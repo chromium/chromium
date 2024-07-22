@@ -203,6 +203,13 @@ ProductSpecificationsService::GetAllProductSpecifications() {
   } else {
     std::vector<ProductSpecificationsSet> product_specifications;
     for (auto& entry : bridge_->entries()) {
+      // Specifics with ProductComparison or ProductComparisonItem follow a
+      // different format where the ProductSpecificationsSet is stored across
+      // multiple specifics. Skip over them for the single specifics case.
+      if (entry.second.has_product_comparison() ||
+          entry.second.has_product_comparison_item()) {
+        continue;
+      }
       std::vector<GURL> urls;
       for (auto& data : entry.second.data()) {
         urls.emplace_back(data.url());

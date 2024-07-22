@@ -79,7 +79,7 @@ cp r8.jar $CHROMIUM_SRC/third_party/r8/lib/r8.jar
 
 * Update backported methods list (used by lint):
 cd $CHROMIUM_SRC
-java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --min-api 24 > third_party/r8/backported_methods.txt
+java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --min-api 26 > third_party/r8/backported_methods.txt
 
 How to file bugs against R8:
 * Copy & paste the failing ninja command (starts with proguard.py), and add --dump-inputs.

@@ -164,10 +164,10 @@ void ShowAllSitesSettingsFilteredByFpsOwner(
     Browser* browser,
     const std::string& fps_owner_host_name);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Shows the enterprise management info page in a browser tab.
 void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ShowAppManagementPage(Profile* profile,
                            const std::string& app_id,
                            ash::settings::AppManagementEntryPoint entry_point);

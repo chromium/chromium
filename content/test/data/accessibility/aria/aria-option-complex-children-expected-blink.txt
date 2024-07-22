@@ -6,7 +6,7 @@ rootWebArea focusable
 ++++++++++link focusable description='title-WAI-ARIA 1.1' name='href-WAI-ARIA 1.1' descriptionFrom=title
 ++++++++++++staticText name='href-WAI-ARIA 1.1'
 ++++++++++++++inlineTextBox name='href-WAI-ARIA 1.1'
-++++++++++paragraph name='title-https://www.w3.org/TR/wai-aria-practices-1.1/'
+++++++++++paragraph description='title-https://www.w3.org/TR/wai-aria-practices-1.1/' descriptionFrom=title
 ++++++++++++staticText name='link-https://www.w3.org/TR/wai-aria-practices-1.1/'
 ++++++++++++++inlineTextBox name='link-https://www.w3.org/TR/wai-aria-practices-1.1/'
 ++++++++++button focusable name='Close'

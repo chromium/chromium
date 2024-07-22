@@ -17,6 +17,10 @@ found in the LICENSE file.
         android:key="identity_error_card"
         app:isPreferenceVisible="false"/>
 
+    <org.chromium.chrome.browser.sync.settings.BatchUploadCardPreference
+        android:key="batch_upload_card"
+        app:isPreferenceVisible="false"/>
+
     <PreferenceCategory
         android:key="account_section_header"
         android:title="@string/account_section_header"/>

@@ -8518,6 +8518,36 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_WHIMSICAL" desc="The label for a wallpaper search mood (ex Chaotic).">
         Whimsical
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_WILD" desc="The label for a wallpaper search mood (ex Chaotic).">
+        Wild
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_DESCRIPTION_1" desc="Accessibility label describing a wallpaper search inspiration image.">
+        A serene oil painting showcasing a yellow-hued meadow, evoking a sense of tranquility and intellectual reflection.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_DESCRIPTION_2" desc="Accessibility label describing a wallpaper search inspiration image.">
+        A contemplative oil painting portraying an intellectual immersed in thought amidst a yellow meadow.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_DESCRIPTION_3" desc="Accessibility label describing a wallpaper search inspiration image.">
+        A vibrant oil painting depicting a sun-drenched meadow.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_DESCRIPTION_4" desc="Accessibility label describing a wallpaper search inspiration image.">
+        Aurora Borealis at night, over a small cottage house.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_DESCRIPTION_5" desc="Accessibility label describing a wallpaper search inspiration image.">
+        Aurora Borealis, stylized in purple and green colors, over a city.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_DESCRIPTION_6" desc="Accessibility label describing a wallpaper search inspiration image.">
+        Bright streams of Aurora Borealis, over a forest.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_DESCRIPTION_7" desc="Accessibility label describing a wallpaper search inspiration image.">
+        Crashing waves in the sea, with a fantastical city and castle in the background, in a dark mood.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_DESCRIPTION_8" desc="Accessibility label describing a wallpaper search inspiration image.">
+        Large waves splashing in the sea, with land in the distant background. Hints of orange light are just beyond the horizon, in an otherwise dark moody sky.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_DESCRIPTION_9" desc="Accessibility label describing a wallpaper search inspiration image.">
+        A large wave engulfs the ocean, with a dark forest ashore.
+      </message>
       <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CHOOSE_ICONS_LABEL" desc="Label for the description of the functionality of the section of Customize Chrome for selecting toolbar icons.">
         Choose what buttons show in the toolbar
       </message>

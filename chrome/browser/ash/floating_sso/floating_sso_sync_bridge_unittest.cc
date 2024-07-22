@@ -27,6 +27,8 @@ namespace ash::floating_sso {
 
 namespace {
 
+using testing::_;
+
 constexpr char kKeyForTests[] = "test_key_value";
 
 syncer::EntityData MakeEntityData(const sync_pb::CookieSpecifics& specifics) {
@@ -63,6 +65,7 @@ class FloatingSsoSyncBridgeTest : public testing::Test {
   }
 
   FloatingSsoSyncBridge& bridge() { return *bridge_; }
+  syncer::MockModelTypeChangeProcessor& processor() { return processor_; }
 
  private:
   void CommitToStoreAndWait(
@@ -141,9 +144,8 @@ TEST_F(FloatingSsoSyncBridgeTest, GetDataForDebugging) {
 // with an empty change list.
 TEST_F(FloatingSsoSyncBridgeTest, ApplyEmptyChange) {
   auto initial_entries_copy = bridge().CookieSpecificsEntriesForTest();
-  bridge().ApplyIncrementalSyncChanges(
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList(),
-      syncer::EntityChangeList());
+  bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
+                                       syncer::EntityChangeList());
   const auto& current_entries = bridge().CookieSpecificsEntriesForTest();
   EXPECT_EQ(initial_entries_copy.size(), current_entries.size());
   for (const auto& [key, specifics] : current_entries) {
@@ -161,9 +163,8 @@ TEST_F(FloatingSsoSyncBridgeTest, IncrementalDeleteAndAdd) {
   syncer::EntityChangeList delete_first;
   delete_first.push_back(
       syncer::EntityChange::CreateDelete(kUniqueKeysForTests[0]));
-  bridge().ApplyIncrementalSyncChanges(
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList(),
-      std::move(delete_first));
+  bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
+                                       std::move(delete_first));
   EXPECT_EQ(entries.size(), initial_size - 1);
   EXPECT_FALSE(entries.contains(kUniqueKeysForTests[0]));
 
@@ -171,9 +172,8 @@ TEST_F(FloatingSsoSyncBridgeTest, IncrementalDeleteAndAdd) {
   syncer::EntityChangeList add_first;
   add_first.push_back(syncer::EntityChange::CreateAdd(
       kUniqueKeysForTests[0], MakeEntityData(CookieSpecificsForTest(0))));
-  bridge().ApplyIncrementalSyncChanges(
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList(),
-      std::move(add_first));
+  bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
+                                       std::move(add_first));
   EXPECT_EQ(entries.size(), initial_size);
   EXPECT_TRUE(entries.contains(kUniqueKeysForTests[0]));
   EXPECT_THAT(entries.at(kUniqueKeysForTests[0]),
@@ -194,9 +194,8 @@ TEST_F(FloatingSsoSyncBridgeTest, IncrementalUpdate) {
               testing::Not(base::test::EqualsProto(updated_specifics)));
   update.push_back(syncer::EntityChange::CreateUpdate(
       kUniqueKeysForTests[0], MakeEntityData(updated_specifics)));
-  bridge().ApplyIncrementalSyncChanges(
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList(),
-      std::move(update));
+  bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
+                                       std::move(update));
 
   // Check that the first entry got updated while others remained the same.
   const auto& current_entries = bridge().CookieSpecificsEntriesForTest();
@@ -206,6 +205,52 @@ TEST_F(FloatingSsoSyncBridgeTest, IncrementalUpdate) {
                 base::test::EqualsProto(key == kUniqueKeysForTests[0]
                                             ? updated_specifics
                                             : initial_entries_copy.at(key)));
+  }
+}
+
+// TODO: b/353222478 - for now we always prefer remote data. Expand this test
+// with an example where a local cookie wins against the remote one during
+// conflict resolution (this will happen with local SAML cookies).
+TEST_F(FloatingSsoSyncBridgeTest, MergeFullSyncData) {
+  auto initial_entries_copy = bridge().CookieSpecificsEntriesForTest();
+
+  syncer::EntityChangeList remote_entities;
+  // Remote cookie which should update one of the locally stored cookies.
+  sync_pb::CookieSpecifics updated_first_cookie = CookieSpecificsForTest(0);
+  updated_first_cookie.set_value("NewRemoteValue");
+  remote_entities.push_back(syncer::EntityChange::CreateAdd(
+      kUniqueKeysForTests[0], MakeEntityData(updated_first_cookie)));
+  // Remote cookie which should be completely new for the client.
+  sync_pb::CookieSpecifics new_remote_cookie;
+  // Key is the only part relevant for this test, so we don't populate other
+  // fields.
+  new_remote_cookie.set_unique_key(kKeyForTests);
+  // Make sure this key is not present locally.
+  ASSERT_FALSE(initial_entries_copy.contains(kKeyForTests));
+  remote_entities.push_back(syncer::EntityChange::CreateAdd(
+      kKeyForTests, MakeEntityData(new_remote_cookie)));
+
+  // Expect local-only cookies to be sent to Sync server.
+  EXPECT_CALL(processor(), Put(kUniqueKeysForTests[1], _, _)).Times(1);
+  EXPECT_CALL(processor(), Put(kUniqueKeysForTests[2], _, _)).Times(1);
+  EXPECT_CALL(processor(), Put(kUniqueKeysForTests[3], _, _)).Times(1);
+
+  bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                             std::move(remote_entities));
+
+  const auto& current_local_entries = bridge().CookieSpecificsEntriesForTest();
+  // Expect one new entry and one updated entry, the rest should be the same as
+  // before.
+  EXPECT_EQ(current_local_entries.size(), initial_entries_copy.size() + 1);
+  for (const auto& [key, specifics] : current_local_entries) {
+    if (key == kKeyForTests) {
+      EXPECT_THAT(specifics, base::test::EqualsProto(new_remote_cookie));
+    } else if (key == kUniqueKeysForTests[0]) {
+      EXPECT_THAT(specifics, base::test::EqualsProto(updated_first_cookie));
+    } else {
+      EXPECT_THAT(specifics,
+                  base::test::EqualsProto(initial_entries_copy.at(key)));
+    }
   }
 }
 

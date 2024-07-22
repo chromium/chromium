@@ -949,6 +949,7 @@ _jar_excluded_patterns = [
   "*/process_launcher/*.class",
   "*/SysUtils*.class",
   "org/chromium/base/Feature*.class",
+  "org/chromium/base/PowerMonitor*.class",
   "org/chromium/base/jank_tracker/*.class",
   "org/chromium/base/memory/MemoryPurgeManager*.class",
   "org/chromium/base/memory/MemoryPressureMonitor*.class",

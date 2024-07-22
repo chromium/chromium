@@ -34,6 +34,7 @@ class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
   // content::NavigationThrottle implementation:
   ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillRedirectRequest() override;
+  ThrottleCheckResult WillProcessResponse() override;
   const char* GetNameForLogging() override;
 
  private:
@@ -46,7 +47,7 @@ class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
   void CheckURL();
 
   // Wraps up common procedure for throttling new requests or redirects.
-  ThrottleCheckResult ThrottleRequest();
+  ThrottleCheckResult ProcessRequest();
 
   void ShowInterstitial(const GURL& url,
                         supervised_user::FilteringBehaviorReason reason);

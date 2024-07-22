@@ -49,7 +49,7 @@ class ClipboardPngReader final : public ClipboardReader {
 
     Blob* blob = nullptr;
     if (data.size()) {
-      blob = Blob::Create(data.data(), data.size(), kMimeTypeImagePng);
+      blob = Blob::Create(data, kMimeTypeImagePng);
     }
     promise_->OnRead(blob);
   }
@@ -117,8 +117,7 @@ class ClipboardTextReader final : public ClipboardReader {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Blob* blob = nullptr;
     if (utf8_bytes.size()) {
-      blob = Blob::Create(utf8_bytes.data(), utf8_bytes.size(),
-                          kMimeTypeTextPlain);
+      blob = Blob::Create(utf8_bytes, kMimeTypeTextPlain);
     }
     promise_->OnRead(blob);
   }
@@ -202,8 +201,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Blob* blob = nullptr;
     if (utf8_bytes.size()) {
-      blob =
-          Blob::Create(utf8_bytes.data(), utf8_bytes.size(), kMimeTypeTextHTML);
+      blob = Blob::Create(utf8_bytes, kMimeTypeTextHTML);
     }
     promise_->OnRead(blob);
   }
@@ -279,8 +277,7 @@ class ClipboardSvgReader final : public ClipboardReader {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Blob* blob = nullptr;
     if (utf8_bytes.size()) {
-      blob =
-          Blob::Create(utf8_bytes.data(), utf8_bytes.size(), kMimeTypeImageSvg);
+      blob = Blob::Create(utf8_bytes, kMimeTypeImageSvg);
     }
     promise_->OnRead(blob);
   }
@@ -306,8 +303,7 @@ class ClipboardCustomFormatReader final : public ClipboardReader {
   }
 
   void OnCustomFormatRead(mojo_base::BigBuffer data) {
-    Blob* blob = Blob::Create(reinterpret_cast<const uint8_t*>(data.data()),
-                              data.size(), mime_type_);
+    Blob* blob = Blob::Create(data, mime_type_);
     promise_->OnRead(blob);
   }
 

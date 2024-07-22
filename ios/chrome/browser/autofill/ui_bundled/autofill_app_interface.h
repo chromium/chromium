@@ -134,6 +134,9 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Returns true if the Keyboard Accessory Upgrade feature is enabled.
 + (BOOL)isKeyboardAccessoryUpgradeEnabled;
 
+// Returns true if the dynamically loading fields on input feature is enabled.
++ (BOOL)isDynamicallyLoadFieldsOnInputEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_APP_INTERFACE_H_

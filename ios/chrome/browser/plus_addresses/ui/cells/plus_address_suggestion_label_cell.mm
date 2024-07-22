@@ -103,11 +103,13 @@ const CGFloat kLeadingImageViewPadding = 20.0;
 }
 
 - (void)setTrailingButtonImage:(UIImage*)trailingButtonImage
-                 withTintColor:(UIColor*)trailingImageColor {
+                 withTintColor:(UIColor*)trailingImageColor
+       accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   _trailingButtonView.hidden = NO;
   _trailingButtonView.tintColor = trailingImageColor;
   [_trailingButtonView setImage:trailingButtonImage
                        forState:UIControlStateNormal];
+  _trailingButtonView.accessibilityIdentifier = accessibilityIdentifier;
 }
 
 - (void)setLeadingIconImage:(UIImage*)image withTintColor:(UIColor*)tintColor {
@@ -122,7 +124,9 @@ const CGFloat kLeadingImageViewPadding = 20.0;
 
   self.textLabel.text = nil;
   self.accessibilityCustomActions = nil;
-  [self setTrailingButtonImage:nil withTintColor:nil];
+  [self setTrailingButtonImage:nil
+                 withTintColor:nil
+       accessibilityIdentifier:nil];
   [self setLeadingIconImage:nil withTintColor:nil];
   _trailingButtonView.hidden = YES;
 }

@@ -188,6 +188,27 @@ chromium-metrics-reviews@google.com.
 
     Note that at the time of writing, this metric only supports PASSWORDS,
     BOOKMARKS and READING_LIST.
+
+    This is not logged when kSyncEnableModelTypeLocalDataBatchUploaders is
+    enabled and will eventually be removed in favor of
+    Sync.BatchUpload.Requests3.
+  </summary>
+</histogram>
+
+<histogram name="Sync.BatchUpload.Requests3" enum="SyncModelTypes"
+    expires_after="2024-11-20">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Logged when batch upload of local data for a data type is requested via
+    SyncService::TriggerLocalDataMigration() (normally by one of the UI entry
+    points), if kSyncEnableModelTypeLocalDataBatchUploaders is enabled.
+
+    Note that at the time of writing, this metric only supports PASSWORDS,
+    BOOKMARKS and READING_LIST.
+
+    This replaced Sync.BatchUpload.Requests2, which omitted types that issued
+    requests but weren't healthy.
   </summary>
 </histogram>
 
@@ -1044,6 +1065,18 @@ chromium-metrics-reviews@google.com.
     Estimated memory usage by sync datatype in kilobytes. Recorded after sync
     configuration. This metric is used for monitoring general health of sync
     client-side code.
+  </summary>
+  <token key="SyncModelType" variants="SyncModelType"/>
+</histogram>
+
+<histogram name="Sync.ModelTypeNumUnsyncedEntitiesOnModelReady{SyncModelType}"
+    units="entities" expires_after="2025-01-22">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Counts the number of unsynced entities for each model type, including
+    tombstones. Recorded once model is ready to sync, i.e. typically soon after
+    browser startup. Recorded only if initial sync is done.
   </summary>
   <token key="SyncModelType" variants="SyncModelType"/>
 </histogram>

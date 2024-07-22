@@ -15,13 +15,11 @@
 namespace ash {
 namespace {
 
-// constexpr const char kUserActionNext[] = "next";
-
 std::vector<SinglePerkDiscoveryPayload> ParsePayload(
     const growth::Payload* payload) {
   std::vector<SinglePerkDiscoveryPayload> perks_result;
   if (payload->empty()) {
-    LOG(ERROR) << "Payload empty.";
+    LOG(WARNING) << "Payload empty.";
     return perks_result;
   }
 
@@ -103,7 +101,7 @@ bool PerksDiscoveryScreen::MaybeSkip(WizardContext& context) {
   return false;
 }
 
-void PerksDiscoveryScreen::GetOobePerksPayload() {
+void PerksDiscoveryScreen::GetOobePerksPayloadAndShow() {
   auto* campaigns_manager = growth::CampaignsManager::Get();
   auto* campaign =
       campaigns_manager->GetCampaignBySlot(growth::Slot::kOobePerkDiscovery);
@@ -122,6 +120,14 @@ void PerksDiscoveryScreen::GetOobePerksPayload() {
   }
 
   perks_data_ = ParsePayload(payload);
+
+  if (view_ && !perks_data_.empty()) {
+    view_->SetPerksData(perks_data_);
+    return;
+  }
+
+  LOG(WARNING) << "Payload parsing error. Unable to extract required information.";
+  exit_callback_.Run(Result::kError);
 }
 
 void PerksDiscoveryScreen::ShowImpl() {
@@ -131,7 +137,6 @@ void PerksDiscoveryScreen::ShowImpl() {
 
   view_->Show();
 
-  // TODO(b:353863015) Optimize OOBE Load Growth Campaign Latency
   auto* campaigns_manager = growth::CampaignsManager::Get();
   if (!campaigns_manager) {
     LOG(ERROR) << "CampaignsManager object is null. Failed to retrieve "
@@ -139,8 +144,9 @@ void PerksDiscoveryScreen::ShowImpl() {
     exit_callback_.Run(Result::kError);
     return;
   }
-  campaigns_manager->LoadCampaigns(base::BindOnce(
-      &PerksDiscoveryScreen::GetOobePerksPayload, weak_factory_.GetWeakPtr()));
+  campaigns_manager->LoadCampaigns(
+      base::BindOnce(&PerksDiscoveryScreen::GetOobePerksPayloadAndShow,
+                     weak_factory_.GetWeakPtr()) , true);
 }
 
 void PerksDiscoveryScreen::HideImpl() {}

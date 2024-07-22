@@ -17,8 +17,11 @@
 #include "services/network/test/test_shared_url_loader_factory.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_management_test_util.h"
+#include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "components/crx_file/id_util.h"  // nogncheck crbug.com/40147906
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
@@ -168,7 +171,7 @@ void AddExtension(const std::string& name,
   extensions::ExtensionRegistry::Get(profile)->AddEnabled(extension);
 }
 
-void CreateMockExtensions(Profile* profile) {
+void CreateMockExtensions(TestingProfile* profile) {
   AddExtension("TestExtension1", ManifestLocation::kInternal, profile);
   AddExtension("TestExtension2", ManifestLocation::kInternal, profile);
   AddExtension("TestExtension3", ManifestLocation::kInternal, profile);
@@ -181,6 +184,13 @@ void CreateMockExtensions(Profile* profile) {
   // extension 8 will not trigger the handler.
   AddExtension("TestExtension8", ManifestLocation::kExternalPolicyDownload,
                profile);
+  using PolicyUpdater = extensions::ExtensionManagementPrefUpdater<
+      sync_preferences::TestingPrefServiceSyncable>;
+  sync_preferences::TestingPrefServiceSyncable* prefs =
+      profile->GetTestingPrefService();
+  PolicyUpdater(prefs).SetIndividualExtensionAutoInstalled(
+      crx_file::id_util::GenerateId("TestExtension8"),
+      extension_urls::kChromeWebstoreUpdateURL, true);
 }
 
 void CleanAllMockExtensions(Profile* profile) {

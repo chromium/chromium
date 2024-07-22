@@ -36,31 +36,40 @@ class CORE_EXPORT CompileHintsForStreaming {
     Builder(
         V8CrowdsourcedCompileHintsProducer* crowdsourced_compile_hints_producer,
         V8CrowdsourcedCompileHintsConsumer* crowdsourced_compile_hints_consumer,
-        const KURL& resource_url);
+        const KURL& resource_url,
+        bool v8_compile_hints_magic_comment_runtime_enabled);
     Builder(const Builder&) = delete;
     Builder& operator=(const Builder&) = delete;
     ~Builder() = default;
 
     // This method can be called on non-main thread.
     std::unique_ptr<CompileHintsForStreaming> Build(
-        scoped_refptr<CachedMetadata> cached_metadata) &&;
+        scoped_refptr<CachedMetadata>
+            hot_cached_metadata_for_local_compile_hints,
+        bool has_hot_timestamp) &&;
 
    private:
     const bool might_generate_crowdsourced_compile_hints_;
     std::unique_ptr<V8CrowdsourcedCompileHintsConsumer::DataAndScriptNameHash>
         crowdsourced_compile_hint_callback_data_;
+    const bool v8_compile_hints_magic_comment_runtime_enabled_;
   };
 
-  // For producing compile hints.
-  explicit CompileHintsForStreaming(base::PassKey<Builder>);
+  // For producing compile hints or just transmitting the compiler options.
+  CompileHintsForStreaming(
+      bool produce_compile_hints,
+      v8::ScriptCompiler::CompileOptions additional_compile_options,
+      base::PassKey<Builder>);
   // For consuming local compile hints.
   CompileHintsForStreaming(
       std::unique_ptr<V8LocalCompileHintsConsumer> local_compile_hints_consumer,
+      v8::ScriptCompiler::CompileOptions additional_compile_options,
       base::PassKey<Builder>);
   // For consuming crowdsourced compile hints.
   CompileHintsForStreaming(
       std::unique_ptr<V8CrowdsourcedCompileHintsConsumer::DataAndScriptNameHash>
           crowdsourced_compile_hint_callback_data,
+      v8::ScriptCompiler::CompileOptions additional_compile_options,
       base::PassKey<Builder>);
 
   CompileHintsForStreaming(const CompileHintsForStreaming&) = delete;

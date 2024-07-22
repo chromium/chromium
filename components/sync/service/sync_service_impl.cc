@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <utility>
 
+#include "base/barrier_callback.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
@@ -226,6 +227,21 @@ void MaybeClearAccountKeyedPreferences(
     user_settings.KeepAccountSettingsPrefsOnlyForUsers(hashes);
   }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+}
+
+std::map<ModelType, LocalDataDescription> JoinAllTypesAndLocalDataDescriptions(
+    const std::vector<std::pair<ModelType, LocalDataDescription>>& pairs) {
+  std::map<ModelType, LocalDataDescription> map;
+  for (const std::pair<ModelType, LocalDataDescription>& pair : pairs) {
+    map.emplace(pair);
+  }
+  return map;
+}
+
+std::pair<ModelType, LocalDataDescription> JoinTypeAndLocalDataDescription(
+    ModelType type,
+    LocalDataDescription description) {
+  return {type, description};
 }
 
 }  // namespace
@@ -2516,10 +2532,35 @@ void SyncServiceImpl::GetLocalDataDescriptions(
   // those which are configured and have not encountered any error.
   types.RetainAll(GetActiveDataTypes());
 
-  sync_client_->GetLocalDataDescriptions(types, std::move(callback));
+  if (!base::FeatureList::IsEnabled(
+          syncer::kSyncEnableModelTypeLocalDataBatchUploaders)) {
+    sync_client_->GetLocalDataDescriptions(types, std::move(callback));
+    return;
+  }
+
+  types.RetainAll(GetModelTypesWithLocalDataBatchUploader());
+  auto barrier_callback =
+      base::BarrierCallback<std::pair<ModelType, LocalDataDescription>>(
+          types.size(), base::BindOnce(&JoinAllTypesAndLocalDataDescriptions)
+                            .Then(std::move(callback)));
+  for (ModelType type : types) {
+    model_type_controllers_.at(type)
+        ->GetModelTypeLocalDataBatchUploader()
+        ->GetLocalDataDescription(
+            base::BindOnce(&JoinTypeAndLocalDataDescription, type)
+                .Then(barrier_callback));
+  }
 }
 
 void SyncServiceImpl::TriggerLocalDataMigration(ModelTypeSet types) {
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncEnableModelTypeLocalDataBatchUploaders)) {
+    for (ModelType type : types) {
+      base::UmaHistogramEnumeration("Sync.BatchUpload.Requests3",
+                                    syncer::ModelTypeHistogramValue(type));
+    }
+  }
+
   // Syncing users do not use separate local and account storages. Thus, there's
   // no local-only data to migrate.
   if (HasSyncConsent()) {
@@ -2530,7 +2571,28 @@ void SyncServiceImpl::TriggerLocalDataMigration(ModelTypeSet types) {
   // those which are configured and have not encountered any error.
   types.RetainAll(GetActiveDataTypes());
 
-  sync_client_->TriggerLocalDataMigration(types);
+  if (!base::FeatureList::IsEnabled(
+          syncer::kSyncEnableModelTypeLocalDataBatchUploaders)) {
+    sync_client_->TriggerLocalDataMigration(types);
+    return;
+  }
+
+  types.RetainAll(GetModelTypesWithLocalDataBatchUploader());
+  for (ModelType type : types) {
+    model_type_controllers_.at(type)
+        ->GetModelTypeLocalDataBatchUploader()
+        ->TriggerLocalDataMigration();
+  }
+}
+
+ModelTypeSet SyncServiceImpl::GetModelTypesWithLocalDataBatchUploader() const {
+  ModelTypeSet types;
+  for (const auto& [type, controller] : model_type_controllers_) {
+    if (controller->GetModelTypeLocalDataBatchUploader()) {
+      types.Put(type);
+    }
+  }
+  return types;
 }
 
 }  // namespace syncer

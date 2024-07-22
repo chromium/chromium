@@ -23,9 +23,11 @@ class AllPlusAddressesBottomSheetProperties {
             new PropertyModel.WritableObjectPropertyKey<>("on_query_text_change");
     static final ReadableObjectPropertyKey<ModelList> PLUS_PROFILES =
             new ReadableObjectPropertyKey<>("plus_profiles");
+    static final PropertyModel.WritableObjectPropertyKey<Runnable> ON_DISMISSED =
+            new PropertyModel.WritableObjectPropertyKey<>("on_dismissed");
 
     static final PropertyKey[] ALL_KEYS = {
-        VISIBLE, TITLE, WARNING, QUERY_HINT, ON_QUERY_TEXT_CHANGE, PLUS_PROFILES,
+        VISIBLE, TITLE, WARNING, QUERY_HINT, ON_QUERY_TEXT_CHANGE, PLUS_PROFILES, ON_DISMISSED,
     };
 
     static PropertyModel createDefaultModel() {
@@ -35,18 +37,24 @@ class AllPlusAddressesBottomSheetProperties {
                 .with(WARNING, "")
                 .with(QUERY_HINT, "")
                 .with(PLUS_PROFILES, new ModelList())
+                .with(ON_DISMISSED, () -> {})
                 .build();
     }
 
     static class PlusProfileProperties {
         static final PropertyModel.ReadableObjectPropertyKey<PlusProfile> PLUS_PROFILE =
                 new PropertyModel.ReadableObjectPropertyKey<>("plus_profile");
+        static final PropertyModel.WritableObjectPropertyKey<Callback<String>>
+                ON_PLUS_ADDRESS_SELECTED =
+                        new PropertyModel.WritableObjectPropertyKey<>("on_plus_address_selected");
 
-        static final PropertyKey[] ALL_KEYS = {PLUS_PROFILE};
+        static final PropertyKey[] ALL_KEYS = {PLUS_PROFILE, ON_PLUS_ADDRESS_SELECTED};
 
-        static PropertyModel createPlusProfileModel(PlusProfile profile) {
+        static PropertyModel createPlusProfileModel(
+                PlusProfile profile, Callback<String> callback) {
             return new PropertyModel.Builder(PlusProfileProperties.ALL_KEYS)
                     .with(PLUS_PROFILE, profile)
+                    .with(ON_PLUS_ADDRESS_SELECTED, callback)
                     .build();
         }
 

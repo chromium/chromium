@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -110,6 +111,9 @@ public abstract class TabListEditorAction {
 
         /** Retrieves the SnackbarManager for the selection editor. */
         SnackbarManager getSnackbarManager();
+
+        /** Retrieves the BottomSheetController for the selection editor. */
+        BottomSheetController getBottomSheetController();
     }
 
     private ObserverList<ActionObserver> mObsevers = new ObserverList<>();

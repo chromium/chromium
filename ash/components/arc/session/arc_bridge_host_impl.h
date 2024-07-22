@@ -228,7 +228,8 @@ class ArcBridgeHostImpl
 
   // Put as a last member to ensure that any callback tied to the elements
   // is not invoked.
-  std::vector<std::unique_ptr<MojoChannelBase>> mojo_channels_;
+  std::vector<std::unique_ptr<MojoChannelBase>> mojo_channels_
+      GUARDED_BY_CONTEXT(thread_checker_);
 };
 
 }  // namespace arc

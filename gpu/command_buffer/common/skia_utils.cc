@@ -13,8 +13,6 @@
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkTraceMemoryDump.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/graphite/Context.h"
-#include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "ui/gl/trace_util.h"
 
 namespace gpu {
@@ -160,31 +158,6 @@ void DumpBackgroundGrMemoryStatistics(
   MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
   dump->AddScalar(MemoryAllocatorDump::kNameSize,
                   MemoryAllocatorDump::kUnitsBytes, skia_gr_cache_size);
-}
-
-void DumpBackgroundGraphiteMemoryStatistics(
-    const skgpu::graphite::Context* context,
-    const skgpu::graphite::Recorder* recorder,
-    base::trace_event::ProcessMemoryDump* pmd) {
-  using base::trace_event::MemoryAllocatorDump;
-
-  std::string context_dump_name =
-      base::StringPrintf("skia/gpu_resources/graphite_context_0x%" PRIXPTR,
-                         reinterpret_cast<uintptr_t>(context));
-  MemoryAllocatorDump* context_dump =
-      pmd->CreateAllocatorDump(context_dump_name);
-  context_dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                          MemoryAllocatorDump::kUnitsBytes,
-                          context->currentBudgetedBytes());
-
-  std::string recorder_dump_name = base::StringPrintf(
-      "skia/gpu_resources/gpu_main_graphite_recorder_0x%" PRIXPTR,
-      reinterpret_cast<uintptr_t>(recorder));
-  MemoryAllocatorDump* recorder_dump =
-      pmd->CreateAllocatorDump(recorder_dump_name);
-  recorder_dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                           MemoryAllocatorDump::kUnitsBytes,
-                           recorder->currentBudgetedBytes());
 }
 
 }  // namespace raster

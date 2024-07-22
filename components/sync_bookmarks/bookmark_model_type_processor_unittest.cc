@@ -2013,6 +2013,41 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldWipeBookmarksIfCacheGuidMismatch) {
                   ->HasNoUserCreatedBookmarksOrFolders());
 }
 
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldRecordNumUnsyncedEntitiesOnModelReady) {
+  {
+    base::HistogramTester histogram_tester;
+    SimulateModelReadyToSyncWithInitialSyncDone();
+    // There are no local unsynced entities.
+    histogram_tester.ExpectUniqueSample(
+        "Sync.ModelTypeNumUnsyncedEntitiesOnModelReady.BOOKMARK", /*sample=*/0,
+        /*expected_bucket_count=*/1);
+  }
+
+  // Add a bookmark, but don't sync it.
+  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(),
+                           /*index=*/0, u"Title", GURL("http://www.url.com"));
+  sync_pb::BookmarkModelMetadata model_metadata =
+      processor()->GetTrackerForTest()->BuildBookmarkModelMetadata();
+
+  // Simulate the browser restart.
+  ResetModelTypeProcessor();
+
+  {
+    base::HistogramTester histogram_tester;
+
+    std::string metadata_str;
+    model_metadata.SerializeToString(&metadata_str);
+    processor()->ModelReadyToSync(metadata_str, base::DoNothing(),
+                                  bookmark_model());
+
+    // Bookmark added above is unsynced.
+    histogram_tester.ExpectUniqueSample(
+        "Sync.ModelTypeNumUnsyncedEntitiesOnModelReady.BOOKMARK", /*sample=*/1,
+        /*expected_bucket_count=*/1);
+  }
+}
+
 }  // namespace
 
 }  // namespace sync_bookmarks

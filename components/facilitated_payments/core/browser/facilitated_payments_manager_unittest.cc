@@ -1139,7 +1139,8 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
   manager_->OnPixCodeCopiedToClipboard(
-      url, "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F");
+      url, "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+      ukm::UkmRecorder::GetNewSourceID());
 
   // The DataDecoder (utility process) validates the PIX code string
   // asynchronously.
@@ -1167,7 +1168,8 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
   manager_->OnPixCodeCopiedToClipboard(
-      url, "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F");
+      url, "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+      ukm::UkmRecorder::GetNewSourceID());
   // The DataDecoder (utility process) validates the PIX code string
   // asynchronously.
   task_environment_.RunUntilIdle();
@@ -1193,7 +1195,8 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
   std::string pix_code =
       "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F";
-  manager_->OnPixCodeCopiedToClipboard(url, pix_code);
+  manager_->OnPixCodeCopiedToClipboard(url, pix_code,
+                                       ukm::UkmRecorder::GetNewSourceID());
   // The DataDecoder (utility process) validates the PIX code string
   // asynchronously.
   task_environment_.RunUntilIdle();
@@ -1240,7 +1243,8 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   // validation was already run above, it should not be run again. This can be
   // verified with IsAvailable not being called again.
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
-  manager_->OnPixCodeCopiedToClipboard(url, pix_code);
+  manager_->OnPixCodeCopiedToClipboard(url, pix_code,
+                                       ukm::UkmRecorder::GetNewSourceID());
   // The DataDecoder (utility process) validates the PIX code string
   // asynchronously.
   task_environment_.RunUntilIdle();

@@ -40,7 +40,7 @@
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
-#include "components/autofill/core/browser/ui/payments/save_card_and_virtual_card_enroll_confirmation_ui_params.h"
+#include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -240,9 +240,9 @@ void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView(
     is_triggered_by_user_gesture_ = false;
     current_bubble_type_ = BubbleType::UPLOAD_COMPLETED;
     confirmation_ui_params_ =
-        card_saved ? SaveCardAndVirtualCardEnrollConfirmationUiParams::
+        card_saved ? SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
                          CreateForSaveCardSuccess()
-                   : SaveCardAndVirtualCardEnrollConfirmationUiParams::
+                   : SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
                          CreateForSaveCardFailure();
     on_confirmation_closed_callback_ =
         std::move(on_confirmation_closed_callback);
@@ -414,7 +414,7 @@ SaveCardBubbleControllerImpl::GetOnBubbleClosedCallback() {
                         weak_ptr_factory_.GetWeakPtr());
 }
 
-const SaveCardAndVirtualCardEnrollConfirmationUiParams&
+const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&
 SaveCardBubbleControllerImpl::GetConfirmationUiParams() const {
   CHECK(confirmation_ui_params_.has_value());
   return confirmation_ui_params_.value();

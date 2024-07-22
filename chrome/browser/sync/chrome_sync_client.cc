@@ -22,6 +22,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_receiver_service_factory.h"
 #include "chrome/browser/password_manager/password_sender_service_factory.h"
@@ -60,6 +61,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/browser_sync/common_controller_builder.h"
 #include "components/browser_sync/sync_api_component_factory_impl.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/data_sharing/public/features.h"
@@ -92,6 +94,7 @@
 #include "components/sync/service/syncable_service_based_model_type_controller.h"
 #include "components/sync/service/trusted_vault_synthetic_field_trial.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
+#include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_user_events/user_event_service.h"
@@ -269,21 +272,13 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
     : profile_(profile), extensions_activity_monitor_(profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  scoped_refptr<autofill::AutofillWebDataService> profile_web_data_service =
-      WebDataServiceFactory::GetAutofillWebDataForProfile(
-          profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  scoped_refptr<autofill::AutofillWebDataService> account_web_data_service =
-      WebDataServiceFactory::GetAutofillWebDataForAccount(
-          profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  scoped_refptr<base::SequencedTaskRunner> web_data_service_thread =
-      profile_web_data_service ? profile_web_data_service->GetDBTaskRunner()
-                               : nullptr;
+  component_factory_ = std::make_unique<SyncApiComponentFactoryImpl>(
+      this,
+      DeviceInfoSyncServiceFactory::GetForProfile(profile_)
+          ->GetDeviceInfoTracker(),
+      GetModelTypeStoreService()->GetSyncDataPath());
 
-  // This class assumes that the database thread is the same across the profile
-  // and account storage. This DCHECK makes that assumption explicit.
-  DCHECK(!account_web_data_service ||
-         web_data_service_thread ==
-             account_web_data_service->GetDBTaskRunner());
+#if BUILDFLAG(IS_ANDROID)
   scoped_refptr<password_manager::PasswordStoreInterface>
       profile_password_store = ProfilePasswordStoreFactory::GetForProfile(
           profile_, ServiceAccessType::IMPLICIT_ACCESS);
@@ -291,28 +286,6 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       account_password_store = AccountPasswordStoreFactory::GetForProfile(
           profile_, ServiceAccessType::IMPLICIT_ACCESS);
 
-  supervised_user::SupervisedUserSettingsService*
-      supervised_user_settings_service =
-          SupervisedUserSettingsServiceFactory::GetForKey(
-              profile_->GetProfileKey());
-
-  component_factory_ = std::make_unique<SyncApiComponentFactoryImpl>(
-      this, chrome::GetChannel(), content::GetUIThreadTaskRunner({}),
-      web_data_service_thread, profile_web_data_service,
-      account_web_data_service, profile_password_store, account_password_store,
-      LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile_),
-      AccountBookmarkSyncServiceFactory::GetForProfile(profile_),
-      BookmarkModelFactory::GetForBrowserContext(profile_),
-      PowerBookmarkServiceFactory::GetForBrowserContext(profile_),
-      supervised_user_settings_service,
-      PlusAddressSettingServiceFactory::GetForBrowserContext(profile_),
-      WebDataServiceFactory::GetPlusAddressWebDataForProfile(
-          profile_, ServiceAccessType::IMPLICIT_ACCESS),
-      commerce::ProductSpecificationsServiceFactory::GetForBrowserContext(
-          profile_),
-      data_sharing::DataSharingServiceFactory::GetForProfile(profile_));
-
-#if BUILDFLAG(IS_ANDROID)
   local_data_query_helper_ =
       std::make_unique<browser_sync::LocalDataQueryHelper>(
           profile_password_store.get(), account_password_store.get(),
@@ -383,88 +356,88 @@ void ChromeSyncClient::TriggerLocalDataMigration(syncer::ModelTypeSet types) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-syncer::ModelTypeStoreService* ChromeSyncClient::GetModelTypeStoreService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return ModelTypeStoreServiceFactory::GetForProfile(profile_);
-}
-
-syncer::DeviceInfoSyncService* ChromeSyncClient::GetDeviceInfoSyncService() {
-  return DeviceInfoSyncServiceFactory::GetForProfile(profile_);
-}
-
-consent_auditor::ConsentAuditor* ChromeSyncClient::GetConsentAuditor() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return ConsentAuditorFactory::GetForProfile(profile_);
-}
-
-favicon::FaviconService* ChromeSyncClient::GetFaviconService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return FaviconServiceFactory::GetForProfile(
-      profile_, ServiceAccessType::IMPLICIT_ACCESS);
-}
-
-history::HistoryService* ChromeSyncClient::GetHistoryService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return HistoryServiceFactory::GetForProfile(
-      profile_, ServiceAccessType::EXPLICIT_ACCESS);
-}
-
-webauthn::PasskeyModel* ChromeSyncClient::GetPasskeyModel() {
-#if BUILDFLAG(IS_ANDROID)
-  NOTREACHED_NORETURN();
-#else
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials));
-  return PasskeyModelFactory::GetForProfile(profile_);
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
-reading_list::DualReadingListModel*
-ChromeSyncClient::GetDualReadingListModel() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return ReadingListModelFactory::GetAsDualReadingListForBrowserContext(
-      profile_);
-}
-
-send_tab_to_self::SendTabToSelfSyncService*
-ChromeSyncClient::GetSendTabToSelfSyncService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return SendTabToSelfSyncServiceFactory::GetForProfile(profile_);
-}
-
-syncer::UserEventService* ChromeSyncClient::GetUserEventService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return browser_sync::UserEventServiceFactory::GetForProfile(profile_);
-}
-
-sync_preferences::PrefServiceSyncable*
-ChromeSyncClient::GetPrefServiceSyncable() {
-  return PrefServiceSyncableFromProfile(profile_);
-}
-
-sync_sessions::SessionSyncService* ChromeSyncClient::GetSessionSyncService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return SessionSyncServiceFactory::GetForProfile(profile_);
-}
-
-password_manager::PasswordReceiverService*
-ChromeSyncClient::GetPasswordReceiverService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return PasswordReceiverServiceFactory::GetForProfile(profile_);
-}
-
-password_manager::PasswordSenderService*
-ChromeSyncClient::GetPasswordSenderService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return PasswordSenderServiceFactory::GetForProfile(profile_);
-}
-
 syncer::ModelTypeController::TypeVector
 ChromeSyncClient::CreateModelTypeControllers(
     syncer::SyncService* sync_service) {
-  syncer::ModelTypeController::TypeVector controllers =
-      component_factory_->CreateCommonModelTypeControllers(
-          GetDisabledCommonDataTypes(), sync_service);
+  scoped_refptr<autofill::AutofillWebDataService> profile_web_data_service =
+      WebDataServiceFactory::GetAutofillWebDataForProfile(
+          profile_, ServiceAccessType::IMPLICIT_ACCESS);
+  scoped_refptr<autofill::AutofillWebDataService> account_web_data_service =
+      WebDataServiceFactory::GetAutofillWebDataForAccount(
+          profile_, ServiceAccessType::IMPLICIT_ACCESS);
+  scoped_refptr<base::SequencedTaskRunner> web_data_service_thread =
+      profile_web_data_service ? profile_web_data_service->GetDBTaskRunner()
+                               : nullptr;
+  // This class assumes that the database thread is the same across the profile
+  // and account storage. This DCHECK makes that assumption explicit.
+  DCHECK(!account_web_data_service ||
+         web_data_service_thread ==
+             account_web_data_service->GetDBTaskRunner());
+
+  browser_sync::CommonControllerBuilder builder;
+  builder.SetAutofillWebDataService(
+      content::GetUIThreadTaskRunner({}), web_data_service_thread,
+      profile_web_data_service, account_web_data_service);
+  builder.SetBookmarkModel(
+      BookmarkModelFactory::GetForBrowserContext(profile_));
+  builder.SetBookmarkSyncService(
+      LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile_),
+      AccountBookmarkSyncServiceFactory::GetForProfile(profile_));
+  builder.SetConsentAuditor(ConsentAuditorFactory::GetForProfile(profile_));
+  builder.SetDataSharingService(
+      data_sharing::DataSharingServiceFactory::GetForProfile(profile_));
+  builder.SetDeviceInfoSyncService(
+      DeviceInfoSyncServiceFactory::GetForProfile(profile_));
+  builder.SetDualReadingListModel(
+      ReadingListModelFactory::GetAsDualReadingListForBrowserContext(profile_));
+  builder.SetFaviconService(FaviconServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::IMPLICIT_ACCESS));
+  builder.SetGoogleGroupsManager(
+      GoogleGroupsManagerFactory::GetForBrowserContext(profile_));
+  builder.SetHistoryService(HistoryServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS));
+  builder.SetIdentityManager(GetIdentityManager());
+  builder.SetModelTypeStoreService(
+      ModelTypeStoreServiceFactory::GetForProfile(profile_));
+#if !BUILDFLAG(IS_ANDROID)
+  builder.SetPasskeyModel(
+      base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
+          ? PasskeyModelFactory::GetForProfile(profile_)
+          : nullptr);
+#endif  // !BUILDFLAG(IS_ANDROID)
+  builder.SetPasswordReceiverService(
+      PasswordReceiverServiceFactory::GetForProfile(profile_));
+  builder.SetPasswordSenderService(
+      PasswordSenderServiceFactory::GetForProfile(profile_));
+  builder.SetPasswordStore(ProfilePasswordStoreFactory::GetForProfile(
+                               profile_, ServiceAccessType::IMPLICIT_ACCESS),
+                           AccountPasswordStoreFactory::GetForProfile(
+                               profile_, ServiceAccessType::IMPLICIT_ACCESS));
+  builder.SetPlusAddressServices(
+      PlusAddressSettingServiceFactory::GetForBrowserContext(profile_),
+      WebDataServiceFactory::GetPlusAddressWebDataForProfile(
+          profile_, ServiceAccessType::IMPLICIT_ACCESS));
+  builder.SetPowerBookmarkService(
+      PowerBookmarkServiceFactory::GetForBrowserContext(profile_));
+  builder.SetPrefService(profile_->GetPrefs());
+  builder.SetPrefServiceSyncable(PrefServiceSyncableFromProfile(profile_));
+  builder.SetProductSpecificationsService(
+      commerce::ProductSpecificationsServiceFactory::GetForBrowserContext(
+          profile_));
+  builder.SetSendTabToSelfSyncService(
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile_));
+  builder.SetSessionSyncService(
+      SessionSyncServiceFactory::GetForProfile(profile_));
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  builder.SetSupervisedUserSettingsService(
+      SupervisedUserSettingsServiceFactory::GetForKey(
+          profile_->GetProfileKey()));
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  builder.SetUserEventService(
+      browser_sync::UserEventServiceFactory::GetForProfile(profile_));
+
+  syncer::ModelTypeController::TypeVector controllers = builder.Build(
+      GetDisabledCommonDataTypes(), sync_service, chrome::GetChannel());
 
   const base::RepeatingClosure dump_stack = GetDumpStackClosure();
 
@@ -741,6 +714,10 @@ ChromeSyncClient::GetSyncInvalidationsService() {
 scoped_refptr<syncer::ExtensionsActivity>
 ChromeSyncClient::GetExtensionsActivity() {
   return extensions_activity_monitor_.GetExtensionsActivity();
+}
+
+syncer::ModelTypeStoreService* ChromeSyncClient::GetModelTypeStoreService() {
+  return ModelTypeStoreServiceFactory::GetForProfile(profile_);
 }
 
 base::WeakPtr<syncer::SyncableService>

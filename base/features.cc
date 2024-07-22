@@ -85,6 +85,12 @@ BASE_FEATURE(kPartialLowEndModeOnMidRangeDevices,
 BASE_FEATURE(kCollectAndroidFrameTimelineMetrics,
              "CollectAndroidFrameTimelineMetrics",
              FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, post registering PowerMonitor broadcast receiver to a background
+// thread,
+BASE_FEATURE(kPostPowerMonitorBroadcastReceiverInitToBackground,
+             "PostPowerMonitorBroadcastReceiverInitToBackground",
+             FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void Init(EmitThreadControllerProfilerMetadata

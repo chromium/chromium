@@ -204,6 +204,10 @@ id<GREYMatcher> MigrateToAccountButton() {
 
 // Test that the page for viewing Autofill profile details is as expected.
 - (void)testAutofillProfileViewPage {
+  if ([AutofillAppInterface isDynamicallyLoadFieldsOnInputEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the fields "
+                           @"are loaded dynamically on input.");
+  }
   [AutofillAppInterface saveExampleProfile];
   [self openEditProfile:kProfileLabel];
 
@@ -444,6 +448,11 @@ id<GREYMatcher> MigrateToAccountButton() {
 // city is added to the required fields. When it is emptied, the save button in
 // displayed. The profile is an account profile.
 - (void)testRequiredFields {
+  if ([AutofillAppInterface isDynamicallyLoadFieldsOnInputEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the fields "
+                           @"are loaded dynamically on input.");
+  }
+
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
@@ -526,6 +535,10 @@ id<GREYMatcher> MigrateToAccountButton() {
 // Tests that when the state data is removed, the "Done" button is enabled for
 // "Germany" but not for "India". Similarly, the "Done" is disabled for "US".
 - (void)testDoneButtonByRequirementsOfCountries {
+  if ([AutofillAppInterface isDynamicallyLoadFieldsOnInputEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the fields "
+                           @"are loaded dynamically on input.");
+  }
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
@@ -599,6 +612,11 @@ id<GREYMatcher> MigrateToAccountButton() {
 // Tests that the footer text is correctly displayed when there are multiple
 // required empty fields.
 - (void)testFooterWithMultipleErrors {
+  if ([AutofillAppInterface isDynamicallyLoadFieldsOnInputEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the fields "
+                           @"are loaded dynamically on input.");
+  }
+
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
@@ -694,6 +712,11 @@ id<GREYMatcher> MigrateToAccountButton() {
 // Tests that a local incomplete profile can be migrated to account after
 // editing the profile.
 - (void)testIncompleteProfileMigrateToAccount {
+  if ([AutofillAppInterface isDynamicallyLoadFieldsOnInputEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the fields "
+                           @"are loaded dynamically on input.");
+  }
+
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleProfile];
 

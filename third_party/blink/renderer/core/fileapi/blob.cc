@@ -162,14 +162,10 @@ Blob* Blob::Create(ExecutionContext* context,
       BlobDataHandle::Create(std::move(blob_data), blob_size));
 }
 
-Blob* Blob::Create(const unsigned char* data,
-                   size_t size,
-                   const String& content_type) {
-  DCHECK(data);
-
+Blob* Blob::Create(base::span<const uint8_t> data, const String& content_type) {
   auto blob_data = std::make_unique<BlobData>();
   blob_data->SetContentType(content_type);
-  blob_data->AppendBytes(data, size);
+  blob_data->AppendBytes(data);
   uint64_t blob_size = blob_data->length();
 
   return MakeGarbageCollected<Blob>(

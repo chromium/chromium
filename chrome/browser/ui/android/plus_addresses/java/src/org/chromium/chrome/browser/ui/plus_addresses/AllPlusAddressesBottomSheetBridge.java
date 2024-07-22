@@ -6,12 +6,15 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
 @JNINamespace("plus_addresses")
-public class AllPlusAddressesBottomSheetBridge {
+public class AllPlusAddressesBottomSheetBridge
+        implements AllPlusAddressesBottomSheetCoordinator.Delegate {
     private long mNativeView;
     private final AllPlusAddressesBottomSheetCoordinator mAllPlusAddressesBottomSheetCoordinator;
 
@@ -20,7 +23,8 @@ public class AllPlusAddressesBottomSheetBridge {
         mAllPlusAddressesBottomSheetCoordinator =
                 new AllPlusAddressesBottomSheetCoordinator(
                         windowAndroid.getActivity().get(),
-                        BottomSheetControllerProvider.from(windowAndroid));
+                        BottomSheetControllerProvider.from(windowAndroid),
+                        /* delegate= */ this);
     }
 
     @CalledByNative
@@ -37,5 +41,30 @@ public class AllPlusAddressesBottomSheetBridge {
     @CalledByNative
     private void showPlusAddresses(AllPlusAddressesBottomSheetUIInfo uiInfo) {
         mAllPlusAddressesBottomSheetCoordinator.showPlusProfiles(uiInfo);
+    }
+
+    @Override
+    public void onPlusAddressSelected(String plusAddress) {
+        assert mNativeView != 0 : "The native side is already dismissed";
+        AllPlusAddressesBottomSheetBridgeJni.get().onPlusAddressSelected(mNativeView, plusAddress);
+    }
+
+    @Override
+    public void onDismissed() {
+        // When the plus address is selected and passed back to the C++ backend via
+        // `onPlusAddressSelected()`, the native object is destroyed. The bottom sheet state change
+        // listener can be triggered afterwards, which should not result is any native method calls.
+        if (mNativeView != 0) {
+            AllPlusAddressesBottomSheetBridgeJni.get().onDismissed(mNativeView);
+        }
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onPlusAddressSelected(
+                long nativeAllPlusAddressesBottomSheetView,
+                @JniType("std::string") String plusAddress);
+
+        void onDismissed(long nativeAllPlusAddressesBottomSheetView);
     }
 }

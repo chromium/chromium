@@ -84,6 +84,13 @@ TEST(VideoCaptureMetricsMacTest, LogFirstFrameWhenAsRequested) {
               testing::UnorderedElementsAre(base::Bucket(0, 1)));
 }
 
+TEST(VideoCaptureMetricsMacTest, LogReactionEffectsGesturesState) {
+  base::HistogramTester histogram_tester;
+  LogReactionEffectsGesturesState();
+  histogram_tester.ExpectTotalCount(
+      "Media.VideoCapture.Mac.Device.ReactionEffectsGesturesState", 1);
+}
+
 }  // namespace
 
 }  // namespace media

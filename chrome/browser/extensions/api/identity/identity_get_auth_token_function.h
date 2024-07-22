@@ -209,9 +209,8 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   void StartMintToken(IdentityMintRequestQueue::MintType type) override;
 
   // OAuth2MintTokenFlow::Delegate implementation:
-  void OnMintTokenSuccess(const std::string& access_token,
-                          const std::set<std::string>& granted_scopes,
-                          int time_to_live) override;
+  void OnMintTokenSuccess(
+      const OAuth2MintTokenFlow::MintTokenResult& result) override;
   void OnMintTokenFailure(const GoogleServiceAuthError& error) override;
   void OnRemoteConsentSuccess(
       const RemoteConsentResolutionData& resolution_data) override;

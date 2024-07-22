@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
+#include "chrome/browser/dips/dips_navigation_flow_detector_wrapper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -69,6 +70,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     permission_indicators_tab_data_ =
         std::make_unique<permissions::PermissionIndicatorsTabData>(
             tab.GetContents());
+
+    dips_navigation_flow_detector_wrapper_ =
+        std::make_unique<DipsNavigationFlowDetectorWrapper>(tab);
   }
 
   customize_chrome_side_panel_controller_ =

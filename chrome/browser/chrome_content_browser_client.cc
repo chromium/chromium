@@ -4501,6 +4501,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   web_prefs->require_transient_activation_for_show_file_or_directory_picker =
       IsFileOrDirectoryPickerWithoutGestureAllowed(web_contents);
 #endif  // !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/40941384): Remove this pref and solely rely on permissions.
   web_prefs->require_transient_activation_for_html_fullscreen =
       IsTransientActivationRequiredForHtmlFullscreen(
           web_contents->GetPrimaryMainFrame());
@@ -4612,6 +4613,7 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
   web_prefs->require_transient_activation_for_show_file_or_directory_picker =
       require_transient_activation_for_show_file_or_directory_picker;
 #endif  // !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/40941384): Remove this pref and solely rely on permissions.
   const bool require_transient_activation_for_html_fullscreen =
       IsTransientActivationRequiredForHtmlFullscreen(
           web_contents->GetPrimaryMainFrame());
@@ -8314,8 +8316,11 @@ bool ChromeContentBrowserClient::
 
 bool ChromeContentBrowserClient::IsTransientActivationRequiredForHtmlFullscreen(
     content::RenderFrameHost* render_frame_host) {
+  // TODO(crbug.com/40941384): Remove this code and solely rely on permissions.
   if (base::FeatureList::IsEnabled(
-          features::kAutomaticFullscreenContentSetting)) {
+          features::kAutomaticFullscreenContentSetting) &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kAutomaticFullscreenPermissionsQuery)) {
     const GURL& url = render_frame_host->GetLastCommittedURL();
     const HostContentSettingsMap* const content_settings =
         HostContentSettingsMapFactory::GetForProfile(

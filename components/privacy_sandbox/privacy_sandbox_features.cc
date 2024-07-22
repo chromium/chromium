@@ -125,10 +125,6 @@ const base::FeatureParam<bool>
         &kPrivacySandboxProactiveTopicsBlocking,
         kPrivacySandboxProactiveTopicsBlockingIncludeModeBName, false};
 
-BASE_FEATURE(kTrackingProtectionSettingsPageRollbackNotice,
-             "TrackingProtectionSettingsPageRollbackNotice",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kTrackingProtectionFullOnboardingMobileTrigger,
              "TrackingProtectionFullOnboardingMobileTrigger",

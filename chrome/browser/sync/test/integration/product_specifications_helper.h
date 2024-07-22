@@ -9,11 +9,9 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 
-namespace sync_pb {
-class ProductComparisonSpecifics;
-}  // namespace sync_pb
-
 namespace commerce {
+
+class ProductSpecificationsSet;
 
 class ProductSpecificationsService;
 
@@ -21,9 +19,8 @@ class ProductSpecificationsService;
 // by ProductSpecificationsService.
 class ProductSpecificationsChecker : public StatusChangeChecker {
  public:
-  ProductSpecificationsChecker(
-      commerce::ProductSpecificationsService* service,
-      const sync_pb::ProductComparisonSpecifics& product_comparison_specifics);
+  ProductSpecificationsChecker(ProductSpecificationsService* service,
+                               ProductSpecificationsSet* expected_set);
 
   ProductSpecificationsChecker(const ProductSpecificationsChecker&) = delete;
   ProductSpecificationsChecker& operator=(const ProductSpecificationsChecker&) =
@@ -35,8 +32,7 @@ class ProductSpecificationsChecker : public StatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  const raw_ref<const sync_pb::ProductComparisonSpecifics>
-      product_comparison_specifics_;
+  const raw_ptr<ProductSpecificationsSet> expected_set_;
   const raw_ptr<commerce::ProductSpecificationsService> service_;
 
   bool IsSpecificsAvailableAndEqual();

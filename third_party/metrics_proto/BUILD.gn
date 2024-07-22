@@ -21,6 +21,7 @@ _proto_files = [
   "omnibox_event.proto",
   "omnibox_focus_type.proto",
   "omnibox_input_type.proto",
+  "omnibox_scoring_signals.proto",
   "perf_data.proto",
   "perf_stat.proto",
   "printer_event.proto",

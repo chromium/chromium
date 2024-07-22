@@ -25,6 +25,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -112,6 +113,23 @@ const char kMyActivityURL[] = "myactivity.google.com";
                           IDS_CLEAR_BROWSING_DATA_CALCULATING))];
 }
 
+// Opens Quick Delete from the three dot menu.
+- (void)openQuickDeleteFromThreeDotMenu:(int)windowIndex {
+  [ChromeEarlGreyUI openToolsMenu];
+
+  // There is a known bug that EG fails on the second window due to a false
+  // negativity visibility computation. Therefore, using the function below
+  // solves that issue.
+  chrome_test_util::TapAtOffsetOf(
+      l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE), windowIndex,
+      CGVectorMake(0.0, 0.0));
+
+  // Wait for the summary to be loaded.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_text(l10n_util::GetNSString(
+                          IDS_CLEAR_BROWSING_DATA_CALCULATING))];
+}
+
 - (void)signIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -145,6 +163,13 @@ const char kMyActivityURL[] = "myactivity.google.com";
       grey_accessibilityLabel(
           l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE)),
       nil);
+}
+
+// Returns a matcher for the text in the browsing data summary corresponding to
+// cache.
+- (id<GREYMatcher>)browsingDataSummaryWithCache {
+  return ContainsPartialText(l10n_util::GetNSString(
+      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CACHED_FILES));
 }
 
 // Returns a matcher for the row with the `timeRange` on the popup menu.
@@ -529,7 +554,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS, 2))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Tap the browsing data button.
+  // Tap the delete browsing data button.
   [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
                         ButtonWithAccessibilityLabel(l10n_util::GetNSString(
                             IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
@@ -543,6 +568,167 @@ void ExpectClearBrowsingDataNavigationHistograms(
                                                         WindowWithNumber(1)];
   [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
+}
+
+// Tests that the selected value for the time range updates across all open
+// Quick Delete menus.
+- (void)testTimeRangeSelectionUpdatesInMultiwindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
+
+  // Set time range pref to the last hour.
+  [ChromeEarlGrey
+      setIntegerValue:static_cast<int>(browsing_data::TimePeriod::LAST_HOUR)
+          forUserPref:browsing_data::prefs::kDeleteTimePeriod];
+
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  // Open a new window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // In the first window, open quick delete and check that time range is set to
+  // the last hour.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(0)];
+
+  // Open Quick Delete menu.
+  [self openQuickDeleteFromThreeDotMenu:0];
+
+  // Assess that time range is set to the last hour.
+  [[EarlGrey
+      selectElementWithMatcher:
+          [self
+              popupCellWithTimeRange:
+                  l10n_util::GetNSString(
+                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR)]]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // In the second window, open quick delete and check that time range is set to
+  // the last hour.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(1)];
+
+  // Open Quick Delete menu.
+  [self openQuickDeleteFromThreeDotMenu:1];
+
+  // Assess that time range is set to the last hour.
+  [[EarlGrey
+      selectElementWithMatcher:
+          [self
+              popupCellWithTimeRange:
+                  l10n_util::GetNSString(
+                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR)]]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Focus on the first window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(0)];
+
+  // Open time range popup menu.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE))]
+      performAction:grey_tap()];
+
+  // Tap on the last 15 minutes option on the popup menu.
+  [[EarlGrey
+      selectElementWithMatcher:
+          [self
+              popupCellMenuItemWithTimeRange:
+                  l10n_util::GetNSString(
+                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES)]]
+      performAction:grey_tap()];
+
+  // Check that the cell has changed to the correct selection, i.e. is showing
+  // the last 15 minutes time range.
+  [[EarlGrey
+      selectElementWithMatcher:
+          [self
+              popupCellWithTimeRange:
+                  l10n_util::GetNSString(
+                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES)]]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Focus on the second window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(1)];
+
+  // Assess that the time range is also set to the last 15 minutes.
+  [[EarlGrey
+      selectElementWithMatcher:
+          [self
+              popupCellWithTimeRange:
+                  l10n_util::GetNSString(
+                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES)]]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that changing the state of one pref, updates the browsing data summary
+// across all open Quick Delete menus.
+- (void)testPrefChangeUpdatesInMultiwindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
+
+  // Set the cache preference to true.
+  [ChromeEarlGrey setBoolValue:true
+                   forUserPref:browsing_data::prefs::kDeleteCache];
+
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  // Open a new window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // In the first window, open quick delete and check that browsing data summary
+  // contains cache related information.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(0)];
+
+  // Open Quick Delete menu.
+  [self openQuickDeleteFromThreeDotMenu:0];
+
+  // Assess that the browsing data summary contains the "cache" keyword.
+  [[EarlGrey selectElementWithMatcher:[self browsingDataSummaryWithCache]]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // In the second window, open quick delete and check that browsing data
+  // summary contains cache related information.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(1)];
+
+  // Open Quick Delete menu.
+  [self openQuickDeleteFromThreeDotMenu:1];
+
+  // Assess that the browsing data summary contains the "cache" keyword.
+  [[EarlGrey selectElementWithMatcher:[self browsingDataSummaryWithCache]]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Set the cache preference to false.
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteCache];
+
+  // Focus on the first window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(0)];
+
+  // Assess that the summary is updated on the first page (i.e. cache pref is no
+  // longer displayed in the summary).
+  [[EarlGrey selectElementWithMatcher:[self browsingDataSummaryWithCache]]
+      assertWithMatcher:grey_nil()];
+
+  // Focus on the second window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(1)];
+
+  // Assess that the cache pref is no longer displayed in the summary on the
+  // second window.
+  [[EarlGrey selectElementWithMatcher:[self browsingDataSummaryWithCache]]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that the number of tabs are not shown on the browsing data row when

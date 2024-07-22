@@ -6,7 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "components/autofill/core/browser/ui/payments/save_card_and_virtual_card_enroll_confirmation_ui_params.h"
+#include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
@@ -27,8 +27,8 @@ AutofillMessageModel& AutofillMessageModel::operator=(AutofillMessageModel&&) =
 
 std::unique_ptr<AutofillMessageModel>
 AutofillMessageModel::CreateForSaveCardFailure() {
-  SaveCardAndVirtualCardEnrollConfirmationUiParams ui_params =
-      SaveCardAndVirtualCardEnrollConfirmationUiParams::
+  SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
+      SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
           CreateForSaveCardFailure();
 
   std::unique_ptr<messages::MessageWrapper> message =
@@ -47,8 +47,8 @@ AutofillMessageModel::CreateForSaveCardFailure() {
 std::unique_ptr<AutofillMessageModel>
 AutofillMessageModel::CreateForVirtualCardEnrollFailure(
     std::u16string card_label) {
-  SaveCardAndVirtualCardEnrollConfirmationUiParams ui_params =
-      SaveCardAndVirtualCardEnrollConfirmationUiParams::
+  SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
+      SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
           CreateForVirtualCardFailure(card_label);
 
   std::unique_ptr<messages::MessageWrapper> message =

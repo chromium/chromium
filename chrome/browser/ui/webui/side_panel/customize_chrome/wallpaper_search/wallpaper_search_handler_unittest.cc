@@ -358,29 +358,36 @@ TEST_F(WallpaperSearchHandlerTest,
 
   EXPECT_TRUE(descriptors);
 
-  const auto& descriptor_a = descriptors->descriptor_a;
-  EXPECT_EQ(2u, descriptor_a.size());
-  const auto& foo_descriptor = descriptor_a[0];
+  const auto& groups = descriptors->groups;
+  EXPECT_EQ(2u, groups.size());
+  const auto& foo_descriptor = groups[0];
   EXPECT_EQ(foo_descriptor->category, "foo");
-  EXPECT_EQ(2u, foo_descriptor->labels.size());
-  EXPECT_EQ("bar", foo_descriptor->labels[0]);
-  EXPECT_EQ("baz", foo_descriptor->labels[1]);
-  const auto& qux_descriptor = descriptor_a[1];
+  EXPECT_EQ(2u, foo_descriptor->descriptor_as.size());
+  EXPECT_EQ("bar", foo_descriptor->descriptor_as[0]->key);
+  EXPECT_EQ("bar", foo_descriptor->descriptor_as[0]->label);
+  EXPECT_EQ("baz", foo_descriptor->descriptor_as[1]->key);
+  EXPECT_EQ("baz", foo_descriptor->descriptor_as[1]->label);
+  const auto& qux_descriptor = groups[1];
   EXPECT_EQ(qux_descriptor->category, "qux");
-  EXPECT_EQ(1u, qux_descriptor->labels.size());
-  EXPECT_EQ("foobar", qux_descriptor->labels[0]);
+  EXPECT_EQ(1u, qux_descriptor->descriptor_as.size());
+  EXPECT_EQ("foobar", qux_descriptor->descriptor_as[0]->key);
+  EXPECT_EQ("foobar", qux_descriptor->descriptor_as[0]->label);
 
   const auto& descriptor_b = descriptors->descriptor_b;
   EXPECT_EQ(1u, descriptor_b.size());
+  EXPECT_EQ("foo", descriptor_b[0]->key);
   EXPECT_EQ("foo", descriptor_b[0]->label);
   EXPECT_EQ(base::StrCat({kGstaticBaseURL, "bar.png"}),
             descriptor_b[0]->image_path);
 
   const auto& descriptor_c = descriptors->descriptor_c;
   EXPECT_EQ(3u, descriptor_c.size());
-  EXPECT_EQ("foo", descriptor_c[0]);
-  EXPECT_EQ("bar", descriptor_c[1]);
-  EXPECT_EQ("baz", descriptor_c[2]);
+  EXPECT_EQ("foo", descriptor_c[0]->key);
+  EXPECT_EQ("foo", descriptor_c[0]->label);
+  EXPECT_EQ("bar", descriptor_c[1]->key);
+  EXPECT_EQ("bar", descriptor_c[1]->label);
+  EXPECT_EQ("baz", descriptor_c[2]->key);
+  EXPECT_EQ("baz", descriptor_c[2]->label);
 }
 
 TEST_F(WallpaperSearchHandlerTest,
@@ -422,20 +429,23 @@ TEST_F(WallpaperSearchHandlerTest,
 
   EXPECT_FALSE(descriptors);
   EXPECT_TRUE(descriptors_2);
-  const auto& descriptor_a = descriptors_2->descriptor_a;
-  EXPECT_EQ(1u, descriptor_a.size());
-  const auto& foo_descriptor = descriptor_a[0];
+  const auto& groups = descriptors_2->groups;
+  EXPECT_EQ(1u, groups.size());
+  const auto& foo_descriptor = groups[0];
   EXPECT_EQ(foo_descriptor->category, "foo");
-  EXPECT_EQ(1u, foo_descriptor->labels.size());
-  EXPECT_EQ("bar", foo_descriptor->labels[0]);
+  EXPECT_EQ(1u, foo_descriptor->descriptor_as.size());
+  EXPECT_EQ("bar", foo_descriptor->descriptor_as[0]->key);
+  EXPECT_EQ("bar", foo_descriptor->descriptor_as[0]->label);
   const auto& descriptor_b = descriptors_2->descriptor_b;
   EXPECT_EQ(1u, descriptor_b.size());
+  EXPECT_EQ("foo", descriptor_b[0]->key);
   EXPECT_EQ("foo", descriptor_b[0]->label);
   EXPECT_EQ(base::StrCat({kGstaticBaseURL, "bar.png"}),
             descriptor_b[0]->image_path);
   const auto& descriptor_c = descriptors_2->descriptor_c;
   EXPECT_EQ(1u, descriptor_c.size());
-  EXPECT_EQ("foo", descriptor_c[0]);
+  EXPECT_EQ("foo", descriptor_c[0]->key);
+  EXPECT_EQ("foo", descriptor_c[0]->label);
 }
 
 TEST_F(WallpaperSearchHandlerTest,
@@ -1533,7 +1543,8 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
 
   EXPECT_EQ(2u, inspiration_groups.size());
   const auto& inspiration_group_a = inspiration_groups[0];
-  EXPECT_EQ("foobar", inspiration_group_a->descriptors->subject);
+  EXPECT_EQ("foobar", inspiration_group_a->descriptors->subject->key);
+  EXPECT_EQ("foobar", inspiration_group_a->descriptors->subject->label);
   const auto& inspiration_a = inspiration_group_a->inspirations;
   EXPECT_EQ(2u, inspiration_a.size());
   const auto& foo_inspiration = inspiration_a[0];
@@ -1555,7 +1566,8 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
       bar_inspiration->id,
       base::Token::FromString("10000000000000000000000000000000").value());
   const auto& inspiration_group_b = inspiration_groups[1];
-  EXPECT_EQ("baz", inspiration_group_b->descriptors->subject);
+  EXPECT_EQ("baz", inspiration_group_b->descriptors->subject->key);
+  EXPECT_EQ("baz", inspiration_group_b->descriptors->subject->label);
   const auto& inspiration_b = inspiration_group_b->inspirations;
   EXPECT_EQ(1u, inspiration_b.size());
   const auto& baz_inspiration = inspiration_b[0];
@@ -1609,9 +1621,12 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success_Descriptors) {
 
   EXPECT_EQ(1u, inspiration_groups.size());
   const auto& inspiration_descriptors = inspiration_groups[0]->descriptors;
-  EXPECT_EQ("foo", inspiration_descriptors->subject);
-  EXPECT_EQ("bar", inspiration_descriptors->style);
-  EXPECT_EQ("baz", inspiration_descriptors->mood);
+  EXPECT_EQ("foo", inspiration_descriptors->subject->key);
+  EXPECT_EQ("foo", inspiration_descriptors->subject->label);
+  EXPECT_EQ("bar", inspiration_descriptors->style->key);
+  EXPECT_EQ("bar", inspiration_descriptors->style->label);
+  EXPECT_EQ("baz", inspiration_descriptors->mood->key);
+  EXPECT_EQ("baz", inspiration_descriptors->mood->label);
   EXPECT_EQ(side_panel::customize_chrome::mojom::DescriptorDValue::NewName(
                 side_panel::customize_chrome::mojom::DescriptorDName::kYellow),
             inspiration_descriptors->color);
@@ -1694,7 +1709,8 @@ TEST_F(WallpaperSearchHandlerTest,
   // There should only be one inspiration.
   EXPECT_EQ(1u, inspiration_groups.size());
   const auto& inspiration_group_a = inspiration_groups[0];
-  EXPECT_EQ("foo", inspiration_group_a->descriptors->subject);
+  EXPECT_EQ("foo", inspiration_group_a->descriptors->subject->key);
+  EXPECT_EQ("foo", inspiration_group_a->descriptors->subject->label);
   const auto& inspiration_a = inspiration_group_a->inspirations;
   EXPECT_EQ(1u, inspiration_a.size());
   EXPECT_EQ(inspiration_a[0]->description, "test inspiration 1");

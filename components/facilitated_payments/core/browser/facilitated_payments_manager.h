@@ -21,6 +21,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -72,7 +73,8 @@ class FacilitatedPaymentsManager {
   // flow has already been triggered by the other code detection methods like
   // DOM search then this method is a no-op.
   void OnPixCodeCopiedToClipboard(const GURL& render_frame_host_url,
-                                  const std::string& pix_code);
+                                  const std::string& pix_code,
+                                  ukm::SourceId ukm_source_id);
 
  private:
   // Defined here so they can be accessed by the tests.
@@ -385,6 +387,11 @@ class FacilitatedPaymentsManager {
 
   // Utility process validator for PIX code strings.
   data_decoder::DataDecoder utility_process_validator_;
+
+  // The source of the trigger for the facilitated payments form of payment(FOP)
+  // selector to show up. It is used for logging purposes. It is set whenever a
+  // trigger occurs and reset if the FOP selector is not shown for some reason.
+  TriggerSource trigger_source_ = TriggerSource::kUnknown;
 
   base::WeakPtrFactory<FacilitatedPaymentsManager> weak_ptr_factory_{this};
 };

@@ -9,6 +9,13 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Common hub feature utils for public use. */
 public class HubFieldTrial {
+    private static final String ALTERNATIVE_FAB_COLOR_PARAM = "hub_alternative_fab_color";
+    public static final BooleanCachedFieldTrialParameter ALTERNATIVE_FAB_COLOR =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON,
+                    ALTERNATIVE_FAB_COLOR_PARAM,
+                    false);
+
     private static final String PANE_SWITCHER_USES_TEXT_PARAM = "pane_switcher_uses_text";
     public static final BooleanCachedFieldTrialParameter PANE_SWITCHER_USES_TEXT =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
@@ -40,6 +47,11 @@ public class HubFieldTrial {
      */
     public static boolean usesFloatActionButton() {
         return ChromeFeatureList.sAndroidHubFloatingActionButton.isEnabled();
+    }
+
+    /** Returns whether to use an alternative floating action button color. */
+    public static boolean useAlternativeFabColor() {
+        return ALTERNATIVE_FAB_COLOR.getValue();
     }
 
     /** Returns whether the UI to switch between panes is using text names or icons. */

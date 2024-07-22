@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSnackbarController;
-import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -361,13 +360,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     // notifyPageOpened(String className).
     public void notifyRequestDesktopSiteSettingsPageOpened() {
         RequestDesktopUtils.notifyRequestDesktopSiteSettingsPageOpened(mProfile);
-    }
-
-    @Override
-    public boolean shouldShowSettingsOffboardingNotice() {
-        return ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_PAGE_ROLLBACK_NOTICE)
-                && new TrackingProtectionBridge(mProfile).isOffboarded();
     }
 
     @Override

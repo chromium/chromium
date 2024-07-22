@@ -62,6 +62,17 @@ cc::FrameInfo CreateFrameInfo(cc::FrameInfo::FrameFinalState final_state) {
   return frame_info;
 }
 
+// Helper method for creating manual ack with damage and prefered frame
+// interval.
+viz::BeginFrameAck CreateManualAckWithDamageAndPreferredFrameInterval(
+    cc::VideoFrameProvider* video_frame_provider) {
+  auto begin_frame_ack = viz::BeginFrameAck::CreateManualAckWithDamage();
+  begin_frame_ack.preferred_frame_interval =
+      video_frame_provider ? video_frame_provider->GetPreferredRenderInterval()
+                           : viz::BeginFrameArgs::MinInterval();
+  return begin_frame_ack;
+}
+
 }  // namespace
 
 // Helper CompositorFrameSink implementation which sits locally between a
@@ -794,7 +805,8 @@ void VideoFrameSubmitter::SubmitEmptyFrame() {
     return;
 
   last_frame_id_.reset();
-  auto begin_frame_ack = viz::BeginFrameAck::CreateManualAckWithDamage();
+  auto begin_frame_ack =
+      CreateManualAckWithDamageAndPreferredFrameInterval(video_frame_provider_);
   auto frame_token = ++next_frame_token_;
   auto compositor_frame = CreateCompositorFrame(
       frame_token, begin_frame_ack, nullptr, media::kNoTransformation);
@@ -823,7 +835,8 @@ void VideoFrameSubmitter::SubmitSingleFrame() {
   if (!video_frame)
     return;
 
-  if (SubmitFrame(viz::BeginFrameAck::CreateManualAckWithDamage(),
+  if (SubmitFrame(CreateManualAckWithDamageAndPreferredFrameInterval(
+                      video_frame_provider_),
                   std::move(video_frame))) {
     video_frame_provider_->PutCurrentFrame();
   }

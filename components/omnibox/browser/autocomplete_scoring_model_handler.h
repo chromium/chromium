@@ -14,7 +14,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/autocomplete_scoring_model_metadata.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 
 // Implements optimization_guide::ModelHandler for autocomplete scoring.
 // Keeps scoring model in memory.
@@ -23,8 +23,7 @@ class AutocompleteScoringModelHandler
           AutocompleteScoringModelExecutor::ModelOutput,
           AutocompleteScoringModelExecutor::ModelInput> {
  public:
-  using ScoringSignals =
-      ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+  using ScoringSignals = ::metrics::OmniboxScoringSignals;
 
   AutocompleteScoringModelHandler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,

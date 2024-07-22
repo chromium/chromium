@@ -125,6 +125,10 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
       driver_map_;
 
   base::ObserverList<Observer> observers_;
+
+  // The maximum number of coexisting drivers over the lifetime of this factory.
+  // TODO: crbug.com/342132628 - Remove the counter and the metric.
+  size_t max_drivers_ = 0;
 };
 
 }  // namespace autofill

@@ -453,8 +453,8 @@ void CanvasAsyncBlobCreator::CreateBlobAndReturnResult(
     Vector<unsigned char> encoded_image) {
   RecordIdleTaskStatusHistogram(idle_task_status_);
 
-  Blob* result_blob = Blob::Create(encoded_image.data(), encoded_image.size(),
-                                   ImageEncodingMimeTypeName(mime_type_));
+  Blob* result_blob =
+      Blob::Create(encoded_image, ImageEncodingMimeTypeName(mime_type_));
   if (function_type_ == kHTMLCanvasToBlobCallback) {
     context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
         ->PostTask(FROM_HERE,

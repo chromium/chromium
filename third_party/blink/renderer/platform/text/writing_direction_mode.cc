@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
+#include <array>
 #include <ostream>
 
 namespace blink {

@@ -82,7 +82,11 @@ class MockOAuth2MintTokenFlow : public OAuth2MintTokenFlow {
   void SimulateMintTokenSuccess(const std::string& access_token,
                                 const std::set<std::string>& granted_scopes,
                                 int time_to_live) {
-    delegate_->OnMintTokenSuccess(access_token, granted_scopes, time_to_live);
+    MintTokenResult result;
+    result.access_token = access_token;
+    result.granted_scopes = granted_scopes;
+    result.time_to_live = base::Seconds(time_to_live);
+    delegate_->OnMintTokenSuccess(result);
   }
   void SimulateMintTokenFailure(const GoogleServiceAuthError& error) {
     delegate_->OnMintTokenFailure(error);

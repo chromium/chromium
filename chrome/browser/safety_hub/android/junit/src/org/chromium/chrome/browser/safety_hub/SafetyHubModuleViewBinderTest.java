@@ -38,7 +38,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class SafetyHubModuleViewBinderTest {
-    private static final @DrawableRes int SAFE_ICON = R.drawable.ic_checkmark_24dp;
+    private static final @DrawableRes int SAFE_ICON = R.drawable.material_ic_check_24dp;
     private static final @DrawableRes int WARNING_ICON = R.drawable.ic_error;
     private static final @DrawableRes int INFO_ICON = R.drawable.btn_info;
     private static final @DrawableRes int MANAGED_ICON = R.drawable.ic_business_small;

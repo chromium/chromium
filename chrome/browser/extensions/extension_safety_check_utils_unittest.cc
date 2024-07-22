@@ -7,6 +7,8 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/cws_info_service.h"
+#include "chrome/browser/extensions/extension_management_test_util.h"
+#include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -16,6 +18,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
@@ -588,9 +591,9 @@ TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_Unpublished) {
 }
 
 TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_No_Warning) {
-  // Test no warning is shown in the Extension Review Panel when there
-  // is not a violation present in the extension.
   {
+    // Test that no warning is shown for an extension without any store
+    // violations.
     const scoped_refptr<const Extension> extension = CreateExtension(
         "test", base::Value::List(), mojom::ManifestLocation::kInternal);
     EXPECT_CALL(mock_cws_info_service_, GetCWSInfo(testing::_))
@@ -604,6 +607,7 @@ TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_No_Warning) {
               api::developer_private::SafetyCheckWarningReason::kNone);
   }
   {
+    // Test that no warning is shown for a component extension.
     const scoped_refptr<const Extension> extension_component_location =
         CreateExtension("test", base::Value::List(),
                         mojom::ManifestLocation::kComponent);
@@ -612,6 +616,47 @@ TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_No_Warning) {
             &mock_cws_info_service_,
             BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
             profile_.get(), *extension_component_location);
+    EXPECT_EQ(no_warning,
+              api::developer_private::SafetyCheckWarningReason::kNone);
+  }
+  {
+    // Test that an extension explicitly allowed by policy does not
+    // trigger a review panel warning.
+    using PolicyUpdater = extensions::ExtensionManagementPrefUpdater<
+        sync_preferences::TestingPrefServiceSyncable>;
+    const scoped_refptr<const Extension> extension_policy_location =
+        CreateExtension("test", base::Value::List(),
+                        mojom::ManifestLocation::kInternal);
+    sync_preferences::TestingPrefServiceSyncable* prefs =
+        profile_->GetTestingPrefService();
+    PolicyUpdater(prefs).SetIndividualExtensionInstallationAllowed(
+        extension_policy_location->id(), true);
+    api::developer_private::SafetyCheckWarningReason no_warning =
+        ExtensionSafetyCheckUtils::GetSafetyCheckWarningReasonHelper(
+            &mock_cws_info_service_,
+            BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+            profile_.get(), *extension_policy_location);
+    EXPECT_EQ(no_warning,
+              api::developer_private::SafetyCheckWarningReason::kNone);
+  }
+  {
+    // Test than an extension force-installed by policy does not trigger a
+    // review panel warning.
+    using PolicyUpdater = extensions::ExtensionManagementPrefUpdater<
+        sync_preferences::TestingPrefServiceSyncable>;
+    const scoped_refptr<const Extension> extension_policy_location =
+        CreateExtension("test", base::Value::List(),
+                        mojom::ManifestLocation::kInternal);
+    sync_preferences::TestingPrefServiceSyncable* prefs =
+        profile_->GetTestingPrefService();
+    PolicyUpdater(prefs).SetIndividualExtensionAutoInstalled(
+        extension_policy_location->id(),
+        extension_urls::kChromeWebstoreUpdateURL, true);
+    api::developer_private::SafetyCheckWarningReason no_warning =
+        ExtensionSafetyCheckUtils::GetSafetyCheckWarningReasonHelper(
+            &mock_cws_info_service_,
+            BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+            profile_.get(), *extension_policy_location);
     EXPECT_EQ(no_warning,
               api::developer_private::SafetyCheckWarningReason::kNone);
   }

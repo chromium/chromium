@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 
+#import "components/browsing_data/core/pref_names.h"
 #import "components/sync/base/command_line_switches.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
@@ -27,6 +28,19 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 @end
 
 @implementation QuickDeleteBrowsingDataTestCase
+
+- (void)setUp {
+  [super setUp];
+  [ChromeEarlGrey resetBrowsingDataPrefs];
+}
+
+- (void)tearDown {
+  [ChromeEarlGrey resetBrowsingDataPrefs];
+  // Dismiss the quick delete bottom sheet to avoid flakiness due to UI
+  // persisting accross tests.
+  [self dismissQuickDelete];
+  [super tearDown];
+}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
@@ -62,6 +76,21 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
   return grey_accessibilityID(kQuickDeleteBrowsingDataConfirmButtonIdentifier);
 }
 
+// Returns a matcher for the autofill cell.
+- (id<GREYMatcher>)autofillCell {
+  return grey_allOf(
+      grey_accessibilityID(kQuickDeleteBrowsingDataAutofillIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+// Returns matcher for an element with or without the
+// UIAccessibilityTraitSelected accessibility trait depending on `selected`.
+- (id<GREYMatcher>)elementIsSelected:(BOOL)selected {
+  return selected
+             ? grey_accessibilityTrait(UIAccessibilityTraitSelected)
+             : grey_not(grey_accessibilityTrait(UIAccessibilityTraitSelected));
+}
+
 // Opens Quick Delete browsing data page.
 - (void)openQuickDeleteBrowsingDataPage {
   [ChromeEarlGreyUI openToolsMenu];
@@ -79,6 +108,21 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
                       [self quickDeleteBrowsingDataPageTitle]];
 }
 
+// Dismisses Quick Delete bottom sheet.
+- (void)dismissQuickDelete {
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Swipe the bottom sheet down.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that Quick Delete has been dismissed.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_nil()];
+}
+
 // Tests the cancel button dismisses the browsing data page.
 - (void)testPageNavigationCancelButton {
   // Open quick delete browsing data page.
@@ -89,13 +133,12 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
       selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
       performAction:grey_tap()];
 
-  // Ensure the page is closed while quick delete bottom sheet is still open.
+  // Ensure the browsing data page is closed while quick delete bottom sheet is
+  // still open.
   [[EarlGrey selectElementWithMatcher:[self quickDeleteBrowsingDataPageTitle]]
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
       assertWithMatcher:grey_notNil()];
-
-  // TODO(crbug.com/341107834): Check prefs are not updated on cancel.
 }
 
 // Tests the confirm button dismisses the browsing data page.
@@ -112,8 +155,83 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
       assertWithMatcher:grey_notNil()];
+}
 
-  // TODO(crbug.com/341107834): Check prefs are updated on confirm.
+// Tests the cancel button does not save changes to prefs.
+- (void)testCancelButtonDoesNotUpdatePrefs {
+  // Set autofill pref to false.
+  [ChromeEarlGrey setBoolValue:(BOOL)NO
+                   forUserPref:browsing_data::prefs::kDeleteFormData];
+
+  // Open quick delete browsing data page.
+  [self openQuickDeleteBrowsingDataPage];
+
+  // Assert autofill row is not selected.
+  [[EarlGrey selectElementWithMatcher:[self autofillCell]]
+      assertWithMatcher:[self elementIsSelected:NO]];
+
+  // Tap on the autofill cell to toggle the selection.
+  [[EarlGrey selectElementWithMatcher:[self autofillCell]]
+      performAction:grey_tap()];
+
+  // Assert autofill row is selected.
+  [[EarlGrey selectElementWithMatcher:[self autofillCell]]
+      assertWithMatcher:[self elementIsSelected:YES]];
+
+  // Tap cancel button.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
+      performAction:grey_tap()];
+
+  // Ensure the browsing data page is closed while quick delete bottom sheet is
+  // still open.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteBrowsingDataPageTitle]]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Assert that the pref remains false on cancel.
+  GREYAssertEqual(
+      [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteFormData],
+      NO, @"Pref changed on cancel.");
+}
+
+// Tests the confirm button should save changes to prefs.
+- (void)testConfirmButtonShouldUpdatePrefs {
+  // Set autofill pref to false.
+  [ChromeEarlGrey setBoolValue:(BOOL)NO
+                   forUserPref:browsing_data::prefs::kDeleteFormData];
+
+  // Open quick delete browsing data page.
+  [self openQuickDeleteBrowsingDataPage];
+
+  // Assert autofill row is not selected.
+  [[EarlGrey selectElementWithMatcher:[self autofillCell]]
+      assertWithMatcher:[self elementIsSelected:NO]];
+
+  // Tap on the autofill cell to toggle the selection.
+  [[EarlGrey selectElementWithMatcher:[self autofillCell]]
+      performAction:grey_tap()];
+
+  // Assert autofill row is selected.
+  [[EarlGrey selectElementWithMatcher:[self autofillCell]]
+      assertWithMatcher:[self elementIsSelected:YES]];
+
+  // Tap confirm button.
+  [[EarlGrey selectElementWithMatcher:[self navigationBarConfirmButton]]
+      performAction:grey_tap()];
+
+  // Ensure the browsing data page is closed while quick delete bottom sheet is
+  // still open.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteBrowsingDataPageTitle]]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Assert that the pref was updated to true on confirm.
+  GREYAssertEqual(
+      [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteFormData],
+      YES, @"Failed to save pref change on confirm.");
 }
 
 @end

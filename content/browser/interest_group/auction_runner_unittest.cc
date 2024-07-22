@@ -1312,16 +1312,26 @@ BuildPrivateAggregationRequest(
       std::move(debug_mode_details));
 }
 
+auction_worklet::mojom::EventTypePtr Reserved(
+    auction_worklet::mojom::ReservedEventType reserved_event_type) {
+  return auction_worklet::mojom::EventType::NewReserved(reserved_event_type);
+}
+
+auction_worklet::mojom::EventTypePtr NonReserved(
+    const std::string& event_type) {
+  return auction_worklet::mojom::EventType::NewNonReserved(event_type);
+}
+
 const auction_worklet::mojom::PrivateAggregationRequestPtr
 BuildPrivateAggregationForEventRequest(
     absl::uint128 bucket,
     int value,
-    std::string event_type,
+    auction_worklet::mojom::EventTypePtr event_type,
     std::optional<uint64_t> filtering_id = std::nullopt) {
   auction_worklet::mojom::AggregatableReportForEventContribution contribution(
       auction_worklet::mojom::ForEventSignalBucket::NewIdBucket(bucket),
       auction_worklet::mojom::ForEventSignalValue::NewIntValue(value),
-      filtering_id, event_type);
+      filtering_id, std::move(event_type));
 
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
@@ -1334,14 +1344,14 @@ auction_worklet::mojom::PrivateAggregationRequestPtr
 BuildPrivateAggregationForBaseValue(
     absl::uint128 bucket,
     auction_worklet::mojom::BaseValue base_value,
-    std::string event_type,
+    auction_worklet::mojom::EventTypePtr event_type,
     std::optional<uint64_t> filtering_id = std::nullopt) {
   auction_worklet::mojom::AggregatableReportForEventContribution contribution(
       auction_worklet::mojom::ForEventSignalBucket::NewIdBucket(bucket),
       auction_worklet::mojom::ForEventSignalValue::NewSignalValue(
           auction_worklet::mojom::SignalValue::New(base_value, /*scale=*/1.0,
                                                    /*offset=*/0)),
-      filtering_id, event_type);
+      filtering_id, std::move(event_type));
 
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
@@ -3813,25 +3823,30 @@ TEST_F(AuctionRunnerTest, Basic) {
 
   EXPECT_THAT(
       private_aggregation_manager_.TakeLoggedPrivateAggregationRequests(),
-      ElementsAreRequests(
-          kExpectedGenerateBidPrivateAggregationRequest,
-          kExpectedGenerateBidPrivateAggregationRequest,
-          kExpectedReportWinPrivateAggregationRequest,
-          kExpectedScoreAdPrivateAggregationRequest,
-          kExpectedScoreAdPrivateAggregationRequest,
-          kExpectedReportResultPrivateAggregationRequest,
-          BuildPrivateAggregationForEventRequest(/*bucket=*/10, /*value=*/21,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/10, /*value=*/22,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/30, /*value=*/42,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/50, /*value=*/60,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/50, /*value=*/60,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/70, /*value=*/80,
-                                                 /*event_type=*/"click")));
+      ElementsAreRequests(kExpectedGenerateBidPrivateAggregationRequest,
+                          kExpectedGenerateBidPrivateAggregationRequest,
+                          kExpectedReportWinPrivateAggregationRequest,
+                          kExpectedScoreAdPrivateAggregationRequest,
+                          kExpectedScoreAdPrivateAggregationRequest,
+                          kExpectedReportResultPrivateAggregationRequest,
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/10, /*value=*/21,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/10, /*value=*/22,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/30, /*value=*/42,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/50, /*value=*/60,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/50, /*value=*/60,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/70, /*value=*/80,
+                              /*event_type=*/NonReserved("click"))));
 
   EXPECT_THAT(result_.private_aggregation_event_map,
               testing::UnorderedElementsAre(testing::Pair(
@@ -8790,28 +8805,34 @@ TEST_F(AuctionRunnerTest, AdditionalBidAliasesInterestGroup) {
 
   EXPECT_THAT(
       private_aggregation_manager_.TakeLoggedPrivateAggregationRequests(),
-      ElementsAreRequests(
-          kExpectedGenerateBidPrivateAggregationRequest,
-          kExpectedGenerateBidPrivateAggregationRequest,
-          kExpectedReportWinPrivateAggregationRequest,
-          kExpectedScoreAdPrivateAggregationRequest,
-          kExpectedScoreAdPrivateAggregationRequest,
-          kExpectedScoreAdPrivateAggregationRequest,
-          kExpectedReportResultPrivateAggregationRequest,
-          BuildPrivateAggregationForEventRequest(/*bucket=*/10, /*value=*/21,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/10, /*value=*/22,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/30, /*value=*/80,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/50, /*value=*/60,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/50, /*value=*/60,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/50, /*value=*/60,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/70, /*value=*/80,
-                                                 /*event_type=*/"click")));
+      ElementsAreRequests(kExpectedGenerateBidPrivateAggregationRequest,
+                          kExpectedGenerateBidPrivateAggregationRequest,
+                          kExpectedReportWinPrivateAggregationRequest,
+                          kExpectedScoreAdPrivateAggregationRequest,
+                          kExpectedScoreAdPrivateAggregationRequest,
+                          kExpectedScoreAdPrivateAggregationRequest,
+                          kExpectedReportResultPrivateAggregationRequest,
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/10, /*value=*/21,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/10, /*value=*/22,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/30, /*value=*/80,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/50, /*value=*/60,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/50, /*value=*/60,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/50, /*value=*/60,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/70, /*value=*/80,
+                              /*event_type=*/NonReserved("click"))));
 
   EXPECT_THAT(result_.private_aggregation_event_map,
               testing::UnorderedElementsAre(testing::Pair(
@@ -9043,28 +9064,34 @@ TEST_F(AuctionRunnerTest, AdditionalBidDistinctFromInterestGroup) {
 
   EXPECT_THAT(
       private_aggregation_manager_.TakeLoggedPrivateAggregationRequests(),
-      ElementsAreRequests(
-          kExpectedGenerateBidPrivateAggregationRequest,
-          kExpectedGenerateBidPrivateAggregationRequest,
-          kExpectedReportWinPrivateAggregationRequest,
-          kExpectedScoreAdPrivateAggregationRequest,
-          kExpectedScoreAdPrivateAggregationRequest,
-          kExpectedScoreAdPrivateAggregationRequest,
-          kExpectedReportResultPrivateAggregationRequest,
-          BuildPrivateAggregationForEventRequest(/*bucket=*/10, /*value=*/21,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/10, /*value=*/22,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/30, /*value=*/80,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/50, /*value=*/60,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/50, /*value=*/60,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/50, /*value=*/60,
-                                                 /*event_type=*/"click"),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/70, /*value=*/80,
-                                                 /*event_type=*/"click")));
+      ElementsAreRequests(kExpectedGenerateBidPrivateAggregationRequest,
+                          kExpectedGenerateBidPrivateAggregationRequest,
+                          kExpectedReportWinPrivateAggregationRequest,
+                          kExpectedScoreAdPrivateAggregationRequest,
+                          kExpectedScoreAdPrivateAggregationRequest,
+                          kExpectedScoreAdPrivateAggregationRequest,
+                          kExpectedReportResultPrivateAggregationRequest,
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/10, /*value=*/21,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/10, /*value=*/22,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/30, /*value=*/80,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/50, /*value=*/60,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/50, /*value=*/60,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/50, /*value=*/60,
+                              /*event_type=*/NonReserved("click")),
+                          BuildPrivateAggregationForEventRequest(
+                              /*bucket=*/70, /*value=*/80,
+                              /*event_type=*/NonReserved("click"))));
 
   EXPECT_THAT(result_.private_aggregation_event_map,
               testing::UnorderedElementsAre(testing::Pair(
@@ -15631,23 +15658,32 @@ TEST_F(AuctionRunnerTest, PrivateAggregationRequestForEventFilteringId) {
       ElementsAreRequests(
           BuildPrivateAggregationForEventRequest(
               /*bucket=*/123, /*value=*/4,
-              /*event_type=*/"reserved.always",
+              /*event_type=*/
+              Reserved(
+                  auction_worklet::mojom::ReservedEventType::kReservedAlways),
               /*filtering_id=*/1),
           BuildPrivateAggregationForEventRequest(
               /*bucket=*/123, /*value=*/4,
-              /*event_type=*/"reserved.always",
+              /*event_type=*/
+              Reserved(
+                  auction_worklet::mojom::ReservedEventType::kReservedAlways),
               /*filtering_id=*/std::nullopt),
           BuildPrivateAggregationForEventRequest(
               /*bucket=*/234, /*value=*/5,
-              /*event_type=*/"reserved.always",
+              /*event_type=*/
+              Reserved(
+                  auction_worklet::mojom::ReservedEventType::kReservedAlways),
               /*filtering_id=*/0),
           BuildPrivateAggregationForEventRequest(
               /*bucket=*/234, /*value=*/5,
-              /*event_type=*/"reserved.always",
+              /*event_type=*/
+              Reserved(
+                  auction_worklet::mojom::ReservedEventType::kReservedAlways),
               /*filtering_id=*/255),
-          BuildPrivateAggregationForEventRequest(/*bucket=*/456, /*value=*/7,
-                                                 /*event_type=*/"click",
-                                                 /*filtering_id=*/2)));
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/456, /*value=*/7,
+              /*event_type=*/NonReserved("click"),
+              /*filtering_id=*/2)));
 }
 
 TEST_F(AuctionRunnerTest,
@@ -15667,11 +15703,8 @@ TEST_F(AuctionRunnerTest,
   PrivateAggregationRequests bidder_1_pa_requests;
   bidder_1_pa_requests.push_back(
       BuildPrivateAggregationForEventRequest(
-          /*bucket=*/10, /*value=*/20, /*event_type=*/"reserved.always")
-          .Clone());
-  bidder_1_pa_requests.push_back(
-      BuildPrivateAggregationForEventRequest(
-          /*bucket=*/11, /*value=*/21, /*event_type=*/"reserved.not-supported")
+          /*bucket=*/10, /*value=*/20, /*event_type=*/
+          Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways))
           .Clone());
 
   // Bidder1 returns a bid with a private aggregation request whose reserved
@@ -15785,18 +15818,19 @@ TEST_F(AuctionRunnerTest, PrivateAggregationTimeMetrics) {
         bidder_pa_requests, seller_pa_requests;
     bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
         /*bucket=*/100 * i, auction_worklet::mojom::BaseValue::kScriptRunTime,
-        "reserved.always"));
+        Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
     seller_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
         /*bucket=*/100 * i + 10,
-        auction_worklet::mojom::BaseValue::kScriptRunTime, "reserved.always"));
+        auction_worklet::mojom::BaseValue::kScriptRunTime,
+        Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
     bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
         /*bucket=*/100 * i + 1,
         auction_worklet::mojom::BaseValue::kSignalsFetchTime,
-        "reserved.always"));
+        Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
     seller_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
         /*bucket=*/100 * i + 11,
         auction_worklet::mojom::BaseValue::kSignalsFetchTime,
-        "reserved.always"));
+        Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
     bidder_worklets[i]->InvokeGenerateBidCallback(
         i + 1, /*bid_currency=*/std::nullopt,
         blink::AdDescriptor(
@@ -15843,16 +15877,16 @@ TEST_F(AuctionRunnerTest, PrivateAggregationTimeMetrics) {
       bidder_report_pa_requests, seller_report_pa_requests;
   bidder_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
       /*bucket=*/50, auction_worklet::mojom::BaseValue::kScriptRunTime,
-      "reserved.always"));
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
   seller_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
       /*bucket=*/60, auction_worklet::mojom::BaseValue::kScriptRunTime,
-      "reserved.always"));
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
   bidder_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
       /*bucket=*/51, auction_worklet::mojom::BaseValue::kSignalsFetchTime,
-      "reserved.always"));
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
   seller_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
       /*bucket=*/61, auction_worklet::mojom::BaseValue::kSignalsFetchTime,
-      "reserved.always"));
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
 
   // Need to flush the service pipe to make sure the AuctionRunner has
   // received the score.
@@ -15949,18 +15983,19 @@ TEST_F(AuctionRunnerTest, ComponentAuctionPrivateAggregationTimeMetrics) {
         bidder_pa_requests, component_seller_pa_requests;
     bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
         /*bucket=*/100 * i, auction_worklet::mojom::BaseValue::kScriptRunTime,
-        "reserved.always"));
+        Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
     component_seller_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
         /*bucket=*/100 * i + 10,
-        auction_worklet::mojom::BaseValue::kScriptRunTime, "reserved.always"));
+        auction_worklet::mojom::BaseValue::kScriptRunTime,
+        Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
     bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
         /*bucket=*/100 * i + 1,
         auction_worklet::mojom::BaseValue::kSignalsFetchTime,
-        "reserved.always"));
+        Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
     component_seller_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
         /*bucket=*/100 * i + 11,
         auction_worklet::mojom::BaseValue::kSignalsFetchTime,
-        "reserved.always"));
+        Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
     bidder_worklets[i]->InvokeGenerateBidCallback(
         i + 1, /*bid_currency=*/std::nullopt,
         blink::AdDescriptor(
@@ -16001,10 +16036,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionPrivateAggregationTimeMetrics) {
       top_seller_pa_requests;
   top_seller_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
       /*bucket=*/20, auction_worklet::mojom::BaseValue::kScriptRunTime,
-      "reserved.always"));
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
   top_seller_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
       /*bucket=*/21, auction_worklet::mojom::BaseValue::kSignalsFetchTime,
-      "reserved.always"));
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
 
   auto top_score_ad_params = top_seller_worklet->WaitForScoreAd();
   mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
@@ -16033,24 +16068,26 @@ TEST_F(AuctionRunnerTest, ComponentAuctionPrivateAggregationTimeMetrics) {
       top_seller_report_pa_requests;
   bidder_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
       /*bucket=*/50, auction_worklet::mojom::BaseValue::kScriptRunTime,
-      "reserved.always"));
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
   component_seller_report_pa_requests.push_back(
       BuildPrivateAggregationForBaseValue(
           /*bucket=*/60, auction_worklet::mojom::BaseValue::kScriptRunTime,
-          "reserved.always"));
+          Reserved(
+              auction_worklet::mojom::ReservedEventType::kReservedAlways)));
   top_seller_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
       /*bucket=*/70, auction_worklet::mojom::BaseValue::kScriptRunTime,
-      "reserved.always"));
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
   bidder_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
       /*bucket=*/51, auction_worklet::mojom::BaseValue::kSignalsFetchTime,
-      "reserved.always"));
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
   component_seller_report_pa_requests.push_back(
       BuildPrivateAggregationForBaseValue(
           /*bucket=*/61, auction_worklet::mojom::BaseValue::kSignalsFetchTime,
-          "reserved.always"));
+          Reserved(
+              auction_worklet::mojom::ReservedEventType::kReservedAlways)));
   top_seller_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
       /*bucket=*/71, auction_worklet::mojom::BaseValue::kSignalsFetchTime,
-      "reserved.always"));
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
 
   top_seller_worklet->WaitForReportResult();
   top_seller_worklet->SetReportingLatency(base::Milliseconds(200));

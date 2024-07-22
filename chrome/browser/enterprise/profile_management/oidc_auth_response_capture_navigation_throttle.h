@@ -50,7 +50,7 @@ class OidcAuthResponseCaptureNavigationThrottle
 
   // Starts OIDC registration and profile creation process if the response is
   // valid.
-  void RegisterWithOidcTokens(ProfileManagementOicdTokens tokens,
+  void RegisterWithOidcTokens(ProfileManagementOidcTokens tokens,
                               data_decoder::DataDecoder::ValueOrError result);
 
   bool interception_triggered_ = false;

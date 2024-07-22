@@ -1655,7 +1655,6 @@
       status: "test",
       base_feature: "none",
       origin_trial_feature_name: "FedCmButtonMode",
-      origin_trial_os: ["win", "mac", "linux", "chromeos"],
       origin_trial_allows_third_party: true,
     },
     {
@@ -3123,6 +3122,12 @@
     },
     {
       name: "PointerEventDeviceId",
+      status: "stable",
+    },
+    // Coalesced/predicted event targets in untrusted events.
+    // See https://crbug.com/353538500
+    {
+      name: "PointerEventTargetsInEventLists",
       status: "stable",
     },
     {

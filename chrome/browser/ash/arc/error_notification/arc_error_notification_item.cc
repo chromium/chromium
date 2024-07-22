@@ -8,26 +8,33 @@ namespace arc {
 
 // static
 mojo::PendingRemote<mojom::ErrorNotificationItem>
-ArcErrorNotificationItem::Create() {
-  // This object will be deleted when the mojo connection is closed.
-  auto* item = new ArcErrorNotificationItem();
+ArcErrorNotificationItem::Create(
+    base::WeakPtr<ArcErrorNotificationBridge> bridge,
+    const std::string& notification_id) {
+  auto* item = new ArcErrorNotificationItem(bridge, notification_id);
   mojo::PendingRemote<arc::mojom::ErrorNotificationItem> remote;
   item->Bind(&remote);
   return remote;
 }
 
 void ArcErrorNotificationItem::CloseErrorNotification() {
+  if (bridge_) {
+    bridge_->CloseNotification(notification_id_);
+  }
   delete this;
-  // TODO(b/332459217): Add implementation.
 }
 
-ArcErrorNotificationItem::ArcErrorNotificationItem() {}
+ArcErrorNotificationItem::ArcErrorNotificationItem(
+    base::WeakPtr<ArcErrorNotificationBridge> bridge,
+    const std::string& notification_id)
+    : bridge_(bridge), notification_id_(notification_id) {}
 
 ArcErrorNotificationItem::~ArcErrorNotificationItem() {}
 
 void ArcErrorNotificationItem::Bind(
     mojo::PendingRemote<arc::mojom::ErrorNotificationItem>* remote) {
   receiver_.Bind(remote->InitWithNewPipeAndPassReceiver());
+  // This object will be deleted when the mojo connection is closed.
   receiver_.set_disconnect_handler(base::BindOnce(
       &ArcErrorNotificationItem::Close, weak_ptr_factory_.GetWeakPtr()));
 }

@@ -21,6 +21,10 @@
         flex: 1;
         overflow: hidden;
       }
+
+      #plusAddressSettingsButton {
+        margin-top: 16px;
+      }
     </style>
     <settings-toggle-button id="autofillProfileToggle"
         no-extension-indicator label="$i18n{enableProfilesLabel}"
@@ -107,3 +111,12 @@
           on-close="onAddressRemoveConfirmationDialogClose_">
       </settings-address-remove-confirmation-dialog>
     </template>
+    <template is="dom-if" if="[[isPlusAddressAddressLevelSettingEnabled_]]">
+    <cr-link-row class="cr-row" id="plusAddressSettingsButton"
+        label="$i18n{plusAddressSettings}"
+        sub-label="$i18n{plusAddressSettingsSublabel}"
+        on-click="onPlusAddressClick_"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        external>
+    </cr-link-row>
+  </template>

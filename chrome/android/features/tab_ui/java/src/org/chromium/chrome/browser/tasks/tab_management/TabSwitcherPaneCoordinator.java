@@ -299,6 +299,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             tabModelFilterSupplier,
                             tabContentManager,
                             tabListCoordinator,
+                            bottomSheetController,
                             mode,
                             onTabGroupCreation);
             mTabListEditorManager = tabListEditorManager;
@@ -541,8 +542,12 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         return mDialogControllerSupplier.get();
     }
 
-    public void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
+    void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
         mTabListCoordinator.showQuickDeleteAnimation(onAnimationEnd, tabs);
+    }
+
+    void showCloseAllTabsAnimation(Runnable onAnimationEnd) {
+        mTabListCoordinator.showCloseAllTabsAnimation(onAnimationEnd);
     }
 
     private int getNthTabIndexInModel(int filterIndex) {

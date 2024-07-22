@@ -243,6 +243,37 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
   EXPECT_OCMOCK_VERIFY((id)mock_consumer);
 }
 
+TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
+       AcceptButtonPushedLogsLoadingViewNotShown) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
+  VirtualCardEnrollmentBottomSheetMediator* mediator =
+      MakeMediator(MakeModel());
+
+  [mediator didAccept];
+
+  // Expect 1 sample with `is_shown` (sample) being false.
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.VirtualCardEnrollBubble.LoadingShown", /*sample=*/false,
+      /*expected_count=*/1);
+}
+
+TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
+       AcceptButtonPushedLogsLoadingViewShown) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
+  VirtualCardEnrollmentBottomSheetMediator* mediator =
+      MakeMediator(MakeModel());
+
+  [mediator didAccept];
+
+  // Expect 1 sample with `is_shown` (sample) being true.
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.VirtualCardEnrollBubble.LoadingShown", /*sample=*/true,
+      /*expected_count=*/1);
+}
+
 // Test that the result metric is logged when the prompt is accepted.
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest, LogsAcceptedMetric) {
   VirtualCardEnrollmentBottomSheetMediator* mediator =
@@ -317,6 +348,24 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
 }
 
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
+       LogsConfirmationShownWhenEnrolled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
+  // Hold a strong reference to the mediator during the duration of the test.
+  [[maybe_unused]] VirtualCardEnrollmentBottomSheetMediator* mediator =
+      MakeMediator(MakeModel());
+
+  model_->SetEnrollmentProgress(
+      autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled);
+
+  // Expect 1 sample with `is_shown` (sample) being true.
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.VirtualCardEnrollBubble.ConfirmationShown.CardEnrolled",
+      /*sample=*/true,
+      /*expected_count=*/1);
+}
+
+TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
        DelayAfterShowingConfirmation) {
   base::test::ScopedFeatureList scoped_feature_list(
       autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
@@ -368,4 +417,22 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
       autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kFailed);
 
   EXPECT_OCMOCK_VERIFY((id)mock_browser_coordinator_handler_);
+}
+
+TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
+       LogsConfirmationShownWhenEnrollmentFailed) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
+  // Hold a strong reference to the mediator during the duration of the test.
+  [[maybe_unused]] VirtualCardEnrollmentBottomSheetMediator* unused_mediator =
+      MakeMediator(MakeModel());
+
+  model_->SetEnrollmentProgress(
+      autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kFailed);
+
+  // Expect 1 sample with `is_shown` (sample) being true.
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.VirtualCardEnrollBubble.ConfirmationShown.CardNotEnrolled",
+      /*sample=*/true,
+      /*expected_count=*/1);
 }

@@ -17,40 +17,48 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.compat.ApiHelperForQ;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /** Integrates native PowerMonitor with the java side. */
 @JNINamespace("base::android")
 public class PowerMonitor {
-    private static PowerMonitor sInstance;
+    private static boolean sIsInitRequested;
 
-    private boolean mIsBatteryPower;
+    @PowerStatus private static int sIsBatteryPower = PowerStatus.UNKNOWN;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @interface PowerStatus {
+        int UNKNOWN = 0;
+        int BATTERY_POWER = 1;
+        int EXTERNAL_POWER = 2;
+    }
 
     public static void createForTests() {
         // Applications will create this once the JNI side has been fully wired up both sides. For
         // tests, we just need native -> java, that is, we don't need to notify java -> native on
         // creation.
-        sInstance = new PowerMonitor();
+        sIsInitRequested = true;
     }
 
     /** Create a PowerMonitor instance if none exists. */
     public static void create() {
         ThreadUtils.assertOnUiThread();
-
-        if (sInstance != null) return;
-
-        Context context = ContextUtils.getApplicationContext();
-        sInstance = new PowerMonitor();
-        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        Intent batteryStatusIntent =
-                ContextUtils.registerProtectedBroadcastReceiver(context, null, ifilter);
-        if (batteryStatusIntent != null) {
-            // Default to 0, which the EXTRA_PLUGGED docs indicate means "on battery power".  There
-            // is no symbolic constant.  Nonzero values indicate we have some external power source.
-            int chargePlug = batteryStatusIntent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
-            // If we're not plugged, assume we're running on battery power.
-            onBatteryChargingChanged(chargePlug == 0);
+        if (sIsInitRequested) return;
+        sIsInitRequested = true;
+        if (BaseFeatureMap.isEnabled(
+                BaseFeatures.POST_POWER_MONITOR_BROADCAST_RECEIVER_INIT_TO_BACKGROUND)) {
+            PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, PowerMonitor::createInternal);
+        } else {
+            createInternal();
         }
+    }
 
+    private static void createInternal() {
+        Context context = ContextUtils.getApplicationContext();
         IntentFilter powerConnectedFilter = new IntentFilter();
         powerConnectedFilter.addAction(Intent.ACTION_POWER_CONNECTED);
         powerConnectedFilter.addAction(Intent.ACTION_POWER_DISCONNECTED);
@@ -72,13 +80,38 @@ public class PowerMonitor {
                 PowerMonitorForQ.addThermalStatusListener(powerManager);
             }
         }
+
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatusIntent =
+                ContextUtils.registerProtectedBroadcastReceiver(context, null, ifilter);
+
+        // createInternal can be called from a background thread, we need to post the updates to the
+        // main thread so that mIsBatteryPower is only gets called from UI thread.
+        if (batteryStatusIntent != null) {
+            // Default to 0, which the EXTRA_PLUGGED docs indicate means "on battery
+            // power". There is no symbolic constant. Nonzero values indicate we have some external
+            // power source.
+            int chargePlug = batteryStatusIntent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
+
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        // Only update if the status is the default.
+                        if (sIsBatteryPower == PowerStatus.UNKNOWN) {
+                            // If we're not plugged, assume we're running on battery power.
+                            onBatteryChargingChanged(chargePlug == 0);
+                        }
+                    });
+        }
     }
 
     private PowerMonitor() {}
 
     private static void onBatteryChargingChanged(boolean isBatteryPower) {
-        assert sInstance != null;
-        sInstance.mIsBatteryPower = isBatteryPower;
+        ThreadUtils.assertOnUiThread();
+        // We can't allow for updating battery status without requesting initialization.
+        assert sIsInitRequested;
+        sIsBatteryPower = isBatteryPower ? PowerStatus.BATTERY_POWER : PowerStatus.EXTERNAL_POWER;
         PowerMonitorJni.get().onBatteryChargingChanged();
     }
 
@@ -87,9 +120,18 @@ public class PowerMonitor {
         // Creation of the PowerMonitor can be deferred based on the browser startup path.  If the
         // battery power is requested prior to the browser triggering the creation, force it to be
         // created now.
-        if (sInstance == null) create();
+        if (!sIsInitRequested) {
+            create();
+        }
 
-        return sInstance.mIsBatteryPower;
+        return switch (sIsBatteryPower) {
+            // UNKNOWN is for the default state, when we don't have value yet. That happens if
+            // we call isBatteryPower() before the creation is done.
+            // TODO(b/339859756): Propagate the tri-state instead of boolean.
+            case PowerStatus.UNKNOWN, PowerStatus.EXTERNAL_POWER -> false;
+            case PowerStatus.BATTERY_POWER -> true;
+            default -> throw new IllegalStateException("Unexpected value: " + sIsBatteryPower);
+        };
     }
 
     @CalledByNative
@@ -97,8 +139,9 @@ public class PowerMonitor {
         // Creation of the PowerMonitor can be deferred based on the browser startup path.  If the
         // battery power is requested prior to the browser triggering the creation, force it to be
         // created now.
-        if (sInstance == null) create();
-
+        if (!sIsInitRequested) {
+            create();
+        }
         return getRemainingBatteryCapacityImpl();
     }
 
@@ -117,8 +160,9 @@ public class PowerMonitor {
         // Creation of the PowerMonitor can be deferred based on the browser startup path.  If the
         // battery power is requested prior to the browser triggering the creation, force it to be
         // created now.
-        if (sInstance == null) create();
-
+        if (!sIsInitRequested) {
+            create();
+        }
         PowerManager powerManager =
                 (PowerManager)
                         ContextUtils.getApplicationContext()

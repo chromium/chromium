@@ -1656,7 +1656,7 @@ void AXObject::SerializeInlineTextBoxAttributes(
 void AXObject::SerializeLangAttribute(ui::AXNodeData* node_data) const {
   AXObject* parent = ParentObject();
   if (Language().length()) {
-    // Trim redundant languages.
+    // TODO(chrishall): should we still trim redundant languages off here?
     if (!parent || parent->Language() != Language()) {
       TruncateAndAddStringAttribute(
           node_data, ax::mojom::blink::StringAttribute::kLanguage, Language());
@@ -1746,6 +1746,7 @@ void AXObject::SerializeNameAndDescriptionAttributes(
     node_data->SetNameFrom(
         ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty);
   } else if (!name.empty()) {
+    DCHECK_NE(name_from, ax::mojom::blink::NameFrom::kProhibited);
     int max_length = node_data->role == ax::mojom::blink::Role::kStaticText
                          ? kMaxStaticTextLength
                          : kMaxStringAttributeLength;
@@ -1755,14 +1756,21 @@ void AXObject::SerializeNameAndDescriptionAttributes(
     AddIntListAttributeFromObjects(
         ax::mojom::blink::IntListAttribute::kLabelledbyIds, name_objects,
         node_data);
+  } else if (name_from == ax::mojom::blink::NameFrom::kProhibited) {
+    DCHECK(name.empty());
+    node_data->SetNameFrom(ax::mojom::blink::NameFrom::kProhibited);
   }
 
   ax::mojom::blink::DescriptionFrom description_from;
   AXObjectVector description_objects;
   String description =
       Description(name_from, description_from, &description_objects);
-  if (!description.empty()) {
-    DCHECK(description_from != ax::mojom::blink::DescriptionFrom::kNone);
+  if (description.empty()) {
+    DCHECK_NE(name_from, ax::mojom::blink::NameFrom::kProhibited)
+        << "Should expose prohibited name as description: " << GetNode();
+  } else {
+    DCHECK_NE(description_from, ax::mojom::blink::DescriptionFrom::kNone)
+        << this << "\n* Description: " << description;
     TruncateAndAddStringAttribute(
         node_data, ax::mojom::blink::StringAttribute::kDescription,
         description);
@@ -4419,12 +4427,13 @@ String AXObject::SimplifyName(const String& str,
       }
     }
 
-    // TODO(crbug.com/350528330): Uncomment the following in a future CL.
-    // Prohibited names are repaired by moving them to the description field,
-    // where they will not override the contents of the element for screen
-    // reader users.
-    // name_from = ax::mojom::blink::NameFrom::kProhibited;
-    // return "";
+    if (RuntimeEnabledFeatures::AccessibilityProhibitedNamesEnabled()) {
+      // Prohibited names are repaired by moving them to the description field,
+      // where they will not override the contents of the element for screen
+      // reader users.
+      name_from = ax::mojom::blink::NameFrom::kProhibited;
+      return "";
+    }
   }
 #endif
 

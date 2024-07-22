@@ -472,7 +472,6 @@ void ChipController::HandleConfirmation(
       permission_prompt_model_->CanDisplayConfirmation()) {
     is_confirmation_showing_ = true;
 
-    // AnimateToFit isn't working for `PermissionDashboardView`.
     if (chip_->GetVisible()) {
       chip_->AnimateToFit(GetAnimationDuration(base::Milliseconds(200)));
     } else {
@@ -485,8 +484,11 @@ void ChipController::HandleConfirmation(
                                            weak_factory_.GetWeakPtr()));
     AnnouncePermissionRequestForAccessibility(
         permission_prompt_model_->GetAccessibilityChipText());
-    collapse_timer_.Start(FROM_HERE, kConfirmationDisplayDuration, this,
-                          &ChipController::CollapseConfirmation);
+
+    if (!do_no_collapse_for_testing_) {
+      collapse_timer_.Start(FROM_HERE, kConfirmationDisplayDuration, this,
+                            &ChipController::CollapseConfirmation);
+    }
   } else {
     ResetPermissionPromptChip();
   }

@@ -65,7 +65,8 @@ QueryResult = pandas.Series
 class BigQueryQuerier:
   """Class to handle all BigQuery queries for a script invocation."""
 
-  def __init__(self, suite: Optional[str], project: str, num_samples: int):
+  def __init__(self, suite: Optional[str], project: str, num_samples: int,
+               keep_unmatched_results: bool):
     """
     Args:
       suite: A string containing the name of the suite that is being queried
@@ -74,10 +75,13 @@ class BigQueryQuerier:
       project: A string containing the billing project to use for BigQuery.
       num_samples: An integer containing the number of builds to pull results
           from.
+      keep_unmatched_results: Whether to store and return unmatched results
+          for debugging purposes.
     """
     self._suite = suite
     self._project = project
     self._num_samples = num_samples or DEFAULT_NUM_SAMPLES
+    self._keep_unmatched_results = keep_unmatched_results
 
     assert self._num_samples > 0
 
@@ -153,8 +157,11 @@ class BigQueryQuerier:
                                               matching_builder.name)
         unmatched_results = expectation_map.AddResultList(
             prefixed_builder_name, results, expectation_files)
-        if unmatched_results:
-          all_unmatched_results[prefixed_builder_name] = unmatched_results
+        if self._keep_unmatched_results:
+          if unmatched_results:
+            all_unmatched_results[prefixed_builder_name] = unmatched_results
+        else:
+          logging.info('Dropping %d unmatched results', len(unmatched_results))
 
     logging.debug('Filling expectation map took %f', time.time() - start_time)
     return all_unmatched_results

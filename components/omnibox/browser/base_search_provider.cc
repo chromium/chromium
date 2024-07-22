@@ -538,7 +538,8 @@ void BaseSearchProvider::AddMatchToMap(
   if (result.relevance_from_server()) {
     match.scoring_signals->set_search_suggest_relevance(result.relevance());
   }
-  SearchScoringSignalsAnnotator::UpdateIsSearchSuggestEntity(match);
+  SearchScoringSignalsAnnotator::UpdateMatchTypeScoringSignals(match,
+                                                               input.text());
 
   // Try to add `match` to `map`.
   // NOTE: Keep this ToLower() call in sync with url_database.cc.

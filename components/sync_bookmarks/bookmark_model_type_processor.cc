@@ -36,6 +36,7 @@
 #include "components/sync_bookmarks/bookmark_remote_updates_handler.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 #include "components/sync_bookmarks/parent_guid_preprocessing.h"
+#include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 #include "components/undo/bookmark_undo_utils.h"
 #include "ui/base/models/tree_node_iterator.h"
@@ -115,6 +116,18 @@ size_t CountSyncableBookmarksFromModel(BookmarkModelView* model) {
     }
   }
   return count;
+}
+
+void RecordModelTypeNumUnsyncedEntitiesOnModelReadyForBookmarks(
+    const SyncedBookmarkTracker& tracker) {
+  size_t num_unsynced_entities = 0;
+  for (const auto* entity : tracker.GetAllEntities()) {
+    if (entity->IsUnsynced()) {
+      num_unsynced_entities++;
+    }
+  }
+  syncer::SyncRecordModelTypeNumUnsyncedEntitiesOnModelReady(
+      syncer::BOOKMARKS, num_unsynced_entities);
 }
 
 }  // namespace
@@ -358,6 +371,8 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
 
     if (bookmark_tracker_) {
       StartTrackingMetadata();
+      RecordModelTypeNumUnsyncedEntitiesOnModelReadyForBookmarks(
+          *bookmark_tracker_);
     } else if (!metadata_str.empty()) {
       DLOG(WARNING)
           << "Persisted bookmark sync metadata invalidated when loading.";

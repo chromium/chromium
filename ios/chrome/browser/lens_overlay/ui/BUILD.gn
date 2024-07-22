@@ -7,6 +7,7 @@ source_set("protocols") {
     "lens_overlay_result_consumer.h",
     "lens_overlay_selection_delegate.h",
     "lens_overlay_snapshot_consumer.h",
+    "lens_result_page_web_state_delegate.h",
   ]
   frameworks = [ "UIKit.framework" ]
 }

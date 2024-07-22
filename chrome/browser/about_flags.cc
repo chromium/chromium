@@ -3709,6 +3709,17 @@ const FeatureEntry::FeatureVariation kAndroidHubV2Variations[] = {
     {"Phase 3", kHubPhase3, std::size(kHubPhase3), nullptr},
     {"Phase 4", kHubPhase4, std::size(kHubPhase4), nullptr}};
 
+const FeatureEntry::FeatureParam
+    kAndroidHubFloatingActionButtonAlternativeColors[] = {
+        {"hub_alternative_fab_color", "true"},
+};
+
+const FeatureEntry::FeatureVariation
+    kAndroidHubFloatingActionButtonVariations[] = {
+        {"Alternative colors", kAndroidHubFloatingActionButtonAlternativeColors,
+         std::size(kAndroidHubFloatingActionButtonAlternativeColors), nullptr},
+};
+
 const FeatureEntry::FeatureParam kTabGroupParityAndroidSkipCreationDialog[] = {
     {"skip_tab_group_creation_dialog", "true"}};
 
@@ -3725,6 +3736,9 @@ const FeatureEntry::FeatureParam kGtsCloseTabAnimationUseStandardEasing[] = {
 const FeatureEntry::FeatureParam
     kGtsCloseTabAnimationCloseAllQuickDeleteAnimation[] = {
         {"close_all_quick_delete_animation", "true"}};
+const FeatureEntry::FeatureParam
+    kGtsCloseTabAnimationCloseAllCustomAnimation[] = {
+        {"close_all_custom_animation", "true"}};
 
 const FeatureEntry::FeatureVariation kGtsCloseTabAnimationVariations[] = {
     {"Option A remove and move simultaneously",
@@ -3738,6 +3752,9 @@ const FeatureEntry::FeatureVariation kGtsCloseTabAnimationVariations[] = {
     {"Option D close all uses quick delete animation",
      kGtsCloseTabAnimationCloseAllQuickDeleteAnimation,
      std::size(kGtsCloseTabAnimationCloseAllQuickDeleteAnimation), nullptr},
+    {"Option E close all uses custom animation",
+     kGtsCloseTabAnimationCloseAllCustomAnimation,
+     std::size(kGtsCloseTabAnimationCloseAllCustomAnimation), nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -11107,7 +11124,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-hub-floating-action-button",
      flag_descriptions::kAndroidHubFloatingActionButtonName,
      flag_descriptions::kAndroidHubFloatingActionButtonDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidHubFloatingActionButton)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kAndroidHubFloatingActionButton,
+         kAndroidHubFloatingActionButtonVariations,
+         "AndroidHubFloatingActionButton")},
 
     {"android-hub-v2", flag_descriptions::kAndroidHubV2Name,
      flag_descriptions::kAndroidHubV2Description, kOsAndroid,

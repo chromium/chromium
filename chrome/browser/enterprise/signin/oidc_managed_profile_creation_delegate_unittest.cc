@@ -64,7 +64,7 @@ TEST_P(OidcManagedProfileCreationDelegateTest,
                     .GetProfileAttributesWithPath(profile_->GetPath());
   delegate->SetManagedAttributesForProfile(entry);
   ASSERT_TRUE(entry);
-  ProfileManagementOicdTokens oidc_tokens =
+  ProfileManagementOidcTokens oidc_tokens =
       entry->GetProfileManagementOidcTokens();
   EXPECT_EQ(kOAuthToken, oidc_tokens.auth_token);
   EXPECT_EQ(kIdToken, oidc_tokens.id_token);

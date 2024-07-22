@@ -185,7 +185,7 @@ TEST_F(FieldTrialInternalsUtilsTest,
                                        requires_restart);
 
   EXPECT_THAT(overrides, testing::IsEmpty());
-  EXPECT_TRUE(requires_restart);
+  EXPECT_FALSE(requires_restart);
 }
 
 TEST_F(FieldTrialInternalsUtilsTest,

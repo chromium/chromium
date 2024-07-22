@@ -64,9 +64,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintAccessTokenFetcherAdapter
 
  private:
   // OAuth2MintTokenFlow::Delegate:
-  void OnMintTokenSuccess(const std::string& access_token,
-                          const std::set<std::string>& granted_scopes,
-                          int time_to_live) override;
+  void OnMintTokenSuccess(
+      const OAuth2MintTokenFlow::MintTokenResult& result) override;
   void OnMintTokenFailure(const GoogleServiceAuthError& error) override;
   void OnRemoteConsentSuccess(
       const RemoteConsentResolutionData& resolution_data) override;

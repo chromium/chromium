@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
@@ -92,6 +93,19 @@ SecurityTokenSessionController::Behavior ParseBehaviorPrefValue(
     return SecurityTokenSessionController::Behavior::kLock;
 
   return SecurityTokenSessionController::Behavior::kIgnore;
+}
+
+std::string SerializeBehaviorValue(
+    const SecurityTokenSessionController::Behavior& behavior) {
+  switch (behavior) {
+    case SecurityTokenSessionController::Behavior::kIgnore:
+      return std::string(kIgnorePrefValue);
+    case SecurityTokenSessionController::Behavior::kLogout:
+      return std::string(kLogoutPrefValue);
+    case SecurityTokenSessionController::Behavior::kLock:
+      return std::string(kLockPrefValue);
+  }
+  NOTREACHED_NORETURN();
 }
 
 // Checks if `domain` represents a valid domain. Returns false if `domain` is
@@ -502,6 +516,9 @@ void SecurityTokenSessionController::ExtensionStopsProvidingCertificate() {
   if (behavior_ == Behavior::kIgnore) {
     return;
   }
+  SYSLOG(WARNING) << "Missing certificate is about to trigger "
+                  << SerializeBehaviorValue(behavior_)
+                  << " action with a delay " << notification_seconds_ << ".";
 
   // Schedule session lock / logout.
   action_timer_.Start(

@@ -1558,7 +1558,7 @@ AutocompleteMatch SearchProvider::NavigationToMatch(
   if (navigation.relevance_from_server()) {
     match.scoring_signals->set_search_suggest_relevance(navigation.relevance());
   }
-  SearchScoringSignalsAnnotator::UpdateIsSearchSuggestEntity(match);
+  SearchScoringSignalsAnnotator::UpdateMatchTypeScoringSignals(match, input);
 
   return match;
 }
@@ -1604,12 +1604,20 @@ void SearchProvider::PrefetchImages(SearchSuggestionParser::Results* results) {
        ++i) {
     auto suggestion = results->suggest_results[i];
 
-    GURL image_url = GURL(suggestion.entity_info().image_url());
-    if (!image_url.is_empty())
-      prefetch_image_urls.push_back(std::move(image_url));
+    GURL entity_image_url = GURL(suggestion.entity_info().image_url());
+    if (entity_image_url.is_valid()) {
+      prefetch_image_urls.push_back(std::move(entity_image_url));
+    }
 
-    if (suggestion.answer())
-      suggestion.answer()->AddImageURLsTo(&prefetch_image_urls);
+    GURL answer_image_url =
+        omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
+                suggestion.answer_template()
+            ? GURL(suggestion.answer_template()->answers(0).image().url())
+            : ((suggestion.answer() ? suggestion.answer()->image_url()
+                                    : GURL()));
+    if (answer_image_url.is_valid()) {
+      prefetch_image_urls.push_back(std::move(answer_image_url));
+    }
   }
 
   for (const GURL& url : prefetch_image_urls)

@@ -3714,6 +3714,13 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
     return nullptr;
   }
 
+  // Verify that we are not inside a canvas layer.
+  if (layer_count_ > 0) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "A layer is currently active.");
+    return nullptr;
+  }
+
   // Verify that the usage flags are supported.
   constexpr wgpu::TextureUsage kSupportedUsageFlags =
       wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst |
@@ -3792,8 +3799,16 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
       blink_device, AsDawnType(image_info.colorType()), tex_usage,
       std::move(texture), access_options->getLabelOr(String()));
 
-  // TODO(crbug.com/343211830): we should take away the canvas' resource
-  // provider here.
+  // We take away the canvas' resource provider here, which will cause the
+  // canvas to be treated as a brand new surface if additional draws occur.
+  // It also gives us a mechanism to detect post-transfer-out draws, which is
+  // used in `transferBackFromWebGPU` to raise an exception.
+  resource_provider_from_webgpu_access_ =
+      host->ReplaceResourceProvider(nullptr);
+
+  // The user isn't obligated to ever transfer back, which means this resource
+  // provider might stick around for while. Jettison any unnecessary resources.
+  resource_provider_from_webgpu_access_->ClearRecycledResources();
 
   return webgpu_access_texture_;
 }
@@ -3850,29 +3865,44 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
 
   // Prevent unbalanced calls to transferBackFromGPUTexture without an earlier
   // call to transferToGPUTexture.
-  if (!webgpu_access_texture_) {
+  if (!webgpu_access_texture_ || !resource_provider_from_webgpu_access_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "This canvas is not currently in use by WebGPU.");
+    webgpu_access_texture_ = nullptr;
+    resource_provider_from_webgpu_access_ = nullptr;
     return;
   }
 
+  // If this canvas already has a resource provider, this means that drawing has
+  // occurred after `transferToWebGPU`. We disallow transferring back in this
+  // case, and raise an exception instead.
+  if (host->ResourceProvider()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The canvas was touched after transferToGPUTexture.");
+    webgpu_access_texture_ = nullptr;
+    resource_provider_from_webgpu_access_ = nullptr;
+    return;
+  }
+
+  // If the caller explicitly destroyed the WebGPU access texture, there is
+  // nothing to transfer.
   if (webgpu_access_texture_->Destroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The texture has been destroyed.");
+    webgpu_access_texture_ = nullptr;
+    resource_provider_from_webgpu_access_ = nullptr;
     return;
   }
 
-  // TODO(crbug.com/343211830): if this canvas already has a resource provider,
-  // we should raise an exception and prevent transferring back.
-
-  // Get the CanvasResourceProvider of this canvas. As above, if the canvas
-  // resource provider doesn't exist, this call becomes a no-op.
+  // Restore the canvas' resource provider back onto the canvas host,
+  // surrendering our temporary ownership of the provider.
   CanvasResourceProvider* resource_provider =
-      host->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
-  if (UNLIKELY(!resource_provider)) {
-    return;
-  }
+      resource_provider_from_webgpu_access_.get();
+  host->ReplaceResourceProvider(
+      std::move(resource_provider_from_webgpu_access_));
+  resource_provider->SetCanvasResourceHost(host);
 
   // Copy the contents of the GPUTexture into this ResourceProvider.
   if (!CopyGPUTextureToResourceProvider(*webgpu_access_texture_,

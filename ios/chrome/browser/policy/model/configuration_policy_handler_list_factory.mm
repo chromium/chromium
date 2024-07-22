@@ -212,10 +212,12 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
       std::make_unique<policy::BooleanDisablingPolicyHandler>(
           policy::key::kUrlKeyedMetricsAllowed,
           unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)));
-  handlers->AddHandler(
-      std::make_unique<enterprise_idle::IdleTimeoutPolicyHandler>());
+  // Do not change order of `IdleTimeoutActionsPolicyHandler` and
+  // `IdleTimeoutActionsPolicyHandler`.
   handlers->AddHandler(
       std::make_unique<enterprise_idle::IdleTimeoutActionsPolicyHandler>(
           chrome_schema));
+  handlers->AddHandler(
+      std::make_unique<enterprise_idle::IdleTimeoutPolicyHandler>());
   return handlers;
 }

@@ -19,12 +19,38 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 
 /** Implements the bottom sheet content for the all plus addresses bottom sheet. */
 class AllPlusAddressesBottomSheetView implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
     private final RecyclerView mSheetItemListView;
     private final LinearLayout mContentView;
+
+    private final BottomSheetObserver mBottomSheetObserver =
+            new EmptyBottomSheetObserver() {
+                @Override
+                public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
+                    super.onSheetClosed(reason);
+                    assert mOnDismissed != null;
+                    mOnDismissed.run();
+                    mBottomSheetController.removeObserver(mBottomSheetObserver);
+                }
+
+                @Override
+                public void onSheetStateChanged(
+                        @BottomSheetController.SheetState int newState,
+                        @BottomSheetController.StateChangeReason int reason) {
+                    super.onSheetStateChanged(newState, reason);
+                    if (newState != BottomSheetController.SheetState.HIDDEN) return;
+                    // This is a fail-safe for cases where onSheetClosed isn't triggered.
+                    mOnDismissed.run();
+                    mBottomSheetController.removeObserver(mBottomSheetObserver);
+                }
+            };
+
+    private Runnable mOnDismissed;
 
     public AllPlusAddressesBottomSheetView(
             Context context, BottomSheetController bottomSheetController) {
@@ -41,7 +67,12 @@ class AllPlusAddressesBottomSheetView implements BottomSheetContent {
 
     void setVisible(boolean isVisible) {
         if (isVisible) {
-            mBottomSheetController.requestShowContent(this, true);
+            mBottomSheetController.addObserver(mBottomSheetObserver);
+            if (!mBottomSheetController.requestShowContent(this, true)) {
+                assert (mOnDismissed != null);
+                mOnDismissed.run();
+                mBottomSheetController.removeObserver(mBottomSheetObserver);
+            }
         } else {
             mBottomSheetController.hideContent(this, true);
         }
@@ -81,6 +112,10 @@ class AllPlusAddressesBottomSheetView implements BottomSheetContent {
         mSheetItemListView.setAdapter(adapter);
     }
 
+    void setOnDismissedCallback(Runnable onDismissed) {
+        mOnDismissed = onDismissed;
+    }
+
     @Override
     public View getContentView() {
         return mContentView;
@@ -98,7 +133,9 @@ class AllPlusAddressesBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
+    }
 
     @Override
     public int getPriority() {

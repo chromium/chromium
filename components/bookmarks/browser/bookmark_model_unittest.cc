@@ -2626,6 +2626,17 @@ TEST_F(BookmarkModelTest, IsLocalOnlyNodeWithSyncFeatureOn) {
   EXPECT_FALSE(model_->IsLocalOnlyNode(*folder));
 }
 
+TEST_F(BookmarkModelTest, IsLocalOnlyNodeWithSyncFeatureOnAndDettachedNode) {
+  static_cast<TestBookmarkClient*>(model_->client())
+      ->SetIsSyncFeatureEnabledIncludingBookmarks(true);
+
+  auto dettached_node =
+      std::make_unique<BookmarkNode>(/*id=*/200, base::Uuid::GenerateRandomV4(),
+                                     GURL());
+
+  EXPECT_TRUE(model_->IsLocalOnlyNode(*dettached_node));
+}
+
 }  // namespace
 
 class BookmarkModelFaviconTest : public testing::Test,

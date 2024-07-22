@@ -545,6 +545,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(BlinkFeatures.DYNAMIC_SCROLL_CULL_RECT_EXPANSION),
         Flag.baseFeature(BlinkFeatures.INTERSECTION_OPTIMIZATION),
         Flag.baseFeature(BlinkFeatures.EXPAND_COMPOSITED_CULL_RECT),
+        Flag.baseFeature(BlinkFeatures.RASTER_INDUCING_SCROLL),
         Flag.baseFeature(BlinkFeatures.SCROLLBAR_COLOR),
         Flag.baseFeature(BlinkFeatures.UNBLOCK_TOUCH_MOVE_EARLIER),
         Flag.baseFeature(
@@ -875,6 +876,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BaseFeatures.PARTITION_ALLOC_ZAPPING_BY_FREE_FLAGS,
                 "Enables PartitionAlloc's FreeFlags::kZap"),
+        Flag.baseFeature(
+                BaseFeatures.POST_POWER_MONITOR_BROADCAST_RECEIVER_INIT_TO_BACKGROUND,
+                "If enabled, it posts PowerMonitor broadcast receiver init to a background"
+                        + " thread."),
         Flag.baseFeature(
                 BlinkFeatures.REGISTER_JS_SOURCE_LOCATION_BLOCKING_BF_CACHE,
                 "Starts capturing bfcache blocking details"),

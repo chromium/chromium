@@ -31,7 +31,7 @@ rootWebArea focusable name='overflow-auto'
 rootWebArea focusable name='only-small-content'
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer name='1234'
+++++++genericContainer description='1234' descriptionFrom=title
 ++++++++blockquote
 ++++++++++staticText name='small'
 ++++++++++++inlineTextBox name='small'
@@ -51,7 +51,7 @@ rootWebArea focusable name='large-content'
 rootWebArea focusable name='p-font-small'
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer name='1234'
+++++++genericContainer description='1234' descriptionFrom=title
 ++++++++blockquote
 ++++++++++staticText name='small'
 ++++++++++++inlineTextBox name='small'
@@ -74,7 +74,7 @@ rootWebArea focusable name='p-font-large'
 rootWebArea focusable name='overflow-hidden'
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer name='1234'
+++++++genericContainer description='1234' descriptionFrom=title
 ++++++++blockquote
 ++++++++++staticText name='small'
 ++++++++++++inlineTextBox name='small'

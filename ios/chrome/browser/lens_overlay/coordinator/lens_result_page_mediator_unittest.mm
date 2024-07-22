@@ -17,11 +17,20 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+@interface LensResultPageMediator (Testing)
+- (std::unique_ptr<web::WebState>)detachWebState;
+- (void)attachWebState:(std::unique_ptr<web::WebState>)webState;
+@end
 
 namespace {
 
@@ -88,6 +97,27 @@ class LensResultPageMediatorTest : public PlatformTest {
     return policy_decision.ShouldAllowNavigation();
   }
 
+  // Replaces the web state from LensResultPageMediator with a fake one.
+  void AttachFakeWebState() {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetIsRealized(true);
+    web_state->SetWebFramesManager(
+        web::ContentWorld::kAllContentWorlds,
+        std::make_unique<web::FakeWebFramesManager>());
+    web_state->SetWebFramesManager(
+        web::ContentWorld::kPageContentWorld,
+        std::make_unique<web::FakeWebFramesManager>());
+    web_state->SetWebFramesManager(
+        web::ContentWorld::kIsolatedWorld,
+        std::make_unique<web::FakeWebFramesManager>());
+    web_state->SetNavigationManager(
+        std::make_unique<web::FakeNavigationManager>());
+    fake_web_state_ = web_state.get();
+    [mediator_ detachWebState];
+    [mediator_ attachWebState:std::move(web_state)];
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState local_state_;
@@ -97,6 +127,9 @@ class LensResultPageMediatorTest : public PlatformTest {
   web::FakeWebStateDelegate browser_web_state_delegate_;
   OCMockObject<LensResultPageConsumer>* mock_consumer_;
   OCMockObject<ApplicationCommands>* mock_application_handler_;
+
+  // Call `AttachFakeWebState()` to use `fake_web_state_`.
+  web::FakeWebState* fake_web_state_;
 };
 
 // Tests that the mediator starts a navigation when loadResultsURL is called.
@@ -128,6 +161,31 @@ TEST_F(LensResultPageMediatorTest, ShouldAllowAnyNavigationNotInMainFrame) {
                                      /*target_frame_is_main=*/false));
   EXPECT_TRUE(TestShouldAllowRequest(@"https://www.google.com",
                                      /*target_frame_is_main=*/false));
+}
+
+// Tests that updating the background color calls the consumer.
+TEST_F(LensResultPageMediatorTest, BackgroundColorUpdates) {
+  AttachFakeWebState();
+
+  // Make the consumer mock strict.
+  mock_consumer_ =
+      [OCMockObject mockForProtocol:@protocol(LensResultPageConsumer)];
+  OCMExpect([mock_consumer_ setWebView:[OCMArg any]]);
+  mediator_.consumer = mock_consumer_;
+
+  // Background color is not updated if nil.
+  fake_web_state_->SetUnderPageBackgroundColor(nil);
+
+  // Background color is updated when it changes.
+  OCMExpect([mock_consumer_ setBackgroundColor:UIColor.blackColor]);
+  fake_web_state_->SetUnderPageBackgroundColor(UIColor.blackColor);
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  // Background color is updated when the navigation finishes.
+  OCMExpect([mock_consumer_ setBackgroundColor:UIColor.blackColor]);
+  web::FakeNavigationContext context;
+  fake_web_state_->OnNavigationFinished(&context);
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 
 }  // namespace

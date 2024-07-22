@@ -183,8 +183,7 @@ class FakeWebNNContextClientImpl : public mojom::WebNNContextClient {
 // the graph validation steps and computation resources.
 class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
  public:
-  void CreateWebNNContext(
-      WebNNContextProviderImpl::WebNNContextImplSet& context_impls,
+  std::unique_ptr<WebNNContextImpl> CreateWebNNContext(
       WebNNContextProviderImpl* context_provider_impl,
       mojom::CreateContextOptionsPtr options,
       mojom::WebNNContextProvider::CreateWebNNContextCallback callback)
@@ -199,12 +198,12 @@ class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
     ContextProperties context_properties = context_impl->properties();
     // The receiver bound to FakeWebNNContext.
     context_impl_ = context_impl.get();
-    context_impls.insert(std::move(context_impl));
     auto success = mojom::CreateContextSuccess::New(
         std::move(remote), std::move(client_receiver),
         std::move(context_properties), std::move(context_handle));
     std::move(callback).Run(
         mojom::CreateContextResult::NewSuccess(std::move(success)));
+    return context_impl;
   }
 
   void DestroyWebNNContext() {

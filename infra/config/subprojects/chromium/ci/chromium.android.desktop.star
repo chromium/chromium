@@ -78,7 +78,7 @@ ci.builder(
         ],
     ),
     targets = targets.bundle(
-        additional_compile_targets = "android_lint",
+        additional_compile_targets = "all",
     ),
     console_view_entry = consoles.console_view_entry(
         category = "builder|arm64",
@@ -122,6 +122,9 @@ ci.builder(
             "webview_trichrome",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = "all",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "builder|arm64",
         short_name = "rel",
@@ -160,6 +163,9 @@ ci.builder(
             "webview_trichrome",
             "webview_shell",
         ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = "all",
     ),
     console_view_entry = consoles.console_view_entry(
         category = "builder|x64",
@@ -204,6 +210,9 @@ ci.builder(
             "webview_trichrome",
             "webview_shell",
         ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = "all",
     ),
     console_view_entry = consoles.console_view_entry(
         category = "builder|x64",

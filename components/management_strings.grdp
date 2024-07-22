@@ -36,14 +36,14 @@
 
   <!-- Subtitles of the browser version of the management page -->
   <if expr="not chromeos_ash">
-      <message name="IDS_MANAGEMENT_SUBTITLE" desc="Title of chrome://management page, which shows the administrator's capabilities in a managed environment">
-      Your browser is managed by your organization
-    </message>
     <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED_BY" desc="Title of chrome://management page, which shows the administrator's capabilities in a managed environment. MANAGER can be a domain or an email address.">
       Your browser is managed by <ph name="MANAGER">$1<ex>example.com</ex></ph>
     </message>
     <message name="IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE" desc="Title of chrome://management page for a browser that is not managed">
       Your browser is not managed
+    </message>
+    <message name="IDS_MANAGEMENT_SUBTITLE" desc="Title of chrome://management page, which shows the administrator's capabilities in a managed environment">
+      Your browser is managed by your organization
     </message>
     <message name="IDS_MANAGEMENT_SUBTITLE_BROWSER_AND_PROFILE_DIFFERENT_MANAGED_BY" desc="Text displayed to inform that the browser is managed by BROWSER_DOMAIN and the profile by PROFILE_DOMAIN.">
       Your browser is managed by <ph name="BROWSER_DOMAIN">$1<ex>foo.com</ex></ph> and your profile is managed by <ph name="PROFILE_DOMAIN">$2<ex>bar.com</ex></ph>
@@ -408,4 +408,15 @@
       Information about your browser, OS, device, installed software, and files
     </message>
   </if>
+
+  <!-- Management toolbar button dialog view -->
+  <message name="IDS_MANAGEMENT_DIALOG_BROWSING_DATA_MANAGEMENT" desc="Disclosure that browsing data can be managed by the admin.">
+    Browsing data, including history and passwords can be seen and managed
+  </message>
+  <message name="IDS_MANAGEMENT_DIALOG_DEVICE_SIGNALS" desc="Disclosure that device information can be visible to the admin for device safety. The OS, browser info and and installed software may be visible to the admin to assess the device safety.">
+    For device safety, OS, browser info, and installed software may be visible
+  </message>
+  <message name="IDS_MANAGEMENT_DIALOG_THINGS_TO_CONSIDER_SUBTITLE" desc="Subtitle of a section of things to consider regarding that an admin can do an see while managing the browser and profile.">
+    Things to consider
+  </message>
 </grit-part>

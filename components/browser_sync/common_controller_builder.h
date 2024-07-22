@@ -18,6 +18,7 @@
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/model_type.h"
 
+class GoogleGroupsManager;
 class PrefService;
 
 namespace autofill {
@@ -140,6 +141,7 @@ class CommonControllerBuilder {
   void SetDeviceInfoSyncService(
       syncer::DeviceInfoSyncService* device_info_sync_service);
   void SetFaviconService(favicon::FaviconService* favicon_service);
+  void SetGoogleGroupsManager(GoogleGroupsManager* google_groups_manager);
   void SetHistoryService(history::HistoryService* history_service);
   void SetIdentityManager(signin::IdentityManager* identity_manager);
   void SetModelTypeStoreService(
@@ -238,6 +240,7 @@ class CommonControllerBuilder {
   SafeOptional<raw_ptr<syncer::DeviceInfoSyncService>>
       device_info_sync_service_;
   SafeOptional<raw_ptr<favicon::FaviconService>> favicon_service_;
+  SafeOptional<raw_ptr<GoogleGroupsManager>> google_groups_manager_;
   SafeOptional<raw_ptr<history::HistoryService>> history_service_;
   SafeOptional<raw_ptr<syncer::ModelTypeStoreService>>
       model_type_store_service_;

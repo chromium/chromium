@@ -436,7 +436,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         if (TabUiFeatureUtilities.shouldUseListMode() || !isTabCard(holder)) {
             animator = buildGenericRemoveAnimator(holder);
         } else {
-            animator = buildTabRemoveAnimator(holder);
+            animator = buildTabRemoveAnimatorForItemAnimator(holder);
         }
         mRemovals.put(holder, animator);
         return true;
@@ -473,7 +473,8 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         return alphaAnimator;
     }
 
-    private Animator buildTabRemoveAnimator(ViewHolder holder) {
+    /** Builds an animator that shrinks and fades a tab. */
+    public static Animator buildTabRemoveAnimator(ViewHolder holder) {
         // This is a new custom remove animation that happens in two parts.
         // Part 1 shrinks from 100% -> 60%.
         // Part 2 shrinks from 60% -> 0% while fading to 0 alpha.
@@ -501,21 +502,32 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         animator.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
+                    public void onAnimationEnd(Animator animator) {
+                        view.setScaleX(ORIGINAL_SCALE);
+                        view.setScaleY(ORIGINAL_SCALE);
+                        view.setAlpha(1f);
+                    }
+                });
+        animator.play(part1Shrink).before(part2ShrinkAndFade);
+        return animator;
+    }
+
+    private Animator buildTabRemoveAnimatorForItemAnimator(ViewHolder holder) {
+        Animator animator = buildTabRemoveAnimator(holder);
+        animator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
                     public void onAnimationStart(Animator animator) {
                         dispatchRemoveStarting(holder);
                     }
 
                     @Override
                     public void onAnimationEnd(Animator animator) {
-                        view.setScaleX(ORIGINAL_SCALE);
-                        view.setScaleY(ORIGINAL_SCALE);
-                        view.setAlpha(1.0f);
                         dispatchRemoveFinished(holder);
                         mRemovals.remove(holder);
                         dispatchFinishedWhenAllAnimationsDone();
                     }
                 });
-        animator.play(part1Shrink).before(part2ShrinkAndFade);
         return animator;
     }
 

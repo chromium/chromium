@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
@@ -306,7 +307,7 @@ bool GetFilteringId(v8::Isolate* isolate,
 auction_worklet::mojom::AggregatableReportForEventContributionPtr
 ParseForEventContribution(
     v8::Isolate* isolate,
-    const std::string& event_type,
+    auction_worklet::mojom::EventTypePtr event_type,
     absl::variant<PASignalValue, v8::Local<v8::BigInt>> idl_bucket,
     absl::variant<PASignalValue, int32_t> idl_value,
     std::optional<v8::Local<v8::BigInt>> idl_filtering_id,
@@ -347,11 +348,27 @@ std::optional<uint64_t> ParseDebugKey(v8::Local<v8::BigInt> js_debug_key,
   return absl::Uint128Low64(maybe_debug_key.value());
 }
 
-}  // namespace
+constexpr auto kReservedEventTypes =
+    base::MakeFixedFlatMap<std::string_view,
+                           auction_worklet::mojom::ReservedEventType>(
+        {{"reserved.always",
+          auction_worklet::mojom::ReservedEventType::kReservedAlways},
+         {"reserved.win",
+          auction_worklet::mojom::ReservedEventType::kReservedWin},
+         {"reserved.loss",
+          auction_worklet::mojom::ReservedEventType::kReservedLoss}});
 
-const char kReservedAlways[] = "reserved.always";
-const char kReservedWin[] = "reserved.win";
-const char kReservedLoss[] = "reserved.loss";
+std::optional<auction_worklet::mojom::ReservedEventType> ParseReservedEventType(
+    const std::string& type) {
+  auto it = kReservedEventTypes.find(type);
+  if (it != kReservedEventTypes.end()) {
+    return it->second;
+  } else {
+    return std::nullopt;
+  }
+}
+
+}  // namespace
 
 PrivateAggregationBindings::PrivateAggregationBindings(
     AuctionV8Helper* v8_helper,
@@ -570,8 +587,8 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
       v8_helper, time_limit_scope,
       "privateAggregation.contributeToHistogramOnEvent(): ", &args,
       /*min_required_args=*/2);
-  std::string event_type;
-  args_converter.ConvertArg(0, "event", event_type);
+  std::string event_type_str;
+  args_converter.ConvertArg(0, "event", event_type_str);
 
   // Arg 1 is:
   // https://patcg-individual-drafts.github.io/private-aggregation-api/#dictdef-paextendedhistogramcontribution
@@ -618,17 +635,27 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
     return;
   }
 
-  if (base::StartsWith(event_type, "reserved.") && event_type != kReservedWin &&
-      event_type != kReservedLoss && event_type != kReservedAlways) {
-    // Don't throw an error if an invalid reserved event type is provided, to
-    // provide forward compatibility with new reserved event types added later.
-    return;
+  auction_worklet::mojom::EventTypePtr event_type;
+  if (base::StartsWith(event_type_str, "reserved.")) {
+    std::optional<auction_worklet::mojom::ReservedEventType> maybe_reserved =
+        ParseReservedEventType(event_type_str);
+    if (!maybe_reserved.has_value()) {
+      // Don't throw an error if an invalid reserved event type is provided, to
+      // provide forward compatibility with new reserved event types added
+      // later.
+      return;
+    }
+    event_type =
+        auction_worklet::mojom::EventType::NewReserved(maybe_reserved.value());
+  } else {
+    event_type =
+        auction_worklet::mojom::EventType::NewNonReserved(event_type_str);
   }
 
   std::string error;
   auction_worklet::mojom::AggregatableReportForEventContributionPtr
       contribution = ParseForEventContribution(
-          isolate, event_type, std::move(bucket), std::move(value),
+          isolate, std::move(event_type), std::move(bucket), std::move(value),
           std::move(filtering_id), &error);
 
   if (contribution.is_null()) {

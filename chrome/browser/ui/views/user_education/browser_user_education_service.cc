@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -574,7 +576,8 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleTitleText(
               IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TITLE_SIGNIN_REMINDER)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetBubbleIcon(&vector_icons::kCelebrationIcon)));
+          .SetBubbleIcon(&vector_icons::kCelebrationIcon)
+          .SetReshowPolicy(base::Days(14), /*max_show_count=*/std::nullopt)));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // kIPHCookieControlsFeature:

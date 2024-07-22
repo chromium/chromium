@@ -29,6 +29,7 @@ include_rules = [
   "+components/sync_user_events",
   "+components/undo",
   "+components/url_formatter",
+  "+components/variations/service",
   "+components/version_info",
   "+components/webauthn/core/browser",
   "+components/webdata/common",

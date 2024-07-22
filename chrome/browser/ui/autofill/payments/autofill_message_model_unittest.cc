@@ -7,7 +7,7 @@
 #include <string>
 
 #include "chrome/browser/android/resource_mapper.h"
-#include "components/autofill/core/browser/ui/payments/save_card_and_virtual_card_enroll_confirmation_ui_params.h"
+#include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 #include "components/grit/components_scaled_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,8 +28,8 @@ class AutofillMessageModelTest : public testing::Test {
 };
 
 TEST_F(AutofillMessageModelTest, VerifySaveCardFailureAttributes) {
-  SaveCardAndVirtualCardEnrollConfirmationUiParams ui_params =
-      SaveCardAndVirtualCardEnrollConfirmationUiParams::
+  SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
+      SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
           CreateForSaveCardFailure();
 
   std::unique_ptr<AutofillMessageModel> message_model =
@@ -50,8 +50,8 @@ TEST_F(AutofillMessageModelTest, VerifySaveCardFailureAttributes) {
 
 TEST_F(AutofillMessageModelTest, VerifyVirtualCardEnrollFailureAttributes) {
   std::u16string card_label = u"Visa ****1234";
-  SaveCardAndVirtualCardEnrollConfirmationUiParams ui_params =
-      SaveCardAndVirtualCardEnrollConfirmationUiParams::
+  SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
+      SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
           CreateForVirtualCardFailure(card_label);
 
   std::unique_ptr<AutofillMessageModel> message_model =

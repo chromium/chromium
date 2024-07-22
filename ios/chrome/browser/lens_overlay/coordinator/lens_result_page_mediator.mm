@@ -10,6 +10,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_result_page_web_state_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -19,6 +20,7 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_delegate_bridge.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
@@ -35,6 +37,7 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
 }  // namespace
 
 @interface LensResultPageMediator () <CRWWebStateDelegate,
+                                      CRWWebStateObserver,
                                       CRWWebStatePolicyDecider>
 
 @end
@@ -50,6 +53,8 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   BOOL _isIncognito;
   /// Web state delegate.
   std::unique_ptr<web::WebStateDelegateBridge> _webStateDelegateBridge;
+  /// Bridges C++ WebStateObserver methods to this mediator.
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
 }
 
 - (instancetype)
@@ -58,14 +63,12 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
                 isIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
-    _webState = web::WebState::Create(params);
     _browserWebStateDelegate = browserWebStateDelegate;
     _webStateDelegateBridge =
         std::make_unique<web::WebStateDelegateBridge>(self);
-    _webState->SetDelegate(_webStateDelegateBridge.get());
-    AttachTabHelpers(_webState.get(), TabHelperFilter::kBottomSheet);
-    _policyDeciderBridge = std::make_unique<web::WebStatePolicyDeciderBridge>(
-        _webState.get(), self);
+    _webStateObserverBridge =
+        std::make_unique<web::WebStateObserverBridge>(self);
+    [self attachWebState:web::WebState::Create(params)];
     _isIncognito = isIncognito;
   }
   return self;
@@ -76,12 +79,22 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   CHECK(_webState, kLensOverlayNotFatalUntil);
   _webState->SetWebUsageEnabled(true);
   [self.consumer setWebView:_webState->GetView()];
+  [self updateBackgroundColor];
 }
 
 - (void)disconnect {
   _policyDeciderBridge.reset();
+  _webState->RemoveObserver(_webStateObserverBridge.get());
   _webState.reset();
+  _webStateObserverBridge.reset();
   _webStateDelegateBridge.reset();
+}
+
+- (void)dealloc {
+  if (_webState) {
+    _webState->RemoveObserver(_webStateObserverBridge.get());
+    _webStateObserverBridge.reset();
+  }
 }
 
 #pragma mark - LensOverlayResultConsumer
@@ -112,6 +125,17 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   } else {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
+}
+
+#pragma mark - CRWWebStateObserver
+
+- (void)webState:(web::WebState*)webState
+    didFinishNavigation:(web::NavigationContext*)navigationContext {
+  [self updateBackgroundColor];
+}
+
+- (void)webStateDidChangeUnderPageBackgroundColor:(web::WebState*)webState {
+  [self updateBackgroundColor];
 }
 
 #pragma mark - CRWWebStateDelegate
@@ -181,6 +205,49 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
 - (id<CRWResponderInputView>)webStateInputViewProvider:
     (web::WebState*)webState {
   return _browserWebStateDelegate->GetResponderInputView(webState);
+}
+
+#pragma mark - Private
+
+/// Detaches and returns the current web state.
+- (std::unique_ptr<web::WebState>)detachWebState {
+  CHECK(_webState, kLensOverlayNotFatalUntil);
+  _policyDeciderBridge.reset();
+  _webState->RemoveObserver(_webStateObserverBridge.get());
+  _webState->SetDelegate(nullptr);
+  return std::move(_webState);
+}
+
+/// Attaches `webState` to the mediator.
+- (void)attachWebState:(std::unique_ptr<web::WebState>)webState {
+  /// Detach the current web state before attaching a new one.
+  CHECK(!_webState, kLensOverlayNotFatalUntil);
+  CHECK(!_policyDeciderBridge, kLensOverlayNotFatalUntil);
+  _webState = std::move(webState);
+  _webState->SetDelegate(_webStateDelegateBridge.get());
+  _webState->AddObserver(_webStateObserverBridge.get());
+  _policyDeciderBridge =
+      std::make_unique<web::WebStatePolicyDeciderBridge>(_webState.get(), self);
+  AttachTabHelpers(_webState.get(), TabHelperFilter::kBottomSheet);
+}
+
+/// Updates the consumer's background color.
+- (void)updateBackgroundColor {
+  UIColor* backgroundColor = _webState->GetUnderPageBackgroundColor();
+  if (backgroundColor) {
+    [self.consumer setBackgroundColor:backgroundColor];
+  }
+}
+
+#pragma mark - CRWWebStateObserver
+
+- (void)webStateDestroyed:(web::WebState*)webState {
+  if (_webState) {
+    _webState->RemoveObserver(_webStateObserverBridge.get());
+    _webStateObserverBridge.reset();
+  }
+
+  [self.webStateDelegate lensResultPageWebStateDestroyed];
 }
 
 @end

@@ -1633,6 +1633,11 @@ enum class ToolbarKind {
 
   engagementTracker->Dismissed(feature);
   _contextualPanelEntrypointHelpPresenter = nil;
+
+  if (IPHDismissalReasonType == IPHDismissalReasonType::kTappedAnchorView ||
+      IPHDismissalReasonType == IPHDismissalReasonType::kTappedIPH) {
+    [self openContextualSheet];
+  }
 }
 
 #pragma mark - ActivityServiceCommands

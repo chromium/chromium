@@ -4270,6 +4270,8 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
     }
   } else if (attr_name == html_names::kIdAttr) {
     DeferTreeUpdate(TreeUpdateReason::kIdChanged, element);
+  } else if (attr_name == html_names::kClassAttr) {
+    MarkElementDirty(element);  // Reserialize the class.
   } else if (attr_name == html_names::kTabindexAttr) {
     MarkElementDirty(element);
   } else if (attr_name == html_names::kValueAttr) {
@@ -4288,14 +4290,6 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
     ChildrenChanged(element);
   } else if (attr_name == html_names::kHrefAttr) {
     DeferTreeUpdate(TreeUpdateReason::kRoleMaybeChangedFromHref, element);
-  } else if (attr_name == html_names::kLangAttr) {
-    MarkElementDirty(element);
-    // ATs may look at the language of the document as a whole on the root web
-    // area. Since the root's language can come from the <html> element's
-    // language, if the language changes on <html>, we need to update the root.
-    if (element == GetDocument().documentElement()) {
-      MarkAXObjectDirty(Root());
-    }
   }
 }
 

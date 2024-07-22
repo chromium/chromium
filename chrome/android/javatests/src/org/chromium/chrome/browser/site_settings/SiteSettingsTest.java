@@ -1351,34 +1351,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures({ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_PAGE_ROLLBACK_NOTICE})
-    public void testOnlyExpectedPreferencesThirdPartyCookiesWhenUserOffboarded() {
-        mFakeTrackingProtectionBridge.setIsOffboarded(true);
-
-        testExpectedPreferences(
-                SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
-                new String[] {
-                    "card_preference", "info_text", "tri_state_cookie_toggle", "add_exception"
-                },
-                new String[] {"card_preference", "info_text", "tri_state_cookie_toggle"});
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures({ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_PAGE_ROLLBACK_NOTICE})
-    public void testOnlyExpectedPreferencesThirdPartyCookiesWhenUserNotOffboarded() {
-        mFakeTrackingProtectionBridge.setIsOffboarded(false);
-
-        testExpectedPreferences(
-                SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
-                new String[] {"info_text", "tri_state_cookie_toggle", "add_exception"},
-                new String[] {"info_text", "tri_state_cookie_toggle"});
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesSiteData() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.SITE_DATA,
@@ -2730,18 +2702,6 @@ public class SiteSettingsTest {
         createCookieExceptions();
         renderCategoryPage(
                 SiteSettingsCategory.Type.THIRD_PARTY_COOKIES, "site_settings_cookies_page_fps");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_PAGE_ROLLBACK_NOTICE})
-    public void testRenderThirdPartyCookiesPageWithOffboarderdUser() throws Exception {
-        mFakeTrackingProtectionBridge.setIsOffboarded(true);
-
-        renderCategoryPage(
-                SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
-                "site_settings_third_party_cookies_page_offboarded_user");
     }
 
     @Test

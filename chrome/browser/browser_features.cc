@@ -120,7 +120,7 @@ BASE_FEATURE(kDevToolsVeLogging,
              base::FEATURE_ENABLED_BY_DEFAULT);
 // Run VE logging in a test mode
 const base::FeatureParam<bool> kDevToolsVeLoggingTesting{
-    &kDevToolsConsoleInsights, "testing", /*default_value=*/false};
+    &kDevToolsVeLogging, "testing", /*default_value=*/false};
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables being able to zoom a web page by double tapping in Chrome OS tablet

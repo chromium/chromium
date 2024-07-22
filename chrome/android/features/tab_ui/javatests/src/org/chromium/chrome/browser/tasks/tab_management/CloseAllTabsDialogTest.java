@@ -9,12 +9,15 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.espresso.matcher.ViewMatchers;
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.LargeTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,7 +30,11 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.TestAnimations.EnableAnimations;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
@@ -65,12 +72,13 @@ public class CloseAllTabsDialogTest {
 
     /** Tests that close all tabs works after modal dialog. */
     @Test
-    @SmallTest
+    @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testCloseAllTabs() {
         TabModelSelector selector =
                 mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
 
+        if (mIsIncognito) mActivityTestRule.newIncognitoTabFromMenu();
         navigateToCloseAllTabsDialog(selector);
         onViewWaiting(withId(org.chromium.chrome.test.R.id.positive_button), true).perform(click());
 
@@ -82,12 +90,13 @@ public class CloseAllTabsDialogTest {
 
     /** Tests that close all tabs stops if dismissing modal dialog. */
     @Test
-    @SmallTest
+    @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testCancelCloseAllTabs() {
         TabModelSelector selector =
                 mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
 
+        if (mIsIncognito) mActivityTestRule.newIncognitoTabFromMenu();
         navigateToCloseAllTabsDialog(selector);
 
         onViewWaiting(withId(org.chromium.chrome.test.R.id.negative_button), true).perform(click());
@@ -98,11 +107,34 @@ public class CloseAllTabsDialogTest {
                 });
     }
 
-    private void navigateToCloseAllTabsDialog(TabModelSelector selector) {
-        // Create incognito tab if in incognito version.
-        if (mIsIncognito) mActivityTestRule.newIncognitoTabFromMenu();
+    /**
+     * Tests the custom close all tabs animation will run and close tabs. This test does not test
+     * the actual animation logic beyond verifying it runs and does not crash as testing the actual
+     * animation data is not possible from here.
+     */
+    @Test
+    @LargeTest
+    @EnableAnimations
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @EnableFeatures({ChromeFeatureList.GTS_CLOSE_TAB_ANIMATION + "<Study"})
+    @CommandLineFlags.Add({
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:close_all_custom_animation/true"
+    })
+    public void testCloseAllTabs_CustomAnimation() {
+        TabModelSelector selector =
+                mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
 
-        assertEquals(1, selector.getModel(mIsIncognito).getCount());
+        TabUiTestHelper.createTabs(mActivityTestRule.getActivity(), mIsIncognito, 8);
+        navigateToCloseAllTabsDialog(selector);
+        onViewWaiting(withId(org.chromium.chrome.test.R.id.positive_button), true).perform(click());
+
+        CriteriaHelper.pollUiThread(() -> 0 == selector.getModel(mIsIncognito).getCount());
+    }
+
+    private void navigateToCloseAllTabsDialog(TabModelSelector selector) {
+
+        assertThat(selector.getModel(mIsIncognito).getCount(), greaterThanOrEqualTo(1));
 
         // Open the AppMenu in the Tab Switcher and ensure it shows.
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());

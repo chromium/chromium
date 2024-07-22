@@ -799,21 +799,6 @@ void CanvasResourceSharedImage::OnMemoryDump(
 // ExternalCanvasResource
 //==============================================================================
 scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
-    const viz::TransferableResource& transferable_resource,
-    viz::ReleaseCallback release_callback,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<CanvasResourceProvider> provider,
-    cc::PaintFlags::FilterQuality filter_quality,
-    bool is_origin_top_left) {
-  TRACE_EVENT0("blink", "ExternalCanvasResource::Create");
-  auto resource = AdoptRef(new ExternalCanvasResource(
-      /*client_si=*/nullptr, transferable_resource, std::move(release_callback),
-      std::move(context_provider_wrapper), std::move(provider), filter_quality,
-      is_origin_top_left));
-  return resource->IsValid() ? resource : nullptr;
-}
-
-scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
     scoped_refptr<gpu::ClientSharedImage> client_si,
     const viz::TransferableResource& transferable_resource,
     viz::ReleaseCallback release_callback,
@@ -856,7 +841,7 @@ bool ExternalCanvasResource::IsValid() const {
   // of origin to access the resource. In that case we will find out
   // whether the resource was dropped later, when we attempt to access the
   // mailbox.
-  return (is_cross_thread() || context_provider_wrapper_) && HasGpuMailbox();
+  return is_cross_thread() || context_provider_wrapper_;
 }
 
 void ExternalCanvasResource::TakeSkImage(sk_sp<SkImage> image) {
@@ -885,10 +870,6 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
       std::move(release_callback),
       /*supports_display_compositing=*/true,
       transferable_resource_.is_overlay_candidate);
-}
-
-bool ExternalCanvasResource::HasGpuMailbox() const {
-  return !transferable_resource_.is_empty();
 }
 
 const gpu::SyncToken
@@ -957,9 +938,8 @@ ExternalCanvasResource::ExternalCanvasResource(
       transferable_resource_(transferable_resource),
       release_callback_(std::move(out_callback)),
       is_origin_top_left_(is_origin_top_left) {
-  if (client_si_) {
-    CHECK(client_si_->mailbox() == transferable_resource_.mailbox());
-  }
+  CHECK(client_si_);
+  CHECK(client_si_->mailbox() == transferable_resource_.mailbox());
   DCHECK(!release_callback_ || transferable_resource_.sync_token().HasData());
 }
 

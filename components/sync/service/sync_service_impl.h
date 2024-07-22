@@ -380,6 +380,9 @@ class SyncServiceImpl : public SyncService,
   // passphrase type.
   void RegisterTrustedVaultSyntheticFieldTrialsIfNecessary();
 
+  // Returns the types that have a non-null ModelTypeLocalDataBatchUploader.
+  ModelTypeSet GetModelTypesWithLocalDataBatchUploader() const;
+
   // This profile's SyncClient, which abstracts away non-Sync dependencies and
   // the Sync API component factory.
   const std::unique_ptr<SyncClient> sync_client_;

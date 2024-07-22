@@ -412,11 +412,22 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     public void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
         @Nullable
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
-        if (coordinator == null) {
+        if (coordinator == null || getTabListMode() != TabListMode.GRID) {
             onAnimationEnd.run();
             return;
         }
         coordinator.showQuickDeleteAnimation(onAnimationEnd, tabs);
+    }
+
+    @Override
+    public void showCloseAllTabsAnimation(Runnable onAnimationEnd) {
+        @Nullable
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null || getTabListMode() != TabListMode.GRID) {
+            onAnimationEnd.run();
+        } else {
+            coordinator.showCloseAllTabsAnimation(onAnimationEnd);
+        }
     }
 
     /**

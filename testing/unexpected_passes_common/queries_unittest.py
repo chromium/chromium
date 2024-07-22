@@ -216,8 +216,9 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
       self._querier.FillExpectationMapForBuilders(
           data_types.TestExpectationMap({}), builders_to_fill)
 
-  def testValidResults(self) -> None:
-    """Tests functionality when valid results are returned by the query."""
+  def _runValidResultsTest(self, keep_unmatched_results: bool) -> None:
+    self._querier = uu.CreateGenericQuerier(
+        keep_unmatched_results=keep_unmatched_results)
 
     public_results = [
         uu.FakeQueryResult(builder_name='matched_builder',
@@ -318,16 +319,27 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
         },
     }
     self.assertEqual(expectation_map, expected_expectation_map)
-    self.assertEqual(
-        unmatched_results, {
-            'chromium/ci:unmatched_builder': [
-                data_types.Result('bar', [], 'Pass', 'step_name', 'build_id'),
-            ],
-            'chrome/ci:unmatched_internal': [
-                data_types.Result('bar', [], 'Pass', 'step_name_internal',
-                                  'build_id'),
-            ],
-        })
+    if keep_unmatched_results:
+      self.assertEqual(
+          unmatched_results, {
+              'chromium/ci:unmatched_builder': [
+                  data_types.Result('bar', [], 'Pass', 'step_name', 'build_id'),
+              ],
+              'chrome/ci:unmatched_internal': [
+                  data_types.Result('bar', [], 'Pass', 'step_name_internal',
+                                    'build_id'),
+              ],
+          })
+    else:
+      self.assertEqual(unmatched_results, {})
+
+  def testValidResultsKeepUnmatched(self) -> None:
+    """Tests behavior w/ valid results and keeping unmatched results."""
+    self._runValidResultsTest(True)
+
+  def testValidResultsDoNotKeepUnmatched(self) -> None:
+    """Tests behavior w/ valid results and not keeping unmatched results."""
+    self._runValidResultsTest(False)
 
 
 class ProcessRowsForBuilderUnittest(unittest.TestCase):

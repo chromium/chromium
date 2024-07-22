@@ -36,6 +36,15 @@ public class HubFieldTrialTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON})
+    public void testUseAlternativeFabColor() {
+        assertFalse(HubFieldTrial.useAlternativeFabColor());
+        HubFieldTrial.ALTERNATIVE_FAB_COLOR.setForTesting(true);
+        assertTrue(HubFieldTrial.useAlternativeFabColor());
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures({ChromeFeatureList.ANDROID_HUB_V2})
     public void testHubV2Enabled() {
         assertTrue(HubFieldTrial.isHubV2Enabled());

@@ -70,6 +70,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final TabListOnScrollListener mTabListOnScrollListener = new TabListOnScrollListener();
+    private final BottomSheetController mBottomSheetController;
     private ObservableSupplierImpl<Boolean> mShowingOrAnimationSupplier =
             new ObservableSupplierImpl<>(false);
     private TabContentManager mTabContentManager;
@@ -142,6 +143,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             } else {
                 mSnackbarManager = null;
             }
+            mBottomSheetController = bottomSheetController;
 
             if (isDataSharingAndroidEnabled) {
                 mSharedImageTilesCoordinator = new SharedImageTilesCoordinator(activity);
@@ -326,6 +328,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             mode,
                             /* displayGroups= */ false,
                             mSnackbarManager,
+                            mBottomSheetController,
                             TabProperties.TabActionState.SELECTABLE,
                             /* gridCardOnClickListenerProvider= */ null);
         }

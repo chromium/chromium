@@ -1,0 +1,204 @@
+<style>
+  :host {
+    --google-grey-100: rgb(241, 243, 244);
+    --google-grey-900: rgb(var(--google-grey-900-rgb));
+    --google-red-700: rgb(197, 34, 31);
+
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --input-background: var(--google-grey-100);
+    --primary-color: var(--google-grey-900);
+    --warning-color: var(--google-red-700);
+  }
+
+  .blurb-container {
+    color: var(--primary-color);
+    font-size: .875rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+  }
+
+  .blurb-warning {
+    color: var(--warning-color);
+    text-transform: uppercase;
+  }
+
+  p {
+    white-space: pre-wrap;
+  }
+
+  div:has(>#manual-enroll-input) {
+    align-items: baseline;
+    display: flex;
+    flex-direction: row;
+  }
+
+  #manual-enroll-input,
+  #filter {
+    flex-grow: 2;
+  }
+
+  div:has(>#filter-status) {
+    display: flex;
+    flex-direction: row-reverse;
+  }
+
+  #manual-enroll-input {
+    background: var(--input-background);
+    padding: 12px;
+  }
+
+  #filter {
+    background: var(--input-background) url(chrome://resources/images/icon_search.svg) no-repeat 8px 50%;
+    padding: 12px 12px 12px 36px;
+    width: 100%;
+  }
+
+  .override {
+    flex-direction: column;
+  }
+
+  .trial-header {
+    align-items: center;
+    display: flex;
+    font-weight: bold;
+  }
+
+  .expand-button {
+    background: var(--input-background) url(chrome://resources/images/icon_expand_more.svg);
+    height: 2em;
+    width: 2em;
+    margin-right: 1em;
+  }
+
+  .trial-row[data-expanded='true'] .expand-button {
+    background: var(--input-background) url(chrome://resources/images/icon_expand_more.svg);
+  }
+
+  .trial-row:not([data-expanded='true']) .expand-button {
+    background: var(--input-background) url(chrome://resources/images/icon_expand_less.svg);
+  }
+
+  #filter,
+  #manual-enroll-input {
+    border: 1px solid transparent;
+    border-radius: 3px;
+    box-sizing: border-box;
+    color: inherit;
+    font-size: .8125rem;
+  }
+
+  .trial-groups {
+    background-color: lightgrey;
+    border: 1px solid;
+    margin-bottom: .5em;
+  }
+
+  .trial-groups :has(input[type=checkbox]:checked) {
+    background-color: lightblue;
+  }
+
+  /* Hide trials if all experiments are filtered out. */
+  .trial-row[data-search-result='no-match'] {
+    display: none;
+  }
+
+  /* If a trial isn't expanded, hide groups not enrolled or overridden. */
+  #field-trial-list:not([data-expand-all='true']) .trial-row:not([data-expanded='true'])
+    .experiment-row:not([data-enrolled='1']):not(:has(input[type=checkbox]:checked)) {
+    display: none;
+  }
+
+  .experiment-row {
+    align-items: baseline;
+    display: flex;
+    padding-left: .5em;
+  }
+
+  .experiment-name {
+    flex-grow: 2;
+    max-width: calc(100% - 6em);
+    overflow-wrap: break-word;
+  }
+
+  .experiment-row[data-enrolled] .experiment-name::after {
+      content: ' (enrolled)';
+      font-weight: bold;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .experiment-row:nth-child(odd) {
+    background-color: #c0c0c0;
+  }
+
+  .experiment-row:nth-child(even) {
+    background-color: #d0d0d0;
+  }
+
+  .experiment-row[data-search-result='match']:nth-child(odd) {
+    background-color: rgb(176, 176, 0);
+  }
+
+  .experiment-row[data-search-result='match']:nth-child(even) {
+    background-color: rgb(192, 192, 0);
+  }
+
+  .experiment-row:nth-child(odd)[data-enrolled],
+  .experiment-row:nth-child(even)[data-enrolled] {
+    background-color: rgb(170, 221, 170);
+  }
+
+  #needs-restart {
+    display: none;
+    background: white;
+    bottom: 0;
+    box-shadow: 0 -2px 2px 0 rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    left: 0;
+    padding: 16px;
+    position: fixed;
+    width: 100%;
+    z-index: 10;
+  }
+
+  :host([data-needs-restart='true']) #needs-restart {
+    display: block;
+  }
+
+  :host([data-needs-restart='true']) #field-trial-list {
+    padding-bottom: 6em;
+  }
+</style>
+<div class="header-box">
+  <form>
+    <div>
+      <input id="filter" placeholder="Search 'MyStudy.Group'" autocomplete="on" name="experiment-filter">
+      <div>
+        <span id="filter-status"></span>
+      </div>
+    </div>
+  </form>
+</div>
+<h1>field-trial-internals</h1>
+<div class="blurb-container">
+  <span class="blurb-warning">Warning: Experimental features ahead!</span>
+  <span>By enabling these features, you could lose browser data or
+    compromise your security or privacy. Enabled features apply to all
+    users of this browser.
+
+    Changes here apply only after restart, and are reverted after 3 restarts. Visit this page again to re-apply.
+  </span>
+</div>
+<div id="field-trial-list"></div>
+<div id="needs-restart">
+  <div class="flex-container">
+    <div class="restart-notice">Your changes will take effect the next time you relaunch Chromium.</div>
+    <div>
+      <button id="restart-button" tabindex="-1">
+        Relaunch
+      </button>
+    </div>
+  </div>
+</div>

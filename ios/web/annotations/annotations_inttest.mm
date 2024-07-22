@@ -592,6 +592,47 @@ TEST_F(AnnotationTextManagerViewportTest, DecorateText) {
             "</body></html>");
 }
 
+// Tests the if the original node is updated, the annotation is restored.
+TEST_F(AnnotationTextManagerViewportTest, UpdateDecoratedText) {
+  LoadHtmlAndExtractText("<html><body>"
+                         "<p>text</p>"
+                         "<p id='annotated'>annotation</p>"
+                         "<p>text</p>"
+                         "</body></html>");
+
+  // Simulate page accessing the DOM, so out of the content world.
+  ExecuteJavaScript(@"var annotated_element = "
+                    @"document.getElementById('annotated').childNodes[0];");
+
+  std::string text = "text "
+                     "annotation "
+                     "text ";
+  EXPECT_EQ(text, observer()->extracted_text());
+
+  // Create annotation.
+  NSString* source = base::SysUTF8ToNSString(text);
+  CreateAndApplyAnnotations(source, @[ @"annotation" ], observer() -> seq_id());
+
+  EXPECT_EQ(observer()->successes(), 1);
+  EXPECT_EQ(observer()->annotations(), 1);
+
+  // Check the resulting html is annotating at the right place.
+  CheckHtml("<html><body>"
+            "<p>text</p>"
+            "<p><chrome_annotation>annotation</chrome_annotation></p>"
+            "<p>text</p>"
+            "</body></html>");
+
+  // Simulate page accessing the DOM, so out of the content world.
+  ExecuteJavaScript(@"annotated_element.textContent = 'ANNOTATION';");
+  // Check the annotation disappeared so that the change is visible.
+  CheckHtml("<html><body>"
+            "<p>text</p>"
+            "<p>ANNOTATION</p>"
+            "<p>text</p>"
+            "</body></html>");
+}
+
 // Tests on no-decoration tags.
 TEST_F(AnnotationTextManagerNoViewportTest, NoDecorateText) {
   LoadHtmlAndExtractText("<html><body>"

@@ -213,6 +213,8 @@ class TabGridViewBinder {
             if (TabProperties.TAB_GROUP_INFO == propertyKey) {
                 ((TabGridView) view).setTabActionButtonDrawable(tabGroupInfo.getIsTabGroup());
             }
+        } else if (TabProperties.VISIBILITY == propertyKey) {
+            view.setVisibility(model.get(TabProperties.VISIBILITY));
         }
     }
 

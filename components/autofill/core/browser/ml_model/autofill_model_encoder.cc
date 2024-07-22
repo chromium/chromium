@@ -72,20 +72,52 @@ AutofillModelEncoder::EncodeForm(const FormStructure& form) const {
 std::array<AutofillModelEncoder::TokenId,
            AutofillModelEncoder::kOutputSequenceLength>
 AutofillModelEncoder::EncodeField(const AutofillField& field) const {
- return EncodeAttribute(field.label());
+  using EncodedAttribute = std::array<TokenId, kAttributeOutputSequenceLength>;
+  std::vector<EncodedAttribute> encoded_attributes = {
+      EncodeAttribute(field.label(), FieldAttributeIdentifier::kLabel),
+      EncodeAttribute(base::UTF8ToUTF16(field.autocomplete_attribute()),
+                      FieldAttributeIdentifier::kAutocomplete),
+      EncodeAttribute(field.placeholder(),
+                      FieldAttributeIdentifier::kPlaceholder),
+  };
+
+  // Concatenate the encoded attributes to one output of length
+  // `kOutputSequenceLength`.
+  std::array<TokenId, kOutputSequenceLength> output;
+  auto it = output.begin();
+  for (EncodedAttribute& encoded_attribute : encoded_attributes) {
+    it = base::ranges::move(encoded_attribute, it);
+  }
+  return output;
 }
 
 std::array<AutofillModelEncoder::TokenId,
            AutofillModelEncoder::kAttributeOutputSequenceLength>
-AutofillModelEncoder::EncodeAttribute(std::u16string_view input) const {
+AutofillModelEncoder::EncodeAttribute(
+    std::u16string_view input,
+    FieldAttributeIdentifier attribute_identifier) const {
+  std::array<AutofillModelEncoder::TokenId,
+             AutofillModelEncoder::kAttributeOutputSequenceLength - 1>
+      tokenized_attribute = TokenizeAttribute(input);
+  std::array<AutofillModelEncoder::TokenId,
+             AutofillModelEncoder::kAttributeOutputSequenceLength>
+      output;
+  output[0] = EncodeAttributeIdentifier(attribute_identifier);
+  base::ranges::move(tokenized_attribute, output.begin() + 1);
+  return output;
+}
+
+std::array<AutofillModelEncoder::TokenId,
+           AutofillModelEncoder::kAttributeOutputSequenceLength - 1>
+AutofillModelEncoder::TokenizeAttribute(std::u16string_view input) const {
   std::u16string standardized_input = base::ToLowerASCII(input);
   base::RemoveChars(standardized_input, kSpecialChars, &standardized_input);
   std::vector<std::u16string> split_string =
-      base::SplitString(standardized_input, u" ", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
+      base::SplitString(standardized_input, kWhitespaceChars,
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   // Padding the output to be of size `kAttributeOutputSequenceLength`.
-  split_string.resize(kAttributeOutputSequenceLength, u"");
-  std::array<TokenId, kAttributeOutputSequenceLength> output;
+  split_string.resize(kAttributeOutputSequenceLength - 1, u"");
+  std::array<TokenId, kAttributeOutputSequenceLength - 1> output;
   base::ranges::transform(
       split_string, output.begin(),
       [&](std::u16string_view token) { return TokenToId(token); });

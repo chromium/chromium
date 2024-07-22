@@ -15,7 +15,6 @@ import org.junit.Assert;
 import org.mockito.Mockito;
 
 import org.chromium.base.Log;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -26,7 +25,6 @@ import org.chromium.components.feature_engagement.Tracker;
  * Custom ActivityTestRule for all instrumentation tests that require a {@link CustomTabActivity}.
  */
 public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabActivity> {
-    protected static final long STARTUP_TIMEOUT_MS = ScalableTimeout.scaleTimeout(5L * 1000);
     protected static final long LONG_TIMEOUT_MS = 10L * 1000;
     private static final String TAG = "CustomTabTestRule";
     private static int sCustomTabId;
@@ -56,10 +54,6 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
         if (hasCustomTabId) return;
 
         intent.putExtra(CustomTabsTestUtils.EXTRA_CUSTOM_TAB_ID, sCustomTabId++);
-    }
-
-    public static int getCustomTabIdFromIntent(Intent intent) {
-        return intent.getIntExtra(CustomTabsTestUtils.EXTRA_CUSTOM_TAB_ID, -1);
     }
 
     @Override

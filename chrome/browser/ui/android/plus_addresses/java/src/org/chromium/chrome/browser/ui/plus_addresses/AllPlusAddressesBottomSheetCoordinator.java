@@ -29,9 +29,29 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 class AllPlusAddressesBottomSheetCoordinator {
     private final AllPlusAddressesBottomSheetMediator mMeditor;
 
-    AllPlusAddressesBottomSheetCoordinator(Context context, BottomSheetController sheetController) {
+    /**
+     * This delegate is called when the AllPlusAddressesBottomSheet is interacted with (e.g.
+     * dismissed or a suggestion was selected).
+     */
+    static interface Delegate {
+        /**
+         * Called when the user taps on one of the plus addresses chips.
+         *
+         * @param plusAddress The main text of the selected chip view.
+         */
+        void onPlusAddressSelected(String plusAddress);
+
+        /**
+         * Called when the user dismisses the AllPlusAddressesBottomSheet or if the bottom sheet
+         * content failed to be shown.
+         */
+        void onDismissed();
+    }
+
+    AllPlusAddressesBottomSheetCoordinator(
+            Context context, BottomSheetController sheetController, Delegate delegate) {
         PropertyModel model = AllPlusAddressesBottomSheetProperties.createDefaultModel();
-        mMeditor = new AllPlusAddressesBottomSheetMediator(model);
+        mMeditor = new AllPlusAddressesBottomSheetMediator(model, delegate);
         AllPlusAddressesBottomSheetView view =
                 new AllPlusAddressesBottomSheetView(context, sheetController);
 

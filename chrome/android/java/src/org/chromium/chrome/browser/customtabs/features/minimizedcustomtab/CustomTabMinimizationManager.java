@@ -41,6 +41,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
+import org.chromium.components.url_formatter.SchemeDisplay;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
@@ -337,10 +340,14 @@ public class CustomTabMinimizationManager
                     DomDistillerUrlUtils.isDistilledPage(tab.getUrl())
                             ? tab.getOriginalUrl()
                             : tab.getUrl();
+            String host =
+                    UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_CRYPTOGRAPHIC);
+            String title =
+                    ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(host) ? "" : tab.getTitle();
             mModel =
                     new PropertyModel.Builder(ALL_KEYS)
-                            .with(TITLE, tab.getTitle())
-                            .with(URL, url.getHost())
+                            .with(TITLE, title)
+                            .with(URL, host)
                             .with(FAVICON, TabFavicon.getBitmap(tab))
                             .build();
         }

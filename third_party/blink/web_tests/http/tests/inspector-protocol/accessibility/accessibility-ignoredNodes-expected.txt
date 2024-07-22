@@ -217,10 +217,6 @@ RootWebArea
                 attribute : aria-label
                 type : attribute
             }
-            [2] : {
-                attribute : title
-                type : attribute
-            }
         ]
         type : computedString
         value : 
@@ -657,11 +653,6 @@ RootWebArea
                     value : span with ARIA label
                 }
             }
-            [2] : {
-                attribute : title
-                superseded : true
-                type : attribute
-            }
         ]
         type : computedString
         value : span with ARIA label
@@ -730,10 +721,6 @@ RootWebArea
             }
             [1] : {
                 attribute : aria-label
-                type : attribute
-            }
-            [2] : {
-                attribute : title
                 type : attribute
             }
         ]

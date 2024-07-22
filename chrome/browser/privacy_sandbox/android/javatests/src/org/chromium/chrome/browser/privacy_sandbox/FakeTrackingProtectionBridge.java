@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 public class FakeTrackingProtectionBridge implements TrackingProtectionBridge.Natives {
     private Integer mLastNoticeAction;
     private boolean mNoticeShown;
-    private boolean mIsOffboarded;
 
     private @NoticeType int mNoticeType;
 
@@ -32,11 +31,6 @@ public class FakeTrackingProtectionBridge implements TrackingProtectionBridge.Na
     }
 
     @Override
-    public boolean isOffboarded(Profile profile) {
-        return mIsOffboarded;
-    }
-
-    @Override
     public boolean shouldRunUILogic(@JniType("Profile*") Profile profile, int surface) {
         return true;
     }
@@ -51,9 +45,5 @@ public class FakeTrackingProtectionBridge implements TrackingProtectionBridge.Na
 
     public Integer getLastNoticeAction() {
         return mLastNoticeAction;
-    }
-
-    public void setIsOffboarded(boolean isOffboarded) {
-        mIsOffboarded = isOffboarded;
     }
 }

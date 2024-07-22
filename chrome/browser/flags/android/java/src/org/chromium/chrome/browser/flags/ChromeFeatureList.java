@@ -309,8 +309,6 @@ public abstract class ChromeFeatureList {
     public static final String ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS =
             "EnablePasswordsAccountStorageForNonSyncingUsers";
     public static final String EXPERIMENTS_FOR_AGSA = "ExperimentsForAgsa";
-    public static final String FEDCM_BUTTON_MODE_UNIFIED_ACCOUNT_CHOOSER =
-            "FedCmButtonModeUnifiedAccountChooser";
     public static final String FEED_CONTAINMENT = "FeedContainment";
     public static final String FEED_FOLLOW_UI_UPDATE = "FeedFollowUiUpdate";
     public static final String FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE =
@@ -509,8 +507,6 @@ public abstract class ChromeFeatureList {
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
     public static final String TINKER_TANK_BOTTOM_SHEET = "TinkerTankBottomSheet";
     public static final String TOOLBAR_SCROLL_ABLATION = "AndroidToolbarScrollAblation";
-    public static final String TRACKING_PROTECTION_SETTINGS_PAGE_ROLLBACK_NOTICE =
-            "TrackingProtectionSettingsPageRollbackNotice";
     public static final String TRACKING_PROTECTION_FULL_ONBOARDING_MOBILE_TRIGGER =
             "TrackingProtectionFullOnboardingMobileTrigger";
     public static final String TRACKING_PROTECTION_3PCD = "TrackingProtection3pcd";
@@ -877,6 +873,9 @@ public abstract class ChromeFeatureList {
 
     // Mutable*ParamWithSafeDefault instances.
     /* Alphabetical: */
+    public static final MutableBooleanParamWithSafeDefault
+            sGtsCloseTabAnimationCloseAllCustomAnimation =
+                    sGtsCloseTabAnimation.newBooleanParam("close_all_custom_animation", false);
     public static final MutableBooleanParamWithSafeDefault
             sGtsCloseTabAnimationCloseAllQuickDeleteAnimation =
                     sGtsCloseTabAnimation.newBooleanParam(

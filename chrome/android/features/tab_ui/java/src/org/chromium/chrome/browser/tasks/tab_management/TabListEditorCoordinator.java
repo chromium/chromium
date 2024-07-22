@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -260,6 +261,7 @@ class TabListEditorCoordinator {
      * @param mode Modes of showing the list of tabs. Can be used in GRID or STRIP.
      * @param displayGroups Whether groups should be displayed.
      * @param snackbarManager Used to display snackbar messages.
+     * @param bottomSheetController Used to display bottom sheets.
      * @param initialTabActionState The initial TabActionState to use.
      */
     public TabListEditorCoordinator(
@@ -273,6 +275,7 @@ class TabListEditorCoordinator {
             @TabListMode int mode,
             boolean displayGroups,
             SnackbarManager snackbarManager,
+            BottomSheetController bottomSheetController,
             @TabActionState int initialTabActionState,
             @Nullable
                     TabListMediator.GridCardOnClickListenerProvider
@@ -309,6 +312,7 @@ class TabListEditorCoordinator {
                             mSelectionDelegate,
                             displayGroups,
                             snackbarManager,
+                            bottomSheetController,
                             mTabListEditorLayout,
                             mTabActionState);
             mTabListEditorMediator.setNavigationProvider(

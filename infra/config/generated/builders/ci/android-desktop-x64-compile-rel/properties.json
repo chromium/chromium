@@ -48,7 +48,8 @@
           "builder": "android-desktop-x64-compile-rel",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-desktop-x64-compile-rel/targets"
     }
   },
   "$build/reclient": {

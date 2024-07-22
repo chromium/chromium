@@ -85,8 +85,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "net/http/http_util.h"
-#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/device_form_factor.h"
@@ -115,7 +115,7 @@ constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 
 namespace {
 
-using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+using ScoringSignals = ::metrics::OmniboxScoringSignals;
 using ProviderType = AutocompleteProvider::Type;
 
 constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
@@ -136,13 +136,15 @@ void RecordScoringSignalCoverageForProvider(
     const AutocompleteProvider* provider) {
   // Keep consistent:
   // - omnibox_event.proto `ScoringSignals`
+  // - omnibox_scoring_signals.proto `OmniboxScoringSignals`
   // - autocomplete_scoring_model_handler.cc
   //   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
   // - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
   // - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
+  // - omnibox_metrics_provider.cc `GetScoringSignalsForLogging()`
   // - omnibox.mojom `struct Signals`
-  // - omnibox_page_handler.cc `TypeConverter<AutocompleteMatch::ScoringSignals,
-  //   mojom::SignalsPtr>`
+  // - omnibox_page_handler.cc
+  //   `TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr>`
   // - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
   //   AutocompleteMatch::ScoringSignals>`
   // - omnibox_util.ts `signalNames`
@@ -199,6 +201,11 @@ void RecordScoringSignalCoverageForProvider(
        scoring_signals.has_search_suggest_relevance()},
       {"is_search_suggest_entity",
        scoring_signals.has_is_search_suggest_entity()},
+      {"is_verbatim", scoring_signals.has_is_verbatim()},
+      {"is_navsuggest", scoring_signals.has_is_navsuggest()},
+      {"is_search_suggest_tail", scoring_signals.has_is_search_suggest_tail()},
+      {"is_answer_suggest", scoring_signals.has_is_answer_suggest()},
+      {"is_calculator_suggest", scoring_signals.has_is_calculator_suggest()},
   };
 
   const std::string provider_type = provider->GetName();

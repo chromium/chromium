@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service.h"
+#include "chrome/test/base/testing_profile.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -67,7 +68,7 @@ void AddExtension(
     std::string update_url = extension_urls::kChromeWebstoreUpdateURL);
 
 // Adds seven extensions, of which one is installed by an external policy.
-void CreateMockExtensions(Profile* profile);
+void CreateMockExtensions(TestingProfile* profile);
 
 // Deletes all mock extensions that are added by CreateMockExtensions.
 void CleanAllMockExtensions(Profile* profile);

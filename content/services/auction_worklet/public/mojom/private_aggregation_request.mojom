@@ -50,6 +50,13 @@ struct SignalValue {
   int32 offset = 0;
 };
 
+// Designations of events that are automatically triggered by the browser.
+enum ReservedEventType {
+  kReservedAlways,
+  kReservedWin,
+  kReservedLoss
+};
+
 // A bucket which is a 128bit ID or a SignalBucket which tells the browser how
 // to calculate the bucket.
 union ForEventSignalBucket {
@@ -65,6 +72,14 @@ union ForEventSignalValue {
   SignalValue signal_value;
 };
 
+// Type of event after which to trigger a histogram contribution, either a
+// reserved one automatically triggered by the browser, or a custom user-
+// defined one.
+union EventType {
+  ReservedEventType reserved;
+  string non_reserved;
+};
+
 // A for-event contribution contains a bucket, a value, a filtering ID, and an
 // event_type.
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md#reporting-api-informal-specification
@@ -76,7 +91,7 @@ struct AggregatableReportForEventContribution {
   uint64? filtering_id;
 
   // Identifies the event type that triggers sending this report.
-  string event_type;
+  EventType event_type;
 };
 
 // `histogram_contribution` for contributeToHistogram(), and

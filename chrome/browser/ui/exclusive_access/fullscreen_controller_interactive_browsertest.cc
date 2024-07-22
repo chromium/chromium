@@ -945,6 +945,21 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
     const std::string script = R"((() => {
       let w = open(location.href, '', 'popup');
       return new Promise(resolve => {
+        w.onload = async () => {
+          try { await w.document.body.requestFullscreen(); } catch {}
+          resolve(!!w.document.fullscreenElement);
+        };
+      });
+    })())";
+
+    // Without async permission checks, requestFullscreen in load event handlers
+    // races with pertient document settings reaching the renderer.
+    // TODO(crbug.com/40941384): Remove retries with document setting removal.
+    const bool retry = !base::FeatureList::IsEnabled(
+        blink::features::kAutomaticFullscreenPermissionsQuery);
+    const std::string script_with_retry = R"((() => {
+      let w = open(location.href, '', 'popup');
+      return new Promise(resolve => {
         w.onload = () => {
           w.document.onfullscreenchange = () => {
             clearInterval(w.int);
@@ -961,8 +976,9 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
         };
       });
     })())";
+
     Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-    auto result = EvalJs(web_contents_, script);
+    auto result = EvalJs(web_contents_, retry ? script_with_retry : script);
     Browser* popup = popup_observer.Wait();
     if (!popup) {
       return std::make_pair(false, nullptr);

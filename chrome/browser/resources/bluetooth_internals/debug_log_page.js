@@ -68,7 +68,7 @@ export class DebugLogPage extends Page {
   setUpBtmonButton() {
     const elem = /** @type {!HTMLInputElement} */ ($('btmon-start-btn'));
     elem.addEventListener('click', this.onStartBtsnoopClick.bind(this));
-    this.setBtmonButtonText('Start snoop');
+    this.setBtmonButtonText('Start logging');
   }
 
   setBtmonButtonText(text) {
@@ -94,11 +94,11 @@ export class DebugLogPage extends Page {
     const {btsnoop: btsnoopInterface} =
         await this.bluetoothInternalsHandler_.startBtsnoop();
     if (btsnoopInterface != null) {
-      this.setBtmonStatusText('Btmon is running.');
-      this.setBtmonButtonText('Stop snoop');
+      this.setBtmonStatusText('Logging is ongoing.');
+      this.setBtmonButtonText('Stop logging');
       this.btsnoopInterface_ = btsnoopInterface;
     } else {
-      this.setBtmonStatusText('Fail to start btmon.');
+      this.setBtmonStatusText('Fail to start logging.');
       this.btsnoopInterface_ = null;
     }
   }
@@ -111,11 +111,11 @@ export class DebugLogPage extends Page {
     const {success} = await this.btsnoopInterface_.stop();
     if (success) {
       this.setBtmonStatusText(
-          'Btmon is stopped. Log is saved as capture.btsnoop in your Downloads directory.');
+          'Logging is stopped. Log is saved to Downloads as capture.btsnoop.');
     } else {
-      this.setBtmonStatusText('Fail to save snoop log.');
+      this.setBtmonStatusText('Fail to save debug log.');
     }
-    this.setBtmonButtonText('Start snoop');
+    this.setBtmonButtonText('Start logging');
     this.btsnoopInterface_ = null;
   }
 

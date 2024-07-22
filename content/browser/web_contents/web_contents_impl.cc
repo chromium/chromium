@@ -509,10 +509,25 @@ FullscreenContentsSet(BrowserContext* browser_context) {
 bool IsWindowManagementGranted(RenderFrameHost* host) {
   content::PermissionController* permission_controller =
       host->GetBrowserContext()->GetPermissionController();
-  DCHECK(permission_controller);
+  CHECK(permission_controller);
 
   return permission_controller->GetPermissionStatusForCurrentDocument(
              blink::PermissionType::WINDOW_MANAGEMENT, host) ==
+         blink::mojom::PermissionStatus::GRANTED;
+}
+
+// Returns true if `host` has the Automatic Fullscreen permission granted.
+bool IsAutomaticFullscreenGranted(RenderFrameHost* host) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kAutomaticFullscreenPermissionsQuery)) {
+    return false;
+  }
+  content::PermissionController* permission_controller =
+      host->GetBrowserContext()->GetPermissionController();
+  CHECK(permission_controller);
+
+  return permission_controller->GetPermissionStatusForCurrentDocument(
+             blink::PermissionType::AUTOMATIC_FULLSCREEN, host) ==
          blink::mojom::PermissionStatus::GRANTED;
 }
 
@@ -10338,6 +10353,11 @@ bool WebContentsImpl::IsTransientActivationRequiredForHtmlFullscreen() {
   if (last_exit != last_exits->end() &&
       base::TimeTicks::Now() < last_exit->second + kCooldown) {
     return true;
+  }
+
+  // Waive transient activation requirements if Automatic Fullscreen is granted.
+  if (IsAutomaticFullscreenGranted(host)) {
+    return false;
   }
 
   return GetContentClient()

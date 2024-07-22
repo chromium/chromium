@@ -1264,9 +1264,6 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
       if (base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)) {
         url += "&targetType=tab";
       }
-      if (base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
-        url += "&veLogging=true";
-      }
       break;
     case kFrontendWorker:
       url = kWorkerFrontendURL + remote_base;

@@ -59,11 +59,10 @@ class EmulationHandler : public DevToolsDomainHandler,
   void GetOverriddenSensorInformation(
       const Emulation::SensorType& type,
       std::unique_ptr<GetOverriddenSensorInformationCallback>) override;
-  void SetSensorOverrideEnabled(
+  Response SetSensorOverrideEnabled(
       bool enabled,
       const Emulation::SensorType& type,
-      Maybe<Emulation::SensorMetadata> metadata,
-      std::unique_ptr<SetSensorOverrideEnabledCallback>) override;
+      Maybe<Emulation::SensorMetadata> metadata) override;
   void SetSensorOverrideReadings(
       const Emulation::SensorType& type,
       std::unique_ptr<Emulation::SensorReading> reading,

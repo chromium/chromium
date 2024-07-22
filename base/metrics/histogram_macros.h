@@ -229,6 +229,14 @@
   UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
                              base::Seconds(10), 50)
 
+// TODO(crbug.com/353712922): rename and reintroduce this function/macro
+// Warning: There is another UMA logging function with a very similar name
+// which buckets data differently than this one.
+// https://source.chromium.org/chromium/chromium/src/+/main:base/metrics/histogram_functions.h?q=UmaHistogramMediumTimes
+// If you modify your logging to use that other function, you will be making a
+// meaningful semantic change to your data, and should change your histogram's
+// name, as per the guidelines at
+// https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#revising-histograms.
 // Medium timings - up to 3 minutes. Note this starts at 10ms (no good reason,
 // but not worth changing).
 #define UMA_HISTOGRAM_MEDIUM_TIMES(name, sample)                   \

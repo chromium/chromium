@@ -477,6 +477,7 @@
     contents,
     placeholder,
     popoverAttribute,
+    prohibited,
     relatedElement,
     title,
     value
@@ -487,6 +488,7 @@
     attributeExplicitlyEmpty,
     buttonLabel,
     popoverAttribute,
+    prohibitedNameRepair,
     relatedElement,
     rubyAnnotation,
     summary,

@@ -63,6 +63,8 @@ public class CloseAllTabsHelper {
             TabModelSelector tabModelSelector,
             boolean isIncognitoOnly) {
 
+        boolean useCustomAnimation =
+                ChromeFeatureList.sGtsCloseTabAnimationCloseAllCustomAnimation.getValue();
         boolean useQuickDeleteAnimation =
                 ChromeFeatureList.sGtsCloseTabAnimationCloseAllQuickDeleteAnimation.getValue();
 
@@ -72,15 +74,26 @@ public class CloseAllTabsHelper {
         boolean isPaneAndCloseCombinationValid =
                 (isRegularHubPane && !isIncognitoOnly) || isIncognitoHubPane;
         boolean canShowAnimation = hubState.isVisible && isPaneAndCloseCombinationValid;
-        if (canShowAnimation && useQuickDeleteAnimation) {
-            playQuickDeleteAnimation(
-                    regularTabSwitcherSupplier,
-                    incognitoTabSwitcherSupplier,
-                    tabModelSelector,
-                    isIncognitoOnly,
-                    isIncognitoHubPane);
+
+        Runnable onAnimationFinished = () -> closeAllTabs(tabModelSelector, isIncognitoOnly);
+        if (canShowAnimation && (useCustomAnimation || useQuickDeleteAnimation)) {
+            TabSwitcher tabSwitcher =
+                    isIncognitoHubPane
+                            ? incognitoTabSwitcherSupplier.get()
+                            : regularTabSwitcherSupplier.get();
+            assert tabSwitcher != null;
+
+            if (useCustomAnimation) {
+                tabSwitcher.showCloseAllTabsAnimation(onAnimationFinished);
+            } else if (useQuickDeleteAnimation) {
+                TabModel tabModel = tabModelSelector.getModel(isIncognitoHubPane);
+                List<Tab> tabs = TabModelUtils.convertTabListToListOfTabs(tabModel);
+                tabSwitcher.showQuickDeleteAnimation(onAnimationFinished, tabs);
+            } else {
+                assert false : "Not reached";
+            }
         } else {
-            closeAllTabs(tabModelSelector, isIncognitoOnly);
+            onAnimationFinished.run();
         }
     }
 
@@ -109,27 +122,5 @@ public class CloseAllTabsHelper {
             state.currentPaneId = focusedPane.getPaneId();
         }
         return state;
-    }
-
-    private static void playQuickDeleteAnimation(
-            OneshotSupplier<TabSwitcher> regularTabSwitcherSupplier,
-            OneshotSupplier<TabSwitcher> incognitoTabSwitcherSupplier,
-            TabModelSelector tabModelSelector,
-            boolean isIncognitoOnly,
-            boolean isIncognitoHubPane) {
-        Runnable onAnimationFinished = () -> closeAllTabs(tabModelSelector, isIncognitoOnly);
-        playQuickDeleteAnimationInternal(
-                isIncognitoHubPane ? incognitoTabSwitcherSupplier : regularTabSwitcherSupplier,
-                tabModelSelector.getModel(isIncognitoHubPane),
-                onAnimationFinished);
-    }
-
-    private static void playQuickDeleteAnimationInternal(
-            OneshotSupplier<TabSwitcher> tabSwitcherSupplier,
-            TabModel tabModel,
-            Runnable onAnimationFinished) {
-        assert tabSwitcherSupplier.hasValue();
-        List<Tab> tabs = TabModelUtils.convertTabListToListOfTabs(tabModel);
-        tabSwitcherSupplier.get().showQuickDeleteAnimation(onAnimationFinished, tabs);
     }
 }

@@ -28,6 +28,7 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -82,6 +83,12 @@ export class SettingsAutofillSectionElement extends
 
       showAddressDialog_: Boolean,
       showAddressRemoveConfirmationDialog_: Boolean,
+
+      isPlusAddressAddressLevelSettingEnabled_: {
+        type: Boolean,
+        value: () => !!loadTimeData.getString('plusAddressManagementUrl') &&
+            loadTimeData.getBoolean('plusAddressSettingInAddressSection'),
+      },
     };
   }
 
@@ -290,6 +297,11 @@ export class SettingsAutofillSectionElement extends
         this.accountInfo_ && this.accountInfo_.isAutofillSyncToggleAvailable);
     this.autofillManager_.setAutofillSyncToggleEnabled(
         this.$.autofillSyncToggle.checked);
+  }
+
+  private onPlusAddressClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('plusAddressManagementUrl'));
   }
 }
 

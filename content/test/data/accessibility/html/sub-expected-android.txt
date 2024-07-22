@@ -12,6 +12,6 @@ android.webkit.WebView focusable focused
 ++++++android.widget.TextView name=' '
 ++++++android.view.View role_description='insertion'
 ++++++++android.view.View role_description='link' clickable focusable link name='2'
-++++++++++android.widget.TextView name='better'
+++++++++++android.widget.TextView name='2' hint='better'
 ++++++android.widget.TextView name=' '
 ++++android.widget.TextView name='O'

@@ -165,6 +165,10 @@ BASE_FEATURE(kUseFamilyMemberRolePrefsForFeedback,
              "UseFamilyMemberRolePrefsForFeedback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClassifyUrlOnProcessResponseEvent,
+             "ClassifyUrlOnProcessResponseEvent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsKidFriendlyContentFeedAvailable() {
   return base::FeatureList::IsEnabled(kKidFriendlyContentFeed);
 }

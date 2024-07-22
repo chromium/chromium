@@ -70,8 +70,8 @@ using signin::IdentityManager;
 namespace {
 const char kOidcEnrollmentHistogramName[] = "Enterprise.OidcEnrollment";
 
-const ProfileManagementOicdTokens kExampleOidcTokens =
-    ProfileManagementOicdTokens("example_auth_token",
+const ProfileManagementOidcTokens kExampleOidcTokens =
+    ProfileManagementOidcTokens("example_auth_token",
                                 "example_id_token",
                                 /*identity_name=*/u"");
 constexpr char kExampleSubjectIdentifier[] = "example_subject_id";
@@ -424,7 +424,7 @@ class OidcAuthenticationSigninInterceptorTest
   // Test if profile is correctly created (or not created) by the interceptor
   // class with supplied arguments.
   void TestProfileCreationOrSwitch(
-      const ProfileManagementOicdTokens& oidc_tokens,
+      const ProfileManagementOidcTokens& oidc_tokens,
       const std::string& issuer_id,
       const std::string& subject_id,
       bool expect_profile_created,
@@ -558,7 +558,7 @@ class OidcAuthenticationSigninInterceptorTest
               ->GetProfileAttributesStorage()
               .GetProfileAttributesWithPath(added_profile_->GetPath());
 
-      ProfileManagementOicdTokens tokens =
+      ProfileManagementOidcTokens tokens =
           entry->GetProfileManagementOidcTokens();
       EXPECT_EQ(tokens.auth_token, oidc_tokens.auth_token);
       EXPECT_EQ(tokens.auth_token, oidc_tokens.auth_token);
@@ -744,7 +744,7 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, UserDidNotAccept) {
 }
 
 TEST_P(OidcAuthenticationSigninInterceptorTest, InterceptionForSameProfile) {
-  ProfileManagementOicdTokens new_example_token = ProfileManagementOicdTokens(
+  ProfileManagementOidcTokens new_example_token = ProfileManagementOidcTokens(
       "new_auth_token", "new_id_token", /*identity_name=*/u"");
 
   // Fake current TestProfile as an OIDC profile with the same subject ID.

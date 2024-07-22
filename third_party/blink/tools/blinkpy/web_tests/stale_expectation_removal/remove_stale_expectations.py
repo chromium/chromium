@@ -51,7 +51,8 @@ def main() -> int:
     ci_builders = builders_instance.GetCiBuilders()
 
     querier = queries.WebTestBigQueryQuerier(None, args.project,
-                                             args.num_samples)
+                                             args.num_samples,
+                                             args.keep_unmatched_results)
     # Unmatched results are mainly useful for script maintainers, as they don't
     # provide any additional information for the purposes of finding
     # unexpectedly passing tests or unused expectations.

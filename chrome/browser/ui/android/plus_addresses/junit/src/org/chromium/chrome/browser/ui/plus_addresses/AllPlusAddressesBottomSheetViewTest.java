@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PLUS_PROFILES;
 
@@ -64,6 +66,8 @@ public class AllPlusAddressesBottomSheetViewTest {
     @Test
     @SmallTest
     public void testShowAndHideBottomSheet() {
+        when(mBottomSheetController.requestShowContent(eq(mView), eq(true))).thenReturn(true);
+
         mView.setVisible(true);
         verify(mBottomSheetController).requestShowContent(mView, true);
 
@@ -112,13 +116,14 @@ public class AllPlusAddressesBottomSheetViewTest {
     @Test
     @SmallTest
     public void testSetSheetItemListAdapter() {
+        Callback<String> callback = mock(Callback.class);
         PropertyModel model = AllPlusAddressesBottomSheetProperties.createDefaultModel();
         model.get(PLUS_PROFILES)
                 .add(
                         new ListItem(
                                 ItemType.PLUS_PROFILE,
                                 AllPlusAddressesBottomSheetProperties.PlusProfileProperties
-                                        .createPlusProfileModel(PROFILE_1)));
+                                        .createPlusProfileModel(PROFILE_1, callback)));
         mView.setSheetItemListAdapter(
                 AllPlusAddressesBottomSheetCoordinator.createSheetItemListAdapter(
                         model.get(PLUS_PROFILES)));
@@ -133,6 +138,9 @@ public class AllPlusAddressesBottomSheetViewTest {
         ChipView plusAddress = mView.getContentView().findViewById(R.id.plus_address);
         assertNotNull(plusAddress);
         assertEquals(plusAddress.getPrimaryTextView().getText(), PROFILE_1.getPlusAddress());
+
+        plusAddress.performClick();
+        verify(callback).onResult(PROFILE_1.getPlusAddress());
     }
 
     /**

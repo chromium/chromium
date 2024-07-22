@@ -110,7 +110,9 @@ ColoredDialog::ColoredDialog(AcceptCallback accept_callback) {
 }
 
 ColoredDialog::~ColoredDialog() {
-  textfield_->set_controller(nullptr);
+  if (textfield_) {
+    textfield_->set_controller(nullptr);
+  }
 }
 
 bool ColoredDialog::ShouldShowCloseButton() const {

@@ -6366,7 +6366,9 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
               /*bucket=*/mojom::ForEventSignalBucket::NewIdBucket(234),
               /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
               /*filtering_id=*/std::nullopt,
-              /*event_type=*/"reserved.win")),
+              /*event_type=*/
+              mojom::EventType::NewReserved(
+                  mojom::ReservedEventType::kReservedWin))),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
   mojom::PrivateAggregationRequest kExpectedForEventRequest2(
@@ -6377,7 +6379,9 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
                                    /*low=*/0)),
               /*value=*/mojom::ForEventSignalValue::NewIntValue(2),
               /*filtering_id=*/std::nullopt,
-              /*event_type=*/"reserved.win")),
+              /*event_type=*/
+              mojom::EventType::NewReserved(
+                  mojom::ReservedEventType::kReservedWin))),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 
@@ -6583,7 +6587,9 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
                 /*bucket=*/mojom::ForEventSignalBucket::NewIdBucket(234),
                 /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
                 /*filtering_id=*/255,
-                /*event_type=*/"reserved.win")),
+                /*event_type=*/
+                mojom::EventType::NewReserved(
+                    mojom::ReservedEventType::kReservedWin))),
         blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New()));
 
@@ -6627,7 +6633,9 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
               /*bucket=*/mojom::ForEventSignalBucket::NewIdBucket(234),
               /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
               /*filtering_id=*/std::nullopt,
-              /*event_type=*/"reserved.win")),
+              /*event_type=*/
+              mojom::EventType::NewReserved(
+                  mojom::ReservedEventType::kReservedWin))),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 
@@ -6863,7 +6871,9 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
                 /*bucket=*/mojom::ForEventSignalBucket::NewIdBucket(234),
                 /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
                 /*filtering_id=*/255,
-                /*event_type=*/"reserved.win")),
+                /*event_type=*/
+                mojom::EventType::NewReserved(
+                    mojom::ReservedEventType::kReservedWin))),
         blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New()));
 

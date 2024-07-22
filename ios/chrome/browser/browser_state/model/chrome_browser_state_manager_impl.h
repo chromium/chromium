@@ -28,6 +28,7 @@ class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager,
 
   // ChromeBrowserStateManager:
   ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() override;
+  ChromeBrowserState* GetBrowserStateByName(const std::string& name) override;
   ChromeBrowserState* GetBrowserStateByPath(
       const base::FilePath& path) override;
   BrowserStateInfoCache* GetBrowserStateInfoCache() override;
@@ -45,8 +46,8 @@ class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager,
       bool success) override;
 
  private:
-  using ChromeBrowserStatePathMap =
-      std::map<base::FilePath, std::unique_ptr<ChromeBrowserState>>;
+  using ChromeBrowserMap =
+      std::map<std::string, std::unique_ptr<ChromeBrowserState>, std::less<>>;
 
   // Callback invoked with the BrowserState once its initialisation is done.
   // May be invoked with nullptr if loading the BrowserState failed. Will be
@@ -72,7 +73,7 @@ class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager,
   void AddBrowserStateToCache(ChromeBrowserState* browser_state);
 
   // Holds the ChromeBrowserState instances that this instance has created.
-  ChromeBrowserStatePathMap browser_states_;
+  ChromeBrowserMap browser_states_;
   std::unique_ptr<BrowserStateInfoCache> browser_state_info_cache_;
 };
 

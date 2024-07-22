@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/base_export.h"
 #include "base/profiler/register_context.h"
 #include "base/time/time.h"

@@ -101,6 +101,7 @@ public class TabSwitcherPaneUnitTest {
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private View mButton;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private Runnable mRunnable;
 
     @Captor private ArgumentCaptor<ObservableSupplier<Boolean>> mIsAnimatingSupplierCaptor;
 
@@ -827,6 +828,25 @@ public class TabSwitcherPaneUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mUserEducationHelper).requestShowIPH(any());
+    }
+
+    @Test
+    public void testShowCloseAllTabsAnimation() {
+        mTabSwitcherPane.showCloseAllTabsAnimation(mRunnable);
+        verify(mRunnable).run();
+
+        mTabSwitcherPane.initWithNative();
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        assertNotNull(coordinator);
+
+        when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.LIST);
+        mTabSwitcherPane.showCloseAllTabsAnimation(mRunnable);
+        verify(mRunnable, times(2)).run();
+
+        when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.GRID);
+        mTabSwitcherPane.showCloseAllTabsAnimation(mRunnable);
+        verify(coordinator).showCloseAllTabsAnimation(mRunnable);
     }
 
     private void createSelectedTab() {

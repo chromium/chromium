@@ -2563,7 +2563,7 @@ void ImageCapture::OnMojoTakePhoto(ScriptPromiseResolverBase* resolver,
         DOMExceptionCode::kUnknownError, "platform error"));
   } else {
     resolver->DowncastTo<Blob>()->Resolve(
-        Blob::Create(blob->data.data(), blob->data.size(), blob->mime_type));
+        Blob::Create(blob->data, blob->mime_type));
   }
   service_requests_.erase(resolver);
 }

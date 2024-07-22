@@ -495,15 +495,6 @@ bool SuggestionAnswer::Equals(const SuggestionAnswer& answer) const {
          second_line_.Equals(answer.second_line_);
 }
 
-void SuggestionAnswer::AddImageURLsTo(URLs* urls) const {
-  // Note: first_line_.image_url() is not used in practice (so it's ignored).
-  if (image_url_.is_valid()) {
-    urls->push_back(image_url_);
-  } else if (second_line_.image_url().is_valid()) {
-    urls->push_back(second_line_.image_url());
-  }
-}
-
 size_t SuggestionAnswer::EstimateMemoryUsage() const {
   size_t res = 0;
 

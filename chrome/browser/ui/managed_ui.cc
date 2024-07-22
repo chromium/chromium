@@ -387,6 +387,35 @@ std::u16string GetManagementPageSubtitle(Profile* profile) {
 }
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
+std::u16string GetManagementBubbleTitle(Profile* profile) {
+  // TODO(347245819): Use EnterpriseCustomLabel for the managers.
+  std::optional<std::string> device_manager = GetDeviceManagerIdentity();
+
+  switch (GetManagementStringType(profile)) {
+    case BROWSER_MANAGED:
+      return l10n_util::GetStringUTF16(IDS_MANAGEMENT_SUBTITLE);
+    case BROWSER_MANAGED_BY:
+      return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
+                                        base::UTF8ToUTF16(*device_manager));
+    case BROWSER_PROFILE_SAME_MANAGED_BY:
+      return l10n_util::GetStringFUTF16(
+          IDS_MANAGEMENT_SUBTITLE_BROWSER_AND_PROFILE_SAME_MANAGED_BY,
+          base::UTF8ToUTF16(*device_manager));
+    case BROWSER_PROFILE_DIFFERENT_MANAGED_BY:
+    case BROWSER_MANAGED_PROFILE_MANAGED_BY:
+      return l10n_util::GetStringUTF16(IDS_BROWSER_PROFILE_MANAGED);
+    case PROFILE_MANAGED_BY:
+      return l10n_util::GetStringFUTF16(
+          IDS_MANAGEMENT_SUBTITLE_PROFILE_MANAGED_BY,
+          base::UTF8ToUTF16(*GetAccountManagerIdentity(profile)));
+    case SUPERVISED:
+    case NOT_MANAGED:
+      NOTREACHED_NORETURN();
+  }
+}
+#endif
+
 std::optional<std::string> GetDeviceManagerIdentity() {
   if (g_device_manager_for_testing) {
     return g_device_manager_for_testing;

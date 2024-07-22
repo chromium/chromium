@@ -458,6 +458,7 @@ chrome.automation.NameFromType = {
   CONTENTS: 'contents',
   PLACEHOLDER: 'placeholder',
   POPOVER_ATTRIBUTE: 'popoverAttribute',
+  PROHIBITED: 'prohibited',
   RELATED_ELEMENT: 'relatedElement',
   TITLE: 'title',
   VALUE: 'value',

@@ -6,4 +6,5 @@ found in the LICENSE file.
 -->
 <resources>
     <dimen name="hub_button_radius">16dp</dimen>
+    <dimen name="floating_action_button_elevation">3dp</dimen>
 </resources>

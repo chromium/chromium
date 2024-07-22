@@ -274,7 +274,7 @@ public class WebappSplashScreenTest {
     @SmallTest
     @Feature({"Webapps"})
     public void testSplashScreenWithSynchronousLayoutInflation() {
-        WebappActivity.setOverrideCoreCount(2);
+        WebappActivity.setOverrideCoreCountForTesting(2);
 
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());

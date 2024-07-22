@@ -13,11 +13,13 @@ WebContentsInteractionTestUtil::DeepQuery PairingDialog() {
 }
 
 WebContentsInteractionTestUtil::DeepQuery PairingDialogDeviceSelectionPage() {
-  return WebContentsInteractionTestUtil::DeepQuery({{
-      "bluetooth-pairing-dialog",
-      "bluetooth-pairing-ui",
-      "bluetooth-pairing-device-selection-page",
-  }});
+  return PairingDialog() + "bluetooth-pairing-ui" +
+         "bluetooth-pairing-device-selection-page";
+}
+
+WebContentsInteractionTestUtil::DeepQuery PairingDialogEnterCodePage() {
+  return PairingDialog() + "bluetooth-pairing-ui" +
+         "bluetooth-pairing-enter-code-page" + "bluetooth-base-page";
 }
 
 }  // namespace ash::webui::bluetooth

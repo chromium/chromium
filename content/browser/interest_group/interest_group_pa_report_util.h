@@ -22,11 +22,6 @@ namespace content {
 
 class PrivateAggregationManager;
 
-// Reserved event types for aggregatable report's for-event contribution.
-CONTENT_EXPORT extern const char kReservedAlways[];
-CONTENT_EXPORT extern const char kReservedWin[];
-CONTENT_EXPORT extern const char kReservedLoss[];
-
 struct CONTENT_EXPORT PrivateAggregationRequestWithEventType {
   PrivateAggregationRequestWithEventType(
       auction_worklet::mojom::PrivateAggregationRequestPtr request,

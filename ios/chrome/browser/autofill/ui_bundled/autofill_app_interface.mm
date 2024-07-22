@@ -26,6 +26,7 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/credit_card_save_manager_test_observer_bridge.h"
 #import "components/autofill/ios/browser/ios_test_event_waiter.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
@@ -617,6 +618,11 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 
 + (BOOL)isKeyboardAccessoryUpgradeEnabled {
   return IsKeyboardAccessoryUpgradeEnabled();
+}
+
++ (BOOL)isDynamicallyLoadFieldsOnInputEnabled {
+  return base::FeatureList::IsEnabled(
+      kAutofillDynamicallyLoadsFieldsForAddressInput);
 }
 
 #pragma mark - Private

@@ -105,20 +105,6 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
       kConfirmationAlertSecondaryActionAccessibilityIdentifier);
 }
 
-// TODO(crbug.com/349816094): On iOS18 inactive tabs button taps will fail due
-// to an apparent EG2 SwiftUI bug. Use XCUIapplication APIs instead here.
-void EnterInactiveTabsGrid() {
-  if (@available(iOS 18, *)) {
-    XCUIApplication* app = [[XCUIApplication alloc] init];
-    if ([app.buttons[kInactiveTabsButtonAccessibilityIdentifier] exists]) {
-      [app.buttons[kInactiveTabsButtonAccessibilityIdentifier] tap];
-    }
-  } else {
-    [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
-        performAction:grey_tap()];
-  }
-}
-
 }  // namespace
 
 // Tests related to the Inactive Tabs feature.
@@ -383,7 +369,8 @@ void EnterInactiveTabsGrid() {
                  @"Inactive tab count should be 1");
 
   // Enter the Inactive Tabs grid.
-  EnterInactiveTabsGrid();
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+      performAction:grey_tap()];
 
   // Tap on the inactive tab.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(@"Tab1")]
@@ -421,7 +408,8 @@ void EnterInactiveTabsGrid() {
                  @"Inactive tab count should be 1");
 
   // Enter the Inactive Tabs grid.
-  EnterInactiveTabsGrid();
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+      performAction:grey_tap()];
 
   // Long press the tab.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(@"Tab1")]
@@ -461,7 +449,8 @@ void EnterInactiveTabsGrid() {
                  @"Inactive tab count should be 1");
 
   // Enter the Inactive Tabs grid.
-  EnterInactiveTabsGrid();
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+      performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridCloseButtonForCellAtIndex(0)]
@@ -497,7 +486,8 @@ void EnterInactiveTabsGrid() {
                  @"Inactive tab count should be 1");
 
   // Enter the Inactive Tabs grid.
-  EnterInactiveTabsGrid();
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+      performAction:grey_tap()];
 
   // Long press the tab.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(@"Tab1")]
@@ -541,7 +531,8 @@ void EnterInactiveTabsGrid() {
                  @"Inactive tab count should be 1");
 
   // Enter the Inactive Tabs grid.
-  EnterInactiveTabsGrid();
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+      performAction:grey_tap()];
 
   // Long press the tab.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(@"Tab1")]
@@ -588,7 +579,8 @@ void EnterInactiveTabsGrid() {
                  @"Inactive tab count should be 1");
 
   // Enter the Inactive Tabs grid.
-  EnterInactiveTabsGrid();
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+      performAction:grey_tap()];
 
   // Long press the tab.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(@"Tab1")]
@@ -637,7 +629,8 @@ void EnterInactiveTabsGrid() {
                  @"Inactive tab count should be 3");
 
   // Enter the Inactive Tabs grid.
-  EnterInactiveTabsGrid();
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+      performAction:grey_tap()];
 
   // Tab the Close All Inactive button.
   [[EarlGrey selectElementWithMatcher:GetMatcherForCloseAllInactiveButton()]
@@ -701,7 +694,8 @@ void EnterInactiveTabsGrid() {
                  @"Inactive tab count should be 1");
 
   // Enter the Inactive Tabs grid.
-  EnterInactiveTabsGrid();
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+      performAction:grey_tap()];
 
   // Tap on the settings link from the preamble.
   [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsSettingsLink()]
@@ -734,7 +728,8 @@ void EnterInactiveTabsGrid() {
   [ChromeEarlGreyUI openTabGrid];
 
   // Enter the Inactive Tabs grid.
-  EnterInactiveTabsGrid();
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+      performAction:grey_tap()];
 
   // There should be one inactive tab, and the active NTP.
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1,
@@ -804,7 +799,8 @@ void EnterInactiveTabsGrid() {
   [ChromeEarlGreyUI openTabGrid];
 
   // Enter the Inactive Tabs grid.
-  EnterInactiveTabsGrid();
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+      performAction:grey_tap()];
 
   // The user education screen is shown.
   [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsUserEducation()]
@@ -815,7 +811,8 @@ void EnterInactiveTabsGrid() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:testing::NavigationBarBackButton()]
       performAction:grey_tap()];
-  EnterInactiveTabsGrid();
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+      performAction:grey_tap()];
 
   // The user education screen is not shown.
   [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsUserEducation()]
@@ -837,7 +834,8 @@ void EnterInactiveTabsGrid() {
   [ChromeEarlGreyUI openTabGrid];
 
   // Enter the Inactive Tabs grid.
-  EnterInactiveTabsGrid();
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+      performAction:grey_tap()];
 
   // The user education screen is shown.
   [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsUserEducation()]

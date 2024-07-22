@@ -35,8 +35,12 @@ TextfieldExample::TextfieldExample()
     : ExampleBase(GetStringUTF8(IDS_TEXTFIELD_SELECT_LABEL).c_str()) {}
 
 TextfieldExample::~TextfieldExample() {
-  name_->set_controller(nullptr);
-  password_->set_controller(nullptr);
+  if (name_) {
+    name_->set_controller(nullptr);
+  }
+  if (password_) {
+    password_->set_controller(nullptr);
+  }
 }
 
 void TextfieldExample::CreateExampleView(View* container) {

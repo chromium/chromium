@@ -235,7 +235,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEdgeToEdgeBottomChin,
     &kEducationalTipModule,
     &kExperimentsForAgsa,
-    &kFedCmButtonModeUnifiedAccountChooser,
     &kFeedPositionAndroid,
     &kFocusOmniboxInIncognitoTabIntents,
     &kForceListTabSwitcher,
@@ -347,7 +346,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking,
     &privacy_sandbox::kTrackingProtectionFullOnboardingMobileTrigger,
     &privacy_sandbox::kTrackingProtectionSettingsLaunch,
-    &privacy_sandbox::kTrackingProtectionSettingsPageRollbackNotice,
     &privacy_sandbox::kTrackingProtectionUserBypassPwa,
     &privacy_sandbox::kTrackingProtectionUserBypassPwaTrigger,
     &query_tiles::features::kQueryTiles,
@@ -720,10 +718,6 @@ BASE_FEATURE(kEducationalTipModule,
 BASE_FEATURE(kExperimentsForAgsa,
              "ExperimentsForAgsa",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFedCmButtonModeUnifiedAccountChooser,
-             "FedCmButtonModeUnifiedAccountChooser",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFullscreenInsetsApiMigration,
              "FullscreenInsetsApiMigration",

@@ -9,6 +9,7 @@
 #import "base/feature_list.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
@@ -137,8 +138,10 @@ const base::TimeDelta kConfirmationDismissDelay = base::Seconds(1.5);
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
     [_consumer showLoadingState];
+    autofill::LogVirtualCardEnrollmentLoadingViewShown(/*is_shown=*/true);
     return;
   }
+  autofill::LogVirtualCardEnrollmentLoadingViewShown(/*is_shown=*/false);
   [_browserCoordinatorHandler dismissVirtualCardEnrollmentBottomSheet];
 }
 
@@ -159,6 +162,9 @@ const base::TimeDelta kConfirmationDismissDelay = base::Seconds(1.5);
   switch (enrollmentProgress) {
     case autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled: {
       [self.consumer showConfirmationState];
+      autofill::LogVirtualCardEnrollmentConfirmationViewShown(
+          /*is_shown=*/true,
+          /*is_card_enrolled=*/true);
       __weak __typeof__(self) weakSelf = self;
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, base::BindOnce(^{
@@ -171,6 +177,9 @@ const base::TimeDelta kConfirmationDismissDelay = base::Seconds(1.5);
       // Dismiss the virtual card enrollment bottom sheet. Failure messages are
       // expected to be initiated by the IOSChromePaymentsAutofillClient.
       [_browserCoordinatorHandler dismissVirtualCardEnrollmentBottomSheet];
+      autofill::LogVirtualCardEnrollmentConfirmationViewShown(
+          /*is_shown=*/true,
+          /*is_card_enrolled=*/false);
       break;
     case autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kOffered:
       // The enrollment progress is set by IOSChromePaymentsAutofillClient to

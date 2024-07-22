@@ -89,6 +89,10 @@ std::u16string GetDeviceManagedUiWebUILabel();
 std::u16string GetManagementPageSubtitle(Profile* profile);
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
+std::u16string GetManagementBubbleTitle(Profile* profile);
+#endif
+
 // Returns nullopt if the device is not managed, the UTF8-encoded string
 // representation of the manager identity if available and an empty string if
 // the device is managed but the manager is not known or if the policy store

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.ON_DISMISSED;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.ON_QUERY_TEXT_CHANGE;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PLUS_PROFILES;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.QUERY_HINT;
@@ -24,9 +25,12 @@ import java.util.Locale;
 /** Mediator for the all plus addresses bottom sheet UI component. */
 class AllPlusAddressesBottomSheetMediator {
     private final PropertyModel mModel;
+    private final AllPlusAddressesBottomSheetCoordinator.Delegate mDelegate;
     private @Nullable List<PlusProfile> mProfiles;
 
-    AllPlusAddressesBottomSheetMediator(PropertyModel model) {
+    AllPlusAddressesBottomSheetMediator(
+            PropertyModel model, AllPlusAddressesBottomSheetCoordinator.Delegate delegate) {
+        mDelegate = delegate;
         mModel = model;
     }
 
@@ -37,10 +41,13 @@ class AllPlusAddressesBottomSheetMediator {
         mModel.set(WARNING, uiInfo.getWarning());
         mModel.set(QUERY_HINT, uiInfo.getQueryHint());
         mModel.set(ON_QUERY_TEXT_CHANGE, this::onQueryTextChanged);
+        mModel.set(ON_DISMISSED, this::onDismissed);
 
         mModel.get(PLUS_PROFILES).clear();
         for (PlusProfile profile : uiInfo.getPlusProfiles()) {
-            final PropertyModel model = PlusProfileProperties.createPlusProfileModel(profile);
+            final PropertyModel model =
+                    PlusProfileProperties.createPlusProfileModel(
+                            profile, this::onPlusAddressSelected);
             mModel.get(PLUS_PROFILES).add(new ListItem(ItemType.PLUS_PROFILE, model));
         }
         mModel.set(VISIBLE, true);
@@ -52,7 +59,9 @@ class AllPlusAddressesBottomSheetMediator {
         mModel.get(PLUS_PROFILES).clear();
         for (PlusProfile profile : mProfiles) {
             if (!shouldFilter(query.toLowerCase(Locale.ENGLISH), profile)) {
-                final PropertyModel model = PlusProfileProperties.createPlusProfileModel(profile);
+                final PropertyModel model =
+                        PlusProfileProperties.createPlusProfileModel(
+                                profile, this::onPlusAddressSelected);
                 mModel.get(PLUS_PROFILES).add(new ListItem(ItemType.PLUS_PROFILE, model));
             }
         }
@@ -61,5 +70,15 @@ class AllPlusAddressesBottomSheetMediator {
     private boolean shouldFilter(String query, PlusProfile profile) {
         return !profile.getPlusAddress().toLowerCase(Locale.ENGLISH).contains(query)
                 && !profile.getOrigin().toLowerCase(Locale.ENGLISH).contains(query);
+    }
+
+    private void onPlusAddressSelected(String plusAddress) {
+        mModel.set(VISIBLE, false);
+        mDelegate.onPlusAddressSelected(plusAddress);
+    }
+
+    private void onDismissed() {
+        mModel.set(VISIBLE, false);
+        mDelegate.onDismissed();
     }
 }

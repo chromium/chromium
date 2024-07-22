@@ -53,8 +53,8 @@ using policy::ProfileCloudPolicyManager;
 using policy::UserCloudPolicyManager;
 
 namespace {
-const ProfileManagementOicdTokens kExampleOidcTokens =
-    ProfileManagementOicdTokens{"example_auth_token", "example_id_token",
+const ProfileManagementOidcTokens kExampleOidcTokens =
+    ProfileManagementOidcTokens{"example_auth_token", "example_id_token",
                                 u"Test User"};
 
 constexpr char kExampleUserEmail[] = "user@test.com";

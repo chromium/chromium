@@ -837,18 +837,10 @@ BASE_FEATURE(kVaapiVp9SModeHWEncoding,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-// Enables the new V4L2 flat video decoder clients instead of V4L2VideoDecoder.
-// Owners: frkoenig@chromium.org, mcasas@chromium.org
-// Expiry: When flat decoders are supported on all platforms and the legacy
-//         decoders have been deprecated.
-BASE_FEATURE(kV4L2FlatVideoDecoder,
-             "V4L2FlatVideoDecoder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the new V4L2StatefulVideoDecoder instead of V4L2VideoDecoder.
 // Owners: frkoenig@chromium.org, mcasas@chromium.org
-// Expiry: When the |V4L2FlatVideoDecoder| flag handles both stateful and
-//         stateless decoders.
+// Expiry: When the |V4L2FlatVideoDecoder| flag handles stateful decoding on
+// all platforms.
 BASE_FEATURE(kV4L2FlatStatefulVideoDecoder,
              "V4L2FlatStatefulVideoDecoder",
              base::FEATURE_ENABLED_BY_DEFAULT);

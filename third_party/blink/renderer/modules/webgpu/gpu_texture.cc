@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 
+#include "base/containers/heap_array.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_descriptor.h"
@@ -28,7 +29,7 @@ bool ConvertToDawn(const GPUTextureDescriptor* in,
                    wgpu::TextureBindingViewDimensionDescriptor*
                        out_texture_binding_view_dimension,
                    std::string* label,
-                   std::unique_ptr<wgpu::TextureFormat[]>* view_formats,
+                   base::HeapArray<wgpu::TextureFormat>* view_formats,
                    GPUDevice* device,
                    ExceptionState& exception_state) {
   DCHECK(in);
@@ -64,7 +65,7 @@ bool ConvertToDawn(const GPUTextureDescriptor* in,
 
   *view_formats = AsDawnEnum<wgpu::TextureFormat>(in->viewFormats());
   out->viewFormatCount = in->viewFormats().size();
-  out->viewFormats = view_formats->get();
+  out->viewFormats = view_formats->data();
 
   return ConvertToDawn(in->size(), &out->size, device, exception_state);
 }
@@ -148,7 +149,7 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
       texture_binding_view_dimension_desc;
 
   std::string label;
-  std::unique_ptr<wgpu::TextureFormat[]> view_formats;
+  base::HeapArray<wgpu::TextureFormat> view_formats;
   if (!ConvertToDawn(webgpu_desc, &dawn_desc,
                      &texture_binding_view_dimension_desc, &label,
                      &view_formats, device, exception_state)) {

@@ -341,7 +341,9 @@ UIImageView* BrandingImageView() {
     [cell setTrailingButtonImage:CustomSymbolTemplateWithPointSize(
                                      kArrowClockWiseSymbol,
                                      kPlusAddressSheetCellImageSize)
-                   withTintColor:[UIColor colorNamed:kBlueColor]];
+                   withTintColor:[UIColor colorNamed:kBlueColor]
+         accessibilityIdentifier:
+             kPlusAddressRefreshButtonAccessibilityIdentifier];
   }
   cell.textLabel.text = _reservedPlusAddress;
   cell.textLabel.accessibilityIdentifier =

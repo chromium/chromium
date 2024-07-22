@@ -29,8 +29,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::AllOf;
 using testing::ByRef;
 using testing::Eq;
+using testing::Field;
 using testing::StrictMock;
 
 namespace {
@@ -102,6 +104,20 @@ constexpr std::string_view kChannel = "test_channel";
 constexpr std::string_view kScopes[] = {"http://scope1", "http://scope2"};
 constexpr std::string_view kClientId = "client1";
 
+MATCHER_P3(HasMintTokenResult, access_token, granted_scopes, time_to_live, "") {
+  return testing::ExplainMatchResult(
+      AllOf(Field("access_token",
+                  &OAuth2MintTokenFlow::MintTokenResult::access_token,
+                  access_token),
+            Field("granted_scopes",
+                  &OAuth2MintTokenFlow::MintTokenResult::granted_scopes,
+                  granted_scopes),
+            Field("time_to_live",
+                  &OAuth2MintTokenFlow::MintTokenResult::time_to_live,
+                  time_to_live)),
+      arg, result_listener);
+}
+
 static RemoteConsentResolutionData CreateRemoteConsentResolutionData() {
   RemoteConsentResolutionData resolution_data;
   resolution_data.url = GURL("https://test.com/consent?param=value");
@@ -122,17 +138,14 @@ static RemoteConsentResolutionData CreateRemoteConsentResolutionData() {
 
 class MockDelegate : public OAuth2MintTokenFlow::Delegate {
  public:
-  MockDelegate() {}
-  ~MockDelegate() override {}
+  MockDelegate() = default;
+  ~MockDelegate() override = default;
 
-  MOCK_METHOD3(OnMintTokenSuccess,
-               void(const std::string& access_token,
-                    const std::set<std::string>& granted_scopes,
-                    int time_to_live));
+  MOCK_METHOD1(OnMintTokenSuccess,
+               void(const OAuth2MintTokenFlow::MintTokenResult& result));
   MOCK_METHOD1(OnRemoteConsentSuccess,
                void(const RemoteConsentResolutionData& resolution_data));
-  MOCK_METHOD1(OnMintTokenFailure,
-               void(const GoogleServiceAuthError& error));
+  MOCK_METHOD1(OnMintTokenFailure, void(const GoogleServiceAuthError& error));
 };
 
 class MockMintTokenFlow : public OAuth2MintTokenFlow {
@@ -405,44 +418,25 @@ TEST_F(OAuth2MintTokenFlowTest, ParseMintTokenResponse) {
   {  // Access token missing.
     base::Value::Dict json =
         base::test::ParseJsonDict(kTokenResponseNoAccessToken);
-    std::string access_token;
-    std::set<std::string> granted_scopes;
-    int time_to_live;
-    EXPECT_FALSE(OAuth2MintTokenFlow::ParseMintTokenResponse(
-        json, &access_token, &granted_scopes, &time_to_live));
-    EXPECT_TRUE(access_token.empty());
+    EXPECT_EQ(OAuth2MintTokenFlow::ParseMintTokenResponse(json), std::nullopt);
   }
   {  // Granted scopes parameter is there but is empty.
     base::Value::Dict json =
         base::test::ParseJsonDict(kTokenResponseEmptyGrantedScopes);
-    std::string access_token;
-    std::set<std::string> granted_scopes;
-    int time_to_live;
-    EXPECT_FALSE(OAuth2MintTokenFlow::ParseMintTokenResponse(
-        json, &access_token, &granted_scopes, &time_to_live));
-    EXPECT_TRUE(granted_scopes.empty());
+    EXPECT_EQ(OAuth2MintTokenFlow::ParseMintTokenResponse(json), std::nullopt);
   }
   {  // Granted scopes parameter is missing.
     base::Value::Dict json =
         base::test::ParseJsonDict(kTokenResponseNoGrantedScopes);
-    std::string access_token;
-    std::set<std::string> granted_scopes;
-    int time_to_live;
-    EXPECT_FALSE(OAuth2MintTokenFlow::ParseMintTokenResponse(
-        json, &access_token, &granted_scopes, &time_to_live));
-    EXPECT_TRUE(granted_scopes.empty());
+    EXPECT_EQ(OAuth2MintTokenFlow::ParseMintTokenResponse(json), std::nullopt);
   }
   {  // All good.
     base::Value::Dict json = base::test::ParseJsonDict(kValidTokenResponse);
-    std::string access_token;
-    std::set<std::string> granted_scopes;
-    int time_to_live;
-    EXPECT_TRUE(OAuth2MintTokenFlow::ParseMintTokenResponse(
-        json, &access_token, &granted_scopes, &time_to_live));
-    EXPECT_EQ("at1", access_token);
-    EXPECT_EQ(3600, time_to_live);
-    EXPECT_EQ(std::set<std::string>({"http://scope1", "http://scope2"}),
-              granted_scopes);
+    EXPECT_THAT(
+        OAuth2MintTokenFlow::ParseMintTokenResponse(json),
+        testing::Optional(HasMintTokenResult(
+            "at1", std::set<std::string>({"http://scope1", "http://scope2"}),
+            base::Seconds(3600))));
   }
 }
 
@@ -635,7 +629,8 @@ TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_NoAccessToken) {
 TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_GoodToken) {
   CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
   std::set<std::string> granted_scopes = {"http://scope1", "http://scope2"};
-  EXPECT_CALL(delegate_, OnMintTokenSuccess("at1", granted_scopes, 3600));
+  EXPECT_CALL(delegate_, OnMintTokenSuccess(HasMintTokenResult(
+                             "at1", granted_scopes, base::Seconds(3600))));
   ProcessApiCallSuccess(head_200_.get(),
                         std::make_unique<std::string>(kValidTokenResponse));
   histogram_tester_.ExpectUniqueSample(

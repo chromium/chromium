@@ -66,8 +66,7 @@ class CORE_EXPORT Blob : public ScriptWrappable,
                       const HeapVector<Member<V8BlobPart>>& blob_parts,
                       const BlobPropertyBag* options);
 
-  static Blob* Create(const unsigned char* data,
-                      size_t size,
+  static Blob* Create(base::span<const uint8_t> data,
                       const String& content_type);
 
   explicit Blob(scoped_refptr<BlobDataHandle>);

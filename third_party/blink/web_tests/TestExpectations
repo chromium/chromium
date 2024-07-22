@@ -2554,7 +2554,7 @@ crbug.com/1446038 [ Debug Mac13-arm64 ] external/wpt/webaudio/the-audio-api/the-
 
 # ====== Test expectations added to unblock wpt-importer ======
 crbug.com/626703 external/wpt/css/css-ui/outline-auto-width-001.html [ Failure ]
-crbug.com/626703 virtual/fedcm-login-status/external/wpt/fedcm/fedcm-login-status/confirm-idp-login.https.html [ Failure ]
+crbug.com/626703 external/wpt/fedcm/fedcm-login-status/confirm-idp-login.https.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-align/text-align-justify-tabs-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-align/text-align-justify-tabs-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-align/text-align-justify-tabs-003.html [ Failure ]
@@ -2629,7 +2629,6 @@ crbug.com/350122897 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fen
 crbug.com/349903863 [ Mac11-arm64 ] external/wpt/wai-aria/role/listbox-roles.tentative.html [ Failure Timeout ]
 crbug.com/349505546 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/permission-geolocation.https.html [ Timeout ]
 crbug.com/349414749 [ Mac13 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/wide--contain--nonpercent-width-nonpercent-height.html [ Failure ]
-crbug.com/349414735 [ Win11-arm64 ] external/wpt/content-security-policy/inheritance/history-iframe.sub.html [ Timeout ]
 crbug.com/348567826 external/wpt/css/css-images/image-orientation/image-orientation-exif-png-3.html [ Failure ]
 crbug.com/348794702 external/wpt/geolocation/tojson.https.window.html [ Timeout ]
 crbug.com/348474007 [ Win11-arm64 ] external/wpt/compression/decompression-buffersource.tentative.any.sharedworker.html [ Failure Timeout ]
@@ -6275,10 +6274,6 @@ crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.tentat
 # Sheriff 2023-02-07
 crbug.com/1413770 wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.worker.html [ Failure Pass ]
 
-
-# Flaky tests. Disabling while investigating a deflake solution.
-crbug.com/1412866 http/tests/inspector-protocol/tracing/advanced-painting-instrumentation.js [ Failure Pass ]
-
 # Sheriff 2023-02-14
 crbug.com/1417178 [ Linux ] external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/same-document-traversal-cross-document-nav.html [ Failure Pass ]
 
@@ -6664,7 +6659,7 @@ crbug.com/1464614 [ Win11-arm64 ] custom-elements/form-validation-bubble-appeara
 crbug.com/1464614 [ Win11-arm64 ] fast/forms/file/file-appearance-bidi-filenames.html [ Failure ]
 crbug.com/1464614 [ Win11-arm64 ] fast/ruby/nested-ruby.html [ Failure ]
 crbug.com/1464614 [ Win11-arm64 ] external/wpt/fedcm/fedcm-disconnect-errors.https.html [ Failure Pass Timeout ] # Flaky
-crbug.com/1464614 [ Win11-arm64 ] virtual/fedcm-login-status/external/wpt/fedcm/fedcm-login-status/cross-origin-status.https.html [ Failure Pass Timeout ] # Flaky
+crbug.com/1464614 [ Win11-arm64 ] external/wpt/fedcm/fedcm-login-status/cross-origin-status.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/1464614 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/deep-copy-config.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/1464614 [ Win11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomain2.sub.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/1464614 [ Win11-arm64 ] virtual/pna-permission/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Failure Pass Timeout ] # Flaky

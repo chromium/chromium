@@ -14,6 +14,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/background_refresh_constants.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
@@ -28,14 +29,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
-
-namespace {
-// NSUserDefaults key for the last time background refresh was called.
-NSString* const kFeedLastBackgroundRefreshTimestamp =
-    @"FeedLastBackgroundRefreshTimestamp";
-}  // namespace
 
 @implementation FeedAppAgent {
   // Set to YES when the app is foregrounded.

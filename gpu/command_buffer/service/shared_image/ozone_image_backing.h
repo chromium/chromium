@@ -44,7 +44,6 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
   OzoneImageBacking(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
-      gfx::BufferPlane plane,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
@@ -166,7 +165,6 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
   // Indicates if this backing produced a VASurface that may have pending work.
   bool has_pending_va_writes_ = false;
   std::unique_ptr<VaapiDependencies> vaapi_deps_;
-  gfx::BufferPlane plane_;
   uint32_t reads_in_progress_ = 0;
   bool is_write_in_progress_ = false;
   int write_streams_count_;

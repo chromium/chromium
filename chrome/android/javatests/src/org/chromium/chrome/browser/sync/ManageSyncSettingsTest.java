@@ -19,6 +19,8 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -63,6 +65,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -106,6 +109,8 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.sync.LocalDataDescription;
+import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -188,6 +193,7 @@ public class ManageSyncSettingsTest {
     @Mock private GoogleActivityController mGoogleActivityController;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
     @Mock private HistorySyncHelper mHistorySyncHelperMock;
+    @Mock private SyncService mSyncService;
 
     @Before
     public void setUp() {
@@ -965,6 +971,144 @@ public class ManageSyncSettingsTest {
                         });
         mRenderTestRule.render(
                 view, "sign_in_settings_top_avatar_with_non_displayable_email_and_no_name");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync", "RenderTest"})
+    @EnableFeatures({
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+        ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS
+    })
+    public void testSigninSettingsBatchUploadEntryDescriptionPassword() throws Exception {
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        doAnswer(
+                        args -> {
+                            HashMap<Integer, LocalDataDescription> localDataDescription =
+                                    new HashMap<>();
+                            localDataDescription.put(
+                                    ModelType.PASSWORDS,
+                                    new LocalDataDescription(1, new String[] {"example.com"}, 1));
+                            localDataDescription.put(
+                                    ModelType.BOOKMARKS,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            localDataDescription.put(
+                                    ModelType.READING_LIST,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            args.getArgument(1, Callback.class).onResult(localDataDescription);
+                            return null;
+                        })
+                .when(mSyncService)
+                .getLocalDataDescriptions(
+                        eq(
+                                Set.of(
+                                        ModelType.BOOKMARKS,
+                                        ModelType.PASSWORDS,
+                                        ModelType.READING_LIST)),
+                        any(Callback.class));
+
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+
+        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        View view =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return fragment.getActivity().findViewById(R.id.signin_settings_card);
+                        });
+        mRenderTestRule.render(view, "batch_upload_entry_description_passwords");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync", "RenderTest"})
+    @EnableFeatures({
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+        ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS
+    })
+    public void testSigninSettingsBatchUploadEntryDescriptionOther() throws Exception {
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        doAnswer(
+                        args -> {
+                            HashMap<Integer, LocalDataDescription> localDataDescription =
+                                    new HashMap<>();
+                            localDataDescription.put(
+                                    ModelType.PASSWORDS,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            localDataDescription.put(
+                                    ModelType.BOOKMARKS,
+                                    new LocalDataDescription(1, new String[] {"example.com"}, 1));
+                            localDataDescription.put(
+                                    ModelType.READING_LIST,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            args.getArgument(1, Callback.class).onResult(localDataDescription);
+                            return null;
+                        })
+                .when(mSyncService)
+                .getLocalDataDescriptions(
+                        eq(
+                                Set.of(
+                                        ModelType.BOOKMARKS,
+                                        ModelType.PASSWORDS,
+                                        ModelType.READING_LIST)),
+                        any(Callback.class));
+
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+
+        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        View view =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return fragment.getActivity().findViewById(R.id.signin_settings_card);
+                        });
+        mRenderTestRule.render(view, "batch_upload_entry_description_other");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync", "RenderTest"})
+    @EnableFeatures({
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+        ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS
+    })
+    public void testSigninSettingsBatchUploadEntryDescriptionPasswordAndOther() throws Exception {
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        doAnswer(
+                        args -> {
+                            HashMap<Integer, LocalDataDescription> localDataDescription =
+                                    new HashMap<>();
+                            localDataDescription.put(
+                                    ModelType.PASSWORDS,
+                                    new LocalDataDescription(1, new String[] {"example.com"}, 1));
+                            localDataDescription.put(
+                                    ModelType.BOOKMARKS,
+                                    new LocalDataDescription(1, new String[] {"example.com"}, 1));
+                            localDataDescription.put(
+                                    ModelType.READING_LIST,
+                                    new LocalDataDescription(1, new String[] {"example.com"}, 1));
+                            args.getArgument(1, Callback.class).onResult(localDataDescription);
+                            return null;
+                        })
+                .when(mSyncService)
+                .getLocalDataDescriptions(
+                        eq(
+                                Set.of(
+                                        ModelType.BOOKMARKS,
+                                        ModelType.PASSWORDS,
+                                        ModelType.READING_LIST)),
+                        any(Callback.class));
+
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+
+        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+        View view =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return fragment.getActivity().findViewById(R.id.signin_settings_card);
+                        });
+        mRenderTestRule.render(view, "batch_upload_entry_description_password_and_other");
     }
 
     @Test

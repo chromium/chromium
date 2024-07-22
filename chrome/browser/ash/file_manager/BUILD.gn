@@ -195,6 +195,10 @@ static_library("file_manager") {
     "//ui/chromeos/strings",
     "//ui/gfx",
     "//ui/gfx/codec",
+
+    # TODO(b/354679788): Use targets having headers included from
+    # chrome/browser/ash/file_manager/copy_or_move_io_task_impl.cc.
+    "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings",
   ]
 
   allow_circular_includes_from = [

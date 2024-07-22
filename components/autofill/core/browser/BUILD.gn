@@ -551,8 +551,8 @@ static_library("browser") {
     "ui/payments/payments_window_user_consent_dialog_controller.h",
     "ui/payments/payments_window_user_consent_dialog_controller_impl.cc",
     "ui/payments/payments_window_user_consent_dialog_controller_impl.h",
-    "ui/payments/save_card_and_virtual_card_enroll_confirmation_ui_params.cc",
-    "ui/payments/save_card_and_virtual_card_enroll_confirmation_ui_params.h",
+    "ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.cc",
+    "ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h",
     "ui/payments/virtual_card_enroll_bubble_controller.h",
     "ui/payments/virtual_card_enroll_ui_model.cc",
     "ui/payments/virtual_card_enroll_ui_model.h",
@@ -1080,8 +1080,8 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/autofill/merge/output/singlemerge.out",
     "//components/test/data/autofill/merge/output/streetaddress.out",
     "//components/test/data/autofill/merge/output/validation.out",
-    "//components/test/data/autofill/ml_model/autofill_model-br-overfit.tflite",
-    "//components/test/data/autofill/ml_model/br_overfitted_dictionary_test.txt",
+    "//components/test/data/autofill/ml_model/autofill_model-fold-one.tflite",
+    "//components/test/data/autofill/ml_model/autofill_model_metadata.binarypb",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
@@ -1255,7 +1255,7 @@ source_set("unit_tests") {
     "ui/payments/card_unmask_otp_input_dialog_controller_impl_unittest.cc",
     "ui/payments/card_unmask_prompt_controller_impl_unittest.cc",
     "ui/payments/payments_window_user_consent_dialog_controller_impl_unittest.cc",
-    "ui/payments/save_card_and_virtual_card_enroll_confirmation_ui_params_unittest.cc",
+    "ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params_unittest.cc",
     "ui/payments/virtual_card_enroll_ui_model_unittest.cc",
     "ui/region_combobox_model_unittest.cc",
     "validation_unittest.cc",

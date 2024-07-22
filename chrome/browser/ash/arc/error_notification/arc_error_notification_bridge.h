@@ -46,6 +46,8 @@ class ArcErrorNotificationBridge
       mojo::PendingRemote<mojom::ErrorNotificationActionHandler> action_handler,
       SendErrorDetailsCallback callback) override;
 
+  void CloseNotification(const std::string& notification_id);
+
  private:
   std::string GenerateNotificationId(mojom::ErrorType type,
                                      const std::string& app_name);

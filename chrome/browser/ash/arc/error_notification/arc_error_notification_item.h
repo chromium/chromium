@@ -7,6 +7,7 @@
 
 #include "ash/components/arc/mojom/error_notification.mojom.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/arc/error_notification/arc_error_notification_bridge.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -17,11 +18,15 @@ namespace arc {
 class ArcErrorNotificationItem
     : public mojom::ErrorNotificationItem {  // Inherit from mojom interface
  public:
-  static mojo::PendingRemote<mojom::ErrorNotificationItem> Create();
+  static mojo::PendingRemote<mojom::ErrorNotificationItem> Create(
+      base::WeakPtr<ArcErrorNotificationBridge> bridge,
+      const std::string& notification_id);
 
   // mojom::ErrorNotificationHost implementation
   void CloseErrorNotification() override;
 
+  ArcErrorNotificationItem(base::WeakPtr<ArcErrorNotificationBridge> bridge,
+                           const std::string& notification_id);
   ArcErrorNotificationItem(const ArcErrorNotificationItem&) = delete;
   ArcErrorNotificationItem& operator=(const ArcErrorNotificationItem&) = delete;
   ~ArcErrorNotificationItem() override;
@@ -32,6 +37,10 @@ class ArcErrorNotificationItem
   void Bind(mojo::PendingRemote<arc::mojom::ErrorNotificationItem>* remote);
 
   void Close();
+
+  base::WeakPtr<ArcErrorNotificationBridge> bridge_;
+
+  const std::string notification_id_;
 
   mojo::Receiver<arc::mojom::ErrorNotificationItem> receiver_{this};
 

@@ -1307,6 +1307,9 @@ enum NameFrom {
   // the figcaption element in a figure, or another View present in the UI.
   kRelatedElement,
 
+  // Applies to roles that cannot be named as per the ARIA spec.
+  kProhibited,
+
   // The name comes from the title attribute (HTML), the title element (SVG),
   // or a View's tooltip.
   kTitle,
@@ -1348,6 +1351,11 @@ enum DescriptionFrom {
 
   // The description comes from a Ruby annotation.
   kRubyAnnotation,
+
+  // The description contains a name that was prohibited because of the
+  // object's role. Exposing as a description allows screen reader users to
+  // experience the prohibited name as an annotation.
+  kProhibitedNameRepair,
 
   // The description comes from the contents of a summary element.
   // See HTML-AAM's Accessible Name and Description Computation.

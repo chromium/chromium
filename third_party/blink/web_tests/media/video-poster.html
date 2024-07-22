@@ -42,6 +42,12 @@ var posterInfo = [
 posterInfo.forEach(function(poster) {
     async_test(function(t) {
         var video = document.createElement("video");
+
+        video.onerror = t.unreached_func(
+            "Poster errors shouldn't surface on video element");
+        video.onload = t.unreached_func(
+            "Poster load events shouldn't surface on video element");
+
         document.body.appendChild(video);
         if (poster.setSize) {
             video.setAttribute("width", "320");
@@ -51,16 +57,21 @@ posterInfo.forEach(function(poster) {
         }
         if (poster.widthAttr)
             video.width = poster.widthAttr;
+
+        let cycleEventLoop = t.step_func(_=> {
+            setTimeout(t.step_func_done(testPoster), 0);
+        });
         if (poster.url) {
             var image = document.createElement("img");
             image.src = poster.url;
             document.body.appendChild(image);
-            if (image.src.indexOf("bogus") > 0)
-                image.onerror = t.step_func_done(testPoster);
-            else
-                image.onload = t.step_func_done(testPoster);
+            if (image.src.indexOf("bogus") > 0) {
+                image.onerror = t.step_func(cycleEventLoop);
+            } else {
+                image.onload = t.step_func(cycleEventLoop);
+            }
         } else {
-            setTimeout(t.step_func_done(testPoster), 0);
+            cycleEventLoop();
         }
 
         function testPoster() {

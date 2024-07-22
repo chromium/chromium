@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_QUICK_DELETE_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_QUICK_DELETE_CONSUMER_H_
 
+#include "components/browsing_data/core/counters/browsing_data_counter.h"
+
 namespace browsing_data {
 enum class TimePeriod;
 }
@@ -22,6 +24,15 @@ enum class TimePeriod;
 // Sets the boolean on whether the ViewController should show the disclaimer
 // footer string or not.
 - (void)setShouldShowFooter:(BOOL)shouldShowFooter;
+
+// Updates the ViewController with the result of browsing data counter.
+- (void)updateAutofillWithResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result;
+
+// Sets the boolean value for the autofill pref selection.
+- (void)setAutofillSelection:(BOOL)selected;
+
+// TODO(crbug.com/341107834): Add other browsing data type methods here.
 
 @end
 

@@ -16,6 +16,9 @@ NSString* const kPlusAddressSheetNoticeMessageAccessibilityIdentifier =
 NSString* const kPlusAddressLabelAccessibilityIdentifier =
     @"PlusAddressLabelAccessibilityIdentifierAXID";
 
+NSString* const kPlusAddressRefreshButtonAccessibilityIdentifier =
+    @"PlusAddressRefreshButtonAccessibilityIdentifierAXID";
+
 const CGFloat kPlusAddressSheetPrimaryAddressBottomMargin = 20;
 
 const CGFloat kPlusAddressSheetBeforeImageTopMargin = 10;

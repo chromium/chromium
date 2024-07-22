@@ -10,7 +10,6 @@ static_library("browser_sync") {
   sources = [
     "active_devices_provider_impl.cc",
     "active_devices_provider_impl.h",
-    "browser_sync_client.h",
     "common_controller_builder.cc",
     "common_controller_builder.h",
     "signin_confirmation_helper.cc",
@@ -58,6 +57,7 @@ static_library("browser_sync") {
     "//components/sync_sessions",
     "//components/sync_user_events",
     "//components/url_formatter",
+    "//components/variations/service",
     "//components/version_info",
     "//components/version_info:generate_version_info",
     "//components/webauthn/core/browser",

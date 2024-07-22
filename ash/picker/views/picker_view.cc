@@ -156,13 +156,11 @@ PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
   }
 }
 
-// TODO: b/331285414 - Finalize the search field placeholder text.
 std::u16string GetSearchFieldPlaceholderText() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return l10n_util::GetStringUTF16(IDS_PICKER_SEARCH_FIELD_PLACEHOLDER_TEXT);
 #else
-  return l10n_util::GetStringUTF16(
-      IDS_PICKER_ZERO_STATE_SEARCH_FIELD_PLACEHOLDER_TEXT);
+  return u"Placeholder";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 

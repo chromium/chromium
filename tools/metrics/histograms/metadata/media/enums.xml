@@ -1737,6 +1737,14 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="ReactionEffectsGesturesState">
+  <int value="0" label="The platform does not support reaction effects"/>
+  <int value="1" label="Reaction effects supported, but disabled"/>
+  <int value="2"
+      label="Reaction effects enabled, but not triggered by gestures"/>
+  <int value="3" label="Gestures trigger reaction effects"/>
+</enum>
+
 <enum name="RemotingCompatibility">
   <int value="0" label="Compatible"/>
   <int value="1" label="Incompatible, no audio nor video"/>

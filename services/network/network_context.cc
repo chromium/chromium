@@ -1408,15 +1408,15 @@ void NetworkContext::QueueReport(
                       net::ReportingTargetType::kDeveloper);
 }
 
-void NetworkContext::QueueEnterpriseReport(
-    const std::string& type,
-    const std::string& group,
-    const GURL& url,
-    const std::optional<base::UnguessableToken>& reporting_source,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
-    base::Value::Dict body) {
-  QueueReportInternal(type, group, url, reporting_source,
-                      network_anonymization_key, std::move(body),
+void NetworkContext::QueueEnterpriseReport(const std::string& type,
+                                           const std::string& group,
+                                           const GURL& url,
+                                           base::Value::Dict body) {
+  // Enterprise reports don't use a |reporting_source| or
+  // |network_anonymization_key|. Enterprise endpoints are profile-bound and not
+  // document-bound like web developer endpoints.
+  QueueReportInternal(type, group, url, /*reporting_source=*/std::nullopt,
+                      net::NetworkAnonymizationKey(), std::move(body),
                       net::ReportingTargetType::kEnterprise);
 }
 
@@ -1431,7 +1431,9 @@ void NetworkContext::QueueReportInternal(
 #if BUILDFLAG(ENABLE_REPORTING)
   // If |reporting_source| is provided, it must not be empty.
   DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));
-  if (require_network_anonymization_key_) {
+  // Enterprise reports have an empty |network_anonymization_key|.
+  if (target_type == net::ReportingTargetType::kDeveloper &&
+      require_network_anonymization_key_) {
     DCHECK(!network_anonymization_key.IsEmpty());
   }
 

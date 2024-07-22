@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.ON_DISMISSED;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.ON_QUERY_TEXT_CHANGE;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PLUS_PROFILES;
+import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PlusProfileProperties.ON_PLUS_ADDRESS_SELECTED;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PlusProfileProperties.PLUS_PROFILE;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.QUERY_HINT;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.TITLE;
@@ -37,6 +39,8 @@ class AllPlusAddressesBottomSheetViewBinder {
             view.setOnQueryChangedCallback(model.get(ON_QUERY_TEXT_CHANGE));
         } else if (propertyKey == PLUS_PROFILES) {
             // Intentionally empty. The adapter will observe changes to PLUS_PROFILES.
+        } else if (propertyKey == ON_DISMISSED) {
+            view.setOnDismissedCallback(model.get(ON_DISMISSED));
         } else {
             assert false : "Every possible property update needs to be handled!";
         }
@@ -59,6 +63,18 @@ class AllPlusAddressesBottomSheetViewBinder {
             plusAddressChip
                     .getPrimaryTextView()
                     .setContentDescription(plusProfile.getPlusAddress());
+            plusAddressChip.setIcon(
+                    R.drawable.ic_plus_addresses_logo_24dp, /* tintWithTextColor= */ true);
+        } else if (propertyKey == ON_PLUS_ADDRESS_SELECTED) {
+            ChipView plusAddressChip = view.findViewById(R.id.plus_address);
+            plusAddressChip.setOnClickListener(
+                    src ->
+                            model.get(ON_PLUS_ADDRESS_SELECTED)
+                                    .onResult(
+                                            plusAddressChip
+                                                    .getPrimaryTextView()
+                                                    .getText()
+                                                    .toString()));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

@@ -60,12 +60,14 @@ struct NET_EXPORT ReportingEndpointGroupKey {
   }
 
   // The NetworkAnonymizationKey the group is scoped to. Needed to prevent
-  // leaking third party contexts across sites.
+  // leaking third party contexts across sites. This is empty for
+  // enterprise groups.
   NetworkAnonymizationKey network_anonymization_key;
 
   // Source token for the document or worker which configured this endpoint, if
   // this was configured with the Reporting-Endpoints header. For endpoint
-  // groups configured with the Report-To header, this will be nullopt.
+  // groups configured with the Report-To header and enterprise endpoint groups,
+  // this will be nullopt.
   std::optional<base::UnguessableToken> reporting_source;
 
   // Origin that configured this endpoint group.

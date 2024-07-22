@@ -1752,13 +1752,15 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
 void AutocompleteMatch::MergeScoringSignals(const AutocompleteMatch& other) {
   // Keep consistent:
   // - omnibox_event.proto `ScoringSignals`
+  // - omnibox_scoring_signals.proto `OmniboxScoringSignals`
   // - autocomplete_scoring_model_handler.cc
   //   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
   // - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
   // - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
+  // - omnibox_metrics_provider.cc `GetScoringSignalsForLogging()`
   // - omnibox.mojom `struct Signals`
-  // - omnibox_page_handler.cc `TypeConverter<AutocompleteMatch::ScoringSignals,
-  //   mojom::SignalsPtr>`
+  // - omnibox_page_handler.cc
+  //   `TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr>`
   // - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
   //   AutocompleteMatch::ScoringSignals>`
   // - omnibox_util.ts `signalNames`
@@ -1984,6 +1986,39 @@ void AutocompleteMatch::MergeScoringSignals(const AutocompleteMatch& other) {
     scoring_signals->set_is_search_suggest_entity(
         scoring_signals->is_search_suggest_entity() ||
         other.scoring_signals->is_search_suggest_entity());
+  }
+
+  // Take the OR result.
+  if (other.scoring_signals->has_is_verbatim()) {
+    scoring_signals->set_is_verbatim(scoring_signals->is_verbatim() ||
+                                     other.scoring_signals->is_verbatim());
+  }
+
+  // Take the OR result.
+  if (other.scoring_signals->has_is_navsuggest()) {
+    scoring_signals->set_is_navsuggest(scoring_signals->is_navsuggest() ||
+                                       other.scoring_signals->is_navsuggest());
+  }
+
+  // Take the OR result.
+  if (other.scoring_signals->has_is_search_suggest_tail()) {
+    scoring_signals->set_is_search_suggest_tail(
+        scoring_signals->is_search_suggest_tail() ||
+        other.scoring_signals->is_search_suggest_tail());
+  }
+
+  // Take the OR result.
+  if (other.scoring_signals->has_is_answer_suggest()) {
+    scoring_signals->set_is_answer_suggest(
+        scoring_signals->is_answer_suggest() ||
+        other.scoring_signals->is_answer_suggest());
+  }
+
+  // Take the OR result.
+  if (other.scoring_signals->has_is_calculator_suggest()) {
+    scoring_signals->set_is_calculator_suggest(
+        scoring_signals->is_calculator_suggest() ||
+        other.scoring_signals->is_calculator_suggest());
   }
 }
 

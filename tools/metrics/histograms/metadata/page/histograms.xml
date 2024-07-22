@@ -72,6 +72,8 @@ chromium-metrics-reviews@google.com.
 <variants name="NavigationMilestone">
   <variant name="CommitSent"/>
   <variant name="DidCommit"/>
+  <variant name="DOMContentLoaded"/>
+  <variant name="FirstContentfulPaint"/>
   <variant name="FirstRedirectedRequestStart"/>
   <variant name="FirstRedirectResponseLoaderCallback"/>
   <variant name="FirstRedirectResponseStart"/>
@@ -1873,6 +1875,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients{ObservedNavigation}.Leakage.NavigationStartToRendererProcessInit{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
+    units="ms" expires_after="2024-12-08">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time relative to the navigation start that the final renderer process is
+    created for a main frame navigation for {ObservedNavigation} with
+    potentially some suffixes detaling the navigation {BackgroundSuffix},
+    {HiddenSuffix}, {NonSRPSuffix}, and {RTTBucketSuffix}. The metric is emitted
+    when the navigation's commit IPC is just sent out, if the renderer process
+    is created after the navigation started.
+  </summary>
+  <token key="BackgroundSuffix" variants="BackgroundSuffix"/>
+  <token key="HiddenSuffix" variants="HiddenSuffix"/>
+  <token key="NonSRPSuffix" variants="NonSRPSuffix"/>
+  <token key="ObservedNavigation" variants="ObservedNavigation"/>
+  <token key="RTTBucketSuffix" variants="RTTBucketSuffix"/>
+</histogram>
+
+<histogram
     name="PageLoad.Clients{ObservedNavigation}.Leakage.NavigationStartTo{NavigationMilestone}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
     units="ms" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
@@ -1909,6 +1931,25 @@ chromium-metrics-reviews@google.com.
     emitted when the navigation finishes committing or it gets abandoned for the
     first time.
   </summary>
+  <token key="NonSRPSuffix" variants="NonSRPSuffix"/>
+  <token key="ObservedNavigation" variants="ObservedNavigation"/>
+  <token key="RTTBucketSuffix" variants="RTTBucketSuffix"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients{ObservedNavigation}.Leakage.RendererProcessCreatedBeforeNav{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
+    enum="Boolean" expires_after="2024-12-08">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Whether the renderer process for the navigation is already created before
+    the navigation start or not, for a main frame navigation for
+    {ObservedNavigation} with potentially some suffixes detaling the navigation
+    {BackgroundSuffix}, {HiddenSuffix}, {NonSRPSuffix}, and {RTTBucketSuffix}.
+    The metric is emitted when the navigation's commit IPC is just sent out.
+  </summary>
+  <token key="BackgroundSuffix" variants="BackgroundSuffix"/>
+  <token key="HiddenSuffix" variants="HiddenSuffix"/>
   <token key="NonSRPSuffix" variants="NonSRPSuffix"/>
   <token key="ObservedNavigation" variants="ObservedNavigation"/>
   <token key="RTTBucketSuffix" variants="RTTBucketSuffix"/>

@@ -50,6 +50,12 @@ void SyncRecordModelTypeEntitySizeHistogram(ModelType model_type,
 // `WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata`.
 void SyncRecordModelClearedOnceHistogram(ModelType model_type);
 
+// Records the amount of unsynced entities for the given |model_type| upon
+// ModelTypeChangeProcessor::ModelReadyToSync() call.
+void SyncRecordModelTypeNumUnsyncedEntitiesOnModelReady(
+    ModelType model_type,
+    size_t num_unsynced_entities);
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // LINT.IfChange(SyncToSigninMigrationReadingListStep)

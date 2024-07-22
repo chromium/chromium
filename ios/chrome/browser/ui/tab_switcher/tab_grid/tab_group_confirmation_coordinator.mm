@@ -41,6 +41,12 @@
 
 - (void)start {
   CHECK(self.action);
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(deviceOrientationDidChange)
+             name:UIDeviceOrientationDidChangeNotification
+           object:nil];
+
   _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
@@ -78,9 +84,15 @@
   }
 }
 
+- (void)deviceOrientationDidChange {
+  [self dismissActionSheetCoordinator];
+}
+
 // Stops the action sheet coordinator currently showned and nullifies the
 // instance.
 - (void)dismissActionSheetCoordinator {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+
   [_actionSheetCoordinator stop];
   _actionSheetCoordinator = nil;
 }

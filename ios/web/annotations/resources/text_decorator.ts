@@ -58,6 +58,25 @@ class TextDecorator {
   // Unique id used in `decorations` map.
   uniqueId = 0;
 
+  // A mutation observer callback that observed the original nodes.
+  // If an original node is updated, the decoration should be restored.
+  private mutationCallback =
+      (mutationList: MutationRecord[]) => {
+        for (let mutation of mutationList) {
+          let target = mutation.target as TextWithSymbolIndex;
+          if (!target[originalNodeDecorationId]) {
+            continue;
+          }
+          let replacementId = target[originalNodeDecorationId];
+          const liveDecoration = this.decorations.get(replacementId);
+          liveDecoration?.restore();
+        }
+      }
+
+  // A mutation observer callback that observed the original nodes.
+  // If an original node is updated, the decoration should be restored.
+  private mutationObserver = new MutationObserver(this.mutationCallback);
+
   // Decorates a single `textNode` at given `index` in full chunk text.
   private decorateNode(
       run: TextAnnotationList, textNode: TextWithSymbolIndex,
@@ -123,6 +142,9 @@ class TextDecorator {
             textNode, decoration.replacements);
       } else {
         this.decorations.set(decoration.id, decoration);
+        // Observe the original text Node. If the value change, the annotation
+        // should be reverted.
+        this.mutationObserver.observe(textNode, {characterData: true});
         decoration.apply();
       }
     }
@@ -233,6 +255,7 @@ class TextDecorator {
     this.decorations.forEach((decoration) => {
       decoration.restore();
     });
+    this.mutationObserver.disconnect();
     this.decorations.clear();
   }
 

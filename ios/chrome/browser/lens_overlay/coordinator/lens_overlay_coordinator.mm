@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_selection_placeholder_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_result_page_web_state_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -27,7 +28,8 @@
 
 @interface LensOverlayCoordinator () <LensOverlayCommands,
                                       UISheetPresentationControllerDelegate,
-                                      LensOverlayResultConsumer>
+                                      LensOverlayResultConsumer,
+                                      LensResultPageWebStateDelegate>
 @end
 
 @implementation LensOverlayCoordinator {
@@ -324,4 +326,9 @@
 
   return NO;
 }
+
+- (void)lensResultPageWebStateDestroyed {
+  [self stopResultPage];
+}
+
 @end

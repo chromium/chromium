@@ -78,7 +78,7 @@ class OidcAuthenticationSigninInterceptor
   // are valid.
   virtual void MaybeInterceptOidcAuthentication(
       content::WebContents* intercepted_contents,
-      const ProfileManagementOicdTokens& oidc_tokens,
+      const ProfileManagementOidcTokens& oidc_tokens,
       const std::string& issuer_id,
       const std::string& subject_id,
       OidcInterceptionCallback oidc_callback);
@@ -136,7 +136,7 @@ class OidcAuthenticationSigninInterceptor
 
   // Members below are related to the interception in progress.
   base::WeakPtr<content::WebContents> web_contents_;
-  ProfileManagementOicdTokens oidc_tokens_;
+  ProfileManagementOidcTokens oidc_tokens_;
   std::string dm_token_;
   std::string client_id_;
   std::string user_display_name_;

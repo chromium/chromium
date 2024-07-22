@@ -10,7 +10,10 @@ build_webui("build") {
 
   static_files = [ "metrics_internals.html" ]
 
-  web_component_files = [ "app.ts" ]
+  web_component_files = [
+    "app.ts",
+    "field_trials.ts",
+  ]
   non_web_component_files = [
     "browser_proxy.ts",
     "log_utils.ts",

@@ -1596,6 +1596,21 @@
             ]
         }
     ],
+    "AutofillDynamicallyLoadsFieldsForAddressInput": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillDynamicallyLoadsFieldsForAddressInput"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableAccountStorageForIneligibleCountries": [
         {
             "platforms": [
@@ -3234,6 +3249,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "prioritize_prerendering": "false",
                         "target_urls": "[]"
                     },
                     "enable_features": [
@@ -3477,9 +3493,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithBalancedLayout_Dev_20240601",
+                    "name": "EnabledWithSearchButton_Dev_20240718",
                     "params": {
-                        "google_bottom_bar_button_list": "0,3,2"
+                        "google_bottom_bar_button_list": "0,3,9,2"
                     },
                     "enable_features": [
                         "CCTGoogleBottomBar"
@@ -9162,6 +9178,21 @@
             ]
         }
     ],
+    "ExternalBeginFrameSourceWinUsesRunOrPostTask": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExternalBeginFrameSourceWinUsesRunOrPostTask"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExternalHDR10": [
         {
             "platforms": [
@@ -9226,6 +9257,24 @@
                     },
                     "enable_features": [
                         "FledgeBiddingAndAuctionServer"
+                    ]
+                }
+            ]
+        }
+    ],
+    "FamilyMemberRoleFeedback": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240722",
+                    "enable_features": [
+                        "FetchListFamilyMembersWithCapability",
+                        "UseFamilyMemberRolePrefsForFeedback"
                     ]
                 }
             ]
@@ -9302,22 +9351,6 @@
                     "name": "Enabled_Dogfood_20231030",
                     "enable_features": [
                         "FasterSplitScreenSetup"
-                    ]
-                }
-            ]
-        }
-    ],
-    "FedCmButtonModeUnifiedAccountChooser": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FedCmButtonModeUnifiedAccountChooser"
                     ]
                 }
             ]
@@ -16347,6 +16380,46 @@
             ]
         }
     ],
+    "PermissionElementPromptPositioning": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "NearElement",
+                    "params": {
+                        "PermissionElementPromptPositioningParam": "near_element"
+                    },
+                    "enable_features": [
+                        "PermissionElementPromptPositioning"
+                    ]
+                },
+                {
+                    "name": "WindowMiddle",
+                    "params": {
+                        "PermissionElementPromptPositioningParam": "window_middle"
+                    },
+                    "enable_features": [
+                        "PermissionElementPromptPositioning"
+                    ]
+                },
+                {
+                    "name": "LegacyPrompt",
+                    "params": {
+                        "PermissionElementPromptPositioningParam": "legacy_prompt"
+                    },
+                    "enable_features": [
+                        "PermissionElementPromptPositioning"
+                    ]
+                }
+            ]
+        }
+    ],
     "PickerUI": [
         {
             "platforms": [
@@ -16387,27 +16460,6 @@
             ]
         }
     ],
-    "PlusAddressFallbackFromContextMenu": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PlusAddressFallbackFromContextMenu"
-                    ]
-                }
-            ]
-        }
-    ],
     "PlusAddressesExperiment": [
         {
             "platforms": [
@@ -16424,10 +16476,8 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PlusAddressAffiliations",
+                        "PlusAddressFallbackFromContextMenu",
                         "PlusAddressRefresh",
-                        "PlusAddressRefreshUiInAndroid",
-                        "PlusAddressRefreshUiInDesktopModal",
-                        "PlusAddressRefreshUiInIOS",
                         "PlusAddressesEnabled",
                         "SyncPlusAddress"
                     ]
@@ -18209,6 +18259,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "RTCAlignReceivedEncodedVideoTransforms"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RasterInducingScroll": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RasterInducingScroll"
                     ]
                 }
             ]
@@ -21252,22 +21322,6 @@
             ]
         }
     ],
-    "SkipParentApprovalToInstallExtensions": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableSupervisedUserSkipParentApprovalToInstallExtensions"
-                    ]
-                }
-            ]
-        }
-    ],
     "SkipUnnecessaryThreadHopsForParseHeaders": [
         {
             "platforms": [
@@ -22754,6 +22808,21 @@
                     },
                     "enable_features": [
                         "UMAPseudoMetricsEffect"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UPMClearMigratedDataStudy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClearLoginDatabaseForAllMigratedUPMUsers"
                     ]
                 }
             ]

@@ -18,7 +18,7 @@
 #include "components/omnibox/browser/autocomplete_scoring_model_executor.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
-#include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 
 // Autocomplete scoring service using machine learning models via
 // OptimizationGuide's model handler.
@@ -26,8 +26,7 @@ class AutocompleteScoringModelService : public KeyedService {
  public:
   using Result = std::optional<float>;
   using ModelOutput = AutocompleteScoringModelExecutor::ModelOutput;
-  using ScoringSignals =
-      ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+  using ScoringSignals = ::metrics::OmniboxScoringSignals;
 
   explicit AutocompleteScoringModelService(
       optimization_guide::OptimizationGuideModelProvider* model_provider);

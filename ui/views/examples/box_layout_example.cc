@@ -30,9 +30,15 @@ namespace views::examples {
 BoxLayoutExample::BoxLayoutExample() : LayoutExampleBase("Box Layout") {}
 
 BoxLayoutExample::~BoxLayoutExample() {
-  between_child_spacing_->set_controller(nullptr);
-  default_flex_->set_controller(nullptr);
-  min_cross_axis_size_->set_controller(nullptr);
+  if (between_child_spacing_) {
+    between_child_spacing_->set_controller(nullptr);
+  }
+  if (default_flex_) {
+    default_flex_->set_controller(nullptr);
+  }
+  if (min_cross_axis_size_) {
+    min_cross_axis_size_->set_controller(nullptr);
+  }
   border_insets_.ResetControllers();
 }
 

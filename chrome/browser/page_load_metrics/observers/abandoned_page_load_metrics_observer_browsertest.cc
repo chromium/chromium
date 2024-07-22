@@ -14,6 +14,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -29,6 +30,8 @@ using AbandonReason = AbandonedPageLoadMetricsObserver::AbandonReason;
 using NavigationMilestone =
     AbandonedPageLoadMetricsObserver::NavigationMilestone;
 using page_load_metrics::PageLoadMetricsTestWaiter;
+using UkmMetrics = ukm::TestUkmRecorder::HumanReadableUkmMetrics;
+using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
 
 class AbandonedPageLoadMetricsObserverBrowserTest
     : public MetricIntegrationTest {
@@ -52,16 +55,15 @@ class AbandonedPageLoadMetricsObserverBrowserTest
             NavigationMilestone::kNonRedirectResponseStart,
             NavigationMilestone::kNonRedirectResponseLoaderCallback,
             NavigationMilestone::kCommitSent,
-            NavigationMilestone::kDidCommit};
+            NavigationMilestone::kDidCommit,
+            NavigationMilestone::kParseStart,
+            NavigationMilestone::kFirstContentfulPaint,
+            NavigationMilestone::kDOMContentLoaded};
   }
   std::vector<NavigationMilestone> all_testable_milestones() {
     return {NavigationMilestone::kNavigationStart,
             NavigationMilestone::kLoaderStart,
             NavigationMilestone::kNonRedirectResponseLoaderCallback};
-  }
-
-  std::vector<NavigationMilestone> all_loading_milestones() {
-    return {NavigationMilestone::kParseStart};
   }
 
   void SetUpOnMainThread() override {
@@ -128,18 +130,6 @@ class AbandonedPageLoadMetricsObserverBrowserTest
     }
   }
 
-  void ExpectTotalCountForAllLoadingMilestones(
-      int count,
-      std::string histogram_suffix = "") {
-    for (auto milestone : all_loading_milestones()) {
-      SCOPED_TRACE(testing::Message()
-                   << " ExpectTotalCountForAllLoadingMilestones on milestone "
-                   << ((int)milestone) << " with suffix " << histogram_suffix);
-      histogram_tester().ExpectTotalCount(
-          GetMilestoneHistogramName(milestone, histogram_suffix), count);
-    }
-  }
-
   void ExpectEmptyNavigationAbandonment() {
     for (auto milestone : all_milestones()) {
       SCOPED_TRACE(testing::Message()
@@ -163,9 +153,9 @@ class AbandonedPageLoadMetricsObserverBrowserTest
 // metrics and none of the abandonment metrics.
 IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
                        NoAbandonment) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 0);
-  ExpectTotalCountForAllLoadingMilestones(0);
   ExpectEmptyNavigationAbandonment();
 
   // Navigate to `url_a`.
@@ -178,10 +168,14 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   // There should be a new entry for all the navigation and loading milestones
   // metrics.
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 1);
-  ExpectTotalCountForAllLoadingMilestones(1);
+  histogram_tester().ExpectTotalCount(
+      std::string(internal::kAbandonedPageLoadMetricsHistogramPrefix) +
+          internal::kRendererProcessCreatedBeforeNavHistogramName,
+      1);
 
   // There should be no new entry for the navigation abandonment metrics.
   ExpectEmptyNavigationAbandonment();
+  EXPECT_TRUE(ukm_recorder.GetEntriesByName("AbandonedNavigation").empty());
 }
 
 // Test that a successful history navigation will log all the navigation
@@ -189,31 +183,30 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
 // navigation is served from BFCache. In that case, no metric will be recorded.
 IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
                        HistoryNavigation) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.test", "/title1.html"));
   // 1) Navigate to A.
   auto waiter1 = CreatePageLoadMetricsTestWaiter();
   waiter1->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
   waiter1->Wait();
   content::RenderFrameHostWrapper rfh_a(web_contents()->GetPrimaryMainFrame());
   // There should be a new entry for all the navigation and loading milestones
   // metrics.
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 1);
-  ExpectTotalCountForAllLoadingMilestones(1);
 
   // 2) Navigate to B.
   auto waiter2 = CreatePageLoadMetricsTestWaiter();
   waiter2->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_b));
   waiter2->Wait();
   content::RenderFrameHostWrapper rfh_b(web_contents()->GetPrimaryMainFrame());
 
   // There should be a new entry for all the navigation milestones metrics.
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 2);
-  ExpectTotalCountForAllLoadingMilestones(2);
 
   // Test non-BFCache-restore history navigation. Ensure that the history
   // navigation won't restore from BFCache, by flushing the BFCache.
@@ -223,17 +216,16 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   // 3) Go back to A without restoring from BFCache.
   auto waiter3 = CreatePageLoadMetricsTestWaiter();
   waiter3->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   waiter3->Wait();
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 3);
-  ExpectTotalCountForAllLoadingMilestones(3);
 
   // 4) Navigate forward to B, potentially restoring from BFCache.
   auto waiter4 = CreatePageLoadMetricsTestWaiter();
   waiter4->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     rfh_b->IsInLifecycleState(
         content::RenderFrameHost::LifecycleState::kInBackForwardCache);
@@ -244,14 +236,18 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
 
   // If the forward navigation was a BFCache restore, no navigation milestone
   // metrics will be logged. Otherwise, all milestones will be logged.
+  int expected_count =
+      (content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 3 : 4);
   ExpectTotalCountForAllNavigationMilestones(
-      /*include_redirect=*/false,
-      content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 3 : 4);
-  ExpectTotalCountForAllLoadingMilestones(
-      content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 3 : 4);
+      /*include_redirect=*/false, expected_count);
+  histogram_tester().ExpectTotalCount(
+      std::string(internal::kAbandonedPageLoadMetricsHistogramPrefix) +
+          internal::kRendererProcessCreatedBeforeNavHistogramName,
+      expected_count);
 
   // No abandonment happened, so no abandonment metrics was logged.
   ExpectEmptyNavigationAbandonment();
+  EXPECT_TRUE(ukm_recorder.GetEntriesByName("AbandonedNavigation").empty());
 }
 
 // Test navigations that are cancelled by `content::WebContents::Stop()` (which
@@ -261,6 +257,7 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
                        SearchCancelledByWebContentsStop) {
   GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
   for (NavigationMilestone abandon_milestone : all_testable_milestones()) {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
     base::HistogramTester histogram_tester;
 
     // Navigate to `url_a`, but pause it just after we reach the desired
@@ -283,51 +280,62 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
     EXPECT_TRUE(navigation.WaitForNavigationFinished());
     EXPECT_FALSE(navigation.was_committed());
 
+    auto ukm_entries = ukm_recorder.GetEntriesByName("AbandonedNavigation");
+    EXPECT_EQ(ukm_entries.size(), 1ul);
+    const ukm::mojom::UkmEntry* ukm_entry = ukm_entries[0].get();
+    ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, url_a);
+    ukm_recorder.ExpectEntryMetric(ukm_entry, "AbandonReason",
+                                   (int)AbandonReason::kExplicitCancellation);
+    ukm_recorder.ExpectEntryMetric(ukm_entry, "LastMilestoneBeforeAbandon",
+                                   (int)abandon_milestone);
+    EXPECT_FALSE(
+        ukm_recorder.EntryHasMetric(ukm_entry, "PreviousBackgroundedTime"));
+    EXPECT_FALSE(ukm_recorder.EntryHasMetric(ukm_entry, "PreviousHiddenTime"));
+    EXPECT_FALSE(
+        ukm_recorder.EntryHasMetric(ukm_entry, "RendererProcessInitTime"));
+
+    histogram_tester.ExpectTotalCount(
+        std::string(internal::kAbandonedPageLoadMetricsHistogramPrefix) +
+            internal::kRendererProcessCreatedBeforeNavHistogramName,
+        0);
+    histogram_tester.ExpectTotalCount(
+        std::string(internal::kAbandonedPageLoadMetricsHistogramPrefix) +
+            internal::kRendererProcessInitHistogramName,
+        0);
+
     // There should be new entries for the navigation milestone metrics up until
     // the abandonment, but no entries for milestones after that.
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(NavigationMilestone::kNavigationStart), 1);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(NavigationMilestone::kLoaderStart),
-        abandon_milestone == NavigationMilestone::kNavigationStart ? 0 : 1);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(
-            NavigationMilestone::kFirstRedirectedRequestStart),
-        0);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(
-            NavigationMilestone::kFirstRedirectResponseStart),
-        0);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(
-            NavigationMilestone::kFirstRedirectResponseLoaderCallback),
-        0);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(
-            NavigationMilestone::kNonRedirectedRequestStart),
-        abandon_milestone >= NavigationMilestone::kNonRedirectResponseStart
-            ? 1
-            : 0);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(
-            NavigationMilestone::kNonRedirectResponseStart),
-        abandon_milestone >= NavigationMilestone::kNonRedirectResponseStart
-            ? 1
-            : 0);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(
-            NavigationMilestone::kNonRedirectResponseLoaderCallback),
-        abandon_milestone >=
-                NavigationMilestone::kNonRedirectResponseLoaderCallback
-            ? 1
-            : 0);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(NavigationMilestone::kCommitSent),
-        abandon_milestone >= NavigationMilestone::kCommitSent ? 1 : 0);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(NavigationMilestone::kDidCommit), 0);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(NavigationMilestone::kParseStart), 0);
+    for (auto milestone : all_milestones()) {
+      if (abandon_milestone < milestone ||
+          (milestone >= NavigationMilestone::kFirstRedirectedRequestStart &&
+           milestone <=
+               NavigationMilestone::kFirstRedirectResponseLoaderCallback)) {
+        histogram_tester.ExpectTotalCount(GetMilestoneHistogramName(milestone),
+                                          0);
+        EXPECT_FALSE(ukm_recorder.EntryHasMetric(
+            ukm_entry,
+            AbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
+                milestone) +
+                "Time"));
+      } else {
+        histogram_tester.ExpectTotalCount(GetMilestoneHistogramName(milestone),
+                                          1);
+        if (milestone == NavigationMilestone::kNonRedirectResponseStart ||
+            milestone ==
+                NavigationMilestone::kNonRedirectResponseLoaderCallback) {
+          EXPECT_TRUE(ukm_recorder.EntryHasMetric(
+              ukm_entry, "NonRedirectResponseReceived"));
+        } else {
+          EXPECT_EQ(
+              milestone != NavigationMilestone::kNavigationStart,
+              ukm_recorder.EntryHasMetric(
+                  ukm_entry,
+                  AbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
+                      milestone) +
+                      "Time"));
+        }
+      }
+    }
 
     // There should be a new entry for exactly one of the abandonment
     // histograms, indicating that the navigation is abandoned just after
@@ -375,28 +383,32 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest, TabHidden) {
   base::HistogramTester histogram_tester;
-
   GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
+
+  // TODO(crbug.com/347706997): Build the test case that hides the current tab
+  // for each loading milestone so that we make the abandon histogram testable
+  // for all loading miletsones.
   auto waiter = CreatePageLoadMetricsTestWaiter();
   waiter->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kFirstPaint);
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
   waiter->Wait();
 
   // Hide the tab during navigation.
   web_contents()->WasHidden();
 
-  // For loading milestones, we only test `ParseStartToAbandon` for now.
-  EXPECT_THAT(
-      histogram_tester.GetTotalCountsForPrefix(
-          GetMilestoneToAbandonHistogramName(NavigationMilestone::kParseStart)),
-      testing::ElementsAre(testing::Pair(
-          GetMilestoneToAbandonHistogramName(NavigationMilestone::kParseStart,
-                                             AbandonReason::kHidden),
-          1)));
+  // The series of loading milestones is not a fixed order, but the last
+  // milestone of this test page is always first contentful paint milestone.
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  GetMilestoneToAbandonHistogramName(
+                      NavigationMilestone::kFirstContentfulPaint)),
+              testing::ElementsAre(
+                  testing::Pair(GetMilestoneToAbandonHistogramName(
+                                    NavigationMilestone::kFirstContentfulPaint,
+                                    AbandonReason::kHidden),
+                                1)));
 
   // There should be a new entry for all the navigation and loading milestones
   // metrics.
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 1);
-  ExpectTotalCountForAllLoadingMilestones(1);
 }

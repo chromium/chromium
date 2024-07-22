@@ -151,10 +151,6 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<bool>
     kPrivacySandboxProactiveTopicsBlockingIncludeModeB;
 
-// Enables showing the rollback notice for Tracking Protection in settings.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kTrackingProtectionSettingsPageRollbackNotice);
-
 #if BUILDFLAG(IS_ANDROID)
 // Triggers Tracking Protection Onboarding notice for 100% launch.
 // TODO(b/341975190): This flag is for testing only and will be replaced by

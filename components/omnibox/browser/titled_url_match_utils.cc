@@ -20,12 +20,12 @@
 #include "components/omnibox/browser/url_prefix.h"
 #include "components/query_parser/snippet.h"
 #include "components/url_formatter/url_formatter.h"
-#include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 
 namespace bookmarks {
 namespace {
 
-using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+using ScoringSignals = ::metrics::OmniboxScoringSignals;
 
 // Concatenates |ancestors| in reverse order and using '/' as the delimiter.
 std::u16string ConcatAncestorsTitles(

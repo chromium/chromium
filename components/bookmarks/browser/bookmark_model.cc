@@ -63,12 +63,14 @@ BookmarkNode* AsMutable(const BookmarkNode* node) {
   return const_cast<BookmarkNode*>(node);
 }
 
-// Traverses ancestors to find a permanent node.
+// Traverses ancestors to find a permanent node or null in the rare case where
+// the node has no ancestor permanent node. This can happen if `node` is the
+// root node or because `node` is in the process of being deleted (i.e. removed
+// from the indices), typically as a result of feature code reacting to
+// BookmarkModelObserver::BookmarkNodeRemoved().
 const BookmarkNode* GetSelfOrAncestorPermanentNode(const BookmarkNode* node) {
   CHECK(node);
-  CHECK(node->parent());
-  while (!node->is_permanent_node()) {
-    CHECK(node->parent());
+  while (node && !node->is_permanent_node()) {
     node = node->parent();
   }
   return node;
@@ -232,7 +234,15 @@ bool BookmarkModel::IsLocalOnlyNode(const BookmarkNode& node) const {
 
   const BookmarkNode* ancestor_permanent_node =
       GetSelfOrAncestorPermanentNode(&node);
-  CHECK(ancestor_permanent_node);
+  if (!ancestor_permanent_node) {
+    // In rare cases, `node` may already be 'dettached' from the bookmark tree.
+    // This can happen for example if this function is exercised as a reaction
+    // to BookmarkModelObserver::BookmarkNodeRemoved(). In this case, the
+    // semantics of this function aren't clear, but following the same rationale
+    // as for the root node, discussed above, returning true seems most
+    // sensible.
+    return true;
+  }
 
   if (client_->IsNodeManaged(ancestor_permanent_node)) {
     // Managed nodes don't sync.

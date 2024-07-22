@@ -15,6 +15,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -124,10 +125,9 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
     return nullptr;
   }
   return std::make_unique<OzoneImageBacking>(
-      mailbox, format, gfx::BufferPlane::DEFAULT, size, color_space,
-      surface_origin, alpha_type, usage, std::move(debug_label),
-      shared_context_state_, std::move(pixmap), workarounds_,
-      std::move(buffer_usage));
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(debug_label), shared_context_state_, std::move(pixmap),
+      workarounds_, std::move(buffer_usage));
 }
 
 std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
@@ -206,9 +206,9 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
   }
 
   auto backing = std::make_unique<OzoneImageBacking>(
-      mailbox, format, gfx::BufferPlane::DEFAULT, size, color_space,
-      surface_origin, alpha_type, usage, std::move(debug_label),
-      shared_context_state_, std::move(pixmap), workarounds_);
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(debug_label), shared_context_state_, std::move(pixmap),
+      workarounds_);
   backing->SetCleared();
 
   return backing;
@@ -376,11 +376,16 @@ bool OzoneImageBackingFactory::CanImportNativePixmapToWebGPU() {
   // TODO(crbug.com/40855765): To check it without vk_context_provider.
   return true;
 #else
-  // Assume that if skia/vulkan vkDevice supports the Vulkan extensions
-  // (external_memory_dma_buf, image_drm_format_modifier), then Dawn/WebGPU also
-  // support the extensions until there is capability to check the extensions
-  // from Dawn vkDevice when they are exposed.
-  return CanImportNativePixmapToVulkan();
+  // Disable all WebGPU ozone usage for non-Chromeos Ozone (Fuchsia, Linux).
+  // WebGPU on non-ChromeOS will now go through the ExternalVkImageBacking. Long
+  // term we will return to using the ozone backing on devices that have sync
+  // fences.
+  // TODO(crbug.com/330385376): Support dynamic switching of fence types in
+  // dawn and runtime extension testing.
+  // This testing in runtime can be done where graphite is enabled by checking
+  // against features in the 'dawn_context_provider' in the
+  // 'shared_context_state_'.
+  return false;
 #endif
 }
 

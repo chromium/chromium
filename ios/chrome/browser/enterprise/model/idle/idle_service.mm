@@ -164,14 +164,14 @@ void IdleService::RunActionsForStateForTesting(LastState last_state) {
 }
 
 void IdleService::MaybeRunActionsForState(LastState last_state) {
+  last_action_set_ = GetActionSet(
+      browser_state_->GetPrefs(),
+      AuthenticationServiceFactory::GetForBrowserState(browser_state_));
+
   if (!IsAnyActionNeededToRun()) {
     PostCheckIdleTask(GetTimeout());
     return;
   }
-
-  last_action_set_ = GetActionSet(
-      browser_state_->GetPrefs(),
-      AuthenticationServiceFactory::GetForBrowserState(browser_state_));
 
   if (last_state == LastState::kIdleOnBackground) {
     metrics::RecordIdleTimeoutCase(metrics::IdleTimeoutCase::kBackground);
@@ -200,17 +200,12 @@ void IdleService::RunActions() {
 }
 
 bool IdleService::IsAnyActionNeededToRun() {
-  const auto& actions =
-      browser_state_->GetPrefs()->GetList(prefs::kIdleTimeoutActions);
-  AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state_);
-  // return false if the only idle timeout action that is set is signout, but
+  // Returns true if any action will run. The return can be false if
+  // 1. the only idle timeout action that is set is signout, but
   // the user is not currently signed in.
-  return !(actions.size() == 1 &&
-           static_cast<ActionType>(actions.front().GetInt()) ==
-               ActionType::kSignOut &&
-           !authentication_service->HasPrimaryIdentity(
-               signin::ConsentLevel::kSignin));
+  // 2. the actions set are not known (empty IdleTimeoutActions pref).
+  return last_action_set_.clear || last_action_set_.close ||
+         last_action_set_.signout;
 }
 
 void IdleService::SetLastActiveTime() {

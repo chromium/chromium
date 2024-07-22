@@ -31,69 +31,6 @@ namespace autofill {
 
 namespace {
 
-// Array describing how the output of the test ML model is interpreted.
-// Some of the types that the model was trained on are not supported by the
-// client. Index 0 is UNKNOWN_TYPE, while the others are non-supported types.
-// The handler receives this information as part of its metadata.
-constexpr std::array<FieldType, 57> kSupportedFieldTypes = {
-    UNKNOWN_TYPE,
-    EMAIL_ADDRESS,
-    UNKNOWN_TYPE,
-    UNKNOWN_TYPE,
-    UNKNOWN_TYPE,
-    UNKNOWN_TYPE,
-    CREDIT_CARD_NUMBER,
-    CONFIRMATION_PASSWORD,
-    UNKNOWN_TYPE,
-    PHONE_HOME_EXTENSION,
-    PHONE_HOME_WHOLE_NUMBER,
-    PHONE_HOME_COUNTRY_CODE,
-    UNKNOWN_TYPE,
-    NAME_FIRST,
-    ADDRESS_HOME_DEPENDENT_LOCALITY,
-    ADDRESS_HOME_CITY,
-    ADDRESS_HOME_STREET_ADDRESS,
-    PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX,
-    UNKNOWN_TYPE,
-    NAME_HONORIFIC_PREFIX,
-    CREDIT_CARD_EXP_2_DIGIT_YEAR,
-    ADDRESS_HOME_STATE,
-    UNKNOWN_TYPE,
-    CREDIT_CARD_NAME_LAST,
-    ACCOUNT_CREATION_PASSWORD,
-    ADDRESS_HOME_HOUSE_NUMBER,
-    PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
-    CREDIT_CARD_TYPE,
-    CREDIT_CARD_NAME_FULL,
-    ADDRESS_HOME_APT_NUM,
-    CREDIT_CARD_NAME_FIRST,
-    ADDRESS_HOME_FLOOR,
-    UNKNOWN_TYPE,
-    ADDRESS_HOME_LANDMARK,
-    UNKNOWN_TYPE,
-    ADDRESS_HOME_STREET_NAME,
-    ADDRESS_HOME_COUNTRY,
-    CREDIT_CARD_EXP_4_DIGIT_YEAR,
-    DELIVERY_INSTRUCTIONS,
-    PHONE_HOME_NUMBER,
-    CREDIT_CARD_VERIFICATION_CODE,
-    NAME_LAST,
-    CREDIT_CARD_EXP_MONTH,
-    ADDRESS_HOME_OVERFLOW,
-    UNKNOWN_TYPE,
-    NAME_FULL,
-    COMPANY_NAME,
-    CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
-    PHONE_HOME_CITY_AND_NUMBER,
-    PHONE_HOME_CITY_CODE,
-    ADDRESS_HOME_LINE2,
-    ADDRESS_HOME_STREET_LOCATION,
-    ADDRESS_HOME_ZIP,
-    CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
-    ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
-    ADDRESS_HOME_LINE3,
-    ADDRESS_HOME_LINE1};
-
 // The matcher expects two arguments of types std::unique_ptr<AutofillField>
 // and FieldType respectively.
 MATCHER(MlTypeEq, "") {
@@ -152,12 +89,16 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
   // An optional `confidence_threshold` for the metadata can be provided.
   void SimulateRetrieveModelFromServer(
       std::optional<float> confidence_threshold = std::nullopt) {
+    optimization_guide::proto::AutofillFieldClassificationModelMetadata
+        model_metadata = ReadModelMetadata();
+    if (confidence_threshold) {
+      model_metadata.set_confidence_threshold(*confidence_threshold);
+    }
     std::unique_ptr<optimization_guide::ModelInfo> model_info =
         optimization_guide::TestModelInfoBuilder()
             .SetModelFilePath(
-                test_data_dir_.AppendASCII("autofill_model-br-overfit.tflite"))
-            .SetModelMetadata(
-                WrapMetadata(ConstructorModelMetadata(confidence_threshold)))
+                test_data_dir_.AppendASCII("autofill_model-fold-one.tflite"))
+            .SetModelMetadata(WrapMetadata(model_metadata))
             .Build();
     model_handler_->OnModelUpdated(
         optimization_guide::proto::
@@ -167,25 +108,15 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
   }
 
  private:
-  // Constructs metadata for the model:
-  // - `input_token()`s are constructed from a test dictionary file
-  // - `output_type()`s are constructed from `kSupportedFieldTypes`.
-  // - A `confidence_threshold`, if provided.
   optimization_guide::proto::AutofillFieldClassificationModelMetadata
-  ConstructorModelMetadata(std::optional<float> confidence_threshold) const {
+  ReadModelMetadata() const {
     optimization_guide::proto::AutofillFieldClassificationModelMetadata
         metadata;
-    // Construct `input_token()`.
-    AddInputTokensFromFile(
-        test_data_dir_.AppendASCII("br_overfitted_dictionary_test.txt"),
-        metadata);
-    // Construct `output_type()`.
-    for (FieldType type : kSupportedFieldTypes) {
-      metadata.add_output_type(static_cast<int>(type));
-    }
-    if (confidence_threshold) {
-      metadata.set_confidence_threshold(*confidence_threshold);
-    }
+    base::FilePath file_path(
+        test_data_dir_.AppendASCII("autofill_model_metadata.binarypb"));
+    std::string proto_content;
+    EXPECT_TRUE(base::ReadFileToString(file_path, &proto_content));
+    EXPECT_TRUE(metadata.ParseFromString(proto_content));
     return metadata;
   }
 
@@ -244,9 +175,7 @@ TEST_F(AutofillMlPredictionModelHandlerTest, GetModelPredictionsForForm) {
 // UNKNOWN_TYPE.
 TEST_F(AutofillMlPredictionModelHandlerTest,
        GetModelPredictionsForForm_Threshold) {
-  // The test model's outputs are unnormalized and below 20 for the
-  // `CreateOverfittedForm()`. Set a really high threshold and expect that
-  // all predictions are suppressed.
+  // Set a really high threshold and expect that all predictions are suppressed.
   SimulateRetrieveModelFromServer(/*confidence_threshold=*/100);
   std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
   base::test::TestFuture<std::unique_ptr<FormStructure>> future;

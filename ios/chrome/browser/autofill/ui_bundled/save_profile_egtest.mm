@@ -287,6 +287,11 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 // Ensures that the profile is saved to Chrome after submitting and editing the
 // form.
 - (void)testUserData_LocalEdit {
+  if ([AutofillAppInterface isDynamicallyLoadFieldsOnInputEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the fields "
+                           @"are loaded dynamically on input.");
+  }
+
   // Fill and submit the form.
   [self fillPresidentProfileAndShowSaveModal];
 
@@ -335,6 +340,11 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 // Ensures that the profile is saved to Account after submitting and editing the
 // form.
 - (void)testUserData_AccountEdit {
+  if ([AutofillAppInterface isDynamicallyLoadFieldsOnInputEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the fields "
+                           @"are loaded dynamically on input.");
+  }
+
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [self fillPresidentProfileAndShowSaveModal];

@@ -14,9 +14,9 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 
 namespace autofill {
 
@@ -26,14 +26,11 @@ using testing::ElementsAre;
 class AutofillModelEncoderTest : public testing::Test {
  public:
   void SetUp() override {
-    encoder_ = EncoderFromFileContents(GetTestDictionaryPath());
+    encoder_ = EncoderFromFileContents(GetTestModelMetadataPath());
   }
 
  protected:
-  AutofillModelEncoder encoder_;
-
- private:
-  base::FilePath GetTestDictionaryPath() {
+  base::FilePath GetTestModelMetadataPath() {
     base::FilePath source_root_dir;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
     return source_root_dir.AppendASCII("components")
@@ -41,25 +38,27 @@ class AutofillModelEncoderTest : public testing::Test {
         .AppendASCII("data")
         .AppendASCII("autofill")
         .AppendASCII("ml_model")
-        .AppendASCII("br_overfitted_dictionary_test.txt");
+        .AppendASCII("autofill_model_metadata.binarypb");
   }
 
-  AutofillModelEncoder EncoderFromFileContents(const base::FilePath& file) {
-    std::string content;
-    CHECK(base::ReadFileToString(file, &content));
-    google::protobuf::RepeatedPtrField<std::string> tokens;
-    for (std::string& token : base::SplitString(
-             content, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-      tokens.Add(std::move(token));
-    }
-    return AutofillModelEncoder(tokens);
+  AutofillModelEncoder EncoderFromFileContents(
+      const base::FilePath& file_path) {
+    optimization_guide::proto::AutofillFieldClassificationModelMetadata
+        metadata;
+    std::string proto_content;
+    EXPECT_TRUE(base::ReadFileToString(file_path, &proto_content));
+    EXPECT_TRUE(metadata.ParseFromString(proto_content));
+    return AutofillModelEncoder(metadata.input_token());
   }
 
+  AutofillModelEncoder encoder_;
+
+ private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
 TEST_F(AutofillModelEncoderTest, TokensMappedCorrectly) {
-  EXPECT_EQ(encoder_.TokenToId(u"first"), TokenId(53));
+  EXPECT_EQ(encoder_.TokenToId(u"number"), TokenId(22));
 }
 
 // Tests that words out of vocabulary return 1.
@@ -73,17 +72,23 @@ TEST_F(AutofillModelEncoderTest, EmptyToken) {
 }
 
 TEST_F(AutofillModelEncoderTest, InputEncodedCorrectly) {
-  EXPECT_THAT(encoder_.EncodeAttribute(u"Phone 'number"),
-              ElementsAre(TokenId(49), TokenId(40), TokenId(0), TokenId(0),
-                          TokenId(0)));
+  EXPECT_THAT(
+      encoder_.TokenizeAttribute(u"Phone 'number"),
+      ElementsAre(TokenId(1), TokenId(22), TokenId(0), TokenId(0), TokenId(0)));
 }
 
 // If a field label has more than one consecutive whitespace, they
 // should all be removed without any empty strings.
 TEST_F(AutofillModelEncoderTest, InputHasMoreThanOneWhitespace) {
-  EXPECT_THAT(encoder_.EncodeAttribute(u"Phone   &number  "),
-              ElementsAre(TokenId(49), TokenId(40), TokenId(0), TokenId(0),
-                          TokenId(0)));
+  EXPECT_THAT(
+      encoder_.TokenizeAttribute(u"Phone   &number  "),
+      ElementsAre(TokenId(1), TokenId(22), TokenId(0), TokenId(0), TokenId(0)));
+}
+
+TEST_F(AutofillModelEncoderTest, ReplaceSpecialWithWhitespace) {
+  EXPECT_THAT(
+      encoder_.TokenizeAttribute(u"Phone \u3164 number \xa0"),
+      ElementsAre(TokenId(1), TokenId(22), TokenId(0), TokenId(0), TokenId(0)));
 }
 
 // If a field label has more words than the kAttributeOutputSequenceLength,
@@ -91,28 +96,57 @@ TEST_F(AutofillModelEncoderTest, InputHasMoreThanOneWhitespace) {
 // rest are ignored.
 TEST_F(AutofillModelEncoderTest, InputHasMoreWordsThanOutputSequenceLength) {
   EXPECT_THAT(
-      encoder_.EncodeAttribute(u"City Number Phone Address Card Last Zip "),
-      ElementsAre(TokenId(46), TokenId(40), TokenId(49), TokenId(36),
-                  TokenId(43)));
+      encoder_.TokenizeAttribute(u"City Number Phone Address Card Last Zip "),
+      ElementsAre(TokenId(1), TokenId(22), TokenId(1), TokenId(1), TokenId(1)));
+}
+
+TEST_F(AutofillModelEncoderTest, AttributeEncodedCorrectly) {
+  EXPECT_THAT(encoder_.EncodeAttribute(
+                  u"Phone \u3164 number \xa0",
+                  AutofillModelEncoder::FieldAttributeIdentifier::kPlaceholder),
+              ElementsAre(TokenId(46), TokenId(1), TokenId(22), TokenId(0),
+                          TokenId(0), TokenId(0)));
 }
 
 TEST_F(AutofillModelEncoderTest, InputConstructedCorrectly) {
   AutofillField field;
   field.set_label(u"Phone 'number");
-  EXPECT_THAT(encoder_.EncodeField(field),
-              ElementsAre(TokenId(49), TokenId(40), TokenId(0), TokenId(0),
-                          TokenId(0)));
+  field.set_placeholder(u"Phone 'number");
+  field.set_autocomplete_attribute("Phone 'number");
+  EXPECT_THAT(
+      encoder_.EncodeField(field),
+      ElementsAre(TokenId(45), TokenId(1), TokenId(22), TokenId(0), TokenId(0),
+                  TokenId(0), TokenId(47), TokenId(1), TokenId(22), TokenId(0),
+                  TokenId(0), TokenId(0), TokenId(46), TokenId(1), TokenId(22),
+                  TokenId(0), TokenId(0), TokenId(0)));
 }
 
 TEST_F(AutofillModelEncoderTest, FormEncodedCorrectly) {
   FormStructure form(test::GetFormData(
-      {.fields = {{.label = u"Phone 'number"},
-                  {.label = u"City Number Phone Address Card Last Zip "}}}));
-  EXPECT_THAT(encoder_.EncodeForm(form),
-              ElementsAre(ElementsAre(TokenId(49), TokenId(40), TokenId(0),
-                                      TokenId(0), TokenId(0)),
-                          ElementsAre(TokenId(46), TokenId(40), TokenId(49),
-                                      TokenId(36), TokenId(43))));
+      {.fields = {
+           {
+               .label = u"Phone 'number",
+               .placeholder = u"Phone 'number",
+               .autocomplete_attribute = "Phone 'number",
+           },
+           {
+               .label = u"City Number Phone Address Card Last Zip ",
+               .placeholder = u"City Number Phone Address Card Last Zip ",
+               .autocomplete_attribute =
+                   "City Number Phone Address Card Last Zip ",
+           }}}));
+  EXPECT_THAT(
+      encoder_.EncodeForm(form),
+      ElementsAre(ElementsAre(TokenId(45), TokenId(1), TokenId(22), TokenId(0),
+                              TokenId(0), TokenId(0), TokenId(47), TokenId(1),
+                              TokenId(22), TokenId(0), TokenId(0), TokenId(0),
+                              TokenId(46), TokenId(1), TokenId(22), TokenId(0),
+                              TokenId(0), TokenId(0)),
+                  ElementsAre(TokenId(45), TokenId(1), TokenId(22), TokenId(1),
+                              TokenId(1), TokenId(1), TokenId(47), TokenId(1),
+                              TokenId(22), TokenId(1), TokenId(1), TokenId(1),
+                              TokenId(46), TokenId(1), TokenId(22), TokenId(1),
+                              TokenId(1), TokenId(1))));
 }
 
 }  // namespace autofill

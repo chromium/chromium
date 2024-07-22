@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/ash/bluetooth_pairing_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/bluetooth/bluetooth_power_state_observer.h"
+#include "chrome/test/base/ash/interactive/bluetooth/bluetooth_util.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/webui/interactive_uitest_elements.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -37,8 +38,29 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
 
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBluetoothPairingDialogElementId);
+
 namespace ash {
 namespace {
+
+// This JavaScript checks that the code for pairing a Bluetooth device is shown
+// in the UI. This JavaScript expects `el` to be the root node on the code entry
+// page, and checks that there is a <span> element for each digit in the code
+// and for the button indicating the user should afterwards press 'enter'.
+constexpr char kCheckPairingCodeJs[] = R"(
+  (el) => {
+    const code = '%s';
+    const elements = el.querySelectorAll('div#code > span');
+    if (elements.length != code.length + 1) {
+      return false;
+    }
+    for (let i = 0; i < code.length; i++) {
+      if (elements[i].innerText !== code[i]) {
+        return false;
+      }
+    }
+    return elements[elements.length - 1].innerText.indexOf('%s') != -1;
+  })";
 
 class PairWithUiInteractiveUiTest : public InteractiveAshTest {
  public:
@@ -57,29 +79,117 @@ class PairWithUiInteractiveUiTest : public InteractiveAshTest {
 
  protected:
   ui::test::internal::InteractiveTestPrivate::MultiStep
+  OpenDialogAndClickDevice(const std::string& name) {
+    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BluetoothPowerStateObserver,
+                                        kBluetoothPowerState);
+
+    return Steps(
+        ObserveState(kBluetoothPowerState,
+                     BluetoothPowerStateObserver::Create()),
+
+        Log("Waiting for Floss clients to be ready (if Floss is enabled)"),
+
+        WaitForFlossClientsReady(),
+
+        Log("Waiting for Bluetooth to be enabled"),
+
+        WaitForState(kBluetoothPowerState, true),
+
+        Log("Opening the Quick Settings bubble"),
+
+        OpenQuickSettings(),
+
+        Log("Navigating to the bluetooth detailed page"),
+
+        NavigateQuickSettingsToBluetoothPage(),
+
+        Log("Waiting for bluetooth toggle button to be shown and enabled"),
+
+        WaitForShow(kBluetoothDetailedViewToggleElementId),
+        WaitForViewProperty(kBluetoothDetailedViewToggleElementId, views::View,
+                            Enabled, true),
+
+        Log("Waiting for \"pair new device\" button to be be shown"),
+
+        WaitForShow(kBluetoothDetailedViewPairNewDeviceElementId),
+
+        Log("Clicking the \"pair new device\" button"),
+
+        MoveMouseTo(kBluetoothDetailedViewPairNewDeviceElementId), ClickMouse(),
+
+        Log("Waiting for the Quick Settings bubble to close"),
+
+        WaitForHide(kQuickSettingsViewElementId),
+
+        Log("Waiting for the pairing dialog to be visible"),
+
+        InstrumentNonTabWebView(
+            kBluetoothPairingDialogElementId,
+            BluetoothPairingDialog::kBluetoothPairingDialogElementId),
+
+        Log("Waiting for the device to be visible in the pairing dialog"),
+
+        WaitForElementExists(kBluetoothPairingDialogElementId,
+                             webui::bluetooth::PairingDialog()),
+
+        Log(base::StringPrintf("Waiting for Bluetooth device '%s' to be found",
+                               name.c_str())),
+
+        WaitForAnyElementTextContains(
+            kBluetoothPairingDialogElementId,
+            webui::bluetooth::PairingDialogDeviceSelectionPage(),
+            BluetoothPairingDeviceItem(),
+            /*text=*/name),
+
+        Log("Checking that the device is not paired"),
+
+        CheckBluetoothDevicePairedState(name, /*paired=*/false),
+
+        Log("Clicking the device"),
+
+        ClickAnyElementTextContains(
+            kBluetoothPairingDialogElementId,
+            webui::bluetooth::PairingDialogDeviceSelectionPage(),
+            BluetoothPairingDeviceItem(),
+            /*text=*/name));
+  }
+
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  CheckDeviceBecomesPaired(const std::string& name) {
+    return Steps(
+        Log("Waiting for pairing dialog to close"),
+
+        WaitForHide(kBluetoothPairingDialogElementId),
+
+        Log("Waiting for a system toast to become visible and have the "
+            "expected text"),
+
+        WaitForShow(SystemToastView::kSystemToastViewElementId),
+        CheckViewProperty(
+            SystemToastView::kSystemToastViewElementId,
+            &SystemToastView::GetText,
+            l10n_util::GetStringFUTF16(
+                IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_OR_CONNECTED_TOAST,
+                base::ASCIIToUTF16(name))),
+
+        Log("Checking that the device became paired"),
+
+        CheckBluetoothDevicePairedState(name, /*paired=*/true));
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+
+ private:
+  ui::test::internal::InteractiveTestPrivate::MultiStep
   CheckBluetoothDevicePairedState(const std::string& name, bool paired) {
     return Steps(Do([name, paired]() {
-      base::test::TestFuture<scoped_refptr<device::BluetoothAdapter>> adapter;
-      device::BluetoothAdapterFactory::Get()->GetAdapter(adapter.GetCallback());
-      for (const auto& device : adapter.Get()->GetDevices()) {
+      for (const auto& device : GetBluetoothAdapter()->GetDevices()) {
         EXPECT_TRUE(device->GetName() != name || device->IsPaired() == paired);
       }
     }));
   }
 
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class FlossPairWithUiInteractiveUiTest : public PairWithUiInteractiveUiTest {
- public:
-  FlossPairWithUiInteractiveUiTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{floss::features::kFlossEnabled},
-        /*disabled_features=*/{
-            floss::features::kFlossIsAvailabilityCheckNeeded});
-  }
-
- protected:
   // TODO(b/353285322): Remove this logic when we are able to rely solely on the
   // adapter powered state for whether we can continue the dependent tests.
   ui::test::internal::InteractiveTestPrivate::MultiStep
@@ -91,10 +201,21 @@ class FlossPairWithUiInteractiveUiTest : public PairWithUiInteractiveUiTest {
             kFlossClientsReady,
             std::make_unique<ui::test::PollingStateObserver<bool>>(
                 base::BindRepeating([]() {
-                  return floss::FlossDBusManager::IsInitialized() &&
-                         floss::FlossDBusManager::Get()->AreClientsReady();
+                  return !floss::features::IsFlossEnabled() ||
+                         (floss::FlossDBusManager::IsInitialized() &&
+                          floss::FlossDBusManager::Get()->AreClientsReady());
                 }))),
         WaitForState(kFlossClientsReady, true));
+  }
+};
+
+class FlossPairWithUiInteractiveUiTest : public PairWithUiInteractiveUiTest {
+ public:
+  FlossPairWithUiInteractiveUiTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{floss::features::kFlossEnabled},
+        /*disabled_features=*/{
+            floss::features::kFlossIsAvailabilityCheckNeeded});
   }
 };
 
@@ -106,197 +227,61 @@ class BluezPairWithUiInteractiveUiTest : public PairWithUiInteractiveUiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(FlossPairWithUiInteractiveUiTest,
-                       PairDeviceWithQuickSettings) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBluetoothPairingDialogElementId);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BluetoothPowerStateObserver,
-                                      kBluetoothPowerState);
-
+IN_PROC_BROWSER_TEST_F(FlossPairWithUiInteractiveUiTest, SimplePair) {
   RunTestSequence(
-      ObserveState(kBluetoothPowerState, BluetoothPowerStateObserver::Create()),
+      OpenDialogAndClickDevice(floss::FakeFlossAdapterClient::kJustWorksName),
 
-      Log("Waiting for Floss clients to be ready"),
-
-      WaitForFlossClientsReady(),
-
-      Log("Waiting for Bluetooth to be enabled"),
-
-      WaitForState(kBluetoothPowerState, true),
-
-      Log("Opening the Quick Settings bubble"),
-
-      OpenQuickSettings(),
-
-      Log("Navigating to the bluetooth detailed page"),
-
-      NavigateQuickSettingsToBluetoothPage(),
-
-      Log("Waiting for bluetooth toggle button to be shown"),
-      WaitForShow(kBluetoothDetailedViewToggleElementId),
-
-      // The bluetooth toggle button may take time to enable because the UI
-      // queries the bluetooth adapter state asynchronously.
-      Log("Waiting for bluetooth toggle button to enable"),
-      WaitForViewProperty(kBluetoothDetailedViewToggleElementId, views::View,
-                          Enabled, true),
-
-      Log("Waiting for \"pair new device\" button to be be shown"),
-      WaitForShow(kBluetoothDetailedViewPairNewDeviceElementId),
-
-      Log("Clicking the \"pair new device\" button"),
-      MoveMouseTo(kBluetoothDetailedViewPairNewDeviceElementId), ClickMouse(),
-
-      Log("Waiting for the Quick Settings bubble to close"),
-      WaitForHide(kQuickSettingsViewElementId),
-
-      Log("Waiting for the pairing dialog to be visible"),
-
-      InstrumentNonTabWebView(
-          kBluetoothPairingDialogElementId,
-          BluetoothPairingDialog::kBluetoothPairingDialogElementId),
-
-      Log("Waiting for the device to be visible in the pairing dialog"),
-
-      WaitForElementExists(kBluetoothPairingDialogElementId,
-                           webui::bluetooth::PairingDialog()),
-
-      Log(base::StringPrintf("Waiting for Bluetooth device '%s' to be found",
-                             floss::FakeFlossAdapterClient::kJustWorksName)),
-
-      WaitForAnyElementTextContains(
-          kBluetoothPairingDialogElementId,
-          webui::bluetooth::PairingDialogDeviceSelectionPage(),
-          BluetoothPairingDeviceItem(),
-          /*text=*/floss::FakeFlossAdapterClient::kJustWorksName),
-
-      Log("Checking that the device is not paired"),
-
-      CheckBluetoothDevicePairedState(
-          floss::FakeFlossAdapterClient::kJustWorksName, /*paired=*/false),
-
-      Log("Clicking the device"),
-
-      ClickAnyElementTextContains(
-          kBluetoothPairingDialogElementId,
-          webui::bluetooth::PairingDialogDeviceSelectionPage(),
-          BluetoothPairingDeviceItem(),
-          /*text=*/floss::FakeFlossAdapterClient::kJustWorksName),
-
-      Log("Waiting for pairing dialog to close"),
-
-      WaitForHide(kBluetoothPairingDialogElementId),
-
-      Log("Waiting for a system toast to become visible and have the expected "
-          "text"),
-
-      WaitForShow(SystemToastView::kSystemToastViewElementId),
-      CheckViewProperty(
-          SystemToastView::kSystemToastViewElementId, &SystemToastView::GetText,
-          l10n_util::GetStringFUTF16(
-              IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_OR_CONNECTED_TOAST,
-              base::ASCIIToUTF16(
-                  floss::FakeFlossAdapterClient::kJustWorksName))),
-
-      Log("Checking that the device became paired"),
-
-      CheckBluetoothDevicePairedState(
-          floss::FakeFlossAdapterClient::kJustWorksName, /*paired=*/true),
+      CheckDeviceBecomesPaired(floss::FakeFlossAdapterClient::kJustWorksName),
 
       Log("Test complete"));
 }
 
-IN_PROC_BROWSER_TEST_F(BluezPairWithUiInteractiveUiTest,
-                       PairDeviceWithQuickSettings) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBluetoothPairingDialogElementId);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BluetoothPowerStateObserver,
-                                      kBluetoothPowerState);
-
+IN_PROC_BROWSER_TEST_F(FlossPairWithUiInteractiveUiTest, PairWithPinCode) {
   RunTestSequence(
-      Log("Waiting for Bluetooth to be enabled"),
+      OpenDialogAndClickDevice(
+          floss::FakeFlossAdapterClient::kPinCodeDisplayName),
 
-      ObserveState(kBluetoothPowerState, BluetoothPowerStateObserver::Create()),
-      WaitForState(kBluetoothPowerState, true),
-
-      Log("Opening the Quick Settings bubble"),
-
-      OpenQuickSettings(),
-
-      Log("Navigating to the bluetooth detailed page"),
-
-      NavigateQuickSettingsToBluetoothPage(),
-
-      Log("Waiting for bluetooth toggle button to be shown"),
-      WaitForShow(kBluetoothDetailedViewToggleElementId),
-
-      // The bluetooth toggle button may take time to enable because the UI
-      // queries the bluetooth adapter state asynchronously.
-      Log("Waiting for bluetooth toggle button to enable"),
-      WaitForViewProperty(kBluetoothDetailedViewToggleElementId, views::View,
-                          Enabled, true),
-
-      Log("Waiting for \"pair new device\" button to be be shown"),
-      WaitForShow(kBluetoothDetailedViewPairNewDeviceElementId),
-
-      Log("Clicking the \"pair new device\" button"),
-      MoveMouseTo(kBluetoothDetailedViewPairNewDeviceElementId), ClickMouse(),
-
-      Log("Waiting for the Quick Settings bubble to close"),
-      WaitForHide(kQuickSettingsViewElementId),
-
-      Log("Waiting for the pairing dialog to be visible"),
-
-      InstrumentNonTabWebView(
-          kBluetoothPairingDialogElementId,
-          BluetoothPairingDialog::kBluetoothPairingDialogElementId),
-
-      Log("Waiting for the device to be visible in the pairing dialog"),
+      Log("Waiting to be prompted to enter the code"),
 
       WaitForElementExists(kBluetoothPairingDialogElementId,
-                           webui::bluetooth::PairingDialog()),
+                           webui::bluetooth::PairingDialogEnterCodePage()),
 
-      Log(base::StringPrintf("Waiting for Bluetooth device '%s' to be found",
-                             bluez::FakeBluetoothDeviceClient::kJustWorksName)),
+      Log("Checking that the expected code is shown"),
 
-      WaitForAnyElementTextContains(
+      CheckJsResultAt(
           kBluetoothPairingDialogElementId,
-          webui::bluetooth::PairingDialogDeviceSelectionPage(),
-          BluetoothPairingDeviceItem(),
-          bluez::FakeBluetoothDeviceClient::kJustWorksName),
+          webui::bluetooth::PairingDialogEnterCodePage(),
+          base::StringPrintf(
+              kCheckPairingCodeJs, floss::FakeFlossAdapterClient::kPinCode,
+              l10n_util::GetStringUTF8(IDS_BLUETOOTH_PAIRING_ENTER_KEY)
+                  .c_str())),
 
-      Log("Checking that the device is not paired"),
+      Log("Simulating the pairing process"),
 
-      CheckBluetoothDevicePairedState(
-          bluez::FakeBluetoothDeviceClient::kJustWorksName, /*paired=*/false),
+      Do([&]() {
+        for (const auto& device : GetBluetoothAdapter()->GetDevices()) {
+          if (device->GetName() ==
+              floss::FakeFlossAdapterClient::kPinCodeDisplayName) {
+            device->SetPinCode(floss::FakeFlossAdapterClient::kPinCode);
+            break;
+          }
+        }
+      }),
 
-      Log("Clicking the device"),
-
-      ClickAnyElementTextContains(
-          kBluetoothPairingDialogElementId,
-          webui::bluetooth::PairingDialogDeviceSelectionPage(),
-          BluetoothPairingDeviceItem(),
-          bluez::FakeBluetoothDeviceClient::kJustWorksName),
-
-      Log("Waiting for pairing dialog to close"),
-
-      WaitForHide(kBluetoothPairingDialogElementId),
-
-      Log("Waiting for a system toast to become visible and have the expected "
-          "text"),
-
-      WaitForShow(SystemToastView::kSystemToastViewElementId),
-      CheckViewProperty(
-          SystemToastView::kSystemToastViewElementId, &SystemToastView::GetText,
-          l10n_util::GetStringFUTF16(
-              IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_OR_CONNECTED_TOAST,
-              base::ASCIIToUTF16(
-                  bluez::FakeBluetoothDeviceClient::kJustWorksName))),
-
-      Log("Checking that the device became paired"),
-
-      CheckBluetoothDevicePairedState(
-          bluez::FakeBluetoothDeviceClient::kJustWorksName, /*paired=*/true),
+      CheckDeviceBecomesPaired(
+          floss::FakeFlossAdapterClient::kPinCodeDisplayName),
 
       Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(BluezPairWithUiInteractiveUiTest, SimplePair) {
+  RunTestSequence(OpenDialogAndClickDevice(
+                      bluez::FakeBluetoothDeviceClient::kJustWorksName),
+
+                  CheckDeviceBecomesPaired(
+                      bluez::FakeBluetoothDeviceClient::kJustWorksName),
+
+                  Log("Test complete"));
 }
 
 }  // namespace

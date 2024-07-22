@@ -279,6 +279,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   // Boolean indicating if password forms have been received for the first time.
   // Used to show a loading indicator while waiting for the store response.
   BOOL _didReceivePasswords;
+  // Whether -viewDidAppear was called.
+  BOOL _hasViewAppeared;
   // Whether the table view is in search mode. That is, it only has the search
   // bar potentially saved passwords and blocked sites.
   BOOL _tableIsInSearchMode;
@@ -406,18 +408,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  if (_shouldOpenInSearchMode) {
-    // Queue search bar focus so the keyboard animation doesn't collide with
-    // other animations.
-    __weak __typeof(self.searchController.searchBar) weakSearchBar =
-        self.searchController.searchBar;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          [weakSearchBar becomeFirstResponder];
-        }));
-
-    _shouldOpenInSearchMode = NO;
-  }
+  _hasViewAppeared = YES;
+  [self maybeFocusSearchBar];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -1726,10 +1718,36 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       password_manager::CreatePasswordManagerTitleView(/*title=*/self.title);
 }
 
+// Don't focus the searchBar before the view has loaded or if the empty state
+// view is displayed. It's possible for the view to load before the model or
+// vice versa.
+- (void)maybeFocusSearchBar {
+  if ([self shouldShowEmptyStateView]) {
+    return;
+  }
+
+  if (!_hasViewAppeared) {
+    return;
+  }
+
+  if (_shouldOpenInSearchMode) {
+    // Queue search bar focus so the keyboard animation doesn't collide with
+    // other animations.
+    __weak __typeof(self.searchController.searchBar) weakSearchBar =
+        self.searchController.searchBar;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSearchBar becomeFirstResponder];
+        }));
+
+    _shouldOpenInSearchMode = NO;
+  }
+}
+
 // Shows the empty state view when there is no content to display in the
 // tableView, otherwise hides the empty state view if one is being displayed.
 - (void)showOrHideEmptyView {
-  if (![self hasPasswords] && _blockedSites.empty()) {
+  if ([self shouldShowEmptyStateView]) {
     NSString* title =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_EMPTY_TITLE);
 
@@ -1756,6 +1774,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     [self removeEmptyTableView];
     self.navigationItem.searchController = self.searchController;
     self.tableView.alwaysBounceVertical = YES;
+    [self maybeFocusSearchBar];
   }
 }
 

@@ -11,7 +11,12 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/search_engines/template_url_service.h"
+#include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 #include "url/gurl.h"
+
+namespace {
+using ScoringSignals = ::metrics::OmniboxScoringSignals;
+}
 
 AutocompleteMatch VerbatimMatchForURL(
     AutocompleteProvider* provider,
@@ -106,6 +111,11 @@ AutocompleteMatch VerbatimMatchForInput(AutocompleteProvider* provider,
         termMatches, match.contents.size(),
         ACMatchClassification::MATCH | ACMatchClassification::URL,
         ACMatchClassification::URL);
+
+    if (!match.scoring_signals) {
+      match.scoring_signals = std::make_optional<ScoringSignals>();
+    }
+    match.scoring_signals->set_is_verbatim(true);
   }
 
   return match;

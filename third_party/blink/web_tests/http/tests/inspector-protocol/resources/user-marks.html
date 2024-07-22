@@ -22,7 +22,7 @@
         function dispatchIdleCallback() {
             let requestCallback;
             window.__requestIdleCallbackPromise = new Promise((fulfill) => requestCallback = fulfill);
-            const requestIdleCallbackId = window.requestIdleCallback(idleCallback);
+            const requestIdleCallbackId = window.requestIdleCallback(idleCallback, {timeout: 10});
             function idleCallback() {
                 window.cancelIdleCallback(requestIdleCallbackId);
                 requestCallback();

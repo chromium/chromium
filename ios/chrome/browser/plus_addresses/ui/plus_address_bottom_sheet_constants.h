@@ -22,6 +22,9 @@ extern NSString* const kPlusAddressSheetNoticeMessageAccessibilityIdentifier;
 // Accessibility identifier for the plus address label.
 extern NSString* const kPlusAddressLabelAccessibilityIdentifier;
 
+// Accessibility identifier for the refresh button in the bottom sheet.
+extern NSString* const kPlusAddressRefreshButtonAccessibilityIdentifier;
+
 // The margin to be shown under the user's primary email address, and above the
 // reserved plus address element in the bottom sheet.
 extern const CGFloat kPlusAddressSheetPrimaryAddressBottomMargin;

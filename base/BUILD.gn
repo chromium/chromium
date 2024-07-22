@@ -1158,6 +1158,7 @@ component("base") {
       "android/apk_assets.h",
       "android/application_status_listener.cc",
       "android/application_status_listener.h",
+      "android/base_feature_map.cc",
       "android/build_info.cc",
       "android/build_info.h",
       "android/bundle_utils.cc",
@@ -4229,6 +4230,7 @@ if (is_android || is_robolectric) {
   generate_jni("base_jni") {
     sources = [
       "android/java/src/org/chromium/base/ApkAssets.java",
+      "android/java/src/org/chromium/base/BaseFeatureMap.java",
       "android/java/src/org/chromium/base/BuildInfo.java",
       "android/java/src/org/chromium/base/BundleUtils.java",
       "android/java/src/org/chromium/base/ContentUriUtils.java",
@@ -4367,6 +4369,7 @@ if (is_android) {
 
     sources = [
       "android/java/src/org/chromium/base/ApkAssets.java",
+      "android/java/src/org/chromium/base/BaseFeatureMap.java",
       "android/java/src/org/chromium/base/BuildInfo.java",
       "android/java/src/org/chromium/base/BundleUtils.java",
       "android/java/src/org/chromium/base/CallbackController.java",

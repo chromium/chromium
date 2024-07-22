@@ -152,11 +152,12 @@ AccessibilityMatchPredicate PredicateForSearchKey(
 }
 
 // The element in the document for which we may be displaying an autofill popup.
-int32_t g_element_hosting_autofill_popup_unique_id = -1;
+int32_t g_element_hosting_autofill_popup_unique_id = ui::kInvalidAXNodeID;
 
 // The element in the document that is the next element after
 // |g_element_hosting_autofill_popup_unique_id|.
-int32_t g_element_after_element_hosting_autofill_popup_unique_id = -1;
+int32_t g_element_after_element_hosting_autofill_popup_unique_id =
+    ui::kInvalidAXNodeID;
 
 // Autofill popup will not be part of the |AXTree| that is sent by renderer.
 // Hence, we need a proxy |AXNode| to represent the autofill popup.
@@ -215,13 +216,13 @@ std::optional<int> MaybeFindRowColumn(BrowserAccessibility* start_node,
   }
 
   if (!table_node || !cell_node) {
-    return 0;
+    return ui::kInvalidAXNodeID;
   }
 
   ui::AXTree* tree = start_node->node()->tree();
   ui::AXTableInfo* table_info = tree->GetTableInfo(table_node->node());
   if (!table_info) {
-    return 0;
+    return ui::kInvalidAXNodeID;
   }
 
   // Move in the desired direction by the element type.
@@ -246,7 +247,7 @@ std::optional<int> MaybeFindRowColumn(BrowserAccessibility* start_node,
   // trying to move past a boundary.
   if (want_row_index < 0 || (size_t)want_row_index >= table_info->row_count ||
       want_col_index < 0 || (size_t)want_col_index >= table_info->col_count) {
-    return 0;
+    return ui::kInvalidAXNodeID;
   }
 
   // This causes the caller to stop its search and indicate appropriately when
@@ -255,7 +256,7 @@ std::optional<int> MaybeFindRowColumn(BrowserAccessibility* start_node,
       (want_col_bounds && want_row_index == cur_row_index) ||
       (want_table_bounds && want_row_index == cur_row_index &&
        want_col_index == cur_col_index)) {
-    return 0;
+    return ui::kInvalidAXNodeID;
   }
 
   return table_info->cell_ids[want_row_index][want_col_index];
@@ -1184,16 +1185,16 @@ jint WebContentsAccessibilityAndroid::FindElementType(
     jboolean use_default_predicate) {
   BrowserAccessibilityAndroid* start_node = GetAXFromUniqueID(start_id);
   if (!start_node)
-    return 0;
+    return ui::kInvalidAXNodeID;
 
   BrowserAccessibilityManagerAndroid* root_manager =
       GetRootBrowserAccessibilityManager();
   if (!root_manager)
-    return 0;
+    return ui::kInvalidAXNodeID;
 
   BrowserAccessibility* root = root_manager->GetBrowserAccessibilityRoot();
   if (!root)
-    return 0;
+    return ui::kInvalidAXNodeID;
 
   // If |element_type_str| was empty, we can skip to the default predicate.
   AccessibilityMatchPredicate predicate;
@@ -1208,7 +1209,7 @@ jint WebContentsAccessibilityAndroid::FindElementType(
       BrowserAccessibility* node = start_node->manager()->GetFromID(*ret);
       return node ? static_cast<BrowserAccessibilityAndroid*>(node)
                         ->GetUniqueId()
-                  : 0;
+                  : ui::kInvalidAXNodeID;
     }
 
     predicate = PredicateForSearchKey(element_type);
@@ -1226,7 +1227,7 @@ jint WebContentsAccessibilityAndroid::FindElementType(
   tree_search.AddPredicate(predicate);
 
   if (tree_search.CountMatches() == 0)
-    return 0;
+    return ui::kInvalidAXNodeID;
 
   auto* android_node =
       static_cast<BrowserAccessibilityAndroid*>(tree_search.GetMatchAtIndex(0));
@@ -1425,7 +1426,7 @@ jint WebContentsAccessibilityAndroid::
   if (g_element_after_element_hosting_autofill_popup_unique_id == -1 ||
       !GetAXFromUniqueID(
           g_element_after_element_hosting_autofill_popup_unique_id))
-    return 0;
+    return ui::kInvalidAXNodeID;
 
   return g_element_after_element_hosting_autofill_popup_unique_id;
 }

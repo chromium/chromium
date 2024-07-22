@@ -86,3 +86,7 @@ class MetricsInternalsUIBrowserTestWithLog
 IN_PROC_BROWSER_TEST_F(MetricsInternalsUIBrowserTestWithLog, All) {
   RunTest("metrics_internals/with_log_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(MetricsInternalsUIBrowserTest, FieldTrials) {
+  RunTest("metrics_internals/field_trials_test.js", "mocha.run()");
+}

@@ -6,6 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -22,7 +24,9 @@
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
+#include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/vk/VulkanTypes.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_space.h"
@@ -144,6 +148,31 @@ skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
   options.fDisableCachedGlyphUploads = true;
 
   return options;
+}
+
+void DumpBackgroundGraphiteMemoryStatistics(
+    const skgpu::graphite::Context* context,
+    const skgpu::graphite::Recorder* recorder,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  using base::trace_event::MemoryAllocatorDump;
+
+  std::string context_dump_name =
+      base::StringPrintf("skia/gpu_resources/graphite_context_0x%" PRIXPTR,
+                         reinterpret_cast<uintptr_t>(context));
+  MemoryAllocatorDump* context_dump =
+      pmd->CreateAllocatorDump(context_dump_name);
+  context_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                          MemoryAllocatorDump::kUnitsBytes,
+                          context->currentBudgetedBytes());
+
+  std::string recorder_dump_name = base::StringPrintf(
+      "skia/gpu_resources/gpu_main_graphite_recorder_0x%" PRIXPTR,
+      reinterpret_cast<uintptr_t>(recorder));
+  MemoryAllocatorDump* recorder_dump =
+      pmd->CreateAllocatorDump(recorder_dump_name);
+  recorder_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                           MemoryAllocatorDump::kUnitsBytes,
+                           recorder->currentBudgetedBytes());
 }
 
 GLuint GetGrGLBackendTextureFormat(

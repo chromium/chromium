@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_VIDEO_SURFACE_TEXTURE_IMAGE_BACKING_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
@@ -32,6 +33,7 @@ class GPU_GLES2_EXPORT VideoSurfaceTextureImageBacking
       const gfx::ColorSpace color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
+      std::string debug_label,
       scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
       scoped_refptr<SharedContextState> shared_context_state);
 

@@ -15,8 +15,8 @@ namespace autofill {
 
 // Maximum number of form fields for which the model can predict types.
 // When calling the executor with a larger form, predictions are only returned
-// for the first `kMaxNumberOfFields` many fields.
-inline constexpr size_t kModelExecutorMaxNumberOfFields = 20;
+// for the first `kModelExecutorMaxNumberOfFields` many fields.
+inline constexpr size_t kModelExecutorMaxNumberOfFields = 30;
 
 // The executor maps its inputs into TFLite's tensor format and converts the
 // model output's tensor representation back. See `ModelInput` and `ModelOutput`

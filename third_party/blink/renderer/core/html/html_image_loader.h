@@ -34,6 +34,7 @@ class CORE_EXPORT HTMLImageLoader final : public ImageLoader {
   ~HTMLImageLoader() override;
 
   void DispatchLoadEvent() override;
+  void DispatchErrorEvent() override;
   void NoImageResourceToLoad() override;
 
   void ImageNotifyFinished(ImageResourceContent*) override;

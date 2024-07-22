@@ -72,6 +72,10 @@ TEST_P(URLVisitUtilTest, GettersReturnDataURLVisitAggregateSingleFetcher) {
     ASSERT_EQ(GURL(kSampleSearchUrl), visit->url_row.url());
     ASSERT_EQ(u"sample_title", visit->url_row.title());
   } else {
+    const URLVisitAggregate::TabData* tab_data = GetTabDataIfExists(aggregate);
+    EXPECT_EQ(1u, tab_data->tab_count);
+    EXPECT_FALSE(tab_data->pinned);
+
     const URLVisitAggregate::Tab* tab = GetTabIfExists(aggregate);
     ASSERT_EQ(GURL(kSampleSearchUrl), tab->visit.url);
     ASSERT_EQ(u"sample_title", tab->visit.title);

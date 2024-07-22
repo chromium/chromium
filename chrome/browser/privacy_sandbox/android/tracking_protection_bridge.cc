@@ -52,13 +52,6 @@ static void JNI_TrackingProtectionBridge_NoticeActionTaken(JNIEnv* env,
               action));
 }
 
-static jboolean JNI_TrackingProtectionBridge_IsOffboarded(JNIEnv* env,
-                                                          Profile* profile) {
-  // Always returning false for now. This is to be removed as part of
-  // crbug/344565466.
-  return false;
-}
-
 static jboolean JNI_TrackingProtectionBridge_ShouldRunUILogic(JNIEnv* env,
                                                               Profile* profile,
                                                               jint surface) {

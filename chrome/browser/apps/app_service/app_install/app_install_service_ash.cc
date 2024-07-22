@@ -334,15 +334,12 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
   base::WeakPtr<ash::app_install::AppInstallDialog> dialog =
       ash::app_install::AppInstallDialog::CreateDialog();
   dialog->ShowApp(&*profile_, parent, expected_package_id, data->name,
-                  web_app_data.document_url, data->description,
-                  data->icon ? data->icon->url : GURL::EmptyGURL(),
-                  data->icon ? data->icon->width_in_pixels : 0,
-                  data->icon ? data->icon->is_masking_allowed : false,
+                  web_app_data.document_url, data->description, data->icon,
                   std::move(screenshots),
                   base::BindOnce(&AppInstallServiceAsh::InstallIfDialogAccepted,
                                  weak_ptr_factory_.GetWeakPtr(), surface,
-                                 expected_package_id, std::move(data).value(),
-                                 dialog, std::move(callback)));
+                                 expected_package_id, data.value(), dialog,
+                                 std::move(callback)));
 }
 
 void AppInstallServiceAsh::InstallIfDialogAccepted(

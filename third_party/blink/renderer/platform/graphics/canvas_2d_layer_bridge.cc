@@ -352,9 +352,6 @@ void Canvas2DLayerBridge::FlushRecording(FlushReason reason) {
   TRACE_EVENT0("cc", "Canvas2DLayerBridge::flushRecording");
 
   provider->FlushCanvas(reason);
-
-  // Recreate the resource provider if the playback crashed the GPU context.
-  GetOrCreateResourceProvider();
 }
 
 bool Canvas2DLayerBridge::Restore() {

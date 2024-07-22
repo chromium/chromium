@@ -450036,13 +450036,6 @@
        {}
       ]
      ],
-     "animation-canceled-by-parent-details-element-being-closed.html": [
-      "3f6521fccfd9ffd4dd52de4afbe43933d5feca32",
-      [
-       null,
-       {}
-      ]
-     ],
      "animation-change-underlying-value-changed-in-flight.html": [
       "444ea7378533da40fd6243d7c165785325374cdb",
       [
@@ -454911,7 +454904,7 @@
        ]
       ],
       "content-visibility-auto-state-changed.html": [
-       "0333c052e4a2ea80e750e9da342657abd337420e",
+       "6a14470c0f4b1d66bacd6316803fba01a6ba6d20",
        [
         null,
         {
@@ -641832,7 +641825,7 @@
      ]
     ],
     "sequential-focus.html": [
-     "30b467f1ecd1a59e275c20a17c4e2928a07a5dc4",
+     "79b013ca229c66cfb486de1a39f4dd0d7e5a7d88",
      [
       null,
       {

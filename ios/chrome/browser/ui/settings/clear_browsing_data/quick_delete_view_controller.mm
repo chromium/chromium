@@ -231,7 +231,16 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 #pragma mark - QuickDeleteConsumer
 
 - (void)setTimeRange:(browsing_data::TimePeriod)timeRange {
+  if (_timeRange == timeRange) {
+    return;
+  }
   _timeRange = timeRange;
+
+  // Reload the time range row with the new value.
+  NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
+      [_dataSource snapshot];
+  [snapshot reconfigureItemsWithIdentifiers:@[ @(ItemIdentifierTimeRange) ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:NO completion:nil];
 }
 
 - (void)setBrowsingDataSummary:(NSString*)summary {
@@ -271,6 +280,15 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                     // added or removed.
                     [weakSelf updateBottomSheetHeight];
                   }];
+}
+
+- (void)updateAutofillWithResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result {
+  // TODO(crbug.com/341107834): Refactor summary using this result.
+}
+
+- (void)setAutofillSelection:(BOOL)selected {
+  // TODO(crbug.com/341107834): Refactor summary using this type selection.
 }
 
 #pragma mark - Private

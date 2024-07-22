@@ -38,8 +38,7 @@ class GPU_GLES2_EXPORT OzoneImageGLTexturesHolder
   // Creates an OzoneImageGLTexturesHolder with gles2::TexturePassthroughs.
   static scoped_refptr<OzoneImageGLTexturesHolder> CreateAndInitTexturesHolder(
       SharedImageBacking* backing,
-      scoped_refptr<gfx::NativePixmap> pixmap,
-      gfx::BufferPlane plane);
+      scoped_refptr<gfx::NativePixmap> pixmap);
 
   void MarkContextLost();
   bool WasContextLost();
@@ -70,8 +69,7 @@ class GPU_GLES2_EXPORT OzoneImageGLTexturesHolder
   // Initializes this holder with gles2::TexturePassthroughs. On failure,
   // returns false.
   bool Initialize(SharedImageBacking* backing,
-                  scoped_refptr<gfx::NativePixmap> pixmap,
-                  gfx::BufferPlane plane);
+                  scoped_refptr<gfx::NativePixmap> pixmap);
 
   // Creates and stores a gles2::TexturePassthrough. On failure, returns false.
   bool CreateAndStoreTexture(SharedImageBacking* backing,

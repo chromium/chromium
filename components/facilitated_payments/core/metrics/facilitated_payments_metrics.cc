@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace payments::facilitated {
 
@@ -60,7 +61,10 @@ void LogFopSelectorShown(bool shown) {
   UMA_HISTOGRAM_BOOLEAN("FacilitatedPayments.Pix.FopSelector.Shown", shown);
 }
 
-void LogTransactionResult(TransactionResult result, base::TimeDelta duration) {
+void LogTransactionResult(TransactionResult result,
+                          TriggerSource trigger_source,
+                          base::TimeDelta duration,
+                          ukm::SourceId ukm_source_id) {
   // TODO(b/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
   base::UmaHistogramEnumeration("FacilitatedPayments.Pix.Transaction.Result",
@@ -81,6 +85,10 @@ void LogTransactionResult(TransactionResult result, base::TimeDelta duration) {
       base::StrCat({"FacilitatedPayments.Pix.Transaction.",
                     latency_histogram_transaction_result_type, ".Latency"}),
       duration);
+  ukm::builders::FacilitatedPayments_Pix_Transaction(ukm_source_id)
+      .SetResult(static_cast<uint8_t>(result))
+      .SetTriggerSource(static_cast<uint8_t>(trigger_source))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 }  // namespace payments::facilitated

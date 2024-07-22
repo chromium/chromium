@@ -69,7 +69,7 @@ namespace {
 
 constexpr char kUniqueIdentifierTemplate[] = "iss:%s,sub:%s";
 
-bool IsValidOidcToken(const ProfileManagementOicdTokens& oidc_tokens) {
+bool IsValidOidcToken(const ProfileManagementOidcTokens& oidc_tokens) {
   return !oidc_tokens.auth_token.empty() && !oidc_tokens.id_token.empty();
 }
 
@@ -88,7 +88,7 @@ OidcAuthenticationSigninInterceptor::~OidcAuthenticationSigninInterceptor() =
 
 void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
     content::WebContents* intercepted_contents,
-    const ProfileManagementOicdTokens& oidc_tokens,
+    const ProfileManagementOidcTokens& oidc_tokens,
     const std::string& issuer_id,
     const std::string& subject_id,
     OidcInterceptionCallback oidc_callback) {
@@ -204,7 +204,7 @@ void OidcAuthenticationSigninInterceptor::Reset() {
   }
 
   web_contents_ = nullptr;
-  oidc_tokens_ = ProfileManagementOicdTokens();
+  oidc_tokens_ = ProfileManagementOidcTokens();
   dm_token_.clear();
   client_id_.clear();
   user_display_name_.clear();

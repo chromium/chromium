@@ -2518,6 +2518,35 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   EXPECT_NE(nullptr, GetEntityForStorageKey(kKey1));
 }
 
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldRecordNumUnsyncedEntitiesOnModelReady) {
+  {
+    base::HistogramTester histogram_tester;
+    InitializeToReadyState();
+    // There are no local unsynced entities.
+    histogram_tester.ExpectUniqueSample(
+        "Sync.ModelTypeNumUnsyncedEntitiesOnModelReady.PREFERENCE",
+        /*sample=*/0, /*expected_bucket_count=*/1);
+  }
+  WritePrefItem(bridge(), kKey1, kValue1);
+
+  ASSERT_TRUE(db()->HasData(kKey1));
+  ASSERT_TRUE(db()->HasMetadata(kKey1));
+  ASSERT_NE(nullptr, GetEntityForStorageKey(kKey1));
+
+  // Reset "the browser" so that the processor looses the copy of the data.
+  ResetState(/*keep_db=*/true);
+
+  {
+    base::HistogramTester histogram_tester;
+    InitializeToReadyState();
+    // Entity with kKey1 is unsynced.
+    histogram_tester.ExpectUniqueSample(
+        "Sync.ModelTypeNumUnsyncedEntitiesOnModelReady.PREFERENCE",
+        /*sample=*/1, /*expected_bucket_count=*/1);
+  }
+}
+
 // This tests the case when the bridge deletes an item, and before it's
 // committed to the server, it created again with a different storage key.
 TEST_F(ClientTagBasedModelTypeProcessorTest,

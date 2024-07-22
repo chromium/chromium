@@ -30,10 +30,6 @@ public class TrackingProtectionBridge {
         TrackingProtectionBridgeJni.get().noticeShown(mProfile, surface, noticeType);
     }
 
-    public boolean isOffboarded() {
-        return TrackingProtectionBridgeJni.get().isOffboarded(mProfile);
-    }
-
     public boolean shouldRunUILogic(@SurfaceType int surface) {
         return TrackingProtectionBridgeJni.get().shouldRunUILogic(mProfile, surface);
     }
@@ -46,8 +42,6 @@ public class TrackingProtectionBridge {
                 @JniType("Profile*") Profile profile, int surface, int noticeType, int action);
 
         int getRequiredNotice(@JniType("Profile*") Profile profile, int surface);
-
-        boolean isOffboarded(@JniType("Profile*") Profile profile);
 
         boolean shouldRunUILogic(@JniType("Profile*") Profile profile, int surface);
     }

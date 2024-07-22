@@ -6241,6 +6241,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Mac.Device.ReactionEffectsGesturesState"
+    enum="ReactionEffectsGesturesState" expires_after="2025-07-22">
+  <owner>guidou@chromium.org</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    An enumeration count of whether reaction effects are enabled and can be
+    triggered by gestures. This is recorded once per opening of the camera.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Mac.Device.RequestedPixelFormat"
     enum="VideoPixelFormatUnion" expires_after="2023-03-05">
   <owner>eshr@google.com</owner>

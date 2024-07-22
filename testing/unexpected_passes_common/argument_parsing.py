@@ -84,6 +84,15 @@ def AddCommonArguments(parser: argparse.ArgumentParser) -> None:
                       type=int,
                       help=('DEPRECATED/NO-OP. Will be removed once all uses '
                             'are removed.'))
+  parser.add_argument('--keep-unmatched-results',
+                      action='store_true',
+                      default=False,
+                      help=('Store unmatched results and include them in the '
+                            'script output. Doing so can result in a '
+                            'significant increase in memory usage depending on '
+                            'the data being queried. This is meant for '
+                            'debugging purposes and should not be needed '
+                            'during normal use.'))
   internal_group = parser.add_mutually_exclusive_group()
   internal_group.add_argument('--include-internal-builders',
                               action='store_true',

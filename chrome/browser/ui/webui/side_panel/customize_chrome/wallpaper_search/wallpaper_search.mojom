@@ -8,15 +8,21 @@ import "mojo/public/mojom/base/token.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "url/mojom/url.mojom";
 
+struct KeyLabel {
+  string key;
+  string label;
+};
+
 // Subject descriptor. Each one is a category of subjects and its
 // list of possible values.
-struct DescriptorA {
+struct Group {
   string category;
-  array<string> labels;
+  array<KeyLabel> descriptor_as;
 };
 
 // Style descriptor value, which includes a label and an image.
 struct DescriptorB {
+  string key;
   string label;
   string image_path;
 };
@@ -37,9 +43,9 @@ enum DescriptorDName {
 // Full list of possible subject, style, and mood descriptors for the
 // dropdowns in the Wallpaper Search UI.
 struct Descriptors {
-  array<DescriptorA> descriptor_a;
+  array<Group> groups;
   array<DescriptorB> descriptor_b;
-  array<string> descriptor_c;
+  array<KeyLabel> descriptor_c;
 };
 
 struct Inspiration {
@@ -49,8 +55,15 @@ struct Inspiration {
   url.mojom.Url thumbnail_url;
 };
 
+struct InspirationDescriptors {
+  KeyLabel? subject;
+  KeyLabel? style;
+  KeyLabel? mood;
+  DescriptorDValue? color;
+};
+
 struct InspirationGroup {
-  ResultDescriptors descriptors;
+  InspirationDescriptors descriptors;
   array<Inspiration> inspirations;
 };
 

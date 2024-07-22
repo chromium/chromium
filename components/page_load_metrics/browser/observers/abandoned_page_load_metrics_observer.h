@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_
 
-#include <optional>
-
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle_timing.h"
 
@@ -15,6 +13,8 @@ namespace internal {
 extern const char kAbandonedPageLoadMetricsHistogramPrefix[];
 extern const char kSuffixWasBackgrounded[];
 extern const char kSuffixWasHidden[];
+extern const char kRendererProcessCreatedBeforeNavHistogramName[];
+extern const char kRendererProcessInitHistogramName[];
 
 }  // namespace internal
 
@@ -46,7 +46,9 @@ class AbandonedPageLoadMetricsObserver
     kCommitSent = 8,
     kDidCommit = 9,
     kParseStart = 10,
-    kMaxValue = kParseStart,
+    kFirstContentfulPaint = 11,
+    kDOMContentLoaded = 12,
+    kMaxValue = kDOMContentLoaded,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationMilestoneEnum)
 
@@ -111,6 +113,10 @@ class AbandonedPageLoadMetricsObserver
   // Post-commit loading events:
   void OnParseStart(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnFirstContentfulPaintInPage(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnDomContentLoadedEventStart(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
   // Signals that the navigation is abandoned: backgrounded, hidden, or failed.
   ObservePolicy FlushMetricsOnAppEnterBackground(
@@ -154,6 +160,10 @@ class AbandonedPageLoadMetricsObserver
   // navigation start time.
   void LogMilestoneHistogram(NavigationMilestone milestone,
                              base::TimeDelta event_time);
+  // Call `LogMilestoneHistogram()` with the given loading milestone and taken
+  // time from the navigation start. Also updates `latest_loading_milestone_` if
+  // the given milestone is newer than the current `latest_loading_milestone_`.
+  void LogLoadingMilestone(NavigationMilestone milestone, base::TimeDelta time);
   bool WasBackgrounded() const {
     return !first_backgrounded_timestamp_.is_null();
   }
@@ -170,12 +180,10 @@ class AbandonedPageLoadMetricsObserver
       content::NavigationHandle* navigation_handle);
   virtual bool IsAllowedToLogMetrics() const;
 
-  // Set to true if we see the navigation involves non-SRP URL, which will be
-  // specially marked in the logged metrics.
-  bool did_request_non_srp_ = false;
-  // Set to true if we see the navigation involves SRP URL, which means we need
-  // to log metrics for this navigation.
-  bool involved_srp_url_ = false;
+  // The ID of the navigation being tracked.
+  int64_t navigation_id_ = 0;
+
+  base::TimeTicks renderer_process_init_time_;
 
   // Timestamp of the first time `FlushMetricsOnAppEnterBackground()` or
   // `OnHidden()` are called, respectively. This is tracked in case the
@@ -206,11 +214,11 @@ class AbandonedPageLoadMetricsObserver
   // haven't logged on a previous call before.
   content::NavigationHandleTiming last_logged_navigation_handle_timing_;
 
-  // The most up-to-date LoadingMilesone we're tracking, updated from each
+  // The array of achieved LoadingMilesone we're tracking, added from each
   // post-commit loading events that this class implements e.g. OnParseStart().
   // We need this because we'd like to log the latest milestone when the
-  // navigation is abandoned.
-  std::optional<LoadingMilestone> latest_loading_milestone_;
+  // navigation is abandoned, and send all logged milestones to UKM as well.
+  std::vector<LoadingMilestone> loading_milestones_;
 };
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_

@@ -4,5 +4,4 @@
 
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 
-NSString* const kFeedBackgroundRefreshTaskIdentifier = @"chrome.feed.refresh";
 NSString* const kEngagedWithFeedKey = @"engaged_with_feed_key";

@@ -406,6 +406,18 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
+    name = "chromium_mac_osxbeta_rel_isolated_scripts",
+    basic_suites = [
+        "chromedriver_py_tests_isolated_scripts",
+        "components_perftests_isolated_scripts",
+        "desktop_chromium_mac_osxbeta_scripts",
+        "mac_specific_isolated_scripts",
+        "mojo_python_unittests_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts",
+    ],
+)
+
+targets.legacy_compound_suite(
     name = "chromium_mac_rel_isolated_scripts_and_sizes",
     basic_suites = [
         "chrome_sizes_suite",

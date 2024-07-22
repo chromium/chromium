@@ -476,8 +476,10 @@ bool IsABookmarkNodeSectionForIdentifier(
 
 - (BOOL)shouldDisplayCloudSlashIconWithBookmarkNode:
     (const BookmarkNode*)bookmarkNode {
-  return bookmarkNode && _bookmarkModel->IsLocalOnlyNode(*bookmarkNode) &&
-         bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(self.syncService);
+  return bookmarkNode &&
+         bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(
+             self.syncService) &&
+         _bookmarkModel->IsLocalOnlyNode(*bookmarkNode);
 }
 
 #pragma mark - BookmarkModelBridgeObserver

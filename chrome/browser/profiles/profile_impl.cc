@@ -432,7 +432,6 @@ void ProfileImpl::RegisterProfilePrefs(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(prefs::kPdfAnnotationsEnabled, true);
 #endif
-  registry->RegisterStringPref(prefs::kEnterpriseCustomLabel, std::string());
   registry->RegisterIntegerPref(prefs::kProfileLabelPreset, 0);
   registry->RegisterIntegerPref(prefs::kEnterpriseBadgingTemporarySetting, 0);
 }

@@ -466,3 +466,53 @@ function test_canvas_works_after_cpu_downgrade(adapterInfo, device, canvas) {
     checkCanvasColor(ctx, [0x00, 0xFF, 0x00, 0xFF]);
   }
 }
+
+/**
+ * WebGPU access should not allow transferring back after drawing to the canvas.
+ */
+function test_canvas_disallows_transfer_back_after_draw(device, canvas) {
+  const ctx = canvas.getContext('2d');
+
+  // Transfer the GPU texture off the context and clear it to red.
+  // This red is never transferred back, so it doesn't matter.
+  const tex = ctx.transferToGPUTexture({device: device});
+  clearTextureToColor(device, tex, { r: 1.0, g: 0.0, b: 0.0, a: 1.0 });
+
+  // Draw a green rectangle using Canvas2D commands. Only cover the top half of
+  // the canvas. The bottom half will be untouched by drawing commands. Note
+  // that there should be no red pixels, despite the above call to
+  // `clearTextureToColor`; the canvas should be treated as newly-initialized.
+  const w = ctx.canvas.width;
+  const h = ctx.canvas.height;
+  ctx.fillStyle = "#00FF00";
+  ctx.fillRect(0, 0, w, h / 2);
+
+  // Attempting to transfer the GPU texture back should raise an exception.
+  try {
+    ctx.transferBackFromGPUTexture();
+    assert_unreached('transferBackFromGPUTexture should have thrown.');
+  } catch (ex) {
+    assert_true(ex instanceof DOMException);
+    assert_equals(ex.name, 'InvalidStateError');
+  }
+
+  // The canvas' image should contain the rectangle, and should have zero red
+  // or blue pixels.
+  const imageData = ctx.getImageData(0, 0, w, h);
+  for (let idx = 0; idx < w * h * 4; idx += 4) {
+    assert_equals(imageData.data[idx + 0], 0x00,
+                  'Expected no red in the canvas image.');
+    assert_equals(imageData.data[idx + 2], 0x00,
+                  'Expected no blue in the canvas image.');
+  }
+
+  // We should be able to find some green pixels from the rectangle.
+  let foundGreen = false;
+  for (let idx = 0; idx < w * h * 4; idx += 4) {
+    if (imageData.data[idx + 1] == 0xFF) {
+      foundGreen = true;
+      break;
+    }
+  }
+  assert_true(foundGreen, 'Expected some green in the canvas image.');
+}

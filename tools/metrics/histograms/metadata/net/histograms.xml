@@ -2020,8 +2020,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.TotalTime.TLS13.Google" units="ms"
-    expires_after="2024-07-21">
-  <owner>davidben@chromium.org</owner>
+    expires_after="2025-01-21">
+  <owner>bashi@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
     Time it takes to complete an HttpJob to a Google host, from starting the

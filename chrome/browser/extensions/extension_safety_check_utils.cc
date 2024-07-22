@@ -221,14 +221,20 @@ developer::SafetyCheckWarningReason GetSafetyCheckWarningReasonHelper(
     bool unpublished_only) {
   developer::SafetyCheckWarningReason top_warning_reason =
       developer::SafetyCheckWarningReason::kNone;
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile);
   bool is_extension = extension.is_extension() || extension.is_shared_module();
   bool is_non_visible_extension =
-      extensions::Manifest::IsPolicyLocation(extension.location()) ||
       extensions::Manifest::IsComponentLocation(extension.location());
-  // We will not show warnings on Chrome apps or extensions that are not
-  // visible to the user.
-  if (!is_extension || is_non_visible_extension) {
-    return top_warning_reason;
+  bool is_explicitly_allowed_by_policy =
+      extension_management->IsInstallationExplicitlyAllowed(extension.id());
+  // We do not show warnings for the following:
+  // - Chrome apps
+  // - Chrome extensions that are enterprise policy controlled OR not visible
+  // to the user.
+  if (!is_extension || is_non_visible_extension ||
+      is_explicitly_allowed_by_policy) {
+    return developer::SafetyCheckWarningReason::kNone;
   }
 
   developer::SafetyCheckWarningReason acknowledged_reason =

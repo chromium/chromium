@@ -81,10 +81,11 @@ found in the LICENSE file.
                 android:visibility="gone" />
 
             <LinearLayout
+                android:id="@+id/url_bar_wrapper"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:orientation="horizontal"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="bottom"
                 android:layoutDirection="ltr">
                 <org.chromium.ui.widget.ChromeImageButton
                     android:id="@+id/security_icon"

@@ -157,8 +157,10 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
     return script;
   }
 
-  switch (compile_options) {
-    case v8::ScriptCompiler::kConsumeCompileHints: {
+  switch (static_cast<int>(compile_options)) {
+    case v8::ScriptCompiler::kConsumeCompileHints:
+    case v8::ScriptCompiler::kConsumeCompileHints |
+        v8::ScriptCompiler::kFollowCompileHintsMagicComment: {
       // We can only consume local or crowdsourced compile hints, but
       // not both at the same time. If the page has crowdsourced compile hints,
       // we won't generate local compile hints, so won't ever have them.
@@ -219,10 +221,11 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
             ExecutionContext::GetCodeCacheHostFromContext(execution_context),
             CachedMetadataHandler::kClearPersistentStorage);
         // Compile without compile hints.
+        compile_options = v8::ScriptCompiler::CompileOptions(
+            compile_options & (~v8::ScriptCompiler::kConsumeCompileHints));
         v8::ScriptCompiler::Source source(code, origin);
-        return v8::ScriptCompiler::Compile(
-            script_state->GetContext(), &source,
-            v8::ScriptCompiler::kNoCompileOptions, no_cache_reason);
+        return v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
+                                           compile_options, no_cache_reason);
       }
       v8::ScriptCompiler::Source source(
           code, origin,
@@ -231,7 +234,9 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
       return v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
                                          compile_options, no_cache_reason);
     }
-    case v8::ScriptCompiler::kProduceCompileHints: {
+    case v8::ScriptCompiler::kProduceCompileHints:
+    case v8::ScriptCompiler::kProduceCompileHints |
+        v8::ScriptCompiler::kFollowCompileHintsMagicComment: {
       base::UmaHistogramEnumeration(
           v8_compile_hints::kStatusHistogram,
           v8_compile_hints::Status::kProduceCompileHintsClassicNonStreaming);
@@ -240,7 +245,8 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
                                          compile_options, no_cache_reason);
     }
     case v8::ScriptCompiler::kNoCompileOptions:
-    case v8::ScriptCompiler::kEagerCompile: {
+    case v8::ScriptCompiler::kEagerCompile:
+    case v8::ScriptCompiler::kFollowCompileHintsMagicComment: {
       base::UmaHistogramEnumeration(
           v8_compile_hints::kStatusHistogram,
           v8_compile_hints::Status::kNoCompileHintsClassicNonStreaming);
@@ -607,18 +613,23 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     V8CodeCache::ProduceCacheOptions produce_cache_options;
     v8::ScriptCompiler::NoCacheReason no_cache_reason;
     Page* page = frame != nullptr ? frame->GetPage() : nullptr;
-    bool is_http = classic_script->SourceUrl().ProtocolIsInHTTPFamily();
-    bool might_generate_crowdsourced_compile_hints =
+    const bool is_http = classic_script->SourceUrl().ProtocolIsInHTTPFamily();
+    const bool might_generate_crowdsourced_compile_hints =
         is_http && page != nullptr &&
         page->GetV8CrowdsourcedCompileHintsProducer().MightGenerateData();
-    bool can_use_crowdsourced_compile_hints =
+    const bool can_use_crowdsourced_compile_hints =
         is_http && page != nullptr && page->MainFrame() == frame &&
         page->GetV8CrowdsourcedCompileHintsConsumer().HasData();
+    const bool v8_compile_hints_magic_comment_runtime_enabled =
+        RuntimeEnabledFeatures::JavaScriptCompileHintsMagicRuntimeEnabled(
+            execution_context);
+
     std::tie(compile_options, produce_cache_options, no_cache_reason) =
         V8CodeCache::GetCompileOptions(
             execution_context->GetV8CacheOptions(), *classic_script,
             might_generate_crowdsourced_compile_hints,
-            can_use_crowdsourced_compile_hints);
+            can_use_crowdsourced_compile_hints,
+            v8_compile_hints_magic_comment_runtime_enabled);
 
     v8::ScriptOrigin origin = classic_script->CreateScriptOrigin(isolate);
     v8::MaybeLocal<v8::Value> maybe_result;

@@ -8,10 +8,12 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -64,6 +66,7 @@ ManagementToolbarButton::ManagementToolbarButton(BrowserView* browser_view,
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON);
 
   SetID(VIEW_ID_MANAGEMENT_BUTTON);
+  SetProperty(views::kElementIdentifierKey, kToolbarManagementButtonElementId);
 
   // The icon should not flip with RTL UI. This does not affect text rendering
   // and LabelButton image/label placement is still flipped like usual.
@@ -78,16 +81,33 @@ ManagementToolbarButton::ManagementToolbarButton(BrowserView* browser_view,
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kEnterpriseCustomLabel,
-      base::BindRepeating(&ManagementToolbarButton::UpdateText,
+      base::BindRepeating(&ManagementToolbarButton::UpdateManagementInfo,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kEnterpriseLogoUrl,
-      base::BindRepeating(&ManagementToolbarButton::UpdateIcon,
+      base::BindRepeating(&ManagementToolbarButton::UpdateManagementInfo,
                           base::Unretained(this)));
-  SetVisible(CanShowManagementToolbarButton(*profile_->GetPrefs()));
+  UpdateManagementInfo();
 }
 
 ManagementToolbarButton::~ManagementToolbarButton() = default;
+
+void ManagementToolbarButton::UpdateManagementInfo() {
+  PrefService* prefs = profile_->GetPrefs();
+  std::string label;
+  std::string icon_url;
+  bool show_management_toolbar_button = CanShowManagementToolbarButton(*prefs);
+  SetVisible(show_management_toolbar_button);
+  SetManagementLabel(prefs->GetString(prefs::kEnterpriseCustomLabel));
+  if (show_management_toolbar_button) {
+    chrome::enterprise_util::GetManagementIcon(
+        GURL(prefs->GetString(prefs::kEnterpriseLogoUrl)), profile_,
+        base::BindOnce(&ManagementToolbarButton::SetManagementIcon,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    management_icon_ = gfx::Image();
+  }
+}
 
 void ManagementToolbarButton::UpdateIcon() {
   // If widget isn't set, the button doesn't have access to the theme provider
@@ -97,8 +117,6 @@ void ManagementToolbarButton::UpdateIcon() {
   }
 
   SetImageModel(ButtonState::STATE_NORMAL, GetIcon());
-
-  SetVisible(CanShowManagementToolbarButton(*profile_->GetPrefs()));
 }
 
 void ManagementToolbarButton::Layout(PassKey) {
@@ -129,9 +147,7 @@ bool ManagementToolbarButton::ShouldPaintBorder() const {
 
 void ManagementToolbarButton::UpdateText() {
   SetTooltipText(l10n_util::GetStringUTF16(IDS_MANAGED));
-  SetHighlight(/*text=*/base::UTF8ToUTF16(profile_->GetPrefs()->GetString(
-                   prefs::kEnterpriseCustomLabel)),
-               /*color=*/std::nullopt);
+  SetHighlight(/*text=*/management_label_, /*color=*/std::nullopt);
   UpdateLayoutInsets();
 
   // TODO(crbug.com/40689215): this is a hack because toolbar buttons don't
@@ -145,7 +161,6 @@ void ManagementToolbarButton::UpdateText() {
   // take over.
   SizeToPreferredSize();
   InvalidateLayout();
-  SetVisible(CanShowManagementToolbarButton(*profile_->GetPrefs()));
 }
 
 void ManagementToolbarButton::OnThemeChanged() {
@@ -155,8 +170,7 @@ void ManagementToolbarButton::OnThemeChanged() {
 }
 
 void ManagementToolbarButton::ButtonPressed() {
-  // TODO(crbug/347245819) : Make this show the management menu view once
-  // implemented.
+  browser_->window()->ShowBubbleFromManagementToolbarButton();
 }
 
 ui::ImageModel ManagementToolbarButton::GetIcon() const {
@@ -165,18 +179,13 @@ ui::ImageModel ManagementToolbarButton::GetIcon() const {
   const int icon_size = ui::TouchUiController::Get()->touch_ui()
                             ? kDefaultIconSizeChromeRefresh
                             : kIconSizeForNonTouchUi;
-  policy::BrowserManagementService* management_service =
-      static_cast<policy::BrowserManagementService*>(
-          policy::ManagementServiceFactory::GetForProfile(profile_));
-  gfx::Image management_logo =
-      management_service->GetMetadata().GetManagementLogo();
-  if (management_logo.IsEmpty()) {
+  if (management_icon_.IsEmpty()) {
     return ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
                                           ui::kColorMenuIcon, icon_size);
   }
 
   gfx::Image image = profiles::GetSizedAvatarIcon(
-      management_logo, icon_size, icon_size, profiles::SHAPE_SQUARE);
+      management_icon_, icon_size, icon_size, profiles::SHAPE_SQUARE);
   return ui::ImageModel::FromImageSkia(image.AsImageSkia());
 }
 
@@ -190,6 +199,18 @@ bool ManagementToolbarButton::IsLabelPresentAndVisible() const {
 void ManagementToolbarButton::UpdateLayoutInsets() {
   SetLayoutInsets(::GetLayoutInsets(
       IsLabelPresentAndVisible() ? AVATAR_CHIP_PADDING : TOOLBAR_BUTTON));
+}
+
+void ManagementToolbarButton::SetManagementLabel(
+    const std::string& management_label) {
+  management_label_ = base::UTF8ToUTF16(management_label);
+  UpdateText();
+}
+
+void ManagementToolbarButton::SetManagementIcon(
+    const gfx::Image& management_icon) {
+  management_icon_ = management_icon;
+  UpdateIcon();
 }
 
 BEGIN_METADATA(ManagementToolbarButton)

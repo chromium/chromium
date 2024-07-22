@@ -15,7 +15,8 @@
             role-description="$i18n{subpageArrowRoleDescription}"
             start-icon="cr20:password" external>
         </cr-link-row>
-        <template is="dom-if" if="[[isPlusAddressSettingEnabled_]]">
+        <template is="dom-if"
+            if="[[isPlusAddressAutofillLevelSettingEnabled_]]">
           <cr-link-row id="plusAddressManagerButton"
               label="$i18n{plusAddressSettings}"
               on-click="onPlusAddressClick_"
@@ -30,6 +31,7 @@
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
         <cr-link-row id="addressesManagerButton"
             start-icon="settings:location-on" label="$i18n{addressesTitle}"
+            sub-label="$i18n{addressesSublabel}"
             on-click="onAddressesClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
       </div>

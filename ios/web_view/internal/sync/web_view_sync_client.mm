@@ -19,8 +19,10 @@
 #import "components/plus_addresses/settings/plus_address_setting_service.h"
 #import "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #import "components/sync/base/sync_util.h"
+#import "components/sync/model/model_type_store_service.h"
 #import "components/sync/service/model_type_controller.h"
 #import "components/sync/service/sync_api_component_factory.h"
+#import "components/sync_device_info/device_info_sync_service.h"
 #import "components/version_info/version_info.h"
 #import "components/version_info/version_string.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -82,35 +84,50 @@ WebViewSyncClient::WebViewSyncClient(
     syncer::ModelTypeStoreService* model_type_store_service,
     syncer::DeviceInfoSyncService* device_info_sync_service,
     syncer::SyncInvalidationsService* sync_invalidations_service)
-    : profile_web_data_service_(profile_web_data_service),
-      account_web_data_service_(account_web_data_service),
-      profile_password_store_(profile_password_store),
-      account_password_store_(account_password_store),
-      pref_service_(pref_service),
+    : pref_service_(pref_service),
       identity_manager_(identity_manager),
-      model_type_store_service_(model_type_store_service),
-      device_info_sync_service_(device_info_sync_service),
       sync_invalidations_service_(sync_invalidations_service) {
   component_factory_ =
       std::make_unique<browser_sync::SyncApiComponentFactoryImpl>(
-          this, version_info::Channel::STABLE, web::GetUIThreadTaskRunner({}),
-          profile_web_data_service_->GetDBTaskRunner(),
-          profile_web_data_service_, account_web_data_service_,
-          profile_password_store_, account_password_store_,
-          /*local_or_syncable_bookmark_sync_service=*/nullptr,
-          /*account_bookmark_sync_service=*/nullptr,
-          /*bookmark_model=*/nullptr,
-          /*power_bookmark_service=*/nullptr,
-          /*supervised_user_settings_service=*/nullptr,
-          /*plus_address_setting_service=*/nullptr,
-          /*plus_address_webdata_service=*/nullptr,
-          /*TODO(crbug.com/330201909) implement on iOS
-             product_specifications_service= */
-          nullptr,
-          /*data_sharing_service=*/nullptr);
+          this, device_info_sync_service->GetDeviceInfoTracker(),
+          model_type_store_service->GetSyncDataPath());
+
   // TODO(crbug.com/40264840): introduce ios webview version of
   // TrustedVaultServiceFactory.
   trusted_vault_client_ = std::make_unique<WebViewTrustedVaultClient>();
+
+  controller_builder_.SetAutofillWebDataService(
+      web::GetUIThreadTaskRunner({}),
+      profile_web_data_service->GetDBTaskRunner(), profile_web_data_service,
+      account_web_data_service);
+  controller_builder_.SetBookmarkModel(nullptr);
+  controller_builder_.SetBookmarkSyncService(nullptr, nullptr);
+  controller_builder_.SetConsentAuditor(nullptr);
+  controller_builder_.SetDataSharingService(nullptr);
+  controller_builder_.SetDeviceInfoSyncService(device_info_sync_service);
+  controller_builder_.SetDualReadingListModel(nullptr);
+  controller_builder_.SetFaviconService(nullptr);
+  controller_builder_.SetGoogleGroupsManager(nullptr);
+  controller_builder_.SetHistoryService(nullptr);
+  controller_builder_.SetIdentityManager(identity_manager);
+  controller_builder_.SetModelTypeStoreService(model_type_store_service);
+  controller_builder_.SetPasskeyModel(nullptr);
+  controller_builder_.SetPasswordReceiverService(nullptr);
+  controller_builder_.SetPasswordSenderService(nullptr);
+  controller_builder_.SetPasswordStore(profile_password_store,
+                                       account_password_store);
+  controller_builder_.SetPlusAddressServices(nullptr, nullptr);
+  controller_builder_.SetPowerBookmarkService(nullptr);
+  controller_builder_.SetPrefService(pref_service_);
+  controller_builder_.SetPrefServiceSyncable(nullptr);
+  // TODO(crbug.com/330201909) implement for iOS.
+  controller_builder_.SetProductSpecificationsService(nullptr);
+  controller_builder_.SetSendTabToSelfSyncService(nullptr);
+  controller_builder_.SetSessionSyncService(nullptr);
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  controller_builder_.SetSupervisedUserSettingsService(nullptr);
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  controller_builder_.SetUserEventService(nullptr);
 }
 
 WebViewSyncClient::~WebViewSyncClient() {}
@@ -129,68 +146,11 @@ base::FilePath WebViewSyncClient::GetLocalSyncBackendFolder() {
   return base::FilePath();
 }
 
-syncer::ModelTypeStoreService* WebViewSyncClient::GetModelTypeStoreService() {
-  return model_type_store_service_;
-}
-
-consent_auditor::ConsentAuditor* WebViewSyncClient::GetConsentAuditor() {
-  return nullptr;
-}
-
-syncer::DeviceInfoSyncService* WebViewSyncClient::GetDeviceInfoSyncService() {
-  return device_info_sync_service_;
-}
-
-favicon::FaviconService* WebViewSyncClient::GetFaviconService() {
-  return nullptr;
-}
-
-history::HistoryService* WebViewSyncClient::GetHistoryService() {
-  return nullptr;
-}
-
-webauthn::PasskeyModel* WebViewSyncClient::GetPasskeyModel() {
-  return nullptr;
-}
-
-reading_list::DualReadingListModel*
-WebViewSyncClient::GetDualReadingListModel() {
-  return nullptr;
-}
-
-syncer::UserEventService* WebViewSyncClient::GetUserEventService() {
-  return nullptr;
-}
-
-sync_preferences::PrefServiceSyncable*
-WebViewSyncClient::GetPrefServiceSyncable() {
-  return nullptr;
-}
-
-sync_sessions::SessionSyncService* WebViewSyncClient::GetSessionSyncService() {
-  return nullptr;
-}
-
-password_manager::PasswordReceiverService*
-WebViewSyncClient::GetPasswordReceiverService() {
-  return nullptr;
-}
-
-password_manager::PasswordSenderService*
-WebViewSyncClient::GetPasswordSenderService() {
-  return nullptr;
-}
-
-send_tab_to_self::SendTabToSelfSyncService*
-WebViewSyncClient::GetSendTabToSelfSyncService() {
-  return nullptr;
-}
-
 syncer::ModelTypeController::TypeVector
 WebViewSyncClient::CreateModelTypeControllers(
     syncer::SyncService* sync_service) {
-  return component_factory_->CreateCommonModelTypeControllers(
-      GetDisabledTypes(), sync_service);
+  return controller_builder_.Build(GetDisabledTypes(), sync_service,
+                                   version_info::Channel::STABLE);
 }
 
 syncer::SyncInvalidationsService*

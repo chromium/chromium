@@ -41,23 +41,22 @@ enum class NameForm {
   kGaiaAndLocalName,
 };
 
-struct ProfileManagementOicdTokens {
-  // TODO(b/353757492): Fix typo and possibly change from struct to class.
-  ProfileManagementOicdTokens();
-  ProfileManagementOicdTokens(const std::string& auth_token,
+struct ProfileManagementOidcTokens {
+  ProfileManagementOidcTokens();
+  ProfileManagementOidcTokens(const std::string& auth_token,
                               const std::string& id_token,
                               const std::u16string& identity_name);
-  ProfileManagementOicdTokens(const std::string& auth_token,
+  ProfileManagementOidcTokens(const std::string& auth_token,
                               const std::string& id_token,
                               const std::string& state);
 
-  ProfileManagementOicdTokens(const ProfileManagementOicdTokens& other);
-  ProfileManagementOicdTokens& operator=(
-      const ProfileManagementOicdTokens& other);
+  ProfileManagementOidcTokens(const ProfileManagementOidcTokens& other);
+  ProfileManagementOidcTokens& operator=(
+      const ProfileManagementOidcTokens& other);
 
-  ProfileManagementOicdTokens(ProfileManagementOicdTokens&& other);
-  ProfileManagementOicdTokens& operator=(ProfileManagementOicdTokens&& other);
-  ~ProfileManagementOicdTokens();
+  ProfileManagementOidcTokens(ProfileManagementOidcTokens&& other);
+  ProfileManagementOidcTokens& operator=(ProfileManagementOidcTokens&& other);
+  ~ProfileManagementOidcTokens();
 
   // Authorization token from the authorization response.
   std::string auth_token;
@@ -201,7 +200,7 @@ class ProfileAttributesEntry {
   // Returns the Oauth token and Id token from the OIDC authentication response
   // that created the profile. The existence of these tokens are also used to
   // check whether the profile is created by an OIDC authentication response.
-  ProfileManagementOicdTokens GetProfileManagementOidcTokens() const;
+  ProfileManagementOidcTokens GetProfileManagementOidcTokens() const;
 
   // Returns the signin id for a profile managed by a token. This may be empty
   // even if there is an enrollment token.
@@ -249,7 +248,7 @@ class ProfileAttributesEntry {
 
   void SetProfileManagementEnrollmentToken(const std::string& enrollment_token);
   void SetProfileManagementOidcTokens(
-      const ProfileManagementOicdTokens& oidc_tokens);
+      const ProfileManagementOidcTokens& oidc_tokens);
   void SetProfileManagementId(const std::string& id);
 
   void SetAuthInfo(const std::string& gaia_id,

@@ -320,18 +320,19 @@ suite('SelectionOverlay', function() {
     const expectedTop = 25 / parentBoundingRect.height * 100;
     const expectedLeft = 50 / parentBoundingRect.width * 100;
 
-    assertEquals(
-        `${expectedHeight}%`,
-        postSelectionStyles.getPropertyValue('--selection-height'));
-    assertEquals(
-        `${expectedWidth}%`,
-        postSelectionStyles.getPropertyValue('--selection-width'));
-    assertEquals(
-        `${expectedTop}%`,
-        postSelectionStyles.getPropertyValue('--selection-top'));
-    assertEquals(
-        `${expectedLeft}%`,
-        postSelectionStyles.getPropertyValue('--selection-left'));
+    // Only look at first 5 digits to account for rounding errors.
+    assertStringContains(
+        postSelectionStyles.getPropertyValue('--selection-height'),
+        expectedHeight.toString().substring(0, 6));
+    assertStringContains(
+        postSelectionStyles.getPropertyValue('--selection-width'),
+        expectedWidth.toString().substring(0, 6));
+    assertStringContains(
+        postSelectionStyles.getPropertyValue('--selection-top'),
+        expectedTop.toString().substring(0, 6));
+    assertStringContains(
+        postSelectionStyles.getPropertyValue('--selection-left'),
+        expectedLeft.toString().substring(0, 6));
   });
 
   test('verify that tapping an object triggers post selection', async () => {

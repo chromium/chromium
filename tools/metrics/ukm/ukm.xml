@@ -18,6 +18,150 @@ be describing additional metrics about the same event.
 
 <ukm-configuration>
 
+<event name="AbandonedNavigation" singular="True">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Metrics recorded each time a navigation/page load is abandoned.
+  </summary>
+  <metric name="AbandonReason">
+    <summary>
+      The reason the navigation/page load gets abandoned.
+    </summary>
+  </metric>
+  <metric name="AbandonTimingFromLastMilestone">
+    <summary>
+      The time when the navigation/page load is abandoned, relative to the last
+      milestone.
+    </summary>
+  </metric>
+  <metric name="AbandonTimingFromNavigationStart">
+    <summary>
+      The time when the navigation/page load is abandoned, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="AFTEndTime">
+    <summary>
+      The timestamp of the AFT End event for the page load, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="AFTStartTime">
+    <summary>
+      The timestamp of the AFT Start event for the page load, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="BodyChunkTime">
+    <summary>
+      The time when the body chunk is processed for the page load, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="CommitReceivedTime">
+    <summary>
+      The time when the CommitNavigation IPC for the navigation is received in
+      the renderer process, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="CommitSentTime">
+    <summary>
+      The time when the CommitNavigation IPC for the navigation is sent from the
+      browser process, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="DidCommitTime">
+    <summary>
+      The time when the DidCommit IPC for the navigation is received, relative
+      to navigation start.
+    </summary>
+  </metric>
+  <metric name="DOMContentLoadedTime">
+    <summary>
+      The timestamp of when the &quot;DOMContentLoaded&quot; event is fired for
+      the page load, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="FirstContentfulPaintTime">
+    <summary>
+      The timestamp of the first contentful paint for the page load, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="FirstRedirectedRequestStartTime">
+    <summary>
+      The time when the first network request that got redirected for the
+      navigation started, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="FirstRedirectResponseReceived">
+    <summary>
+      Whether the first redirect response is received yet.
+    </summary>
+  </metric>
+  <metric name="LargestContentfulPaintTime">
+    <summary>
+      The timestamp of the largest contentful paint for the page load, relative
+      to navigation start.
+    </summary>
+  </metric>
+  <metric name="LastMilestoneBeforeAbandon">
+    <summary>
+      The last milestone before the navigation is abandoned.
+    </summary>
+  </metric>
+  <metric name="LoaderStartTime">
+    <summary>
+      The time when the URLLoader for the navigation started, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="LoadEventStartedTime">
+    <summary>
+      The timestamp of when the &quot;load&quot; event is fired for the page
+      load, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="NonRedirectedRequestStartTime">
+    <summary>
+      The time when the final network request that didn't got redirected for the
+      navigation started, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="NonRedirectResponseReceived">
+    <summary>
+      Whether the non-redirect/final response is received yet.
+    </summary>
+  </metric>
+  <metric name="ParseStartTime">
+    <summary>
+      The time when the parsing of the HTTP response body started, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="PreviousBackgroundedTime">
+    <summary>
+      If we've experienced backgrounding while the navigation/page load is
+      running before this abandonment event happened, this will have the time
+      when the backgrounding happened, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="PreviousHiddenTime">
+    <summary>
+      If we've experienced hiding while the navigation/page load is running
+      before this abandonment event happened, this will have the time when the
+      hiding happened, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="RendererProcessInitTime">
+    <summary>
+      The time when the final renderer process for the navigation is
+      initialized, relative to navigation start.
+    </summary>
+  </metric>
+</event>
+
 <event name="AboutThisSiteStatus">
   <owner>olesiamarukhnno@google.com</owner>
   <summary>
@@ -7105,6 +7249,65 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="DIPS.NavigationFlowNode" singular="True">
+  <owner>svend@google.com</owner>
+  <owner>dc-komics@google.com</owner>
+  <summary>
+    When a user visits three consecutive pages A-&gt;B-&gt;C within a tab, B
+    accesses cookies or storage, and the site (eTLD+1) for B is different from
+    the sites of A and C, then this event is recorded.
+  </summary>
+  <metric name="DidHaveSuccessfulWAA" enum="Boolean">
+    <summary>
+      True if this page had a successful WebAuthn assertion during the visit.
+    </summary>
+  </metric>
+  <metric name="DidHaveUserActivation" enum="Boolean">
+    <summary>
+      True if this page received user activation (click, etc.) during the visit.
+    </summary>
+  </metric>
+  <metric name="DidSiteHavePreviousUserActivation" enum="Boolean">
+    <summary>
+      True if DIPS had a record of user activation on this page's site prior to
+      this visit to this page.
+    </summary>
+  </metric>
+  <metric name="VisitDurationMilliseconds">
+    <summary>
+      The number of milliseconds this page was the primary page for,
+      exponentially bucketed. The duration increases as long as the page is the
+      primary page in its tab, even if the tab is not the active tab.
+    </summary>
+  </metric>
+  <metric name="WasEntryUserInitiated" enum="Boolean">
+    <summary>
+      True if the navigation from the prior page to this page was initiated by a
+      user gesture (e.g., typing a URL into the omnibar, clicking a link, etc.).
+    </summary>
+  </metric>
+  <metric name="WasExitUserInitiated" enum="Boolean">
+    <summary>
+      True if the navigation from this page to the next page was initiated by a
+      user gesture (e.g., typing a URL into the omnibar, clicking a link, etc.).
+    </summary>
+  </metric>
+  <metric name="WereEntryAndExitRendererInitiated" enum="Boolean">
+    <summary>
+      True if both the navigation from the prior page to this page, as well as
+      the navigation from this page to the next page, were initiated from the
+      renderer (e.g., by clicking a link in page content, etc.).
+    </summary>
+  </metric>
+  <metric name="WerePreviousAndNextSiteSame" enum="Boolean">
+    <summary>
+      True if the site (eTLD+1) for the page visited immediately prior to this
+      one (in the same tab) is the same as the site for the page visited
+      immediately after this one (in the same tab).
+    </summary>
+  </metric>
+</event>
+
 <event name="DIPS.Redirect" singular="True">
   <owner>rtarpine@google.com</owner>
   <owner>dc-komics@google.com</owner>
@@ -7725,6 +7928,40 @@ be describing additional metrics about the same event.
   <metric name="State" enum="ExtensionInProgressRequestState">
     <summary>
       The final state of the request.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="FacilitatedPayments.Pix.Transaction">
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>rouslan@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    An event that is logged when a FacilitatedPayments transaction is completed.
+  </summary>
+  <metric name="Result" enum="FacilitatedPayments.TransactionResult">
+    <summary>
+      The result of the transaction.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TriggerSource" enum="FacilitatedPayments.TriggerSource">
+    <summary>
+      The trigger source for this transaction.
     </summary>
     <aggregation>
       <history>

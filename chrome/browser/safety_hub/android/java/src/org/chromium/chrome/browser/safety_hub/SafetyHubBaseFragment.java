@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.ApplicationStatus;
@@ -23,6 +26,14 @@ public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment
         implements FragmentSettingsLauncher {
     private SnackbarManager mSnackbarManager;
     private SettingsLauncher mSettingsLauncher;
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Disable animations of preference changes.
+        getListView().setItemAnimator(null);
+    }
 
     @Override
     public void setSettingsLauncher(SettingsLauncher settingsLauncher) {

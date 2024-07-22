@@ -5,6 +5,7 @@
 #include "components/sync/test/fake_model_type_controller.h"
 
 #include <memory>
+#include <utility>
 
 #include "components/sync/engine/data_type_activation_response.h"
 
@@ -36,6 +37,11 @@ FakeModelTypeControllerDelegate* FakeModelTypeController::model(
       GetDelegateForTesting(sync_mode));
 }
 
+void FakeModelTypeController::SetLocalDataBatchUploader(
+    std::unique_ptr<ModelTypeLocalDataBatchUploader> uploader) {
+  uploader_ = std::move(uploader);
+}
+
 ModelTypeController::PreconditionState
 FakeModelTypeController::GetPreconditionState() const {
   return precondition_state_;
@@ -44,6 +50,11 @@ FakeModelTypeController::GetPreconditionState() const {
 std::unique_ptr<DataTypeActivationResponse> FakeModelTypeController::Connect() {
   ++activate_call_count_;
   return ModelTypeController::Connect();
+}
+
+ModelTypeLocalDataBatchUploader*
+FakeModelTypeController::GetModelTypeLocalDataBatchUploader() {
+  return uploader_.get();
 }
 
 }  // namespace syncer

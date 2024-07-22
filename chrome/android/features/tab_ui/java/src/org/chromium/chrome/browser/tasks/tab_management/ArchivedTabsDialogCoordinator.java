@@ -374,6 +374,7 @@ public class ArchivedTabsDialogCoordinator {
                         mMode,
                         /* displayGroups= */ false,
                         mSnackbarManager,
+                        /* bottomSheetController= */ null,
                         TabProperties.TabActionState.CLOSABLE,
                         mGridCardOnCLickListenerProvider);
     }
