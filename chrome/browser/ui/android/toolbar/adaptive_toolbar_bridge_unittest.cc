@@ -122,6 +122,10 @@ TEST_F(AdaptiveToolbarBridgeTest, GetRankedButtons_NotReady) {
   run_loop_.Run();
 
   EXPECT_FALSE(callback_is_ready_);
+  std::vector<int> expected_buttons = {
+      static_cast<int>(AdaptiveToolbarButtonVariant::kUnknown),
+  };
+  EXPECT_EQ(callback_buttons_, expected_buttons);
 }
 
 TEST_F(AdaptiveToolbarBridgeTest, GetRankedButtons_RawResults) {
@@ -202,6 +206,10 @@ TEST_F(AdaptiveToolbarBridgeTest, GetRankedButtons_RawResults_NotReady) {
   run_loop_.Run();
 
   EXPECT_FALSE(callback_is_ready_);
+  std::vector<int> expected_buttons = {
+      static_cast<int>(AdaptiveToolbarButtonVariant::kUnknown),
+  };
+  EXPECT_EQ(callback_buttons_, expected_buttons);
 }
 
 }  // namespace adaptive_toolbar
