@@ -37,7 +37,7 @@ BASE_FEATURE(kAndroidAutofillBottomSheetWorkaround,
 // session.
 BASE_FEATURE(kAndroidAutofillCancelSessionOnNavigation,
              "AndroidAutofillCancelSessionOnNavigation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, we stop relying on `known_success` in FormSubmitted signal to
 // decide whether to defer submission on not, and instead we directly inform the
@@ -53,7 +53,7 @@ BASE_FEATURE(kAndroidAutofillDirectFormSubmission,
 // Future features may extend prefill requests to more form types.
 BASE_FEATURE(kAndroidAutofillPrefillRequestsForLoginForms,
              "AndroidAutofillPrefillRequestsForLoginForms",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, username and password field predictions are taken from
 // `password_manager::FormDataParser` and overwrite Autofill's native
@@ -63,7 +63,7 @@ BASE_FEATURE(kAndroidAutofillPrefillRequestsForLoginForms,
 // `FormDataParser` predictions.
 BASE_FEATURE(kAndroidAutofillUsePwmPredictionsForOverrides,
              "AndroidAutofillUsePwmPredictionsForOverrides",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, offer prefill requests (i.e. calls to
 // `AutofillManager.notifyVirtualViewsReady`) to change
