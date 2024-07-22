@@ -26,8 +26,7 @@ TEST_P(VpdDumpNameValuePairsParserTest, TestParseNameValuePairs) {
 "keyboard_layout"="mozc-jp"
 "empty"=""
 )";
-  EXPECT_TRUE(parser.ParseNameValuePairs(contents1, format,
-                                         /*debug_source=*/"unit test"));
+  EXPECT_TRUE(parser.ParseNameValuePairs(contents1, format));
   EXPECT_EQ(3U, map.size());
   EXPECT_EQ("ja", map["initial_locale"]);
   EXPECT_EQ("mozc-jp", map["keyboard_layout"]);
@@ -39,8 +38,7 @@ TEST_P(VpdDumpNameValuePairsParserTest, TestParseNameValuePairs) {
 "serial_number"="BADBADBAD""
 "model_name"="15" Chromebook"
 )";
-  EXPECT_TRUE(parser.ParseNameValuePairs(contents2, format,
-                                         /*debug_source=*/"unit test"));
+  EXPECT_TRUE(parser.ParseNameValuePairs(contents2, format));
   EXPECT_EQ(3U, map.size());
   EXPECT_EQ("\"quote\"", map["quoted"]);
   EXPECT_EQ("BADBADBAD\"", map["serial_number"]);
@@ -53,21 +51,8 @@ TEST_P(VpdDumpNameValuePairsParserTest, TestParseNameValuePairs) {
 "a=b"="c"
 ""="value"
 )";
-  EXPECT_FALSE(parser.ParseNameValuePairs(contents3, format,
-                                          /*debug_source=*/"unit test"));
+  EXPECT_FALSE(parser.ParseNameValuePairs(contents3, format));
   EXPECT_EQ(0U, map.size());
-
-  // This is just for visual confirmations that we have warnings logged and
-  // that we don't expose the value of the device stable secret in logs.
-  // TODO(crbug.com/40057283): Delete after logging is fixed.
-  map.clear();
-  const std::string contents5 = R"(
-"stable_device_secret_DO_NOT_SHARE"="prettybadtobehere"
-"stable_device_secret_DO_NOT_SHARE"="stillprettybadtobehere"
-)";
-  EXPECT_TRUE(parser.ParseNameValuePairs(contents5, format,
-                                         /*debug_source=*/"unit test"));
-  EXPECT_EQ(1U, map.size());
 }
 
 INSTANTIATE_TEST_SUITE_P(NameValuePairs,
@@ -87,8 +72,7 @@ name2="value2"
 "name3"="value3"
 name4="value4"
 )";
-  EXPECT_FALSE(parser.ParseNameValuePairs(contents1, format,
-                                          /*debug_source=*/"unit test"));
+  EXPECT_FALSE(parser.ParseNameValuePairs(contents1, format));
   EXPECT_EQ(2U, map.size());
   EXPECT_EQ("value1", map["name1"]);
   EXPECT_EQ("value3", map["name3"]);
@@ -104,8 +88,7 @@ TEST(NameValuePairsParser, TestParseErrorInVpdDumpFormat) {
 "name1"="value1"
 # RW_VPD execute error.
 )";
-  EXPECT_FALSE(parser.ParseNameValuePairs(contents1, format,
-                                          /*debug_source=*/"unit test"));
+  EXPECT_FALSE(parser.ParseNameValuePairs(contents1, format));
   EXPECT_EQ(1U, map.size());
   EXPECT_EQ("value1", map["name1"]);
 }
@@ -122,8 +105,7 @@ name2="value2"
 "name3"="value3"
 name4="value4"
 )";
-  EXPECT_TRUE(parser.ParseNameValuePairs(contents1, format,
-                                         /*debug_source=*/"unit test"));
+  EXPECT_TRUE(parser.ParseNameValuePairs(contents1, format));
   EXPECT_EQ(4U, map.size());
   EXPECT_EQ("value1", map["name1"]);
   EXPECT_EQ("value2", map["name2"]);
@@ -134,8 +116,7 @@ name4="value4"
   const std::string contents2 = R"(
 ="value"
 )";
-  EXPECT_FALSE(parser.ParseNameValuePairs(contents2, format,
-                                          /*debug_source=*/"unit test"));
+  EXPECT_FALSE(parser.ParseNameValuePairs(contents2, format));
   EXPECT_EQ(0U, map.size());
 }
 
