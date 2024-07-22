@@ -8,8 +8,6 @@ option optimize_for = LITE_RUNTIME;
 
 package safe_browsing;
 
-import "components/safe_browsing/core/common/proto/client_model.proto";
-
 message ClientSidePhishingFuzzerCase {
   optional bytes memory_region = 1;
 
