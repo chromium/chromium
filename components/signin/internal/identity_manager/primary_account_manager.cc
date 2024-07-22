@@ -26,6 +26,7 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -786,6 +787,13 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
   LogPrimaryAccountChangeMetrics(event_details);
 
   ComputeExplicitBrowserSignin(event_details, scoped_pref_commit);
+
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+      PrimaryAccountChangeEvent::Type::kCleared) {
+    SigninPrefs(*client_->GetPrefs())
+        .SetChromeLastSignoutTime(previous_state.primary_account.gaia,
+                                  base::Time::Now());
+  }
 
   client_->OnPrimaryAccountChanged(event_details);
 

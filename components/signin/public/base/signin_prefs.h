@@ -75,6 +75,10 @@ class SigninPrefs {
   ChromeSigninUserChoice GetChromeSigninInterceptionUserChoice(
       GaiaId gaia_id) const;
 
+  // Last signout time.
+  void SetChromeLastSignoutTime(GaiaId gaia_id, base::Time last_signout_time);
+  std::optional<base::Time> GetChromeLastSignoutTime(GaiaId gaia_id) const;
+
   // This pref is expected to be used with the reprompt logic for the Chrome
   // Signin bubble. The reprompt should only be possible after bubble declines,
   // meaning that this pref and other related prefs will be cleared when the

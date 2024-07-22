@@ -74,6 +74,7 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -1855,6 +1856,9 @@ class DiceBrowserTestWithChromeSigninIPH
 
 IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithChromeSigninIPH,
                        SigninRememberedIPH) {
+  // The IPH can be shown after 14 days. Use 15 in the test to avoid any
+  // precision problem.
+  base::TimeDelta kIPHReshowDelay = base::Days(15);
   // Simulates a previous choice done with Always sign in.
   SetChromeSigninChoice(ChromeSigninUserChoice::kSignin);
 
@@ -1899,13 +1903,23 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithChromeSigninIPH,
       feature_engagement::
           kIPHExplicitBrowserSigninPreferenceRememberedFeature));
 
-  // Wait two weeks, and do it again: IPH shows again.
-  // TODO(crbug/345192624): The delay should start from the signout event and
-  // not from the last impression.
-  RunTestSequence(AdvanceTime(base::Days(14)));
+  // The IPH can be reshown two weeks after the signout.
+  RunTestSequence(AdvanceTime(kIPHReshowDelay));
   SignoutAndResetState();
   SimulateWebSigninMainAccount();
   SimulateExtendedAccountInfoFetched();
+  // IPH does not reshow yet, because the delay was before the signout event.
+  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
+      feature_engagement::
+          kIPHExplicitBrowserSigninPreferenceRememberedFeature));
+  SignoutAndResetState();
+  // Wait 2 weeks after the signout event (by overriding the last signout date).
+  SigninPrefs(*browser()->profile()->GetPrefs())
+      .SetChromeLastSignoutTime(core_account_info.gaia,
+                                base::Time::Now() - kIPHReshowDelay);
+  SimulateWebSigninMainAccount();
+  SimulateExtendedAccountInfoFetched();
+  // IPH can now show again.
   EXPECT_TRUE(browser()->window()->IsFeaturePromoActive(
       feature_engagement::
           kIPHExplicitBrowserSigninPreferenceRememberedFeature));

@@ -22,6 +22,9 @@ namespace {
 // only metadata.
 constexpr char kSigninAccountPrefs[] = "signin.accounts_metadata_dict";
 
+// Pref used to track the last time the user signed out of Chrome.
+constexpr char kChromeLastSignoutTime[] = "kChromeLastSignoutTime";
+
 // Pref used to store the user choice for the Chrome Signin Intercept. It is
 // tied to an account, stored as the content of a dictionary mapped by the
 // gaia id of the account.
@@ -132,6 +135,16 @@ ChromeSigninUserChoice SigninPrefs::GetChromeSigninInterceptionUserChoice(
   // No value default to 0 -> `ChromeSigninUserChoice::kNoChoice`.
   return static_cast<ChromeSigninUserChoice>(
       account_dict->FindInt(kChromeSigninInterceptionUserChoice).value_or(0));
+}
+
+void SigninPrefs::SetChromeLastSignoutTime(GaiaId gaia_id,
+                                           base::Time last_signout_time) {
+  SetTimePref(last_signout_time, gaia_id, kChromeLastSignoutTime);
+}
+
+std::optional<base::Time> SigninPrefs::GetChromeLastSignoutTime(
+    GaiaId gaia_id) const {
+  return GetTimePref(gaia_id, kChromeLastSignoutTime);
 }
 
 void SigninPrefs::SetChromeSigninInterceptionLastBubbleDeclineTime(

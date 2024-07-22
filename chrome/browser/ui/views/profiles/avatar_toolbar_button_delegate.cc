@@ -52,6 +52,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
@@ -1515,18 +1516,31 @@ bool AvatarToolbarButtonDelegate::ShouldPaintBorder() const {
 
 void AvatarToolbarButtonDelegate::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
-          signin::PrimaryAccountChangeEvent::Type::kSet &&
-      event_details.GetAccessPoint() ==
+  // Try showing the IPH for signin preference remembered.
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+          signin::PrimaryAccountChangeEvent::Type::kSet ||
+      event_details.GetAccessPoint() !=
           signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED) {
-    AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
-        event_details.GetCurrentState().primary_account);
-    if (!account_info.given_name.empty()) {
-      avatar_toolbar_button_
-          ->MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(account_info);
-    } else {
-      gaia_id_for_signin_choice_remembered_ = account_info.gaia;
-    }
+    return;
+  }
+
+  std::string gaia_id = event_details.GetCurrentState().primary_account.gaia;
+  const SigninPrefs signin_prefs(*profile_->GetPrefs());
+  std::optional<base::Time> last_signout_time =
+      signin_prefs.GetChromeLastSignoutTime(gaia_id);
+  if (last_signout_time &&
+      base::Time::Now() - last_signout_time.value() < base::Days(14)) {
+    // Less than two weeks since the last sign out event.
+    return;
+  }
+
+  AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
+      event_details.GetCurrentState().primary_account);
+  if (!account_info.given_name.empty()) {
+    avatar_toolbar_button_
+        ->MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(account_info);
+  } else {
+    gaia_id_for_signin_choice_remembered_ = account_info.gaia;
   }
 }
 
