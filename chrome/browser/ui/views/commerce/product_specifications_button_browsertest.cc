@@ -38,6 +38,7 @@ class MockProductSpecificationsEntryPointController
   MOCK_METHOD(void, OnEntryPointExecuted, (), (override));
   MOCK_METHOD(void, OnEntryPointDismissed, (), (override));
   MOCK_METHOD(void, OnEntryPointHidden, (), (override));
+  MOCK_METHOD(bool, ShouldExecuteEntryPointShow, (), (override));
 };
 
 class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
@@ -57,6 +58,8 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
             browser());
     product_specifications_button()->SetEntryPointControllerForTesting(
         controller_.get());
+    ON_CALL(*controller(), ShouldExecuteEntryPointShow)
+        .WillByDefault(testing::Return(true));
   }
 
   void SetTestingFactory(content::BrowserContext* context) {
@@ -139,6 +142,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest, DelaysShow) {
                    ->expansion_animation_for_testing()
                    ->IsShowing());
 
+  EXPECT_CALL(*controller(), ShouldExecuteEntryPointShow()).Times(1);
   SetLockedExpansionModeForTesting(LockedExpansionMode::kNone);
 
   ASSERT_TRUE(product_specifications_button()
@@ -146,6 +150,28 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest, DelaysShow) {
                   ->IsShowing());
 }
 
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
+                       StopIneligibleDelayedShow) {
+  ASSERT_FALSE(product_specifications_button()
+                   ->expansion_animation_for_testing()
+                   ->IsShowing());
+
+  SetLockedExpansionModeForTesting(LockedExpansionMode::kWillShow);
+  ShowButton();
+
+  ASSERT_FALSE(product_specifications_button()
+                   ->expansion_animation_for_testing()
+                   ->IsShowing());
+
+  EXPECT_CALL(*controller(), ShouldExecuteEntryPointShow()).Times(1);
+  ON_CALL(*controller(), ShouldExecuteEntryPointShow)
+      .WillByDefault(testing::Return(false));
+  SetLockedExpansionModeForTesting(LockedExpansionMode::kNone);
+
+  ASSERT_FALSE(product_specifications_button()
+                   ->expansion_animation_for_testing()
+                   ->IsShowing());
+}
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                        ImmediatelyHidesWhenButtonDismissed) {
