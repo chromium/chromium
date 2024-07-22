@@ -210,10 +210,11 @@ bool PrivateAggregationHost::BindNewReceiver(
                           std::move(aggregation_coordinator_origin),
                       .filtering_id_max_bytes = filtering_id_max_bytes});
 
-  ReceiverContext* receiver_context_raw_ptr = receiver_set_.GetContext(id);
-
   if (timeout) {
     CHECK(timeout->is_positive());
+
+    ReceiverContext* receiver_context_raw_ptr = receiver_set_.GetContext(id);
+    CHECK(receiver_context_raw_ptr);
 
     pipes_with_timeout_count_++;
     receiver_context_raw_ptr->timeout_timer =
@@ -440,6 +441,7 @@ void PrivateAggregationHost::CloseCurrentPipe(PipeResult pipe_result) {
 
 void PrivateAggregationHost::OnTimeoutBeforeDisconnect(mojo::ReceiverId id) {
   ReceiverContext* receiver_context = receiver_set_.GetContext(id);
+  CHECK(receiver_context);
 
   SendReportOnTimeoutOrDisconnect(*receiver_context,
                                   /*remaining_timeout=*/base::TimeDelta());
