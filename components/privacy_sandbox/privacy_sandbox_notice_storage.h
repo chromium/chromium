@@ -107,11 +107,11 @@ class PrivacySandboxNoticeStorage {
   // aren't set.
   std::optional<PrivacySandboxNoticeData> ReadNoticeData(
       PrefService* pref_service,
-      std::string_view notice);
+      std::string_view notice) const;
 
   // Records histograms tracking the state of notice flow on startup.
   void RecordHistogramsOnStartup(PrefService* pref_service,
-                                 std::string_view notice);
+                                 std::string_view notice) const;
 
   // Sets the pref and histogram controlling the action taken on the notice.
   void SetNoticeActionTaken(PrefService* pref_service,
