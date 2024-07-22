@@ -564,11 +564,11 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
         // status.
         if (dev_mode_enabled) {
           base::UmaHistogramEnumeration(
-              "Extensions.NonWebstoreLocationWithDeveloperModeOn.Enabled2",
+              "Extensions.NonWebstoreLocationWithDeveloperModeOn.Enabled3",
               location);
         } else {
           base::UmaHistogramEnumeration(
-              "Extensions.NonWebstoreLocationWithDeveloperModeOff.Enabled2",
+              "Extensions.NonWebstoreLocationWithDeveloperModeOff.Enabled3",
               location);
         }
       }
@@ -910,11 +910,11 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
         !disabled_extension->from_webstore()) {
       if (dev_mode_enabled) {
         base::UmaHistogramEnumeration(
-            "Extensions.NonWebstoreLocationWithDeveloperModeOn.Disabled2",
+            "Extensions.NonWebstoreLocationWithDeveloperModeOn.Disabled3",
             location);
       } else {
         base::UmaHistogramEnumeration(
-            "Extensions.NonWebstoreLocationWithDeveloperModeOff.Disabled2",
+            "Extensions.NonWebstoreLocationWithDeveloperModeOff.Disabled3",
             location);
       }
     }

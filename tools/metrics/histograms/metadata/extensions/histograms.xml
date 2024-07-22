@@ -4131,7 +4131,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram
-    name="Extensions.NonWebstoreLocationWith{DeveloperModeState}{ExtensionState}2"
+    name="Extensions.NonWebstoreLocationWith{DeveloperModeState}{ExtensionState}3"
     enum="ExtensionLocation" expires_after="2024-11-17">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -4141,6 +4141,10 @@ of interesting buckets, such as "internal + external".
     Extension::Location. Emitted on every profile open only for &quot;user
     profiles&quot; (profiles where people can install extensions, specifically
     profiles that can have non-component extensions installed).
+
+    This replaces the previous histogram,
+    NonWebstoreLocationWith{DeveloperModeState}{ExtensionState}2, due to missing
+    data from M126.
   </summary>
   <token key="DeveloperModeState" variants="DeveloperModeState"/>
   <token key="ExtensionState" variants="ExtensionState"/>
