@@ -117,10 +117,16 @@ class FlexItem {
 
   bool MainAxisIsInlineAxis() const;
 
+  // Returns the main-start margin value.
   LayoutUnit FlowAwareMarginStart() const;
+  // Returns the main-end margin value.
   LayoutUnit FlowAwareMarginEnd() const;
+  // Returns the cross-start margin value ignoring flex-wrap.
   LayoutUnit FlowAwareMarginBefore() const;
+  // Returns the cross-end margin value ignoring flex-wrap.
   LayoutUnit FlowAwareMarginAfter() const;
+  // Returns the margin value on the block-end in the container writing-mode.
+  // This isn't aware of `flex-direction` and `flex-wrap`.
   LayoutUnit MarginBlockEnd() const;
 
   LayoutUnit MainAxisMarginExtent() const;
@@ -358,7 +364,11 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   bool IsMultiline() const { return style_->FlexWrap() != EFlexWrap::kNowrap; }
   static bool IsHorizontalFlow(const ComputedStyle&);
   static bool IsColumnFlow(const ComputedStyle&);
+  // Returns true if the main axis faces right or bottom.
   bool IsLeftToRightFlow() const;
+  // Returns the physical direction of the cross axis.
+  // This function is aware of `writing-mode`, `flex-direction`, and
+  // no `flex-wrap`.
   PhysicalDirection GetPhysicalDirection() const;
 
   bool ShouldApplyMinSizeAutoForChild(const LayoutBox& child) const;
@@ -385,8 +395,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   void FlipForWrapReverse(LayoutUnit cross_axis_start_edge,
                           LayoutUnit cross_axis_content_size,
                           HeapVector<NGFlexLine>* flex_line_outputs = nullptr);
-
-  static PhysicalDirection GetPhysicalDirection(const ComputedStyle&);
 
   static const StyleContentAlignmentData& ContentAlignmentNormalBehavior();
   static StyleContentAlignmentData ResolvedJustifyContent(const ComputedStyle&);

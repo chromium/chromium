@@ -928,14 +928,8 @@ void FlexibleBoxAlgorithm::FlipForWrapReverse(
 }
 
 PhysicalDirection FlexibleBoxAlgorithm::GetPhysicalDirection() const {
-  return GetPhysicalDirection(*style_);
-}
-
-// static
-PhysicalDirection FlexibleBoxAlgorithm::GetPhysicalDirection(
-    const ComputedStyle& style) {
-  WritingDirectionMode mode = style.GetWritingDirection();
-  if (!style.ResolvedIsColumnFlexDirection()) {
+  WritingDirectionMode mode = style_->GetWritingDirection();
+  if (!style_->ResolvedIsColumnFlexDirection()) {
     return mode.BlockEnd();
   }
   return mode.InlineEnd();
