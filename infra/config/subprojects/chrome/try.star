@@ -145,6 +145,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "fuchsia-ava-nelson",
+)
+
+chrome_internal_verifier(
     builder = "fuchsia-cast-astro",
 )
 
