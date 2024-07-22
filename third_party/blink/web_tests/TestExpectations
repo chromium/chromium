@@ -2705,7 +2705,6 @@ crbug.com/338513293 [ Win11-arm64 ] virtual/fedcm-multi-idp/external/wpt/fedcm/f
 crbug.com/338513292 [ Win11-arm64 ] virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-arbitrary-content-displayed.tentative.html [ Failure ]
 crbug.com/338437452 [ Win11-arm64 ] external/wpt/html/semantics/embedded-content/bfcache/embedded-type-only.html [ Timeout ]
 crbug.com/338350366 [ Win11-arm64 ] external/wpt/preload/delaying-onload-link-preload-after-discovery.html [ Timeout ]
-crbug.com/338339781 [ Win11-arm64 ] external/wpt/fs/FileSystemFileHandle-cross-primitive-locking.https.tentative.worker.html [ Timeout ]
 crbug.com/337115047 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/fence-report-event-sub-fencedframe.https.html [ Timeout ]
 crbug.com/337069171 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/csp-allowed.https.html [ Timeout ]
 crbug.com/336588276 external/wpt/webnn/conformance_tests/parallel-compute.https.any.html?cpu [ Failure Pass ]
@@ -2747,7 +2746,6 @@ crbug.com/332933144 [ Win11-arm64 ] external/wpt/fetch/api/response/response-clo
 crbug.com/332933144 [ Mac11 ] external/wpt/fetch/api/response/response-clone.any.sharedworker.html [ Failure Timeout ]
 crbug.com/332933144 [ Win11-arm64 ] external/wpt/fetch/api/response/response-clone.any.worker.html [ Failure Timeout ]
 crbug.com/332933144 [ Mac11 ] external/wpt/fetch/api/response/response-clone.any.worker.html [ Failure Timeout ]
-crbug.com/333152481 [ Mac14 ] external/wpt/fs/FileSystemFileHandle-cross-primitive-locking.https.tentative.worker.html [ Failure Timeout ]
 crbug.com/333171923 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribute-allow.https.html [ Timeout ]
 crbug.com/332933144 [ Mac14 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.html [ Failure Timeout ]
 crbug.com/332933144 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.html [ Failure Timeout ]
@@ -7612,3 +7610,6 @@ crbug.com/352093460 external/wpt/webtransport/stats.https.any.serviceworker.html
 # Gardener 2024-07-19
 crbug.com/354060896 [ Release Win11-arm64 ] virtual/media-foundation-for-clear-dcomp/media/track/track-css-window-color.html [ Failure Pass Timeout ]
 crbug.com/354061998 [ Release Win11-arm64 ] http/tests/cookies/partitioned-cookies/ancestor-chain-same-site-subresource-to-cross-site.https.html [ Failure Pass Timeout ]
+
+# Flaky 2024-07-19
+crbug.com/353746882 external/wpt/fs/FileSystemFileHandle-cross-primitive-locking.https.tentative.worker.html [ Failure Pass ]
