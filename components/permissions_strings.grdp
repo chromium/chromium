@@ -474,6 +474,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_MACOS_NAME_FRAGMENT" desc="Text fragment identifying the macOS">
     macOS
   </message>
+  <message name="IDS_WINDOWS_NAME_FRAGMENT" desc="Text fragment identifying the Windows">
+    Windows
+  </message>
   <!--Embedded permission prompts: button labels-->
   <message name="IDS_EMBEDDED_PROMPT_OK_LABEL" desc="Label used on a button that allows the user to acknowledge and close an informational dialog">
     OK

@@ -46,8 +46,6 @@ class SystemPermissionSettingsImpl
         device::GeolocationSystemPermissionManager::GetInstance();
     CHECK(geolocation_system_permission_manager);
     observation_.Observe(geolocation_system_permission_manager);
-    geolocation_status_ =
-        geolocation_system_permission_manager->GetSystemPermission();
   }
 
   ~SystemPermissionSettingsImpl() override {
@@ -64,7 +62,8 @@ class SystemPermissionSettingsImpl
         return prompt(
             system_media_permissions::CheckSystemAudioCapturePermission());
       case ContentSettingsType::GEOLOCATION:
-        return geolocation_status_ ==
+        return device::GeolocationSystemPermissionManager::GetInstance()
+                   ->GetSystemPermission() ==
                device::LocationSystemPermissionStatus::kNotDetermined;
       default:
         return false;
@@ -80,7 +79,8 @@ class SystemPermissionSettingsImpl
         return denied(
             system_media_permissions::CheckSystemAudioCapturePermission());
       case ContentSettingsType::GEOLOCATION:
-        return geolocation_status_ ==
+        return device::GeolocationSystemPermissionManager::GetInstance()
+                   ->GetSystemPermission() ==
                device::LocationSystemPermissionStatus::kDenied;
       default:
         return false;
@@ -96,10 +96,11 @@ class SystemPermissionSettingsImpl
         return allowed(
             system_media_permissions::CheckSystemAudioCapturePermission());
       case ContentSettingsType::GEOLOCATION:
-        return geolocation_status_ ==
+        return device::GeolocationSystemPermissionManager::GetInstance()
+                   ->GetSystemPermission() ==
                device::LocationSystemPermissionStatus::kAllowed;
       default:
-        return false;
+        return true;
     }
   }
 
@@ -170,7 +171,6 @@ class SystemPermissionSettingsImpl
   // implementation.
   void OnSystemPermissionUpdated(
       device::LocationSystemPermissionStatus new_status) override {
-    geolocation_status_ = new_status;
     FlushGeolocationCallbacks();
   }
 
@@ -182,8 +182,6 @@ class SystemPermissionSettingsImpl
     }
   }
 
-  device::LocationSystemPermissionStatus geolocation_status_ =
-      device::LocationSystemPermissionStatus::kNotDetermined;
   std::vector<SystemPermissionResponseCallback> geolocation_callbacks_;
   base::ScopedObservation<
       device::GeolocationSystemPermissionManager,
