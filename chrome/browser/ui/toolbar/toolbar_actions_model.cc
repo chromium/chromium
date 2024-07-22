@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
@@ -306,7 +307,8 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
 
   auto current_position_on_toolbar =
       base::ranges::find(pinned_action_ids_, action_id);
-  DCHECK(current_position_on_toolbar != pinned_action_ids_.end());
+  CHECK(current_position_on_toolbar != pinned_action_ids_.end(),
+        base::NotFatalUntil::M130);
   size_t current_index_on_toolbar =
       current_position_on_toolbar - pinned_action_ids_.begin();
 
@@ -378,7 +380,8 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
 
   auto current_position_in_prefs =
       base::ranges::find(stored_pinned_actions, action_id);
-  DCHECK(current_position_in_prefs != stored_pinned_actions.end());
+  CHECK(current_position_in_prefs != stored_pinned_actions.end(),
+        base::NotFatalUntil::M130);
 
   // Rotate |action_id| to be in the target position.
   if (is_left_to_right_move) {

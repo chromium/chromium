@@ -66,7 +66,8 @@ void MTPDeviceMapService::RevokeMTPFileSystem(
     const AsyncDelegateKey key =
         GetAsyncDelegateKey(device_location, read_only);
     MTPDeviceUsageMap::iterator delegate_it = mtp_device_usage_map_.find(key);
-    DCHECK(delegate_it != mtp_device_usage_map_.end());
+    CHECK(delegate_it != mtp_device_usage_map_.end(),
+          base::NotFatalUntil::M130);
 
     mtp_device_usage_map_[key]--;
     if (mtp_device_usage_map_[key] == 0) {

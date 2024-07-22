@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/media/router/providers/cast/cast_app_availability_tracker.h"
+
 #include "base/containers/contains.h"
+#include "base/not_fatal_until.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 
 using cast_channel::GetAppAvailabilityResult;
@@ -38,7 +40,8 @@ void CastAppAvailabilityTracker::UnregisterSource(
   for (const auto& app_info : it->second.app_infos()) {
     const std::string& app_id = app_info.app_id;
     auto count_it = registration_count_by_app_id_.find(app_id);
-    DCHECK(count_it != registration_count_by_app_id_.end());
+    CHECK(count_it != registration_count_by_app_id_.end(),
+          base::NotFatalUntil::M130);
     if (--(count_it->second) == 0)
       registration_count_by_app_id_.erase(count_it);
   }

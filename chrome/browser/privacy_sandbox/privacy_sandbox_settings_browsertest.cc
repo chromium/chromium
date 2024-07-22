@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
+
 #include <memory>
 #include <string>
 #include <tuple>
@@ -23,7 +25,6 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_switches.h"
@@ -935,7 +936,7 @@ class PrivacySandboxSettingsAttestProtectedAudienceBrowserTest
     // .well-known requests should advertise they accept JSON responses.
     const auto accept_header =
         request.headers.find(net::HttpRequestHeaders::kAccept);
-    DCHECK(accept_header != request.headers.end());
+    CHECK(accept_header != request.headers.end());
     EXPECT_EQ(accept_header->second, "application/json");
 
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();

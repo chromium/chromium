@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -379,7 +380,7 @@ void PinnedToolbarActionsContainer::WriteDragDataForView(
   DCHECK(data);
 
   const auto iter = base::ranges::find(pinned_buttons_, sender);
-  DCHECK(iter != pinned_buttons_.end());
+  CHECK(iter != pinned_buttons_.end(), base::NotFatalUntil::M130);
   auto* button = (*iter).get();
 
   ui::ImageModel icon =

@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/not_fatal_until.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -80,7 +81,8 @@ int IdGenerator::GenerateId(CredentialUIEntry credential) {
   // Refresh the |credential| in the caches, as the |key_to_credential_| may
   // contain stale one.
   auto iterator_to_credential = id_to_credential_.find(id_for_key);
-  DCHECK(iterator_to_credential != id_to_credential_.end());
+  CHECK(iterator_to_credential != id_to_credential_.end(),
+        base::NotFatalUntil::M130);
   iterator_to_credential->second = std::move(credential);
 
   return id_for_key;

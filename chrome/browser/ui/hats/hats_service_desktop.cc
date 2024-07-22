@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
@@ -523,7 +524,8 @@ void HatsServiceDesktop::RecordSurveyAsShown(std::string trigger_id) {
                            return pair.second.trigger_id;
                          });
 
-  DCHECK(trigger_survey_config != survey_configs_by_triggers_.end());
+  CHECK(trigger_survey_config != survey_configs_by_triggers_.end(),
+        base::NotFatalUntil::M130);
   std::string trigger = trigger_survey_config->first;
 
   UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,

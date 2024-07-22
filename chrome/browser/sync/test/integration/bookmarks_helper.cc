@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -1188,10 +1189,12 @@ bool BookmarkModelMatchesFakeServerChecker::IsExitConditionSatisfied(
     // Check that the local |node| and the server entity have the same position.
     auto parent_iter =
         server_uuids_by_parent_id.find(server_entity.parent_id_string());
-    DCHECK(parent_iter != server_uuids_by_parent_id.end());
+    CHECK(parent_iter != server_uuids_by_parent_id.end(),
+          base::NotFatalUntil::M130);
     auto server_position_iter =
         base::ranges::find(parent_iter->second, node->uuid());
-    DCHECK(server_position_iter != parent_iter->second.end());
+    CHECK(server_position_iter != parent_iter->second.end(),
+          base::NotFatalUntil::M130);
     const size_t server_position =
         server_position_iter - parent_iter->second.begin();
     const size_t local_position = node->parent()->GetIndexOf(node).value();

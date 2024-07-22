@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/process/process.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
@@ -164,7 +165,7 @@ void HungPluginTabHelper::OnReshowTimer(int child_id) {
   // The timer should have been cancelled if the record isn't in our map
   // anymore.
   auto found = hung_plugins_.find(child_id);
-  DCHECK(found != hung_plugins_.end());
+  CHECK(found != hung_plugins_.end(), base::NotFatalUntil::M130);
   DCHECK(!found->second->infobar);
   ShowBar(child_id, found->second.get());
 }

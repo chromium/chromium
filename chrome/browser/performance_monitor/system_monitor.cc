@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/task/thread_pool.h"
@@ -227,7 +228,7 @@ void SystemMonitor::NotifyObservers(SystemMonitor::MetricVector metrics) {
       continue;
     for (auto& observer : observers_) {
       const auto& iter = observer_metrics_.find(&observer);
-      DCHECK(iter != observer_metrics_.end());
+      CHECK(iter != observer_metrics_.end(), base::NotFatalUntil::M130);
       if (metric_evaluators_metadata_[static_cast<size_t>(metric->type())]
               .get_refresh_frequency_field_function(iter->second) !=
           SystemMonitor::SamplingFrequency::kNoSampling) {

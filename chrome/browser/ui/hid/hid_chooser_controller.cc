@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/chooser_controller/title_util.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
@@ -372,7 +373,7 @@ bool HidChooserController::RemoveDeviceInfo(
     const device::mojom::HidDeviceInfo& device) {
   auto id = PhysicalDeviceIdFromDeviceInfo(device);
   auto find_it = device_map_.find(id);
-  DCHECK(find_it != device_map_.end());
+  CHECK(find_it != device_map_.end(), base::NotFatalUntil::M130);
   auto& device_infos = find_it->second;
   std::erase_if(device_infos,
                 [&device](const device::mojom::HidDeviceInfoPtr& d) {
@@ -390,10 +391,10 @@ void HidChooserController::UpdateDeviceInfo(
     const device::mojom::HidDeviceInfo& device) {
   auto id = PhysicalDeviceIdFromDeviceInfo(device);
   auto physical_device_it = device_map_.find(id);
-  DCHECK(physical_device_it != device_map_.end());
+  CHECK(physical_device_it != device_map_.end(), base::NotFatalUntil::M130);
   auto& device_infos = physical_device_it->second;
   auto device_it = base::ranges::find(device_infos, device.guid,
                                       &device::mojom::HidDeviceInfo::guid);
-  DCHECK(device_it != device_infos.end());
+  CHECK(device_it != device_infos.end(), base::NotFatalUntil::M130);
   *device_it = device.Clone();
 }

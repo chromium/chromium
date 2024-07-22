@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -299,7 +300,7 @@ void MediaGalleriesPermissionController::FileSelected(
     // just sets the gallery to permitted.
     GalleryDialogId gallery_id = GetDialogId(gallery.pref_id);
     auto iter = known_galleries_.find(gallery_id);
-    DCHECK(iter != known_galleries_.end());
+    CHECK(iter != known_galleries_.end(), base::NotFatalUntil::M130);
     iter->second.selected = true;
     forgotten_galleries_.erase(gallery_id);
     dialog_->UpdateGalleries();

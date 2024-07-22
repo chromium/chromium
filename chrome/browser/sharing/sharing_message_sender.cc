@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sharing/sharing_message_sender.h"
 
+#include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "chrome/browser/sharing/sharing_constants.h"
@@ -100,7 +101,7 @@ void SharingMessageSender::OnMessageSent(const std::string& message_guid,
                                          std::optional<std::string> message_id,
                                          SharingChannelType channel_type) {
   auto metadata_iter = message_metadata_.find(message_guid);
-  DCHECK(metadata_iter != message_metadata_.end());
+  CHECK(metadata_iter != message_metadata_.end(), base::NotFatalUntil::M130);
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       "sharing", "Sharing.DoSendMessage",
       TRACE_ID_LOCAL(metadata_iter->second.trace_id), "result",
@@ -138,7 +139,7 @@ void SharingMessageSender::OnAckReceived(
   message_guids_.erase(guid_iter);
 
   auto metadata_iter = message_metadata_.find(message_guid);
-  DCHECK(metadata_iter != message_metadata_.end());
+  CHECK(metadata_iter != message_metadata_.end(), base::NotFatalUntil::M130);
 
   InvokeSendMessageCallback(message_guid, SharingSendMessageResult::kSuccessful,
                             std::move(response));
@@ -155,7 +156,7 @@ void SharingMessageSender::RegisterSendDelegate(
 
 SharingFCMSender* SharingMessageSender::GetFCMSenderForTesting() const {
   auto delegate_iter = send_delegates_.find(DelegateType::kFCM);
-  DCHECK(delegate_iter != send_delegates_.end());
+  CHECK(delegate_iter != send_delegates_.end(), base::NotFatalUntil::M130);
   DCHECK(delegate_iter->second);
   return static_cast<SharingFCMSender*>(delegate_iter->second.get());
 }

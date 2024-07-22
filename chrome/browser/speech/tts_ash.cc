@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -247,7 +248,7 @@ void TtsAsh::SpeakWithLacrosVoice(content::TtsUtterance* utterance,
       GetPrimaryProfileBrowserContextId();
   mojo_utterance->browser_context_id = browser_context_id;
   auto item = tts_clients_.find(browser_context_id);
-  DCHECK(item != tts_clients_.end());
+  CHECK(item != tts_clients_.end(), base::NotFatalUntil::M130);
   auto& tts_client = item->second;
   // Note: TtsUtterance::ShouldAlwaysBeSpoken() is a misleading name. It should
   // be renamed as TtsUtterance::FromExternalPlatform(), which indicates whether
@@ -289,19 +290,19 @@ void TtsAsh::StopRemoteEngine(content::TtsUtterance* utterance) {
     DeletePendingAshUtteranceClient(utterance->GetId());
   }
   auto item = tts_clients_.find(GetPrimaryProfileBrowserContextId());
-  DCHECK(item != tts_clients_.end());
+  CHECK(item != tts_clients_.end(), base::NotFatalUntil::M130);
   item->second->Stop(utterance->GetEngineId());
 }
 
 void TtsAsh::PauseRemoteEngine(content::TtsUtterance* utterance) {
   auto item = tts_clients_.find(GetPrimaryProfileBrowserContextId());
-  DCHECK(item != tts_clients_.end());
+  CHECK(item != tts_clients_.end(), base::NotFatalUntil::M130);
   item->second->Pause(utterance->GetEngineId());
 }
 
 void TtsAsh::ResumeRemoteEngine(content::TtsUtterance* utterance) {
   auto item = tts_clients_.find(GetPrimaryProfileBrowserContextId());
-  DCHECK(item != tts_clients_.end());
+  CHECK(item != tts_clients_.end(), base::NotFatalUntil::M130);
   item->second->Resume(utterance->GetEngineId());
 }
 
@@ -339,7 +340,7 @@ void TtsAsh::OnVoicesChanged() {
     mojo_voices.push_back(tts_crosapi_util::ToMojo(voice));
 
   auto item = tts_clients_.find(primary_profile_browser_context_id_);
-  DCHECK(item != tts_clients_.end());
+  CHECK(item != tts_clients_.end(), base::NotFatalUntil::M130);
   item->second->VoicesChanged(std::move(mojo_voices));
 }
 

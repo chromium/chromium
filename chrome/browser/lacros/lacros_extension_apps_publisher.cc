@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
@@ -636,7 +637,7 @@ void LacrosExtensionAppsPublisher::UpdateAppWindowMode(
 
   // Republish the app.
   auto matched = profile_trackers_.find(profile);
-  DCHECK(matched != profile_trackers_.end());
+  CHECK(matched != profile_trackers_.end(), base::NotFatalUntil::M130);
   matched->second->Publish(extension, apps::Readiness::kReady);
 }
 

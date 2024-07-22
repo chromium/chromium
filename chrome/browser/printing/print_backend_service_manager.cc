@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -1352,12 +1353,12 @@ void PrintBackendServiceManager::ServiceCallbackDone(
     const base::UnguessableToken& saved_callback_id,
     X... data) {
   auto found_callback_map = saved_callbacks.find(remote_id);
-  DCHECK(found_callback_map != saved_callbacks.end());
+  CHECK(found_callback_map != saved_callbacks.end(), base::NotFatalUntil::M130);
 
   SavedCallbacks<T...>& callback_map = found_callback_map->second;
 
   auto callback_entry = callback_map.find(saved_callback_id);
-  DCHECK(callback_entry != callback_map.end());
+  CHECK(callback_entry != callback_map.end(), base::NotFatalUntil::M130);
   auto callback = std::move(callback_entry->second);
   callback_map.erase(callback_entry);
 

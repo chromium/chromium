@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -210,7 +211,7 @@ bool DeclarativeContentIsBookmarkedConditionTracker::EvaluatePredicate(
   const DeclarativeContentIsBookmarkedPredicate* typed_predicate =
       static_cast<const DeclarativeContentIsBookmarkedPredicate*>(predicate);
   auto loc = per_web_contents_tracker_.find(tab);
-  DCHECK(loc != per_web_contents_tracker_.end());
+  CHECK(loc != per_web_contents_tracker_.end(), base::NotFatalUntil::M130);
   return loc->second->is_url_bookmarked() == typed_predicate->is_bookmarked();
 }
 
