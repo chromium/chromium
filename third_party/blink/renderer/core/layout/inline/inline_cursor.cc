@@ -437,7 +437,7 @@ UBiDiLevel InlineCursorPosition::BidiLevel() const {
           return item.StartOffset() <= offset.start &&
                  item.EndOffset() >= offset.end;
         });
-    DCHECK(item != items->end()) << this;
+    CHECK(item != items->end(), base::NotFatalUntil::M130) << this;
     return item->BidiLevel();
   }
 

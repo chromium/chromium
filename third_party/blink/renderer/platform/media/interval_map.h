@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 
 namespace blink {
@@ -98,13 +99,13 @@ class IntervalMapConstIterator {
 
   // Returns the beginning of the current interval.
   KeyType interval_begin() const {
-    DCHECK(iter_ != map_->end());
+    CHECK(iter_ != map_->end(), base::NotFatalUntil::M130);
     return iter_->first;
   }
 
   // Returns the end of the current interval, non-inclusive.
   KeyType interval_end() const {
-    DCHECK(iter_ != map_->end());
+    CHECK(iter_ != map_->end(), base::NotFatalUntil::M130);
     typename MapType::const_iterator next = iter_;
     ++next;
     if (next == map_->end()) {
@@ -121,7 +122,7 @@ class IntervalMapConstIterator {
 
   // Returns the value associated with the current interval.
   ValueType value() const {
-    DCHECK(iter_ != map_->end());
+    CHECK(iter_ != map_->end(), base::NotFatalUntil::M130);
     return iter_->second;
   }
 
@@ -136,7 +137,7 @@ class IntervalMapConstIterator {
   // interval. (But should always have a different value.)
   // Not allowed if we're already at map_->end().
   void operator++() {
-    DCHECK(iter_ != map_->end());
+    CHECK(iter_ != map_->end(), base::NotFatalUntil::M130);
     ++iter_;
   }
 
