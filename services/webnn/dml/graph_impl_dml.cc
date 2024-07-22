@@ -4984,23 +4984,38 @@ GraphImplDml::GraphBufferBindingInfo::GraphBufferBindingInfo() = default;
 GraphImplDml::GraphBufferBindingInfo::~GraphBufferBindingInfo() = default;
 
 GraphImplDml::GraphBufferBindingInfo::GraphBufferBindingInfo(
+    const GraphBufferBindingInfo&) = default;
+GraphImplDml::GraphBufferBindingInfo&
+GraphImplDml::GraphBufferBindingInfo::operator=(const GraphBufferBindingInfo&) =
+    default;
+
+GraphImplDml::GraphBufferBindingInfo::GraphBufferBindingInfo(
     GraphBufferBindingInfo&&) = default;
 GraphImplDml::GraphBufferBindingInfo&
 GraphImplDml::GraphBufferBindingInfo::operator=(GraphBufferBindingInfo&&) =
     default;
 
-GraphImplDml::PersistentResource::PersistentResource(
+// static
+scoped_refptr<GraphImplDml::PersistentResource>
+GraphImplDml::PersistentResource::Create(
     uint64_t persistent_buffer_byte_length,
-    ComPtr<ID3D12Resource> persistent_resource)
-    : persistent_buffer(std::move(persistent_resource)) {
+    ComPtr<ID3D12Resource> persistent_buffer) {
   CHECK_GT(persistent_buffer_byte_length, 0u);
   CHECK_NE(persistent_buffer.Get(), nullptr);
-  persistent_buffer_binding =
-      DML_BUFFER_BINDING{.Buffer = persistent_buffer.Get(),
+  return base::WrapRefCounted(new PersistentResource(
+      persistent_buffer_byte_length, std::move(persistent_buffer)));
+}
+
+GraphImplDml::PersistentResource::PersistentResource(
+    uint64_t persistent_buffer_byte_length,
+    ComPtr<ID3D12Resource> persistent_buffer)
+    : persistent_buffer_(std::move(persistent_buffer)) {
+  persistent_buffer_binding_ =
+      DML_BUFFER_BINDING{.Buffer = persistent_buffer_.Get(),
                          .Offset = 0,
                          .SizeInBytes = persistent_buffer_byte_length};
-  persistent_buffer_binding_desc = DML_BINDING_DESC{
-      .Type = DML_BINDING_TYPE_BUFFER, .Desc = &persistent_buffer_binding};
+  persistent_buffer_binding_desc_ = DML_BINDING_DESC{
+      .Type = DML_BINDING_TYPE_BUFFER, .Desc = &persistent_buffer_binding_};
 }
 
 GraphImplDml::PersistentResource::~PersistentResource() = default;
@@ -5276,7 +5291,7 @@ HRESULT GraphImplDml::RecordGraphExecution(
   std::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;
   if (persistent_resource) {
     persistent_buffer_binding_desc =
-        persistent_resource->persistent_buffer_binding_desc;
+        persistent_resource->persistent_buffer_binding_desc();
   }
 
   // Execute the graph with input, output and persistent buffer bindings.
@@ -5301,7 +5316,7 @@ GraphImplDml::GraphImplDml(
     scoped_refptr<Adapter> adapter,
     ContextImplDml* context,
     std::unique_ptr<CommandRecorder> command_recorder,
-    std::unique_ptr<PersistentResource> persistent_resource,
+    scoped_refptr<PersistentResource> persistent_resource,
     ComPtr<IDMLCompiledOperator> compiled_operator,
     ComputeResourceInfo compute_resource_info,
     GraphBufferBindingInfo graph_buffer_binding_info,
@@ -5500,7 +5515,7 @@ void GraphImplDml::OnCompilationComplete(
 
   // Create the persistent resource which is bound as output of operator
   // initializer.
-  std::unique_ptr<PersistentResource> persistent_resource;
+  scoped_refptr<PersistentResource> persistent_resource;
   std::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;
   DML_BINDING_PROPERTIES execution_binding_properties =
       compiled_operator->GetBindingProperties();
@@ -5518,10 +5533,11 @@ void GraphImplDml::OnCompilationComplete(
       return;
     }
 
-    persistent_resource = base::WrapUnique(new PersistentResource(
-        persistent_buffer_size, std::move(persistent_buffer)));
+    persistent_resource = PersistentResource::Create(
+        persistent_buffer_size, std::move(persistent_buffer));
+    CHECK(persistent_resource);
     persistent_buffer_binding_desc =
-        persistent_resource->persistent_buffer_binding_desc;
+        persistent_resource->persistent_buffer_binding_desc();
   }
 
   hr = initialization_command_recorder->InitializeOperator(
@@ -5575,10 +5591,73 @@ void GraphImplDml::OnCompilationComplete(
 }
 
 // static
+base::expected<std::unique_ptr<GraphImplDml::ComputeResources>, HRESULT>
+GraphImplDml::RecordGraphExecutionOnBackgroundThread(
+    scoped_refptr<Adapter> adapter,
+    scoped_refptr<PersistentResource> persistent_resource,
+    ComPtr<IDMLCompiledOperator> compiled_operator,
+    std::unique_ptr<ComputeResources> compute_resources,
+    GraphBufferBindingInfo graph_buffer_binding_info) {
+  TRACE_EVENT0("gpu",
+               "dml::GraphImplDml::RecordGraphExecutionOnBackgroundThread");
+
+  RETURN_UNEXPECTED_IF_FAILED(RecordGraphExecution(
+      adapter.get(), compiled_operator.Get(), compute_resources.get(),
+      persistent_resource.get(), graph_buffer_binding_info));
+
+  return compute_resources;
+}
+
+// static
+void GraphImplDml::CreateWebNNGraphImpl(
+    scoped_refptr<Adapter> adapter,
+    base::WeakPtr<ContextImplDml> context,
+    scoped_refptr<PersistentResource> persistent_resource,
+    ComPtr<IDMLCompiledOperator> compiled_operator,
+    ComputeResourceInfo compute_resource_info,
+    GraphBufferBindingInfo graph_buffer_binding_info,
+    WebNNContextImpl::CreateGraphImplCallback callback,
+    base::expected<std::unique_ptr<ComputeResources>, HRESULT>
+        recording_result) {
+  if (!context) {
+    std::move(callback).Run(base::unexpected(CreateError(
+        mojom::Error::Code::kUnknownError,
+        "Failed to create graph because the context was destroyed.")));
+    return;
+  }
+
+  if (!recording_result.has_value()) {
+    HandleGraphCreationFailure(
+        "Failed to record commands and bind resources for execution.",
+        std::move(callback), context.get(), recording_result.error());
+    return;
+  }
+  std::unique_ptr<ComputeResources> compute_resources =
+      std::move(recording_result.value());
+
+  // Create a new command recorder and pass it to `GraphImplDml` for
+  // `dispatch()`. For `compute()`, a separate command recorder is created by
+  // `AllocateComputeResources()` and stored in `compute_resources`.
+  ASSIGN_OR_RETURN(
+      std::unique_ptr<CommandRecorder> command_recorder_for_dispatch,
+      CommandRecorder::Create(adapter->command_queue(), adapter->dml_device()),
+      &HandleGraphCreationFailure,
+      "Failed to create the command recorder for dispatch.",
+      std::move(callback), context.get());
+
+  // The receiver bound to GraphImplDml.
+  std::move(callback).Run(base::WrapUnique(new GraphImplDml(
+      std::move(adapter), context.get(),
+      std::move(command_recorder_for_dispatch), std::move(persistent_resource),
+      std::move(compiled_operator), std::move(compute_resource_info),
+      std::move(graph_buffer_binding_info), std::move(compute_resources))));
+}
+
+// static
 void GraphImplDml::OnInitializationComplete(
     scoped_refptr<Adapter> adapter,
     base::WeakPtr<ContextImplDml> context,
-    std::unique_ptr<PersistentResource> persistent_resource,
+    scoped_refptr<PersistentResource> persistent_resource,
     ComPtr<IDMLCompiledOperator> compiled_operator,
     ComputeResourceInfo compute_resource_info,
     GraphBufferBindingInfo graph_buffer_binding_info,
@@ -5613,6 +5692,22 @@ void GraphImplDml::OnInitializationComplete(
       std::move(compute_resources_allocation_result.value());
   CHECK(compute_resources);
 
+  if (adapter->IsNPU()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(&GraphImplDml::RecordGraphExecutionOnBackgroundThread,
+                       adapter, persistent_resource, compiled_operator,
+                       std::move(compute_resources), graph_buffer_binding_info),
+        base::BindOnce(&GraphImplDml::CreateWebNNGraphImpl, adapter,
+                       std::move(context), persistent_resource,
+                       compiled_operator, std::move(compute_resource_info),
+                       graph_buffer_binding_info, std::move(callback)));
+
+    return;
+  }
+
   hr = RecordGraphExecution(adapter.get(), compiled_operator.Get(),
                             compute_resources.get(), persistent_resource.get(),
                             graph_buffer_binding_info);
@@ -5623,22 +5718,11 @@ void GraphImplDml::OnInitializationComplete(
     return;
   }
 
-  // Create a new command recorder and pass it to `GraphImplDml` for
-  // `dispatch()`. For `compute()`, a separate command recorder is created by
-  // `AllocateComputeResources()` and stored in `compute_resources`.
-  ASSIGN_OR_RETURN(
-      std::unique_ptr<CommandRecorder> command_recorder_for_dispatch,
-      CommandRecorder::Create(adapter->command_queue(), adapter->dml_device()),
-      &HandleGraphCreationFailure,
-      "Failed to create the command recorder for dispatch.",
-      std::move(callback), context.get());
-
-  // The receiver bound to GraphImplDml.
-  std::move(callback).Run(base::WrapUnique(new GraphImplDml(
-      std::move(adapter), context.get(),
-      std::move(command_recorder_for_dispatch), std::move(persistent_resource),
+  CreateWebNNGraphImpl(
+      std::move(adapter), std::move(context), std::move(persistent_resource),
       std::move(compiled_operator), std::move(compute_resource_info),
-      std::move(graph_buffer_binding_info), std::move(compute_resources))));
+      std::move(graph_buffer_binding_info), std::move(callback),
+      std::move(compute_resources));
 }
 
 // static
@@ -6064,20 +6148,12 @@ void GraphImplDml::CreateAndBuild(
 
 void GraphImplDml::HandleComputationFailure(
     const std::string& error_message,
+    HRESULT hr,
     mojom::WebNNGraph::ComputeCallback callback) {
   compute_resources_.reset();
   std::move(callback).Run(ComputeResult::NewError(
       CreateError(mojom::Error::Code::kUnknownError, error_message)));
-}
-
-void GraphImplDml::HandleComputationFailure(
-    const std::string& error_message,
-    HRESULT hr,
-    mojom::WebNNGraph::ComputeCallback callback) {
-  compute_resources_.reset();
-    std::move(callback).Run(ComputeResult::NewError(
-        CreateError(mojom::Error::Code::kUnknownError, error_message)));
-    context_->HandleContextLostOrCrash(error_message, hr);
+  context_->HandleContextLostOrCrash(error_message, hr);
 }
 
 void GraphImplDml::HandleDispatchFailure(std::string_view error_message,
@@ -6089,6 +6165,53 @@ void GraphImplDml::HandleDispatchFailure(std::string_view error_message,
   previous_input_buffers_.clear();
   previous_output_buffers_.clear();
   context_->HandleContextLostOrCrash(error_message, hr);
+}
+
+void GraphImplDml::ExecuteAndWaitAsync(
+    scoped_refptr<Adapter> adapter,
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
+    mojom::WebNNGraph::ComputeCallback callback,
+    base::expected<std::unique_ptr<ComputeResources>, HRESULT>
+        recording_result) {
+  if (!recording_result.has_value()) {
+    HandleComputationFailure(
+        "Failed to record commands and bind resources for execution.",
+        std::move(recording_result.error()), std::move(callback));
+    return;
+  }
+  std::unique_ptr<ComputeResources> compute_resources =
+      std::move(recording_result.value());
+
+  HRESULT hr = S_OK;
+  if (compute_resources->input_aligned_byte_length.total_byte_length > 0) {
+    // For GPU supports UMA, the `input_buffer` is allocated in the custom heap
+    // which can be mapped and written by CPU efficiently.
+    auto* buffer = adapter->IsUMA() ? compute_resources->input_buffer.Get()
+                                    : compute_resources->upload_buffer.Get();
+    hr = MapAndCopyInputDataToBuffer(
+        named_inputs,
+        compute_resources->input_aligned_byte_length.key_to_d3d12_range_map,
+        buffer);
+    if (FAILED(hr)) {
+      HandleComputationFailure(
+          "Failed to copy the data from named inputs to the buffer.", hr,
+          std::move(callback));
+      return;
+    }
+  }
+
+  // Submit the command list for execution.
+  hr = compute_resources->command_recorder->Execute();
+  if (FAILED(hr)) {
+    HandleComputationFailure("Failed to execute the command list.", hr,
+                             std::move(callback));
+    return;
+  }
+
+  compute_resources->command_recorder->command_queue()->WaitAsync(
+      base::BindOnce(&GraphImplDml::OnComputationComplete,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(compute_resources)));
 }
 
 void GraphImplDml::ComputeImpl(
@@ -6122,10 +6245,23 @@ void GraphImplDml::ComputeImpl(
   }
   CHECK(compute_resources);
 
-  HRESULT hr = S_OK;
-
   if (is_command_recording_needed) {
-    hr = RecordGraphExecution(
+    if (adapter_->IsNPU()) {
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE,
+          {base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+          base::BindOnce(&GraphImplDml::RecordGraphExecutionOnBackgroundThread,
+                         adapter_, persistent_resource_, compiled_operator_,
+                         std::move(compute_resources),
+                         graph_buffer_binding_info_),
+          base::BindOnce(&GraphImplDml::ExecuteAndWaitAsync,
+                         weak_factory_.GetWeakPtr(), adapter_,
+                         std::move(named_inputs), std::move(callback)));
+      return;
+    }
+
+    HRESULT hr = RecordGraphExecution(
         adapter_.get(), compiled_operator_.Get(), compute_resources.get(),
         persistent_resource_.get(), graph_buffer_binding_info_);
     if (FAILED(hr)) {
@@ -6136,35 +6272,8 @@ void GraphImplDml::ComputeImpl(
     }
   }
 
-  if (compute_resources->input_aligned_byte_length.total_byte_length > 0) {
-    // For GPU supports UMA, the `input_buffer` is allocated in the custom heap
-    // which can be mapped and written by CPU efficiently.
-    auto* buffer = adapter_->IsUMA() ? compute_resources->input_buffer.Get()
-                                     : compute_resources->upload_buffer.Get();
-    hr = MapAndCopyInputDataToBuffer(
-        named_inputs,
-        compute_resources->input_aligned_byte_length.key_to_d3d12_range_map,
-        buffer);
-    if (FAILED(hr)) {
-      HandleComputationFailure(
-          "Failed to copy the data from named inputs to the buffer.", hr,
-          std::move(callback));
-      return;
-    }
-  }
-
-  // Submit the command list for execution.
-  hr = compute_resources->command_recorder->Execute();
-  if (FAILED(hr)) {
-    HandleComputationFailure("Failed to execute the command list.", hr,
-                             std::move(callback));
-    return;
-  }
-
-  compute_resources->command_recorder->command_queue()->WaitAsync(
-      base::BindOnce(&GraphImplDml::OnComputationComplete,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(compute_resources)));
+  ExecuteAndWaitAsync(adapter_, std::move(named_inputs), std::move(callback),
+                      std::move(compute_resources));
 }
 
 void GraphImplDml::OnComputationComplete(
@@ -6346,7 +6455,7 @@ void GraphImplDml::DispatchImpl(
     std::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;
     if (persistent_resource_) {
       persistent_buffer_binding_desc =
-          persistent_resource_->persistent_buffer_binding_desc;
+          persistent_resource_->persistent_buffer_binding_desc();
     }
 
     // Execute the graph with input, output, temporary, and persistent bindings.

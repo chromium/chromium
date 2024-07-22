@@ -33,8 +33,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
                         base::PassKey<WebNNGraphImpl> pass_key);
     ~ComputeResourceInfo();
 
-    ComputeResourceInfo(const ComputeResourceInfo&) = delete;
-    ComputeResourceInfo& operator=(const ComputeResourceInfo&) = delete;
+    ComputeResourceInfo(const ComputeResourceInfo&);
+    ComputeResourceInfo& operator=(const ComputeResourceInfo&);
 
     ComputeResourceInfo(ComputeResourceInfo&&);
     ComputeResourceInfo& operator=(ComputeResourceInfo&&);

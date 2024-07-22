@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
@@ -69,8 +70,8 @@ class GraphImplDml final : public WebNNGraphImpl {
     GraphBufferBindingInfo();
     ~GraphBufferBindingInfo();
 
-    GraphBufferBindingInfo(const GraphBufferBindingInfo&) = delete;
-    GraphBufferBindingInfo& operator=(const GraphBufferBindingInfo&) = delete;
+    GraphBufferBindingInfo(const GraphBufferBindingInfo&);
+    GraphBufferBindingInfo& operator=(const GraphBufferBindingInfo&);
 
     GraphBufferBindingInfo(GraphBufferBindingInfo&&);
     GraphBufferBindingInfo& operator=(GraphBufferBindingInfo&&);
@@ -93,20 +94,30 @@ class GraphImplDml final : public WebNNGraphImpl {
   // Contains the persistent resource for the graph initialization and execution
   // if the graph needs it. The resource should be kept alive until the GPU has
   // completed the execution.
-  struct PersistentResource {
+  class PersistentResource final
+      : public base::RefCountedThreadSafe<PersistentResource> {
+   public:
+    static scoped_refptr<PersistentResource> Create(
+        uint64_t persistent_buffer_byte_length,
+        Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer);
+
+    PersistentResource(const PersistentResource&) = delete;
+    PersistentResource& operator=(const PersistentResource&) = delete;
+
+    DML_BINDING_DESC persistent_buffer_binding_desc() const {
+      return persistent_buffer_binding_desc_;
+    }
+
+   private:
+    friend class base::RefCountedThreadSafe<PersistentResource>;
     PersistentResource(
         uint64_t persistent_buffer_byte_length,
         Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer);
     ~PersistentResource();
-    PersistentResource(const PersistentResource&) = delete;
-    PersistentResource& operator=(const PersistentResource&) = delete;
 
-    PersistentResource(PersistentResource&&) = delete;
-    PersistentResource& operator=(PersistentResource&&) = delete;
-
-    Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer;
-    DML_BUFFER_BINDING persistent_buffer_binding;
-    DML_BINDING_DESC persistent_buffer_binding_desc;
+    Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer_;
+    DML_BUFFER_BINDING persistent_buffer_binding_;
+    DML_BINDING_DESC persistent_buffer_binding_desc_;
   };
 
   // Contains the GPU descriptor heap and temporary buffer for graph
@@ -207,10 +218,52 @@ class GraphImplDml final : public WebNNGraphImpl {
       const PersistentResource* persistent_resource,
       const GraphBufferBindingInfo& graph_buffer_binding_info);
 
+  // `RecordGraphExecutionOnBackgroundThread` calls the `RecordGraphExecution`
+  // method above, but runs on a background thread. The `compute_resources` is
+  // passed to this method and will be returned to the caller after the graph
+  // execution is recorded. Since `IDMLCommandRecorder::RecordDispatch` and
+  // `ID3D12GraphicsCommandList::Close` called in this method may take long time
+  // on some adapters e.g. NPU, this method should run on non-gpuMain threads to
+  // avoid blocking the compositor.
+  static base::expected<std::unique_ptr<GraphImplDml::ComputeResources>,
+                        HRESULT>
+  RecordGraphExecutionOnBackgroundThread(
+      scoped_refptr<Adapter> adapter,
+      scoped_refptr<PersistentResource> persistent_resource,
+      Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
+      std::unique_ptr<ComputeResources> compute_resources,
+      GraphBufferBindingInfo graph_buffer_binding_info);
+
+  // After the `RecordGraphExecutionOnBackgroundThread` task or
+  // `RecordGraphExecution` task is completed, the `CreateWebNNGraphImpl`
+  // method runs back on the gpuMain thread to create the `GraphImplDml`
+  // instance.
+  static void CreateWebNNGraphImpl(
+      scoped_refptr<Adapter> adapter,
+      base::WeakPtr<ContextImplDml> context,
+      scoped_refptr<PersistentResource> persistent_resource,
+      Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
+      ComputeResourceInfo compute_resource_info,
+      GraphBufferBindingInfo graph_buffer_binding_info,
+      WebNNContextImpl::CreateGraphImplCallback callback,
+      base::expected<std::unique_ptr<ComputeResources>, HRESULT>
+          recording_result);
+
+  // After the `RecordGraphExecutionOnBackgroundThread` task or
+  // `RecordGraphExecution` task is completed, the `ExecuteAndWaitAsync`
+  // method runs back on the gpuMain thread to copy the input data and submit
+  // the command list for execution.
+  void ExecuteAndWaitAsync(
+      scoped_refptr<Adapter> adapter,
+      base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
+      mojom::WebNNGraph::ComputeCallback callback,
+      base::expected<std::unique_ptr<ComputeResources>, HRESULT>
+          recording_result);
+
   GraphImplDml(scoped_refptr<Adapter> adapter,
                ContextImplDml* context,
                std::unique_ptr<CommandRecorder> command_recorder,
-               std::unique_ptr<PersistentResource> persistent_resource,
+               scoped_refptr<PersistentResource> persistent_resource,
                Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
                ComputeResourceInfo compute_resource_info,
                GraphBufferBindingInfo graph_buffer_binding_info,
@@ -250,15 +303,16 @@ class GraphImplDml final : public WebNNGraphImpl {
       base::expected<Microsoft::WRL::ComPtr<IDMLCompiledOperator>, HRESULT>
           compilation_result);
 
-  // Create the GraphImplDml instance and bind it to the mojom::WebNNGraph
-  // receiver, then run callback to send the pending remote to the
-  // render.
-  // Notice that the persistent_buffer could be nullptr which means it isn't
-  // required by the graph.
+  // This method calls `RecordGraphExecution` to record the graph execution,
+  // create the GraphImplDml instance and bind it to the mojom::WebNNGraph
+  // receiver, then run callback to send the pending remote to the renderer
+  // process.
+  // Notice that the `persistent_resource` could be nullptr which means
+  // it isn't required by the graph.
   static void OnInitializationComplete(
       scoped_refptr<Adapter> adapter,
       base::WeakPtr<ContextImplDml> context,
-      std::unique_ptr<PersistentResource> persistent_resource,
+      scoped_refptr<PersistentResource> persistent_resource,
       Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
       ComputeResourceInfo compute_resource_info,
       GraphBufferBindingInfo graph_buffer_binding_info,
@@ -266,7 +320,7 @@ class GraphImplDml final : public WebNNGraphImpl {
       HRESULT hr);
 
   // After the computation is completed, copy the output data from GPU readback
-  // buffer and then run the callback to send it to the render process.
+  // buffer and then run the callback to send it to the renderer process.
   //
   // The ranges in the value of the `graph_output_name_to_d3d12_range_map` are
   // the ranges in the readback output buffer and the default output buffer,
@@ -281,14 +335,9 @@ class GraphImplDml final : public WebNNGraphImpl {
   void OnDispatchComplete(std::unique_ptr<GraphResources> graph_resources,
                           HRESULT hr);
 
-  // If GraphImplDml::ComputeImpl fails, report and log an error message and
-  // release the command recorder since it may haven't been closed normally by
-  // CommandRecorder::CloseAndExecute.
-  void HandleComputationFailure(const std::string& error_message,
-                                mojom::WebNNGraph::ComputeCallback callback);
-  // Similar to the method above, while it will report the error message and log
-  // it with the system error code `hr`. In addition, log and report the out of
-  // memory error message if there is.
+  // If GraphImplDml::ComputeImpl fails, release the `compute_resources_`,
+  // report the error message via `callback` and let `context_` handle the
+  // error.
   void HandleComputationFailure(const std::string& error_message,
                                 HRESULT hr,
                                 mojom::WebNNGraph::ComputeCallback callback);
@@ -314,7 +363,7 @@ class GraphImplDml final : public WebNNGraphImpl {
   // completed for the graph initialization and will be used for the following
   // graph executions. It could be nullptr which means it isn't required by the
   // graph and won't need to be bound for graph executions.
-  std::unique_ptr<PersistentResource> persistent_resource_;
+  scoped_refptr<PersistentResource> persistent_resource_;
 
   // Adapter used to create the built graph.
   scoped_refptr<Adapter> adapter_;

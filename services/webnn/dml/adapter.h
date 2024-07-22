@@ -34,7 +34,7 @@ class CommandQueue;
 // `Adapter::GetGpuInstance()` or `Adapter::GetNpuInstance()` and is released
 // when the last `GraphImplDml` is destroyed.
 class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
-    : public base::RefCounted<Adapter> {
+    : public base::RefCountedThreadSafe<Adapter> {
  public:
   // Get the shared `Adapter` instance. If `Adapter` instance already exists,
   // the that one is returned regardless of whether the `dxgi_adapter` matches.
@@ -110,7 +110,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
   FRIEND_TEST_ALL_PREFIXES(WebNNAdapterTest, GetGpuInstance);
   FRIEND_TEST_ALL_PREFIXES(WebNNAdapterTest, GetNpuInstance);
 
-  friend class base::RefCounted<Adapter>;
+  friend class base::RefCountedThreadSafe<Adapter>;
   Adapter(Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter,
           Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device,
           Microsoft::WRL::ComPtr<IDMLDevice> dml_device,
