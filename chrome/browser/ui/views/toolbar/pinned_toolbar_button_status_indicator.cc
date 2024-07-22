@@ -7,11 +7,14 @@
 #include <string>
 
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 // static
 PinnedToolbarButtonStatusIndicator* PinnedToolbarButtonStatusIndicator::Install(
@@ -37,8 +40,11 @@ PinnedToolbarButtonStatusIndicator::GetStatusIndicator(View* parent) {
 PinnedToolbarButtonStatusIndicator::~PinnedToolbarButtonStatusIndicator() =
     default;
 
-void PinnedToolbarButtonStatusIndicator::SetColor(SkColor color) {
-  color_ = color;
+void PinnedToolbarButtonStatusIndicator::SetColorId(
+    ui::ColorId active_color_id,
+    ui::ColorId inactive_color_id) {
+  active_color_id_ = active_color_id;
+  inactive_color_id_ = inactive_color_id;
   SchedulePaint();
 }
 
@@ -62,10 +68,27 @@ void PinnedToolbarButtonStatusIndicator::OnPaint(gfx::Canvas* canvas) {
                     height() / 2);
 
   cc::PaintFlags flags;
-  flags.setColor(color_.value_or(GetCascadingAccentColor(this)));
+  std::optional<ui::ColorId> color_id = GetWidget()->ShouldPaintAsActive()
+                                            ? active_color_id_
+                                            : inactive_color_id_;
+
+  flags.setColor(color_id.has_value()
+                     ? GetColorProvider()->GetColor(color_id.value())
+                     : GetCascadingAccentColor(this));
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
   canvas->DrawPath(path, flags);
+}
+
+void PinnedToolbarButtonStatusIndicator::AddedToWidget() {
+  paint_as_active_subscription_ =
+      GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+          &PinnedToolbarButtonStatusIndicator::PaintAsActiveChanged,
+          base::Unretained(this)));
+}
+
+void PinnedToolbarButtonStatusIndicator::PaintAsActiveChanged() {
+  SchedulePaint();
 }
 
 void PinnedToolbarButtonStatusIndicator::OnThemeChanged() {

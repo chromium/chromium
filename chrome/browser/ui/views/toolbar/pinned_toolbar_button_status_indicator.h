@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/view.h"
 
@@ -31,8 +32,7 @@ class PinnedToolbarButtonStatusIndicator : public views::View {
   // Returns the status indicator if it is a direct child of the `parent`.
   static PinnedToolbarButtonStatusIndicator* GetStatusIndicator(View* parent);
 
-  void SetColor(SkColor color);
-
+  void SetColorId(ui::ColorId active_color_id, ui::ColorId inactive_color_id);
   void Show();
   void Hide();
 
@@ -42,8 +42,13 @@ class PinnedToolbarButtonStatusIndicator : public views::View {
   // View:
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
+  void AddedToWidget() override;
 
-  std::optional<SkColor> color_;
+  void PaintAsActiveChanged();
+
+  std::optional<ui::ColorId> active_color_id_;
+  std::optional<ui::ColorId> inactive_color_id_;
+  base::CallbackListSubscription paint_as_active_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_PINNED_TOOLBAR_BUTTON_STATUS_INDICATOR_H_

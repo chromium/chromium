@@ -183,8 +183,8 @@ gfx::Size PinnedActionToolbarButton::CalculatePreferredSize(
 void PinnedActionToolbarButton::Layout(PassKey) {
   LayoutSuperclass<ToolbarButton>(this);
   gfx::Rect status_rect(14, 2);
-  status_indicator_->SetColor(
-      GetColorProvider()->GetColor(ui::kColorSysPrimary));
+  status_indicator_->SetColorId(kColorToolbarActionItemEngaged,
+                                kColorToolbarButtonIconInactive);
 
   gfx::Rect image_container_bounds = image_container_view()->GetLocalBounds();
   int new_x = image_container_bounds.x() +
@@ -218,11 +218,11 @@ void PinnedActionToolbarButton::UpdateIcon() {
                                     : icons->icon;
 
   if (is_icon_visible_ && action_engaged_) {
-    UpdateIconsWithColors(icon,
-                          GetColorProvider()->GetColor(ui::kColorSysPrimary),
-                          GetColorProvider()->GetColor(ui::kColorSysPrimary),
-                          GetColorProvider()->GetColor(ui::kColorSysPrimary),
-                          GetForegroundColor(ButtonState::STATE_DISABLED));
+    UpdateIconsWithColors(
+        icon, GetColorProvider()->GetColor(kColorToolbarActionItemEngaged),
+        GetColorProvider()->GetColor(kColorToolbarActionItemEngaged),
+        GetColorProvider()->GetColor(kColorToolbarActionItemEngaged),
+        GetForegroundColor(ButtonState::STATE_DISABLED));
   } else {
     UpdateIconsWithColors(icon, GetForegroundColor(ButtonState::STATE_NORMAL),
                           GetForegroundColor(ButtonState::STATE_HOVERED),

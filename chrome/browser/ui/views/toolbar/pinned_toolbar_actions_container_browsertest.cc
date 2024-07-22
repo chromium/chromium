@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -50,6 +52,13 @@ class PinnedToolbarActionsContainerBrowserTest : public InProcessBrowserTest {
     chrome_translate_client->GetTranslateManager()
         ->GetLanguageState()
         ->SetCurrentLanguage("en");
+  }
+
+  Browser* CreateBrowser() {
+    Browser::CreateParams params(browser()->profile(), true /* user_gesture */);
+    Browser* browser = Browser::Create(params);
+    browser->window()->Show();
+    return browser;
   }
 
  protected:
@@ -109,6 +118,10 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
       ui::PAGE_TRANSITION_TYPED));
 
   TranslatePage(browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(pinned_button->GetStatusIndicatorForTesting()->GetVisible(), true);
+
+  // Status indicator should still be visible after creating a new browser.
+  CreateBrowser();
   EXPECT_EQ(pinned_button->GetStatusIndicatorForTesting()->GetVisible(), true);
 
   // Navigate to non-translated page.
