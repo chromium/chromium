@@ -340,11 +340,6 @@ void LocationBarView::Init() {
     // first so that they appear on the left side of the icon container.
     // TODO(crbug.com/40835681): Improve the ordering heuristics for page action
     // icons and determine a way to handle simultaneous icon animations.
-    if (lens::features::IsOmniboxEntryPointEnabled() &&
-        LensOverlayController::IsEnabled(browser_)) {
-      params.types_enabled.push_back(PageActionIconType::kLensOverlay);
-    }
-
     if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
       params.types_enabled.push_back(
           PageActionIconType::kProductSpecifications);
@@ -386,6 +381,19 @@ void LocationBarView::Init() {
   // TODO(crbug.com/40164487): Place this in the proper order upon having final
   // mocks.
   params.types_enabled.push_back(PageActionIconType::kAutofillAddress);
+
+  if (browser_ && LensOverlayController::IsEnabled(browser_) &&
+      lens::features::IsOmniboxEntryPointEnabled()) {
+    // The persistent compact entrypoint should be positioned directly before
+    // the star icon and the prominent expanding entrypoint should be
+    // positioned in the leading position.
+    if (lens::features::IsOmniboxEntrypointAlwaysVisible()) {
+      params.types_enabled.push_back(PageActionIconType::kLensOverlay);
+    } else {
+      params.types_enabled.insert(params.types_enabled.begin(),
+                                  PageActionIconType::kLensOverlay);
+    }
+  }
 
   if (browser_ && !is_popup_mode_) {
     params.types_enabled.push_back(PageActionIconType::kBookmarkStar);
