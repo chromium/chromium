@@ -143,7 +143,7 @@ TEST_F(RequestBodyTest, InitWithUrlSearchParams) {
 TEST_F(RequestBodyTest, InitWithBlob) {
   V8TestingScope scope;
   String body = "test body!";
-  auto* blob = Blob::Create(body.Span8().data(), body.length(), "text/html");
+  auto* blob = Blob::Create(body.Span8(), "text/html");
   auto* init = CreateRequestInit(
       scope, ToV8Traits<Blob>::ToV8(scope.GetScriptState(), blob));
 

@@ -1608,9 +1608,9 @@ TEST(V8ScriptValueSerializerTest, RoundTripBlob) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   const char kHelloWorld[] = "Hello world!";
-  Blob* blob =
-      Blob::Create(reinterpret_cast<const unsigned char*>(&kHelloWorld),
-                   sizeof(kHelloWorld), "text/plain");
+  Blob* blob = Blob::Create(
+      base::as_bytes(base::span_with_nul_from_cstring(kHelloWorld)),
+      "text/plain");
   String uuid = blob->Uuid();
   EXPECT_FALSE(uuid.empty());
   v8::Local<v8::Value> wrapper =
@@ -1645,9 +1645,9 @@ TEST(V8ScriptValueSerializerTest, RoundTripBlobIndex) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   const char kHelloWorld[] = "Hello world!";
-  Blob* blob =
-      Blob::Create(reinterpret_cast<const unsigned char*>(&kHelloWorld),
-                   sizeof(kHelloWorld), "text/plain");
+  Blob* blob = Blob::Create(
+      base::as_bytes(base::span_with_nul_from_cstring(kHelloWorld)),
+      "text/plain");
   String uuid = blob->Uuid();
   EXPECT_FALSE(uuid.empty());
   v8::Local<v8::Value> wrapper =

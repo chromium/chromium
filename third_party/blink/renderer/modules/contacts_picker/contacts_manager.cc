@@ -78,8 +78,7 @@ TypeConverter<blink::ContactInfo*, blink::mojom::blink::ContactInfoPtr>::
   if (contact->icon) {
     blink::HeapVector<blink::Member<blink::Blob>> icons;
     for (blink::mojom::blink::ContactIconBlobPtr& icon : *contact->icon) {
-      icons.push_back(blink::Blob::Create(icon->data.data(), icon->data.size(),
-                                          icon->mime_type));
+      icons.push_back(blink::Blob::Create(icon->data, icon->mime_type));
     }
 
     contact_info->setIcon(icons);
