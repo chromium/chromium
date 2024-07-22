@@ -55,7 +55,7 @@ export function createLogFile(suffix) {
 export function parseCommandLineArgs() {
   return yargs(hideBin(process.argv))
     .usage(
-      `$0 [fileOrFolder]`,
+      `$0 [fileOrFolder...]`,
       `[CHANNEL=<local | stable | beta | canary | dev>] [DEBUG=*] [DEBUG_COLORS=<yes | no>] [LOG_DIR=logs] [NODE_OPTIONS=--unhandled-rejections=strict] [PORT=8080]`,
       (yargs) => {
         yargs.positional('fileOrFolder', {

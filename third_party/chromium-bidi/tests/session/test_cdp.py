@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import asyncio
 from unittest.mock import ANY
 
 import pytest
@@ -158,3 +159,53 @@ async def test_cdp_wait_for_event(websocket, get_cdp_session_id, context_id):
             "session": session_id
         }
     })
+
+
+@pytest.mark.asyncio
+async def test_cdp_no_extraneous_events(websocket, get_cdp_session_id,
+                                        create_context, url_base):
+    new_context_id = await create_context()
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_base,
+                "wait": "complete",
+                "context": new_context_id
+            }
+        })
+
+    await subscribe(websocket, ["cdp"], [new_context_id])
+
+    session_id = await get_cdp_session_id(new_context_id)
+
+    id = await send_JSON_command(
+        websocket, {
+            "method": "cdp.sendCommand",
+            "params": {
+                "method": "Target.attachToTarget",
+                "params": {
+                    "targetId": new_context_id,
+                    "flatten": True
+                },
+                "session": session_id
+            }
+        })
+
+    events = []
+    event = await read_JSON_message(websocket)
+
+    session_id = None
+    with pytest.raises(asyncio.TimeoutError):
+        while True:
+            if 'id' in event and event['id'] == id:
+                session_id = event['result']['result']['sessionId']
+            if 'id' not in event:
+                events.append(event)
+            event = await asyncio.wait_for(read_JSON_message(websocket),
+                                           timeout=1.0)
+
+    for event in events:
+        if event['method'].startswith(
+                'cdp') and event['params']['session'] == session_id:
+            raise Exception("Unrelated CDP events detected")

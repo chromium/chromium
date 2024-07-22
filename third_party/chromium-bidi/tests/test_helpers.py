@@ -69,7 +69,10 @@ async def send_JSON_command(websocket, command: dict) -> int:
 
 
 async def read_JSON_message(websocket) -> dict:
-    return json.loads(await websocket.recv())
+    logging.info("calling websocket recv", exc_info=True)
+    result = json.loads(await websocket.recv())
+    logging.info("calling websocket recv: done", exc_info=True)
+    return result
 
 
 async def execute_command(websocket, command: dict, timeout: int = 5) -> dict:

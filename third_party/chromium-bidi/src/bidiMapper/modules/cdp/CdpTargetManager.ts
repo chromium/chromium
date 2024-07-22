@@ -43,6 +43,7 @@ const cdpToBidiTargetTypes = {
 export class CdpTargetManager {
   readonly #browserCdpClient: CdpClient;
   readonly #cdpConnection: CdpConnection;
+  readonly #targetKeysToBeIgnoredByAutoAttach = new Set<string>();
   readonly #selfTargetId: string;
   readonly #eventManager: EventManager;
 
@@ -70,6 +71,7 @@ export class CdpTargetManager {
   ) {
     this.#cdpConnection = cdpConnection;
     this.#browserCdpClient = browserCdpClient;
+    this.#targetKeysToBeIgnoredByAutoAttach.add(selfTargetId);
     this.#selfTargetId = selfTargetId;
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
@@ -151,18 +153,50 @@ export class CdpTargetManager {
     const {sessionId, targetInfo} = params;
     const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
 
+    const detach = async () => {
+      // Detaches and resumes the target suppressing errors.
+      await targetCdpClient
+        .sendCommand('Runtime.runIfWaitingForDebugger')
+        .then(() =>
+          parentSessionCdpClient.sendCommand('Target.detachFromTarget', params)
+        )
+        .catch((error) => this.#logger?.(LogType.debugError, error));
+    };
+
+    if (this.#selfTargetId !== targetInfo.targetId) {
+      // Service workers are special case because they attach to the
+      // browser target and the page target (so twice per worker) during
+      // the regular auto-attach and might hang if the CDP session on
+      // the browser level is not detached. The logic to detach the
+      // right session is handled in the switch below.
+      const targetKey =
+        targetInfo.type === 'service_worker'
+          ? `${parentSessionCdpClient.sessionId}_${targetInfo.targetId}`
+          : targetInfo.targetId;
+
+      // Mapper generally only needs one session per target. If we
+      // receive additional auto-attached sessions, that is very likely
+      // coming from custom CDP sessions.
+      if (this.#targetKeysToBeIgnoredByAutoAttach.has(targetKey)) {
+        // Return to leave the session untouched.
+        return;
+      }
+      this.#targetKeysToBeIgnoredByAutoAttach.add(targetKey);
+    }
+
     switch (targetInfo.type) {
       case 'page':
       case 'iframe': {
-        if (targetInfo.targetId === this.#selfTargetId) {
-          break;
+        if (this.#selfTargetId === targetInfo.targetId) {
+          void detach();
+          return;
         }
 
         const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
         const maybeContext = this.#browsingContextStorage.findContext(
           targetInfo.targetId
         );
-        if (maybeContext) {
+        if (maybeContext && targetInfo.type === 'iframe') {
           // OOPiF.
           maybeContext.updateCdpTarget(cdpTarget);
         } else {
@@ -203,7 +237,8 @@ export class CdpTargetManager {
         });
         // If there is no browsing context, this worker is already terminated.
         if (!realm) {
-          break;
+          void detach();
+          return;
         }
 
         const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
@@ -230,12 +265,7 @@ export class CdpTargetManager {
 
     // DevTools or some other not supported by BiDi target. Just release
     // debugger and ignore them.
-    targetCdpClient
-      .sendCommand('Runtime.runIfWaitingForDebugger')
-      .then(() =>
-        parentSessionCdpClient.sendCommand('Target.detachFromTarget', params)
-      )
-      .catch((error) => this.#logger?.(LogType.debugError, error));
+    void detach();
   }
 
   #createCdpTarget(

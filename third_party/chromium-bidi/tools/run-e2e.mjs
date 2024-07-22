@@ -133,12 +133,12 @@ syncFileStreams.pipe(fileWriteStream);
 const serverProcess = createBiDiServerProcess();
 
 if (serverProcess.stderr) {
-  serverProcess.stdout.pipe(process.stdout);
   serverProcess.stderr.pipe(syncFileStreams);
 }
 
 if (serverProcess.stdout) {
   serverProcess.stdout.pipe(syncFileStreams);
+  serverProcess.stdout.pipe(process.stdout);
 }
 
 await matchLine(serverProcess).catch((error) => {
@@ -166,7 +166,11 @@ if (PYTEST_TOTAL_CHUNKS !== 1) {
 }
 
 if (argv.fileOrFolder) {
-  e2eArgs.push(argv.fileOrFolder);
+  e2eArgs.push(
+    ...(Array.isArray(argv.fileOrFolder)
+      ? argv.fileOrFolder
+      : [argv.fileOrFolder])
+  );
 }
 if (process.env.HEADLESS === 'false' && !argv.k) {
   e2eArgs.push('--ignore=tests/input');
