@@ -7249,6 +7249,65 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="DIPS.NavigationFlowNode" singular="True">
+  <owner>svend@google.com</owner>
+  <owner>dc-komics@google.com</owner>
+  <summary>
+    When a user visits three consecutive pages A-&gt;B-&gt;C within a tab, B
+    accesses cookies or storage, and the site (eTLD+1) for B is different from
+    the sites of A and C, then this event is recorded.
+  </summary>
+  <metric name="DidHaveSuccessfulWAA" enum="Boolean">
+    <summary>
+      True if this page had a successful WebAuthn assertion during the visit.
+    </summary>
+  </metric>
+  <metric name="DidHaveUserActivation" enum="Boolean">
+    <summary>
+      True if this page received user activation (click, etc.) during the visit.
+    </summary>
+  </metric>
+  <metric name="DidSiteHavePreviousUserActivation" enum="Boolean">
+    <summary>
+      True if DIPS had a record of user activation on this page's site prior to
+      this visit to this page.
+    </summary>
+  </metric>
+  <metric name="VisitDurationMilliseconds">
+    <summary>
+      The number of milliseconds this page was the primary page for,
+      exponentially bucketed. The duration increases as long as the page is the
+      primary page in its tab, even if the tab is not the active tab.
+    </summary>
+  </metric>
+  <metric name="WasEntryUserInitiated" enum="Boolean">
+    <summary>
+      True if the navigation from the prior page to this page was initiated by a
+      user gesture (e.g., typing a URL into the omnibar, clicking a link, etc.).
+    </summary>
+  </metric>
+  <metric name="WasExitUserInitiated" enum="Boolean">
+    <summary>
+      True if the navigation from this page to the next page was initiated by a
+      user gesture (e.g., typing a URL into the omnibar, clicking a link, etc.).
+    </summary>
+  </metric>
+  <metric name="WereEntryAndExitRendererInitiated" enum="Boolean">
+    <summary>
+      True if both the navigation from the prior page to this page, as well as
+      the navigation from this page to the next page, were initiated from the
+      renderer (e.g., by clicking a link in page content, etc.).
+    </summary>
+  </metric>
+  <metric name="WerePreviousAndNextSiteSame" enum="Boolean">
+    <summary>
+      True if the site (eTLD+1) for the page visited immediately prior to this
+      one (in the same tab) is the same as the site for the page visited
+      immediately after this one (in the same tab).
+    </summary>
+  </metric>
+</event>
+
 <event name="DIPS.Redirect" singular="True">
   <owner>rtarpine@google.com</owner>
   <owner>dc-komics@google.com</owner>

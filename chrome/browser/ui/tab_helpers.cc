@@ -179,6 +179,7 @@
 #include "chrome/browser/android/policy/policy_auditor_bridge.h"
 #include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
+#include "chrome/browser/dips/dips_navigation_flow_detector.h"
 #include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 #include "chrome/browser/fast_checkout/fast_checkout_tab_helper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -581,6 +582,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   // --- Section 2: Platform-specific tab helpers ---
 
 #if BUILDFLAG(IS_ANDROID)
+  DipsNavigationFlowDetector::MaybeCreateForWebContents(web_contents);
   webapps::MLInstallabilityPromoter::CreateForWebContents(web_contents);
   {
     // Remove after fixing https://crbug/905919
