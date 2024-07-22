@@ -10,15 +10,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync/glue/extensions_activity_monitor.h"
-#include "components/browser_sync/browser_sync_client.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/service/local_data_description.h"
+#include "components/sync/service/sync_client.h"
 #include "extensions/buildflags/buildflags.h"
 
 class Profile;
 
 namespace syncer {
 class ModelTypeController;
+class ModelTypeStoreService;
 class SyncService;
 class SyncableService;
 }  // namespace syncer
@@ -29,7 +30,7 @@ class LocalDataQueryHelper;
 class LocalDataMigrationHelper;
 class SyncApiComponentFactoryImpl;
 
-class ChromeSyncClient : public browser_sync::BrowserSyncClient {
+class ChromeSyncClient : public syncer::SyncClient {
  public:
   explicit ChromeSyncClient(Profile* profile);
 
@@ -38,25 +39,10 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
 
   ~ChromeSyncClient() override;
 
-  // BrowserSyncClient implementation.
+  // SyncClient implementation.
   PrefService* GetPrefService() override;
   signin::IdentityManager* GetIdentityManager() override;
   base::FilePath GetLocalSyncBackendFolder() override;
-  syncer::ModelTypeStoreService* GetModelTypeStoreService() override;
-  consent_auditor::ConsentAuditor* GetConsentAuditor() override;
-  syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() override;
-  favicon::FaviconService* GetFaviconService() override;
-  history::HistoryService* GetHistoryService() override;
-  webauthn::PasskeyModel* GetPasskeyModel() override;
-  reading_list::DualReadingListModel* GetDualReadingListModel() override;
-  send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
-      override;
-  sync_sessions::SessionSyncService* GetSessionSyncService() override;
-  password_manager::PasswordReceiverService* GetPasswordReceiverService()
-      override;
-  password_manager::PasswordSenderService* GetPasswordSenderService() override;
-  syncer::UserEventService* GetUserEventService() override;
-  sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
   syncer::ModelTypeController::TypeVector CreateModelTypeControllers(
       syncer::SyncService* sync_service) override;
   trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;
@@ -80,6 +66,9 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:
+  // Convenience function that exercises ModelTypeStoreServiceFactory.
+  syncer::ModelTypeStoreService* GetModelTypeStoreService();
+
   // Convenience function used during controller creation.
   base::WeakPtr<syncer::SyncableService> GetSyncableServiceForType(
       syncer::ModelType type);

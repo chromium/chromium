@@ -10,7 +10,6 @@ static_library("browser_sync") {
   sources = [
     "active_devices_provider_impl.cc",
     "active_devices_provider_impl.h",
-    "browser_sync_client.h",
     "common_controller_builder.cc",
     "common_controller_builder.h",
     "signin_confirmation_helper.cc",
