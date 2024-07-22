@@ -399,6 +399,13 @@ bool HistoryDatabase::RecreateAllTablesButURL() {
   if (!InitVisitTable())
     return false;
 
+  if (!DropVisitedLinkTable()) {
+    return false;
+  }
+  if (!CreateVisitedLinkTable()) {
+    return false;
+  }
+
   if (!DropKeywordSearchTermsTable())
     return false;
   if (!InitKeywordSearchTermsTable())

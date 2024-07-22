@@ -1829,12 +1829,16 @@ void HistoryService::NotifyDeletions(const DeletionInfo& deletion_info) {
   if (visit_delegate_) {
     if (deletion_info.IsAllHistory()) {
       visit_delegate_->DeleteAllURLs();
+      visit_delegate_->DeleteAllVisitedLinks();
     } else {
       std::vector<GURL> urls;
       urls.reserve(deletion_info.deleted_rows().size());
       for (const auto& row : deletion_info.deleted_rows())
         urls.push_back(row.url());
       visit_delegate_->DeleteURLs(urls);
+      // The deletion of individual VisitedLinks is completed by the
+      // ExpireHistoryBackend class, so we don't need to duplicate that behavior
+      // here.
     }
   }
 

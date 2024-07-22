@@ -49,6 +49,11 @@ class VisitedLinkDatabase {
   // VisitedLink table functions
   // -------------------------------------------------------
 
+  // Deletes the visited link database. Used for rapidly clearing all visits. In
+  // this case, CreateVisitedLinkTable() would be called immediately afterward
+  // to re-create it. Returns true on success.
+  bool DropVisitedLinkTable();
+
   // Looks up a visited link given an id. Fills info with the data. Returns true
   // on success and false otherwise.
   bool GetVisitedLinkRow(VisitedLinkID visited_link_id, VisitedLinkRow& info);
