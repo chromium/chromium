@@ -159,7 +159,7 @@ void SetInputMethodOptions(Profile& profile,
       autocorrect_enabled ? 1 : 0);
   input_method_setting.SetByDottedPath(
       std::string(kEngineIdUs) + ".physicalKeyboardEnablePredictiveWriting",
-      base::Value(predictive_writing_enabled));
+      predictive_writing_enabled);
   profile.GetPrefs()->SetDict(::prefs::kLanguageInputMethodSpecificSettings,
                               std::move(input_method_setting));
 }
@@ -293,16 +293,6 @@ class NativeInputMethodEngineTest : public ::testing::Test {
         /*disabled_features=*/DisabledFeatures());
   }
 
-  void EnableDefaultFeatureListWithMultiwordDisabled() {
-    feature_list_.Reset();
-
-    std::vector<base::test::FeatureRef> disabled_features = DisabledFeatures();
-    disabled_features.push_back(features::kAssistMultiWord);
-
-    feature_list_.InitWithFeatures(/*enabled_features=*/{},
-                                   /*disabled_features=*/disabled_features);
-  }
-
   void EnableDefaultFeatureListWithJapaneseSystemPk() {
     feature_list_.Reset();
     feature_list_.InitWithFeatures(
@@ -367,7 +357,6 @@ TEST_F(NativeInputMethodEngineTest,
        PredictiveWritingDoesNotLaunchImeServiceWithMultiWordFlagDisabled) {
   TestingProfile testing_profile;
   SetEmptyPrefs(testing_profile);
-  EnableDefaultFeatureListWithMultiwordDisabled();
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/false,
                         /*predictive_writing_enabled=*/true);
 
@@ -432,7 +421,6 @@ TEST_F(NativeInputMethodEngineTest,
 TEST_F(NativeInputMethodEngineTest, TogglesImeServiceWhenAutocorrectChanges) {
   TestingProfile testing_profile;
   SetEmptyPrefs(testing_profile);
-  EnableDefaultFeatureListWithMultiwordDisabled();
   testing::StrictMock<MockInputMethod> mock_input_method;
   InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
@@ -731,7 +719,7 @@ TEST_P(AutocorrectByDefaultDisabledByInputMethodMetadata,
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
       {features::kAutocorrectByDefault, features::kImeFstDecoderParamsUpdate},
-      {features::kImeRuleConfig, features::kAssistMultiWord});
+      DisabledFeatures());
   TestingProfile testing_profile;
   SetPhysicalKeyboardAutocorrectAsEnabledByDefault(testing_profile.GetPrefs(),
                                                    kEngineIdUs);

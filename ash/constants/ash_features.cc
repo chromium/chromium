@@ -155,7 +155,7 @@ BASE_FEATURE(kAssistEmojiEnhanced,
 // Controls whether to enable assistive multi word suggestions.
 BASE_FEATURE(kAssistMultiWord,
              "AssistMultiWord",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to enable assistive multi word suggestions on an expanded
 // list of surfaces.

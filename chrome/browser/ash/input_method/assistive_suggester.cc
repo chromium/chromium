@@ -202,7 +202,7 @@ void RecordMultiWordTextInputState(
     return;
   }
 
-  if (!IsPredictiveWritingPrefEnabled(*pref_service, engine_id)) {
+  if (!IsPredictiveWritingPrefEnabled(pref_service, engine_id)) {
     RecordTextInputStateMetric(
         AssistiveTextInputState::kFeatureBlockedByPreference);
     return;
@@ -255,7 +255,7 @@ bool AssistiveSuggester::IsEnhancedEmojiSuggestEnabled() {
 
 bool AssistiveSuggester::IsMultiWordSuggestEnabled() {
   return base::FeatureList::IsEnabled(features::kAssistMultiWord) &&
-         IsPredictiveWritingPrefEnabled(*profile_->GetPrefs(),
+         IsPredictiveWritingPrefEnabled(profile_->GetPrefs(),
                                         active_engine_id_);
 }
 
@@ -708,7 +708,7 @@ void AssistiveSuggester::OnActivate(const std::string& engine_id) {
 
   if (base::FeatureList::IsEnabled(features::kAssistMultiWord)) {
     RecordAssistiveUserPrefForMultiWord(
-        IsPredictiveWritingPrefEnabled(*profile_->GetPrefs(), engine_id));
+        IsPredictiveWritingPrefEnabled(profile_->GetPrefs(), engine_id));
   }
   if (base::FeatureList::IsEnabled(
           features::kDiacriticsOnPhysicalKeyboardLongpress) &&
