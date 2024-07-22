@@ -503,10 +503,6 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
 
 // Tests the group renaming from the group's context menu in the grid.
 - (void)testRenamingGroupUsingGridContextMenu {
-  // TODO(b/353283917): test failing on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test not supported on iPad");
-  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -530,10 +526,6 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
 
 // Tests the ungrouping of a group from its context menu in the grid.
 - (void)testUngroupingGroupUsingGridContextMenu {
-  // TODO(b/353283917): test failing on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test not supported on iPad");
-  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -821,10 +813,6 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
 // Tests opening a tab group after resetting the incognito browser (i.e. closing
 // all incognito tabs).
 - (void)testOpenTabGroupAfterBrowserReset {
-  // TODO(b/353283917): test failing on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test not supported on iPad");
-  }
   // Create one incognito tab then close all of them to reset the browser.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey waitForIncognitoTabCount:1];
@@ -848,10 +836,6 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
 
 // Tests re-opening a group from Search in another window.
 - (void)testReopenGroupFromAnotherWindow {
-  // TODO(b/353283917): test failing on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test not supported on iPad");
-  }
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
   }
@@ -937,10 +921,6 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
 // Tests that the TabGrid is correctly updated when it was presenting a group
 // before being backgrounded while incognito reauth is enabled.
 - (void)testIncognitoReauth {
-  // TODO(b/353283917): test failing on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test not supported on iPad");
-  }
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGreyUI openTabGrid];
 
@@ -1022,10 +1002,6 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
 
 // Tests the different explanation text (signed in/out) in the creation screen.
 - (void)testTabGroupCreationScreenExplanation {
-  // TODO(b/353283917): test failing on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test not supported on iPad");
-  }
   [ChromeEarlGreyUI openTabGrid];
 
   // Open the creation view.
@@ -1058,10 +1034,6 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
 
 // Tests opening a tab from the group view.
 - (void)testOpenTabFromGroupView {
-  // TODO(b/353283917): test failing on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test not supported on iPad");
-  }
   std::string URL1 = "chrome://version";
   std::string URL2 = "chrome://about";
   std::string content1 = "Revision";
