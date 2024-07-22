@@ -89,6 +89,8 @@ const char kMilestoneNonRedirectResponseLoaderCallback[] =
 const char kMilestoneCommitSent[] = "CommitSent";
 const char kMilestoneDidCommit[] = "DidCommit";
 const char kMilestoneParseStart[] = "ParseStart";
+const char kFirstContentfulPaint[] = "FirstContentfulPaint";
+const char kDOMContentLoaded[] = "DOMContentLoaded";
 
 // TODO(https://crbug.com/347706997): Record more milestones related to loading
 // and process creation timing.
@@ -154,6 +156,10 @@ std::string AbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
       return internal::kMilestoneDidCommit;
     case NavigationMilestone::kParseStart:
       return internal::kMilestoneParseStart;
+    case NavigationMilestone::kFirstContentfulPaint:
+      return internal::kFirstContentfulPaint;
+    case NavigationMilestone::kDOMContentLoaded:
+      return internal::kDOMContentLoaded;
   }
 }
 
@@ -295,6 +301,13 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
   }
 }
 
+void AbandonedPageLoadMetricsObserver::LogLoadingMilestone(
+    NavigationMilestone milestone,
+    base::TimeDelta time) {
+  LogMilestoneHistogram(milestone, time);
+  loading_milestones_.emplace_back(milestone, time);
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 AbandonedPageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
@@ -385,11 +398,21 @@ AbandonedPageLoadMetricsObserver::OnCommit(
 
 void AbandonedPageLoadMetricsObserver::OnParseStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  auto loading_milestone =
-      std::make_pair(NavigationMilestone::kParseStart,
-                     timing.parse_timing->parse_start.value());
-  LogMilestoneHistogram(loading_milestone.first, loading_milestone.second);
-  latest_loading_milestone_ = loading_milestone;
+  LogLoadingMilestone(NavigationMilestone::kParseStart,
+                      timing.parse_timing->parse_start.value());
+}
+
+void AbandonedPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  LogLoadingMilestone(NavigationMilestone::kFirstContentfulPaint,
+                      timing.paint_timing->first_contentful_paint.value());
+}
+
+void AbandonedPageLoadMetricsObserver::OnDomContentLoadedEventStart(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  LogLoadingMilestone(
+      NavigationMilestone::kDOMContentLoaded,
+      timing.document_timing->dom_content_loaded_event_start.value());
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -516,6 +539,20 @@ void AbandonedPageLoadMetricsObserver::LogMetricsOnAbandon(
 
   const std::string abandon_string = AbandonReasonToString(abandon_reason);
 
+  // Find the most latest loading milestone before the loading is abandoned. If
+  // found, log it as an abandoned milesone later.
+  std::optional<LoadingMilestone> latest_loading_milestone_to_abandon;
+  for (const auto& milestone : loading_milestones_) {
+    if (abandon_timing <=
+        milestone.second + GetDelegate().GetNavigationStart()) {
+      continue;
+    }
+    if (!latest_loading_milestone_to_abandon.has_value() ||
+        milestone.second > latest_loading_milestone_to_abandon->second) {
+      latest_loading_milestone_to_abandon = milestone;
+    }
+  }
+
   // Log the time from the latest navigation or loading milestone received. This
   // helps us know at what point of the navigation the abandonment happened.
   // Note that for redirects and non-redirects we only check "loader callback"
@@ -523,15 +560,15 @@ void AbandonedPageLoadMetricsObserver::LogMetricsOnAbandon(
   // since we're only notified of NavigationHandleTiming update when we get the
   // loader callback. Thus, the loader callback timing must be more recent than
   // the response start or request start counterpart.
-  if (latest_loading_milestone_.has_value() &&
-      abandon_timing > latest_loading_milestone_->second +
-                           GetDelegate().GetNavigationStart()) {
-    // `latest_loading_milestone_` has the taken time from the navigation start
-    // time as base::TimeDelta, adding the navigation start time to measure the
-    // abandoned time.
-    LogAbandonHistograms(
-        abandon_reason, latest_loading_milestone_->first, abandon_timing,
-        latest_loading_milestone_->second + GetDelegate().GetNavigationStart());
+  if (latest_loading_milestone_to_abandon.has_value()) {
+    // `latest_loading_milestone_to_abandon` has the taken time from the
+    // navigation start time as base::TimeDelta, adding the navigation start
+    // time to measure the abandoned time.
+    LogAbandonHistograms(abandon_reason,
+                         latest_loading_milestone_to_abandon->first,
+                         abandon_timing,
+                         latest_loading_milestone_to_abandon->second +
+                             GetDelegate().GetNavigationStart());
   } else if (!latest_navigation_handle_timing_.navigation_commit_sent_time
                   .is_null() &&
              abandon_timing >

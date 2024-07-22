@@ -52,16 +52,15 @@ class AbandonedPageLoadMetricsObserverBrowserTest
             NavigationMilestone::kNonRedirectResponseStart,
             NavigationMilestone::kNonRedirectResponseLoaderCallback,
             NavigationMilestone::kCommitSent,
-            NavigationMilestone::kDidCommit};
+            NavigationMilestone::kDidCommit,
+            NavigationMilestone::kParseStart,
+            NavigationMilestone::kFirstContentfulPaint,
+            NavigationMilestone::kDOMContentLoaded};
   }
   std::vector<NavigationMilestone> all_testable_milestones() {
     return {NavigationMilestone::kNavigationStart,
             NavigationMilestone::kLoaderStart,
             NavigationMilestone::kNonRedirectResponseLoaderCallback};
-  }
-
-  std::vector<NavigationMilestone> all_loading_milestones() {
-    return {NavigationMilestone::kParseStart};
   }
 
   void SetUpOnMainThread() override {
@@ -128,18 +127,6 @@ class AbandonedPageLoadMetricsObserverBrowserTest
     }
   }
 
-  void ExpectTotalCountForAllLoadingMilestones(
-      int count,
-      std::string histogram_suffix = "") {
-    for (auto milestone : all_loading_milestones()) {
-      SCOPED_TRACE(testing::Message()
-                   << " ExpectTotalCountForAllLoadingMilestones on milestone "
-                   << ((int)milestone) << " with suffix " << histogram_suffix);
-      histogram_tester().ExpectTotalCount(
-          GetMilestoneHistogramName(milestone, histogram_suffix), count);
-    }
-  }
-
   void ExpectEmptyNavigationAbandonment() {
     for (auto milestone : all_milestones()) {
       SCOPED_TRACE(testing::Message()
@@ -165,7 +152,6 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
                        NoAbandonment) {
   GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 0);
-  ExpectTotalCountForAllLoadingMilestones(0);
   ExpectEmptyNavigationAbandonment();
 
   // Navigate to `url_a`.
@@ -178,7 +164,6 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   // There should be a new entry for all the navigation and loading milestones
   // metrics.
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 1);
-  ExpectTotalCountForAllLoadingMilestones(1);
 
   // There should be no new entry for the navigation abandonment metrics.
   ExpectEmptyNavigationAbandonment();
@@ -194,26 +179,24 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   // 1) Navigate to A.
   auto waiter1 = CreatePageLoadMetricsTestWaiter();
   waiter1->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
   waiter1->Wait();
   content::RenderFrameHostWrapper rfh_a(web_contents()->GetPrimaryMainFrame());
   // There should be a new entry for all the navigation and loading milestones
   // metrics.
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 1);
-  ExpectTotalCountForAllLoadingMilestones(1);
 
   // 2) Navigate to B.
   auto waiter2 = CreatePageLoadMetricsTestWaiter();
   waiter2->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_b));
   waiter2->Wait();
   content::RenderFrameHostWrapper rfh_b(web_contents()->GetPrimaryMainFrame());
 
   // There should be a new entry for all the navigation milestones metrics.
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 2);
-  ExpectTotalCountForAllLoadingMilestones(2);
 
   // Test non-BFCache-restore history navigation. Ensure that the history
   // navigation won't restore from BFCache, by flushing the BFCache.
@@ -223,17 +206,16 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   // 3) Go back to A without restoring from BFCache.
   auto waiter3 = CreatePageLoadMetricsTestWaiter();
   waiter3->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   waiter3->Wait();
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 3);
-  ExpectTotalCountForAllLoadingMilestones(3);
 
   // 4) Navigate forward to B, potentially restoring from BFCache.
   auto waiter4 = CreatePageLoadMetricsTestWaiter();
   waiter4->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     rfh_b->IsInLifecycleState(
         content::RenderFrameHost::LifecycleState::kInBackForwardCache);
@@ -246,8 +228,6 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   // metrics will be logged. Otherwise, all milestones will be logged.
   ExpectTotalCountForAllNavigationMilestones(
       /*include_redirect=*/false,
-      content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 3 : 4);
-  ExpectTotalCountForAllLoadingMilestones(
       content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 3 : 4);
 
   // No abandonment happened, so no abandonment metrics was logged.
@@ -375,28 +355,32 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest, TabHidden) {
   base::HistogramTester histogram_tester;
-
   GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
+
+  // TODO(crbug.com/347706997): Build the test case that hides the current tab
+  // for each loading milestone so that we make the abandon histogram testable
+  // for all loading miletsones.
   auto waiter = CreatePageLoadMetricsTestWaiter();
   waiter->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kFirstPaint);
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
   waiter->Wait();
 
   // Hide the tab during navigation.
   web_contents()->WasHidden();
 
-  // For loading milestones, we only test `ParseStartToAbandon` for now.
-  EXPECT_THAT(
-      histogram_tester.GetTotalCountsForPrefix(
-          GetMilestoneToAbandonHistogramName(NavigationMilestone::kParseStart)),
-      testing::ElementsAre(testing::Pair(
-          GetMilestoneToAbandonHistogramName(NavigationMilestone::kParseStart,
-                                             AbandonReason::kHidden),
-          1)));
+  // The series of loading milestones is not a fixed order, but the last
+  // milestone of this test page is always first contentful paint milestone.
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  GetMilestoneToAbandonHistogramName(
+                      NavigationMilestone::kFirstContentfulPaint)),
+              testing::ElementsAre(
+                  testing::Pair(GetMilestoneToAbandonHistogramName(
+                                    NavigationMilestone::kFirstContentfulPaint,
+                                    AbandonReason::kHidden),
+                                1)));
 
   // There should be a new entry for all the navigation and loading milestones
   // metrics.
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 1);
-  ExpectTotalCountForAllLoadingMilestones(1);
 }

@@ -72,6 +72,8 @@ chromium-metrics-reviews@google.com.
 <variants name="NavigationMilestone">
   <variant name="CommitSent"/>
   <variant name="DidCommit"/>
+  <variant name="DOMContentLoaded"/>
+  <variant name="FirstContentfulPaint"/>
   <variant name="FirstRedirectedRequestStart"/>
   <variant name="FirstRedirectResponseLoaderCallback"/>
   <variant name="FirstRedirectResponseStart"/>

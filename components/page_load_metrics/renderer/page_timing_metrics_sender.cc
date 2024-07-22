@@ -46,20 +46,30 @@ mojom::UserInteractionType UserInteractionTypeForMojom(
   return mojom::UserInteractionType::kMinValue;
 }
 
-bool IsFirstFCP(mojom::PageLoadTimingPtr last_timing,
-                mojom::PageLoadTimingPtr new_timing) {
+bool IsFirstFCP(const mojom::PageLoadTimingPtr& last_timing,
+                const mojom::PageLoadTimingPtr& new_timing) {
   return (!last_timing->paint_timing ||
           !last_timing->paint_timing->first_contentful_paint.has_value()) &&
          new_timing->paint_timing &&
          new_timing->paint_timing->first_contentful_paint.has_value();
 }
 
-bool IsFirstParseStart(mojom::PageLoadTimingPtr last_timing,
-                       mojom::PageLoadTimingPtr new_timing) {
+bool IsFirstParseStart(const mojom::PageLoadTimingPtr& last_timing,
+                       const mojom::PageLoadTimingPtr& new_timing) {
   return (!last_timing->parse_timing ||
           !last_timing->parse_timing->parse_start.has_value()) &&
          new_timing->parse_timing &&
          new_timing->parse_timing->parse_start.has_value();
+}
+
+bool IsFirstDCL(const mojom::PageLoadTimingPtr& last_timing,
+                const mojom::PageLoadTimingPtr& new_timing) {
+  return (!last_timing->document_timing ||
+          !last_timing->document_timing->dom_content_loaded_event_start
+               .has_value()) &&
+         new_timing->document_timing &&
+         new_timing->document_timing->dom_content_loaded_event_start
+             .has_value();
 }
 
 }  // namespace
@@ -277,12 +287,12 @@ void PageTimingMetricsSender::Update(
   }
 
   // We want to force sending the metrics quickly when some loading milestones
-  // are reached (currently parse start and FCP) so that the browser can
+  // are reached (currently parse start, DCL, and FCP) so that the browser can
   // receive the accurate number of events. This accuracy is important to
   // measure the abandoned navigation.
-  const bool send_urgently =
-      IsFirstFCP(last_timing_.Clone(), timing.Clone()) ||
-      IsFirstParseStart(last_timing_.Clone(), timing.Clone());
+  const bool send_urgently = IsFirstFCP(last_timing_, timing) ||
+                             IsFirstParseStart(last_timing_, timing) ||
+                             IsFirstDCL(last_timing_, timing);
 
   last_timing_ = std::move(timing);
   metadata_recorder_.UpdateMetadata(monotonic_timing);
