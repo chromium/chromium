@@ -60,13 +60,14 @@ def CreateGenericQuerier(
     suite: Optional[str] = None,
     project: Optional[str] = None,
     num_samples: Optional[int] = None,
+    keep_unmatched_results: bool = False,
     cls: Optional[Type[queries_module.BigQueryQuerier]] = None
 ) -> queries_module.BigQueryQuerier:
   suite = suite or 'pixel'
   project = project or 'project'
   num_samples = num_samples or 5
   cls = cls or SimpleBigQueryQuerier
-  return cls(suite, project, num_samples)
+  return cls(suite, project, num_samples, keep_unmatched_results)
 
 
 def GetArgsForMockCall(call_args_list: List[tuple],
