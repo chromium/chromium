@@ -100,6 +100,8 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     @Override
     protected void after() {
         super.after();
+        // Activity is finish()'ed in super.after(), and CCT activities sometimes trigger creation
+        // of spare tabs in their onDestroy() (https://crrev.com/c/5597549).
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WarmupManager.getInstance().destroySpareTab();
