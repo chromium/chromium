@@ -63,8 +63,7 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
     return resource_provider_.get();
   }
 
-  // TODO(junov): remove "virtual" when refactoring is complete.
-  virtual void FlushRecording(FlushReason reason);
+  void FlushRecording(FlushReason reason);
 
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProvider(
       std::unique_ptr<CanvasResourceProvider>);

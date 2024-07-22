@@ -166,7 +166,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
  private:
   void FinalizeFrame(FlushReason) final;
-  void FlushRecording(FlushReason);
 
   bool IsPaintable() const final;
   bool IsCanvas2DBufferValid() const override;

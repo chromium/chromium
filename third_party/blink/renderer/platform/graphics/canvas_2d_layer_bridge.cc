@@ -134,7 +134,7 @@ void Canvas2DLayerBridge::Hibernate() {
   // No HibernationEvent reported on success. This is on purppose to avoid
   // non-complementary stats. Each HibernationScheduled event is paired with
   // exactly one failure or exit event.
-  FlushRecording(FlushReason::kHibernating);
+  resource_host_->FlushRecording(FlushReason::kHibernating);
   // The following checks that the flush succeeded, which should always be the
   // case because flushRecording should only fail it it fails to allocate
   // a surface, and we have an early exit at the top of this function for when
@@ -334,24 +334,12 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
       recorder.RestartRecording();
     }
   } else {
-    FlushRecording(FlushReason::kWritePixels);
+    resource_host_->FlushRecording(FlushReason::kWritePixels);
     if (!GetOrCreateResourceProvider())
       return false;
   }
 
   return ResourceProvider()->WritePixels(orig_info, pixels, row_bytes, x, y);
-}
-
-void Canvas2DLayerBridge::FlushRecording(FlushReason reason) {
-  CHECK(resource_host_);
-  CanvasResourceProvider* provider = GetOrCreateResourceProvider();
-  if (!provider || !provider->Recorder().HasReleasableDrawOps()) {
-    return;
-  }
-
-  TRACE_EVENT0("cc", "Canvas2DLayerBridge::flushRecording");
-
-  provider->FlushCanvas(reason);
 }
 
 bool Canvas2DLayerBridge::Restore() {
@@ -400,7 +388,7 @@ void Canvas2DLayerBridge::FinalizeFrame(FlushReason reason) {
   if (!GetOrCreateResourceProvider())
     return;
 
-  FlushRecording(reason);
+  resource_host_->FlushRecording(reason);
   if (reason == FlushReason::kCanvasPushFrame) {
     if (resource_host_->IsDisplayed()) {
       // Make sure the GPU is never more than two animation frames behind.
@@ -434,7 +422,7 @@ scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot(
   // FlushRecording, in case the playback crashed the GPU context.
   if (!GetOrCreateResourceProvider())
     return nullptr;
-  FlushRecording(reason);
+  resource_host_->FlushRecording(reason);
   if (!GetOrCreateResourceProvider())
     return nullptr;
   return ResourceProvider()->Snapshot(reason);

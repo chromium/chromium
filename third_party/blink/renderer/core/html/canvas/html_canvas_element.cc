@@ -988,7 +988,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
     // web test printing/manual/canvas2d-vector-text.html
     // That test should be run manually against CLs that touch this code.
     if (IsPrinting() && IsRenderingContext2D() && canvas2d_bridge_) {
-      canvas2d_bridge_->FlushRecording(FlushReason::kPrinting);
+      FlushRecording(FlushReason::kPrinting);
       CanvasResourceProvider* provider = ResourceProvider();
       // The provider must be checked after calling `FlushRecording` in case
       // the playback crashed the context.
@@ -1937,15 +1937,6 @@ bool HTMLCanvasElement::IsHibernating() const {
 
 bool HTMLCanvasElement::IsAccelerated() const {
   return GetRasterMode() == RasterMode::kGPU;
-}
-
-// Temporary plumbing
-void HTMLCanvasElement::FlushRecording(FlushReason reason) {
-  if (canvas2d_bridge_) {
-    canvas2d_bridge_->FlushRecording(reason);
-  } else {
-    CanvasResourceHost::FlushRecording(reason);
-  }
 }
 
 }  // namespace blink
