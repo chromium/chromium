@@ -409,9 +409,9 @@ class HarfBuzzSkiaFontFuncs final {
 
     const int num_tags = typeface->countTables();
 
-    SkFontTableTag tags[num_tags];
+    Vector<SkFontTableTag> tags(num_tags);
 
-    const int returned_tags = typeface->getTableTags(tags);
+    const int returned_tags = typeface->getTableTags(tags.data());
     DCHECK_EQ(num_tags, returned_tags);
 
     for (auto& tag : tags) {
