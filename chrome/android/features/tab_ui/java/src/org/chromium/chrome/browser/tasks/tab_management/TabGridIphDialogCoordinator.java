@@ -89,6 +89,8 @@ class TabGridIphDialogCoordinator implements TabSwitcherIphController {
 
     @Override
     public void showIph() {
+        if (mParentView == null) return;
+
         attachParentGlobalLayoutListener();
         mModalDialogManager.showDialog(mModel, ModalDialogManager.ModalDialogType.APP);
         mIphDialogView.startIPHAnimation();
