@@ -73,8 +73,8 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
   void RestartRecording();
 
   bool HasRecordedDrawOps() const {
-    return main_canvas_.HasRecordedDrawOps() +
-           (side_canvas_ ? side_canvas_->HasRecordedDrawOps() : 0);
+    return main_canvas_.HasRecordedDrawOps() ||
+           (side_canvas_ && side_canvas_->HasRecordedDrawOps());
   }
   bool HasReleasableDrawOps() const {
     return main_canvas_.HasRecordedDrawOps();
