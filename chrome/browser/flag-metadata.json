@@ -8175,6 +8175,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "show-cast-permission-rejected-error",
+    "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "show-featured-enterprise-site-search",
     "owners": [ "ftirelo@chromium.org", "pastarmovj@chromium.org" ],
     "expiry_milestone": 130
@@ -9008,6 +9013,11 @@
     "name": "use-multi-plane-format-for-software-video",
     "owners": [ "hitawala@chromium.org", "vasilyt@chromium.org" ],
     "expiry_milestone": 130
+  },
+  {
+    "name": "use-network-framework-for-cast-discovery",
+    "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "use-out-of-process-video-decoding",

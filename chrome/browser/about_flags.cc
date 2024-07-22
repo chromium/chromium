@@ -5294,6 +5294,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDelayMediaSinkDiscoveryName,
      flag_descriptions::kDelayMediaSinkDiscoveryDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media_router::kDelayMediaSinkDiscovery)},
+    {"show-cast-permission-rejected-error",
+     flag_descriptions::kShowCastPermissionRejectedErrorName,
+     flag_descriptions::kShowCastPermissionRejectedErrorDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media_router::kShowCastPermissionRejectedError)},
     {"cast-streaming-hardware-h264",
      flag_descriptions::kCastStreamingHardwareH264Name,
      flag_descriptions::kCastStreamingHardwareH264Description, kOsDesktop,
@@ -5327,8 +5331,12 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_MAC)
     {"enable-cast-streaming-mac-hardware-h264",
      flag_descriptions::kCastStreamingMacHardwareH264Name,
-     flag_descriptions::kCastStreamingMacHardwareH264Description, kOsDesktop,
+     flag_descriptions::kCastStreamingMacHardwareH264Description, kOsMac,
      FEATURE_VALUE_TYPE(media::kCastStreamingMacHardwareH264)},
+    {"use-network-framework-for-cast-discovery",
+     flag_descriptions::kUseNetworkFrameworkForCastDiscoveryName,
+     flag_descriptions::kUseNetworkFrameworkForCastDiscoveryDescription, kOsMac,
+     FEATURE_VALUE_TYPE(media_router::kUseNetworkFrameworkForCastDiscovery)},
 #endif
 
     {"enable-cast-streaming-vp8", flag_descriptions::kCastStreamingVp8Name,

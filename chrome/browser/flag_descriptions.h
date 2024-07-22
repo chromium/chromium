@@ -1143,6 +1143,8 @@ extern const char kCastStreamingVp9Description[];
 #if BUILDFLAG(IS_MAC)
 extern const char kCastStreamingMacHardwareH264Name[];
 extern const char kCastStreamingMacHardwareH264Description[];
+extern const char kUseNetworkFrameworkForCastDiscoveryName[];
+extern const char kUseNetworkFrameworkForCastDiscoveryDescription[];
 #endif
 
 extern const char kCastEnableStreamingWithHiDPIName[];
@@ -2922,6 +2924,8 @@ extern const char kDialMediaRouteProviderName[];
 extern const char kDialMediaRouteProviderDescription[];
 extern const char kDelayMediaSinkDiscoveryName[];
 extern const char kDelayMediaSinkDiscoveryDescription[];
+extern const char kShowCastPermissionRejectedErrorName[];
+extern const char kShowCastPermissionRejectedErrorDescription[];
 
 extern const char kCastMirroringTargetPlayoutDelayName[];
 extern const char kCastMirroringTargetPlayoutDelayDescription[];

@@ -15904,6 +15904,7 @@ from previous Chrome versions.
   <int value="-2092067251" label="NativeFilesystemAPI:disabled"/>
   <int value="-2091414992" label="DlcSettingsUi:disabled"/>
   <int value="-2091404586" label="TabStripKeyboardFocus:enabled"/>
+  <int value="-2091355143" label="ShowCastPermissionRejectedError:enabled"/>
   <int value="-2090484194" label="ContextualSearchUrlActions:disabled"/>
   <int value="-2088555929" label="EnableAppGridGhost:enabled"/>
   <int value="-2088472280" label="KeyboardShortcutViewerApp:disabled"/>
@@ -18349,6 +18350,8 @@ from previous Chrome versions.
   <int value="-1064302126"
       label="OmniboxAlternateMatchDescriptionSeparator:enabled"/>
   <int value="-1062534902" label="SyncingCompromisedCredentials:disabled"/>
+  <int value="-1062338822"
+      label="UseNetworkFrameworkForCastDiscovery:disabled"/>
   <int value="-1062119671" label="enable-password-force-saving"/>
   <int value="-1061203892" label="VideoToolboxVp9Decoding:disabled"/>
   <int value="-1060574877"
@@ -18541,6 +18544,7 @@ from previous Chrome versions.
   <int value="-985445963" label="TabSearchFuzzySearch:disabled"/>
   <int value="-984340827" label="OidcAuthProfileManagement:enabled"/>
   <int value="-984052166" label="DoodlesOnLocalNtp:enabled"/>
+  <int value="-983845861" label="ShowCastPermissionRejectedError:disabled"/>
   <int value="-983342281" label="TabSwitcherLongpressMenu:disabled"/>
   <int value="-983335806" label="DelegatedCompositing:disabled"/>
   <int value="-983087919"
@@ -18858,6 +18862,7 @@ from previous Chrome versions.
   <int value="-851924474" label="FastPairDebugMetadata:disabled"/>
   <int value="-851413329" label="AnnotatorMode:disabled"/>
   <int value="-850821337" label="WebContentsForceDark:enabled"/>
+  <int value="-850108109" label="UseNetworkFrameworkForCastDiscovery:enabled"/>
   <int value="-849792130" label="UserMediaCaptureOnFocus:disabled"/>
   <int value="-848691867" label="DesktopPWAWindowing:enabled"/>
   <int value="-847735582" label="NotificationsViaHelperApp:enabled"/>

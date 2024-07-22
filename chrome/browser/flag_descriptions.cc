@@ -2026,6 +2026,11 @@ const char kCastStreamingMacHardwareH264Name[] =
 const char kCastStreamingMacHardwareH264Description[] =
     "Offers the H264 video codec when negotiating Cast Streaming, and uses "
     "hardware-accelerated H264 encoding if selected for the session";
+const char kUseNetworkFrameworkForCastDiscoveryName[] =
+    "Use the Network Framework for Cast device discovery on Mac";
+const char kUseNetworkFrameworkForCastDiscoveryDescription[] =
+    "Use the Network Framework to replace the Bonjour API for Cast device "
+    "discovery on Mac.";
 #endif
 
 const char kCastEnableStreamingWithHiDPIName[] =
@@ -5032,6 +5037,12 @@ const char kDelayMediaSinkDiscoveryDescription[] =
     "Delay the browser background discovery of Cast and DIAL devices until "
     "users have interacted with the Cast UI or visited a site supporting Cast "
     "SDK or Remote Playback API.";
+
+const char kShowCastPermissionRejectedErrorName[] =
+    "Show the permission rejected error message in the Cast/GMC UI.";
+const char kShowCastPermissionRejectedErrorDescription[] =
+    "Show an error message in the Cast/GMC UI to inform users when the network "
+    "permission is rejected and Chrome's Cast feature is disabled.";
 
 const char kCastMirroringTargetPlayoutDelayName[] =
     "Changes the target playout delay for cast mirroring.";
