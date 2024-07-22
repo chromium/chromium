@@ -805,9 +805,9 @@ BUILDERS = {
             # version ever changes or becomes inconsistent. It is important
             # that bots are homogeneous. See crbug.com/988045 for history.
             'os':
-            'Windows-10-18363.476|Windows-10-18363.1621',
+            'Windows-10',
             'gpu':
-            '8086:1616-20.19.15.5070|8086:1616-10.0.18362.1',
+            '8086:1616',
             'synthetic_product_name':
             'HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)'
         },
@@ -827,8 +827,8 @@ BUILDERS = {
         64,
         'dimension': {
             'pool': 'chrome.tests.perf',
-            'os': 'Windows-10-18363.476|Windows-10-18363.1621',
-            'gpu': '8086:1616-20.19.15.5070|8086:1616-10.0.18362.1',
+            'os': 'Windows-10',
+            'gpu': '8086:1616',
         },
     },
     'win-10-perf': {
@@ -888,8 +888,8 @@ BUILDERS = {
             # that we can be informed if this
             # version ever changes or becomes inconsistent. It is important
             # that bots are homogeneous. See crbug.com/988045 for history.
-            'os': 'Windows-10-19043',
-            'gpu': '1002:1638-30.0.13033.1000',
+            'os': 'Windows-10',
+            'gpu': '1002:1638',
             'synthetic_product_name': 'OMEN by HP Laptop 16-c0xxx [ ] (HP)',
         },
     },
@@ -912,8 +912,8 @@ BUILDERS = {
             # that we can be informed if this
             # version ever changes or becomes inconsistent. It is important
             # that bots are homogeneous. See crbug.com/988045 for history.
-            'os': 'Windows-10-19043',
-            'gpu': '1002:1638-30.0.13033.1000',
+            'os': 'Windows-10',
+            'gpu': '1002:1638',
             'synthetic_product_name': 'OMEN by HP Laptop 16-c0xxx [ ] (HP)',
         },
     },
