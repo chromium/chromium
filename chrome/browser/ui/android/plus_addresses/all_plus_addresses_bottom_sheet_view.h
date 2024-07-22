@@ -23,6 +23,14 @@ class AllPlusAddressesBottomSheetView final {
   ~AllPlusAddressesBottomSheetView();
   void Show(base::span<const PlusProfile> profiles);
 
+  // Invoked in case the user chooses an entry from the plus address list
+  // presented to them.
+  void OnPlusAddressSelected(JNIEnv* env, const std::string& plus_address);
+
+  // Called from Java bridge when user dismisses the BottomSheet.
+  // Redirects the call to the controller.
+  void OnDismissed(JNIEnv* env);
+
  private:
   // Returns either the fully initialized java counterpart of this bridge or
   // a is_null() reference if the creation failed. By using this method, the

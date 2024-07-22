@@ -15,8 +15,13 @@ import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBott
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -32,13 +37,16 @@ public class AllPlusAddressesBottomSheetMediatorTest {
     private static final String BOTTOMSHEET_QUERY_HINT = "Query hint";
     private static final PlusProfile PROFILE_1 = new PlusProfile("google.com", "example@gmail.com");
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Mock private AllPlusAddressesBottomSheetCoordinator.Delegate mDelegate;
+
     private PropertyModel mModel;
     private AllPlusAddressesBottomSheetMediator mMediator;
 
     @Before
     public void setUp() {
         mModel = AllPlusAddressesBottomSheetProperties.createDefaultModel();
-        mMediator = new AllPlusAddressesBottomSheetMediator(mModel);
+        mMediator = new AllPlusAddressesBottomSheetMediator(mModel, mDelegate);
     }
 
     @Test

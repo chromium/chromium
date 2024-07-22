@@ -81,6 +81,16 @@ void AllPlusAddressesBottomSheetView::Show(
                                                            ui_info);
 }
 
+void AllPlusAddressesBottomSheetView::OnPlusAddressSelected(
+    JNIEnv* env,
+    const std::string& plus_address) {
+  controller_->OnPlusAddressSelected(plus_address);
+}
+
+void AllPlusAddressesBottomSheetView::OnDismissed(JNIEnv* env) {
+  controller_->OnBottomSheetDismissed();
+}
+
 base::android::ScopedJavaGlobalRef<jobject>
 AllPlusAddressesBottomSheetView::GetOrCreateJavaObject() {
   if (java_object_internal_) {

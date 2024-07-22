@@ -6,8 +6,13 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.View.MeasureSpec;
@@ -33,7 +38,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.base.TestActivity;
 
@@ -53,6 +60,7 @@ public class AllPlusAddressesBottomSheetModuleTest {
     @Captor private ArgumentCaptor<AllPlusAddressesBottomSheetView> mViewCaptor;
 
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private AllPlusAddressesBottomSheetCoordinator.Delegate mDelegate;
 
     private Activity mActivity;
     private AllPlusAddressesBottomSheetCoordinator mCoordinator;
@@ -63,13 +71,33 @@ public class AllPlusAddressesBottomSheetModuleTest {
         MockitoAnnotations.openMocks(this);
         mActivity = Robolectric.setupActivity(TestActivity.class);
         mCoordinator =
-                new AllPlusAddressesBottomSheetCoordinator(mActivity, mBottomSheetController);
+                new AllPlusAddressesBottomSheetCoordinator(
+                        mActivity, mBottomSheetController, mDelegate);
         mUIInfo = new AllPlusAddressesBottomSheetUIInfo();
         mUIInfo.setPlusProfiles(List.of(PROFILE_1));
+
+        // `BottomSheetController#hideContent()` is called when the model is initially bound to the
+        // view. The mock is reset to avoid confusing expectations in the tests.
+        reset(mBottomSheetController);
     }
 
     @Test
+    @SmallTest
+    public void testBottomSheetFailsToShow() {
+        when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
+                .thenReturn(false);
+
+        mCoordinator.showPlusProfiles(mUIInfo);
+        verify(mBottomSheetController).requestShowContent(any(BottomSheetContent.class), eq(true));
+        verify(mBottomSheetController).hideContent(any(BottomSheetContent.class), eq(true));
+    }
+
+    @Test
+    @SmallTest
     public void testShowPlusProfiles() {
+        when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
+                .thenReturn(true);
+
         mCoordinator.showPlusProfiles(mUIInfo);
         verify(mBottomSheetController).requestShowContent(mViewCaptor.capture(), eq(true));
 
@@ -91,6 +119,9 @@ public class AllPlusAddressesBottomSheetModuleTest {
     @Test
     @SmallTest
     public void testFilterPlusProfiles() {
+        when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
+                .thenReturn(true);
+
         mCoordinator.showPlusProfiles(mUIInfo);
         verify(mBottomSheetController).requestShowContent(mViewCaptor.capture(), eq(true));
 
@@ -121,6 +152,79 @@ public class AllPlusAddressesBottomSheetModuleTest {
         // All profiles should be displayed for an empty query.
         searchView.setQuery("", /* submit= */ true);
         assertEquals(profilesView.getAdapter().getItemCount(), 1);
+    }
+
+    @Test
+    @SmallTest
+    public void testCloseBottomSheet() {
+        when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
+                .thenReturn(true);
+
+        mCoordinator.showPlusProfiles(mUIInfo);
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        verify(mBottomSheetController).requestShowContent(any(BottomSheetContent.class), eq(true));
+
+        BottomSheetObserver observer = observerCaptor.getValue();
+        assertNotNull(observer);
+
+        observer.onSheetClosed(BottomSheetController.StateChangeReason.BACK_PRESS);
+
+        verify(mBottomSheetController).hideContent(any(BottomSheetContent.class), eq(true));
+        verify(mDelegate, times(0)).onPlusAddressSelected(anyString());
+    }
+
+    @Test
+    @SmallTest
+    public void testChangeBottomSheetState() {
+        when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
+                .thenReturn(true);
+
+        mCoordinator.showPlusProfiles(mUIInfo);
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        verify(mBottomSheetController).requestShowContent(any(BottomSheetContent.class), eq(true));
+
+        BottomSheetObserver observer = observerCaptor.getValue();
+        assertNotNull(observer);
+
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HIDDEN,
+                BottomSheetController.StateChangeReason.SWIPE);
+
+        verify(mBottomSheetController).hideContent(any(BottomSheetContent.class), eq(true));
+        verify(mDelegate, times(0)).onPlusAddressSelected(anyString());
+    }
+
+    @Test
+    @SmallTest
+    public void testSelectPlusAddress() {
+        when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
+                .thenReturn(true);
+
+        mCoordinator.showPlusProfiles(mUIInfo);
+        verify(mBottomSheetController).requestShowContent(mViewCaptor.capture(), eq(true));
+
+        AllPlusAddressesBottomSheetView view = mViewCaptor.getValue();
+        assertNotNull(view);
+
+        // Robolectric doesn't layout recycler views.
+        layoutPlusAddressView(view);
+
+        // Verify that only 1 profile is shown.
+        RecyclerView profilesView = view.getContentView().findViewById(R.id.sheet_item_list);
+        assertEquals(profilesView.getAdapter().getItemCount(), 1);
+
+        // Click on the plus address chip and verify that bottom sheet is closed and the plus
+        // address is returned.
+        ChipView plusAddress = view.getContentView().findViewById(R.id.plus_address);
+        assertNotNull(plusAddress);
+        plusAddress.performClick();
+
+        verify(mBottomSheetController).hideContent(eq(view), eq(true));
+        verify(mDelegate).onPlusAddressSelected(PROFILE_1.getPlusAddress());
     }
 
     /**
