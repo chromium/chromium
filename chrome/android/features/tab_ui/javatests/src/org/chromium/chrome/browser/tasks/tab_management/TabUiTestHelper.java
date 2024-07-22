@@ -554,14 +554,14 @@ public class TabUiTestHelper {
     }
 
     /**
-     * Create {@code numTabs} of {@link Tab}s with {@code url} loaded to Chrome.
-     * Note that if the test doesn't care about thumbnail, use {@link TabUiTestHelper#createTabs}
-     * instead since it's faster.
+     * Create {@code numTabs} of {@link Tab}s with {@code url} loaded to Chrome. Note that if the
+     * test doesn't care about thumbnail, use {@link TabUiTestHelper#createTabs} instead since it's
+     * faster.
      *
      * @param rule The {@link ChromeTabbedActivityTestRule}.
      * @param numTabs The number of tabs to create.
      * @param url The URL to load. Skip loading when null, but the thumbnail for the NTP might not
-     *            be saved.
+     *     be saved.
      * @param isIncognito Whether the tab is incognito tab.
      */
     public static void createTabsWithThumbnail(
@@ -569,17 +569,16 @@ public class TabUiTestHelper {
             int numTabs,
             @Nullable String url,
             boolean isIncognito) {
+        ChromeTabbedActivity cta = rule.getActivity();
         assertTrue(numTabs >= 1);
-
         int previousTabCount =
                 rule.getActivity().getTabModelSelector().getModel(isIncognito).getCount();
 
         for (int i = 0; i < numTabs; i++) {
-            TabModel previousTabModel = rule.getActivity().getTabModelSelector().getCurrentModel();
+            TabModel previousTabModel = cta.getTabModelSelector().getCurrentModel();
             int previousTabIndex = previousTabModel.index();
             Tab previousTab = previousTabModel.getTabAt(previousTabIndex);
 
-            ChromeTabbedActivity cta = rule.getActivity();
             boolean urlIsNull = url == null;
             if (urlIsNull) {
                 ChromeTabUtils.newTabFromMenu(
@@ -589,7 +588,7 @@ public class TabUiTestHelper {
                         InstrumentationRegistry.getInstrumentation(), cta, url, isIncognito);
             }
 
-            TabModel currentTabModel = rule.getActivity().getTabModelSelector().getCurrentModel();
+            TabModel currentTabModel = cta.getTabModelSelector().getCurrentModel();
             int currentTabIndex = currentTabModel.index();
 
             boolean fixPendingReadbacks =
