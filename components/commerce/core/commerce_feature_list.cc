@@ -215,7 +215,7 @@ BASE_FEATURE(kProductSpecificationsClearMetadataOnNewlySupportedFields,
 // Stores Product Specifications across multiple specifics instead of one.
 BASE_FEATURE(kProductSpecificationsMultiSpecifics,
              "ProductSpecificationsMultiSpecifics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShoppingIconColorVariant,
              "ShoppingIconColorVariant",
