@@ -21253,22 +21253,6 @@
             ]
         }
     ],
-    "SkipParentApprovalToInstallExtensions": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableSupervisedUserSkipParentApprovalToInstallExtensions"
-                    ]
-                }
-            ]
-        }
-    ],
     "SkipUnnecessaryThreadHopsForParseHeaders": [
         {
             "platforms": [
