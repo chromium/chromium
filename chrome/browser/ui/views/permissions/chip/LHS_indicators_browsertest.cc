@@ -4,6 +4,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
+#include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,11 +18,13 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
+#include "components/permissions/test/permission_request_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -72,6 +76,33 @@ class ChipAnimationObserver : PermissionChipView::Observer {
   base::RunLoop loop_;
   QuitOnEvent quiet_on_event = QuitOnEvent::kExpand;
 };
+
+// Test implementation of PermissionUiSelector that always returns a canned
+// decision.
+class TestQuietNotificationPermissionUiSelector
+    : public permissions::PermissionUiSelector {
+ public:
+  explicit TestQuietNotificationPermissionUiSelector(
+      const Decision& canned_decision)
+      : canned_decision_(canned_decision) {}
+  ~TestQuietNotificationPermissionUiSelector() override = default;
+
+ protected:
+  // permissions::PermissionUiSelector:
+  void SelectUiToUse(permissions::PermissionRequest* request,
+                     DecisionMadeCallback callback) override {
+    std::move(callback).Run(canned_decision_);
+  }
+
+  bool IsPermissionRequestSupported(
+      permissions::RequestType request_type) override {
+    return request_type == permissions::RequestType::kNotifications ||
+           request_type == permissions::RequestType::kGeolocation;
+  }
+
+ private:
+  Decision canned_decision_;
+};
 }  // namespace
 
 class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
@@ -96,6 +127,8 @@ class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(https_server());
     https_server()->StartAcceptingConnections();
+    test_api_ =
+        std::make_unique<test::PermissionRequestManagerTestApi>(browser());
 
     // Override url in the omnibox to avoid test flakiness due to different port
     // in the original url.
@@ -144,6 +177,13 @@ class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
   void WaitForUserDismissal() override {
     // Consider closing the browser to be dismissal.
     ui_test_utils::WaitForBrowserToClose();
+  }
+
+  void RequestPermission(permissions::RequestType request_type) {
+    permissions::PermissionRequestObserver observer(web_contents());
+    test_api_->AddSimpleRequest(web_contents()->GetPrimaryMainFrame(),
+                                request_type);
+    observer.Wait();
   }
 
   LocationBarView* GetLocationBarView(Browser* browser) {
@@ -241,7 +281,20 @@ class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
+  using WarningReason = permissions::PermissionUiSelector::WarningReason;
+
+  void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
+                           std::optional<WarningReason> warning_reason) {
+    test_api_->manager()->set_permission_ui_selector_for_testing(
+        std::make_unique<TestQuietNotificationPermissionUiSelector>(
+            permissions::PermissionUiSelector::Decision(quiet_ui_reason,
+                                                        warning_reason)));
+  }
+
   TargetViewToVerify target_ = TargetViewToVerify::kLocationBar;
+
+  test::PermissionRequestManagerTestApi* test_api() { return test_api_.get(); }
 
  private:
   // Disable the permission chip animation. This happens automatically in pixel
@@ -252,6 +305,7 @@ class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   base::test::ScopedFeatureList scoped_features_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
 };
 
 IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_camera) {
@@ -268,6 +322,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_camera) {
 IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_microphone) {
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_ALLOW);
+
   GetDashboardController()->DoNotCollapseForTesting();
 
   ExpandIndicator("requestMicrophone()");
@@ -469,6 +524,119 @@ IN_PROC_BROWSER_TEST_F(
       ContentSettingsType::MEDIASTREAM_MIC, /*blocked=*/true);
 
   UpdatePageInfo();
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+                       InvokeUi_NotificationsRequest_Loud) {
+  RequestPermission(permissions::RequestType::kNotifications);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+                       InvokeUi_NotificationsRequest_Loud_Confirmation) {
+  RequestPermission(permissions::RequestType::kNotifications);
+  GetLocationBarView(browser())->GetChipController()->DoNotCollapseForTesting();
+
+  test_api()->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetLocationBarView(browser())
+                  ->GetChipController()
+                  ->is_confirmation_showing());
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+                       InvokeUi_NotificationsRequest_VeryUnlikelyGrant) {
+  SetCannedUiDecision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
+                      std::nullopt);
+  RequestPermission(permissions::RequestType::kNotifications);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LHSIndicatorsUiBrowserTest,
+    InvokeUi_NotificationsRequest_VeryUnlikelyGrant_Confirmation) {
+  SetCannedUiDecision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
+                      std::nullopt);
+  RequestPermission(permissions::RequestType::kNotifications);
+  GetLocationBarView(browser())->GetChipController()->DoNotCollapseForTesting();
+
+  test_api()->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetLocationBarView(browser())
+                  ->GetChipController()
+                  ->is_confirmation_showing());
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+                       InvokeUi_NotificationsRequest_AbusiveRequests) {
+  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveRequests,
+                      std::nullopt);
+  RequestPermission(permissions::RequestType::kNotifications);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LHSIndicatorsUiBrowserTest,
+    InvokeUi_NotificationsRequest_AbusiveRequests_Confirmation) {
+  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveRequests,
+                      std::nullopt);
+  RequestPermission(permissions::RequestType::kNotifications);
+  GetLocationBarView(browser())->GetChipController()->DoNotCollapseForTesting();
+
+  test_api()->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetLocationBarView(browser())
+                  ->GetChipController()
+                  ->is_confirmation_showing());
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+                       InvokeUi_NotificationsRequest_EnabledInPrefs) {
+  SetCannedUiDecision(QuietUiReason::kEnabledInPrefs, std::nullopt);
+  RequestPermission(permissions::RequestType::kNotifications);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LHSIndicatorsUiBrowserTest,
+    InvokeUi_NotificationsRequest_EnabledInPrefs_Confirmation) {
+  SetCannedUiDecision(QuietUiReason::kEnabledInPrefs, std::nullopt);
+  RequestPermission(permissions::RequestType::kNotifications);
+  GetLocationBarView(browser())->GetChipController()->DoNotCollapseForTesting();
+
+  test_api()->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetLocationBarView(browser())
+                  ->GetChipController()
+                  ->is_confirmation_showing());
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+                       InvokeUi_GeolocationRequest_Loud) {
+  RequestPermission(permissions::RequestType::kGeolocation);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+                       InvokeUi_GeolocationRequest_Loud_Confirmation) {
+  RequestPermission(permissions::RequestType::kGeolocation);
+  GetLocationBarView(browser())->GetChipController()->DoNotCollapseForTesting();
+
+  test_api()->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetLocationBarView(browser())
+                  ->GetChipController()
+                  ->is_confirmation_showing());
 
   ShowAndVerifyUi();
 }

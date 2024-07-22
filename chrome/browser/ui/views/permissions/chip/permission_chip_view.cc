@@ -77,13 +77,15 @@ void PermissionChipView::AnimateExpand(base::TimeDelta duration) {
 
 void PermissionChipView::AnimateToFit(base::TimeDelta duration) {
   animation_->SetSlideDuration(duration);
-  base_width_ = label()
-                    ->GetPreferredSize(views::SizeBounds(label()->width(), {}))
-                    .width();
 
   if (label()
           ->GetPreferredSize(views::SizeBounds(label()->width(), {}))
           .width() < width()) {
+    base_width_ =
+        label()
+            ->GetPreferredSize(views::SizeBounds(label()->width(), {}))
+            .width();
+
     // As we're collapsing, we need to make sure that the padding is not
     // animated away.
     base_width_ += GetPadding().width();
@@ -94,6 +96,12 @@ void PermissionChipView::AnimateToFit(base::TimeDelta duration) {
 }
 
 void PermissionChipView::ResetAnimation(double value) {
+  // `base_width_` is used regardless of the animation value. When animation is
+  // reset, e.g. on a tab switch, `base_width_` may hold obsolete values that
+  // should be reset as well.
+  if (value == 0.0) {
+    base_width_ = 0;
+  }
   animation_->Reset(value);
   OnAnimationValueMaybeChanged();
 }

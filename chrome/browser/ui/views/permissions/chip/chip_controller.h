@@ -166,6 +166,8 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
     is_bubble_suppressed_ = is_bubble_suppressed;
   }
 
+  void DoNotCollapseForTesting() { do_no_collapse_for_testing_ = true; }
+
  private:
   bool ShouldWaitForConfirmationToComplete() const;
   bool ShouldWaitForLHSIndicatorToCollapse() const;
@@ -256,6 +258,8 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   views::ViewTracker bubble_tracker_;
   bool is_bubble_suppressed_ = false;
+
+  bool do_no_collapse_for_testing_ = false;
 
   base::ScopedClosureRunner disallowed_custom_cursors_scope_;
 
