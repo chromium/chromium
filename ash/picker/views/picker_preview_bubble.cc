@@ -33,10 +33,6 @@ constexpr ui::ColorId kBackgroundColor =
     cros_tokens::kCrosSysSystemBaseElevatedOpaque;
 constexpr int kBubbleOverlapOverPicker = 4;
 constexpr int kPickerBubbleCornerRadius = 12;
-// TODO(b/322899031): Translate these strings.
-constexpr std::u16string_view kEyebrowText = u"Last action";
-// TODO: b/344717756 - Use a better placeholder title for when it is not set.
-constexpr std::u16string_view kMainText = u"…";
 constexpr gfx::Insets kMargins(8);
 constexpr int kPreviewBackgroundBorderRadius = 8;
 constexpr gfx::Insets kLabelPadding = gfx::Insets::TLBR(8, 8, 0, 8);
@@ -74,7 +70,8 @@ namespace ash {
 PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::RIGHT_CENTER,
-                               views::BubbleBorder::STANDARD_SHADOW) {
+                               views::BubbleBorder::STANDARD_SHADOW,
+                               /*autosize=*/true) {
   // Configuration for this view.
   SetLayoutManager(
       std::make_unique<views::BoxLayout>(views::LayoutOrientation::kVertical))
@@ -95,15 +92,18 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
               .SetCrossAxisAlignment(
                   views::BoxLayout::CrossAxisAlignment::kStart)
               .SetInsideBorderInsets(kLabelPadding)
-              .AddChildren(
-                  views::Builder<views::Label>(ash::bubble_utils::CreateLabel(
-                      TypographyToken::kCrosAnnotation2, kEyebrowText.data(),
-                      cros_tokens::kCrosSysOnSurfaceVariant)),
-                  views::Builder<views::Label>(
-                      ash::bubble_utils::CreateLabel(
-                          TypographyToken::kCrosBody2, kMainText.data(),
-                          cros_tokens::kCrosSysOnSurface))
-                      .CopyAddressTo(&main_label_)))
+              .SetVisible(false)
+              .CopyAddressTo(&box_layout_view_)
+              .AddChildren(views::Builder<views::Label>(
+                               ash::bubble_utils::CreateLabel(
+                                   TypographyToken::kCrosAnnotation2, u"",
+                                   cros_tokens::kCrosSysOnSurfaceVariant))
+                               .CopyAddressTo(&eyebrow_label_),
+                           views::Builder<views::Label>(
+                               ash::bubble_utils::CreateLabel(
+                                   TypographyToken::kCrosBody2, u"",
+                                   cros_tokens::kCrosSysOnSurface))
+                               .CopyAddressTo(&main_label_)))
       .BuildChildren();
 
   // Show the widget.
@@ -125,12 +125,23 @@ void PickerPreviewBubbleView::SetPreviewImage(ui::ImageModel image) {
   image_view_->SetImage(std::move(image));
 }
 
-std::u16string_view PickerPreviewBubbleView::GetMainTextForTesting() {
+bool PickerPreviewBubbleView::GetLabelsVisibleForTesting() const {
+  return box_layout_view_->GetVisible();
+}
+
+std::u16string_view PickerPreviewBubbleView::GetEyebrowTextForTesting() const {
+  return eyebrow_label_->GetText();
+}
+
+std::u16string_view PickerPreviewBubbleView::GetMainTextForTesting() const {
   return main_label_->GetText();
 }
 
-void PickerPreviewBubbleView::SetMainText(const std::u16string& text) {
-  main_label_->SetText(text);
+void PickerPreviewBubbleView::SetText(const std::u16string& eyebrow_text,
+                                      const std::u16string& main_text) {
+  eyebrow_label_->SetText(eyebrow_text);
+  main_label_->SetText(main_text);
+  box_layout_view_->SetVisible(true);
 }
 
 void PickerPreviewBubbleView::OnThemeChanged() {

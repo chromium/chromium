@@ -256,7 +256,7 @@ TEST_F(PickerPreviewBubbleControllerTest,
 }
 
 TEST_F(PickerPreviewBubbleControllerTest,
-       ShowBubbleUsesPlaceholderTitleBeforeFileInfoResolves) {
+       ShowBubbleHidesLabelsBeforeFileInfoResolves) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   PickerPreviewBubbleController controller;
@@ -271,11 +271,11 @@ TEST_F(PickerPreviewBubbleControllerTest,
   ASSERT_FALSE(file_info_future.IsReady());
   ViewDrawnWaiter().Wait(bubble_view);
 
-  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"…");
+  EXPECT_FALSE(bubble_view->GetLabelsVisibleForTesting());
 }
 
 TEST_F(PickerPreviewBubbleControllerTest,
-       ShowBubbleUsesPlaceholderTitleAfterFileInfoResolvesWithNullopt) {
+       ShowBubbleHidesLabelsAfterFileInfoResolvesWithNullopt) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   PickerPreviewBubbleController controller;
@@ -295,11 +295,11 @@ TEST_F(PickerPreviewBubbleControllerTest,
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
 
-  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"…");
+  EXPECT_FALSE(bubble_view->GetLabelsVisibleForTesting());
 }
 
 TEST_F(PickerPreviewBubbleControllerTest,
-       ShowBubbleUsesPlaceholderTitleAfterFileInfoResolvesWithNullFileInfo) {
+       ShowBubbleHidesLabelsAfterFileInfoResolvesWithNullFileInfo) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   PickerPreviewBubbleController controller;
@@ -317,7 +317,7 @@ TEST_F(PickerPreviewBubbleControllerTest,
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
 
-  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"…");
+  EXPECT_FALSE(bubble_view->GetLabelsVisibleForTesting());
 }
 
 TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsModifiedTitle) {
@@ -341,6 +341,8 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsModifiedTitle) {
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
 
+  EXPECT_TRUE(bubble_view->GetLabelsVisibleForTesting());
+  EXPECT_EQ(bubble_view->GetEyebrowTextForTesting(), u"Last action");
   EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"Edited · Dec 23");
 }
 
@@ -365,6 +367,8 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsAccessedTitle) {
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
 
+  EXPECT_TRUE(bubble_view->GetLabelsVisibleForTesting());
+  EXPECT_EQ(bubble_view->GetEyebrowTextForTesting(), u"Last action");
   EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"You opened · Dec 23");
 }
 
@@ -391,6 +395,8 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsModifiedTitleIfNewer) {
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
 
+  EXPECT_TRUE(bubble_view->GetLabelsVisibleForTesting());
+  EXPECT_EQ(bubble_view->GetEyebrowTextForTesting(), u"Last action");
   EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"Edited · Dec 23");
 }
 
@@ -417,6 +423,8 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsAccessedTitleIfNewer) {
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
 
+  EXPECT_TRUE(bubble_view->GetLabelsVisibleForTesting());
+  EXPECT_EQ(bubble_view->GetEyebrowTextForTesting(), u"Last action");
   EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"You opened · Dec 23");
 }
 
@@ -444,6 +452,8 @@ TEST_F(PickerPreviewBubbleControllerTest,
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
 
+  EXPECT_TRUE(bubble_view->GetLabelsVisibleForTesting());
+  EXPECT_EQ(bubble_view->GetEyebrowTextForTesting(), u"Last action");
   EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"Edited · Dec 23");
 }
 

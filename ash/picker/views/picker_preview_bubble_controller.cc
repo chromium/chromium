@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/picker/views/picker_preview_bubble.h"
@@ -27,6 +28,9 @@
 
 namespace ash {
 namespace {
+
+// TODO: b/322899031 - Translate this string.
+constexpr std::u16string_view kEyebrowText = u"Last action";
 
 // Duration to wait before showing the preview bubble when it is requested.
 constexpr base::TimeDelta kShowBubbleDelay = base::Milliseconds(600);
@@ -147,7 +151,8 @@ void PickerPreviewBubbleController::UpdateBubbleMetadata(
     return;
   }
 
-  bubble_view_->SetMainText(
+  bubble_view_->SetText(
+      std::u16string(kEyebrowText),
       GetJustificationString(info->last_accessed, info->last_modified));
 }
 

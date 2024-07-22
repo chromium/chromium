@@ -16,6 +16,7 @@
 #include "ui/views/view.h"
 
 namespace views {
+class BoxLayoutView;
 class ImageView;
 class Label;
 }
@@ -36,8 +37,13 @@ class ASH_EXPORT PickerPreviewBubbleView
   ui::ImageModel GetPreviewImage() const;
   void SetPreviewImage(ui::ImageModel image);
 
-  std::u16string_view GetMainTextForTesting();
-  void SetMainText(const std::u16string& text);
+  bool GetLabelsVisibleForTesting() const;
+  std::u16string_view GetEyebrowTextForTesting() const;
+  std::u16string_view GetMainTextForTesting() const;
+
+  // Sets the text of the labels and makes them visible.
+  void SetText(const std::u16string& eyebrow_text,
+               const std::u16string& main_text);
 
   // BubbleDialogDelegateView overrides
   void OnThemeChanged() override;
@@ -46,6 +52,9 @@ class ASH_EXPORT PickerPreviewBubbleView
 
  private:
   raw_ptr<views::ImageView> image_view_;
+
+  raw_ptr<views::BoxLayoutView> box_layout_view_;
+  raw_ptr<views::Label> eyebrow_label_;
   raw_ptr<views::Label> main_label_;
 };
 
