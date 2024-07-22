@@ -110,6 +110,12 @@ BASE_DECLARE_FEATURE(kFetchListFamilyMembersWithCapability);
 // for feedback if it is available.
 BASE_DECLARE_FEATURE(kUseFamilyMemberRolePrefsForFeedback);
 
+// Alters the behavior of the supervised_user::SupervisedUserNavigationThrottle
+// so that the decision whether to proceed or cancel is made when the response
+// is ready to be rendered, rather than before the request (or any redirect) is
+// issued.
+BASE_DECLARE_FEATURE(kClassifyUrlOnProcessResponseEvent);
+
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.
 // Local web approvals are only available when refreshed version of web

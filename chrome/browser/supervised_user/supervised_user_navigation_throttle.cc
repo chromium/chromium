@@ -5,6 +5,7 @@
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -21,6 +22,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -115,7 +117,7 @@ void SupervisedUserNavigationThrottle::ShowInterstitialAsync(
 }
 
 content::NavigationThrottle::ThrottleCheckResult
-SupervisedUserNavigationThrottle::ThrottleRequest() {
+SupervisedUserNavigationThrottle::ProcessRequest() {
   deferred_ = false;
   DCHECK_EQ(supervised_user::FilteringBehavior::kInvalid, behavior_);
 
@@ -134,12 +136,38 @@ SupervisedUserNavigationThrottle::ThrottleRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 SupervisedUserNavigationThrottle::WillStartRequest() {
-  return ThrottleRequest();
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kClassifyUrlOnProcessResponseEvent)) {
+    // TODO(b/299088120): Proceed here and verify result in WillProcessResponse
+    // (unless decision is already known, then proceed or cancel).
+    return NavigationThrottle::PROCEED;
+  } else {
+    return ProcessRequest();
+  }
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 SupervisedUserNavigationThrottle::WillRedirectRequest() {
-  return ThrottleRequest();
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kClassifyUrlOnProcessResponseEvent)) {
+    // TODO(b/299088120): Proceed here and verify result in WillProcessResponse
+    // (unless decision is already known, then proceed or cancel).
+    return NavigationThrottle::PROCEED;
+  } else {
+    return ProcessRequest();
+  }
+}
+
+content::NavigationThrottle::ThrottleCheckResult
+SupervisedUserNavigationThrottle::WillProcessResponse() {
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kClassifyUrlOnProcessResponseEvent)) {
+    // TODO(b/299088120): Consume the result of classification and make decision
+    // if available, otherwise defer.
+    return NavigationThrottle::PROCEED;
+  } else {
+    return NavigationThrottle::PROCEED;
+  }
 }
 
 const char* SupervisedUserNavigationThrottle::GetNameForLogging() {
