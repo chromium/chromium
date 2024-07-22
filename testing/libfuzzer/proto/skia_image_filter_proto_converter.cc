@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // Converts an Input protobuf Message to a string that can be successfully read
 // by SkImageFilter::Deserialize and used as an image filter. The string
 // is essentially a valid flattened skia image filter. Note: We will sometimes
