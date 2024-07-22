@@ -16788,6 +16788,29 @@
             ]
         }
     ],
+    "Prerender2BookmarkBarTrigger": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows",
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "OnlyMouseDown_20240718",
+                    "params": {
+                        "prerender_bookmarkbar_on_mouse_hover_trigger": "false",
+                        "prerender_bookmarkbar_on_mouse_pressed_trigger": "true"
+                    },
+                    "enable_features": [
+                        "BookmarkTriggerForPrerender2"
+                    ]
+                }
+            ]
+        }
+    ],
     "Prerender2EarlyDocumentLifecycleUpdate": [
         {
             "platforms": [
