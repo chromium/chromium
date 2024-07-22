@@ -13,6 +13,8 @@ namespace internal {
 extern const char kAbandonedPageLoadMetricsHistogramPrefix[];
 extern const char kSuffixWasBackgrounded[];
 extern const char kSuffixWasHidden[];
+extern const char kRendererProcessCreatedBeforeNavHistogramName[];
+extern const char kRendererProcessInitHistogramName[];
 
 }  // namespace internal
 
@@ -181,12 +183,7 @@ class AbandonedPageLoadMetricsObserver
   // The ID of the navigation being tracked.
   int64_t navigation_id_ = 0;
 
-  // Set to true if we see the navigation involves non-SRP URL, which will be
-  // specially marked in the logged metrics.
-  bool did_request_non_srp_ = false;
-  // Set to true if we see the navigation involves SRP URL, which means we need
-  // to log metrics for this navigation.
-  bool involved_srp_url_ = false;
+  base::TimeTicks renderer_process_init_time_;
 
   // Timestamp of the first time `FlushMetricsOnAppEnterBackground()` or
   // `OnHidden()` are called, respectively. This is tracked in case the

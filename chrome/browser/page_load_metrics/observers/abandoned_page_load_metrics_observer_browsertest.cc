@@ -168,6 +168,10 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   // There should be a new entry for all the navigation and loading milestones
   // metrics.
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 1);
+  histogram_tester().ExpectTotalCount(
+      std::string(internal::kAbandonedPageLoadMetricsHistogramPrefix) +
+          internal::kRendererProcessCreatedBeforeNavHistogramName,
+      1);
 
   // There should be no new entry for the navigation abandonment metrics.
   ExpectEmptyNavigationAbandonment();
@@ -232,9 +236,14 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
 
   // If the forward navigation was a BFCache restore, no navigation milestone
   // metrics will be logged. Otherwise, all milestones will be logged.
+  int expected_count =
+      (content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 3 : 4);
   ExpectTotalCountForAllNavigationMilestones(
-      /*include_redirect=*/false,
-      content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 3 : 4);
+      /*include_redirect=*/false, expected_count);
+  histogram_tester().ExpectTotalCount(
+      std::string(internal::kAbandonedPageLoadMetricsHistogramPrefix) +
+          internal::kRendererProcessCreatedBeforeNavHistogramName,
+      expected_count);
 
   // No abandonment happened, so no abandonment metrics was logged.
   ExpectEmptyNavigationAbandonment();
@@ -282,6 +291,17 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
     EXPECT_FALSE(
         ukm_recorder.EntryHasMetric(ukm_entry, "PreviousBackgroundedTime"));
     EXPECT_FALSE(ukm_recorder.EntryHasMetric(ukm_entry, "PreviousHiddenTime"));
+    EXPECT_FALSE(
+        ukm_recorder.EntryHasMetric(ukm_entry, "RendererProcessInitTime"));
+
+    histogram_tester.ExpectTotalCount(
+        std::string(internal::kAbandonedPageLoadMetricsHistogramPrefix) +
+            internal::kRendererProcessCreatedBeforeNavHistogramName,
+        0);
+    histogram_tester.ExpectTotalCount(
+        std::string(internal::kAbandonedPageLoadMetricsHistogramPrefix) +
+            internal::kRendererProcessInitHistogramName,
+        0);
 
     // There should be new entries for the navigation milestone metrics up until
     // the abandonment, but no entries for milestones after that.

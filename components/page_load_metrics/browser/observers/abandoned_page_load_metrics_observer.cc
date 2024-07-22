@@ -12,6 +12,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_process_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -67,7 +68,7 @@ const char kAbandonReasonNewOtherNavigationRendererInitiated[] =
 const char kAbandonReasonFrameRemoved[] = "FrameRemoved";
 const char kAbandonReasonExplicitCancellation[] = "ExplicitCancellation";
 const char kAbandonReasonInternalCancellation[] = "InternalCancellation";
-const char kAbandonReasonRenderProcessGone[] = "RenderProcessGone";
+const char kAbandonReasonRendererProcessGone[] = "RendererProcessGone";
 const char kAbandonReasonNeverStarted[] = "NeverStarted";
 const char kAbandonReasonFailedSecurityCheck[] = "FailedSecurityCheck";
 const char kAbandonReasonOther[] = "Other";
@@ -96,6 +97,11 @@ const char kMilestoneParseStart[] = "ParseStart";
 const char kFirstContentfulPaint[] = "FirstContentfulPaint";
 const char kDOMContentLoaded[] = "DOMContentLoaded";
 
+const char kRendererProcessCreatedBeforeNavHistogramName[] =
+    "RendererProcessCreatedBeforeNav";
+const char kRendererProcessInitHistogramName[] =
+    "NavigationStartToRendererProcessInit";
+
 // TODO(https://crbug.com/347706997): Record more milestones related to loading
 // and process creation timing.
 
@@ -119,7 +125,7 @@ std::string AbandonedPageLoadMetricsObserver::AbandonReasonToString(
     case AbandonReason::kInternalCancellation:
       return internal::kAbandonReasonInternalCancellation;
     case AbandonReason::kRenderProcessGone:
-      return internal::kAbandonReasonRenderProcessGone;
+      return internal::kAbandonReasonRendererProcessGone;
     case AbandonReason::kNeverStarted:
       return internal::kAbandonReasonNeverStarted;
     case AbandonReason::kFailedSecurityCheck:
@@ -321,6 +327,12 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
         (first_backgrounded_timestamp_ - navigation_start_time)
             .InMilliseconds());
   }
+
+  if (!renderer_process_init_time_.is_null()) {
+    builder.SetRendererProcessInitTime(
+        (renderer_process_init_time_ - navigation_start_time).InMilliseconds());
+  }
+
   if (!first_hidden_timestamp_.is_null()) {
     builder.SetPreviousHiddenTime(
         (first_hidden_timestamp_ - navigation_start_time).InMilliseconds());
@@ -437,6 +449,32 @@ AbandonedPageLoadMetricsObserver::OnNavigationHandleTimingUpdated(
       navigation_handling_result = OnNavigationEvent(navigation_handle);
   if (navigation_handling_result != CONTINUE_OBSERVING) {
     return navigation_handling_result;
+  }
+
+  if (renderer_process_init_time_.is_null() &&
+      !latest_navigation_handle_timing_.navigation_commit_sent_time.is_null() &&
+      navigation_handle->GetRenderFrameHost()) {
+    renderer_process_init_time_ = navigation_handle->GetRenderFrameHost()
+                                      ->GetProcess()
+                                      ->GetLastInitTime();
+    bool renderer_process_created_before_navigation =
+        (renderer_process_init_time_ < GetDelegate().GetNavigationStart());
+    std::string base_suffix = GetHistogramSuffix(
+        NavigationMilestone::kCommitSent, renderer_process_init_time_);
+    for (std::string additional_suffix : GetAdditionalSuffixes()) {
+      std::string suffix = base_suffix + additional_suffix;
+      base::UmaHistogramBoolean(
+          GetHistogramPrefix() +
+              internal::kRendererProcessCreatedBeforeNavHistogramName + suffix,
+          renderer_process_created_before_navigation);
+      if (renderer_process_created_before_navigation) {
+        continue;
+      }
+      PAGE_LOAD_HISTOGRAM(
+          GetHistogramPrefix() + internal::kRendererProcessInitHistogramName +
+              suffix,
+          renderer_process_init_time_ - GetDelegate().GetNavigationStart());
+    }
   }
 
   if (navigation_handle->GetNetErrorCode() != net::OK) {
