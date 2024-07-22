@@ -9,6 +9,7 @@
 #include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_item_remover.h"
+#include "ash/birch/stub_birch_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
@@ -94,80 +95,6 @@ std::vector<BirchTabItem> MakeTabItemList(int count) {
   return items;
 }
 
-// A data provider that does nothing.
-class StubBirchDataProvider : public BirchDataProvider {
- public:
-  StubBirchDataProvider() = default;
-  ~StubBirchDataProvider() override = default;
-
-  // BirchDataProvider:
-  void RequestBirchDataFetch() override {
-    did_request_birch_data_fetch_ = true;
-  }
-
-  bool did_request_birch_data_fetch_ = false;
-};
-
-// A BirchClient that returns data providers that do nothing.
-class StubBirchClient : public BirchClient {
- public:
-  StubBirchClient() { EXPECT_TRUE(test_dir_.CreateUniqueTempDir()); }
-  ~StubBirchClient() override = default;
-
-  // BirchClient:
-  BirchDataProvider* GetCalendarProvider() override {
-    return &calendar_provider_;
-  }
-  BirchDataProvider* GetFileSuggestProvider() override {
-    return &file_suggest_provider_;
-  }
-  BirchDataProvider* GetRecentTabsProvider() override {
-    return &recent_tabs_provider_;
-  }
-  BirchDataProvider* GetLastActiveProvider() override {
-    return &last_active_provider_;
-  }
-  BirchDataProvider* GetMostVisitedProvider() override {
-    return &most_visited_provider_;
-  }
-  BirchDataProvider* GetSelfShareProvider() override {
-    return &self_share_provider_;
-  }
-  BirchDataProvider* GetLostMediaProvider() override {
-    return &lost_media_provider_;
-  }
-  BirchDataProvider* GetReleaseNotesProvider() override {
-    return &release_notes_provider_;
-  }
-  void WaitForRefreshTokens(base::OnceClosure callback) override {
-    std::move(callback).Run();
-  }
-  base::FilePath GetRemovedItemsFilePath() override {
-    return test_dir_.GetPath();
-  }
-  void RemoveFileItemFromLauncher(const base::FilePath& path) override {
-    last_removed_path_ = path;
-  }
-  void GetFaviconImageForIconURL(
-      const GURL& url,
-      base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
-
-  void GetFaviconImageForPageURL(
-      const GURL& url,
-      base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
-
-  StubBirchDataProvider calendar_provider_;
-  StubBirchDataProvider file_suggest_provider_;
-  StubBirchDataProvider recent_tabs_provider_;
-  StubBirchDataProvider last_active_provider_;
-  StubBirchDataProvider most_visited_provider_;
-  StubBirchDataProvider self_share_provider_;
-  StubBirchDataProvider lost_media_provider_;
-  StubBirchDataProvider release_notes_provider_;
-  base::ScopedTempDir test_dir_;
-  base::FilePath last_removed_path_;
-};
-
 class TestModelConsumer {
  public:
   void OnItemsReady(const std::string& id) {
@@ -219,8 +146,7 @@ class BirchModelTest : public AshTestBase {
     AshTestBase::SetUp();
     // Inject no-op, stub weather provider to prevent real implementation from
     // returning empty weather info.
-    Shell::Get()->birch_model()->OverrideWeatherProviderForTest(
-        std::make_unique<StubBirchDataProvider>());
+    stub_birch_client_.InstallStubWeatherDataProvider();
     Shell::Get()->birch_model()->SetClientAndInit(&stub_birch_client_);
     base::RunLoop run_loop;
     Shell::Get()
@@ -487,9 +413,7 @@ TEST_F(BirchModelTest, DisablingAllPrefsCausesNoFetch) {
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
   // Install a stub weather provider.
-  auto weather_provider = std::make_unique<StubBirchDataProvider>();
-  auto* weather_provider_ptr = weather_provider.get();
-  model->OverrideWeatherProviderForTest(std::move(weather_provider));
+  auto* weather_provider = stub_birch_client_.InstallStubWeatherDataProvider();
 
   // Request a data fetch.
   model->RequestBirchDataFetch(/*is_post_login=*/false,
@@ -502,15 +426,15 @@ TEST_F(BirchModelTest, DisablingAllPrefsCausesNoFetch) {
 
   // Nothing was fetched and the (empty) data is still fresh.
   auto& client = stub_birch_client_;
-  EXPECT_FALSE(client.calendar_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.file_suggest_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.recent_tabs_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.last_active_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.most_visited_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.self_share_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.lost_media_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.release_notes_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(weather_provider_ptr->did_request_birch_data_fetch_);
+  EXPECT_FALSE(client.DidRequestCalendarDataFetch());
+  EXPECT_FALSE(client.DidRequestFileSuggestDataFetch());
+  EXPECT_FALSE(client.DidRequestRecentTabsDataFetch());
+  EXPECT_FALSE(client.DidRequestLastActiveDataFetch());
+  EXPECT_FALSE(client.DidRequestMostVisitedDataFetch());
+  EXPECT_FALSE(client.DidRequestSelfShareDataFetch());
+  EXPECT_FALSE(client.DidRequestLostMediaDataFetch());
+  EXPECT_FALSE(client.DidRequestReleaseNotesDataFetch());
+  EXPECT_FALSE(weather_provider->did_request_birch_data_fetch());
   EXPECT_TRUE(model->IsDataFresh());
 }
 
@@ -529,24 +453,22 @@ TEST_F(BirchModelTest, EnablingOnePrefsCausesFetch) {
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
   // Install a stub weather provider.
-  auto weather_provider = std::make_unique<StubBirchDataProvider>();
-  auto* weather_provider_ptr = weather_provider.get();
-  model->OverrideWeatherProviderForTest(std::move(weather_provider));
+  auto* weather_provider = stub_birch_client_.InstallStubWeatherDataProvider();
 
   // Request a fetch.
   model->RequestBirchDataFetch(/*is_post_login=*/false, base::DoNothing());
 
   // Only calendar was fetched.
   auto& client = stub_birch_client_;
-  EXPECT_TRUE(client.calendar_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.file_suggest_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.recent_tabs_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.last_active_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.most_visited_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.self_share_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.lost_media_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.release_notes_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(weather_provider_ptr->did_request_birch_data_fetch_);
+  EXPECT_TRUE(client.DidRequestCalendarDataFetch());
+  EXPECT_FALSE(client.DidRequestFileSuggestDataFetch());
+  EXPECT_FALSE(client.DidRequestRecentTabsDataFetch());
+  EXPECT_FALSE(client.DidRequestLastActiveDataFetch());
+  EXPECT_FALSE(client.DidRequestMostVisitedDataFetch());
+  EXPECT_FALSE(client.DidRequestSelfShareDataFetch());
+  EXPECT_FALSE(client.DidRequestLostMediaDataFetch());
+  EXPECT_FALSE(client.DidRequestReleaseNotesDataFetch());
+  EXPECT_FALSE(weather_provider->did_request_birch_data_fetch());
 }
 
 TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
@@ -754,14 +676,14 @@ TEST_F(BirchModelTest, EnablePrefsDuringFetchCausesDataFetchRequest) {
   model->RequestBirchDataFetch(/*is_post_login=*/false, base::DoNothing());
 
   auto& client = stub_birch_client_;
-  EXPECT_FALSE(client.calendar_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.file_suggest_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.recent_tabs_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.last_active_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.most_visited_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.self_share_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.lost_media_provider_.did_request_birch_data_fetch_);
-  EXPECT_FALSE(client.release_notes_provider_.did_request_birch_data_fetch_);
+  EXPECT_FALSE(client.DidRequestCalendarDataFetch());
+  EXPECT_FALSE(client.DidRequestFileSuggestDataFetch());
+  EXPECT_FALSE(client.DidRequestRecentTabsDataFetch());
+  EXPECT_FALSE(client.DidRequestLastActiveDataFetch());
+  EXPECT_FALSE(client.DidRequestMostVisitedDataFetch());
+  EXPECT_FALSE(client.DidRequestSelfShareDataFetch());
+  EXPECT_FALSE(client.DidRequestLostMediaDataFetch());
+  EXPECT_FALSE(client.DidRequestReleaseNotesDataFetch());
 
   // Enable prefs and then expect that data fetch requests are called for each
   // enabled data type.
@@ -771,23 +693,21 @@ TEST_F(BirchModelTest, EnablePrefsDuringFetchCausesDataFetchRequest) {
   prefs->SetBoolean(prefs::kBirchUseLostMedia, true);
 
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, true);
-  EXPECT_TRUE(client.calendar_provider_.did_request_birch_data_fetch_);
-  EXPECT_TRUE(client.file_suggest_provider_.did_request_birch_data_fetch_);
-  EXPECT_TRUE(client.recent_tabs_provider_.did_request_birch_data_fetch_);
-  EXPECT_TRUE(client.last_active_provider_.did_request_birch_data_fetch_);
-  EXPECT_TRUE(client.most_visited_provider_.did_request_birch_data_fetch_);
-  EXPECT_TRUE(client.self_share_provider_.did_request_birch_data_fetch_);
-  EXPECT_TRUE(client.lost_media_provider_.did_request_birch_data_fetch_);
-  EXPECT_TRUE(client.release_notes_provider_.did_request_birch_data_fetch_);
+  EXPECT_TRUE(client.DidRequestCalendarDataFetch());
+  EXPECT_TRUE(client.DidRequestFileSuggestDataFetch());
+  EXPECT_TRUE(client.DidRequestRecentTabsDataFetch());
+  EXPECT_TRUE(client.DidRequestLastActiveDataFetch());
+  EXPECT_TRUE(client.DidRequestMostVisitedDataFetch());
+  EXPECT_TRUE(client.DidRequestSelfShareDataFetch());
+  EXPECT_TRUE(client.DidRequestLostMediaDataFetch());
+  EXPECT_TRUE(client.DidRequestReleaseNotesDataFetch());
 }
 
 TEST_F(BirchModelTest, EnableWeatherPrefDuringFetchCausesDataFetchRequest) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Install a stub weather provider.
-  auto weather_provider = std::make_unique<StubBirchDataProvider>();
-  auto* weather_provider_ptr = weather_provider.get();
-  model->OverrideWeatherProviderForTest(std::move(weather_provider));
+  auto* weather_provider = stub_birch_client_.InstallStubWeatherDataProvider();
 
   // Disable the weather pref.
   PrefService* prefs =
@@ -798,11 +718,11 @@ TEST_F(BirchModelTest, EnableWeatherPrefDuringFetchCausesDataFetchRequest) {
   // Request a fetch, creating a pending fetch request.
   model->RequestBirchDataFetch(/*is_post_login=*/false, base::DoNothing());
 
-  EXPECT_FALSE(weather_provider_ptr->did_request_birch_data_fetch_);
+  EXPECT_FALSE(weather_provider->did_request_birch_data_fetch());
 
   // Enable the weather pref and expect a weather data fetch.
   prefs->SetBoolean(prefs::kBirchUseWeather, true);
-  EXPECT_TRUE(weather_provider_ptr->did_request_birch_data_fetch_);
+  EXPECT_TRUE(weather_provider->did_request_birch_data_fetch());
 }
 
 // Regression test for missing attachment type check in IsDataFresh().
@@ -1618,7 +1538,7 @@ TEST_F(BirchModelTest, RemoveFileItemNotifiesBirchClient) {
   model->RemoveItem(&file_item_list[0]);
 
   // Verify the birch client was notified of the removal.
-  EXPECT_EQ(stub_birch_client_.last_removed_path_,
+  EXPECT_EQ(stub_birch_client_.last_removed_path(),
             base::FilePath("/test/path"));
 }
 

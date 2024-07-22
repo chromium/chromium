@@ -11,6 +11,7 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/birch/birch_icon_cache.h"
 #include "ash/birch/birch_model.h"
+#include "ash/birch/stub_birch_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
@@ -28,49 +29,6 @@
 
 namespace ash {
 namespace {
-
-// A data provider that does nothing.
-class StubBirchDataProvider : public BirchDataProvider {
- public:
-  StubBirchDataProvider() = default;
-  ~StubBirchDataProvider() override = default;
-
-  // BirchDataProvider:
-  void RequestBirchDataFetch() override {}
-};
-
-class StubBirchClient : public BirchClient {
- public:
-  StubBirchClient() = default;
-  ~StubBirchClient() override = default;
-
-  // BirchClient:
-  BirchDataProvider* GetCalendarProvider() override { return &provider_; }
-  BirchDataProvider* GetFileSuggestProvider() override { return &provider_; }
-  BirchDataProvider* GetRecentTabsProvider() override { return &provider_; }
-  BirchDataProvider* GetLastActiveProvider() override { return &provider_; }
-  BirchDataProvider* GetMostVisitedProvider() override { return &provider_; }
-  BirchDataProvider* GetSelfShareProvider() override { return &provider_; }
-  BirchDataProvider* GetLostMediaProvider() override { return &provider_; }
-  BirchDataProvider* GetReleaseNotesProvider() override { return &provider_; }
-
-  void WaitForRefreshTokens(base::OnceClosure callback) override {
-    did_wait_for_refresh_tokens_ = true;
-    std::move(callback).Run();
-  }
-  base::FilePath GetRemovedItemsFilePath() override { return base::FilePath(); }
-  void RemoveFileItemFromLauncher(const base::FilePath& path) override {}
-  void GetFaviconImageForIconURL(
-      const GURL& url,
-      base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
-
-  void GetFaviconImageForPageURL(
-      const GURL& url,
-      base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
-
-  StubBirchDataProvider provider_;
-  bool did_wait_for_refresh_tokens_ = false;
-};
 
 BirchWeatherProvider* GetWeatherProvider() {
   return static_cast<BirchWeatherProvider*>(
@@ -190,7 +148,7 @@ TEST_F(BirchWeatherProviderTest, GetWeatherWaitsForRefreshTokens) {
   run_loop.Run();
 
   // The provider used the client to wait for refresh tokens.
-  EXPECT_TRUE(birch_client.did_wait_for_refresh_tokens_);
+  EXPECT_TRUE(birch_client.did_wait_for_refresh_tokens());
 
   // Weather data was fetched.
   auto& weather_items = birch_model->GetWeatherForTest();
