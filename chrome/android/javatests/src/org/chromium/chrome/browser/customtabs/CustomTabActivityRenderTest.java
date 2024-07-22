@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.customtabs;
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_END;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_POSITION;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
@@ -228,6 +231,17 @@ public class CustomTabActivityRenderTest {
 
         startActivityAndRenderToolbar(
                 "cct_close_button_end_with_https_" + mRunWithHttps + "_minimize_button");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void testCCTToolbarWithOmnibox() throws IOException {
+        // Permit Omnibox for any upcoming intent(s).
+        var connection = spy(CustomTabsConnection.getInstance());
+        doReturn(true).when(connection).shouldEnableOmniboxForIntent(any());
+        CustomTabsConnection.setInstanceForTesting(connection);
+        startActivityAndRenderToolbar("cct_omnibox_" + mRunWithHttps);
     }
 
     @Test
