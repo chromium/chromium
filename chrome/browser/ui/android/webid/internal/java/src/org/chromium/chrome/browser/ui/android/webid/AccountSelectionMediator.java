@@ -100,7 +100,6 @@ class AccountSelectionMediator {
     private final AccountSelectionComponent.Delegate mDelegate;
     private final PropertyModel mModel;
     private final ModelList mSheetAccountItems;
-    private final ImageFetcher mImageFetcher;
     private final @Px int mDesiredAvatarSize;
     private final @RpMode.EnumType int mRpMode;
 
@@ -124,6 +123,7 @@ class AccountSelectionMediator {
     private @RpContext.EnumType int mRpContext;
     private IdentityCredentialTokenError mError;
     private boolean mRequestPermission;
+    private ImageFetcher mImageFetcher;
 
     // All of the user's accounts.
     private List<Account> mAccounts;
@@ -544,6 +544,11 @@ class AccountSelectionMediator {
     @VisibleForTesting
     void setComponentShowTime(long componentShowTime) {
         mComponentShowTime = componentShowTime;
+    }
+
+    @VisibleForTesting
+    void setImageFetcher(ImageFetcher imageFetcher) {
+        mImageFetcher = imageFetcher;
     }
 
     @VisibleForTesting

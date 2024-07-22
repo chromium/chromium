@@ -35,12 +35,12 @@ found in the LICENSE file.
             android:layout_height="@dimen/account_selection_button_mode_sheet_arrow_range_icon_size"
             android:layout_marginHorizontal="@dimen/account_selection_button_mode_sheet_icon_padding"
             android:visibility="gone"
+            android:fillColor="@color/baseline_neutral_variant_50"
             android:focusable="false"
             android:importantForAccessibility="no" />
 
     <ImageView
         android:id="@+id/header_rp_icon"
-        android:src="@drawable/globe"
         android:layout_width="@dimen/account_selection_button_mode_sheet_icon_size"
         android:layout_height="@dimen/account_selection_button_mode_sheet_icon_size"
         android:visibility="gone"

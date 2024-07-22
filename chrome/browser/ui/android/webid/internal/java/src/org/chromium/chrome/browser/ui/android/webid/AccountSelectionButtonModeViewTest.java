@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.android.webid;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -246,38 +245,31 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
     }
 
     @Test
-    public void testHeaderTypesWithRpIconDisplayed() {
-        List<HeaderType> headerTypesWithRpIcon =
-                Arrays.asList(
-                        HeaderType.REQUEST_PERMISSION,
-                        HeaderType.VERIFY,
-                        HeaderType.VERIFY_AUTO_REAUTHN);
-        for (HeaderType headerType : headerTypesWithRpIcon) {
-            mModel.set(
-                    ItemProperties.HEADER,
-                    new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                            .with(HeaderProperties.TYPE, headerType)
-                            .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
-                            .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
-                            .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
-                            .with(HeaderProperties.RP_MODE, RpMode.BUTTON)
-                            .with(
-                                    HeaderProperties.IDP_BRAND_ICON,
-                                    Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
-                            .with(
-                                    HeaderProperties.RP_BRAND_ICON,
-                                    Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
-                            .build());
-            assertEquals(View.VISIBLE, mContentView.getVisibility());
-            ImageView idpBrandIcon = mContentView.findViewById(R.id.header_idp_icon);
-            ImageView rpBrandIcon = mContentView.findViewById(R.id.header_rp_icon);
-            ImageView arrowRangeIcon = mContentView.findViewById(R.id.arrow_range_icon);
+    public void testRequestPermissionDialogRpIconDisplayed() {
+        mModel.set(
+                ItemProperties.HEADER,
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(HeaderProperties.TYPE, HeaderType.REQUEST_PERMISSION)
+                        .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                        .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
+                        .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
+                        .with(HeaderProperties.RP_MODE, RpMode.BUTTON)
+                        .with(
+                                HeaderProperties.IDP_BRAND_ICON,
+                                Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
+                        .with(
+                                HeaderProperties.RP_BRAND_ICON,
+                                Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
+                        .build());
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
+        ImageView idpBrandIcon = mContentView.findViewById(R.id.header_idp_icon);
+        ImageView rpBrandIcon = mContentView.findViewById(R.id.header_rp_icon);
+        ImageView arrowRangeIcon = mContentView.findViewById(R.id.arrow_range_icon);
 
-            assertTrue(idpBrandIcon.isShown());
-            assertTrue(rpBrandIcon.isShown());
-            assertNull(rpBrandIcon.getImageTintList());
-            assertTrue(arrowRangeIcon.isShown());
-        }
+        assertTrue(idpBrandIcon.isShown());
+        assertTrue(rpBrandIcon.isShown());
+        assertNull(rpBrandIcon.getImageTintList());
+        assertTrue(arrowRangeIcon.isShown());
     }
 
     @Test
@@ -316,7 +308,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
     }
 
     @Test
-    public void testRpIconUnavailableRpIconIsTintedGlobe() {
+    public void testRpIconUnavailableRpIconHidden() {
         mModel.set(
                 ItemProperties.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
@@ -336,15 +328,12 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
         ImageView arrowRangeIcon = mContentView.findViewById(R.id.arrow_range_icon);
 
         assertTrue(idpBrandIcon.isShown());
-        assertTrue(arrowRangeIcon.isShown());
-
-        assertTrue(rpBrandIcon.isShown());
-        assertNotNull(rpBrandIcon.getDrawable());
-        assertNotNull(rpBrandIcon.getImageTintList());
+        assertFalse(rpBrandIcon.isShown());
+        assertFalse(arrowRangeIcon.isShown());
     }
 
     @Test
-    public void testIdpIconUnavailableRpIconHidden() {
+    public void testIdpIconUnavailableBothIconsHidden() {
         mModel.set(
                 ItemProperties.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
