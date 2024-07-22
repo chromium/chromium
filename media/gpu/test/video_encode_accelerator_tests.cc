@@ -30,10 +30,6 @@
 #include "media/gpu/test/video_test_environment.h"
 #include "media/gpu/test/video_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_surface.h"
-#include "ui/gl/init/gl_factory.h"
-#include "ui/gl/test/gl_surface_test_support.h"
-#include "ui/gl/test/gl_test_support.h"
 
 namespace media {
 namespace test {
@@ -968,10 +964,6 @@ int main(int argc, char** argv) {
 
   media::test::g_env = static_cast<media::test::VideoEncoderTestEnvironment*>(
       testing::AddGlobalTestEnvironment(test_environment));
-
-  raw_ptr<gl::GLDisplay> display =
-      gl::GLTestSupport::InitializeGL(std::nullopt);
-  gl::init::CreateOffscreenGLSurface(display, gfx::Size());
 
   return RUN_ALL_TESTS();
 }
