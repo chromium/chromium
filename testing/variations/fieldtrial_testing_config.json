@@ -16380,6 +16380,46 @@
             ]
         }
     ],
+    "PermissionElementPromptPositioning": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "NearElement",
+                    "params": {
+                        "PermissionElementPromptPositioningParam": "near_element"
+                    },
+                    "enable_features": [
+                        "PermissionElementPromptPositioning"
+                    ]
+                },
+                {
+                    "name": "WindowMiddle",
+                    "params": {
+                        "PermissionElementPromptPositioningParam": "window_middle"
+                    },
+                    "enable_features": [
+                        "PermissionElementPromptPositioning"
+                    ]
+                },
+                {
+                    "name": "LegacyPrompt",
+                    "params": {
+                        "PermissionElementPromptPositioningParam": "legacy_prompt"
+                    },
+                    "enable_features": [
+                        "PermissionElementPromptPositioning"
+                    ]
+                }
+            ]
+        }
+    ],
     "PickerUI": [
         {
             "platforms": [
