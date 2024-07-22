@@ -164,9 +164,11 @@ TEST_F(PrivateAggregationHostTest,
   // We're using `MOCK_TIME` so we can be sure no time has advanced.
   base::Time now = base::Time::Now();
   EXPECT_GE(validated_request->shared_info().scheduled_report_time,
-            now + base::Minutes(10));
-  EXPECT_LE(validated_request->shared_info().scheduled_report_time,
-            now + base::Hours(1));
+            now + base::Minutes(10) +
+                PrivateAggregationHost::kTimeForLocalProcessing);
+  EXPECT_LE(
+      validated_request->shared_info().scheduled_report_time,
+      now + base::Hours(1) + PrivateAggregationHost::kTimeForLocalProcessing);
   EXPECT_TRUE(validated_request->shared_info().report_id.is_valid());
 
   std::optional<AggregatableReportRequest> expected_request =
@@ -1569,7 +1571,8 @@ TEST_F(PrivateAggregationHostTest, TimeoutBeforeDisconnect) {
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kDisabled);
             EXPECT_EQ(request.shared_info().scheduled_report_time,
-                      on_the_minute_start_time + base::Minutes(1));
+                      on_the_minute_start_time + base::Minutes(1) +
+                          PrivateAggregationHost::kTimeForLocalProcessing);
             EXPECT_EQ(budget_key.time_window().start_time(),
                       on_the_minute_start_time + base::Minutes(1));
           }));
@@ -1642,7 +1645,8 @@ TEST_F(PrivateAggregationHostTest, TimeoutAfterDisconnect) {
             CHECK_EQ(base::Time::Now() + base::Seconds(1),
                      on_the_minute_start_time + base::Minutes(1));
             EXPECT_EQ(request.shared_info().scheduled_report_time,
-                      on_the_minute_start_time + base::Minutes(1));
+                      on_the_minute_start_time + base::Minutes(1) +
+                          PrivateAggregationHost::kTimeForLocalProcessing);
 
             // The start time for budgeting should be based off the current
             // time, instead of the desired timeout time.
@@ -1731,8 +1735,9 @@ TEST_F(PrivateAggregationHostTest, TimeoutBeforeDisconnectForTwoHosts) {
   EXPECT_EQ(validated_request1->debug_key(), std::nullopt);
   EXPECT_EQ(validated_request1->shared_info().debug_mode,
             AggregatableReportSharedInfo::DebugMode::kDisabled);
-  EXPECT_EQ(validated_request1->shared_info().scheduled_report_time,
-            base::Time::Now());
+  EXPECT_EQ(
+      validated_request1->shared_info().scheduled_report_time,
+      base::Time::Now() + PrivateAggregationHost::kTimeForLocalProcessing);
 
   // Timeout reached for remote2.
   task_environment_.FastForwardBy(base::Seconds(1));
@@ -1746,8 +1751,9 @@ TEST_F(PrivateAggregationHostTest, TimeoutBeforeDisconnectForTwoHosts) {
   EXPECT_EQ(validated_request2->debug_key(), std::nullopt);
   EXPECT_EQ(validated_request2->shared_info().debug_mode,
             AggregatableReportSharedInfo::DebugMode::kDisabled);
-  EXPECT_EQ(validated_request2->shared_info().scheduled_report_time,
-            base::Time::Now());
+  EXPECT_EQ(
+      validated_request2->shared_info().scheduled_report_time,
+      base::Time::Now() + PrivateAggregationHost::kTimeForLocalProcessing);
 
   remote1.reset();
   remote2.reset();
@@ -1815,7 +1821,8 @@ TEST_F(PrivateAggregationHostTest, TimeoutAfterDisconnectForTwoHosts) {
   EXPECT_EQ(validated_request1->shared_info().debug_mode,
             AggregatableReportSharedInfo::DebugMode::kDisabled);
   EXPECT_EQ(validated_request1->shared_info().scheduled_report_time,
-            base::Time::Now() + base::Seconds(1));
+            base::Time::Now() + base::Seconds(1) +
+                PrivateAggregationHost::kTimeForLocalProcessing);
 
   // `validated_request2` should have report scheduled 2s from now.
   EXPECT_THAT(
@@ -1826,7 +1833,8 @@ TEST_F(PrivateAggregationHostTest, TimeoutAfterDisconnectForTwoHosts) {
   EXPECT_EQ(validated_request2->shared_info().debug_mode,
             AggregatableReportSharedInfo::DebugMode::kDisabled);
   EXPECT_EQ(validated_request2->shared_info().scheduled_report_time,
-            base::Time::Now() + base::Seconds(2));
+            base::Time::Now() + base::Seconds(2) +
+                PrivateAggregationHost::kTimeForLocalProcessing);
 
   histogram.ExpectUniqueSample(
       kTimeoutResultHistogram,
@@ -1985,8 +1993,9 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
   ASSERT_TRUE(validated_request);
 
   // We're using `MOCK_TIME` so we can be sure no time has advanced.
-  EXPECT_EQ(validated_request->shared_info().scheduled_report_time,
-            base::Time::Now());
+  EXPECT_EQ(
+      validated_request->shared_info().scheduled_report_time,
+      base::Time::Now() + PrivateAggregationHost::kTimeForLocalProcessing);
 }
 
 TEST_F(PrivateAggregationHostDeveloperModeTest,
@@ -2027,7 +2036,8 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
 
   // We're using `MOCK_TIME` so we can be sure no time has advanced.
   EXPECT_EQ(validated_request->shared_info().scheduled_report_time,
-            base::Time::Now() + base::Seconds(30));
+            base::Time::Now() + base::Seconds(30) +
+                PrivateAggregationHost::kTimeForLocalProcessing);
 }
 
 }  // namespace

@@ -55,14 +55,6 @@ namespace content {
 
 namespace {
 
-// Helper to add a random delay to reports being sent. This delay is picked
-// uniformly at random from the range [10 minutes, 1 hour).
-// TODO(alexmt): Consider making this configurable for easier testing.
-base::Time GetScheduledReportTime(base::Time report_issued_time) {
-  return report_issued_time + base::Minutes(10) +
-         base::RandDouble() * base::Minutes(50);
-}
-
 void RecordPipeResultHistogram(PrivateAggregationHost::PipeResult result) {
   base::UmaHistogramEnumeration(
       "PrivacySandbox.PrivateAggregation.Host.PipeResult", result);
@@ -523,28 +515,38 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
         blink::mojom::DebugModeDetails::New();
   }
 
-  base::Time now = base::Time::Now();
+  const base::Time now = base::Time::Now();
 
   // If the timeout hasn't been reached, use a modified report issued time.
-  base::Time report_issued_time = now + remaining_timeout;
+  base::Time scheduled_report_time = now + remaining_timeout;
 
-  bool should_not_delay_this_report =
+  // Add a tiny window to account for local processing time, the majority of
+  // which we expect to be spent in `PrivateAggregationBudgeter`. Otherwise, the
+  // report time could passively leak information about the previous budgeting
+  // history. For context, see <https://crbug.com/324314568>.
+  scheduled_report_time += kTimeForLocalProcessing;
+
+  const bool use_reduced_delay =
       should_not_delay_reports_ || receiver_context.timeout_timer;
 
+  if (!use_reduced_delay) {
+    // Add a full delay to the report time. The full delay is picked uniformly
+    // at random from the range [10 minutes, 1 hour).
+    // TODO(alexmt): Consider making this configurable for easier testing.
+    scheduled_report_time +=
+        base::Minutes(10) + base::RandDouble() * base::Minutes(50);
+  }
+
   const AggregatableReportRequest::DelayType delay_type =
-      receiver_context.timeout_timer
+      use_reduced_delay
           ? AggregatableReportRequest::DelayType::ScheduledWithReducedDelay
           : AggregatableReportRequest::DelayType::ScheduledWithFullDelay;
 
   ReportRequestGenerator report_request_generator = base::BindOnce(
       GenerateReportRequest, std::move(timeout_or_disconnect_timer),
-      std::move(receiver_context.report_debug_details),
-      /*scheduled_report_time=*/
-      should_not_delay_this_report ? report_issued_time
-                                   : GetScheduledReportTime(report_issued_time),
-      delay_type,
-      /*report_id=*/base::Uuid::GenerateRandomV4(), reporting_origin,
-      receiver_context.api_for_budgeting,
+      std::move(receiver_context.report_debug_details), scheduled_report_time,
+      delay_type, /*report_id=*/base::Uuid::GenerateRandomV4(),
+      reporting_origin, receiver_context.api_for_budgeting,
       std::move(receiver_context.context_id),
       std::move(receiver_context.aggregation_coordinator_origin),
       receiver_context.filtering_id_max_bytes);

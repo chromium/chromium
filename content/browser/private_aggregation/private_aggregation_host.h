@@ -100,6 +100,12 @@ class CONTENT_EXPORT PrivateAggregationHost
                 "Maximum length of context_id should be aligned between Shared "
                 "Storage and Private Aggregation.");
 
+  // The duration of time that `SendReportOnTimeoutOrDisconnect()`
+  // unconditionally adds to the scheduled report time. Marked public for
+  // testing.
+  static constexpr base::TimeDelta kTimeForLocalProcessing =
+      base::Milliseconds(100);
+
   // `on_report_request_details_received` and `browser_context` must be
   // non-null.
   PrivateAggregationHost(
