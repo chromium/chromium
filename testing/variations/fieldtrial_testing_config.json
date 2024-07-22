@@ -7796,22 +7796,6 @@
             ]
         }
     ],
-    "DisableHangWatcherAndroid": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "EnableHangWatcher"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableMemoryReclaimerInBackground": [
         {
             "platforms": [
@@ -8977,21 +8961,6 @@
             "experiments": [
                 {
                     "name": "ExpandCompositedCullRect"
-                }
-            ]
-        }
-    ],
-    "ExpandedPrefetchRange": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ExpandedPrefetchRange"
-                    ]
                 }
             ]
         }
@@ -10191,21 +10160,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ExperimentalAccessibilityGoogleTtsLanguagePacks"
-                    ]
-                }
-            ]
-        }
-    ],
-    "GpuInfoCollectionSeparatePrefetch": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GpuInfoCollectionSeparatePrefetch"
                     ]
                 }
             ]
@@ -13117,24 +13071,6 @@
             ]
         }
     ],
-    "MacEfficientFileFlush": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledBarrierFsync",
-                    "params": {
-                        "MacEfficientFileFlushUseBarrier": "true"
-                    },
-                    "enable_features": [
-                        "MacEfficientFileFlush"
-                    ]
-                }
-            ]
-        }
-    ],
     "MacImmersiveFullscreen": [
         {
             "platforms": [
@@ -13636,28 +13572,6 @@
                     "enable_features": [
                         "MmapSafeBrowsingDatabase",
                         "SafeBrowsingOnUIThread"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MojoBindingsInlineSLS": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MojoBindingsInlineSLS"
                     ]
                 }
             ]
@@ -16273,6 +16187,91 @@
                     },
                     "enable_features": [
                         "TrimOnMemoryPressure"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PerfCombined2024": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExpandedPrefetchRange",
+                        "FledgeEnableWALForInterestGroupStorage",
+                        "GpuInfoCollectionSeparatePrefetch",
+                        "MojoBindingsInlineSLS",
+                        "RunTasksByBatches",
+                        "SharedStorageAPIEnableWALForDatabase",
+                        "SqlWALModeOnDipsDatabase",
+                        "SqlWALModeOnSegmentationDatabase"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "MacEfficientFileFlushUseBarrier": "true"
+                    },
+                    "enable_features": [
+                        "FledgeEnableWALForInterestGroupStorage",
+                        "MacEfficientFileFlush",
+                        "MojoBindingsInlineSLS",
+                        "NumberOfCoresWithCpuSecurityMitigation",
+                        "SharedStorageAPIEnableWALForDatabase",
+                        "SqlWALModeOnDipsDatabase",
+                        "SqlWALModeOnSegmentationDatabase"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "fuchsia",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeEnableWALForInterestGroupStorage",
+                        "MojoBindingsInlineSLS",
+                        "SharedStorageAPIEnableWALForDatabase",
+                        "SqlWALModeOnDipsDatabase",
+                        "SqlWALModeOnSegmentationDatabase"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeEnableWALForInterestGroupStorage",
+                        "MojoBindingsInlineSLS",
+                        "SharedStorageAPIEnableWALForDatabase",
+                        "SqlWALModeOnDipsDatabase",
+                        "SqlWALModeOnSegmentationDatabase"
+                    ],
+                    "disable_features": [
+                        "EnableHangWatcher"
                     ]
                 }
             ]
@@ -19175,8 +19174,7 @@
         {
             "platforms": [
                 "android",
-                "android_webview",
-                "windows"
+                "android_webview"
             ],
             "experiments": [
                 {
@@ -21507,34 +21505,6 @@
                     "name": "EnableFeatureForTests",
                     "enable_features": [
                         "SplitCacheByNetworkIsolationKey"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SqlWalMode": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FledgeEnableWALForInterestGroupStorage",
-                        "SharedStorageAPIEnableWALForDatabase",
-                        "SqlWALModeOnDipsDatabase",
-                        "SqlWALModeOnSegmentationDatabase",
-                        "SqlWALModeOnWebDatabase"
                     ]
                 }
             ]
