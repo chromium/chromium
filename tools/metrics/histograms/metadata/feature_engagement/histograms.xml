@@ -523,6 +523,8 @@ chromium-metrics-reviews@google.com.
       summary="educating user to drop one tab on another tab to create group"/>
   <variant name="IPH_TabGroupsQuicklyComparePages"
       summary="long pressing a link to open in a tab group"/>
+  <variant name="IPH_TabGroupsRemoteGroup"
+      summary="IPH highlighting a synced tab group"/>
   <variant name="IPH_TabGroupsSaveV2CloseGroup"
       summary="IPH for tab group closing adding them to a new location"/>
   <variant name="IPH_TabGroupsSaveV2Intro"

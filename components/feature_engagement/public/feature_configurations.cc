@@ -1076,6 +1076,21 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(EQUAL, 0), 360, 360);
     return config;
   }
+  if (kIPHTabGroupsRemoteGroupFeature.name == feature->name) {
+    // Allows an IPH for highlighting a remote tab group when:
+    // * Only once per day.
+    // * Up to 3 times per year.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 1);
+    config->trigger = EventConfig("tab_groups_remote_group_triggered",
+                                  Comparator(EQUAL, 0), 1, 1);
+    config->event_configs.insert(
+        EventConfig("tab_groups_remote_group_triggered",
+                    Comparator(LESS_THAN, 3), 360, 360));
+    return config;
+  }
   if (kIPHTabGroupsSurfaceFeature.name == feature->name) {
     // Allows an IPH for the tab groups surface through hub toolbar when:
     // * Only once per week.

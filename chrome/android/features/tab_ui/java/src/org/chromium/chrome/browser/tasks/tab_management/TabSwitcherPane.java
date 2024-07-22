@@ -12,10 +12,13 @@ import android.view.View.OnClickListener;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
+import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
@@ -48,6 +51,8 @@ import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.function.DoubleConsumer;
@@ -55,6 +60,7 @@ import java.util.function.DoubleConsumer;
 /** A {@link Pane} representing the regular tab switcher. */
 public class TabSwitcherPane extends TabSwitcherPaneBase {
     private static final int ON_SHOWN_IPH_DELAY = 700;
+    private static final int ON_CREATION_IPH_DELAY = 100;
 
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
@@ -73,8 +79,19 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
                         @DidRemoveTabGroupReason int removalReason) {
                     onDidRemoveTabGroup(oldTabGroupId, removalReason);
                 }
+
+                @Override
+                public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
+                    // Unfortunately it's difficult to wait for a recycler view to finish  binding
+                    // and fully showing views. So just wait with a short delay.
+                    PostTask.postDelayedTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> tryToTriggerRemoteGroupIph(),
+                            ON_CREATION_IPH_DELAY);
+                }
             };
 
+    private final Callback<Boolean> mScrollingObserver = this::onScrollingChanged;
     private final Callback<Boolean> mVisibilityObserver = this::onVisibilityChanged;
     private final @NonNull SharedPreferences mSharedPreferences;
     private final @NonNull Supplier<TabModelFilter> mTabModelFilterSupplier;
@@ -94,7 +111,6 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
      * @param tabSwitcherDrawableCoordinator The drawable to represent the pane.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      * @param userEducationHelper Used for showing IPHs.
-     * @param paneManager Dependency for conditional IPH after creation of groups.
      */
     TabSwitcherPane(
             @NonNull Context context,
@@ -113,8 +129,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
         mUserEducationHelper = userEducationHelper;
 
         // TODO(crbug.com/40946413): Update this string to not be an a11y string and it should
-        // probably
-        // just say "Tabs".
+        // probably just say "Tabs".
         mReferenceButtonDataSupplier.set(
                 new DrawableButtonData(
                         R.string.accessibility_tab_switcher_standard_stack,
@@ -130,8 +145,9 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
                         () -> newTabButtonClickListener.onClick(null)));
 
         profileProviderSupplier.onAvailable(this::onProfileProviderAvailable);
-
         getIsVisibleSupplier().addObserver(mVisibilityObserver);
+        getTabSwitcherPaneCoordinatorSupplier()
+                .addObserver(new ValueChangedCallback<>(this::onTabSwitcherPaneCoordinatorChanged));
     }
 
     @Override
@@ -211,6 +227,26 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
         return this::tryToTriggerTabGroupSurfaceIph;
     }
 
+    private void onTabSwitcherPaneCoordinatorChanged(
+            @Nullable TabSwitcherPaneCoordinator newValue,
+            @Nullable TabSwitcherPaneCoordinator oldValue) {
+        if (oldValue != null) {
+            OneshotSupplier<ObservableSupplier<Boolean>> wrappedSupplier =
+                    oldValue.getIsScrollingSupplier();
+            if (wrappedSupplier.hasValue()) {
+                wrappedSupplier.get().removeObserver(mScrollingObserver);
+            }
+        }
+        if (newValue != null) {
+            OneshotSupplier<ObservableSupplier<Boolean>> wrappedSupplier =
+                    newValue.getIsScrollingSupplier();
+            wrappedSupplier.onAvailable(
+                    supplier -> {
+                        supplier.addObserver(mScrollingObserver);
+                    });
+        }
+    }
+
     private void onProfileProviderAvailable(@NonNull ProfileProvider profileProvider) {
         Profile profile = profileProvider.getOriginalProfile();
         mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
@@ -256,8 +292,13 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
         // TODO(crbug.com/346356139): Figure out a more elegant way of observing entering the hub as
         // well as switching between panes. Knowing when these animations complete turns out to be
         // fairly difficult, especially knowing when we're about to enter a transition.
-        PostTask.postDelayedTask(
-                TaskTraits.UI_DEFAULT, this::tryToTriggerTabGroupSurfaceIph, ON_SHOWN_IPH_DELAY);
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, this::onShown, ON_SHOWN_IPH_DELAY);
+    }
+
+    private void onShown() {
+        // The IPH system will ensure we don't show both.
+        tryToTriggerTabGroupSurfaceIph();
+        tryToTriggerRemoteGroupIph();
     }
 
     private void tryToTriggerTabGroupSurfaceIph() {
@@ -284,6 +325,57 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
                         .setAnchorView(anchorView)
                         .build();
         mUserEducationHelper.requestShowIPH(command);
+    }
+
+    private void onScrollingChanged(boolean isScrolling) {
+        // When we stop scrolling is a good time to check if the remote group iph should trigger, as
+        // new tab groups cards may be fully visible one the screen where they were not previously.
+        if (!isScrolling) {
+            tryToTriggerRemoteGroupIph();
+        }
+    }
+
+    private void tryToTriggerRemoteGroupIph() {
+        if (mTabGroupSyncService == null) return;
+
+        @Nullable PaneHubController paneHubController = getPaneHubController();
+        if (paneHubController == null) return;
+
+        TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
+        if (coordinator == null) return;
+
+        TabGroupModelFilter filter = (TabGroupModelFilter) mTabModelFilterSupplier.get();
+        @Nullable Pair<Integer, Integer> range = coordinator.getVisibleRange();
+        if (range == null) return;
+        // Iterate in reverse because when multiple viable groups are on screen, we want to trigger
+        // on the most recently added, which should be ordered later.
+        for (int viewIndex = range.second; viewIndex >= range.first; --viewIndex) {
+            int filterIndex = coordinator.countOfTabCardsOrInvalid(viewIndex);
+            @Nullable Tab tab = filter.getTabAt(filterIndex);
+            if (tab == null || !filter.isTabInTabGroup(tab)) continue;
+
+            @Nullable Token tabGroupId = tab.getTabGroupId();
+            if (tabGroupId == null) return;
+            @Nullable
+            SavedTabGroup savedTabGroup =
+                    mTabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
+            if (savedTabGroup == null) return;
+            if (!mTabGroupSyncService.isRemoteDevice(savedTabGroup.creatorCacheGuid)) return;
+
+            @Nullable View anchorView = coordinator.getViewByIndex(viewIndex);
+            if (anchorView == null) continue;
+
+            IPHCommand command =
+                    new IPHCommandBuilder(
+                                    getRootView().getResources(),
+                                    FeatureConstants.TAB_GROUPS_REMOTE_GROUP,
+                                    R.string.newly_synced_tab_group_iph,
+                                    R.string.newly_synced_tab_group_iph)
+                            .setAnchorView(anchorView)
+                            .build();
+            mUserEducationHelper.requestShowIPH(command);
+            return;
+        }
     }
 
     private void removeObservers() {

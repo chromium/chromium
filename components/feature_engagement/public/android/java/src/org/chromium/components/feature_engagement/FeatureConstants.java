@@ -64,6 +64,9 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.FEED_CARD_MENU_FEATURE,
     FeatureConstants.IDENTITY_DISC_FEATURE,
     FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE,
+    FeatureConstants.TAB_GROUPS_REMOTE_GROUP,
+    FeatureConstants.TAB_GROUPS_SURFACE,
+    FeatureConstants.TAB_GROUPS_SURFACE_ON_HIDE,
     FeatureConstants.QUIET_NOTIFICATION_PROMPTS_FEATURE,
     FeatureConstants.FEED_HEADER_MENU_FEATURE,
     FeatureConstants.FEED_SWIPE_REFRESH_FEATURE,
@@ -214,6 +217,9 @@ public @interface FeatureConstants {
 
     /** An IPH feature to show a card item on grid tab switcher to educate drag-and-drop. */
     String TAB_GROUPS_DRAG_AND_DROP_FEATURE = "IPH_TabGroupsDragAndDrop";
+
+    /** An IPH feature to highlight a synced tab group on the GTS. */
+    String TAB_GROUPS_REMOTE_GROUP = "IPH_TabGroupsRemoteGroup";
 
     /** An IPH feature to show a highlight on the toolbar button to show the tab group surface. */
     String TAB_GROUPS_SURFACE = "IPH_TabGroupsSurface";

@@ -814,6 +814,11 @@ public class TabListCoordinator
         return mMediator.getIndexOfNthTabCard(index);
     }
 
+    /** Returns the filter index of a tab from its view index or TabList.INVALID_TAB_INDEX. */
+    int indexOfTabCardsOrInvalid(int index) {
+        return mMediator.indexOfTabCardsOrInvalid(index);
+    }
+
     void runAnimationOnNextLayout(Runnable runnable) {
         mRecyclerView.runAnimationOnNextLayout(runnable);
     }

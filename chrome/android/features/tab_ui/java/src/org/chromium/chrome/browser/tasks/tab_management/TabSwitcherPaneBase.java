@@ -174,7 +174,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     public void notifyLoadHint(@LoadHint int loadHint) {
         boolean isVisible = loadHint == LoadHint.HOT;
         mIsVisibleSupplier.set(isVisible);
-
         removeDelayedCallbacks();
 
         if (isVisible) {
@@ -182,11 +181,10 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             showAllTabs();
             setInitialScrollIndexOffset();
             // TODO(crbug.com/40942549): This should only happen when the Pane becomes user visible
-            // which
-            // might only happen after the Hub animation finishes. Figure out how to handle that
-            // since the load hint for hot will come before the animation is started. Panes likely
-            // need to know an animation is going to play and when it is finished (possibly using
-            // the isAnimatingSupplier?).
+            // which might only happen after the Hub animation finishes. Figure out how to handle
+            // that since the load hint for hot will come before the animation is started. Panes
+            // likely need to know an animation is going to play and when it is finished (possibly
+            // using the isAnimatingSupplier?).
             requestAccessibilityFocusOnCurrentTab();
         } else {
             cancelWaitForTabStateInitializedTimer();
@@ -519,6 +517,12 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     @Nullable
     TabSwitcherPaneCoordinator getTabSwitcherPaneCoordinator() {
         return mTabSwitcherPaneCoordinatorSupplier.get();
+    }
+
+    /** Returns an observable supplier that hold the current coordinator. */
+    protected @NonNull ObservableSupplier<TabSwitcherPaneCoordinator>
+            getTabSwitcherPaneCoordinatorSupplier() {
+        return mTabSwitcherPaneCoordinatorSupplier;
     }
 
     /** Creates a {@link TabSwitcherCoordinator}. */

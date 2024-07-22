@@ -159,6 +159,7 @@ BASE_DECLARE_FEATURE(kIPHTabGroupsTapToSeeAnotherTabFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupSyncOnStripFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsYourTabsAreTogetherFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsDragAndDropFeature);
+BASE_DECLARE_FEATURE(kIPHTabGroupsRemoteGroupFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsSurfaceFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsSurfaceOnHideFeature);
 BASE_DECLARE_FEATURE(kIPHTabSwitcherButtonFeature);
