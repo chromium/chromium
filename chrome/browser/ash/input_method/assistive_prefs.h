@@ -13,7 +13,7 @@
 namespace ash {
 namespace input_method {
 
-bool IsPredictiveWritingPrefEnabled(PrefService* pref_service,
+bool IsPredictiveWritingPrefEnabled(const PrefService& pref_service,
                                     const std::string& engine_id);
 
 bool IsDiacriticsOnLongpressPrefEnabled(PrefService* pref_service,

@@ -321,9 +321,13 @@ TEST_F(AssistiveSuggesterTest,
 }
 
 TEST_F(AssistiveSuggesterTest,
-       AssistiveControlVLongpressFlagEnabled_AssistiveFeatureEnabled) {
+       OnlyAssistiveControlVLongpressFlagEnabled_AssistiveFeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kClipboardHistoryLongpress);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kClipboardHistoryLongpress},
+      /*disabled_features=*/{features::kAssistMultiWord,
+                             features::kAssistEmojiEnhanced,
+                             features::kDiacriticsOnPhysicalKeyboardLongpress});
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
                         /*diacritics_on_longpress_enabled=*/false);
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
@@ -332,7 +336,11 @@ TEST_F(AssistiveSuggesterTest,
 TEST_F(AssistiveSuggesterTest,
        AssistiveControlVLongpressFlagDisabled_AssistiveFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kClipboardHistoryLongpress);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{}, /*disabled_features=*/{
+          features::kClipboardHistoryLongpress, features::kAssistMultiWord,
+          features::kAssistEmojiEnhanced,
+          features::kDiacriticsOnPhysicalKeyboardLongpress});
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
                         /*diacritics_on_longpress_enabled=*/false);
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
