@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/webid/digital_identity_provider_desktop.h"
+#include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
 
 #include <memory>
 
 #include "base/containers/span.h"
-#include "chrome/browser/ui/views/webid/digital_identity_safety_interstitial_controller_desktop.h"
-#include "chrome/browser/webid/digital_identity_low_risk_origins.h"
+#include "chrome/browser/ui/views/digital_credentials/digital_identity_safety_interstitial_controller_desktop.h"
+#include "chrome/browser/digital_credentials/digital_identity_low_risk_origins.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/qr_code_generator/bitmap_generator.h"

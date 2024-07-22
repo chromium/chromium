@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_WEBID_DIGITAL_IDENTITY_SAFETY_INTERSTITIAL_CONTROLLER_DESKTOP_H_
-#define CHROME_BROWSER_UI_VIEWS_WEBID_DIGITAL_IDENTITY_SAFETY_INTERSTITIAL_CONTROLLER_DESKTOP_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_SAFETY_INTERSTITIAL_CONTROLLER_DESKTOP_H_
+#define CHROME_BROWSER_UI_VIEWS_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_SAFETY_INTERSTITIAL_CONTROLLER_DESKTOP_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webid/digital_identity_safety_interstitial_controller.h"
+#include "chrome/browser/ui/digital_credentials/digital_identity_safety_interstitial_controller.h"
 #include "content/public/browser/digital_identity_interstitial_type.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/web_contents.h"
@@ -55,4 +55,4 @@ class DigitalIdentitySafetyInterstitialControllerDesktop
       weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_WEBID_DIGITAL_IDENTITY_SAFETY_INTERSTITIAL_CONTROLLER_DESKTOP_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_SAFETY_INTERSTITIAL_CONTROLLER_DESKTOP_H_

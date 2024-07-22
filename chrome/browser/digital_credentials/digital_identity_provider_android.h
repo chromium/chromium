@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEBID_DIGITAL_IDENTITY_PROVIDER_ANDROID_H_
-#define CHROME_BROWSER_WEBID_DIGITAL_IDENTITY_PROVIDER_ANDROID_H_
+#ifndef CHROME_BROWSER_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_PROVIDER_ANDROID_H_
+#define CHROME_BROWSER_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_PROVIDER_ANDROID_H_
 
 #include <jni.h>
 
@@ -54,4 +54,4 @@ class DigitalIdentityProviderAndroid : public content::DigitalIdentityProvider {
   DigitalIdentityCallback callback_;
 };
 
-#endif  // CHROME_BROWSER_WEBID_DIGITAL_IDENTITY_PROVIDER_ANDROID_H_
+#endif  // CHROME_BROWSER_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_PROVIDER_ANDROID_H_

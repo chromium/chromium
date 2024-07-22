@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEBID_DIGITAL_IDENTITY_LOW_RISK_ORIGINS_H_
-#define CHROME_BROWSER_WEBID_DIGITAL_IDENTITY_LOW_RISK_ORIGINS_H_
+#ifndef CHROME_BROWSER_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_LOW_RISK_ORIGINS_H_
+#define CHROME_BROWSER_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_LOW_RISK_ORIGINS_H_
 
 #include "url/origin.h"
 
@@ -16,4 +16,4 @@ bool IsLowRiskOrigin(const url::Origin& to_check);
 
 }  // namespace digital_credentials
 
-#endif  // CHROME_BROWSER_WEBID_DIGITAL_IDENTITY_LOW_RISK_ORIGINS_H_
+#endif  // CHROME_BROWSER_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_LOW_RISK_ORIGINS_H_

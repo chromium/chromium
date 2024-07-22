@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webid/digital_identity_safety_interstitial_bridge_android.h"
+#include "chrome/browser/ui/digital_credentials/digital_identity_safety_interstitial_bridge_android.h"
 
 #include "base/android/jni_android.h"
 #include "content/public/browser/digital_identity_interstitial_type.h"

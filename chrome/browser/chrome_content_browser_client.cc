@@ -492,11 +492,11 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/chrome_browser_main_android.h"
+#include "chrome/browser/digital_credentials/digital_identity_provider_android.h"
 #include "chrome/browser/download/android/available_offline_content_provider.h"
 #include "chrome/browser/download/android/intercept_oma_download_navigation_throttle.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/browser/webid/digital_identity_provider_android.h"
 #include "chrome/common/chrome_descriptors.h"
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
@@ -517,12 +517,12 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
 #include "chrome/browser/preloading/preview/preview_navigation_throttle.h"
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/webid/digital_identity_provider_desktop.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 

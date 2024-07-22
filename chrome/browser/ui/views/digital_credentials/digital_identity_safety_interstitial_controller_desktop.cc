@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/webid/digital_identity_safety_interstitial_controller_desktop.h"
+#include "chrome/browser/ui/views/digital_credentials/digital_identity_safety_interstitial_controller_desktop.h"
 
 #include <string>
 
-#include "chrome/browser/ui/webid/digital_identity_safety_interstitial_controller.h"
+#include "chrome/browser/ui/digital_credentials/digital_identity_safety_interstitial_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/url_formatter/elide_url.h"

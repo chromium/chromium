@@ -380,6 +380,8 @@ static_library("browser") {
     "data_sharing/data_sharing_service_factory.h",
     "defaults.cc",
     "defaults.h",
+    "digital_credentials/digital_identity_low_risk_origins.cc",
+    "digital_credentials/digital_identity_low_risk_origins.h",
     "dips/chrome_dips_delegate.cc",
     "dips/chrome_dips_delegate.h",
     "dips/cookie_access_filter.cc",
@@ -1873,8 +1875,6 @@ static_library("browser") {
     "webauthn/webauthn_pref_names.h",
     "webdata_services/web_data_service_factory.cc",
     "webdata_services/web_data_service_factory.h",
-    "webid/digital_identity_low_risk_origins.cc",
-    "webid/digital_identity_low_risk_origins.h",
     "webid/federated_identity_account_keyed_permission_context.cc",
     "webid/federated_identity_account_keyed_permission_context.h",
     "webid/federated_identity_api_permission_context.cc",
@@ -1903,6 +1903,8 @@ static_library("browser") {
       "accessibility/embedded_a11y_extension_loader.h",
       "component_updater/iwa_key_distribution_component_installer.cc",
       "component_updater/iwa_key_distribution_component_installer.h",
+      "digital_credentials/digital_identity_provider_desktop.cc",
+      "digital_credentials/digital_identity_provider_desktop.h",
       "global_desktop_features.cc",
       "global_desktop_features.h",
       "picture_in_picture/auto_pip_setting_helper.cc",
@@ -1952,8 +1954,6 @@ static_library("browser") {
       "visited_url_ranking/desktop_tab_model_url_visit_data_fetcher.h",
       "webapps/webapps_client_desktop.cc",
       "webapps/webapps_client_desktop.h",
-      "webid/digital_identity_provider_desktop.cc",
-      "webid/digital_identity_provider_desktop.h",
     ]
   }
 
@@ -3162,6 +3162,8 @@ static_library("browser") {
       "device_reauth/android/device_authenticator_bridge_impl.h",
       "device_reauth/android/reauthenticator_bridge.cc",
       "device_reauth/android/reauthenticator_bridge.h",
+      "digital_credentials/digital_identity_provider_android.cc",
+      "digital_credentials/digital_identity_provider_android.h",
       "dom_distiller/dom_distiller_service_factory_android.cc",
       "dom_distiller/dom_distiller_service_factory_android.h",
       "dom_distiller/tab_utils.cc",
@@ -3516,8 +3518,6 @@ static_library("browser") {
       "webauthn/android/chrome_webauthn_client_android.h",
       "webauthn/android/webauthn_request_delegate_android.cc",
       "webauthn/android/webauthn_request_delegate_android.h",
-      "webid/digital_identity_provider_android.cc",
-      "webid/digital_identity_provider_android.h",
     ]
     deps += [
       ":delta_file_proto",

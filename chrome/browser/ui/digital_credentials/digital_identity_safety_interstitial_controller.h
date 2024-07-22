@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBID_DIGITAL_IDENTITY_SAFETY_INTERSTITIAL_CONTROLLER_H_
-#define CHROME_BROWSER_UI_WEBID_DIGITAL_IDENTITY_SAFETY_INTERSTITIAL_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_SAFETY_INTERSTITIAL_CONTROLLER_H_
+#define CHROME_BROWSER_UI_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_SAFETY_INTERSTITIAL_CONTROLLER_H_
 
 #include "content/public/browser/digital_identity_interstitial_type.h"
 #include "content/public/browser/digital_identity_provider.h"
@@ -34,4 +34,4 @@ class DigitalIdentitySafetyInterstitialController {
   virtual ~DigitalIdentitySafetyInterstitialController() = default;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBID_DIGITAL_IDENTITY_SAFETY_INTERSTITIAL_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_SAFETY_INTERSTITIAL_CONTROLLER_H_

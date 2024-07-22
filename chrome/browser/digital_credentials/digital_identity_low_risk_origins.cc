@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/webid/digital_identity_low_risk_origins.h"
+#include "chrome/browser/digital_credentials/digital_identity_low_risk_origins.h"
 
 #include "url/gurl.h"
 #include "url/origin.h"
