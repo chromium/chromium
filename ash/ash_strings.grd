@@ -8363,6 +8363,9 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_INFORMED_RESTORE_EDUCATION_NUDGE" desc="Text of the informed restore education nudge.">
         To see personalized suggestions for things to do next, press the Overview key
       </message>
+      <message name="IDS_ASH_BIRCH_PRIVACY_NUDGE" desc="Text of the privacy nudge that appears when informed restore/overview UI suggestions are first shown.">
+        To customize suggestions, right-click or press &amp; hold on a suggestion
+      </message>
       <message name="IDS_ASH_BIRCH_CALENDAR_ONGOING_SUBTITLE" desc="Subtitle for the suggestion chip for an ongoing calendar event (e.g. a meeting that is happening right now)">
         Now · Ends <ph name="END_TIME">$1<ex>11:20 AM</ex></ph>
       </message>

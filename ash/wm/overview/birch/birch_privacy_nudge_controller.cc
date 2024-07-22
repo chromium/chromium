@@ -9,11 +9,13 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/command_line.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -71,13 +73,9 @@ void BirchPrivacyNudgeController::MaybeShowNudge(views::View* anchor_view) {
     return;
   }
 
-  // TODO(b/353354153): Localize the string after UX writing provides final
-  // text.
   AnchoredNudgeData nudge_data(
       "BirchPrivacyId", NudgeCatalogName::kBirchPrivacy,
-      u"To customize suggestions, tap or press with two fingers (touchpad) or "
-      u"right-click (mouse) when hovering over a suggestion",
-      anchor_view);
+      l10n_util::GetStringUTF16(IDS_ASH_BIRCH_PRIVACY_NUDGE), anchor_view);
   nudge_data.arrow = views::BubbleBorder::BOTTOM_LEFT;
 
   Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
