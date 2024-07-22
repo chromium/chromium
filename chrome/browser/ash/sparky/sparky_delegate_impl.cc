@@ -55,8 +55,15 @@ void SparkyDelegateImpl::AddPrefToMap(
     const std::string& pref_name,
     SettingsPrivatePrefType settings_pref_type,
     std::optional<base::Value> value) {
+  // TODO (b:354608065) Add in UMA logging for these error cases.
   switch (settings_pref_type) {
     case SettingsPrivatePrefType::kBoolean: {
+      if (!value->is_bool()) {
+        DVLOG(1) << "Cros setting " << pref_name
+                 << " has a prefType of bool, but has a value of type: "
+                 << value->type();
+        break;
+      }
       current_prefs_[pref_name] = std::make_unique<manta::SettingsData>(
           pref_name, manta::PrefType::kBoolean, std::move(value));
       break;
@@ -68,21 +75,44 @@ void SparkyDelegateImpl::AddPrefToMap(
       } else if (value->is_double()) {
         current_prefs_[pref_name] = std::make_unique<manta::SettingsData>(
             pref_name, manta::PrefType::kDouble, std::move(value));
+      } else {
+        DVLOG(1) << "Cros setting " << pref_name
+                 << " has a prefType of number, but has a value of type: "
+                 << value->type();
       }
       break;
     }
     case SettingsPrivatePrefType::kList: {
+      if (!value->is_list()) {
+        DVLOG(1) << "Cros setting " << pref_name
+                 << " has a prefType of list, but has a value of type: "
+                 << value->type();
+        break;
+      }
       current_prefs_[pref_name] = std::make_unique<manta::SettingsData>(
           pref_name, manta::PrefType::kList, std::move(value));
       break;
     }
     case SettingsPrivatePrefType::kString:
     case SettingsPrivatePrefType::kUrl: {
+      if (!value->is_string()) {
+        DVLOG(1)
+            << "Cros setting " << pref_name
+            << " has a prefType of string or url, but has a value of type: "
+            << value->type();
+        break;
+      }
       current_prefs_[pref_name] = std::make_unique<manta::SettingsData>(
           pref_name, manta::PrefType::kString, std::move(value));
       break;
     }
     case SettingsPrivatePrefType::kDictionary: {
+      if (!value->is_dict()) {
+        DVLOG(1) << "Cros setting " << pref_name
+                 << " has a prefType of dictionary, but has a value of type: "
+                 << value->type();
+        break;
+      }
       current_prefs_[pref_name] = std::make_unique<manta::SettingsData>(
           pref_name, manta::PrefType::kDictionary, std::move(value));
       break;

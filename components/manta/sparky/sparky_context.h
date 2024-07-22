@@ -35,7 +35,7 @@ struct COMPONENT_EXPORT(MANTA) SparkyContext {
   std::optional<std::string> page_content;
   std::optional<std::string> page_url;
   std::optional<std::string> server_url;
-  bool collect_settings{false};
+  bool collect_settings{true};
   proto::Task task{proto::Task::TASK_PLANNER};
 };
 
