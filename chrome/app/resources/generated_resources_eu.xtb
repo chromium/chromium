@@ -2651,7 +2651,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2897878306272793870">Ziur <ph name="TAB_COUNT" /> fitxa ireki nahi dituzula?</translation>
 <translation id="2900247416110050639">Google Dokumentuak, Kalkulu-orriak edo Aurkezpenak erabiliz gero, Google Drive-n gorde behar dira fitxategiak. Gailuko fitxategiak eraman egingo dira; beste kokapenetakoak, aldiz, kopiatu. Fitxategiak aplikazioko Google Drive karpetan egongo dira zure fitxategiak.</translation>
 <translation id="290105521672621980">Fitxategiak eginbide bateraezinak darabiltza</translation>
-<translation id="2901348420151309559">Azken argazkiak eta aplikazioak</translation>
+<translation id="2901348420151309559">Azkenaldiko argazkiak eta aplikazioak</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> luzapenak ezin izan du komunikatu inprimagailu honekin. Egiaztatu inprimagailua konektatuta dagoela eta saiatu berriro.</translation>
 <translation id="2902265136119311513">Arakatu gonbidatu gisa</translation>
 <translation id="2902312830803030883">Ekintza gehiago</translation>
@@ -3823,7 +3823,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3771851622616482156">Webguneko saioa amaituko da, baita irekita dauden fitxetakoa ere.</translation>
 <translation id="3772046291955677288">Irakurri ditut eta onartzen ditut <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Chrome-ren eta ChromeOS-ren Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />.</translation>
 <translation id="3774059845329307709">Serie-zenbakia</translation>
-<translation id="3774166835015494435">Azken argazkiak eta jakinarazpenak</translation>
+<translation id="3774166835015494435">Azkenaldiko argazkiak eta jakinarazpenak</translation>
 <translation id="3775432569830822555">SSL zerbitzariaren ziurtagiria</translation>
 <translation id="3775705724665058594">Bidali zure gailuetara</translation>
 <translation id="3776508619697147021">Webguneek fitxategi bat baino gehiago automatikoki deskargatzea eska dezakete</translation>
@@ -4300,7 +4300,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
     <ph name="BEGIN_PARAGRAPH2" />Google-k zu identifikatu gabe erabiltzen du informazio hori, helburu hauekin: kokapen-zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzea eta, orokorrean, Google-ren zerbitzuak hobetu, eman eta mantentzea. Google-k eta hirugarrenek erabiltzaileen beharrei erantzuteko duten legezko interesa oinarri hartuta prozesatzen dugu informazio hori.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Kokapen-zehaztasuna desaktibatzeko, joan gailuaren kokapen-ezarpenetara Ezarpenak &gt; Pribatutasuna eta segurtasuna &gt; Pribatutasun-ezarpenak &gt; Kokapena erabiltzeko baimena &gt; Kokapen-ezarpen aurreratuak atalean. Kokapen-zehaztasuna desaktibatuta badago, ez da bilduko kokapen-zehaztasunarekin lotutako daturik. Android-erako aplikazio eta zerbitzuetarako, IP helbidea soilik erabiltzen da (erabilgarri badago) gailuaren kokapena zehazteko. Beraz, baliteke Android-erako aplikazio eta zerbitzuetarako (adibidez, Google Maps) kokapenen erabilgarritasunean eta zehaztasunean eragitea.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Lortu Kokapen-zehaztasuna ezarpenari buruzko informazio gehiago<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
-<translation id="4114524937989710624">Google Drive-n egindako azkenaldiko jardueretara erraz itzul zaitezen ari zara ikusten iradokitako fitxategiak.
+<translation id="4114524937989710624">Google Drive-n egindako azken jardueretara erraz itzul zaitezen ari zara ikusten iradokitako fitxategiak.
         <ph name="BREAK" />
         <ph name="BREAK" />
         Ezarpenak kudeatzeko, joan txartelaren menura edo ikusi aukera gehiago Pertsonalizatu Chrome atalean.</translation>
@@ -9778,7 +9778,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="825238165904109940">Erakutsi beti URL osoak</translation>
 <translation id="8252569384384439529">Kargatzen…</translation>
 <translation id="8253198102038551905">Sakatu "+" sarearen propietateak ikusteko</translation>
-<translation id="8255212965098517578">Azken argazkiak, jakinarazpenak eta aplikazioak</translation>
+<translation id="8255212965098517578">Azkenaldiko argazkiak, jakinarazpenak eta aplikazioak</translation>
 <translation id="8256319818471787266">Tximista</translation>
 <translation id="8257950718085972371">Jarraitu kamerarako sarbidea blokeatzen</translation>
 <translation id="8258027225380843424">Inportatu dira!</translation>
