@@ -7,6 +7,7 @@ package org.chromium.ui.base;
 import android.view.View;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -61,6 +62,7 @@ public class LocalizationUtils {
                 == View.LAYOUT_DIRECTION_RTL;
     }
 
+    @CalledByNativeForTesting
     public static void setRtlForTesting(boolean shouldBeRtl) {
         sIsLayoutRtlForTesting = shouldBeRtl;
         ResettersForTesting.register(() -> sIsLayoutRtlForTesting = null);

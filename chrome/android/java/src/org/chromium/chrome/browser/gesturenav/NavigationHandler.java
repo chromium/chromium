@@ -436,7 +436,12 @@ class NavigationHandler implements TouchEventObserver {
             activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
             width = displayMetrics.heightPixels;
         }
-        return Math.max(0, getTouchX() / width);
+
+        // Progress runs from 0 to 1 even when pulling from the right edge.
+        float offset =
+                mInitiatingEdge == BackGestureEventSwipeEdge.LEFT ? mPullOffsetX : -mPullOffsetX;
+
+        return Math.min(Math.max(0, offset / width), 1);
     }
 
     /** Performs cleanup upon destruction. */

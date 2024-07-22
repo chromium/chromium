@@ -99,7 +99,7 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
   CHECK(animator_factory_);
   animator_ = animator_factory_->Create(
       web_contents_view_android_.get(), navigation_controller_.get(), gesture,
-      navigation_direction, destination_entry, this);
+      navigation_direction, edge, destination_entry, this);
 
   // Become a WCO as soon as this class is created, because we want to
   // observe all navigations while this class is controlling the UI. This

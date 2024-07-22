@@ -22,6 +22,7 @@
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/android/window_android.h"
+#include "ui/events/back_gesture_event.h"
 
 namespace content {
 
@@ -33,6 +34,7 @@ using NavigationDirection =
     BackForwardTransitionAnimationManager::NavigationDirection;
 using AnimationStage = BackForwardTransitionAnimationManager::AnimationStage;
 using SwitchSpringReason = PhysicsModel::SwitchSpringReason;
+using SwipeEdge = ui::BackGestureEventSwipeEdge;
 
 void ResetTransformForLayer(cc::slim::Layer* layer) {
   CHECK(layer);
@@ -140,11 +142,12 @@ BackForwardTransitionAnimator::Factory::Create(
     NavigationControllerImpl* controller,
     const ui::BackGestureEvent& gesture,
     NavigationDirection nav_direction,
+    SwipeEdge initiating_edge,
     NavigationEntryImpl* destination_entry,
     BackForwardTransitionAnimationManagerAndroid* animation_manager) {
   return base::WrapUnique(new BackForwardTransitionAnimator(
       web_contents_view_android, controller, gesture, nav_direction,
-      destination_entry, animation_manager));
+      initiating_edge, destination_entry, animation_manager));
 }
 
 BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
@@ -200,9 +203,11 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
     NavigationControllerImpl* controller,
     const ui::BackGestureEvent& gesture,
     NavigationDirection nav_direction,
+    SwipeEdge initiating_edge,
     NavigationEntryImpl* destination_entry,
     BackForwardTransitionAnimationManagerAndroid* animation_manager)
     : nav_direction_(nav_direction),
+      initiating_edge_(initiating_edge),
       destination_entry_id_(destination_entry->GetUniqueID()),
       animation_manager_(animation_manager),
       is_copied_from_embedder_(destination_entry->navigation_transition_data()
@@ -222,8 +227,8 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
 void BackForwardTransitionAnimator::OnGestureProgressed(
     const ui::BackGestureEvent& gesture) {
   CHECK_EQ(state_, State::kStarted);
-  // `gesture.progress()` goes from 0.0 to 1.0 when swipe from left to right,
-  // and 1.0 to 0.0 from right to left.
+  // `gesture.progress()` goes from 0.0 to 1.0 regardless of the edge being
+  // swiped.
   CHECK_GE(gesture.progress(), 0.f);
   CHECK_LE(gesture.progress(), 1.f);
   // TODO(crbug.com/40287990): Should check the number of KeyFrameModels
@@ -1172,6 +1177,33 @@ bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
   return true;
 }
 
+BackForwardTransitionAnimator::ComputedAnimationValues
+BackForwardTransitionAnimator::ComputeAnimationValues(
+    const PhysicsModel::Result& result) {
+  ComputedAnimationValues values;
+  values.live_page_offset = result.foreground_offset_physical;
+  values.screenshot_offset = result.background_offset_physical;
+
+  // Swipes from the right edge will travel in the opposite direction.
+  if (initiating_edge_ == SwipeEdge::RIGHT) {
+    values.live_page_offset *= -1;
+    values.screenshot_offset *= -1;
+  }
+
+  // TODO(b/331778101) for forward navigations, the background and foreground
+  // should be swapped. Also, progress computation assumes the current page is
+  // moving but this will be flipped for forward navigations.
+  values.progress = std::abs(values.live_page_offset) /
+                    animation_manager_->web_contents_view_android()
+                        ->GetNativeView()
+                        ->GetPhysicalBackingSize()
+                        .width();
+  CHECK_GE(values.progress, 0.f);
+  CHECK_LE(values.progress, 1.f);
+
+  return values;
+}
+
 cc::UIResourceId BackForwardTransitionAnimator::CreateUIResource(
     cc::UIResourceClient* client) {
   // A Window is detached from the NativeView if the tab is not currently
@@ -1197,29 +1229,27 @@ void BackForwardTransitionAnimator::DeleteUIResource(
 
 bool BackForwardTransitionAnimator::SetLayerTransformationAndTickEffect(
     const PhysicsModel::Result& result) {
-  screenshot_layer_->SetTransform(
-      gfx::Transform::MakeTranslation(result.background_offset_physical, 0.f));
+  // Mirror for RTL if needed and swap the layers for forward navigations.
+  ComputedAnimationValues values = ComputeAnimationValues(result);
 
-  const auto foreground_transform =
-      gfx::Transform::MakeTranslation(result.foreground_offset_physical, 0.f);
+  screenshot_layer_->SetTransform(
+      gfx::Transform::MakeTranslation(values.screenshot_offset, 0.f));
+
+  const auto live_page_transform =
+      gfx::Transform::MakeTranslation(values.live_page_offset, 0.f);
   animation_manager_->web_contents_view_android()
       ->parent_for_web_page_widgets()
-      ->SetTransform(foreground_transform);
+      ->SetTransform(live_page_transform);
 
   if (old_surface_clone_) {
     CHECK(navigation_state_ == NavigationState::kCommitted ||
           navigation_state_ == NavigationState::kStarted)
         << ToString(navigation_state_);
     CHECK_EQ(state_, State::kDisplayingInvokeAnimation);
-    old_surface_clone_->SetTransform(foreground_transform);
+    old_surface_clone_->SetTransform(live_page_transform);
   }
 
-  float screenshot_layer_progress =
-      result.foreground_offset_physical / GetViewportWidthPx();
-  CHECK_GE(screenshot_layer_progress, 0.f);
-  CHECK_LE(screenshot_layer_progress, 1.f);
-  effect_.Tick(
-      GetFittedTimeTicksForForegroundProgress(screenshot_layer_progress));
+  effect_.Tick(GetFittedTimeTicksForForegroundProgress(values.progress));
   return result.done && effect_.keyframe_models().empty();
 }
 
