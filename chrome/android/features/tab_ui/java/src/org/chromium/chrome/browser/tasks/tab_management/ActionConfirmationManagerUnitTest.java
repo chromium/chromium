@@ -146,6 +146,21 @@ public class ActionConfirmationManagerUnitTest {
     }
 
     @Test
+    public void testProcessCloseTabAttempt_Positive() {
+        ActionConfirmationManager actionConfirmationManager =
+                new ActionConfirmationManager(
+                        mProfile, mActivity, mTabGroupModelFilter, mModalDialogManager);
+        actionConfirmationManager.processCloseTabAttempt(mOnResult);
+        verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
+        Controller controller =
+                mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
+        controller.onDismiss(
+                mPropertyModelArgumentCaptor.getValue(),
+                DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        verify(mOnResult).onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
+    }
+
+    @Test
     public void testProcessRemoveTabAttempt_Positive() {
         ActionConfirmationManager actionConfirmationManager =
                 new ActionConfirmationManager(

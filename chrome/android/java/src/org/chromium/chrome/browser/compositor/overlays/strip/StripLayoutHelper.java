@@ -2144,6 +2144,21 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // Placeholder tabs are expected to have invalid tab ids.
         if (tab == null || tab.isDying() || tab.getId() == Tab.INVALID_TAB_ID) return;
 
+        int tabId = tab.getId();
+        int rootId = getTabById(tabId).getRootId();
+        if (isLastTabInGroup(tabId)) {
+            showDeleteGroupDialogAndProcessTabAction(
+                    tabId,
+                    rootId,
+                    /* draggingLastTabOffStrip= */ false,
+                    /* closeTab= */ true,
+                    () -> handleCloseTab(tab, time));
+        } else {
+            handleCloseTab(tab, time);
+        }
+    }
+
+    private void handleCloseTab(final StripLayoutTab tab, long time) {
         mMultiStepTabCloseAnimRunning = false;
         finishAnimationsAndPushTabUpdates();
 
@@ -4159,7 +4174,15 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 // will show and we will hide the indicators for the interacting tab group until the
                 // user confirms the next action. e.g delete tab group when user confirms the
                 // delete, or restore indicators back on strip when user cancel the delete.
-                showDeleteGroupDialogAndMaybeMoveOutOfGroup(tabId, rootId, towardEnd, false);
+                showDeleteGroupDialogAndProcessTabAction(
+                        tabId,
+                        rootId,
+                        /* draggingLastTabOffStrip= */ false,
+                        /* closeTab= */ false,
+                        () -> {
+                            mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, towardEnd);
+                            RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
+                        });
             } else if (getNumOfTabsInGroup(targetGroupTitle) > 1) {
                 mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, towardEnd);
                 RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
@@ -4171,7 +4194,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     }
 
     @VisibleForTesting
-    boolean isDialogSkipped() {
+    boolean isTabRemoveDialogSkipped() {
         if (mPrefService == null) {
             mPrefService = UserPrefs.get(mModel.getProfile());
         }
@@ -4665,49 +4688,68 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     }
 
     /**
-     * This method will show a tab group delete dialog when the last tab is being dragged out of
-     * group.
+     * This method prompts a confirmation dialog for deleting the tab group and handles the user
+     * response.
      *
-     * @param moveTabOutOfGroup The callback method to move tab out of group when user confirms the
-     *     delete.
+     * @param confirmationCallback The callback method to close the last tab or move the last tab
+     *     out of the group when the user confirms the tab group deletion.
      * @param dragTabOffStrip Whether the tab is being dragged off tab strip.
+     * @param closeTab Whether this method is triggered from tab closing.
      */
-    private void showActionConfirmationDialog(Runnable moveTabOutOfGroup, boolean dragTabOffStrip) {
-        if (!isDialogSkipped()) {
+    private void showConfirmationDialogAndHandleResponse(
+            Runnable confirmationCallback, boolean dragTabOffStrip, boolean closeTab) {
+        // Clear any drag and drop in progress to display the dialog.
+        if (!isTabRemoveDialogSkipped()) {
             if (mToolbarContainerView != null) {
                 mToolbarContainerView.cancelDragAndDrop();
             }
         }
-        handleDialogConfirmation(moveTabOutOfGroup, dragTabOffStrip);
+
+        // Do not run callback if the call is from tab drag and drop, tab group will be restored
+        // if drop is not handled. If the tab drop is handled, the tab group will be deleted
+        // when the tab is re-parented, so no action is needed here.
+        boolean shouldRunIfImmediateContinue = closeTab || !dragTabOffStrip;
+
+        // Show the delete group dialog for either removing or closing the last tab in the group.
+        if (closeTab) {
+            mActionConfirmationManager.processCloseTabAttempt(
+                    (@ConfirmationResult Integer result) -> {
+                        handleUserConfirmation(
+                                result, confirmationCallback, shouldRunIfImmediateContinue);
+                    });
+        } else {
+            mActionConfirmationManager.processRemoveTabAttempt(
+                    (@ConfirmationResult Integer result) -> {
+                        handleUserConfirmation(
+                                result, confirmationCallback, shouldRunIfImmediateContinue);
+                    });
+        }
     }
 
     /**
      * This method handles the user response for the tab group delete dialog.
      *
-     * @param moveTabOutOfGroup The callback method to move tab out of group when user confirms the
-     *     delete.
-     * @param dragTabOffStrip Whether the tab is being dragged off tab strip.
+     * @param result The integer value representing the user's response on whether to proceed with
+     *     deleting the group.
+     * @param confirmationCallback The callback method to close the last tab or move the last tab
+     *     out of the group when the user confirms the tab group deletion.
+     * @param shouldRunIfImmediateContinue Whether to run the callback method when dialog is
+     *     skipped.
      */
-    private void handleDialogConfirmation(Runnable moveTabOutOfGroup, boolean dragTabOffStrip) {
-        mActionConfirmationManager.processRemoveTabAttempt(
-                (@ConfirmationResult Integer result) -> {
-                    mTabGroupIdToHide = Tab.INVALID_TAB_ID;
-                    if (result == ConfirmationResult.CONFIRMATION_NEGATIVE) {
-                        rebuildStripViews();
-                    } else if (result == ConfirmationResult.CONFIRMATION_POSITIVE) {
-                        moveTabOutOfGroup.run();
-                        RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
-                    } else {
-                        // Not proceed with moving tab out of group when the call is from when drag
-                        // and drop. We want to be able to restore tab groups when the tab drop is
-                        // not handled, if tab drop is handled, the tab group will be deleted when
-                        // tab is re-parented, so no action needed here.
-                        if (!dragTabOffStrip) {
-                            moveTabOutOfGroup.run();
-                            RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
-                        }
-                    }
-                });
+    private void handleUserConfirmation(
+            @ConfirmationResult Integer result,
+            Runnable confirmationCallback,
+            boolean shouldRunIfImmediateContinue) {
+        mTabGroupIdToHide = Tab.INVALID_TAB_ID;
+        if (result == ConfirmationResult.CONFIRMATION_NEGATIVE) {
+            rebuildStripViews();
+        } else if (result == ConfirmationResult.CONFIRMATION_POSITIVE) {
+            confirmationCallback.run();
+        } else {
+            if (shouldRunIfImmediateContinue) {
+                confirmationCallback.run();
+            }
+        }
     }
 
     /**
@@ -5441,7 +5483,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             // Rebuild tab groups to unhide the interacting tab group as tab is restored back on tab
             // strip.
             if (ChromeFeatureList.sTabStripGroupIndicators.isEnabled()
-                    && isDialogSkipped()
+                    && isTabRemoveDialogSkipped()
                     && isLastTabInGroup(selectedTab.getId())) {
                 mTabGroupIdToHide = Tab.INVALID_TAB_ID;
                 rebuildStripViews();
@@ -5537,19 +5579,25 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      *
      * @param tabId The id of the interacting tab.
      * @param rootId The root id of the interacting tab.
-     * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
      * @param draggingLastTabOffStrip Whether the last tab in group is being dragged off strip.
+     * @param closeTab The tab being closed.
+     * @param confirmationCallback The callback method to close the tab or move the tab out of group
+     *     when user confirms the tab group deletion.
      */
-    private void showDeleteGroupDialogAndMaybeMoveOutOfGroup(
-            int tabId, int rootId, boolean towardEnd, boolean draggingLastTabOffStrip) {
+    private void showDeleteGroupDialogAndProcessTabAction(
+            int tabId,
+            int rootId,
+            boolean draggingLastTabOffStrip,
+            boolean closeTab,
+            Runnable confirmationCallback) {
         if (mTabGroupIdToHide == Tab.INVALID_TAB_ID) {
+            // Hide the tab group and rebuild tab strip view.
             mTabGroupIdToHide = rootId;
             rebuildStripViews();
-            showActionConfirmationDialog(
-                    () -> {
-                        mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, towardEnd);
-                    },
-                    draggingLastTabOffStrip);
+
+            // Show confirmation dialog and handle user response.
+            showConfirmationDialogAndHandleResponse(
+                    confirmationCallback, draggingLastTabOffStrip, closeTab);
         }
     }
 
@@ -5557,13 +5605,20 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         StripLayoutTab draggedTab = getSelectedStripTab();
         assert draggedTab != null;
 
-        Tab tab = getTabById(draggedTab.getId());
+        int tabId = draggedTab.getId();
+        Tab tab = getTabById(tabId);
 
         // Show group delete dialog when the last tab in group is being dragged off tab strip.
-        boolean draggingLastTabInGroup = isLastTabInGroup(draggedTab.getId());
+        boolean draggingLastTabInGroup = isLastTabInGroup(tabId);
         if (draggingLastTabInGroup) {
-            showDeleteGroupDialogAndMaybeMoveOutOfGroup(
-                    draggedTab.getId(), tab.getRootId(), false, true);
+            showDeleteGroupDialogAndProcessTabAction(
+                    draggedTab.getId(),
+                    tab.getRootId(),
+                    /* draggingLastTabOffStrip= */ true,
+                    /* closeTab= */ false,
+                    () -> {
+                        mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, false);
+                    });
         }
 
         // Store reorder state, then exit reorder mode.
@@ -5572,7 +5627,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         finishAnimationsAndPushTabUpdates();
 
         // Skip hiding dragged tab container when tab group delete dialog is showing.
-        if (!draggingLastTabInGroup || isDialogSkipped()) {
+        if (!draggingLastTabInGroup || isTabRemoveDialogSkipped()) {
 
             // Immediately hide the dragged tab container, as if it were being translated off like a
             // closed tab.
