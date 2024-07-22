@@ -2603,7 +2603,7 @@ deps = {
   },
 
   'src/third_party/zstd/src':
-    Var('chromium_git') + '/external/github.com/facebook/zstd.git' + '@' + '17b531501670781f37fc3e5070a29eede09bca3b',
+    Var('chromium_git') + '/external/github.com/facebook/zstd.git' + '@' + '0ff651dd876823b99fa5c5f53292be28381aee9b',
 
   'src/tools/skia_goldctl/linux': {
       'packages': [
