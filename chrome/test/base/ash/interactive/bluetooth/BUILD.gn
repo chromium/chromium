@@ -36,6 +36,8 @@ source_set("test_support") {
   sources = [
     "bluetooth_power_state_observer.cc",
     "bluetooth_power_state_observer.h",
+    "bluetooth_util.cc",
+    "bluetooth_util.h",
   ]
 
   deps = [

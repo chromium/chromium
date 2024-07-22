@@ -4,17 +4,13 @@
 
 #include "chrome/test/base/ash/interactive/bluetooth/bluetooth_power_state_observer.h"
 
-#include "base/memory/scoped_refptr.h"
-#include "base/test/test_future.h"
-#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "chrome/test/base/ash/interactive/bluetooth/bluetooth_util.h"
 
 namespace ash {
 
 std::unique_ptr<BluetoothPowerStateObserver>
 BluetoothPowerStateObserver::Create() {
-  base::test::TestFuture<scoped_refptr<device::BluetoothAdapter>> adapter;
-  device::BluetoothAdapterFactory::Get()->GetAdapter(adapter.GetCallback());
-  return std::make_unique<BluetoothPowerStateObserver>(adapter.Take());
+  return std::make_unique<BluetoothPowerStateObserver>(GetBluetoothAdapter());
 }
 
 BluetoothPowerStateObserver::BluetoothPowerStateObserver(

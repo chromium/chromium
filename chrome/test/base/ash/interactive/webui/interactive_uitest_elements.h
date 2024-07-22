@@ -16,6 +16,10 @@ WebContentsInteractionTestUtil::DeepQuery PairingDialog();
 // dialog. This is used to execute JavaScript against the device list.
 WebContentsInteractionTestUtil::DeepQuery PairingDialogDeviceSelectionPage();
 
+// The root element of the page in the Bluetooth pairing dialog where the user
+// is prompted to input a code on the peripheral being paired.
+WebContentsInteractionTestUtil::DeepQuery PairingDialogEnterCodePage();
+
 }  // namespace ash::webui::bluetooth
 
 #endif  // CHROME_TEST_BASE_ASH_INTERACTIVE_WEBUI_INTERACTIVE_UITEST_ELEMENTS_H_
