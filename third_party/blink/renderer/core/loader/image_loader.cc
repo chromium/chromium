@@ -355,15 +355,15 @@ static void ConfigureRequest(
   }
 }
 
-inline void ImageLoader::DispatchErrorEvent() {
+inline void ImageLoader::QueuePendingErrorEvent() {
   // The error event should not fire if the image data update is a result of
   // environment change.
   // https://html.spec.whatwg.org/C/#the-img-element:the-img-element-55
   if (suppress_error_events_) {
     return;
   }
-  // There can be cases where DispatchErrorEvent() is called when there is
-  // already a scheduled error event for the previous load attempt.
+  // There can be cases where QueuePendingErrorEvent() is called when there
+  // is already a scheduled error event for the previous load attempt.
   // In such cases we cancel the previous event (by overwriting
   // |pending_error_event_|) and then re-schedule a new error event here.
   // crbug.com/722500
@@ -560,7 +560,7 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
   } else {
     if (!image_source_url.IsNull()) {
       // Fire an error event if the url string is not empty, but the KURL is.
-      DispatchErrorEvent();
+      QueuePendingErrorEvent();
     }
     NoImageResourceToLoad();
   }
@@ -789,7 +789,7 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
     if (error && error->IsAccessCheck())
       CrossSiteOrCSPViolationOccurred(AtomicString(error->FailingURL()));
 
-    DispatchErrorEvent();
+    QueuePendingErrorEvent();
     return;
   }
 
@@ -905,7 +905,7 @@ void ImageLoader::DispatchPendingLoadEvent(
 
 void ImageLoader::DispatchPendingErrorEvent(
     std::unique_ptr<IncrementLoadEventDelayCount> count) {
-  GetElement()->DispatchEvent(*Event::Create(event_type_names::kError));
+  DispatchErrorEvent();
 
   // Checks Document's load event synchronously here for performance.
   // This is safe because DispatchPendingErrorEvent() is called asynchronously.

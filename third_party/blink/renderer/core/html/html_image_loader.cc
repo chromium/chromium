@@ -33,25 +33,47 @@
 
 namespace blink {
 
+namespace {
+
+bool ShouldSkipEventDispatch(Element* element) {
+  // HTMLVideoElement uses this class to load the poster image, but it should
+  // not fire events for loading or failure.
+  return IsA<HTMLVideoElement>(*element);
+}
+
+}  // namespace
+
 HTMLImageLoader::HTMLImageLoader(Element* element) : ImageLoader(element) {}
 
 HTMLImageLoader::~HTMLImageLoader() = default;
 
 void HTMLImageLoader::DispatchLoadEvent() {
   RESOURCE_LOADING_DVLOG(1) << "HTMLImageLoader::dispatchLoadEvent " << this;
-
-  // HTMLVideoElement uses this class to load the poster image, but it should
-  // not fire events for loading or failure.
-  if (IsA<HTMLVideoElement>(*GetElement()))
+  if (ShouldSkipEventDispatch(GetElement())) {
     return;
-
-  bool error_occurred = GetContent()->ErrorOccurred();
-  if (IsA<HTMLObjectElement>(*GetElement()) && !error_occurred) {
-    // An <object> considers a 404 to be an error and should fire onerror.
-    error_occurred = (GetContent()->GetResponse().HttpStatusCode() >= 400);
   }
-  GetElement()->DispatchEvent(*Event::Create(
-      error_occurred ? event_type_names::kError : event_type_names::kLoad));
+
+  if (GetContent()->ErrorOccurred()) {
+    DispatchErrorEvent();
+    return;
+  }
+
+  // An <object> considers a 404 to be an error and should fire onerror.
+  if (IsA<HTMLObjectElement>(*GetElement()) &&
+      GetContent()->GetResponse().HttpStatusCode() >= 400) {
+    DispatchErrorEvent();
+    return;
+  }
+
+  GetElement()->DispatchEvent(*Event::Create(event_type_names::kLoad));
+}
+
+void HTMLImageLoader::DispatchErrorEvent() {
+  if (ShouldSkipEventDispatch(GetElement())) {
+    return;
+  }
+
+  GetElement()->DispatchEvent(*Event::Create(event_type_names::kError));
 }
 
 void HTMLImageLoader::NoImageResourceToLoad() {

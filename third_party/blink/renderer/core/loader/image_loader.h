@@ -171,6 +171,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
                            bool force_blocking = false);
 
   virtual void DispatchLoadEvent() = 0;
+  virtual void DispatchErrorEvent() = 0;
   virtual void NoImageResourceToLoad() {}
 
   bool HasPendingEvent() const;
@@ -188,7 +189,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
   void UpdateImageState(ImageResourceContent*);
 
   void ClearFailedLoadURL();
-  void DispatchErrorEvent();
+  void QueuePendingErrorEvent();
   void CrossSiteOrCSPViolationOccurred(AtomicString);
   void EnqueueImageLoadingMicroTask(UpdateFromElementBehavior update_behavior);
 
