@@ -1262,16 +1262,33 @@ std::vector<GURL> GetTargetUrlsOfBoostRenderProcessForLoading() {
 
 bool IsTargetLifecycleStateOfBoostRenderProcessForLoading(
     RenderFrameHostImpl::LifecycleStateImpl lifecycle_state) {
-  switch (lifecycle_state) {
-    case RenderFrameHostImpl::LifecycleStateImpl::kSpeculative:
-    case RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit:
-    case RenderFrameHostImpl::LifecycleStateImpl::kActive:
-      return true;
-    case RenderFrameHostImpl::LifecycleStateImpl::kPrerendering:
-    case RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache:
-    case RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers:
-    case RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted:
-      return false;
+  static const bool kPrioritizePrerendering =
+      blink::features::kBoostRenderProcessForLoadingPrioritizePrerendering
+          .Get();
+  if (kPrioritizePrerendering) {
+    switch (lifecycle_state) {
+      case RenderFrameHostImpl::LifecycleStateImpl::kSpeculative:
+      case RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit:
+      case RenderFrameHostImpl::LifecycleStateImpl::kActive:
+      case RenderFrameHostImpl::LifecycleStateImpl::kPrerendering:
+        return true;
+      case RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache:
+      case RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers:
+      case RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted:
+        return false;
+    }
+  } else {
+    switch (lifecycle_state) {
+      case RenderFrameHostImpl::LifecycleStateImpl::kSpeculative:
+      case RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit:
+      case RenderFrameHostImpl::LifecycleStateImpl::kActive:
+        return true;
+      case RenderFrameHostImpl::LifecycleStateImpl::kPrerendering:
+      case RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache:
+      case RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers:
+      case RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted:
+        return false;
+    }
   }
 }
 

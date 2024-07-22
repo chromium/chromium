@@ -3234,6 +3234,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "prioritize_prerendering": "false",
                         "target_urls": "[]"
                     },
                     "enable_features": [

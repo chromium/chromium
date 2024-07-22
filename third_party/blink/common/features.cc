@@ -2339,6 +2339,13 @@ BASE_FEATURE(kBoostRenderProcessForLoading,
 const base::FeatureParam<std::string> kBoostRenderProcessForLoadingTargetUrls{
     &kBoostRenderProcessForLoading, "target_urls", "[]"};
 
+// If true is specified, kBoostRenderProcessForLoading feature also prioritizes
+// the renderer process that is used for prerendering. This is a part of an
+// ablation study. See https://crbug.com/351953350.
+const base::FeatureParam<bool>
+    kBoostRenderProcessForLoadingPrioritizePrerendering{
+        &kBoostRenderProcessForLoading, "prioritize_prerendering", false};
+
 // Freeze scheduler task queues in background after allowed grace time.
 // "stop" is a legacy name.
 BASE_FEATURE(kStopInBackground,
