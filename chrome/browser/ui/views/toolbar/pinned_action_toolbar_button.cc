@@ -195,6 +195,18 @@ void PinnedActionToolbarButton::Layout(PassKey) {
   status_indicator_->SetBoundsRect(status_rect);
 }
 
+bool PinnedActionToolbarButton::OnMousePressed(const ui::MouseEvent& event) {
+  skip_execution_ = is_action_showing_bubble_;
+  return ToolbarButton::OnMousePressed(event);
+}
+
+void PinnedActionToolbarButton::OnMouseReleased(const ui::MouseEvent& event) {
+  if (!skip_execution_) {
+    ToolbarButton::OnMouseReleased(event);
+  }
+  skip_execution_ = false;
+}
+
 void PinnedActionToolbarButton::UpdateIcon() {
   const std::optional<VectorIcons>& icons = GetVectorIcons();
   if (!icons.has_value()) {
@@ -367,6 +379,7 @@ void PinnedActionToolbarButtonActionViewInterface::ActionItemChangedImpl(
   OnViewChangedImpl(action_item);
   action_view_->SetIsPinnable(
       action_item->GetProperty(actions::kActionItemPinnableKey));
+  action_view_->SetIsActionShowingBubble(action_item->GetIsShowingBubble());
 }
 
 void PinnedActionToolbarButtonActionViewInterface::InvokeActionImpl(

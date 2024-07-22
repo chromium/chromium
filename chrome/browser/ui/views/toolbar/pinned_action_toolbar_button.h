@@ -43,6 +43,9 @@ class PinnedActionToolbarButton : public ToolbarButton,
   void SetIconVisibility(bool is_visible);
   bool NeedsDelayedDestruction() { return needs_delayed_destruction_; }
   void SetIsPinnable(bool is_pinnable) { is_pinnable_ = is_pinnable; }
+  void SetIsActionShowingBubble(bool showing_bubble) {
+    is_action_showing_bubble_ = showing_bubble;
+  }
   void SetShouldShowEphemerallyInToolbar(bool should_show_in_toolbar) {
     should_show_in_toolbar_ = should_show_in_toolbar;
   }
@@ -51,6 +54,8 @@ class PinnedActionToolbarButton : public ToolbarButton,
   bool ShouldShowEphemerallyInToolbar() { return should_show_in_toolbar_; }
   bool IsIconVisible() { return is_icon_visible_; }
   bool IsPinned() { return pinned_; }
+
+  bool ShouldSkipExecutionForTesting() { return skip_execution_; }
 
   using views::LabelButton::image_container_view;
   // View:
@@ -62,6 +67,8 @@ class PinnedActionToolbarButton : public ToolbarButton,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
   void Layout(PassKey) override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
 
   void UpdatePinnedStateForContextMenu();
   void UpdateStatusIndicator();
@@ -94,6 +101,9 @@ class PinnedActionToolbarButton : public ToolbarButton,
   bool is_pinnable_ = false;
   bool is_icon_visible_ = true;
   bool action_engaged_ = false;
+  // Set when the action is currently showing an associated bubble.
+  bool is_action_showing_bubble_ = false;
+  bool skip_execution_ = false;
 
   // Set when a button should be shown in the toolbar regardless of whether it
   // is pinned or active. This is used in cases like when the recent download

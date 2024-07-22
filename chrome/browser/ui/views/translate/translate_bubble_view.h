@@ -313,6 +313,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
   translate::TranslateErrors error_type_;
 
+  raw_ptr<actions::ActionItem> translate_action_item_ = nullptr;
+
   // Whether the window is an incognito window.
   const bool is_in_incognito_window_;
 

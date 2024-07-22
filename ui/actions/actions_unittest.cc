@@ -320,6 +320,7 @@ TEST_F(ActionItemTest, ActionBuilderChildrenTest) {
               .CopyAddressTo(&child_action2)
               .SetActionId(kActionTest3)
               .SetChecked(true)
+              .SetIsShowingBubble(true)
               .SetText(kChild2Text));
   // clang-format on
   auto& manager = ActionManager::GetForTesting();
@@ -335,12 +336,14 @@ TEST_F(ActionItemTest, ActionBuilderChildrenTest) {
   ASSERT_TRUE(child_action_id1);
   EXPECT_EQ(child_action_id1.value(), kActionTest2);
   EXPECT_FALSE(child_action1->GetChecked());
+  EXPECT_FALSE(child_action1->GetIsShowingBubble());
 
   EXPECT_EQ(child_action2->GetText(), kChild2Text);
   auto child_action_id2 = child_action2->GetActionId();
   ASSERT_TRUE(child_action_id2);
   EXPECT_EQ(child_action_id2.value(), kActionTest3);
   EXPECT_TRUE(child_action2->GetChecked());
+  EXPECT_TRUE(child_action2->GetIsShowingBubble());
 
   EXPECT_FALSE(root_action->GetEnabled());
   EXPECT_EQ(action_invoked_count, 0);
