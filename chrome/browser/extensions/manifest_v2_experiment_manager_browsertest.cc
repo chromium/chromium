@@ -21,9 +21,12 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/mock_external_provider.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/feature_switch.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 #include "extensions/test/test_extension_dir.h"
 
@@ -78,6 +81,8 @@ MV2ExperimentStage GetExperimentStageForTest(std::string_view test_name) {
        MV2ExperimentStage::kDisableWithReEnable},
       {"ExtensionsAreReEnabledIfExperimentDisabled",
        MV2ExperimentStage::kWarning},
+      {"ExternalExtensionsCanBeInstalledButAreAlsoDisabled",
+       MV2ExperimentStage::kDisableWithReEnable},
   };
 
   for (const auto& test_stage : test_stages) {
@@ -630,6 +635,53 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   // reported.
   histogram_tester().ExpectTotalCount(
       "Extensions.MV2Deprecation.MV2ExtensionState.Internal", 0);
+}
+
+// Tests that externally-installed extensions are allowed to be installed, but
+// will still be disabled by the MV2 experiments.
+IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
+                       ExternalExtensionsCanBeInstalledButAreAlsoDisabled) {
+  // External extensions are default-disabled on Windows and Mac. This won't
+  // be affected by the MV2 deprecation, but for consistency of testing, we
+  // disable this prompting in the test.
+  FeatureSwitch::ScopedOverride feature_override(
+      FeatureSwitch::prompt_for_external_extensions(), false);
+
+  // TODO(devlin): Update this to a different extension so we use one dedicated
+  // to this test ("good.crx" should likely be updated to MV3).
+  static constexpr char kExtensionId[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
+  base::FilePath crx_path = test_data_dir_.AppendASCII("good.crx");
+
+  // Install a new external extension.
+  TestExtensionRegistryObserver observer(extension_registry());
+  auto provider = std::make_unique<MockExternalProvider>(
+      extension_service(), mojom::ManifestLocation::kExternalPref);
+  provider->UpdateOrAddExtension(kExtensionId, "1.0.0.0", crx_path);
+  extension_service()->AddProviderForTesting(std::move(provider));
+  extension_service()->CheckForExternalUpdates();
+
+  auto extension = observer.WaitForExtensionInstalled();
+  EXPECT_EQ(extension->id(), kExtensionId);
+
+  // The extension should install and be enabled. We allow installation of
+  // external extensions (unlike webstore extensions) because we can't know if
+  // the extension is MV2 or MV3 until we install it.
+  // We could theoretically disable it immediately if it's MV2, but it'll get
+  // disabled on the next run of Chrome.
+  EXPECT_TRUE(
+      extension_registry()->enabled_extensions().Contains(kExtensionId));
+  EXPECT_EQ(0, extension_prefs()->GetDisableReasons(kExtensionId));
+
+  // The extension should still be counted as "affected" by the MV2 deprecation.
+  EXPECT_TRUE(experiment_manager()->IsExtensionAffected(*extension));
+
+  // And should also be disabled when we check again.
+  experiment_manager()->DisableAffectedExtensionsForTesting();
+  EXPECT_TRUE(
+      extension_registry()->disabled_extensions().Contains(kExtensionId));
+  EXPECT_EQ(
+      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
+      extension_prefs()->GetDisableReasons(kExtensionId));
 }
 
 }  // namespace extensions
