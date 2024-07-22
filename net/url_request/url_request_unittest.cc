@@ -3567,7 +3567,9 @@ TEST_F(URLRequestTest, PartitionedCookiesRedirect) {
     auto same_site_partitioned_cookie = CanonicalCookie::CreateForTesting(
         create_cookie_url, "samesite_partitioned=1;Secure;Partitioned",
         base::Time::Now(), std::nullopt,
-        CookiePartitionKey::FromURLForTesting(create_cookie_url));
+        CookiePartitionKey::FromURLForTesting(
+            create_cookie_url,
+            CookiePartitionKey::AncestorChainBit::kSameSite));
     ASSERT_TRUE(same_site_partitioned_cookie);
     ASSERT_TRUE(same_site_partitioned_cookie->IsPartitioned());
     base::test::TestFuture<CookieAccessResult> future;
@@ -7599,6 +7601,7 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
                   R"x("partition_key":")x" +
                   set_cookie_test_url.scheme() + "://" +
                   set_cookie_test_url.host() +
+                  ", same-site"
                   R"x(","path":"/","status":"INCLUDE, DO_NOT_WARN, )x"
                   R"x(NO_EXEMPTION"})x",
               SerializeNetLogValueToJson(entries[3].params));
@@ -7652,6 +7655,7 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
                   R"x("partition_key":")x" +
                   set_cookie_test_url.scheme() + "://" +
                   set_cookie_test_url.host() +
+                  ", same-site"
                   R"x(","path":"/)x"
                   R"x(","status":"EXCLUDE_USER_PREFERENCES, DO_NOT_WARN, )x"
                   R"x(NO_EXEMPTION"})x",
@@ -7687,6 +7691,7 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
     EXPECT_EQ(R"x({"operation":"send","partition_key":")x" +
                   set_cookie_test_url.scheme() + "://" +
                   set_cookie_test_url.host() +
+                  ", same-site"
                   R"x(","status":"EXCLUDE_USER_PREFERENCES, )x"
                   R"x(DO_NOT_WARN, NO_EXEMPTION"})x",
               SerializeNetLogValueToJson(entries[2].params));
@@ -7737,6 +7742,7 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
             R"x(","name":"partitioned_cookie","operation":"send",)x"
             R"x("partition_key":")x" +
             set_cookie_test_url.scheme() + "://" + set_cookie_test_url.host() +
+            ", same-site"
             R"x(","path":"/","status":"INCLUDE, DO_NOT_WARN, NO_EXEMPTION"})x",
         SerializeNetLogValueToJson(entries[2].params));
     net_log_observer.Clear();
