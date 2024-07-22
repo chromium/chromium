@@ -993,7 +993,7 @@ void DeskBarViewBase::UpdateDeskIconButtonState(
   button->UpdateState(target_state);
   DeprecatedLayoutImmediately();
 
-  gfx::RectF target_bounds = gfx::RectF(new_desk_button_->GetBoundsInScreen());
+  gfx::RectF target_bounds = gfx::RectF(button->GetBoundsInScreen());
   gfx::Transform scale_transform;
   const int shift_x = begin_x - GetFirstMiniViewXOffset();
   scale_transform.Translate(shift_x, 0);
