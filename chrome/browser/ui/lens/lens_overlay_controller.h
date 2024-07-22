@@ -619,12 +619,6 @@ class LensOverlayController : public LensSearchboxClient,
   // Called when the UI needs to create the view to show in the overlay.
   std::unique_ptr<views::View> CreateViewForOverlay();
 
-  // Sets the action state for our toolbar entrypoint. This will set the toolbar
-  // to visible if it is active and not already visible to the user. When
-  // setting is_active to false, will remove from the toolbar if not pinned by
-  // the user.
-  void SetToolbarEntrypointActionState(bool is_active);
-
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
