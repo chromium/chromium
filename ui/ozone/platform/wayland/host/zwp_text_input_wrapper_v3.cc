@@ -166,10 +166,23 @@ void ZWPTextInputWrapperV3::Deactivate() {
 }
 
 void ZWPTextInputWrapperV3::ShowInputPanel() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  // Not directly supported in zwp_text_input_v3
+  // Enable again to show the screen keyboard in GNOME:
+  // https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1543#note_1051704
+  // We do not reset the pending requests here because this may be called after
+  // sending a request like surrounding text before done event is received, in
+  // which case the pending surrounding text should still be sent.
+  zwp_text_input_v3_enable(obj_.get());
+  Commit();
 }
 
 void ZWPTextInputWrapperV3::HideInputPanel() {
+  // Unsupported in zwp_text_input_v3 yet. To be supported soon as per wayland
+  // governance meeting on 2024-07-02:
+  // https://gitlab.freedesktop.org/wayland/wayland-protocols/-/wikis/meetings
+  //
+  // Some earlier notes in
+  // https://lists.freedesktop.org/archives/wayland-devel/2018-March/037341.html
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

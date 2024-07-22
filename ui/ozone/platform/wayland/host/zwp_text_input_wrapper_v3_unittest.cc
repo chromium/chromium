@@ -84,6 +84,29 @@ TEST_F(ZWPTextInputWrapperV3Test, Reset) {
   wrapper_->Reset();
 }
 
+TEST_F(ZWPTextInputWrapperV3Test, ShowInputPanel) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    InSequence s;
+    EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Enable())
+        .Times(1);
+    EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Commit())
+        .Times(1);
+  });
+  wrapper_->ShowInputPanel();
+}
+
+TEST_F(ZWPTextInputWrapperV3Test, HideInputPanel) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Enable())
+        .Times(0);
+    EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Disable())
+        .Times(0);
+    EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Commit())
+        .Times(0);
+  });
+  wrapper_->HideInputPanel();
+}
+
 TEST_F(ZWPTextInputWrapperV3Test, SetContentType) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     InSequence s;
