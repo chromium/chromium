@@ -475,24 +475,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     }
   }
 
-  private handlePointerLeave(event: PointerEvent) {
-    const boundingRect = this.$.selectionOverlay.getBoundingClientRect();
-
+  private handlePointerLeave() {
     this.isPointerInside = false;
-    // If the pointer is in the bounds, that means it is hovering over some
-    // other ui element like the info button.
-    const pointerInBounds = boundingRect.left <= event.clientX &&
-        boundingRect.top <= event.clientY &&
-        boundingRect.right >= event.clientX &&
-        boundingRect.bottom >= event.clientY;
-    if (!pointerInBounds && !this.isPointerInsideContextMenu) {
-      this.dispatchEvent(
-          new CustomEvent<CursorTooltipData>('set-cursor-tooltip', {
-            bubbles: true,
-            composed: true,
-            detail: {tooltipType: CursorTooltipType.LIVE_PAGE},
-          }));
-    }
 
     // Unfocus the shimmer from the cursor. If the cursor is dragging, force
     // shimmer to follow cursor.
@@ -769,6 +753,13 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private handlePointerLeaveContextMenu() {
     this.isPointerInside = true;
     this.isPointerInsideContextMenu = false;
+    // Reshow the cursor tooltip.
+    this.dispatchEvent(
+        new CustomEvent<CursorTooltipData>('set-cursor-tooltip', {
+          bubbles: true,
+          composed: true,
+          detail: {tooltipType: CursorTooltipType.REGION_SEARCH},
+        }));
   }
 
   private onInitialFlashAnimationEnd() {

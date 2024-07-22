@@ -141,9 +141,9 @@
     on-screenshot-rendered="onScreenshotRendered"
     on-selection-overlay-clicked="handleSelectionOverlayClicked"
     on-pointer-released="handlePointerReleased"
+    on-text-copied="showTextCopiedToast"
     on-pointerenter="handlePointerEnter"
     on-pointerleave="handlePointerLeave"
-    on-text-copied="showTextCopiedToast"
     style="
     --color-primary: [[skColorToHex_(theme.primary)]];
     --color-shader-layer-1: [[skColorToHex_(theme.shaderLayer1)]];
@@ -163,9 +163,14 @@
     </cr-button>
   </cr-toast>
   <div id="backgroundScrim" on-click="onBackgroundScrimClicked"
-      hidden$="[[!isImageRendered]]"></div>
-  <lens-selection-overlay theme="[[theme]]" screenshot-data-uri="[[screenshotDataUri]]"
-      class$="[[getSelectionOverlayClass(screenshotDataUri)]]">
+      hidden$="[[!isImageRendered]]"
+      on-pointerenter="handlePointerEnterBackgroundScrim"
+      on-pointerleave="handlePointerLeaveBackgroundScrim"></div>
+  <lens-selection-overlay id="selectionOverlay" theme="[[theme]]"
+      screenshot-data-uri="[[screenshotDataUri]]"
+      class$="[[getSelectionOverlayClass(screenshotDataUri)]]"
+      on-pointerenter="handlePointerEnterSelectionOverlay"
+      on-pointerleave="handlePointerLeaveSelectionOverlay">
   </lens-selection-overlay>
   <initial-gradient id="initialGradient"></initial-gradient>
   <div id="buttonContainer">
@@ -173,8 +178,6 @@
       <cr-icon-button iron-icon="cr:more-vert" id="moreOptionsButton"
           class="action-button" on-click="onMoreOptionsButtonClick"
           aria-label="$i18n{moreOptions}"
-          on-pointerenter="handlePointerEnterActionButton"
-          on-pointerleave="handlePointerLeaveActionButton"
           title="$i18n{moreOptions}">
       </cr-icon-button>
       <div id="moreOptionsMenu">
@@ -200,8 +203,6 @@
     </div>
     <cr-icon-button id="closeButton" class="action-button"
         on-click="onCloseButtonClick" aria-label="$i18n{close}"
-        on-pointerenter="handlePointerEnterActionButton"
-        on-pointerleave="handlePointerLeaveActionButton"
         title="$i18n{close}"></cr-icon-button>
   </div>
   <cursor-tooltip id="cursorTooltip"></cursor-tooltip>
