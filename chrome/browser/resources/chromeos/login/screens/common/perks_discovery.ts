@@ -63,7 +63,6 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
 
   private perksList: PerkData[];
 
-
   override get UI_STEPS() {
     return PerksDiscoveryStep;
   }

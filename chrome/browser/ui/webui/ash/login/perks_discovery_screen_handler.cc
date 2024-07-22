@@ -16,7 +16,9 @@ PerksDiscoveryScreenHandler::PerksDiscoveryScreenHandler()
 PerksDiscoveryScreenHandler::~PerksDiscoveryScreenHandler() = default;
 
 void PerksDiscoveryScreenHandler::DeclareLocalizedValues(
-    ::login::LocalizedValuesBuilder* builder) {}
+    ::login::LocalizedValuesBuilder* builder) {
+  builder->Add("perksLoading", IDS_LOGIN_PERKS_SCREEN_LOADING);
+}
 
 void PerksDiscoveryScreenHandler::Show() {
   ShowInWebUI();
