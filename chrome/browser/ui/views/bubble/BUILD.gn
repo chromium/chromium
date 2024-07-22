@@ -23,6 +23,12 @@ source_set("bubble") {
     "//ui/base",
     "//ui/views",
     "//ui/views/controls/webview",
+
+    # TODO(crbug.com/353621219): Use target having
+    # chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h instead after
+    # fixing cyclic dependency for
+    # obj/chrome/browser/ui/views/bubble/bubble/webui_bubble_manager.o.
+    "//chrome/browser/ui:webui_name_variants",
   ]
   deps = [ "//components/input" ]
 
