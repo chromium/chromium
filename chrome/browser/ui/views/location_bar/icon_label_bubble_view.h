@@ -101,6 +101,9 @@ class IconLabelBubbleView : public views::InkDropObserver,
   void InkDropAnimationStarted() override;
   void InkDropRippleAnimationEnded(views::InkDropState state) override;
 
+  // views::LabelButton:
+  void Layout(PassKey) override;
+
   // Returns true when the label should be visible.
   virtual bool ShouldShowLabel() const;
 
@@ -178,7 +181,6 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // views::LabelButton:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;
   bool IsTriggerableEvent(const ui::Event& event) override;

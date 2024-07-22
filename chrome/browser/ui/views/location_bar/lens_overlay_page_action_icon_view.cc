@@ -69,7 +69,7 @@ LensOverlayPageActionIconView::LensOverlayPageActionIconView(
     SetLabel(
         l10n_util::GetStringUTF16(IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL));
     SetUseTonalColorsWhenExpanded(true);
-    SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
+    SetBackgroundVisibility(BackgroundVisibility::kAlways);
   }
 
   // The accessible name should show the full text, independent of the what the
@@ -80,6 +80,55 @@ LensOverlayPageActionIconView::LensOverlayPageActionIconView(
 }
 
 LensOverlayPageActionIconView::~LensOverlayPageActionIconView() = default;
+
+bool LensOverlayPageActionIconView::ShouldShowLabel() const {
+  return should_show_label_;
+}
+
+void LensOverlayPageActionIconView::Layout(PassKey) {
+  if (const bool should_show_label =
+          bounds().width() >= preferred_size_with_label_.width();
+      should_show_label_ != should_show_label) {
+    should_show_label_ = should_show_label;
+    UpdateBorder();
+    UpdateBackground();
+  }
+  LayoutSuperclass<PageActionIconView>(this);
+}
+
+void LensOverlayPageActionIconView::OnBoundsChanged(
+    const gfx::Rect& previous_bounds) {
+  PageActionIconView::OnBoundsChanged(previous_bounds);
+
+  // Override the view's label settings to calculate the preferred size with
+  // both with and without the label set.
+  const bool initial_should_show_label = should_show_label_;
+  const auto calculate_forced_preferred_size = [&](bool with_label) {
+    // The border must also be updated as this depends on whether or not the
+    // label is shown and affects the view's calculated preferred size.
+    should_show_label_ = with_label;
+    UpdateBorder();
+    return PageActionIconView::CalculatePreferredSize({});
+  };
+  gfx::Size preferred_size_with_label = calculate_forced_preferred_size(true);
+  gfx::Size preferred_size_without_label =
+      calculate_forced_preferred_size(false);
+
+  // Reset the view to its original configuration.
+  should_show_label_ = initial_should_show_label;
+  UpdateBorder();
+
+  // Currently PageActionIconViews have their preferred size depend on their
+  // bounds, which should typically not be the case. To address this behavior
+  // the preferred size for the label and labelless configuration needs to be
+  // recalculated on a bounds change.
+  if (preferred_size_with_label_ != preferred_size_with_label ||
+      preferred_size_without_label_ != preferred_size_without_label_) {
+    preferred_size_with_label_ = std::move(preferred_size_with_label);
+    preferred_size_without_label_ = std::move(preferred_size_without_label);
+    PreferredSizeChanged();
+  }
+}
 
 void LensOverlayPageActionIconView::UpdateImpl() {
   bool enabled = browser_->profile()->GetPrefs()->GetBoolean(
@@ -147,24 +196,15 @@ const gfx::VectorIcon& LensOverlayPageActionIconView::GetVectorIcon() const {
 
 gfx::Size LensOverlayPageActionIconView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  // TODO(tluk): Update GetSizeForLabelWidth() to correctly calculate padding
-  // for empty label widths and replace the calculation below.
-  const gfx::Size full_size =
-      PageActionIconView::CalculatePreferredSize(available_size);
-  const gfx::Insets view_insets = GetInsets();
-  const gfx::Size reduced_size =
-      image_container_view()->GetPreferredSize() +
-      gfx::Size(view_insets.left() * 2, view_insets.height());
-
   // Size icon to its full width if there are no size constraints.
   if (!available_size.width().is_bounded()) {
-    return full_size;
+    return preferred_size_with_label_;
   }
 
   // Handle minimum size requests.
   int available_width = available_size.width().value();
   if (available_width == 0) {
-    return reduced_size;
+    return preferred_size_without_label_;
   }
 
   // Adjust the available width by the minimum size of the parent's other
@@ -172,13 +212,16 @@ gfx::Size LensOverlayPageActionIconView::CalculatePreferredSize(
   // passes in the total size available to each of its child views, and the
   // combined preferred size calculations of the children may not correctly
   // respect the available size.
-  available_width -= parent()->GetMinimumSize().width() - reduced_size.width();
+  available_width -= parent()->GetMinimumSize().width() -
+                     preferred_size_without_label_.width();
 
   // TODO(crbug.com/350541615): Currently all page action icons are treated as
   // non-resizable by LocationBarLayout. Page actions should be updated to be
   // resizable by the LocationBarLayout, until then control the icon's preferred
   // size based on the available space.
-  return available_width < full_size.width() ? reduced_size : full_size;
+  return available_width < preferred_size_with_label_.width()
+             ? preferred_size_without_label_
+             : preferred_size_with_label_;
 }
 
 BEGIN_METADATA(LensOverlayPageActionIconView)
