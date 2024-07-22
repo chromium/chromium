@@ -148,9 +148,12 @@ function calculatePowerAverages(powers: number[]): number[] {
 export function getDefaultFileNameWithoutExtension(
   meta: RecordingMetadata,
 ): string {
-  // TODO(pihsun): This should be a default filename in another format if the
-  // user never manually changed title.
-  return meta.title;
+  // Replace all ":" with ".", since Chrome defaults to replacing ':' with '_',
+  // and we want to align with screen capture/recording default name which use
+  // '.' as separator.
+  // Example default title: `Audio recording 2024-12-04 12:34:56`
+  // Example default filename: `Audio recording 2024-12-04 12.34.56.<extension>`
+  return meta.title.replaceAll(':', '.');
 }
 
 // TODO(pihsun): Use a Map when draft.ts supports it.

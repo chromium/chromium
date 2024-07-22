@@ -15,6 +15,12 @@ import {
 import {i18n} from '../core/i18n.js';
 import {ModelResponseError} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
+import {assertExhaustive, assertExists} from '../core/utils/assert.js';
+
+export enum GenaiResultType {
+  SUMMARY = 'SUMMARY',
+  TITLE_SUGGESTION = 'TITLE_SUGGESTION',
+}
 
 export class GenaiError extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`
@@ -34,24 +40,39 @@ export class GenaiError extends ReactiveLitElement {
 
   error: ModelResponseError|null = null;
 
-  // Note that the `i18n` use context so it can't be put in module scope.
-  private readonly imageNameMessageMap = {
-    [ModelResponseError.GENERAL]: {
-      imageName: 'genai_error_general',
-      message: i18n.genAiErrorGeneralLabel,
-    },
-    [ModelResponseError.UNSAFE]: {
-      imageName: 'genai_error_unsafe',
-      message: i18n.genAiErrorTrustAndSafetyLabel,
-    },
-  } as const;
+  resultType: GenaiResultType|null = null;
 
   override render(): RenderResult {
     if (this.error === null) {
       return nothing;
     }
 
-    const {imageName, message} = this.imageNameMessageMap[this.error];
+    let imageName: string;
+    let message: string;
+    switch (this.error) {
+      case ModelResponseError.GENERAL:
+        imageName = 'genai_error_general';
+        message = i18n.genAiErrorGeneralLabel;
+        break;
+      case ModelResponseError.UNSAFE: {
+        imageName = 'genai_error_unsafe';
+        const resultType = assertExists(this.resultType);
+        switch (resultType) {
+          case GenaiResultType.SUMMARY:
+            message = i18n.genAiErrorSummaryTrustAndSafetyLabel;
+            break;
+          case GenaiResultType.TITLE_SUGGESTION:
+            message = i18n.genAiErrorTitleSuggestionTrustAndSafetyLabel;
+            break;
+          default:
+            assertExhaustive(resultType);
+        }
+        break;
+      }
+      default:
+        assertExhaustive(this.error);
+    }
+
     // TODO(pihsun): Add a "try again" button.
     return html`
       <cra-image .name=${imageName}></cra-image>
