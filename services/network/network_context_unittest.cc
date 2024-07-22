@@ -990,8 +990,8 @@ TEST_F(NetworkContextTest, QueueEnterpriseReport) {
       std::move(params),
       net::ReportingService::CreateForTesting(std::move(reporting_context)));
 
-  network_context->QueueEnterpriseReport(
-      kType_, kGroup_, kUrl_, kReportingSource_, kNak_, base::Value::Dict());
+  network_context->QueueEnterpriseReport(kType_, kGroup_, kUrl_,
+                                         base::Value::Dict());
 
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports =
       network_context->url_request_context()->reporting_service()->GetReports();
@@ -2638,8 +2638,7 @@ TEST_F(NetworkContextTest, ClearReportingCacheReports) {
       domain, std::nullopt, net::NetworkAnonymizationKey(), "Mozilla/1.0",
       "group", "type", base::Value::Dict(), 0,
       net::ReportingTargetType::kDeveloper);
-  network_context->QueueEnterpriseReport("type", "group", domain, std::nullopt,
-                                         net::NetworkAnonymizationKey(),
+  network_context->QueueEnterpriseReport("type", "group", domain,
                                          base::Value::Dict());
 
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports;

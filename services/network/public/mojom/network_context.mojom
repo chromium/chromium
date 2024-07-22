@@ -1251,8 +1251,6 @@ interface NetworkContext {
   QueueEnterpriseReport(string type,
               string group,
               url.mojom.Url url,
-              mojo_base.mojom.UnguessableToken? reporting_source,
-              NetworkAnonymizationKey network_anonymization_key,
               mojo_base.mojom.DictionaryValue body);
 
   // Queues a signed exchange report.
