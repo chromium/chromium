@@ -161,7 +161,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const std::vector<std::u16string> mismatch_idps,
       const std::vector<std::u16string> non_mismatch_idps);
 
-  // The initial title for the dialog.
+  // The current title for the dialog.
   std::u16string title_;
 
   // The relying party context to show in the title.

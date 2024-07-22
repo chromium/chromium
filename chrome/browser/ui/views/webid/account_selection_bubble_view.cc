@@ -354,13 +354,10 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
   if (!has_sheet_) {
     has_sheet_ = true;
     InitDialogWidget();
-    webid::SendAccessibilityEvent(GetWidget(), title);
     return;
   }
 
   PreferredSizeChanged();
-
-  webid::SendAccessibilityEvent(GetWidget(), title);
 }
 
 void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
@@ -387,9 +384,8 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
 void AccountSelectionBubbleView::ShowFailureDialog(
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
-  std::u16string title =
-      webid::GetTitle(rp_for_display_, idp_for_display, rp_context_);
-  UpdateHeader(idp_metadata, title,
+  UpdateHeader(idp_metadata,
+               webid::GetTitle(rp_for_display_, idp_for_display, rp_context_),
                /*show_back_button=*/false);
 
   RemoveNonHeaderChildViews();
@@ -531,7 +527,8 @@ void AccountSelectionBubbleView::ShowSingleReturningAccountDialog(
   DCHECK(idp_data_list.size() > 1u);
   // Since there are multiple IDPs, then the content::IdentityProviderMetadata
   // passed will be unused since there will be no `header_icon_view_`.
-  UpdateHeader(content::IdentityProviderMetadata(), title_,
+  UpdateHeader(content::IdentityProviderMetadata(),
+               webid::GetTitle(rp_for_display_, std::nullopt, rp_context_),
                /*show_back_button=*/false);
 
   RemoveNonHeaderChildViews();
@@ -561,9 +558,7 @@ void AccountSelectionBubbleView::CloseDialog() {
 }
 
 std::string AccountSelectionBubbleView::GetDialogTitle() const {
-  // We cannot just return title_ because it is not always set
-  // (e.g. by ShowFailureDialog).
-  return base::UTF16ToUTF8(title_label_->GetText());
+  return base::UTF16ToUTF8(title_);
 }
 
 void AccountSelectionBubbleView::UpdateDialogPosition() {
@@ -1019,7 +1014,12 @@ void AccountSelectionBubbleView::UpdateHeader(
       ConfigureBrandImageView(header_icon_view_, idp_metadata.brand_icon_url);
     }
   }
-  title_label_->SetText(title);
+  if (title.compare(title_) != 0) {
+    title_ = title;
+    title_label_->SetText(title_);
+    // The title label is not destroyed, so announce it manually.
+    webid::SendAccessibilityEvent(GetWidget(), title_);
+  }
 }
 
 void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
