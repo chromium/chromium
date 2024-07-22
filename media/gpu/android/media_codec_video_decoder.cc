@@ -801,7 +801,9 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
           base::BindPostTaskToCurrentDefault(base::BindRepeating(
               &MediaCodecVideoDecoder::PumpCodec, weak_factory_.GetWeakPtr()))),
       base::SequencedTaskRunner::GetCurrentDefault(),
-      decoder_config_.coded_size(), coded_size_alignment);
+      decoder_config_.coded_size(),
+      decoder_config_.color_space_info().ToGfxColorSpace(),
+      coded_size_alignment);
 
   // If the target surface changed while codec creation was in progress,
   // transition to it immediately.

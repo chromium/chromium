@@ -30,6 +30,7 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
                    CodecWrapper::OutputReleasedCB output_buffer_release_cb,
                    scoped_refptr<base::SequencedTaskRunner> release_task_runner,
                    const gfx::Size& initial_expected_size,
+                   const gfx::ColorSpace& config_color_space,
                    std::optional<gfx::Size> coded_size_alignment);
 
   CodecWrapperImpl(const CodecWrapperImpl&) = delete;
@@ -113,6 +114,9 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
   // The alignment to use for width, height when guessing coded size.
   const std::optional<gfx::Size> coded_size_alignment_;
 
+  // Used when the color space can't be retrieved from the codec.
+  const gfx::ColorSpace config_color_space_;
+
   // Task runner on which we'll release codec buffers without rendering.  May be
   // null to always do this on the calling task runner.
   scoped_refptr<base::SequencedTaskRunner> release_task_runner_;
@@ -177,6 +181,7 @@ CodecWrapperImpl::CodecWrapperImpl(
     CodecWrapper::OutputReleasedCB output_buffer_release_cb,
     scoped_refptr<base::SequencedTaskRunner> release_task_runner,
     const gfx::Size& initial_expected_size,
+    const gfx::ColorSpace& config_color_space,
     std::optional<gfx::Size> coded_size_alignment)
     : state_(State::kFlushed),
       codec_(std::move(codec_surface_pair.first)),
@@ -185,6 +190,7 @@ CodecWrapperImpl::CodecWrapperImpl(
       size_(initial_expected_size),
       output_buffer_release_cb_(std::move(output_buffer_release_cb)),
       coded_size_alignment_(coded_size_alignment),
+      config_color_space_(config_color_space),
       release_task_runner_(std::move(release_task_runner)) {
   DVLOG(2) << __func__;
 }
@@ -405,10 +411,15 @@ CodecWrapperImpl::DequeueStatus CodecWrapperImpl::DequeueOutputBuffer(
                      MediaCodecResult::Codes::kError;
         UMA_HISTOGRAM_BOOLEAN("Media.Android.GetColorSpaceError", error);
         if (error && !size_.IsEmpty()) {
-          // If we get back an unsupported color space, then just default to
-          // sRGB for < 720p, or 709 otherwise.  It's better than nothing.
-          color_space_ = size_.width() >= 1280 ? gfx::ColorSpace::CreateREC709()
-                                               : gfx::ColorSpace::CreateSRGB();
+          if (config_color_space_.IsValid()) {
+            color_space_ = config_color_space_;
+          } else {
+            // If we get back an unsupported color space, then just default to
+            // sRGB for < 720p, or 709 otherwise.  It's better than nothing.
+            color_space_ = size_.width() >= 1280
+                               ? gfx::ColorSpace::CreateREC709()
+                               : gfx::ColorSpace::CreateSRGB();
+          }
         }
         continue;
       }
@@ -520,11 +531,13 @@ CodecWrapper::CodecWrapper(
     OutputReleasedCB output_buffer_release_cb,
     scoped_refptr<base::SequencedTaskRunner> release_task_runner,
     const gfx::Size& initial_expected_size,
+    const gfx::ColorSpace& config_color_space,
     std::optional<gfx::Size> coded_size_alignment)
     : impl_(new CodecWrapperImpl(std::move(codec_surface_pair),
                                  std::move(output_buffer_release_cb),
                                  std::move(release_task_runner),
                                  initial_expected_size,
+                                 config_color_space,
                                  coded_size_alignment)) {}
 
 CodecWrapper::~CodecWrapper() {
