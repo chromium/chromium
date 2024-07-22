@@ -244,12 +244,6 @@ class AppBannerManagerAndroid
                               GURL primary_icon_url,
                               const SkBitmap& bitmap);
 
-  // Run before showing the ambient badge. This calls back to the
-  // InstallableManager to continue checking service worker criteria for showing
-  // ambient badge.
-  void PerformWorkerCheckForAmbientBadge(InstallableParams params,
-                                         InstallableCallback callback);
-
   const std::unique_ptr<ChromeDelegate> delegate_;
 
   // The Java-side AppBannerManager.

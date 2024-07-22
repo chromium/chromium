@@ -665,13 +665,6 @@ bool AppBannerManagerAndroid::MaybeShowPwaBottomSheetController(
       std::move(a2hs_params));
 }
 
-void AppBannerManagerAndroid::PerformWorkerCheckForAmbientBadge(
-    InstallableParams params,
-    InstallableCallback callback) {
-  InstallableManager::FromWebContents(&GetWebContents())
-      ->GetData(params, std::move(callback));
-}
-
 void AppBannerManagerAndroid::OnMlInstallPrediction(
     base::PassKey<MLInstallabilityPromoter>,
     std::string result_label) {
