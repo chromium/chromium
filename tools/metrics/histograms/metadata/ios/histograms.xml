@@ -4655,7 +4655,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.WhatsNew.InstructionsShown" enum="WhatsNewType"
-    expires_after="2024-12-15">
+    expires_after="2025-01-05">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -4665,14 +4665,14 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.WhatsNew.ItemsClickedCount" units="count"
-    expires_after="2024-12-15">
+    expires_after="2025-01-05">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>The number of clicked What's New items per impression</summary>
 </histogram>
 
 <histogram name="IOS.WhatsNew.LearnMoreTapped" enum="WhatsNewType"
-    expires_after="2024-12-01">
+    expires_after="2025-01-05">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -4682,7 +4682,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.WhatsNew.PrimaryActionTapped" enum="WhatsNewType"
-    expires_after="2024-12-01">
+    expires_after="2025-01-05">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -4717,17 +4717,28 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.WhatsNew.{Type}.TimeSpent" units="ms"
-    expires_after="2024-07-28">
+    expires_after="2025-01-05">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>Logs the time a user spent on each feature of What's New.</summary>
   <token key="Type">
+    <variant name="BottomOmnibox" summary="Bottom Omnibox"/>
     <variant name="CalendarEvent" summary="Calendar Event"/>
     <variant name="ChromeActions" summary="Chrome Actions"/>
+    <variant name="CustomizableOverflowMenu"
+        summary="Customizable Overflow Menu"/>
+    <variant name="ESB" summary="Enhanced Safe Browsing"/>
+    <variant name="InactiveTabs" summary="Inactive Tabs"/>
     <variant name="IncognitoLock" summary="Incognito Lock"/>
     <variant name="IncognitoTabsFromOtherApps"
         summary="Incognito Tabs From Other Apps"/>
+    <variant name="LensSearch" summary="Lens Search"/>
     <variant name="MiniMaps" summary="Mini Maps"/>
+    <variant name="PackageTracking" summary="Package Tracking"/>
+    <variant name="PasswordSharing" summary="Password Sharing"/>
+    <variant name="PinnedTabs" summary="Pinned Tabs"/>
+    <variant name="PWMWidget" summary="Password Manager Widget"/>
+    <variant name="UseChromeByDefault" summary="Use Chrome By Default"/>
   </token>
 </histogram>
 

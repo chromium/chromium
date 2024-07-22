@@ -1117,6 +1117,9 @@ the generic promo launch. -->
   <int value="15" label="Password Manager Widget"/>
   <int value="16" label="Pinned Tabs"/>
   <int value="17" label="Inactive Tabs"/>
+  <int value="18" label="Package Tracking"/>
+  <int value="19" label="Password Sharing"/>
+  <int value="20" label="Customizable Overflow Menu"/>
 </enum>
 
 <enum name="WindowActivityOrigin">
