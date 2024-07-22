@@ -63,6 +63,8 @@ class AllPlusAddressesBottomSheetViewBinder {
             plusAddressChip
                     .getPrimaryTextView()
                     .setContentDescription(plusProfile.getPlusAddress());
+            plusAddressChip.setIcon(
+                    R.drawable.ic_plus_addresses_logo_24dp, /* tintWithTextColor= */ true);
         } else if (propertyKey == ON_PLUS_ADDRESS_SELECTED) {
             ChipView plusAddressChip = view.findViewById(R.id.plus_address);
             plusAddressChip.setOnClickListener(
