@@ -97,8 +97,8 @@ void AccessibilityHighlightController::SetCaretBounds(
 }
 
 void AccessibilityHighlightController::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_MOVED ||
-      event->type() == ui::ET_MOUSE_DRAGGED) {
+  if (event->type() == ui::EventType::kMouseMoved ||
+      event->type() == ui::EventType::kMouseDragged) {
     cursor_point_ = event->location();
     if (event->target()) {
       ::wm::ConvertPointToScreen(static_cast<aura::Window*>(event->target()),
@@ -109,8 +109,9 @@ void AccessibilityHighlightController::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void AccessibilityHighlightController::OnKeyEvent(ui::KeyEvent* event) {
-  if (event->type() == ui::ET_KEY_PRESSED)
+  if (event->type() == ui::EventType::kKeyPressed) {
     UpdateFocusAndCaretHighlights();
+  }
 }
 
 void AccessibilityHighlightController::OnTextInputStateChanged(

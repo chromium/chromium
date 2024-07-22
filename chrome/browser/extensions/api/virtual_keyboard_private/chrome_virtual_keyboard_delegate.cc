@@ -112,9 +112,9 @@ bool SendKeyEventImpl(const std::string& type,
                       aura::WindowTreeHost* host) {
   ui::EventType event_type;
   if (type == kKeyDown)
-    event_type = ui::ET_KEY_PRESSED;
+    event_type = ui::EventType::kKeyPressed;
   else if (type == kKeyUp)
-    event_type = ui::ET_KEY_RELEASED;
+    event_type = ui::EventType::kKeyReleased;
   else
     return false;
 
@@ -123,17 +123,17 @@ bool SendKeyEventImpl(const std::string& type,
   if (code == ui::VKEY_UNKNOWN) {
     // Handling of special printable characters (e.g. accented characters) for
     // which there is no key code.
-    if (event_type == ui::ET_KEY_RELEASED) {
+    if (event_type == ui::EventType::kKeyReleased) {
       // This can be null if no text input field is focused.
       ui::TextInputClient* tic = GetFocusedTextInputClient();
 
-      SendProcessKeyEvent(ui::ET_KEY_PRESSED, host);
+      SendProcessKeyEvent(ui::EventType::kKeyPressed, host);
 
       ui::KeyEvent char_event = ui::KeyEvent::FromCharacter(
           key_value, code, ui::DomCode::NONE, ui::EF_NONE);
       if (tic)
         tic->InsertChar(char_event);
-      SendProcessKeyEvent(ui::ET_KEY_RELEASED, host);
+      SendProcessKeyEvent(ui::EventType::kKeyReleased, host);
     }
     return true;
   }

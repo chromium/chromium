@@ -157,7 +157,7 @@ TEST_F(SubAppsInstallDialogControllerTest, EscPressed) {
   views::Widget* widget = controller->GetWidgetForTesting();
 
   // Simulate esc key press.
-  ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, ui::EF_NONE);
+  ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE, ui::EF_NONE);
   widget->OnKeyEvent(&event);
 
   EXPECT_FALSE(future.Get());

@@ -328,7 +328,7 @@ void StyledLabel::ClearStyleRanges() {
 
 void StyledLabel::ClickFirstLinkForTesting() {
   GetFirstLinkForTesting()->OnKeyPressed(  // IN-TEST
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE));
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_SPACE, ui::EF_NONE));
 }
 
 views::Link* StyledLabel::GetFirstLinkForTesting() {

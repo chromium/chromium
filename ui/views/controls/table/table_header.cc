@@ -264,17 +264,17 @@ void TableHeader::OnMouseCaptureLost() {
 
 void TableHeader::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP:
+    case ui::EventType::kGestureTap:
       if (!resize_details_.get())
         ToggleSortOrder(*event);
       break;
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       StartResize(*event);
       break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       ContinueResize(*event);
       break;
-    case ui::ET_GESTURE_SCROLL_END:
+    case ui::EventType::kGestureScrollEnd:
       resize_details_.reset();
       break;
     default:

@@ -216,8 +216,9 @@ void BackGestureEventHandler::OnGestureEvent(ui::GestureEvent* event) {
 
     // Reset |should_wait_for_touch_ack_| for the last gesture event in the
     // sequence.
-    if (event->type() == ui::ET_GESTURE_END)
+    if (event->type() == ui::EventType::kGestureEnd) {
       should_wait_for_touch_ack_ = false;
+    }
   }
 }
 
@@ -229,11 +230,11 @@ void BackGestureEventHandler::OnTouchEvent(ui::TouchEvent* event) {
     return;
   }
 
-  // Update |first_touch_id_| on first ET_TOUCH_PRESSED only. ET_TOUCH_PRESSED
-  // type check is needed because there could be ET_TOUCH_CANCELLED after
-  // ET_TOUCH_RELEASED event.
+  // Update |first_touch_id_| on first EventType::kTouchPressed only.
+  // EventType::kTouchPressed type check is needed because there could be
+  // EventType::kTouchCancelled after EventType::kTouchReleased event.
   if (first_touch_id_ == ui::kPointerIdUnknown &&
-      event->type() == ui::ET_TOUCH_PRESSED) {
+      event->type() == ui::EventType::kTouchPressed) {
     first_touch_id_ = event->pointer_details().id;
   }
 
@@ -242,12 +243,12 @@ void BackGestureEventHandler::OnTouchEvent(ui::TouchEvent* event) {
     return;
   }
 
-  if (event->type() == ui::ET_TOUCH_RELEASED) {
+  if (event->type() == ui::EventType::kTouchReleased) {
     first_touch_id_ = ui::kPointerIdUnknown;
     other_touch_event_ids_list_.clear();
   }
 
-  if (event->type() == ui::ET_TOUCH_PRESSED) {
+  if (event->type() == ui::EventType::kTouchPressed) {
     x_drag_amount_ = y_drag_amount_ = 0;
     during_reverse_dragging_ = false;
   } else {
@@ -270,14 +271,14 @@ void BackGestureEventHandler::OnTouchEvent(ui::TouchEvent* event) {
   // from GetAndResetPendingGestures is nullptr. The coordinate conversion is
   // done outside the loop as the previous gesture events in a sequence may
   // invalidate the target, for example given a sequence of
-  // {ET_GESTURE_SCROLL_END, ET_GESTURE_END} on a non-resizable window, the
-  // first gesture will trigger a minimize event which will delete the backdrop,
-  // which was the target. See http://crbug.com/1064618.
+  // {EventType::kGestureScrollEnd, EventType::kGestureEnd} on a non-resizable
+  // window, the first gesture will trigger a minimize event which will delete
+  // the backdrop, which was the target. See http://crbug.com/1064618.
   aura::Window* target = static_cast<aura::Window*>(event->target());
   gfx::Point screen_location = event->location();
   ::wm::ConvertPointToScreen(target, &screen_location);
 
-  if (event->type() == ui::ET_TOUCH_PRESSED &&
+  if (event->type() == ui::EventType::kTouchPressed &&
       ShouldWaitForTouchPressAck(screen_location)) {
     should_wait_for_touch_ack_ = true;
     return;
@@ -316,7 +317,7 @@ bool BackGestureEventHandler::MaybeHandleBackGesture(
     ui::GestureEvent* event,
     const gfx::Point& screen_location) {
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP_DOWN:
+    case ui::EventType::kGestureTapDown:
       going_back_started_ = CanStartGoingBack(screen_location);
       if (!going_back_started_)
         break;
@@ -330,7 +331,7 @@ bool BackGestureEventHandler::MaybeHandleBackGesture(
             contextual_tooltip::TooltipType::kBackGesture);
       }
       return true;
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       if (!going_back_started_)
         break;
       back_start_location_ = screen_location;
@@ -340,16 +341,16 @@ bool BackGestureEventHandler::MaybeHandleBackGesture(
           dragged_from_splitview_divider_, back_start_location_);
       RecordStartScenarioType(back_gesture_start_scenario_type_);
       break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       if (!going_back_started_)
         break;
       CHECK(back_gesture_affordance_);
       back_gesture_affordance_->Update(x_drag_amount_, y_drag_amount_,
                                        during_reverse_dragging_);
       return true;
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
-    case ui::ET_GESTURE_END: {
+    case ui::EventType::kGestureScrollEnd:
+    case ui::EventType::kScrollFlingStart:
+    case ui::EventType::kGestureEnd: {
       if (!going_back_started_)
         break;
       CHECK(back_gesture_affordance_);
@@ -363,7 +364,7 @@ bool BackGestureEventHandler::MaybeHandleBackGesture(
                             going_back_started_);
       SCOPED_CRASH_KEY_NUMBER("286590216", "event.type", event->type());
       if (back_gesture_affordance_->IsActivated() ||
-          (event->type() == ui::ET_SCROLL_FLING_START &&
+          (event->type() == ui::EventType::kScrollFlingStart &&
            event->details().velocity_x() >= kFlingVelocityForGoingBack)) {
         auto* shell = Shell::Get();
         if (!keyboard_util::CloseKeyboardIfActive()) {

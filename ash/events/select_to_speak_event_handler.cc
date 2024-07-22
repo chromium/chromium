@@ -54,8 +54,8 @@ void SelectToSpeakEventHandler::OnKeyEvent(ui::KeyEvent* event) {
   DCHECK(IsSelectToSpeakEnabled());
   DCHECK(event);
 
-  bool pressed = event->type() == ui::ET_KEY_PRESSED;
-  bool released = event->type() == ui::ET_KEY_RELEASED;
+  bool pressed = event->type() == ui::EventType::kKeyPressed;
+  bool released = event->type() == ui::EventType::kKeyReleased;
   if (!(pressed || released)) {
     return;
   }
@@ -90,7 +90,7 @@ void SelectToSpeakEventHandler::OnKeyEvent(ui::KeyEvent* event) {
   if (key_code == ui::VKEY_LWIN || key_code == ui::VKEY_RWIN) {
     if (pressed && state_ == INACTIVE) {
       state_ = SEARCH_DOWN;
-    } else if (event->type() == ui::ET_KEY_RELEASED) {
+    } else if (event->type() == ui::EventType::kKeyReleased) {
       if (state_ == CAPTURING_MOUSE) {
         cancel_event = true;
         state_ = WAIT_FOR_MOUSE_RELEASE;
@@ -119,7 +119,7 @@ void SelectToSpeakEventHandler::OnKeyEvent(ui::KeyEvent* event) {
       // CAPTURING_SPEAK_SELECTION_KEY if the search key is not lifted.
       cancel_event = true;
       state_ = CAPTURING_SPEAK_SELECTION_KEY;
-    } else if (event->type() == ui::ET_KEY_RELEASED) {
+    } else if (event->type() == ui::EventType::kKeyReleased) {
       if (state_ == CAPTURING_SPEAK_SELECTION_KEY) {
         // They released the speak selection key while it was being captured.
         cancel_event = true;
@@ -150,7 +150,7 @@ void SelectToSpeakEventHandler::OnMouseEvent(ui::MouseEvent* event) {
   if (state_ == INACTIVE)
     return;
 
-  if (event->type() == ui::ET_MOUSE_PRESSED) {
+  if (event->type() == ui::EventType::kMousePressed) {
     if (state_ == SEARCH_DOWN || state_ == MOUSE_RELEASED)
       state_ = CAPTURING_MOUSE;
     else if (state_ == SELECTION_REQUESTED)
@@ -165,7 +165,7 @@ void SelectToSpeakEventHandler::OnMouseEvent(ui::MouseEvent* event) {
   }
 
   if (state_ == WAIT_FOR_MOUSE_RELEASE &&
-      event->type() == ui::ET_MOUSE_RELEASED) {
+      event->type() == ui::EventType::kMouseReleased) {
     state_ = INACTIVE;
     return;
   }
@@ -175,7 +175,7 @@ void SelectToSpeakEventHandler::OnMouseEvent(ui::MouseEvent* event) {
   if (state_ != CAPTURING_MOUSE && state_ != CAPTURING_MOUSE_ONLY)
     return;
 
-  if (event->type() == ui::ET_MOUSE_RELEASED) {
+  if (event->type() == ui::EventType::kMouseReleased) {
     if (state_ == CAPTURING_MOUSE)
       state_ = MOUSE_RELEASED;
     else if (state_ == CAPTURING_MOUSE_ONLY)
@@ -185,10 +185,11 @@ void SelectToSpeakEventHandler::OnMouseEvent(ui::MouseEvent* event) {
   // Forward the mouse event to the chrome process for the extension.
   delegate_->DispatchMouseEvent(*event);
 
-  if (event->type() == ui::ET_MOUSE_PRESSED ||
-      event->type() == ui::ET_MOUSE_RELEASED ||
-      event->type() == ui::ET_MOUSE_DRAGGED)
+  if (event->type() == ui::EventType::kMousePressed ||
+      event->type() == ui::EventType::kMouseReleased ||
+      event->type() == ui::EventType::kMouseDragged) {
     CancelEvent(event);
+  }
 }
 
 void SelectToSpeakEventHandler::OnTouchEvent(ui::TouchEvent* event) {
@@ -201,8 +202,8 @@ void SelectToSpeakEventHandler::OnTouchEvent(ui::TouchEvent* event) {
 
   // On a touch-down event, if selection was requested, we begin capturing
   // touch events.
-  if (event->type() == ui::ET_TOUCH_PRESSED && state_ == SELECTION_REQUESTED &&
-      touch_id_ == ui::kPointerIdUnknown) {
+  if (event->type() == ui::EventType::kTouchPressed &&
+      state_ == SELECTION_REQUESTED && touch_id_ == ui::kPointerIdUnknown) {
     state_ = CAPTURING_TOUCH_ONLY;
     touch_id_ = event->pointer_details().id;
     touch_type_ = event->pointer_details().pointer_type;
@@ -218,7 +219,7 @@ void SelectToSpeakEventHandler::OnTouchEvent(ui::TouchEvent* event) {
 
   // On a touch-up event, we go back to inactive state, but still forward the
   // event to the extension.
-  if (event->type() == ui::ET_TOUCH_RELEASED &&
+  if (event->type() == ui::EventType::kTouchReleased &&
       state_ == CAPTURING_TOUCH_ONLY) {
     state_ = INACTIVE;
     touch_id_ = ui::kPointerIdUnknown;
@@ -230,15 +231,15 @@ void SelectToSpeakEventHandler::OnTouchEvent(ui::TouchEvent* event) {
   // and we already have mouse event plumbing in place for Select-to-Speak.
   ui::EventType type;
   switch (event->type()) {
-    case ui::ET_TOUCH_PRESSED:
-      type = ui::ET_MOUSE_PRESSED;
+    case ui::EventType::kTouchPressed:
+      type = ui::EventType::kMousePressed;
       break;
-    case ui::ET_TOUCH_RELEASED:
-    case ui::ET_TOUCH_CANCELLED:
-      type = ui::ET_MOUSE_RELEASED;
+    case ui::EventType::kTouchReleased:
+    case ui::EventType::kTouchCancelled:
+      type = ui::EventType::kMouseReleased;
       break;
-    case ui::ET_TOUCH_MOVED:
-      type = ui::ET_MOUSE_DRAGGED;
+    case ui::EventType::kTouchMoved:
+      type = ui::EventType::kMouseDragged;
       break;
     default:
       return;
@@ -254,7 +255,7 @@ void SelectToSpeakEventHandler::OnTouchEvent(ui::TouchEvent* event) {
 
   delegate_->DispatchMouseEvent(event_to_send);
 
-  if (event->type() != ui::ET_TOUCH_MOVED) {
+  if (event->type() != ui::EventType::kTouchMoved) {
     // Don't cancel move events in case focus needs to change.
     CancelEvent(event);
   }

@@ -83,12 +83,12 @@ class FullscreenMagnifierController::GestureProviderClient
     // Do nothing. OnGestureEvent is for timer based gesture events, e.g. tap.
     // FullscreenMagnifierController is interested only in pinch and scroll
     // gestures.
-    DCHECK_NE(ui::ET_GESTURE_SCROLL_BEGIN, event->type());
-    DCHECK_NE(ui::ET_GESTURE_SCROLL_END, event->type());
-    DCHECK_NE(ui::ET_GESTURE_SCROLL_UPDATE, event->type());
-    DCHECK_NE(ui::ET_GESTURE_PINCH_BEGIN, event->type());
-    DCHECK_NE(ui::ET_GESTURE_PINCH_END, event->type());
-    DCHECK_NE(ui::ET_GESTURE_PINCH_UPDATE, event->type());
+    DCHECK_NE(ui::EventType::kGestureScrollBegin, event->type());
+    DCHECK_NE(ui::EventType::kGestureScrollEnd, event->type());
+    DCHECK_NE(ui::EventType::kGestureScrollUpdate, event->type());
+    DCHECK_NE(ui::EventType::kGesturePinchBegin, event->type());
+    DCHECK_NE(ui::EventType::kGesturePinchEnd, event->type());
+    DCHECK_NE(ui::EventType::kGesturePinchUpdate, event->type());
   }
 };
 
@@ -308,7 +308,7 @@ void FullscreenMagnifierController::OnMouseEvent(ui::MouseEvent* event) {
   // Used for screen bounds checking.
   gfx::Point root_location = event->root_location();
 
-  if (event->type() == ui::ET_MOUSE_DRAGGED) {
+  if (event->type() == ui::EventType::kMouseDragged) {
     auto* screen = display::Screen::GetScreen();
     const gfx::Point cursor_screen_location = screen->GetCursorScreenPoint();
 
@@ -325,16 +325,17 @@ void FullscreenMagnifierController::OnMouseEvent(ui::MouseEvent* event) {
 
   if (current_root->bounds().Contains(root_location)) {
     // This must be before |SwitchTargetRootWindow()|.
-    if (event->type() != ui::ET_MOUSE_CAPTURE_CHANGED)
+    if (event->type() != ui::EventType::kMouseCaptureChanged) {
       point_of_interest_in_root_ = root_location;
+    }
 
     if (current_root != root_window_) {
       DCHECK(current_root);
       SwitchTargetRootWindow(current_root, true);
     }
 
-    const bool dragged_or_moved = event->type() == ui::ET_MOUSE_MOVED ||
-                                  event->type() == ui::ET_MOUSE_DRAGGED;
+    const bool dragged_or_moved = event->type() == ui::EventType::kMouseMoved ||
+                                  event->type() == ui::EventType::kMouseDragged;
     if (IsMagnified() && dragged_or_moved &&
         event->pointer_details().pointer_type != ui::EventPointerType::kPen) {
       OnMouseMove(root_location_f);
@@ -344,10 +345,10 @@ void FullscreenMagnifierController::OnMouseEvent(ui::MouseEvent* event) {
 
 void FullscreenMagnifierController::OnScrollEvent(ui::ScrollEvent* event) {
   if (event->IsAltDown() && event->IsControlDown()) {
-    if (event->type() == ui::ET_SCROLL_FLING_START) {
+    if (event->type() == ui::EventType::kScrollFlingStart) {
       event->StopPropagation();
       return;
-    } else if (event->type() == ui::ET_SCROLL_FLING_CANCEL) {
+    } else if (event->type() == ui::EventType::kScrollFlingCancel) {
       float scale = GetScale();
       // Jump back to exactly 1.0 if we are just a tiny bit zoomed in.
       // TODO(katie): These events are not fired after every scroll, which means
@@ -360,7 +361,7 @@ void FullscreenMagnifierController::OnScrollEvent(ui::ScrollEvent* event) {
       return;
     }
 
-    if (event->type() == ui::ET_SCROLL) {
+    if (event->type() == ui::EventType::kScroll) {
       SetScale(magnifier_utils::GetScaleFromScroll(
                    event->y_offset() * kScrollScaleChangeFactor, GetScale(),
                    kMaxMagnifiedScale, kNonMagnifiedScale),
@@ -396,12 +397,12 @@ ui::EventDispatchDetails FullscreenMagnifierController::RewriteEvent(
 
   const ui::TouchEvent* touch_event = event.AsTouchEvent();
 
-  if (touch_event->type() == ui::ET_TOUCH_PRESSED) {
+  if (touch_event->type() == ui::EventType::kTouchPressed) {
     touch_points_++;
     press_event_map_[touch_event->pointer_details().id] =
         std::make_unique<ui::TouchEvent>(*touch_event);
-  } else if (touch_event->type() == ui::ET_TOUCH_RELEASED ||
-             touch_event->type() == ui::ET_TOUCH_CANCELLED) {
+  } else if (touch_event->type() == ui::EventType::kTouchReleased ||
+             touch_event->type() == ui::EventType::kTouchCancelled) {
     touch_points_--;
     press_event_map_.erase(touch_event->pointer_details().id);
   }
@@ -418,8 +419,9 @@ ui::EventDispatchDetails FullscreenMagnifierController::RewriteEvent(
   // User can change zoom level with two fingers pinch and pan around with two
   // fingers scroll. Once FullscreenMagnifierController detects one of those two
   // gestures, it starts consuming all touch events with cancelling existing
-  // touches. If cancel_pressed_touches is set to true, ET_TOUCH_CANCELLED
-  // events are dispatched for existing touches after the next for-loop.
+  // touches. If cancel_pressed_touches is set to true,
+  // EventType::kTouchCancelled events are dispatched for existing touches after
+  // the next for-loop.
   bool cancel_pressed_touches = ProcessGestures();
 
   if (cancel_pressed_touches) {
@@ -430,8 +432,8 @@ ui::EventDispatchDetails FullscreenMagnifierController::RewriteEvent(
     consume_touch_event_ = true;
 
     for (const auto& it : press_event_map_) {
-      ui::TouchEvent touch_cancel_event(ui::ET_TOUCH_CANCELLED, gfx::Point(),
-                                        touch_event->time_stamp(),
+      ui::TouchEvent touch_cancel_event(ui::EventType::kTouchCancelled,
+                                        gfx::Point(), touch_event->time_stamp(),
                                         it.second->pointer_details());
       touch_cancel_event.set_location_f(it.second->location_f());
       touch_cancel_event.set_root_location_f(it.second->root_location_f());
@@ -762,13 +764,13 @@ bool FullscreenMagnifierController::ProcessGestures() {
     if (details.touch_points() != 2)
       continue;
 
-    if (gesture->type() == ui::ET_GESTURE_PINCH_BEGIN) {
+    if (gesture->type() == ui::EventType::kGesturePinchBegin) {
       original_scale_ = scale_;
 
       // Start consuming touch events with cancelling existing touches.
       if (!consume_touch_event_)
         cancel_pressed_touches = true;
-    } else if (gesture->type() == ui::ET_GESTURE_PINCH_UPDATE) {
+    } else if (gesture->type() == ui::EventType::kGesturePinchUpdate) {
       float scale = GetScale() * details.scale();
       ValidateScale(&scale);
 
@@ -797,13 +799,13 @@ bool FullscreenMagnifierController::ProcessGestures() {
               (scale_ / scale) * (gesture_center.y() - origin_.y()));
 
       RedrawDIP(origin, scale, 0, kDefaultAnimationTweenType);
-    } else if (gesture->type() == ui::ET_GESTURE_SCROLL_BEGIN) {
+    } else if (gesture->type() == ui::EventType::kGestureScrollBegin) {
       original_origin_ = origin_;
 
       // Start consuming all touch events with cancelling existing touches.
       if (!consume_touch_event_)
         cancel_pressed_touches = true;
-    } else if (gesture->type() == ui::ET_GESTURE_SCROLL_UPDATE) {
+    } else if (gesture->type() == ui::EventType::kGestureScrollUpdate) {
       // The scroll offsets are apparently in pixels and does not take into
       // account the display rotation. Convert back to dip by applying the
       // inverse transform of the rotation (these are offsets, so we don't care

@@ -124,7 +124,7 @@ class PartialTranslateBubbleViewTest : public ChromeViewsTestBase {
   void PressButton(PartialTranslateBubbleView::ButtonID id) {
     views::Button* button =
         static_cast<views::Button*>(bubble_->GetViewByID(id));
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
                            ui::DomCode::ENTER, ui::EF_NONE);
     views::test::ButtonTestApi(button).NotifyClick(key_event);
   }

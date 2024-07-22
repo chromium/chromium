@@ -60,7 +60,8 @@ void SynthesizePaste() {
 
   DCHECK(host);
 
-  ui::KeyEvent control_press(/*type=*/ui::ET_KEY_PRESSED, ui::VKEY_CONTROL,
+  ui::KeyEvent control_press(/*type=*/ui::EventType::kKeyPressed,
+                             ui::VKEY_CONTROL,
                              /*code=*/static_cast<ui::DomCode>(0),
                              /*flags=*/0);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -70,7 +71,7 @@ void SynthesizePaste() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   host->DeliverEventToSink(&control_press);
 
-  ui::KeyEvent v_press(/*type=*/ui::ET_KEY_PRESSED, ui::VKEY_V,
+  ui::KeyEvent v_press(/*type=*/ui::EventType::kKeyPressed, ui::VKEY_V,
                        /*code=*/static_cast<ui::DomCode>(0),
                        /*flags=*/ui::EF_CONTROL_DOWN);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -80,12 +81,13 @@ void SynthesizePaste() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   host->DeliverEventToSink(&v_press);
 
-  ui::KeyEvent v_release(/*type=*/ui::ET_KEY_RELEASED, ui::VKEY_V,
+  ui::KeyEvent v_release(/*type=*/ui::EventType::kKeyReleased, ui::VKEY_V,
                          /*code=*/static_cast<ui::DomCode>(0),
                          /*flags=*/ui::EF_CONTROL_DOWN);
   host->DeliverEventToSink(&v_release);
 
-  ui::KeyEvent control_release(/*type=*/ui::ET_KEY_RELEASED, ui::VKEY_CONTROL,
+  ui::KeyEvent control_release(/*type=*/ui::EventType::kKeyReleased,
+                               ui::VKEY_CONTROL,
                                /*code=*/static_cast<ui::DomCode>(0),
                                /*flags=*/0);
   host->DeliverEventToSink(&control_release);

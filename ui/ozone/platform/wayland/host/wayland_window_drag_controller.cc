@@ -350,9 +350,9 @@ void WaylandWindowDragController::OnDragLeave(base::TimeTicks timestamp) {
 
   drag_target_window_ = nullptr;
 
-  // In order to guarantee ET_MOUSE_RELEASED event is delivered once the DND
-  // session finishes, the focused window is not reset here. This is similar to
-  // the "implicit grab" behavior implemented by Wayland compositors for
+  // In order to guarantee EventType::kMouseReleased event is delivered once the
+  // DND session finishes, the focused window is not reset here. This is similar
+  // to the "implicit grab" behavior implemented by Wayland compositors for
   // wl_pointer events. Additionally, this makes it possible for the drag
   // controller to overcome deviations in the order that wl_data_source and
   // wl_pointer events arrive when the drop happens. For example, unlike Weston
@@ -511,11 +511,12 @@ uint32_t WaylandWindowDragController::DispatchEvent(
   }
 
   if (state_ == State::kDetached &&
-      (event->type() == ET_MOUSE_MOVED || event->type() == ET_MOUSE_DRAGGED ||
-       event->type() == ET_TOUCH_MOVED)) {
+      (event->type() == EventType::kMouseMoved ||
+       event->type() == EventType::kMouseDragged ||
+       event->type() == EventType::kTouchMoved)) {
     HandleMotionEvent(event->AsLocatedEvent());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (event->type() != ET_TOUCH_MOVED) {
+    if (event->type() != EventType::kTouchMoved) {
       // Pass through touch so that touch position will be updated.
       return POST_DISPATCH_STOP_PROPAGATION;
     }

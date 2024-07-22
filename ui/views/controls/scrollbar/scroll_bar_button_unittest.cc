@@ -81,18 +81,20 @@ TEST_F(ScrollBarButtonTest, CallbackFiresOnMouseDown) {
   EXPECT_CALL(callback(), ButtonPressed());
 
   // By default the button should notify its callback on mouse release.
-  button()->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button()->OnMousePressed(
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON));
 }
 
 TEST_F(ScrollBarButtonTest, CallbackFiresMultipleTimesMouseHeldDown) {
   EXPECT_CALL(callback(), ButtonPressed()).Times(AtLeast(2));
 
   // By default the button should notify its callback on mouse release.
-  button()->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button()->OnMousePressed(
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON));
 
   AdvanceTime(RepeatController::GetInitialWaitForTesting() * 10);
 }
@@ -101,17 +103,19 @@ TEST_F(ScrollBarButtonTest, CallbackStopsFiringAfterMouseReleased) {
   EXPECT_CALL(callback(), ButtonPressed()).Times(AtLeast(2));
 
   // By default the button should notify its callback on mouse release.
-  button()->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button()->OnMousePressed(
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON));
 
   AdvanceTime(RepeatController::GetInitialWaitForTesting() * 10);
 
   testing::Mock::VerifyAndClearExpectations(&callback());
 
-  button()->OnMouseReleased(ui::MouseEvent(
-      ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button()->OnMouseReleased(
+      ui::MouseEvent(ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON));
 
   AdvanceTime(RepeatController::GetInitialWaitForTesting() * 10);
 
@@ -122,9 +126,10 @@ TEST_F(ScrollBarButtonTest, CallbackStopsFiringAfterMouseCaptureReleased) {
   EXPECT_CALL(callback(), ButtonPressed()).Times(AtLeast(2));
 
   // By default the button should notify its callback on mouse release.
-  button()->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button()->OnMousePressed(
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON));
 
   AdvanceTime(RepeatController::GetInitialWaitForTesting() * 10);
 

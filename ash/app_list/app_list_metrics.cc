@@ -161,19 +161,19 @@ void AppListRecordPageSwitcherSourceByEventType(ui::EventType type) {
   AppListPageSwitcherSource source;
 
   switch (type) {
-    case ui::ET_MOUSEWHEEL:
+    case ui::EventType::kMousewheel:
       source = kMouseWheelScroll;
       break;
-    case ui::ET_SCROLL:
+    case ui::EventType::kScroll:
       source = kMousePadScroll;
       break;
-    case ui::ET_GESTURE_SCROLL_END:
+    case ui::EventType::kGestureScrollEnd:
       source = kSwipeAppGrid;
       break;
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kScrollFlingStart:
       source = kFlingAppGrid;
       break;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       source = kMouseDrag;
       break;
     default:

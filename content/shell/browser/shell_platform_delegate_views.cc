@@ -256,8 +256,8 @@ class ShellView : public views::BoxLayoutView,
                        const std::u16string& new_contents) override {}
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override {
-    if (key_event.type() == ui::ET_KEY_PRESSED && sender == url_entry_ &&
-        key_event.key_code() == ui::VKEY_RETURN) {
+    if (key_event.type() == ui::EventType::kKeyPressed &&
+        sender == url_entry_ && key_event.key_code() == ui::VKEY_RETURN) {
       std::string text = base::UTF16ToUTF8(url_entry_->GetText());
       GURL url(text);
       if (!url.has_scheme()) {

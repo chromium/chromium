@@ -69,11 +69,11 @@ void XGlobalShortcutListener::StopListening() {
 }
 
 bool XGlobalShortcutListener::CanDispatchEvent(const PlatformEvent& event) {
-  return event->type() == ET_KEY_PRESSED;
+  return event->type() == EventType::kKeyPressed;
 }
 
 uint32_t XGlobalShortcutListener::DispatchEvent(const PlatformEvent& event) {
-  CHECK_EQ(event->type(), ET_KEY_PRESSED);
+  CHECK_EQ(event->type(), EventType::kKeyPressed);
   OnKeyPressEvent(*event->AsKeyEvent());
   return POST_DISPATCH_NONE;
 }
@@ -128,7 +128,7 @@ void XGlobalShortcutListener::UnregisterAccelerator(KeyboardCode key_code,
 }
 
 void XGlobalShortcutListener::OnKeyPressEvent(const KeyEvent& event) {
-  DCHECK_EQ(event.type(), ET_KEY_PRESSED);
+  DCHECK_EQ(event.type(), EventType::kKeyPressed);
 
   const KeyboardCode key_code = event.key_code();
   const bool is_alt_down = event.flags() & EF_ALT_DOWN;

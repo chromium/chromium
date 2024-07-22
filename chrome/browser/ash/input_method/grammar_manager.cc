@@ -97,7 +97,7 @@ void GrammarManager::OnFocus(int context_id, SpellcheckMode spellcheck_mode) {
 }
 
 bool GrammarManager::OnKeyEvent(const ui::KeyEvent& event) {
-  if (!suggestion_shown_ || event.type() != ui::ET_KEY_PRESSED) {
+  if (!suggestion_shown_ || event.type() != ui::EventType::kKeyPressed) {
     return false;
   }
 

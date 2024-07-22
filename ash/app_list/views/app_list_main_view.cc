@@ -171,7 +171,7 @@ void AppListMainView::AssistantButtonPressed() {
 
 void AppListMainView::CloseButtonPressed() {
   // Deactivate the search box.
-  search_box_view_->SetSearchBoxActive(false, ui::ET_UNKNOWN);
+  search_box_view_->SetSearchBoxActive(false, ui::EventType::kUnknown);
   search_box_view_->ClearSearch();
 }
 

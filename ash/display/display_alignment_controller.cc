@@ -86,7 +86,7 @@ void DisplayAlignmentController::OnDisplaysInitialized() {
 
 void DisplayAlignmentController::OnMouseEvent(ui::MouseEvent* event) {
   if (current_state_ == DisplayAlignmentState::kDisabled ||
-      event->type() != ui::ET_MOUSE_MOVED) {
+      event->type() != ui::EventType::kMouseMoved) {
     return;
   }
 

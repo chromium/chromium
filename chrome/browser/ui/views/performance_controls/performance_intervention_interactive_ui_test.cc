@@ -160,8 +160,8 @@ class PerformanceInterventionInteractiveTest
 
   auto SimulateMouseEnterTabRow(const ElementSpecifier& tab_row_id) {
     return WithView(tab_row_id, [](TabListRowView* tab_list_row) {
-      ui::MouseEvent e(ui::EventType::ET_MOUSE_ENTERED, gfx::Point(),
-                       gfx::Point(), ui::EventTimeForNow(), 0, 0);
+      ui::MouseEvent e(ui::EventType::kMouseEntered, gfx::Point(), gfx::Point(),
+                       ui::EventTimeForNow(), 0, 0);
       tab_list_row->OnEvent(&e);
     });
   }
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
   // Dismiss the dialog.
   views::test::WidgetDestroyedWaiter widget_waiter(
       intervention_button->bubble_dialog_model_host()->GetWidget());
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(intervention_button);
   test_api.NotifyClick(e);

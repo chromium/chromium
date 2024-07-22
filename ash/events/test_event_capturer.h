@@ -12,8 +12,8 @@ namespace ash {
 
 // Used to capture and inspect events in ash_unittests.  By default it captures
 // all KeyEvents, MouseEvents, and TouchEvents.
-// ET_MOUSE_MOVED, ET_MOUSE_ENTERED and ET_MOUSE_EXITED can be optionally
-// filtered out to make the stored events less noisy.
+// EventType::kMouseMoved, EventType::kMouseEntered and EventType::kMouseExited
+// can be optionally filtered out to make the stored events less noisy.
 class TestEventCapturer : public ui::EventHandler {
  public:
   TestEventCapturer();

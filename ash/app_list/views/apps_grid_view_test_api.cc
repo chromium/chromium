@@ -50,7 +50,7 @@ gfx::Rect AppsGridViewTestApi::GetItemTileRectOnCurrentPageAt(int row,
 
 void AppsGridViewTestApi::PressItemAt(int index) {
   GetViewAtModelIndex(index)->OnKeyPressed(
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::EF_NONE));
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE));
 }
 
 size_t AppsGridViewTestApi::TilesPerPageInPagedGrid(int page) const {

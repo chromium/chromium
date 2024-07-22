@@ -235,7 +235,7 @@ class AuthDialogContentsView::FingerprintView : public views::View {
 
   // views::View:
   void OnGestureEvent(ui::GestureEvent* event) override {
-    if (event->type() != ui::ET_GESTURE_TAP) {
+    if (event->type() != ui::EventType::kGestureTap) {
       return;
     }
     if (state_ == FingerprintState::AVAILABLE_DEFAULT ||

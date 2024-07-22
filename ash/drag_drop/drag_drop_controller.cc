@@ -387,20 +387,21 @@ void DragDropController::OnMouseEvent(ui::MouseEvent* event) {
   aura::Window* translated_target =
       window_util::GetEventHandlerForEvent(*event);
   if (!translated_target) {
-    // ET_MOUSE_CAPTURE_CHANGED event does not have a location that can
+    // EventType::kMouseCaptureChanged event does not have a location that can
     // be used to locate a translated target.
-    if (event->type() != ui::ET_MOUSE_CAPTURE_CHANGED)
+    if (event->type() != ui::EventType::kMouseCaptureChanged) {
       DragCancel();
+    }
     event->StopPropagation();
     return;
   }
 
   auto translated_event = ConvertEvent(translated_target, *event);
   switch (translated_event->type()) {
-    case ui::ET_MOUSE_DRAGGED:
+    case ui::EventType::kMouseDragged:
       DragUpdate(translated_target, *translated_event.get());
       break;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       Drop(translated_target, *translated_event.get());
       break;
     default:
@@ -428,8 +429,9 @@ void DragDropController::OnTouchEvent(ui::TouchEvent* event) {
   if (event->handled())
     return;
 
-  if (event->type() == ui::ET_TOUCH_CANCELLED)
+  if (event->type() == ui::EventType::kTouchCancelled) {
     DragCancel();
+  }
 }
 
 void DragDropController::OnGestureEvent(ui::GestureEvent* event) {
@@ -483,14 +485,14 @@ void DragDropController::OnGestureEvent(ui::GestureEvent* event) {
   }
 
   switch (event->type()) {
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       DragUpdate(translated_target, *translated_event);
       break;
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kGestureScrollEnd:
+    case ui::EventType::kScrollFlingStart:
       Drop(translated_target, *translated_event);
       break;
-    case ui::ET_GESTURE_LONG_TAP:
+    case ui::EventType::kGestureLongTap:
       // Ideally we would want to just forward this long tap event to the
       // |drag_source_window_|. However, webkit does not accept events while a
       // drag drop is still in progress. The drag drop ends only when the nested

@@ -29,8 +29,8 @@ class ContentSettingSiteRowViewTest : public ChromeViewsTestBase {
   views::Widget* widget() { return widget_.get(); }
 
   ui::MouseEvent click_event() {
-    return ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                          ui::EventTimeForNow(), 0, 0);
+    return ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                          gfx::Point(), ui::EventTimeForNow(), 0, 0);
   }
 
  private:

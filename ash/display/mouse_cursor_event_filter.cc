@@ -48,9 +48,9 @@ void MouseCursorEventFilter::OnMouseEvent(ui::MouseEvent* event) {
 
   // Handle both MOVED and DRAGGED events here because when the mouse pointer
   // enters the other root window while dragging, the underlying window system
-  // (at least X11) stops generating a ui::ET_MOUSE_MOVED event.
-  if (event->type() != ui::ET_MOUSE_MOVED &&
-      event->type() != ui::ET_MOUSE_DRAGGED) {
+  // (at least X11) stops generating a ui::EventType::kMouseMoved event.
+  if (event->type() != ui::EventType::kMouseMoved &&
+      event->type() != ui::EventType::kMouseDragged) {
     return;
   }
 

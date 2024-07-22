@@ -147,8 +147,8 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
   void ProcessAbs(const input_event& input);
   void ProcessSyn(const input_event& input);
 
-  // Returns an EventType to dispatch for |touch|. Returns ET_UNKNOWN if an
-  // event should not be dispatched.
+  // Returns an EventType to dispatch for |touch|. Returns EventType::kUnknown
+  // if an event should not be dispatched.
   EventType GetEventTypeForTouch(const InProgressTouchEvdev& touch);
 
   void ReportTouchEvent(const InProgressTouchEvdev& event,

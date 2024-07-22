@@ -47,8 +47,8 @@ namespace ash {
 namespace {
 
 bool ShouldProcessLocatedEvent(const ui::LocatedEvent& event) {
-  if (event.type() != ui::ET_MOUSE_PRESSED &&
-      event.type() != ui::ET_TOUCH_PRESSED) {
+  if (event.type() != ui::EventType::kMousePressed &&
+      event.type() != ui::EventType::kTouchPressed) {
     return false;
   }
 
@@ -141,7 +141,7 @@ void DeskBarController::OnTouchEvent(ui::TouchEvent* event) {
 }
 
 void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
-  const bool is_key_press = event->type() == ui::ET_KEY_PRESSED;
+  const bool is_key_press = event->type() == ui::EventType::kKeyPressed;
 
   // We return early if we are in an overview session because the overview desk
   // bar has its own predefined key event handling logic. This will handle key
@@ -487,8 +487,8 @@ void DeskBarController::OnLocatedEvent(ui::LocatedEvent& event) {
   // Maybe dismiss the persistent toast, unless the event might be targeting the
   // toast itself. If that is the case, we'd better let the toast handle the
   // event.
-  if ((event.type() == ui::ET_MOUSE_PRESSED ||
-       event.type() == ui::ET_TOUCH_PRESSED) &&
+  if ((event.type() == ui::EventType::kMousePressed ||
+       event.type() == ui::EventType::kTouchPressed) &&
       !TargetsSettingsBubbleContainer(event)) {
     DesksController::Get()->MaybeDismissPersistentDeskRemovalToast();
   }

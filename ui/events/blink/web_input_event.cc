@@ -64,11 +64,11 @@ blink::WebMouseWheelEvent MakeUntranslatedWebMouseWheelEventFromNativeEvent(
 blink::WebKeyboardEvent MakeWebKeyboardEventFromUiEvent(const KeyEvent& event) {
   blink::WebInputEvent::Type type = blink::WebInputEvent::Type::kUndefined;
   switch (event.type()) {
-    case ET_KEY_PRESSED:
+    case EventType::kKeyPressed:
       type = event.is_char() ? blink::WebInputEvent::Type::kChar
                              : blink::WebInputEvent::Type::kRawKeyDown;
       break;
-    case ET_KEY_RELEASED:
+    case EventType::kKeyReleased:
       type = blink::WebInputEvent::Type::kKeyUp;
       break;
     default:
@@ -166,13 +166,13 @@ blink::WebGestureEvent MakeWebGestureEventFromUiEvent(
     const ScrollEvent& event) {
   blink::WebInputEvent::Type type = blink::WebInputEvent::Type::kUndefined;
   switch (event.type()) {
-    case ET_SCROLL_FLING_START:
+    case EventType::kScrollFlingStart:
       type = blink::WebInputEvent::Type::kGestureFlingStart;
       break;
-    case ET_SCROLL_FLING_CANCEL:
+    case EventType::kScrollFlingCancel:
       type = blink::WebInputEvent::Type::kGestureFlingCancel;
       break;
-    case ET_SCROLL:
+    case EventType::kScroll:
       NOTREACHED_IN_MIGRATION() << "Invalid gesture type: " << event.type();
       break;
     default:
@@ -182,7 +182,7 @@ blink::WebGestureEvent MakeWebGestureEventFromUiEvent(
   blink::WebGestureEvent webkit_event(
       type, EventFlagsToWebEventModifiers(event.flags()), event.time_stamp(),
       blink::WebGestureDevice::kTouchpad);
-  if (event.type() == ET_SCROLL_FLING_START) {
+  if (event.type() == EventType::kScrollFlingStart) {
     webkit_event.data.fling_start.velocity_x = event.x_offset();
     webkit_event.data.fling_start.velocity_y = event.y_offset();
   }
@@ -223,7 +223,7 @@ blink::WebMouseEvent MakeWebMouseEvent(const MouseEvent& event) {
 #if BUILDFLAG(IS_WIN)
       // On Windows we have WM_ events coming from desktop and pure Events
       // coming from metro mode.
-      event.native_event().message && (event.type() != ET_MOUSE_EXITED)
+      event.native_event().message && (event.type() != EventType::kMouseExited)
           ? MakeUntranslatedWebMouseEventFromNativeEvent(
                 event.native_event(), event.time_stamp(),
                 event.pointer_details().pointer_type)
@@ -241,8 +241,9 @@ blink::WebMouseEvent MakeWebMouseEvent(const MouseEvent& event) {
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (event.native_event().message && event.type() != ET_MOUSE_EXITED)
+  if (event.native_event().message && event.type() != EventType::kMouseExited) {
     return webkit_event;
+  }
 #endif
 
   const gfx::PointF screen_point = GetScreenLocationFromEvent(event);
@@ -364,15 +365,15 @@ blink::WebMouseEvent MakeWebMouseEventFromUiEvent(const MouseEvent& event) {
   blink::WebInputEvent::Type type = blink::WebInputEvent::Type::kUndefined;
   int click_count = 0;
   switch (event.type()) {
-    case ET_MOUSE_PRESSED:
+    case EventType::kMousePressed:
       type = blink::WebInputEvent::Type::kMouseDown;
       click_count = event.GetClickCount();
       break;
-    case ET_MOUSE_RELEASED:
+    case EventType::kMouseReleased:
       type = blink::WebInputEvent::Type::kMouseUp;
       click_count = event.GetClickCount();
       break;
-    case ET_MOUSE_EXITED: {
+    case EventType::kMouseExited: {
       // When MOUSE_EXITED is created for intermediate windows that the
       // pointer crosses through, change these into mouse move events.
       const Event::Properties* props = event.properties();
@@ -386,9 +387,9 @@ blink::WebMouseEvent MakeWebMouseEventFromUiEvent(const MouseEvent& event) {
       }
       break;
     }
-    case ET_MOUSE_ENTERED:
-    case ET_MOUSE_MOVED:
-    case ET_MOUSE_DRAGGED:
+    case EventType::kMouseEntered:
+    case EventType::kMouseMoved:
+    case EventType::kMouseDragged:
       type = blink::WebInputEvent::Type::kMouseMove;
       break;
     default:
@@ -401,7 +402,8 @@ blink::WebMouseEvent MakeWebMouseEventFromUiEvent(const MouseEvent& event) {
       event.pointer_details().id);
   webkit_event.button = blink::WebMouseEvent::Button::kNoButton;
   int button_flags = event.flags();
-  if (event.type() == ET_MOUSE_PRESSED || event.type() == ET_MOUSE_RELEASED) {
+  if (event.type() == EventType::kMousePressed ||
+      event.type() == EventType::kMouseReleased) {
     // We want to use changed_button_flags() for mouse pressed & released.
     // These flags can be used only if they are set which is not always the case
     // (see e.g. GetChangedMouseButtonFlagsFromNative() in events_win.cc).

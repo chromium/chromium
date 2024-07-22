@@ -843,7 +843,7 @@ void ScrollableShelfView::OnGestureEvent(ui::GestureEvent* event) {
   } else if (shelf_view_->HandleGestureEvent(event)) {
     // |event| is consumed by ShelfView.
     event->StopPropagation();
-  } else if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN) {
+  } else if (event->type() == ui::EventType::kGestureScrollBegin) {
     // |event| is consumed by neither ScrollableShelfView nor ShelfView. So the
     // gesture end event will not be propagated to this view. Then we need to
     // reset the class members related with scroll status explicitly.
@@ -1306,7 +1306,7 @@ bool ScrollableShelfView::ShouldHandleGestures(const ui::GestureEvent& event) {
   if (scroll_status_ == kNotInScroll && !event.IsScrollGestureEvent())
     return false;
 
-  if (event.type() == ui::ET_GESTURE_SCROLL_BEGIN) {
+  if (event.type() == ui::EventType::kGestureScrollBegin) {
     CHECK_EQ(scroll_status_, kNotInScroll);
 
     float main_offset = event.details().scroll_x_hint();
@@ -1327,7 +1327,7 @@ bool ScrollableShelfView::ShouldHandleGestures(const ui::GestureEvent& event) {
   bool should_handle_gestures = scroll_status_ == kAlongMainAxisScroll;
 
   if (scroll_status_ == kAlongMainAxisScroll &&
-      event.type() == ui::ET_GESTURE_SCROLL_BEGIN) {
+      event.type() == ui::EventType::kGestureScrollBegin) {
     scroll_offset_before_main_axis_scrolling_ = scroll_offset_;
     layout_strategy_before_main_axis_scrolling_ = layout_strategy_;
 
@@ -1335,8 +1335,9 @@ bool ScrollableShelfView::ShouldHandleGestures(const ui::GestureEvent& event) {
     MaybeUpdateGradientZone();
   }
 
-  if (event.type() == ui::ET_GESTURE_END)
+  if (event.type() == ui::EventType::kGestureEnd) {
     ResetScrollStatus();
+  }
 
   return should_handle_gestures;
 }
@@ -1356,7 +1357,7 @@ bool ScrollableShelfView::ProcessGestureEvent(const ui::GestureEvent& event) {
 
   // Handle scroll-related events, but don't do anything special for begin and
   // end.
-  if (event.type() == ui::ET_GESTURE_SCROLL_BEGIN) {
+  if (event.type() == ui::EventType::kGestureScrollBegin) {
     DCHECK(!presentation_time_recorder_);
     if (Shell::Get()->IsInTabletMode()) {
       if (Shell::Get()->app_list_controller()->IsVisible(
@@ -1396,9 +1397,10 @@ bool ScrollableShelfView::ProcessGestureEvent(const ui::GestureEvent& event) {
     return true;
   }
 
-  if (event.type() == ui::ET_GESTURE_END) {
-    // Do not reset |presentation_time_recorder_| in ui::ET_GESTURE_SCROLL_END
-    // event because it may not exist due to gesture fling.
+  if (event.type() == ui::EventType::kGestureEnd) {
+    // Do not reset |presentation_time_recorder_| in
+    // ui::EventType::kGestureScrollEnd event because it may not exist due to
+    // gesture fling.
     presentation_time_recorder_.reset();
 
     // The type of scrolling offset is float to ensure that ScrollableShelfView
@@ -1413,7 +1415,7 @@ bool ScrollableShelfView::ProcessGestureEvent(const ui::GestureEvent& event) {
     return true;
   }
 
-  if (event.type() == ui::ET_SCROLL_FLING_START) {
+  if (event.type() == ui::EventType::kScrollFlingStart) {
     const bool is_horizontal_alignment = GetShelf()->IsHorizontalAlignment();
     if (!ShouldHandleScroll(gfx::Vector2dF(event.details().velocity_x(),
                                            event.details().velocity_y()),
@@ -1441,8 +1443,9 @@ bool ScrollableShelfView::ProcessGestureEvent(const ui::GestureEvent& event) {
     return true;
   }
 
-  if (event.type() != ui::ET_GESTURE_SCROLL_UPDATE)
+  if (event.type() != ui::EventType::kGestureScrollUpdate) {
     return false;
+  }
 
   float scroll_delta = 0.f;
   const bool is_horizontal = GetShelf()->IsHorizontalAlignment();
@@ -2150,8 +2153,9 @@ bool ScrollableShelfView::ShouldDelegateScrollToShelf(
   // When the shelf is not aligned in the bottom, the events should be
   // propagated and handled as MouseWheel events.
 
-  if (event.type() != ui::ET_SCROLL)
+  if (event.type() != ui::EventType::kScroll) {
     return false;
+  }
 
   const float main_offset =
       GetShelf()->IsHorizontalAlignment() ? event.x_offset() : event.y_offset();

@@ -47,7 +47,7 @@ const char kDeleteBrowsingDataActionName[] =
 
 void ClickButton(views::Button* button) {
   views::test::ButtonTestApi test_api(button);
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   test_api.NotifyClick(e);
 }

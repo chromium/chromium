@@ -425,20 +425,20 @@ bool SubmenuView::OnMouseWheel(const ui::MouseWheelEvent& e) {
 void SubmenuView::OnGestureEvent(ui::GestureEvent* event) {
   bool handled = true;
   switch (event->type()) {
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       scroll_animator_->Stop();
       break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       handled = OnScroll(0, event->details().scroll_y());
       break;
-    case ui::ET_GESTURE_SCROLL_END:
+    case ui::EventType::kGestureScrollEnd:
       break;
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kScrollFlingStart:
       if (event->details().velocity_y() != 0.0f)
         scroll_animator_->Start(0, event->details().velocity_y());
       break;
-    case ui::ET_GESTURE_TAP_DOWN:
-    case ui::ET_SCROLL_FLING_CANCEL:
+    case ui::EventType::kGestureTapDown:
+    case ui::EventType::kScrollFlingCancel:
       if (scroll_animator_->is_scrolling())
         scroll_animator_->Stop();
       else

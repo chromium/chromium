@@ -222,12 +222,12 @@ constexpr int kAutoHideTaskbarThicknessPx = 2;
 
 ui::EventType GetTouchEventType(POINTER_FLAGS pointer_flags) {
   if (pointer_flags & POINTER_FLAG_DOWN)
-    return ui::ET_TOUCH_PRESSED;
+    return ui::EventType::kTouchPressed;
   if (pointer_flags & POINTER_FLAG_UPDATE)
-    return ui::ET_TOUCH_MOVED;
+    return ui::EventType::kTouchMoved;
   if (pointer_flags & POINTER_FLAG_UP)
-    return ui::ET_TOUCH_RELEASED;
-  return ui::ET_TOUCH_MOVED;
+    return ui::EventType::kTouchReleased;
+  return ui::EventType::kTouchMoved;
 }
 
 bool IsHitTestOnResizeHandle(LRESULT hittest) {
@@ -1232,7 +1232,7 @@ void HWNDMessageHandler::ApplyPinchZoomScale(float scale) {
   POINT cursor_pos = GetCursorPos();
   ScreenToClient(hwnd(), &cursor_pos);
 
-  ui::GestureEventDetails event_details(ui::ET_GESTURE_PINCH_UPDATE);
+  ui::GestureEventDetails event_details(ui::EventType::kGesturePinchUpdate);
   event_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
   event_details.set_scale(scale);
 
@@ -1245,7 +1245,7 @@ void HWNDMessageHandler::ApplyPinchZoomBegin() {
   POINT cursor_pos = GetCursorPos();
   ScreenToClient(hwnd(), &cursor_pos);
 
-  ui::GestureEventDetails event_details(ui::ET_GESTURE_PINCH_BEGIN);
+  ui::GestureEventDetails event_details(ui::EventType::kGesturePinchBegin);
   event_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
 
   ui::GestureEvent event(cursor_pos.x, cursor_pos.y, ui::EF_NONE,
@@ -1257,7 +1257,7 @@ void HWNDMessageHandler::ApplyPinchZoomEnd() {
   POINT cursor_pos = GetCursorPos();
   ScreenToClient(hwnd(), &cursor_pos);
 
-  ui::GestureEventDetails event_details(ui::ET_GESTURE_PINCH_END);
+  ui::GestureEventDetails event_details(ui::EventType::kGesturePinchEnd);
   event_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
 
   ui::GestureEvent event(cursor_pos.x, cursor_pos.y, ui::EF_NONE,
@@ -1282,9 +1282,9 @@ void HWNDMessageHandler::ApplyPanGestureEvent(
 
   int modifiers = ui::GetModifiersFromKeyState();
 
-  ui::ScrollEvent event(ui::ET_SCROLL, cursor_location, ui::EventTimeForNow(),
-                        modifiers, scroll_x, scroll_y, scroll_x, scroll_y, 2,
-                        momentum_phase, phase);
+  ui::ScrollEvent event(ui::EventType::kScroll, cursor_location,
+                        ui::EventTimeForNow(), modifiers, scroll_x, scroll_y,
+                        scroll_x, scroll_y, 2, momentum_phase, phase);
   delegate_->HandleScrollEvent(&event);
 }
 
@@ -2182,7 +2182,7 @@ LRESULT HWNDMessageHandler::OnInputEvent(UINT message,
     ::GetCursorPos(&cursor_pos);
     ScreenToClient(hwnd(), &cursor_pos);
     ui::MouseEvent event(
-        ui::ET_MOUSE_MOVED, gfx::PointF(cursor_pos.x, cursor_pos.y),
+        ui::EventType::kMouseMoved, gfx::PointF(cursor_pos.x, cursor_pos.y),
         gfx::PointF(cursor_pos.x, cursor_pos.y), ui::EventTimeForNow(),
         GetFlagsFromRawInputMessage(input), 0);
     if (!(input->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)) {
@@ -2828,10 +2828,10 @@ LRESULT HWNDMessageHandler::OnTouchEvent(UINT message,
 
       if (input[i].dwFlags & TOUCHEVENTF_DOWN) {
         touch_ids_.insert(input[i].dwID);
-        GenerateTouchEvent(ui::ET_TOUCH_PRESSED, touch_point, touch_id,
+        GenerateTouchEvent(ui::EventType::kTouchPressed, touch_point, touch_id,
                            event_time, &touch_events);
-        ui::ComputeEventLatencyOSFromTOUCHINPUT(ui::ET_TOUCH_PRESSED, input[i],
-                                                event_time);
+        ui::ComputeEventLatencyOSFromTOUCHINPUT(ui::EventType::kTouchPressed,
+                                                input[i], event_time);
         touch_down_contexts_++;
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
@@ -2840,17 +2840,17 @@ LRESULT HWNDMessageHandler::OnTouchEvent(UINT message,
             kTouchDownContextResetTimeout);
       } else {
         if (input[i].dwFlags & TOUCHEVENTF_MOVE) {
-          GenerateTouchEvent(ui::ET_TOUCH_MOVED, touch_point, touch_id,
+          GenerateTouchEvent(ui::EventType::kTouchMoved, touch_point, touch_id,
                              event_time, &touch_events);
-          ui::ComputeEventLatencyOSFromTOUCHINPUT(ui::ET_TOUCH_MOVED, input[i],
-                                                  event_time);
+          ui::ComputeEventLatencyOSFromTOUCHINPUT(ui::EventType::kTouchMoved,
+                                                  input[i], event_time);
         }
 
         if (input[i].dwFlags & TOUCHEVENTF_UP) {
           touch_ids_.erase(input[i].dwID);
-          GenerateTouchEvent(ui::ET_TOUCH_RELEASED, touch_point, touch_id,
-                             event_time, &touch_events);
-          ui::ComputeEventLatencyOSFromTOUCHINPUT(ui::ET_TOUCH_RELEASED,
+          GenerateTouchEvent(ui::EventType::kTouchReleased, touch_point,
+                             touch_id, event_time, &touch_events);
+          ui::ComputeEventLatencyOSFromTOUCHINPUT(ui::EventType::kTouchReleased,
                                                   input[i], event_time);
           id_generator_.ReleaseNumber(input[i].dwID);
         }
@@ -2865,8 +2865,8 @@ LRESULT HWNDMessageHandler::OnTouchEvent(UINT message,
       auto touch_id = static_cast<ui::PointerId>(
           id_generator_.GetGeneratedID(touch_number));
       touch_ids_.erase(touch_number);
-      GenerateTouchEvent(ui::ET_TOUCH_RELEASED, gfx::Point(0, 0), touch_id,
-                         event_time, &touch_events);
+      GenerateTouchEvent(ui::EventType::kTouchReleased, gfx::Point(0, 0),
+                         touch_id, event_time, &touch_events);
       id_generator_.ReleaseNumber(touch_number);
     }
 
@@ -3211,18 +3211,19 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
   if (IsSynthesizedMouseMessage(message, message_time, l_param))
     event.SetFlags(event.flags() | ui::EF_FROM_TOUCH);
 
-  if (event.type() == ui::ET_MOUSE_MOVED && !HasCapture() && track_mouse) {
+  if (event.type() == ui::EventType::kMouseMoved && !HasCapture() &&
+      track_mouse) {
     // Windows only fires WM_MOUSELEAVE events if the application begins
     // "tracking" mouse events for a given HWND during WM_MOUSEMOVE events.
     // We need to call |TrackMouseEvents| to listen for WM_MOUSELEAVE.
     TrackMouseEvents((message == WM_NCMOUSEMOVE) ? TME_NONCLIENT | TME_LEAVE
                                                  : TME_LEAVE);
-  } else if (event.type() == ui::ET_MOUSE_EXITED) {
+  } else if (event.type() == ui::EventType::kMouseExited) {
     // Reset our tracking flags so future mouse movement over this
     // NativeWidget results in a new tracking session. Fall through for
     // OnMouseEvent.
     active_mouse_tracking_flags_ = 0;
-  } else if (event.type() == ui::ET_MOUSEWHEEL) {
+  } else if (event.type() == ui::EventType::kMousewheel) {
     ui::MouseWheelEvent mouse_wheel_event(msg);
     // Reroute the mouse wheel to the window under the pointer if applicable.
     return (ui::RerouteMouseWheel(hwnd(), w_param, l_param) ||
@@ -3231,10 +3232,10 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
                : 1;
   }
 
-  // Suppress |ET_MOUSE_MOVED| and |ET_MOUSE_DRAGGED| events from WM_MOUSE*
-  // messages when using WM_INPUT.
-  if (using_wm_input_ && (event.type() == ui::ET_MOUSE_MOVED ||
-                          event.type() == ui::ET_MOUSE_DRAGGED)) {
+  // Suppress |EventType::kMouseMoved| and |EventType::kMouseDragged| events
+  // from WM_MOUSE* messages when using WM_INPUT.
+  if (using_wm_input_ && (event.type() == ui::EventType::kMouseMoved ||
+                          event.type() == ui::EventType::kMouseDragged)) {
     return 0;
   }
 
@@ -3243,7 +3244,7 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   bool handled = false;
 
-  if (event.type() == ui::ET_MOUSE_DRAGGED) {
+  if (event.type() == ui::EventType::kMouseDragged) {
     constexpr int kMaxDragEventsToIgnore00Move = 6;
     POINT point;
     point.x = event.x();
@@ -3272,7 +3273,7 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
         return 0;
       }
     }
-  } else if (event.type() == ui::ET_MOUSE_PRESSED) {
+  } else if (event.type() == ui::EventType::kMousePressed) {
     num_drag_events_after_press_ = 0;
   }
 
@@ -3324,8 +3325,8 @@ LRESULT HWNDMessageHandler::HandlePointerEventTypeTouchOrNonClient(
 
   last_touch_or_pen_message_time_ = ::GetMessageTime();
   // Ignore enter/leave events, otherwise they will be converted in
-  // |GetTouchEventType| to ET_TOUCH_PRESSED/ET_TOUCH_RELEASED events, which
-  // is not correct.
+  // |GetTouchEventType| to EventType::kTouchPressed/EventType::kTouchReleased
+  // events, which is not correct.
   if (message == WM_POINTERENTER || message == WM_POINTERLEAVE) {
     SetMsgHandled(TRUE);
     return 0;
@@ -3388,8 +3389,9 @@ LRESULT HWNDMessageHandler::HandlePointerEventTypeTouchOrNonClient(
       ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, event_time);
 
   // Release the pointer id for touch release events.
-  if (event_type == ui::ET_TOUCH_RELEASED)
+  if (event_type == ui::EventType::kTouchReleased) {
     id_generator_.ReleaseNumber(pointer_id);
+  }
 
   // There are cases where the code handling the message destroys the
   // window, so use the weak ptr to check if destruction occurred or not.
@@ -3411,8 +3413,9 @@ LRESULT HWNDMessageHandler::HandlePointerEventTypeTouchOrNonClient(
           SendMessage(hwnd(), WM_NCHITTEST, 0, l_param) == HTCAPTION;
       // Unlike above, we must mark both WM_POINTERUP and WM_NCPOINTERUP as
       // handled, in order for the custom caption buttons to work correctly.
-      if (event_type == ui::ET_TOUCH_RELEASED && !on_titlebar)
+      if (event_type == ui::EventType::kTouchReleased && !on_titlebar) {
         event.SetHandled();
+      }
     }
     SetMsgHandled(event.handled());
   }

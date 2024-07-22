@@ -49,7 +49,7 @@ class GlanceablesContentsScrollView::ScrollBar : public RoundedScrollBar {
     ResetMouseWheelTimer();
 
     switch (event->type()) {
-      case ui::ET_GESTURE_SCROLL_BEGIN:
+      case ui::EventType::kGestureScrollBegin:
         // Check if the position is at the max/min position at the start of the
         // scroll event.
         if (!GetVisible()) {
@@ -69,7 +69,7 @@ class GlanceablesContentsScrollView::ScrollBar : public RoundedScrollBar {
               GetTrackBounds().height() - GetThumb()->GetLength();
         }
         break;
-      case ui::ET_GESTURE_SCROLL_UPDATE:
+      case ui::EventType::kGestureScrollUpdate:
         switch (time_management_context_) {
           case TimeManagementContext::kTasks: {
             // Note that max position is at the bottom of the scrollbar, while
@@ -161,7 +161,7 @@ class GlanceablesContentsScrollView::ScrollBar : public RoundedScrollBar {
     ResetMouseWheelTimer();
 
     switch (event->type()) {
-      case ui::ET_SCROLL_FLING_CANCEL:
+      case ui::EventType::kScrollFlingCancel:
         // Check if the position is at the max/min position at the start of the
         // scroll event.
         if (!GetVisible()) {
@@ -181,7 +181,7 @@ class GlanceablesContentsScrollView::ScrollBar : public RoundedScrollBar {
               GetTrackBounds().height() - GetThumb()->GetLength();
         }
         break;
-      case ui::ET_SCROLL:
+      case ui::EventType::kScroll:
         switch (time_management_context_) {
           case TimeManagementContext::kTasks: {
             // Note that max position is at the bottom of the scrollbar, while
@@ -346,10 +346,10 @@ void GlanceablesContentsScrollView::OnGestureEvent(ui::GestureEvent* event) {
   // scroll bar is visible and the scroll view is scrollable, but the overscroll
   // behavior also needs to consider the case where the scroll view is not
   // scrollable.
-  bool scroll_event = event->type() == ui::ET_GESTURE_SCROLL_UPDATE ||
-                      event->type() == ui::ET_GESTURE_SCROLL_BEGIN ||
-                      event->type() == ui::ET_GESTURE_SCROLL_END ||
-                      event->type() == ui::ET_SCROLL_FLING_START;
+  bool scroll_event = event->type() == ui::EventType::kGestureScrollUpdate ||
+                      event->type() == ui::EventType::kGestureScrollBegin ||
+                      event->type() == ui::EventType::kGestureScrollEnd ||
+                      event->type() == ui::EventType::kScrollFlingStart;
 
   if (!scroll_bar_->GetVisible() && scroll_event) {
     scroll_bar_->OnGestureEvent(event);

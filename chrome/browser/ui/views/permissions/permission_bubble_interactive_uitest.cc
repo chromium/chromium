@@ -126,9 +126,9 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
     if (lbv->GetChipController()->IsPermissionPromptChipVisible() &&
         !lbv->GetChipController()->IsBubbleShowing()) {
       views::test::ButtonTestApi(lbv->GetChipController()->chip())
-          .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
-                                      gfx::Point(), ui::EventTimeForNow(),
-                                      ui::EF_LEFT_MOUSE_BUTTON, 0));
+          .NotifyClick(ui::MouseEvent(
+              ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
       base::RunLoop().RunUntilIdle();
     }
   }

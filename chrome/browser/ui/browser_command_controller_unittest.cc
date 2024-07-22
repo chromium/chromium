@@ -59,59 +59,59 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKey) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // F1-3 keys are reserved Chrome accelerators on Chrome OS.
   EXPECT_TRUE(browser()->command_controller()->IsReservedCommandOrKey(
-      IDC_BACK, input::NativeWebKeyboardEvent(
-                    ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_BROWSER_BACK,
-                                 ui::DomCode::BROWSER_BACK, 0))));
+      IDC_BACK, input::NativeWebKeyboardEvent(ui::KeyEvent(
+                    ui::EventType::kKeyPressed, ui::VKEY_BROWSER_BACK,
+                    ui::DomCode::BROWSER_BACK, 0))));
   EXPECT_TRUE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_FORWARD, input::NativeWebKeyboardEvent(ui::KeyEvent(
-                       ui::ET_KEY_PRESSED, ui::VKEY_BROWSER_FORWARD,
+                       ui::EventType::kKeyPressed, ui::VKEY_BROWSER_FORWARD,
                        ui::DomCode::BROWSER_FORWARD, 0))));
   EXPECT_TRUE(browser()->command_controller()->IsReservedCommandOrKey(
-      IDC_RELOAD, input::NativeWebKeyboardEvent(
-                      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_BROWSER_REFRESH,
-                                   ui::DomCode::BROWSER_REFRESH, 0))));
+      IDC_RELOAD, input::NativeWebKeyboardEvent(ui::KeyEvent(
+                      ui::EventType::kKeyPressed, ui::VKEY_BROWSER_REFRESH,
+                      ui::DomCode::BROWSER_REFRESH, 0))));
 
   // When there are modifier keys pressed, don't reserve.
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_RELOAD_BYPASSING_CACHE, input::NativeWebKeyboardEvent(ui::KeyEvent(
-                                      ui::ET_KEY_PRESSED, ui::VKEY_F3,
+                                      ui::EventType::kKeyPressed, ui::VKEY_F3,
                                       ui::DomCode::F3, ui::EF_SHIFT_DOWN))));
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_RELOAD_BYPASSING_CACHE, input::NativeWebKeyboardEvent(ui::KeyEvent(
-                                      ui::ET_KEY_PRESSED, ui::VKEY_F3,
+                                      ui::EventType::kKeyPressed, ui::VKEY_F3,
                                       ui::DomCode::F3, ui::EF_CONTROL_DOWN))));
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_FULLSCREEN, input::NativeWebKeyboardEvent(
-                          ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_F4,
+                          ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_F4,
                                        ui::DomCode::F4, ui::EF_SHIFT_DOWN))));
 
   // F4-10 keys are not reserved since they are Ash accelerators.
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       -1, input::NativeWebKeyboardEvent(ui::KeyEvent(
-              ui::ET_KEY_PRESSED, ui::VKEY_F4, ui::DomCode::F4, 0))));
+              ui::EventType::kKeyPressed, ui::VKEY_F4, ui::DomCode::F4, 0))));
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       -1, input::NativeWebKeyboardEvent(ui::KeyEvent(
-              ui::ET_KEY_PRESSED, ui::VKEY_F5, ui::DomCode::F5, 0))));
+              ui::EventType::kKeyPressed, ui::VKEY_F5, ui::DomCode::F5, 0))));
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       -1, input::NativeWebKeyboardEvent(ui::KeyEvent(
-              ui::ET_KEY_PRESSED, ui::VKEY_F6, ui::DomCode::F6, 0))));
+              ui::EventType::kKeyPressed, ui::VKEY_F6, ui::DomCode::F6, 0))));
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       -1, input::NativeWebKeyboardEvent(ui::KeyEvent(
-              ui::ET_KEY_PRESSED, ui::VKEY_F7, ui::DomCode::F7, 0))));
+              ui::EventType::kKeyPressed, ui::VKEY_F7, ui::DomCode::F7, 0))));
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       -1, input::NativeWebKeyboardEvent(ui::KeyEvent(
-              ui::ET_KEY_PRESSED, ui::VKEY_F8, ui::DomCode::F8, 0))));
+              ui::EventType::kKeyPressed, ui::VKEY_F8, ui::DomCode::F8, 0))));
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       -1, input::NativeWebKeyboardEvent(ui::KeyEvent(
-              ui::ET_KEY_PRESSED, ui::VKEY_F9, ui::DomCode::F9, 0))));
+              ui::EventType::kKeyPressed, ui::VKEY_F9, ui::DomCode::F9, 0))));
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       -1, input::NativeWebKeyboardEvent(ui::KeyEvent(
-              ui::ET_KEY_PRESSED, ui::VKEY_F10, ui::DomCode::F10, 0))));
+              ui::EventType::kKeyPressed, ui::VKEY_F10, ui::DomCode::F10, 0))));
 
   // Shift+Control+Alt+F3 is also an Ash accelerator. Don't reserve it.
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       -1, input::NativeWebKeyboardEvent(ui::KeyEvent(
-              ui::ET_KEY_PRESSED, ui::VKEY_F3, ui::DomCode::F3,
+              ui::EventType::kKeyPressed, ui::VKEY_F3, ui::DomCode::F3,
               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN))));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -122,15 +122,15 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKey) {
   // USE_AURA is #defined.
   EXPECT_TRUE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_NEW_WINDOW, input::NativeWebKeyboardEvent(ui::KeyEvent(
-                          ui::ET_KEY_PRESSED, ui::VKEY_N, ui::DomCode::US_N,
-                          ui::EF_CONTROL_DOWN))));
+                          ui::EventType::kKeyPressed, ui::VKEY_N,
+                          ui::DomCode::US_N, ui::EF_CONTROL_DOWN))));
   EXPECT_TRUE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_CLOSE_TAB, input::NativeWebKeyboardEvent(ui::KeyEvent(
-                         ui::ET_KEY_PRESSED, ui::VKEY_W, ui::DomCode::US_W,
-                         ui::EF_CONTROL_DOWN))));
+                         ui::EventType::kKeyPressed, ui::VKEY_W,
+                         ui::DomCode::US_W, ui::EF_CONTROL_DOWN))));
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_FIND, input::NativeWebKeyboardEvent(
-                    ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_F,
+                    ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_F,
                                  ui::DomCode::US_F, ui::EF_CONTROL_DOWN))));
 #endif  // USE_AURA
 }
@@ -148,17 +148,20 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKeyIsApp) {
   // When is_type_app(), no keys are reserved.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
-      IDC_BACK, input::NativeWebKeyboardEvent(ui::KeyEvent(
-                    ui::ET_KEY_PRESSED, ui::VKEY_F1, ui::DomCode::F1, 0))));
+      IDC_BACK,
+      input::NativeWebKeyboardEvent(ui::KeyEvent(
+          ui::EventType::kKeyPressed, ui::VKEY_F1, ui::DomCode::F1, 0))));
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
-      IDC_FORWARD, input::NativeWebKeyboardEvent(ui::KeyEvent(
-                       ui::ET_KEY_PRESSED, ui::VKEY_F2, ui::DomCode::F2, 0))));
+      IDC_FORWARD,
+      input::NativeWebKeyboardEvent(ui::KeyEvent(
+          ui::EventType::kKeyPressed, ui::VKEY_F2, ui::DomCode::F2, 0))));
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
-      IDC_RELOAD, input::NativeWebKeyboardEvent(ui::KeyEvent(
-                      ui::ET_KEY_PRESSED, ui::VKEY_F3, ui::DomCode::F3, 0))));
+      IDC_RELOAD,
+      input::NativeWebKeyboardEvent(ui::KeyEvent(
+          ui::EventType::kKeyPressed, ui::VKEY_F3, ui::DomCode::F3, 0))));
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       -1, input::NativeWebKeyboardEvent(ui::KeyEvent(
-              ui::ET_KEY_PRESSED, ui::VKEY_F4, ui::DomCode::F4, 0))));
+              ui::EventType::kKeyPressed, ui::VKEY_F4, ui::DomCode::F4, 0))));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(USE_AURA)
@@ -166,15 +169,15 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKeyIsApp) {
   // USE_AURA is #defined.
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_NEW_WINDOW, input::NativeWebKeyboardEvent(ui::KeyEvent(
-                          ui::ET_KEY_PRESSED, ui::VKEY_N, ui::DomCode::US_N,
-                          ui::EF_CONTROL_DOWN))));
+                          ui::EventType::kKeyPressed, ui::VKEY_N,
+                          ui::DomCode::US_N, ui::EF_CONTROL_DOWN))));
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_CLOSE_TAB, input::NativeWebKeyboardEvent(ui::KeyEvent(
-                         ui::ET_KEY_PRESSED, ui::VKEY_W, ui::DomCode::US_W,
-                         ui::EF_CONTROL_DOWN))));
+                         ui::EventType::kKeyPressed, ui::VKEY_W,
+                         ui::DomCode::US_W, ui::EF_CONTROL_DOWN))));
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_FIND, input::NativeWebKeyboardEvent(
-                    ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_F,
+                    ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_F,
                                  ui::DomCode::US_F, ui::EF_CONTROL_DOWN))));
 #endif  // USE_AURA
 }

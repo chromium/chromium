@@ -272,8 +272,8 @@ void WmModeController::OnLocatedEvent(ui::LocatedEvent* event) {
   event->StopPropagation();
   event->SetHandled();
 
-  const bool is_release = event->type() == ui::ET_MOUSE_RELEASED ||
-                          event->type() == ui::ET_TOUCH_RELEASED;
+  const bool is_release = event->type() == ui::EventType::kMouseReleased ||
+                          event->type() == ui::EventType::kTouchReleased;
   if (!is_release) {
     return;
   }

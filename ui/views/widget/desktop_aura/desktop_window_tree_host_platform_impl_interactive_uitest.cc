@@ -91,8 +91,10 @@ class MouseMoveCounterHandler : public ui::EventHandler {
     // aura::WindowTreeHostPlatform::MoveCursorToScreenLocationInPixels. Thus,
     // two events will come - one is synthetic and another one is our real one.
     // Ignore the synthetic events as we are not interested in them.
-    if (event->type() == ui::ET_MOUSE_MOVED && !event->IsSynthesized())
+    if (event->type() == ui::EventType::kMouseMoved &&
+        !event->IsSynthesized()) {
       ++count_;
+    }
   }
 
   int num_mouse_moves() const { return count_; }
@@ -291,10 +293,10 @@ class DesktopWindowTreeHostPlatformImplTest
   void GenerateAndDispatchClickMouseEvent(const gfx::Point& click_location,
                                           int flags) {
     DCHECK(host_);
-    DispatchEvent(
-        GenerateMouseEvent(ui::ET_MOUSE_PRESSED, click_location, flags));
-    DispatchEvent(
-        GenerateMouseEvent(ui::ET_MOUSE_RELEASED, click_location, flags));
+    DispatchEvent(GenerateMouseEvent(ui::EventType::kMousePressed,
+                                     click_location, flags));
+    DispatchEvent(GenerateMouseEvent(ui::EventType::kMouseReleased,
+                                     click_location, flags));
   }
 
   ui::MouseEvent* GenerateMouseEvent(ui::EventType event_type,
@@ -415,11 +417,12 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, MAYBE_HitTest) {
     // |hittest| value we specified.
 
     if (use_touch_event()) {
-      ui::GestureEventDetails gesture_details(ui::ET_GESTURE_SCROLL_BEGIN);
+      ui::GestureEventDetails gesture_details(
+          ui::EventType::kGestureScrollBegin);
       DispatchEvent(
           GenerateGestureEvent(pointer_location_in_px, gesture_details));
     } else {
-      DispatchEvent(GenerateMouseEvent(ui::ET_MOUSE_PRESSED,
+      DispatchEvent(GenerateMouseEvent(ui::EventType::kMousePressed,
                                        pointer_location_in_px,
                                        ui::EF_LEFT_MOUSE_BUTTON));
     }
@@ -436,11 +439,11 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, MAYBE_HitTest) {
     // Dispatch mouse/touch release event to release a mouse/touch pressed
     // handler and be able to consume future events.
     if (use_touch_event()) {
-      ui::GestureEventDetails gesture_details(ui::ET_GESTURE_SCROLL_END);
+      ui::GestureEventDetails gesture_details(ui::EventType::kGestureScrollEnd);
       DispatchEvent(
           GenerateGestureEvent(pointer_location_in_px, gesture_details));
     } else {
-      DispatchEvent(GenerateMouseEvent(ui::ET_MOUSE_RELEASED,
+      DispatchEvent(GenerateMouseEvent(ui::EventType::kMouseReleased,
                                        pointer_location_in_px,
                                        ui::EF_LEFT_MOUSE_BUTTON));
     }
@@ -472,7 +475,7 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch,
   host_->ResetCalledMaximize();
 
   if (use_touch_event()) {
-    ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+    ui::GestureEventDetails details(ui::EventType::kGestureTap);
     details.set_tap_count(1);
     DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
     details.set_tap_count(2);
@@ -510,7 +513,7 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch,
 
   if (use_touch_event()) {
     frame_view->set_hit_test_result(HTCLIENT);
-    ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+    ui::GestureEventDetails details(ui::EventType::kGestureTap);
     details.set_tap_count(1);
     DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
 

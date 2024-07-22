@@ -94,7 +94,7 @@ void EventCountView::ResetCounts() {
 
 void EventCountView::OnMouseMoved(const ui::MouseEvent& event) {
   // MouseMove events are not re-dispatched from the RootView.
-  ++event_count_[ui::ET_MOUSE_MOVED];
+  ++event_count_[ui::EventType::kMouseMoved];
   last_flags_ = 0;
 }
 

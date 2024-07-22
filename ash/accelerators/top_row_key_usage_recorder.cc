@@ -18,7 +18,8 @@ TopRowKeyUsageRecorder::TopRowKeyUsageRecorder() = default;
 TopRowKeyUsageRecorder::~TopRowKeyUsageRecorder() = default;
 
 void TopRowKeyUsageRecorder::OnKeyEvent(ui::KeyEvent* key_event) {
-  if (key_event->is_repeat() || key_event->type() == ui::ET_KEY_RELEASED) {
+  if (key_event->is_repeat() ||
+      key_event->type() == ui::EventType::kKeyReleased) {
     return;
   }
 

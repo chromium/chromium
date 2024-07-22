@@ -32,8 +32,9 @@ constexpr float kAppsGridCardifiedScale = 0.9f;
 }  // namespace
 
 bool IsUnhandledUnmodifiedEvent(const ui::KeyEvent& event) {
-  if (event.handled() || event.type() != ui::ET_KEY_PRESSED)
+  if (event.handled() || event.type() != ui::EventType::kKeyPressed) {
     return false;
+  }
 
   if (event.IsShiftDown() || event.IsControlDown() || event.IsAltDown())
     return false;

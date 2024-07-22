@@ -125,7 +125,7 @@ ash::VideoConferenceTray* GetVcTray() {
 
 // Simulates left click on the `button`.
 void ClickButton(views::Button* button) {
-  ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi(button).NotifyClick(event);
 }

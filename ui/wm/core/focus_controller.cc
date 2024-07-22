@@ -135,11 +135,13 @@ aura::Window* FocusController::GetFocusedWindow() {
 void FocusController::OnKeyEvent(ui::KeyEvent* event) {}
 
 void FocusController::OnMouseEvent(ui::MouseEvent* event) {
-  if ((event->type() == ui::ET_MOUSE_PRESSED ||
-       (event->type() == ui::ET_MOUSE_ENTERED && focus_follows_cursor_)) &&
-      !event->handled())
+  if ((event->type() == ui::EventType::kMousePressed ||
+       (event->type() == ui::EventType::kMouseEntered &&
+        focus_follows_cursor_)) &&
+      !event->handled()) {
     WindowFocusedFromInputEvent(static_cast<aura::Window*>(event->target()),
                                 event);
+  }
 }
 
 void FocusController::OnScrollEvent(ui::ScrollEvent* event) {}
@@ -147,7 +149,7 @@ void FocusController::OnScrollEvent(ui::ScrollEvent* event) {}
 void FocusController::OnTouchEvent(ui::TouchEvent* event) {}
 
 void FocusController::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_BEGIN &&
+  if (event->type() == ui::EventType::kGestureBegin &&
       event->details().touch_points() == 1 && !event->handled()) {
     WindowFocusedFromInputEvent(static_cast<aura::Window*>(event->target()),
                                 event);
@@ -478,7 +480,7 @@ void FocusController::WindowFocusedFromInputEvent(aura::Window* window,
                                                   const ui::Event* event) {
   // For focus follows cursor: avoid activating when `window` is a child of the
   // currently active window.
-  bool is_mouse_entered_event = event->type() == ui::ET_MOUSE_ENTERED;
+  bool is_mouse_entered_event = event->type() == ui::EventType::kMouseEntered;
   if (is_mouse_entered_event && active_window_ &&
       active_window_->Contains(window)) {
     return;

@@ -74,71 +74,71 @@ void EventFilter::OnGestureEvent(ui::GestureEvent* event) {
 
 bool EventFilter::IsEventAllowed(ui::EventType type) {
   switch (type) {
-    case ui::ET_KEY_PRESSED:
-    case ui::ET_KEY_RELEASED:
+    case ui::EventType::kKeyPressed:
+    case ui::EventType::kKeyReleased:
       return IsTypeEnabled(InputTypes::KEY);
 
-    case ui::ET_MOUSE_PRESSED:
-    case ui::ET_MOUSE_DRAGGED:
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMousePressed:
+    case ui::EventType::kMouseDragged:
+    case ui::EventType::kMouseReleased:
       return IsTypeEnabled(InputTypes::MOUSE_CLICK);
 
-    case ui::ET_MOUSE_MOVED:
-    case ui::ET_MOUSE_ENTERED:
-    case ui::ET_MOUSE_EXITED:
+    case ui::EventType::kMouseMoved:
+    case ui::EventType::kMouseEntered:
+    case ui::EventType::kMouseExited:
       return IsTypeEnabled(InputTypes::MOUSE_MOVE);
 
-    case ui::ET_MOUSEWHEEL:
+    case ui::EventType::kMousewheel:
       return IsTypeEnabled(InputTypes::MOUSE_WHEEL);
 
-    case ui::ET_GESTURE_TAP:
-    case ui::ET_GESTURE_TAP_DOWN:
-    case ui::ET_GESTURE_TAP_CANCEL:
-    case ui::ET_GESTURE_TAP_UNCONFIRMED:
-    case ui::ET_GESTURE_DOUBLE_TAP:
-    case ui::ET_GESTURE_TWO_FINGER_TAP:
-    case ui::ET_GESTURE_SHORT_PRESS:
-    case ui::ET_GESTURE_LONG_PRESS:
-    case ui::ET_GESTURE_LONG_TAP:
+    case ui::EventType::kGestureTap:
+    case ui::EventType::kGestureTapDown:
+    case ui::EventType::kGestureTapCancel:
+    case ui::EventType::kGestureTapUnconfirmed:
+    case ui::EventType::kGestureDoubleTap:
+    case ui::EventType::kGestureTwoFingerTap:
+    case ui::EventType::kGestureShortPress:
+    case ui::EventType::kGestureLongPress:
+    case ui::EventType::kGestureLongTap:
       return IsTypeEnabled(InputTypes::GESTURE_TAP);
 
-    case ui::ET_GESTURE_PINCH_BEGIN:
-    case ui::ET_GESTURE_PINCH_END:
-    case ui::ET_GESTURE_PINCH_UPDATE:
+    case ui::EventType::kGesturePinchBegin:
+    case ui::EventType::kGesturePinchEnd:
+    case ui::EventType::kGesturePinchUpdate:
       return IsTypeEnabled(InputTypes::GESTURE_PINCH);
 
-    case ui::ET_GESTURE_SCROLL_BEGIN:
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_GESTURE_SCROLL_UPDATE:
-    case ui::ET_GESTURE_SWIPE:
-    case ui::ET_SCROLL:
-    case ui::ET_SCROLL_FLING_START:
-    case ui::ET_SCROLL_FLING_CANCEL:
+    case ui::EventType::kGestureScrollBegin:
+    case ui::EventType::kGestureScrollEnd:
+    case ui::EventType::kGestureScrollUpdate:
+    case ui::EventType::kGestureSwipe:
+    case ui::EventType::kScroll:
+    case ui::EventType::kScrollFlingStart:
+    case ui::EventType::kScrollFlingCancel:
       return IsTypeEnabled(InputTypes::GESTURE_DRAG);
 
     // Allow low-level touch events and non-input control messages to pass
     // through unimpeded.
-    case ui::ET_TOUCH_RELEASED:
-    case ui::ET_TOUCH_PRESSED:
-    case ui::ET_TOUCH_MOVED:
-    case ui::ET_TOUCH_CANCELLED:
-    case ui::ET_DROP_TARGET_EVENT:
-    case ui::ET_GESTURE_SHOW_PRESS:
-    case ui::ET_GESTURE_BEGIN:
-    case ui::ET_GESTURE_END:
-    case ui::ET_CANCEL_MODE:
-    case ui::ET_MOUSE_CAPTURE_CHANGED:
+    case ui::EventType::kTouchReleased:
+    case ui::EventType::kTouchPressed:
+    case ui::EventType::kTouchMoved:
+    case ui::EventType::kTouchCancelled:
+    case ui::EventType::kDropTargetEvent:
+    case ui::EventType::kGestureShowPress:
+    case ui::EventType::kGestureBegin:
+    case ui::EventType::kGestureEnd:
+    case ui::EventType::kCancelMode:
+    case ui::EventType::kMouseCaptureChanged:
       return true;
 
-    case ui::ET_UMA_DATA:
+    case ui::EventType::kUmaData:
       NOTREACHED_IN_MIGRATION();  // ChromeOS only.
       break;
 
-    case ui::ET_LAST:
+    case ui::EventType::kLast:
       NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
 
-    case ui::ET_UNKNOWN:
+    case ui::EventType::kUnknown:
       break;
   }
 

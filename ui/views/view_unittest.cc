@@ -1074,10 +1074,11 @@ TEST_F(ViewTest, MouseEvent) {
   v2->Reset();
 
   gfx::Point p1(110, 120);
-  ui::MouseEvent pressed(ui::ET_MOUSE_PRESSED, p1, p1, ui::EventTimeForNow(),
-                         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent pressed(ui::EventType::kMousePressed, p1, p1,
+                         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                         ui::EF_LEFT_MOUSE_BUTTON);
   root->OnMousePressed(pressed);
-  EXPECT_EQ(v2->last_mouse_event_type_, ui::ET_MOUSE_PRESSED);
+  EXPECT_EQ(v2->last_mouse_event_type_, ui::EventType::kMousePressed);
   EXPECT_EQ(v2->location_.x(), 10);
   EXPECT_EQ(v2->location_.y(), 20);
   // Make sure v1 did not receive the event
@@ -1087,10 +1088,10 @@ TEST_F(ViewTest, MouseEvent) {
   v1->Reset();
   v2->Reset();
   gfx::Point p2(50, 40);
-  ui::MouseEvent dragged(ui::ET_MOUSE_DRAGGED, p2, p2, ui::EventTimeForNow(),
-                         ui::EF_LEFT_MOUSE_BUTTON, 0);
+  ui::MouseEvent dragged(ui::EventType::kMouseDragged, p2, p2,
+                         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0);
   root->OnMouseDragged(dragged);
-  EXPECT_EQ(v2->last_mouse_event_type_, ui::ET_MOUSE_DRAGGED);
+  EXPECT_EQ(v2->last_mouse_event_type_, ui::EventType::kMouseDragged);
   EXPECT_EQ(v2->location_.x(), -50);
   EXPECT_EQ(v2->location_.y(), -60);
   // Make sure v1 did not receive the event
@@ -1099,10 +1100,10 @@ TEST_F(ViewTest, MouseEvent) {
   // Releasted event out of bounds. Should still go to v2
   v1->Reset();
   v2->Reset();
-  ui::MouseEvent released(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                          ui::EventTimeForNow(), 0, 0);
+  ui::MouseEvent released(ui::EventType::kMouseReleased, gfx::Point(),
+                          gfx::Point(), ui::EventTimeForNow(), 0, 0);
   root->OnMouseDragged(released);
-  EXPECT_EQ(v2->last_mouse_event_type_, ui::ET_MOUSE_RELEASED);
+  EXPECT_EQ(v2->last_mouse_event_type_, ui::EventType::kMouseReleased);
   EXPECT_EQ(v2->location_.x(), -100);
   EXPECT_EQ(v2->location_.y(), -100);
   // Make sure v1 did not receive the event
@@ -1132,7 +1133,7 @@ TEST_F(ViewTest, DeleteOnPressed) {
 
   v2->delete_on_pressed_ = true;
   gfx::Point point(110, 120);
-  ui::MouseEvent pressed(ui::ET_MOUSE_PRESSED, point, point,
+  ui::MouseEvent pressed(ui::EventType::kMousePressed, point, point,
                          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                          ui::EF_LEFT_MOUSE_BUTTON);
   root->OnMousePressed(pressed);
@@ -1160,21 +1161,22 @@ TEST_F(ViewTest, DetectReturnFormDrag) {
   v1->Reset();
   v2->Reset();
   gfx::Point p1(110, 120);
-  ui::MouseEvent pressed(ui::ET_MOUSE_PRESSED, p1, p1, ui::EventTimeForNow(),
-                         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent pressed(ui::EventType::kMousePressed, p1, p1,
+                         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                         ui::EF_LEFT_MOUSE_BUTTON);
   root->OnMousePressed(pressed);
 
   v1->Reset();
   v2->Reset();
   gfx::Point p2(50, 40);
-  ui::MouseEvent dragged(ui::ET_MOUSE_DRAGGED, p2, p2, ui::EventTimeForNow(),
-                         ui::EF_LEFT_MOUSE_BUTTON, 0);
+  ui::MouseEvent dragged(ui::EventType::kMouseDragged, p2, p2,
+                         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0);
   EXPECT_TRUE(root->OnMouseDragged(dragged));
 
   v1->Reset();
   v2->Reset();
-  ui::MouseEvent released(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                          ui::EventTimeForNow(), 0, 0);
+  ui::MouseEvent released(ui::EventType::kMouseReleased, gfx::Point(),
+                          gfx::Point(), ui::EventTimeForNow(), 0, 0);
   EXPECT_TRUE(root->OnMouseDragged(released));
 }
 
@@ -2537,7 +2539,8 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
 
   // Move the mouse in v111.
   gfx::Point p1(6, 6);
-  ui::MouseEvent move1(ui::ET_MOUSE_MOVED, p1, p1, ui::EventTimeForNow(), 0, 0);
+  ui::MouseEvent move1(ui::EventType::kMouseMoved, p1, p1,
+                       ui::EventTimeForNow(), 0, 0);
   root_view->OnMouseMoved(move1);
   EXPECT_TRUE(v111->received_mouse_enter_);
   EXPECT_FALSE(v11->last_mouse_event_type_);
@@ -2548,7 +2551,8 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
 
   // Now, move into v121.
   gfx::Point p2(65, 21);
-  ui::MouseEvent move2(ui::ET_MOUSE_MOVED, p2, p2, ui::EventTimeForNow(), 0, 0);
+  ui::MouseEvent move2(ui::EventType::kMouseMoved, p2, p2,
+                       ui::EventTimeForNow(), 0, 0);
   root_view->OnMouseMoved(move2);
   EXPECT_TRUE(v111->received_mouse_exit_);
   EXPECT_TRUE(v121->received_mouse_enter_);
@@ -2559,7 +2563,8 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
 
   // Now, move into v11.
   gfx::Point p3(1, 1);
-  ui::MouseEvent move3(ui::ET_MOUSE_MOVED, p3, p3, ui::EventTimeForNow(), 0, 0);
+  ui::MouseEvent move3(ui::EventType::kMouseMoved, p3, p3,
+                       ui::EventTimeForNow(), 0, 0);
   root_view->OnMouseMoved(move3);
   EXPECT_TRUE(v121->received_mouse_exit_);
   EXPECT_TRUE(v11->received_mouse_enter_);
@@ -2570,7 +2575,8 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
 
   // Move to v21.
   gfx::Point p4(121, 15);
-  ui::MouseEvent move4(ui::ET_MOUSE_MOVED, p4, p4, ui::EventTimeForNow(), 0, 0);
+  ui::MouseEvent move4(ui::EventType::kMouseMoved, p4, p4,
+                       ui::EventTimeForNow(), 0, 0);
   root_view->OnMouseMoved(move4);
   EXPECT_TRUE(v21->received_mouse_enter_);
   EXPECT_FALSE(v2->last_mouse_event_type_);
@@ -2583,7 +2589,8 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
 
   // Move to v1.
   gfx::Point p5(21, 0);
-  ui::MouseEvent move5(ui::ET_MOUSE_MOVED, p5, p5, ui::EventTimeForNow(), 0, 0);
+  ui::MouseEvent move5(ui::EventType::kMouseMoved, p5, p5,
+                       ui::EventTimeForNow(), 0, 0);
   root_view->OnMouseMoved(move5);
   EXPECT_TRUE(v21->received_mouse_exit_);
   EXPECT_TRUE(v1->received_mouse_enter_);
@@ -2593,8 +2600,8 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
 
   // Now, move into v11.
   gfx::Point p6(15, 15);
-  ui::MouseEvent mouse6(ui::ET_MOUSE_MOVED, p6, p6, ui::EventTimeForNow(), 0,
-                        0);
+  ui::MouseEvent mouse6(ui::EventType::kMouseMoved, p6, p6,
+                        ui::EventTimeForNow(), 0, 0);
   root_view->OnMouseMoved(mouse6);
   EXPECT_TRUE(v11->received_mouse_enter_);
   EXPECT_FALSE(v1->last_mouse_event_type_);
@@ -2606,8 +2613,8 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
   // and the mouse remains inside |v1| the whole time, it receives another ENTER
   // when the mouse leaves v11.
   gfx::Point p7(21, 0);
-  ui::MouseEvent mouse7(ui::ET_MOUSE_MOVED, p7, p7, ui::EventTimeForNow(), 0,
-                        0);
+  ui::MouseEvent mouse7(ui::EventType::kMouseMoved, p7, p7,
+                        ui::EventTimeForNow(), 0, 0);
   root_view->OnMouseMoved(mouse7);
   EXPECT_TRUE(v11->received_mouse_exit_);
   EXPECT_FALSE(v1->received_mouse_enter_);
@@ -3258,16 +3265,17 @@ TEST_F(ViewTest, TransformEvent) {
   v2->Reset();
 
   gfx::Point p1(110, 210);
-  ui::MouseEvent pressed(ui::ET_MOUSE_PRESSED, p1, p1, ui::EventTimeForNow(),
-                         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent pressed(ui::EventType::kMousePressed, p1, p1,
+                         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                         ui::EF_LEFT_MOUSE_BUTTON);
   root->OnMousePressed(pressed);
   EXPECT_EQ(0, v1->last_mouse_event_type_);
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, v2->last_mouse_event_type_);
+  EXPECT_EQ(ui::EventType::kMousePressed, v2->last_mouse_event_type_);
   EXPECT_EQ(190, v2->location_.x());
   EXPECT_EQ(10, v2->location_.y());
 
-  ui::MouseEvent released(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                          ui::EventTimeForNow(), 0, 0);
+  ui::MouseEvent released(ui::EventType::kMouseReleased, gfx::Point(),
+                          gfx::Point(), ui::EventTimeForNow(), 0, 0);
   root->OnMouseReleased(released);
 
   // Now rotate |v2| inside |v1| clockwise.
@@ -3282,11 +3290,12 @@ TEST_F(ViewTest, TransformEvent) {
   v2->Reset();
 
   gfx::Point point2(110, 320);
-  ui::MouseEvent p2(ui::ET_MOUSE_PRESSED, point2, point2, ui::EventTimeForNow(),
-                    ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent p2(ui::EventType::kMousePressed, point2, point2,
+                    ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                    ui::EF_LEFT_MOUSE_BUTTON);
   root->OnMousePressed(p2);
   EXPECT_EQ(0, v1->last_mouse_event_type_);
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, v2->last_mouse_event_type_);
+  EXPECT_EQ(ui::EventType::kMousePressed, v2->last_mouse_event_type_);
   EXPECT_EQ(10, v2->location_.x());
   EXPECT_EQ(20, v2->location_.y());
 
@@ -3317,11 +3326,12 @@ TEST_F(ViewTest, TransformEvent) {
   v3->Reset();
 
   gfx::Point point(112, 110);
-  ui::MouseEvent p3(ui::ET_MOUSE_PRESSED, point, point, ui::EventTimeForNow(),
-                    ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent p3(ui::EventType::kMousePressed, point, point,
+                    ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                    ui::EF_LEFT_MOUSE_BUTTON);
   root->OnMousePressed(p3);
 
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, v3->last_mouse_event_type_);
+  EXPECT_EQ(ui::EventType::kMousePressed, v3->last_mouse_event_type_);
   EXPECT_EQ(10, v3->location_.x());
   EXPECT_EQ(25, v3->location_.y());
 
@@ -3355,11 +3365,12 @@ TEST_F(ViewTest, TransformEvent) {
   // |v3| now occupies (120, 120) to (144, 130) in |root|.
 
   gfx::Point point3(124, 125);
-  ui::MouseEvent p4(ui::ET_MOUSE_PRESSED, point3, point3, ui::EventTimeForNow(),
-                    ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent p4(ui::EventType::kMousePressed, point3, point3,
+                    ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                    ui::EF_LEFT_MOUSE_BUTTON);
   root->OnMousePressed(p4);
 
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, v3->last_mouse_event_type_);
+  EXPECT_EQ(ui::EventType::kMousePressed, v3->last_mouse_event_type_);
   EXPECT_EQ(10, v3->location_.x());
   EXPECT_EQ(25, v3->location_.y());
 
@@ -5956,7 +5967,7 @@ class TestEventHandler : public ui::EventHandler {
 
   void OnMouseEvent(ui::MouseEvent* event) override {
     // The |view_| should have received the event first.
-    EXPECT_EQ(ui::ET_MOUSE_PRESSED, view_->last_mouse_event_type_);
+    EXPECT_EQ(ui::EventType::kMousePressed, view_->last_mouse_event_type_);
     had_mouse_event_ = true;
   }
 
@@ -5981,23 +5992,24 @@ TEST_F(ViewTest, ScopedTargetHandlerReceivesEvents) {
     EXPECT_EQ(&scoped_target_handler,
               v->SetTargetHandler(&scoped_target_handler));
 
-    EXPECT_EQ(ui::ET_UNKNOWN, v->last_mouse_event_type_);
+    EXPECT_EQ(ui::kUnknown, v->last_mouse_event_type_);
     gfx::Point p(10, 120);
-    ui::MouseEvent pressed(ui::ET_MOUSE_PRESSED, p, p, ui::EventTimeForNow(),
-                           ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+    ui::MouseEvent pressed(ui::EventType::kMousePressed, p, p,
+                           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                           ui::EF_LEFT_MOUSE_BUTTON);
     root->OnMousePressed(pressed);
 
     // Both the View |v| and the |handler| should have received the event.
-    EXPECT_EQ(ui::ET_MOUSE_PRESSED, v->last_mouse_event_type_);
+    EXPECT_EQ(ui::EventType::kMousePressed, v->last_mouse_event_type_);
     EXPECT_TRUE(handler.had_mouse_event_);
   }
 
   // The View should continue receiving events after the |handler| is deleted.
   v->Reset();
-  ui::MouseEvent released(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                          ui::EventTimeForNow(), 0, 0);
+  ui::MouseEvent released(ui::EventType::kMouseReleased, gfx::Point(),
+                          gfx::Point(), ui::EventTimeForNow(), 0, 0);
   root->OnMouseReleased(released);
-  EXPECT_EQ(ui::ET_MOUSE_RELEASED, v->last_mouse_event_type_);
+  EXPECT_EQ(ui::EventType::kMouseReleased, v->last_mouse_event_type_);
 }
 
 // See comment above test for details.

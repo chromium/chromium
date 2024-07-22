@@ -168,12 +168,13 @@ void GestureDrag(const views::View* from,
   ui::test::EventGenerator event_generator(root_window);
   event_generator.PressTouch(from->GetBoundsInScreen().CenterPoint());
 
-  // Gesture drag is initiated only after an `ui::ET_GESTURE_LONG_PRESS` event.
+  // Gesture drag is initiated only after an `ui::EventType::kGestureLongPress`
+  // event.
   ui::GestureEvent long_press(
       event_generator.current_screen_location().x(),
       event_generator.current_screen_location().y(), ui::EF_NONE,
       ui::EventTimeForNow(),
-      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   event_generator.Dispatch(&long_press);
 
   // Generate multiple interpolated touch move events.

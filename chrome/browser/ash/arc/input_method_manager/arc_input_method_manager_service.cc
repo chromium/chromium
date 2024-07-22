@@ -247,7 +247,7 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
       const ui::KeyEvent& event,
       ash::TextInputMethod::KeyEventDoneCallback key_data) override {
     if (event.key_code() == ui::VKEY_BROWSER_BACK &&
-        event.type() == ui::ET_KEY_PRESSED &&
+        event.type() == ui::EventType::kKeyPressed &&
         owner_->IsVirtualKeyboardShown()) {
       // Back button on the shelf is pressed. We should consume only "keydown"
       // events here to make sure that Android side receives "keyup" events

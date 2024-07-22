@@ -171,7 +171,8 @@ void ModifierKeyComboRecorder::Initialize() {
 
 void ModifierKeyComboRecorder::OnPrerewriteKeyInputEvent(
     const ui::KeyEvent& key_event) {
-  if (key_event.type() == ui::ET_KEY_RELEASED || key_event.is_repeat()) {
+  if (key_event.type() == ui::EventType::kKeyReleased ||
+      key_event.is_repeat()) {
     return;
   }
 

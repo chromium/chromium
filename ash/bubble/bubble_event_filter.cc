@@ -34,13 +34,13 @@ void BubbleEventFilter::SetButton(views::View* button) {
 }
 
 void BubbleEventFilter::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_PRESSED) {
+  if (event->type() == ui::EventType::kMousePressed) {
     ProcessPressedEvent(*event);
   }
 }
 
 void BubbleEventFilter::OnTouchEvent(ui::TouchEvent* event) {
-  if (event->type() == ui::ET_TOUCH_PRESSED) {
+  if (event->type() == ui::EventType::kTouchPressed) {
     ProcessPressedEvent(*event);
   }
 }

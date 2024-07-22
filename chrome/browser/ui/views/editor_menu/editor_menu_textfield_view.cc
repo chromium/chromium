@@ -78,7 +78,7 @@ void EditorMenuTextfieldView::ContentsChanged(
 bool EditorMenuTextfieldView::HandleKeyEvent(views::Textfield* sender,
                                              const ui::KeyEvent& key_event) {
   if (key_event.key_code() != ui::VKEY_RETURN ||
-      key_event.type() != ui::ET_KEY_PRESSED) {
+      key_event.type() != ui::EventType::kKeyPressed) {
     return false;
   }
 

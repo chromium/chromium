@@ -112,12 +112,14 @@ TEST_F(MediaKeyboardHookWinInteractiveTest, CallbackReceivesProperEvents) {
   // Send a key down event and validate it when received through the hook.
   SendKeyDown(ui::VKEY_MEDIA_PLAY_PAUSE);
   WaitForKeyEvents(1);
-  ExpectReceivedEvent(/*index=*/0, ui::VKEY_MEDIA_PLAY_PAUSE, ET_KEY_PRESSED);
+  ExpectReceivedEvent(/*index=*/0, ui::VKEY_MEDIA_PLAY_PAUSE,
+                      EventType::kKeyPressed);
 
   // Send a key up event and validate it when received through the hook.
   SendKeyUp(ui::VKEY_MEDIA_PLAY_PAUSE);
   WaitForKeyEvents(2);
-  ExpectReceivedEvent(/*index=*/1, ui::VKEY_MEDIA_PLAY_PAUSE, ET_KEY_RELEASED);
+  ExpectReceivedEvent(/*index=*/1, ui::VKEY_MEDIA_PLAY_PAUSE,
+                      EventType::kKeyReleased);
 }
 
 }  // namespace ui

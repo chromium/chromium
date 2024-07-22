@@ -111,7 +111,8 @@ void WebDialogBrowserTest::SetUpOnMainThread() {
 }
 
 void WebDialogBrowserTest::SimulateEscapeKey() {
-  ui::KeyEvent escape_event(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, ui::EF_NONE);
+  ui::KeyEvent escape_event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE,
+                            ui::EF_NONE);
   if (view_->GetFocusManager()->OnKeyEvent(escape_event)) {
     ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         view_->GetWidget()->GetNativeWindow(), ui::VKEY_ESCAPE, false, false,

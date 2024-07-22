@@ -215,7 +215,7 @@ class TabStripTestBase : public ChromeViewsTestBase {
   raw_ptr<views::View, DanglingUntriaged> tab_strip_parent_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
 
-  ui::MouseEvent dummy_event_ = ui::MouseEvent(ui::ET_MOUSE_PRESSED,
+  ui::MouseEvent dummy_event_ = ui::MouseEvent(ui::EventType::kMousePressed,
                                                gfx::PointF(),
                                                gfx::PointF(),
                                                base::TimeTicks::Now(),

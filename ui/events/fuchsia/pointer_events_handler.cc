@@ -122,13 +122,13 @@ EventType GetEventTypeFromTouchEventPhase(
     fuchsia_ui_pointer::EventPhase phase) {
   switch (phase) {
     case fuchsia_ui_pointer::EventPhase::kAdd:
-      return ET_TOUCH_PRESSED;
+      return EventType::kTouchPressed;
     case fuchsia_ui_pointer::EventPhase::kChange:
-      return ET_TOUCH_MOVED;
+      return EventType::kTouchMoved;
     case fuchsia_ui_pointer::EventPhase::kRemove:
-      return ET_TOUCH_RELEASED;
+      return EventType::kTouchReleased;
     case fuchsia_ui_pointer::EventPhase::kCancel:
-      return ET_TOUCH_CANCELLED;
+      return EventType::kTouchCancelled;
   }
 }
 
@@ -226,7 +226,7 @@ std::unique_ptr<MouseEvent> CreateMouseEventDraft(
                                 view_parameters.viewport_to_view_transform());
 
   // Ensure gesture recognition: DOWN starts in the logical view space.
-  if (event_type == ET_MOUSE_PRESSED) {
+  if (event_type == EventType::kMousePressed) {
     logical = ClampToViewSpace(logical[0], logical[1], view_parameters);
   }
 
@@ -234,7 +234,7 @@ std::unique_ptr<MouseEvent> CreateMouseEventDraft(
   auto root_location = gfx::PointF(sample->position_in_viewport().value()[0],
                                    sample->position_in_viewport().value()[1]);
 
-  if (event_type == ET_MOUSEWHEEL) {
+  if (event_type == EventType::kMousewheel) {
     // TODO(fxbug.dev/92938): Maybe also support ctrl+wheel event here.
 
     const int tick_x_120ths = sample->scroll_h().value_or(0) * kWheelDelta;
@@ -257,7 +257,7 @@ std::unique_ptr<MouseEvent> CreateMouseEventDraft(
       // finger_count is 2. Maybe need to use different number when we support
       // precision wheel mouse.
       return std::make_unique<ScrollEvent>(
-          ui::ET_SCROLL, location, root_location, timestamp,
+          ui::EventType::kScroll, location, root_location, timestamp,
           pressed_buttons_flags, offset_x, offset_y, offset_x, offset_y,
           /*finger_count=*/2);
     }
@@ -442,13 +442,13 @@ void PointerEventsHandler::OnMouseSourceWatchResult(
             // ones.
             continue;
           } else if (!prev_down && curr_down) {
-            auto event_type = ET_MOUSE_PRESSED;
+            auto event_type = EventType::kMousePressed;
             auto draft = CreateMouseEventDraft(
                 event, event_type, button, changed_buttons,
                 mouse_view_parameters_.value(), mouse_device_info_[id]);
             event_callback_.Run(draft.get());
           } else if (prev_down && !curr_down) {
-            auto event_type = ET_MOUSE_RELEASED;
+            auto event_type = EventType::kMouseReleased;
             auto draft = CreateMouseEventDraft(
                 event, event_type, button, changed_buttons,
                 mouse_view_parameters_.value(), mouse_device_info_[id]);
@@ -460,14 +460,14 @@ void PointerEventsHandler::OnMouseSourceWatchResult(
       if (is_wheel_event) {
         // Handle the mouse scroll.
         auto draft = CreateMouseEventDraft(
-            event, ET_MOUSEWHEEL, pressed_buttons, changed_buttons,
+            event, EventType::kMousewheel, pressed_buttons, changed_buttons,
             mouse_view_parameters_.value(), mouse_device_info_[id]);
         event_callback_.Run(draft.get());
       }
 
       if (is_move_or_drag_event) {
-        auto event_type =
-            (pressed_buttons == 0) ? ET_MOUSE_MOVED : ET_MOUSE_DRAGGED;
+        auto event_type = (pressed_buttons == 0) ? EventType::kMouseMoved
+                                                 : EventType::kMouseDragged;
         auto draft = CreateMouseEventDraft(
             event, event_type, pressed_buttons, changed_buttons,
             mouse_view_parameters_.value(), mouse_device_info_[id]);

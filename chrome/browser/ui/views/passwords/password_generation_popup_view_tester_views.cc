@@ -22,7 +22,7 @@ PasswordGenerationPopupViewTesterViews::
 
 void PasswordGenerationPopupViewTesterViews::SimulateMouseMovementAt(
     const gfx::Point& point) {
-  ui::MouseEvent mouse_down(ui::ET_MOUSE_MOVED, point, gfx::Point(0, 0),
+  ui::MouseEvent mouse_down(ui::EventType::kMouseMoved, point, gfx::Point(0, 0),
                             ui::EventTimeForNow(), 0, 0);
   static_cast<views::View*>(view_)->OnMouseMoved(mouse_down);
 }

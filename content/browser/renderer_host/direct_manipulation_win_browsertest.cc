@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(DirectManipulationBrowserTest, EventConvert) {
     std::unique_ptr<ui::Event> event = event_logger.ReleaseLastEvent();
     ASSERT_TRUE(event);
 
-    EXPECT_EQ(ui::ET_SCROLL, event->type());
+    EXPECT_EQ(ui::EventType::kScroll, event->type());
     ui::ScrollEvent* scroll_event = event->AsScrollEvent();
     EXPECT_EQ(1, scroll_event->x_offset());
     EXPECT_EQ(2, scroll_event->y_offset());
@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(DirectManipulationBrowserTest, EventConvert) {
     std::unique_ptr<ui::Event> event = event_logger.ReleaseLastEvent();
     ASSERT_TRUE(event);
 
-    EXPECT_EQ(ui::ET_SCROLL, event->type());
+    EXPECT_EQ(ui::EventType::kScroll, event->type());
     ui::ScrollEvent* scroll_event = event->AsScrollEvent();
     EXPECT_EQ(1, scroll_event->x_offset());
     EXPECT_EQ(2, scroll_event->y_offset());
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(DirectManipulationBrowserTest, EventConvert) {
     std::unique_ptr<ui::Event> event = event_logger.ReleaseLastEvent();
 
     ASSERT_TRUE(event);
-    EXPECT_EQ(ui::ET_SCROLL, event->type());
+    EXPECT_EQ(ui::EventType::kScroll, event->type());
     ui::ScrollEvent* scroll_event = event->AsScrollEvent();
     EXPECT_EQ(1, scroll_event->x_offset());
     EXPECT_EQ(2, scroll_event->y_offset());
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(DirectManipulationBrowserTest, EventConvert) {
     std::unique_ptr<ui::Event> event = event_logger.ReleaseLastEvent();
 
     ASSERT_TRUE(event);
-    EXPECT_EQ(ui::ET_SCROLL, event->type());
+    EXPECT_EQ(ui::EventType::kScroll, event->type());
     ui::ScrollEvent* scroll_event = event->AsScrollEvent();
     EXPECT_EQ(0, scroll_event->x_offset());
     EXPECT_EQ(0, scroll_event->y_offset());
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(DirectManipulationBrowserTest, EventConvert) {
     std::unique_ptr<ui::Event> event = event_logger.ReleaseLastEvent();
 
     ASSERT_TRUE(event);
-    EXPECT_EQ(ui::ET_SCROLL, event->type());
+    EXPECT_EQ(ui::EventType::kScroll, event->type());
     ui::ScrollEvent* scroll_event = event->AsScrollEvent();
     EXPECT_EQ(0, scroll_event->x_offset());
     EXPECT_EQ(0, scroll_event->y_offset());
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(DirectManipulationBrowserTest, EventConvert) {
     std::unique_ptr<ui::Event> event = event_logger.ReleaseLastEvent();
 
     ASSERT_TRUE(event);
-    EXPECT_EQ(ui::ET_SCROLL, event->type());
+    EXPECT_EQ(ui::EventType::kScroll, event->type());
     ui::ScrollEvent* scroll_event = event->AsScrollEvent();
     EXPECT_EQ(0, scroll_event->x_offset());
     EXPECT_EQ(0, scroll_event->y_offset());
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(DirectManipulationBrowserTest, EventConvert) {
     target->ApplyPinchZoomBegin();
     std::unique_ptr<ui::Event> event = event_logger.ReleaseLastEvent();
     ASSERT_TRUE(event);
-    EXPECT_EQ(ui::ET_GESTURE_PINCH_BEGIN, event->type());
+    EXPECT_EQ(ui::EventType::kGesturePinchBegin, event->type());
     ui::GestureEvent* gesture_event = event->AsGestureEvent();
     EXPECT_EQ(ui::GestureDeviceType::DEVICE_TOUCHPAD,
               gesture_event->details().device_type());
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(DirectManipulationBrowserTest, EventConvert) {
     target->ApplyPinchZoomScale(1.1f);
     std::unique_ptr<ui::Event> event = event_logger.ReleaseLastEvent();
     ASSERT_TRUE(event);
-    EXPECT_EQ(ui::ET_GESTURE_PINCH_UPDATE, event->type());
+    EXPECT_EQ(ui::EventType::kGesturePinchUpdate, event->type());
     ui::GestureEvent* gesture_event = event->AsGestureEvent();
     EXPECT_EQ(ui::GestureDeviceType::DEVICE_TOUCHPAD,
               gesture_event->details().device_type());
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(DirectManipulationBrowserTest, EventConvert) {
     target->ApplyPinchZoomEnd();
     std::unique_ptr<ui::Event> event = event_logger.ReleaseLastEvent();
     ASSERT_TRUE(event);
-    EXPECT_EQ(ui::ET_GESTURE_PINCH_END, event->type());
+    EXPECT_EQ(ui::EventType::kGesturePinchEnd, event->type());
     ui::GestureEvent* gesture_event = event->AsGestureEvent();
     EXPECT_EQ(ui::GestureDeviceType::DEVICE_TOUCHPAD,
               gesture_event->details().device_type());

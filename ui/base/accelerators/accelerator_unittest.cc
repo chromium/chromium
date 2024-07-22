@@ -33,7 +33,7 @@ TEST(AcceleratorTest, TimeStamp) {
   EXPECT_EQ(base::TimeTicks(), accelerator_a.time_stamp());
 
   const base::TimeTicks event_time = base::TimeTicks() + base::Milliseconds(1);
-  KeyEvent keyevent(ET_KEY_PRESSED, VKEY_SPACE, EF_NONE, event_time);
+  KeyEvent keyevent(EventType::kKeyPressed, VKEY_SPACE, EF_NONE, event_time);
 
   const Accelerator accelerator_b(keyevent);
   EXPECT_EQ(event_time, accelerator_b.time_stamp());
@@ -84,13 +84,13 @@ TEST(AcceleratorTest, VerifyToKeyEventConstructor) {
   KeyEvent key_event = accelerator.ToKeyEvent();
   // Check key event fields to verift if the right constructor is called.
   EXPECT_EQ(key_event.key_code(), VKEY_Z);
-  EXPECT_EQ(key_event.Clone()->type(), ui::ET_KEY_RELEASED);
+  EXPECT_EQ(key_event.Clone()->type(), ui::EventType::kKeyReleased);
   EXPECT_FALSE(key_event.is_char());
 }
 
 TEST(AcceleratorTest, ConversionFromKeyEvent) {
   ui::KeyEvent key_event(
-      ui::ET_KEY_PRESSED, ui::VKEY_F,
+      ui::EventType::kKeyPressed, ui::VKEY_F,
       ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_FUNCTION_DOWN);
   Accelerator accelerator(key_event);
 
@@ -108,7 +108,8 @@ class AcceleratorTestMac : public testing::Test {
   // Returns a "short" string representation of the modifier flags in
   // |modifier_mask|.
   std::u16string ShortFormStringForModifiers(int modifier_flags) {
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_F, modifier_flags);
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_F,
+                           modifier_flags);
     Accelerator accelerator(key_event);
 
     // Passing the empty string causes the method to return just the string
@@ -140,7 +141,7 @@ TEST(AcceleratorTest, ConversionFromKeyEvent_Ash) {
   scoped_feature_list.InitAndEnableFeature(
       ::features::kImprovedKeyboardShortcuts);
 
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_F,
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_F,
                          ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
   Accelerator accelerator(key_event);
 

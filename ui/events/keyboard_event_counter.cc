@@ -15,13 +15,13 @@ KeyboardEventCounter::~KeyboardEventCounter() = default;
 void KeyboardEventCounter::OnKeyboardEvent(EventType event,
                                            KeyboardCode key_code) {
   // Updates the pressed keys and the total count of key presses.
-  if (event == ET_KEY_PRESSED) {
+  if (event == EventType::kKeyPressed) {
     if (pressed_keys_.find(key_code) != pressed_keys_.end())
       return;
     pressed_keys_.insert(key_code);
     ++total_key_presses_;
   } else {
-    DCHECK_EQ(ET_KEY_RELEASED, event);
+    DCHECK_EQ(EventType::kKeyReleased, event);
     pressed_keys_.erase(key_code);
   }
 }

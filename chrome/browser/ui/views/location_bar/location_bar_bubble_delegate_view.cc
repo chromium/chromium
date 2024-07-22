@@ -60,7 +60,8 @@ LocationBarBubbleDelegateView::WebContentMouseHandler::WebContentMouseHandler(
   DCHECK(web_contents_);
   event_monitor_ = views::EventMonitor::CreateWindowMonitor(
       this, web_contents_->GetTopLevelNativeWindow(),
-      {ui::ET_MOUSE_PRESSED, ui::ET_KEY_PRESSED, ui::ET_TOUCH_PRESSED});
+      {ui::EventType::kMousePressed, ui::EventType::kKeyPressed,
+       ui::EventType::kTouchPressed});
 }
 
 LocationBarBubbleDelegateView::WebContentMouseHandler::

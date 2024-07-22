@@ -147,7 +147,7 @@ class PermissionChipUnitTest : public TestWithBrowserView {
 
   void ClickOnChip(PermissionChipView& chip) {
     views::test::ButtonTestApi(&chip).NotifyClick(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
     base::RunLoop().RunUntilIdle();
   }

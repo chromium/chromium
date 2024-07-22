@@ -291,8 +291,9 @@ class ConvertToScreenEventHandler : public ui::EventHandler {
 
  private:
   void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() == ui::ET_MOUSE_CAPTURE_CHANGED)
+    if (event->type() == ui::EventType::kMouseCaptureChanged) {
       return;
+    }
 
     aura::Window* root =
         static_cast<aura::Window*>(event->target())->GetRootWindow();

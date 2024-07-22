@@ -601,9 +601,9 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
 
   AshTracingManager::Get().AddObserver(this);
   aura::Env* env = aura::Env::GetInstance();
-  env->AddEventObserver(
-      this, env,
-      std::set<ui::EventType>({ui::ET_MOUSE_DRAGGED, ui::ET_MOUSE_MOVED}));
+  env->AddEventObserver(this, env,
+                        std::set<ui::EventType>({ui::EventType::kMouseDragged,
+                                                 ui::EventType::kMouseMoved}));
 }
 
 HUDSettingsView::~HUDSettingsView() {

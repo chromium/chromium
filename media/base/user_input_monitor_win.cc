@@ -272,8 +272,8 @@ LRESULT UserInputMonitorWinCore::OnInput(HRAWINPUT input_handle) {
   if (input->header.dwType == RIM_TYPEKEYBOARD &&
       input->header.hDevice != NULL) {
     ui::EventType event = (input->data.keyboard.Flags & RI_KEY_BREAK)
-                              ? ui::ET_KEY_RELEASED
-                              : ui::ET_KEY_PRESSED;
+                              ? ui::EventType::kKeyReleased
+                              : ui::EventType::kKeyPressed;
     ui::KeyboardCode key_code =
         ui::KeyboardCodeForWindowsKeyCode(input->data.keyboard.VKey);
     counter_.OnKeyboardEvent(event, key_code);

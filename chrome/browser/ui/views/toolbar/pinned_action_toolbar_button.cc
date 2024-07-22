@@ -145,7 +145,8 @@ bool PinnedActionToolbarButton::OnKeyPressed(const ui::KeyEvent& event) {
 #else
       ui::EF_CONTROL_DOWN;
 #endif
-  if (event.type() == ui::ET_KEY_PRESSED && (event.flags() & kModifiedFlag)) {
+  if (event.type() == ui::EventType::kKeyPressed &&
+      (event.flags() & kModifiedFlag)) {
     const bool is_right = event.key_code() == ui::VKEY_RIGHT;
     const bool is_left = event.key_code() == ui::VKEY_LEFT;
     if (is_right || is_left) {

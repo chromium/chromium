@@ -68,7 +68,7 @@ class ChromeLabsUiTest : public DialogBrowserTest {
             ->toolbar()
             ->chrome_labs_button();
     views::test::ButtonTestApi(chrome_labs_button)
-        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(), 0, 0));
   }
 
@@ -134,7 +134,7 @@ class ChromeLabsMultipleFeaturesUiTest : public DialogBrowserTest {
             ->toolbar()
             ->chrome_labs_button();
     views::test::ButtonTestApi(chrome_labs_button)
-        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(), 0, 0));
     // Scroll to a little after the dialog inset to ensure that scrolling does
     // not make the contents too close to the title.

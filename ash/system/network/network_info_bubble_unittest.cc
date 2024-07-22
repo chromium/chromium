@@ -169,8 +169,9 @@ class NetworkInfoBubbleTest : public AshTestBase {
   void SimulateMouseExit() {
     ASSERT_TRUE(network_info_bubble_);
     static_cast<views::View*>(network_info_bubble_)
-        ->OnMouseExited(ui::MouseEvent(ui::ET_MOUSE_EXITED, gfx::PointF(),
-                                       gfx::PointF(), base::TimeTicks(), 0, 0));
+        ->OnMouseExited(ui::MouseEvent(ui::EventType::kMouseExited,
+                                       gfx::PointF(), gfx::PointF(),
+                                       base::TimeTicks(), 0, 0));
     network_info_bubble_ = nullptr;
     base::RunLoop().RunUntilIdle();
   }

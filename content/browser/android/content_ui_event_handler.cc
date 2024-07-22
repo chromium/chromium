@@ -101,7 +101,7 @@ void ContentUiEventHandler::SendMouseWheelEvent(
   // Compute Event.Latency.OS2.MOUSE_WHEEL histogram.
   base::TimeTicks current_time = ui::EventTimeForNow();
   base::TimeTicks event_time = base::TimeTicks::FromJavaNanoTime(time_ns);
-  ComputeEventLatencyOS(ui::ET_MOUSEWHEEL, event_time, current_time);
+  ComputeEventLatencyOS(ui::EventType::kMousewheel, event_time, current_time);
   ui::MotionEventAndroid::Pointer pointer(
       0, x, y, 0.0f /* touch_major */, 0.0f /* touch_minor */, 0.0f, 0.0f, 0);
 

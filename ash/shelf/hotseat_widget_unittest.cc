@@ -2216,10 +2216,10 @@ TEST_P(HotseatWidgetTest, HotseatHidesWhenSwipedToBezel) {
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
   start = shelf_widget_bounds.bottom_center();
   // The first few events which get sent to ShelfLayoutManager are
-  // ui::ET_TAP_DOWN, and ui::ET_GESTURE_START. After a few px we get
-  // ui::ET_GESTURE_SCROLL_UPDATE. Add 6 px of slop to get the first events out
-  // of the way, and 1 extra px to ensure we are not on the bottom edge of the
-  // display.
+  // ui::EventType::kTapDown, and ui::EventType::kGestureStart. After a few px
+  // we get ui::EventType::kGestureScrollUpdate. Add 6 px of slop to get the
+  // first events out of the way, and 1 extra px to ensure we are not on the
+  // bottom edge of the display.
   start.Offset(0, -7);
 
   GetEventGenerator()->GestureScrollSequence(start, end, kTimeDelta,

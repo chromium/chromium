@@ -249,14 +249,14 @@ class ComboboxTest : public ViewsTestBase {
 
   void PerformMousePress(const gfx::Point& point) {
     ui::MouseEvent pressed_event = ui::MouseEvent(
-        ui::ET_MOUSE_PRESSED, point, point, ui::EventTimeForNow(),
+        ui::EventType::kMousePressed, point, point, ui::EventTimeForNow(),
         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
     widget_->OnMouseEvent(&pressed_event);
   }
 
   void PerformMouseRelease(const gfx::Point& point) {
     ui::MouseEvent released_event = ui::MouseEvent(
-        ui::ET_MOUSE_RELEASED, point, point, ui::EventTimeForNow(),
+        ui::EventType::kMouseReleased, point, point, ui::EventTimeForNow(),
         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
     widget_->OnMouseEvent(&released_event);
   }
@@ -665,7 +665,7 @@ TEST_F(ComboboxTest, ExpandedCollapsedAccessibleState) {
 
   // Pressing space shows the menu, which sets the expanded state.
   combobox()->OnKeyPressed(
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE));
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_SPACE, ui::EF_NONE));
   node_data = ui::AXNodeData();
   combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
@@ -680,7 +680,7 @@ TEST_F(ComboboxTest, ExpandedCollapsedAccessibleState) {
 
   // Pressing space again reopens the menu and sets the expanded state.
   combobox()->OnKeyPressed(
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE));
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_SPACE, ui::EF_NONE));
   node_data = ui::AXNodeData();
   combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
@@ -731,10 +731,11 @@ TEST_F(ComboboxTest, ConsumingPressKeyEvents) {
   InitCombobox(nullptr);
 
   EXPECT_TRUE(combobox()->OnKeyPressed(
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE)));
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_SPACE, ui::EF_NONE)));
   EXPECT_EQ(1, menu_show_count_);
 
-  ui::KeyEvent return_press(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::EF_NONE);
+  ui::KeyEvent return_press(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                            ui::EF_NONE);
   if (PlatformStyle::kReturnClicksFocusedControl) {
     EXPECT_TRUE(combobox()->OnKeyPressed(return_press));
     EXPECT_EQ(2, menu_show_count_);
@@ -852,8 +853,9 @@ TEST_F(ComboboxTest, TypingPrefixNotifiesListener) {
       widget_->GetInputMethod()->GetTextInputClient();
 
   // Type the first character of the second menu item ("JELLY").
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_J, ui::DomCode::US_J, 0,
-                         ui::DomKey::FromCharacter('J'), ui::EventTimeForNow());
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_J,
+                         ui::DomCode::US_J, 0, ui::DomKey::FromCharacter('J'),
+                         ui::EventTimeForNow());
 
   input_client->InsertChar(key_event);
   EXPECT_EQ(1, listener.actions_performed());
@@ -862,7 +864,7 @@ TEST_F(ComboboxTest, TypingPrefixNotifiesListener) {
   // Type the second character of "JELLY", item shouldn't change and
   // OnPerformAction() shouldn't be re-called.
   key_event =
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_E, ui::DomCode::US_E, 0,
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_E, ui::DomCode::US_E, 0,
                    ui::DomKey::FromCharacter('E'), ui::EventTimeForNow());
   input_client->InsertChar(key_event);
   EXPECT_EQ(1, listener.actions_performed());
@@ -875,7 +877,7 @@ TEST_F(ComboboxTest, TypingPrefixNotifiesListener) {
   // Type the first character of "PEANUT BUTTER", which should change the
   // selected index and perform an action.
   key_event =
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_E, ui::DomCode::US_P, 0,
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_E, ui::DomCode::US_P, 0,
                    ui::DomKey::FromCharacter('P'), ui::EventTimeForNow());
   input_client->InsertChar(key_event);
   EXPECT_EQ(2, listener.actions_performed());

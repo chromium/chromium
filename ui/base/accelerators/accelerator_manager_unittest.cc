@@ -183,9 +183,9 @@ TEST_F(AcceleratorManagerTest, PositionalShortcuts_AllEqual) {
   TestAcceleratorTarget target;
   const Accelerator accelerator(VKEY_OEM_6, EF_CONTROL_DOWN);
   manager.Register({accelerator}, AcceleratorManager::kNormalPriority, &target);
-  KeyEvent event(ui::ET_KEY_PRESSED, VKEY_OEM_6, ui::DomCode::BRACKET_RIGHT,
-                 ui::EF_CONTROL_DOWN, ui::DomKey::FromCharacter(']'),
-                 base::TimeTicks());
+  KeyEvent event(ui::EventType::kKeyPressed, VKEY_OEM_6,
+                 ui::DomCode::BRACKET_RIGHT, ui::EF_CONTROL_DOWN,
+                 ui::DomKey::FromCharacter(']'), base::TimeTicks());
   const Accelerator trigger(event);
   EXPECT_TRUE(manager.IsRegistered(trigger));
   EXPECT_TRUE(manager.Process(trigger));
@@ -206,9 +206,9 @@ TEST_F(AcceleratorManagerTest, PositionalShortcuts_MatchingDomCode) {
   TestAcceleratorTarget target;
   const Accelerator accelerator(VKEY_OEM_6, EF_CONTROL_DOWN);
   manager.Register({accelerator}, AcceleratorManager::kNormalPriority, &target);
-  KeyEvent event(ui::ET_KEY_PRESSED, VKEY_OEM_PLUS, ui::DomCode::BRACKET_RIGHT,
-                 ui::EF_CONTROL_DOWN, ui::DomKey::FromCharacter(']'),
-                 base::TimeTicks());
+  KeyEvent event(ui::EventType::kKeyPressed, VKEY_OEM_PLUS,
+                 ui::DomCode::BRACKET_RIGHT, ui::EF_CONTROL_DOWN,
+                 ui::DomKey::FromCharacter(']'), base::TimeTicks());
   const Accelerator trigger(event);
   EXPECT_TRUE(manager.IsRegistered(trigger));
   EXPECT_TRUE(manager.Process(trigger));
@@ -230,9 +230,9 @@ TEST_F(AcceleratorManagerTest, PositionalShortcuts_NotMatchingDomCode) {
   TestAcceleratorTarget target;
   const Accelerator accelerator(VKEY_OEM_6, EF_CONTROL_DOWN);
   manager.Register({accelerator}, AcceleratorManager::kNormalPriority, &target);
-  KeyEvent event(ui::ET_KEY_PRESSED, VKEY_OEM_6, ui::DomCode::BRACKET_LEFT,
-                 ui::EF_CONTROL_DOWN, ui::DomKey::FromCharacter(']'),
-                 base::TimeTicks());
+  KeyEvent event(ui::EventType::kKeyPressed, VKEY_OEM_6,
+                 ui::DomCode::BRACKET_LEFT, ui::EF_CONTROL_DOWN,
+                 ui::DomKey::FromCharacter(']'), base::TimeTicks());
   const Accelerator trigger(event);
   EXPECT_FALSE(manager.IsRegistered(trigger));
   EXPECT_FALSE(manager.Process(trigger));
@@ -254,7 +254,7 @@ TEST_F(AcceleratorManagerTest, PositionalShortcuts_NonPositionalMatch) {
   TestAcceleratorTarget target;
   const Accelerator accelerator(VKEY_Z, EF_CONTROL_DOWN);
   manager.Register({accelerator}, AcceleratorManager::kNormalPriority, &target);
-  KeyEvent event(ui::ET_KEY_PRESSED, VKEY_Z, ui::DomCode::US_Y,
+  KeyEvent event(ui::EventType::kKeyPressed, VKEY_Z, ui::DomCode::US_Y,
                  ui::EF_CONTROL_DOWN, ui::DomKey::FromCharacter(']'),
                  base::TimeTicks());
   const Accelerator trigger(event);
@@ -277,7 +277,7 @@ TEST_F(AcceleratorManagerTest, PositionalShortcuts_NonPositionalNonMatch) {
   TestAcceleratorTarget target;
   const Accelerator accelerator(VKEY_Z, EF_CONTROL_DOWN);
   manager.Register({accelerator}, AcceleratorManager::kNormalPriority, &target);
-  KeyEvent event(ui::ET_KEY_PRESSED, VKEY_Y, ui::DomCode::US_Z,
+  KeyEvent event(ui::EventType::kKeyPressed, VKEY_Y, ui::DomCode::US_Z,
                  ui::EF_CONTROL_DOWN, ui::DomKey::FromCharacter(']'),
                  base::TimeTicks());
   const Accelerator trigger(event);

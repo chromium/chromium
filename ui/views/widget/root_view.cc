@@ -49,7 +49,8 @@ class MouseEnterExitEvent : public ui::MouseEvent {
       : ui::MouseEvent(event,
                        static_cast<View*>(nullptr),
                        static_cast<View*>(nullptr)) {
-    DCHECK(type == ui::ET_MOUSE_ENTERED || type == ui::ET_MOUSE_EXITED);
+    DCHECK(type == ui::EventType::kMouseEntered ||
+           type == ui::EventType::kMouseExited);
     SetType(type);
   }
 
@@ -232,7 +233,8 @@ class PostEventDispatchHandler : public ui::EventHandler {
     View* target = static_cast<View*>(event->target());
 
     gfx::Point location = event->location();
-    if (touch_dnd_enabled_ && event->type() == ui::ET_GESTURE_LONG_PRESS &&
+    if (touch_dnd_enabled_ &&
+        event->type() == ui::EventType::kGestureLongPress &&
         (!target->drag_controller() ||
          target->drag_controller()->CanStartDragForView(target, location,
                                                         location))) {
@@ -244,9 +246,9 @@ class PostEventDispatchHandler : public ui::EventHandler {
     }
 
     if (target->context_menu_controller() &&
-        (event->type() == ui::ET_GESTURE_LONG_PRESS ||
-         event->type() == ui::ET_GESTURE_LONG_TAP ||
-         event->type() == ui::ET_GESTURE_TWO_FINGER_TAP)) {
+        (event->type() == ui::EventType::kGestureLongPress ||
+         event->type() == ui::EventType::kGestureLongTap ||
+         event->type() == ui::EventType::kGestureTwoFingerTap)) {
       gfx::Point screen_location(location);
       View::ConvertPointToScreen(target, &screen_location);
       target->ShowContextMenu(screen_location, ui::MENU_SOURCE_TOUCH);
@@ -402,27 +404,27 @@ void RootView::OnEventProcessingStarted(ui::Event* event) {
 
   ui::GestureEvent* gesture_event = event->AsGestureEvent();
 
-  // Do not process ui::ET_GESTURE_BEGIN events.
-  if (gesture_event->type() == ui::ET_GESTURE_BEGIN) {
+  // Do not process ui::EventType::kGestureBegin events.
+  if (gesture_event->type() == ui::EventType::kGestureBegin) {
     event->SetHandled();
     return;
   }
 
-  // Do not process ui::ET_GESTURE_END events if they do not correspond to the
-  // removal of the final touch point or if no gesture handler has already
-  // been set.
-  if (gesture_event->type() == ui::ET_GESTURE_END &&
+  // Do not process ui::EventType::kGestureEnd events if they do not correspond
+  // to the removal of the final touch point or if no gesture handler has
+  // already been set.
+  if (gesture_event->type() == ui::EventType::kGestureEnd &&
       (gesture_event->details().touch_points() > 1 || !gesture_handler_)) {
     event->SetHandled();
     return;
   }
 
   // Do not process subsequent gesture scroll events if no handler was set for
-  // a ui::ET_GESTURE_SCROLL_BEGIN event.
+  // a ui::EventType::kGestureScrollBegin event.
   if (!gesture_handler_ &&
-      (gesture_event->type() == ui::ET_GESTURE_SCROLL_UPDATE ||
-       gesture_event->type() == ui::ET_GESTURE_SCROLL_END ||
-       gesture_event->type() == ui::ET_SCROLL_FLING_START)) {
+      (gesture_event->type() == ui::EventType::kGestureScrollUpdate ||
+       gesture_event->type() == ui::EventType::kGestureScrollEnd ||
+       gesture_event->type() == ui::EventType::kScrollFlingStart)) {
     event->SetHandled();
     return;
   }
@@ -574,7 +576,7 @@ void RootView::OnMouseCaptureLost() {
     // Synthesize a release event for UpdateCursor.
     if (mouse_pressed_handler_) {
       gfx::Point last_point(last_mouse_event_x_, last_mouse_event_y_);
-      ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, last_point,
+      ui::MouseEvent release_event(ui::EventType::kMouseReleased, last_point,
                                    last_point, ui::EventTimeForNow(),
                                    last_mouse_event_flags_, 0);
       UpdateCursor(release_event);
@@ -602,7 +604,7 @@ void RootView::OnMouseEntered(const ui::MouseEvent& event) {
 
 void RootView::OnMouseExited(const ui::MouseEvent& event) {
   if (mouse_move_handler_ != nullptr) {
-    MouseEnterExitEvent exited(event, ui::ET_MOUSE_EXITED);
+    MouseEnterExitEvent exited(event, ui::EventType::kMouseExited);
     ui::EventDispatchDetails dispatch_details =
         DispatchEvent(mouse_move_handler_, &exited);
     if (dispatch_details.dispatcher_destroyed)
@@ -611,7 +613,7 @@ void RootView::OnMouseExited(const ui::MouseEvent& event) {
     // mouse exit event. b/312400341
     if (!dispatch_details.target_destroyed && mouse_move_handler_) {
       dispatch_details = NotifyEnterExitOfDescendant(
-          event, ui::ET_MOUSE_EXITED, mouse_move_handler_, nullptr);
+          event, ui::EventType::kMouseExited, mouse_move_handler_, nullptr);
       if (dispatch_details.dispatcher_destroyed)
         return;
     }
@@ -771,8 +773,8 @@ void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
   View* v = GetEventHandlerForPoint(event.location());
   // Check for a disabled move handler. If the move handler became
   // disabled while handling moves, it's wrong to suddenly send
-  // ET_MOUSE_EXITED and ET_MOUSE_ENTERED events, because the mouse
-  // hasn't actually exited yet.
+  // EventType::kMouseExited and EventType::kMouseEntered events, because the
+  // mouse hasn't actually exited yet.
   if (mouse_move_handler_ && !mouse_move_handler_->GetEnabled() &&
       v->Contains(mouse_move_handler_)) {
     v = mouse_move_handler_;
@@ -783,7 +785,7 @@ void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
       if (mouse_move_handler_ != nullptr &&
           (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
            !mouse_move_handler_->Contains(v))) {
-        MouseEnterExitEvent exit(event, ui::ET_MOUSE_EXITED);
+        MouseEnterExitEvent exit(event, ui::EventType::kMouseExited);
         exit.ConvertLocationToTarget(static_cast<View*>(this),
                                      mouse_move_handler_.get());
         ui::EventDispatchDetails dispatch_details =
@@ -794,14 +796,14 @@ void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
         // The mouse_move_handler_ could have been destroyed in the context of
         // the mouse exit event.
         if (!dispatch_details.target_destroyed) {
-          // View was removed by ET_MOUSE_EXITED, or |mouse_move_handler_| was
-          // cleared, perhaps by a nested event handler, so return and wait for
-          // the next mouse move event.
+          // View was removed by EventType::kMouseExited, or
+          // |mouse_move_handler_| was cleared, perhaps by a nested event
+          // handler, so return and wait for the next mouse move event.
           if (!mouse_move_handler_) {
             return;
           }
           dispatch_details = NotifyEnterExitOfDescendant(
-              event, ui::ET_MOUSE_EXITED, mouse_move_handler_, v);
+              event, ui::EventType::kMouseExited, mouse_move_handler_, v);
           if (dispatch_details.dispatcher_destroyed) {
             return;
           }
@@ -815,7 +817,7 @@ void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
           mouse_move_handler_dangling_checker(mouse_move_handler_);
       if (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
           !mouse_move_handler_->Contains(old_handler)) {
-        MouseEnterExitEvent entered(event, ui::ET_MOUSE_ENTERED);
+        MouseEnterExitEvent entered(event, ui::EventType::kMouseEntered);
         entered.ConvertLocationToTarget(static_cast<View*>(this),
                                         mouse_move_handler_.get());
         ui::EventDispatchDetails dispatch_details =
@@ -824,14 +826,15 @@ void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
             dispatch_details.target_destroyed) {
           return;
         }
-        // View was removed by ET_MOUSE_ENTERED, or |mouse_move_handler_| was
-        // cleared, perhaps by a nested event handler, so return and wait for
-        // the next mouse move event.
+        // View was removed by EventType::kMouseEntered, or
+        // |mouse_move_handler_| was cleared, perhaps by a nested event handler,
+        // so return and wait for the next mouse move event.
         if (!mouse_move_handler_) {
           return;
         }
-        dispatch_details = NotifyEnterExitOfDescendant(
-            event, ui::ET_MOUSE_ENTERED, mouse_move_handler_, old_handler);
+        dispatch_details =
+            NotifyEnterExitOfDescendant(event, ui::EventType::kMouseEntered,
+                                        mouse_move_handler_, old_handler);
         if (dispatch_details.dispatcher_destroyed ||
             dispatch_details.target_destroyed) {
           return;
@@ -839,7 +842,7 @@ void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
       }
     }
 
-    if (event.type() == ui::ET_MOUSE_MOVED) {
+    if (event.type() == ui::EventType::kMouseMoved) {
       ui::MouseEvent moved_event(event, static_cast<View*>(this),
                                  mouse_move_handler_.get());
       mouse_move_handler_->OnMouseMoved(moved_event);
@@ -851,7 +854,7 @@ void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
       }
     }
   } else if (mouse_move_handler_ != nullptr) {
-    MouseEnterExitEvent exited(event, ui::ET_MOUSE_EXITED);
+    MouseEnterExitEvent exited(event, ui::EventType::kMouseExited);
     ui::EventDispatchDetails dispatch_details =
         DispatchEvent(mouse_move_handler_, &exited);
     if (dispatch_details.dispatcher_destroyed) {
@@ -860,14 +863,14 @@ void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
     // The mouse_move_handler_ could have been destroyed in the context of the
     // mouse exit event.
     if (!dispatch_details.target_destroyed) {
-      // View was removed by ET_MOUSE_EXITED, or |mouse_move_handler_| was
-      // cleared, perhaps by a nested event handler, so return and wait for
+      // View was removed by EventType::kMouseExited, or |mouse_move_handler_|
+      // was cleared, perhaps by a nested event handler, so return and wait for
       // the next mouse move event.
       if (!mouse_move_handler_) {
         return;
       }
-      dispatch_details = NotifyEnterExitOfDescendant(event, ui::ET_MOUSE_EXITED,
-                                                     mouse_move_handler_, v);
+      dispatch_details = NotifyEnterExitOfDescendant(
+          event, ui::EventType::kMouseExited, mouse_move_handler_, v);
       if (dispatch_details.dispatcher_destroyed) {
         return;
       }
@@ -932,7 +935,7 @@ ui::EventDispatchDetails RootView::PostDispatchEvent(ui::EventTarget* target,
   // The GESTURE_END event corresponding to the removal of the final touch
   // point marks the end of a gesture sequence, so reset |gesture_handler_|
   // to NULL.
-  if (event.type() == ui::ET_GESTURE_END) {
+  if (event.type() == ui::EventType::kGestureEnd) {
     // In case a drag was in progress, reset all the handlers. Otherwise, just
     // reset the gesture handler.
     if (gesture_handler_ && gesture_handler_ == mouse_pressed_handler_)

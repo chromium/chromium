@@ -154,11 +154,11 @@ class TouchCalibratorControllerTest : public AshTestBase {
     eg->set_current_target(event_target);
 
     ui::TouchEvent press_touch_event(
-        ui::ET_TOUCH_PRESSED, location, ui::EventTimeForNow(),
+        ui::EventType::kTouchPressed, location, ui::EventTimeForNow(),
         ui::PointerDetails(ui::EventPointerType::kTouch, 12, 1.0f, 1.0f, 0.0f),
         0);
     ui::TouchEvent release_touch_event(
-        ui::ET_TOUCH_RELEASED, location, ui::EventTimeForNow(),
+        ui::EventType::kTouchReleased, location, ui::EventTimeForNow(),
         ui::PointerDetails(ui::EventPointerType::kTouch, 12, 1.0f, 1.0f, 0.0f),
         0);
 

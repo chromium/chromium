@@ -80,139 +80,139 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
   void set_bounding_box(const gfx::RectF& box) { bounding_box_ = box; }
 
   float scroll_x_hint() const {
-    DCHECK_EQ(ET_GESTURE_SCROLL_BEGIN, type_);
+    DCHECK_EQ(EventType::kGestureScrollBegin, type_);
     return data_.scroll_begin.x_hint;
   }
 
   float scroll_y_hint() const {
-    DCHECK_EQ(ET_GESTURE_SCROLL_BEGIN, type_);
+    DCHECK_EQ(EventType::kGestureScrollBegin, type_);
     return data_.scroll_begin.y_hint;
   }
 
   ui::ScrollGranularity scroll_begin_units() const {
-    DCHECK_EQ(ET_GESTURE_SCROLL_BEGIN, type_);
+    DCHECK_EQ(EventType::kGestureScrollBegin, type_);
     return data_.scroll_begin.delta_hint_units;
   }
 
   float scroll_x() const {
-    DCHECK_EQ(ET_GESTURE_SCROLL_UPDATE, type_);
+    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
     return data_.scroll_update.x;
   }
 
   float scroll_y() const {
-    DCHECK_EQ(ET_GESTURE_SCROLL_UPDATE, type_);
+    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
     return data_.scroll_update.y;
   }
 
   ui::ScrollGranularity scroll_update_units() const {
-    DCHECK_EQ(ET_GESTURE_SCROLL_UPDATE, type_);
+    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
     return data_.scroll_update.delta_units;
   }
 
   float velocity_x() const {
-    DCHECK_EQ(ET_SCROLL_FLING_START, type_);
+    DCHECK_EQ(EventType::kScrollFlingStart, type_);
     return data_.fling_velocity.x;
   }
 
   float velocity_y() const {
-    DCHECK_EQ(ET_SCROLL_FLING_START, type_);
+    DCHECK_EQ(EventType::kScrollFlingStart, type_);
     return data_.fling_velocity.y;
   }
 
   float first_finger_width() const {
-    DCHECK_EQ(ET_GESTURE_TWO_FINGER_TAP, type_);
+    DCHECK_EQ(EventType::kGestureTwoFingerTap, type_);
     return data_.first_finger_enclosing_rectangle.width;
   }
 
   float first_finger_height() const {
-    DCHECK_EQ(ET_GESTURE_TWO_FINGER_TAP, type_);
+    DCHECK_EQ(EventType::kGestureTwoFingerTap, type_);
     return data_.first_finger_enclosing_rectangle.height;
   }
 
   float scale() const {
-    DCHECK_EQ(ET_GESTURE_PINCH_UPDATE, type_);
+    DCHECK_EQ(EventType::kGesturePinchUpdate, type_);
     return data_.pinch_update.scale;
   }
 
   float pinch_angle() const {
-    DCHECK_EQ(ET_GESTURE_PINCH_UPDATE, type_);
+    DCHECK_EQ(EventType::kGesturePinchUpdate, type_);
     return data_.pinch_update.angle;
   }
 
   bool swipe_left() const {
-    DCHECK_EQ(ET_GESTURE_SWIPE, type_);
+    DCHECK_EQ(EventType::kGestureSwipe, type_);
     return data_.swipe.left;
   }
 
   bool swipe_right() const {
-    DCHECK_EQ(ET_GESTURE_SWIPE, type_);
+    DCHECK_EQ(EventType::kGestureSwipe, type_);
     return data_.swipe.right;
   }
 
   bool swipe_up() const {
-    DCHECK_EQ(ET_GESTURE_SWIPE, type_);
+    DCHECK_EQ(EventType::kGestureSwipe, type_);
     return data_.swipe.up;
   }
 
   bool swipe_down() const {
-    DCHECK_EQ(ET_GESTURE_SWIPE, type_);
+    DCHECK_EQ(EventType::kGestureSwipe, type_);
     return data_.swipe.down;
   }
 
   void set_swipe_left(bool swipe) {
-    DCHECK_EQ(ET_GESTURE_SWIPE, type_);
+    DCHECK_EQ(EventType::kGestureSwipe, type_);
     data_.swipe.left = swipe;
   }
 
   void set_swipe_right(bool swipe) {
-    DCHECK_EQ(ET_GESTURE_SWIPE, type_);
+    DCHECK_EQ(EventType::kGestureSwipe, type_);
     data_.swipe.right = swipe;
   }
 
   void set_swipe_up(bool swipe) {
-    DCHECK_EQ(ET_GESTURE_SWIPE, type_);
+    DCHECK_EQ(EventType::kGestureSwipe, type_);
     data_.swipe.up = swipe;
   }
 
   void set_swipe_down(bool swipe) {
-    DCHECK_EQ(ET_GESTURE_SWIPE, type_);
+    DCHECK_EQ(EventType::kGestureSwipe, type_);
     data_.swipe.down = swipe;
   }
 
   int tap_count() const {
-    DCHECK(type_ == ET_GESTURE_TAP ||
-           type_ == ET_GESTURE_TAP_UNCONFIRMED ||
-           type_ == ET_GESTURE_DOUBLE_TAP);
+    DCHECK(type_ == EventType::kGestureTap ||
+           type_ == EventType::kGestureTapUnconfirmed ||
+           type_ == EventType::kGestureDoubleTap);
     return data_.tap_count;
   }
 
   void set_tap_count(int tap_count) {
     DCHECK_GE(tap_count, 0);
-    DCHECK(type_ == ET_GESTURE_TAP ||
-           type_ == ET_GESTURE_TAP_UNCONFIRMED ||
-           type_ == ET_GESTURE_DOUBLE_TAP);
+    DCHECK(type_ == EventType::kGestureTap ||
+           type_ == EventType::kGestureTapUnconfirmed ||
+           type_ == EventType::kGestureDoubleTap);
     data_.tap_count = tap_count;
   }
 
   int tap_down_count() const {
-    DCHECK_EQ(ET_GESTURE_TAP_DOWN, type_);
+    DCHECK_EQ(EventType::kGestureTapDown, type_);
     return data_.tap_down_count;
   }
 
   void set_tap_down_count(int tap_down_count) {
     DCHECK_GE(tap_down_count, 0);
-    DCHECK_EQ(ET_GESTURE_TAP_DOWN, type_);
+    DCHECK_EQ(EventType::kGestureTapDown, type_);
     data_.tap_down_count = tap_down_count;
   }
 
   void set_scale(float scale) {
     DCHECK_GE(scale, 0.0f);
-    DCHECK_EQ(type_, ET_GESTURE_PINCH_UPDATE);
+    DCHECK_EQ(type_, EventType::kGesturePinchUpdate);
     data_.pinch_update.scale = scale;
   }
 
   void set_pinch_angle(float angle) {
-    DCHECK_EQ(type_, ET_GESTURE_PINCH_UPDATE);
+    DCHECK_EQ(type_, EventType::kGesturePinchUpdate);
     data_.pinch_update.angle = angle;
   }
 
@@ -277,12 +277,13 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
     } swipe;
 
     // Number of taps that have occurred in the current repeated tap sequence.
-    // Should be set for ET_GESTURE_TAP, ET_GESTURE_TAP_UNCONFIRMED, and
-    // ET_GESTURE_DOUBLE_TAP events.
+    // Should be set for EventType::kGestureTap,
+    // EventType::kGestureTapUnconfirmed, and EventType::kGestureDoubleTap
+    // events.
     int tap_count;
 
     // Number of tap downs that have occurred in the current repeated tap
-    // sequence. Should be set for ET_GESTURE_TAP_DOWN events.
+    // sequence. Should be set for EventType::kGestureTapDown events.
     int tap_down_count;
   } data_;
 

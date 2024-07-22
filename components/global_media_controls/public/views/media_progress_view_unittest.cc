@@ -116,7 +116,7 @@ TEST_F(MediaProgressViewTest, MouseEventSeekTo) {
 
   // Simulate mouse click and release events and SeekTo() should be called.
   gfx::Point point(view()->width() / 2, view()->height() / 2);
-  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, point, point,
+  ui::MouseEvent pressed_event(ui::EventType::kMousePressed, point, point,
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(*this, OnProgressDragStateChange(DragState::kDragStarted));
@@ -126,9 +126,9 @@ TEST_F(MediaProgressViewTest, MouseEventSeekTo) {
   EXPECT_CALL(*this, SeekTo(0.5));
   view()->OnMousePressed(pressed_event);
 
-  ui::MouseEvent released_event =
-      ui::MouseEvent(ui::ET_MOUSE_RELEASED, point, point, ui::EventTimeForNow(),
-                     ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent released_event = ui::MouseEvent(
+      ui::EventType::kMouseReleased, point, point, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(*this, OnProgressDragStateChange(DragState::kDragEnded));
   EXPECT_CALL(*this,
               OnPlaybackStateChangeForProgressDrag(
@@ -162,7 +162,7 @@ TEST_F(MediaProgressViewTest, MouseEventSeekToForRTL) {
 
   // Simulate mouse click and release events and SeekTo() should be called.
   gfx::Point point(view()->width() / 4 + kWidthInset / 2, view()->height() / 2);
-  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, point, point,
+  ui::MouseEvent pressed_event(ui::EventType::kMousePressed, point, point,
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(*this, OnProgressDragStateChange(DragState::kDragStarted));
@@ -172,9 +172,9 @@ TEST_F(MediaProgressViewTest, MouseEventSeekToForRTL) {
   EXPECT_CALL(*this, SeekTo(testing::DoubleNear(0.75, 0.01)));
   view()->OnMousePressed(pressed_event);
 
-  ui::MouseEvent released_event =
-      ui::MouseEvent(ui::ET_MOUSE_RELEASED, point, point, ui::EventTimeForNow(),
-                     ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent released_event = ui::MouseEvent(
+      ui::EventType::kMouseReleased, point, point, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(*this, OnProgressDragStateChange(DragState::kDragEnded));
   EXPECT_CALL(*this,
               OnPlaybackStateChangeForProgressDrag(
@@ -194,7 +194,7 @@ TEST_F(MediaProgressViewTest, GestureEventSeekTo) {
   gfx::Point point(view()->width() / 2, view()->height() / 2);
   ui::GestureEvent tapped_event(
       point.x(), point.y(), 0, ui::EventTimeForNow(),
-      ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
+      ui::GestureEventDetails(ui::EventType::kGestureTapDown));
   EXPECT_CALL(*this, OnProgressDragStateChange(DragState::kDragStarted));
   EXPECT_CALL(*this,
               OnPlaybackStateChangeForProgressDrag(
@@ -202,9 +202,9 @@ TEST_F(MediaProgressViewTest, GestureEventSeekTo) {
   EXPECT_CALL(*this, SeekTo(0.5));
   view()->OnGestureEvent(&tapped_event);
 
-  ui::GestureEvent released_event(point.x(), point.y(), 0,
-                                  ui::EventTimeForNow(),
-                                  ui::GestureEventDetails(ui::ET_GESTURE_END));
+  ui::GestureEvent released_event(
+      point.x(), point.y(), 0, ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::EventType::kGestureEnd));
   EXPECT_CALL(*this, OnProgressDragStateChange(DragState::kDragEnded));
   EXPECT_CALL(*this,
               OnPlaybackStateChangeForProgressDrag(
@@ -220,9 +220,9 @@ TEST_F(MediaProgressViewTest, KeyEventSeekBackward) {
   EXPECT_CALL(*this, OnProgressUpdated(testing::_));
   view()->UpdateProgress(media_position);
 
-  ui::KeyEvent key_event{ui::ET_KEY_PRESSED,      ui::VKEY_LEFT,
-                         ui::DomCode::ARROW_LEFT, ui::EF_NONE,
-                         ui::DomKey::ARROW_LEFT,  ui::EventTimeForNow()};
+  ui::KeyEvent key_event{ui::EventType::kKeyPressed, ui::VKEY_LEFT,
+                         ui::DomCode::ARROW_LEFT,    ui::EF_NONE,
+                         ui::DomKey::ARROW_LEFT,     ui::EventTimeForNow()};
   EXPECT_CALL(*this, SeekTo(testing::DoubleNear(0.5, 0.01)));
   view()->OnKeyPressed(key_event);
 }
@@ -234,9 +234,9 @@ TEST_F(MediaProgressViewTest, KeyEventSeekBackwardToBeginning) {
   EXPECT_CALL(*this, OnProgressUpdated(testing::_));
   view()->UpdateProgress(media_position);
 
-  ui::KeyEvent key_event{ui::ET_KEY_PRESSED,      ui::VKEY_DOWN,
-                         ui::DomCode::ARROW_DOWN, ui::EF_NONE,
-                         ui::DomKey::ARROW_DOWN,  ui::EventTimeForNow()};
+  ui::KeyEvent key_event{ui::EventType::kKeyPressed, ui::VKEY_DOWN,
+                         ui::DomCode::ARROW_DOWN,    ui::EF_NONE,
+                         ui::DomKey::ARROW_DOWN,     ui::EventTimeForNow()};
   EXPECT_CALL(*this, SeekTo(0));
   view()->OnKeyPressed(key_event);
 }
@@ -248,9 +248,9 @@ TEST_F(MediaProgressViewTest, KeyEventSeekForward) {
   EXPECT_CALL(*this, OnProgressUpdated(testing::_));
   view()->UpdateProgress(media_position);
 
-  ui::KeyEvent key_event{ui::ET_KEY_PRESSED,       ui::VKEY_RIGHT,
-                         ui::DomCode::ARROW_RIGHT, ui::EF_NONE,
-                         ui::DomKey::ARROW_RIGHT,  ui::EventTimeForNow()};
+  ui::KeyEvent key_event{ui::EventType::kKeyPressed, ui::VKEY_RIGHT,
+                         ui::DomCode::ARROW_RIGHT,   ui::EF_NONE,
+                         ui::DomKey::ARROW_RIGHT,    ui::EventTimeForNow()};
   EXPECT_CALL(*this, SeekTo(testing::DoubleNear(0.5, 0.01)));
   view()->OnKeyPressed(key_event);
 }
@@ -262,9 +262,9 @@ TEST_F(MediaProgressViewTest, KeyEventSeekForwardToEnd) {
   EXPECT_CALL(*this, OnProgressUpdated(testing::_));
   view()->UpdateProgress(media_position);
 
-  ui::KeyEvent key_event{ui::ET_KEY_PRESSED,    ui::VKEY_UP,
-                         ui::DomCode::ARROW_UP, ui::EF_NONE,
-                         ui::DomKey::ARROW_UP,  ui::EventTimeForNow()};
+  ui::KeyEvent key_event{ui::EventType::kKeyPressed, ui::VKEY_UP,
+                         ui::DomCode::ARROW_UP,      ui::EF_NONE,
+                         ui::DomKey::ARROW_UP,       ui::EventTimeForNow()};
   EXPECT_CALL(*this, SeekTo(1));
   view()->OnKeyPressed(key_event);
 }
@@ -277,7 +277,7 @@ TEST_F(MediaProgressViewTest, DragProgressForPlayingMedia) {
   view()->UpdateProgress(media_position);
 
   gfx::Point point(view()->width() / 2, view()->height() / 2);
-  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, point, point,
+  ui::MouseEvent pressed_event(ui::EventType::kMousePressed, point, point,
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(*this, OnProgressDragStateChange(DragState::kDragStarted));
@@ -287,15 +287,17 @@ TEST_F(MediaProgressViewTest, DragProgressForPlayingMedia) {
   EXPECT_CALL(*this, SeekTo(0.5));
   view()->OnMousePressed(pressed_event);
 
-  ui::MouseEvent dragged_event(ui::ET_MOUSE_DRAGGED, gfx::Point(), gfx::Point(),
-                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+  ui::MouseEvent dragged_event(ui::EventType::kMouseDragged, gfx::Point(),
+                               gfx::Point(), ui::EventTimeForNow(),
+                               ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(*this, SeekTo(0));
   view()->OnMouseDragged(dragged_event);
 
-  ui::MouseEvent released_event = ui::MouseEvent(
-      ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent released_event =
+      ui::MouseEvent(ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(*this, OnProgressDragStateChange(DragState::kDragEnded));
   EXPECT_CALL(*this,
               OnPlaybackStateChangeForProgressDrag(
@@ -312,7 +314,7 @@ TEST_F(MediaProgressViewTest, DragProgressForPausedMedia) {
   view()->UpdateProgress(media_position);
 
   gfx::Point point(view()->width() / 2, view()->height() / 2);
-  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, point, point,
+  ui::MouseEvent pressed_event(ui::EventType::kMousePressed, point, point,
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(*this, OnProgressDragStateChange(DragState::kDragStarted));
@@ -321,15 +323,16 @@ TEST_F(MediaProgressViewTest, DragProgressForPausedMedia) {
   view()->OnMousePressed(pressed_event);
 
   gfx::Point new_point(view()->width() / 4, view()->height() / 2);
-  ui::MouseEvent dragged_event(ui::ET_MOUSE_DRAGGED, new_point, new_point,
-                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                               ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent dragged_event(
+      ui::EventType::kMouseDragged, new_point, new_point, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(*this, SeekTo(testing::DoubleNear(0.25, 0.01)));
   view()->OnMouseDragged(dragged_event);
 
-  ui::MouseEvent released_event = ui::MouseEvent(
-      ui::ET_MOUSE_RELEASED, new_point, new_point, ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent released_event =
+      ui::MouseEvent(ui::EventType::kMouseReleased, new_point, new_point,
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(*this, OnProgressDragStateChange(DragState::kDragEnded));
   EXPECT_CALL(*this, OnPlaybackStateChangeForProgressDrag(testing::_)).Times(0);
   EXPECT_CALL(*this, SeekTo(testing::DoubleNear(0.25, 0.01)));

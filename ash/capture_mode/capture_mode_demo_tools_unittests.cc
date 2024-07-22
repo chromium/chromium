@@ -901,7 +901,7 @@ TEST_F(CaptureModeDemoToolsTest, DragAndDropIconOnShelfTest) {
   ASSERT_TRUE(button->FireDragTimerForTest());
   button->FireRippleActivationTimerForTest();
 
-  ui::GestureEventDetails event_details(ui::ET_GESTURE_LONG_PRESS);
+  ui::GestureEventDetails event_details(ui::EventType::kGestureLongPress);
   ui::GestureEvent long_press(button_center_point.x(), button_center_point.y(),
                               0, ui::EventTimeForNow(), event_details);
   event_generator->Dispatch(&long_press);

@@ -53,11 +53,11 @@ void SuspendStateMachine::OnKeyEvent(ui::KeyEvent* event) {
   }
 
   // If any key is pressed, the suspend trigger should be cancelled.
-  if (event->type() == ui::ET_KEY_PRESSED) {
+  if (event->type() == ui::EventType::kKeyPressed) {
     CancelSuspend();
     return;
   }
-  DCHECK_EQ(ui::ET_KEY_RELEASED, event->type());
+  DCHECK_EQ(ui::EventType::kKeyReleased, event->type());
 
   // Either the key code of the accelerator must match OR the release key must
   // have modifiers that match in the accelerator.

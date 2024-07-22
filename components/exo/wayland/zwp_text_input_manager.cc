@@ -246,7 +246,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
       VLOG(0) << "Unable to find keysym for: " << event.ToString();
     }
 
-    bool pressed = (event.type() == ui::ET_KEY_PRESSED);
+    bool pressed = (event.type() == ui::EventType::kKeyPressed);
     zwp_text_input_v1_send_keysym(
         text_input_, TimeTicksToMilliseconds(event.time_stamp()),
         serial_tracker_->GetNextSerial(SerialTracker::EventType::OTHER_EVENT),

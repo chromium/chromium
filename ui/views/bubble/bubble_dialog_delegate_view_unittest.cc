@@ -559,7 +559,8 @@ TEST_F(BubbleDialogDelegateViewTest, CloseMethods) {
         BubbleDialogDelegateView::CreateBubble(bubble_delegate);
     bubble_widget->Show();
 
-    ui::KeyEvent escape_event(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, ui::EF_NONE);
+    ui::KeyEvent escape_event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE,
+                              ui::EF_NONE);
     bubble_widget->OnKeyEvent(&escape_event);
     EXPECT_TRUE(bubble_widget->IsClosed());
   }
@@ -578,7 +579,7 @@ TEST_F(BubbleDialogDelegateViewTest, CloseMethods) {
     Button* close_button = frame_view->close_;
     ASSERT_TRUE(close_button);
     test::ButtonTestApi(close_button)
-        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(),
                                     ui::EF_NONE, ui::EF_NONE));
     EXPECT_TRUE(bubble_widget->IsClosed());

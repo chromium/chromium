@@ -458,14 +458,14 @@ void DemoSessionMetricsRecorder::OnUserActivity(const ui::Event* event) {
 
 void DemoSessionMetricsRecorder::OnMouseEvent(ui::MouseEvent* event) {
   // If event type is mouse/trackpad clicking, increase the metric by one.
-  if (event->type() == ui::ET_MOUSE_PRESSED) {
+  if (event->type() == ui::EventType::kMousePressed) {
     user_clicks_and_presses_++;
   }
 }
 
 void DemoSessionMetricsRecorder::OnTouchEvent(ui::TouchEvent* event) {
   // If event type is screen pressing, increase the metric by one.
-  if (event->type() == ui::ET_TOUCH_PRESSED) {
+  if (event->type() == ui::EventType::kTouchPressed) {
     user_clicks_and_presses_++;
   }
 }

@@ -275,11 +275,11 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
     auto* scrim_view = static_cast<EmbeddedPermissionPromptContentScrimView*>(
         waiter.WaitIfNeededAndGet()->GetContentsView());
     scrim_view->OnMousePressed(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-    scrim_view->OnMouseReleased(
-        ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+    scrim_view->OnMouseReleased(ui::MouseEvent(
+        ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
+        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
     WaitForDismissEvent(id);
   }
 }
@@ -300,11 +300,11 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
         waiter.WaitIfNeededAndGet()->GetContentsView());
     ui::GestureEvent tap_down(
         gfx::Point().x(), gfx::Point().y(), 0, base::TimeTicks::Now(),
-        ui::GestureEventDetails(ui::EventType::ET_GESTURE_TAP_DOWN));
+        ui::GestureEventDetails(ui::EventType::kGestureTapDown));
     scrim_view->OnGestureEvent(&tap_down);
     ui::GestureEvent tap_up(
         gfx::Point().x(), gfx::Point().y(), 0, base::TimeTicks::Now(),
-        ui::GestureEventDetails(ui::EventType::ET_GESTURE_TAP));
+        ui::GestureEventDetails(ui::EventType::kGestureTap));
     scrim_view->OnGestureEvent(&tap_up);
     WaitForDismissEvent(id);
   }

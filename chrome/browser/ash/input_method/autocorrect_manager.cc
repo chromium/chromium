@@ -729,7 +729,8 @@ void AutocorrectManager::OnActivate(const std::string& engine_id) {
 bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
   RecordPendingMetricsAwaitingKeyPress();
 
-  if (!pending_autocorrect_.has_value() || event.type() != ui::ET_KEY_PRESSED) {
+  if (!pending_autocorrect_.has_value() ||
+      event.type() != ui::EventType::kKeyPressed) {
     return false;
   }
   // TODO(b:253549747): call pending_autocorrect_->last_key_event.reset() if

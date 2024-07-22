@@ -14530,8 +14530,7 @@ TEST_P(LayerTreeHostImplTest,
     // `AverageLagTrackingManager::CollectScrollEventsFromFrame()`.
     EventMetrics::List events_metrics;
     events_metrics.push_back(ScrollUpdateEventMetrics::Create(
-        ui::EventType::ET_GESTURE_SCROLL_UPDATE,
-        ui::ScrollInputType::kTouchscreen,
+        ui::EventType::kGestureScrollUpdate, ui::ScrollInputType::kTouchscreen,
         /*is_inertial=*/false,
         i == 0 ? ScrollUpdateEventMetrics::ScrollUpdateType::kStarted
                : ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,

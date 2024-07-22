@@ -515,8 +515,8 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserBubbleTest,
 
   views::test::ButtonTestApi test_api(intent_picker_icon);
   test_api.NotifyClick(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   Browser* app_browser = ui_test_utils::WaitForBrowserToOpen();
   EXPECT_FALSE(intent_picker_bubble());
   EXPECT_TRUE(app_browser);

@@ -118,7 +118,7 @@ bool LoginPinInput::HandleMouseEvent(views::Textfield* sender,
 
 bool LoginPinInput::HandleGestureEvent(views::Textfield* sender,
                                        const ui::GestureEvent& gesture_event) {
-  if (gesture_event.details().type() != ui::EventType::ET_GESTURE_TAP) {
+  if (gesture_event.details().type() != ui::EventType::kGestureTap) {
     return false;
   }
 
@@ -129,7 +129,7 @@ bool LoginPinInput::HandleGestureEvent(views::Textfield* sender,
 bool LoginPinInput::HandleKeyEvent(views::Textfield* sender,
                                    const ui::KeyEvent& key_event) {
   // Let the parent view handle the 'Return' key. Triggers SmartLock login.
-  if (key_event.type() == ui::ET_KEY_PRESSED &&
+  if (key_event.type() == ui::EventType::kKeyPressed &&
       key_event.key_code() == ui::VKEY_RETURN) {
     return false;
   }

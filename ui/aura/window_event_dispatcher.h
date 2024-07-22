@@ -80,8 +80,9 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   ui::EventTargeter* GetDefaultEventTargeter() override;
 
   // Repost event for re-processing. Used when exiting context menus.
-  // We support the ET_MOUSE_PRESSED, ET_TOUCH_PRESSED and ET_GESTURE_TAP_DOWN
-  // event types (although the latter is currently a no-op).
+  // We support the EventType::kMousePressed, EventType::kTouchPressed and
+  // EventType::kGestureTapDown event types (although the latter is currently a
+  // no-op).
   void RepostEvent(const ui::LocatedEvent* event);
 
   // Invoked when the mouse events get enabled or disabled.
@@ -89,7 +90,7 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
 
   void DispatchCancelModeEvent();
 
-  // Dispatches a ui::ET_MOUSE_EXITED event at |point| to the |target|
+  // Dispatches a ui::EventType::kMouseExited event at |point| to the |target|
   // If the |target| is NULL, we will dispatch the event to the root-window.
   // |event_flags| will be set on the dispatched exit event.
   // TODO(beng): needed only for WTH::OnCursorVisibilityChanged().

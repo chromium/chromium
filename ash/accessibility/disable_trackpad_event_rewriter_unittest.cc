@@ -94,11 +94,11 @@ TEST_F(DisableTrackpadEventRewriterTest, KeyboardEventsNotCanceledIfDisabled) {
   event_rewriter()->SetEnabled(false);
   generator()->PressKey(ui::VKEY_A, ui::EF_NONE);
   ASSERT_EQ(1U, event_capturer()->events().size());
-  ASSERT_EQ(ui::EventType::ET_KEY_PRESSED,
+  ASSERT_EQ(ui::EventType::kKeyPressed,
             event_capturer()->events().back()->type());
   generator()->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
   ASSERT_EQ(2u, event_capturer()->events().size());
-  ASSERT_EQ(ui::EventType::ET_KEY_RELEASED,
+  ASSERT_EQ(ui::EventType::kKeyReleased,
             event_capturer()->events().back()->type());
 }
 
@@ -106,33 +106,33 @@ TEST_F(DisableTrackpadEventRewriterTest, MouseButtonsNotCanceledIfDisabled) {
   event_rewriter()->SetEnabled(false);
   generator()->PressLeftButton();
   EXPECT_EQ(1U, event_capturer()->events().size());
-  EXPECT_EQ(ui::EventType::ET_MOUSE_PRESSED,
+  EXPECT_EQ(ui::EventType::kMousePressed,
             event_capturer()->events().back()->type());
   generator()->ReleaseLeftButton();
   EXPECT_EQ(2U, event_capturer()->events().size());
-  EXPECT_EQ(ui::EventType::ET_MOUSE_RELEASED,
+  EXPECT_EQ(ui::EventType::kMouseReleased,
             event_capturer()->events().back()->type());
 }
 
 TEST_F(DisableTrackpadEventRewriterTest, KeyboardEventsNotCanceled) {
   generator()->PressKey(ui::VKEY_A, ui::EF_NONE);
   ASSERT_EQ(1U, event_capturer()->events().size());
-  ASSERT_EQ(ui::EventType::ET_KEY_PRESSED,
+  ASSERT_EQ(ui::EventType::kKeyPressed,
             event_capturer()->events().back()->type());
   generator()->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
   ASSERT_EQ(2u, event_capturer()->events().size());
-  ASSERT_EQ(ui::EventType::ET_KEY_RELEASED,
+  ASSERT_EQ(ui::EventType::kKeyReleased,
             event_capturer()->events().back()->type());
 }
 
 TEST_F(DisableTrackpadEventRewriterTest, MouseButtonsNotCanceled) {
   generator()->PressLeftButton();
   EXPECT_EQ(1U, event_capturer()->events().size());
-  EXPECT_EQ(ui::EventType::ET_MOUSE_PRESSED,
+  EXPECT_EQ(ui::EventType::kMousePressed,
             event_capturer()->events().back()->type());
   generator()->ReleaseLeftButton();
   EXPECT_EQ(2U, event_capturer()->events().size());
-  EXPECT_EQ(ui::EventType::ET_MOUSE_RELEASED,
+  EXPECT_EQ(ui::EventType::kMouseReleased,
             event_capturer()->events().back()->type());
 }
 

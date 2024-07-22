@@ -101,8 +101,8 @@ chromeos::WindowStateType SplitViewOverviewSession::GetWindowStateType() const {
 }
 
 void SplitViewOverviewSession::HandleClickOrTap(const ui::LocatedEvent& event) {
-  if (event.type() != ui::ET_MOUSE_PRESSED &&
-      event.type() != ui::ET_TOUCH_RELEASED) {
+  if (event.type() != ui::EventType::kMousePressed &&
+      event.type() != ui::EventType::kTouchReleased) {
     return;
   }
 

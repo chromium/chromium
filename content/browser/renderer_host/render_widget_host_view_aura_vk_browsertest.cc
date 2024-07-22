@@ -245,10 +245,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   const int width = EvalJs(shell(), "elemRect3.width").ExtractInt();
   const int height = EvalJs(shell(), "elemRect3.height").ExtractInt();
   gfx::Point tap_point = gfx::Point(left + width / 2, top + height / 2);
-  SimulateTouchEventAt(web_contents, ui::ET_TOUCH_PRESSED, tap_point);
+  SimulateTouchEventAt(web_contents, ui::EventType::kTouchPressed, tap_point);
   SimulateTapDownAt(web_contents, tap_point);
   SimulateTapAt(web_contents, tap_point);
-  SimulateTouchEventAt(web_contents, ui::ET_TOUCH_RELEASED, tap_point);
+  SimulateTouchEventAt(web_contents, ui::EventType::kTouchReleased, tap_point);
   type_observer_auto.Wait();
 }
 
@@ -273,10 +273,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   const int width = EvalJs(shell(), "elemRect3.width").ExtractInt();
   const int height = EvalJs(shell(), "elemRect3.height").ExtractInt();
   gfx::Point tap_point = gfx::Point(left + width / 2, top + height / 2);
-  SimulateTouchEventAt(web_contents, ui::ET_TOUCH_PRESSED, tap_point);
+  SimulateTouchEventAt(web_contents, ui::EventType::kTouchPressed, tap_point);
   SimulateTapDownAt(web_contents, tap_point);
   SimulateTapAt(web_contents, tap_point);
-  SimulateTouchEventAt(web_contents, ui::ET_TOUCH_RELEASED, tap_point);
+  SimulateTouchEventAt(web_contents, ui::EventType::kTouchReleased, tap_point);
   show_ime_observer_true.Wait();
 }
 
@@ -301,10 +301,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   const int width = EvalJs(shell(), "elemRect1.width").ExtractInt();
   const int height = EvalJs(shell(), "elemRect1.height").ExtractInt();
   gfx::Point tap_point = gfx::Point(left + width / 2, top + height / 2);
-  SimulateTouchEventAt(web_contents, ui::ET_TOUCH_PRESSED, tap_point);
+  SimulateTouchEventAt(web_contents, ui::EventType::kTouchPressed, tap_point);
   SimulateTapDownAt(web_contents, tap_point);
   SimulateTapAt(web_contents, tap_point);
-  SimulateTouchEventAt(web_contents, ui::ET_TOUCH_RELEASED, tap_point);
+  SimulateTouchEventAt(web_contents, ui::EventType::kTouchReleased, tap_point);
   type_observer_show.Wait();
   TextInputManagerVkVisibilityRequestObserver type_observer_hide(
       web_contents, ui::mojom::VirtualKeyboardVisibilityRequest::HIDE);
@@ -334,10 +334,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   const int width = EvalJs(shell(), "elemRect2.width").ExtractInt();
   const int height = EvalJs(shell(), "elemRect2.height").ExtractInt();
   gfx::Point tap_point = gfx::Point(left + width / 2, top + height / 2);
-  SimulateTouchEventAt(web_contents, ui::ET_TOUCH_PRESSED, tap_point);
+  SimulateTouchEventAt(web_contents, ui::EventType::kTouchPressed, tap_point);
   SimulateTapDownAt(web_contents, tap_point);
   SimulateTapAt(web_contents, tap_point);
-  SimulateTouchEventAt(web_contents, ui::ET_TOUCH_RELEASED, tap_point);
+  SimulateTouchEventAt(web_contents, ui::EventType::kTouchReleased, tap_point);
   type_observer_show.Wait();
   TextInputManagerVkVisibilityRequestObserver type_observer_hide(
       web_contents, ui::mojom::VirtualKeyboardVisibilityRequest::HIDE);

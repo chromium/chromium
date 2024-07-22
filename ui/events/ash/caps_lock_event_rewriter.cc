@@ -31,11 +31,11 @@ EventDispatchDetails CapsLockEventRewriter::RewriteEvent(
     const Continuation continuation) {
   std::unique_ptr<Event> rewritten_event;
   switch (event.type()) {
-    case ET_KEY_PRESSED: {
+    case EventType::kKeyPressed: {
       rewritten_event = RewritePressKeyEvent(*event.AsKeyEvent());
       break;
     }
-    case ET_KEY_RELEASED: {
+    case EventType::kKeyReleased: {
       rewritten_event = RewriteReleaseKeyEvent(*event.AsKeyEvent());
       break;
     }

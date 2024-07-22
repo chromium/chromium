@@ -184,8 +184,8 @@ class CaptionBubbleEventObserver : public ui::EventObserver {
     CHECK(widget);
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this, widget->GetNativeWindow(),
-        {ui::ET_MOUSE_MOVED, ui::ET_MOUSE_EXITED, ui::ET_KEY_PRESSED,
-         ui::ET_KEY_RELEASED});
+        {ui::EventType::kMouseMoved, ui::EventType::kMouseExited,
+         ui::EventType::kKeyPressed, ui::EventType::kKeyReleased});
   }
 
   CaptionBubbleEventObserver(const CaptionBubbleEventObserver&) = delete;

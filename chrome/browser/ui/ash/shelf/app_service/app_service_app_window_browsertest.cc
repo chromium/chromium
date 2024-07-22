@@ -92,7 +92,7 @@ constexpr char kTestPaymentAppActivity[] =
 
 ash::ShelfAction SelectItem(
     const ash::ShelfID& id,
-    ui::EventType event_type = ui::ET_MOUSE_PRESSED,
+    ui::EventType event_type = ui::EventType::kMousePressed,
     int64_t display_id = display::kInvalidDisplayId,
     ash::ShelfLaunchSource source = ash::LAUNCH_FROM_UNKNOWN) {
   return SelectShelfItem(id, event_type, display_id, source);
@@ -640,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowWebAppBrowserTest,
             GetAppInstanceState(app_id, instance2->Window()));
 
   // Launching the first app from the app list should activate it.
-  SelectItem(item.id, ui::ET_MOUSE_PRESSED, display::kInvalidDisplayId,
+  SelectItem(item.id, ui::EventType::kMousePressed, display::kInvalidDisplayId,
              ash::LAUNCH_FROM_APP_LIST);
 
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
@@ -648,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowWebAppBrowserTest,
             GetAppInstanceState(app_id, instance1->Window()));
 
   // Selecting an active app from the app list should not minimize it.
-  SelectItem(item.id, ui::ET_MOUSE_PRESSED, display::kInvalidDisplayId,
+  SelectItem(item.id, ui::EventType::kMousePressed, display::kInvalidDisplayId,
              ash::LAUNCH_FROM_APP_LIST);
 
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |

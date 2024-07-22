@@ -168,7 +168,7 @@ void DeskButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void DeskButton::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_PRESSED &&
+  if (event->type() == ui::EventType::kMousePressed &&
       event->IsOnlyRightMouseButton()) {
     desk_button_container_->MaybeShowContextMenu(this, event);
     return;
@@ -178,8 +178,8 @@ void DeskButton::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void DeskButton::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_LONG_PRESS ||
-      event->type() == ui::ET_GESTURE_LONG_TAP) {
+  if (event->type() == ui::EventType::kGestureLongPress ||
+      event->type() == ui::EventType::kGestureLongTap) {
     desk_button_container_->MaybeShowContextMenu(this, event);
     return;
   }

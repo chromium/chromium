@@ -109,7 +109,7 @@ class SystemTextfield::EventHandler : public ui::EventHandler {
     }
 
     const ui::EventType event_type = event->type();
-    if (event_type != ui::ET_MOUSE_PRESSED) {
+    if (event_type != ui::EventType::kMousePressed) {
       return;
     }
 

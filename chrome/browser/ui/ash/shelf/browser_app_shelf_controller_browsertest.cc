@@ -311,8 +311,8 @@ class BrowserAppShelfControllerBrowserTest
       const std::string& app_id,
       ash::ShelfLaunchSource source = ash::LAUNCH_FROM_UNKNOWN) {
     auto event = std::make_unique<ui::MouseEvent>(
-        ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-        ui::EF_NONE, 0);
+        ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+        ui::EventTimeForNow(), ui::EF_NONE, 0);
 
     base::RunLoop run_loop;
     ash::ShelfModel* model = ash::ShelfModel::Get();

@@ -29,7 +29,7 @@ WindowEventFilterLacros::~WindowEventFilterLacros() {
 }
 
 void WindowEventFilterLacros::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() != ui::ET_MOUSE_PRESSED ||
+  if (event->type() != ui::EventType::kMousePressed ||
       !event->IsOnlyLeftMouseButton()) {
     return;
   }
@@ -60,7 +60,7 @@ void WindowEventFilterLacros::OnGestureEvent(ui::GestureEvent* event) {
           : HTNOWHERE;
 
   // Double tap to maximize.
-  if (event->type() == ui::ET_GESTURE_TAP) {
+  if (event->type() == ui::EventType::kGestureTap) {
     int previous_pressed_component = previous_pressed_component_;
     previous_pressed_component_ = component;
 
@@ -75,8 +75,9 @@ void WindowEventFilterLacros::OnGestureEvent(ui::GestureEvent* event) {
   }
 
   // Interactive window move.
-  if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN)
+  if (event->type() == ui::EventType::kGestureScrollBegin) {
     MaybeDispatchHostWindowDragMovement(component, event);
+  }
 }
 
 void WindowEventFilterLacros::MaybeToggleMaximizedState(aura::Window* window) {

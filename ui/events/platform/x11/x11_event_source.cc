@@ -299,7 +299,7 @@ void X11EventSource::OnEvent(const x11::Event& x11_event) {
       translated_event && translated_event->IsMouseEvent()) {
     return;
   }
-  if (translated_event && translated_event->type() != ET_UNKNOWN) {
+  if (translated_event && translated_event->type() != EventType::kUnknown) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (translated_event->IsLocatedEvent()) {
       ui::CursorController::GetInstance()->SetCursorLocation(

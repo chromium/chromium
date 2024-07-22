@@ -57,18 +57,18 @@ class TestEventRewriteSink : public EventSink {
 
 std::unique_ptr<Event> CreateEventForType(EventType type) {
   switch (type) {
-    case ET_CANCEL_MODE:
+    case EventType::kCancelMode:
       return std::make_unique<CancelModeEvent>();
-    case ET_MOUSE_DRAGGED:
-    case ET_MOUSE_PRESSED:
-    case ET_MOUSE_RELEASED:
+    case EventType::kMouseDragged:
+    case EventType::kMousePressed:
+    case EventType::kMouseReleased:
       return std::make_unique<MouseEvent>(type, gfx::Point(), gfx::Point(),
                                           base::TimeTicks::Now(), 0, 0);
-    case ET_KEY_PRESSED:
-    case ET_KEY_RELEASED:
+    case EventType::kKeyPressed:
+    case EventType::kKeyReleased:
       return std::make_unique<KeyEvent>(type, ui::VKEY_TAB, DomCode::NONE, 0);
-    case ET_SCROLL_FLING_CANCEL:
-    case ET_SCROLL_FLING_START:
+    case EventType::kScrollFlingCancel:
+    case EventType::kScrollFlingStart:
       return std::make_unique<ScrollEvent>(
           type, gfx::Point(), base::TimeTicks::Now(), 0, 0, 0, 0, 0, 0);
     default:
@@ -260,24 +260,26 @@ class TestStateMachineEventRewriter : public EventRewriter {
 }  // namespace
 
 TEST(EventRewriterTest, EventRewritingOld) {
-  // TestEventRewriter r0 always rewrites events to ET_CANCEL_MODE;
+  // TestEventRewriter r0 always rewrites events to EventType::kCancelMode;
   // it is placed at the beginning of the chain and later removed,
   // to verify that rewriter removal works.
-  TestConstantEventRewriterOld r0(EVENT_REWRITE_REWRITTEN, ET_CANCEL_MODE);
+  TestConstantEventRewriterOld r0(EVENT_REWRITE_REWRITTEN,
+                                  EventType::kCancelMode);
 
   // TestEventRewriter r1 always returns EVENT_REWRITE_CONTINUE;
   // it is at the beginning of the chain (once r0 is removed)
   // to verify that a later rewriter sees the events.
-  TestConstantEventRewriterOld r1(EVENT_REWRITE_CONTINUE, ET_UNKNOWN);
+  TestConstantEventRewriterOld r1(EVENT_REWRITE_CONTINUE, EventType::kUnknown);
 
   // TestEventRewriter r2 has a state machine, primarily to test
   // |EVENT_REWRITE_DISPATCH_ANOTHER|.
   TestStateMachineEventRewriterOld r2;
 
-  // TestEventRewriter r3 always rewrites events to ET_CANCEL_MODE;
+  // TestEventRewriter r3 always rewrites events to EventType::kCancelMode;
   // it is placed at the end of the chain to verify that previously
   // rewritten events are not passed further down the chain.
-  TestConstantEventRewriterOld r3(EVENT_REWRITE_REWRITTEN, ET_CANCEL_MODE);
+  TestConstantEventRewriterOld r3(EVENT_REWRITE_REWRITTEN,
+                                  EventType::kCancelMode);
 
   TestEventTarget t;
   TestEventRewriteSink p(&t);
@@ -286,66 +288,68 @@ TEST(EventRewriterTest, EventRewritingOld) {
   s.AddEventRewriter(&r1);
   s.AddEventRewriter(&r2);
 
-  // These events should be rewritten by r0 to ET_CANCEL_MODE.
-  p.AddExpectedEvent(ET_CANCEL_MODE);
-  s.Send(ET_MOUSE_DRAGGED);
-  p.AddExpectedEvent(ET_CANCEL_MODE);
-  s.Send(ET_MOUSE_PRESSED);
+  // These events should be rewritten by r0 to EventType::kCancelMode.
+  p.AddExpectedEvent(EventType::kCancelMode);
+  s.Send(EventType::kMouseDragged);
+  p.AddExpectedEvent(EventType::kCancelMode);
+  s.Send(EventType::kMousePressed);
   p.CheckAllReceived();
 
   // Remove r0, and verify that it's gone and that events make it through.
-  // - r0 is removed, so the resulting event should NOT be ET_CANCEL_MODE.
-  // - r2 should rewrite ET_SCROLL_FLING_START to ET_SCROLL_FLING_CANCEL,
+  // - r0 is removed, so the resulting event should NOT be
+  // EventType::kCancelMode.
+  // - r2 should rewrite EventType::kScrollFlingStart to
+  // EventType::kScrollFlingCancel,
   //   and skip subsequent rewriters, so the resulting event should be
-  //   ET_SCROLL_FLING_CANCEL.
+  //   EventType::kScrollFlingCancel.
   // - r3 should be skipped after r2 returns, so the resulting event
-  //   should NOT be ET_CANCEL_MODE.
+  //   should NOT be EventType::kCancelMode.
   s.AddEventRewriter(&r3);
   s.RemoveEventRewriter(&r0);
   // clang-format off
-  r2.AddRule(0, ET_SCROLL_FLING_START,
-             0, ET_SCROLL_FLING_CANCEL, EVENT_REWRITE_REWRITTEN);
+  r2.AddRule(0, EventType::kScrollFlingStart,
+             0, EventType::kScrollFlingCancel, EVENT_REWRITE_REWRITTEN);
   // clang-format on
-  p.AddExpectedEvent(ET_SCROLL_FLING_CANCEL);
-  s.Send(ET_SCROLL_FLING_START);
+  p.AddExpectedEvent(EventType::kScrollFlingCancel);
+  s.Send(EventType::kScrollFlingStart);
   p.CheckAllReceived();
   s.RemoveEventRewriter(&r3);
 
   // Verify EVENT_REWRITE_DISPATCH_ANOTHER using a state machine
   // (that happens to be analogous to sticky keys).
   // clang-format off
-  r2.AddRule(0, ET_KEY_PRESSED,
-             1, ET_KEY_PRESSED, EVENT_REWRITE_CONTINUE);
-  r2.AddRule(1, ET_MOUSE_PRESSED,
-             0, ET_MOUSE_PRESSED, EVENT_REWRITE_CONTINUE);
-  r2.AddRule(1, ET_KEY_RELEASED,
-             2, ET_KEY_RELEASED, EVENT_REWRITE_DISCARD);
-  r2.AddRule(2, ET_MOUSE_RELEASED,
-             3, ET_MOUSE_RELEASED, EVENT_REWRITE_DISPATCH_ANOTHER);
-  r2.AddRule(3, ET_MOUSE_RELEASED,
-             0, ET_KEY_RELEASED, EVENT_REWRITE_REWRITTEN);
+  r2.AddRule(0, EventType::kKeyPressed,
+             1, EventType::kKeyPressed, EVENT_REWRITE_CONTINUE);
+  r2.AddRule(1, EventType::kMousePressed,
+             0, EventType::kMousePressed, EVENT_REWRITE_CONTINUE);
+  r2.AddRule(1, EventType::kKeyReleased,
+             2, EventType::kKeyReleased, EVENT_REWRITE_DISCARD);
+  r2.AddRule(2, EventType::kMouseReleased,
+             3, EventType::kMouseReleased, EVENT_REWRITE_DISPATCH_ANOTHER);
+  r2.AddRule(3, EventType::kMouseReleased,
+             0, EventType::kKeyReleased, EVENT_REWRITE_REWRITTEN);
   // clang-format on
-  p.AddExpectedEvent(ET_KEY_PRESSED);
-  s.Send(ET_KEY_PRESSED);
-  s.Send(ET_KEY_RELEASED);
-  p.AddExpectedEvent(ET_MOUSE_PRESSED);
-  s.Send(ET_MOUSE_PRESSED);
+  p.AddExpectedEvent(EventType::kKeyPressed);
+  s.Send(EventType::kKeyPressed);
+  s.Send(EventType::kKeyReleased);
+  p.AddExpectedEvent(EventType::kMousePressed);
+  s.Send(EventType::kMousePressed);
 
   // Removing rewriter r1 shouldn't affect r2.
   s.RemoveEventRewriter(&r1);
 
   // Continue with the state-based rewriting.
-  p.AddExpectedEvent(ET_MOUSE_RELEASED);
-  p.AddExpectedEvent(ET_KEY_RELEASED);
-  s.Send(ET_MOUSE_RELEASED);
+  p.AddExpectedEvent(EventType::kMouseReleased);
+  p.AddExpectedEvent(EventType::kKeyReleased);
+  s.Send(EventType::kMouseReleased);
   p.CheckAllReceived();
 }
 
 TEST(EventRewriterTest, EventRewriting) {
-  // TestEventRewriter r0 always rewrites events to ET_CANCEL_MODE;
+  // TestEventRewriter r0 always rewrites events to EventType::kCancelMode;
   // it is placed at the beginning of the chain and later removed,
   // to verify that rewriter removal works.
-  TestConstantEventRewriter r0(ET_CANCEL_MODE);
+  TestConstantEventRewriter r0(EventType::kCancelMode);
 
   // TestEventRewriter r1 always returns EVENT_REWRITE_CONTINUE;
   // it is at the beginning of the chain (once r0 is removed)
@@ -356,10 +360,10 @@ TEST(EventRewriterTest, EventRewriting) {
   // |EVENT_REWRITE_DISPATCH_ANOTHER|.
   TestStateMachineEventRewriter r2;
 
-  // TestEventRewriter r3 always rewrites events to ET_CANCEL_MODE;
+  // TestEventRewriter r3 always rewrites events to EventType::kCancelMode;
   // it is placed at the end of the chain to verify that previously
   // rewritten events are not passed further down the chain.
-  TestConstantEventRewriter r3(ET_CANCEL_MODE);
+  TestConstantEventRewriter r3(EventType::kCancelMode);
 
   TestEventTarget t;
   TestEventRewriteSink p(&t);
@@ -368,62 +372,67 @@ TEST(EventRewriterTest, EventRewriting) {
   s.AddEventRewriter(&r1);
   s.AddEventRewriter(&r2);
 
-  // These events should be rewritten by r0 to ET_CANCEL_MODE.
-  p.AddExpectedEvent(ET_CANCEL_MODE);
-  s.Send(ET_MOUSE_DRAGGED);
-  p.AddExpectedEvent(ET_CANCEL_MODE);
-  s.Send(ET_MOUSE_PRESSED);
+  // These events should be rewritten by r0 to EventType::kCancelMode.
+  p.AddExpectedEvent(EventType::kCancelMode);
+  s.Send(EventType::kMouseDragged);
+  p.AddExpectedEvent(EventType::kCancelMode);
+  s.Send(EventType::kMousePressed);
   p.CheckAllReceived();
 
   // Remove r0, and verify that it's gone and that events make it through.
-  // - r0 is removed, so the resulting event should NOT be ET_CANCEL_MODE.
-  // - r2 should rewrite ET_SCROLL_FLING_START to ET_SCROLL_FLING_CANCEL,
+  // - r0 is removed, so the resulting event should NOT be
+  // EventType::kCancelMode.
+  // - r2 should rewrite EventType::kScrollFlingStart to
+  // EventType::kScrollFlingCancel,
   //   and skip subsequent rewriters, so the resulting event should be
-  //   ET_SCROLL_FLING_CANCEL.
+  //   EventType::kScrollFlingCancel.
   // - r3 should be skipped after r2 returns, so the resulting event
-  //   should NOT be ET_CANCEL_MODE.
+  //   should NOT be EventType::kCancelMode.
   s.AddEventRewriter(&r3);
   s.RemoveEventRewriter(&r0);
-  r2.AddRule(0, ET_SCROLL_FLING_START, 0, ET_SCROLL_FLING_CANCEL,
+  r2.AddRule(0, EventType::kScrollFlingStart, 0, EventType::kScrollFlingCancel,
              TestStateMachineEventRewriter::REPLACE,
              TestStateMachineEventRewriter::RETURN);
-  p.AddExpectedEvent(ET_SCROLL_FLING_CANCEL);
-  s.Send(ET_SCROLL_FLING_START);
+  p.AddExpectedEvent(EventType::kScrollFlingCancel);
+  s.Send(EventType::kScrollFlingStart);
   p.CheckAllReceived();
   s.RemoveEventRewriter(&r3);
 
   // Verify replacing an event with multiple events using a state machine
   // (that happens to be analogous to sticky keys).
-  r2.AddRule(0, ET_KEY_PRESSED, 1, ET_UNKNOWN,
+  r2.AddRule(0, EventType::kKeyPressed, 1, EventType::kUnknown,
              TestStateMachineEventRewriter::ACCEPT,
              TestStateMachineEventRewriter::RETURN);
-  r2.AddRule(1, ET_MOUSE_PRESSED, 0, ET_UNKNOWN,
+  r2.AddRule(1, EventType::kMousePressed, 0, EventType::kUnknown,
              TestStateMachineEventRewriter::ACCEPT,
              TestStateMachineEventRewriter::RETURN);
-  r2.AddRule(1, ET_KEY_RELEASED, 2, ET_UNKNOWN,
+  r2.AddRule(1, EventType::kKeyReleased, 2, EventType::kUnknown,
              TestStateMachineEventRewriter::DISCARD,
              TestStateMachineEventRewriter::RETURN);
-  r2.AddRule(2, ET_MOUSE_RELEASED, 3, ET_MOUSE_RELEASED,
+  r2.AddRule(2, EventType::kMouseReleased, 3, EventType::kMouseReleased,
              TestStateMachineEventRewriter::REPLACE,
              TestStateMachineEventRewriter::PROCEED);
-  r2.AddRule(3, ET_MOUSE_RELEASED, 0, ET_KEY_RELEASED,
+  r2.AddRule(3, EventType::kMouseReleased, 0, EventType::kKeyReleased,
              TestStateMachineEventRewriter::REPLACE,
              TestStateMachineEventRewriter::RETURN);
-  p.AddExpectedEvent(ET_KEY_PRESSED);
-  s.Send(ET_KEY_PRESSED);   // state 0 ET_KEY_PRESSED -> 1 ACCEPT ET_KEY_PRESSED
-  s.Send(ET_KEY_RELEASED);  // state 1 ET_KEY_RELEASED -> 2 DISCARD
-  p.AddExpectedEvent(ET_MOUSE_PRESSED);
-  s.Send(ET_MOUSE_PRESSED);  // no matching rule; pass event through.
+  p.AddExpectedEvent(EventType::kKeyPressed);
+  s.Send(EventType::kKeyPressed);  // state 0 EventType::kKeyPressed -> 1 ACCEPT
+                                   // EventType::kKeyPressed
+  s.Send(
+      EventType::kKeyReleased);  // state 1 EventType::kKeyReleased -> 2 DISCARD
+  p.AddExpectedEvent(EventType::kMousePressed);
+  s.Send(EventType::kMousePressed);  // no matching rule; pass event through.
 
   // Removing rewriter r1 shouldn't affect r2.
   s.RemoveEventRewriter(&r1);
 
   // Continue with the state-based rewriting.
-  p.AddExpectedEvent(ET_MOUSE_RELEASED);
-  p.AddExpectedEvent(ET_KEY_RELEASED);
-  s.Send(
-      ET_MOUSE_RELEASED);  // 2 ET_MOUSE_RELEASED -> 3 PROCEED ET_MOUSE_RELEASED
-                           // 3 ET_MOUSE_RELEASED -> 0 REPLACE ET_KEY_RELEASED
+  p.AddExpectedEvent(EventType::kMouseReleased);
+  p.AddExpectedEvent(EventType::kKeyReleased);
+  s.Send(EventType::kMouseReleased);  // 2 EventType::kMouseReleased -> 3
+                                      // PROCEED EventType::kMouseReleased 3
+                                      // EventType::kMouseReleased -> 0 REPLACE
+                                      // EventType::kKeyReleased
   p.CheckAllReceived();
 }
 

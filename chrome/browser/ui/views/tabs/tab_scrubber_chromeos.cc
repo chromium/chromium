@@ -82,13 +82,14 @@ void TabScrubberChromeOS::SetEnabled(bool enabled) {
 
 void TabScrubberChromeOS::SynthesizedScrollEvent(float x_offset,
                                                  bool is_fling_scroll_event) {
-  // ET_SCROLL_FLING_START and ET_SCROLL_FLING_CANCEL are both handled in the
-  // same way inside OnScrollEvent(), so we can set ET_SCROLL_FLING_START if
-  // `is_fling_scroll_event` is true.
+  // EventType::kScrollFlingStart and EventType::kScrollFlingCancel are both
+  // handled in the same way inside OnScrollEvent(), so we can set
+  // EventType::kScrollFlingStart if `is_fling_scroll_event` is true.
   // TODO(crbug.com/40207972): Instead of generating event here, use the real
   // event passed from wayland.
-  ui::EventType event_type =
-      is_fling_scroll_event ? ui::ET_SCROLL_FLING_START : ui::ET_SCROLL;
+  ui::EventType event_type = is_fling_scroll_event
+                                 ? ui::EventType::kScrollFlingStart
+                                 : ui::EventType::kScroll;
   // Set `y_offset` as zero so that its absolute value is always not larger than
   // that of `x_offset` to represent the horizontal scroll.
   constexpr float y_offset = 0.f;

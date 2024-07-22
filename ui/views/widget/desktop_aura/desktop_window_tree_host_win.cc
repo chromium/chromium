@@ -1066,7 +1066,7 @@ void DesktopWindowTreeHostWin::HandleKeyEvent(ui::KeyEvent* event) {
   // corresponding WM_SYSCHAR.  This allows HandleIMEMessage() to show the
   // system menu in this case.  If we instead showed the system menu here, the
   // WM_SYSCHAR would trigger a beep when processed by the native event handler.
-  if ((event->type() == ui::ET_KEY_PRESSED) &&
+  if ((event->type() == ui::EventType::kKeyPressed) &&
       (event->key_code() == ui::VKEY_SPACE) &&
       (event->flags() & ui::EF_ALT_DOWN) &&
       !(event->flags() & ui::EF_CONTROL_DOWN) &&
@@ -1091,18 +1091,18 @@ void DesktopWindowTreeHostWin::HandleTouchEvent(ui::TouchEvent* event) {
     gfx::Point screen_point(event_point);
     // Send equivalent mouse events, because Ole32 drag drop doesn't seem to
     // handle pointer events.
-    if (event->type() == ui::ET_TOUCH_MOVED) {
+    if (event->type() == ui::EventType::kTouchMoved) {
       ui::SendMouseEvent(screen_point, MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE);
-    } else if (event->type() == ui::ET_TOUCH_RELEASED) {
+    } else if (event->type() == ui::EventType::kTouchReleased) {
       FinishTouchDrag(screen_point);
     }
   }
-  // TODO(crbug.com/40312079) Calling ::SetCursorPos for ui::ET_TOUCH_PRESSED
-  // events here would fix web ui tab strip drags when the cursor is not over
-  // the Chrome window - The TODO is to figure out if that's reasonable, since
-  // it would change the cursor pos on every touch event. Or figure out if there
-  // is a less intrusive way of fixing the cursor position. If we can do that,
-  // we can remove the call to ::SetCursorPos in
+  // TODO(crbug.com/40312079) Calling ::SetCursorPos for
+  // ui::EventType::kTouchPressed events here would fix web ui tab strip drags
+  // when the cursor is not over the Chrome window - The TODO is to figure out
+  // if that's reasonable, since it would change the cursor pos on every touch
+  // event. Or figure out if there is a less intrusive way of fixing the cursor
+  // position. If we can do that, we can remove the call to ::SetCursorPos in
   // DesktopDragDropClientWin::StartDragAndDrop. Note that calling SetCursorPos
   // at the start of StartDragAndDrop breaks touch drag and drop, so it has to
   // be called some time before we get to StartDragAndDrop.

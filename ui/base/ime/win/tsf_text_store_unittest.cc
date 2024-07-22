@@ -1739,7 +1739,7 @@ class KeyEventTestCallback : public TSFTextStoreTestCallback {
   }
 
   ui::EventDispatchDetails DispatchKeyEventPostIME1(KeyEvent* key) {
-    EXPECT_EQ(ui::ET_KEY_PRESSED, key->type());
+    EXPECT_EQ(ui::EventType::kKeyPressed, key->type());
     EXPECT_EQ(VKEY_PROCESSKEY, key->key_code());
     return ui::EventDispatchDetails();
   }
@@ -1788,13 +1788,13 @@ class KeyEventTestCallback : public TSFTextStoreTestCallback {
   }
 
   ui::EventDispatchDetails DispatchKeyEventPostIME2(KeyEvent* key) {
-    EXPECT_EQ(ui::ET_KEY_RELEASED, key->type());
+    EXPECT_EQ(ui::EventType::kKeyReleased, key->type());
     EXPECT_EQ(VKEY_PROCESSKEY, key->key_code());
     return ui::EventDispatchDetails();
   }
 
   ui::EventDispatchDetails DispatchKeyEventPostIME3a(KeyEvent* key) {
-    EXPECT_EQ(ui::ET_KEY_PRESSED, key->type());
+    EXPECT_EQ(ui::EventType::kKeyPressed, key->type());
     EXPECT_EQ(VKEY_PROCESSKEY, key->key_code());
     return ui::EventDispatchDetails();
   }
@@ -1820,7 +1820,7 @@ class KeyEventTestCallback : public TSFTextStoreTestCallback {
   }
 
   ui::EventDispatchDetails DispatchKeyEventPostIME3b(KeyEvent* key) {
-    EXPECT_EQ(ui::ET_KEY_RELEASED, key->type());
+    EXPECT_EQ(ui::EventType::kKeyReleased, key->type());
     EXPECT_EQ(VKEY_PROCESSKEY, key->key_code());
     return ui::EventDispatchDetails();
   }
@@ -2690,7 +2690,7 @@ class RegressionTestCallback : public TSFTextStoreTestCallback {
   }
 
   ui::EventDispatchDetails DispatchKeyEventPostIME1(KeyEvent* key) {
-    EXPECT_EQ(ui::ET_KEY_PRESSED, key->type());
+    EXPECT_EQ(ui::EventType::kKeyPressed, key->type());
     EXPECT_EQ(VKEY_PROCESSKEY, key->key_code());
     return ui::EventDispatchDetails();
   }
@@ -2735,13 +2735,13 @@ class RegressionTestCallback : public TSFTextStoreTestCallback {
   }
 
   ui::EventDispatchDetails DispatchKeyEventPostIME2a(KeyEvent* key) {
-    EXPECT_EQ(ui::ET_KEY_RELEASED, key->type());
+    EXPECT_EQ(ui::EventType::kKeyReleased, key->type());
     EXPECT_EQ(VKEY_PROCESSKEY, key->key_code());
     return ui::EventDispatchDetails();
   }
 
   ui::EventDispatchDetails DispatchKeyEventPostIME2b(KeyEvent* key) {
-    EXPECT_EQ(ui::ET_KEY_PRESSED, key->type());
+    EXPECT_EQ(ui::EventType::kKeyPressed, key->type());
     EXPECT_EQ(VKEY_PROCESSKEY, key->key_code());
     return ui::EventDispatchDetails();
   }
@@ -2805,7 +2805,7 @@ class RegressionTestCallback : public TSFTextStoreTestCallback {
   }
 
   ui::EventDispatchDetails DispatchKeyEventPostIME4(KeyEvent* key) {
-    EXPECT_EQ(ui::ET_KEY_RELEASED, key->type());
+    EXPECT_EQ(ui::EventType::kKeyReleased, key->type());
     EXPECT_EQ(VKEY_PROCESSKEY, key->key_code());
     return ui::EventDispatchDetails();
   }
@@ -2851,7 +2851,7 @@ class RegressionTestCallback : public TSFTextStoreTestCallback {
   }
 
   ui::EventDispatchDetails DispatchKeyEventPostIME5(KeyEvent* key) {
-    EXPECT_EQ(ui::ET_KEY_PRESSED, key->type());
+    EXPECT_EQ(ui::EventType::kKeyPressed, key->type());
     EXPECT_EQ(VKEY_PROCESSKEY, key->key_code());
     return ui::EventDispatchDetails();
   }

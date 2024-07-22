@@ -305,7 +305,7 @@ class AppListPresenterTest : public AshTestBase,
   void LongPressAt(const gfx::Point& point) {
     ui::GestureEvent long_press(
         point.x(), point.y(), 0, base::TimeTicks::Now(),
-        ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+        ui::GestureEventDetails(ui::EventType::kGestureLongPress));
     GetEventGenerator()->Dispatch(&long_press);
   }
 };
@@ -487,7 +487,7 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
   void LongPressAt(const gfx::Point& point) {
     ui::GestureEvent long_press(
         point.x(), point.y(), 0, base::TimeTicks::Now(),
-        ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+        ui::GestureEventDetails(ui::EventType::kGestureLongPress));
     GetEventGenerator()->Dispatch(&long_press);
   }
 
@@ -1713,17 +1713,17 @@ TEST_P(AppListBubbleAndTabletTest, AppListEventTargeterForAssistantScrolling) {
 
   // Scroll events are blocked for that window.
   constexpr int offset = 10;
-  ui::ScrollEvent scroll_down(ui::ET_SCROLL, gfx::Point(),
+  ui::ScrollEvent scroll_down(ui::EventType::kScroll, gfx::Point(),
                               base::TimeTicks::Now(), ui::EF_NONE, 0, offset, 0,
                               offset, /*finger_count=*/2);
   EXPECT_FALSE(targeter->SubtreeShouldBeExploredForEvent(child, scroll_down));
 
   // Click events are not blocked.
-  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        base::TimeTicks::Now(), ui::EF_NONE,
                        ui::EF_LEFT_MOUSE_BUTTON);
-  ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                         base::TimeTicks::Now(), ui::EF_NONE,
+  ui::MouseEvent release(ui::EventType::kMouseReleased, gfx::Point(),
+                         gfx::Point(), base::TimeTicks::Now(), ui::EF_NONE,
                          ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_TRUE(targeter->SubtreeShouldBeExploredForEvent(child, press));
   EXPECT_TRUE(targeter->SubtreeShouldBeExploredForEvent(child, press));
@@ -4484,7 +4484,7 @@ TEST_F(AppListPresenterHomeLauncherTest, WallpaperContextMenu) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   ui::GestureEvent long_press(
       onscreen_point.x(), onscreen_point.y(), 0, base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   generator->Dispatch(&long_press);
   GetAppListTestHelper()->WaitUntilIdle();
   const aura::Window* root = window_util::GetRootWindowAt(onscreen_point);
@@ -4493,9 +4493,9 @@ TEST_F(AppListPresenterHomeLauncherTest, WallpaperContextMenu) {
   EXPECT_TRUE(root_window_controller->IsContextMenuShown());
 
   // Tap down to close the context menu.
-  ui::GestureEvent tap_down(onscreen_point.x(), onscreen_point.y(), 0,
-                            base::TimeTicks(),
-                            ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
+  ui::GestureEvent tap_down(
+      onscreen_point.x(), onscreen_point.y(), 0, base::TimeTicks(),
+      ui::GestureEventDetails(ui::EventType::kGestureTapDown));
   generator->Dispatch(&tap_down);
   GetAppListTestHelper()->WaitUntilIdle();
   EXPECT_FALSE(root_window_controller->IsContextMenuShown());

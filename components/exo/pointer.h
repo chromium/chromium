@@ -294,7 +294,7 @@ class Pointer : public SurfaceTreeHost,
   const base::UnguessableToken cursor_capture_source_id_;
 
   // Last received event type.
-  ui::EventType last_event_type_ = ui::ET_UNKNOWN;
+  ui::EventType last_event_type_ = ui::EventType::kUnknown;
 
   // Last reported stylus values.
   ui::EventPointerType last_pointer_type_ = ui::EventPointerType::kUnknown;

@@ -192,8 +192,9 @@ void MediaControlsProgressView::OnGestureEvent(ui::GestureEvent* event) {
   if (is_live_)
     return;
 
-  if (event->type() != ui::ET_GESTURE_TAP)
+  if (event->type() != ui::EventType::kGestureTap) {
     return;
+  }
 
   if (!is_modern_notification_ &&
       (event->y() < kMinClickHeight || event->y() > kMaxClickHeight)) {

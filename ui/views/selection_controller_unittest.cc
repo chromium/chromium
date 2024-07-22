@@ -102,9 +102,9 @@ class SelectionControllerTest : public ::testing::Test {
 
   void DragMouse(const gfx::Point& location) {
     mouse_location_ = location;
-    controller_->OnMouseDragged(ui::MouseEvent(ui::ET_MOUSE_DRAGGED, location,
-                                               location, last_event_time_,
-                                               mouse_flags_, 0));
+    controller_->OnMouseDragged(
+        ui::MouseEvent(ui::EventType::kMouseDragged, location, location,
+                       last_event_time_, mouse_flags_, 0));
   }
 
   void RightMouseDown(const gfx::Point& location, bool focused = false) {
@@ -130,7 +130,7 @@ class SelectionControllerTest : public ::testing::Test {
     // interval to avoid triggering a double-click.
     last_event_time_ += base::Milliseconds(views::GetDoubleClickInterval() + 1);
     controller_->OnMousePressed(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, location, location,
+        ui::MouseEvent(ui::EventType::kMousePressed, location, location,
                        last_event_time_, mouse_flags_, button),
         false,
         focused
@@ -141,9 +141,9 @@ class SelectionControllerTest : public ::testing::Test {
   void ReleaseMouseButton(int button) {
     DCHECK(mouse_flags_ & button);
     mouse_flags_ &= ~button;
-    controller_->OnMouseReleased(
-        ui::MouseEvent(ui::ET_MOUSE_RELEASED, mouse_location_, mouse_location_,
-                       last_event_time_, mouse_flags_, button));
+    controller_->OnMouseReleased(ui::MouseEvent(
+        ui::EventType::kMouseReleased, mouse_location_, mouse_location_,
+        last_event_time_, mouse_flags_, button));
   }
 
   base::test::TaskEnvironment task_environment_;

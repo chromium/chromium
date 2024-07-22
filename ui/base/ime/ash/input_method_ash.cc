@@ -134,7 +134,7 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
   auto* manager = input_method::InputMethodManager::Get();
   if (manager) {
     input_method::ImeKeyboard* keyboard = manager->GetImeKeyboard();
-    if (keyboard && event->type() == ui::ET_KEY_PRESSED &&
+    if (keyboard && event->type() == ui::EventType::kKeyPressed &&
         event->key_code() != ui::VKEY_CAPITAL &&
         keyboard->IsCapsLockEnabled() != event->IsCapsLockOn()) {
       // Synchronize the keyboard state with event's state if they do not
@@ -150,7 +150,7 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
     // VKEY_DBE_SBCSCHAR/VKEY_DBE_DBCSCHAR: ZenkakuHankaku key
     input_method::InputMethodManager::State* state =
         manager->GetActiveIMEState().get();
-    if (event->type() == ui::ET_KEY_PRESSED && state) {
+    if (event->type() == ui::EventType::kKeyPressed && state) {
       bool language_input_key = true;
       switch (event->key_code()) {
         case ui::VKEY_CONVERT:
@@ -192,7 +192,7 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
   // Note: We need to send the key event to ibus even if the |context_| is not
   // enabled, so that ibus can have a chance to enable the |context_|.
   if (IsPasswordOrNoneInputFieldFocused() || !GetEngine()) {
-    if (event->type() == ui::ET_KEY_PRESSED) {
+    if (event->type() == ui::EventType::kKeyPressed) {
       if (ExecuteCharacterComposer(*event)) {
         // Treating as PostIME event if character composer handles key event and
         // generates some IME event,
@@ -228,7 +228,7 @@ void InputMethodAsh::ProcessKeyEventDone(
     ui::ime::KeyEventHandledState handled_state) {
   DCHECK(event);
   bool is_handled_by_char_composer = false;
-  if (event->type() == ui::ET_KEY_PRESSED) {
+  if (event->type() == ui::EventType::kKeyPressed) {
     if (handled_state != ui::ime::KeyEventHandledState::kNotHandled) {
       // IME event has a priority to be handled, so that character composer
       // should be reset.
@@ -249,8 +249,8 @@ void InputMethodAsh::ProcessKeyEventDone(
       }
     }
   }
-  if (event->type() == ui::ET_KEY_PRESSED ||
-      event->type() == ui::ET_KEY_RELEASED) {
+  if (event->type() == ui::EventType::kKeyPressed ||
+      event->type() == ui::EventType::kKeyReleased) {
     ui::ime::KeyEventHandledState handled_state_to_process =
         is_handled_by_char_composer
             ? ui::ime::KeyEventHandledState::kHandledByIME
@@ -661,7 +661,7 @@ ui::EventDispatchDetails InputMethodAsh::ProcessKeyEventPostIME(
     return DispatchKeyEventPostIME(event);
   }
 
-  if (event->type() == ui::ET_KEY_PRESSED && handled) {
+  if (event->type() == ui::EventType::kKeyPressed && handled) {
     bool only_dispatch_vkey_processkey =
         (handled_state ==
          ui::ime::KeyEventHandledState::kHandledByAssistiveSuggester);
@@ -692,11 +692,11 @@ ui::EventDispatchDetails InputMethodAsh::ProcessKeyEventPostIME(
     return dispatch_details;  // IME handled the key event. do not forward.
   }
 
-  if (event->type() == ui::ET_KEY_PRESSED) {
+  if (event->type() == ui::EventType::kKeyPressed) {
     return ProcessUnfilteredKeyPressEvent(event);
   }
 
-  if (event->type() == ui::ET_KEY_RELEASED) {
+  if (event->type() == ui::EventType::kKeyReleased) {
     return DispatchKeyEventPostIME(event);
   }
   return dispatch_details;
@@ -723,7 +723,7 @@ ui::EventDispatchDetails InputMethodAsh::ProcessFilteredKeyPressEvent(
     }
   }
 
-  ui::KeyEvent fabricated_event(ui::ET_KEY_PRESSED, ui::VKEY_PROCESSKEY,
+  ui::KeyEvent fabricated_event(ui::EventType::kKeyPressed, ui::VKEY_PROCESSKEY,
                                 event->code(), event->flags(),
                                 ui::DomKey::PROCESS, event->time_stamp());
   if (const auto* properties = event->properties()) {
@@ -776,7 +776,7 @@ void InputMethodAsh::MaybeProcessPendingInputMethodResult(ui::KeyEvent* event,
   if (pending_commit_) {
     if (handled && NeedInsertChar()) {
       for (const auto& ch : pending_commit_->text) {
-        ui::KeyEvent ch_event(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN,
+        ui::KeyEvent ch_event(ui::EventType::kKeyPressed, ui::VKEY_UNKNOWN,
                               ui::EF_NONE);
         ch_event.set_character(ch);
         ui::SetKeyboardImeFlags(&ch_event, ui::kPropertyKeyboardImeHandledFlag);
@@ -1157,9 +1157,10 @@ ui::InputMethod* InputMethodAsh::GetInputMethod() {
 }
 
 bool InputMethodAsh::SendFakeProcessKeyEvent(bool pressed) const {
-  ui::KeyEvent evt(pressed ? ui::ET_KEY_PRESSED : ui::ET_KEY_RELEASED,
-                   pressed ? ui::VKEY_PROCESSKEY : ui::VKEY_UNKNOWN,
-                   ui::EF_IME_FABRICATED_KEY);
+  ui::KeyEvent evt(
+      pressed ? ui::EventType::kKeyPressed : ui::EventType::kKeyReleased,
+      pressed ? ui::VKEY_PROCESSKEY : ui::VKEY_UNKNOWN,
+      ui::EF_IME_FABRICATED_KEY);
   ui::SetKeyboardImeFlags(&evt, ui::kPropertyKeyboardImeHandledFlag);
 
   std::ignore = DispatchKeyEventPostIME(&evt);

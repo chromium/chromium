@@ -397,18 +397,18 @@ class RootWindowTargeter : public aura::WindowTargeter {
   // Returns true if the mouse event should be constrainted.
   bool ShouldConstrainMouseClick(ui::LocatedEvent* event,
                                  bool has_capture_target) {
-    if (event->type() == ui::ET_MOUSE_PRESSED && !has_capture_target) {
-      last_mouse_event_type_ = ui::ET_MOUSE_PRESSED;
+    if (event->type() == ui::EventType::kMousePressed && !has_capture_target) {
+      last_mouse_event_type_ = ui::EventType::kMousePressed;
       return true;
     }
-    if (last_mouse_event_type_ == ui::ET_MOUSE_PRESSED &&
-        event->type() == ui::ET_MOUSE_RELEASED && has_capture_target) {
-      last_mouse_event_type_ = ui::ET_UNKNOWN;
+    if (last_mouse_event_type_ == ui::EventType::kMousePressed &&
+        event->type() == ui::EventType::kMouseReleased && has_capture_target) {
+      last_mouse_event_type_ = ui::EventType::kUnknown;
       return true;
     }
     // For other cases, reset the state
-    if (event->type() != ui::ET_MOUSE_CAPTURE_CHANGED) {
-      last_mouse_event_type_ = ui::ET_UNKNOWN;
+    if (event->type() != ui::EventType::kMouseCaptureChanged) {
+      last_mouse_event_type_ = ui::EventType::kUnknown;
     }
     return false;
   }
@@ -418,7 +418,7 @@ class RootWindowTargeter : public aura::WindowTargeter {
                       std::clamp(p.y(), bounds.y(), bounds.bottom() - 1));
   }
 
-  ui::EventType last_mouse_event_type_ = ui::ET_UNKNOWN;
+  ui::EventType last_mouse_event_type_ = ui::EventType::kUnknown;
 };
 
 class ShelfMenuModelAdapter : public AppMenuModelAdapter {
@@ -651,7 +651,7 @@ aura::Window* RootWindowController::FindEventTarget(
   gfx::Point location_in_root(location_in_screen);
   aura::Window* root_window = GetRootWindow();
   ::wm::ConvertPointFromScreen(root_window, &location_in_root);
-  ui::MouseEvent test_event(ui::ET_MOUSE_MOVED, location_in_root,
+  ui::MouseEvent test_event(ui::EventType::kMouseMoved, location_in_root,
                             location_in_root, ui::EventTimeForNow(),
                             ui::EF_NONE, ui::EF_NONE);
   ui::EventTarget* event_handler =

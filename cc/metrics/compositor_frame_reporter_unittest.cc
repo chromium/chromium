@@ -144,7 +144,7 @@ class CompositorFrameReporterTest : public testing::Test {
     // Creates a kGestureScrollUpdate event.
     return SetupEventMetricsWithDispatchTimes(
         ScrollUpdateEventMetrics::CreateForTesting(
-            ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kWheel,
+            ui::EventType::kGestureScrollUpdate, ui::ScrollInputType::kWheel,
             is_inertial, scroll_update_type, /*delta=*/10.0f, event_time,
             arrived_in_browser_main_timestamp, &test_tick_clock_, std::nullopt),
         stage_durations);
@@ -156,7 +156,7 @@ class CompositorFrameReporterTest : public testing::Test {
     const base::TimeTicks arrived_in_browser_main_timestamp = AdvanceNowByUs(2);
     AdvanceNowByUs(3);
     return SetupEventMetrics(ScrollEventMetrics::CreateForTesting(
-        ui::ET_GESTURE_SCROLL_BEGIN, input_type,
+        ui::EventType::kGestureScrollBegin, input_type,
         /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp,
         &test_tick_clock_));
   }
@@ -169,7 +169,7 @@ class CompositorFrameReporterTest : public testing::Test {
     const base::TimeTicks arrived_in_browser_main_timestamp = AdvanceNowByUs(2);
     AdvanceNowByUs(3);
     return SetupEventMetrics(ScrollUpdateEventMetrics::CreateForTesting(
-        ui::ET_GESTURE_SCROLL_UPDATE, input_type, is_inertial,
+        ui::EventType::kGestureScrollUpdate, input_type, is_inertial,
         scroll_update_type, /*delta=*/10.0f, event_time,
         arrived_in_browser_main_timestamp, &test_tick_clock_, std::nullopt));
   }
@@ -400,9 +400,9 @@ TEST_F(CompositorFrameReporterTest,
   base::HistogramTester histogram_tester;
 
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
-      CreateEventMetrics(ui::ET_TOUCH_PRESSED),
-      CreateEventMetrics(ui::ET_TOUCH_MOVED),
-      CreateEventMetrics(ui::ET_TOUCH_MOVED),
+      CreateEventMetrics(ui::EventType::kTouchPressed),
+      CreateEventMetrics(ui::EventType::kTouchMoved),
+      CreateEventMetrics(ui::EventType::kTouchMoved),
   };
   EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
   EventMetrics::List events_metrics(
@@ -613,13 +613,13 @@ TEST_F(CompositorFrameReporterTest,
   base::HistogramTester histogram_tester;
 
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
-      CreatePinchEventMetrics(ui::ET_GESTURE_PINCH_BEGIN,
+      CreatePinchEventMetrics(ui::EventType::kGesturePinchBegin,
                               ui::ScrollInputType::kWheel),
-      CreatePinchEventMetrics(ui::ET_GESTURE_PINCH_UPDATE,
+      CreatePinchEventMetrics(ui::EventType::kGesturePinchUpdate,
                               ui::ScrollInputType::kWheel),
-      CreatePinchEventMetrics(ui::ET_GESTURE_PINCH_BEGIN,
+      CreatePinchEventMetrics(ui::EventType::kGesturePinchBegin,
                               ui::ScrollInputType::kTouchscreen),
-      CreatePinchEventMetrics(ui::ET_GESTURE_PINCH_UPDATE,
+      CreatePinchEventMetrics(ui::EventType::kGesturePinchUpdate,
                               ui::ScrollInputType::kTouchscreen),
   };
   EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
@@ -701,9 +701,9 @@ TEST_F(CompositorFrameReporterTest,
   base::HistogramTester histogram_tester;
 
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
-      CreateEventMetrics(ui::ET_TOUCH_PRESSED),
-      CreateEventMetrics(ui::ET_TOUCH_MOVED),
-      CreateEventMetrics(ui::ET_TOUCH_MOVED),
+      CreateEventMetrics(ui::EventType::kTouchPressed),
+      CreateEventMetrics(ui::EventType::kTouchMoved),
+      CreateEventMetrics(ui::EventType::kTouchMoved),
   };
   EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
   EventMetrics::List events_metrics(
@@ -1890,13 +1890,13 @@ TEST_F(CompositorFrameReporterTest, EventLatencyMultipleEventTypePredictions) {
   // The prediction should only be updated with the ScrollUpdateType event,
   // other EventType metrics should be ignored.
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
-      CreateEventMetrics(ui::ET_TOUCH_PRESSED),
-      CreateEventMetrics(ui::ET_TOUCH_MOVED),
+      CreateEventMetrics(ui::EventType::kTouchPressed),
+      CreateEventMetrics(ui::EventType::kTouchMoved),
       CreateScrollUpdateEventMetricsWithDispatchTimes(
           false, ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
           dispatch_times),
-      CreateEventMetrics(ui::ET_TOUCH_MOVED)};
-  // The last ET_TOUCH_MOVED event above adds 12 us to transition time.
+      CreateEventMetrics(ui::EventType::kTouchMoved)};
+  // The last EventType::kTouchMoved event above adds 12 us to transition time.
   const base::TimeDelta kTouchEventTransition = base::Microseconds(12);
   EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
   EventMetrics::List events_metrics = {
@@ -1905,7 +1905,7 @@ TEST_F(CompositorFrameReporterTest, EventLatencyMultipleEventTypePredictions) {
 
   AdvanceNowByUs(300);
   // Total transition time is 312 us because of the extra 3 us from the
-  // ET_TOUCH_MOVED event.
+  // EventType::kTouchMoved event.
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kBeginImplFrameToSendBeginMainFrame,
       Now());

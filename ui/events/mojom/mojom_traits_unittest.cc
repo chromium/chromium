@@ -96,17 +96,18 @@ TEST(StructTraitsTest, KeyEvent) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
 
   const KeyEvent kTestData[] = {
-      {ET_KEY_PRESSED, VKEY_RETURN, EF_CONTROL_DOWN},
-      {ET_KEY_PRESSED, VKEY_MENU, EF_ALT_DOWN},
-      {ET_KEY_RELEASED, VKEY_SHIFT, EF_SHIFT_DOWN},
-      {ET_KEY_RELEASED, VKEY_MENU, EF_ALT_DOWN},
-      {ET_KEY_PRESSED, VKEY_A, DomCode::US_A, EF_NONE},
-      {ET_KEY_PRESSED, VKEY_B, DomCode::US_B, EF_CONTROL_DOWN | EF_ALT_DOWN},
+      {EventType::kKeyPressed, VKEY_RETURN, EF_CONTROL_DOWN},
+      {EventType::kKeyPressed, VKEY_MENU, EF_ALT_DOWN},
+      {EventType::kKeyReleased, VKEY_SHIFT, EF_SHIFT_DOWN},
+      {EventType::kKeyReleased, VKEY_MENU, EF_ALT_DOWN},
+      {EventType::kKeyPressed, VKEY_A, DomCode::US_A, EF_NONE},
+      {EventType::kKeyPressed, VKEY_B, DomCode::US_B,
+       EF_CONTROL_DOWN | EF_ALT_DOWN},
       ui::KeyEvent::FromCharacter('\x12', VKEY_2, DomCode::NONE,
                                   EF_CONTROL_DOWN),
       ui::KeyEvent::FromCharacter('Z', VKEY_Z, DomCode::NONE, EF_CAPS_LOCK_ON),
       ui::KeyEvent::FromCharacter('z', VKEY_Z, DomCode::NONE, EF_NONE),
-      {ET_KEY_PRESSED, VKEY_Z, EF_NONE,
+      {EventType::kKeyPressed, VKEY_Z, EF_NONE,
        base::TimeTicks() + base::Microseconds(101)},
       ui::KeyEvent::FromCharacter('Z', VKEY_Z, DomCode::NONE, EF_NONE,
                                   base::TimeTicks() + base::Microseconds(102)),
@@ -126,27 +127,27 @@ TEST(StructTraitsTest, KeyEvent) {
 
 TEST(StructTraitsTest, MouseEvent) {
   const MouseEvent kTestData[] = {
-      {ET_MOUSE_PRESSED, gfx::Point(10, 10), gfx::Point(20, 30),
+      {EventType::kMousePressed, gfx::Point(10, 10), gfx::Point(20, 30),
        base::TimeTicks() + base::Microseconds(201), EF_NONE, 0,
        PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
-      {ET_MOUSE_DRAGGED, gfx::Point(1, 5), gfx::Point(5, 1),
+      {EventType::kMouseDragged, gfx::Point(1, 5), gfx::Point(5, 1),
        base::TimeTicks() + base::Microseconds(202), EF_LEFT_MOUSE_BUTTON,
        EF_LEFT_MOUSE_BUTTON,
        PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
-      {ET_MOUSE_RELEASED, gfx::Point(411, 130), gfx::Point(20, 30),
+      {EventType::kMouseReleased, gfx::Point(411, 130), gfx::Point(20, 30),
        base::TimeTicks() + base::Microseconds(203),
        EF_MIDDLE_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON, EF_RIGHT_MOUSE_BUTTON,
        PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
-      {ET_MOUSE_MOVED, gfx::Point(0, 1), gfx::Point(2, 3),
+      {EventType::kMouseMoved, gfx::Point(0, 1), gfx::Point(2, 3),
        base::TimeTicks() + base::Microseconds(204), EF_ALT_DOWN, 0,
        PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
-      {ET_MOUSE_ENTERED, gfx::Point(6, 7), gfx::Point(8, 9),
+      {EventType::kMouseEntered, gfx::Point(6, 7), gfx::Point(8, 9),
        base::TimeTicks() + base::Microseconds(205), EF_NONE, 0,
        PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
-      {ET_MOUSE_EXITED, gfx::Point(10, 10), gfx::Point(20, 30),
+      {EventType::kMouseExited, gfx::Point(10, 10), gfx::Point(20, 30),
        base::TimeTicks() + base::Microseconds(206), EF_BACK_MOUSE_BUTTON, 0,
        PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
-      {ET_MOUSE_CAPTURE_CHANGED, gfx::Point(99, 99), gfx::Point(99, 99),
+      {EventType::kMouseCaptureChanged, gfx::Point(99, 99), gfx::Point(99, 99),
        base::TimeTicks() + base::Microseconds(207), EF_CONTROL_DOWN, 0,
        PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
   };
@@ -182,7 +183,7 @@ TEST(StructTraitsTest, MouseWheelEvent) {
     std::unique_ptr<Event> output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
                                                                   output));
-    ASSERT_EQ(ET_MOUSEWHEEL, output->type());
+    ASSERT_EQ(EventType::kMousewheel, output->type());
 
     const MouseWheelEvent* output_event = output->AsMouseWheelEvent();
     // TODO(sky): make this use ExpectEventsEqual().
@@ -195,14 +196,14 @@ TEST(StructTraitsTest, FloatingPointLocations) {
   const gfx::PointF location(11.1, 22.2);
   const gfx::PointF root_location(33.3, 44.4);
   const base::TimeTicks time_stamp = base::TimeTicks::Now();
-  MouseEvent mouse_event(ET_MOUSE_PRESSED, location, root_location, time_stamp,
-                         EF_NONE, EF_NONE);
+  MouseEvent mouse_event(EventType::kMousePressed, location, root_location,
+                         time_stamp, EF_NONE, EF_NONE);
   MouseWheelEvent wheel_event(gfx::Vector2d(1, 0), location, root_location,
                               time_stamp, EF_NONE, EF_NONE);
-  ScrollEvent scroll_event(ET_SCROLL, location, root_location, time_stamp,
-                           EF_NONE, 1, 2, 3, 4, 5);
-  TouchEvent touch_event(ET_TOUCH_PRESSED, location, root_location, time_stamp,
-                         {}, EF_NONE);
+  ScrollEvent scroll_event(EventType::kScroll, location, root_location,
+                           time_stamp, EF_NONE, 1, 2, 3, 4, 5);
+  TouchEvent touch_event(EventType::kTouchPressed, location, root_location,
+                         time_stamp, {}, EF_NONE);
   Event* test_data[] = {&mouse_event, &wheel_event, &scroll_event,
                         &touch_event};
 
@@ -220,7 +221,7 @@ TEST(StructTraitsTest, FloatingPointLocations) {
 TEST(StructTraitsTest, KeyEventPropertiesSerialized) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
 
-  KeyEvent key_event(ET_KEY_PRESSED, VKEY_T, EF_NONE);
+  KeyEvent key_event(EventType::kKeyPressed, VKEY_T, EF_NONE);
   const std::string key = "key";
   const std::vector<uint8_t> value(0xCD, 2);
   KeyEvent::Properties properties;
@@ -237,24 +238,24 @@ TEST(StructTraitsTest, KeyEventPropertiesSerialized) {
 }
 
 TEST(StructTraitsTest, GestureEvent) {
-  GestureEventDetails pinch_begin_details(ET_GESTURE_PINCH_BEGIN);
+  GestureEventDetails pinch_begin_details(EventType::kGesturePinchBegin);
   pinch_begin_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
-  GestureEventDetails pinch_end_details(ET_GESTURE_PINCH_END);
+  GestureEventDetails pinch_end_details(EventType::kGesturePinchEnd);
   pinch_end_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
-  GestureEventDetails pinch_update_details(ET_GESTURE_PINCH_UPDATE);
+  GestureEventDetails pinch_update_details(EventType::kGesturePinchUpdate);
   pinch_update_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
   pinch_update_details.set_scale(1.23f);
-  GestureEventDetails swipe_top_left_details(ET_GESTURE_SWIPE, -1, -1);
+  GestureEventDetails swipe_top_left_details(EventType::kGestureSwipe, -1, -1);
   swipe_top_left_details.set_device_type(
       ui::GestureDeviceType::DEVICE_TOUCHPAD);
-  GestureEventDetails swipe_right_details(ET_GESTURE_SWIPE, 1, 0);
+  GestureEventDetails swipe_right_details(EventType::kGestureSwipe, 1, 0);
   swipe_right_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
 
   const GestureEvent kTestData[] = {
       {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
-       GestureEventDetails(ET_SCROLL_FLING_START)},
+       GestureEventDetails(EventType::kScrollFlingStart)},
       {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
-       GestureEventDetails(ET_GESTURE_TAP)},
+       GestureEventDetails(EventType::kGestureTap)},
       {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
        pinch_begin_details},
       {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
@@ -284,31 +285,31 @@ TEST(StructTraitsTest, GestureEvent) {
 
 TEST(StructTraitsTest, ScrollEvent) {
   const ScrollEvent kTestData[] = {
-      {ET_SCROLL, gfx::Point(10, 20),
+      {EventType::kScroll, gfx::Point(10, 20),
        base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
        EventMomentumPhase::NONE, ScrollEventPhase::kNone},
-      {ET_SCROLL, gfx::Point(10, 20),
+      {EventType::kScroll, gfx::Point(10, 20),
        base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
        EventMomentumPhase::NONE, ScrollEventPhase::kUpdate},
-      {ET_SCROLL, gfx::Point(10, 20),
+      {EventType::kScroll, gfx::Point(10, 20),
        base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
        EventMomentumPhase::NONE, ScrollEventPhase::kBegan},
-      {ET_SCROLL, gfx::Point(10, 20),
+      {EventType::kScroll, gfx::Point(10, 20),
        base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
        EventMomentumPhase::NONE, ScrollEventPhase::kEnd},
-      {ET_SCROLL, gfx::Point(10, 20),
+      {EventType::kScroll, gfx::Point(10, 20),
        base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
        EventMomentumPhase::BEGAN, ScrollEventPhase::kNone},
-      {ET_SCROLL, gfx::Point(10, 20),
+      {EventType::kScroll, gfx::Point(10, 20),
        base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
        EventMomentumPhase::INERTIAL_UPDATE, ScrollEventPhase::kNone},
-      {ET_SCROLL, gfx::Point(10, 20),
+      {EventType::kScroll, gfx::Point(10, 20),
        base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
        EventMomentumPhase::END, ScrollEventPhase::kNone},
-      {ET_SCROLL_FLING_START, gfx::Point(10, 20),
+      {EventType::kScrollFlingStart, gfx::Point(10, 20),
        base::TimeTicks() + base::Microseconds(502), EF_NONE, 1, 2, 3, 4, 5,
        EventMomentumPhase::MAY_BEGIN, ScrollEventPhase::kNone},
-      {ET_SCROLL_FLING_CANCEL, gfx::Point(10, 20),
+      {EventType::kScrollFlingCancel, gfx::Point(10, 20),
        base::TimeTicks() + base::Microseconds(502), EF_NONE, 1, 2, 3, 4, 5,
        EventMomentumPhase::END, ScrollEventPhase::kNone},
   };
@@ -357,14 +358,18 @@ TEST(StructTraitsTest, PointerDetails) {
 
 TEST(StructTraitsTest, TouchEvent) {
   const TouchEvent kTestData[] = {
-      {ET_TOUCH_RELEASED,
+      {EventType::kTouchReleased,
        {1, 2},
        base::TimeTicks::Now(),
        {EventPointerType::kUnknown, 1, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f},
        EF_SHIFT_DOWN},
-      {ET_TOUCH_PRESSED, {1, 2}, base::TimeTicks::Now(), {}, EF_CONTROL_DOWN},
-      {ET_TOUCH_MOVED, {1, 2}, base::TimeTicks::Now(), {}, EF_NONE},
-      {ET_TOUCH_CANCELLED, {1, 2}, base::TimeTicks::Now(), {}, EF_NONE},
+      {EventType::kTouchPressed,
+       {1, 2},
+       base::TimeTicks::Now(),
+       {},
+       EF_CONTROL_DOWN},
+      {EventType::kTouchMoved, {1, 2}, base::TimeTicks::Now(), {}, EF_NONE},
+      {EventType::kTouchCancelled, {1, 2}, base::TimeTicks::Now(), {}, EF_NONE},
   };
   for (size_t i = 0; i < std::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = kTestData[i].Clone();
@@ -376,7 +381,7 @@ TEST(StructTraitsTest, TouchEvent) {
 
   // Serialize/Deserialize with fields that can not be set from constructor.
   std::unique_ptr<TouchEvent> touch_event =
-      std::make_unique<TouchEvent>(ET_TOUCH_CANCELLED, gfx::Point(),
+      std::make_unique<TouchEvent>(EventType::kTouchCancelled, gfx::Point(),
                                    base::TimeTicks::Now(), PointerDetails());
   touch_event->set_may_cause_scrolling(true);
   touch_event->set_hovering(true);
@@ -389,7 +394,7 @@ TEST(StructTraitsTest, TouchEvent) {
 
 TEST(StructTraitsTest, UnserializedTouchEventFields) {
   std::unique_ptr<TouchEvent> touch_event =
-      std::make_unique<TouchEvent>(ET_TOUCH_CANCELLED, gfx::Point(),
+      std::make_unique<TouchEvent>(EventType::kTouchCancelled, gfx::Point(),
                                    base::TimeTicks::Now(), PointerDetails());
   std::unique_ptr<Event> expected = std::move(touch_event);
   std::unique_ptr<Event> output;
@@ -429,7 +434,7 @@ TEST(StructTraitsTest, DifferentKeyboardLayout) {
   ScopedKeyboardLayoutEngine scoped_keyboard_layout_engine(
       std::make_unique<FixedKeyboardLayoutEngine>());
   std::unique_ptr<KeyEvent> key_event = std::make_unique<KeyEvent>(
-      ET_KEY_PRESSED, VKEY_S, DomCode::US_S, EF_NONE,
+      EventType::kKeyPressed, VKEY_S, DomCode::US_S, EF_NONE,
       DomKey::FromCharacter('s'), base::TimeTicks::Now());
   std::unique_ptr<Event> expected = std::move(key_event);
   std::unique_ptr<Event> output;

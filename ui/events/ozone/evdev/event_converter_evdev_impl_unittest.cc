@@ -315,13 +315,13 @@ TEST_F(EventConverterEvdevImplTest, KeyPress) {
   ui::KeyEvent* event;
 
   event = dispatched_event(0);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
   EXPECT_EQ(ui::VKEY_BACK, event->key_code());
   EXPECT_EQ(0x7002au, event->scan_code());
   EXPECT_EQ(0, event->flags());
 
   event = dispatched_event(1);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_BACK, event->key_code());
   EXPECT_EQ(0x7002au, event->scan_code());
   EXPECT_EQ(0, event->flags());
@@ -354,13 +354,13 @@ TEST_F(EventConverterEvdevImplTest, KeyRepeat) {
   ui::KeyEvent* event;
 
   event = dispatched_event(0);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
   EXPECT_EQ(ui::VKEY_BACK, event->key_code());
   EXPECT_EQ(0x7002au, event->scan_code());
   EXPECT_EQ(0, event->flags());
 
   event = dispatched_event(1);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_BACK, event->key_code());
   EXPECT_EQ(0x7002au, event->scan_code());
   EXPECT_EQ(0, event->flags());
@@ -399,25 +399,25 @@ TEST_F(EventConverterEvdevImplTest, KeyWithModifier) {
   ui::KeyEvent* event;
 
   event = dispatched_event(0);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
   EXPECT_EQ(ui::VKEY_SHIFT, event->key_code());
   EXPECT_EQ(0x700e1u, event->scan_code());
   EXPECT_EQ(ui::EF_SHIFT_DOWN, event->flags());
 
   event = dispatched_event(1);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
   EXPECT_EQ(ui::VKEY_A, event->key_code());
   EXPECT_EQ(0x70004u, event->scan_code());
   EXPECT_EQ(ui::EF_SHIFT_DOWN, event->flags());
 
   event = dispatched_event(2);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_A, event->key_code());
   EXPECT_EQ(0x70004u, event->scan_code());
   EXPECT_EQ(ui::EF_SHIFT_DOWN, event->flags());
 
   event = dispatched_event(3);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_SHIFT, event->key_code());
   EXPECT_EQ(0x700e1u, event->scan_code());
   EXPECT_EQ(0, event->flags());
@@ -458,37 +458,37 @@ TEST_F(EventConverterEvdevImplTest, KeyWithDuplicateModifier) {
   ui::KeyEvent* event;
 
   event = dispatched_event(0);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
   EXPECT_EQ(ui::VKEY_CONTROL, event->key_code());
   EXPECT_EQ(0x700e1u, event->scan_code());
   EXPECT_EQ(ui::EF_CONTROL_DOWN, event->flags());
 
   event = dispatched_event(1);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
   EXPECT_EQ(ui::VKEY_CONTROL, event->key_code());
   EXPECT_EQ(0x700e5u, event->scan_code());
   EXPECT_EQ(ui::EF_CONTROL_DOWN, event->flags());
 
   event = dispatched_event(2);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
   EXPECT_EQ(ui::VKEY_Z, event->key_code());
   EXPECT_EQ(0x7001du, event->scan_code());
   EXPECT_EQ(ui::EF_CONTROL_DOWN, event->flags());
 
   event = dispatched_event(3);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_Z, event->key_code());
   EXPECT_EQ(0x7001du, event->scan_code());
   EXPECT_EQ(ui::EF_CONTROL_DOWN, event->flags());
 
   event = dispatched_event(4);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_CONTROL, event->key_code());
   EXPECT_EQ(0x700e1u, event->scan_code());
   EXPECT_EQ(ui::EF_CONTROL_DOWN, event->flags());
 
   event = dispatched_event(5);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_CONTROL, event->key_code());
   EXPECT_EQ(0x700e5u, event->scan_code());
   EXPECT_EQ(0, event->flags());
@@ -513,13 +513,13 @@ TEST_F(EventConverterEvdevImplTest, KeyWithLock) {
   ui::KeyEvent* event;
 
   event = dispatched_event(0);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
   EXPECT_EQ(ui::VKEY_CAPITAL, event->key_code());
   EXPECT_EQ(0x70039u, event->scan_code());
   EXPECT_EQ(ui::EF_MOD3_DOWN, event->flags());
 
   event = dispatched_event(1);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_CAPITAL, event->key_code());
   EXPECT_EQ(0x70039u, event->scan_code());
   EXPECT_EQ(ui::EF_NONE, event->flags());
@@ -542,11 +542,11 @@ TEST_F(EventConverterEvdevImplTest, MouseButton) {
   ui::MouseEvent* event;
 
   event = dispatched_mouse_event(0);
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kMousePressed, event->type());
   EXPECT_EQ(true, event->IsLeftMouseButton());
 
   event = dispatched_mouse_event(1);
-  EXPECT_EQ(ui::ET_MOUSE_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kMouseReleased, event->type());
   EXPECT_EQ(true, event->IsLeftMouseButton());
 }
 
@@ -565,7 +565,7 @@ TEST_F(EventConverterEvdevImplTest, MouseMove) {
   ui::MouseEvent* event;
 
   event = dispatched_mouse_event(0);
-  EXPECT_EQ(ui::ET_MOUSE_MOVED, event->type());
+  EXPECT_EQ(ui::EventType::kMouseMoved, event->type());
   EXPECT_EQ(cursor()->GetLocation(), gfx::PointF(4, 2));
 }
 
@@ -599,11 +599,11 @@ TEST_F(EventConverterEvdevImplTest, ShouldReleaseKeysOnUnplug) {
   EXPECT_EQ(2u, size());
 
   ui::KeyEvent* event = dispatched_event(0);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
   EXPECT_EQ(ui::VKEY_A, event->key_code());
 
   event = dispatched_event(1);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_A, event->key_code());
 }
 
@@ -621,11 +621,11 @@ TEST_F(EventConverterEvdevImplTest, ShouldReleaseKeysOnSynDropped) {
   EXPECT_EQ(2u, size());
 
   ui::KeyEvent* event = dispatched_event(0);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
   EXPECT_EQ(ui::VKEY_A, event->key_code());
 
   event = dispatched_event(1);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_A, event->key_code());
 }
 
@@ -644,11 +644,11 @@ TEST_F(EventConverterEvdevImplTest, ShouldReleaseKeysOnDisable) {
   EXPECT_EQ(2u, size());
 
   ui::KeyEvent* event = dispatched_event(0);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
   EXPECT_EQ(ui::VKEY_A, event->key_code());
 
   event = dispatched_event(1);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_A, event->key_code());
 }
 
@@ -674,16 +674,16 @@ TEST_F(EventConverterEvdevImplTest, SetAllowedKeys) {
 
   ASSERT_EQ(4u, size());
   ui::KeyEvent* event = dispatched_event(0);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
   EXPECT_EQ(ui::VKEY_A, event->key_code());
   event = dispatched_event(1);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_A, event->key_code());
   event = dispatched_event(2);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
   EXPECT_EQ(ui::VKEY_POWER, event->key_code());
   event = dispatched_event(3);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_POWER, event->key_code());
 
   ClearDispatchedEvents();
@@ -694,10 +694,10 @@ TEST_F(EventConverterEvdevImplTest, SetAllowedKeys) {
 
   ASSERT_EQ(2u, size());
   event = dispatched_event(0);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
   EXPECT_EQ(ui::VKEY_POWER, event->key_code());
   event = dispatched_event(1);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_POWER, event->key_code());
 
   ClearDispatchedEvents();
@@ -705,16 +705,16 @@ TEST_F(EventConverterEvdevImplTest, SetAllowedKeys) {
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
 
   event = dispatched_event(0);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
   EXPECT_EQ(ui::VKEY_A, event->key_code());
   event = dispatched_event(1);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_A, event->key_code());
   event = dispatched_event(2);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
   EXPECT_EQ(ui::VKEY_POWER, event->key_code());
   event = dispatched_event(3);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_POWER, event->key_code());
 }
 
@@ -735,7 +735,7 @@ TEST_F(EventConverterEvdevImplTest, SetAllowedKeysBlockedKeyPressed) {
   dev->ProcessEvents(key_press, std::size(key_press));
   ASSERT_EQ(1u, size());
   ui::KeyEvent* event = dispatched_event(0);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
 
   // Block all key events. Calling SetAllowKeys() should dispatch a synthetic
   // key release for VKEY_A.
@@ -744,7 +744,7 @@ TEST_F(EventConverterEvdevImplTest, SetAllowedKeysBlockedKeyPressed) {
   dev->SetKeyFilter(true /* enable_filter */, allowed_keys);
   ASSERT_EQ(1u, size());
   event = dispatched_event(0);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
 
   // The real key release should be dropped, whenever it comes.
   ClearDispatchedEvents();
@@ -767,12 +767,12 @@ TEST_F(EventConverterEvdevImplTest, SetBlockModifiers) {
   dev->ProcessEvents(key_press, std::size(key_press));
   ASSERT_EQ(1u, size());
   ui::KeyEvent* event = dispatched_event(0);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
 
   dev->ProcessEvents(key_release, std::size(key_release));
   ASSERT_EQ(2u, size());
   event = dispatched_event(1);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
 
   dev->SetBlockModifiers(true);
 
@@ -797,12 +797,12 @@ TEST_F(EventConverterEvdevImplTest, SetBlockModifiersWithModifierHeldDown) {
   dev->ProcessEvents(key_press, std::size(key_press));
   ASSERT_EQ(1u, size());
   ui::KeyEvent* event = dispatched_event(0);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
 
   dev->SetBlockModifiers(true);
   ASSERT_EQ(2u, size());
   event = dispatched_event(1);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
   EXPECT_EQ(ui::VKEY_CONTROL, event->key_code());
 
   dev->ProcessEvents(key_release, std::size(key_release));
@@ -841,19 +841,19 @@ TEST_F(EventConverterEvdevImplTest, ShouldSwapMouseButtonsFromUserPreference) {
 
   ui::MouseEvent* event;
   event = dispatched_mouse_event(0);
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kMousePressed, event->type());
   EXPECT_EQ(true, event->IsLeftMouseButton());
 
   event = dispatched_mouse_event(1);
-  EXPECT_EQ(ui::ET_MOUSE_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kMouseReleased, event->type());
   EXPECT_EQ(true, event->IsLeftMouseButton());
 
   event = dispatched_mouse_event(2);
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kMousePressed, event->type());
   EXPECT_EQ(true, event->IsRightMouseButton());
 
   event = dispatched_mouse_event(3);
-  EXPECT_EQ(ui::ET_MOUSE_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kMouseReleased, event->type());
   EXPECT_EQ(true, event->IsRightMouseButton());
 
   // Captured from Evoluent VerticalMouse 4.
@@ -881,19 +881,19 @@ TEST_F(EventConverterEvdevImplTest, ShouldSwapMouseButtonsFromUserPreference) {
   EXPECT_EQ(4u, size());
 
   event = dispatched_mouse_event(0);
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kMousePressed, event->type());
   EXPECT_EQ(true, event->IsRightMouseButton());
 
   event = dispatched_mouse_event(1);
-  EXPECT_EQ(ui::ET_MOUSE_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kMouseReleased, event->type());
   EXPECT_EQ(true, event->IsRightMouseButton());
 
   event = dispatched_mouse_event(2);
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, event->type());
+  EXPECT_EQ(ui::EventType::kMousePressed, event->type());
   EXPECT_EQ(true, event->IsLeftMouseButton());
 
   event = dispatched_mouse_event(3);
-  EXPECT_EQ(ui::ET_MOUSE_RELEASED, event->type());
+  EXPECT_EQ(ui::EventType::kMouseReleased, event->type());
   EXPECT_EQ(true, event->IsLeftMouseButton());
 }
 

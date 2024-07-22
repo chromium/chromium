@@ -539,14 +539,14 @@ IN_PROC_BROWSER_TEST_F(TabDragControllerTest, GestureEndShouldEndDragTest) {
 
   ui::GestureEvent gesture_tap_down(
       tab_1_center.x(), tab_1_center.x(), 0, base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
+      ui::GestureEventDetails(ui::EventType::kGestureTapDown));
   tab_strip->MaybeStartDrag(tab1, gesture_tap_down,
     tab_strip->GetSelectionModel());
   EXPECT_TRUE(TabDragController::IsActive());
 
-  ui::GestureEvent gesture_end(tab_1_center.x(), tab_1_center.x(), 0,
-                               base::TimeTicks(),
-                               ui::GestureEventDetails(ui::ET_GESTURE_END));
+  ui::GestureEvent gesture_end(
+      tab_1_center.x(), tab_1_center.x(), 0, base::TimeTicks(),
+      ui::GestureEventDetails(ui::EventType::kGestureEnd));
   HandleGestureEvent(tab_strip, &gesture_end);
   EXPECT_FALSE(TabDragController::IsActive());
   EXPECT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
@@ -1633,8 +1633,8 @@ bool SubtreeShouldBeExplored(aura::Window* window,
   gfx::Point point_in_root = local_point;
   aura::Window::ConvertPointToTarget(window, window->GetRootWindow(),
                                      &point_in_root);
-  ui::MouseEvent event(ui::ET_MOUSE_MOVED, point_in_parent, point_in_root,
-                       base::TimeTicks::Now(), 0, 0);
+  ui::MouseEvent event(ui::EventType::kMouseMoved, point_in_parent,
+                       point_in_root, base::TimeTicks::Now(), 0, 0);
   return window->targeter()->SubtreeShouldBeExploredForEvent(window, event);
 }
 

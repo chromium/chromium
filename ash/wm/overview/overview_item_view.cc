@@ -297,8 +297,8 @@ void OverviewItemView::OnGestureEvent(ui::GestureEvent* event) {
 bool OverviewItemView::CanAcceptEvent(const ui::Event& event) {
   bool accept_events = true;
   // Do not process or accept press down events that are on the border.
-  static ui::EventType press_types[] = {ui::ET_GESTURE_TAP_DOWN,
-                                        ui::ET_MOUSE_PRESSED};
+  static ui::EventType press_types[] = {ui::EventType::kGestureTapDown,
+                                        ui::EventType::kMousePressed};
   if (event.IsLocatedEvent() && base::Contains(press_types, event.type())) {
     const gfx::Rect content_bounds = GetContentsBounds();
     if (!content_bounds.Contains(event.AsLocatedEvent()->location()))

@@ -325,7 +325,7 @@ TEST_F(DeviceChooserContentViewTest, ClickAdapterOffHelpLink) {
 TEST_F(DeviceChooserContentViewTest, ClickRescanButton) {
   EXPECT_CALL(*controller(), RefreshOptions()).Times(1);
   const gfx::Point point(10, 10);
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, point, point,
+  const ui::MouseEvent event(ui::EventType::kMousePressed, point, point,
                              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
   views::test::ButtonTestApi(re_scan_button()).NotifyClick(event);
@@ -338,7 +338,7 @@ TEST_F(DeviceChooserContentViewTest, ClickHelpButton) {
   auto* help_button = static_cast<views::ImageButton*>(
       extra_views_container_->children().front());
   const gfx::Point point(10, 10);
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, point, point,
+  const ui::MouseEvent event(ui::EventType::kMousePressed, point, point,
                              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
   views::test::ButtonTestApi(help_button).NotifyClick(event);

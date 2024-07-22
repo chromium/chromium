@@ -797,7 +797,7 @@ TEST_F(DesktopMediaPickerViewsSingleTabPaneTest,
   // with no selected source. If the fix to https://crbug.com/1042976 regresses,
   // this test will crash here.
   test_api_.PressKeyOnSourceAtIndex(
-      0, ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, 0));
+      0, ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RETURN, 0));
 }
 
 class DesktopMediaPickerPreferredDisplaySurfaceTest
@@ -1107,8 +1107,8 @@ TEST_F(DelegatedSourceListTest, ReselectButtonEnabledState) {
 
   // Verify that clicking the button causes the button to become disabled.
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), 0, 0);
+  const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi(test_api_.GetReselectButton()).NotifyClick(event);
   EXPECT_FALSE(test_api_.GetReselectButton()->GetEnabled());
 
@@ -1142,8 +1142,8 @@ TEST_F(DelegatedSourceListTest, ReselectTriggersShowDelegatedSourceList) {
 
   // Verify that clicking the button causes the selection to be cleared on the
   // current source list.
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), 0, 0);
+  const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi(test_api_.GetReselectButton()).NotifyClick(event);
   EXPECT_EQ(1, media_lists_[DesktopMediaList::Type::kScreen]
                    ->clear_delegated_source_list_selection_count());

@@ -156,7 +156,7 @@ void QuickSettingsMediaView::OnGestureEvent(ui::GestureEvent* event) {
   // between media items.
   if (pagination_controller_->OnGestureEvent(*event, GetContentsBounds())) {
     event->SetHandled();
-  } else if (event->type() == ui::ET_GESTURE_TAP) {
+  } else if (event->type() == ui::EventType::kGestureTap) {
     // A tap gesture is handled in the same way as a mouse click event. The
     // controller does not need to know the item id for now so we do not need to
     // record it.

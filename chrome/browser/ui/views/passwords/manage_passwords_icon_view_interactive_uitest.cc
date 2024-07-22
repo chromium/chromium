@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, ManageState) {
 IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, CloseOnClick) {
   SetupPendingPassword();
   EXPECT_TRUE(GetView()->GetVisible());
-  ui::MouseEvent mouse_down(ui::ET_MOUSE_PRESSED, gfx::Point(10, 10),
+  ui::MouseEvent mouse_down(ui::EventType::kMousePressed, gfx::Point(10, 10),
                             gfx::Point(900, 60), ui::EventTimeForNow(),
                             ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   GetView()->OnMousePressed(mouse_down);

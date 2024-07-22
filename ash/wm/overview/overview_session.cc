@@ -1507,7 +1507,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   // focus enabled, a Tab will blur the textfield which will commit the name
   // changes.
   const ui::KeyboardCode key_code = event->key_code();
-  const bool is_key_press = event->type() == ui::ET_KEY_PRESSED;
+  const bool is_key_press = event->type() == ui::EventType::kKeyPressed;
   if (!features::IsOverviewNewFocusEnabled()) {
     const bool should_commit_name_changes =
         is_key_press && key_code == ui::VKEY_TAB;
@@ -1817,7 +1817,7 @@ bool OverviewSession::ProcessForScrolling(const ui::KeyEvent& event) {
   // The scrollable overview grid only works for tablet mode, so using the
   // primary display works.
   auto* grid = GetGridWithRootWindow(Shell::GetPrimaryRootWindow());
-  const bool press = (event.type() == ui::ET_KEY_PRESSED);
+  const bool press = (event.type() == ui::EventType::kKeyPressed);
 
   if (!press) {
     if (is_keyboard_scrolling_grid_) {

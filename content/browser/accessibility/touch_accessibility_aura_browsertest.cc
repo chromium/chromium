@@ -59,7 +59,7 @@ class TouchAccessibilityBrowserTest : public ContentBrowserTest {
     gfx::Point location(bounds.x() + x, bounds.y() + y);
     int flags = ui::EF_TOUCH_ACCESSIBILITY;
     std::unique_ptr<ui::Event> mouse_move_event(
-        new ui::MouseEvent(ui::ET_MOUSE_MOVED, location, location,
+        new ui::MouseEvent(ui::EventType::kMouseMoved, location, location,
                            ui::EventTimeForNow(), flags, 0));
     std::ignore = sink->OnEventFromSource(mouse_move_event.get());
   }

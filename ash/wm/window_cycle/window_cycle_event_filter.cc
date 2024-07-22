@@ -85,8 +85,9 @@ void WindowCycleEventFilter::OnKeyEvent(ui::KeyEvent* event) {
   const bool is_trigger_key = IsTriggerKey(event);
   const bool is_exit_key = IsExitKey(event);
 
-  if (!is_trigger_key || event->type() != ui::ET_KEY_PRESSED)
+  if (!is_trigger_key || event->type() != ui::EventType::kKeyPressed) {
     event->StopPropagation();
+  }
 
   if (is_trigger_key)
     HandleTriggerKey(event);
@@ -117,26 +118,26 @@ void WindowCycleEventFilter::OnMouseEvent(ui::MouseEvent* event) {
   // Prevent mouse clicks from doing anything while the Alt+Tab UI is active
   // <crbug.com/641171> but don't interfere with drag and drop operations
   // <crbug.com/660945>.
-  if (event->type() != ui::ET_MOUSE_DRAGGED &&
-      event->type() != ui::ET_MOUSE_RELEASED) {
+  if (event->type() != ui::EventType::kMouseDragged &&
+      event->type() != ui::EventType::kMouseReleased) {
     event->StopPropagation();
   }
 }
 
 void WindowCycleEventFilter::OnScrollEvent(ui::ScrollEvent* event) {
-  // ET_SCROLL_FLING_CANCEL means a touchpad swipe has started.
-  if (event->type() == ui::ET_SCROLL_FLING_CANCEL) {
+  // EventType::kScrollFlingCancel means a touchpad swipe has started.
+  if (event->type() == ui::EventType::kScrollFlingCancel) {
     scroll_data_ = ScrollData();
     return;
   }
 
-  // ET_SCROLL_FLING_START means a touchpad swipe has ended.
-  if (event->type() == ui::ET_SCROLL_FLING_START) {
+  // EventType::kScrollFlingStart means a touchpad swipe has ended.
+  if (event->type() == ui::EventType::kScrollFlingStart) {
     scroll_data_.reset();
     return;
   }
 
-  DCHECK_EQ(ui::ET_SCROLL, event->type());
+  DCHECK_EQ(ui::EventType::kScroll, event->type());
 
   if (ProcessEventImpl(event->finger_count(), event->x_offset(),
                        event->y_offset())) {
@@ -157,7 +158,7 @@ void WindowCycleEventFilter::OnGestureEvent(ui::GestureEvent* event) {
 
 void WindowCycleEventFilter::HandleTriggerKey(ui::KeyEvent* event) {
   const ui::KeyboardCode key_code = event->key_code();
-  if (event->type() == ui::ET_KEY_RELEASED) {
+  if (event->type() == ui::EventType::kKeyReleased) {
     repeat_timer_.Stop();
   } else if (ShouldRepeatKey(event)) {
     repeat_timer_.Start(
@@ -174,14 +175,14 @@ void WindowCycleEventFilter::HandleTriggerKey(ui::KeyEvent* event) {
 }
 
 bool WindowCycleEventFilter::ShouldRepeatKey(ui::KeyEvent* event) const {
-  return event->type() == ui::ET_KEY_PRESSED && event->is_repeat() &&
+  return event->type() == ui::EventType::kKeyPressed && event->is_repeat() &&
          !repeat_timer_.IsRunning();
 }
 
 void WindowCycleEventFilter::SetHasUserUsedMouse(ui::MouseEvent* event) {
-  if (event->type() != ui::ET_MOUSE_MOVED &&
-      event->type() != ui::ET_MOUSE_ENTERED &&
-      event->type() != ui::ET_MOUSE_EXITED) {
+  if (event->type() != ui::EventType::kMouseMoved &&
+      event->type() != ui::EventType::kMouseEntered &&
+      event->type() != ui::EventType::kMouseExited) {
     // If a user clicks/drags/scrolls mouse wheel, then they have used the
     // mouse.
     has_user_used_mouse_ = true;
@@ -200,7 +201,7 @@ void WindowCycleEventFilter::SetHasUserUsedMouse(ui::MouseEvent* event) {
 
 void WindowCycleEventFilter::ProcessMouseEvent(ui::MouseEvent* event) {
   auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
-  if (event->type() == ui::ET_MOUSE_PRESSED &&
+  if (event->type() == ui::EventType::kMousePressed &&
       !window_cycle_controller->IsEventInCycleView(event)) {
     // Close the window cycle list if a user clicks outside of it.
     window_cycle_controller->CancelCycling();
@@ -226,23 +227,23 @@ void WindowCycleEventFilter::ProcessMouseEvent(ui::MouseEvent* event) {
 void WindowCycleEventFilter::ProcessGestureEvent(ui::GestureEvent* event) {
   bool should_complete_cycling = false;
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP:
-    case ui::ET_GESTURE_TAP_DOWN:
-    case ui::ET_GESTURE_DOUBLE_TAP:
-    case ui::ET_GESTURE_TAP_UNCONFIRMED:
-    case ui::ET_GESTURE_TWO_FINGER_TAP:
-    case ui::ET_GESTURE_LONG_PRESS:
-    case ui::ET_GESTURE_LONG_TAP: {
+    case ui::EventType::kGestureTap:
+    case ui::EventType::kGestureTapDown:
+    case ui::EventType::kGestureDoubleTap:
+    case ui::EventType::kGestureTapUnconfirmed:
+    case ui::EventType::kGestureTwoFingerTap:
+    case ui::EventType::kGestureLongPress:
+    case ui::EventType::kGestureLongTap: {
       tapped_window_ =
           Shell::Get()->window_cycle_controller()->GetWindowAtPoint(
               event->AsLocatedEvent());
       break;
     }
-    case ui::ET_GESTURE_TAP_CANCEL:
+    case ui::EventType::kGestureTapCancel:
       // Do nothing because the event after this one determines whether we
       // scrolled or tapped.
       break;
-    case ui::ET_GESTURE_SCROLL_BEGIN: {
+    case ui::EventType::kGestureScrollBegin: {
       tapped_window_ = nullptr;
       if (!Shell::Get()->window_cycle_controller()->IsEventInCycleView(event))
         return;
@@ -250,7 +251,7 @@ void WindowCycleEventFilter::ProcessGestureEvent(ui::GestureEvent* event) {
       touch_scrolling_ = true;
       break;
     }
-    case ui::ET_GESTURE_SCROLL_UPDATE: {
+    case ui::EventType::kGestureScrollUpdate: {
       if (!touch_scrolling_)
         return;
 
@@ -258,7 +259,7 @@ void WindowCycleEventFilter::ProcessGestureEvent(ui::GestureEvent* event) {
           event->details().scroll_x());
       break;
     }
-    case ui::ET_SCROLL_FLING_START: {
+    case ui::EventType::kScrollFlingStart: {
       tapped_window_ = nullptr;
       auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
       if (!window_cycle_controller->IsEventInCycleView(event))
@@ -271,7 +272,7 @@ void WindowCycleEventFilter::ProcessGestureEvent(ui::GestureEvent* event) {
         window_cycle_controller->StartFling(velocity_x);
       break;
     }
-    case ui::ET_GESTURE_END: {
+    case ui::EventType::kGestureEnd: {
       if (tapped_window_) {
         // Defer calling WindowCycleController::CompleteCycling() until we've
         // set |event| to handled and stop its propagation.
@@ -391,7 +392,7 @@ void WindowCycleEventFilter::AltReleaseHandler::OnKeyEvent(
     ui::KeyEvent* event) {
   // Views uses VKEY_MENU for both left and right Alt keys.
   if (event->key_code() == ui::VKEY_MENU &&
-      event->type() == ui::ET_KEY_RELEASED) {
+      event->type() == ui::EventType::kKeyReleased) {
     event->StopPropagation();
     Shell::Get()->window_cycle_controller()->CompleteCycling();
     // Warning: |this| will be deleted from here on.

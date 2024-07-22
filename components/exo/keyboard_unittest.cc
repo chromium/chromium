@@ -161,20 +161,24 @@ TEST_F(KeyboardTest, CorrectSeatPressedKeysOnSwitchingDesks) {
     seat.WillProcessEvent(&key_event);
     GetEventGenerator()->Dispatch(&key_event);
 
-    EXPECT_EQ(type != ui::ET_KEY_RELEASED,
+    EXPECT_EQ(type != ui::EventType::kKeyReleased,
               seat.pressed_keys().count(PhysicalCode(code)));
 
     seat.DidProcessEvent(&key_event);
   };
 
   ash::DeskSwitchAnimationWaiter waiter;
-  displatch_key_event(ui::ET_KEY_PRESSED, ui::VKEY_MENU, ui::DomCode::ALT_LEFT,
+  displatch_key_event(ui::EventType::kKeyPressed, ui::VKEY_MENU,
+                      ui::DomCode::ALT_LEFT,
                       /*flags=*/0);
-  displatch_key_event(ui::ET_KEY_PRESSED, ui::VKEY_TAB, ui::DomCode::TAB,
+  displatch_key_event(ui::EventType::kKeyPressed, ui::VKEY_TAB,
+                      ui::DomCode::TAB,
                       /*flags=*/ui::EF_ALT_DOWN);
-  displatch_key_event(ui::ET_KEY_RELEASED, ui::VKEY_MENU, ui::DomCode::ALT_LEFT,
+  displatch_key_event(ui::EventType::kKeyReleased, ui::VKEY_MENU,
+                      ui::DomCode::ALT_LEFT,
                       /*flags=*/0);
-  displatch_key_event(ui::ET_KEY_RELEASED, ui::VKEY_TAB, ui::DomCode::TAB,
+  displatch_key_event(ui::EventType::kKeyReleased, ui::VKEY_TAB,
+                      ui::DomCode::TAB,
                       /*flags=*/0);
 
   EXPECT_TRUE(seat.pressed_keys().empty());
@@ -738,7 +742,7 @@ TEST_F(KeyboardTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
       ui::DomCode::US_A);
 
   {
-    ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, 0);
+    ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_A, 0);
     ui::SetKeyboardImeFlags(&event, ui::kPropertyKeyboardImeHandledFlag);
     event.set_source_device_id(0);
     generator.Dispatch(&event);
@@ -900,7 +904,7 @@ TEST_F(KeyboardTest, KeyboardKey_SuppressAutoRepeat) {
   seat.set_physical_code_for_currently_processing_event_for_testing(
       ui::DomCode::US_X);
   {
-    ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_X, 0);
+    ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_X, 0);
     event.set_source_device_id(ui::ED_UNKNOWN_DEVICE);
     {
       ui::Event::Properties properties;
@@ -931,7 +935,7 @@ TEST_F(KeyboardTest, KeyboardKey_SuppressAutoRepeat) {
   seat.set_physical_code_for_currently_processing_event_for_testing(
       ui::DomCode::US_Y);
   {
-    ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_Y, 0);
+    ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_Y, 0);
     event.set_source_device_id(ui::ED_UNKNOWN_DEVICE);
     {
       ui::Event::Properties properties;

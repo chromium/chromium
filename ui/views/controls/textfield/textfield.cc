@@ -677,7 +677,7 @@ void Textfield::SetBorder(std::unique_ptr<Border> b) {
 ui::Cursor Textfield::GetCursor(const ui::MouseEvent& event) {
   bool platform_arrow = PlatformStyle::kTextfieldUsesDragCursorWhenDraggable;
   bool in_selection = GetRenderText()->IsPointInSelection(event.location());
-  bool drag_event = event.type() == ui::ET_MOUSE_DRAGGED;
+  bool drag_event = event.type() == ui::EventType::kMouseDragged;
   bool text_cursor =
       !initiating_drag_ && (drag_event || !in_selection || !platform_arrow);
   return text_cursor ? ui::mojom::CursorType::kIBeam : ui::Cursor();
@@ -790,7 +790,7 @@ bool Textfield::OnKeyReleased(const ui::KeyEvent& event) {
 
 void Textfield::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP: {
+    case ui::EventType::kGestureTap: {
       RequestFocusForGesture(event->details());
       if (controller_ && controller_->HandleGestureEvent(this, *event)) {
         StopSelectionDragging();
@@ -830,7 +830,7 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       event->SetHandled();
       break;
     }
-    case ui::ET_GESTURE_TAP_DOWN: {
+    case ui::EventType::kGestureTapDown: {
       if (HasFocus()) {
         if (HandleGestureForSelectionDragging(event)) {
           return;
@@ -838,7 +838,7 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       }
       break;
     }
-    case ui::ET_GESTURE_LONG_PRESS:
+    case ui::EventType::kGestureLongPress:
       if (GetRenderText()->IsPointInSelection(event->location())) {
         // If long-press happens on the selection, deactivate touch selection
         // and try to initiate drag-drop. If drag-drop is not enabled, context
@@ -868,7 +868,7 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
         }
       }
       break;
-    case ui::ET_GESTURE_LONG_TAP:
+    case ui::EventType::kGestureLongTap:
       if (HandleGestureForSelectionDragging(event)) {
         return;
       }
@@ -878,7 +878,7 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       if (touch_selection_controller_)
         event->SetHandled();
       break;
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       if (HasFocus()) {
         if (HandleGestureForSelectionDragging(event)) {
           return;
@@ -887,7 +887,7 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
         event->SetHandled();
       }
       break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       if (HasFocus()) {
         if (HandleGestureForSelectionDragging(event)) {
           return;
@@ -896,8 +896,8 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
         event->SetHandled();
       }
       break;
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kGestureScrollEnd:
+    case ui::EventType::kScrollFlingStart:
       if (HandleGestureForSelectionDragging(event)) {
         NOTREACHED_NORETURN();
       }
@@ -909,7 +909,7 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
         event->SetHandled();
       }
       break;
-    case ui::ET_GESTURE_END:
+    case ui::EventType::kGestureEnd:
       if (HandleGestureForSelectionDragging(event)) {
         NOTREACHED_NORETURN();
       }
@@ -923,8 +923,8 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
 bool Textfield::AcceleratorPressed(const ui::Accelerator& accelerator) {
   ui::KeyEvent event(
       accelerator.key_state() == ui::Accelerator::KeyState::PRESSED
-          ? ui::ET_KEY_PRESSED
-          : ui::ET_KEY_RELEASED,
+          ? ui::EventType::kKeyPressed
+          : ui::EventType::kKeyReleased,
       accelerator.key_code(), accelerator.modifiers());
   ExecuteTextEditCommand(GetCommandForKeyEvent(event));
   return true;
@@ -2397,8 +2397,9 @@ bool Textfield::PreHandleKeyPressed(const ui::KeyEvent& event) {
 
 ui::TextEditCommand Textfield::GetCommandForKeyEvent(
     const ui::KeyEvent& event) {
-  if (event.type() != ui::ET_KEY_PRESSED || event.IsUnicodeKeyCode())
+  if (event.type() != ui::EventType::kKeyPressed || event.IsUnicodeKeyCode()) {
     return ui::TextEditCommand::INVALID_COMMAND;
+  }
 
   const bool shift = event.IsShiftDown();
 #if BUILDFLAG(IS_MAC)
@@ -3075,7 +3076,7 @@ bool Textfield::HandleGestureForSelectionDragging(ui::GestureEvent* event) {
   }
 
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP:
+    case ui::EventType::kGestureTap:
       if (selection_dragging_state_ != SelectionDraggingState::kNone) {
         // Selection has already been set in preceding events, so we can just
         // cancel selection dragging and show touch handles without changing the
@@ -3086,7 +3087,7 @@ bool Textfield::HandleGestureForSelectionDragging(ui::GestureEvent* event) {
         return true;
       }
       return false;
-    case ui::ET_GESTURE_TAP_DOWN:
+    case ui::EventType::kGestureTapDown:
       if (event->details().tap_down_count() == 1) {
         selection_dragging_state_ = SelectionDraggingState::kNone;
         return false;
@@ -3105,13 +3106,13 @@ bool Textfield::HandleGestureForSelectionDragging(ui::GestureEvent* event) {
       DestroyTouchSelection();
       event->SetHandled();
       return true;
-    case ui::ET_GESTURE_LONG_PRESS:
+    case ui::EventType::kGestureLongPress:
       selection_dragging_state_ = SelectionDraggingState::kSelectedWord;
       selection_drag_type_ = ui::TouchSelectionDragType::kLongPressDrag;
       DestroyTouchSelection();
       event->SetHandled();
       return true;
-    case ui::ET_GESTURE_LONG_TAP:
+    case ui::EventType::kGestureLongTap:
       if (selection_dragging_state_ != SelectionDraggingState::kNone) {
         StopSelectionDragging();
         CreateTouchSelectionControllerAndNotifyIt();
@@ -3119,7 +3120,7 @@ bool Textfield::HandleGestureForSelectionDragging(ui::GestureEvent* event) {
         return true;
       }
       return false;
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       // Only start selection dragging if scrolling with one touch point.
       if (event->details().touch_points() == 1 &&
           StartSelectionDragging(*event)) {
@@ -3130,7 +3131,7 @@ bool Textfield::HandleGestureForSelectionDragging(ui::GestureEvent* event) {
       }
       StopSelectionDragging();
       return false;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       // Switch from selection dragging to default scrolling behaviour if scroll
       // update has multiple touch points.
       if (IsSelectionDragging() && event->details().touch_points() > 1) {
@@ -3150,9 +3151,9 @@ bool Textfield::HandleGestureForSelectionDragging(ui::GestureEvent* event) {
         return true;
       }
       return false;
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
-    case ui::ET_GESTURE_END:
+    case ui::EventType::kGestureScrollEnd:
+    case ui::EventType::kScrollFlingStart:
+    case ui::EventType::kGestureEnd:
       StopSelectionDragging();
       return false;
     default:
@@ -3161,7 +3162,7 @@ bool Textfield::HandleGestureForSelectionDragging(ui::GestureEvent* event) {
 }
 
 bool Textfield::StartSelectionDragging(const ui::GestureEvent& event) {
-  DCHECK_EQ(event.type(), ui::ET_GESTURE_SCROLL_BEGIN);
+  DCHECK_EQ(event.type(), ui::EventType::kGestureScrollBegin);
 
   const float delta_x = event.details().scroll_x_hint();
   const float delta_y = event.details().scroll_y_hint();

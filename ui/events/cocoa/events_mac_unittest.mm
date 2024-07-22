@@ -239,7 +239,7 @@ TEST_F(EventsMacTest, ButtonEvents) {
 
   NSEvent* event =
       TestMouseEvent(kCGEventLeftMouseDown, location, kNoEventFlags);
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED,
+  EXPECT_EQ(ui::EventType::kMousePressed,
             ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
   EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON,
             ui::EventFlagsFromNative(base::apple::OwnedNSEvent(event)));
@@ -248,7 +248,7 @@ TEST_F(EventsMacTest, ButtonEvents) {
 
   event =
       TestMouseEvent(kCGEventOtherMouseDown, location, kCGEventFlagMaskShift);
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED,
+  EXPECT_EQ(ui::EventType::kMousePressed,
             ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
   EXPECT_EQ(ui::EF_MIDDLE_MOUSE_BUTTON | ui::EF_SHIFT_DOWN,
             ui::EventFlagsFromNative(base::apple::OwnedNSEvent(event)));
@@ -256,7 +256,7 @@ TEST_F(EventsMacTest, ButtonEvents) {
                           base::apple::OwnedNSEvent(event))));
 
   event = TestMouseEvent(kCGEventRightMouseUp, location, kNoEventFlags);
-  EXPECT_EQ(ui::ET_MOUSE_RELEASED,
+  EXPECT_EQ(ui::EventType::kMouseReleased,
             ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
   EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON,
             ui::EventFlagsFromNative(base::apple::OwnedNSEvent(event)));
@@ -265,7 +265,7 @@ TEST_F(EventsMacTest, ButtonEvents) {
 
   // Scroll up.
   event = TestScrollEvent(location, 0, 1);
-  EXPECT_EQ(ui::ET_SCROLL,
+  EXPECT_EQ(ui::EventType::kScroll,
             ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
   EXPECT_EQ(0, ui::EventFlagsFromNative(base::apple::OwnedNSEvent(event)));
   EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(
@@ -276,7 +276,7 @@ TEST_F(EventsMacTest, ButtonEvents) {
 
   // Scroll down.
   event = TestScrollEvent(location, 0, -1);
-  EXPECT_EQ(ui::ET_SCROLL,
+  EXPECT_EQ(ui::EventType::kScroll,
             ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
   EXPECT_EQ(0, ui::EventFlagsFromNative(base::apple::OwnedNSEvent(event)));
   EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(
@@ -287,7 +287,7 @@ TEST_F(EventsMacTest, ButtonEvents) {
 
   // Scroll left.
   event = TestScrollEvent(location, 1, 0);
-  EXPECT_EQ(ui::ET_SCROLL,
+  EXPECT_EQ(ui::EventType::kScroll,
             ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
   EXPECT_EQ(0, ui::EventFlagsFromNative(base::apple::OwnedNSEvent(event)));
   EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(
@@ -298,7 +298,7 @@ TEST_F(EventsMacTest, ButtonEvents) {
 
   // Scroll right.
   event = TestScrollEvent(location, -1, 0);
-  EXPECT_EQ(ui::ET_SCROLL,
+  EXPECT_EQ(ui::EventType::kScroll,
             ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
   EXPECT_EQ(0, ui::EventFlagsFromNative(base::apple::OwnedNSEvent(event)));
   EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(
@@ -323,7 +323,7 @@ TEST_F(EventsMacTest, NativeTitlebarEventLocation) {
   // EventLocationFromNative should behave the same as the ButtonEvents test.
   NSEvent* event =
       TestMouseEvent(kCGEventLeftMouseDown, location, kNoEventFlags);
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED,
+  EXPECT_EQ(ui::EventType::kMousePressed,
             ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
   EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON,
             ui::EventFlagsFromNative(base::apple::OwnedNSEvent(event)));
@@ -380,35 +380,35 @@ TEST_F(EventsMacTest, NoWindowLocation) {
 TEST_F(EventsMacTest, EventTypeFromNative) {
   NSEvent* event =
       cocoa_test_event_utils::KeyEventWithType(NSEventTypeKeyDown, 0);
-  EXPECT_EQ(ui::ET_KEY_PRESSED,
+  EXPECT_EQ(ui::EventType::kKeyPressed,
             ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
 
   event = cocoa_test_event_utils::KeyEventWithType(NSEventTypeKeyUp, 0);
-  EXPECT_EQ(ui::ET_KEY_RELEASED,
+  EXPECT_EQ(ui::EventType::kKeyReleased,
             ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
 
   event = cocoa_test_event_utils::MouseEventWithType(
       NSEventTypeLeftMouseDragged, 0);
-  EXPECT_EQ(ui::ET_MOUSE_DRAGGED,
+  EXPECT_EQ(ui::EventType::kMouseDragged,
             ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
   event = cocoa_test_event_utils::MouseEventWithType(
       NSEventTypeRightMouseDragged, 0);
-  EXPECT_EQ(ui::ET_MOUSE_DRAGGED,
+  EXPECT_EQ(ui::EventType::kMouseDragged,
             ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
   event = cocoa_test_event_utils::MouseEventWithType(
       NSEventTypeOtherMouseDragged, 0);
-  EXPECT_EQ(ui::ET_MOUSE_DRAGGED,
+  EXPECT_EQ(ui::EventType::kMouseDragged,
             ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
 
   event = cocoa_test_event_utils::MouseEventWithType(NSEventTypeMouseMoved, 0);
-  EXPECT_EQ(ui::ET_MOUSE_MOVED,
+  EXPECT_EQ(ui::EventType::kMouseMoved,
             ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
 
   event = cocoa_test_event_utils::EnterEvent();
-  EXPECT_EQ(ui::ET_MOUSE_ENTERED,
+  EXPECT_EQ(ui::EventType::kMouseEntered,
             ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
   event = cocoa_test_event_utils::ExitEvent();
-  EXPECT_EQ(ui::ET_MOUSE_EXITED,
+  EXPECT_EQ(ui::EventType::kMouseExited,
             ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
 }
 
@@ -419,7 +419,7 @@ TEST_F(EventsMacTest, MouseWheelScroll) {
   NSEvent* ns_wheel = TestScrollEvent(default_location_, 0, wheel_delta_y);
   EXPECT_FALSE([ns_wheel hasPreciseScrollingDeltas]);
   ui::ScrollEvent wheel((base::apple::OwnedNSEvent(ns_wheel)));
-  EXPECT_EQ(ui::ET_SCROLL, wheel.type());
+  EXPECT_EQ(ui::EventType::kScroll, wheel.type());
 
   // Currently wheel events still say two for finger count, but this may change.
   EXPECT_EQ(2, wheel.finger_count());
@@ -448,14 +448,14 @@ TEST_F(EventsMacTest, TrackpadRestRelease) {
   EXPECT_TRUE([ns_events[0] hasPreciseScrollingDeltas]);
 
   ui::ScrollEvent rest((base::apple::OwnedNSEvent(ns_events[0])));
-  EXPECT_EQ(ui::ET_SCROLL, rest.type());
+  EXPECT_EQ(ui::EventType::kScroll, rest.type());
   EXPECT_EQ(2, rest.finger_count());
   EXPECT_EQ(ui::EventMomentumPhase::MAY_BEGIN, rest.momentum_phase());
   EXPECT_EQ(0, rest.y_offset_ordinal());
   EXPECT_EQ(default_location_, rest.location());
 
   ui::ScrollEvent cancel((base::apple::OwnedNSEvent(ns_events[1])));
-  EXPECT_EQ(ui::ET_SCROLL, cancel.type());
+  EXPECT_EQ(ui::EventType::kScroll, cancel.type());
   EXPECT_EQ(2, cancel.finger_count());
   EXPECT_EQ(ui::EventMomentumPhase::END, cancel.momentum_phase());
   EXPECT_EQ(0, cancel.y_offset_ordinal());
@@ -585,25 +585,27 @@ TEST_F(EventsMacTest, HandleModifierOnlyKeyEvents) {
     KeyboardCode expected_key_code;
   } test_cases[] = {
       {"CapsLock pressed", NSEventModifierFlagCapsLock, kVK_CapsLock,
-       ET_KEY_PRESSED, VKEY_CAPITAL},
-      {"CapsLock released", 0, kVK_CapsLock, ET_KEY_RELEASED, VKEY_CAPITAL},
-      {"Shift pressed", NSEventModifierFlagShift, kVK_Shift, ET_KEY_PRESSED,
-       VKEY_SHIFT},
-      {"Shift released", 0, kVK_Shift, ET_KEY_RELEASED, VKEY_SHIFT},
+       EventType::kKeyPressed, VKEY_CAPITAL},
+      {"CapsLock released", 0, kVK_CapsLock, EventType::kKeyReleased,
+       VKEY_CAPITAL},
+      {"Shift pressed", NSEventModifierFlagShift, kVK_Shift,
+       EventType::kKeyPressed, VKEY_SHIFT},
+      {"Shift released", 0, kVK_Shift, EventType::kKeyReleased, VKEY_SHIFT},
       {"Control pressed", NSEventModifierFlagControl, kVK_Control,
-       ET_KEY_PRESSED, VKEY_CONTROL},
-      {"Control released", 0, kVK_Control, ET_KEY_RELEASED, VKEY_CONTROL},
-      {"Option pressed", NSEventModifierFlagOption, kVK_Option, ET_KEY_PRESSED,
-       VKEY_MENU},
-      {"Option released", 0, kVK_Option, ET_KEY_RELEASED, VKEY_MENU},
+       EventType::kKeyPressed, VKEY_CONTROL},
+      {"Control released", 0, kVK_Control, EventType::kKeyReleased,
+       VKEY_CONTROL},
+      {"Option pressed", NSEventModifierFlagOption, kVK_Option,
+       EventType::kKeyPressed, VKEY_MENU},
+      {"Option released", 0, kVK_Option, EventType::kKeyReleased, VKEY_MENU},
       {"Command pressed", NSEventModifierFlagCommand, kVK_Command,
-       ET_KEY_PRESSED, VKEY_LWIN},
-      {"Command released", 0, kVK_Command, ET_KEY_RELEASED, VKEY_LWIN},
+       EventType::kKeyPressed, VKEY_LWIN},
+      {"Command released", 0, kVK_Command, EventType::kKeyReleased, VKEY_LWIN},
       {"Shift pressed with CapsLock on",
        NSEventModifierFlagShift | NSEventModifierFlagCapsLock, kVK_Shift,
-       ET_KEY_PRESSED, VKEY_SHIFT},
+       EventType::kKeyPressed, VKEY_SHIFT},
       {"Shift released with CapsLock off", NSEventModifierFlagCapsLock,
-       kVK_Shift, ET_KEY_RELEASED, VKEY_SHIFT},
+       kVK_Shift, EventType::kKeyReleased, VKEY_SHIFT},
   };
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(::testing::Message() << "While checking case: "

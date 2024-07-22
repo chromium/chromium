@@ -43,8 +43,8 @@ void WebUIBubbleEventHandlerAura::ProcessLocatedEvent(ui::LocatedEvent* event) {
   // Touch drags must be handled via gesture events to ensure events touch
   // inputs been correctly interpreted by the gesture recognizer.
   switch (event->type()) {
-    case ui::ET_GESTURE_SCROLL_BEGIN:
-    case ui::ET_MOUSE_PRESSED: {
+    case ui::EventType::kGestureScrollBegin:
+    case ui::EventType::kMousePressed: {
       // Only start drags on bubble caption regions.
       if (target->delegate()->GetNonClientComponent(event->location()) ==
           HTCAPTION) {
@@ -55,8 +55,8 @@ void WebUIBubbleEventHandlerAura::ProcessLocatedEvent(ui::LocatedEvent* event) {
       }
       break;
     }
-    case ui::ET_GESTURE_SCROLL_UPDATE:
-    case ui::ET_MOUSE_DRAGGED: {
+    case ui::EventType::kGestureScrollUpdate:
+    case ui::EventType::kMouseDragged: {
       if (!dragging_) {
         break;
       }

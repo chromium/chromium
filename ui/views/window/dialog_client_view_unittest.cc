@@ -551,15 +551,16 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_ClickAfterShown) {
   SetDialogButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
 
   // Should ignore clicks right after the dialog is shown.
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
-                             ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::PointF(),
+                             gfx::PointF(), ui::EventTimeForNow(), ui::EF_NONE,
+                             ui::EF_NONE);
   test::ButtonTestApi(client_view()->ok_button()).NotifyClick(mouse_event);
   test::ButtonTestApi cancel_button(client_view()->cancel_button());
   cancel_button.NotifyClick(mouse_event);
   EXPECT_FALSE(widget()->IsClosed());
 
   cancel_button.NotifyClick(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
+      ui::EventType::kMousePressed, gfx::PointF(), gfx::PointF(),
       ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
       ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(widget()->IsClosed());
@@ -573,7 +574,7 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_TapAfterShown) {
   // Should ignore taps right after the dialog is shown.
   ui::GestureEvent tap_event(
       0, 0, 0, ui::EventTimeForNow(),
-      ui::GestureEventDetails(ui::EventType::ET_GESTURE_TAP));
+      ui::GestureEventDetails(ui::EventType::kGestureTap));
   test::ButtonTestApi(client_view()->ok_button()).NotifyClick(tap_event);
   test::ButtonTestApi cancel_button(client_view()->cancel_button());
   cancel_button.NotifyClick(tap_event);
@@ -582,7 +583,7 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_TapAfterShown) {
   ui::GestureEvent tap_event2(
       0, 0, 0,
       ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
-      ui::GestureEventDetails(ui::EventType::ET_GESTURE_TAP));
+      ui::GestureEventDetails(ui::EventType::kGestureTap));
   cancel_button.NotifyClick(tap_event2);
   EXPECT_TRUE(widget()->IsClosed());
 }
@@ -594,8 +595,8 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_TouchAfterShown) {
   SetDialogButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
 
   // Should ignore touches right after the dialog is shown.
-  ui::TouchEvent touch_event(ui::ET_TOUCH_PRESSED, gfx::PointF(), gfx::PointF(),
-                             ui::EventTimeForNow(),
+  ui::TouchEvent touch_event(ui::EventType::kTouchPressed, gfx::PointF(),
+                             gfx::PointF(), ui::EventTimeForNow(),
                              ui::PointerDetails(ui::EventPointerType::kTouch));
   test::ButtonTestApi(client_view()->ok_button()).NotifyClick(touch_event);
   test::ButtonTestApi cancel_button(client_view()->cancel_button());
@@ -603,7 +604,7 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_TouchAfterShown) {
   EXPECT_FALSE(widget()->IsClosed());
 
   ui::TouchEvent touch_event2(
-      ui::ET_TOUCH_PRESSED, gfx::PointF(), gfx::PointF(),
+      ui::EventType::kTouchPressed, gfx::PointF(), gfx::PointF(),
       ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
       ui::PointerDetails(ui::EventPointerType::kTouch));
   cancel_button.NotifyClick(touch_event2);
@@ -635,15 +636,16 @@ TEST_F(DesktopDialogClientViewTest,
   // old widget should be ignored.
   auto* widget1 = CreateTopLevelNativeWidget();
   widget1->SetBounds(gfx::Rect(50, 50, 100, 100));
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), ui::EF_NONE,
+                             ui::EF_NONE);
   test::ButtonTestApi(client_view()->ok_button()).NotifyClick(mouse_event);
   test::ButtonTestApi cancel_button(client_view()->cancel_button());
   cancel_button.NotifyClick(mouse_event);
   EXPECT_FALSE(widget()->IsClosed());
 
   cancel_button.NotifyClick(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
       ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
       ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(widget()->IsClosed());
@@ -664,15 +666,16 @@ TEST_F(DesktopDialogClientViewTest,
   // widget should be ignored.
   auto* widget1 = CreateTopLevelNativeWidget();
   widget1->CloseNow();
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), ui::EF_NONE,
+                             ui::EF_NONE);
   test::ButtonTestApi(client_view()->ok_button()).NotifyClick(mouse_event);
   test::ButtonTestApi cancel_button(client_view()->cancel_button());
   cancel_button.NotifyClick(mouse_event);
   EXPECT_FALSE(widget()->IsClosed());
 
   cancel_button.NotifyClick(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
       ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
       ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(widget()->IsClosed());
@@ -692,8 +695,9 @@ TEST_F(DialogClientViewTest,
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_TOOLTIP);
   widget1->Init(std::move(params));
   widget1->CloseNow();
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), ui::EF_NONE,
+                             ui::EF_NONE);
   test::ButtonTestApi(client_view()->ok_button()).NotifyClick(mouse_event);
   test::ButtonTestApi cancel_button(client_view()->cancel_button());
   cancel_button.NotifyClick(mouse_event);
@@ -712,8 +716,8 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_RepeatedClicks) {
       base::Milliseconds(GetDoubleClickInterval());
 
   // Should ignore clicks right after the dialog is shown.
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             kNow, ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), kNow, ui::EF_NONE, ui::EF_NONE);
   test::ButtonTestApi(client_view()->ok_button()).NotifyClick(mouse_event);
   test::ButtonTestApi cancel_button(client_view()->cancel_button());
   cancel_button.NotifyClick(mouse_event);
@@ -726,18 +730,18 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_RepeatedClicks) {
   ASSERT_TRUE(kNumClicks * kRepeatedClickInterval > kShortClickInterval);
   base::TimeTicks event_time = kNow;
   for (size_t i = 0; i < kNumClicks; i++) {
-    cancel_button.NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
-                                             gfx::Point(), event_time,
-                                             ui::EF_NONE, ui::EF_NONE));
+    cancel_button.NotifyClick(
+        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                       event_time, ui::EF_NONE, ui::EF_NONE));
     EXPECT_FALSE(widget()->IsClosed());
     event_time += kRepeatedClickInterval;
   }
 
   // Sufficient time passed, events are now allowed.
   event_time += kShortClickInterval;
-  cancel_button.NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
-                                           gfx::Point(), event_time,
-                                           ui::EF_NONE, ui::EF_NONE));
+  cancel_button.NotifyClick(
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                     event_time, ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(widget()->IsClosed());
 }
 

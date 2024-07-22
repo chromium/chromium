@@ -89,8 +89,8 @@ class MediaItemUIViewTest : public views::ViewsTestBase {
     fake_screen_.set_cursor_screen_point(
         item_ui_->GetBoundsInScreen().CenterPoint());
 
-    ui::MouseEvent event(ui::ET_MOUSE_ENTERED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(), 0, 0);
+    ui::MouseEvent event(ui::EventType::kMouseEntered, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(), 0, 0);
     item_ui_->OnMouseEntered(event);
   }
 
@@ -100,27 +100,27 @@ class MediaItemUIViewTest : public views::ViewsTestBase {
         container_bounds.bottom_right() + gfx::Vector2d(1, 1);
     fake_screen_.set_cursor_screen_point(point_outside_container);
 
-    ui::MouseEvent event(ui::ET_MOUSE_EXITED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(), 0, 0);
+    ui::MouseEvent event(ui::EventType::kMouseExited, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(), 0, 0);
     item_ui_->OnMouseExited(event);
   }
 
   void SimulateItemUIClicked() {
-    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(), 0, 0);
+    ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(), 0, 0);
     views::test::ButtonTestApi(item_ui_).NotifyClick(event);
   }
 
   void SimulateHeaderClicked() {
-    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(), 0, 0);
+    ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(), 0, 0);
     views::test::ButtonTestApi(GetView()->GetHeaderRowForTesting())
         .NotifyClick(event);
   }
 
   void SimulateDismissButtonClicked() {
-    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(), 0, 0);
+    ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(), 0, 0);
     views::test::ButtonTestApi(GetDismissButton()).NotifyClick(event);
   }
 

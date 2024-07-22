@@ -272,9 +272,9 @@ void TrayBubbleView::RerouteEventHandler::OnEvent(ui::Event* event) {
     return;
   }
 
-  if (event->type() == ui::ET_MOUSE_PRESSED ||
-      event->type() == ui::ET_TOUCH_PRESSED ||
-      event->type() == ui::ET_GESTURE_TAP) {
+  if (event->type() == ui::EventType::kMousePressed ||
+      event->type() == ui::EventType::kTouchPressed ||
+      event->type() == ui::EventType::kGestureTap) {
     tray_bubble_view_->SetCanActivate(true);
   }
 

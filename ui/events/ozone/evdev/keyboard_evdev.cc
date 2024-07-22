@@ -211,8 +211,9 @@ void KeyboardEvdev::DispatchKey(unsigned int key,
     }
   }
 
-  KeyEvent event(down ? ET_KEY_PRESSED : ET_KEY_RELEASED, key_code, dom_code,
-                 flags | modifiers_->GetModifierFlags(), dom_key, timestamp);
+  KeyEvent event(down ? EventType::kKeyPressed : EventType::kKeyReleased,
+                 key_code, dom_code, flags | modifiers_->GetModifierFlags(),
+                 dom_key, timestamp);
   event.set_scan_code(scan_code);
   event.set_source_device_id(device_id);
   callback_.Run(&event);

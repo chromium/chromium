@@ -182,10 +182,10 @@ class TestEventHandler : public ui::EventHandler {
   TestEventHandler() = default;
 
   void OnTouchEvent(ui::TouchEvent* event) override {
-    if (event->type() == ui::ET_TOUCH_PRESSED) {
+    if (event->type() == ui::EventType::kTouchPressed) {
       ++outstanding_touches_;
-    } else if (event->type() == ui::ET_TOUCH_RELEASED ||
-               event->type() == ui::ET_TOUCH_CANCELLED) {
+    } else if (event->type() == ui::EventType::kTouchReleased ||
+               event->type() == ui::EventType::kTouchCancelled) {
       --outstanding_touches_;
     }
   }
@@ -576,7 +576,7 @@ void MenuControllerTest::PressKey(ui::KeyboardCode key_code) {
 }
 
 void MenuControllerTest::DispatchKey(ui::KeyboardCode key_code) {
-  ui::KeyEvent event(ui::EventType::ET_KEY_PRESSED, key_code, 0);
+  ui::KeyEvent event(ui::EventType::kKeyPressed, key_code, 0);
   menu_controller_->OnWillDispatchKeyEvent(&event);
 }
 
@@ -641,7 +641,7 @@ MenuAnchorPosition MenuControllerTest::AdjustAnchorPositionForRtl(
 
 #if defined(USE_AURA)
 void MenuControllerTest::TestAsyncEscapeKey() {
-  ui::KeyEvent event(ui::EventType::ET_KEY_PRESSED, ui::VKEY_ESCAPE, 0);
+  ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE, 0);
   menu_controller_->OnWillDispatchKeyEvent(&event);
 }
 
@@ -1455,9 +1455,9 @@ TEST_F(MenuControllerTest, SelectChildButtonView) {
   // Move a mouse to hot track the |button1|.
   const gfx::Point location = View::ConvertPointToTarget(
       button1, submenu, button1->GetLocalBounds().CenterPoint());
-  ProcessMouseMoved(submenu,
-                    ui::MouseEvent(ui::ET_MOUSE_MOVED, location, location,
-                                   ui::EventTimeForNow(), 0, 0));
+  ProcessMouseMoved(
+      submenu, ui::MouseEvent(ui::EventType::kMouseMoved, location, location,
+                              ui::EventTimeForNow(), 0, 0));
   EXPECT_EQ(button1, hot_button());
   EXPECT_TRUE(button1->IsHotTracked());
 
@@ -1539,9 +1539,9 @@ TEST_F(MenuControllerTest, ChildButtonHotTrackedAfterMouseMove) {
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   const gfx::Point location = View::ConvertPointToTarget(
       button, submenu, button->GetLocalBounds().CenterPoint());
-  ProcessMouseMoved(submenu,
-                    ui::MouseEvent(ui::ET_MOUSE_MOVED, location, location,
-                                   ui::EventTimeForNow(), 0, 0));
+  ProcessMouseMoved(
+      submenu, ui::MouseEvent(ui::EventType::kMouseMoved, location, location,
+                              ui::EventTimeForNow(), 0, 0));
 
   // After the mouse moves to `button`, `button` should be hot tracked.
   EXPECT_EQ(button, hot_button());
@@ -1770,8 +1770,8 @@ TEST_F(MenuControllerTest, HostReceivesInputBeforeDestruction) {
 
   // This should not attempt to access the destroyed MenuController and should
   // not crash.
-  root_view->OnMouseMoved(ui::MouseEvent(ui::ET_MOUSE_MOVED, location, location,
-                                         ui::EventTimeForNow(),
+  root_view->OnMouseMoved(ui::MouseEvent(ui::EventType::kMouseMoved, location,
+                                         location, ui::EventTimeForNow(),
                                          ui::EF_LEFT_MOUSE_BUTTON, 0));
 }
 
@@ -1802,7 +1802,7 @@ TEST_F(MenuControllerTest, PreserveGestureForOwner) {
       submenu->GetLocalBounds().bottom_left() + gfx::Vector2d(0, 10);
   const ui::GestureEvent event(
       location.x(), location.y(), 0, ui::EventTimeForNow(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollBegin));
 
   // Gesture events should not be forwarded if the flag is not set.
   EXPECT_EQ(owner_gesture_count(), 0);
@@ -1815,14 +1815,14 @@ TEST_F(MenuControllerTest, PreserveGestureForOwner) {
   ProcessGestureEvent(submenu, event);
   EXPECT_EQ(owner_gesture_count(), 1);
 
-  const ui::GestureEvent event2(location.x(), location.y(), 0,
-                                ui::EventTimeForNow(),
-                                ui::GestureEventDetails(ui::ET_GESTURE_END));
+  const ui::GestureEvent event2(
+      location.x(), location.y(), 0, ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::EventType::kGestureEnd));
 
   ProcessGestureEvent(submenu, event2);
   EXPECT_EQ(owner_gesture_count(), 2);
 
-  // ET_GESTURE_END resets the |send_gesture_events_to_owner_| flag, so
+  // EventType::kGestureEnd resets the |send_gesture_events_to_owner_| flag, so
   // further gesture events should not be sent to the owner.
   ProcessGestureEvent(submenu, event2);
   EXPECT_EQ(owner_gesture_count(), 2);
@@ -1854,7 +1854,7 @@ TEST_F(MenuControllerTest, ForwardsEventsToNativeViewForGestures) {
       submenu->GetLocalBounds().bottom_left() + gfx::Vector2d(0, 10);
   const ui::GestureEvent event(
       location.x(), location.y(), 0, ui::EventTimeForNow(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollBegin));
 
   // Gesture events should not be forwarded to either the `child_window` or
   // the hosts native window if the flag is not set.
@@ -1871,14 +1871,14 @@ TEST_F(MenuControllerTest, ForwardsEventsToNativeViewForGestures) {
   EXPECT_EQ(0, owner_gesture_count());
   EXPECT_EQ(1, child_delegate.GetGestureCountAndReset());
 
-  const ui::GestureEvent event2(location.x(), location.y(), 0,
-                                ui::EventTimeForNow(),
-                                ui::GestureEventDetails(ui::ET_GESTURE_END));
+  const ui::GestureEvent event2(
+      location.x(), location.y(), 0, ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::EventType::kGestureEnd));
   ProcessGestureEvent(submenu, event2);
   EXPECT_EQ(0, owner_gesture_count());
   EXPECT_EQ(1, child_delegate.GetGestureCountAndReset());
 
-  // ET_GESTURE_END resets the `send_gesture_events_to_owner_` flag, so
+  // EventType::kGestureEnd resets the `send_gesture_events_to_owner_` flag, so
   // further gesture events should not be sent to the `child_window`.
   ProcessGestureEvent(submenu, event2);
   EXPECT_EQ(0, owner_gesture_count());
@@ -1900,7 +1900,7 @@ TEST_F(MenuControllerTest, NoTouchCloseWhenSendingGesturesToOwner) {
   const gfx::Point location =
       submenu->GetLocalBounds().bottom_right() + gfx::Vector2d(1, 1);
   const ui::TouchEvent touch_event(
-      ui::ET_TOUCH_PRESSED, location, ui::EventTimeForNow(),
+      ui::EventType::kTouchPressed, location, ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   ProcessTouchEvent(submenu, touch_event);
 
@@ -1911,7 +1911,7 @@ TEST_F(MenuControllerTest, NoTouchCloseWhenSendingGesturesToOwner) {
   ProcessGestureEvent(
       submenu,
       ui::GestureEvent(location.x(), location.y(), 0, ui::EventTimeForNow(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_END)));
+                       ui::GestureEventDetails(ui::EventType::kGestureEnd)));
 
   // Touch outside again and menu should be closed.
   ProcessTouchEvent(submenu, touch_event);
@@ -1943,7 +1943,7 @@ TEST_F(MenuControllerTest, AsynchronousRepostEvent) {
   // shutdown. This should not crash while attempting to repost the event.
   SetSelectionOnPointerDown(
       submenu,
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, location, location,
+      ui::MouseEvent(ui::EventType::kMousePressed, location, location,
                      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
   views::test::WaitForMenuClosureAnimation();
 
@@ -1970,7 +1970,8 @@ TEST_F(MenuControllerTest, AsynchronousTouchEventRepostEvent) {
       submenu->GetLocalBounds().bottom_right() + gfx::Vector2d(1, 1);
   ProcessTouchEvent(
       submenu,
-      ui::TouchEvent(ui::ET_TOUCH_PRESSED, location, ui::EventTimeForNow(),
+      ui::TouchEvent(ui::EventType::kTouchPressed, location,
+                     ui::EventTimeForNow(),
                      ui::PointerDetails(ui::EventPointerType::kTouch, 0)));
   views::test::WaitForMenuClosureAnimation();
 
@@ -2009,7 +2010,7 @@ TEST_F(MenuControllerTest, AsynchronousRepostEventDeletesController) {
   // shutdown. This should not crash while attempting to repost the event.
   SetSelectionOnPointerDown(
       submenu,
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, location, location,
+      ui::MouseEvent(ui::EventType::kMousePressed, location, location,
                      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
   views::test::WaitForMenuClosureAnimation();
 
@@ -2042,7 +2043,7 @@ TEST_F(MenuControllerTest, AsynchronousGestureDeletesController) {
   ProcessGestureEvent(
       submenu,
       ui::GestureEvent(location.x(), location.y(), 0, ui::EventTimeForNow(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP)));
+                       ui::GestureEventDetails(ui::EventType::kGestureTap)));
   views::test::WaitForMenuClosureAnimation();
 
   // Close to remove observers before test TearDown
@@ -2356,17 +2357,17 @@ TEST_F(MenuControllerTest, MouseAtMenuItemOnShow) {
   // It should be ignored, and selected item shouldn't change.
   SubmenuView* const submenu = menu_item->GetSubmenu();
   View::ConvertPointFromScreen(submenu, &location);
-  ProcessMouseMoved(submenu,
-                    ui::MouseEvent(ui::ET_MOUSE_MOVED, location, location,
-                                   ui::EventTimeForNow(), 0, 0));
+  ProcessMouseMoved(
+      submenu, ui::MouseEvent(ui::EventType::kMouseMoved, location, location,
+                              ui::EventTimeForNow(), 0, 0));
   EXPECT_EQ(0, pending_state_item()->GetCommand());
 
   // Synthesize an event at a slightly different mouse position. It
   // should cause the item under the cursor to be selected.
   location.Offset(0, 1);
-  ProcessMouseMoved(submenu,
-                    ui::MouseEvent(ui::ET_MOUSE_MOVED, location, location,
-                                   ui::EventTimeForNow(), 0, 0));
+  ProcessMouseMoved(
+      submenu, ui::MouseEvent(ui::EventType::kMouseMoved, location, location,
+                              ui::EventTimeForNow(), 0, 0));
   EXPECT_EQ(1, pending_state_item()->GetCommand());
 }
 
@@ -2509,7 +2510,8 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
           View::ConvertPointToScreen(submenu_view, press_location));
   ProcessMousePressed(
       nested_menu_submenu,
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, press_location_for_nested_menu,
+      ui::MouseEvent(ui::EventType::kMousePressed,
+                     press_location_for_nested_menu,
                      press_location_for_nested_menu, ui::EventTimeForNow(),
                      ui::EF_RIGHT_MOUSE_BUTTON, 0));
   EXPECT_EQ(nested_controller_delegate_1->on_menu_closed_called(), 1);
@@ -2520,17 +2522,18 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
   SetState(submenu_item);
   press_location.Offset(-5, 0);
   ProcessMouseDragged(
-      submenu_view,
-      ui::MouseEvent(ui::ET_MOUSE_DRAGGED, press_location, press_location,
-                     ui::EventTimeForNow(), ui::EF_RIGHT_MOUSE_BUTTON, 0));
+      submenu_view, ui::MouseEvent(ui::EventType::kMouseDragged, press_location,
+                                   press_location, ui::EventTimeForNow(),
+                                   ui::EF_RIGHT_MOUSE_BUTTON, 0));
   ASSERT_EQ(menu_delegate()->will_hide_menu_count(), 0);
 
   // Release the mouse in the empty menu item, triggering a context menu
   // request.
   ProcessMouseReleased(
       submenu_view,
-      ui::MouseEvent(ui::ET_MOUSE_RELEASED, press_location, press_location,
-                     ui::EventTimeForNow(), ui::EF_RIGHT_MOUSE_BUTTON, 0));
+      ui::MouseEvent(ui::EventType::kMouseReleased, press_location,
+                     press_location, ui::EventTimeForNow(),
+                     ui::EF_RIGHT_MOUSE_BUTTON, 0));
   EXPECT_EQ(menu_delegate()->show_context_menu_count(), 1);
   EXPECT_EQ(menu_delegate()->show_context_menu_source(), submenu_item);
 
@@ -2566,30 +2569,30 @@ TEST_F(MenuControllerTest, DragFromViewIntoMenuAndExit) {
   const gfx::Point drag_location = first_item->bounds().CenterPoint();
 
   // Begin drag on an external view
-  drag_view->OnMousePressed(
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, press_location, press_location,
-                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+  drag_view->OnMousePressed(ui::MouseEvent(
+      ui::EventType::kMousePressed, press_location, press_location,
+      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
 
   // Drag into a menu item
   ProcessMouseDragged(
       submenu,
-      ui::MouseEvent(ui::ET_MOUSE_DRAGGED, drag_location, drag_location,
+      ui::MouseEvent(ui::EventType::kMouseDragged, drag_location, drag_location,
                      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
   EXPECT_TRUE(first_item->IsSelected());
 
   // Drag out of the menu item
   constexpr gfx::Point kReleaseLocation(200, 50);
   ProcessMouseDragged(
-      submenu,
-      ui::MouseEvent(ui::ET_MOUSE_DRAGGED, kReleaseLocation, kReleaseLocation,
-                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+      submenu, ui::MouseEvent(ui::EventType::kMouseDragged, kReleaseLocation,
+                              kReleaseLocation, ui::EventTimeForNow(),
+                              ui::EF_LEFT_MOUSE_BUTTON, 0));
   EXPECT_FALSE(first_item->IsSelected());
 
   // Complete drag with release
   ProcessMouseReleased(
-      submenu,
-      ui::MouseEvent(ui::ET_MOUSE_RELEASED, kReleaseLocation, kReleaseLocation,
-                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+      submenu, ui::MouseEvent(ui::EventType::kMouseReleased, kReleaseLocation,
+                              kReleaseLocation, ui::EventTimeForNow(),
+                              ui::EF_LEFT_MOUSE_BUTTON, 0));
 }
 
 // Tests that |MenuHost::InitParams| are correctly forwarded to the created
@@ -2730,25 +2733,25 @@ TEST_F(MenuControllerTest, RegisterClickWithChildViews) {
   first_menu_item->AddChildView(std::make_unique<View>());
   const gfx::Point press_location = first_menu_item->bounds().CenterPoint();
   ProcessMousePressed(
-      submenu,
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, press_location, press_location,
-                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+      submenu, ui::MouseEvent(ui::EventType::kMousePressed, press_location,
+                              press_location, ui::EventTimeForNow(),
+                              ui::EF_LEFT_MOUSE_BUTTON, 0));
   ProcessMouseReleased(
-      submenu,
-      ui::MouseEvent(ui::ET_MOUSE_RELEASED, press_location, press_location,
-                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+      submenu, ui::MouseEvent(ui::EventType::kMouseReleased, press_location,
+                              press_location, ui::EventTimeForNow(),
+                              ui::EF_LEFT_MOUSE_BUTTON, 0));
   // No signal when there's a child view and
   // SetTriggerActionWithNonIconChildViews is false.
   EXPECT_EQ(menu_controller_delegate()->on_menu_closed_called(), 0);
   first_menu_item->SetTriggerActionWithNonIconChildViews(true);
   ProcessMousePressed(
-      submenu,
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, press_location, press_location,
-                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+      submenu, ui::MouseEvent(ui::EventType::kMousePressed, press_location,
+                              press_location, ui::EventTimeForNow(),
+                              ui::EF_LEFT_MOUSE_BUTTON, 0));
   ProcessMouseReleased(
-      submenu,
-      ui::MouseEvent(ui::ET_MOUSE_RELEASED, press_location, press_location,
-                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+      submenu, ui::MouseEvent(ui::EventType::kMouseReleased, press_location,
+                              press_location, ui::EventTimeForNow(),
+                              ui::EF_LEFT_MOUSE_BUTTON, 0));
   // We should receive a signal to close the menu when
   // SetTriggerActionWithNonIconChildViews is true.
   EXPECT_EQ(menu_controller_delegate()->on_menu_closed_called(), 1);
@@ -2784,7 +2787,7 @@ TEST_F(MenuControllerTest, NoUseAfterFreeWhenMenuCanceledOnMousePress) {
   const gfx::Point location = canceling_view->bounds().CenterPoint();
   EXPECT_TRUE(ProcessMousePressed(
       submenu,
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, location, location,
+      ui::MouseEvent(ui::EventType::kMousePressed, location, location,
                      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0)));
 
   // Close to remove observers before test TearDown.
@@ -3100,16 +3103,17 @@ TEST_F(MenuControllerTest, BrowserHotkeysCancelMenusAndAreRedispatched) {
                          MenuAnchorPosition::kTopLeft, false, false);
 
   int options = ui::EF_COMMAND_DOWN;
-  ui::KeyEvent press_cmd(ui::ET_KEY_PRESSED, ui::VKEY_COMMAND, options);
+  ui::KeyEvent press_cmd(ui::EventType::kKeyPressed, ui::VKEY_COMMAND, options);
   menu_controller()->OnWillDispatchKeyEvent(&press_cmd);
   EXPECT_TRUE(showing());  // ensure the command press itself doesn't cancel
 
   options |= ui::EF_CONTROL_DOWN;
-  ui::KeyEvent press_ctrl(ui::ET_KEY_PRESSED, ui::VKEY_CONTROL, options);
+  ui::KeyEvent press_ctrl(ui::EventType::kKeyPressed, ui::VKEY_CONTROL,
+                          options);
   menu_controller()->OnWillDispatchKeyEvent(&press_ctrl);
   EXPECT_TRUE(showing());
 
-  ui::KeyEvent press_f(ui::ET_KEY_PRESSED, ui::VKEY_F, options);
+  ui::KeyEvent press_f(ui::EventType::kKeyPressed, ui::VKEY_F, options);
   menu_controller()->OnWillDispatchKeyEvent(&press_f);
   EXPECT_FALSE(showing());
   EXPECT_FALSE(press_f.handled());
@@ -3158,13 +3162,13 @@ TEST_F(ExecuteCommandWithoutClosingMenuTest, OnClick) {
   const MenuItemView* const menu_item_view = submenu->GetMenuItemAt(0);
   const gfx::Point press_location = menu_item_view->bounds().CenterPoint();
   ProcessMousePressed(
-      submenu,
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, press_location, press_location,
-                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+      submenu, ui::MouseEvent(ui::EventType::kMousePressed, press_location,
+                              press_location, ui::EventTimeForNow(),
+                              ui::EF_LEFT_MOUSE_BUTTON, 0));
   ProcessMouseReleased(
-      submenu,
-      ui::MouseEvent(ui::ET_MOUSE_RELEASED, press_location, press_location,
-                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+      submenu, ui::MouseEvent(ui::EventType::kMouseReleased, press_location,
+                              press_location, ui::EventTimeForNow(),
+                              ui::EF_LEFT_MOUSE_BUTTON, 0));
 
   EXPECT_EQ(0, menu_controller_delegate()->on_menu_closed_called());
   EXPECT_TRUE(showing());
@@ -3179,9 +3183,9 @@ TEST_F(ExecuteCommandWithoutClosingMenuTest, OnTap) {
   const MenuItemView* const menu_item_view = submenu->GetMenuItemAt(0);
   const gfx::Point tap_location = menu_item_view->bounds().CenterPoint();
   ProcessGestureEvent(
-      submenu, ui::GestureEvent(tap_location.x(), tap_location.y(), 0,
-                                ui::EventTimeForNow(),
-                                ui::GestureEventDetails(ui::ET_GESTURE_TAP)));
+      submenu, ui::GestureEvent(
+                   tap_location.x(), tap_location.y(), 0, ui::EventTimeForNow(),
+                   ui::GestureEventDetails(ui::EventType::kGestureTap)));
 
   EXPECT_EQ(0, menu_controller_delegate()->on_menu_closed_called());
   EXPECT_TRUE(showing());

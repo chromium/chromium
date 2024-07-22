@@ -149,7 +149,7 @@ class ImeListItemView : public views::Button {
   void PerformAction(const ui::Event& event) {
     ime_list_view_->set_last_item_selected_with_keyboard(
         ime_list_view_->should_focus_ime_after_selection_with_keyboard() &&
-        event.type() == ui::EventType::ET_KEY_PRESSED);
+        event.type() == ui::EventType::kKeyPressed);
     ime_list_view_->HandleViewClicked(this);
   }
 

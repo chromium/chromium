@@ -101,7 +101,7 @@ CastDialogModel CreateModelWithSinks(std::vector<UIMediaSink> sinks) {
 }
 
 ui::MouseEvent CreateMouseEvent() {
-  return ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),
+  return ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(0, 0),
                         gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
 }
 
@@ -173,7 +173,7 @@ class CastDialogViewTest : public ChromeViewsTestBase {
   }
 
   void NotifyButtonOfClick(views::Button* button) {
-    ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),
+    ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(0, 0),
                                gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
     views::test::ButtonTestApi(button).NotifyClick(mouse_event);
     // The request to cast/stop is sent asynchronously, so we must call

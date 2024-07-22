@@ -187,13 +187,16 @@ class NotificationGroupingControllerTest : public AshTestBase {
 
   void GenerateSwipe(int swipe_amount,
                      views::SlideOutController* slide_out_controller) {
-    GenerateGestureEvent(ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN),
-                         slide_out_controller);
     GenerateGestureEvent(
-        ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, swipe_amount, 0),
+        ui::GestureEventDetails(ui::EventType::kGestureScrollBegin),
         slide_out_controller);
-    GenerateGestureEvent(ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END),
-                         slide_out_controller);
+    GenerateGestureEvent(
+        ui::GestureEventDetails(ui::EventType::kGestureScrollUpdate,
+                                swipe_amount, 0),
+        slide_out_controller);
+    GenerateGestureEvent(
+        ui::GestureEventDetails(ui::EventType::kGestureScrollEnd),
+        slide_out_controller);
   }
 
   views::SlideOutController* GetSlideOutController(AshNotificationView* view) {

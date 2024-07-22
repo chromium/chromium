@@ -63,7 +63,7 @@ TEST_F(PickerItemWithSubmenuViewTest, ShowsSubmenuOnMouseEnter) {
   widget->Show();
 
   item_view->OnMouseEntered(ui::MouseEvent(
-      ui::ET_MOUSE_MOVED, gfx::PointF(), gfx::PointF(),
+      ui::EventType::kMouseMoved, gfx::PointF(), gfx::PointF(),
       /*time_stamp=*/{}, ui::EF_IS_SYNTHESIZED, ui::EF_LEFT_MOUSE_BUTTON));
 
   views::test::WidgetVisibleWaiter(submenu_controller.widget_for_testing())

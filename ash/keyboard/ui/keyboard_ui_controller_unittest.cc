@@ -77,8 +77,8 @@ class TestFocusController : public ui::EventHandler {
   // Overridden from ui::EventHandler:
   void OnEvent(ui::Event* event) override {
     auto* target = static_cast<aura::Window*>(event->target());
-    if (event->type() == ui::ET_MOUSE_PRESSED ||
-        event->type() == ui::ET_TOUCH_PRESSED) {
+    if (event->type() == ui::EventType::kMousePressed ||
+        event->type() == ui::EventType::kTouchPressed) {
       aura::client::GetFocusClient(target)->FocusWindow(target);
     }
   }

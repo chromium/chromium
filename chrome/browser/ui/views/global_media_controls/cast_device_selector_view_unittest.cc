@@ -101,7 +101,7 @@ TEST_F(CastDeviceSelectorViewTest, CloseButtonCheck) {
   EXPECT_TRUE(view()->GetCloseButtonForTesting()->GetVisible());
 
   views::test::ButtonTestApi(view()->GetCloseButtonForTesting())
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   EXPECT_FALSE(view()->GetVisible());
 
@@ -120,7 +120,7 @@ TEST_F(CastDeviceSelectorViewTest, DeviceEntryCheck) {
        view()->GetDeviceContainerViewForTesting()->children()) {
     EXPECT_CALL(*device_list_host(), SelectDevice(kTestDeviceId));
     views::test::ButtonTestApi(static_cast<views::Button*>(child))
-        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(), 0, 0));
   }
 }

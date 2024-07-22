@@ -39,8 +39,9 @@ class MediaNotificationVolumeSliderViewTest : public views::ViewsTestBase {
   }
 
   void SimulateMousePressed(const gfx::Point& point) {
-    volume_slider_->OnMousePressed(ui::MouseEvent(
-        ui::ET_MOUSE_PRESSED, point, point, ui::EventTimeForNow(), 0, 0));
+    volume_slider_->OnMousePressed(ui::MouseEvent(ui::EventType::kMousePressed,
+                                                  point, point,
+                                                  ui::EventTimeForNow(), 0, 0));
   }
 
   void SimulateMouseWheelEvent(const gfx::Vector2d& vector) {
@@ -49,7 +50,8 @@ class MediaNotificationVolumeSliderViewTest : public views::ViewsTestBase {
   }
 
   void SimulateKeyEvent(const ui::KeyboardCode key_code) {
-    volume_slider_->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, key_code, 0));
+    volume_slider_->OnKeyPressed(
+        ui::KeyEvent(ui::EventType::kKeyPressed, key_code, 0));
   }
 
   MediaNotificationVolumeSliderView* volume_slider() { return volume_slider_; }

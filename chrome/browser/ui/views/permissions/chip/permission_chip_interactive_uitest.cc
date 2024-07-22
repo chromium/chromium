@@ -180,14 +180,14 @@ class PermissionChipInteractiveUITest : public InProcessBrowserTest {
     ASSERT_FALSE(GetChipController()->GetBubbleWidget());
 
     views::test::ButtonTestApi(chip).NotifyClick(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
     base::RunLoop().RunUntilIdle();
   }
 
   void ClickOnLock() {
     views::test::ButtonTestApi(GetLocationBarView()->location_icon_view())
-        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(),
                                     ui::EF_LEFT_MOUSE_BUTTON, 0));
     base::RunLoop().RunUntilIdle();
@@ -553,7 +553,7 @@ class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveUITest {
 
   void PerformMouseClickOnView(views::Button* button) {
     views::test::ButtonTestApi(button).NotifyClick(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
   }
 

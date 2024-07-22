@@ -35,9 +35,9 @@ class MenuEntryViewTest : public exo::test::ExoTestBase {
     menu_entry_view_ = display_overlay_controller_->GetMenuEntryView();
     local_location_ = menu_entry_view_->bounds().CenterPoint();
     menu_entry_view_->OnMousePressed(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, local_location_, local_location_,
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                       ui::EF_LEFT_MOUSE_BUTTON));
+        ui::MouseEvent(ui::EventType::kMousePressed, local_location_,
+                       local_location_, ui::EventTimeForNow(),
+                       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   }
 
   void TouchPressAtMenuEntryView() {
@@ -46,48 +46,49 @@ class MenuEntryViewTest : public exo::test::ExoTestBase {
     auto scroll_begin = ui::GestureEvent(
         local_location_.x(), local_location_.y(), ui::EF_NONE,
         ui::EventTimeForNow(),
-        ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 0, 0));
+        ui::GestureEventDetails(ui::EventType::kGestureScrollBegin, 0, 0));
     menu_entry_view_->OnGestureEvent(&scroll_begin);
   }
 
   void MouseDragMenuEntryViewBy(const gfx::Vector2d& move) {
     menu_entry_view_ = display_overlay_controller_->GetMenuEntryView();
     local_location_ += move;
-    menu_entry_view_->OnMouseDragged(
-        ui::MouseEvent(ui::ET_MOUSE_DRAGGED, local_location_, local_location_,
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+    menu_entry_view_->OnMouseDragged(ui::MouseEvent(
+        ui::EventType::kMouseDragged, local_location_, local_location_,
+        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
   }
 
   void TouchMoveAtMenuEntryViewBy(const gfx::Vector2d& move) {
     local_location_ += move;
-    auto scroll_begin =
-        ui::GestureEvent(local_location_.x(), local_location_.y(), ui::EF_NONE,
-                         ui::EventTimeForNow(),
-                         ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE,
-                                                 move.x(), move.y()));
+    auto scroll_begin = ui::GestureEvent(
+        local_location_.x(), local_location_.y(), ui::EF_NONE,
+        ui::EventTimeForNow(),
+        ui::GestureEventDetails(ui::EventType::kGestureScrollUpdate, move.x(),
+                                move.y()));
     menu_entry_view_->OnGestureEvent(&scroll_begin);
   }
 
   void ReleaseLeftMouseAtMenuEntryView() {
     menu_entry_view_ = display_overlay_controller_->GetMenuEntryView();
     menu_entry_view_->OnMouseReleased(
-        ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                       ui::EF_LEFT_MOUSE_BUTTON));
+        ui::MouseEvent(ui::EventType::kMouseReleased, gfx::Point(),
+                       gfx::Point(), ui::EventTimeForNow(),
+                       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   }
 
   void TouchReleaseAtMenuEntryView() {
-    auto scroll_end =
-        ui::GestureEvent(local_location_.x(), local_location_.y(), ui::EF_NONE,
-                         ui::EventTimeForNow(),
-                         ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
+    auto scroll_end = ui::GestureEvent(
+        local_location_.x(), local_location_.y(), ui::EF_NONE,
+        ui::EventTimeForNow(),
+        ui::GestureEventDetails(ui::EventType::kGestureScrollEnd));
     menu_entry_view_->OnGestureEvent(&scroll_end);
   }
 
   void TapAtMenuEntryView() {
-    auto scroll_end = ui::GestureEvent(
-        local_location_.x(), local_location_.y(), ui::EF_NONE,
-        ui::EventTimeForNow(), ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+    auto scroll_end =
+        ui::GestureEvent(local_location_.x(), local_location_.y(), ui::EF_NONE,
+                         ui::EventTimeForNow(),
+                         ui::GestureEventDetails(ui::EventType::kGestureTap));
     menu_entry_view_->OnGestureEvent(&scroll_end);
   }
 
@@ -201,9 +202,9 @@ TEST_F(MenuEntryViewTest, TestArrowKeyMove) {
   // Arrow key left single press & release.
   auto updated_pos = menu_entry_view_->origin();
   menu_entry_view_->OnKeyPressed(
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_LEFT, ui::EF_NONE));
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_LEFT, ui::EF_NONE));
   menu_entry_view_->OnKeyReleased(
-      ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_LEFT, ui::EF_NONE));
+      ui::KeyEvent(ui::EventType::kKeyReleased, ui::VKEY_LEFT, ui::EF_NONE));
   auto move_left = gfx::Vector2d(-kArrowKeyMoveDistance, 0);
   updated_pos += move_left;
   EXPECT_EQ(updated_pos, menu_entry_view_->origin());
@@ -211,9 +212,9 @@ TEST_F(MenuEntryViewTest, TestArrowKeyMove) {
   // Arrow key down single press & release.
   updated_pos = menu_entry_view_->origin();
   menu_entry_view_->OnKeyPressed(
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_DOWN, ui::EF_NONE));
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_DOWN, ui::EF_NONE));
   menu_entry_view_->OnKeyReleased(
-      ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_DOWN, ui::EF_NONE));
+      ui::KeyEvent(ui::EventType::kKeyReleased, ui::VKEY_DOWN, ui::EF_NONE));
   auto move_down = gfx::Vector2d(0, kArrowKeyMoveDistance);
   updated_pos += move_down;
   EXPECT_EQ(updated_pos, menu_entry_view_->origin());
@@ -224,11 +225,11 @@ TEST_F(MenuEntryViewTest, TestArrowKeyMove) {
   auto move_right = gfx::Vector2d(kArrowKeyMoveDistance, 0);
   for (int i = 0; i < key_press_times; i++) {
     menu_entry_view_->OnKeyPressed(
-        ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RIGHT, ui::EF_NONE));
+        ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RIGHT, ui::EF_NONE));
     updated_pos += move_right;
   }
   menu_entry_view_->OnKeyReleased(
-      ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_RIGHT, ui::EF_NONE));
+      ui::KeyEvent(ui::EventType::kKeyReleased, ui::VKEY_RIGHT, ui::EF_NONE));
   EXPECT_EQ(updated_pos, menu_entry_view_->origin());
 }
 

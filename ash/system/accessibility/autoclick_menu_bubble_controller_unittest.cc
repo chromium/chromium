@@ -34,7 +34,7 @@ const int kScrollViewBoundsRectBuffer = 18;
 
 ui::GestureEvent CreateTapEvent() {
   return ui::GestureEvent(0, 0, 0, base::TimeTicks(),
-                          ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+                          ui::GestureEventDetails(ui::EventType::kGestureTap));
 }
 
 }  // namespace

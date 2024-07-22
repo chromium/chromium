@@ -757,7 +757,7 @@ TEST_P(OverviewSessionTest, ClickOnWindowDuringTouch) {
 TEST_P(OverviewSessionTest, WindowDoesNotReceiveEvents) {
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(400, 400)));
   const gfx::Point point1 = window->bounds().CenterPoint();
-  ui::MouseEvent event1(ui::ET_MOUSE_PRESSED, point1, point1,
+  ui::MouseEvent event1(ui::EventType::kMousePressed, point1, point1,
                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
 
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
@@ -774,7 +774,7 @@ TEST_P(OverviewSessionTest, WindowDoesNotReceiveEvents) {
   // The bounds have changed, take that into account.
   const gfx::Point point2 =
       GetTransformedBoundsInRootWindow(window.get()).CenterPoint();
-  ui::MouseEvent event2(ui::ET_MOUSE_PRESSED, point2, point2,
+  ui::MouseEvent event2(ui::EventType::kMousePressed, point2, point2,
                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
 
   // Now the transparent window should be intercepting this event.
@@ -2953,7 +2953,7 @@ TEST_P(OverviewSessionTest, DraggingWithTwoFingers) {
   // Dispatches a long press event at the event generators current location.
   // Long press is one way to start dragging in splitview.
   auto dispatch_long_press = [this]() {
-    ui::GestureEventDetails event_details(ui::ET_GESTURE_LONG_PRESS);
+    ui::GestureEventDetails event_details(ui::EventType::kGestureLongPress);
     const gfx::Point location = GetEventGenerator()->current_screen_location();
     ui::GestureEvent long_press(location.x(), location.y(), 0,
                                 ui::EventTimeForNow(), event_details);
@@ -3139,8 +3139,9 @@ class TestEventHandler : public ui::EventHandler {
   ~TestEventHandler() override = default;
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override {
-    if (event->type() != ui::ET_KEY_PRESSED)
+    if (event->type() != ui::EventType::kKeyPressed) {
       return;
+    }
 
     has_seen_event_ = true;
     event->SetHandled();
@@ -5902,7 +5903,7 @@ class TabletModeOverviewSessionTest : public OverviewTestBase {
         gfx::ToRoundedPoint(item->target_bounds().CenterPoint());
     ui::GestureEvent long_press(
         point.x(), point.y(), 0, base::TimeTicks::Now(),
-        ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+        ui::GestureEventDetails(ui::EventType::kGestureLongPress));
     GetEventGenerator()->Dispatch(&long_press);
   }
 
@@ -6049,8 +6050,8 @@ TEST_F(TabletModeOverviewSessionTest, WindowDestroyWhileScrolling) {
   const int y = 200;
   base::TimeTicks timestamp = ui::EventTimeForNow();
   auto* event_generator = GetEventGenerator();
-  ui::TouchEvent press(ui::ET_TOUCH_PRESSED, gfx::Point(x, y), timestamp,
-                       ui::PointerDetails());
+  ui::TouchEvent press(ui::EventType::kTouchPressed, gfx::Point(x, y),
+                       timestamp, ui::PointerDetails());
   event_generator->Dispatch(&press);
 
   // Scroll a bit to the left, so the overview items that are offscreen on the
@@ -6058,7 +6059,7 @@ TEST_F(TabletModeOverviewSessionTest, WindowDestroyWhileScrolling) {
   const base::TimeDelta step_delay = base::Milliseconds(5);
   for (int i = 0; i < 10; ++i) {
     timestamp += step_delay;
-    ui::TouchEvent move(ui::ET_TOUCH_MOVED, gfx::Point(x, y), timestamp,
+    ui::TouchEvent move(ui::EventType::kTouchMoved, gfx::Point(x, y), timestamp,
                         ui::PointerDetails());
     event_generator->Dispatch(&move);
     x -= 5;
@@ -6070,14 +6071,14 @@ TEST_F(TabletModeOverviewSessionTest, WindowDestroyWhileScrolling) {
   // Continue scrolling and then end the scroll. There should be no crash.
   for (int i = 0; i < 10; ++i) {
     timestamp += step_delay;
-    ui::TouchEvent move(ui::ET_TOUCH_MOVED, gfx::Point(x, y), timestamp,
+    ui::TouchEvent move(ui::EventType::kTouchMoved, gfx::Point(x, y), timestamp,
                         ui::PointerDetails());
     event_generator->Dispatch(&move);
     x -= 5;
   }
 
-  ui::TouchEvent release(ui::ET_TOUCH_RELEASED, gfx::Point(x, y), timestamp,
-                         ui::PointerDetails());
+  ui::TouchEvent release(ui::EventType::kTouchReleased, gfx::Point(x, y),
+                         timestamp, ui::PointerDetails());
   event_generator->Dispatch(&release);
 }
 
@@ -6166,9 +6167,9 @@ TEST_F(TabletModeOverviewSessionTest, StackingOrderAfterGestureEvent) {
   auto* item = GetOverviewItemForWindow(window2.get());
   const gfx::PointF item_center = item->target_bounds().CenterPoint();
   DispatchLongPress(item);
-  ui::GestureEvent gesture_end(item_center.x(), item_center.y(), 0,
-                               ui::EventTimeForNow(),
-                               ui::GestureEventDetails(ui::ET_GESTURE_END));
+  ui::GestureEvent gesture_end(
+      item_center.x(), item_center.y(), 0, ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::EventType::kGestureEnd));
   item->HandleGestureEvent(&gesture_end, item);
   EXPECT_TRUE(window_util::IsStackedBelow(window2.get(), window1.get()));
 
@@ -9840,7 +9841,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
           .CenterPoint());
   generator->PressTouch();
   // Drag the divider by an amount big enough to be considered
-  // ET_GESTURE_SCROLL_BEGIN.
+  // EventType::kGestureScrollBegin.
   generator->MoveTouchBy(7, 0);
   EXPECT_TRUE(snapped_window_state_delegate->drag_in_progress());
   EXPECT_NE(nullptr, snapped_window_state->drag_details());

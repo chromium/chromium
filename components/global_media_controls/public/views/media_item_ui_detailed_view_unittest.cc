@@ -182,7 +182,7 @@ class MediaItemUIDetailedViewTest : public views::ViewsTestBase {
     EXPECT_TRUE(button && button->GetVisible());
 
     views::test::ButtonTestApi(button).NotifyClick(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), 0, 0));
   }
 
@@ -233,7 +233,7 @@ TEST_F(MediaItemUIDetailedViewTest, DeviceSelectorViewCheck) {
       .WillOnce(Return(false))
       .WillOnce(Return(true));
   views::test::ButtonTestApi(view()->GetStartCastingButtonForTesting())
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   EXPECT_TRUE(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible());
 
@@ -243,7 +243,7 @@ TEST_F(MediaItemUIDetailedViewTest, DeviceSelectorViewCheck) {
       .WillOnce(Return(true))
       .WillOnce(Return(false));
   views::test::ButtonTestApi(view()->GetStartCastingButtonForTesting())
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   EXPECT_FALSE(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible());
 }
@@ -444,9 +444,9 @@ TEST_F(MediaItemUIDetailedViewTest, ProgressViewCheck) {
               0.5, 0.001);
 
   // Check that key event on the view can seek the progress.
-  ui::KeyEvent key_event{ui::ET_KEY_PRESSED,       ui::VKEY_RIGHT,
-                         ui::DomCode::ARROW_RIGHT, ui::EF_NONE,
-                         ui::DomKey::ARROW_RIGHT,  ui::EventTimeForNow()};
+  ui::KeyEvent key_event{ui::EventType::kKeyPressed, ui::VKEY_RIGHT,
+                         ui::DomCode::ARROW_RIGHT,   ui::EF_NONE,
+                         ui::DomKey::ARROW_RIGHT,    ui::EventTimeForNow()};
   EXPECT_CALL(item(), SeekTo(testing::_));
   view->OnKeyPressed(key_event);
 }
@@ -495,7 +495,7 @@ TEST_F(MediaItemUIDetailedViewTest, ChapterList) {
 
   // Click the start chapter list button to show the chapters.
   views::test::ButtonTestApi(view->GetChapterListButtonForTesting())
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   EXPECT_TRUE(view->GetChapterListViewForTesting()->GetVisible());
   EXPECT_EQ(view->GetTitleLabelForTesting()->GetText(), metadata.title);
@@ -520,13 +520,13 @@ TEST_F(MediaItemUIDetailedViewTest, ChapterList) {
   // Clicking on a chapter item should seek to the start time of that chapter.
   EXPECT_CALL(item(), SeekTo(base::Seconds(10)));
   views::test::ButtonTestApi(view->GetChaptersForTesting().find(0)->second)
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   testing::Mock::VerifyAndClearExpectations(this);
 
   EXPECT_CALL(item(), SeekTo(base::Seconds(20)));
   views::test::ButtonTestApi(view->GetChaptersForTesting().find(1)->second)
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   testing::Mock::VerifyAndClearExpectations(this);
 
@@ -534,14 +534,14 @@ TEST_F(MediaItemUIDetailedViewTest, ChapterList) {
   view->UpdateDeviceSelectorAvailability(/*has_devices=*/true);
   EXPECT_TRUE(view->GetStartCastingButtonForTesting()->GetVisible());
   views::test::ButtonTestApi(view->GetStartCastingButtonForTesting())
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   EXPECT_TRUE(view->GetChapterListButtonForTesting()->GetVisible());
   EXPECT_FALSE(view->GetChapterListViewForTesting()->GetVisible());
 
   // Showing the chapter list view should also hide the cast view.
   views::test::ButtonTestApi(view->GetChapterListButtonForTesting())
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   EXPECT_FALSE(view->GetDeviceSelectorForTesting()->IsDeviceSelectorExpanded());
   EXPECT_TRUE(view->GetChapterListViewForTesting()->GetVisible());
@@ -590,7 +590,7 @@ TEST_F(MediaItemUIDetailedViewTest, ShouldNotShowDeviceSelectorViewForAsh) {
       .WillOnce(Return(false))
       .WillOnce(Return(true));
   views::test::ButtonTestApi(start_casting_button)
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   EXPECT_FALSE(separator->GetVisible());
 
@@ -600,7 +600,7 @@ TEST_F(MediaItemUIDetailedViewTest, ShouldNotShowDeviceSelectorViewForAsh) {
       .WillOnce(Return(true))
       .WillOnce(Return(false));
   views::test::ButtonTestApi(start_casting_button)
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   EXPECT_FALSE(separator->GetVisible());
 }
@@ -627,7 +627,7 @@ TEST_F(MediaItemUIDetailedViewTest, Forward10ButtonClick) {
       view->GetActionButtonForTesting(MediaSessionAction::kSeekForward);
   EXPECT_TRUE(button && button->GetVisible());
   views::test::ButtonTestApi(button).NotifyClick(
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                      ui::EventTimeForNow(), 0, 0));
 }
 
@@ -653,7 +653,7 @@ TEST_F(MediaItemUIDetailedViewTest, Backward10ButtonClick) {
       view->GetActionButtonForTesting(MediaSessionAction::kSeekBackward);
   EXPECT_TRUE(button && button->GetVisible());
   views::test::ButtonTestApi(button).NotifyClick(
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                      ui::EventTimeForNow(), 0, 0));
   testing::Mock::VerifyAndClearExpectations(this);
 }

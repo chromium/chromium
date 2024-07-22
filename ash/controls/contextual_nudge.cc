@@ -106,7 +106,7 @@ ui::LayerType ContextualNudge::GetLayerType() const {
 }
 
 void ContextualNudge::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_TAP && tap_callback_) {
+  if (event->type() == ui::EventType::kGestureTap && tap_callback_) {
     event->StopPropagation();
     tap_callback_.Run();
     return;

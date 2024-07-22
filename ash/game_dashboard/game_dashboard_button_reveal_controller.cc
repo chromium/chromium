@@ -74,8 +74,9 @@ void GameDashboardButtonRevealController::UpdateVisibility(
 
 void GameDashboardButtonRevealController::OnMouseEvent(ui::MouseEvent* event) {
   const auto event_type = event->type();
-  if (event_type != ui::ET_MOUSE_MOVED && event_type != ui::ET_MOUSE_RELEASED &&
-      event_type != ui::ET_MOUSE_CAPTURE_CHANGED) {
+  if (event_type != ui::EventType::kMouseMoved &&
+      event_type != ui::EventType::kMouseReleased &&
+      event_type != ui::EventType::kMouseCaptureChanged) {
     return;
   }
 
@@ -105,11 +106,11 @@ void GameDashboardButtonRevealController::OnMouseEvent(ui::MouseEvent* event) {
 void GameDashboardButtonRevealController::OnGestureEvent(
     ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       // Record the start location of a scroll gesture.
       gesture_scroll_start_pos_ = event->location();
       return;
-    case ui::ET_GESTURE_SCROLL_UPDATE: {
+    case ui::EventType::kGestureScrollUpdate: {
       if (!gesture_scroll_start_pos_.has_value()) {
         return;
       }
@@ -127,8 +128,8 @@ void GameDashboardButtonRevealController::OnGestureEvent(
       gesture_scroll_start_pos_.reset();
       return;
     }
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kGestureScrollEnd:
+    case ui::EventType::kScrollFlingStart:
       gesture_scroll_start_pos_.reset();
       return;
     default:
@@ -139,7 +140,8 @@ void GameDashboardButtonRevealController::OnGestureEvent(
 void GameDashboardButtonRevealController::OnTouchEvent(ui::TouchEvent* event) {
   // If the main menu is open, or the Game Dashboard button is not visible, do
   // nothing.
-  if (event->type() != ui::ET_TOUCH_PRESSED || context_->IsMainMenuOpen() ||
+  if (event->type() != ui::EventType::kTouchPressed ||
+      context_->IsMainMenuOpen() ||
       !context_->game_dashboard_button_widget()->IsVisible()) {
     return;
   }

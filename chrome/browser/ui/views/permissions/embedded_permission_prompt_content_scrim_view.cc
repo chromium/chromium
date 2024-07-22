@@ -65,8 +65,8 @@ bool EmbeddedPermissionPromptContentScrimView::OnMousePressed(
 
 void EmbeddedPermissionPromptContentScrimView::OnGestureEvent(
     ui::GestureEvent* event) {
-  if (delegate_ && (event->type() == ui::ET_GESTURE_TAP ||
-                    event->type() == ui::ET_GESTURE_DOUBLE_TAP)) {
+  if (delegate_ && (event->type() == ui::EventType::kGestureTap ||
+                    event->type() == ui::EventType::kGestureDoubleTap)) {
     delegate_->DismissScrim();
   }
 }

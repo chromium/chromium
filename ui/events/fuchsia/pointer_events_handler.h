@@ -110,11 +110,11 @@ class EVENTS_EXPORT PointerEventsHandler {
   // 11, as defined in ui/events/event_constants.h.
   //
   // The high level algorithm for any given mouse and button is:
-  //   if !mouse_down[id] && !button then: change = ET_MOUSE_MOVED
-  //   if !mouse_down[id] &&  button then: change = ET_MOUSE_PRESSED;
+  //   if !mouse_down[id] && !button then: change = EventType::kMouseMoved
+  //   if !mouse_down[id] &&  button then: change = EventType::kMousePressed;
   //       mouse_down[id] |= button // sets button bit to 1
-  //   if  mouse_down[id] &&  button then: change = ET_MOUSE_DRAGGED
-  //   if  mouse_down[id] && !button then: change = ET_MOUSE_RELEASED;
+  //   if  mouse_down[id] &&  button then: change = EventType::kMouseDragged
+  //   if  mouse_down[id] && !button then: change = EventType::kMouseReleased;
   //       mouse_down[id] ^= button // sets button bit to 0
   base::flat_map<MouseDeviceId, /*pressed_buttons_flags=*/int> mouse_down_;
 

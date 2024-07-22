@@ -49,7 +49,7 @@ gfx::Size DeskSwitchButton::CalculatePreferredSize(
 }
 
 void DeskSwitchButton::OnMouseEvent(ui::MouseEvent* event) {
-  if (GetEnabled() && event->type() == ui::ET_MOUSE_PRESSED &&
+  if (GetEnabled() && event->type() == ui::EventType::kMousePressed &&
       event->IsOnlyRightMouseButton()) {
     desk_button_container_->MaybeShowContextMenu(this, event);
     return;
@@ -59,8 +59,8 @@ void DeskSwitchButton::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void DeskSwitchButton::OnGestureEvent(ui::GestureEvent* event) {
-  if (GetEnabled() && (event->type() == ui::ET_GESTURE_LONG_PRESS ||
-                       event->type() == ui::ET_GESTURE_LONG_TAP)) {
+  if (GetEnabled() && (event->type() == ui::EventType::kGestureLongPress ||
+                       event->type() == ui::EventType::kGestureLongTap)) {
     desk_button_container_->MaybeShowContextMenu(this, event);
     return;
   }

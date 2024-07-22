@@ -130,9 +130,9 @@ TEST_F(CaptureControllerTest, ResetMouseEventHandlerOnCapture) {
 
   // Make a synthesized mouse down event. Ensure that the WindowEventDispatcher
   // will dispatch further mouse events to |w1|.
-  ui::MouseEvent mouse_pressed_event(ui::ET_MOUSE_PRESSED, gfx::Point(5, 5),
-                                     gfx::Point(5, 5), ui::EventTimeForNow(), 0,
-                                     0);
+  ui::MouseEvent mouse_pressed_event(ui::EventType::kMousePressed,
+                                     gfx::Point(5, 5), gfx::Point(5, 5),
+                                     ui::EventTimeForNow(), 0, 0);
   DispatchEventUsingWindowDispatcher(&mouse_pressed_event);
   EXPECT_EQ(w1.get(), host()->dispatcher()->mouse_pressed_handler());
 
@@ -249,8 +249,9 @@ class GestureEventDeleteWindowOnScrollEnd
   // aura::test::TestWindowDelegate:
   void OnGestureEvent(ui::GestureEvent* gesture) override {
     TestWindowDelegate::OnGestureEvent(gesture);
-    if (gesture->type() != ui::ET_GESTURE_SCROLL_END)
+    if (gesture->type() != ui::EventType::kGestureScrollEnd) {
       return;
+    }
     window_.reset();
   }
 
@@ -295,8 +296,8 @@ TEST_F(CaptureControllerTest, GestureResetWithCapture) {
   EXPECT_EQ(nullptr, capture_client->GetCaptureWindow());
 
   // Send a mouse click. We no longer hold capture so this should not crash.
-  ui::MouseEvent mouse_press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             base::TimeTicks(), 0, 0);
+  ui::MouseEvent mouse_press(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), base::TimeTicks(), 0, 0);
   DispatchEventUsingWindowDispatcher(&mouse_press);
 }
 

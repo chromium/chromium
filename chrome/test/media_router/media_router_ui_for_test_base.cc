@@ -23,9 +23,9 @@ void MediaRouterUiForTestBase::TearDown() {
 
 // static
 void MediaRouterUiForTestBase::ClickOnButton(views::Button* button) {
-  views::test::ButtonTestApi(button).NotifyClick(
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0), gfx::Point(0, 0),
-                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+  views::test::ButtonTestApi(button).NotifyClick(ui::MouseEvent(
+      ui::EventType::kMousePressed, gfx::Point(0, 0), gfx::Point(0, 0),
+      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
   base::RunLoop().RunUntilIdle();
 }
 

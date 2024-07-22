@@ -225,9 +225,9 @@ void SnapGroup::OnLocatedEvent(ui::LocatedEvent* event) {
     return;
   }
 
-  CHECK(event->type() == ui::ET_MOUSE_DRAGGED ||
-        event->type() == ui::ET_TOUCH_MOVED ||
-        event->type() == ui::ET_GESTURE_SCROLL_UPDATE);
+  CHECK(event->type() == ui::EventType::kMouseDragged ||
+        event->type() == ui::EventType::kTouchMoved ||
+        event->type() == ui::EventType::kGestureScrollUpdate);
 
   aura::Window* target = static_cast<aura::Window*>(event->target());
   const int client_component =

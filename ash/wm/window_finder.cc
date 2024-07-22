@@ -44,7 +44,7 @@ bool IsWindowTargeted(aura::Window* window,
     gfx::Point point_in_root = local_point;
     aura::Window::ConvertPointToTarget(window, window->GetRootWindow(),
                                        &point_in_root);
-    ui::MouseEvent event(ui::ET_MOUSE_MOVED, local_point, point_in_root,
+    ui::MouseEvent event(ui::EventType::kMouseMoved, local_point, point_in_root,
                          base::TimeTicks::Now(), 0, 0);
     return targeter->SubtreeShouldBeExploredForEvent(window, event);
   }

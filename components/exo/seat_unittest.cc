@@ -651,10 +651,14 @@ TEST_F(SeatTest, SetSelection_ClientOutOfFocus) {
 
 TEST_F(SeatTest, PressedKeys) {
   TestSeat seat;
-  ui::KeyEvent press_a(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, 0);
-  ui::KeyEvent release_a(ui::ET_KEY_RELEASED, ui::VKEY_A, ui::DomCode::US_A, 0);
-  ui::KeyEvent press_b(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::DomCode::US_B, 0);
-  ui::KeyEvent release_b(ui::ET_KEY_RELEASED, ui::VKEY_B, ui::DomCode::US_B, 0);
+  ui::KeyEvent press_a(ui::EventType::kKeyPressed, ui::VKEY_A,
+                       ui::DomCode::US_A, 0);
+  ui::KeyEvent release_a(ui::EventType::kKeyReleased, ui::VKEY_A,
+                         ui::DomCode::US_A, 0);
+  ui::KeyEvent press_b(ui::EventType::kKeyPressed, ui::VKEY_B,
+                       ui::DomCode::US_B, 0);
+  ui::KeyEvent release_b(ui::EventType::kKeyReleased, ui::VKEY_B,
+                         ui::DomCode::US_B, 0);
 
   // Press A, it should be in the map.
   seat.WillProcessEvent(&press_a);
@@ -709,10 +713,14 @@ TEST_F(SeatTest, DragDropAbort) {
 TEST_F(SeatTest, MultiRewriteEventsFromInvalidSource) {
   TestSeat seat;
 
-  ui::KeyEvent press_a(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, 0);
-  ui::KeyEvent release_a(ui::ET_KEY_RELEASED, ui::VKEY_A, ui::DomCode::US_A, 0);
-  ui::KeyEvent press_b(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::DomCode::US_B, 0);
-  ui::KeyEvent release_b(ui::ET_KEY_RELEASED, ui::VKEY_B, ui::DomCode::US_B, 0);
+  ui::KeyEvent press_a(ui::EventType::kKeyPressed, ui::VKEY_A,
+                       ui::DomCode::US_A, 0);
+  ui::KeyEvent release_a(ui::EventType::kKeyReleased, ui::VKEY_A,
+                         ui::DomCode::US_A, 0);
+  ui::KeyEvent press_b(ui::EventType::kKeyPressed, ui::VKEY_B,
+                       ui::DomCode::US_B, 0);
+  ui::KeyEvent release_b(ui::EventType::kKeyReleased, ui::VKEY_B,
+                         ui::DomCode::US_B, 0);
 
   // Press A, it should be in the map.
   seat.WillProcessEvent(&press_a);
@@ -741,14 +749,14 @@ TEST_F(SeatTest, MultiRewriteEventsFromInvalidSource) {
 TEST_F(SeatTest, MultiRewriteEventsFromValidSource) {
   TestSeat seat;
 
-  ui::KeyEvent press_a(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
-                       ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
-  ui::KeyEvent release_a(ui::ET_KEY_RELEASED, ui::VKEY_A, ui::DomCode::US_A,
-                         ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
-  ui::KeyEvent press_b(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::DomCode::US_B,
-                       ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
-  ui::KeyEvent release_b(ui::ET_KEY_RELEASED, ui::VKEY_B, ui::DomCode::US_B,
-                         ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent press_a(ui::EventType::kKeyPressed, ui::VKEY_A,
+                       ui::DomCode::US_A, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent release_a(ui::EventType::kKeyReleased, ui::VKEY_A,
+                         ui::DomCode::US_A, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent press_b(ui::EventType::kKeyPressed, ui::VKEY_B,
+                       ui::DomCode::US_B, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent release_b(ui::EventType::kKeyReleased, ui::VKEY_B,
+                         ui::DomCode::US_B, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
 
   // Press A, it should be in the map.
   seat.WillProcessEvent(&press_a);
@@ -780,21 +788,21 @@ TEST_F(SeatTest, MultiRewriteEventsFromValidSource) {
 TEST_F(SeatTest, MouseMultiRewriteEventsFromValidSource) {
   TestSeat seat;
 
-  ui::MouseEvent press_back(ui::ET_MOUSE_PRESSED, gfx::PointF{}, gfx::PointF{},
-                            base::TimeTicks(), ui::EF_BACK_MOUSE_BUTTON,
-                            ui::EF_BACK_MOUSE_BUTTON);
+  ui::MouseEvent press_back(ui::EventType::kMousePressed, gfx::PointF{},
+                            gfx::PointF{}, base::TimeTicks(),
+                            ui::EF_BACK_MOUSE_BUTTON, ui::EF_BACK_MOUSE_BUTTON);
   ui::MouseEvent release_back(
-      ui::ET_MOUSE_RELEASED, gfx::PointF{}, gfx::PointF{}, base::TimeTicks(),
-      ui::EF_BACK_MOUSE_BUTTON, ui::EF_BACK_MOUSE_BUTTON);
+      ui::EventType::kMouseReleased, gfx::PointF{}, gfx::PointF{},
+      base::TimeTicks(), ui::EF_BACK_MOUSE_BUTTON, ui::EF_BACK_MOUSE_BUTTON);
 
-  ui::KeyEvent press_a(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
-                       ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
-  ui::KeyEvent release_a(ui::ET_KEY_RELEASED, ui::VKEY_A, ui::DomCode::US_A,
-                         ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
-  ui::KeyEvent press_b(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::DomCode::US_B,
-                       ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
-  ui::KeyEvent release_b(ui::ET_KEY_RELEASED, ui::VKEY_B, ui::DomCode::US_B,
-                         ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent press_a(ui::EventType::kKeyPressed, ui::VKEY_A,
+                       ui::DomCode::US_A, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent release_a(ui::EventType::kKeyReleased, ui::VKEY_A,
+                         ui::DomCode::US_A, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent press_b(ui::EventType::kKeyPressed, ui::VKEY_B,
+                       ui::DomCode::US_B, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent release_b(ui::EventType::kKeyReleased, ui::VKEY_B,
+                         ui::DomCode::US_B, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
 
   // Press Back remapped to "A", it should be in the map.
   seat.WillProcessEvent(&press_back);

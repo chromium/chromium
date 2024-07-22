@@ -1182,16 +1182,16 @@ TEST_F(NativeWidgetMacTest, CapturedMouseUpClearsDrag) {
   NSEvent* exit_event = cocoa_test_event_utils::ExitEvent({200, 200}, window);
 
   widget->Show();
-  EXPECT_EQ(0, widget->GetMouseEventCount(ui::ET_MOUSE_ENTERED));
-  EXPECT_EQ(0, widget->GetMouseEventCount(ui::ET_MOUSE_EXITED));
+  EXPECT_EQ(0, widget->GetMouseEventCount(ui::EventType::kMouseEntered));
+  EXPECT_EQ(0, widget->GetMouseEventCount(ui::EventType::kMouseExited));
 
   [native_view mouseEntered:enter_event];
-  EXPECT_EQ(1, widget->GetMouseEventCount(ui::ET_MOUSE_ENTERED));
-  EXPECT_EQ(0, widget->GetMouseEventCount(ui::ET_MOUSE_EXITED));
+  EXPECT_EQ(1, widget->GetMouseEventCount(ui::EventType::kMouseEntered));
+  EXPECT_EQ(0, widget->GetMouseEventCount(ui::EventType::kMouseExited));
 
   [native_view mouseExited:exit_event];
-  EXPECT_EQ(1, widget->GetMouseEventCount(ui::ET_MOUSE_ENTERED));
-  EXPECT_EQ(1, widget->GetMouseEventCount(ui::ET_MOUSE_EXITED));
+  EXPECT_EQ(1, widget->GetMouseEventCount(ui::EventType::kMouseEntered));
+  EXPECT_EQ(1, widget->GetMouseEventCount(ui::EventType::kMouseExited));
 
   // Send a click. Note a click may initiate a drag, so the mouse-up is sent as
   // a captured event.
@@ -1202,12 +1202,12 @@ TEST_F(NativeWidgetMacTest, CapturedMouseUpClearsDrag) {
 
   // After a click, Enter/Exit should still work.
   [native_view mouseEntered:enter_event];
-  EXPECT_EQ(2, widget->GetMouseEventCount(ui::ET_MOUSE_ENTERED));
-  EXPECT_EQ(1, widget->GetMouseEventCount(ui::ET_MOUSE_EXITED));
+  EXPECT_EQ(2, widget->GetMouseEventCount(ui::EventType::kMouseEntered));
+  EXPECT_EQ(1, widget->GetMouseEventCount(ui::EventType::kMouseExited));
 
   [native_view mouseExited:exit_event];
-  EXPECT_EQ(2, widget->GetMouseEventCount(ui::ET_MOUSE_ENTERED));
-  EXPECT_EQ(2, widget->GetMouseEventCount(ui::ET_MOUSE_EXITED));
+  EXPECT_EQ(2, widget->GetMouseEventCount(ui::EventType::kMouseEntered));
+  EXPECT_EQ(2, widget->GetMouseEventCount(ui::EventType::kMouseExited));
 
   widget->CloseNow();
 }

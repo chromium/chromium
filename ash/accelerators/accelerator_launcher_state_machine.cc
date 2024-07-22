@@ -27,8 +27,8 @@ AcceleratorLauncherStateMachine::AcceleratorLauncherStateMachine(
 AcceleratorLauncherStateMachine::~AcceleratorLauncherStateMachine() = default;
 
 void AcceleratorLauncherStateMachine::OnKeyEvent(ui::KeyEvent* event) {
-  if (event->type() != ui::ET_KEY_RELEASED &&
-      event->type() != ui::ET_KEY_PRESSED) {
+  if (event->type() != ui::EventType::kKeyReleased &&
+      event->type() != ui::EventType::kKeyPressed) {
     return;
   }
 
@@ -43,7 +43,7 @@ void AcceleratorLauncherStateMachine::OnKeyEvent(ui::KeyEvent* event) {
     // not.
     case LauncherState::kTrigger:
     case LauncherState::kStart:
-      if (event->type() != ui::ET_KEY_PRESSED) {
+      if (event->type() != ui::EventType::kKeyPressed) {
         current_state_ = LauncherState::kStart;
         break;
       }
@@ -70,7 +70,7 @@ void AcceleratorLauncherStateMachine::OnKeyEvent(ui::KeyEvent* event) {
         break;
       }
 
-      if (event->type() == ui::ET_KEY_PRESSED) {
+      if (event->type() == ui::EventType::kKeyPressed) {
         break;
       }
 
@@ -88,8 +88,8 @@ void AcceleratorLauncherStateMachine::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void AcceleratorLauncherStateMachine::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() != ui::ET_MOUSE_PRESSED &&
-      event->type() != ui::ET_MOUSE_RELEASED) {
+  if (event->type() != ui::EventType::kMousePressed &&
+      event->type() != ui::EventType::kMouseReleased) {
     return;
   }
 
@@ -99,7 +99,7 @@ void AcceleratorLauncherStateMachine::OnMouseEvent(ui::MouseEvent* event) {
     case LauncherState::kStart:
     case LauncherState::kTrigger:
     case LauncherState::kPrimed:
-      if (event->type() == ui::ET_MOUSE_PRESSED) {
+      if (event->type() == ui::EventType::kMousePressed) {
         current_state_ = LauncherState::kSuppress;
       }
       break;
@@ -107,7 +107,7 @@ void AcceleratorLauncherStateMachine::OnMouseEvent(ui::MouseEvent* event) {
     // If the mouse is released during kSuppress and there are no keys pressed,
     // move back to kStart.
     case LauncherState::kSuppress:
-      if (event->type() == ui::ET_MOUSE_RELEASED &&
+      if (event->type() == ui::EventType::kMouseReleased &&
           !input_controller_->AreAnyKeysPressed()) {
         current_state_ = LauncherState::kStart;
       }

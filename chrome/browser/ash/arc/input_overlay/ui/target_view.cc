@@ -165,8 +165,10 @@ void TargetView::OnGestureEvent(ui::GestureEvent* event) {
   event->SetHandled();
 
   // When the gesture event is released, add a new action.
-  if (type == ui::ET_GESTURE_SCROLL_END || type == ui::ET_SCROLL_FLING_START ||
-      type == ui::ET_GESTURE_PINCH_END || type == ui::ET_GESTURE_END) {
+  if (type == ui::EventType::kGestureScrollEnd ||
+      type == ui::EventType::kScrollFlingStart ||
+      type == ui::EventType::kGesturePinchEnd ||
+      type == ui::EventType::kGestureEnd) {
     controller_->AddNewAction(action_type_, center_);
   }
 }

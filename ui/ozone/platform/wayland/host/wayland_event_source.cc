@@ -242,7 +242,7 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
     base::TimeTicks timestamp,
     int device_id,
     WaylandKeyboard::KeyEventKind kind) {
-  DCHECK(type == ET_KEY_PRESSED || type == ET_KEY_RELEASED);
+  DCHECK(type == EventType::kKeyPressed || type == EventType::kKeyReleased);
 
   DomKey dom_key;
   KeyboardCode key_code;
@@ -302,7 +302,7 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
 void WaylandEventSource::OnSynthesizedKeyPressEvent(DomCode dom_code,
                                                     base::TimeTicks timestamp) {
   std::ignore =
-      OnKeyboardKeyEvent(ET_KEY_PRESSED, dom_code, /*repeat=*/false,
+      OnKeyboardKeyEvent(EventType::kKeyPressed, dom_code, /*repeat=*/false,
                          /*serial=*/std::nullopt, timestamp,
                          /*device_id=*/0, WaylandKeyboard::KeyEventKind::kKey);
 }
@@ -328,7 +328,8 @@ void WaylandEventSource::OnPointerFocusChanged(
 
   auto* target = window_manager_->GetCurrentPointerFocusedWindow();
   if (target) {
-    EventType type = focused ? ET_MOUSE_ENTERED : ET_MOUSE_EXITED;
+    EventType type =
+        focused ? EventType::kMouseEntered : EventType::kMouseExited;
     MouseEvent event(type, pointer_location_, pointer_location_, timestamp,
                      pointer_flags_, 0);
     if (dispatch_policy == wl::EventDispatchPolicy::kImmediate) {
@@ -352,15 +353,16 @@ void WaylandEventSource::OnPointerButtonEvent(
     wl::EventDispatchPolicy dispatch_policy,
     bool allow_release_of_unpressed_button,
     bool is_synthesized) {
-  DCHECK(type == ET_MOUSE_PRESSED || type == ET_MOUSE_RELEASED);
+  DCHECK(type == EventType::kMousePressed || type == EventType::kMouseReleased);
   DCHECK(HasAnyPointerButtonFlag(changed_button));
 
   // Ignore release events for buttons that aren't currently pressed. Such
   // events should never happen, but there have been compositor bugs before
   // (e.g. crbug.com/1376393).
-  if (!allow_release_of_unpressed_button && type == ET_MOUSE_RELEASED &&
-      (pointer_flags_ & changed_button) == 0)
+  if (!allow_release_of_unpressed_button && type == EventType::kMouseReleased &&
+      (pointer_flags_ & changed_button) == 0) {
     return;
+  }
 
   WaylandWindow* prev_focused_window =
       window_manager_->GetCurrentPointerFocusedWindow();
@@ -371,7 +373,7 @@ void WaylandEventSource::OnPointerButtonEvent(
       &WaylandEventSource::OnPointerButtonEventInternal, base::Unretained(this),
       (window ? prev_focused_window : nullptr), type);
 
-  pointer_flags_ = type == ET_MOUSE_PRESSED
+  pointer_flags_ = type == EventType::kMousePressed
                        ? (pointer_flags_ | changed_button)
                        : (pointer_flags_ & ~changed_button);
   last_pointer_button_pressed_ = changed_button;
@@ -404,8 +406,9 @@ void WaylandEventSource::OnPointerButtonEventInternal(WaylandWindow* window,
   if (window)
     window_manager_->SetPointerFocusedWindow(window);
 
-  if (type == ET_MOUSE_RELEASED)
+  if (type == EventType::kMouseReleased) {
     last_pointer_stylus_data_.reset();
+  }
 }
 
 void WaylandEventSource::OnPointerMotionEvent(
@@ -419,7 +422,7 @@ void WaylandEventSource::OnPointerMotionEvent(
   if (is_synthesized) {
     flags |= EF_IS_SYNTHESIZED;
   }
-  MouseEvent event(ET_MOUSE_MOVED, pointer_location_, pointer_location_,
+  MouseEvent event(EventType::kMouseMoved, pointer_location_, pointer_location_,
                    timestamp, flags, 0);
   auto* target = window_manager_->GetCurrentPointerFocusedWindow();
 
@@ -560,8 +563,8 @@ void WaylandEventSource::OnTouchPressEvent(
   }
 
   PointerDetails details(EventPointerType::kTouch, id);
-  TouchEvent event(ET_TOUCH_PRESSED, location, location, timestamp, details,
-                   keyboard_modifiers_);
+  TouchEvent event(EventType::kTouchPressed, location, location, timestamp,
+                   details, keyboard_modifiers_);
   touch_frames_.push_back(
       std::make_unique<FrameData>(event, base::NullCallback()));
 }
@@ -586,8 +589,8 @@ void WaylandEventSource::OnTouchReleaseEvent(
     flags |= EF_IS_SYNTHESIZED;
   }
 
-  TouchEvent event(ET_TOUCH_RELEASED, location, location, timestamp, details,
-                   flags);
+  TouchEvent event(EventType::kTouchReleased, location, location, timestamp,
+                   details, flags);
   if (dispatch_policy == wl::EventDispatchPolicy::kImmediate) {
     SetTouchTargetAndDispatchTouchEvent(&event);
     OnTouchReleaseInternal(id);
@@ -674,8 +677,8 @@ void WaylandEventSource::OnTouchMotionEvent(
     flags |= EF_IS_SYNTHESIZED;
   }
 
-  TouchEvent event(ET_TOUCH_MOVED, location, location, timestamp, details,
-                   flags);
+  TouchEvent event(EventType::kTouchMoved, location, location, timestamp,
+                   details, flags);
   if (dispatch_policy == wl::EventDispatchPolicy::kImmediate) {
     SetTouchTargetAndDispatchTouchEvent(&event);
   } else {
@@ -696,7 +699,7 @@ void WaylandEventSource::OnTouchCancelEvent() {
   base::TimeTicks timestamp = base::TimeTicks::Now();
   for (auto& touch_point : touch_points_) {
     PointerId id = touch_point.first;
-    TouchEvent event(ET_TOUCH_CANCELLED, location, location, timestamp,
+    TouchEvent event(EventType::kTouchCancelled, location, location, timestamp,
                      PointerDetails(EventPointerType::kTouch, id));
     SetTouchTargetAndDispatchTouchEvent(&event);
     HandleTouchFocusChange(touch_point.second->window, false);
@@ -806,7 +809,7 @@ void WaylandEventSource::OnHoldEvent(EventType event_type,
                                      int device_id,
                                      wl::EventDispatchPolicy dispatch_policy) {
   // Lifting the finger from the touchpad will be ignored.
-  if (event_type != ET_TOUCH_PRESSED) {
+  if (event_type != EventType::kTouchPressed) {
     return;
   }
 
@@ -826,7 +829,7 @@ void WaylandEventSource::OnHoldEvent(EventType event_type,
 
   pointer_scroll_data_set_.clear();
 
-  ScrollEvent event(ET_SCROLL_FLING_CANCEL, pointer_location_,
+  ScrollEvent event(EventType::kScrollFlingCancel, pointer_location_,
                     pointer_location_, timestamp, pointer_flags_, 0, 0, 0, 0,
                     finger_count);
 
@@ -876,7 +879,7 @@ void WaylandEventSource::ReleasePressedPointerButtons(
   for (const auto& [button, name] : kMouseButtonToStringMap) {
     if (button & pointer_flags_) {
       VLOG(1) << "Synthesizing pointer release for: " << name;
-      OnPointerButtonEvent(ET_MOUSE_RELEASED, button, timestamp, window,
+      OnPointerButtonEvent(EventType::kMouseReleased, button, timestamp, window,
                            wl::EventDispatchPolicy::kImmediate,
                            /*allow_release_of_unpressed_button=*/false,
                            /*is_synthesized=*/true);
@@ -1117,14 +1120,14 @@ void WaylandEventSource::ProcessPointerScrollData() {
     float vy = initial_velocity.y();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     ScrollEvent event(pointer_scroll_data_->is_axis_stop
-                          ? ET_SCROLL_FLING_START
-                          : ET_SCROLL_FLING_CANCEL,
+                          ? EventType::kScrollFlingStart
+                          : EventType::kScrollFlingCancel,
                       pointer_location_, pointer_location_, timestamp, flags,
                       vx, vy, vx, vy, kGestureScrollFingerCount);
 #else
     // In Linux there is no axis event with 0 delta when start scrolling.
     // A fling is therefore always started at this point.
-    ScrollEvent event(ET_SCROLL_FLING_START, pointer_location_,
+    ScrollEvent event(EventType::kScrollFlingStart, pointer_location_,
                       pointer_location_, timestamp, flags, vx, vy, vx, vy,
                       kGestureScrollFingerCount);
     is_fling_active_ = true;
@@ -1149,17 +1152,18 @@ void WaylandEventSource::ProcessPointerScrollData() {
       // From Wayland 1.23 this will be done through hold event.
       if (is_fling_active_) {
         is_fling_active_ = false;
-        ScrollEvent stop_fling_event(ET_SCROLL_FLING_CANCEL, pointer_location_,
-                                     pointer_location_, timestamp, flags, 0, 0,
-                                     0, 0, kGestureScrollFingerCount);
+        ScrollEvent stop_fling_event(
+            EventType::kScrollFlingCancel, pointer_location_, pointer_location_,
+            timestamp, flags, 0, 0, 0, 0, kGestureScrollFingerCount);
         pointer_frames_.push_back(std::make_unique<FrameData>(
             stop_fling_event, base::NullCallback()));
       }
 #endif
-      ScrollEvent event(ET_SCROLL, pointer_location_, pointer_location_,
-                        timestamp, flags, pointer_scroll_data_->dx,
-                        pointer_scroll_data_->dy, pointer_scroll_data_->dx,
-                        pointer_scroll_data_->dy, kGestureScrollFingerCount);
+      ScrollEvent event(EventType::kScroll, pointer_location_,
+                        pointer_location_, timestamp, flags,
+                        pointer_scroll_data_->dx, pointer_scroll_data_->dy,
+                        pointer_scroll_data_->dx, pointer_scroll_data_->dy,
+                        kGestureScrollFingerCount);
       pointer_frames_.push_back(
           std::make_unique<FrameData>(event, base::NullCallback()));
     }

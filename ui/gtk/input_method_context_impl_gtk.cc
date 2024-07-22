@@ -182,7 +182,7 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
   // alternative API called gtk_im_context_filter_key() was added for clients
   // that would have needed to construct their own event.  The parameters to
   // the new API are just a deconstructed version of a KeyEvent.
-  bool press = key_event.type() == ui::ET_KEY_PRESSED;
+  bool press = key_event.type() == ui::EventType::kKeyPressed;
   auto* surface =
       gtk_native_get_surface(gtk_widget_get_native(GetDummyWindow()));
   auto* device = gdk_seat_get_keyboard(

@@ -335,14 +335,14 @@ class VideoPictureInPictureWindowControllerBrowserTest
   void MoveMouseOverOverlayWindow() {
     auto* const window = GetOverlayWindow();
     const gfx::Point p(window->GetBounds().origin());
-    ui::MouseEvent moved_over(ui::ET_MOUSE_MOVED, p, p, ui::EventTimeForNow(),
-                              ui::EF_NONE, ui::EF_NONE);
+    ui::MouseEvent moved_over(ui::EventType::kMouseMoved, p, p,
+                              ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
     window->OnMouseEvent(&moved_over);
   }
 
   void ClickButton(views::Button* button) {
-    const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                               ui::EventTimeForNow(), 0, 0);
+    const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                               gfx::Point(), ui::EventTimeForNow(), 0, 0);
     views::test::ButtonTestApi(button).NotifyClick(event);
   }
 
@@ -2153,7 +2153,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   ASSERT_NE(GetOverlayWindow(), nullptr);
   ASSERT_FALSE(GetOverlayWindow()->GetFocusManager()->GetFocusedView());
 
-  ui::KeyEvent space_key_pressed(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
+  ui::KeyEvent space_key_pressed(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
                                  ui::DomCode::SPACE, ui::EF_NONE);
   GetOverlayWindow()->OnKeyEvent(&space_key_pressed);
 

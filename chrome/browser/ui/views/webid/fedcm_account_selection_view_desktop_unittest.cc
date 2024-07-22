@@ -547,8 +547,9 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
   }
 
   ui::MouseEvent CreateMouseEvent() {
-    return ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                          base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, 0);
+    return ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                          gfx::Point(), base::TimeTicks(),
+                          ui::EF_LEFT_MOUSE_BUTTON, 0);
   }
 
  protected:

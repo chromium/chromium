@@ -963,8 +963,8 @@ TEST_P(HomeButtonTest, LongPressGesture) {
   EXPECT_TRUE(test_api.IsHomeButtonVisible());
   ASSERT_TRUE(home_button());
 
-  ui::GestureEvent long_press =
-      CreateGestureEvent(ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  ui::GestureEvent long_press = CreateGestureEvent(
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   SendGestureEvent(&long_press);
   GetAppListTestHelper()->WaitUntilIdle();
   EXPECT_EQ(AssistantVisibility::kVisible,
@@ -1005,8 +1005,8 @@ TEST_P(HomeButtonTest, LongPressGestureInTabletMode) {
   if (!should_show_home_button)
     return;
 
-  ui::GestureEvent long_press =
-      CreateGestureEvent(ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  ui::GestureEvent long_press = CreateGestureEvent(
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   SendGestureEvent(&long_press);
   GetAppListTestHelper()->WaitUntilIdle();
   EXPECT_EQ(AssistantVisibility::kVisible,
@@ -1042,8 +1042,8 @@ TEST_P(HomeButtonTest, LongPressGestureWithSecondaryUser) {
   EXPECT_TRUE(test_api.IsHomeButtonVisible());
   ASSERT_TRUE(home_button());
 
-  ui::GestureEvent long_press =
-      CreateGestureEvent(ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  ui::GestureEvent long_press = CreateGestureEvent(
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   SendGestureEvent(&long_press);
   // The Assistant is disabled for secondary user.
   EXPECT_NE(AssistantVisibility::kVisible,
@@ -1070,8 +1070,8 @@ TEST_P(HomeButtonTest, LongPressGestureWithSettingsDisabled) {
   EXPECT_TRUE(test_api.IsHomeButtonVisible());
   ASSERT_TRUE(home_button());
 
-  ui::GestureEvent long_press =
-      CreateGestureEvent(ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  ui::GestureEvent long_press = CreateGestureEvent(
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   SendGestureEvent(&long_press);
   EXPECT_NE(AssistantVisibility::kVisible,
             AssistantUiController::Get()->GetModel()->visibility());
@@ -1183,7 +1183,8 @@ TEST_P(HomeButtonTest, GestureHomeButtonHitTest) {
   gfx::Point nav_widget_center(nav_widget_bounds.CenterPoint());
   EXPECT_EQ(home_button_center, nav_widget_center);
 
-  ui::GestureEventDetails details = ui::GestureEventDetails(ui::ET_GESTURE_TAP);
+  ui::GestureEventDetails details =
+      ui::GestureEventDetails(ui::EventType::kGestureTap);
 
   // Create and test a gesture-event targeting >60% of the navigation widget,
   // as well as ~60% of the home button.

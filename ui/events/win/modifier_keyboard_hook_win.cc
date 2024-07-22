@@ -254,7 +254,7 @@ bool ModifierKeyboardHookWinImpl::ProcessKeyEventMessage(WPARAM w_param,
   CHROME_MSG msg = {nullptr, static_cast<UINT>(w_param), non_located_vk,
                     GetLParamFromScanCode(scan_code), time_stamp};
   EventType event_type = EventTypeFromMSG(msg);
-  if (event_type == ET_KEY_PRESSED) {
+  if (event_type == EventType::kKeyPressed) {
     UpdateModifierState(vk, /*key_down=*/true);
     // We use the non-located vkey to determine whether a key event is a repeat
     // or not.  The exception is for AltGr which has a two key sequence which
@@ -262,7 +262,7 @@ bool ModifierKeyboardHookWinImpl::ProcessKeyEventMessage(WPARAM w_param,
     is_repeat = (last_key_down_ == non_located_vk) || altgr_sequence_count_ > 1;
     last_key_down_ = non_located_vk;
   } else {
-    DCHECK_EQ(event_type, ET_KEY_RELEASED);
+    DCHECK_EQ(event_type, EventType::kKeyReleased);
     UpdateModifierState(vk, /*key_down=*/false);
     altgr_sequence_count_ = 0;
     last_key_down_ = 0;

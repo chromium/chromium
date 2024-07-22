@@ -256,7 +256,7 @@ void LongTapAt(ui::test::EventGenerator* event_generator,
                const gfx::Point& point) {
   ui::GestureEvent long_press(
       point.x(), point.y(), 0, base::TimeTicks::Now(),
-      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   event_generator->Dispatch(&long_press);
 }
 

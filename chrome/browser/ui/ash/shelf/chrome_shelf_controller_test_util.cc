@@ -20,11 +20,11 @@ ash::ShelfAction SelectShelfItem(const ash::ShelfID& id,
                                  int64_t display_id,
                                  ash::ShelfLaunchSource source) {
   std::unique_ptr<ui::Event> event;
-  if (event_type == ui::ET_MOUSE_PRESSED) {
+  if (event_type == ui::EventType::kMousePressed) {
     event =
         std::make_unique<ui::MouseEvent>(event_type, gfx::Point(), gfx::Point(),
                                          ui::EventTimeForNow(), ui::EF_NONE, 0);
-  } else if (event_type == ui::ET_KEY_RELEASED) {
+  } else if (event_type == ui::EventType::kKeyReleased) {
     event = std::make_unique<ui::KeyEvent>(event_type, ui::VKEY_UNKNOWN,
                                            ui::EF_NONE);
   }

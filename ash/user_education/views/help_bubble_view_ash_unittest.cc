@@ -53,7 +53,7 @@ ui::MouseEvent CreateMouseMovedEvent(aura::Window* target,
                                      const gfx::Point& location_in_screen) {
   gfx::Point location(location_in_screen);
   wm::ConvertPointFromScreen(target, &location);
-  ui::MouseEvent mouse_moved_event(ui::ET_MOUSE_MOVED, location,
+  ui::MouseEvent mouse_moved_event(ui::EventType::kMouseMoved, location,
                                    location_in_screen, ui::EventTimeForNow(),
                                    /*flags=*/ui::EF_NONE,
                                    /*changed_button_flags=*/ui::EF_NONE);
@@ -213,7 +213,7 @@ TEST_F(HelpBubbleViewAshTest, HitTest) {
     // events don't leak through to windows behind it.
     // TODO(http://b/307780200): Possibly remove this when `WindowTargeter` is
     // updated, since it should be tested at that level
-    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, point, point,
+    ui::MouseEvent press(ui::EventType::kMousePressed, point, point,
                          base::TimeTicks::Now(), ui::EF_NONE,
                          ui::EF_LEFT_MOUSE_BUTTON);
     EXPECT_EQ(root_window_targeter->FindTargetForEvent(root_window, &press),
@@ -236,7 +236,7 @@ TEST_F(HelpBubbleViewAshTest, HitTest) {
     // event so it doesn't block events in its shadow.
     // TODO(http://b/307780200): Possibly remove this when `WindowTargeter` is
     // updated, since it should be tested at that level
-    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, point, point,
+    ui::MouseEvent press(ui::EventType::kMousePressed, point, point,
                          base::TimeTicks::Now(), ui::EF_NONE,
                          ui::EF_LEFT_MOUSE_BUTTON);
     EXPECT_NE(root_window_targeter->FindTargetForEvent(root_window, &press),

@@ -136,7 +136,7 @@ using EventTypeVariant = absl::variant<ui::MouseEvent, ui::KeyEvent, bool>;
 using CapslockState = AcceleratorCapslockStateMachine::CapslockState;
 
 ui::MouseEvent MousePress() {
-  return ui::MouseEvent(ui::ET_MOUSE_PRESSED,
+  return ui::MouseEvent(ui::EventType::kMousePressed,
                         /*location=*/gfx::PointF{},
                         /*root_location=*/gfx::PointF{},
                         /*time_stamp=*/{}, ui::EF_LEFT_MOUSE_BUTTON,
@@ -144,7 +144,7 @@ ui::MouseEvent MousePress() {
 }
 
 ui::MouseEvent MouseRelease() {
-  return ui::MouseEvent(ui::ET_MOUSE_RELEASED,
+  return ui::MouseEvent(ui::EventType::kMouseReleased,
                         /*location=*/gfx::PointF{},
                         /*root_location=*/gfx::PointF{},
                         /*time_stamp=*/{}, ui::EF_NONE,
@@ -152,11 +152,11 @@ ui::MouseEvent MouseRelease() {
 }
 
 ui::KeyEvent KeyPress(ui::KeyboardCode key_code) {
-  return ui::KeyEvent(ui::ET_KEY_PRESSED, key_code, ui::EF_NONE);
+  return ui::KeyEvent(ui::EventType::kKeyPressed, key_code, ui::EF_NONE);
 }
 
 ui::KeyEvent KeyRelease(ui::KeyboardCode key_code) {
-  return ui::KeyEvent(ui::ET_KEY_RELEASED, key_code, ui::EF_NONE);
+  return ui::KeyEvent(ui::EventType::kKeyReleased, key_code, ui::EF_NONE);
 }
 
 ui::Event& GetEventFromVariant(EventTypeVariant& event) {

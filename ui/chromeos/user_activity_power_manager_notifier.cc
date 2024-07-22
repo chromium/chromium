@@ -20,8 +20,9 @@ const int kNotifyIntervalSec = 5;
 // Returns a UserActivityType describing |event|.
 power_manager::UserActivityType GetUserActivityTypeForEvent(
     const Event* event) {
-  if (!event || event->type() != ET_KEY_PRESSED)
+  if (!event || event->type() != EventType::kKeyPressed) {
     return power_manager::USER_ACTIVITY_OTHER;
+  }
 
   switch (static_cast<const KeyEvent*>(event)->key_code()) {
     case VKEY_BRIGHTNESS_DOWN:

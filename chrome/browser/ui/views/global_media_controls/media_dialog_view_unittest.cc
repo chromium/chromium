@@ -222,9 +222,9 @@ TEST_P(MediaDialogViewTest, TerminateSession) {
         media_item_ui_view()->footer_view_for_testing()->children()[0]);
   }
   views::test::ButtonTestApi(stop_casting_button)
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),
-                                  gfx::Point(0, 0), ui::EventTimeForNow(),
-                                  ui::EF_LEFT_MOUSE_BUTTON, 0));
+      .NotifyClick(ui::MouseEvent(
+          ui::EventType::kMousePressed, gfx::Point(0, 0), gfx::Point(0, 0),
+          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
 
   SimulateMediaRouteUpdate({});
   view()->RefreshMediaItem(

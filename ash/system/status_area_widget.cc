@@ -673,7 +673,7 @@ void StatusAreaWidget::OnMouseEvent(ui::MouseEvent* event) {
   // virtual keyboard.
   gfx::Point location = event->location();
   views::View::ConvertPointFromWidget(virtual_keyboard_tray_, &location);
-  if (event->type() == ui::ET_MOUSE_PRESSED &&
+  if (event->type() == ui::EventType::kMousePressed &&
       !virtual_keyboard_tray_->HitTestPoint(location)) {
     keyboard::KeyboardUIController::Get()->HideKeyboardImplicitlyByUser();
   }
@@ -685,7 +685,7 @@ void StatusAreaWidget::OnGestureEvent(ui::GestureEvent* event) {
   // virtual keyboard.
   gfx::Point location = event->location();
   views::View::ConvertPointFromWidget(virtual_keyboard_tray_, &location);
-  if (event->type() == ui::ET_GESTURE_TAP_DOWN &&
+  if (event->type() == ui::EventType::kGestureTapDown &&
       !virtual_keyboard_tray_->HitTestPoint(location)) {
     keyboard::KeyboardUIController::Get()->HideKeyboardImplicitlyByUser();
   }

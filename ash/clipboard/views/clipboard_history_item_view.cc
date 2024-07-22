@@ -316,8 +316,9 @@ void ClipboardHistoryItemView::HandleMainButtonPressEvent(
 
   // When an item view is under gesture tap, it may be not under pseudo
   // focus yet.
-  if (event.type() == ui::ET_GESTURE_TAP)
+  if (event.type() == ui::EventType::kGestureTap) {
     pseudo_focus_ = PseudoFocus::kMainButton;
+  }
 
   Activate(CalculateActionForMainButtonClick(), event.flags());
 }
@@ -331,19 +332,20 @@ void ClipboardHistoryItemView::MaybeHandleGestureEventFromMainButton(
     ui::GestureEvent* event) {
   // `event` is always handled here if the menu item view is under the gesture
   // long press. It prevents other event handlers from introducing side effects.
-  // For example, if `main_button_` handles the ui::ET_GESTURE_END event,
-  // `main_button_`'s state will be reset. However, `main_button_` is expected
-  // to be at the "hovered" state when the menu item is selected.
+  // For example, if `main_button_` handles the ui::EventType::kGestureEnd
+  // event, `main_button_`'s state will be reset. However, `main_button_` is
+  // expected to be at the "hovered" state when the menu item is selected.
   if (under_gesture_long_press_) {
-    DCHECK_NE(ui::ET_GESTURE_LONG_PRESS, event->type());
-    if (event->type() == ui::ET_GESTURE_END)
+    DCHECK_NE(ui::EventType::kGestureLongPress, event->type());
+    if (event->type() == ui::EventType::kGestureEnd) {
       under_gesture_long_press_ = false;
+    }
 
     event->SetHandled();
     return;
   }
 
-  if (event->type() == ui::ET_GESTURE_LONG_PRESS) {
+  if (event->type() == ui::EventType::kGestureLongPress) {
     under_gesture_long_press_ = true;
     switch (pseudo_focus_) {
       case PseudoFocus::kEmpty:

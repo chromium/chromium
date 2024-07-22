@@ -51,7 +51,7 @@ TrayEventFilter::~TrayEventFilter() {
 }
 
 void TrayEventFilter::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() != ui::ET_GESTURE_SCROLL_BEGIN) {
+  if (event->type() != ui::EventType::kGestureScrollBegin) {
     return;
   }
 

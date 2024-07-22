@@ -309,8 +309,8 @@ class TestEventHandler : public ui::EventHandler {
 
   void OnMouseEvent(ui::MouseEvent* event) override {
     if (event->flags() & ui::EF_IS_SYNTHESIZED &&
-        event->type() != ui::ET_MOUSE_EXITED &&
-        event->type() != ui::ET_MOUSE_ENTERED) {
+        event->type() != ui::EventType::kMouseExited &&
+        event->type() != ui::EventType::kMouseEntered) {
       return;
     }
     aura::Window* target = static_cast<aura::Window*>(event->target());
@@ -337,7 +337,7 @@ class TestEventHandler : public ui::EventHandler {
     if (target->GetName() != kWallpaperView)
       return;
 
-    if (event->type() == ui::ET_SCROLL) {
+    if (event->type() == ui::EventType::kScroll) {
       scroll_x_offset_ = event->x_offset();
       scroll_y_offset_ = event->y_offset();
       scroll_x_offset_ordinal_ = event->x_offset_ordinal();
@@ -2227,7 +2227,7 @@ TEST_F(WindowTreeHostManagerTest, GetActiveDisplayWhenReplacingPrimaryDisplay) {
 
 TEST_F(WindowTreeHostManagerTest, KeyEventFromSecondaryDisplay) {
   UpdateDisplay("400x300,300x200");
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, 0);
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_RETURN, 0);
   ui::Event::DispatcherApi dispatcher_api(&key_event);
   // Set the target to the second display. WindowTreeHostManager will end up
   // targeting the primary display.

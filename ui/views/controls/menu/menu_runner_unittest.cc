@@ -363,7 +363,7 @@ class MenuLauncherEventHandler : public ui::EventHandler {
  private:
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() == ui::ET_MOUSE_PRESSED) {
+    if (event->type() == ui::EventType::kMousePressed) {
       runner_->RunMenuAt(owner_, nullptr, gfx::Rect(),
                          MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_NONE,
                          nullptr);
@@ -446,7 +446,7 @@ TEST_F(MenuRunnerWidgetTest, WidgetDoesntTakeCapture) {
   generator->MoveMouseTo(widget()->GetClientAreaBoundsInScreen().CenterPoint());
   // Implicit capture should not be held by |widget|.
   generator->PressLeftButton();
-  EXPECT_EQ(1, event_count_view()->GetEventCount(ui::ET_MOUSE_PRESSED));
+  EXPECT_EQ(1, event_count_view()->GetEventCount(ui::EventType::kMousePressed));
   EXPECT_NE(widget()->GetNativeView(),
             internal::NativeWidgetPrivate::GetGlobalCapture(
                 widget()->GetNativeView()));
@@ -493,7 +493,8 @@ TEST_F(MenuRunnerWidgetTest, ClearsMouseHandlerOnRun) {
   generator->MoveMouseTo(
       second_event_count_view->GetBoundsInScreen().CenterPoint());
   generator->PressLeftButton();
-  EXPECT_EQ(1, second_event_count_view->GetEventCount(ui::ET_MOUSE_PRESSED));
+  EXPECT_EQ(
+      1, second_event_count_view->GetEventCount(ui::EventType::kMousePressed));
 }
 
 class MenuRunnerImplTest : public MenuRunnerTest {

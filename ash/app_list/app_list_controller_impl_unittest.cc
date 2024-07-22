@@ -684,7 +684,7 @@ TEST_P(AppListControllerImplTest, OnlyMinimizeCycleListWindows) {
 
   ash::TabletModeControllerTestApi().EnterTabletMode();
   std::unique_ptr<ui::Event> test_event = std::make_unique<ui::KeyEvent>(
-      ui::EventType::ET_MOUSE_PRESSED, ui::VKEY_UNKNOWN, ui::EF_NONE);
+      ui::EventType::kMousePressed, ui::VKEY_UNKNOWN, ui::EF_NONE);
   Shell::Get()->app_list_controller()->GoHome(GetPrimaryDisplay().id());
   EXPECT_TRUE(WindowState::Get(w1.get())->IsMinimized());
   EXPECT_FALSE(WindowState::Get(w2.get())->IsMinimized());

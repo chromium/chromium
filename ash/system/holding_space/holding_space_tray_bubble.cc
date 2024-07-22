@@ -98,8 +98,9 @@ class HoldingSpaceTrayBubbleEventHandler : public ui::EventHandler {
  private:
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override {
-    if (event->type() != ui::ET_KEY_PRESSED)
+    if (event->type() != ui::EventType::kKeyPressed) {
       return;
+    }
 
     // Only handle `event`s that would otherwise escape the `bubble_` window.
     aura::Window* target = static_cast<aura::Window*>(event->target());

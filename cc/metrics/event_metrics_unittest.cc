@@ -32,7 +32,7 @@ TEST_F(EventMetricsTest, ScrollBeginCreateWithNullBeginRwhTime) {
   // Act
   std::unique_ptr<ScrollEventMetrics> scroll_event_metric =
       ScrollEventMetrics::Create(
-          ui::ET_GESTURE_SCROLL_BEGIN, ui::ScrollInputType::kTouchscreen,
+          ui::EventType::kGestureScrollBegin, ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp,
           blocking_touch_dispatched_to_renderer_timestamp, std::nullopt);
 
@@ -82,7 +82,7 @@ TEST_F(EventMetricsTest, ScrollBeginCreate) {
   // Act
   std::unique_ptr<ScrollEventMetrics> scroll_event_metric =
       ScrollEventMetrics::Create(
-          ui::ET_GESTURE_SCROLL_BEGIN, ui::ScrollInputType::kTouchscreen,
+          ui::EventType::kGestureScrollBegin, ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp,
           blocking_touch_dispatched_to_renderer_timestamp, std::nullopt);
 
@@ -127,14 +127,14 @@ TEST_F(EventMetricsTest, ScrollBeginCreateFromExisting) {
       base::TimeTicks::Now() - base::Microseconds(50);
   std::unique_ptr<ScrollEventMetrics> scroll_metric =
       ScrollEventMetrics::Create(
-          ui::ET_GESTURE_SCROLL_BEGIN, ui::ScrollInputType::kTouchscreen,
+          ui::EventType::kGestureScrollBegin, ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp,
           blocking_touch_dispatched_to_renderer_timestamp, std::nullopt);
 
   // Act
   std::unique_ptr<ScrollEventMetrics> copy_scroll_metric =
       ScrollEventMetrics::CreateFromExisting(
-          ui::ET_GESTURE_SCROLL_BEGIN, ui::ScrollInputType::kTouchscreen,
+          ui::EventType::kGestureScrollBegin, ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false,
           EventMetrics::DispatchStage::kRendererMainFinished,
           scroll_metric.get());
@@ -192,7 +192,8 @@ TEST_F(EventMetricsTest, ScrollUpdateCreateWithNullBeginRwhTime) {
   // Act
   std::unique_ptr<ScrollUpdateEventMetrics> scroll_event_metric =
       ScrollUpdateEventMetrics::Create(
-          ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kTouchscreen,
+          ui::EventType::kGestureScrollUpdate,
+          ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false,
           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, /*delta=*/0.4,
           event_time, arrived_in_browser_main_timestamp,
@@ -246,7 +247,8 @@ TEST_F(EventMetricsTest, ScrollUpdateCreate) {
   // Act
   std::unique_ptr<ScrollUpdateEventMetrics> scroll_event_metric =
       ScrollUpdateEventMetrics::Create(
-          ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kTouchscreen,
+          ui::EventType::kGestureScrollUpdate,
+          ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false,
           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, /*delta=*/0.4,
           event_time, arrived_in_browser_main_timestamp,
@@ -295,7 +297,8 @@ TEST_F(EventMetricsTest, ScrollUpdateCreateFromExisting) {
   TraceId trace_id(123);
   std::unique_ptr<ScrollUpdateEventMetrics> scroll_metric =
       ScrollUpdateEventMetrics::Create(
-          ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kTouchscreen,
+          ui::EventType::kGestureScrollUpdate,
+          ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false,
           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, /*delta=*/0.4,
           event_time, arrived_in_browser_main_timestamp,
@@ -304,7 +307,8 @@ TEST_F(EventMetricsTest, ScrollUpdateCreateFromExisting) {
   // Act
   std::unique_ptr<ScrollUpdateEventMetrics> copy_scroll_metric =
       ScrollUpdateEventMetrics::CreateFromExisting(
-          ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kTouchscreen,
+          ui::EventType::kGestureScrollUpdate,
+          ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false,
           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, /*delta=*/0.4,
           EventMetrics::DispatchStage::kRendererMainFinished,
@@ -362,7 +366,7 @@ TEST_F(EventMetricsTest, Create) {
 
   // Act
   std::unique_ptr<EventMetrics> event_metric =
-      EventMetrics::Create(ui::ET_TOUCH_MOVED, event_time,
+      EventMetrics::Create(ui::EventType::kTouchMoved, event_time,
                            arrived_in_browser_main_timestamp, std::nullopt);
 
   // Assert
@@ -399,13 +403,13 @@ TEST_F(EventMetricsTest, CreateFromExisting) {
   base::TimeTicks arrived_in_browser_main_timestamp =
       base::TimeTicks::Now() - base::Microseconds(50);
   std::unique_ptr<EventMetrics> event_metric =
-      EventMetrics::Create(ui::ET_TOUCH_MOVED, event_time,
+      EventMetrics::Create(ui::EventType::kTouchMoved, event_time,
                            arrived_in_browser_main_timestamp, std::nullopt);
 
   // Act
   std::unique_ptr<EventMetrics> copy_event_metric =
       EventMetrics::CreateFromExisting(
-          ui::ET_TOUCH_MOVED,
+          ui::EventType::kTouchMoved,
           EventMetrics::DispatchStage::kRendererMainFinished,
           event_metric.get());
 

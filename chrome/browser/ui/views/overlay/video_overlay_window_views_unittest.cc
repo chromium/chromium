@@ -483,13 +483,14 @@ TEST_F(VideoOverlayWindowViewsTest, DISABLED_NoMouseExitWithinWindowBounds) {
   ASSERT_FALSE(video_bounds.Contains(close_button_bounds));
 
   const gfx::Point moved_location(video_bounds.origin() + gfx::Vector2d(5, 5));
-  ui::MouseEvent moved_event(ui::ET_MOUSE_MOVED, moved_location, moved_location,
-                             ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent moved_event(ui::EventType::kMouseMoved, moved_location,
+                             moved_location, ui::EventTimeForNow(), ui::EF_NONE,
+                             ui::EF_NONE);
   overlay_window().OnMouseEvent(&moved_event);
   ASSERT_TRUE(overlay_window().AreControlsVisible());
 
   const gfx::Point exited_location(close_button_bounds.CenterPoint());
-  ui::MouseEvent exited_event(ui::ET_MOUSE_EXITED, exited_location,
+  ui::MouseEvent exited_event(ui::EventType::kMouseExited, exited_location,
                               exited_location, ui::EventTimeForNow(),
                               ui::EF_NONE, ui::EF_NONE);
   overlay_window().OnMouseEvent(&exited_event);
@@ -507,7 +508,7 @@ TEST_F(VideoOverlayWindowViewsTest, ShowControlsOnFocus) {
 TEST_F(VideoOverlayWindowViewsTest, OnlyPauseOnCloseWhenPauseIsAvailable) {
   views::test::ButtonTestApi close_button_clicker(
       overlay_window().close_button_for_testing());
-  ui::MouseEvent dummy_event(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),
+  ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(0, 0),
                              gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
 
   // When the play/pause controls are visible, closing via the close button
@@ -524,9 +525,10 @@ TEST_F(VideoOverlayWindowViewsTest, OnlyPauseOnCloseWhenPauseIsAvailable) {
   overlay_window().ForceControlsVisibleForTesting(true);
   gfx::Point close_button_center =
       overlay_window().GetCloseControlsBounds().CenterPoint();
-  ui::GestureEvent tap_event(close_button_center.x(), close_button_center.y(),
-                             0, base::TimeTicks::Now(),
-                             ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+  ui::GestureEvent tap_event(
+      close_button_center.x(), close_button_center.y(), 0,
+      base::TimeTicks::Now(),
+      ui::GestureEventDetails(ui::EventType::kGestureTap));
   EXPECT_CALL(pip_window_controller(), Close(true));
   overlay_window().OnGestureEvent(&tap_event);
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
@@ -743,7 +745,7 @@ TEST_F(VideoOverlayWindowViewsWithMinimizeButtonTest,
        MinimizeButtonClosesWIthoutPausing) {
   views::test::ButtonTestApi minimize_button_clicker(
       overlay_window().minimize_button_for_testing());
-  ui::MouseEvent dummy_event(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),
+  ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(0, 0),
                              gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
 
   // Even when play/pause is available, the minimize button should not pause the

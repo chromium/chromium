@@ -1245,7 +1245,7 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
     return;
   }
 
-  if (event->type() != ui::ET_KEY_PRESSED) {
+  if (event->type() != ui::EventType::kKeyPressed) {
     return;
   }
 
@@ -1778,13 +1778,13 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     return;
   }
 
-  // |ui::ET_MOUSE_EXITED| and |ui::ET_MOUSE_ENTERED| events will be generated
-  // during moving capture mode bar to another display. We should ignore them
-  // here, since they will overwrite the capture mode bar's root change during
-  // keyboard tabbing in capture window mode.
-  if (event->type() == ui::ET_MOUSE_CAPTURE_CHANGED ||
-      event->type() == ui::ET_MOUSE_EXITED ||
-      event->type() == ui::ET_MOUSE_ENTERED) {
+  // |ui::EventType::kMouseExited| and |ui::EventType::kMouseEntered| events
+  // will be generated during moving capture mode bar to another display. We
+  // should ignore them here, since they will overwrite the capture mode bar's
+  // root change during keyboard tabbing in capture window mode.
+  if (event->type() == ui::EventType::kMouseCaptureChanged ||
+      event->type() == ui::EventType::kMouseExited ||
+      event->type() == ui::EventType::kMouseEntered) {
     return;
   }
 
@@ -1811,8 +1811,8 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   const CaptureModeSource capture_source = controller_->source();
   const bool is_capture_region = capture_source == CaptureModeSource::kRegion;
 
-  const bool is_press_event = event->type() == ui::ET_MOUSE_PRESSED ||
-                              event->type() == ui::ET_TOUCH_PRESSED;
+  const bool is_press_event = event->type() == ui::EventType::kMousePressed ||
+                              event->type() == ui::EventType::kTouchPressed;
 
   // Clear keyboard focus on presses.
   if (is_press_event && focus_cycler_->HasFocus())
@@ -1836,8 +1836,9 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   // at the top. The dimensions label and capture button have been moved and
   // stacked on tap down so manually stack at top instead of calling
   // RefreshStackingOrder.
-  const bool is_release_event = event->type() == ui::ET_MOUSE_RELEASED ||
-                                event->type() == ui::ET_TOUCH_RELEASED;
+  const bool is_release_event =
+      event->type() == ui::EventType::kMouseReleased ||
+      event->type() == ui::EventType::kTouchReleased;
   if (is_release_event && is_capture_region &&
       current_root_ !=
           capture_mode_bar_widget_->GetNativeWindow()->GetRootWindow()) {
@@ -1939,17 +1940,17 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
 
   if (is_capture_fullscreen || is_capture_window) {
     switch (event->type()) {
-      case ui::ET_MOUSE_MOVED:
-      case ui::ET_TOUCH_PRESSED:
-      case ui::ET_TOUCH_MOVED: {
+      case ui::EventType::kMouseMoved:
+      case ui::EventType::kTouchPressed:
+      case ui::EventType::kTouchMoved: {
         if (is_capture_window) {
           capture_window_observer_->UpdateSelectedWindowAtPosition(
               screen_location);
         }
         break;
       }
-      case ui::ET_MOUSE_RELEASED:
-      case ui::ET_TOUCH_RELEASED:
+      case ui::EventType::kMouseReleased:
+      case ui::EventType::kTouchReleased:
         if (is_capture_fullscreen ||
             IsPointOverSelectedWindow(screen_location)) {
           // Clicking anywhere in fullscreen mode, or over the selected window
@@ -1971,17 +1972,17 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   const gfx::Point& location_in_root = event->root_location();
 
   switch (event->type()) {
-    case ui::ET_MOUSE_PRESSED:
-    case ui::ET_TOUCH_PRESSED:
+    case ui::EventType::kMousePressed:
+    case ui::EventType::kTouchPressed:
       old_mouse_warp_status_ = SetMouseWarpEnabled(false);
       OnLocatedEventPressed(location_in_root, is_touch);
       break;
-    case ui::ET_MOUSE_DRAGGED:
-    case ui::ET_TOUCH_MOVED:
+    case ui::EventType::kMouseDragged:
+    case ui::EventType::kTouchMoved:
       OnLocatedEventDragged(location_in_root);
       break;
-    case ui::ET_MOUSE_RELEASED:
-    case ui::ET_TOUCH_RELEASED:
+    case ui::EventType::kMouseReleased:
+    case ui::EventType::kTouchReleased:
       // Reenable mouse warping.
       if (old_mouse_warp_status_)
         SetMouseWarpEnabled(*old_mouse_warp_status_);

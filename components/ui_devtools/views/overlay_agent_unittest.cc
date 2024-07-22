@@ -72,8 +72,8 @@ class OverlayAgentTest : public views::ViewsTestBase {
 #else
     ui::EventTarget* target = widget()->GetRootView();
 #endif
-    auto event = std::make_unique<ui::MouseEvent>(ui::ET_MOUSE_MOVED, p, p,
-                                                  ui::EventTimeForNow(),
+    auto event = std::make_unique<ui::MouseEvent>(ui::EventType::kMouseMoved, p,
+                                                  p, ui::EventTimeForNow(),
                                                   ui::EF_NONE, ui::EF_NONE);
     ui::Event::DispatcherApi(event.get()).set_target(target);
     return event;
@@ -319,9 +319,9 @@ TEST_F(OverlayAgentTest, MouseEventsGenerateFEEventsInInspectMode) {
   ui::test::EventGenerator generator(GetRootWindow(widget()));
   generator.MoveMouseTo(widget()->GetClientAreaBoundsInScreen().origin());
 
-  // Aura platforms generate both ET_MOUSE_ENTERED and ET_MOUSE_MOVED for
-  // this but Mac just generates ET_MOUSE_ENTERED, so just ensure we sent
-  // at least one.
+  // Aura platforms generate both EventType::kMouseEntered and
+  // EventType::kMouseMoved for this but Mac just generates
+  // EventType::kMouseEntered, so just ensure we sent at least one.
   EXPECT_GT(GetOverlayNodeHighlightRequestedCount(node_id), 0);
   EXPECT_EQ(0, GetOverlayInspectNodeRequestedCount(node_id));
 

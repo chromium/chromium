@@ -1020,11 +1020,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInternalsHitTestBrowserTest,
 
   // Send a wheel to scroll the div.
   gfx::Point location(point_f.x(), point_f.y());
-  ui::ScrollEvent scroll_event(ui::ET_SCROLL, location, ui::EventTimeForNow(),
-                               0, 0, -ui::MouseWheelEvent::kWheelDelta, 0,
-                               ui::MouseWheelEvent::kWheelDelta,
-                               2);  // This must be '2' or it gets silently
-                                    // dropped.
+  ui::ScrollEvent scroll_event(
+      ui::EventType::kScroll, location, ui::EventTimeForNow(), 0, 0,
+      -ui::MouseWheelEvent::kWheelDelta, 0, ui::MouseWheelEvent::kWheelDelta,
+      2);  // This must be '2' or it gets silently
+           // dropped.
   UpdateEventRootLocation(&scroll_event, rwhv_root);
 
   InputEventAckWaiter ack_observer(
@@ -1147,11 +1147,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInternalsHitTestBrowserTest,
 
   // Send a wheel to scroll the parent containing the div.
   gfx::Point location(point_f.x(), point_f.y());
-  ui::ScrollEvent scroll_event(ui::ET_SCROLL, location, ui::EventTimeForNow(),
-                               0, 0, -ui::MouseWheelEvent::kWheelDelta, 0,
-                               ui::MouseWheelEvent::kWheelDelta,
-                               2);  // This must be '2' or it gets silently
-                                    // dropped.
+  ui::ScrollEvent scroll_event(
+      ui::EventType::kScroll, location, ui::EventTimeForNow(), 0, 0,
+      -ui::MouseWheelEvent::kWheelDelta, 0, ui::MouseWheelEvent::kWheelDelta,
+      2);  // This must be '2' or it gets silently
+           // dropped.
   UpdateEventRootLocation(&scroll_event, rwhv_root);
 
   InputEventAckWaiter ack_observer(
@@ -2445,9 +2445,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 }
 #endif  // defined(USE_AURA) || BUILDFLAG(IS_ANDROID)
 
-// Test that an ET_SCROLL event sent to an out-of-process iframe correctly
-// results in a scroll. This is only handled by RenderWidgetHostViewAura
-// and is needed for trackpad scrolling on Chromebooks.
+// Test that an EventType::kScroll event sent to an out-of-process iframe
+// correctly results in a scroll. This is only handled by
+// RenderWidgetHostViewAura and is needed for trackpad scrolling on Chromebooks.
 #if defined(USE_AURA)
 IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, ScrollEventToOOPIF) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -2480,7 +2480,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, ScrollEventToOOPIF) {
   InputEventAckWaiter waiter(
       child_node->current_frame_host()->GetRenderWidgetHost(),
       blink::WebInputEvent::Type::kMouseWheel);
-  ui::ScrollEvent scroll_event(ui::ET_SCROLL, gfx::Point(75, 75),
+  ui::ScrollEvent scroll_event(ui::EventType::kScroll, gfx::Point(75, 75),
                                ui::EventTimeForNow(), ui::EF_NONE, 0,
                                10,     // Offsets
                                0, 10,  // Offset ordinals
@@ -4570,11 +4570,11 @@ class SitePerProcessMouseWheelHitTestBrowserTest
 
   void SendMouseWheel(gfx::Point location) {
     DCHECK(rwhv_root_);
-    ui::ScrollEvent scroll_event(ui::ET_SCROLL, location, ui::EventTimeForNow(),
-                                 0, 0, -ui::MouseWheelEvent::kWheelDelta, 0,
-                                 ui::MouseWheelEvent::kWheelDelta,
-                                 2);  // This must be '2' or it gets silently
-                                      // dropped.
+    ui::ScrollEvent scroll_event(
+        ui::EventType::kScroll, location, ui::EventTimeForNow(), 0, 0,
+        -ui::MouseWheelEvent::kWheelDelta, 0, ui::MouseWheelEvent::kWheelDelta,
+        2);  // This must be '2' or it gets silently
+             // dropped.
     UpdateEventRootLocation(&scroll_event, rwhv_root_);
     rwhv_root_->OnScrollEvent(&scroll_event);
   }
@@ -4870,8 +4870,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessMouseWheelHitTestBrowserTest,
 
 #if !BUILDFLAG(IS_WIN)
   {
-    ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, child_point_in_root,
-                                ui::EventTimeForNow(), 0, 10, 0, 10, 0, 1);
+    ui::ScrollEvent fling_start(ui::EventType::kScrollFlingStart,
+                                child_point_in_root, ui::EventTimeForNow(), 0,
+                                10, 0, 10, 0, 1);
     UpdateEventRootLocation(&fling_start, rwhv_root);
 
     InputEventAckWaiter await_fling_start_in_child(
@@ -4934,7 +4935,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     observer.Wait();
   }
 
-  ui::TouchEvent touch_event(ui::ET_TOUCH_PRESSED, child_center,
+  ui::TouchEvent touch_event(ui::EventType::kTouchPressed, child_center,
                              ui::EventTimeForNow(),
                              ui::PointerDetails(ui::EventPointerType::kTouch,
                                                 /* pointer_id*/ 0,
@@ -5001,7 +5002,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     observer->Wait();
   }
 
-  ui::TouchEvent touch_event(ui::ET_TOUCH_PRESSED, frame_center,
+  ui::TouchEvent touch_event(ui::EventType::kTouchPressed, frame_center,
                              ui::EventTimeForNow(),
                              ui::PointerDetails(ui::EventPointerType::kTouch,
                                                 /* pointer_id*/ 0,
@@ -5096,7 +5097,7 @@ uint32_t SendTouchTapWithExpectedTarget(
     observer.Wait();
   }
   ui::TouchEvent touch_event_pressed(
-      ui::ET_TOUCH_PRESSED, touch_point, ui::EventTimeForNow(),
+      ui::EventType::kTouchPressed, touch_point, ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch,
                          /* pointer_id*/ 0,
                          /* radius_x */ 30.0f,
@@ -5113,7 +5114,7 @@ uint32_t SendTouchTapWithExpectedTarget(
   waiter.Wait();
   EXPECT_EQ(expected_target, router_touch_target);
   ui::TouchEvent touch_event_released(
-      ui::ET_TOUCH_RELEASED, touch_point, ui::EventTimeForNow(),
+      ui::EventType::kTouchReleased, touch_point, ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch,
                          /* pointer_id*/ 0,
                          /* radius_x */ 30.0f,
@@ -5137,7 +5138,7 @@ void SendGestureTapSequenceWithExpectedTarget(
     const uint32_t unique_touch_event_id) {
   auto* root_view_aura = static_cast<RenderWidgetHostViewAura*>(root_view);
 
-  ui::GestureEventDetails gesture_begin_details(ui::ET_GESTURE_BEGIN);
+  ui::GestureEventDetails gesture_begin_details(ui::EventType::kGestureBegin);
   gesture_begin_details.set_device_type(
       ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   ui::GestureEvent gesture_begin_event(
@@ -5146,7 +5147,8 @@ void SendGestureTapSequenceWithExpectedTarget(
   UpdateEventRootLocation(&gesture_begin_event, root_view_aura);
   root_view_aura->OnGestureEvent(&gesture_begin_event);
 
-  ui::GestureEventDetails gesture_tap_down_details(ui::ET_GESTURE_TAP_DOWN);
+  ui::GestureEventDetails gesture_tap_down_details(
+      ui::EventType::kGestureTapDown);
   gesture_tap_down_details.set_device_type(
       ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   ui::GestureEvent gesture_tap_down_event(
@@ -5156,7 +5158,8 @@ void SendGestureTapSequenceWithExpectedTarget(
   root_view_aura->OnGestureEvent(&gesture_tap_down_event);
   EXPECT_EQ(expected_target, router_gesture_target.get());
 
-  ui::GestureEventDetails gesture_show_press_details(ui::ET_GESTURE_SHOW_PRESS);
+  ui::GestureEventDetails gesture_show_press_details(
+      ui::EventType::kGestureShowPress);
   gesture_show_press_details.set_device_type(
       ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   ui::GestureEvent gesture_show_press_event(
@@ -5166,7 +5169,7 @@ void SendGestureTapSequenceWithExpectedTarget(
   root_view_aura->OnGestureEvent(&gesture_show_press_event);
   EXPECT_EQ(expected_target, router_gesture_target.get());
 
-  ui::GestureEventDetails gesture_tap_details(ui::ET_GESTURE_TAP);
+  ui::GestureEventDetails gesture_tap_details(ui::EventType::kGestureTap);
   gesture_tap_details.set_device_type(
       ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   gesture_tap_details.set_tap_count(1);
@@ -5177,7 +5180,7 @@ void SendGestureTapSequenceWithExpectedTarget(
   root_view_aura->OnGestureEvent(&gesture_tap_event);
   EXPECT_EQ(nullptr, router_gesture_target.get());
 
-  ui::GestureEventDetails gesture_end_details(ui::ET_GESTURE_END);
+  ui::GestureEventDetails gesture_end_details(ui::EventType::kGestureEnd);
   gesture_end_details.set_device_type(
       ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   ui::GestureEvent gesture_end_event(gesture_point.x(), gesture_point.y(), 0,
@@ -5195,7 +5198,8 @@ void SendTouchpadPinchSequenceWithExpectedTarget(
     RenderWidgetHostViewBase* expected_target) {
   auto* root_view_aura = static_cast<RenderWidgetHostViewAura*>(root_view);
 
-  ui::GestureEventDetails pinch_begin_details(ui::ET_GESTURE_PINCH_BEGIN);
+  ui::GestureEventDetails pinch_begin_details(
+      ui::EventType::kGesturePinchBegin);
   pinch_begin_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
   ui::GestureEvent pinch_begin(gesture_point.x(), gesture_point.y(), 0,
                                ui::EventTimeForNow(), pinch_begin_details);
@@ -5213,7 +5217,8 @@ void SendTouchpadPinchSequenceWithExpectedTarget(
   EXPECT_EQ(expected_target, router_touchpad_gesture_target);
   target_monitor.ResetEventsReceived();
 
-  ui::GestureEventDetails pinch_update_details(ui::ET_GESTURE_PINCH_UPDATE);
+  ui::GestureEventDetails pinch_update_details(
+      ui::EventType::kGesturePinchUpdate);
   pinch_update_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
   pinch_update_details.set_scale(1.23);
   ui::GestureEvent pinch_update(gesture_point.x(), gesture_point.y(), 0,
@@ -5226,7 +5231,7 @@ void SendTouchpadPinchSequenceWithExpectedTarget(
             blink::WebInputEvent::Type::kGesturePinchUpdate);
   target_monitor.ResetEventsReceived();
 
-  ui::GestureEventDetails pinch_end_details(ui::ET_GESTURE_PINCH_END);
+  ui::GestureEventDetails pinch_end_details(ui::EventType::kGesturePinchEnd);
   pinch_end_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
   ui::GestureEvent pinch_end(gesture_point.x(), gesture_point.y(), 0,
                              ui::EventTimeForNow(), pinch_end_details);
@@ -5247,12 +5252,12 @@ void SendTouchpadFlingSequenceWithExpectedTarget(
     RenderWidgetHostViewBase* expected_target) {
   auto* root_view_aura = static_cast<RenderWidgetHostViewAura*>(root_view);
 
-  ui::ScrollEvent scroll_begin(ui::ET_SCROLL, gesture_point,
+  ui::ScrollEvent scroll_begin(ui::EventType::kScroll, gesture_point,
                                ui::EventTimeForNow(), 0, 1, 0, 1, 0, 2);
   UpdateEventRootLocation(&scroll_begin, root_view_aura);
   root_view_aura->OnScrollEvent(&scroll_begin);
 
-  ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, gesture_point,
+  ui::ScrollEvent fling_start(ui::EventType::kScrollFlingStart, gesture_point,
                               ui::EventTimeForNow(), 0, 1, 0, 1, 0, 1);
   UpdateEventRootLocation(&fling_start, root_view_aura);
   TestInputEventObserver target_monitor(expected_target->GetRenderWidgetHost());
@@ -5278,7 +5283,7 @@ void SendTouchpadFlingSequenceWithExpectedTarget(
   InputEventAckWaiter fling_cancel_waiter(
       expected_target->GetRenderWidgetHost(),
       blink::WebInputEvent::Type::kGestureFlingCancel);
-  ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gesture_point,
+  ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel, gesture_point,
                                ui::EventTimeForNow(), 0, 1, 0, 1, 0, 1);
   UpdateEventRootLocation(&fling_cancel, root_view_aura);
   root_view_aura->OnScrollEvent(&fling_cancel);
@@ -5976,9 +5981,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
   // Next send a mouse up directly targeting the first option, simulating a
   // drag. This requires a ui::MouseEvent because it tests behavior that is
   // above RWH input event routing.
-  ui::MouseEvent mouse_up_event(ui::ET_MOUSE_RELEASED, gfx::Point(10, 5),
-                                gfx::Point(10, 5), ui::EventTimeForNow(),
-                                ui::EF_LEFT_MOUSE_BUTTON,
+  ui::MouseEvent mouse_up_event(ui::EventType::kMouseReleased,
+                                gfx::Point(10, 5), gfx::Point(10, 5),
+                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                 ui::EF_LEFT_MOUSE_BUTTON);
   UpdateEventRootLocation(&mouse_up_event, rwhv_root);
   popup_view->OnMouseEvent(&mouse_up_event);
@@ -6334,7 +6339,7 @@ class SitePerProcessGestureHitTestBrowserTest
     // Use full version of constructor with radius, angle and force since it
     // will crash in the renderer otherwise.
     ui::TouchEvent touch_pressed(
-        ui::ET_TOUCH_PRESSED, position, ui::EventTimeForNow(),
+        ui::EventType::kTouchPressed, position, ui::EventTimeForNow(),
         ui::PointerDetails(ui::EventPointerType::kTouch,
                            /* pointer_id*/ 0,
                            /* radius_x */ 1.0f,
@@ -6346,7 +6351,8 @@ class SitePerProcessGestureHitTestBrowserTest
     rwhva->OnTouchEvent(&touch_pressed);
     waiter.Wait();
 
-    ui::GestureEventDetails gesture_tap_down_details(ui::ET_GESTURE_TAP_DOWN);
+    ui::GestureEventDetails gesture_tap_down_details(
+        ui::EventType::kGestureTapDown);
     gesture_tap_down_details.set_device_type(
         ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
     ui::GestureEvent gesture_tap_down(
@@ -6356,7 +6362,7 @@ class SitePerProcessGestureHitTestBrowserTest
     rwhva->OnGestureEvent(&gesture_tap_down);
 
     ui::GestureEventDetails gesture_scroll_begin_details(
-        ui::ET_GESTURE_SCROLL_BEGIN);
+        ui::EventType::kGestureScrollBegin);
     gesture_scroll_begin_details.set_device_type(
         ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
     gesture_scroll_begin_details.set_touch_points(2);
@@ -6367,7 +6373,7 @@ class SitePerProcessGestureHitTestBrowserTest
     rwhva->OnGestureEvent(&gesture_scroll_begin);
 
     ui::GestureEventDetails gesture_pinch_begin_details(
-        ui::ET_GESTURE_PINCH_BEGIN);
+        ui::EventType::kGesturePinchBegin);
     gesture_pinch_begin_details.set_device_type(
         ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
     ui::GestureEvent gesture_pinch_begin(
@@ -6376,7 +6382,8 @@ class SitePerProcessGestureHitTestBrowserTest
     UpdateEventRootLocation(&gesture_pinch_begin, rwhva);
     rwhva->OnGestureEvent(&gesture_pinch_begin);
 
-    ui::GestureEventDetails gesture_pinch_end_details(ui::ET_GESTURE_PINCH_END);
+    ui::GestureEventDetails gesture_pinch_end_details(
+        ui::EventType::kGesturePinchEnd);
     gesture_pinch_end_details.set_device_type(
         ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
     ui::GestureEvent gesture_pinch_end(
@@ -6386,7 +6393,7 @@ class SitePerProcessGestureHitTestBrowserTest
     rwhva->OnGestureEvent(&gesture_pinch_end);
 
     ui::GestureEventDetails gesture_scroll_end_details(
-        ui::ET_GESTURE_SCROLL_END);
+        ui::EventType::kGestureScrollEnd);
     gesture_scroll_end_details.set_device_type(
         ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
     ui::GestureEvent gesture_scroll_end(
@@ -6399,7 +6406,7 @@ class SitePerProcessGestureHitTestBrowserTest
     // to preserve the touch action set by TouchStart, we end release touch
     // after pinch gestures.
     ui::TouchEvent touch_released(
-        ui::ET_TOUCH_RELEASED, position, ui::EventTimeForNow(),
+        ui::EventType::kTouchReleased, position, ui::EventTimeForNow(),
         ui::PointerDetails(ui::EventPointerType::kTouch,
                            /* pointer_id*/ 0,
                            /* radius_x */ 1.0f,

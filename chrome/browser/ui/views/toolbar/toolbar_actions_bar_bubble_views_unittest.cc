@@ -87,7 +87,7 @@ class ToolbarActionsBarBubbleViewsTest : public ChromeViewsTestBase {
 
     ASSERT_TRUE(button);
     const gfx::Point point(10, 10);
-    const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, point, point,
+    const ui::MouseEvent event(ui::EventType::kMousePressed, point, point,
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
     button->OnMousePressed(event);

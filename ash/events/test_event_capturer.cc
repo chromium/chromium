@@ -32,7 +32,8 @@ void TestEventCapturer::OnMouseEvent(ui::MouseEvent* event) {
   bool save_event = false;
   bool stop_event = false;
   ui::EventType type = event->type();
-  if (type == ui::ET_MOUSE_PRESSED || type == ui::ET_MOUSE_RELEASED) {
+  if (type == ui::EventType::kMousePressed ||
+      type == ui::EventType::kMouseReleased) {
     // Only track left and right mouse button events, ensuring that we get
     // left-click, right-click and double-click.
     if (!(event->flags() & ui::EF_LEFT_MOUSE_BUTTON) &&
@@ -43,13 +44,14 @@ void TestEventCapturer::OnMouseEvent(ui::MouseEvent* event) {
     // Stop event propagation so we don't click on random stuff that
     // might break test assumptions.
     stop_event = true;
-  } else if (type == ui::ET_MOUSE_DRAGGED ||
-             (capture_mouse_move_ && type == ui::ET_MOUSE_MOVED) ||
+  } else if (type == ui::EventType::kMouseDragged ||
+             (capture_mouse_move_ && type == ui::EventType::kMouseMoved) ||
              (capture_mouse_enter_exit_ &&
-              (type == ui::ET_MOUSE_ENTERED || type == ui::ET_MOUSE_EXITED))) {
+              (type == ui::EventType::kMouseEntered ||
+               type == ui::EventType::kMouseExited))) {
     save_event = true;
     stop_event = false;
-  } else if (type == ui::ET_MOUSEWHEEL) {
+  } else if (type == ui::EventType::kMousewheel) {
     // Save it immediately as a MouseWheelEvent.
     wheel_events_.push_back(ui::MouseWheelEvent(
         event->AsMouseWheelEvent()->offset(), event->location(),

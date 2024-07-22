@@ -97,7 +97,7 @@ void TooltipIcon::OnBlur() {
 }
 
 void TooltipIcon::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_TAP) {
+  if (event->type() == ui::EventType::kGestureTap) {
     ShowBubble();
     event->SetHandled();
   }

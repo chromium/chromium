@@ -164,11 +164,11 @@ void LongPress(const views::View* view) {
   event_generator.MoveTouch(view->GetBoundsInScreen().CenterPoint());
   const gfx::Point& press_location = event_generator.current_screen_location();
   ui::GestureEvent long_press =
-      BuildGestureEvent(press_location, ui::ET_GESTURE_LONG_PRESS);
+      BuildGestureEvent(press_location, ui::EventType::kGestureLongPress);
   event_generator.Dispatch(&long_press);
 
   ui::GestureEvent gesture_end =
-      BuildGestureEvent(press_location, ui::ET_GESTURE_END);
+      BuildGestureEvent(press_location, ui::EventType::kGestureEnd);
   event_generator.Dispatch(&gesture_end);
 }
 

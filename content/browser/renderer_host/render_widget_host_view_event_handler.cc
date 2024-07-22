@@ -245,15 +245,18 @@ void RenderWidgetHostViewEventHandler::OnKeyEvent(ui::KeyEvent* event) {
 
   if (event->key_code() == ui::VKEY_RETURN) {
     // Do not forward return key release events if no press event was handled.
-    if (event->type() == ui::ET_KEY_RELEASED && !accept_return_character_)
+    if (event->type() == ui::EventType::kKeyReleased &&
+        !accept_return_character_) {
       return;
+    }
     // Accept return key character events between press and release events.
-    accept_return_character_ = event->type() == ui::ET_KEY_PRESSED;
+    accept_return_character_ = event->type() == ui::EventType::kKeyPressed;
   }
 
-  // Call SetKeyboardFocus() for not only ET_KEY_PRESSED but also
-  // ET_KEY_RELEASED. If a user closed the hotdog menu with ESC key press,
-  // we need to notify focus to Blink on ET_KEY_RELEASED for ESC key.
+  // Call SetKeyboardFocus() for not only EventType::kKeyPressed but also
+  // EventType::kKeyReleased. If a user closed the hotdog menu with ESC key
+  // press, we need to notify focus to Blink on EventType::kKeyReleased for ESC
+  // key.
   SetKeyboardFocus();
   // We don't have to communicate with an input method here.
   input::NativeWebKeyboardEvent webkit_event(*event);
@@ -273,7 +276,7 @@ void RenderWidgetHostViewEventHandler::OnKeyEvent(ui::KeyEvent* event) {
 void RenderWidgetHostViewEventHandler::HandleMouseWheelEvent(
     ui::MouseEvent* event) {
   DCHECK(event);
-  DCHECK_EQ(event->type(), ui::ET_MOUSEWHEEL);
+  DCHECK_EQ(event->type(), ui::EventType::kMousewheel);
 
 #if BUILDFLAG(IS_WIN)
   if (!mouse_locked_) {
@@ -296,7 +299,7 @@ void RenderWidgetHostViewEventHandler::HandleMouseWheelEvent(
   if (mouse_wheel_event.delta_x != 0 || mouse_wheel_event.delta_y != 0) {
     const bool should_route_event = ShouldRouteEvents();
     // End the touchpad scrolling sequence (if such exists) before handling
-    // a ui::ET_MOUSEWHEEL event.
+    // a ui::EventType::kMousewheel event.
     mouse_wheel_phase_handler_.SendWheelEndForTouchpadScrollingIfNeeded(
         should_route_event);
 
@@ -341,24 +344,25 @@ void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
   if (overscroll_controller &&
       overscroll_controller->overscroll_mode() != OVERSCROLL_NONE &&
       event->flags() & ui::EF_IS_SYNTHESIZED &&
-      (event->type() == ui::ET_MOUSE_ENTERED ||
-       event->type() == ui::ET_MOUSE_EXITED ||
-       event->type() == ui::ET_MOUSE_MOVED)) {
+      (event->type() == ui::EventType::kMouseEntered ||
+       event->type() == ui::EventType::kMouseExited ||
+       event->type() == ui::EventType::kMouseMoved)) {
     event->StopPropagation();
     return;
   }
 
-  if (event->type() == ui::ET_MOUSEWHEEL)
+  if (event->type() == ui::EventType::kMousewheel) {
     HandleMouseWheelEvent(event);
-  else {
+  } else {
     bool is_selection_popup = NeedsInputGrab(popup_child_host_view_);
     if (CanRendererHandleEvent(event, mouse_locked_, is_selection_popup) &&
         !(event->flags() & ui::EF_FROM_TOUCH)) {
 
       // Confirm existing composition text on mouse press, to make sure
       // the input caret won't be moved with an ongoing composition text.
-      if (event->type() == ui::ET_MOUSE_PRESSED)
+      if (event->type() == ui::EventType::kMousePressed) {
         FinishImeCompositionSession();
+      }
 
       blink::WebMouseEvent mouse_event = ui::MakeWebMouseEvent(*event);
       ModifyEventMovementAndCoords(*event, &mouse_event);
@@ -371,16 +375,17 @@ void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
 
       // Ensure that we get keyboard focus on mouse down as a plugin window may
       // have grabbed keyboard focus.
-      if (event->type() == ui::ET_MOUSE_PRESSED)
+      if (event->type() == ui::EventType::kMousePressed) {
         SetKeyboardFocus();
+      }
     }
   }
 
   switch (event->type()) {
-    case ui::ET_MOUSE_PRESSED:
+    case ui::EventType::kMousePressed:
       window_->SetCapture();
       break;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       if (!delegate_->NeedsMouseCapture())
         window_->ReleaseCapture();
       break;
@@ -395,7 +400,7 @@ void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
 void RenderWidgetHostViewEventHandler::OnScrollEvent(ui::ScrollEvent* event) {
   TRACE_EVENT0("input", "RenderWidgetHostViewBase::OnScrollEvent");
   const bool should_route_event = ShouldRouteEvents();
-  if (event->type() == ui::ET_SCROLL) {
+  if (event->type() == ui::EventType::kScroll) {
 #if !BUILDFLAG(IS_WIN)
     // TODO(ananta)
     // Investigate if this is true for Windows 8 Metro ASH as well.
@@ -427,8 +432,8 @@ void RenderWidgetHostViewEventHandler::OnScrollEvent(ui::ScrollEvent* event) {
       host_->ForwardWheelEventWithLatencyInfo(mouse_wheel_event,
                                               *event->latency());
     }
-  } else if (event->type() == ui::ET_SCROLL_FLING_START ||
-             event->type() == ui::ET_SCROLL_FLING_CANCEL) {
+  } else if (event->type() == ui::EventType::kScrollFlingStart ||
+             event->type() == ui::EventType::kScrollFlingCancel) {
     blink::WebGestureEvent gesture_event = ui::MakeWebGestureEvent(*event);
     if (should_route_event) {
       host_->delegate()->GetInputEventRouter()->RouteGestureEvent(
@@ -436,11 +441,11 @@ void RenderWidgetHostViewEventHandler::OnScrollEvent(ui::ScrollEvent* event) {
     } else {
       host_->ForwardGestureEvent(gesture_event);
     }
-    if (event->type() == ui::ET_SCROLL_FLING_START) {
+    if (event->type() == ui::EventType::kScrollFlingStart) {
       RecordAction(base::UserMetricsAction("TrackpadScrollFling"));
       // The user has lifted their fingers.
       mouse_wheel_phase_handler_.ResetTouchpadScrollSequence();
-    } else if (event->type() == ui::ET_SCROLL_FLING_CANCEL) {
+    } else if (event->type() == ui::EventType::kScrollFlingCancel) {
       // The user has put their fingers down.
       DCHECK_EQ(blink::WebGestureDevice::kTouchpad,
                 gesture_event.SourceDevice());
@@ -504,12 +509,13 @@ void RenderWidgetHostViewEventHandler::OnGestureEvent(ui::GestureEvent* event) {
 
   // Ensure that we get keyboard focus on tap down as page may lose focus
   // state previously (e.g. tapping outside to dismiss a select pop-up menu).
-  if (event->type() == ui::ET_GESTURE_TAP)
+  if (event->type() == ui::EventType::kGestureTap) {
     SetKeyboardFocus();
+  }
 
-  if ((event->type() == ui::ET_GESTURE_PINCH_BEGIN ||
-       event->type() == ui::ET_GESTURE_PINCH_UPDATE ||
-       event->type() == ui::ET_GESTURE_PINCH_END) &&
+  if ((event->type() == ui::EventType::kGesturePinchBegin ||
+       event->type() == ui::EventType::kGesturePinchUpdate ||
+       event->type() == ui::EventType::kGesturePinchEnd) &&
       !pinch_zoom_enabled_) {
     event->SetHandled();
     return;
@@ -521,11 +527,12 @@ void RenderWidgetHostViewEventHandler::OnGestureEvent(ui::GestureEvent* event) {
 
   // Confirm existing composition text on TAP gesture, to make sure the input
   // caret won't be moved with an ongoing composition text.
-  if (event->type() == ui::ET_GESTURE_TAP)
+  if (event->type() == ui::EventType::kGestureTap) {
     FinishImeCompositionSession();
+  }
 
   blink::WebGestureEvent gesture = ui::MakeWebGestureEvent(*event);
-  if (event->type() == ui::ET_GESTURE_TAP_DOWN) {
+  if (event->type() == ui::EventType::kGestureTapDown) {
     // Webkit does not stop a fling-scroll on tap-down. So explicitly send an
     // event to stop any in-progress flings.
     blink::WebGestureEvent fling_cancel = gesture;
@@ -542,19 +549,19 @@ void RenderWidgetHostViewEventHandler::OnGestureEvent(ui::GestureEvent* event) {
   }
 
   if (gesture.GetType() != blink::WebInputEvent::Type::kUndefined) {
-    if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN) {
+    if (event->type() == ui::EventType::kGestureScrollBegin) {
       // If there is a current scroll going on and a new scroll that isn't
       // wheel based send a synthetic wheel event with kPhaseEnded to cancel
       // the current scroll.
       mouse_wheel_phase_handler_.DispatchPendingWheelEndEvent();
       mouse_wheel_phase_handler_.SendWheelEndForTouchpadScrollingIfNeeded(
           ShouldRouteEvents());
-    } else if (event->type() == ui::ET_SCROLL_FLING_START) {
+    } else if (event->type() == ui::EventType::kScrollFlingStart) {
       RecordAction(base::UserMetricsAction("TouchscreenScrollFling"));
     }
 
-    if (event->type() == ui::ET_GESTURE_SCROLL_END ||
-        event->type() == ui::ET_SCROLL_FLING_START) {
+    if (event->type() == ui::EventType::kGestureScrollEnd ||
+        event->type() == ui::EventType::kScrollFlingStart) {
       // Scrolling with touchscreen has finished. Make sure that the next wheel
       // event will have phase = |kPhaseBegan|. This is for maintaining the
       // correct phase info when some of the wheel events get ignored while a
@@ -588,10 +595,11 @@ bool RenderWidgetHostViewEventHandler::CanRendererHandleEvent(
     const ui::MouseEvent* event,
     bool mouse_locked,
     bool selection_popup) const {
-  if (event->type() == ui::ET_MOUSE_CAPTURE_CHANGED)
+  if (event->type() == ui::EventType::kMouseCaptureChanged) {
     return false;
+  }
 
-  if (event->type() == ui::ET_MOUSE_EXITED) {
+  if (event->type() == ui::EventType::kMouseExited) {
     if (mouse_locked || selection_popup)
       return false;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -668,24 +676,24 @@ void RenderWidgetHostViewEventHandler::ForwardMouseEventToParent(
 void RenderWidgetHostViewEventHandler::HandleGestureForTouchSelection(
     ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_LONG_PRESS:
+    case ui::EventType::kGestureLongPress:
       delegate_->selection_controller()->HandleLongPressEvent(
           event->time_stamp(), event->location_f());
       break;
-    case ui::ET_GESTURE_TAP_DOWN:
+    case ui::EventType::kGestureTapDown:
       if (event->details().tap_down_count() == 2) {
         delegate_->selection_controller()->HandleDoublePressEvent(
             event->time_stamp(), event->location_f());
       }
       break;
-    case ui::ET_GESTURE_TAP:
+    case ui::EventType::kGestureTap:
       delegate_->selection_controller()->HandleTapEvent(
           event->location_f(), event->details().tap_count());
       break;
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       delegate_->selection_controller_client()->OnScrollStarted();
       break;
-    case ui::ET_GESTURE_SCROLL_END:
+    case ui::EventType::kGestureScrollEnd:
       delegate_->selection_controller_client()->OnScrollCompleted();
       break;
     default:
@@ -728,9 +736,9 @@ void RenderWidgetHostViewEventHandler::HandleMouseEventWhileLocked(
 
   DCHECK(!cursor_client || !cursor_client->IsCursorVisible());
 
-  if (event->type() == ui::ET_MOUSEWHEEL)
+  if (event->type() == ui::EventType::kMousewheel) {
     HandleMouseWheelEvent(event);
-  else {
+  } else {
     // If we receive non client mouse messages while we are in the locked state
     // it probably means that the mouse left the borders of our window and
     // needs to be moved back to the center.
@@ -756,7 +764,7 @@ void RenderWidgetHostViewEventHandler::HandleMouseEventWhileLocked(
       }
       // Ensure that we get keyboard focus on mouse down as a plugin window
       // may have grabbed keyboard focus.
-      if (event->type() == ui::ET_MOUSE_PRESSED) {
+      if (event->type() == ui::EventType::kMousePressed) {
         SetKeyboardFocus();
       }
     }

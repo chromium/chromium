@@ -68,16 +68,16 @@ int KeyboardDeviceIdEventRewriter::GetKeyboardDeviceId(
 std::optional<int> KeyboardDeviceIdEventRewriter::GetKeyboardDeviceIdInternal(
     const Event& event) const {
   switch (event.type()) {
-    case ET_KEY_PRESSED:
-    case ET_KEY_RELEASED:
+    case EventType::kKeyPressed:
+    case EventType::kKeyReleased:
       return GetKeyboardDeviceId(event.source_device_id(),
                                  last_keyboard_device_id_,
                                  keyboard_capability_);
-    case ET_MOUSE_PRESSED:
-    case ET_MOUSE_RELEASED:
-    case ET_MOUSEWHEEL:
-    case ET_TOUCH_PRESSED:
-    case ET_TOUCH_RELEASED:
+    case EventType::kMousePressed:
+    case EventType::kMouseReleased:
+    case EventType::kMousewheel:
+    case EventType::kTouchPressed:
+    case EventType::kTouchReleased:
       // Returns device_id for the last keyboard event for motion events.
       // This will be used for modifier flags rewriting in later stage.
       return last_keyboard_device_id_;

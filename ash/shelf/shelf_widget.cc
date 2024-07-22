@@ -1046,7 +1046,7 @@ void ShelfWidget::OnMouseEvent(ui::MouseEvent* event) {
     return;
   }
 
-  if (event->type() == ui::ET_MOUSE_PRESSED) {
+  if (event->type() == ui::EventType::kMousePressed) {
     keyboard::KeyboardUIController::Get()->HideKeyboardImplicitlyByUser();
 
     // If the shelf receives the mouse pressing event, the RootView of the shelf
@@ -1060,8 +1060,9 @@ void ShelfWidget::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void ShelfWidget::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_TAP_DOWN)
+  if (event->type() == ui::EventType::kGestureTapDown) {
     keyboard::KeyboardUIController::Get()->HideKeyboardImplicitlyByUser();
+  }
   ui::GestureEvent event_in_screen(*event);
   gfx::Point location_in_screen(event->location());
   ::wm::ConvertPointToScreen(GetNativeWindow(), &location_in_screen);
@@ -1069,7 +1070,8 @@ void ShelfWidget::OnGestureEvent(ui::GestureEvent* event) {
 
   // Tap on in-app shelf should show a contextual nudge for in-app to home
   // gesture.
-  if (event->type() == ui::ET_GESTURE_TAP && ShelfConfig::Get()->is_in_app() &&
+  if (event->type() == ui::EventType::kGestureTap &&
+      ShelfConfig::Get()->is_in_app() &&
       features::IsHideShelfControlsInTabletModeEnabled()) {
     if (delegate_view_->drag_handle()->MaybeShowDragHandleNudge()) {
       event->StopPropagation();

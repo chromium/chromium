@@ -1389,12 +1389,12 @@ TEST_F(WorkspaceControllerTest, WindowEdgeHitTest) {
     for (int i = 0; i < kNumPoints; ++i) {
       SCOPED_TRACE(points[i].direction);
       const gfx::Point& location = points[i].location;
-      ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, location, location,
+      ui::MouseEvent mouse(ui::EventType::kMouseMoved, location, location,
                            ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
       ui::EventTarget* target = targeter->FindTargetForEvent(root, &mouse);
       EXPECT_EQ(expected_target, target);
 
-      ui::TouchEvent touch(ui::ET_TOUCH_PRESSED, location,
+      ui::TouchEvent touch(ui::EventType::kTouchPressed, location,
                            ui::EventTimeForNow(),
                            ui::PointerDetails(ui::EventPointerType::kTouch, 0));
       target = targeter->FindTargetForEvent(root, &touch);

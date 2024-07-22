@@ -408,12 +408,12 @@ ui::ime::AssistiveWindowButton CreateHighlightedLearnMoreButton() {
 
 // A helper for creating key event.
 ui::KeyEvent CreateKeyEvent(ui::DomKey key, ui::DomCode code) {
-  return ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, code, ui::EF_NONE,
-                      key, ui::EventTimeForNow());
+  return ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_UNKNOWN, code,
+                      ui::EF_NONE, key, ui::EventTimeForNow());
 }
 
 ui::KeyEvent PressKeyWithCtrl(const ui::DomCode& code) {
-  return ui::KeyEvent(ui::EventType::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, code,
+  return ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_UNKNOWN, code,
                       ui::EF_CONTROL_DOWN, ui::DomKey::NONE,
                       ui::EventTimeForNow());
 }

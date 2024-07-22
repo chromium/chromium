@@ -1135,16 +1135,21 @@ TEST_F(WelcomeTourControllerRunTest, BlockInteractionsWithIrrelevantWindow) {
   widget->GetFocusManager()->SetFocusedView(contents_view);
 
   // `contents_view` should be interactive before the Welcome Tour.
-  EXPECT_CALL(*contents_view,
-              OnEvent(Property(&ui::Event::type, Eq(ui::ET_MOUSE_ENTERED))));
-  EXPECT_CALL(*contents_view,
-              OnEvent(Property(&ui::Event::type, Eq(ui::ET_MOUSE_PRESSED))));
-  EXPECT_CALL(*contents_view,
-              OnEvent(Property(&ui::Event::type, Eq(ui::ET_MOUSE_EXITED))));
-  EXPECT_CALL(*contents_view,
-              OnEvent(Property(&ui::Event::type, Eq(ui::ET_KEY_PRESSED))));
-  EXPECT_CALL(*contents_view,
-              OnEvent(Property(&ui::Event::type, Eq(ui::ET_KEY_RELEASED))));
+  EXPECT_CALL(
+      *contents_view,
+      OnEvent(Property(&ui::Event::type, Eq(ui::EventType::kMouseEntered))));
+  EXPECT_CALL(
+      *contents_view,
+      OnEvent(Property(&ui::Event::type, Eq(ui::EventType::kMousePressed))));
+  EXPECT_CALL(
+      *contents_view,
+      OnEvent(Property(&ui::Event::type, Eq(ui::EventType::kMouseExited))));
+  EXPECT_CALL(
+      *contents_view,
+      OnEvent(Property(&ui::Event::type, Eq(ui::EventType::kKeyPressed))));
+  EXPECT_CALL(
+      *contents_view,
+      OnEvent(Property(&ui::Event::type, Eq(ui::EventType::kKeyReleased))));
   LeftClickOn(contents_view);
   PressAndReleaseKey(ui::VKEY_A);
 
@@ -1158,16 +1163,21 @@ TEST_F(WelcomeTourControllerRunTest, BlockInteractionsWithIrrelevantWindow) {
 
   // Perform the same set of actions after the Welcome Tour. `contents_view`
   // should be interactive.
-  EXPECT_CALL(*contents_view,
-              OnEvent(Property(&ui::Event::type, Eq(ui::ET_MOUSE_ENTERED))));
-  EXPECT_CALL(*contents_view,
-              OnEvent(Property(&ui::Event::type, Eq(ui::ET_MOUSE_PRESSED))));
-  EXPECT_CALL(*contents_view,
-              OnEvent(Property(&ui::Event::type, Eq(ui::ET_MOUSE_EXITED))));
-  EXPECT_CALL(*contents_view,
-              OnEvent(Property(&ui::Event::type, Eq(ui::ET_KEY_PRESSED))));
-  EXPECT_CALL(*contents_view,
-              OnEvent(Property(&ui::Event::type, Eq(ui::ET_KEY_RELEASED))));
+  EXPECT_CALL(
+      *contents_view,
+      OnEvent(Property(&ui::Event::type, Eq(ui::EventType::kMouseEntered))));
+  EXPECT_CALL(
+      *contents_view,
+      OnEvent(Property(&ui::Event::type, Eq(ui::EventType::kMousePressed))));
+  EXPECT_CALL(
+      *contents_view,
+      OnEvent(Property(&ui::Event::type, Eq(ui::EventType::kMouseExited))));
+  EXPECT_CALL(
+      *contents_view,
+      OnEvent(Property(&ui::Event::type, Eq(ui::EventType::kKeyPressed))));
+  EXPECT_CALL(
+      *contents_view,
+      OnEvent(Property(&ui::Event::type, Eq(ui::EventType::kKeyReleased))));
   LeftClickOn(contents_view);
   PressAndReleaseKey(ui::VKEY_A);
 }
@@ -1424,8 +1434,8 @@ class WelcomeTourAcceleratorHandlerRunTest
               Property(&ui::KeyEvent::type,
                        Eq(accelerator.key_state() ==
                                   ui::Accelerator::KeyState::PRESSED
-                              ? ui::ET_KEY_PRESSED
-                              : ui::ET_KEY_RELEASED)),
+                              ? ui::EventType::kKeyPressed
+                              : ui::EventType::kKeyReleased)),
               Property(&ui::KeyEvent::key_code, Eq(accelerator.key_code())))))
           .Times(received ? 1u : 0u);
 
@@ -1436,8 +1446,8 @@ class WelcomeTourAcceleratorHandlerRunTest
               Property(&ui::KeyEvent::type,
                        Eq(accelerator.key_state() ==
                                   ui::Accelerator::KeyState::PRESSED
-                              ? ui::ET_KEY_RELEASED
-                              : ui::ET_KEY_PRESSED)),
+                              ? ui::EventType::kKeyReleased
+                              : ui::EventType::kKeyPressed)),
               Property(&ui::KeyEvent::key_code, Eq(accelerator.key_code())))));
 
       // Press and release `accelerator`.

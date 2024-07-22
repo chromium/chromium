@@ -78,7 +78,7 @@ void ScopedWindowTucker::TuckHandleView::PaintButtonContents(
 
 void ScopedWindowTucker::TuckHandleView::OnGestureEvent(
     ui::GestureEvent* event) {
-  if (event->type() != ui::ET_GESTURE_SCROLL_BEGIN) {
+  if (event->type() != ui::EventType::kGestureScrollBegin) {
     views::Button::OnGestureEvent(event);
     return;
   }

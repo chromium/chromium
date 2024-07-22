@@ -27,8 +27,8 @@ void AcceleratorTracker::OnKeyEvent(ui::KeyEvent* event) {
       ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
       ui::EF_COMMAND_DOWN;
   const TrackerData tracker_data(
-      event->type() == ui::ET_KEY_PRESSED ? KeyState::PRESSED
-                                          : KeyState::RELEASED,
+      event->type() == ui::EventType::kKeyPressed ? KeyState::PRESSED
+                                                  : KeyState::RELEASED,
       event->key_code(), event->flags() & kModifiersMask);
 
   // If we find a match in the map:

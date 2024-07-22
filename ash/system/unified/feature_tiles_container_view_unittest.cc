@@ -299,19 +299,19 @@ TEST_F(FeatureTilesContainerViewTest, PaginationGesture) {
   gfx::Point container_origin = container()->GetBoundsInScreen().origin();
   ui::GestureEvent swipe_left_begin(
       container_origin.x(), container_origin.y(), 0, base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, -1, 0));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollBegin, -1, 0));
   ui::GestureEvent swipe_left_update(
       container_origin.x(), container_origin.y(), 0, base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, -1000, 0));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollUpdate, -1000, 0));
   ui::GestureEvent swipe_right_begin(
       container_origin.x(), container_origin.y(), 0, base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 1, 0));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollBegin, 1, 0));
   ui::GestureEvent swipe_right_update(
       container_origin.x(), container_origin.y(), 0, base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, 1000, 0));
-  ui::GestureEvent swipe_end(container_origin.x(), container_origin.y(), 0,
-                             base::TimeTicks(),
-                             ui::GestureEventDetails(ui::ET_GESTURE_END));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollUpdate, 1000, 0));
+  ui::GestureEvent swipe_end(
+      container_origin.x(), container_origin.y(), 0, base::TimeTicks(),
+      ui::GestureEventDetails(ui::EventType::kGestureEnd));
 
   int previous_page = pagination_model()->selected_page();
 
@@ -364,17 +364,17 @@ TEST_F(FeatureTilesContainerViewTest, PaginationScroll) {
 
   gfx::Point container_origin = container()->GetBoundsInScreen().origin();
 
-  ui::ScrollEvent fling_up_start(ui::ET_SCROLL_FLING_START, container_origin,
-                                 base::TimeTicks(), 0, 0, 100, 0, 10,
-                                 kNumberOfFingers);
+  ui::ScrollEvent fling_up_start(ui::EventType::kScrollFlingStart,
+                                 container_origin, base::TimeTicks(), 0, 0, 100,
+                                 0, 10, kNumberOfFingers);
 
-  ui::ScrollEvent fling_down_start(ui::ET_SCROLL_FLING_START, container_origin,
-                                   base::TimeTicks(), 0, 0, -100, 0, 10,
-                                   kNumberOfFingers);
+  ui::ScrollEvent fling_down_start(ui::EventType::kScrollFlingStart,
+                                   container_origin, base::TimeTicks(), 0, 0,
+                                   -100, 0, 10, kNumberOfFingers);
 
-  ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, container_origin,
-                               base::TimeTicks(), 0, 0, 0, 0, 0,
-                               kNumberOfFingers);
+  ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel,
+                               container_origin, base::TimeTicks(), 0, 0, 0, 0,
+                               0, kNumberOfFingers);
 
   int previous_page = pagination_model()->selected_page();
 

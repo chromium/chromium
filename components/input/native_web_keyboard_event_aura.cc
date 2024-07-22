@@ -72,14 +72,14 @@ int WebEventModifiersToEventFlags(int modifiers) {
 class TranslatedKeyEvent : public ui::KeyEvent {
  public:
   static TranslatedKeyEvent* Create(const blink::WebKeyboardEvent& web_event) {
-    ui::EventType type = ui::ET_KEY_RELEASED;
+    ui::EventType type = ui::EventType::kKeyReleased;
     bool is_char = false;
     if (web_event.GetType() == blink::WebInputEvent::Type::kChar) {
       is_char = true;
-      type = ui::ET_KEY_PRESSED;
+      type = ui::EventType::kKeyPressed;
     } else if (web_event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
                web_event.GetType() == blink::WebInputEvent::Type::kKeyDown) {
-      type = ui::ET_KEY_PRESSED;
+      type = ui::EventType::kKeyPressed;
     }
     // look up the DomCode in the table because we can't trust the
     // WebKeyboardEvent as it came from the renderer.

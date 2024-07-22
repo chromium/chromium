@@ -225,7 +225,7 @@ class AdaptiveScreenBrightnessManagerTest
   }
 
   const gfx::Point kEventLocation = gfx::Point(90, 90);
-  const ui::MouseEvent kMouseEvent = ui::MouseEvent(ui::ET_MOUSE_MOVED,
+  const ui::MouseEvent kMouseEvent = ui::MouseEvent(ui::EventType::kMouseMoved,
                                                     kEventLocation,
                                                     kEventLocation,
                                                     base::TimeTicks(),
@@ -592,20 +592,20 @@ TEST_F(AdaptiveScreenBrightnessManagerTest, UserEventCounts) {
   ReportUserActivity(&kMouseEvent);
 
   const ui::TouchEvent kTouchEvent(
-      ui::ET_TOUCH_PRESSED, kEventLocation, base::TimeTicks(),
+      ui::EventType::kTouchPressed, kEventLocation, base::TimeTicks(),
       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   ReportUserActivity(&kTouchEvent);
   ReportUserActivity(&kTouchEvent);
 
   const ui::KeyEvent kKeyEvent(
-      ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, 0,
+      ui::EventType::kKeyPressed, ui::VKEY_A, ui::DomCode::US_A, 0,
       ui::DomKey::FromCharacter('a'), base::TimeTicks());
   ReportUserActivity(&kKeyEvent);
   ReportUserActivity(&kKeyEvent);
   ReportUserActivity(&kKeyEvent);
 
   const ui::TouchEvent kStylusEvent(
-      ui::ET_TOUCH_MOVED, kEventLocation, base::TimeTicks(),
+      ui::EventType::kTouchMoved, kEventLocation, base::TimeTicks(),
       ui::PointerDetails(ui::EventPointerType::kPen, 0), ui::EF_NONE);
   ReportUserActivity(&kStylusEvent);
   ReportUserActivity(&kStylusEvent);

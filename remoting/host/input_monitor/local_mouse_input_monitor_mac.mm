@@ -235,7 +235,8 @@ void LocalMouseInputMonitorMac::Core::OnLocalMouseMoved(
   mouse_position_ = position;
 
   caller_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(on_mouse_move_, position, ui::ET_MOUSE_MOVED));
+      FROM_HERE,
+      base::BindOnce(on_mouse_move_, position, ui::EventType::kMouseMoved));
 }
 
 }  // namespace

@@ -543,7 +543,7 @@ void UILockController::OnKeyEvent(ui::KeyEvent* event) {
 
   if (event->code() == ui::DomCode::ESCAPE &&
       (event->flags() & kExcludedFlags) == 0) {
-    OnEscapeKey(event->type() == ui::ET_KEY_PRESSED);
+    OnEscapeKey(event->type() == ui::EventType::kKeyPressed);
   }
 }
 

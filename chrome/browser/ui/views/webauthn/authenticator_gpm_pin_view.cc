@@ -53,7 +53,7 @@ void AuthenticatorGPMPinView::RequestFocus() {
 
 bool AuthenticatorGPMPinView::HandleKeyEvent(views::Textfield* textfield,
                                              const ui::KeyEvent& event) {
-  if (event.type() != ui::ET_KEY_PRESSED) {
+  if (event.type() != ui::EventType::kKeyPressed) {
     return false;
   }
 

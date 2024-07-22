@@ -227,9 +227,9 @@ TEST_F(WebContentsViewAuraTest, WebContentsDestroyedDuringClick) {
   web_contents()->SetDelegate(&delegate);
 
   // Simulates the mouse press.
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                             0);
+  ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON, 0);
   ui::EventHandler* event_handler = GetView();
   event_handler->OnMouseEvent(&mouse_event);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

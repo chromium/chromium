@@ -63,8 +63,8 @@ class ArcNotificationContentView::MouseEnterExitHandler
   // ui::EventHandler
   void OnMouseEvent(ui::MouseEvent* event) override {
     ui::EventHandler::OnMouseEvent(event);
-    if (event->type() == ui::ET_MOUSE_ENTERED ||
-        event->type() == ui::ET_MOUSE_EXITED) {
+    if (event->type() == ui::EventType::kMouseEntered ||
+        event->type() == ui::EventType::kMouseExited) {
       owner_->UpdateControlButtonsVisibility();
     }
   }
@@ -120,14 +120,14 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
       ui::LocatedEvent* located_event = event->AsLocatedEvent();
       located_event->target()->ConvertEventToTarget(widget->GetNativeWindow(),
                                                     located_event);
-      if (located_event->type() == ui::ET_MOUSE_ENTERED ||
-          located_event->type() == ui::ET_MOUSE_EXITED) {
+      if (located_event->type() == ui::EventType::kMouseEntered ||
+          located_event->type() == ui::EventType::kMouseExited) {
         owner_->UpdateControlButtonsVisibility();
         widget->OnMouseEvent(located_event->AsMouseEvent());
         return;
       }
 
-      if (located_event->type() == ui::ET_MOUSE_MOVED ||
+      if (located_event->type() == ui::EventType::kMouseMoved ||
           located_event->IsMouseWheelEvent()) {
         widget->OnMouseEvent(located_event->AsMouseEvent());
       } else if (located_event->IsScrollEvent()) {
@@ -135,12 +135,12 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
         widget->OnScrollEvent(located_event->AsScrollEvent());
         return;
       } else if (located_event->IsGestureEvent() &&
-                 event->type() != ui::ET_GESTURE_TAP) {
+                 event->type() != ui::EventType::kGestureTap) {
         bool slide_handled_by_android = false;
-        if ((event->type() == ui::ET_GESTURE_SCROLL_BEGIN ||
-             event->type() == ui::ET_GESTURE_SCROLL_UPDATE ||
-             event->type() == ui::ET_GESTURE_SCROLL_END ||
-             event->type() == ui::ET_GESTURE_SWIPE)) {
+        if ((event->type() == ui::EventType::kGestureScrollBegin ||
+             event->type() == ui::EventType::kGestureScrollUpdate ||
+             event->type() == ui::EventType::kGestureScrollEnd ||
+             event->type() == ui::EventType::kGestureSwipe)) {
           gfx::RectF rect =
               owner_->surface_->GetContentWindow()->transform().MapRect(
                   gfx::RectF(owner_->item_->GetSwipeInputRect()));
@@ -148,24 +148,27 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
           views::View::ConvertPointFromWidget(owner_, &location);
           bool contains = rect.Contains(gfx::PointF(location));
 
-          if (contains && event->type() == ui::ET_GESTURE_SCROLL_BEGIN)
+          if (contains && event->type() == ui::EventType::kGestureScrollBegin) {
             swipe_captured_ = true;
+          }
 
           slide_handled_by_android = contains && swipe_captured_;
         }
 
-        if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN)
+        if (event->type() == ui::EventType::kGestureScrollBegin) {
           owner_->item_->CancelPress();
+        }
 
-        if (event->type() == ui::ET_GESTURE_SCROLL_END)
+        if (event->type() == ui::EventType::kGestureScrollEnd) {
           swipe_captured_ = false;
+        }
 
         if (slide_handled_by_android &&
-            event->type() == ui::ET_GESTURE_SCROLL_BEGIN) {
+            event->type() == ui::EventType::kGestureScrollBegin) {
           is_current_slide_handled_by_android_ = true;
           owner_->message_view_->DisableSlideForcibly(true);
         } else if (is_current_slide_handled_by_android_ &&
-                   event->type() == ui::ET_GESTURE_SCROLL_END) {
+                   event->type() == ui::EventType::kGestureScrollEnd) {
           is_current_slide_handled_by_android_ = false;
           owner_->message_view_->DisableSlideForcibly(false);
         }
@@ -180,8 +183,8 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
       // settings are being captured as well, while clicks/taps on the close
       // button won't reach this. Interactions from keyboard are handled
       // separately in ArcNotificationItemImpl.
-      if (event->type() == ui::ET_MOUSE_RELEASED ||
-          event->type() == ui::ET_GESTURE_TAP) {
+      if (event->type() == ui::EventType::kMouseReleased ||
+          event->type() == ui::EventType::kGestureTap) {
         // TODO(b/185943161): Record this in arc::ArcMetricsService.
         UMA_HISTOGRAM_ENUMERATION(
             "Arc.UserInteraction",
@@ -192,11 +195,12 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
       // should go to underlying widget so the swipe control buttons can
       // pressed. See crbug.com/965603.
       if (owner_->slide_in_progress()) {
-        if (event->type() == ui::ET_MOUSE_RELEASED ||
-            event->type() == ui::ET_MOUSE_PRESSED)
+        if (event->type() == ui::EventType::kMouseReleased ||
+            event->type() == ui::EventType::kMousePressed) {
           widget->OnMouseEvent(event->AsMouseEvent());
-        else if (event->type() == ui::ET_GESTURE_TAP)
+        } else if (event->type() == ui::EventType::kGestureTap) {
           widget->OnGestureEvent(event->AsGestureEvent());
+        }
       }
     }
 

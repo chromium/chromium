@@ -110,7 +110,7 @@ void LocalHotkeyInputMonitorChromeos::Core::WillProcessEvent(
 void LocalHotkeyInputMonitorChromeos::Core::DidProcessEvent(
     const ui::PlatformEvent& event) {
   ui::EventType type = ui::EventTypeFromNative(event);
-  if (type == ui::ET_KEY_PRESSED) {
+  if (type == ui::EventType::kKeyPressed) {
     HandleKeyPressed(event);
   }
 }

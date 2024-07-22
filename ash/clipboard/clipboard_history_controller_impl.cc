@@ -212,7 +212,8 @@ ui::KeyEvent SyntheticCtrlV(ui::EventType type) {
 }
 
 ui::KeyEvent SyntheticCtrl(ui::EventType type) {
-  int flags = type == ui::ET_KEY_PRESSED ? ui::EF_CONTROL_DOWN : ui::EF_NONE;
+  int flags =
+      type == ui::EventType::kKeyPressed ? ui::EF_CONTROL_DOWN : ui::EF_NONE;
   ui::DomCode dom_code = ui::DomCode::NONE;
 #if BUILDFLAG(USE_XKBCOMMON)
   dom_code = LookUpXkbDomCode(XKB_KEY_Control_L);
@@ -236,23 +237,23 @@ void SyntheticPaste(
   // TODO(http://b/283533126): Replace this workaround with a long-term fix.
   if (paste_source == crosapi::mojom::ClipboardHistoryControllerShowSource::
                           kControlVLongpress) {
-    ui::KeyEvent v_release = SyntheticCtrlV(ui::ET_KEY_RELEASED);
+    ui::KeyEvent v_release = SyntheticCtrlV(ui::EventType::kKeyReleased);
     host->DeliverEventToSink(&v_release);
 
-    ui::KeyEvent ctrl_release = SyntheticCtrl(ui::ET_KEY_RELEASED);
+    ui::KeyEvent ctrl_release = SyntheticCtrl(ui::EventType::kKeyReleased);
     host->DeliverEventToSink(&ctrl_release);
   }
 
-  ui::KeyEvent ctrl_press = SyntheticCtrl(ui::ET_KEY_PRESSED);
+  ui::KeyEvent ctrl_press = SyntheticCtrl(ui::EventType::kKeyPressed);
   host->DeliverEventToSink(&ctrl_press);
 
-  ui::KeyEvent v_press = SyntheticCtrlV(ui::ET_KEY_PRESSED);
+  ui::KeyEvent v_press = SyntheticCtrlV(ui::EventType::kKeyPressed);
   host->DeliverEventToSink(&v_press);
 
-  ui::KeyEvent v_release = SyntheticCtrlV(ui::ET_KEY_RELEASED);
+  ui::KeyEvent v_release = SyntheticCtrlV(ui::EventType::kKeyReleased);
   host->DeliverEventToSink(&v_release);
 
-  ui::KeyEvent ctrl_release = SyntheticCtrl(ui::ET_KEY_RELEASED);
+  ui::KeyEvent ctrl_release = SyntheticCtrl(ui::EventType::kKeyReleased);
   host->DeliverEventToSink(&ctrl_release);
 }
 

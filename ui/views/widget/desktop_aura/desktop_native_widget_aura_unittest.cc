@@ -437,8 +437,9 @@ TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnCaptureLostTest) {
 }
 
 TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnGestureEventTest) {
-  ui::GestureEvent gesture(0, 0, 0, ui::EventTimeForNow(),
-                           ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
+  ui::GestureEvent gesture(
+      0, 0, 0, ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::EventType::kGestureTapDown));
   static_cast<ui::EventHandler*>(desktop_native_widget_)
       ->OnGestureEvent(&gesture);
 }
@@ -459,12 +460,12 @@ TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnHostWorkspaceChangedTest) {
 }
 
 TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnKeyEventTest) {
-  ui::KeyEvent key(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE);
+  ui::KeyEvent key(ui::EventType::kKeyPressed, ui::VKEY_0, ui::EF_NONE);
   static_cast<ui::EventHandler*>(desktop_native_widget_)->OnKeyEvent(&key);
 }
 
 TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnMouseEventTest) {
-  ui::MouseEvent move(ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent move(ui::EventType::kMouseMoved, gfx::Point(), gfx::Point(),
                       ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
   static_cast<ui::EventHandler*>(desktop_native_widget_)->OnMouseEvent(&move);
 }
@@ -475,8 +476,8 @@ TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnPaintTest) {
 }
 
 TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnScrollEventTest) {
-  ui::ScrollEvent scroll(ui::ET_SCROLL, gfx::Point(), ui::EventTimeForNow(), 0,
-                         0, 0, 0, 0, 0);
+  ui::ScrollEvent scroll(ui::EventType::kScroll, gfx::Point(),
+                         ui::EventTimeForNow(), 0, 0, 0, 0, 0, 0);
   static_cast<ui::EventHandler*>(desktop_native_widget_)
       ->OnScrollEvent(&scroll);
 }
@@ -703,34 +704,42 @@ TEST_F(DesktopNativeWidgetAuraTest, TopLevelOwnedPopupRepositionTest) {
 // and release stopping at |last_event_type|.
 void GenerateMouseEvents(Widget* widget, ui::EventType last_event_type) {
   const gfx::Rect screen_bounds(widget->GetWindowBoundsInScreen());
-  ui::MouseEvent move_event(ui::ET_MOUSE_MOVED, screen_bounds.CenterPoint(),
-                            screen_bounds.CenterPoint(), ui::EventTimeForNow(),
-                            0, 0);
+  ui::MouseEvent move_event(
+      ui::EventType::kMouseMoved, screen_bounds.CenterPoint(),
+      screen_bounds.CenterPoint(), ui::EventTimeForNow(), 0, 0);
   ui::EventSink* sink = WidgetTest::GetEventSink(widget);
   ui::EventDispatchDetails details = sink->OnEventFromSource(&move_event);
-  if (last_event_type == ui::ET_MOUSE_ENTERED || details.dispatcher_destroyed)
+  if (last_event_type == ui::EventType::kMouseEntered ||
+      details.dispatcher_destroyed) {
     return;
+  }
   details = sink->OnEventFromSource(&move_event);
-  if (last_event_type == ui::ET_MOUSE_MOVED || details.dispatcher_destroyed)
+  if (last_event_type == ui::EventType::kMouseMoved ||
+      details.dispatcher_destroyed) {
     return;
+  }
 
-  ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, screen_bounds.CenterPoint(),
-                             screen_bounds.CenterPoint(), ui::EventTimeForNow(),
-                             0, 0);
+  ui::MouseEvent press_event(
+      ui::EventType::kMousePressed, screen_bounds.CenterPoint(),
+      screen_bounds.CenterPoint(), ui::EventTimeForNow(), 0, 0);
   details = sink->OnEventFromSource(&press_event);
-  if (last_event_type == ui::ET_MOUSE_PRESSED || details.dispatcher_destroyed)
+  if (last_event_type == ui::EventType::kMousePressed ||
+      details.dispatcher_destroyed) {
     return;
+  }
 
   gfx::Point end_point(screen_bounds.CenterPoint());
   end_point.Offset(1, 1);
-  ui::MouseEvent drag_event(ui::ET_MOUSE_DRAGGED, end_point, end_point,
+  ui::MouseEvent drag_event(ui::EventType::kMouseDragged, end_point, end_point,
                             ui::EventTimeForNow(), 0, 0);
   details = sink->OnEventFromSource(&drag_event);
-  if (last_event_type == ui::ET_MOUSE_DRAGGED || details.dispatcher_destroyed)
+  if (last_event_type == ui::EventType::kMouseDragged ||
+      details.dispatcher_destroyed) {
     return;
+  }
 
-  ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, end_point, end_point,
-                               ui::EventTimeForNow(), 0, 0);
+  ui::MouseEvent release_event(ui::EventType::kMouseReleased, end_point,
+                               end_point, ui::EventTimeForNow(), 0, 0);
   details = sink->OnEventFromSource(&release_event);
   if (details.dispatcher_destroyed)
     return;
@@ -753,12 +762,12 @@ void RunCloseWidgetDuringDispatchTest(WidgetTest* test,
 
 // Verifies deleting the widget from a mouse pressed event doesn't crash.
 TEST_F(DesktopNativeWidgetAuraTest, CloseWidgetDuringMousePress) {
-  RunCloseWidgetDuringDispatchTest(this, ui::ET_MOUSE_PRESSED);
+  RunCloseWidgetDuringDispatchTest(this, ui::EventType::kMousePressed);
 }
 
 // Verifies deleting the widget from a mouse released event doesn't crash.
 TEST_F(DesktopNativeWidgetAuraTest, CloseWidgetDuringMouseReleased) {
-  RunCloseWidgetDuringDispatchTest(this, ui::ET_MOUSE_RELEASED);
+  RunCloseWidgetDuringDispatchTest(this, ui::EventType::kMouseReleased);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -788,14 +797,14 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_WindowMouseModalityTest) {
   top_level_widget.GetRootView()->AddChildView(widget_view);
 
   gfx::Point cursor_location_main(5, 5);
-  ui::MouseEvent move_main(ui::ET_MOUSE_MOVED, cursor_location_main,
+  ui::MouseEvent move_main(ui::EventType::kMouseMoved, cursor_location_main,
                            cursor_location_main, ui::EventTimeForNow(),
                            ui::EF_NONE, ui::EF_NONE);
   ui::EventDispatchDetails details =
       GetEventSink(&top_level_widget)->OnEventFromSource(&move_main);
   ASSERT_FALSE(details.dispatcher_destroyed);
 
-  EXPECT_EQ(1, widget_view->GetEventCount(ui::ET_MOUSE_ENTERED));
+  EXPECT_EQ(1, widget_view->GetEventCount(ui::EventType::kMouseEntered));
   widget_view->ResetCounts();
 
   // Create a modal dialog and validate that a mouse down message makes it to
@@ -816,23 +825,23 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_WindowMouseModalityTest) {
 
   gfx::Point cursor_location_dialog(100, 100);
   ui::MouseEvent mouse_down_dialog(
-      ui::ET_MOUSE_PRESSED, cursor_location_dialog, cursor_location_dialog,
-      ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+      ui::EventType::kMousePressed, cursor_location_dialog,
+      cursor_location_dialog, ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
   details =
       GetEventSink(&top_level_widget)->OnEventFromSource(&mouse_down_dialog);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  EXPECT_EQ(1, dialog_widget_view->GetEventCount(ui::ET_MOUSE_PRESSED));
+  EXPECT_EQ(1, dialog_widget_view->GetEventCount(ui::EventType::kMousePressed));
 
   // Send a mouse move message to the main window. It should not be received by
   // the main window as the modal dialog is still active.
   gfx::Point cursor_location_main2(6, 6);
-  ui::MouseEvent mouse_down_main(ui::ET_MOUSE_MOVED, cursor_location_main2,
-                                 cursor_location_main2, ui::EventTimeForNow(),
-                                 ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent mouse_down_main(
+      ui::EventType::kMouseMoved, cursor_location_main2, cursor_location_main2,
+      ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
   details =
       GetEventSink(&top_level_widget)->OnEventFromSource(&mouse_down_main);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  EXPECT_EQ(0, widget_view->GetEventCount(ui::ET_MOUSE_MOVED));
+  EXPECT_EQ(0, widget_view->GetEventCount(ui::EventType::kMouseMoved));
 
   modal_dialog_widget->CloseNow();
   top_level_widget.CloseNow();

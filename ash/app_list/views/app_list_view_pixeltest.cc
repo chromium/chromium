@@ -428,7 +428,7 @@ TEST_P(AppListViewTabletPixelTest, BottomGradientZone) {
 TEST_P(AppListViewTabletPixelTest, SearchBoxViewActive) {
   raw_ptr<SearchBoxView> search_box_view =
       GetAppListTestHelper()->GetSearchBoxView();
-  search_box_view->SetSearchBoxActive(true, ui::EventType::ET_UNKNOWN);
+  search_box_view->SetSearchBoxActive(true, ui::EventType::kUnknown);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "search_box_view_active", 7, search_box_view));

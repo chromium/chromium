@@ -178,10 +178,10 @@ std::optional<WebUITabStripDragDirection> DragDirectionFromSwipe(
 
 bool EventTypeCanCloseTabStrip(const ui::EventType& type) {
   switch (type) {
-    case ui::ET_MOUSE_PRESSED:
-    case ui::ET_TOUCH_PRESSED:
-    case ui::ET_GESTURE_TAP:
-    case ui::ET_GESTURE_DOUBLE_TAP:
+    case ui::EventType::kMousePressed:
+    case ui::EventType::kTouchPressed:
+    case ui::EventType::kGestureTap:
+    case ui::EventType::kGestureDoubleTap:
       return true;
     default:
       return false;
@@ -340,7 +340,7 @@ class WebUITabStripContainerView::DragToOpenHandler : public ui::EventHandler {
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override {
     switch (event->type()) {
-      case ui::ET_GESTURE_SCROLL_BEGIN: {
+      case ui::EventType::kGestureScrollBegin: {
         // Only treat this scroll as drag-to-open if the y component is
         // larger. Otherwise, leave the event unhandled. Horizontal
         // scrolls are used in the toolbar, e.g. for text scrolling in
@@ -354,23 +354,23 @@ class WebUITabStripContainerView::DragToOpenHandler : public ui::EventHandler {
         }
         break;
       }
-      case ui::ET_GESTURE_SCROLL_UPDATE:
+      case ui::EventType::kGestureScrollUpdate:
         if (drag_in_progress_) {
           container_->UpdateHeightForDragToOpen(event->details().scroll_y());
           event->SetHandled();
         }
         break;
-      case ui::ET_GESTURE_SCROLL_END:
+      case ui::EventType::kGestureScrollEnd:
         if (drag_in_progress_) {
           container_->EndDragToOpen();
           event->SetHandled();
           drag_in_progress_ = false;
         }
         break;
-      case ui::ET_GESTURE_SWIPE: {
+      case ui::EventType::kGestureSwipe: {
         // If a touch is released at high velocity, the scroll gesture
-        // is "converted" to a swipe gesture. ET_GESTURE_END is still
-        // sent after. From logging, it seems like ET_GESTURE_SCROLL_END
+        // is "converted" to a swipe gesture. EventType::kGestureEnd is still
+        // sent after. From logging, it seems like EventType::kGestureScrollEnd
         // is sometimes also sent after this. It will be ignored here
         // since |drag_in_progress_| is set to false.
         const auto direction = DragDirectionFromSwipe(event);
@@ -392,7 +392,7 @@ class WebUITabStripContainerView::DragToOpenHandler : public ui::EventHandler {
         event->SetHandled();
         drag_in_progress_ = false;
       } break;
-      case ui::ET_GESTURE_END:
+      case ui::EventType::kGestureEnd:
         if (drag_in_progress_) {
           // If an unsupported gesture is sent, ensure that we still
           // finish the drag on gesture end. Otherwise, the container

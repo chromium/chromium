@@ -446,12 +446,12 @@ void TouchPoint::OnMouseReleased(const ui::MouseEvent& event) {
 
 void TouchPoint::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       SetToDrag();
       event->SetHandled();
       break;
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kGestureScrollEnd:
+    case ui::EventType::kScrollFlingStart:
       SetToDefault();
       event->SetHandled();
       break;

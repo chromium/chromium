@@ -49,8 +49,9 @@ class ToolbarActionHoverCardController::EventSniffer
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this,
         controller_->extensions_container_->GetWidget()->GetNativeWindow(),
-        {ui::ET_KEY_PRESSED, ui::ET_KEY_RELEASED, ui::ET_MOUSE_PRESSED,
-         ui::ET_MOUSE_RELEASED, ui::ET_GESTURE_BEGIN, ui::ET_GESTURE_END});
+        {ui::EventType::kKeyPressed, ui::EventType::kKeyReleased,
+         ui::EventType::kMousePressed, ui::EventType::kMouseReleased,
+         ui::EventType::kGestureBegin, ui::EventType::kGestureEnd});
   }
 
   ~EventSniffer() override = default;

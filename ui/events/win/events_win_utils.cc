@@ -177,7 +177,7 @@ EventType EventTypeFromMSG(const CHROME_MSG& native_event) {
     case WM_SYSKEYDOWN:
     case WM_CHAR:
     case WM_SYSCHAR:
-      return ET_KEY_PRESSED;
+      return EventType::kKeyPressed;
     // The WM_DEADCHAR message is posted to the window with the keyboard focus
     // when a WM_KEYUP message is translated. This happens for special keyboard
     // sequences.
@@ -188,7 +188,7 @@ EventType EventTypeFromMSG(const CHROME_MSG& native_event) {
     // function. It specifies the character code of the system dead key.
     case WM_SYSDEADCHAR:
     case WM_SYSKEYUP:
-      return ET_KEY_RELEASED;
+      return EventType::kKeyReleased;
     case WM_LBUTTONDBLCLK:
     case WM_LBUTTONDOWN:
     case WM_MBUTTONDBLCLK:
@@ -205,7 +205,7 @@ EventType EventTypeFromMSG(const CHROME_MSG& native_event) {
     case WM_RBUTTONDOWN:
     case WM_XBUTTONDBLCLK:
     case WM_XBUTTONDOWN:
-      return ET_MOUSE_PRESSED;
+      return EventType::kMousePressed;
     case WM_LBUTTONUP:
     case WM_MBUTTONUP:
     case WM_NCLBUTTONUP:
@@ -214,26 +214,27 @@ EventType EventTypeFromMSG(const CHROME_MSG& native_event) {
     case WM_NCXBUTTONUP:
     case WM_RBUTTONUP:
     case WM_XBUTTONUP:
-      return ET_MOUSE_RELEASED;
+      return EventType::kMouseReleased;
     case WM_MOUSEMOVE:
-      return IsButtonDown(native_event) ? ET_MOUSE_DRAGGED : ET_MOUSE_MOVED;
+      return IsButtonDown(native_event) ? EventType::kMouseDragged
+                                        : EventType::kMouseMoved;
     case WM_NCMOUSEMOVE:
-      return ET_MOUSE_MOVED;
+      return EventType::kMouseMoved;
     case WM_MOUSEWHEEL:
     case WM_MOUSEHWHEEL:
-      return ET_MOUSEWHEEL;
+      return EventType::kMousewheel;
     case WM_MOUSELEAVE:
     case WM_NCMOUSELEAVE:
-      return ET_MOUSE_EXITED;
+      return EventType::kMouseExited;
     case WM_VSCROLL:
     case WM_HSCROLL:
-      return ET_SCROLL;
+      return EventType::kScroll;
     default:
       // We can't NOTREACHED() here, since this function can be called for any
       // message.
       break;
   }
-  return ET_UNKNOWN;
+  return EventType::kUnknown;
 }
 
 int EventFlagsFromMSG(const CHROME_MSG& native_event) {
@@ -520,7 +521,7 @@ CHROME_MSG MSGFromKeyEvent(KeyEvent* event, HWND hwnd) {
   if (event->is_char())
     message = WM_CHAR;
   else
-    message = event->type() == ET_KEY_PRESSED ? WM_KEYDOWN : WM_KEYUP;
+    message = event->type() == EventType::kKeyPressed ? WM_KEYDOWN : WM_KEYUP;
   return {hwnd, message, w_param, l_param};
 }
 

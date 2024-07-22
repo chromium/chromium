@@ -18,7 +18,7 @@ PickerKeyEventHandler::~PickerKeyEventHandler() = default;
 
 bool PickerKeyEventHandler::HandleKeyEvent(const ui::KeyEvent& event) {
   if (active_pseudo_focus_handler_ == nullptr || event.handled() ||
-      event.type() != ui::ET_KEY_PRESSED) {
+      event.type() != ui::EventType::kKeyPressed) {
     return false;
   }
 

@@ -169,14 +169,20 @@ class FullscreenMagnifierControllerTest : public AshTestBase {
     end1.Offset(offset.x(), offset.y());
     end2.Offset(offset.x(), offset.y());
 
-    DispatchTouchEvent(ui::ET_TOUCH_PRESSED, start1, time, pointer_details1);
-    DispatchTouchEvent(ui::ET_TOUCH_PRESSED, start2, time, pointer_details2);
+    DispatchTouchEvent(ui::EventType::kTouchPressed, start1, time,
+                       pointer_details1);
+    DispatchTouchEvent(ui::EventType::kTouchPressed, start2, time,
+                       pointer_details2);
 
-    DispatchTouchEvent(ui::ET_TOUCH_MOVED, end1, time, pointer_details1);
-    DispatchTouchEvent(ui::ET_TOUCH_MOVED, end2, time, pointer_details2);
+    DispatchTouchEvent(ui::EventType::kTouchMoved, end1, time,
+                       pointer_details1);
+    DispatchTouchEvent(ui::EventType::kTouchMoved, end2, time,
+                       pointer_details2);
 
-    DispatchTouchEvent(ui::ET_TOUCH_RELEASED, end1, time, pointer_details1);
-    DispatchTouchEvent(ui::ET_TOUCH_RELEASED, end2, time, pointer_details2);
+    DispatchTouchEvent(ui::EventType::kTouchReleased, end1, time,
+                       pointer_details1);
+    DispatchTouchEvent(ui::EventType::kTouchReleased, end2, time,
+                       pointer_details2);
   }
 
   MagnifierTextInputTestHelper text_input_helper_;
@@ -641,37 +647,39 @@ TEST_F(FullscreenMagnifierControllerTest, PinchZoom) {
   ui::PointerDetails pointer_details2(ui::EventPointerType::kTouch, 1);
 
   // Simulate pinch gesture.
-  DispatchTouchEvent(ui::ET_TOUCH_PRESSED, gfx::Point(900, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchPressed, gfx::Point(900, 10), time,
                      pointer_details1);
-  DispatchTouchEvent(ui::ET_TOUCH_PRESSED, gfx::Point(1100, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchPressed, gfx::Point(1100, 10), time,
                      pointer_details2);
 
   ASSERT_EQ(2u, touch_event_watcher_->touch_events.size());
-  EXPECT_EQ(ui::ET_TOUCH_PRESSED, touch_event_watcher_->touch_events[0].type());
-  EXPECT_EQ(ui::ET_TOUCH_PRESSED, touch_event_watcher_->touch_events[1].type());
+  EXPECT_EQ(ui::EventType::kTouchPressed,
+            touch_event_watcher_->touch_events[0].type());
+  EXPECT_EQ(ui::EventType::kTouchPressed,
+            touch_event_watcher_->touch_events[1].type());
 
-  DispatchTouchEvent(ui::ET_TOUCH_MOVED, gfx::Point(850, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchMoved, gfx::Point(850, 10), time,
                      pointer_details1);
-  DispatchTouchEvent(ui::ET_TOUCH_MOVED, gfx::Point(1150, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchMoved, gfx::Point(1150, 10), time,
                      pointer_details2);
 
   // Expect that event watcher receives touch cancelled events. Magnification
   // controller should cancel existing touches when it detects interested
   // gestures.
   ASSERT_EQ(4u, touch_event_watcher_->touch_events.size());
-  EXPECT_EQ(ui::ET_TOUCH_CANCELLED,
+  EXPECT_EQ(ui::EventType::kTouchCancelled,
             touch_event_watcher_->touch_events[2].type());
-  EXPECT_EQ(ui::ET_TOUCH_CANCELLED,
+  EXPECT_EQ(ui::EventType::kTouchCancelled,
             touch_event_watcher_->touch_events[3].type());
 
-  DispatchTouchEvent(ui::ET_TOUCH_MOVED, gfx::Point(800, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchMoved, gfx::Point(800, 10), time,
                      pointer_details1);
-  DispatchTouchEvent(ui::ET_TOUCH_MOVED, gfx::Point(1200, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchMoved, gfx::Point(1200, 10), time,
                      pointer_details2);
 
-  DispatchTouchEvent(ui::ET_TOUCH_RELEASED, gfx::Point(800, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchReleased, gfx::Point(800, 10), time,
                      pointer_details1);
-  DispatchTouchEvent(ui::ET_TOUCH_RELEASED, gfx::Point(1200, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchReleased, gfx::Point(1200, 10), time,
                      pointer_details2);
 
   // All events are consumed by the controller after it detects gesture.
@@ -684,19 +692,19 @@ TEST_F(FullscreenMagnifierControllerTest, PinchZoom) {
   // Peform pinch gesture again with 4.0x.
   GetFullscreenMagnifierController()->SetScale(4.0f, false /* animate */);
 
-  DispatchTouchEvent(ui::ET_TOUCH_PRESSED, gfx::Point(900, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchPressed, gfx::Point(900, 10), time,
                      pointer_details1);
-  DispatchTouchEvent(ui::ET_TOUCH_PRESSED, gfx::Point(1100, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchPressed, gfx::Point(1100, 10), time,
                      pointer_details2);
 
-  DispatchTouchEvent(ui::ET_TOUCH_MOVED, gfx::Point(800, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchMoved, gfx::Point(800, 10), time,
                      pointer_details1);
-  DispatchTouchEvent(ui::ET_TOUCH_MOVED, gfx::Point(1200, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchMoved, gfx::Point(1200, 10), time,
                      pointer_details2);
 
-  DispatchTouchEvent(ui::ET_TOUCH_RELEASED, gfx::Point(800, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchReleased, gfx::Point(800, 10), time,
                      pointer_details1);
-  DispatchTouchEvent(ui::ET_TOUCH_RELEASED, gfx::Point(1200, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchReleased, gfx::Point(1200, 10), time,
                      pointer_details2);
 
   float ratio_zoomed = GetFullscreenMagnifierController()->GetScale() / 4.0f;
@@ -719,33 +727,35 @@ TEST_F(FullscreenMagnifierControllerTest, PinchZoomCancel) {
   ui::PointerDetails pointer_details2(ui::EventPointerType::kTouch, 1);
 
   // Simulate pinch gesture.
-  DispatchTouchEvent(ui::ET_TOUCH_PRESSED, gfx::Point(900, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchPressed, gfx::Point(900, 10), time,
                      pointer_details1);
-  DispatchTouchEvent(ui::ET_TOUCH_PRESSED, gfx::Point(1100, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchPressed, gfx::Point(1100, 10), time,
                      pointer_details2);
 
   ASSERT_EQ(2u, touch_event_watcher_->touch_events.size());
-  EXPECT_EQ(ui::ET_TOUCH_PRESSED, touch_event_watcher_->touch_events[0].type());
-  EXPECT_EQ(ui::ET_TOUCH_PRESSED, touch_event_watcher_->touch_events[1].type());
+  EXPECT_EQ(ui::EventType::kTouchPressed,
+            touch_event_watcher_->touch_events[0].type());
+  EXPECT_EQ(ui::EventType::kTouchPressed,
+            touch_event_watcher_->touch_events[1].type());
 
-  DispatchTouchEvent(ui::ET_TOUCH_MOVED, gfx::Point(850, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchMoved, gfx::Point(850, 10), time,
                      pointer_details1);
-  DispatchTouchEvent(ui::ET_TOUCH_MOVED, gfx::Point(1150, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchMoved, gfx::Point(1150, 10), time,
                      pointer_details2);
 
   // Expect that event watcher receives touch cancelled events. Magnification
   // controller should cancel existing touches when it detects interested
   // gestures.
   ASSERT_EQ(4u, touch_event_watcher_->touch_events.size());
-  EXPECT_EQ(ui::ET_TOUCH_CANCELLED,
+  EXPECT_EQ(ui::EventType::kTouchCancelled,
             touch_event_watcher_->touch_events[2].type());
-  EXPECT_EQ(ui::ET_TOUCH_CANCELLED,
+  EXPECT_EQ(ui::EventType::kTouchCancelled,
             touch_event_watcher_->touch_events[3].type());
 
   // Dispatch cancelled events (for example due to palm detection).
-  DispatchTouchEvent(ui::ET_TOUCH_CANCELLED, gfx::Point(850, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchCancelled, gfx::Point(850, 10), time,
                      pointer_details1);
-  DispatchTouchEvent(ui::ET_TOUCH_CANCELLED, gfx::Point(1150, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchCancelled, gfx::Point(1150, 10), time,
                      pointer_details2);
 
   // All events are consumed by the controller after it detects gesture.
@@ -753,22 +763,24 @@ TEST_F(FullscreenMagnifierControllerTest, PinchZoomCancel) {
   ASSERT_EQ(0, GetFullscreenMagnifierController()->GetTouchPointsForTesting());
 
   // Touch the screen again.
-  DispatchTouchEvent(ui::ET_TOUCH_PRESSED, gfx::Point(900, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchPressed, gfx::Point(900, 10), time,
                      pointer_details1);
 
   // Events should again be passed to touch_event_watcher.
   ASSERT_EQ(5u, touch_event_watcher_->touch_events.size());
-  EXPECT_EQ(ui::ET_TOUCH_PRESSED, touch_event_watcher_->touch_events[4].type());
+  EXPECT_EQ(ui::EventType::kTouchPressed,
+            touch_event_watcher_->touch_events[4].type());
 
-  DispatchTouchEvent(ui::ET_TOUCH_MOVED, gfx::Point(800, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchMoved, gfx::Point(800, 10), time,
                      pointer_details1);
   ASSERT_EQ(6u, touch_event_watcher_->touch_events.size());
-  EXPECT_EQ(ui::ET_TOUCH_MOVED, touch_event_watcher_->touch_events[5].type());
+  EXPECT_EQ(ui::EventType::kTouchMoved,
+            touch_event_watcher_->touch_events[5].type());
 
-  DispatchTouchEvent(ui::ET_TOUCH_RELEASED, gfx::Point(800, 10), time,
+  DispatchTouchEvent(ui::EventType::kTouchReleased, gfx::Point(800, 10), time,
                      pointer_details1);
   ASSERT_EQ(7u, touch_event_watcher_->touch_events.size());
-  EXPECT_EQ(ui::ET_TOUCH_RELEASED,
+  EXPECT_EQ(ui::EventType::kTouchReleased,
             touch_event_watcher_->touch_events[6].type());
 }
 
@@ -888,19 +900,19 @@ TEST_F(FullscreenMagnifierControllerTest, ZoomsIntoCenter) {
   // Simulate pinch gesture with keeping center of bounding box of touches at
   // (250, 300). Note that GestureProvider dispatches scroll gesture from this
   // touch sequence as well.
-  DispatchTouchEvent(ui::ET_TOUCH_PRESSED, gfx::Point(245, 300), time,
+  DispatchTouchEvent(ui::EventType::kTouchPressed, gfx::Point(245, 300), time,
                      pointer_details1);
-  DispatchTouchEvent(ui::ET_TOUCH_PRESSED, gfx::Point(255, 300), time,
+  DispatchTouchEvent(ui::EventType::kTouchPressed, gfx::Point(255, 300), time,
                      pointer_details2);
 
-  DispatchTouchEvent(ui::ET_TOUCH_MOVED, gfx::Point(145, 300), time,
+  DispatchTouchEvent(ui::EventType::kTouchMoved, gfx::Point(145, 300), time,
                      pointer_details1);
-  DispatchTouchEvent(ui::ET_TOUCH_MOVED, gfx::Point(355, 300), time,
+  DispatchTouchEvent(ui::EventType::kTouchMoved, gfx::Point(355, 300), time,
                      pointer_details2);
 
-  DispatchTouchEvent(ui::ET_TOUCH_RELEASED, gfx::Point(145, 300), time,
+  DispatchTouchEvent(ui::EventType::kTouchReleased, gfx::Point(145, 300), time,
                      pointer_details1);
-  DispatchTouchEvent(ui::ET_TOUCH_RELEASED, gfx::Point(355, 300), time,
+  DispatchTouchEvent(ui::EventType::kTouchReleased, gfx::Point(355, 300), time,
                      pointer_details2);
 
   // Confirms that scale has increased with the gesture.

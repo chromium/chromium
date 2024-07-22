@@ -109,7 +109,7 @@ class ToastOverlay::ToastHoverObserver : public ui::EventObserver {
       : event_monitor_(views::EventMonitor::CreateWindowMonitor(
             /*event_observer=*/this,
             widget_window,
-            {ui::ET_MOUSE_ENTERED, ui::ET_MOUSE_EXITED})),
+            {ui::EventType::kMouseEntered, ui::EventType::kMouseExited})),
         on_hover_state_changed_(std::move(on_hover_state_changed)) {}
 
   ToastHoverObserver(const ToastHoverObserver&) = delete;
@@ -120,10 +120,10 @@ class ToastOverlay::ToastHoverObserver : public ui::EventObserver {
   // ui::EventObserver:
   void OnEvent(const ui::Event& event) override {
     switch (event.type()) {
-      case ui::ET_MOUSE_ENTERED:
+      case ui::EventType::kMouseEntered:
         on_hover_state_changed_.Run(/*is_hovering=*/true);
         break;
-      case ui::ET_MOUSE_EXITED:
+      case ui::EventType::kMouseExited:
         on_hover_state_changed_.Run(/*is_hovering=*/false);
         break;
       default:
@@ -134,8 +134,8 @@ class ToastOverlay::ToastHoverObserver : public ui::EventObserver {
 
  private:
   // While this `EventMonitor` object exists, this object will only look for
-  // `ui::ET_MOUSE_ENTERED` and `ui::ET_MOUSE_EXITED` events that occur in the
-  // `widget_window` indicated in the constructor.
+  // `ui::EventType::kMouseEntered` and `ui::EventType::kMouseExited` events
+  // that occur in the `widget_window` indicated in the constructor.
   std::unique_ptr<views::EventMonitor> event_monitor_;
 
   // This is run whenever the mouse enters or exits the observed window with a

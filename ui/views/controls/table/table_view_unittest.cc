@@ -418,21 +418,21 @@ std::string GetHeaderRowAsString(TableView* table) {
 }
 
 bool PressLeftMouseAt(views::View* target, const gfx::Point& point) {
-  const ui::MouseEvent pressed(ui::ET_MOUSE_PRESSED, point, point,
+  const ui::MouseEvent pressed(ui::EventType::kMousePressed, point, point,
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
   return target->OnMousePressed(pressed);
 }
 
 void ReleaseLeftMouseAt(views::View* target, const gfx::Point& point) {
-  const ui::MouseEvent release(ui::ET_MOUSE_RELEASED, point, point,
+  const ui::MouseEvent release(ui::EventType::kMouseReleased, point, point,
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
   target->OnMouseReleased(release);
 }
 
 bool DragLeftMouseTo(views::View* target, const gfx::Point& point) {
-  const ui::MouseEvent dragged(ui::ET_MOUSE_DRAGGED, point, point,
+  const ui::MouseEvent dragged(ui::EventType::kMouseDragged, point, point,
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                0);
   return target->OnMouseDragged(dragged);
@@ -665,7 +665,8 @@ TEST_P(TableViewTest, SelectedIndexWithNoRows) {
   model_->Clear();
   table_->RequestFocus();
   EXPECT_TRUE(table_->selection_model().empty());
-  table_->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_DOWN, 0));
+  table_->OnKeyPressed(
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_DOWN, 0));
   EXPECT_TRUE(table_->selection_model().empty());
 }
 
@@ -883,11 +884,11 @@ TEST_P(TableViewTest, ResizeViaGesture) {
   // Drag the mouse 1 pixel to the left.
   ui::GestureEvent scroll_begin(
       x, 0, 0, base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollBegin));
   helper_->header()->OnGestureEvent(&scroll_begin);
   ui::GestureEvent scroll_update(
       x - 1, 0, 0, base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollUpdate));
   helper_->header()->OnGestureEvent(&scroll_update);
 
   // This should shrink the first column and pull the second column in.

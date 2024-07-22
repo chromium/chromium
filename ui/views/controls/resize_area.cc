@@ -25,14 +25,14 @@ ui::Cursor ResizeArea::GetCursor(const ui::MouseEvent& event) {
 }
 
 void ResizeArea::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_TAP_DOWN) {
+  if (event->type() == ui::EventType::kGestureTapDown) {
     SetInitialPosition(event->x());
     event->SetHandled();
-  } else if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN ||
-             event->type() == ui::ET_GESTURE_SCROLL_UPDATE) {
+  } else if (event->type() == ui::EventType::kGestureScrollBegin ||
+             event->type() == ui::EventType::kGestureScrollUpdate) {
     ReportResizeAmount(event->x(), false);
     event->SetHandled();
-  } else if (event->type() == ui::ET_GESTURE_END) {
+  } else if (event->type() == ui::EventType::kGestureEnd) {
     ReportResizeAmount(event->x(), true);
     event->SetHandled();
   }

@@ -376,7 +376,7 @@ TEST_F(WindowModalityControllerTest, ReleaseCapture) {
 class TouchTrackerWindowDelegate : public aura::test::TestWindowDelegate {
  public:
   TouchTrackerWindowDelegate()
-      : received_touch_(false), last_event_type_(ui::ET_UNKNOWN) {}
+      : received_touch_(false), last_event_type_(ui::EventType::kUnknown) {}
 
   TouchTrackerWindowDelegate(const TouchTrackerWindowDelegate&) = delete;
   TouchTrackerWindowDelegate& operator=(const TouchTrackerWindowDelegate&) =
@@ -386,7 +386,7 @@ class TouchTrackerWindowDelegate : public aura::test::TestWindowDelegate {
 
   void reset() {
     received_touch_ = false;
-    last_event_type_ = ui::ET_UNKNOWN;
+    last_event_type_ = ui::EventType::kUnknown;
   }
 
   bool received_touch() const { return received_touch_; }
@@ -453,7 +453,7 @@ TEST_F(WindowModalityControllerTest, TouchEvent) {
 
     w11->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
     EXPECT_TRUE(d1.received_touch());
-    EXPECT_EQ(ui::ET_TOUCH_CANCELLED, d1.last_event_type());
+    EXPECT_EQ(ui::EventType::kTouchCancelled, d1.last_event_type());
     EXPECT_FALSE(d11.received_touch());
     EXPECT_FALSE(d12.received_touch());
     EXPECT_FALSE(d2.received_touch());
@@ -477,7 +477,7 @@ TEST_F(WindowModalityControllerTest, TouchEvent) {
     EXPECT_FALSE(d1.received_touch());
     EXPECT_FALSE(d11.received_touch());
     EXPECT_TRUE(d12.received_touch());
-    EXPECT_EQ(ui::ET_TOUCH_CANCELLED, d12.last_event_type());
+    EXPECT_EQ(ui::EventType::kTouchCancelled, d12.last_event_type());
     EXPECT_FALSE(d2.received_touch());
     w11->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_NONE);
   }

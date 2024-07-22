@@ -264,7 +264,7 @@ struct TestKey {
       ui::EventFlags flags = ui::EF_NONE,
       std::vector<std::pair<std::string, std::vector<uint8_t>>> properties =
           {}) {
-    return {ui::ET_KEY_PRESSED,
+    return {ui::EventType::kKeyPressed,
             code,
             (flags & ui::EF_SHIFT_DOWN) ? shifted_key : key,
             keycode,
@@ -279,7 +279,7 @@ struct TestKey {
       std::vector<std::pair<std::string, std::vector<uint8_t>>> properties =
           {}) {
     // Note: modifier flag should not be present on release events.
-    return {ui::ET_KEY_RELEASED,
+    return {ui::EventType::kKeyReleased,
             code,
             (flags & ui::EF_SHIFT_DOWN) ? shifted_key : key,
             keycode,
@@ -792,8 +792,8 @@ class EventRewriterTestBase : public ChromeAshTestBase {
         continue;
       }
       current_flags |= modifier.flag;
-      SendKeyEvent(TestKeyEvent{ui::ET_KEY_PRESSED, modifier.code, modifier.key,
-                                modifier.keycode, current_flags},
+      SendKeyEvent(TestKeyEvent{ui::EventType::kKeyPressed, modifier.code,
+                                modifier.key, modifier.keycode, current_flags},
                    device_id);
     }
     CHECK_EQ(current_flags, extra_flags);
@@ -814,7 +814,7 @@ class EventRewriterTestBase : public ChromeAshTestBase {
         continue;
       }
       current_flags &= ~modifier.flag;
-      SendKeyEvent(TestKeyEvent{ui::ET_KEY_RELEASED, modifier.code,
+      SendKeyEvent(TestKeyEvent{ui::EventType::kKeyReleased, modifier.code,
                                 modifier.key, modifier.keycode, current_flags},
                    device_id);
     }
@@ -1235,9 +1235,9 @@ TEST_P(EventRewriterTest, TestRewriteModifiersNoRemapMultipleKeys) {
                   // factory does not support.
                   // Modifier flags will be annotated to TestKeyEvents inside
                   // RunRewriter.
-                  {TestKeyEvent{ui::ET_KEY_PRESSED, ui::DomCode::US_B,
+                  {TestKeyEvent{ui::EventType::kKeyPressed, ui::DomCode::US_B,
                                 ui::DomKey::FromCharacter('B'), ui::VKEY_B},
-                   TestKeyEvent{ui::ET_KEY_RELEASED, ui::DomCode::US_B,
+                   TestKeyEvent{ui::EventType::kKeyReleased, ui::DomCode::US_B,
                                 ui::DomKey::FromCharacter('B'), ui::VKEY_B}},
                   ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
                       ui::EF_COMMAND_DOWN));
@@ -2982,11 +2982,12 @@ TEST_P(EventRewriterTest, TestRewriteFunctionKeysWilcoLayouts) {
     // F4 -> F4, Search + F4 -> Launch App 1
     EXPECT_EQ(KeyF4::Typed(), RunRewriter(KeyF4::Typed()));
     EXPECT_EQ(
-        std::vector(
-            {TestKeyEvent{ui::ET_KEY_PRESSED, ui::DomCode::F4, ui::DomKey::F4,
-                          ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE},
-             TestKeyEvent{ui::ET_KEY_RELEASED, ui::DomCode::F4, ui::DomKey::F4,
-                          ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE}}),
+        std::vector({TestKeyEvent{ui::EventType::kKeyPressed, ui::DomCode::F4,
+                                  ui::DomKey::F4, ui::VKEY_MEDIA_LAUNCH_APP1,
+                                  ui::EF_NONE},
+                     TestKeyEvent{ui::EventType::kKeyReleased, ui::DomCode::F4,
+                                  ui::DomKey::F4, ui::VKEY_MEDIA_LAUNCH_APP1,
+                                  ui::EF_NONE}}),
         RunRewriter(KeyF4::Typed(), ui::EF_COMMAND_DOWN));
     EXPECT_EQ(KeyF4::Typed(ui::EF_CONTROL_DOWN),
               RunRewriter(KeyF4::Typed(), ui::EF_CONTROL_DOWN));
@@ -3083,10 +3084,10 @@ TEST_P(EventRewriterTest, TestRewriteFunctionKeysWilcoLayouts) {
   // Search + F12 -> Ctrl + Zoom (aka Fullscreen) (Display toggle)
   EXPECT_EQ(
       std::vector(
-          {TestKeyEvent{ui::ET_KEY_PRESSED, ui::DomCode::F12, ui::DomKey::F12,
-                        ui::VKEY_ZOOM, ui::EF_CONTROL_DOWN},
-           TestKeyEvent{ui::ET_KEY_RELEASED, ui::DomCode::F12, ui::DomKey::F12,
-                        ui::VKEY_ZOOM, ui::EF_CONTROL_DOWN}}),
+          {TestKeyEvent{ui::EventType::kKeyPressed, ui::DomCode::F12,
+                        ui::DomKey::F12, ui::VKEY_ZOOM, ui::EF_CONTROL_DOWN},
+           TestKeyEvent{ui::EventType::kKeyReleased, ui::DomCode::F12,
+                        ui::DomKey::F12, ui::VKEY_ZOOM, ui::EF_CONTROL_DOWN}}),
       RunRewriter(KeyF12::Typed(), ui::EF_COMMAND_DOWN));
 
   SetUpKeyboard(kWilco1_5Keyboard);
@@ -3549,7 +3550,7 @@ TEST_P(EventRewriterTest, TestRewriteNonNativeEvent) {
   const int kTouchId = 2;
   gfx::Point location(0, 0);
   ui::TouchEvent press(
-      ui::ET_TOUCH_PRESSED, location, base::TimeTicks(),
+      ui::EventType::kTouchPressed, location, base::TimeTicks(),
       ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
   press.SetFlags(ui::EF_CONTROL_DOWN);
 
@@ -3567,8 +3568,9 @@ TEST_P(EventRewriterTest, TopRowKeysAreFunctionKeys) {
   wm::ActivateWindow(window.get());
 
   // Create a simulated keypress of F1 targetted at the window.
-  ui::KeyEvent press_f1(ui::ET_KEY_PRESSED, ui::VKEY_F1, ui::DomCode::F1,
-                        ui::EF_NONE, ui::DomKey::F1, ui::EventTimeForNow());
+  ui::KeyEvent press_f1(ui::EventType::kKeyPressed, ui::VKEY_F1,
+                        ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1,
+                        ui::EventTimeForNow());
 
   // The event should also not be rewritten if the send-function-keys pref is
   // additionally set, for both apps v2 and regular windows.
@@ -3606,13 +3608,13 @@ void EventRewriterTestBase::DontRewriteIfNotRewritten(int right_click_flags) {
 
   // Test (Alt|Search) + Left click.
   {
-    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(), right_click_flags,
+    ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(), right_click_flags,
                          ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_press(&press);
     test_press.set_source_device_id(kTouchpadId1);
     // Sanity check.
-    EXPECT_EQ(ui::ET_MOUSE_PRESSED, press.type());
+    EXPECT_EQ(ui::EventType::kMousePressed, press.type());
     EXPECT_EQ(right_click_flags, press.flags());
     const ui::MouseEvent result = RewriteMouseButtonEvent(press);
     EXPECT_TRUE(ui::EF_RIGHT_MOUSE_BUTTON & result.flags());
@@ -3620,9 +3622,9 @@ void EventRewriterTestBase::DontRewriteIfNotRewritten(int right_click_flags) {
     EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON, result.changed_button_flags());
   }
   {
-    ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                           ui::EventTimeForNow(), right_click_flags,
-                           ui::EF_LEFT_MOUSE_BUTTON);
+    ui::MouseEvent release(ui::EventType::kMouseReleased, gfx::Point(),
+                           gfx::Point(), ui::EventTimeForNow(),
+                           right_click_flags, ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_release(&release);
     test_release.set_source_device_id(kTouchpadId1);
     const ui::MouseEvent result = RewriteMouseButtonEvent(release);
@@ -3633,9 +3635,9 @@ void EventRewriterTestBase::DontRewriteIfNotRewritten(int right_click_flags) {
 
   // No (ALT|SEARCH) in first click.
   {
-    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                         ui::EF_LEFT_MOUSE_BUTTON);
+    ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(),
+                         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_press(&press);
     test_press.set_source_device_id(kTouchpadId1);
     const ui::MouseEvent result = RewriteMouseButtonEvent(press);
@@ -3643,9 +3645,9 @@ void EventRewriterTestBase::DontRewriteIfNotRewritten(int right_click_flags) {
     EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, result.changed_button_flags());
   }
   {
-    ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                           ui::EventTimeForNow(), right_click_flags,
-                           ui::EF_LEFT_MOUSE_BUTTON);
+    ui::MouseEvent release(ui::EventType::kMouseReleased, gfx::Point(),
+                           gfx::Point(), ui::EventTimeForNow(),
+                           right_click_flags, ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_release(&release);
     test_release.set_source_device_id(kTouchpadId1);
     const ui::MouseEvent result = RewriteMouseButtonEvent(release);
@@ -3655,8 +3657,8 @@ void EventRewriterTestBase::DontRewriteIfNotRewritten(int right_click_flags) {
 
   // ALT on different device.
   {
-    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(), right_click_flags,
+    ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(), right_click_flags,
                          ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_press(&press);
     test_press.set_source_device_id(kTouchpadId2);
@@ -3666,9 +3668,9 @@ void EventRewriterTestBase::DontRewriteIfNotRewritten(int right_click_flags) {
     EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON, result.changed_button_flags());
   }
   {
-    ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                           ui::EventTimeForNow(), right_click_flags,
-                           ui::EF_LEFT_MOUSE_BUTTON);
+    ui::MouseEvent release(ui::EventType::kMouseReleased, gfx::Point(),
+                           gfx::Point(), ui::EventTimeForNow(),
+                           right_click_flags, ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_release(&release);
     test_release.set_source_device_id(kTouchpadId1);
     const ui::MouseEvent result = RewriteMouseButtonEvent(release);
@@ -3676,9 +3678,9 @@ void EventRewriterTestBase::DontRewriteIfNotRewritten(int right_click_flags) {
     EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, result.changed_button_flags());
   }
   {
-    ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                           ui::EventTimeForNow(), right_click_flags,
-                           ui::EF_LEFT_MOUSE_BUTTON);
+    ui::MouseEvent release(ui::EventType::kMouseReleased, gfx::Point(),
+                           gfx::Point(), ui::EventTimeForNow(),
+                           right_click_flags, ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_release(&release);
     test_release.set_source_device_id(kTouchpadId2);
     const ui::MouseEvent result = RewriteMouseButtonEvent(release);
@@ -3689,21 +3691,21 @@ void EventRewriterTestBase::DontRewriteIfNotRewritten(int right_click_flags) {
 
   // No rewrite for non-touchpad devices.
   {
-    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(), right_click_flags,
+    ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(), right_click_flags,
                          ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_press(&press);
     test_press.set_source_device_id(kMouseId);
-    EXPECT_EQ(ui::ET_MOUSE_PRESSED, press.type());
+    EXPECT_EQ(ui::EventType::kMousePressed, press.type());
     EXPECT_EQ(right_click_flags, press.flags());
     const ui::MouseEvent result = RewriteMouseButtonEvent(press);
     EXPECT_EQ(right_click_flags, right_click_flags & result.flags());
     EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, result.changed_button_flags());
   }
   {
-    ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                           ui::EventTimeForNow(), right_click_flags,
-                           ui::EF_LEFT_MOUSE_BUTTON);
+    ui::MouseEvent release(ui::EventType::kMouseReleased, gfx::Point(),
+                           gfx::Point(), ui::EventTimeForNow(),
+                           right_click_flags, ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_release(&release);
     test_release.set_source_device_id(kMouseId);
     const ui::MouseEvent result = RewriteMouseButtonEvent(release);
@@ -3717,13 +3719,13 @@ void EventRewriterTestBase::DontRewriteIfNotRewritten(int right_click_flags) {
   // https://crbug.com/1399284
   // https://crbug.com/1417079
   {
-    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(), right_click_flags,
+    ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(), right_click_flags,
                          ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_press(&press);
     test_press.set_source_device_id(kTouchpadId1);
     // Sanity check.
-    EXPECT_EQ(ui::ET_MOUSE_PRESSED, press.type());
+    EXPECT_EQ(ui::EventType::kMousePressed, press.type());
     EXPECT_EQ(right_click_flags, press.flags());
     const ui::MouseEvent result = RewriteMouseButtonEvent(press);
     EXPECT_TRUE(ui::EF_RIGHT_MOUSE_BUTTON & result.flags());
@@ -3731,9 +3733,9 @@ void EventRewriterTestBase::DontRewriteIfNotRewritten(int right_click_flags) {
     EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON, result.changed_button_flags());
   }
   {
-    ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                           ui::EF_LEFT_MOUSE_BUTTON);
+    ui::MouseEvent release(ui::EventType::kMouseReleased, gfx::Point(),
+                           gfx::Point(), ui::EventTimeForNow(),
+                           ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_release(&release);
     test_release.set_source_device_id(kTouchpadId1);
     const ui::MouseEvent result = RewriteMouseButtonEvent(release);
@@ -3804,13 +3806,13 @@ TEST_P(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
 
   // Alt + Left click => No rewrite.
   {
-    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(), deprecated_flags,
+    ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(), deprecated_flags,
                          ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_press(&press);
     test_press.set_source_device_id(kTouchpadId1);
     // Sanity check.
-    EXPECT_EQ(ui::ET_MOUSE_PRESSED, press.type());
+    EXPECT_EQ(ui::EventType::kMousePressed, press.type());
     EXPECT_EQ(deprecated_flags, press.flags());
     const ui::MouseEvent result = RewriteMouseButtonEvent(press);
 
@@ -3823,9 +3825,9 @@ TEST_P(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
     ClearNotifications();
   }
   {
-    ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                           ui::EventTimeForNow(), deprecated_flags,
-                           ui::EF_LEFT_MOUSE_BUTTON);
+    ui::MouseEvent release(ui::EventType::kMouseReleased, gfx::Point(),
+                           gfx::Point(), ui::EventTimeForNow(),
+                           deprecated_flags, ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_release(&release);
     test_release.set_source_device_id(kTouchpadId1);
     const ui::MouseEvent result = RewriteMouseButtonEvent(release);
@@ -3840,12 +3842,12 @@ TEST_P(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
 
   // No rewrite or notification for non-touchpad devices.
   {
-    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(), deprecated_flags,
+    ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(), deprecated_flags,
                          ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_press(&press);
     test_press.set_source_device_id(kMouseId);
-    EXPECT_EQ(ui::ET_MOUSE_PRESSED, press.type());
+    EXPECT_EQ(ui::EventType::kMousePressed, press.type());
     EXPECT_EQ(deprecated_flags, press.flags());
     const ui::MouseEvent result = RewriteMouseButtonEvent(press);
     EXPECT_EQ(deprecated_flags, deprecated_flags & result.flags());
@@ -3855,9 +3857,9 @@ TEST_P(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
     EXPECT_EQ(message_center_.NotificationCount(), 0u);
   }
   {
-    ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                           ui::EventTimeForNow(), deprecated_flags,
-                           ui::EF_LEFT_MOUSE_BUTTON);
+    ui::MouseEvent release(ui::EventType::kMouseReleased, gfx::Point(),
+                           gfx::Point(), ui::EventTimeForNow(),
+                           deprecated_flags, ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_release(&release);
     test_release.set_source_device_id(kMouseId);
     const ui::MouseEvent result = RewriteMouseButtonEvent(release);
@@ -3901,7 +3903,7 @@ TEST_P(EventRewriterTest, MouseEventDispatchImpl) {
 
   // Test mouse press event is correctly modified.
   gfx::Point location(0, 0);
-  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, location, location,
+  ui::MouseEvent press(ui::EventType::kMousePressed, location, location,
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                        ui::EF_LEFT_MOUSE_BUTTON);
   ui::EventDispatchDetails details = source().Send(&press);
@@ -3909,13 +3911,13 @@ TEST_P(EventRewriterTest, MouseEventDispatchImpl) {
   {
     auto events = TakeEvents();
     ASSERT_EQ(1u, events.size());
-    EXPECT_EQ(ui::ET_MOUSE_PRESSED, events[0]->type());
+    EXPECT_EQ(ui::EventType::kMousePressed, events[0]->type());
     EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
   }
 
   // Test mouse release event is correctly modified and modifier release
   // event is sent. The mouse event should have the correct DIP location.
-  ui::MouseEvent release(ui::ET_MOUSE_RELEASED, location, location,
+  ui::MouseEvent release(ui::EventType::kMouseReleased, location, location,
                          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                          ui::EF_LEFT_MOUSE_BUTTON);
   details = source().Send(&release);
@@ -3923,10 +3925,10 @@ TEST_P(EventRewriterTest, MouseEventDispatchImpl) {
   {
     auto events = TakeEvents();
     ASSERT_EQ(2u, events.size());
-    EXPECT_EQ(ui::ET_MOUSE_RELEASED, events[0]->type());
+    EXPECT_EQ(ui::EventType::kMouseReleased, events[0]->type());
     EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
 
-    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    ASSERT_EQ(ui::EventType::kKeyReleased, events[1]->type());
     EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
   }
 }
@@ -3950,7 +3952,7 @@ TEST_P(EventRewriterTest, MouseWheelEventDispatchImpl) {
     EXPECT_TRUE(events[0]->IsMouseWheelEvent());
     EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
 
-    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    ASSERT_EQ(ui::EventType::kKeyReleased, events[1]->type());
     EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
   }
 
@@ -3970,7 +3972,7 @@ TEST_P(EventRewriterTest, MouseWheelEventDispatchImpl) {
     EXPECT_TRUE(events[0]->IsMouseWheelEvent());
     EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
 
-    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    ASSERT_EQ(ui::EventType::kKeyReleased, events[1]->type());
     EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
   }
 }
@@ -4032,7 +4034,7 @@ TEST_P(EventRewriterTest, MouseEventMaintainNativeEvent) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
 
   gfx::Point location(0, 0);
-  ui::MouseEvent native_event(ui::ET_MOUSE_MOVED, location, location,
+  ui::MouseEvent native_event(ui::EventType::kMouseMoved, location, location,
                               /*time_stamp=*/{}, ui::EF_CONTROL_DOWN,
                               ui::EF_NONE);
   ui::MouseEvent mouse_event(&native_event);
@@ -4109,7 +4111,7 @@ TEST_P(EventRewriterTest, ScrollEventDispatchImpl) {
   SendKeyEvents(KeyLControl::Typed());
 
   gfx::PointF location(0, 0);
-  ui::ScrollEvent scroll(ui::ET_SCROLL, location, location,
+  ui::ScrollEvent scroll(ui::EventType::kScroll, location, location,
                          ui::EventTimeForNow(), 0 /* flag */, 0 /* x_offset */,
                          1 /* y_offset */, 0 /* x_offset_ordinal */,
                          1 /* y_offset_ordinal */, 2 /* finger */);
@@ -4124,8 +4126,8 @@ TEST_P(EventRewriterTest, ScrollEventDispatchImpl) {
 
   // Test FLING_START event deactivates the sticky key, but is modified.
   ui::ScrollEvent fling_start(
-      ui::ET_SCROLL_FLING_START, location, location, ui::EventTimeForNow(),
-      0 /* flag */, 0 /* x_offset */, 0 /* y_offset */,
+      ui::EventType::kScrollFlingStart, location, location,
+      ui::EventTimeForNow(), 0 /* flag */, 0 /* x_offset */, 0 /* y_offset */,
       0 /* x_offset_ordinal */, 0 /* y_offset_ordinal */, 2 /* finger */);
   details = source().Send(&fling_start);
   {
@@ -4134,7 +4136,7 @@ TEST_P(EventRewriterTest, ScrollEventDispatchImpl) {
     EXPECT_TRUE(events[0]->IsScrollEvent());
     EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
 
-    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    ASSERT_EQ(ui::EventType::kKeyReleased, events[1]->type());
     EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
   }
 
@@ -4145,7 +4147,7 @@ TEST_P(EventRewriterTest, ScrollEventDispatchImpl) {
   ASSERT_FALSE(details.dispatcher_destroyed);
   std::ignore = TakeEvents();
 
-  ui::ScrollEvent scroll2(ui::ET_SCROLL, location, location,
+  ui::ScrollEvent scroll2(ui::EventType::kScroll, location, location,
                           ui::EventTimeForNow(), 0 /* flag */, 0 /* x_offset */,
                           -1 /* y_offset */, 0 /* x_offset_ordinal */,
                           -1 /* y_offset_ordinal */, 2 /* finger */);
@@ -4157,7 +4159,7 @@ TEST_P(EventRewriterTest, ScrollEventDispatchImpl) {
     EXPECT_TRUE(events[0]->IsScrollEvent());
     EXPECT_FALSE(events[0]->flags() & ui::EF_CONTROL_DOWN);
 
-    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
+    ASSERT_EQ(ui::EventType::kKeyReleased, events[1]->type());
     EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
   }
 }
@@ -4835,10 +4837,10 @@ TEST_P(EventRewriterTest, AltgrLatch) {
       TestKey<ui::DomCode::QUOTE, ui::DomKey::ALT_GRAPH_LATCH, ui::VKEY_ALTGR,
               ui::EF_ALTGR_DOWN>;
   EXPECT_EQ(std::vector<TestKeyEvent>(
-                {{ui::ET_KEY_PRESSED, ui::DomCode::QUOTE, ui::DomKey::ALT_GRAPH,
-                  ui::VKEY_ALTGR, ui::EF_ALTGR_DOWN},
+                {{ui::EventType::kKeyPressed, ui::DomCode::QUOTE,
+                  ui::DomKey::ALT_GRAPH, ui::VKEY_ALTGR, ui::EF_ALTGR_DOWN},
                  // EF_ALTGR_DOWN is still here, because it's latched.
-                 {ui::ET_KEY_RELEASED, ui::DomCode::QUOTE,
+                 {ui::EventType::kKeyReleased, ui::DomCode::QUOTE,
                   ui::DomKey::ALT_GRAPH, ui::VKEY_ALTGR, ui::EF_ALTGR_DOWN}}),
             SendKeyEvents(KeyLatvianQuote::Typed()));
   EXPECT_EQ(std::vector({KeyA::Pressed(ui::EF_ALTGR_DOWN), KeyA::Released()}),
@@ -4846,8 +4848,8 @@ TEST_P(EventRewriterTest, AltgrLatch) {
 
   // Hold the quote.
   EXPECT_EQ(std::vector<TestKeyEvent>(
-                {{ui::ET_KEY_PRESSED, ui::DomCode::QUOTE, ui::DomKey::ALT_GRAPH,
-                  ui::VKEY_ALTGR, ui::EF_ALTGR_DOWN}}),
+                {{ui::EventType::kKeyPressed, ui::DomCode::QUOTE,
+                  ui::DomKey::ALT_GRAPH, ui::VKEY_ALTGR, ui::EF_ALTGR_DOWN}}),
             SendKeyEvent(KeyLatvianQuote::Pressed()));
 
   // Type A followed by C.
@@ -4857,10 +4859,10 @@ TEST_P(EventRewriterTest, AltgrLatch) {
             SendKeyEvents(KeyC::Typed(ui::EF_ALTGR_DOWN)));
 
   // Release the quote, where EF_ALTGR_DOWN should not be set.
-  EXPECT_EQ(
-      std::vector<TestKeyEvent>({{ui::ET_KEY_RELEASED, ui::DomCode::QUOTE,
-                                  ui::DomKey::ALT_GRAPH, ui::VKEY_ALTGR}}),
-      SendKeyEvent(KeyLatvianQuote::Released()));
+  EXPECT_EQ(std::vector<TestKeyEvent>(
+                {{ui::EventType::kKeyReleased, ui::DomCode::QUOTE,
+                  ui::DomKey::ALT_GRAPH, ui::VKEY_ALTGR}}),
+            SendKeyEvent(KeyLatvianQuote::Released()));
 }
 
 TEST_P(EventRewriterTest, SixPackRemappingsFnBased) {
@@ -5077,8 +5079,9 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedTest) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
       modifier_key_usage_mapping_, 1);
   // Unset CapsLock for each press.
-  SendKeyEvent(TestKeyEvent{ui::ET_KEY_RELEASED, event_.code, event_.key,
-                            event_.keycode, event_.flags, event_.scan_code});
+  SendKeyEvent(TestKeyEvent{ui::EventType::kKeyReleased, event_.code,
+                            event_.key, event_.keycode, event_.flags,
+                            event_.scan_code});
   fake_ime_keyboard_.SetCapsLockEnabled(false);
 
   SetUpKeyboard(kExternalChromeKeyboard);
@@ -5089,8 +5092,9 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedTest) {
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.CrOSExternal",
       modifier_key_usage_mapping_, 1);
-  SendKeyEvent(TestKeyEvent{ui::ET_KEY_RELEASED, event_.code, event_.key,
-                            event_.keycode, event_.flags, event_.scan_code});
+  SendKeyEvent(TestKeyEvent{ui::EventType::kKeyReleased, event_.code,
+                            event_.key, event_.keycode, event_.flags,
+                            event_.scan_code});
   fake_ime_keyboard_.SetCapsLockEnabled(false);
 
   SetUpKeyboard(kExternalAppleKeyboard);
@@ -5101,8 +5105,9 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedTest) {
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.AppleExternal",
       modifier_key_usage_mapping_, 1);
-  SendKeyEvent(TestKeyEvent{ui::ET_KEY_RELEASED, event_.code, event_.key,
-                            event_.keycode, event_.flags, event_.scan_code});
+  SendKeyEvent(TestKeyEvent{ui::EventType::kKeyReleased, event_.code,
+                            event_.key, event_.keycode, event_.flags,
+                            event_.scan_code});
   fake_ime_keyboard_.SetCapsLockEnabled(false);
 
   SetUpKeyboard(kExternalGenericKeyboard);
@@ -5113,8 +5118,9 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedTest) {
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.External",
       modifier_key_usage_mapping_, 1);
-  SendKeyEvent(TestKeyEvent{ui::ET_KEY_RELEASED, event_.code, event_.key,
-                            event_.keycode, event_.flags, event_.scan_code});
+  SendKeyEvent(TestKeyEvent{ui::EventType::kKeyReleased, event_.code,
+                            event_.key, event_.keycode, event_.flags,
+                            event_.scan_code});
   fake_ime_keyboard_.SetCapsLockEnabled(false);
 }
 
@@ -5769,12 +5775,12 @@ TEST_P(EventRewriterRemapToRightClickTest, AltClickRemappedToRightClick) {
   SetSimulateRightClickSetting(ui::mojom::SimulateRightClickModifier::kAlt);
   int flag_masks = ui::EF_ALT_DOWN | ui::EF_LEFT_MOUSE_BUTTON;
 
-  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), flag_masks,
                        ui::EF_LEFT_MOUSE_BUTTON);
   ui::EventTestApi test_press(&press);
   test_press.set_source_device_id(kTouchpadId1);
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, press.type());
+  EXPECT_EQ(ui::EventType::kMousePressed, press.type());
   EXPECT_EQ(flag_masks, press.flags());
   const ui::MouseEvent result = RewriteMouseButtonEvent(press);
   EXPECT_TRUE(ui::EF_RIGHT_MOUSE_BUTTON & result.flags());
@@ -5786,12 +5792,12 @@ TEST_P(EventRewriterRemapToRightClickTest, SearchClickRemappedToRightClick) {
   SetSimulateRightClickSetting(ui::mojom::SimulateRightClickModifier::kSearch);
   int flag_masks = ui::EF_COMMAND_DOWN | ui::EF_LEFT_MOUSE_BUTTON;
 
-  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), flag_masks,
                        ui::EF_LEFT_MOUSE_BUTTON);
   ui::EventTestApi test_press(&press);
   test_press.set_source_device_id(kTouchpadId1);
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, press.type());
+  EXPECT_EQ(ui::EventType::kMousePressed, press.type());
   EXPECT_EQ(flag_masks, press.flags());
   const ui::MouseEvent result = RewriteMouseButtonEvent(press);
   EXPECT_TRUE(ui::EF_RIGHT_MOUSE_BUTTON & result.flags());
@@ -5809,8 +5815,8 @@ TEST_P(EventRewriterRemapToRightClickTest, RemapToRightClickBlockedBySetting) {
   SetSimulateRightClickSetting(ui::mojom::SimulateRightClickModifier::kAlt);
 
   {
-    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(),
+    ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(),
                          ui::EF_COMMAND_DOWN | ui::EF_LEFT_MOUSE_BUTTON,
                          ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_press(&press);
@@ -5823,9 +5829,10 @@ TEST_P(EventRewriterRemapToRightClickTest, RemapToRightClickBlockedBySetting) {
   {
     SetSimulateRightClickSetting(
         ui::mojom::SimulateRightClickModifier::kSearch);
-    ui::MouseEvent press(
-        ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-        ui::EF_ALT_DOWN | ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+    ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(),
+                         ui::EF_ALT_DOWN | ui::EF_LEFT_MOUSE_BUTTON,
+                         ui::EF_LEFT_MOUSE_BUTTON);
     ui::EventTestApi test_press(&press);
     test_press.set_source_device_id(kTouchpadId1);
     const ui::MouseEvent result = RewriteMouseButtonEvent(press);
@@ -5844,9 +5851,10 @@ TEST_P(EventRewriterRemapToRightClickTest, RemapToRightClickIsDisabled) {
       ->OnTouchpadDevicesUpdated(touchpad_devices);
   SetSimulateRightClickSetting(ui::mojom::SimulateRightClickModifier::kNone);
 
-  ui::MouseEvent press(
-      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-      ui::EF_COMMAND_DOWN | ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                       ui::EventTimeForNow(),
+                       ui::EF_COMMAND_DOWN | ui::EF_LEFT_MOUSE_BUTTON,
+                       ui::EF_LEFT_MOUSE_BUTTON);
   ui::EventTestApi test_press(&press);
   test_press.set_source_device_id(kTouchpadId1);
   const ui::MouseEvent result = RewriteMouseButtonEvent(press);

@@ -30,10 +30,12 @@ class AuraObserver : public aura::WindowEventDispatcherObserver {
   void OnWindowEventDispatcherStartedProcessing(
       aura::WindowEventDispatcher* dispatcher,
       const ui::Event& event) override {
-    if (event.type() == ui::EventType::ET_MOUSE_PRESSED)
+    if (event.type() == ui::EventType::kMousePressed) {
       mouse_down_seen_ = true;
-    if (mouse_down_seen_ && event.type() == ui::EventType::ET_MOUSE_RELEASED)
+    }
+    if (mouse_down_seen_ && event.type() == ui::EventType::kMouseReleased) {
       mouse_up_seen_ = true;
+    }
 
     if (Done()) {
       run_loop_->Quit();

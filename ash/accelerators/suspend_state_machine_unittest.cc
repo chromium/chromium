@@ -156,7 +156,7 @@ template <ui::DomCode code,
 struct TestKey {
   // Returns press key event.
   static constexpr TestKeyEvent Pressed(ui::EventFlags flags = ui::EF_NONE) {
-    return {ui::ET_KEY_PRESSED, code,
+    return {ui::EventType::kKeyPressed, code,
             (flags & ui::EF_SHIFT_DOWN) ? shifted_key : key, keycode,
             flags | modifier_flag};
   }
@@ -164,7 +164,7 @@ struct TestKey {
   // Returns release key event.
   static constexpr TestKeyEvent Released(ui::EventFlags flags = ui::EF_NONE) {
     // Note: modifier flag should not be present on release events.
-    return {ui::ET_KEY_RELEASED, code,
+    return {ui::EventType::kKeyReleased, code,
             (flags & ui::EF_SHIFT_DOWN) ? shifted_key : key, keycode, flags};
   }
 };

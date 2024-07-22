@@ -141,7 +141,7 @@ class DialogTest : public ViewsTestBase {
   void ShowDialog() { CreateDialogWidget(std::move(dialog_))->Show(); }
 
   void SimulateKeyPress(ui::KeyboardCode key) {
-    ui::KeyEvent event(ui::ET_KEY_PRESSED, key, ui::EF_NONE);
+    ui::KeyEvent event(ui::EventType::kKeyPressed, key, ui::EF_NONE);
     if (dialog()->GetFocusManager()->OnKeyEvent(event))
       dialog()->GetWidget()->OnKeyEvent(&event);
   }
@@ -203,7 +203,7 @@ TEST_F(DialogTest, EscButtonCancelsWithoutCloseAction) {
 }
 
 TEST_F(DialogTest, ReturnDirectedToOkButtonPlatformStyle) {
-  const ui::KeyEvent return_event(ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
+  const ui::KeyEvent return_event(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
                                   ui::EF_NONE);
   if (PlatformStyle::kReturnClicksFocusedControl) {
     EXPECT_TRUE(dialog()->GetOkButton()->OnKeyPressed(return_event));
@@ -218,7 +218,7 @@ TEST_F(DialogTest, ReturnDirectedToOkButtonPlatformStyle) {
 }
 
 TEST_F(DialogTest, ReturnDirectedToCancelButtonPlatformBehavior) {
-  const ui::KeyEvent return_event(ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
+  const ui::KeyEvent return_event(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
                                   ui::EF_NONE);
   if (PlatformStyle::kReturnClicksFocusedControl) {
     EXPECT_TRUE(dialog()->GetCancelButton()->OnKeyPressed(return_event));

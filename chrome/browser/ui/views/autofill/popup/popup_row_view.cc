@@ -161,17 +161,17 @@ EnterExitHandler::EnterExitHandler(base::RepeatingClosure enter_callback,
 EnterExitHandler::~EnterExitHandler() = default;
 void EnterExitHandler::OnEvent(ui::Event* event) {
   switch (event->type()) {
-    case ui::ET_MOUSE_ENTERED:
+    case ui::EventType::kMouseEntered:
       enter_callback_.Run();
       break;
-    case ui::ET_MOUSE_EXITED:
+    case ui::EventType::kMouseExited:
       exit_callback_.Run();
       break;
-    case ui::ET_GESTURE_TAP_DOWN:
+    case ui::EventType::kGestureTapDown:
       enter_callback_.Run();
       break;
-    case ui::ET_GESTURE_TAP_CANCEL:
-    case ui::ET_GESTURE_END:
+    case ui::EventType::kGestureTapCancel:
+    case ui::EventType::kGestureEnd:
       exit_callback_.Run();
       break;
     default:
@@ -329,7 +329,7 @@ void PopupRowView::OnMouseReleased(const ui::MouseEvent& event) {
 
 void PopupRowView::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP:
+    case ui::EventType::kGestureTap:
       if (content_view_->HitTestPoint(event->location()) && controller_) {
         controller_->AcceptSuggestion(line_number_);
       }

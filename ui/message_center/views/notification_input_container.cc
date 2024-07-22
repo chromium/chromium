@@ -172,14 +172,14 @@ views::ProposedLayout NotificationInputContainer::CalculateProposedLayout(
 
 bool NotificationInputContainer::HandleKeyEvent(views::Textfield* sender,
                                                 const ui::KeyEvent& event) {
-  if (event.type() == ui::ET_KEY_PRESSED &&
+  if (event.type() == ui::EventType::kKeyPressed &&
       event.key_code() == ui::VKEY_RETURN) {
     delegate_->OnNotificationInputSubmit(
         textfield_->GetProperty(kTextfieldIndexKey), textfield_->GetText());
     textfield_->SetText(std::u16string());
     return true;
   }
-  return event.type() == ui::ET_KEY_RELEASED;
+  return event.type() == ui::EventType::kKeyReleased;
 }
 
 void NotificationInputContainer::OnAfterUserAction(views::Textfield* sender) {

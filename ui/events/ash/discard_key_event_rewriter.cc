@@ -19,8 +19,8 @@ EventDispatchDetails DiscardKeyEventRewriter::RewriteEvent(
     const Continuation continuation) {
   std::unique_ptr<Event> rewritten_event;
   switch (event.type()) {
-    case ET_KEY_PRESSED:
-    case ET_KEY_RELEASED: {
+    case EventType::kKeyPressed:
+    case EventType::kKeyReleased: {
       const KeyEvent& key_event = *event.AsKeyEvent();
       if (key_event.code() == DomCode::FN) {
         return DiscardEvent(continuation);

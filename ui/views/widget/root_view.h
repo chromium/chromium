@@ -172,8 +172,9 @@ class VIEWS_EXPORT RootView : public View,
   // screen reader via an alert or live region update.
   AnnounceTextView* GetOrCreateAnnounceView();
 
-  // ET_MOUSE_ENTERED events require the same handling as ET_MOUSE_MOVED, except
-  // that for the former we don't send ET_MOUSE_MOVED to |mouse_move_handler_|.
+  // EventType::kMouseEntered events require the same handling as
+  // EventType::kMouseMoved, except that for the former we don't send
+  // EventType::kMouseMoved to |mouse_move_handler_|.
   void HandleMouseEnteredOrMoved(const ui::MouseEvent& event);
 
   // |view| is the view receiving |event|. This function sends the event to all

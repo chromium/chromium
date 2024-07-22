@@ -115,9 +115,10 @@ TEST_F(KeyboardDrivenEventRewriterTest, PassThrough) {
   };
 
   for (size_t i = 0; i < std::size(kTests); ++i) {
-    EXPECT_EQ(base::StringPrintf("PassThrough ui_flags=%d", kTests[i].ui_flags),
-              GetRewrittenEventAsString(kTests[i].ui_keycode,
-                                        kTests[i].ui_flags, ui::ET_KEY_PRESSED))
+    EXPECT_EQ(
+        base::StringPrintf("PassThrough ui_flags=%d", kTests[i].ui_flags),
+        GetRewrittenEventAsString(kTests[i].ui_keycode, kTests[i].ui_flags,
+                                  ui::EventType::kKeyPressed))
         << "Test case " << i;
   }
 }
@@ -138,9 +139,10 @@ TEST_F(KeyboardDrivenEventRewriterTest, Rewrite) {
   };
 
   for (size_t i = 0; i < std::size(kTests); ++i) {
-    EXPECT_EQ("Rewritten ui_flags=0",
-              GetRewrittenEventAsString(kTests[i].ui_keycode,
-                                        kTests[i].ui_flags, ui::ET_KEY_PRESSED))
+    EXPECT_EQ(
+        "Rewritten ui_flags=0",
+        GetRewrittenEventAsString(kTests[i].ui_keycode, kTests[i].ui_flags,
+                                  ui::EventType::kKeyPressed))
         << "Test case " << i;
   }
 }

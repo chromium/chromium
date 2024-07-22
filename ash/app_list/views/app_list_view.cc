@@ -443,9 +443,10 @@ void AppListView::HandleClickOrTap(ui::LocatedEvent* event) {
   }
 
   if ((event->IsGestureEvent() &&
-       (event->AsGestureEvent()->type() == ui::ET_GESTURE_LONG_PRESS ||
-        event->AsGestureEvent()->type() == ui::ET_GESTURE_LONG_TAP ||
-        event->AsGestureEvent()->type() == ui::ET_GESTURE_TWO_FINGER_TAP)) ||
+       (event->AsGestureEvent()->type() == ui::EventType::kGestureLongPress ||
+        event->AsGestureEvent()->type() == ui::EventType::kGestureLongTap ||
+        event->AsGestureEvent()->type() ==
+            ui::EventType::kGestureTwoFingerTap)) ||
       (event->IsMouseEvent() &&
        event->AsMouseEvent()->IsOnlyRightMouseButton())) {
     // Home launcher is shown on top of wallpaper with transparent background.
@@ -543,19 +544,19 @@ void AppListView::OnMouseEvent(ui::MouseEvent* event) {
     return;
 
   switch (event->type()) {
-    // TODO(https://crbug.com/1356661): Consider not marking ET_MOUSE_DRAGGED as
+    // TODO(https://crbug.com/1356661): Consider not marking kMouseDragged as
     // handled here.
-    case ui::ET_MOUSE_PRESSED:
-    case ui::ET_MOUSE_DRAGGED:
+    case ui::EventType::kMousePressed:
+    case ui::EventType::kMouseDragged:
       event->SetHandled();
       break;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       event->SetHandled();
       HandleClickOrTap(event);
       break;
-    case ui::ET_MOUSEWHEEL:
+    case ui::EventType::kMousewheel:
       if (HandleScroll(event->location(), event->AsMouseWheelEvent()->offset(),
-                       ui::ET_MOUSEWHEEL)) {
+                       ui::EventType::kMousewheel)) {
         event->SetHandled();
       }
       break;
@@ -570,10 +571,10 @@ void AppListView::OnGestureEvent(ui::GestureEvent* event) {
     return;
 
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP:
-    case ui::ET_GESTURE_LONG_PRESS:
-    case ui::ET_GESTURE_LONG_TAP:
-    case ui::ET_GESTURE_TWO_FINGER_TAP:
+    case ui::EventType::kGestureTap:
+    case ui::EventType::kGestureLongPress:
+    case ui::EventType::kGestureLongTap:
+    case ui::EventType::kGestureTwoFingerTap:
       event->SetHandled();
       HandleClickOrTap(event);
       break;
@@ -785,8 +786,9 @@ void AppListView::RedirectKeyEventToSearchBox(ui::KeyEvent* event) {
 
   // Insert it into search box if the key event is a character. Released
   // key should not be handled to prevent inserting duplicate character.
-  if (event->type() == ui::ET_KEY_PRESSED)
+  if (event->type() == ui::EventType::kKeyPressed) {
     search_box->InsertChar(*event);
+  }
 }
 
 void AppListView::OnScreenKeyboardShown(bool shown) {

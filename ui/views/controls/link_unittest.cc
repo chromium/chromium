@@ -76,7 +76,7 @@ TEST_F(LinkTest, TestLinkClick) {
       [](bool* link_clicked) { *link_clicked = true; }, &link_clicked));
   link()->SizeToPreferredSize();
   gfx::Point point = link()->bounds().CenterPoint();
-  ui::MouseEvent release(ui::ET_MOUSE_RELEASED, point, point,
+  ui::MouseEvent release(ui::EventType::kMouseReleased, point, point,
                          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                          ui::EF_LEFT_MOUSE_BUTTON);
   link()->OnMouseReleased(release);
@@ -89,8 +89,9 @@ TEST_F(LinkTest, TestLinkTap) {
       [](bool* link_clicked) { *link_clicked = true; }, &link_clicked));
   link()->SizeToPreferredSize();
   gfx::Point point = link()->bounds().CenterPoint();
-  ui::GestureEvent tap_event(point.x(), point.y(), 0, ui::EventTimeForNow(),
-                             ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+  ui::GestureEvent tap_event(
+      point.x(), point.y(), 0, ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::EventType::kGestureTap));
   link()->OnGestureEvent(&tap_event);
   EXPECT_TRUE(link_clicked);
 }

@@ -215,18 +215,19 @@ class MediaNotificationViewImplTest : public views::ViewsTestBase {
     EXPECT_TRUE(button->GetVisible());
 
     views::test::ButtonTestApi(button).NotifyClick(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), 0, 0));
   }
 
   void SimulateHeaderClick() {
     views::test::ButtonTestApi(header_row())
-        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(), 0, 0));
   }
 
   void SimulateTab() {
-    ui::KeyEvent pressed_tab(ui::ET_KEY_PRESSED, ui::VKEY_TAB, ui::EF_NONE);
+    ui::KeyEvent pressed_tab(ui::EventType::kKeyPressed, ui::VKEY_TAB,
+                             ui::EF_NONE);
     view()->GetFocusManager()->OnKeyEvent(pressed_tab);
   }
 

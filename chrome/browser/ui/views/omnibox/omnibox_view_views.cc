@@ -1207,7 +1207,7 @@ void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
   PermitExternalProtocolHandler();
 
   const bool gesture_should_take_focus =
-      !HasFocus() && event->type() == ui::ET_GESTURE_TAP;
+      !HasFocus() && event->type() == ui::EventType::kGestureTap;
   if (gesture_should_take_focus) {
     select_all_on_gesture_tap_ = true;
 
@@ -1224,19 +1224,20 @@ void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
 
   views::Textfield::OnGestureEvent(event);
 
-  if (select_all_on_gesture_tap_ && event->type() == ui::ET_GESTURE_TAP) {
+  if (select_all_on_gesture_tap_ &&
+      event->type() == ui::EventType::kGestureTap) {
     // Select all in the reverse direction so as not to scroll the caret
     // into view and shift the contents jarringly.
     SelectAll(true);
   }
 
-  if (event->type() == ui::ET_GESTURE_TAP ||
-      event->type() == ui::ET_GESTURE_TAP_CANCEL ||
-      event->type() == ui::ET_GESTURE_TWO_FINGER_TAP ||
-      event->type() == ui::ET_GESTURE_SCROLL_BEGIN ||
-      event->type() == ui::ET_GESTURE_PINCH_BEGIN ||
-      event->type() == ui::ET_GESTURE_LONG_PRESS ||
-      event->type() == ui::ET_GESTURE_LONG_TAP) {
+  if (event->type() == ui::EventType::kGestureTap ||
+      event->type() == ui::EventType::kGestureTapCancel ||
+      event->type() == ui::EventType::kGestureTwoFingerTap ||
+      event->type() == ui::EventType::kGestureScrollBegin ||
+      event->type() == ui::EventType::kGesturePinchBegin ||
+      event->type() == ui::EventType::kGestureLongPress ||
+      event->type() == ui::EventType::kGestureLongTap) {
     select_all_on_gesture_tap_ = false;
   }
 }
@@ -1568,7 +1569,7 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
                                       const ui::KeyEvent& event) {
   PermitExternalProtocolHandler();
 
-  if (event.type() == ui::ET_KEY_RELEASED) {
+  if (event.type() == ui::EventType::kKeyReleased) {
     // The omnibox contents may change while the control key is pressed.
     if (event.key_code() == ui::VKEY_CONTROL)
       model()->OnControlKeyChanged(false);

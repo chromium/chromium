@@ -6233,11 +6233,11 @@ TEST_P(DesksTest, GradientsVisibility) {
   const gfx::Point center_point = desks_bar->bounds().CenterPoint();
   ui::GestureEvent scroll_begin(
       center_point.x(), center_point.y(), ui::EF_NONE, base::TimeTicks::Now(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 1, 0));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollBegin, 1, 0));
   scroll_view->OnGestureEvent(&scroll_begin);
   ui::GestureEvent scroll_update(
       center_point.x(), center_point.y(), ui::EF_NONE, base::TimeTicks::Now(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, -100, 0));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollUpdate, -100, 0));
   scroll_view->OnGestureEvent(&scroll_update);
   EXPECT_TRUE(scroll_view->is_scrolling());
   EXPECT_TRUE(left_button->GetVisible());
@@ -6252,7 +6252,7 @@ TEST_P(DesksTest, GradientsVisibility) {
   ui::GestureEvent second_scroll_update(
       center_point.x() - 100, center_point.y(), ui::EF_NONE,
       base::TimeTicks::Now(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, 100, 0));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollUpdate, 100, 0));
   scroll_view->OnGestureEvent(&second_scroll_update);
   EXPECT_TRUE(scroll_view->is_scrolling());
   EXPECT_FALSE(left_button->GetVisible());
@@ -6264,7 +6264,7 @@ TEST_P(DesksTest, GradientsVisibility) {
 
   ui::GestureEvent scroll_end(
       center_point.x(), center_point.y(), ui::EF_NONE, base::TimeTicks::Now(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollEnd));
   scroll_view->OnGestureEvent(&scroll_end);
   EXPECT_FALSE(scroll_view->is_scrolling());
   EXPECT_FALSE(left_button->GetVisible());

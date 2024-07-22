@@ -104,12 +104,12 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
       return;
     }
 
-    if (event->type() == ui::ET_MOUSE_PRESSED) {
+    if (event->type() == ui::EventType::kMousePressed) {
       ProcessPressedEvent(*event);
       return;
     }
 
-    if (event->type() == ui::ET_MOUSE_MOVED && anchor_view_) {
+    if (event->type() == ui::EventType::kMouseMoved && anchor_view_) {
       const gfx::Point screen_location =
           event->target()->GetScreenLocation(*event);
       // Stop the existing timer if either the anchor or the menu contain the
@@ -131,7 +131,7 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
       return;
     }
 
-    if (event->type() == ui::ET_TOUCH_PRESSED) {
+    if (event->type() == ui::EventType::kTouchPressed) {
       ProcessPressedEvent(*event);
     }
   }

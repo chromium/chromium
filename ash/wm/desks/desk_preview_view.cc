@@ -640,18 +640,18 @@ void DeskPreviewView::OnGestureEvent(ui::GestureEvent* event) {
 
   switch (event->type()) {
     // Only long press can trigger drag & drop.
-    case ui::ET_GESTURE_LONG_PRESS:
+    case ui::EventType::kGestureLongPress:
       owner_bar->HandleLongPressEvent(mini_view_, *event);
       event->SetHandled();
       break;
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       [[fallthrough]];
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       owner_bar->HandleDragEvent(mini_view_, *event);
       if (owner_bar->IsDraggingDesk())
         event->SetHandled();
       break;
-    case ui::ET_GESTURE_END:
+    case ui::EventType::kGestureEnd:
       if (owner_bar->HandleReleaseEvent(mini_view_, *event))
         event->SetHandled();
       break;

@@ -459,7 +459,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
 
   void PerformMouseClickOnButton(views::Button* button) {
     views::test::ButtonTestApi(button).NotifyClick(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
   }
 

@@ -339,14 +339,14 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       details.GetEventLatencyMetadata();
 
   switch (details.type()) {
-    case ET_GESTURE_SHOW_PRESS:
+    case EventType::kGestureShowPress:
       gesture.SetType(WebInputEvent::Type::kGestureShowPress);
       gesture.data.show_press.width =
           IfNanUseMaxFloat(details.bounding_box_f().width());
       gesture.data.show_press.height =
           IfNanUseMaxFloat(details.bounding_box_f().height());
       break;
-    case ET_GESTURE_DOUBLE_TAP:
+    case EventType::kGestureDoubleTap:
       gesture.SetType(WebInputEvent::Type::kGestureDoubleTap);
       DCHECK_EQ(1, details.tap_count());
       gesture.data.tap.tap_count = details.tap_count();
@@ -356,7 +356,7 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
           IfNanUseMaxFloat(details.bounding_box_f().height());
       gesture.SetNeedsWheelEvent(source_device == WebGestureDevice::kTouchpad);
       break;
-    case ET_GESTURE_TAP:
+    case EventType::kGestureTap:
       gesture.SetType(WebInputEvent::Type::kGestureTap);
       DCHECK_GE(details.tap_count(), 1);
       gesture.data.tap.tap_count = details.tap_count();
@@ -365,7 +365,7 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       gesture.data.tap.height =
           IfNanUseMaxFloat(details.bounding_box_f().height());
       break;
-    case ET_GESTURE_TAP_UNCONFIRMED:
+    case EventType::kGestureTapUnconfirmed:
       gesture.SetType(WebInputEvent::Type::kGestureTapUnconfirmed);
       DCHECK_EQ(1, details.tap_count());
       gesture.data.tap.tap_count = details.tap_count();
@@ -374,35 +374,35 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       gesture.data.tap.height =
           IfNanUseMaxFloat(details.bounding_box_f().height());
       break;
-    case ET_GESTURE_SHORT_PRESS:
+    case EventType::kGestureShortPress:
       gesture.SetType(WebInputEvent::Type::kGestureShortPress);
       gesture.data.long_press.width =
           IfNanUseMaxFloat(details.bounding_box_f().width());
       gesture.data.long_press.height =
           IfNanUseMaxFloat(details.bounding_box_f().height());
       break;
-    case ET_GESTURE_LONG_PRESS:
+    case EventType::kGestureLongPress:
       gesture.SetType(WebInputEvent::Type::kGestureLongPress);
       gesture.data.long_press.width =
           IfNanUseMaxFloat(details.bounding_box_f().width());
       gesture.data.long_press.height =
           IfNanUseMaxFloat(details.bounding_box_f().height());
       break;
-    case ET_GESTURE_LONG_TAP:
+    case EventType::kGestureLongTap:
       gesture.SetType(WebInputEvent::Type::kGestureLongTap);
       gesture.data.long_press.width =
           IfNanUseMaxFloat(details.bounding_box_f().width());
       gesture.data.long_press.height =
           IfNanUseMaxFloat(details.bounding_box_f().height());
       break;
-    case ET_GESTURE_TWO_FINGER_TAP:
+    case EventType::kGestureTwoFingerTap:
       gesture.SetType(blink::WebInputEvent::Type::kGestureTwoFingerTap);
       gesture.data.two_finger_tap.first_finger_width =
           IfNanUseMaxFloat(details.first_finger_width());
       gesture.data.two_finger_tap.first_finger_height =
           IfNanUseMaxFloat(details.first_finger_height());
       break;
-    case ET_GESTURE_SCROLL_BEGIN:
+    case EventType::kGestureScrollBegin:
       gesture.SetType(WebInputEvent::Type::kGestureScrollBegin);
       gesture.data.scroll_begin.pointer_count = details.touch_points();
       gesture.data.scroll_begin.delta_x_hint =
@@ -413,7 +413,7 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       gesture.data.scroll_begin.inertial_phase =
           WebGestureEvent::InertialPhaseState::kNonMomentum;
       break;
-    case ET_GESTURE_SCROLL_UPDATE:
+    case EventType::kGestureScrollUpdate:
       gesture.SetType(WebInputEvent::Type::kGestureScrollUpdate);
       gesture.data.scroll_update.delta_x = IfNanUseMaxFloat(details.scroll_x());
       gesture.data.scroll_update.delta_y = IfNanUseMaxFloat(details.scroll_y());
@@ -421,38 +421,38 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       gesture.data.scroll_update.inertial_phase =
           WebGestureEvent::InertialPhaseState::kNonMomentum;
       break;
-    case ET_GESTURE_SCROLL_END:
+    case EventType::kGestureScrollEnd:
       gesture.SetType(WebInputEvent::Type::kGestureScrollEnd);
       gesture.data.scroll_end.inertial_phase =
           WebGestureEvent::InertialPhaseState::kNonMomentum;
       break;
-    case ET_SCROLL_FLING_START:
+    case EventType::kScrollFlingStart:
       gesture.SetType(WebInputEvent::Type::kGestureFlingStart);
       gesture.data.fling_start.velocity_x =
           IfNanUseMaxFloat(details.velocity_x());
       gesture.data.fling_start.velocity_y =
           IfNanUseMaxFloat(details.velocity_y());
       break;
-    case ET_SCROLL_FLING_CANCEL:
+    case EventType::kScrollFlingCancel:
       gesture.SetType(WebInputEvent::Type::kGestureFlingCancel);
       break;
-    case ET_GESTURE_PINCH_BEGIN:
+    case EventType::kGesturePinchBegin:
       gesture.SetType(WebInputEvent::Type::kGesturePinchBegin);
       gesture.SetNeedsWheelEvent(source_device == WebGestureDevice::kTouchpad);
       break;
-    case ET_GESTURE_PINCH_UPDATE:
+    case EventType::kGesturePinchUpdate:
       gesture.SetType(WebInputEvent::Type::kGesturePinchUpdate);
       gesture.data.pinch_update.scale = details.scale();
       gesture.SetNeedsWheelEvent(source_device == WebGestureDevice::kTouchpad);
       break;
-    case ET_GESTURE_PINCH_END:
+    case EventType::kGesturePinchEnd:
       gesture.SetType(WebInputEvent::Type::kGesturePinchEnd);
       gesture.SetNeedsWheelEvent(source_device == WebGestureDevice::kTouchpad);
       break;
-    case ET_GESTURE_TAP_CANCEL:
+    case EventType::kGestureTapCancel:
       gesture.SetType(WebInputEvent::Type::kGestureTapCancel);
       break;
-    case ET_GESTURE_TAP_DOWN:
+    case EventType::kGestureTapDown:
       gesture.SetType(WebInputEvent::Type::kGestureTapDown);
       gesture.data.tap_down.tap_down_count = details.tap_down_count();
       gesture.data.tap_down.width =
@@ -460,13 +460,13 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       gesture.data.tap_down.height =
           IfNanUseMaxFloat(details.bounding_box_f().height());
       break;
-    case ET_GESTURE_BEGIN:
+    case EventType::kGestureBegin:
       gesture.SetType(WebInputEvent::Type::kGestureBegin);
       break;
-    case ET_GESTURE_END:
+    case EventType::kGestureEnd:
       gesture.SetType(WebInputEvent::Type::kGestureEnd);
       break;
-    case ET_GESTURE_SWIPE:
+    case EventType::kGestureSwipe:
       // The caller is responsible for discarding these gestures appropriately.
       gesture.SetType(WebInputEvent::Type::kUndefined);
       break;

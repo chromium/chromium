@@ -59,8 +59,9 @@ bool MediaNotificationVolumeSliderView::OnMouseDragged(
 
 void MediaNotificationVolumeSliderView::OnGestureEvent(
     ui::GestureEvent* event) {
-  if (event->type() == ui::EventType::ET_GESTURE_TAP)
+  if (event->type() == ui::EventType::kGestureTap) {
     HandleMouseOrGestureEvent(event->x());
+  }
 }
 
 bool MediaNotificationVolumeSliderView::OnKeyPressed(

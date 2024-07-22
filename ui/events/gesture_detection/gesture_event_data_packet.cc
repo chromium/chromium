@@ -88,7 +88,7 @@ GestureEventDataPacket& GestureEventDataPacket::operator=(
 }
 
 void GestureEventDataPacket::Push(const GestureEventData& original_gesture) {
-  DCHECK_NE(ET_UNKNOWN, original_gesture.type());
+  DCHECK_NE(EventType::kUnknown, original_gesture.type());
   GestureEventData gesture(original_gesture);
   gesture.unique_touch_event_id = unique_touch_event_id_;
   gestures_.push_back(gesture);

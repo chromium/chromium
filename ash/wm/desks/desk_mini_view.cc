@@ -722,8 +722,9 @@ bool DeskMiniView::HandleKeyEvent(views::Textfield* sender,
   // Pressing enter or escape should blur the focus away from DeskNameView so
   // that editing the desk's name ends. Pressing tab should do the same, but is
   // handled in OverviewSession.
-  if (key_event.type() != ui::ET_KEY_PRESSED)
+  if (key_event.type() != ui::EventType::kKeyPressed) {
     return false;
+  }
 
   if (key_event.key_code() != ui::VKEY_RETURN &&
       key_event.key_code() != ui::VKEY_ESCAPE) {
@@ -746,7 +747,7 @@ bool DeskMiniView::HandleMouseEvent(views::Textfield* sender,
   DCHECK_EQ(sender, desk_name_view_);
 
   switch (mouse_event.type()) {
-    case ui::ET_MOUSE_PRESSED:
+    case ui::EventType::kMousePressed:
       // If this is the first mouse press on the DeskNameView, then it's not
       // focused yet. OnViewFocused() should not select all text, since it will
       // be undone by the mouse release event. Instead we defer it until we get
@@ -755,7 +756,7 @@ bool DeskMiniView::HandleMouseEvent(views::Textfield* sender,
         defer_select_all_ = true;
       break;
 
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       if (defer_select_all_) {
         defer_select_all_ = false;
         // The user may have already clicked and dragged to select some range

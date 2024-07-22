@@ -179,7 +179,7 @@ TEST_P(LoginExpandedPublicAccountViewTest, ToggleAdvancedView) {
 
   // Advanced view is shown and the overall size does not change.
   EXPECT_TRUE(test_api.advanced_view()->GetVisible());
-  ui::MouseEvent fake_event(ui::EventType::ET_MOUSE_MOVED, gfx::Point(),
+  ui::MouseEvent fake_event(ui::EventType::kMouseMoved, gfx::Point(),
                             gfx::Point(), base::TimeTicks(), 0, 0);
   EXPECT_EQ(test_api.advanced_view_button()->GetCursor(fake_event),
             ui::mojom::CursorType::kHand);

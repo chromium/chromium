@@ -128,12 +128,13 @@ void CompoundEventFilter::UpdateCursor(aura::Window* target,
         return;
       }
     }
-    // For ET_MOUSE_ENTERED, force the update of the cursor because it may have
-    // changed without |cursor_client| knowing about it.
-    if (event->type() == ui::ET_MOUSE_ENTERED)
+    // For EventType::kMouseEntered, force the update of the cursor because it
+    // may have changed without |cursor_client| knowing about it.
+    if (event->type() == ui::EventType::kMouseEntered) {
       cursor_client->SetCursorForced(cursor);
-    else
+    } else {
       cursor_client->SetCursor(cursor);
+    }
   }
 }
 
@@ -229,10 +230,10 @@ void CompoundEventFilter::OnMouseEvent(ui::MouseEvent* event) {
   // outside of the root window and moved back for some reasons (e.g. running on
   // on Desktop for testing, or a bug in pointer barrier).
   if (!(event->flags() & ui::EF_FROM_TOUCH) &&
-       (event->type() == ui::ET_MOUSE_ENTERED ||
-        event->type() == ui::ET_MOUSE_MOVED ||
-        event->type() == ui::ET_MOUSE_PRESSED ||
-        event->type() == ui::ET_MOUSEWHEEL)) {
+      (event->type() == ui::EventType::kMouseEntered ||
+       event->type() == ui::EventType::kMouseMoved ||
+       event->type() == ui::EventType::kMousePressed ||
+       event->type() == ui::EventType::kMousewheel)) {
     SetMouseEventsEnableStateOnEvent(window, event, true);
     SetCursorVisibilityOnEvent(window, event, true);
     UpdateCursor(window, event);
@@ -248,7 +249,7 @@ void CompoundEventFilter::OnTouchEvent(ui::TouchEvent* event) {
   TRACE_EVENT2("ui,input", "CompoundEventFilter::OnTouchEvent", "event_type",
                event->type(), "event_handled", event->handled());
   FilterTouchEvent(event);
-  if (!event->handled() && event->type() == ui::ET_TOUCH_PRESSED) {
+  if (!event->handled() && event->type() == ui::EventType::kTouchPressed) {
     aura::Window* target = static_cast<aura::Window*>(event->target());
     DCHECK(target);
     auto* client = aura::client::GetCursorClient(target->GetRootWindow());

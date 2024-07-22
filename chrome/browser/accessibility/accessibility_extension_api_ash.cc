@@ -501,8 +501,8 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
   ui::KeyEvent synthetic_key_event(
       key_data->type ==
               accessibility_private::SyntheticKeyboardEventType::kKeyup
-          ? ui::ET_KEY_RELEASED
-          : ui::ET_KEY_PRESSED,
+          ? ui::EventType::kKeyReleased
+          : ui::EventType::kKeyPressed,
       keyboard_code, ui::UsLayoutKeyboardCodeToDomCode(keyboard_code),
       modifiers);
 
@@ -532,32 +532,32 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   accessibility_private::SyntheticMouseEvent* mouse_data = &params->mouse_event;
 
-  ui::EventType type = ui::ET_UNKNOWN;
+  ui::EventType type = ui::EventType::kUnknown;
   switch (mouse_data->type) {
     case accessibility_private::SyntheticMouseEventType::kPress:
-      type = ui::ET_MOUSE_PRESSED;
+      type = ui::EventType::kMousePressed;
       break;
     case accessibility_private::SyntheticMouseEventType::kRelease:
-      type = ui::ET_MOUSE_RELEASED;
+      type = ui::EventType::kMouseReleased;
       break;
     case accessibility_private::SyntheticMouseEventType::kDrag:
-      type = ui::ET_MOUSE_DRAGGED;
+      type = ui::EventType::kMouseDragged;
       break;
     case accessibility_private::SyntheticMouseEventType::kMove:
-      type = ui::ET_MOUSE_MOVED;
+      type = ui::EventType::kMouseMoved;
       break;
     case accessibility_private::SyntheticMouseEventType::kEnter:
-      type = ui::ET_MOUSE_ENTERED;
+      type = ui::EventType::kMouseEntered;
       break;
     case accessibility_private::SyntheticMouseEventType::kExit:
-      type = ui::ET_MOUSE_EXITED;
+      type = ui::EventType::kMouseExited;
       break;
     default:
       NOTREACHED_IN_MIGRATION();
   }
 
   int flags = 0;
-  if (type != ui::ET_MOUSE_MOVED) {
+  if (type != ui::EventType::kMouseMoved) {
     switch (mouse_data->mouse_button) {
       case accessibility_private::SyntheticMouseEventButton::kLeft:
         flags |= ui::EF_LEFT_MOUSE_BUTTON;

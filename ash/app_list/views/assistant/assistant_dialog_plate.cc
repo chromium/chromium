@@ -138,8 +138,9 @@ void AssistantDialogPlate::OnButtonPressed(AssistantButtonId button_id) {
 
 bool AssistantDialogPlate::HandleKeyEvent(views::Textfield* textfield,
                                           const ui::KeyEvent& key_event) {
-  if (key_event.type() != ui::EventType::ET_KEY_PRESSED)
+  if (key_event.type() != ui::EventType::kKeyPressed) {
     return false;
+  }
 
   switch (key_event.key_code()) {
     case ui::KeyboardCode::VKEY_RETURN: {

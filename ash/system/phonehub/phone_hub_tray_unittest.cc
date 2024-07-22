@@ -579,8 +579,8 @@ TEST_F(PhoneHubTrayTest, ShouldNotShowMiniLauncherOnCloseBubble) {
   EXPECT_TRUE(GetAppStreamLauncherDataModel()->GetShouldShowMiniLauncher());
 
   // Simulate a click outside the bubble.
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), 0, 0);
+  const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
   phone_hub_tray_->ClickedOutsideBubble(event);
 
   // Clicking outside should dismiss the bubble and should not show the app

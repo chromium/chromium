@@ -89,7 +89,7 @@ TEST_F(QuickSettingsMediaViewTest, NoCrashOnScrollFlingStart) {
   ui::GestureEvent fling_start(
       gesture_start_point.x(), gesture_start_point.y(), /*flags=*/0,
       /*time_stamp=*/base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_SCROLL_FLING_START, /*delta_x=*/900,
+      ui::GestureEventDetails(ui::EventType::kScrollFlingStart, /*delta_x=*/900,
                               /*delta_y=*/0));
   // Perform the gesture on the media view. There should be no crash.
   view()->OnGestureEvent(&fling_start);

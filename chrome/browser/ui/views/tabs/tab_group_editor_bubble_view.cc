@@ -707,7 +707,7 @@ bool TabGroupEditorBubbleView::TitleFieldController::HandleKeyEvent(
 
   // For special actions, only respond to key pressed events, to be consistent
   // with other views like buttons and dialogs.
-  if (key_event.type() == ui::EventType::ET_KEY_PRESSED) {
+  if (key_event.type() == ui::EventType::kKeyPressed) {
     const ui::KeyboardCode key_code = key_event.key_code();
     if (key_code == ui::VKEY_ESCAPE) {
       parent_->GetWidget()->CloseWithReason(

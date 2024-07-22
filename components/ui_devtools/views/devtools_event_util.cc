@@ -10,8 +10,8 @@ namespace ui_devtools {
 ui::KeyEvent ConvertToUIKeyEvent(protocol::DOM::KeyEvent* event) {
   ui::EventType event_type =
       event->getType() == protocol::DOM::KeyEvent::TypeEnum::KeyPressed
-          ? ui::ET_KEY_PRESSED
-          : ui::ET_KEY_RELEASED;
+          ? ui::EventType::kKeyPressed
+          : ui::EventType::kKeyReleased;
   return ui::KeyEvent(
       event_type, static_cast<ui::KeyboardCode>(event->getKeyCode()),
       static_cast<ui::DomCode>(event->getCode()), event->getFlags(),

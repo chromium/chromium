@@ -491,10 +491,10 @@ TEST_P(IntentPickerBubbleViewLayoutTest, DoubleClickToAccept) {
 
   views::test::ButtonTestApi button(GetButtonAtIndex(0));
 
-  button.NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(),
+  button.NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::PointF(),
                                     gfx::PointF(), ui::EventTimeForNow(),
                                     ui::EF_NONE, ui::EF_NONE));
-  button.NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(),
+  button.NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::PointF(),
                                     gfx::PointF(), ui::EventTimeForNow(),
                                     ui::EF_IS_DOUBLE_CLICK, ui::EF_NONE));
 

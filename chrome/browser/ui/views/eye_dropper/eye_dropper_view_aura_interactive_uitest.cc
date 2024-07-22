@@ -74,12 +74,12 @@ IN_PROC_BROWSER_TEST_F(EyeDropperViewAuraInteractiveTest, MoveMouseAndTouch) {
   // EyeDropper should move on touch events.
   constexpr gfx::Point kTouchStart(100, 100);
   const ui::PointerDetails kDetails(ui::EventPointerType::kTouch, 1);
-  ui::TouchEvent press(ui::ET_TOUCH_PRESSED, kTouchStart,
+  ui::TouchEvent press(ui::EventType::kTouchPressed, kTouchStart,
                        base::TimeTicks::Now(), kDetails);
   view->GetEventHandlerForTesting()->OnTouchEvent(&press);
   constexpr gfx::Point kTouchEnd(110, 110);
-  ui::TouchEvent move(ui::ET_TOUCH_MOVED, kTouchEnd, base::TimeTicks::Now(),
-                      kDetails);
+  ui::TouchEvent move(ui::EventType::kTouchMoved, kTouchEnd,
+                      base::TimeTicks::Now(), kDetails);
   view->GetEventHandlerForTesting()->OnTouchEvent(&move);
 
   gfx::Vector2d kTouchMoved(kTouchEnd - kTouchStart);

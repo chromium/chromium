@@ -101,7 +101,7 @@ TEST_F(TabListViewUnitTest, CloseButtonRemovesListItem) {
       views::AsViewClass<TabListRowView>(children[0]);
   views::ImageButton* const close_button =
       first_row->GetCloseButtonForTesting();
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(close_button);
   test_api.NotifyClick(e);
@@ -130,10 +130,10 @@ TEST_F(TabListViewUnitTest, CloseButtonShowsAndHides) {
 
   EXPECT_FALSE(close_button->GetVisible());
 
-  TriggerMouseEvent(first_row, ui::EventType::ET_MOUSE_ENTERED);
+  TriggerMouseEvent(first_row, ui::EventType::kMouseEntered);
   EXPECT_TRUE(close_button->GetVisible());
 
-  TriggerMouseEvent(first_row, ui::EventType::ET_MOUSE_EXITED);
+  TriggerMouseEvent(first_row, ui::EventType::kMouseExited);
   EXPECT_FALSE(close_button->GetVisible());
 
   TabListRowView* const second_row =
@@ -141,15 +141,15 @@ TEST_F(TabListViewUnitTest, CloseButtonShowsAndHides) {
   views::ImageButton* const second_close_button =
       second_row->GetCloseButtonForTesting();
 
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(second_close_button);
   test_api.NotifyClick(e);
 
   // The close button should now stay hidden regardless of the mouse movement
   // since there is only one item being displayed in the tab list.
-  TriggerMouseEvent(first_row, ui::EventType::ET_MOUSE_ENTERED);
+  TriggerMouseEvent(first_row, ui::EventType::kMouseEntered);
   EXPECT_FALSE(close_button->GetVisible());
-  TriggerMouseEvent(first_row, ui::EventType::ET_MOUSE_EXITED);
+  TriggerMouseEvent(first_row, ui::EventType::kMouseExited);
   EXPECT_FALSE(close_button->GetVisible());
 }

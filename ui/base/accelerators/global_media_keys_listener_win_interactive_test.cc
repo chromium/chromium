@@ -57,7 +57,7 @@ class MockMediaKeysListenerDelegate : public MediaKeysListener::Delegate {
     ASSERT_LT(index, received_events_.size());
     KeyEvent* key_event = &received_events_.at(index);
     EXPECT_EQ(code, key_event->key_code());
-    EXPECT_EQ(ET_KEY_PRESSED, key_event->type());
+    EXPECT_EQ(EventType::kKeyPressed, key_event->type());
   }
 
  private:

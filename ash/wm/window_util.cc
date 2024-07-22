@@ -676,11 +676,11 @@ void SendBackKeyEvent(aura::Window* root_window) {
   // Send up event as well as down event as ARC++ clients expect this
   // sequence.
   // TODO: Investigate if we should be using the current modifiers.
-  ui::KeyEvent press_key_event(ui::ET_KEY_PRESSED, ui::VKEY_BROWSER_BACK,
-                               ui::EF_NONE);
+  ui::KeyEvent press_key_event(ui::EventType::kKeyPressed,
+                               ui::VKEY_BROWSER_BACK, ui::EF_NONE);
   std::ignore = root_window->GetHost()->SendEventToSink(&press_key_event);
-  ui::KeyEvent release_key_event(ui::ET_KEY_RELEASED, ui::VKEY_BROWSER_BACK,
-                                 ui::EF_NONE);
+  ui::KeyEvent release_key_event(ui::EventType::kKeyReleased,
+                                 ui::VKEY_BROWSER_BACK, ui::EF_NONE);
   std::ignore = root_window->GetHost()->SendEventToSink(&release_key_event);
 }
 

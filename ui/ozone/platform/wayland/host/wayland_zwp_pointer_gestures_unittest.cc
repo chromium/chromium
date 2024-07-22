@@ -43,8 +43,10 @@ class PinchEventScaleRecorder : public PlatformEventObserver {
       return;
 
     const GestureEvent* const gesture = event->AsGestureEvent();
-    if (!gesture->IsPinchEvent() || gesture->type() != ET_GESTURE_PINCH_UPDATE)
+    if (!gesture->IsPinchEvent() ||
+        gesture->type() != EventType::kGesturePinchUpdate) {
       return;
+    }
 
     latest_scale_update_ = gesture->details().scale();
   }
@@ -203,12 +205,12 @@ TEST_F(WaylandPointerGesturesTest, HoldEventCancelsFling) {
   ASSERT_TRUE(event2);
   ASSERT_TRUE(event2->IsScrollEvent());
   auto* scroll_event2 = event2->AsScrollEvent();
-  EXPECT_EQ(ET_SCROLL_FLING_START, scroll_event2->type());
+  EXPECT_EQ(EventType::kScrollFlingStart, scroll_event2->type());
   // Finally, FLING_CANCEL is expected.
   ASSERT_TRUE(event3);
   ASSERT_TRUE(event3->IsScrollEvent());
   auto* scroll_event3 = event3->AsScrollEvent();
-  EXPECT_EQ(ET_SCROLL_FLING_CANCEL, scroll_event3->type());
+  EXPECT_EQ(EventType::kScrollFlingCancel, scroll_event3->type());
   // Check the offset direction. It should be zero in both axes.
   EXPECT_EQ(0.0f, scroll_event3->x_offset());
   EXPECT_EQ(0.0f, scroll_event3->y_offset());

@@ -323,7 +323,7 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, SeekTo) {
   progress_view_->UpdateProgress(media_position);
 
   gfx::Point point(progress_view_->width() / 2, progress_view_->height() / 2);
-  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, point, point,
+  ui::MouseEvent pressed_event(ui::EventType::kMousePressed, point, point,
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
 

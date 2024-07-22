@@ -423,12 +423,12 @@ END_METADATA
 bool ShelfAppButton::ShouldHandleEventFromContextMenu(
     const ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_END:
-    case ui::ET_GESTURE_TAP_CANCEL:
-    case ui::ET_GESTURE_SCROLL_BEGIN:
-    case ui::ET_GESTURE_SCROLL_UPDATE:
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kGestureEnd:
+    case ui::EventType::kGestureTapCancel:
+    case ui::EventType::kGestureScrollBegin:
+    case ui::EventType::kGestureScrollUpdate:
+    case ui::EventType::kGestureScrollEnd:
+    case ui::EventType::kScrollFlingStart:
       return true;
     default:
       return false;
@@ -1103,7 +1103,7 @@ void ShelfAppButton::OnThemeChanged() {
 
 void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP_DOWN:
+    case ui::EventType::kGestureTapDown:
       if (shelf_view_->shelf()->IsVisible()) {
         AddState(STATE_HOVERED);
         drag_timer_.Start(FROM_HERE, base::Milliseconds(kDragTimeThresholdMs),
@@ -1118,9 +1118,9 @@ void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
         event->SetHandled();
       }
       break;
-    case ui::ET_GESTURE_TAP:
+    case ui::EventType::kGestureTap:
       [[fallthrough]];  // Ensure tapped items are not enlarged for drag.
-    case ui::ET_GESTURE_END:
+    case ui::EventType::kGestureEnd:
       // If the button is being dragged, or there is an active context menu,
       // for this ShelfAppButton, don't deactivate the ink drop.
       if (!(state_ & STATE_DRAGGING) &&
@@ -1129,7 +1129,7 @@ void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
            views::InkDropState::ACTIVATED)) {
         views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
             views::InkDropState::DEACTIVATED);
-      } else if (event->type() == ui::ET_GESTURE_END) {
+      } else if (event->type() == ui::EventType::kGestureEnd) {
         // When the gesture ends, we may need to deactivate the button's
         // inkdrop. For example, when a mouse event interputs the gesture press
         // on a shelf app button, the button's inkdrop could be in the pending
@@ -1140,7 +1140,7 @@ void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
 
       ClearDragStateOnGestureEnd();
       break;
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       if (state_ & STATE_DRAGGING) {
         shelf_view_->PointerPressedOnButton(this, ShelfView::TOUCH, *event);
         event->SetHandled();
@@ -1152,21 +1152,21 @@ void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
             views::InkDropState::HIDDEN);
       }
       break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       if ((state_ & STATE_DRAGGING) && shelf_view_->IsDraggedView(this)) {
         shelf_view_->PointerDraggedOnButton(this, ShelfView::TOUCH, *event);
         event->SetHandled();
       }
       break;
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kGestureScrollEnd:
+    case ui::EventType::kScrollFlingStart:
       if (state_ & STATE_DRAGGING) {
         ClearState(STATE_DRAGGING);
         shelf_view_->PointerReleasedOnButton(this, ShelfView::TOUCH, false);
         event->SetHandled();
       }
       break;
-    case ui::ET_GESTURE_LONG_TAP:
+    case ui::EventType::kGestureLongTap:
       views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
           views::InkDropState::ACTIVATED);
 
@@ -1179,7 +1179,7 @@ void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
         event->SetHandled();
       }
       break;
-    case ui::ET_GESTURE_TWO_FINGER_TAP:
+    case ui::EventType::kGestureTwoFingerTap:
       views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
           views::InkDropState::ACTIVATED);
       break;

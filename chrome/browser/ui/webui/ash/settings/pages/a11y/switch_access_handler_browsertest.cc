@@ -119,7 +119,8 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessHandlerTest,
   // Confirm the listeners are added.
   run_loop.Run();
 
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE);
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                         ui::EF_NONE);
   handler()->OnKeyEvent(&key_event);
 
   // Verify the method was called correctly.
@@ -136,7 +137,8 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessHandlerTest,
   // Confirm the listeners are added.
   run_loop_2.Run();
 
-  key_event = ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_TAB, ui::EF_NONE);
+  key_event =
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_TAB, ui::EF_NONE);
   handler()->OnKeyEvent(&key_event);
 
   // Verify the method was called correctly.

@@ -67,7 +67,7 @@ TEST_F(WindowTargeterTest, Basic) {
   ui::test::TestEventHandler handler;
   one->AddPreTargetHandler(&handler);
 
-  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(20, 20),
+  ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(20, 20),
                        gfx::Point(20, 20), ui::EventTimeForNow(), ui::EF_NONE,
                        ui::EF_NONE);
   DispatchEventUsingWindowDispatcher(&press);
@@ -89,20 +89,20 @@ TEST_F(WindowTargeterTest, FindTargetInRootWindow) {
 
   // Mouse and touch presses inside the display yield null targets.
   gfx::Point inside = display.bounds().CenterPoint();
-  ui::MouseEvent mouse1(ui::ET_MOUSE_PRESSED, inside, inside,
+  ui::MouseEvent mouse1(ui::EventType::kMousePressed, inside, inside,
                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
-  ui::TouchEvent touch1(ui::ET_TOUCH_PRESSED, inside, ui::EventTimeForNow(),
-                        ui::PointerDetails());
+  ui::TouchEvent touch1(ui::EventType::kTouchPressed, inside,
+                        ui::EventTimeForNow(), ui::PointerDetails());
   touch1.set_root_location(inside);
   EXPECT_EQ(nullptr, targeter.FindTargetInRootWindow(root_window(), mouse1));
   EXPECT_EQ(nullptr, targeter.FindTargetInRootWindow(root_window(), touch1));
 
   // Touch presses outside the display yields the root window as a target.
   gfx::Point outside(display.bounds().right() + 10, inside.y());
-  ui::MouseEvent mouse2(ui::ET_MOUSE_PRESSED, outside, outside,
+  ui::MouseEvent mouse2(ui::EventType::kMousePressed, outside, outside,
                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
-  ui::TouchEvent touch2(ui::ET_TOUCH_PRESSED, outside, ui::EventTimeForNow(),
-                        ui::PointerDetails());
+  ui::TouchEvent touch2(ui::EventType::kTouchPressed, outside,
+                        ui::EventTimeForNow(), ui::PointerDetails());
   touch2.set_root_location(outside);
   EXPECT_EQ(nullptr, targeter.FindTargetInRootWindow(root_window(), mouse2));
   EXPECT_EQ(root_window(),
@@ -124,8 +124,9 @@ TEST_F(WindowTargeterTest, ScopedWindowTargeter) {
 
   gfx::Point event_location(60, 60);
   {
-    ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, event_location, event_location,
-                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    ui::MouseEvent mouse(ui::EventType::kMouseMoved, event_location,
+                         event_location, ui::EventTimeForNow(), ui::EF_NONE,
+                         ui::EF_NONE);
     EXPECT_EQ(child, targeter->FindTargetForEvent(root, &mouse));
   }
 
@@ -135,14 +136,16 @@ TEST_F(WindowTargeterTest, ScopedWindowTargeter) {
                                std::unique_ptr<WindowTargeter>(
                                    new StaticWindowTargeter(window.get()))));
   {
-    ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, event_location, event_location,
-                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    ui::MouseEvent mouse(ui::EventType::kMouseMoved, event_location,
+                         event_location, ui::EventTimeForNow(), ui::EF_NONE,
+                         ui::EF_NONE);
     EXPECT_EQ(window.get(), targeter->FindTargetForEvent(root, &mouse));
   }
   scoped_targeter.reset();
   {
-    ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, event_location, event_location,
-                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    ui::MouseEvent mouse(ui::EventType::kMouseMoved, event_location,
+                         event_location, ui::EventTimeForNow(), ui::EF_NONE,
+                         ui::EF_NONE);
     EXPECT_EQ(child, targeter->FindTargetForEvent(root, &mouse));
   }
 }
@@ -178,8 +181,9 @@ TEST_F(WindowTargeterTest, TargetTransformedWindow) {
   ui::EventTargeter* targeter = root_target->GetEventTargeter();
   gfx::Point event_location(490, 50);
   {
-    ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, event_location, event_location,
-                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    ui::MouseEvent mouse(ui::EventType::kMouseMoved, event_location,
+                         event_location, ui::EventTimeForNow(), ui::EF_NONE,
+                         ui::EF_NONE);
     EXPECT_EQ(window.get(), targeter->FindTargetForEvent(root_target, &mouse));
   }
 
@@ -191,8 +195,9 @@ TEST_F(WindowTargeterTest, TargetTransformedWindow) {
   EXPECT_EQ(gfx::RectF(100, 20, 200, 40).ToString(),
             GetEffectiveVisibleBoundsInRootWindow(window.get()).ToString());
   {
-    ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, event_location, event_location,
-                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    ui::MouseEvent mouse(ui::EventType::kMouseMoved, event_location,
+                         event_location, ui::EventTimeForNow(), ui::EF_NONE,
+                         ui::EF_NONE);
     EXPECT_EQ(root_window(), targeter->FindTargetForEvent(root_target, &mouse));
   }
 
@@ -203,8 +208,9 @@ TEST_F(WindowTargeterTest, TargetTransformedWindow) {
   EXPECT_EQ(gfx::RectF(300, 30, 200, 40).ToString(),
             GetEffectiveVisibleBoundsInRootWindow(window.get()).ToString());
   {
-    ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, event_location, event_location,
-                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    ui::MouseEvent mouse(ui::EventType::kMouseMoved, event_location,
+                         event_location, ui::EventTimeForNow(), ui::EF_NONE,
+                         ui::EF_NONE);
     EXPECT_EQ(window.get(), targeter->FindTargetForEvent(root_target, &mouse));
   }
 }
@@ -252,16 +258,18 @@ TEST_F(WindowTargeterTest, Bounds) {
   // Dispatch a mouse event that falls on the parent, but not on the child. When
   // the default event-targeter used, the event will still reach |grandchild|,
   // because the default targeter does not look at the bounds.
-  ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, gfx::Point(1, 1), gfx::Point(1, 1),
-                       ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent mouse(ui::EventType::kMouseMoved, gfx::Point(1, 1),
+                       gfx::Point(1, 1), ui::EventTimeForNow(), ui::EF_NONE,
+                       ui::EF_NONE);
   EXPECT_EQ(parent_r, targeter->FindTargetForEvent(root_target, &mouse));
 
   // Install a targeter on the |child| that looks at the window id as well
   // as the bounds and makes sure the event reaches the target only if the id of
   // the window is equal to 2 (incorrect). This causes the event to get handled
   // by |parent|.
-  ui::MouseEvent mouse2(ui::ET_MOUSE_MOVED, gfx::Point(8, 8), gfx::Point(8, 8),
-                        ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent mouse2(ui::EventType::kMouseMoved, gfx::Point(8, 8),
+                        gfx::Point(8, 8), ui::EventTimeForNow(), ui::EF_NONE,
+                        ui::EF_NONE);
   std::unique_ptr<aura::WindowTargeter> original_targeter =
       child_r->SetEventTargeter(std::make_unique<IdCheckingEventTargeter>(2));
   EXPECT_EQ(parent_r, targeter->FindTargetForEvent(root_target, &mouse2));
@@ -269,8 +277,9 @@ TEST_F(WindowTargeterTest, Bounds) {
   // Now install a targeter on the |child| that looks at the window id as well
   // as the bounds and makes sure the event reaches the target only if the id of
   // the window is equal to 1 (correct).
-  ui::MouseEvent mouse3(ui::ET_MOUSE_MOVED, gfx::Point(8, 8), gfx::Point(8, 8),
-                        ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent mouse3(ui::EventType::kMouseMoved, gfx::Point(8, 8),
+                        gfx::Point(8, 8), ui::EventTimeForNow(), ui::EF_NONE,
+                        ui::EF_NONE);
   child_r->SetEventTargeter(std::make_unique<IdCheckingEventTargeter>(1));
   EXPECT_EQ(child_r, targeter->FindTargetForEvent(root_target, &mouse3));
 
@@ -278,14 +287,15 @@ TEST_F(WindowTargeterTest, Bounds) {
   child_r->SetEventTargeter(std::move(original_targeter));
 
   // Target |grandchild| location.
-  ui::MouseEvent second(ui::ET_MOUSE_MOVED, gfx::Point(12, 12),
+  ui::MouseEvent second(ui::EventType::kMouseMoved, gfx::Point(12, 12),
                         gfx::Point(12, 12), ui::EventTimeForNow(), ui::EF_NONE,
                         ui::EF_NONE);
   EXPECT_EQ(grandchild_r, targeter->FindTargetForEvent(root_target, &second));
 
   // Target |child| location.
-  ui::MouseEvent third(ui::ET_MOUSE_MOVED, gfx::Point(8, 8), gfx::Point(8, 8),
-                       ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent third(ui::EventType::kMouseMoved, gfx::Point(8, 8),
+                       gfx::Point(8, 8), ui::EventTimeForNow(), ui::EF_NONE,
+                       ui::EF_NONE);
   EXPECT_EQ(child_r, targeter->FindTargetForEvent(root_target, &third));
 }
 
@@ -301,7 +311,7 @@ TEST_F(WindowTargeterTest, NonFullyContainedBounds) {
   auto* targeter =
       static_cast<ui::EventTarget*>(root_window())->GetEventTargeter();
 
-  ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, gfx::Point(17, 75),
+  ui::MouseEvent mouse(ui::EventType::kMouseMoved, gfx::Point(17, 75),
                        gfx::Point(17, 75), ui::EventTimeForNow(), ui::EF_NONE,
                        ui::EF_NONE);
   EXPECT_EQ(child.get(), targeter->FindTargetForEvent(root_window(), &mouse));
@@ -320,7 +330,7 @@ TEST_F(WindowTargeterTest, NonFullyContainedBoundsWithMasksToBounds) {
   auto* targeter =
       static_cast<ui::EventTarget*>(root_window())->GetEventTargeter();
 
-  ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, gfx::Point(17, 75),
+  ui::MouseEvent mouse(ui::EventType::kMouseMoved, gfx::Point(17, 75),
                        gfx::Point(17, 75), ui::EventTimeForNow(), ui::EF_NONE,
                        ui::EF_NONE);
   EXPECT_EQ(root_window(), targeter->FindTargetForEvent(root_window(), &mouse));
@@ -349,7 +359,7 @@ TEST_F(WindowTargeterTest, TargeterChecksOwningEventTarget) {
   ui::EventTarget* root_target = root_window();
   ui::EventTargeter* targeter = root_target->GetEventTargeter();
 
-  ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, gfx::Point(10, 10),
+  ui::MouseEvent mouse(ui::EventType::kMouseMoved, gfx::Point(10, 10),
                        gfx::Point(10, 10), ui::EventTimeForNow(), ui::EF_NONE,
                        ui::EF_NONE);
   EXPECT_EQ(child.get(), targeter->FindTargetForEvent(root_target, &mouse));
@@ -358,7 +368,7 @@ TEST_F(WindowTargeterTest, TargeterChecksOwningEventTarget) {
   // receiving event.
   child->SetEventTargeter(std::make_unique<IgnoreWindowTargeter>());
 
-  ui::MouseEvent mouse2(ui::ET_MOUSE_MOVED, gfx::Point(10, 10),
+  ui::MouseEvent mouse2(ui::EventType::kMouseMoved, gfx::Point(10, 10),
                         gfx::Point(10, 10), ui::EventTimeForNow(), ui::EF_NONE,
                         ui::EF_NONE);
   EXPECT_EQ(root_window(), targeter->FindTargetForEvent(root_target, &mouse2));

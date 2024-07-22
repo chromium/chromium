@@ -675,8 +675,8 @@ void RenderWidgetHostInputEventRouter::DispatchMouseEvent(
 
   if (target) {
     ui::EventType type = mouse_event.GetTypeAsUiEventType();
-    bool hovering =
-        (type ^ ui::ET_MOUSE_DRAGGED) && (type ^ ui::ET_MOUSE_PRESSED);
+    bool hovering = (type ^ ui::EventType::kMouseDragged) &&
+                    (type ^ ui::EventType::kMousePressed);
     ForwardDelegatedInkPoint(target, root_view, mouse_event, mouse_event,
                              hovering);
   }
@@ -1605,7 +1605,7 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
       gesture_target_it == touchscreen_gesture_target_map_.end();
 
   // We use GestureTapDown to detect the start of a gesture sequence since
-  // there is no WebGestureEvent equivalent for ET_GESTURE_BEGIN.
+  // there is no WebGestureEvent equivalent for EventType::kGestureBegin.
   const bool is_gesture_start =
       gesture_event.GetType() == blink::WebInputEvent::Type::kGestureTapDown;
 
@@ -2099,8 +2099,9 @@ void RenderWidgetHostInputEventRouter::SetAutoScrollInProgress(
 }
 
 bool IsMoveEvent(ui::EventType type) {
-  return type == ui::ET_MOUSE_MOVED || type == ui::ET_MOUSE_DRAGGED ||
-         type == ui::ET_TOUCH_MOVED;
+  return type == ui::EventType::kMouseMoved ||
+         type == ui::EventType::kMouseDragged ||
+         type == ui::EventType::kTouchMoved;
 }
 
 void RenderWidgetHostInputEventRouter::ForwardDelegatedInkPoint(

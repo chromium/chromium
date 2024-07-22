@@ -24,7 +24,7 @@ CrosAppsKeyEventHandler::~CrosAppsKeyEventHandler() {
 }
 
 void CrosAppsKeyEventHandler::OnKeyEvent(ui::KeyEvent* event) {
-  if (event->type() != ui::EventType::ET_KEY_PRESSED) {
+  if (event->type() != ui::EventType::kKeyPressed) {
     return;
   }
 

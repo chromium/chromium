@@ -66,8 +66,8 @@ HomeButtonController::~HomeButtonController() {
 
 bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP:
-    case ui::ET_GESTURE_TAP_CANCEL:
+    case ui::EventType::kGestureTap:
+    case ui::EventType::kGestureTapCancel:
       if (IsAssistantAvailable()) {
         assistant_overlay_->EndAnimation();
         assistant_animation_delay_timer_->Stop();
@@ -81,7 +81,7 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
 
       // After animating the ripple, let the button handle the event.
       return false;
-    case ui::ET_GESTURE_TAP_DOWN:
+    case ui::EventType::kGestureTapDown:
       if (IsAssistantAvailable()) {
         assistant_animation_delay_timer_->Start(
             FROM_HERE, kAssistantAnimationDelay,
@@ -96,7 +96,7 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
       }
 
       return false;
-    case ui::ET_GESTURE_LONG_PRESS:
+    case ui::EventType::kGestureLongPress:
       // Only consume the long press event if the Assistant is available.
       if (!IsAssistantAvailable())
         return false;
@@ -110,7 +110,7 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
       AssistantUiController::Get()->ShowUi(
           AssistantEntryPoint::kLongPressLauncher);
       return true;
-    case ui::ET_GESTURE_LONG_TAP:
+    case ui::EventType::kGestureLongTap:
       // Only consume the long tap event if the Assistant is available.
       if (!IsAssistantAvailable())
         return false;

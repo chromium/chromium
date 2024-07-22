@@ -164,7 +164,7 @@ void NotificationItemView::OnMouseReleased(const ui::MouseEvent& event) {
 void NotificationItemView::OnGestureEvent(ui::GestureEvent* event) {
   // Drag gestures are handled by |slide_out_controller_|.
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP:
+    case ui::EventType::kGestureTap:
       event->SetHandled();
       delegate_->ActivateNotificationAndClose(notification_id_);
       return;

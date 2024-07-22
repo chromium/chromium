@@ -117,18 +117,18 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
   // event (except for the GESTURE_END event that is generated at the end of the
   // fling).
   if (scroll_animator_ && scroll_animator_->is_scrolling() &&
-      (event->type() != ui::ET_GESTURE_END ||
+      (event->type() != ui::EventType::kGestureEnd ||
        event->details().touch_points() > 1)) {
     scroll_animator_->Stop();
   }
 
-  if (event->type() == ui::ET_GESTURE_TAP_DOWN) {
+  if (event->type() == ui::EventType::kGestureTapDown) {
     ProcessPressEvent(*event);
     event->SetHandled();
     return;
   }
 
-  if (event->type() == ui::ET_GESTURE_LONG_PRESS) {
+  if (event->type() == ui::EventType::kGestureLongPress) {
     // For a long-press, the repeater started in tap-down should continue. So
     // return early.
     return;
@@ -136,20 +136,20 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
 
   repeater_.Stop();
 
-  if (event->type() == ui::ET_GESTURE_TAP) {
+  if (event->type() == ui::EventType::kGestureTap) {
     // TAP_DOWN would have already scrolled some amount. So scrolling again on
     // TAP is not necessary.
     event->SetHandled();
     return;
   }
 
-  if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN) {
+  if (event->type() == ui::EventType::kGestureScrollBegin) {
     scroll_status_ = ScrollStatus::kScrollStarted;
     event->SetHandled();
     return;
   }
 
-  if (event->type() == ui::ET_GESTURE_SCROLL_END) {
+  if (event->type() == ui::EventType::kGestureScrollEnd) {
     scroll_status_ = ScrollStatus::kScrollEnded;
     controller()->OnScrollEnded();
     event->SetHandled();
@@ -158,14 +158,14 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
 
   // Update the |scroll_status_| to |kScrollEnded| in case the gesture sequence
   // ends incorrectly.
-  if (event->type() == ui::ET_GESTURE_END &&
+  if (event->type() == ui::EventType::kGestureEnd &&
       scroll_status_ != ScrollStatus::kScrollInEnding &&
       scroll_status_ != ScrollStatus::kScrollEnded) {
     scroll_status_ = ScrollStatus::kScrollEnded;
     controller()->OnScrollEnded();
   }
 
-  if (event->type() == ui::ET_GESTURE_SCROLL_UPDATE) {
+  if (event->type() == ui::EventType::kGestureScrollUpdate) {
     if (scroll_status_ == ScrollStatus::kScrollStarted)
       scroll_status_ = ScrollStatus::kScrollInProgress;
 
@@ -185,7 +185,7 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
 
-  if (event->type() == ui::ET_SCROLL_FLING_START) {
+  if (event->type() == ui::EventType::kScrollFlingStart) {
     scroll_status_ = ScrollStatus::kScrollInEnding;
     GetOrCreateScrollAnimator()->Start(
         GetOrientation() == Orientation::kHorizontal
@@ -361,18 +361,18 @@ int ScrollBar::GetScrollIncrement(bool is_page, bool is_positive) {
 
 void ScrollBar::ObserveScrollEvent(const ui::ScrollEvent& event) {
   switch (event.type()) {
-    case ui::ET_SCROLL_FLING_CANCEL:
+    case ui::EventType::kScrollFlingCancel:
       scroll_status_ = ScrollStatus::kScrollStarted;
       break;
-    case ui::ET_SCROLL:
+    case ui::EventType::kScroll:
       if (scroll_status_ == ScrollStatus::kScrollStarted)
         scroll_status_ = ScrollStatus::kScrollInProgress;
       break;
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kScrollFlingStart:
       scroll_status_ = ScrollStatus::kScrollEnded;
       controller()->OnScrollEnded();
       break;
-    case ui::ET_GESTURE_END:
+    case ui::EventType::kGestureEnd:
       if (scroll_status_ != ScrollStatus::kScrollEnded) {
         scroll_status_ = ScrollStatus::kScrollEnded;
         controller()->OnScrollEnded();

@@ -41592,7 +41592,7 @@ should be able to be added at any place in this file.
 
 <action name="TouchscreenScrollFling">
   <owner>tdresser@chromium.org</owner>
-  <description>Logged on an ET_SCROLL_FLING_START gesture event.</description>
+  <description>Logged on an kScrollFlingStart gesture event.</description>
 </action>
 
 <action name="Touchview_Disabled">
@@ -41701,7 +41701,7 @@ should be able to be added at any place in this file.
 
 <action name="TrackpadScrollFling" not_user_triggered="true">
   <owner>tdresser@chromium.org</owner>
-  <description>Logged on an ET_SCROLL_FLING_START scroll event.</description>
+  <description>Logged on an kScrollFlingStart scroll event.</description>
 </action>
 
 <action name="Transpose">

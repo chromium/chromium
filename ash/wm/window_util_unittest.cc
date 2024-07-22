@@ -281,8 +281,9 @@ TEST_F(WindowUtilTest, InteriorTargeter) {
   ui::EventTarget* root_target = window->GetRootWindow();
   auto* targeter = root_target->GetEventTargeter();
   {
-    ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, gfx::Point(0, 0), gfx::Point(0, 0),
-                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    ui::MouseEvent mouse(ui::EventType::kMouseMoved, gfx::Point(0, 0),
+                         gfx::Point(0, 0), ui::EventTimeForNow(), ui::EF_NONE,
+                         ui::EF_NONE);
     EXPECT_EQ(child, targeter->FindTargetForEvent(root_target, &mouse));
   }
 
@@ -290,8 +291,9 @@ TEST_F(WindowUtilTest, InteriorTargeter) {
   // its parent.
   WindowState::Get(window.get())->Restore();
   {
-    ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, gfx::Point(0, 0), gfx::Point(0, 0),
-                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    ui::MouseEvent mouse(ui::EventType::kMouseMoved, gfx::Point(0, 0),
+                         gfx::Point(0, 0), ui::EventTimeForNow(), ui::EF_NONE,
+                         ui::EF_NONE);
     EXPECT_EQ(window.get(), targeter->FindTargetForEvent(root_target, &mouse));
   }
 }

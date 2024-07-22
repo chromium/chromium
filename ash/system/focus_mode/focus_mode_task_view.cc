@@ -175,7 +175,7 @@ class FocusModeTaskView::TaskTextfieldController
 
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override {
-    if (key_event.type() == ui::ET_KEY_PRESSED &&
+    if (key_event.type() == ui::EventType::kKeyPressed &&
         key_event.key_code() == ui::VKEY_RETURN) {
       // If the textfield is focused but not active, activate the textfield and
       // highlight all the text.

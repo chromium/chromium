@@ -150,7 +150,7 @@ void RichAnswersView::OnWidgetDestroying(views::Widget* widget) {
 
 void RichAnswersView::OnKeyEvent(ui::KeyEvent* event) {
   // TODO(b/283135347): Track rich card interaction types for metrics.
-  if (event->type() != ui::ET_KEY_PRESSED) {
+  if (event->type() != ui::EventType::kKeyPressed) {
     return;
   }
 

@@ -53,15 +53,15 @@ const int kReducedScale = 10;
 
 const char* GetTouchEventLabel(ui::EventType type) {
   switch (type) {
-    case ui::ET_UNKNOWN:
+    case ui::EventType::kUnknown:
       return " ";
-    case ui::ET_TOUCH_PRESSED:
+    case ui::EventType::kTouchPressed:
       return "P";
-    case ui::ET_TOUCH_MOVED:
+    case ui::EventType::kTouchMoved:
       return "M";
-    case ui::ET_TOUCH_RELEASED:
+    case ui::EventType::kTouchReleased:
       return "R";
-    case ui::ET_TOUCH_CANCELLED:
+    case ui::EventType::kTouchCancelled:
       return "C";
     default:
       break;
@@ -106,8 +106,8 @@ class TouchTrace {
   const std::vector<TouchPointLog>& log() const { return log_; }
 
   bool active() const {
-    return !log_.empty() && log_.back().type != ui::ET_TOUCH_RELEASED &&
-           log_.back().type != ui::ET_TOUCH_CANCELLED;
+    return !log_.empty() && log_.back().type != ui::EventType::kTouchReleased &&
+           log_.back().type != ui::EventType::kTouchCancelled;
   }
 
   void Reset() { log_.clear(); }
@@ -125,8 +125,9 @@ class TouchLog {
   TouchLog& operator=(const TouchLog&) = delete;
 
   void AddTouchPoint(const ui::TouchEvent& touch) {
-    if (touch.type() == ui::ET_TOUCH_PRESSED)
+    if (touch.type() == ui::EventType::kTouchPressed) {
       StartTrace(touch);
+    }
     AddToTrace(touch);
   }
 
@@ -203,10 +204,12 @@ class TouchHudCanvas : public views::View {
     int trace_index = touch_log_->GetTraceIndex(touch_id);
     const TouchTrace& trace = touch_log_->traces()[trace_index];
     const TouchPointLog& point = trace.log().back();
-    if (point.type == ui::ET_TOUCH_PRESSED)
+    if (point.type == ui::EventType::kTouchPressed) {
       StartedTrace(trace_index);
-    if (point.type != ui::ET_TOUCH_CANCELLED)
+    }
+    if (point.type != ui::EventType::kTouchCancelled) {
       AddedPointToTrace(trace_index);
+    }
   }
 
   void Clear() {
@@ -351,8 +354,10 @@ void TouchHudDebug::UpdateTouchPointLabel(int index) {
   TouchTrace::const_reverse_iterator point = trace.log().rbegin();
   ui::EventType touch_status = point->type;
   float touch_radius = std::max(point->radius_x, point->radius_y);
-  while (point != trace.log().rend() && point->type == ui::ET_TOUCH_CANCELLED)
+  while (point != trace.log().rend() &&
+         point->type == ui::EventType::kTouchCancelled) {
     point++;
+  }
   DCHECK(point != trace.log().rend());
   gfx::Point touch_position = point->location;
 

@@ -242,8 +242,8 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   virtual void OnSurfaceFrameLockingChanged(bool lock);
 
   // Called when the location of mouse pointer entered the window.  This is
-  // different from ui::ET_MOUSE_ENTERED which may not be generated when mouse
-  // is captured either by implicitly or explicitly.
+  // different from ui::EventType::kMouseEntered which may not be generated when
+  // mouse is captured either by implicitly or explicitly.
   virtual void OnMouseEnter() = 0;
 
   // Called when the occlusion state changes, if the underlying platform

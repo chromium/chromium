@@ -76,7 +76,7 @@ EventDispatchDetails KeyboardModifierEventRewriter::RewriteEvent(
     const Continuation continuation) {
   std::unique_ptr<Event> rewritten_event;
   switch (event.type()) {
-    case ET_KEY_PRESSED: {
+    case EventType::kKeyPressed: {
       bool should_record_metrics = !(event.flags() & EF_IS_REPEAT);
       if (should_record_metrics) {
         RecordModifierKeyPressedBeforeRemapping(
@@ -98,7 +98,7 @@ EventDispatchDetails KeyboardModifierEventRewriter::RewriteEvent(
       }
       break;
     }
-    case ET_KEY_RELEASED:
+    case EventType::kKeyReleased:
       rewritten_event = RewriteReleaseKeyEvent(*event.AsKeyEvent());
       break;
     default: {

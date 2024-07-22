@@ -1036,13 +1036,13 @@ void AppsContainerView::OnDidChangeFocus(View* focused_before,
 
 void AppsContainerView::OnGestureEvent(ui::GestureEvent* event) {
   // Ignore tap/long-press, allow those to pass to the ancestor view.
-  if (event->type() == ui::ET_GESTURE_TAP ||
-      event->type() == ui::ET_GESTURE_LONG_PRESS) {
+  if (event->type() == ui::EventType::kGestureTap ||
+      event->type() == ui::EventType::kGestureLongPress) {
     return;
   }
 
   // Will forward events to |apps_grid_view_| if they occur in the same y-region
-  if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN &&
+  if (event->type() == ui::EventType::kGestureScrollBegin &&
       event->location().y() <= apps_grid_view_->bounds().y()) {
     return;
   }

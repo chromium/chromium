@@ -72,22 +72,22 @@ void InkDropEventHandler::OnGestureEvent(ui::GestureEvent* event) {
 
   InkDropState ink_drop_state = InkDropState::HIDDEN;
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP_DOWN:
+    case ui::EventType::kGestureTapDown:
       if (current_ink_drop_state == InkDropState::ACTIVATED)
         return;
       ink_drop_state = InkDropState::ACTION_PENDING;
       break;
-    case ui::ET_GESTURE_LONG_PRESS:
+    case ui::EventType::kGestureLongPress:
       if (current_ink_drop_state == InkDropState::ACTIVATED)
         return;
       ink_drop_state = InkDropState::ALTERNATE_ACTION_PENDING;
       break;
-    case ui::ET_GESTURE_LONG_TAP:
+    case ui::EventType::kGestureLongTap:
       ink_drop_state = InkDropState::ALTERNATE_ACTION_TRIGGERED;
       break;
-    case ui::ET_GESTURE_END:
-    case ui::ET_GESTURE_SCROLL_BEGIN:
-    case ui::ET_GESTURE_TAP_CANCEL:
+    case ui::EventType::kGestureEnd:
+    case ui::EventType::kGestureScrollBegin:
+    case ui::EventType::kGestureTapCancel:
       if (current_ink_drop_state == InkDropState::ACTIVATED)
         return;
       ink_drop_state = InkDropState::HIDDEN;
@@ -111,13 +111,13 @@ void InkDropEventHandler::OnGestureEvent(ui::GestureEvent* event) {
 
 void InkDropEventHandler::OnMouseEvent(ui::MouseEvent* event) {
   switch (event->type()) {
-    case ui::ET_MOUSE_ENTERED:
+    case ui::EventType::kMouseEntered:
       delegate_->GetInkDrop()->SetHovered(true);
       break;
-    case ui::ET_MOUSE_EXITED:
+    case ui::EventType::kMouseExited:
       delegate_->GetInkDrop()->SetHovered(false);
       break;
-    case ui::ET_MOUSE_DRAGGED:
+    case ui::EventType::kMouseDragged:
       delegate_->GetInkDrop()->SetHovered(
           host_view_->GetLocalBounds().Contains(event->location()));
       break;

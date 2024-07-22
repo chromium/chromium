@@ -23,18 +23,18 @@ KeyAccessibilityEnabler::~KeyAccessibilityEnabler() {
 }
 
 void KeyAccessibilityEnabler::OnKeyEvent(ui::KeyEvent* event) {
-  if ((event->type() != ui::ET_KEY_PRESSED &&
-       event->type() != ui::ET_KEY_RELEASED) ||
+  if ((event->type() != ui::EventType::kKeyPressed &&
+       event->type() != ui::EventType::kKeyReleased) ||
       !display::Screen::GetScreen()->InTabletMode()) {
     return;
   }
 
   if (event->key_code() == ui::VKEY_VOLUME_DOWN) {
-    vol_down_pressed_ = event->type() == ui::ET_KEY_PRESSED;
+    vol_down_pressed_ = event->type() == ui::EventType::kKeyPressed;
   } else if (event->key_code() == ui::VKEY_VOLUME_UP) {
-    vol_up_pressed_ = event->type() == ui::ET_KEY_PRESSED;
+    vol_up_pressed_ = event->type() == ui::EventType::kKeyPressed;
   } else {
-    other_key_pressed_ = event->type() == ui::ET_KEY_PRESSED;
+    other_key_pressed_ = event->type() == ui::EventType::kKeyPressed;
   }
 
   if (vol_down_pressed_ && vol_up_pressed_ && !other_key_pressed_) {

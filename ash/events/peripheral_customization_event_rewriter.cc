@@ -215,7 +215,7 @@ std::vector<std::unique_ptr<ui::Event>> RewriteModifiers(
     }
 
     const ui::EventType pressed_or_released_type =
-        pressed ? ui::ET_KEY_PRESSED : ui::ET_KEY_RELEASED;
+        pressed ? ui::EventType::kKeyPressed : ui::EventType::kKeyReleased;
     auto rewritten_modifier_event = std::make_unique<ui::KeyEvent>(
         pressed_or_released_type, iter->key_code, iter->dom_code,
         modifiers_pressed | modifiers_already_pressed |
@@ -285,7 +285,7 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
     int flags_to_release,
     bool key_press) {
   const ui::EventType event_type =
-      key_press ? ui::ET_KEY_PRESSED : ui::ET_KEY_RELEASED;
+      key_press ? ui::EventType::kKeyPressed : ui::EventType::kKeyReleased;
   const uint32_t modifier_key_flag = ConvertKeyCodeToFlags(key_event.vkey);
 
   // `other_modifiers_to_apply` symbolizes the flags that are not handled by
@@ -300,14 +300,14 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
   // Mouse wheel is an exception here since presses and releases happen
   // atomically. Therefore always release every key you originally pressed.
   const uint32_t other_modifiers_to_apply =
-      (key_press || event.type() == ui::ET_MOUSEWHEEL)
+      (key_press || event.type() == ui::EventType::kMousewheel)
           ? (key_event.modifiers & ~event.flags() & ~modifier_key_flag)
           : (flags_to_release & ~event.flags() & ~modifier_key_flag);
 
   uint32_t applied_modifier_key_flag = modifier_key_flag;
   // Do not apply modifier flags when the key is a modifier and it is a release
   // event. Modifier keys do not apply their flag on release.
-  if (event_type == ui::ET_KEY_RELEASED &&
+  if (event_type == ui::EventType::kKeyReleased &&
       key_event.modifiers == modifier_key_flag) {
     applied_modifier_key_flag = ui::EF_NONE;
   }
@@ -330,7 +330,8 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
 
   return GenerateFullKeyEventSequence(
       event, other_modifiers_to_apply, event.flags(),
-      /*pressed=*/event_type == ui::ET_KEY_PRESSED, std::move(rewritten_event));
+      /*pressed=*/event_type == ui::EventType::kKeyPressed,
+      std::move(rewritten_event));
 }
 
 std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
@@ -339,11 +340,12 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
     int flags_to_release) {
   // If the original event is a mouse scroll event, we must generate both a
   // press and release from the single event.
-  const bool should_press_and_release = event.type() == ui::ET_MOUSEWHEEL;
+  const bool should_press_and_release =
+      event.type() == ui::EventType::kMousewheel;
 
   const bool key_press = should_press_and_release ||
-                         event.type() == ui::ET_MOUSE_PRESSED ||
-                         event.type() == ui::ET_KEY_PRESSED;
+                         event.type() == ui::EventType::kMousePressed ||
+                         event.type() == ui::EventType::kKeyPressed;
   std::vector<std::unique_ptr<ui::Event>> rewritten_events =
       RewriteEventToKeyEvents(event, key_event, flags_to_release, key_press);
 
@@ -414,7 +416,8 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToMouseButtonEvents(
     mojom::StaticShortcutAction action) {
   // If the original event is a mouse scroll event, we must generate both a
   // press and release from the single event.
-  const bool should_press_and_release = event.type() == ui::ET_MOUSEWHEEL;
+  const bool should_press_and_release =
+      event.type() == ui::EventType::kMousewheel;
 
   std::vector<std::unique_ptr<ui::Event>> rewritten_events;
 
@@ -423,11 +426,11 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToMouseButtonEvents(
   const int characteristic_flag = flag_iter->second;
 
   const gfx::PointF location = GetCurrentCursorLocation();
-  const ui::EventType type =
-      (should_press_and_release || event.type() == ui::ET_MOUSE_PRESSED ||
-       event.type() == ui::ET_KEY_PRESSED)
-          ? ui::ET_MOUSE_PRESSED
-          : ui::ET_MOUSE_RELEASED;
+  const ui::EventType type = (should_press_and_release ||
+                              event.type() == ui::EventType::kMousePressed ||
+                              event.type() == ui::EventType::kKeyPressed)
+                                 ? ui::EventType::kMousePressed
+                                 : ui::EventType::kMouseReleased;
   rewritten_events.push_back(std::make_unique<ui::MouseEvent>(
       type, location, location, event.time_stamp(),
       event.flags() | characteristic_flag, characteristic_flag));
@@ -435,7 +438,7 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToMouseButtonEvents(
 
   if (should_press_and_release) {
     rewritten_events.push_back(std::make_unique<ui::MouseEvent>(
-        ui::ET_MOUSE_RELEASED, location, location, event.time_stamp(),
+        ui::EventType::kMouseReleased, location, location, event.time_stamp(),
         event.flags() | characteristic_flag, characteristic_flag));
     rewritten_events.back()->set_source_device_id(event.source_device_id());
   }
@@ -444,8 +447,8 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToMouseButtonEvents(
 }
 
 bool IsMouseButtonEvent(const ui::MouseEvent& mouse_event) {
-  return mouse_event.type() == ui::ET_MOUSE_PRESSED ||
-         mouse_event.type() == ui::ET_MOUSE_RELEASED;
+  return mouse_event.type() == ui::EventType::kMousePressed ||
+         mouse_event.type() == ui::EventType::kMouseReleased;
 }
 
 bool IsMouseRemappableButton(int flags) {
@@ -683,7 +686,8 @@ bool IsNumberKeyEvent(const ui::KeyEvent& key_event) {
 
 void RecordMouseInvalidKeyPressed(InputDeviceSettingsController* controller,
                                   const ui::KeyEvent& key_event) {
-  if (key_event.type() == ui::ET_KEY_RELEASED || key_event.is_repeat()) {
+  if (key_event.type() == ui::EventType::kKeyReleased ||
+      key_event.is_repeat()) {
     return;
   }
 
@@ -868,7 +872,7 @@ bool PeripheralCustomizationEventRewriter::NotifyMouseEventObserving(
       break;
   }
 
-  if (mouse_event.type() != ui::ET_MOUSE_PRESSED) {
+  if (mouse_event.type() != ui::EventType::kMousePressed) {
     return true;
   }
 
@@ -928,7 +932,7 @@ bool PeripheralCustomizationEventRewriter::NotifyKeyEventObserving(
   }
 
   // Observers should only be notified on key presses.
-  if (key_event.type() != ui::ET_KEY_PRESSED) {
+  if (key_event.type() != ui::EventType::kKeyPressed) {
     return true;
   }
 
@@ -958,8 +962,8 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
   }
   auto remapping_action = remapping_action_result->remapping_action;
 
-  if (event.type() == ui::ET_KEY_PRESSED ||
-      event.type() == ui::ET_MOUSE_PRESSED) {
+  if (event.type() == ui::EventType::kKeyPressed ||
+      event.type() == ui::EventType::kMousePressed) {
     metrics_manager_->RecordRemappingActionWhenButtonPressed(
         *remapping_action, remapping_action_result->peripheral_kind);
   }
@@ -987,9 +991,9 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
   }
 
   if (remapping_action->is_accelerator_action()) {
-    if (event.type() == ui::ET_KEY_PRESSED ||
-        event.type() == ui::ET_MOUSE_PRESSED ||
-        event.type() == ui::ET_MOUSEWHEEL) {
+    if (event.type() == ui::EventType::kKeyPressed ||
+        event.type() == ui::EventType::kMousePressed ||
+        event.type() == ui::EventType::kMousewheel) {
       // Every accelerator supported by peripheral customization is not impacted
       // by the accelerator passed. Therefore, passing an empty accelerator will
       // cause no issues.
@@ -1089,8 +1093,8 @@ ui::EventDispatchDetails PeripheralCustomizationEventRewriter::RewriteKeyEvent(
   // applying remapped modifiers.
   const ui::Event& last_rewritten_event = *rewritten_events.back();
   if (event_rewritten &&
-      (last_rewritten_event.type() == ui::ET_MOUSE_RELEASED ||
-       last_rewritten_event.type() == ui::ET_KEY_RELEASED)) {
+      (last_rewritten_event.type() == ui::EventType::kMouseReleased ||
+       last_rewritten_event.type() == ui::EventType::kKeyReleased)) {
     updated_button_map = true;
     UpdatePressedButtonMap(std::move(button), key_event, rewritten_events);
   }
@@ -1121,15 +1125,15 @@ void PeripheralCustomizationEventRewriter::UpdatePressedButtonMap(
     const std::vector<std::unique_ptr<ui::Event>>& rewritten_events) {
   // Scroll wheel events cannot affect other events modifiers since they do a
   // full press/release sequence with the one event.
-  if (original_event.type() == ui::ET_MOUSEWHEEL) {
+  if (original_event.type() == ui::EventType::kMousewheel) {
     return;
   }
 
   DeviceIdButton device_id_button_key =
       DeviceIdButton{original_event.source_device_id(), std::move(button)};
   // If the button is released, the entry must be removed from the map.
-  if (original_event.type() == ui::ET_MOUSE_RELEASED ||
-      original_event.type() == ui::ET_KEY_RELEASED) {
+  if (original_event.type() == ui::EventType::kMouseReleased ||
+      original_event.type() == ui::EventType::kKeyReleased) {
     device_button_to_flags_.erase(std::move(device_id_button_key));
 
     // Release all modifier flags on other currently pressed buttons.
@@ -1176,7 +1180,7 @@ void PeripheralCustomizationEventRewriter::UpdatePressedButtonMap(
 
 void PeripheralCustomizationEventRewriter::UpdatePressedButtonMapFlags(
     const ui::KeyEvent& key_event) {
-  if (key_event.type() == ui::ET_KEY_PRESSED) {
+  if (key_event.type() == ui::EventType::kKeyPressed) {
     return;
   }
 
@@ -1255,8 +1259,8 @@ PeripheralCustomizationEventRewriter::RewriteMouseWheelEvent(
   // applying remapped modifiers.
   const ui::Event& last_rewritten_event = *rewritten_events.back();
   if (event_rewritten &&
-      (last_rewritten_event.type() == ui::ET_MOUSE_RELEASED ||
-       last_rewritten_event.type() == ui::ET_KEY_RELEASED)) {
+      (last_rewritten_event.type() == ui::EventType::kMouseReleased ||
+       last_rewritten_event.type() == ui::EventType::kKeyReleased)) {
     updated_button_map = true;
     UpdatePressedButtonMap(std::move(button), mouse_wheel_event,
                            rewritten_events);
@@ -1332,8 +1336,8 @@ PeripheralCustomizationEventRewriter::RewriteMouseEvent(
   // applying remapped modifiers.
   const ui::Event& last_rewritten_event = *rewritten_events.back();
   if (event_rewritten &&
-      (last_rewritten_event.type() == ui::ET_MOUSE_RELEASED ||
-       last_rewritten_event.type() == ui::ET_KEY_RELEASED)) {
+      (last_rewritten_event.type() == ui::EventType::kMouseReleased ||
+       last_rewritten_event.type() == ui::EventType::kKeyReleased)) {
     updated_button_map = true;
     UpdatePressedButtonMap(std::move(button), mouse_event, rewritten_events);
   }

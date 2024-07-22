@@ -81,34 +81,35 @@ bool MotionEventAura::OnTouch(const TouchEvent& touch) {
   int index = FindPointerIndexOfId(touch.pointer_details().id);
   bool pointer_id_is_active = index != -1;
 
-  if (touch.type() == ET_TOUCH_PRESSED && pointer_id_is_active) {
+  if (touch.type() == EventType::kTouchPressed && pointer_id_is_active) {
     // TODO(tdresser): This should be NOTREACHED() - crbug.com/610423.
     return false;
-  } else if (touch.type() != ET_TOUCH_PRESSED && !pointer_id_is_active) {
+  } else if (touch.type() != EventType::kTouchPressed &&
+             !pointer_id_is_active) {
     // When a window begins capturing touch events, we could have an active
     // touch stream transfered to us, resulting in touch move or touch up events
     // without associated touch down events. Ignore them.
     return false;
   }
 
-  if (touch.type() == ET_TOUCH_MOVED && touch.x() == GetX(index) &&
+  if (touch.type() == EventType::kTouchMoved && touch.x() == GetX(index) &&
       touch.y() == GetY(index)) {
     return false;
   }
 
   switch (touch.type()) {
-    case ET_TOUCH_PRESSED:
+    case EventType::kTouchPressed:
       if (!AddTouch(touch))
         return false;
       [[fallthrough]];
-    case ET_TOUCH_RELEASED:
-    case ET_TOUCH_CANCELLED:
+    case EventType::kTouchReleased:
+    case EventType::kTouchCancelled:
       // Removing these touch points needs to be postponed until after the
       // MotionEvent has been dispatched. This cleanup occurs in
       // CleanupRemovedTouchPoints.
       UpdateTouch(touch);
       break;
-    case ET_TOUCH_MOVED:
+    case EventType::kTouchMoved:
       UpdateTouch(touch);
       break;
     default:
@@ -124,8 +125,8 @@ bool MotionEventAura::OnTouch(const TouchEvent& touch) {
 }
 
 void MotionEventAura::CleanupRemovedTouchPoints(const TouchEvent& event) {
-  if (event.type() != ET_TOUCH_RELEASED &&
-      event.type() != ET_TOUCH_CANCELLED) {
+  if (event.type() != EventType::kTouchReleased &&
+      event.type() != EventType::kTouchCancelled) {
     return;
   }
 
@@ -158,7 +159,7 @@ void MotionEventAura::UpdateTouch(const TouchEvent& touch) {
 void MotionEventAura::UpdateCachedAction(const TouchEvent& touch) {
   DCHECK(GetPointerCount());
   switch (touch.type()) {
-    case ET_TOUCH_PRESSED:
+    case EventType::kTouchPressed:
       if (GetPointerCount() == 1) {
         set_action(Action::DOWN);
       } else {
@@ -166,7 +167,7 @@ void MotionEventAura::UpdateCachedAction(const TouchEvent& touch) {
         set_action_index(GetIndexFromId(touch.pointer_details().id));
       }
       break;
-    case ET_TOUCH_RELEASED:
+    case EventType::kTouchReleased:
       if (GetPointerCount() == 1) {
         set_action(Action::UP);
       } else {
@@ -174,10 +175,10 @@ void MotionEventAura::UpdateCachedAction(const TouchEvent& touch) {
         set_action_index(GetIndexFromId(touch.pointer_details().id));
       }
       break;
-    case ET_TOUCH_CANCELLED:
+    case EventType::kTouchCancelled:
       set_action(Action::CANCEL);
       break;
-    case ET_TOUCH_MOVED:
+    case EventType::kTouchMoved:
       set_action(Action::MOVE);
       break;
     default:

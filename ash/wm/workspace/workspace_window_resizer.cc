@@ -1023,12 +1023,12 @@ void WorkspaceWindowResizer::RevertDrag() {
 }
 
 void WorkspaceWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {
-  if (event->type() != ui::ET_SCROLL_FLING_START &&
-      event->type() != ui::ET_GESTURE_SWIPE) {
+  if (event->type() != ui::EventType::kScrollFlingStart &&
+      event->type() != ui::EventType::kGestureSwipe) {
     return;
   }
 
-  if (event->type() == ui::ET_SCROLL_FLING_START) {
+  if (event->type() == ui::EventType::kScrollFlingStart) {
     CompleteDrag();
 
     if (details().bounds_change != WindowResizer::kBoundsChange_Repositions ||
@@ -1051,7 +1051,7 @@ void WorkspaceWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {
                                     WindowStateType::kPrimarySnapped);
     }
   } else {
-    DCHECK_EQ(event->type(), ui::ET_GESTURE_SWIPE);
+    DCHECK_EQ(event->type(), ui::EventType::kGestureSwipe);
     DCHECK_GT(event->details().touch_points(), 0);
     if (event->details().touch_points() == 1) {
       return;

@@ -679,7 +679,7 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   // is called during current edit session.
   if ((has_composition_range_ || on_start_composition_called_) &&
       wparam_keydown_cached_ != 0 && lparam_keydown_cached_ != 0) {
-    DispatchKeyEvent(ui::ET_KEY_PRESSED, wparam_keydown_cached_,
+    DispatchKeyEvent(ui::EventType::kKeyPressed, wparam_keydown_cached_,
                      lparam_keydown_cached_);
   }
 
@@ -927,7 +927,7 @@ HRESULT TSFTextStore::OnLanguageChanged() {
 HRESULT TSFTextStore::OnKeyTraceDown(WPARAM wParam, LPARAM lParam) {
   // fire the event right away if we're in composition
   if (has_composition_range_) {
-    DispatchKeyEvent(ui::ET_KEY_PRESSED, wParam, lParam);
+    DispatchKeyEvent(ui::EventType::kKeyPressed, wParam, lParam);
   } else {
     // we're not in composition but we might be starting it - remember these key
     // events to fire when composition starts
@@ -939,7 +939,7 @@ HRESULT TSFTextStore::OnKeyTraceDown(WPARAM wParam, LPARAM lParam) {
 
 HRESULT TSFTextStore::OnKeyTraceUp(WPARAM wParam, LPARAM lParam) {
   if (has_composition_range_ || wparam_keydown_fired_ == wParam) {
-    DispatchKeyEvent(ui::ET_KEY_RELEASED, wParam, lParam);
+    DispatchKeyEvent(ui::EventType::kKeyReleased, wParam, lParam);
   } else if (wparam_keydown_cached_ == wParam) {
     // If we didn't fire corresponding keydown event, then we need to clear the
     // cached keydown wParam and lParam.
@@ -955,12 +955,12 @@ void TSFTextStore::DispatchKeyEvent(ui::EventType type,
   if (!text_input_client_)
     return;
 
-  if (type == ui::ET_KEY_PRESSED) {
+  if (type == ui::EventType::kKeyPressed) {
     // clear the saved values since we just fired a keydown
     wparam_keydown_cached_ = 0;
     lparam_keydown_cached_ = 0;
     wparam_keydown_fired_ = wparam;
-  } else if (type == ui::ET_KEY_RELEASED) {
+  } else if (type == ui::EventType::kKeyReleased) {
     // clear the saved values since we just fired a keyup
     wparam_keydown_fired_ = 0;
   } else {
@@ -969,7 +969,7 @@ void TSFTextStore::DispatchKeyEvent(ui::EventType type,
   }
 
   // prepare ui::KeyEvent.
-  UINT message = type == ui::ET_KEY_PRESSED ? WM_KEYDOWN : WM_KEYUP;
+  UINT message = type == ui::EventType::kKeyPressed ? WM_KEYDOWN : WM_KEYUP;
   const CHROME_MSG key_event_MSG = {window_handle_, message, VK_PROCESSKEY,
                                     lparam};
   ui::KeyEvent key_event = KeyEventFromMSG(key_event_MSG);

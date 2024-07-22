@@ -117,8 +117,9 @@ TEST(TouchSelectionSessionMetricsTest, RecordsAfterCharacterKeyEvent) {
   session_metrics_recorder.OnTouchEvent(true);
   session_metrics_recorder.OnCursorActivationEvent();
   // End session successfully by typing a character key.
-  const KeyEvent key_event(ET_KEY_PRESSED, VKEY_A, DomCode::US_A, EF_NONE,
-                           DomKey::FromCharacter('a'), EventTimeForNow());
+  const KeyEvent key_event(EventType::kKeyPressed, VKEY_A, DomCode::US_A,
+                           EF_NONE, DomKey::FromCharacter('a'),
+                           EventTimeForNow());
   session_metrics_recorder.OnSessionEndEvent(key_event);
 
   histogram_tester.ExpectUniqueSample(

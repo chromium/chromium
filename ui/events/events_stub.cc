@@ -19,7 +19,7 @@ namespace ui {
 
 EventType EventTypeFromNative(const PlatformEvent& native_event) {
   NOTIMPLEMENTED();
-  return ET_UNKNOWN;
+  return EventType::kUnknown;
 }
 
 int EventFlagsFromNative(const PlatformEvent& native_event) {

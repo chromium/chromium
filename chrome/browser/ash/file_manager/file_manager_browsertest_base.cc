@@ -3717,7 +3717,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "dispatchNativeMediaKey") {
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_MEDIA_PLAY_PAUSE, 0);
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed,
+                           ui::VKEY_MEDIA_PLAY_PAUSE, 0);
     ASSERT_TRUE(PostKeyEvent(&key_event));
     *output = "mediaKeyDispatched";
     return;
@@ -3728,7 +3729,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     bool shift = value.FindBool("shift").value_or(false);
 
     int flag = shift ? ui::EF_SHIFT_DOWN : 0;
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_TAB, flag);
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_TAB, flag);
     ASSERT_TRUE(PostKeyEvent(&key_event));
     *output = "tabKeyDispatched";
     return;

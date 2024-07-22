@@ -1747,7 +1747,7 @@ void CalendarView::OnEvent(ui::Event* event) {
   auto* focus_manager = GetFocusManager();
 
   bool is_tab_key_pressed =
-      key_event->type() == ui::EventType::ET_KEY_PRESSED &&
+      key_event->type() == ui::EventType::kKeyPressed &&
       views::FocusManager::IsTabTraversalKeyEvent(*key_event);
 
   if (is_tab_key_pressed) {
@@ -1786,7 +1786,7 @@ void CalendarView::OnEvent(ui::Event* event) {
     return;
   }
 
-  if (key_event->type() != ui::EventType::ET_KEY_PRESSED ||
+  if (key_event->type() != ui::EventType::kKeyPressed ||
       (key_code != ui::VKEY_UP && key_code != ui::VKEY_DOWN &&
        key_code != ui::VKEY_LEFT && key_code != ui::VKEY_RIGHT)) {
     GlanceableTrayChildBubble::OnEvent(event);

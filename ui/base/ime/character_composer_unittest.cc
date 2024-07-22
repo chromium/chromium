@@ -43,10 +43,10 @@ class CharacterComposerTest : public testing::Test {
  protected:
   // Returns a |KeyEvent| for a dead key press.
   KeyEvent* DeadKeyPress(char16_t combining_character) const {
-    KeyEvent* event =
-        new KeyEvent(ET_KEY_PRESSED, VKEY_UNKNOWN, DomCode::NONE, EF_NONE,
-                     DomKey::DeadKeyFromCombiningCharacter(combining_character),
-                     EventTimeForNow());
+    KeyEvent* event = new KeyEvent(
+        EventType::kKeyPressed, VKEY_UNKNOWN, DomCode::NONE, EF_NONE,
+        DomKey::DeadKeyFromCombiningCharacter(combining_character),
+        EventTimeForNow());
     return event;
   }
 
@@ -70,8 +70,8 @@ class CharacterComposerTest : public testing::Test {
     // Which physical key is used as the Compose key can usually be configured
     // and should therefore be irrelevant.
     return std::make_unique<KeyEvent>(
-        ET_KEY_PRESSED, KeyboardCode::VKEY_COMPOSE, DomCode::ALT_RIGHT, EF_NONE,
-        DomKey::COMPOSE, EventTimeForNow());
+        EventType::kKeyPressed, KeyboardCode::VKEY_COMPOSE, DomCode::ALT_RIGHT,
+        EF_NONE, DomKey::COMPOSE, EventTimeForNow());
   }
 
   // Expects key is filtered and no character is composed.
@@ -86,7 +86,7 @@ class CharacterComposerTest : public testing::Test {
                                             DomCode code,
                                             int flags,
                                             char16_t character) const {
-    return std::make_unique<KeyEvent>(ET_KEY_PRESSED, vkey, code, flags,
+    return std::make_unique<KeyEvent>(EventType::kKeyPressed, vkey, code, flags,
                                       DomKey::FromCharacter(character),
                                       EventTimeForNow());
   }

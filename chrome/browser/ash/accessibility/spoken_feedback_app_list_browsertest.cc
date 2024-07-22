@@ -935,14 +935,14 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest,
 
     gfx::Point touch_point = target_view->GetBoundsInScreen().CenterPoint();
     ui::TouchEvent touch_press(
-        ui::ET_TOUCH_PRESSED, touch_point, base::TimeTicks::Now(),
+        ui::EventType::kTouchPressed, touch_point, base::TimeTicks::Now(),
         ui::PointerDetails(ui::EventPointerType::kTouch, 0));
     generator_ptr->Dispatch(&touch_press);
 
     clock_ptr->Advance(base::Seconds(1));
 
     ui::TouchEvent touch_move(
-        ui::ET_TOUCH_MOVED, touch_point, base::TimeTicks::Now(),
+        ui::EventType::kTouchMoved, touch_point, base::TimeTicks::Now(),
         ui::PointerDetails(ui::EventPointerType::kTouch, 0));
     generator_ptr->Dispatch(&touch_move);
   });

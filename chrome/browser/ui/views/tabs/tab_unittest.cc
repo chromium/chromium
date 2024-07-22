@@ -447,7 +447,7 @@ TEST_F(TabTest, CloseButtonFocus) {
   TabCloseButton* tab_close_button = GetCloseButton(tab);
 
   // Verify tab_close_button does not get focus on right click.
-  ui::MouseEvent right_click_event(ui::ET_KEY_PRESSED, gfx::Point(),
+  ui::MouseEvent right_click_event(ui::EventType::kKeyPressed, gfx::Point(),
                                    gfx::Point(), base::TimeTicks(),
                                    ui::EF_RIGHT_MOUSE_BUTTON, 0);
   tab_close_button->OnMousePressed(right_click_event);

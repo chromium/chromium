@@ -150,7 +150,7 @@ TEST_F(SharingDialogViewTest, DevicePressed) {
   const auto& buttons = dialog()->button_list_for_testing()->children();
   ASSERT_EQ(5U, buttons.size());
   views::test::ButtonTestApi(static_cast<views::Button*>(buttons[1]))
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
 }
 
@@ -166,7 +166,7 @@ TEST_F(SharingDialogViewTest, AppPressed) {
   const auto& buttons = dialog()->button_list_for_testing()->children();
   ASSERT_EQ(5U, buttons.size());
   views::test::ButtonTestApi(static_cast<views::Button*>(buttons[3]))
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
 }
 

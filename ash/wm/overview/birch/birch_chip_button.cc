@@ -257,7 +257,7 @@ void BirchChipButton::SetIconImage(const ui::ImageModel& icon_image,
 }
 
 void BirchChipButton::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_LONG_PRESS) {
+  if (event->type() == ui::EventType::kGestureLongPress) {
     // Show removal chip panel.
     gfx::Point screen_location(event->location());
     views::View::ConvertPointToScreen(this, &screen_location);

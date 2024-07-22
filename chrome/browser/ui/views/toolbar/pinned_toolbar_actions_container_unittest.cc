@@ -168,10 +168,10 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
   void SendKeyPress(views::View* view,
                     ui::KeyboardCode code,
                     int flags = ui::EF_NONE) {
-    view->OnKeyPressed(
-        ui::KeyEvent(ui::ET_KEY_PRESSED, code, flags, ui::EventTimeForNow()));
-    view->OnKeyReleased(
-        ui::KeyEvent(ui::ET_KEY_PRESSED, code, flags, ui::EventTimeForNow()));
+    view->OnKeyPressed(ui::KeyEvent(ui::EventType::kKeyPressed, code, flags,
+                                    ui::EventTimeForNow()));
+    view->OnKeyReleased(ui::KeyEvent(ui::EventType::kKeyPressed, code, flags,
+                                     ui::EventTimeForNow()));
   }
 
  protected:

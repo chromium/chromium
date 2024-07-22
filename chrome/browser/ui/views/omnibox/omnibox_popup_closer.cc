@@ -28,7 +28,7 @@ OmniboxPopupCloser::~OmniboxPopupCloser() = default;
 
 void OmniboxPopupCloser::OnMouseEvent(ui::MouseEvent* event) {
   if (!browser_view_->browser()->is_delete_scheduled() &&
-      event->type() == ui::ET_MOUSE_PRESSED) {
+      event->type() == ui::EventType::kMousePressed) {
     LocationBarView* location_bar_view = browser_view_->GetLocationBarView();
     CHECK(location_bar_view);
     const auto* const view = static_cast<views::View*>(event->target());

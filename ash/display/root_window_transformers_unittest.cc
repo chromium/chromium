@@ -85,7 +85,7 @@ class TestEventHandler : public ui::EventHandler {
     if (target->GetName() != kWallpaperView)
       return;
 
-    if (event->type() == ui::ET_SCROLL) {
+    if (event->type() == ui::EventType::kScroll) {
       scroll_x_offset_ = event->x_offset();
       scroll_y_offset_ = event->y_offset();
       scroll_x_offset_ordinal_ = event->x_offset_ordinal();
