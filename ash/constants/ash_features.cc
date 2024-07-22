@@ -117,7 +117,7 @@ BASE_FEATURE(kAnnotatorMode,
              "AnnotatorMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kApnRevamp, "ApnRevamp", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kApnRevamp, "ApnRevamp", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Adds Borealis support to Almanac app install URIs.
 BASE_FEATURE(kAppInstallServiceUriBorealis,

@@ -2200,6 +2200,8 @@ TEST_F(CrosNetworkConfigTest, FillInCustomAPNList) {
 }
 
 TEST_F(CrosNetworkConfigTest, CustomAPN) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kApnRevamp);
   SetupAPNList();
   // Verify that setting APN to an entry that already exists in apn list
   // does not update the custom apn list.
@@ -3718,6 +3720,8 @@ TEST_F(CrosNetworkConfigTest, ConnectedAPN_ApnRevampDisabled) {
 }
 
 TEST_F(CrosNetworkConfigTest, UnrecognizedAttachApnValue) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kApnRevamp);
   SetupAPNList();
   const char kUnrecognizedTestApnAttachStr[] = "unrecognized attach value";
 
