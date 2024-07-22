@@ -255,8 +255,8 @@ class SavedDeskTest : public OverviewTestBase,
 
     SavedDeskGridView* grid_view = nullptr;
     SavedDeskItemView* item_view = nullptr;
-    for (ash::SavedDeskGridView* grid : saved_desk_library_view->grid_views()) {
-      for (ash::SavedDeskItemView* item : grid->grid_items()) {
+    for (SavedDeskGridView* grid : saved_desk_library_view->grid_views()) {
+      for (SavedDeskItemView* item : grid->grid_items()) {
         if (SavedDeskItemViewTestApi(item).uuid() == uuid) {
           grid_view = grid;
           item_view = item;
@@ -337,6 +337,53 @@ class SavedDeskTest : public OverviewTestBase,
     return overview_session->grid_list();
   }
 
+  // TODO(http://b/354769670): Combine similar helper functions if possible.
+  views::MenuItemView* GetDeskActionContextMenuItem(
+      aura::Window* root,
+      DeskActionContextMenu::CommandId command_id) {
+    auto* bar_view = GetOverviewGridForRoot(root)->desks_bar_view();
+    CHECK(bar_view);
+
+    if (bar_view->IsZeroState()) {
+      // Click the default desk button so it will expand to a `DeskMiniView`.
+      auto* default_button = bar_view->default_desk_button();
+      CHECK(default_button);
+      LeftClickOn(default_button);
+
+      // Clicking the save template button selects the newly created template's
+      // name field. We can press enter or escape or click to select out of it.
+      PressAndReleaseKey(ui::VKEY_RETURN);
+
+      CHECK(!bar_view->IsZeroState());
+    }
+
+    DeskMiniView* mini_view =
+        bar_view->mini_views()[DesksController::Get()->GetActiveDeskIndex()];
+    CHECK(mini_view);
+
+    // Use the desk action view to get the context menu button.
+    CHECK(mini_view->desk_action_view());
+    DeskActionButton* menu_button =
+        mini_view->desk_action_view()->context_menu_button();
+    CHECK(menu_button);
+    CHECK(menu_button->GetVisible());
+
+    // Click the button to open the context menu.
+    LeftClickOn(menu_button);
+
+    auto* menu =
+        GetOverviewGridForRoot(root)
+            ->desks_bar_view()
+            ->mini_views()[DesksController::Get()->GetActiveDeskIndex()]
+            ->context_menu();
+    CHECK(menu);
+
+    views::MenuItemView* menu_item =
+        DesksTestApi::GetDeskActionContextMenuItem(menu, command_id);
+    CHECK(menu_item);
+    return menu_item;
+  }
+
   // Opens overview mode and then clicks the save desk as template button. This
   // should save a new desk template and open the saved desk grid.
   void OpenOverviewAndSaveTemplate(aura::Window* root) {
@@ -344,11 +391,15 @@ class SavedDeskTest : public OverviewTestBase,
       ToggleOverview();
     }
 
-    auto* save_desk_as_template_button =
-        GetSaveDeskAsTemplateButtonForRoot(root);
-    ASSERT_TRUE(
-        GetOverviewGridForRoot(root)->IsSaveDeskButtonContainerVisible());
-    LeftClickOn(save_desk_as_template_button);
+    if (features::IsForestFeatureEnabled()) {
+      LeftClickOn(GetDeskActionContextMenuItem(
+          root, DeskActionContextMenu::kSaveAsTemplate));
+    } else {
+      ASSERT_TRUE(
+          GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
+      LeftClickOn(GetSaveDeskAsTemplateButtonForRoot(root));
+    }
+
     WaitForSavedDeskUI();
     WaitForSavedDeskLibrary();
     // Clicking the save desk as template button selects the newly created saved
@@ -367,10 +418,15 @@ class SavedDeskTest : public OverviewTestBase,
       ToggleOverview();
     }
 
-    auto* save_desk_button = GetSaveDeskForLaterButtonForRoot(root);
-    ASSERT_TRUE(
-        GetOverviewGridForRoot(root)->IsSaveDeskForLaterButtonVisible());
-    LeftClickOn(save_desk_button);
+    if (features::IsForestFeatureEnabled()) {
+      LeftClickOn(GetDeskActionContextMenuItem(
+          root, DeskActionContextMenu::kSaveForLater));
+    } else {
+      ASSERT_TRUE(
+          GetOverviewGridForRoot(root)->IsSaveDeskForLaterButtonVisible());
+      LeftClickOn(GetSaveDeskForLaterButtonForRoot(root));
+    }
+
     WaitForSavedDeskUI();
 
     // Wait for one more time only when we have closing windows.
@@ -4493,8 +4549,14 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskWithDuplicateName) {
 
     // Open overview and save the desk.
     ToggleOverview();
-    LeftClickOn(
-        GetSaveDeskForLaterButtonForRoot(Shell::Get()->GetPrimaryRootWindow()));
+
+    auto* root = Shell::Get()->GetPrimaryRootWindow();
+    if (features::IsForestFeatureEnabled()) {
+      LeftClickOn(GetDeskActionContextMenuItem(
+          root, DeskActionContextMenu::kSaveForLater));
+    } else {
+      LeftClickOn(GetSaveDeskForLaterButtonForRoot(root));
+    }
 
     WaitForSavedDeskUI();
     WaitForSavedDeskUI();
@@ -4603,8 +4665,13 @@ TEST_F(DeskSaveAndRecallTest, NewDeskButtonDisabledWhenRecallingToMaxDesks) {
   // After saving the last desk for later, the new desk button should be enabled
   // again.
   auto* root = Shell::GetPrimaryRootWindow();
-  ASSERT_TRUE(GetOverviewGridForRoot(root)->IsSaveDeskForLaterButtonVisible());
-  LeftClickOn(GetSaveDeskForLaterButtonForRoot(root));
+  if (features::IsForestFeatureEnabled()) {
+    LeftClickOn(GetDeskActionContextMenuItem(
+        root, DeskActionContextMenu::kSaveForLater));
+  } else {
+    LeftClickOn(GetSaveDeskForLaterButtonForRoot(root));
+  }
+
   WaitForSavedDeskUI();
   WaitForSavedDeskUI();
   ASSERT_TRUE(controller->CanCreateDesks());
@@ -4767,9 +4834,9 @@ TEST_F(SavedDeskTest, SaveDeskFilterByProfileID) {
   // Change the profile id of `test_window_2` to be another profile id and set
   // the profile id of `test_window_1` to be the lacros primary id.
 
-  test_window_1->SetProperty(ash::kLacrosProfileId,
+  test_window_1->SetProperty(kLacrosProfileId,
                              desk_profile_delegate->GetPrimaryProfileId());
-  test_window_2->SetProperty(ash::kLacrosProfileId,
+  test_window_2->SetProperty(kLacrosProfileId,
                              desk_profile_delegate->GetPrimaryProfileId() + 1);
   // Open overview and save a floating workspace template.
   ToggleOverview();

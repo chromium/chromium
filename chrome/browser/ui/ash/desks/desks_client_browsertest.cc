@@ -380,8 +380,8 @@ void ClickSaveDeskAsTemplateButton(bool wait_for_ui) {
     // Wait for the desk bar to finish animating to the expanded state.
     ash::DesksTestApi::WaitForDeskBarUiUpdate(bar_view);
 
-    // Clicking the save template button selects the newly created template's
-    // name field. We can press enter or escape or click to select out of it.
+    // Clicking the default desk button selects the desk's name field. We can
+    // press enter or escape or click to select out of it.
     SendKey(ui::VKEY_RETURN);
 
     ASSERT_FALSE(bar_view->IsZeroState());

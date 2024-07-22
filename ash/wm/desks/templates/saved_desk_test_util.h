@@ -21,11 +21,6 @@ namespace app_restore {
 struct AppRestoreData;
 }  // namespace app_restore
 
-namespace views {
-class Button;
-class Label;
-}  // namespace views
-
 namespace ash {
 
 class IconButton;
