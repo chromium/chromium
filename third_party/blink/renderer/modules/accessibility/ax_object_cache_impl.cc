@@ -4270,6 +4270,8 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
     }
   } else if (attr_name == html_names::kIdAttr) {
     DeferTreeUpdate(TreeUpdateReason::kIdChanged, element);
+  } else if (attr_name == html_names::kClassAttr) {
+    MarkElementDirty(element);  // Reserialize the class.
   } else if (attr_name == html_names::kTabindexAttr) {
     MarkElementDirty(element);
   } else if (attr_name == html_names::kValueAttr) {
