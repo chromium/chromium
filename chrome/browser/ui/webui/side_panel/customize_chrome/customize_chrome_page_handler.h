@@ -110,7 +110,6 @@ class CustomizeChromePageHandler
   void SetModuleDisabled(const std::string& module_id, bool disabled) override;
   void UpdateModulesSettings() override;
   void UpdateScrollToSection() override;
-  void UpdateAttachedTabState() override;
 
  private:
   void LogEvent(NTPLoggingEventType event);
@@ -155,10 +154,6 @@ class CustomizeChromePageHandler
   // last requested section, e.g. during load.
   CustomizeChromeSection last_requested_section_ =
       CustomizeChromeSection::kUnspecified;
-
-  // Caches the attached tab state provided to the handler, in cases where the
-  // value needs to be requeried by the page.
-  bool last_is_source_tab_first_party_ntp_ = true;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>

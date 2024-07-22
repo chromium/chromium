@@ -125,7 +125,6 @@ void CustomizeChromePageHandler::ScrollToSection(
 
 void CustomizeChromePageHandler::AttachedTabStateUpdated(
     bool is_source_tab_first_party_ntp) {
-  last_is_source_tab_first_party_ntp_ = is_source_tab_first_party_ntp;
   page_->AttachedTabStateUpdated(is_source_tab_first_party_ntp);
 }
 
@@ -438,10 +437,6 @@ void CustomizeChromePageHandler::UpdateModulesSettings() {
 
 void CustomizeChromePageHandler::UpdateScrollToSection() {
   ScrollToSection(last_requested_section_);
-}
-
-void CustomizeChromePageHandler::UpdateAttachedTabState() {
-  AttachedTabStateUpdated(last_is_source_tab_first_party_ntp_);
 }
 
 void CustomizeChromePageHandler::LogEvent(NTPLoggingEventType event) {

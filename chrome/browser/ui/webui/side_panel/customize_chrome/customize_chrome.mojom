@@ -174,9 +174,6 @@ interface CustomizeChromePageHandler {
 
   // Triggers a call to |CustomizeChromePage.UpdateScrollToSection()|.
   UpdateScrollToSection();
-
-  // Triggers a call to |CustomizeChromePage.AttachedTabStateUpdated()|.
-  UpdateAttachedTabState();
 };
 
 // WebUI-side handler for requests from the browser.
