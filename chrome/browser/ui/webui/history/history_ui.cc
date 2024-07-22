@@ -355,7 +355,8 @@ void HistoryUI::CreateShoppingServiceHandler(
           std::move(page), std::move(receiver), bookmark_model,
           shopping_service, profile->GetPrefs(), tracker,
           std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr,
-                                                                profile));
+                                                                profile),
+          nullptr);
 }
 
 void HistoryUI::UpdateDataSource() {

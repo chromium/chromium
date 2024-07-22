@@ -178,6 +178,13 @@ struct ProductSpecificationsSet {
   array<url.mojom.Url> urls;
 };
 
+//TODO(b/311697865) move this to a common location.
+enum UserFeedback {
+  kUnspecified,
+  kThumbsUp,
+  kThumbsDown,
+};
+
 // Used by surfaces like the price tracking section in side panel, product
 // specifications, chrome://history etc, to bootstrap bidirectional
 // communication.
@@ -257,8 +264,8 @@ interface ShoppingServiceHandler {
   // Show the product specifications set based on the uuid.
   ShowProductSpecificationsSetForUuid(mojo_base.mojom.Uuid uuid);
 
-  // Show feedback form.
-  ShowFeedback();
+  // Show feedback form for price insights.
+  ShowFeedbackForPriceInsights();
 
   // Get all of a user's product specifications sets.
   GetAllProductSpecificationsSets() => (array<ProductSpecificationsSet> sets);
@@ -283,6 +290,9 @@ interface ShoppingServiceHandler {
   // Uuid. If no set with the provided Uuid exists, nullopt is returned.
   SetUrlsForProductSpecificationsSet(mojo_base.mojom.Uuid uuid,
       array<url.mojom.Url> urls) => (ProductSpecificationsSet? updated_set);
+
+  // Store the user feedback for product specifications supplied by the user.
+  SetProductSpecificationsUserFeedback(UserFeedback feedback);
 };
 
 // WebUI-side handler for requests from the browser.

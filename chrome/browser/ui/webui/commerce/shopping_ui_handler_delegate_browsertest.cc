@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 
+#include "base/json/json_reader.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -162,3 +164,31 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
   EXPECT_EQ(valid_web_contents, web_contents());
   EXPECT_EQ(valid_url, web_contents()->GetLastCommittedURL());
 }
+
+// The feedback dialog on CrOS & LaCrOS happens at the system level,
+// which cannot be easily tested here. LaCrOS has a separate feedback
+// browser test which gives us some coverage.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
+                       TestShowFeedbackForProductSpecifications) {
+  const std::string log_id = "test_id";
+  ASSERT_EQ(nullptr, FeedbackDialog::GetInstanceForTest());
+
+  auto delegate =
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+  delegate->ShowFeedbackForProductSpecifications(log_id);
+
+  // Feedback dialog should be non-null with correct meta data.
+  CHECK(FeedbackDialog::GetInstanceForTest());
+  EXPECT_EQ(chrome::kChromeUIFeedbackURL,
+            FeedbackDialog::GetInstanceForTest()->GetDialogContentURL());
+  std::optional<base::Value::Dict> meta_data = base::JSONReader::ReadDict(
+      FeedbackDialog::GetInstanceForTest()->GetDialogArgs());
+  ASSERT_TRUE(meta_data.has_value());
+  ASSERT_EQ(*meta_data->FindString("categoryTag"), "product_specifications");
+  std::optional<base::Value::Dict> ai_meta_data =
+      base::JSONReader::ReadDict(*meta_data->FindString("aiMetadata"));
+  ASSERT_TRUE(ai_meta_data.has_value());
+  ASSERT_EQ(*ai_meta_data->FindString("log_id"), log_id);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)

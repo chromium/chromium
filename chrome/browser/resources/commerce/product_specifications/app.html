@@ -66,11 +66,15 @@
   }
 
   #footer {
-    margin-top: 20px;
+    align-items: center;
+    color: var(--color-side-panel-card-secondary-foreground);
+    display: flex;
     font-size: 11px;
     font-weight: 400;
+    gap: 16px;
+    justify-content: flex-start;
     line-height: 16px;
-    color: var(--color-side-panel-card-secondary-foreground);
+    margin-top: 20px;
   }
 
   #footer a {
@@ -115,6 +119,22 @@
     </new-column-selector>
   </div>
 </div>
-<div id="footer">$i18n{experimentalFeatureDisclaimer}
-  <a href="#" aria-label="$i18n{learnMoreA11yLabel}">$i18n{learnMore}</a>
+<div id="footer" hidden$="[[showEmptyState_]]">
+  <div id="disclaimer">$i18n{experimentalFeatureDisclaimer}
+    <a href="#" aria-label="$i18n{learnMoreA11yLabel}">$i18n{learnMore}</a>
+  </div>
+  <div id="feedbackLoading" hidden$="[[!loadingState_.loading]]">
+    <cr-loading-gradient>
+      <svg height="16" width="44" xmlns="http://www.w3.org/2000/svg">
+        <clipPath>
+          <circle cx="8" cy="8" r="8"></circle>
+          <circle cx="36" cy="8" r="8"></circle>
+        </clipPath>
+      </svg>
+    </cr-loading-gradient>
+  </div>
+  <cr-feedback-buttons id="feedbackButtons"
+      hidden$="[[loadingState_.loading]]"
+      on-selected-option-changed="onFeedbackSelectedOptionChanged_">
+  </cr-feedback-buttons>
 </div>

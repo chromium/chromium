@@ -25,6 +25,7 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/webui/webui_utils.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
@@ -272,6 +273,28 @@ shopping_service::mojom::ProductSpecificationsSetPtr ProductSpecsSetToMojo(
   return set_ptr;
 }
 
+std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+PrepareQualityLogEntry(optimization_guide::ModelQualityLogsUploaderService*
+                           model_quality_logs_uploader_service) {
+  if (!model_quality_logs_uploader_service) {
+    return nullptr;
+  }
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
+      std::make_unique<optimization_guide::ModelQualityLogEntry>(
+          std::make_unique<optimization_guide::proto::LogAiDataRequest>(),
+          model_quality_logs_uploader_service->GetWeakPtr());
+  optimization_guide::proto::LogAiDataRequest* request =
+      log_entry->log_ai_data_request();
+  if (!request) {
+    return nullptr;
+  }
+  // Generate an execution_id here for logging purpose.
+  std::string log_id = commerce::kProductSpecificationsLoggingPrefix +
+                       base::Uuid::GenerateRandomV4().AsLowercaseString();
+  request->mutable_model_execution_info()->set_execution_id(std::move(log_id));
+  return log_entry;
+}
+
 }  // namespace
 
 using shopping_service::mojom::BookmarkProductInfo;
@@ -279,20 +302,24 @@ using shopping_service::mojom::BookmarkProductInfoPtr;
 
 ShoppingServiceHandler::ShoppingServiceHandler(
     mojo::PendingRemote<shopping_service::mojom::Page> remote_page,
-    mojo::PendingReceiver<
-        shopping_service::mojom::ShoppingServiceHandler> receiver,
+    mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
+        receiver,
     bookmarks::BookmarkModel* bookmark_model,
     ShoppingService* shopping_service,
     PrefService* prefs,
     feature_engagement::Tracker* tracker,
-    std::unique_ptr<Delegate> delegate)
+    std::unique_ptr<Delegate> delegate,
+    optimization_guide::ModelQualityLogsUploaderService*
+        model_quality_logs_uploader_service)
     : remote_page_(std::move(remote_page)),
       receiver_(this, std::move(receiver)),
       bookmark_model_(bookmark_model),
       shopping_service_(shopping_service),
       pref_service_(prefs),
       tracker_(tracker),
-      delegate_(std::move(delegate)) {
+      delegate_(std::move(delegate)),
+      model_quality_logs_uploader_service_(
+          model_quality_logs_uploader_service) {
   scoped_subscriptions_observation_.Observe(shopping_service_);
   scoped_bookmark_model_observation_.Observe(bookmark_model_);
   if (shopping_service_ &&
@@ -690,13 +717,20 @@ void ShoppingServiceHandler::GetProductSpecificationsForUrls(
         shopping_service::mojom::ProductSpecifications::New());
     return;
   }
-
+  // The data is sent when `current_log_quality_entry_` destructs, which will
+  // happen when (1) the page is closed and ShoppingServiceHandler destructs or
+  // (2) there is another `GetProductSpecificationsForUrls` call which creates a
+  // new current entry and the old one will destruct.
+  current_log_quality_entry_ =
+      PrepareQualityLogEntry(model_quality_logs_uploader_service_);
   shopping_service_->GetProductSpecificationsForUrls(
       urls, base::BindOnce(
                 [](base::WeakPtr<ShoppingServiceHandler> handler,
                    GetProductSpecificationsForUrlsCallback callback,
                    std::vector<uint64_t> ids,
                    std::optional<ProductSpecifications> specs) {
+                  // TODO(b/347064310): Record response in the current log
+                  // quality entry after the quality proto is added.
                   if (!handler || !specs.has_value()) {
                     std::move(callback).Run(
                         shopping_service::mojom::ProductSpecifications::New());
@@ -765,9 +799,9 @@ void ShoppingServiceHandler::SwitchToOrOpenTab(const GURL& url) {
   }
 }
 
-void ShoppingServiceHandler::ShowFeedback() {
+void ShoppingServiceHandler::ShowFeedbackForPriceInsights() {
   if (delegate_) {
-    delegate_->ShowFeedback();
+    delegate_->ShowFeedbackForPriceInsights();
   }
 }
 
@@ -878,6 +912,37 @@ void ShoppingServiceHandler::SetUrlsForProductSpecificationsSet(
   } else {
     std::move(callback).Run(nullptr);
   }
+}
+
+void ShoppingServiceHandler::SetProductSpecificationsUserFeedback(
+    shopping_service::mojom::UserFeedback feedback) {
+  optimization_guide::proto::UserFeedback user_feedback;
+  switch (feedback) {
+    case shopping_service::mojom::UserFeedback::kThumbsUp:
+      user_feedback =
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP;
+      break;
+    case shopping_service::mojom::UserFeedback::kThumbsDown:
+      user_feedback =
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN;
+      break;
+    case shopping_service::mojom::UserFeedback::kUnspecified:
+      user_feedback =
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+      break;
+  }
+  if (user_feedback ==
+      optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN) {
+    CHECK(current_log_quality_entry_);
+    // `log_id` of the feedback will be the same as the `execution_id` of the
+    // log entry so that they can be matched later.
+    delegate_->ShowFeedbackForProductSpecifications(
+        /*log_id=*/current_log_quality_entry_->log_ai_data_request()
+            ->model_execution_info()
+            .execution_id());
+  }
+  // TODO(b/347064310): Record user feedback in the current log quality entry
+  // after the quality proto is added.
 }
 
 void ShoppingServiceHandler::OnProductSpecificationsSetAdded(

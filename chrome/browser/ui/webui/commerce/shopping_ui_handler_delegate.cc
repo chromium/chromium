@@ -122,7 +122,7 @@ void ShoppingUiHandlerDelegate::SwitchToOrOpenTab(const GURL& url) {
   NavigateToUrl(browser, url);
 }
 
-void ShoppingUiHandlerDelegate::ShowFeedback() {
+void ShoppingUiHandlerDelegate::ShowFeedbackForPriceInsights() {
   auto* browser = chrome::FindLastActive();
   if (!browser) {
     return;
@@ -135,6 +135,25 @@ void ShoppingUiHandlerDelegate::ShowFeedback() {
       l10n_util::GetStringUTF8(IDS_SHOPPING_INSIGHTS_FEEDBACK_FORM_TITLE),
       /*category_tag=*/"price_insights",
       /*extra_diagnostics=*/std::string());
+}
+
+void ShoppingUiHandlerDelegate::ShowFeedbackForProductSpecifications(
+    const std::string& log_id) {
+  auto* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+
+  base::Value::Dict feedback_metadata;
+  feedback_metadata.Set("log_id", log_id);
+  chrome::ShowFeedbackPage(
+      browser, feedback::kFeedbackSourceAI,
+      /*description_template=*/std::string(),
+      /*description_placeholder_text=*/
+      l10n_util::GetStringUTF8(IDS_PRODUCT_SPECIFICATIONS_FEEDBACK_PLACEHOLDER),
+      /*category_tag=*/"product_specifications",
+      /*extra_diagnostics=*/std::string(),
+      /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
 }
 
 void ShoppingUiHandlerDelegate::ShowBookmarkEditorForCurrentUrl() {
