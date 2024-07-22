@@ -937,7 +937,8 @@ void ScrollableArea::SetScrollbarNeedsPaintInvalidation(
           // This will call SetNeedsDisplay() if the color changes (which is
           // the only reason for a SolidColorScrollbarLayer to update display).
           if (compositor->SetScrollbarSolidColor(
-                  element_id, scrollbar->GetTheme().ThumbColor(*scrollbar))) {
+                  element_id, scrollbar->GetTheme().GetSolidColor(
+                                  scrollbar->ScrollbarThumbColor()))) {
             scrollbar->ClearNeedsUpdateDisplay();
           }
         } else if (compositor->SetScrollbarNeedsDisplay(element_id)) {

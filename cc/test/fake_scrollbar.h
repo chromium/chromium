@@ -23,7 +23,9 @@ class FakeScrollbar : public Scrollbar {
   ScrollbarOrientation Orientation() const override;
   bool IsLeftSideVerticalScrollbar() const override;
   bool IsSolidColor() const override;
+  SkColor4f GetSolidColor() const override;
   bool IsOverlay() const override;
+  bool IsFluent() const override;
   bool IsRunningWebTest() const override;
   bool IsFluentOverlayScrollbarMinimalMode() const override;
   bool HasThumb() const override;
@@ -42,12 +44,12 @@ class FakeScrollbar : public Scrollbar {
                  ScrollbarPart part,
                  const gfx::Rect& rect) override;
   void ClearThumbNeedsRepaint() override;
-  SkColor4f ThumbColor() const override;
+  SkColor4f FluentThumbColor() const override;
   bool UsesNinePatchThumbResource() const override;
   gfx::Size NinePatchThumbCanvasSize() const override;
   gfx::Rect NinePatchThumbAperture() const override;
-  bool UsesSolidColorThumb() const override;
   bool UsesNinePatchTrackAndButtonsResource() const override;
+  void SetUsesNinePatchTrackAndButtonsResource(bool uses_nine_patch) override {}
   gfx::Size NinePatchTrackAndButtonsCanvasSize() const override;
   gfx::Rect NinePatchTrackAndButtonsAperture() const override;
   gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
@@ -63,10 +65,10 @@ class FakeScrollbar : public Scrollbar {
   }
   void set_is_solid_color(bool b) { is_solid_color_ = b; }
   void set_is_overlay(bool b) { is_overlay_ = b; }
+  void set_is_fluent(bool b) { is_fluent_ = b; }
   void set_uses_nine_patch_thumb_resource(bool b) {
     uses_nine_patch_thumb_resource_ = b;
   }
-  void set_uses_solid_color_thumb(bool b) { uses_solid_color_thumb_ = b; }
   void set_uses_nine_patch_track_and_buttons_resource(bool b) {
     uses_nine_patch_track_and_buttons_resource_ = b;
   }
@@ -82,7 +84,7 @@ class FakeScrollbar : public Scrollbar {
     needs_repaint_track_ = needs_repaint;
   }
   void set_is_opaque(bool b) { is_opaque_ = b; }
-  void set_thumb_color(SkColor4f color) { thumb_color_ = color; }
+  void set_solid_color(SkColor4f color) { solid_color_ = color; }
 
  protected:
   ~FakeScrollbar() override;
@@ -94,13 +96,13 @@ class FakeScrollbar : public Scrollbar {
   ScrollbarOrientation orientation_ = ScrollbarOrientation::kHorizontal;
   bool is_left_side_vertical_scrollbar_ = false;
   bool is_solid_color_ = false;
+  SkColor4f solid_color_ = SkColors::kWhite;
   bool is_overlay_ = false;
+  bool is_fluent_ = false;
   bool uses_nine_patch_thumb_resource_ = false;
-  bool uses_solid_color_thumb_ = false;
   bool uses_nine_patch_track_and_buttons_resource_ = false;
   gfx::Size thumb_size_{5, 10};
   float thumb_opacity_ = 1;
-  SkColor4f thumb_color_ = SkColors::kRed;
   bool needs_repaint_thumb_ = true;
   bool needs_repaint_track_ = true;
   bool needs_update_display_ = true;

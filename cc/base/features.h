@@ -60,6 +60,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kHudDisplayForPerformanceMetrics);
 // render surface's owning effect.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRenderSurfaceCommonAncestorClip);
 
+// When enabled, Fluent scrollbars will paint the scrollbar's track and button
+// using nine-patch scaling.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kFluentScrollbarUsesNinePatchTrack);
+
 // When enabled, the main thread does not block while commit is running on the
 // impl thread.
 // WARNING: This feature is not yet safe to enable. Work is needed to ensure

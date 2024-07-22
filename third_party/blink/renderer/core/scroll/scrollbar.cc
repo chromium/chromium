@@ -750,6 +750,10 @@ bool Scrollbar::IsOverlayScrollbar() const {
   return theme_.UsesOverlayScrollbars();
 }
 
+bool Scrollbar::IsFluentScrollbar() const {
+  return theme_.UsesFluentScrollbars();
+}
+
 bool Scrollbar::IsFluentOverlayScrollbarMinimalMode() const {
   return theme_.UsesFluentOverlayScrollbars() && hovered_part_ == kNoPart &&
          pressed_part_ != kThumbPart;
@@ -757,7 +761,7 @@ bool Scrollbar::IsFluentOverlayScrollbarMinimalMode() const {
 
 bool Scrollbar::UsesNinePatchTrackAndCanSkipRepaint(
     const gfx::Rect& new_frame_rect) const {
-  if (!theme_.UsesNinePatchTrackAndButtonsResource()) {
+  if (!uses_nine_patch_track_and_buttons_) {
     return false;
   }
   // If the scrollbar's thickness is being changed, then a new bitmap needs to
@@ -867,6 +871,14 @@ void Scrollbar::SetNeedsPaintInvalidation(ScrollbarPart invalid_parts) {
     thumb_needs_repaint_ = true;
   if (scrollable_area_)
     scrollable_area_->SetScrollbarNeedsPaintInvalidation(Orientation());
+}
+
+bool Scrollbar::UsesNinePatchTrackAndButtonsResource() const {
+  return uses_nine_patch_track_and_buttons_;
+}
+
+void Scrollbar::SetUsesNinePatchTrackAndButtonsResource(bool supports) {
+  uses_nine_patch_track_and_buttons_ = supports;
 }
 
 CompositorElementId Scrollbar::GetElementId() const {

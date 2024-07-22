@@ -48,7 +48,11 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual ScrollbarOrientation Orientation() const = 0;
   virtual bool IsLeftSideVerticalScrollbar() const = 0;
   virtual bool IsSolidColor() const = 0;
+  // The color for a solid color scrollbar. This is meaningful only
+  // when IsSolidColor() is true.
+  virtual SkColor4f GetSolidColor() const = 0;
   virtual bool IsOverlay() const = 0;
+  virtual bool IsFluent() const = 0;
   virtual bool IsRunningWebTest() const = 0;
   virtual bool IsFluentOverlayScrollbarMinimalMode() const = 0;
   virtual bool HasThumb() const = 0;
@@ -79,10 +83,7 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
                          ScrollbarPart part,
                          const gfx::Rect& rect) = 0;
   virtual void ClearThumbNeedsRepaint() = 0;
-  // The thumb color for a solid color scrollbar, or a scrollbar using solid
-  // color thumb. This is meaningful only when IsSolidColor() or
-  // UsesSolidColorThumb() is true.
-  virtual SkColor4f ThumbColor() const = 0;
+  virtual SkColor4f FluentThumbColor() const = 0;
 
   // The following two functions are called from blink only.
   // Returns true if either the track or the thumb needs repaint, or the thumb
@@ -94,8 +95,9 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual bool UsesNinePatchThumbResource() const = 0;
   virtual gfx::Size NinePatchThumbCanvasSize() const = 0;
   virtual gfx::Rect NinePatchThumbAperture() const = 0;
-  virtual bool UsesSolidColorThumb() const = 0;
   virtual bool UsesNinePatchTrackAndButtonsResource() const = 0;
+  virtual void SetUsesNinePatchTrackAndButtonsResource(
+      bool uses_nine_patch) = 0;
   virtual gfx::Size NinePatchTrackAndButtonsCanvasSize() const = 0;
   virtual gfx::Rect NinePatchTrackAndButtonsAperture() const = 0;
   virtual gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(

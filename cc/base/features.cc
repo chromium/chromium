@@ -66,6 +66,10 @@ BASE_FEATURE(kRenderSurfaceCommonAncestorClip,
              "RenderSurfaceCommonAncestorClip",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFluentScrollbarUsesNinePatchTrack,
+             "FluentScrollbarUsesNinePatchTrack",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNonBlockingCommit,
              "NonBlockingCommit",
              base::FEATURE_ENABLED_BY_DEFAULT);

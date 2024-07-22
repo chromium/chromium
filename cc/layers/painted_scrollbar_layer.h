@@ -100,14 +100,14 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
   ProtectedSequenceReadable<float> painted_opacity_;
   ProtectedSequenceReadable<bool> has_thumb_;
   ProtectedSequenceReadable<bool> jump_on_track_click_;
-  ProtectedSequenceReadable<std::optional<SkColor4f>> thumb_color_;
-  ProtectedSequenceReadable<gfx::Rect> track_aperture_;
+  ProtectedSequenceReadable<std::optional<SkColor4f>> fluent_thumb_color_;
+  ProtectedSequenceReadable<gfx::Rect> fluent_track_aperture_;
 
   const bool supports_drag_snap_back_;
   const bool is_overlay_;
+  const bool is_fluent_;
   const bool is_web_test_;
   const bool uses_nine_patch_track_and_buttons_;
-  const bool uses_solid_color_thumb_;
 
   ProtectedSequenceReadable<std::unique_ptr<ScopedUIResource>> track_resource_;
   ProtectedSequenceReadable<std::unique_ptr<ScopedUIResource>> thumb_resource_;

@@ -30,17 +30,14 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
   bool UsesFluentOverlayScrollbars() const override;
   void PaintTrackAndButtons(GraphicsContext& context,
                             const Scrollbar&,
-                            const gfx::Rect&) override;
+                            const gfx::Vector2d& offset) override;
   // When scrollbars are main threaded the thumb size returned by ThumbRect()
   // is the expanded thumb size. This function shrinks the thumb and displaces
   // it to be near the correct Edge of the scrollable area.
   gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
       const Scrollbar&,
       const gfx::Rect& rect) const override;
-
-  bool UsesSolidColorThumb() const override { return true; }
-  SkColor4f ThumbColor(const Scrollbar&) const override;
-  bool UsesNinePatchTrackAndButtonsResource() const override;
+  SkColor4f FluentThumbColor(const Scrollbar&) const override;
   gfx::Rect NinePatchTrackAndButtonsAperture(const Scrollbar&) const override;
   gfx::Size NinePatchTrackAndButtonsCanvasSize(const Scrollbar&) const override;
 

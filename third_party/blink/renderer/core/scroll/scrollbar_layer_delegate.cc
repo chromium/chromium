@@ -67,8 +67,17 @@ bool ScrollbarLayerDelegate::IsSolidColor() const {
   return scrollbar_->GetTheme().IsSolidColor();
 }
 
+SkColor4f ScrollbarLayerDelegate::GetSolidColor() const {
+  return scrollbar_->GetTheme().GetSolidColor(
+      scrollbar_->ScrollbarThumbColor());
+}
+
 bool ScrollbarLayerDelegate::IsOverlay() const {
   return scrollbar_->IsOverlayScrollbar();
+}
+
+bool ScrollbarLayerDelegate::IsFluent() const {
+  return scrollbar_->IsFluentScrollbar();
 }
 
 bool ScrollbarLayerDelegate::IsRunningWebTest() const {
@@ -149,7 +158,7 @@ bool ScrollbarLayerDelegate::UsesNinePatchThumbResource() const {
 }
 
 gfx::Size ScrollbarLayerDelegate::NinePatchThumbCanvasSize() const {
-  DCHECK(UsesNinePatchThumbResource());
+  DCHECK(scrollbar_->GetTheme().UsesNinePatchThumbResource());
   return scrollbar_->GetTheme().NinePatchThumbCanvasSize(*scrollbar_);
 }
 
@@ -158,21 +167,22 @@ gfx::Rect ScrollbarLayerDelegate::NinePatchThumbAperture() const {
   return scrollbar_->GetTheme().NinePatchThumbAperture(*scrollbar_);
 }
 
-bool ScrollbarLayerDelegate::UsesSolidColorThumb() const {
-  return scrollbar_->GetTheme().UsesSolidColorThumb();
+bool ScrollbarLayerDelegate::UsesNinePatchTrackAndButtonsResource() const {
+  return scrollbar_->UsesNinePatchTrackAndButtonsResource();
 }
 
-bool ScrollbarLayerDelegate::UsesNinePatchTrackAndButtonsResource() const {
-  return scrollbar_->GetTheme().UsesNinePatchTrackAndButtonsResource();
+void ScrollbarLayerDelegate::SetUsesNinePatchTrackAndButtonsResource(
+    bool uses_nine_patch) {
+  scrollbar_->SetUsesNinePatchTrackAndButtonsResource(uses_nine_patch);
 }
 
 gfx::Size ScrollbarLayerDelegate::NinePatchTrackAndButtonsCanvasSize() const {
-  CHECK(UsesNinePatchTrackAndButtonsResource());
+  CHECK(scrollbar_->UsesNinePatchTrackAndButtonsResource());
   return scrollbar_->GetTheme().NinePatchTrackAndButtonsCanvasSize(*scrollbar_);
 }
 
 gfx::Rect ScrollbarLayerDelegate::NinePatchTrackAndButtonsAperture() const {
-  CHECK(UsesNinePatchTrackAndButtonsResource());
+  CHECK(scrollbar_->UsesNinePatchTrackAndButtonsResource());
   return scrollbar_->GetTheme().NinePatchTrackAndButtonsAperture(*scrollbar_);
 }
 
@@ -210,7 +220,10 @@ void ScrollbarLayerDelegate::PaintPart(cc::PaintCanvas* canvas,
       scrollbar_->ClearThumbNeedsRepaint();
       break;
     case cc::ScrollbarPart::kTrackButtonsTickmarks: {
-      theme.PaintTrackButtonsTickmarks(painter.Context(), *scrollbar_, rect);
+      CHECK(scrollbar_->UsesNinePatchTrackAndButtonsResource() ||
+            rect.size() == scrollbar_->FrameRect().size());
+      gfx::Vector2d offset = rect.origin() - scrollbar_->FrameRect().origin();
+      theme.PaintTrackButtonsTickmarks(painter.Context(), *scrollbar_, offset);
       scrollbar_->ClearTrackNeedsRepaint();
       break;
     }
@@ -223,9 +236,8 @@ void ScrollbarLayerDelegate::ClearThumbNeedsRepaint() {
   scrollbar_->ClearThumbNeedsRepaint();
 }
 
-SkColor4f ScrollbarLayerDelegate::ThumbColor() const {
-  CHECK(IsSolidColor() || UsesSolidColorThumb());
-  return scrollbar_->GetTheme().ThumbColor(*scrollbar_);
+SkColor4f ScrollbarLayerDelegate::FluentThumbColor() const {
+  return scrollbar_->GetTheme().FluentThumbColor(*scrollbar_);
 }
 
 }  // namespace blink

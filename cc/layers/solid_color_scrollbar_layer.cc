@@ -46,7 +46,7 @@ scoped_refptr<SolidColorScrollbarLayer> SolidColorScrollbarLayer::CreateOrReuse(
     result = Create(scrollbar->Orientation(), thumb_thickness, track_start,
                     scrollbar->IsLeftSideVerticalScrollbar());
   }
-  result->SetColor(scrollbar->ThumbColor());
+  result->SetColor(scrollbar->GetSolidColor());
   return result;
 }
 

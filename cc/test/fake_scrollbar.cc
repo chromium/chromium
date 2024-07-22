@@ -28,7 +28,16 @@ bool FakeScrollbar::IsSolidColor() const {
   return is_solid_color_;
 }
 
+SkColor4f FakeScrollbar::GetSolidColor() const {
+  DCHECK(IsSolidColor());
+  return solid_color_;
+}
+
 bool FakeScrollbar::IsOverlay() const { return is_overlay_; }
+
+bool FakeScrollbar::IsFluent() const {
+  return is_fluent_;
+}
 
 bool FakeScrollbar::IsRunningWebTest() const {
   return true;
@@ -112,8 +121,8 @@ void FakeScrollbar::ClearThumbNeedsRepaint() {
   set_needs_repaint_thumb(false);
 }
 
-SkColor4f FakeScrollbar::ThumbColor() const {
-  return thumb_color_;
+SkColor4f FakeScrollbar::FluentThumbColor() const {
+  return SkColor4f::FromColor(SK_ColorRED);
 }
 
 bool FakeScrollbar::UsesNinePatchThumbResource() const {
@@ -126,10 +135,6 @@ gfx::Size FakeScrollbar::NinePatchThumbCanvasSize() const {
 
 gfx::Rect FakeScrollbar::NinePatchThumbAperture() const {
   return uses_nine_patch_thumb_resource_ ? gfx::Rect(0, 0, 5, 5) : gfx::Rect();
-}
-
-bool FakeScrollbar::UsesSolidColorThumb() const {
-  return uses_solid_color_thumb_;
 }
 
 bool FakeScrollbar::UsesNinePatchTrackAndButtonsResource() const {

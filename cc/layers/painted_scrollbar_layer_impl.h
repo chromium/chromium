@@ -55,9 +55,9 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
   void SetThumbLength(int thumb_length);
   void SetTrackRect(gfx::Rect track_rect);
   void SetScrollbarPaintedOpacity(float opacity);
-  void SetThumbColor(SkColor4f thumb_color);
-  void SetTrackImageBounds(const gfx::Size& bounds);
-  void SetTrackAperture(const gfx::Rect& aperture);
+  void SetFluentThumbColor(SkColor4f thumb_color);
+  void SetFluentTrackImageBounds(const gfx::Size& bounds);
+  void SetFluentTrackAperture(const gfx::Rect& aperture);
 
   void set_uses_nine_patch_track_and_buttons(bool uses_nine_patch) {
     uses_nine_patch_track_and_buttons_ = uses_nine_patch;
@@ -104,14 +104,14 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
                         AppendQuadsData* append_quads_data) const;
   void AppendTrackQuads(viz::CompositorRenderPass* render_pass,
                         AppendQuadsData* append_quads_data);
-  void AppendNinePatchScaledTrack(viz::CompositorRenderPass* render_pass,
-                                  viz::SharedQuadState* shared_quad_state,
-                                  gfx::Rect& track_quad_rect);
+  void AppendFluentNinePatchScaledTrack(viz::CompositorRenderPass* render_pass,
+                                        viz::SharedQuadState* shared_quad_state,
+                                        gfx::Rect& track_quad_rect);
   // Expand the scrollbar thumb's hit testable rect to be able to capture the
   // thumb across the entire width of the track rect.
-  gfx::Rect ExpandSolidColorThumb(gfx::Rect thumb_rect) const;
-  // Position composited scrollbar thumb in the center of the track.
-  gfx::Rect CenterSolidColorThumb(gfx::Rect thumb_rect) const;
+  gfx::Rect ExpandFluentScrollbarThumb(gfx::Rect thumb_rect) const;
+  // Position composited Fluent scrollbar thumb in the center of the track.
+  gfx::Rect CenterFluentScrollbarThumb(gfx::Rect thumb_rect) const;
 
   UIResourceId track_ui_resource_id_;
   UIResourceId thumb_ui_resource_id_;
@@ -130,13 +130,13 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
   gfx::Rect back_button_rect_;
   gfx::Rect forward_button_rect_;
   gfx::Rect track_rect_;
-  std::optional<SkColor4f> thumb_color_;
+  std::optional<SkColor4f> fluent_thumb_color_;
 
   bool uses_nine_patch_track_and_buttons_ = false;
-  gfx::Size track_image_bounds_;
-  gfx::Rect track_aperture_;
-  NinePatchGenerator track_patch_generator_;
-  std::vector<NinePatchGenerator::Patch> track_patches_;
+  gfx::Size fluent_track_image_bounds_;
+  gfx::Rect fluent_track_aperture_;
+  NinePatchGenerator fluent_quad_generator_;
+  std::vector<NinePatchGenerator::Patch> fluent_track_patches_;
 };
 
 }  // namespace cc

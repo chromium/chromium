@@ -128,6 +128,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   // IsPlatformOverlayScrollbar() but we don't bother it because
   // overflow:overlay might be deprecated soon.
   virtual bool IsOverlayScrollbar() const;
+  virtual bool IsFluentScrollbar() const;
   virtual bool IsFluentOverlayScrollbarMinimalMode() const;
 
   // Returns `true` if the scrollbar bounds are larger than the canvas'. In
@@ -192,6 +193,9 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
     return orientation_ == kHorizontalScrollbar ? "HorizontalScrollbar"
                                                 : "VerticalScrollbar";
   }
+
+  bool UsesNinePatchTrackAndButtonsResource() const;
+  void SetUsesNinePatchTrackAndButtonsResource(bool supports);
 
   // Marks the scrollbar as needing to be redrawn.
   //
@@ -281,6 +285,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   bool track_needs_repaint_ = true;
   bool thumb_needs_repaint_ = true;
   bool needs_update_display_ = true;
+  bool uses_nine_patch_track_and_buttons_ = false;
 
   bool injected_gesture_scroll_begin_;
 

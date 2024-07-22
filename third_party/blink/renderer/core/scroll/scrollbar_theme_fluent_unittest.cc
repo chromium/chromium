@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_test_suite.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/native_theme/native_theme_features.h"
@@ -247,9 +246,9 @@ TEST_P(ScrollbarThemeFluentTest, ScrollbarTrackPartInvalidationTest) {
 // size when the scrollbars are larger and smaller than the minimal size (enough
 // space for two buttons and a pixel in the middle).
 TEST_P(ScrollbarThemeFluentTest, NinePatchCanvas) {
-  ScopedFluentScrollbarUsesNinePatchTrackForTest nine_patch(true);
   Scrollbar* scrollbar = Scrollbar::CreateForTesting(
       mock_scrollable_area(), kVerticalScrollbar, &(theme_->GetInstance()));
+  scrollbar->SetUsesNinePatchTrackAndButtonsResource(true);
 
   // Test that a scrollbar larger than the minimal size is properly shrunk
   // when asked for the aperture.
@@ -270,9 +269,9 @@ TEST_P(ScrollbarThemeFluentTest, NinePatchCanvas) {
 // middle of the canvas taking into consideration when the scrollbars' width is
 // even to expand the width of the center-patch.
 TEST_P(ScrollbarThemeFluentTest, NinePatchAperture) {
-  ScopedFluentScrollbarUsesNinePatchTrackForTest nine_patch(true);
   Scrollbar* scrollbar = Scrollbar::CreateForTesting(
       mock_scrollable_area(), kVerticalScrollbar, &(theme_->GetInstance()));
+  scrollbar->SetUsesNinePatchTrackAndButtonsResource(true);
   scrollbar->SetFrameRect(
       gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() * 3));
   const gfx::Size canvas = NinePatchTrackAndButtonsCanvasSize(*scrollbar);
@@ -287,7 +286,6 @@ TEST_P(ScrollbarThemeFluentTest, NinePatchAperture) {
 // Verifies that resizing the scrollbar doesn't generate unnecessary paint
 // invalidations when the scrollbar uses nine-patch track resources.
 TEST_P(ScrollbarThemeFluentTest, TestPaintInvalidationsWhenNinePatchScaled) {
-  ScopedFluentScrollbarUsesNinePatchTrackForTest nine_patch(true);
   Scrollbar* scrollbar = Scrollbar::CreateForTesting(
       mock_scrollable_area(), kVerticalScrollbar, &(theme_->GetInstance()));
 
@@ -295,6 +293,7 @@ TEST_P(ScrollbarThemeFluentTest, TestPaintInvalidationsWhenNinePatchScaled) {
   // flags.
   scrollbar->SetFrameRect(
       gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() * 5));
+  scrollbar->SetUsesNinePatchTrackAndButtonsResource(true);
   scrollbar->ClearTrackNeedsRepaint();
   scrollbar->ClearThumbNeedsRepaint();
 
