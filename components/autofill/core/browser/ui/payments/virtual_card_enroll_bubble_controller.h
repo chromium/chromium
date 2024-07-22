@@ -6,7 +6,7 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
-#include "components/autofill/core/browser/ui/payments/save_card_and_virtual_card_enroll_confirmation_ui_params.h"
+#include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 #include "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #include "url/gurl.h"
 
@@ -73,7 +73,7 @@ class VirtualCardEnrollBubbleController {
 
   // Returns the UI parameters needed to display the virtual card enroll
   // confirmation view.
-  virtual const SaveCardAndVirtualCardEnrollConfirmationUiParams&
+  virtual const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&
   GetConfirmationUiParams() const = 0;
 
   // Returns whether the omnibox icon should be visible.

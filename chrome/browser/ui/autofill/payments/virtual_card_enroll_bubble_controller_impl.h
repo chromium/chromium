@@ -73,7 +73,7 @@ class VirtualCardEnrollBubbleControllerImpl
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
   base::OnceCallback<void(PaymentsBubbleClosedReason)>
   GetOnBubbleClosedCallback() override;
-  const SaveCardAndVirtualCardEnrollConfirmationUiParams&
+  const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&
   GetConfirmationUiParams() const override;
   bool IsIconVisible() const override;
 
@@ -133,7 +133,7 @@ class VirtualCardEnrollBubbleControllerImpl
 
   // UI parameters needed to display the virtual card enrollment confirmation
   // view.
-  std::optional<SaveCardAndVirtualCardEnrollConfirmationUiParams>
+  std::optional<SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams>
       confirmation_ui_params_;
 
   base::WeakPtrFactory<VirtualCardEnrollBubbleControllerImpl> weak_ptr_factory_{

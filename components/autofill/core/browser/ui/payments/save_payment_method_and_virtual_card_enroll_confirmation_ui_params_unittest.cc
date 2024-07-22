@@ -1,8 +1,7 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "components/autofill/core/browser/ui/payments/save_card_and_virtual_card_enroll_confirmation_ui_params.h"
+#include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 
 #include <string>
 
@@ -12,12 +11,12 @@
 
 namespace autofill {
 
-// Verify that SaveCardAndVirtualCardEnrollConfirmationUiParams attributes
-// are correctly set for save card upload success.
-TEST(SaveCardAndVirtualCardEnrollConfirmationUiParamsTest,
+// Verify that SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+// attributes are correctly set for save card upload success.
+TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
      VerifyAttributesForSaveCardSuccess) {
-  SaveCardAndVirtualCardEnrollConfirmationUiParams ui_params =
-      SaveCardAndVirtualCardEnrollConfirmationUiParams::
+  SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
+      SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
           CreateForSaveCardSuccess();
 
   EXPECT_TRUE(ui_params.is_success);
@@ -31,12 +30,12 @@ TEST(SaveCardAndVirtualCardEnrollConfirmationUiParamsTest,
   EXPECT_TRUE(ui_params.failure_ok_button_accessible_name.empty());
 }
 
-// Verify that SaveCardAndVirtualCardEnrollConfirmationUiParams attributes
-// are correctly set for virtual card enrollment success.
-TEST(SaveCardAndVirtualCardEnrollConfirmationUiParamsTest,
+// Verify that SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+// attributes are correctly set for virtual card enrollment success.
+TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
      VerifyAttributesForVirtualCardSuccess) {
-  SaveCardAndVirtualCardEnrollConfirmationUiParams ui_params =
-      SaveCardAndVirtualCardEnrollConfirmationUiParams::
+  SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
+      SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
           CreateForVirtualCardSuccess();
 
   EXPECT_TRUE(ui_params.is_success);
@@ -52,12 +51,12 @@ TEST(SaveCardAndVirtualCardEnrollConfirmationUiParamsTest,
   EXPECT_TRUE(ui_params.failure_ok_button_accessible_name.empty());
 }
 
-// Verify that SaveCardAndVirtualCardEnrollConfirmationUiParams attributes
-// are correctly set for save card upload failure.
-TEST(SaveCardAndVirtualCardEnrollConfirmationUiParamsTest,
+// Verify that SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+// attributes are correctly set for save card upload failure.
+TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
      VerifyAttributesForSaveCardFailure) {
-  SaveCardAndVirtualCardEnrollConfirmationUiParams ui_params =
-      SaveCardAndVirtualCardEnrollConfirmationUiParams::
+  SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
+      SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
           CreateForSaveCardFailure();
 
   EXPECT_FALSE(ui_params.is_success);
@@ -77,13 +76,13 @@ TEST(SaveCardAndVirtualCardEnrollConfirmationUiParamsTest,
           IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_OK_BUTTON_ACCESSIBLE_NAME));
 }
 
-// Verify that SaveCardAndVirtualCardEnrollConfirmationUiParams attributes
-// are correctly set for virtual card enrollment failure.
-TEST(SaveCardAndVirtualCardEnrollConfirmationUiParamsTest,
+// Verify that SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+// attributes are correctly set for virtual card enrollment failure.
+TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
      VerifyAttributesForVirtualCardFailure) {
   std::u16string card_label = u"Visa ****2345";
-  SaveCardAndVirtualCardEnrollConfirmationUiParams ui_params =
-      SaveCardAndVirtualCardEnrollConfirmationUiParams::
+  SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
+      SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
           CreateForVirtualCardFailure(card_label);
 
   EXPECT_FALSE(ui_params.is_success);

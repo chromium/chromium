@@ -2,32 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/ui/payments/save_card_and_virtual_card_enroll_confirmation_ui_params.h"
+#include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
-SaveCardAndVirtualCardEnrollConfirmationUiParams::
-    ~SaveCardAndVirtualCardEnrollConfirmationUiParams() = default;
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+    ~SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams() = default;
 
-SaveCardAndVirtualCardEnrollConfirmationUiParams::
-    SaveCardAndVirtualCardEnrollConfirmationUiParams(
-        const SaveCardAndVirtualCardEnrollConfirmationUiParams&) = default;
-SaveCardAndVirtualCardEnrollConfirmationUiParams&
-SaveCardAndVirtualCardEnrollConfirmationUiParams::operator=(
-    const SaveCardAndVirtualCardEnrollConfirmationUiParams&) = default;
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+    SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams(
+        const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&) = default;
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::operator=(
+    const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&) = default;
 
-SaveCardAndVirtualCardEnrollConfirmationUiParams::
-    SaveCardAndVirtualCardEnrollConfirmationUiParams(
-        SaveCardAndVirtualCardEnrollConfirmationUiParams&&) = default;
-SaveCardAndVirtualCardEnrollConfirmationUiParams&
-SaveCardAndVirtualCardEnrollConfirmationUiParams::operator=(
-    SaveCardAndVirtualCardEnrollConfirmationUiParams&&) = default;
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+    SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams(
+        SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&&) = default;
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::operator=(
+    SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&&) = default;
 
-SaveCardAndVirtualCardEnrollConfirmationUiParams::
-    SaveCardAndVirtualCardEnrollConfirmationUiParams(
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+    SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams(
         bool is_success,
         std::u16string title_text,
         std::u16string description_text,
@@ -47,9 +47,9 @@ SaveCardAndVirtualCardEnrollConfirmationUiParams::
 }
 
 // static
-SaveCardAndVirtualCardEnrollConfirmationUiParams
-SaveCardAndVirtualCardEnrollConfirmationUiParams::CreateForSaveCardSuccess() {
-  return SaveCardAndVirtualCardEnrollConfirmationUiParams(
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::CreateForSaveCardSuccess() {
+  return SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams(
       /*is_success=*/true,
       /*title_text=*/
       l10n_util::GetStringUTF16(
@@ -60,10 +60,10 @@ SaveCardAndVirtualCardEnrollConfirmationUiParams::CreateForSaveCardSuccess() {
 }
 
 // static
-SaveCardAndVirtualCardEnrollConfirmationUiParams
-SaveCardAndVirtualCardEnrollConfirmationUiParams::
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
     CreateForVirtualCardSuccess() {
-  return SaveCardAndVirtualCardEnrollConfirmationUiParams(
+  return SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams(
       /*is_success=*/true,
       /*title_text=*/
       l10n_util::GetStringUTF16(
@@ -74,9 +74,9 @@ SaveCardAndVirtualCardEnrollConfirmationUiParams::
 }
 
 // static
-SaveCardAndVirtualCardEnrollConfirmationUiParams
-SaveCardAndVirtualCardEnrollConfirmationUiParams::CreateForSaveCardFailure() {
-  return SaveCardAndVirtualCardEnrollConfirmationUiParams(
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::CreateForSaveCardFailure() {
+  return SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams(
       /*is_success=*/false,
       /*title_text=*/
       l10n_util::GetStringUTF16(
@@ -90,10 +90,10 @@ SaveCardAndVirtualCardEnrollConfirmationUiParams::CreateForSaveCardFailure() {
 }
 
 // static
-SaveCardAndVirtualCardEnrollConfirmationUiParams
-SaveCardAndVirtualCardEnrollConfirmationUiParams::CreateForVirtualCardFailure(
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::CreateForVirtualCardFailure(
     const std::u16string card_label) {
-  return SaveCardAndVirtualCardEnrollConfirmationUiParams(
+  return SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams(
       /*is_success=*/false,
       /*title_text=*/
       l10n_util::GetStringUTF16(

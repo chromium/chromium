@@ -121,7 +121,7 @@ class SaveCardBubbleControllerImpl
   const CreditCard& GetCard() const override;
   base::OnceCallback<void(PaymentsBubbleClosedReason)>
   GetOnBubbleClosedCallback() override;
-  const SaveCardAndVirtualCardEnrollConfirmationUiParams&
+  const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&
   GetConfirmationUiParams() const override;
   bool ShouldRequestNameFromUser() const override;
   bool ShouldRequestExpirationDateFromUser() const override;
@@ -248,7 +248,7 @@ class SaveCardBubbleControllerImpl
   LegalMessageLines legal_message_lines_;
 
   // UI parameters needed to display the save card confirmation view.
-  std::optional<SaveCardAndVirtualCardEnrollConfirmationUiParams>
+  std::optional<SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams>
       confirmation_ui_params_;
 
   // Timer that controls auto closure of confirmation bubble. Should be

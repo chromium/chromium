@@ -322,7 +322,7 @@ AutofillBubbleHandlerImpl::ShowVirtualCardEnrollConfirmationBubble(
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(
           PageActionIconType::kVirtualCardEnroll);
-  const SaveCardAndVirtualCardEnrollConfirmationUiParams& ui_params =
+  const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams& ui_params =
       controller->GetConfirmationUiParams();
 
   return ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
@@ -377,7 +377,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCardConfirmationBubble(
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(
           PageActionIconType::kSaveCard);
-  const SaveCardAndVirtualCardEnrollConfirmationUiParams& ui_params =
+  const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams& ui_params =
       controller->GetConfirmationUiParams();
 
   return ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
@@ -391,7 +391,7 @@ AutofillBubbleHandlerImpl::ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
     base::OnceCallback<void(PaymentsBubbleClosedReason)>
         controller_hide_callback,
     PageActionIconView* icon_view,
-    SaveCardAndVirtualCardEnrollConfirmationUiParams ui_params) {
+    SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params) {
   SaveCardAndVirtualCardEnrollConfirmationBubbleViews* bubble =
       new SaveCardAndVirtualCardEnrollConfirmationBubbleViews(
           anchor_view, web_contents, std::move(controller_hide_callback),

@@ -92,12 +92,13 @@ void VirtualCardEnrollBubbleControllerImpl::ShowConfirmationBubbleView(
   HideIconAndBubble();
   enrollment_status_ = EnrollmentStatus::kCompleted;
   confirmation_ui_params_ =
-      is_vcn_enrolled ? SaveCardAndVirtualCardEnrollConfirmationUiParams::
-                            CreateForVirtualCardSuccess()
-                      : SaveCardAndVirtualCardEnrollConfirmationUiParams::
-                            CreateForVirtualCardFailure(
-                                /*card_label=*/ui_model_->enrollment_fields()
-                                    .credit_card.NetworkAndLastFourDigits());
+      is_vcn_enrolled
+          ? SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+                CreateForVirtualCardSuccess()
+          : SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+                CreateForVirtualCardFailure(
+                    /*card_label=*/ui_model_->enrollment_fields()
+                        .credit_card.NetworkAndLastFourDigits());
   // Show enrollment confirmation bubble.
   Show();
 #endif
@@ -293,7 +294,7 @@ VirtualCardEnrollBubbleControllerImpl::GetOnBubbleClosedCallback() {
                         weak_ptr_factory_.GetWeakPtr());
 }
 
-const SaveCardAndVirtualCardEnrollConfirmationUiParams&
+const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&
 VirtualCardEnrollBubbleControllerImpl::GetConfirmationUiParams() const {
   CHECK(confirmation_ui_params_.has_value());
   return confirmation_ui_params_.value();
