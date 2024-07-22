@@ -40,17 +40,9 @@ public class RegularNewTabPageStation extends PageStation {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
 
-        elements.declareElementFactory(
-                mActivityElement.getEnterCondition(),
-                delayedElements -> {
-                    // TODO(crbug.com/40267786): On android_32_google_apis_x64_foldable these
-                    // elements do not appear or appear unreliably.
-                    if (!mActivityElement.get().isTablet()) {
-                        delayedElements.declareView(SEARCH_LOGO);
-                        delayedElements.declareView(SEARCH_BOX);
-                        delayedElements.declareView(MOST_VISITED_TILES_CONTAINER);
-                    }
-                });
+        elements.declareView(SEARCH_LOGO);
+        elements.declareView(SEARCH_BOX);
+        elements.declareView(MOST_VISITED_TILES_CONTAINER);
 
         elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedSupplier));
     }
