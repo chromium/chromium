@@ -202,8 +202,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     CreateContextOptionsPtr options,
     WebNNContextProvider::CreateWebNNContextCallback callback) {
   if (g_backend_for_testing) {
-    g_backend_for_testing->CreateWebNNContext(impls_, this, std::move(options),
-                                              std::move(callback));
+    impls_.emplace(g_backend_for_testing->CreateWebNNContext(
+        this, std::move(options), std::move(callback)));
     return;
   }
 
