@@ -75,6 +75,10 @@ const base::FeatureParam<bool> kUseMlEmbedder(&kHistoryEmbeddings,
                                               "UseMlEmbedder",
                                               true);
 
+const base::FeatureParam<bool> kOmniboxScoped(&kHistoryEmbeddings,
+                                              "OmniboxScoped",
+                                              false);
+
 const base::FeatureParam<bool> kOmniboxUnscoped(&kHistoryEmbeddings,
                                                 "OmniboxUnscoped",
                                                 false);
