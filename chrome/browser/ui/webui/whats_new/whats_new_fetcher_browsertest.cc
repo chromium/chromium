@@ -99,8 +99,7 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
                        GetV2ServerURLForRenderWithOneEnabled) {
   whats_new::WhatsNewRegistry* registry = GetRegistry();
-  registry->RegisterModule(
-      whats_new::WhatsNewModule(&kTestModuleEnabled, "", ""));
+  registry->RegisterModule(whats_new::WhatsNewModule(&kTestModuleEnabled, ""));
 
   std::string expected = base::StringPrintf(
       "https://www.google.com/chrome/v2/whats-new/?version=%d",
@@ -118,10 +117,8 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
                        GetV2ServerURLForRenderWithMultipleEnabled) {
   whats_new::WhatsNewRegistry* registry = GetRegistry();
-  registry->RegisterModule(
-      whats_new::WhatsNewModule(&kTestModuleEnabled, "", ""));
-  registry->RegisterModule(
-      whats_new::WhatsNewModule(&kTestModule2Enabled, "", ""));
+  registry->RegisterModule(whats_new::WhatsNewModule(&kTestModuleEnabled, ""));
+  registry->RegisterModule(whats_new::WhatsNewModule(&kTestModule2Enabled, ""));
 
   std::string expected = base::StringPrintf(
       "https://www.google.com/chrome/v2/whats-new/?version=%d",
@@ -140,16 +137,14 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
                        GetV2ServerURLForRenderEnabledAndRolled) {
   whats_new::WhatsNewRegistry* registry = GetRegistry();
-  registry->RegisterModule(
-      whats_new::WhatsNewModule(&kTestModuleEnabled, "", ""));
+  registry->RegisterModule(whats_new::WhatsNewModule(&kTestModuleEnabled, ""));
   // Will be ignored - disabled by experiment
+  registry->RegisterModule(whats_new::WhatsNewModule(&kTestModuleDisabled, ""));
   registry->RegisterModule(
-      whats_new::WhatsNewModule(&kTestModuleDisabled, "", ""));
-  registry->RegisterModule(
-      whats_new::WhatsNewModule(&kTestModuleEnabledByDefault, "", ""));
+      whats_new::WhatsNewModule(&kTestModuleEnabledByDefault, ""));
   // Will be ignored - disabled by default
   registry->RegisterModule(
-      whats_new::WhatsNewModule(&kTestModuleDisabledByDefault, "", ""));
+      whats_new::WhatsNewModule(&kTestModuleDisabledByDefault, ""));
 
   std::string expected = base::StringPrintf(
       "https://www.google.com/chrome/v2/whats-new/?version=%d",

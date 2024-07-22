@@ -9,7 +9,9 @@
 #include "build/build_config.h"
 
 namespace whats_new {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 class WhatsNewRegistry;
+#endif
 }  // namespace whats_new
 
 // This class owns the core controllers for features that are globally
@@ -35,9 +37,11 @@ class GlobalDesktopFeatures {
   // Public accessors for features, e.g.
   // FooFeature* foo_feature() { return foo_feature_.get(); }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   whats_new::WhatsNewRegistry* whats_new_registry() {
     return whats_new_registry_.get();
   }
+#endif
 
  protected:
   GlobalDesktopFeatures();
@@ -46,13 +50,17 @@ class GlobalDesktopFeatures {
   // testing. e.g.
   // virtual std::unique_ptr<FooFeature> CreateFooFeature();
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   virtual std::unique_ptr<whats_new::WhatsNewRegistry> CreateWhatsNewRegistry();
+#endif
 
  private:
   // Features will each have a controller. e.g.
   // std::unique_ptr<FooFeature> foo_feature_;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   std::unique_ptr<whats_new::WhatsNewRegistry> whats_new_registry_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_GLOBAL_DESKTOP_FEATURES_H_

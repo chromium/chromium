@@ -43629,13 +43629,13 @@ should be able to be added at any place in this file.
 </action>
 
 <action-suffix separator="." ordering="suffix">
-  <suffix name="Test" label="Test module."/>
+  <suffix name="TestModule" label="Test module."/>
   <affected-action name="UserEducation.WhatsNew.ModuleLinkClicked"/>
   <affected-action name="UserEducation.WhatsNew.ModuleShown"/>
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">
-  <suffix name="Test" label="Test edition."/>
+  <suffix name="TestEdition" label="Test edition."/>
   <affected-action name="UserEducation.WhatsNew.EditionShown"/>
 </action-suffix>
 

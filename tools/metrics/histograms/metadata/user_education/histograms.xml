@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="WhatsNewModule">
-  <variant name="Test" summary="the module used for testing only"/>
+  <variant name="TestModule" summary="the module used for testing only"/>
 </variants>
 
 <histogram name="Tutorial.TabGroup.EditedTitle" enum="BooleanSuccess"

@@ -4020,6 +4020,8 @@ static_library("ui") {
       "webui/whats_new/whats_new_fetcher.h",
       "webui/whats_new/whats_new_handler.cc",
       "webui/whats_new/whats_new_handler.h",
+      "webui/whats_new/whats_new_registrar.cc",
+      "webui/whats_new/whats_new_registrar.h",
       "webui/whats_new/whats_new_ui.cc",
       "webui/whats_new/whats_new_ui.h",
     ]

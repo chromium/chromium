@@ -15,11 +15,9 @@ class WhatsNewModule {
  public:
   WhatsNewModule(const base::Feature* feature,
                  std::string owner,
-                 std::string metric_name,
                  std::optional<BrowserCommand> browser_command = std::nullopt)
       : feature_(feature),
         owner_(owner),
-        metric_name_(metric_name),
         browser_command_(browser_command) {
     CHECK(feature);
   }
@@ -48,8 +46,13 @@ class WhatsNewModule {
  private:
   raw_ptr<const base::Feature> feature_ = nullptr;
   std::string owner_;
-  std::string metric_name_;
   std::optional<BrowserCommand> browser_command_;
+};
+
+class WhatsNewEdition : public WhatsNewModule {
+ public:
+  WhatsNewEdition(const base::Feature* feature, std::string owner)
+      : WhatsNewModule(feature, owner, std::nullopt) {}
 };
 
 class WhatsNewRegistry {
@@ -62,6 +65,9 @@ class WhatsNewRegistry {
   // Register a module to be shown on the What's New Page.
   void RegisterModule(WhatsNewModule module);
 
+  // Register an edition of the What's New Page.
+  void RegisterEdition(WhatsNewEdition edition);
+
   // Used to pass active browser commands to WhatsNewUI.
   const std::vector<BrowserCommand> GetActiveCommands() const;
 
@@ -71,8 +77,12 @@ class WhatsNewRegistry {
   // Used to send enabled-by-default flags to server-side router.
   const std::vector<std::string_view> GetRolledFeatureNames() const;
 
+  const std::vector<WhatsNewModule>& modules() { return modules_; }
+  const std::vector<WhatsNewEdition>& editions() { return editions_; }
+
  private:
   std::vector<WhatsNewModule> modules_;
+  std::vector<WhatsNewEdition> editions_;
 };
 
 }  // namespace whats_new

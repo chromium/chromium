@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_registrar.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/webui/whats_new_registry.h"
 
@@ -44,14 +45,18 @@ void GlobalDesktopFeatures::ReplaceGlobalDesktopFeaturesForTesting(
 }
 
 void GlobalDesktopFeatures::Init() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (user_education::features::IsWhatsNewV2()) {
     whats_new_registry_ = CreateWhatsNewRegistry();
   }
+#endif
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 std::unique_ptr<whats_new::WhatsNewRegistry>
 GlobalDesktopFeatures::CreateWhatsNewRegistry() {
-  return std::make_unique<whats_new::WhatsNewRegistry>();
+  return whats_new::CreateWhatsNewRegistry();
 }
+#endif
 
 GlobalDesktopFeatures::GlobalDesktopFeatures() = default;
