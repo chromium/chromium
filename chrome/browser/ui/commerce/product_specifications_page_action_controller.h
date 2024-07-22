@@ -50,6 +50,7 @@ class ProductSpecificationsPageActionController
 
   void OnIconClicked();
   bool IsInRecommendedSet();
+  std::u16string GetProductSpecificationsLabel(bool is_added);
 
  private:
   void HandleProductInfoResponse(const GURL& url,

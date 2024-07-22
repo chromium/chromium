@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -20,8 +21,10 @@
 #include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/test_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace commerce {
@@ -30,6 +33,7 @@ namespace {
 const char kTestUrl1[] = "https://www.example.com";
 const char kTestUrl2[] = "https://www.foo.com";
 const int64_t kClusterId = 12345L;
+const char kSetTitle[] = "SetTitle";
 
 // Build a basic ProductInfo object.
 std::optional<ProductInfo> CreateProductInfo(uint64_t cluster_id) {
@@ -40,8 +44,8 @@ std::optional<ProductInfo> CreateProductInfo(uint64_t cluster_id) {
 }
 
 std::optional<ProductGroup> CreateProductGroup() {
-  return ProductGroup(base::Uuid::GenerateRandomV4(), "test", {GURL(kTestUrl2)},
-                      base::Time());
+  return ProductGroup(base::Uuid::GenerateRandomV4(), kSetTitle,
+                      {GURL(kTestUrl2)}, base::Time());
 }
 }  // namespace
 
@@ -104,6 +108,10 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest, IconShow) {
   ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
   ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
   ASSERT_TRUE(controller_->WantsExpandedUi());
+  ASSERT_EQ(l10n_util::GetStringFUTF16(
+                IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD,
+                base::UTF8ToUTF16(static_cast<std::string>(kSetTitle))),
+            controller_->GetProductSpecificationsLabel(false));
 }
 
 TEST_F(ProductSpecificationsPageActionControllerUnittest,
@@ -129,6 +137,9 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
   ASSERT_FALSE(controller_->ShouldShowForNavigation().value());
   ASSERT_FALSE(controller_->WantsExpandedUi());
+  ASSERT_EQ(l10n_util::GetStringUTF16(
+                IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT),
+            controller_->GetProductSpecificationsLabel(false));
 }
 
 TEST_F(ProductSpecificationsPageActionControllerUnittest,

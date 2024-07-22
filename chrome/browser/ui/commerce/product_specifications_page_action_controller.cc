@@ -5,9 +5,12 @@
 #include "chrome/browser/ui/commerce/product_specifications_page_action_controller.h"
 
 #include "base/containers/contains.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace commerce {
 
@@ -145,6 +148,22 @@ void ProductSpecificationsPageActionController::OnIconClicked() {
 
 bool ProductSpecificationsPageActionController::IsInRecommendedSet() {
   return is_in_recommended_set_;
+}
+
+std::u16string
+ProductSpecificationsPageActionController::GetProductSpecificationsLabel(
+    bool is_added) {
+  if (!product_group_for_page_.has_value()) {
+    return is_added ? l10n_util::GetStringUTF16(
+                          IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED_DEFAULT)
+                    : l10n_util::GetStringUTF16(
+                          IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT);
+  }
+  std::u16string set_name = base::UTF8ToUTF16(product_group_for_page_->name);
+  return is_added ? l10n_util::GetStringFUTF16(
+                        IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED, set_name)
+                  : l10n_util::GetStringFUTF16(
+                        IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD, set_name);
 }
 
 void ProductSpecificationsPageActionController::HandleProductInfoResponse(

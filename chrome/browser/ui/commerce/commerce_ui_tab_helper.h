@@ -83,6 +83,9 @@ class CommerceUiTabHelper
   // product specifications set.
   virtual bool IsInRecommendedSet();
 
+  // Returns the label to show on the product specifications icon.
+  virtual std::u16string GetProductSpecificationsLabel(bool is_added);
+
   // Returns discounts for the last committed URL. A reference to this object
   // should not be kept directly, if one is needed, a copy should be made.
   virtual const std::vector<DiscountInfo>& GetDiscounts();

@@ -472,6 +472,12 @@ bool CommerceUiTabHelper::IsInRecommendedSet() {
   return product_specifications_controller_->IsInRecommendedSet();
 }
 
+std::u16string CommerceUiTabHelper::GetProductSpecificationsLabel(
+    bool is_added) {
+  return product_specifications_controller_->GetProductSpecificationsLabel(
+      is_added);
+}
+
 const std::vector<DiscountInfo>& CommerceUiTabHelper::GetDiscounts() {
   return discounts_page_action_controller_->GetDiscounts();
 }

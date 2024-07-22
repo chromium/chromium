@@ -133,27 +133,30 @@ TEST_F(ProductSpecificationsIconViewIntegrationTest, IconExecution) {
 }
 
 TEST_F(ProductSpecificationsIconViewIntegrationTest, TestVisualState) {
+  std::u16string added_title = u"Added to set";
+  std::u16string add_title = u"Add to set";
+
   ON_CALL(*GetTabHelper(), ShouldShowProductSpecificationsIconView)
       .WillByDefault(testing::Return(true));
   ON_CALL(*GetTabHelper(), IsInRecommendedSet)
       .WillByDefault(testing::Return(true));
+  ON_CALL(*GetTabHelper(), GetProductSpecificationsLabel)
+      .WillByDefault(testing::Return(added_title));
 
   NavigateAndCommitActiveTab(GURL(kUrlB));
   auto* icon_view = GetChip();
   EXPECT_TRUE(icon_view->GetVisible());
-  EXPECT_EQ(icon_view->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED_DEFAULT));
+  EXPECT_EQ(icon_view->GetText(), added_title);
 
   ON_CALL(*GetTabHelper(), ShouldShowProductSpecificationsIconView)
       .WillByDefault(testing::Return(true));
   ON_CALL(*GetTabHelper(), IsInRecommendedSet)
       .WillByDefault(testing::Return(false));
+  ON_CALL(*GetTabHelper(), GetProductSpecificationsLabel)
+      .WillByDefault(testing::Return(add_title));
 
   NavigateAndCommitActiveTab(GURL(kUrlA));
   icon_view = GetChip();
   EXPECT_TRUE(icon_view->GetVisible());
-  EXPECT_EQ(icon_view->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT));
+  EXPECT_EQ(icon_view->GetText(), add_title);
 }
