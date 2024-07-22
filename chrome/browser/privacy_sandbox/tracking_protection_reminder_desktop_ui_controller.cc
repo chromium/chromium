@@ -9,8 +9,10 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 #include "components/privacy_sandbox/tracking_protection_reminder_service.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo_data.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 
@@ -19,6 +21,18 @@ namespace {
 
 const base::Feature& GetIPHReminderFeature() {
   return feature_engagement::kIPHTrackingProtectionReminderFeature;
+}
+
+privacy_sandbox::NoticeActionTaken ToNoticeActionTaken(
+    user_education::FeaturePromoClosedReason closed_reason) {
+  if (closed_reason == user_education::FeaturePromoClosedReason::kCancel) {
+    // The `x` button of the IPH was clicked or the tab was switched.
+    return NoticeActionTaken::kClosed;
+  } else if (closed_reason ==
+             user_education::FeaturePromoClosedReason::kTimeout) {
+    return NoticeActionTaken::kTimedOut;
+  }
+  return NoticeActionTaken::kOther;
 }
 
 }  // namespace
@@ -60,7 +74,6 @@ void TrackingProtectionReminderDesktopUiController::
   if (!browser) {
     return;
   }
-
   switch (reminder_service_->GetReminderType()) {
     case ReminderType::kNone:
       break;
@@ -72,15 +85,27 @@ void TrackingProtectionReminderDesktopUiController::
       break;
     case ReminderType::kActive:
       user_education::FeaturePromoParams params(GetIPHReminderFeature());
-      // TODO(crbug.com/349122141): Set the close callback to record the
-      // reminder interaction and delta time from reminder appearing to
-      // interaction.
+      params.close_callback = base::BindOnce(
+          &TrackingProtectionReminderDesktopUiController::OnReminderClosed,
+          weak_ptr_factory_.GetWeakPtr(),
+          browser->window()->GetFeaturePromoController());
       if (browser->window()->MaybeShowFeaturePromo(std::move(params))) {
         reminder_service_->OnReminderExperienced(
             TrackingProtectionOnboarding::SurfaceType::kDesktop);
       }
       break;
   }
+}
+
+void TrackingProtectionReminderDesktopUiController::OnReminderClosed(
+    user_education::FeaturePromoController* promo_controller) {
+  user_education::FeaturePromoClosedReason closed_reason;
+  // Call `HasPromoBeenDismissed` to fetch the latest `closed_reason`.
+  promo_controller->HasPromoBeenDismissed(GetIPHReminderFeature(),
+                                          &closed_reason);
+  reminder_service_->OnReminderActionTaken(
+      ToNoticeActionTaken(closed_reason), base::Time::Now(),
+      /*surface_type=*/TrackingProtectionOnboarding::SurfaceType::kDesktop);
 }
 
 void TrackingProtectionReminderDesktopUiController::

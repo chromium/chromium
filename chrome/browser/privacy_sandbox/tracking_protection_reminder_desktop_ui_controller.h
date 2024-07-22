@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/privacy_sandbox/tracking_protection_reminder_service.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "ui/base/interaction/element_tracker.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -35,6 +36,10 @@ class TrackingProtectionReminderDesktopUiController
  private:
   // Fired off when the tracking protection icon is shown.
   void OnTrackingProtectionIconShown(ui::TrackedElement* element);
+
+  // Called when the reminder IPH is closed.
+  void OnReminderClosed(
+      user_education::FeaturePromoController* promo_controller);
 
   base::ScopedObservation<TrackingProtectionReminderService,
                           TrackingProtectionReminderService::Observer>
