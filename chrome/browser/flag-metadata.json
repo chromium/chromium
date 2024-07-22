@@ -8353,11 +8353,6 @@
     "expiry_milestone": 94
   },
   {
-    "name": "stop-app-indexing-report",
-    "owners": [ "gangwu@chromium.org", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "storage-access-headers",
     "owners": [ "cfredric@chromium.org", "potassium-auth-embeds@google.com" ],
     "expiry_milestone": 140

@@ -669,8 +669,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, true);
     public static final CachedFlag sStartSurfaceReturnTime =
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
-    public static final CachedFlag sStopAppIndexingReport =
-            newCachedFlag(STOP_APP_INDEXING_REPORT, true);
     public static final CachedFlag sSurfacePolish = newCachedFlag(SURFACE_POLISH, true);
     public static final CachedFlag sSurfacePolishForToolbarKillSwitch =
             newCachedFlag(SURFACE_POLISH_FOR_TOOLBAR_KILL_SWITCH, true);
@@ -788,7 +786,6 @@ public abstract class ChromeFeatureList {
                     sSearchInCCT,
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
-                    sStopAppIndexingReport,
                     sSurfacePolish,
                     sSurfacePolishForToolbarKillSwitch,
                     sTabDragDropAsWindowAndroid,

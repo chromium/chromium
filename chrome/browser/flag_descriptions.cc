@@ -3469,9 +3469,6 @@ const char kSplitCacheByNetworkIsolationKeyDescription[] =
     "Partitions the HTTP Cache by (top-level site, current-frame site) to "
     "disallow cross-site tracking.";
 
-const char kStopAppIndexingReportName[] = "Stop app indexing report";
-const char kStopAppIndexingReportDescription[] = "Stop report app indexing.";
-
 const char kStorageAccessHeadersName[] = "Storage Access Headers";
 const char kStorageAccessHeadersDescription[] =
     "Enables HTTP headers related to the Storage Access API.";
