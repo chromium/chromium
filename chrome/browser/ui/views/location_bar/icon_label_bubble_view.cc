@@ -270,6 +270,12 @@ SkColor IconLabelBubbleView::GetForegroundColor() const {
   return GetColorProvider()->GetColor(foreground_color_id);
 }
 
+bool IconLabelBubbleView::IconColorShouldMatchForeground() const {
+  // Icons should match the label foreground color if the foreground color is
+  // explicitly overridden or solid backgrounds are used.
+  return foreground_color_id_.has_value() || PaintedOnSolidBackground();
+}
+
 void IconLabelBubbleView::SetCustomForegroundColorId(
     const ui::ColorId color_id) {
   if (foreground_color_id_ == color_id) {
@@ -284,13 +290,6 @@ void IconLabelBubbleView::SetCustomBackgroundColorId(
     return;
   }
   background_color_id_ = color_id;
-}
-
-std::optional<ui::ColorId> IconLabelBubbleView::GetCustomForegroundColorId() {
-  return foreground_color_id_;
-}
-std::optional<ui::ColorId> IconLabelBubbleView::GetCustomBackgroundColorId() {
-  return background_color_id_;
 }
 
 void IconLabelBubbleView::UpdateLabelColors() {

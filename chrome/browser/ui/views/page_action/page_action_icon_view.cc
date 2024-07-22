@@ -276,9 +276,8 @@ void PageActionIconView::UpdateIconImage() {
   // Fall back to the vector icon if no icon image was provided.
   SkColor icon_color =
       active_ ? views::GetCascadingAccentColor(this) : icon_color_;
-  if (GetCustomForegroundColorId().has_value()) {
-    icon_color =
-        GetColorProvider()->GetColor(GetCustomForegroundColorId().value());
+  if (IconColorShouldMatchForeground()) {
+    icon_color = GetForegroundColor();
   }
   const gfx::ImageSkia image = gfx::CreateVectorIconWithBadge(
       GetVectorIcon(), icon_size, icon_color, GetVectorIconBadge());

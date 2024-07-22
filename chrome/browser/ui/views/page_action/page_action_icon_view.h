@@ -83,6 +83,8 @@ class PageActionIconView : public IconLabelBubbleView {
   void RemovePageIconViewObserver(PageActionIconViewObserver* observer);
 
   // Updates the color of the icon, this must be set before the icon is drawn.
+  // TODO(crbug.com/352245808): Color overrides should be moved into the
+  // IconLabelBubbleView superclass.
   void SetIconColor(SkColor icon_color);
   SkColor GetIconColor() const;
 
