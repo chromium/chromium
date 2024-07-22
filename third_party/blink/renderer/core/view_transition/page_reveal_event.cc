@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/view_transition/page_reveal_event.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_page_reveal_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -15,6 +16,14 @@ namespace blink {
 
 PageRevealEvent::PageRevealEvent()
     : Event(event_type_names::kPagereveal, Bubbles::kNo, Cancelable::kNo) {
+  CHECK(RuntimeEnabledFeatures::PageRevealEventEnabled());
+}
+
+PageRevealEvent::PageRevealEvent(const AtomicString& type,
+                                 const PageRevealEventInit* initializer)
+    : Event(type, initializer),
+      dom_view_transition_(initializer ? initializer->viewTransition()
+                                       : nullptr) {
   CHECK(RuntimeEnabledFeatures::PageRevealEventEnabled());
 }
 

@@ -1,0 +1,10 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://html.spec.whatwg.org/multipage/nav-history-apis.html#pageswapeventinit
+
+dictionary PageSwapEventInit : EventInit {
+  NavigationActivation? activation = null;
+  ViewTransition? viewTransition = null;
+};

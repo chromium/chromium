@@ -15,6 +15,7 @@ namespace blink {
 class Document;
 class DOMViewTransition;
 class NavigationActivation;
+class PageSwapEventInit;
 
 // Implementation for the pageswap event. Fired before the Document is hidden
 // and unloaded or placed in the BFCache.
@@ -26,6 +27,13 @@ class PageSwapEvent final : public Event {
   PageSwapEvent(Document&,
                    mojom::blink::PageSwapEventParamsPtr,
                    DOMViewTransition*);
+  PageSwapEvent(const AtomicString&, const PageSwapEventInit*);
+
+  static PageSwapEvent* Create(const AtomicString& type,
+                               const PageSwapEventInit* initializer) {
+    return MakeGarbageCollected<PageSwapEvent>(type, initializer);
+  }
+
   ~PageSwapEvent() override;
 
   const AtomicString& InterfaceName() const override;
