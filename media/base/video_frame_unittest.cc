@@ -367,7 +367,7 @@ TEST(VideoFrame, DestructChainOfWrappedVideoFrames) {
   bool base_frame_done_callback_was_run = false;
   frame->AddDestructionObserver(base::BindOnce(
       &FrameNoLongerNeededCallback, &base_frame_done_callback_was_run));
-  std::array<bool, kFramesInChain> wrapped_frame_done_callback_was_run;
+  std::array<bool, kFramesInChain> wrapped_frame_done_callback_was_run = {};
   std::vector<scoped_refptr<VideoFrame>> frames;
 
   for (int i = 0; i < kFramesInChain; i++) {
