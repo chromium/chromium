@@ -95,10 +95,13 @@ void SparkyManagerImpl::AnswerQuestion(const std::u16string& question,
                                        bool current_panel_content,
                                        MahiAnswerQuestionCallback callback) {
   if (current_panel_content) {
+    auto sparky_context = std::make_unique<manta::SparkyContext>(
+        dialog_turns_, base::UTF16ToUTF8(question),
+        base::UTF16ToUTF8(current_panel_content_->page_content));
+    sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
+
     sparky_provider_->QuestionAndAnswer(
-        std::make_unique<manta::SparkyContext>(
-            dialog_turns_, base::UTF16ToUTF8(question),
-            base::UTF16ToUTF8(current_panel_content_->page_content)),
+        std::move(sparky_context),
         base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
                        weak_ptr_factory_.GetWeakPtr(), question,
                        std::move(callback)));
@@ -220,14 +223,18 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
                             latest_response_status_);
 
     dialog_turns_.emplace_back(std::move(*latest_turn));
+
+    auto sparky_context = std::make_unique<manta::SparkyContext>(
+        dialog_turns_, base::UTF16ToUTF8(question),
+        base::UTF16ToUTF8(current_panel_content_->page_content));
+    sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
+
     // If the latest action is not the final action from the server, then an
     // additional request is made to the server.
     if (!latest_turn->actions.empty() &&
         !latest_turn->actions.back().all_done) {
       sparky_provider_->QuestionAndAnswer(
-          std::make_unique<manta::SparkyContext>(
-              dialog_turns_, base::UTF16ToUTF8(question),
-              base::UTF16ToUTF8(current_panel_content_->page_content)),
+          std::move(sparky_context),
           base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
                          weak_ptr_factory_.GetWeakPtr(), question,
                          std::move(callback)));
@@ -252,10 +259,13 @@ void SparkyManagerImpl::OnGetPageContentForQA(
   // Assign current panel content and clear the current panel QA
   current_panel_content_ = std::move(mahi_content_ptr);
 
+  auto sparky_context = std::make_unique<manta::SparkyContext>(
+      dialog_turns_, base::UTF16ToUTF8(question),
+      base::UTF16ToUTF8(current_panel_content_->page_content));
+  sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
+
   sparky_provider_->QuestionAndAnswer(
-      std::make_unique<manta::SparkyContext>(
-          dialog_turns_, base::UTF16ToUTF8(question),
-          base::UTF16ToUTF8(current_panel_content_->page_content)),
+      std::move(sparky_context),
       base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
                      weak_ptr_factory_.GetWeakPtr(), question,
                      std::move(callback)));

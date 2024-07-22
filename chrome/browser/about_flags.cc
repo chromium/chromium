@@ -11373,6 +11373,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSparkyFeatureKeyDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kSparkyFeatureKey, "")},
 
+    {"sparky-server-url", flag_descriptions::kSparkyServerUrlName,
+     flag_descriptions::kSparkyServerUrlDescription, kOsCrOS,
+     STRING_VALUE_TYPE(ash::switches::kSparkyServerUrl, "")},
+
     {"mahi-feature-key", flag_descriptions::kMahiFeatureKeyName,
      flag_descriptions::kMahiFeatureKeyDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kMahiFeatureKey, "")},

@@ -5,6 +5,7 @@
 #include "ash/constants/ash_switches.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 
 #include "base/auto_reset.h"
@@ -909,6 +910,9 @@ const char kMahiFeatureKey[] = "mahi-feature-key";
 // Supply secret key for the sparky feature.
 const char kSparkyFeatureKey[] = "sparky-feature-key";
 
+// Supply server url for the sparky feature.
+const char kSparkyServerUrl[] = "sparky-server-url";
+
 // Specifies the user that the browser data migration should happen for.
 const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
 
@@ -1474,6 +1478,19 @@ bool IsModifierSplitSecretKeyMatched() {
 
 base::AutoReset<bool> SetIgnoreModifierSplitSecretKeyForTest() {
   return {&g_ignore_modifier_split_secret_key, true};
+}
+
+std::optional<std::string> ObtainSparkyServerUrl() {
+  // Commandline looks like:
+  //  out/Default/chrome --user-data-dir=/tmp/tmp123
+  //  --sparky-server-url="INSERT KEY HERE"
+  //  --enable-features=Sparky
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kSparkyServerUrl)) {
+    return std::make_optional(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            kSparkyServerUrl));
+  }
+  return std::nullopt;
 }
 
 }  // namespace ash::switches

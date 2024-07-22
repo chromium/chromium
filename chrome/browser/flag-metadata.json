@@ -8312,6 +8312,14 @@
     "expiry_milestone": 142
   },
   {
+    "name": "sparky-server-url",
+    "owners": [
+      "laurencom@chromium.org",
+      "tby@chromium.org"
+    ],
+    "expiry_milestone": 144
+  },
+  {
     "name": "spectre-v2-mitigation",
     "owners": [
       "chromeos-security@google.com"

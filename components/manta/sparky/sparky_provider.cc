@@ -147,6 +147,14 @@ void SparkyProvider::OnScreenshotObtained(
     AddDiagnosticsProto(sparky_context->diagnostics_data, diagnostics_proto);
   }
 
+  // This parameter contains the address of one of the backends which the
+  // request is passed through to once it is pushed up in a manta request.
+  if (sparky_context->server_url) {
+    proto::ServerConfig* server_config =
+        sparky_context_data->mutable_server_config();
+    server_config->set_server_url(sparky_context->server_url.value());
+  }
+
   MantaProtoResponseCallback internal_callback = base::BindOnce(
       &OnQAServerResponseOrErrorReceived,
       base::BindOnce(&SparkyProvider::OnResponseReceived,

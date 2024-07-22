@@ -16565,6 +16565,7 @@ from previous Chrome versions.
   <int value="-1824539611" label="U2fPermissionPrompt:disabled"/>
   <int value="-1824166290"
       label="ComputePressureRateObfuscationMitigation:disabled"/>
+  <int value="-1823280112" label="sparky-server-url:enabled"/>
   <int value="-1823193038" label="QuietNotificationPrompts:disabled"/>
   <int value="-1823073826" label="TabGroupsSave:disabled"/>
   <int value="-1822825246" label="DragFromShelfToHomeOrOverview:enabled"/>
@@ -24749,6 +24750,7 @@ from previous Chrome versions.
   <int value="1662466302" label="NtpRealboxUseGoogleGIcon:enabled"/>
   <int value="1662543761" label="PdfOopif:disabled"/>
   <int value="1663574600" label="WebViewDisplayCutout:enabled"/>
+  <int value="1664021307" label="sparky-server-url:disabled"/>
   <int value="1664154056" label="CastStreamingMacHardwareH264:disabled"/>
   <int value="1664401033" label="ColorCorrectRendering:enabled"/>
   <int value="1664463407" label="FirstPartySets:enabled"/>

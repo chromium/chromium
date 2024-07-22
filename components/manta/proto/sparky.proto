@@ -71,6 +71,10 @@ message DiagnosticsData {
   optional MemoryData memory = 4;
 }
 
+message ServerConfig {
+  optional string server_url = 1;
+}
+
 message SettingsValue {
   oneof settings_value {
     bool bool_val = 1;
@@ -133,19 +137,13 @@ message SparkyResponse {
   optional Turn latest_reply = 2;
 }
 
-message InputText {
-  optional string text = 1;
-  optional string tag = 2;
-}
-
 message SparkyContextData {
-  reserved 7;
-
   optional Task task = 1;
   optional DiagnosticsData diagnostics_data = 2;
   optional SettingsData settings_data = 3;
   repeated Turn conversation = 4;
   optional Image screenshot = 5;
   optional AppsData apps_data = 6;
+  optional ServerConfig server_config = 7;
   optional string page_contents = 8;
 }
