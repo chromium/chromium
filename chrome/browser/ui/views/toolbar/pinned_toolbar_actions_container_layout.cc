@@ -14,62 +14,26 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layout;
 
+  int total_width = interior_margin_.width();
   bool size_bounded = size_bounds.is_fully_bounded();
   int remaining_width =
       size_bounded ? (size_bounds.width().value() - interior_margin_.width())
                    : 0;
-  bool has_found_button_forced_visible = false;
-  int mid_priority_width = 0;
-  bool divider_space_preallocated = false;
-  bool divider_included_for_mid_priority = false;
 
-  // 1. Allocate space for forced visible views and calculate additional space
-  // needed for medium priority views.
-  if (size_bounded) {
-    for (views::View* child : host_view()->children()) {
-      PinnedToolbarActionFlexPriority priority =
-          static_cast<PinnedToolbarActionFlexPriority>(
-              child->GetProperty(kToolbarButtonFlexPriorityKey));
+  // 1. Allocate space for forced visible views
+  for (views::View* child : host_view()->children()) {
+    if (child->GetProperty(kToolbarButtonFlexWeightKey) == 0) {
       gfx::Size preferred_size = child->GetPreferredSize();
       preferred_size.Enlarge(child->GetProperty(views::kMarginsKey)->width(),
                              0);
-
-      // Include forced visible views.
-      if (priority == PinnedToolbarActionFlexPriority::kHigh) {
-        has_found_button_forced_visible = true;
+      if (size_bounded) {
         remaining_width -= preferred_size.width();
-      }
-      // Track the total width of items with medium flex priority.
-      if (views::Button::AsButton(child) &&
-          priority == PinnedToolbarActionFlexPriority::kMedium) {
-        mid_priority_width += preferred_size.width();
-      }
-      // Include the divider if any previous buttons are forced visible.
-      if (!views::Button::AsButton(child)) {
-        if (has_found_button_forced_visible) {
-          divider_space_preallocated = true;
-          remaining_width -= preferred_size.width();
-        } else if (mid_priority_width > 0) {
-          divider_included_for_mid_priority = true;
-          mid_priority_width += preferred_size.width();
-        }
       }
     }
   }
 
-  // 2. Check if all medium priority items will fit in the remaining space. If
-  // so, allocate space for them in the remaining width.
-  bool fits_all_medium_priority =
-      !size_bounded || (remaining_width - mid_priority_width > 0);
-  divider_space_preallocated =
-      divider_space_preallocated ||
-      (fits_all_medium_priority && divider_included_for_mid_priority);
-  if (size_bounded && fits_all_medium_priority) {
-    remaining_width -= mid_priority_width;
-  }
-
-  // 3. Allocate space for remaining views, and get their indices. The divider
-  // should only be included if buttons after it should be included.
+  // 2. Allocate space for remaining views, the divider should only be
+  // included if buttons after it should be included.
   std::vector<size_t> visible_child_indices;
   size_t index = host_view()->children().size() - 1;
   size_t divider_index = 0;
@@ -85,41 +49,24 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
       index--;
       continue;
     }
-    // Get the preferred size and include the divider width if this view is
-    // causing the divider to need to be shown.
     int margin_width = (*i)->GetProperty(views::kMarginsKey)->width();
     gfx::Size preferred_size = (*i)->GetPreferredSize();
     preferred_size.Enlarge(margin_width, 0);
     if (divider_index > index) {
       preferred_size.set_width(preferred_size.width() + divider_width);
     }
-
-    PinnedToolbarActionFlexPriority priority =
-        static_cast<PinnedToolbarActionFlexPriority>(
-            (*i)->GetProperty(kToolbarButtonFlexPriorityKey));
-    bool has_preallocated_space_in_layout =
-        priority == PinnedToolbarActionFlexPriority::kHigh ||
-        (fits_all_medium_priority &&
-         priority == PinnedToolbarActionFlexPriority::kMedium);
-    bool fits_in_remaining_space = remaining_width >= preferred_size.width();
-    bool should_take_remaining_space =
-        fits_all_medium_priority ||
-        priority == PinnedToolbarActionFlexPriority::kMedium;
-
-    // Determine whether the child should be visible in the layout and add it to
-    // |visible_child_indices| if so.
-    if (has_preallocated_space_in_layout ||
-        (!size_bounded ||
-         (fits_in_remaining_space && should_take_remaining_space))) {
+    int flex_weight = (*i)->GetProperty(kToolbarButtonFlexWeightKey);
+    if (flex_weight == 0 ||
+        (!size_bounded || remaining_width >= preferred_size.width())) {
       // Include the divider if necessary.
       if (divider_index != 0) {
         visible_child_indices.push_back(divider_index);
-        if (size_bounded && !divider_space_preallocated) {
+        if (size_bounded) {
           remaining_width -= divider_width;
         }
         divider_index = 0;
       }
-      if (has_preallocated_space_in_layout) {
+      if (flex_weight == 0) {
         visible_child_indices.push_back(index);
       } else {
         visible_child_indices.push_back(index);
@@ -131,8 +78,6 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
     index--;
   }
 
-  // 4. Create layout based on prior calculations.
-  int total_width = interior_margin_.width();
   int left = interior_margin_.left();
   index = 0;
   int height = GetLayoutConstant(LayoutConstant::TOOLBAR_BUTTON_HEIGHT);
@@ -154,7 +99,6 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
     }
     index++;
   }
-
   layout.host_size = gfx::Size(total_width, height);
   return layout;
 }

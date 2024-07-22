@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 
 #include <string>
-#include <type_traits>
 
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -16,7 +15,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container_layout.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
@@ -38,12 +36,7 @@ namespace {
 const gfx::VectorIcon kEmptyIcon;
 }  // namespace
 
-DEFINE_UI_CLASS_PROPERTY_TYPE(PinnedToolbarActionFlexPriority)
-DEFINE_UI_CLASS_PROPERTY_KEY(
-    std::underlying_type_t<PinnedToolbarActionFlexPriority>,
-    kToolbarButtonFlexPriorityKey,
-    std::underlying_type_t<PinnedToolbarActionFlexPriority>(
-        PinnedToolbarActionFlexPriority::kLow))
+DEFINE_UI_CLASS_PROPERTY_KEY(int, kToolbarButtonFlexWeightKey, 2)
 
 PinnedActionToolbarButton::PinnedActionToolbarButton(
     Browser* browser,
@@ -217,18 +210,6 @@ void PinnedActionToolbarButton::UpdateIcon() {
 }
 
 void PinnedActionToolbarButton::SetActionEngaged(bool action_engaged) {
-  if (!IsActive()) {
-    SetProperty(
-        kToolbarButtonFlexPriorityKey,
-        action_engaged
-            ? static_cast<
-                  std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
-                  PinnedToolbarActionFlexPriority::kMedium)
-            : static_cast<
-                  std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
-                  PinnedToolbarActionFlexPriority::kLow));
-    InvalidateLayout();
-  }
   action_engaged_ = action_engaged;
 }
 
@@ -265,24 +246,13 @@ void PinnedActionToolbarButton::OnAnchorCountChanged(size_t anchor_count) {
   // If there is something anchored to the button we want to make sure the
   // button will be visible in the toolbar in cases where the window might be
   // small enough that icons must overflow. Update the
-  // kToolbarButtonFlexPriorityKey to make sure icons are forced visible or able
+  // kToolbarButtonFlexWeightKey to make sure icons are forced visible or able
   // to overflow.
   if (anchor_count > 0) {
-    SetProperty(
-        kToolbarButtonFlexPriorityKey,
-        static_cast<std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
-            PinnedToolbarActionFlexPriority::kHigh));
+    SetProperty(kToolbarButtonFlexWeightKey, 0);
     InvalidateLayout();
   } else {
-    SetProperty(
-        kToolbarButtonFlexPriorityKey,
-        action_engaged_
-            ? static_cast<
-                  std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
-                  PinnedToolbarActionFlexPriority::kMedium)
-            : static_cast<
-                  std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
-                  PinnedToolbarActionFlexPriority::kLow));
+    SetProperty(kToolbarButtonFlexWeightKey, 2);
     InvalidateLayout();
   }
 }
