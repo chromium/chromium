@@ -2554,7 +2554,7 @@ crbug.com/1446038 [ Debug Mac13-arm64 ] external/wpt/webaudio/the-audio-api/the-
 
 # ====== Test expectations added to unblock wpt-importer ======
 crbug.com/626703 external/wpt/css/css-ui/outline-auto-width-001.html [ Failure ]
-crbug.com/626703 virtual/fedcm-login-status/external/wpt/fedcm/fedcm-login-status/confirm-idp-login.https.html [ Failure ]
+crbug.com/626703 external/wpt/fedcm/fedcm-login-status/confirm-idp-login.https.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-align/text-align-justify-tabs-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-align/text-align-justify-tabs-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-align/text-align-justify-tabs-003.html [ Failure ]
@@ -6663,7 +6663,7 @@ crbug.com/1464614 [ Win11-arm64 ] custom-elements/form-validation-bubble-appeara
 crbug.com/1464614 [ Win11-arm64 ] fast/forms/file/file-appearance-bidi-filenames.html [ Failure ]
 crbug.com/1464614 [ Win11-arm64 ] fast/ruby/nested-ruby.html [ Failure ]
 crbug.com/1464614 [ Win11-arm64 ] external/wpt/fedcm/fedcm-disconnect-errors.https.html [ Failure Pass Timeout ] # Flaky
-crbug.com/1464614 [ Win11-arm64 ] virtual/fedcm-login-status/external/wpt/fedcm/fedcm-login-status/cross-origin-status.https.html [ Failure Pass Timeout ] # Flaky
+crbug.com/1464614 [ Win11-arm64 ] external/wpt/fedcm/fedcm-login-status/cross-origin-status.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/1464614 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/deep-copy-config.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/1464614 [ Win11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomain2.sub.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/1464614 [ Win11-arm64 ] virtual/pna-permission/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Failure Pass Timeout ] # Flaky

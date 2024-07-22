@@ -2050,25 +2050,6 @@
     "expires": "May 1, 2025"
   },
   {
-    "prefix": "fedcm-login-status",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/fedcm/fedcm-login-status/"],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-features=FedCmIdpSigninStatusEnabled",
-             "--enable-features=FencedFramesDefaultMode"],
-    "owners": ["cbiesinger@chromium.org", "npm@chromium.org"],
-    "expires": "Mar 1, 2025"
-  },
-  {
-    "prefix": "fedcm-same-site-none",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/fedcm/fedcm-same-site-none/"],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-features=FedCmSameSiteNone"],
-    "owners": ["cbiesinger@chromium.org", "npm@chromium.org"],
-    "expires": "Mar 1, 2025"
-  },
-  {
     "prefix": "fedcm-button-and-other-account",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fedcm/fedcm-button-and-other-account/"],
