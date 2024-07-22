@@ -144,9 +144,12 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             loadingStateChanged(currentTab.isLoading());
 
             MenuItem shareItem = menu.findItem(R.id.share_row_menu_id);
-            shareItem.setVisible(mShowShare);
-            shareItem.setEnabled(mShowShare);
-            if (mShowShare) {
+            // TODO(crbug.com/337363657): Show Share for pdf native pages once supported.
+            boolean isPdfPage = currentTab.isNativePage() && currentTab.getNativePage().isPdf();
+            boolean showShareExceptForPdf = mShowShare && !isPdfPage;
+            shareItem.setVisible(showShareExceptForPdf);
+            shareItem.setEnabled(showShareExceptForPdf);
+            if (showShareExceptForPdf) {
                 updateDirectShareMenuItem(menu.findItem(R.id.direct_share_menu_id));
             }
 

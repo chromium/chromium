@@ -28,8 +28,10 @@ public class ShareUtils {
                 url.getScheme().equals(UrlConstants.CHROME_SCHEME)
                         || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
         boolean isDataScheme = url.getScheme().equals(UrlConstants.DATA_SCHEME);
+        // TODO(crbug.com/337363657): Show Share for pdf native pages once supported.
+        boolean isPdfPage = tab.isNativePage() && tab.getNativePage().isPdf();
 
-        return !isChromeScheme && !isDataScheme;
+        return !isChromeScheme && !isDataScheme && !isPdfPage;
     }
 
     /** In the context of custom tabs, should the share be enabled. */
