@@ -512,11 +512,6 @@ std::vector<base::test::FeatureRef> DisabledFeatures() {
   return {ash::features::kImeRuleConfig};
 }
 
-std::vector<base::test::FeatureRef>
-DisabledFeaturesIncludingAutocorrectByDefault() {
-  return {ash::features::kImeRuleConfig, ash::features::kAutocorrectByDefault};
-}
-
 std::vector<base::test::FeatureRef> RequiredForAutocorrectByDefault() {
   return {ash::features::kAutocorrectByDefault,
           ash::features::kImeFstDecoderParamsUpdate,
@@ -2832,14 +2827,8 @@ TEST_F(AutocorrectManagerTest, RecordRejectionForPkControlBackspace) {
   histogram_tester_.ExpectTotalCount(kAutocorrectV2PkRejectionHistName, 2);
 }
 
-TEST_F(
-    AutocorrectManagerTest,
-    IsNotDisabledWhenNoSuggestionProviderAndAutocorrectByDefaultFlagIsDisabled) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/DisabledFeaturesIncludingAutocorrectByDefault());
-
+TEST_F(AutocorrectManagerTest,
+       IsNotDisabledWhenNoSuggestionProviderAndNoExperimentFlag) {
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
 
@@ -2905,10 +2894,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(NotDisabledByInvalidSuggestionProvider,
        WhenAutocorrectByDefaultFlagDisabled) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/DisabledFeaturesIncludingAutocorrectByDefault());
   const AutocorrectSuggestionProvider& provider = GetParam();
 
   manager_.OnActivate(kUsEnglishEngineId);
@@ -3276,7 +3261,7 @@ INSTANTIATE_TEST_SUITE_P(
         {"UsEnglishDefault",
          /*engine_id=*/kUsEnglishEngineId,
          /*autocorrect_level=*/std::nullopt,
-         /*expected_pref=*/AutocorrectPreference::kEnabledByDefault},
+         /*expected_pref=*/AutocorrectPreference::kDefault},
     }),
     [](const testing::TestParamInfo<PkUserPrefCase> info) {
       return info.param.test_name;
@@ -3514,10 +3499,6 @@ TEST_P(PkEnabledByDefaultTest, ItIsEnabledByDefaultWhenFlagIsEnabled) {
 TEST_P(PkEnabledByDefaultTest, ItIsNotEnabledByDefaultWhenFlagIsDisabled) {
   const PkEnabledByDefaultCase& test_case = GetParam();
   PrefService* prefs = profile_->GetPrefs();
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/DisabledFeaturesIncludingAutocorrectByDefault());
   if (test_case.autocorrect_level) {
     SetAutocorrectPreferenceTo(*profile_, kUsEnglishEngineId,
                                *test_case.autocorrect_level);
