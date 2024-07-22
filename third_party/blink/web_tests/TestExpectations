@@ -7530,6 +7530,10 @@ crbug.com/40279192 external/wpt/event-timing/mouseleave.html [ Failure Pass ]
 # Gardener 2024-06-04
 crbug.com/40899458 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass ]
 
+# SVG resource references to html files do not work properly.
+crbug.com/350075019 external/wpt/svg/struct/reftests/use-external-html-resource-with-doctype.html [ Failure ]
+crbug.com/350075019 external/wpt/svg/struct/reftests/use-external-html-resource.html [ Failure ]
+
 # Gardener 2024-06-05
 crbug.com/345118873 external/wpt/webdriver/tests/classic/get_active_element/get.py [ Failure ]
 
