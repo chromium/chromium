@@ -57,7 +57,7 @@ std::unique_ptr<PrefService> CreatePrefService() {
   registry->RegisterBooleanPref(prefs::kOptInStats, true);
   registry->RegisterStringPref(::metrics::prefs::kMetricsClientID, "");
   registry->RegisterStringPref(kVirtualChannel, "");
-  registry->RegisterForeignPref(kLatestUiVersion);
+  registry->RegisterStringPref(kLatestUiVersion, "");
 
   PrefServiceFactory prefServiceFactory;
   prefServiceFactory.SetUserPrefsFile(
