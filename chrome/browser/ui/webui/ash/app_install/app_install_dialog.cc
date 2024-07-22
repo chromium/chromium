@@ -10,6 +10,7 @@
 
 #include "ash/style/typography.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/almanac_api_client/almanac_app_icon_loader.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
@@ -92,9 +93,7 @@ void AppInstallDialog::ShowApp(
     std::string app_name,
     GURL app_url,
     std::string app_description,
-    GURL icon_url,
-    int icon_width,
-    bool is_icon_maskable,
+    std::optional<apps::AppInstallIcon> icon,
     std::vector<mojom::ScreenshotPtr> screenshots,
     base::OnceCallback<void(bool accepted)> dialog_accepted_callback) {
   profile_ = profile->GetWeakPtr();
@@ -111,7 +110,6 @@ void AppInstallDialog::ShowApp(
   app_info_args_.data->description = base::UTF16ToUTF8(gfx::TruncateString(
       base::UTF8ToUTF16(app_description), webapps::kMaximumDescriptionLength,
       gfx::CHARACTER_BREAK));
-  app_info_args_.data->icon_url = std::move(icon_url);
 
   // Filter out portrait screenshots.
   app_info_args_.data->screenshots = std::move(screenshots);
@@ -127,12 +125,15 @@ void AppInstallDialog::ShowApp(
 
   app_info_args_.dialog_accepted_callback = std::move(dialog_accepted_callback);
 
-  icon_cache_ =
-      std::make_unique<apps::AlmanacIconCache>(profile_.get()->GetProfileKey());
-  icon_cache_->GetIcon(
-      app_info_args_.data->icon_url,
-      base::BindOnce(&AppInstallDialog::OnIconDownloaded,
-                     weak_factory_.GetWeakPtr(), icon_width, is_icon_maskable));
+  if (!icon.has_value()) {
+    Show(parent, std::move(app_info_args_));
+    return;
+  }
+
+  icon_loader_ = std::make_unique<apps::AlmanacAppIconLoader>(*profile_.get());
+  icon_loader_->GetAppIcon(icon->url, icon->mime_type, icon->is_masking_allowed,
+                           base::BindOnce(&AppInstallDialog::OnAppIconLoaded,
+                                          weak_factory_.GetWeakPtr()));
 }
 
 void AppInstallDialog::ShowNoAppError(gfx::NativeWindow parent) {
@@ -189,28 +190,13 @@ AppInstallDialog::AppInstallDialog()
 
 AppInstallDialog::~AppInstallDialog() = default;
 
-void AppInstallDialog::OnIconDownloaded(int icon_width,
-                                        bool is_icon_maskable,
-                                        const gfx::Image& icon) {
-  apps::IconValuePtr icon_value = std::make_unique<apps::IconValue>();
-  icon_value->icon_type = apps::IconType::kStandard;
-  icon_value->is_placeholder_icon = false;
-  icon_value->is_maskable_icon = is_icon_maskable;
-  icon_value->uncompressed = icon.AsImageSkia();
+void AppInstallDialog::OnAppIconLoaded(apps::IconValuePtr icon_value) {
+  icon_loader_.reset();
 
-  apps::ApplyIconEffects(profile_.get(), /*app_id=*/std::nullopt,
-                         is_icon_maskable
-                             ? apps::IconEffects::kCrOsStandardMask
-                             : apps::IconEffects::kCrOsStandardIcon,
-                         icon_width, std::move(icon_value),
-                         base::BindOnce(&AppInstallDialog::OnLoadIcon,
-                                        weak_factory_.GetWeakPtr()));
-}
-
-void AppInstallDialog::OnLoadIcon(apps::IconValuePtr icon_value) {
-  app_info_args_.data->icon_url =
-      GURL(webui::GetBitmapDataUrl(*icon_value->uncompressed.bitmap()));
-  set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+  if (icon_value) {
+    app_info_args_.data->icon_url =
+        GURL(webui::GetBitmapDataUrl(*icon_value->uncompressed.bitmap()));
+  }
 
   gfx::NativeWindow parent =
       (parent_window_tracker_ &&
@@ -224,6 +210,10 @@ void AppInstallDialog::Show(gfx::NativeWindow parent,
                             AppInstallDialogArgs dialog_args) {
   dialog_args_ = std::move(dialog_args);
   dialog_height_ = GetDialogHeight(dialog_args_.value());
+
+  if (absl::holds_alternative<AppInfoArgs>(dialog_args_.value())) {
+    set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+  }
 
   ShowSystemDialog(parent);
 

@@ -4899,6 +4899,7 @@ if (!is_android) {
         "//ash/webui/shortcut_customization_ui/backend",
         "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
         "//ash/webui/web_applications/test:test_support",
+        "//chrome/browser/apps/almanac_api_client:browser_tests",
         "//chrome/browser/apps/app_discovery_service/recommended_arc_apps",
         "//chrome/browser/apps/app_discovery_service/recommended_arc_apps:test_support",
         "//chrome/browser/apps/app_preload_service:browser_tests",

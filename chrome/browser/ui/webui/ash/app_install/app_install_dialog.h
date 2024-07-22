@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_APP_INSTALL_APP_INSTALL_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_APP_INSTALL_APP_INSTALL_DIALOG_H_
 
+#include <optional>
+
 #include "chrome/browser/apps/almanac_api_client/almanac_icon_cache.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog_args.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
@@ -13,6 +16,10 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "ui/views/native_window_tracker.h"
+
+namespace apps {
+class AlmanacAppIconLoader;
+}
 
 namespace ash::app_install {
 
@@ -35,9 +42,7 @@ class AppInstallDialog : public SystemWebDialogDelegate {
       std::string app_name,
       GURL app_url,
       std::string app_description,
-      GURL icon_url,
-      int icon_width,
-      bool is_icon_maskable,
+      std::optional<apps::AppInstallIcon> icon,
       std::vector<mojom::ScreenshotPtr> screenshots,
       base::OnceCallback<void(bool accepted)> dialog_accepted_callback);
 
@@ -67,11 +72,7 @@ class AppInstallDialog : public SystemWebDialogDelegate {
   AppInstallDialog();
   ~AppInstallDialog() override;
 
-  void OnIconDownloaded(int icon_width,
-                        bool is_icon_maskable,
-                        const gfx::Image& icon);
-
-  void OnLoadIcon(apps::IconValuePtr icon_value);
+  void OnAppIconLoaded(apps::IconValuePtr icon_value);
 
   void Show(gfx::NativeWindow parent, AppInstallDialogArgs dialog_args);
 
@@ -86,7 +87,7 @@ class AppInstallDialog : public SystemWebDialogDelegate {
   gfx::NativeWindow parent_;
   std::unique_ptr<views::NativeWindowTracker> parent_window_tracker_;
   AppInfoArgs app_info_args_;
-  std::unique_ptr<apps::AlmanacIconCache> icon_cache_;
+  std::unique_ptr<apps::AlmanacAppIconLoader> icon_loader_;
 
   base::WeakPtrFactory<AppInstallDialog> weak_factory_{this};
 };
