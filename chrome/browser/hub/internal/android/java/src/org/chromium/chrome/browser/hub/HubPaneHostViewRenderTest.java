@@ -72,6 +72,18 @@ public class HubPaneHostViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void test() throws Exception {
+        testImpl("base_color");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testAlternativeFabColor() throws Exception {
+        HubFieldTrial.ALTERNATIVE_FAB_COLOR.setForTesting(true);
+        testImpl("alternative_color");
+    }
+
+    private void testImpl(String prefix) throws Exception {
         DisplayButtonData displayButtonData =
                 new ResourceButtonData(
                         R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add);
@@ -85,30 +97,31 @@ public class HubPaneHostViewRenderTest {
                     mPropertyModel.set(PANE_ROOT_VIEW, rootView);
                     mPropertyModel.set(ACTION_BUTTON_DATA, enabledButtonData);
                 });
-        mRenderTestRule.render(mPaneHost, "defaultButton");
+        mRenderTestRule.render(mPaneHost, prefix + "_defaultButton");
 
         FullButtonData disabledButtonData = new DelegateButtonData(displayButtonData, () -> {});
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mPropertyModel.set(ACTION_BUTTON_DATA, disabledButtonData));
-        mRenderTestRule.render(mPaneHost, "disabledButton");
+        mRenderTestRule.render(mPaneHost, prefix + "_disabledButton");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPropertyModel.set(COLOR_SCHEME, HubColorScheme.INCOGNITO);
                     mPropertyModel.set(ACTION_BUTTON_DATA, enabledButtonData);
                 });
-        mRenderTestRule.render(mPaneHost, "incognitoButton");
+        mRenderTestRule.render(mPaneHost, prefix + "_incognitoButton");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mPropertyModel.set(ACTION_BUTTON_DATA, disabledButtonData));
-        mRenderTestRule.render(mPaneHost, "disabledIncognitoButton");
+        mRenderTestRule.render(mPaneHost, prefix + "_disabledIncognitoButton");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mPropertyModel.set(HAIRLINE_VISIBILITY, false);
                     mPropertyModel.set(PANE_ROOT_VIEW, null);
                     mPropertyModel.set(ACTION_BUTTON_DATA, null);
                 });
-        mRenderTestRule.render(mPaneHost, "null");
+        mRenderTestRule.render(mPaneHost, prefix + "_null");
     }
 
     private View solidColorView(@ColorInt int color) {
