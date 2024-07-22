@@ -164,6 +164,12 @@ bool NameValuePairsParser::ParseNameValuePairsFromTool(
                              /*debug_source=*/command.GetProgram().value());
 }
 
+bool NameValuePairsParser::ParseNameValuePairsFromString(
+    const std::string& input,
+    NameValuePairsFormat format) {
+  return ParseNameValuePairs(input, format, /*debug_source=*/"");
+}
+
 void NameValuePairsParser::DeletePairsWithValue(const std::string& value) {
   auto it = map_->begin();
   while (it != map_->end()) {
