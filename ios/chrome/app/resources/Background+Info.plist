@@ -10,6 +10,7 @@
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>chrome.feed.refresh</string>
+		<string>chrome.app.refresh</string>
 	</array>
 </dict>
 </plist>
