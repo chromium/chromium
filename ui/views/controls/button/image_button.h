@@ -180,6 +180,8 @@ class VIEWS_EXPORT ToggleImageButton : public ImageButton {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
 
+  void UpdateAccessibleRoleIfNeeded();
+
  private:
   // The parent class's images_ member is used for the current images,
   // and this array is used to hold the alternative images.
