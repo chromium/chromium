@@ -416,13 +416,8 @@ void MLContext::dispatch(ScriptState* script_state,
     return;
   }
 
-  if (device_type_ == V8MLDeviceType::Enum::kGpu) {
-    return graph->Dispatch(std::move(scoped_trace), inputs, outputs,
-                           exception_state);
-  }
-
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Not implemented");
+  return graph->Dispatch(std::move(scoped_trace), inputs, outputs,
+                         exception_state);
 }
 
 }  // namespace blink

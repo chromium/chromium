@@ -127,8 +127,14 @@ component("webnn_service") {
 
   if (webnn_use_tflite) {
     sources += [
+      "tflite/buffer_content.cc",
+      "tflite/buffer_content.h",
       "tflite/buffer_impl_tflite.cc",
       "tflite/buffer_impl_tflite.h",
+      "tflite/buffer_state.cc",
+      "tflite/buffer_state.h",
+      "tflite/buffer_task.cc",
+      "tflite/buffer_task.h",
     ]
 
     if (is_chromeos) {
@@ -150,21 +156,19 @@ component("webnn_service") {
         "tflite/op_resolver.h",
       ]
 
-      deps += [
-        "//third_party/tflite",
-        "//third_party/tflite:buildflags",
-        "//third_party/tflite:tflite_builtin_op_resolver",
-      ]
-
-      if (build_tflite_with_xnnpack) {
-        deps += [ "//third_party/xnnpack" ]
-      }
+      deps += [ "//third_party/tflite:tflite_builtin_op_resolver" ]
     }
 
     deps += [
       ":tflite_graph_builder",
       "//components/ml/mojom",
+      "//third_party/tflite",
+      "//third_party/tflite:buildflags",
     ]
+
+    if (build_tflite_with_xnnpack) {
+      deps += [ "//third_party/xnnpack" ]
+    }
   }
 
   defines = [ "IS_WEBNN_SERVICE_IMPL" ]
