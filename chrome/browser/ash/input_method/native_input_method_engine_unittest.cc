@@ -432,7 +432,13 @@ TEST_F(NativeInputMethodEngineTest,
 TEST_F(NativeInputMethodEngineTest, TogglesImeServiceWhenAutocorrectChanges) {
   TestingProfile testing_profile;
   SetEmptyPrefs(testing_profile);
-  EnableDefaultFeatureListWithMultiwordDisabled();
+
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kAutocorrectByDefault,
+                             features::kAssistMultiWord});
+
   testing::StrictMock<MockInputMethod> mock_input_method;
   InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
