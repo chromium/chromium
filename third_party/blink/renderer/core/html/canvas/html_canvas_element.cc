@@ -971,7 +971,8 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
 void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
                                       const PhysicalRect& r) {
   context_->PaintRenderingResultsToCanvas(kFrontBuffer);
-  if (ResourceProvider() != nullptr) {
+  CanvasResourceProvider* provider = ResourceProvider();
+  if (provider != nullptr) {
     // For 2D Canvas, there are two ways of render Canvas for printing:
     // display list or image snapshot. Display list allows better PDF printing
     // and we prefer this method.
@@ -988,12 +989,6 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
     // That test should be run manually against CLs that touch this code.
     if (IsPrinting() && IsRenderingContext2D() && canvas2d_bridge_) {
       FlushRecording(FlushReason::kPrinting);
-      CanvasResourceProvider* provider = ResourceProvider();
-      // The provider must be checked after calling `FlushRecording` in case
-      // the playback crashed the context.
-      if (provider == nullptr) {
-        return;
-      }
       // `FlushRecording` might be a no-op if a flush already happened before.
       // Fortunately, the last flush recording was kept by the provider.
       const std::optional<cc::PaintRecord>& last_recording =
