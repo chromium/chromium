@@ -141,6 +141,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             "settings_sync_disabled_by_administrator";
 
     @VisibleForTesting
+    public static final String PREF_BATCH_UPLOAD_CARD_PREFERENCE = "batch_upload_card";
+
+    @VisibleForTesting
     public static final String PREF_ACCOUNT_SECTION_HISTORY_TOGGLE =
             "account_section_history_toggle";
 
@@ -264,6 +267,13 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                     (IdentityErrorCardPreference)
                             findPreference(PREF_IDENTITY_ERROR_CARD_PREFERENCE);
             identityErrorCardPreference.initialize(profile, this);
+
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS)) {
+                BatchUploadCardPreference batchUploadCardPreference =
+                        (BatchUploadCardPreference)
+                                findPreference(PREF_BATCH_UPLOAD_CARD_PREFERENCE);
+                batchUploadCardPreference.initialize(profile);
+            }
 
             if (mSyncService.isSyncDisabledByEnterprisePolicy()) {
                 ChromeBasePreference settingsSyncDisabledByAdministrator =
