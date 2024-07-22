@@ -5566,9 +5566,14 @@
           'shards': 12,
         },
       },
+      'android-14-arm64-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter',
+        ],
+      },
       'android-14-x64-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.webview_instrumentation_test_apk.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter',
         ],
         'swarming': {
           'shards': 12,
@@ -5617,6 +5622,11 @@
         'swarming': {
           'shards': 13, # crbug.com/1294924
         },
+      },
+      'android-tablet-14-arm64-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter',
+        ],
       },
       # Keep this same as android-oreo-x86-rel above
       'android-x86-code-coverage': {
