@@ -50,6 +50,8 @@ namespace {
 const char kDismissedTabsPrefName[] =
     "NewTabPage.MostRelevantTabResumption.DismissedTabs";
 
+constexpr int kOneMinuteInSeconds = 60;
+
 std::u16string FormatRelativeTime(const base::Time& time) {
   // Return a time like "1 hour ago", "2 days ago", etc.
   base::Time now = base::Time::Now();
@@ -60,7 +62,8 @@ std::u16string FormatRelativeTime(const base::Time& time) {
 }
 
 // Helper method to create mojom tab objects from Tab objects.
-history::mojom::TabPtr TabToMojom(const URLVisitAggregate::Tab& tab) {
+history::mojom::TabPtr TabToMojom(const URLVisitAggregate::Tab& tab,
+                                  base::Time last_active = base::Time()) {
   auto tab_mojom = history::mojom::Tab::New();
   tab_mojom->device_type =
       history::mojom::DeviceType(static_cast<int>(tab.visit.device_type));
@@ -70,18 +73,21 @@ history::mojom::TabPtr TabToMojom(const URLVisitAggregate::Tab& tab) {
   NewTabUI::SetUrlTitleAndDirection(&dictionary, tab.visit.title,
                                     tab.visit.url);
   tab_mojom->title = *dictionary.FindString("title");
-
   tab_mojom->decorator = history::mojom::Decorator(0);
-  base::TimeDelta relative_time = base::Time::Now() - tab.visit.last_modified;
+
+  // TODO(crbug.com/349542284): Rely uniquely on `last_active` time as the
+  // `last_visited` time once the aforementioned issue is resolved.
+  auto last_visited = std::max(last_active, tab.visit.last_modified);
+  base::TimeDelta relative_time = base::Time::Now() - last_visited;
   tab_mojom->relative_time = relative_time;
-  if (relative_time.InSeconds() < 60) {
+  if (relative_time.InSeconds() < kOneMinuteInSeconds) {
     tab_mojom->relative_time_text = l10n_util::GetStringUTF8(
         IDS_NTP_MODULES_TAB_RESUMPTION_RECENTLY_OPENED);
   } else {
     tab_mojom->relative_time_text =
-        base::UTF16ToUTF8(FormatRelativeTime(tab.visit.last_modified));
+        base::UTF16ToUTF8(FormatRelativeTime(last_visited));
   }
-  tab_mojom->timestamp = tab.visit.last_modified;
+  tab_mojom->timestamp = last_visited;
 
   return tab_mojom;
 }
@@ -102,7 +108,7 @@ history::mojom::TabPtr HistoryEntryVisitToMojom(
   base::TimeDelta relative_time =
       base::Time::Now() - visit.url_row.last_visit();
   tab_mojom->relative_time = relative_time;
-  if (relative_time.InSeconds() < 60) {
+  if (relative_time.InSeconds() < kOneMinuteInSeconds) {
     tab_mojom->relative_time_text = l10n_util::GetStringUTF8(
         IDS_NTP_MODULES_TAB_RESUMPTION_RECENTLY_OPENED);
   } else {
@@ -317,10 +323,11 @@ void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
                                 status);
   std::vector<history::mojom::TabPtr> tabs_mojom;
   for (const auto& url_visit_aggregate : url_visit_aggregates) {
-    const URLVisitAggregate::Tab* tab =
-        visited_url_ranking::GetTabIfExists(url_visit_aggregate);
-    if (tab) {
-      auto tab_mojom = TabToMojom(*tab);
+    const URLVisitAggregate::TabData* tab_data =
+        GetTabDataIfExists(url_visit_aggregate);
+    if (tab_data) {
+      const URLVisitAggregate::Tab* tab = &tab_data->last_active_tab;
+      auto tab_mojom = TabToMojom(*tab, tab_data->last_active);
       tab_mojom->url = **url_visit_aggregate.GetAssociatedURLs().begin();
       tab_mojom->url_key = url_visit_aggregate.url_key;
       tab_mojom->training_request_id =

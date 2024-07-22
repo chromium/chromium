@@ -207,6 +207,21 @@ scoped_refptr<InputContext> AsInputContext(
   return input_context;
 }
 
+const URLVisitAggregate::TabData* GetTabDataIfExists(
+    const URLVisitAggregate& url_visit_aggregate) {
+  const auto& fetcher_data_map = url_visit_aggregate.fetcher_data_map;
+  for (const auto& fetcher : {Fetcher::kTabModel, Fetcher::kSession}) {
+    if (fetcher_data_map.find(fetcher) != fetcher_data_map.end()) {
+      const URLVisitAggregate::TabData* tab_data =
+          std::get_if<URLVisitAggregate::TabData>(
+              &fetcher_data_map.at(fetcher));
+      return tab_data;
+    }
+  }
+
+  return nullptr;
+}
+
 const URLVisitAggregate::Tab* GetTabIfExists(
     const URLVisitAggregate& url_visit_aggregate) {
   const auto& fetcher_data_map = url_visit_aggregate.fetcher_data_map;

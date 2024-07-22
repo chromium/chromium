@@ -43,11 +43,15 @@ scoped_refptr<segmentation_platform::InputContext> AsInputContext(
     const std::array<FieldSchema, kNumInputs>& fields_schema,
     const URLVisitAggregate& url_visit_aggregate);
 
-// Returns a tab if it exists for a URLVisitAggregate.
+// Returns tab data if it exists for a `URLVisitAggregate`.
+const URLVisitAggregate::TabData* GetTabDataIfExists(
+    const URLVisitAggregate& url_visit_aggregate);
+
+// Returns a tab if it exists for a `URLVisitAggregate`.
 const URLVisitAggregate::Tab* GetTabIfExists(
     const URLVisitAggregate& url_visit_aggregate);
 
-// Returns a history entry if it exists for a URLVisitAggregate.
+// Returns a history entry if it exists for a `URLVisitAggregate`.
 const history::AnnotatedVisit* GetHistoryEntryVisitIfExists(
     const URLVisitAggregate& url_visit_aggregate);
 
