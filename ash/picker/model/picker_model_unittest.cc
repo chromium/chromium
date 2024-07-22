@@ -158,7 +158,7 @@ TEST(PickerModel, GetModeForNoSelectionState) {
 TEST(PickerModel, GetModeForSelectionState) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
-  client.SetTextAndSelection(u"abcd", gfx::Range(1, 3));
+  client.SetTextAndSelection(u"abcd efgh", gfx::Range(1, 5));
 
   PickerModel model(&client, &fake_ime_keyboard,
                     PickerModel::EditorStatus::kEnabled);
@@ -203,6 +203,17 @@ TEST(PickerModel, GifsDisabledWhenPrefIsFalse) {
                     PickerModel::EditorStatus::kEnabled);
 
   EXPECT_FALSE(model.IsGifsEnabled(&prefs));
+}
+
+TEST(PickerModel, GetModeForBlankStringsSelectionState) {
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
+  client.SetTextAndSelection(u"  \n \t\ra", gfx::Range(0, 5));
+
+  PickerModel model(&client, &fake_ime_keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+
+  EXPECT_EQ(model.GetMode(), PickerModeType::kNoSelection);
 }
 
 }  // namespace

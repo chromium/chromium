@@ -8,6 +8,8 @@ component("cpp") {
   defines = [ "IS_EDITOR_MENU_PUBLIC_CPP_IMPL" ]
 
   sources = [
+    "editor_helpers.cc",
+    "editor_helpers.h",
     "icon.cc",
     "icon.h",
     "preset_text_query.cc",
@@ -16,8 +18,21 @@ component("cpp") {
 
   deps = [
     "//base",
+    "//chromeos/constants:constants",
     "//chromeos/ui/vector_icons",
     "//components/vector_icons",
     "//ui/gfx",
+    "//ui/gfx/range",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":cpp",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+  sources = [ "editor_helpers_unittest.cc" ]
 }

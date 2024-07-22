@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/input_method/editor_helpers.h"
+
 #include <string>
 
 #include "base/containers/contains.h"
@@ -17,29 +19,6 @@ namespace {
 constexpr auto kAllowedLanguagesForShowingL10nStrings =
     base::MakeFixedFlatSet<std::string_view>({"de", "en", "en-GB", "fr", "ja"});
 
-constexpr auto striped_symbols =
-    base::MakeFixedFlatSet<char>({' ', '\t', '\n', '.', ','});
-
-}
-
-size_t NonWhitespaceAndSymbolsLength(const std::u16string& text,
-                                     gfx::Range selection_range) {
-  size_t start = selection_range.start();
-  size_t end = selection_range.end();
-  if (start >= end || end > text.length()) {
-    return 0;
-  }
-
-  while (start < end && (striped_symbols.contains(text[start]) ||
-                         striped_symbols.contains(text[end - 1]))) {
-    if (striped_symbols.contains(text[start])) {
-      start++;
-    } else {
-      end--;
-    }
-  }
-
-  return end - start;
 }
 
 std::string GetSystemLocale() {
