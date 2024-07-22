@@ -1525,7 +1525,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 
   // The expected events for this are:
   // 1.  Update print settings, which fails.  No print job is created.
-  SetNumExpectedMessages(/*num=*/1);
+  // 2.  An error dialog is displayed.
+  SetNumExpectedMessages(/*num=*/2);
 
   // Since the preview is loaded before initiating the Print, the error
   // is displayed in the preview and the dialog remains open.
@@ -1533,6 +1534,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   ASSERT_TRUE(preview_dialog);
 
   EXPECT_EQ(update_print_settings_result(), mojom::ResultCode::kFailed);
+  EXPECT_EQ(error_dialog_shown_count(), 1u);
 
   // Need to close the dialog to ensure proper cleanup is done before
   // sanity checks at test termination.  This posts to UI thread to close,
@@ -1542,7 +1544,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
-                       UpdatePrintSettingsFailsErrorDialog) {
+                       PrintWithPreviewBeforeLoadedUpdatePrintSettingsFails) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForFailInUpdatePrinterSettings();
@@ -1558,9 +1560,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 
   // The expected events for this are:
   // 1.  Update print settings, which fails.  No print job is created.
-  // TODO(crbug.com/40286396):  Update expectations once an error dialog is
-  // shown to the user after this failure.
-  SetNumExpectedMessages(/*num=*/1);
+  // 2.  An error dialog is displayed.
+  SetNumExpectedMessages(/*num=*/2);
   PrintAfterPreviewIsReadyAndMaybeLoaded(PrintParams(),
                                          /*wait_for_loaded=*/false);
 
@@ -1575,9 +1576,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   EXPECT_EQ(update_print_settings_result(), mojom::ResultCode::kFailed);
 
   // Initiating printing before the document is ready hides the Print Preview
-  // dialog.  No error is shown to the user when this happens.
-  // TODO(crbug.com/40286396):  Update once an error message is shown.
-  EXPECT_EQ(error_dialog_shown_count(), 0u);
+  // dialog.  An error dialog should get shown to notify the user.
+  EXPECT_EQ(error_dialog_shown_count(), 1u);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -2252,14 +2252,13 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   // are:
   // 1.  Update the print settings, which fails.  No further printing calls
   //     are made.  No print job is created because of such an early failure.
-  SetNumExpectedMessages(/*num=*/1);
+  // 2.  An error dialog is displayed.
+  SetNumExpectedMessages(/*num=*/2);
 
   SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
 
   EXPECT_EQ(update_print_settings_result(), mojom::ResultCode::kFailed);
-  // TODO(crbug.com/40286396):  Update once an error dialog is shown for this
-  // failure to print.
-  EXPECT_EQ(error_dialog_shown_count(), 0u);
+  EXPECT_EQ(error_dialog_shown_count(), 1u);
 }
 
 // This test is Windows-only because of Print Preview behavior in
@@ -2294,14 +2293,13 @@ IN_PROC_BROWSER_TEST_P(
   // are:
   // 1.  Update the print settings, which fails.  No further printing calls
   //     are made.  No print job is created because of such an early failure.
-  // 2.  Print Preview UI is done.
-  SetNumExpectedMessages(/*num=*/2);
+  // 2.  An error dialog is displayed.
+  // 3.  Print Preview UI is done.
+  SetNumExpectedMessages(/*num=*/3);
   SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
 
   EXPECT_EQ(update_print_settings_result(), mojom::ResultCode::kFailed);
-  // TODO(crbug.com/40286396):  Update once an error dialog is shown for this
-  // failure to print.
-  EXPECT_EQ(error_dialog_shown_count(), 0u);
+  EXPECT_EQ(error_dialog_shown_count(), 1u);
 
   // Reset before initiating another Print Preview.
   PrepareRunloop();
@@ -2316,13 +2314,12 @@ IN_PROC_BROWSER_TEST_P(
   // The expected events for this are:
   // 1.  Update the print settings, which fails.  No further printing calls
   //     are made.  No print job is created because of such an early failure.
-  SetNumExpectedMessages(/*num=*/1);
+  // 2.  An error dialog is displayed.
+  SetNumExpectedMessages(/*num=*/2);
   PrintAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(update_print_settings_result(), mojom::ResultCode::kFailed);
-  // TODO(crbug.com/40286396):  Update once an error dialog is shown for this
-  // failure to print.
-  EXPECT_EQ(error_dialog_shown_count(), 0u);
+  EXPECT_EQ(error_dialog_shown_count(), 2u);
 }
 
 // This test is Windows-only, since it is the only platform which can invoke
