@@ -58,7 +58,8 @@ const mojom::GraphicsTablet kGraphicsTablet2 = mojom::GraphicsTablet(
     /*graphics_tablet_button_config=*/
     mojom::GraphicsTabletButtonConfig::kNoConfig,
     mojom::GraphicsTabletSettings::New(),
-    mojom::BatteryInfo::New());
+    mojom::BatteryInfo::New(),
+    mojom::CompanionAppInfo::New());
 
 int GetPrefNotificationCount(const char* pref_name) {
   PrefService* prefs =

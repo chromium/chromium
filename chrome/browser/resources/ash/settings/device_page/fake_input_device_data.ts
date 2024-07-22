@@ -55,6 +55,7 @@ export const fakeKeyboards: Keyboard[] = [
       chargeState: ChargeState.kCharging,
       batteryPercentage: 10,
     },
+    appInfo: null,
   },
   {
     id: 1,
@@ -82,6 +83,7 @@ export const fakeKeyboards: Keyboard[] = [
       chargeState: ChargeState.kCharging,
       batteryPercentage: 10,
     },
+    appInfo: null,
     topRowActionKeys: [
       TopRowActionKey.kBack,
       TopRowActionKey.kForward,
@@ -134,6 +136,7 @@ export const fakeKeyboards: Keyboard[] = [
       chargeState: ChargeState.kCharging,
       batteryPercentage: 10,
     },
+    appInfo: null,
   },
   {
     id: 9,
@@ -183,6 +186,7 @@ export const fakeKeyboards: Keyboard[] = [
       chargeState: ChargeState.kCharging,
       batteryPercentage: 10,
     },
+    appInfo: null,
   },
   {
     id: 17,
@@ -227,6 +231,7 @@ export const fakeKeyboards: Keyboard[] = [
       chargeState: ChargeState.kCharging,
       batteryPercentage: 10,
     },
+    appInfo: null,
   },
 ];
 
@@ -272,6 +277,7 @@ export const fakeKeyboards2: Keyboard[] = [
       chargeState: ChargeState.kCharging,
       batteryPercentage: 10,
     },
+    appInfo: null,
   },
   {
     id: 10,
@@ -311,6 +317,7 @@ export const fakeKeyboards2: Keyboard[] = [
       chargeState: ChargeState.kCharging,
       batteryPercentage: 10,
     },
+    appInfo: null,
   },
 ];
 
@@ -338,6 +345,7 @@ export const fakeTouchpads: Touchpad[] = [
       chargeState: ChargeState.kCharging,
       batteryPercentage: 10,
     },
+    appInfo: null,
   },
   {
     id: 3,
@@ -362,6 +370,7 @@ export const fakeTouchpads: Touchpad[] = [
       chargeState: ChargeState.kCharging,
       batteryPercentage: 10,
     },
+    appInfo: null,
   },
 ];
 
@@ -389,6 +398,7 @@ export const fakeTouchpads2: Touchpad[] = [
       chargeState: ChargeState.kCharging,
       batteryPercentage: 10,
     },
+    appInfo: null,
   },
 ];
 
@@ -666,6 +676,7 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
     },
     graphicsTabletButtonConfig: GraphicsTabletButtonConfig.kNoConfig,
     batteryInfo: null,
+    appInfo: null,
     customizationRestriction: CustomizationRestriction.kAllowCustomizations,
   },
   {
@@ -729,6 +740,7 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
     graphicsTabletButtonConfig:
         GraphicsTabletButtonConfig.kWacomStandardFourButtons,
     batteryInfo: null,
+    appInfo: null,
     customizationRestriction: CustomizationRestriction.kAllowCustomizations,
   },
 ];
@@ -776,6 +788,7 @@ export const fakeGraphicsTablets2: GraphicsTablet[] = [
     graphicsTabletButtonConfig:
         GraphicsTabletButtonConfig.kWacomStandardFourButtons,
     batteryInfo: null,
+    appInfo: null,
     customizationRestriction: CustomizationRestriction.kAllowCustomizations,
   },
 ];

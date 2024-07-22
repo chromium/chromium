@@ -142,6 +142,12 @@ class InputDeviceSettingsProvider
       const ::ash::mojom::Touchpad& touchpad) override;
   void OnMouseCompanionAppInfoChanged(
       const ::ash::mojom::Mouse& mouse) override;
+  void OnKeyboardCompanionAppInfoChanged(
+      const ::ash::mojom::Keyboard& keyboard) override;
+  void OnTouchpadCompanionAppInfoChanged(
+      const ::ash::mojom::Touchpad& touchpad) override;
+  void OnGraphicsTabletCompanionAppInfoChanged(
+      const ::ash::mojom::GraphicsTablet& graphics_tablet) override;
 
   void StartObserving(uint32_t device_id) override;
   void StopObserving() override;

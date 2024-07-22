@@ -607,6 +607,24 @@ void InputDeviceSettingsProvider::OnMouseCompanionAppInfoChanged(
   NotifyMiceUpdated();
 }
 
+void InputDeviceSettingsProvider::OnKeyboardCompanionAppInfoChanged(
+    const ::ash::mojom::Keyboard& keyboard) {
+  CHECK(features::IsWelcomeExperienceEnabled());
+  NotifyKeyboardsUpdated();
+}
+
+void InputDeviceSettingsProvider::OnTouchpadCompanionAppInfoChanged(
+    const ::ash::mojom::Touchpad& touchpad) {
+  CHECK(features::IsWelcomeExperienceEnabled());
+  NotifyTouchpadsUpdated();
+}
+
+void InputDeviceSettingsProvider::OnGraphicsTabletCompanionAppInfoChanged(
+    const ::ash::mojom::GraphicsTablet& graphics_tablet) {
+  CHECK(features::IsWelcomeExperienceEnabled());
+  NotifyGraphicsTabletUpdated();
+}
+
 void InputDeviceSettingsProvider::OnKeyboardConnected(
     const ::ash::mojom::Keyboard& keyboard) {
   NotifyKeyboardsUpdated();

@@ -2489,7 +2489,6 @@ void InputDeviceSettingsControllerImpl::OnAppRegistryCacheWillBeDestroyed(
   app_registry_cache_observer_.Reset();
 }
 
-// TODO(b/329686601): Implement for other input device types.
 void InputDeviceSettingsControllerImpl::OnAppUpdate(
     const apps::AppUpdate& update) {
   auto package_id = update.InstallerPackageId().has_value()
@@ -2500,13 +2499,33 @@ void InputDeviceSettingsControllerImpl::OnAppUpdate(
     return;
   }
 
-  if (auto* mouse = FindMouse(it->second); mouse != nullptr) {
-    auto updated_app_info = mojo::Clone(mouse->app_info);
-    updated_app_info->state = apps_util::IsInstalled(update.Readiness())
-                                  ? mojom::CompanionAppState::kInstalled
-                                  : mojom::CompanionAppState::kAvailable;
-    mouse->app_info = std::move(updated_app_info);
+  auto state = apps_util::IsInstalled(update.Readiness())
+                   ? mojom::CompanionAppState::kInstalled
+                   : mojom::CompanionAppState::kAvailable;
+
+  auto id = it->second;
+  if (auto* mouse = FindMouse(id); mouse != nullptr) {
+    mouse->app_info->state = state;
     DispatchMouseCompanionAppInfoChanged(*mouse);
+    return;
+  }
+
+  if (auto* keyboard = FindKeyboard(id); keyboard != nullptr) {
+    keyboard->app_info->state = state;
+    DispatchKeyboardCompanionAppInfoChanged(*keyboard);
+    return;
+  }
+
+  if (auto* touchpad = FindTouchpad(id); touchpad != nullptr) {
+    touchpad->app_info->state = state;
+    DispatchTouchpadCompanionAppInfoChanged(*touchpad);
+    return;
+  }
+
+  if (auto* graphics_tablet = FindGraphicsTablet(id);
+      graphics_tablet != nullptr) {
+    graphics_tablet->app_info->state = state;
+    DispatchGraphicsTabletCompanionAppInfoChanged(*graphics_tablet);
     return;
   }
 }
@@ -2811,28 +2830,74 @@ void InputDeviceSettingsControllerImpl::DispatchMouseCompanionAppInfoChanged(
   }
 }
 
+void InputDeviceSettingsControllerImpl::DispatchKeyboardCompanionAppInfoChanged(
+    const mojom::Keyboard& keyboard) {
+  CHECK(features::IsWelcomeExperienceEnabled());
+  for (auto& observer : observers_) {
+    observer.OnKeyboardCompanionAppInfoChanged(keyboard);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::DispatchTouchpadCompanionAppInfoChanged(
+    const mojom::Touchpad& touchpad) {
+  CHECK(features::IsWelcomeExperienceEnabled());
+  for (auto& observer : observers_) {
+    observer.OnTouchpadCompanionAppInfoChanged(touchpad);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::
+    DispatchGraphicsTabletCompanionAppInfoChanged(
+        const mojom::GraphicsTablet& graphics_tablet) {
+  CHECK(features::IsWelcomeExperienceEnabled());
+  for (auto& observer : observers_) {
+    observer.OnGraphicsTabletCompanionAppInfoChanged(graphics_tablet);
+  }
+}
+
 void InputDeviceSettingsControllerImpl::SetPeripheralsAppDelegate(
     PeripheralsAppDelegate* delegate) {
   delegate_ = delegate;
   RefreshCompanionAppInfoForConnectedDevices();
 }
 
-// TODO(b/329686601): Implement for other input device types.
 void InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived(
     DeviceId id,
     const std::optional<mojom::CompanionAppInfo>& info) {
-  if (!info || !info.has_value()) {
+  if (!info) {
     return;
   }
 
   if (auto* mouse = FindMouse(id); mouse != nullptr) {
-    mouse->app_info = info.value().Clone();
+    mouse->app_info = info->Clone();
     package_id_to_device_id_map_[mouse->app_info->package_id] = id;
     DispatchMouseCompanionAppInfoChanged(*mouse);
+    return;
+  }
+
+  if (auto* keyboard = FindKeyboard(id); keyboard != nullptr) {
+    keyboard->app_info = info->Clone();
+    package_id_to_device_id_map_[keyboard->app_info->package_id] = id;
+    DispatchKeyboardCompanionAppInfoChanged(*keyboard);
+    return;
+  }
+
+  if (auto* touchpad = FindTouchpad(id); touchpad != nullptr) {
+    touchpad->app_info = info->Clone();
+    package_id_to_device_id_map_[touchpad->app_info->package_id] = id;
+    DispatchTouchpadCompanionAppInfoChanged(*touchpad);
+    return;
+  }
+
+  if (auto* graphics_tablet = FindGraphicsTablet(id);
+      graphics_tablet != nullptr) {
+    graphics_tablet->app_info = info->Clone();
+    package_id_to_device_id_map_[graphics_tablet->app_info->package_id] = id;
+    DispatchGraphicsTabletCompanionAppInfoChanged(*graphics_tablet);
+    return;
   }
 }
 
-// TODO(b/329686601): Implement for other input device types.
 void InputDeviceSettingsControllerImpl::
     RefreshCompanionAppInfoForConnectedDevices() {
   if (!delegate_ || !active_pref_service_) {
@@ -2845,6 +2910,36 @@ void InputDeviceSettingsControllerImpl::
     }
     delegate_->GetCompanionAppInfo(
         mouse->device_key,
+        base::BindOnce(
+            &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
+            weak_ptr_factory_.GetWeakPtr(), id));
+  }
+
+  for (const auto& [id, touchpad] : touchpads_) {
+    if (!touchpad->is_external) {
+      continue;
+    }
+    delegate_->GetCompanionAppInfo(
+        touchpad->device_key,
+        base::BindOnce(
+            &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
+            weak_ptr_factory_.GetWeakPtr(), id));
+  }
+
+  for (const auto& [id, keyboard] : keyboards_) {
+    if (!keyboard->is_external) {
+      continue;
+    }
+    delegate_->GetCompanionAppInfo(
+        keyboard->device_key,
+        base::BindOnce(
+            &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
+            weak_ptr_factory_.GetWeakPtr(), id));
+  }
+
+  for (const auto& [id, graphics_tablet] : graphics_tablets_) {
+    delegate_->GetCompanionAppInfo(
+        graphics_tablet->device_key,
         base::BindOnce(
             &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
             weak_ptr_factory_.GetWeakPtr(), id));
