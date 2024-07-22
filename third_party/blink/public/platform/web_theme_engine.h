@@ -275,14 +275,12 @@ class WebThemeEngine {
   virtual bool IsFluentScrollbarEnabled() const { return false; }
   virtual bool IsFluentOverlayScrollbarEnabled() const { return false; }
   virtual int GetPaintedScrollbarTrackInset() const { return 0; }
-  virtual gfx::Insets GetScrollbarSolidColorThumbInsets(Part) const {
-    return gfx::Insets();
-  }
   // Returns the color the thumb should be painted in based on the state and
-  // extra params. This is called only if the theme uses solid color thumbs.
-  virtual SkColor4f GetScrollbarThumbColor(State,
-                                           const ExtraParams*,
-                                           const ui::ColorProvider*) const {
+  // extra params.
+  virtual SkColor4f GetFluentScrollbarThumbColor(
+      State,
+      const ExtraParams*,
+      const ui::ColorProvider*) const {
     NOTREACHED_NORETURN();
   }
 

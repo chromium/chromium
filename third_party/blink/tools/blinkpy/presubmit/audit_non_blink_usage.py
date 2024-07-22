@@ -1133,7 +1133,6 @@ _CONFIG = [
             'third_party/blink/public/',
         ],
         'allowed': [
-            'gfx::Insets',
             'gfx::Point',
             'gfx::PointF',
             'gfx::Rect',
@@ -1776,7 +1775,7 @@ _CONFIG = [
             'third_party/blink/public/platform/web_theme_engine.h',
             'third_party/blink/renderer/core/layout/layout_theme.cc',
             'third_party/blink/renderer/core/layout/layout_theme.h',
-            'third_party/blink/renderer/core/scroll/scrollbar_theme_aura.cc',
+            'third_party/blink/renderer/core/scroll/scrollbar_theme_fluent.cc',
         ],
         'allowed': ['ui::ColorProvider'],
     },

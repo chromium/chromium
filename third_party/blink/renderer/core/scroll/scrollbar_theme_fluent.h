@@ -28,6 +28,9 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
   bool UsesOverlayScrollbars() const override;
   bool UsesFluentScrollbars() const override;
   bool UsesFluentOverlayScrollbars() const override;
+  void PaintTrackAndButtons(GraphicsContext& context,
+                            const Scrollbar&,
+                            const gfx::Rect&) override;
   // When scrollbars are main threaded the thumb size returned by ThumbRect()
   // is the expanded thumb size. This function shrinks the thumb and displaces
   // it to be near the correct Edge of the scrollable area.
@@ -36,7 +39,10 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
       const gfx::Rect& rect) const override;
 
   bool UsesSolidColorThumb() const override { return true; }
+  SkColor4f ThumbColor(const Scrollbar&) const override;
   bool UsesNinePatchTrackAndButtonsResource() const override;
+  gfx::Rect NinePatchTrackAndButtonsAperture(const Scrollbar&) const override;
+  gfx::Size NinePatchTrackAndButtonsCanvasSize(const Scrollbar&) const override;
 
  protected:
   ScrollbarThemeFluent();

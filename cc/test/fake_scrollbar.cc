@@ -132,10 +132,6 @@ bool FakeScrollbar::UsesSolidColorThumb() const {
   return uses_solid_color_thumb_;
 }
 
-gfx::Insets FakeScrollbar::SolidColorThumbInsets() const {
-  return gfx::Insets();
-}
-
 bool FakeScrollbar::UsesNinePatchTrackAndButtonsResource() const {
   return uses_nine_patch_track_and_buttons_resource_;
 }

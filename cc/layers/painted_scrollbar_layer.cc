@@ -163,13 +163,10 @@ bool PaintedScrollbarLayer::UpdateThumbAndTrackGeometry() {
                             &forward_button_rect_.Write(*this));
   updated |= UpdateProperty(scrollbar->HasThumb(), &has_thumb_.Write(*this));
   if (has_thumb_.Read(*this)) {
-    gfx::Rect thumb_rect = scrollbar->ThumbRect();
-    if (uses_solid_color_thumb_) {
-      thumb_rect.Inset(scrollbar->SolidColorThumbInsets());
-    }
     // Ignore ThumbRect's location because the PaintedScrollbarLayerImpl will
     // compute it from scroll offset.
-    updated |= UpdateProperty(thumb_rect.size(), &thumb_size_.Write(*this));
+    updated |= UpdateProperty(scrollbar->ThumbRect().size(),
+                              &thumb_size_.Write(*this));
   } else {
     updated |= UpdateProperty(gfx::Size(), &thumb_size_.Write(*this));
   }

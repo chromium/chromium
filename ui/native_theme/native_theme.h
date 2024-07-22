@@ -33,7 +33,6 @@ class PaintCanvas;
 }
 
 namespace gfx {
-class Insets;
 class Rect;
 class Size;
 }
@@ -384,14 +383,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
                                 State state,
                                 const ExtraParams& extra) const = 0;
   virtual int GetPaintedScrollbarTrackInset() const;
-
-  virtual gfx::Insets GetScrollbarSolidColorThumbInsets(Part part) const;
-
-  // Called if the theme uses solid color for scrollbar thumb.
-  virtual SkColor4f GetScrollbarThumbColor(
-      const ui::ColorProvider& color_provider,
-      State state,
-      const ScrollbarThumbExtraParams& extra_params) const;
 
   virtual float GetBorderRadiusForPart(Part part,
                                        float width,

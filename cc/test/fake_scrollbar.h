@@ -47,7 +47,6 @@ class FakeScrollbar : public Scrollbar {
   gfx::Size NinePatchThumbCanvasSize() const override;
   gfx::Rect NinePatchThumbAperture() const override;
   bool UsesSolidColorThumb() const override;
-  gfx::Insets SolidColorThumbInsets() const override;
   bool UsesNinePatchTrackAndButtonsResource() const override;
   gfx::Size NinePatchTrackAndButtonsCanvasSize() const override;
   gfx::Rect NinePatchTrackAndButtonsAperture() const override;

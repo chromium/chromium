@@ -81,12 +81,6 @@ class StubWebThemeEngine : public WebThemeEngine {
     return painted_color_scheme_[part];
   }
 
-  SkColor4f GetScrollbarThumbColor(State,
-                                   const ExtraParams*,
-                                   const ui::ColorProvider*) const override {
-    return SkColors::kRed;
-  }
-
  private:
   std::array<mojom::blink::ColorScheme, kPartProgressBar + 1>
       painted_color_scheme_;
