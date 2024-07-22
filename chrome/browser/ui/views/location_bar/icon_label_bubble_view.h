@@ -42,6 +42,13 @@ class IconLabelBubbleView : public views::InkDropObserver,
  public:
   static constexpr int kTrailingPaddingPreMd = 2;
 
+  // Determines when the icon label background should be visible.
+  enum class BackgroundVisibility {
+    kNever,
+    kWithLabel,
+    kAlways,
+  };
+
   // TODO(tluk): These should be updated to return ColorIds instead of raw
   // SkColors.
   class Delegate {
@@ -97,9 +104,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // Returns true when the label should be visible.
   virtual bool ShouldShowLabel() const;
 
-  // Call to have the icon label paint over a solid background when the label
-  // text is shown.
-  void SetPaintLabelOverSolidBackground(bool paint_label_over_solid_background);
+  void SetBackgroundVisibility(BackgroundVisibility background_visibility);
 
   void SetLabel(const std::u16string& label);
   void SetLabel(const std::u16string& label,
@@ -303,11 +308,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // icon). Set before animation begins in AnimateIn().
   int grow_animation_starting_width_ = 0;
 
-  // Controls whether the icon label should be painted over a solid background
-  // when the label text is showing.
-  // TODO(tluk): Remove the opt-in after UX has conslusively decided how icon
-  // labels should be painted when the label text is shown.
-  bool paint_label_over_solid_background_ = false;
+  // Controls when the icon label background should be visible.
+  // TODO(tluk): Remove the kWithLabel opt-in after UX has conslusively decided
+  // how icon labels should be painted when the label text is shown.
+  BackgroundVisibility background_visibility_ = BackgroundVisibility::kNever;
 
   // Whether the tonal color should be used when the icon is expanded to show
   // the label.

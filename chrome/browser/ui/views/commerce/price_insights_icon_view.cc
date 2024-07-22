@@ -126,7 +126,7 @@ void PriceInsightsIconView::UpdatePriceInsightsIconLabel() {
     SetLabel(u"", l10n_util::GetStringUTF16(
                       IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT));
   }
-  SetPaintLabelOverSolidBackground(true);
+  SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
 }
 
 void PriceInsightsIconView::AnimationProgressed(

@@ -211,9 +211,9 @@ bool IconLabelBubbleView::ShouldShowLabel() const {
   return label()->GetVisible() && !label()->GetText().empty();
 }
 
-void IconLabelBubbleView::SetPaintLabelOverSolidBackground(
-    bool paint_label_over_solid_background) {
-  paint_label_over_solid_background_ = paint_label_over_solid_background;
+void IconLabelBubbleView::SetBackgroundVisibility(
+    BackgroundVisibility background_visibility) {
+  background_visibility_ = background_visibility;
   UpdateBackground();
 }
 
@@ -733,7 +733,9 @@ SkPath IconLabelBubbleView::GetHighlightPath() const {
 bool IconLabelBubbleView::PaintedOnSolidBackground() const {
   // If the label is showing we must ensure the icon label is painted over a
   // solid background.
-  return (paint_label_over_solid_background_ && ShouldShowLabel()) ||
+  return (background_visibility_ == BackgroundVisibility::kAlways) ||
+         ((background_visibility_ == BackgroundVisibility::kWithLabel) &&
+          ShouldShowLabel()) ||
          background_color_id_.has_value();
 }
 

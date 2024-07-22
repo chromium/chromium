@@ -419,16 +419,17 @@ TEST_F(IconLabelBubbleViewTest,
   EXPECT_TRUE(view()->IsLabelVisible());
 }
 
-TEST_F(IconLabelBubbleViewTest, LabelPaintsOverSolidBackgroundWhenNecessary) {
+TEST_F(IconLabelBubbleViewTest, LabelPaintsBackgroundWithLabel) {
   view()->ResetSlideAnimation(false);
 
   // Initially no background should be present.
   EXPECT_FALSE(view()->IsLabelVisible());
   EXPECT_EQ(nullptr, view()->GetBackground());
 
-  // Set the view to paint its label over a solid background. There should still
-  // be no background present as the label will not be visible.
-  view()->SetPaintLabelOverSolidBackground(true);
+  // Set the view to paint its background when a label is showing. There should
+  // still be no background present as the label will not be visible.
+  view()->SetBackgroundVisibility(
+      IconLabelBubbleView::BackgroundVisibility::kWithLabel);
   EXPECT_FALSE(view()->IsLabelVisible());
   EXPECT_EQ(nullptr, view()->GetBackground());
 
@@ -445,7 +446,39 @@ TEST_F(IconLabelBubbleViewTest, LabelPaintsOverSolidBackgroundWhenNecessary) {
 
   // Disable painting over a background. The background should no longer be
   // present when it animates in.
-  view()->SetPaintLabelOverSolidBackground(false);
+  view()->SetBackgroundVisibility(
+      IconLabelBubbleView::BackgroundVisibility::kNever);
+  view()->AnimateIn(IDS_AUTOFILL_CARD_SAVED);
+  EXPECT_TRUE(view()->IsLabelVisible());
+  EXPECT_EQ(nullptr, view()->GetBackground());
+}
+
+TEST_F(IconLabelBubbleViewTest, LabelPaintsBackgroundAlways) {
+  view()->ResetSlideAnimation(false);
+
+  // Initially no background should be present.
+  EXPECT_FALSE(view()->IsLabelVisible());
+  EXPECT_EQ(nullptr, view()->GetBackground());
+
+  // Set the view to always paint its background. From this point onwards, as
+  // the label animation changes, the background should always be set.
+  view()->SetBackgroundVisibility(
+      IconLabelBubbleView::BackgroundVisibility::kAlways);
+  EXPECT_FALSE(view()->IsLabelVisible());
+  EXPECT_NE(nullptr, view()->GetBackground());
+
+  view()->AnimateIn(IDS_AUTOFILL_CARD_SAVED);
+  EXPECT_TRUE(view()->IsLabelVisible());
+  EXPECT_NE(nullptr, view()->GetBackground());
+
+  view()->ResetSlideAnimation(false);
+  EXPECT_FALSE(view()->IsLabelVisible());
+  EXPECT_NE(nullptr, view()->GetBackground());
+
+  // Disable painting over a background. The background should no longer be
+  // present.
+  view()->SetBackgroundVisibility(
+      IconLabelBubbleView::BackgroundVisibility::kNever);
   view()->AnimateIn(IDS_AUTOFILL_CARD_SAVED);
   EXPECT_TRUE(view()->IsLabelVisible());
   EXPECT_EQ(nullptr, view()->GetBackground());

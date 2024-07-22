@@ -264,7 +264,7 @@ void PriceTrackingIconView::SetVisualState(bool enable) {
 
     SetLabel(l10n_util::GetStringUTF16(enable ? IDS_OMNIBOX_TRACKING_PRICE
                                               : IDS_OMNIBOX_TRACK_PRICE));
-    SetPaintLabelOverSolidBackground(true);
+    SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
     UpdateIconImage();
 }
 

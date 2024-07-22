@@ -49,7 +49,7 @@ SideSearchIconView::SideSearchIconView(
   SetVisible(false);
   SetLabel(l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_ENTRYPOINT_LABEL));
   SetUpForInOutAnimation();
-  SetPaintLabelOverSolidBackground(true);
+  SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
   browser_->tab_strip_model()->AddObserver(this);
   GetViewAccessibility().SetProperties(
       /*role*/ std::nullopt,
