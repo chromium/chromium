@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fetch/multipart_parser.h"
 
 #include <string.h>
@@ -83,8 +78,11 @@ TEST(MultipartParserTest, AppendDataInChunks) {
     MultipartParser* parser =
         MakeGarbageCollected<MultipartParser>(boundary, client);
 
-    for (size_t i = 0u, length = strlen(kBytes); i < length; i += size)
-      EXPECT_TRUE(parser->AppendData(kBytes + i, std::min(size, length - i)));
+    auto bytes = base::span_from_cstring(kBytes);
+    for (size_t i = 0u; i < bytes.size(); i += size) {
+      auto fragment = bytes.subspan(i, std::min(size, bytes.size() - i));
+      EXPECT_TRUE(parser->AppendData(fragment.data(), fragment.size()));
+    }
     EXPECT_TRUE(parser->Finish()) << " size=" << size;
     EXPECT_EQ(4u, client->NumberOfParts()) << " size=" << size;
     EXPECT_EQ(0u, client->GetPart(0).header_fields.size());
@@ -236,7 +234,8 @@ TEST(MultipartParserTest, Preamble) {
     MultipartParser* parser =
         MakeGarbageCollected<MultipartParser>(boundary, client);
 
-    EXPECT_TRUE(parser->AppendData(kBytes + start, strlen(kBytes + start)));
+    auto bytes = base::span_from_cstring(kBytes).subspan(start);
+    EXPECT_TRUE(parser->AppendData(bytes.data(), bytes.size()));
     EXPECT_TRUE(parser->Finish());
     switch (start) {
       case 9u:
@@ -297,8 +296,9 @@ TEST(MultipartParserTest, PreambleWithMalformedBoundary) {
     MultipartParser* parser =
         MakeGarbageCollected<MultipartParser>(boundary, client);
 
-    EXPECT_TRUE(parser->AppendData(kBytes + start,
-                                   strlen(kBytes + start)));  // Valid preamble.
+    auto bytes = base::span_from_cstring(kBytes).subspan(start);
+    EXPECT_TRUE(parser->AppendData(bytes.data(),
+                                   bytes.size()));            // Valid preamble.
     EXPECT_FALSE(parser->Finish());                           // No parts.
     EXPECT_EQ(0u, client->NumberOfParts());
   }
