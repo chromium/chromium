@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -206,7 +207,7 @@ void SystemLogsFetcher::MergeAshAndLacrosCrashReportIdsInReponse() {
   // with key defined by kAllCrashReportIdsKey, i.e. all_crash_report_ids.
   auto ash_all_crash_iter =
       response_->find(feedback::FeedbackReport::kAllCrashReportIdsKey);
-  DCHECK(ash_all_crash_iter != response_->end());
+  CHECK(ash_all_crash_iter != response_->end(), base::NotFatalUntil::M130);
   std::string ash_all_crash_report_ids = ash_all_crash_iter->second;
 
   std::string lacros_all_crash_report_ids;
