@@ -28,11 +28,10 @@
 #include "base/trace_event/traced_value.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/subresource_filter/content/shared/browser/ruleset_publisher_impl.h"
+#include "components/subresource_filter/content/shared/browser/ruleset_publisher.h"
 #include "components/subresource_filter/content/shared/browser/unindexed_ruleset_stream_generator.h"
 #include "components/subresource_filter/core/browser/copying_file_stream.h"
 #include "components/subresource_filter/core/browser/ruleset_config.h"
-#include "components/subresource_filter/core/browser/ruleset_publisher.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/common_features.h"
@@ -173,7 +172,8 @@ decltype(&base::ReplaceFile) RulesetService::g_replace_file_func =
 std::unique_ptr<RulesetService> RulesetService::Create(
     const RulesetConfig& config,
     PrefService* local_state,
-    const base::FilePath& user_data_dir) {
+    const base::FilePath& user_data_dir,
+    const RulesetPublisher::Factory& publisher_factory) {
   // Runner for tasks critical for user experience.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -191,8 +191,9 @@ std::unique_ptr<RulesetService> RulesetService::Create(
           .Append(kIndexedRulesetBaseDirectoryName);
 
   return std::make_unique<RulesetService>(
-      config, local_state, background_task_runner, indexed_ruleset_base_dir,
-      blocking_task_runner);
+      config, local_state, std::move(background_task_runner),
+      indexed_ruleset_base_dir, std::move(blocking_task_runner),
+      publisher_factory);
 }
 
 RulesetService::RulesetService(
@@ -201,7 +202,7 @@ RulesetService::RulesetService(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const base::FilePath& indexed_ruleset_base_dir,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-    std::unique_ptr<RulesetPublisher> publisher)
+    const RulesetPublisher::Factory& publisher_factory)
     : config_(config),
       local_state_(local_state),
       background_task_runner_(std::move(background_task_runner)),
@@ -210,9 +211,7 @@ RulesetService::RulesetService(
   CHECK_NE(local_state_->GetInitializationStatus(),
            PrefService::INITIALIZATION_STATUS_WAITING,
            base::NotFatalUntil::M129);
-  publisher_ = publisher ? std::move(publisher)
-                         : std::make_unique<RulesetPublisherImpl>(
-                               this, blocking_task_runner);
+  publisher_ = publisher_factory.Create(this, std::move(blocking_task_runner));
   IndexedRulesetVersion most_recently_indexed_version(config.filter_tag);
   most_recently_indexed_version.ReadFromPrefs(local_state_);
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("loading"),

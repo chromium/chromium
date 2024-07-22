@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/shared/browser/ruleset_publisher_impl.h"
+#include "components/subresource_filter/content/shared/browser/ruleset_publisher.h"
 
 #include <stddef.h>
 
@@ -36,6 +36,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace content {
+class RenderProcessHost;
+} // namespace content
+
 namespace subresource_filter {
 
 namespace {
@@ -63,15 +67,15 @@ std::string ReadFileContentsToString(base::File* file) {
 
 }  // namespace
 
-class SubresourceFilterRulesetPublisherImplTest : public ::testing::Test {
+class SubresourceFilterRulesetPublisherTest : public ::testing::Test {
  public:
-  SubresourceFilterRulesetPublisherImplTest()
+  SubresourceFilterRulesetPublisherTest()
       : existing_renderer_(&browser_context_, nullptr) {}
 
-  SubresourceFilterRulesetPublisherImplTest(
-      const SubresourceFilterRulesetPublisherImplTest&) = delete;
-  SubresourceFilterRulesetPublisherImplTest& operator=(
-      const SubresourceFilterRulesetPublisherImplTest&) = delete;
+  SubresourceFilterRulesetPublisherTest(
+      const SubresourceFilterRulesetPublisherTest&) = delete;
+  SubresourceFilterRulesetPublisherTest& operator=(
+      const SubresourceFilterRulesetPublisherTest&) = delete;
 
  protected:
   void SetUp() override { ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir()); }
@@ -100,11 +104,31 @@ class SubresourceFilterRulesetPublisherImplTest : public ::testing::Test {
   NotifyingMockRenderProcessHost existing_renderer_;
 };
 
-class MockRulesetPublisherImpl : public RulesetPublisherImpl {
+class MockRulesetPublisher : public RulesetPublisher {
  public:
   template <typename... Args>
-  explicit MockRulesetPublisherImpl(Args&&... args)
-      : RulesetPublisherImpl(std::forward<Args>(args)...) {}
+  explicit MockRulesetPublisher(Args&&... args)
+      : RulesetPublisher(std::forward<Args>(args)...) {}
+
+  class Factory : public RulesetPublisher::Factory {
+   public:
+    Factory(std::unique_ptr<MockRulesetPublisher> publisher)
+        : publisher_(std::move(publisher)) {}
+
+    std::unique_ptr<RulesetPublisher> Create(
+        RulesetService* ruleset_service,
+        scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
+        const override {
+      // Intentionally ignore the parameters.
+      CHECK(publisher_);
+      return std::unique_ptr<MockRulesetPublisher>(std::move(publisher_));
+    }
+
+   private:
+    // Mutable to allow modification in the Factory's `Create()` function.
+    mutable std::unique_ptr<MockRulesetPublisher> publisher_;
+  };
+
   void SendRulesetToRenderProcess(
       base::File* file,
       content::RenderProcessHost* process) override {
@@ -126,16 +150,17 @@ class MockRulesetPublisherImpl : public RulesetPublisherImpl {
   std::map<content::RenderProcessHost*, base::File*> last_file_;
 };
 
-TEST_F(SubresourceFilterRulesetPublisherImplTest, NoRuleset_NoIPCMessages) {
+TEST_F(SubresourceFilterRulesetPublisherTest, NoRuleset_NoIPCMessages) {
   NotifyingMockRenderProcessHost existing_renderer(browser_context(), nullptr);
-  MockRulesetPublisherImpl service(
-      nullptr, base::SingleThreadTaskRunner::GetCurrentDefault());
+  MockRulesetPublisher service(
+      nullptr,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   NotifyingMockRenderProcessHost new_renderer(browser_context(), &service);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, service.RulesetSent());
 }
 
-TEST_F(SubresourceFilterRulesetPublisherImplTest,
+TEST_F(SubresourceFilterRulesetPublisherTest,
        PublishedRuleset_IsDistributedToExistingAndNewRenderers) {
   const char kTestFileContents[] = "foobar";
   base::WriteFile(scoped_temp_file(), kTestFileContents);
@@ -148,8 +173,9 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest,
 
   NotifyingMockRenderProcessHost existing_renderer(browser_context(), nullptr);
   MockClosureTarget publish_callback_target;
-  MockRulesetPublisherImpl service(
-      nullptr, base::SingleThreadTaskRunner::GetCurrentDefault());
+  MockRulesetPublisher service(
+      nullptr,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   service.SetRulesetPublishedCallbackForTesting(base::BindOnce(
       &MockClosureTarget::Call, base::Unretained(&publish_callback_target)));
 
@@ -170,7 +196,7 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest,
       service.RulesetFileForProcess(&second_renderer), kTestFileContents));
 }
 
-TEST_F(SubresourceFilterRulesetPublisherImplTest,
+TEST_F(SubresourceFilterRulesetPublisherTest,
        PublishesRulesetInOnePostTask) {
   // Regression test for crbug.com/817308. Test verifies that ruleset is
   // published on browser startup via exactly one PostTask.
@@ -211,7 +237,7 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest,
   NotifyingMockRenderProcessHost renderer_host(browser_context(), nullptr);
   base::RunLoop callback_waiter;
   auto content_service =
-      std::make_unique<MockRulesetPublisherImpl>(nullptr, blocking_task_runner);
+      std::make_unique<MockRulesetPublisher>(nullptr, blocking_task_runner);
   content_service->SetRulesetPublishedCallbackForTesting(
       callback_waiter.QuitClosure());
   auto* mock_publisher = content_service.get();
@@ -221,7 +247,8 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest,
   ASSERT_EQ(0u, blocking_task_runner->NumPendingTasks());
   auto service = std::make_unique<RulesetService>(
       kSafeBrowsingRulesetConfig, &prefs, background_task_runner, base_dir,
-      nullptr, std::move(content_service));
+      blocking_task_runner,
+      MockRulesetPublisher::Factory(std::move(content_service)));
 
   // The key test assertion is that ruleset data is published via exactly one
   // post task on |blocking_task_runner|. It is important to run pending tasks
@@ -238,7 +265,7 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest,
       mock_publisher->RulesetFileForProcess(&renderer_host), expected_data));
 
   //
-  // |RulesetPublisherImpl| destruction requires additional tricks. Its member
+  // |RulesetPublisher| destruction requires additional tricks. Its member
   // |VerifiedRulesetDealer::Handle| posts task upon destruction on
   // |blocking_task_runner|.
   service.reset();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/shared/browser/ruleset_publisher_impl.h"
+#include "components/subresource_filter/content/shared/browser/ruleset_publisher.h"
 
 #include <utility>
 
@@ -24,10 +24,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "ipc/ipc_channel_proxy.h"
-
 namespace subresource_filter {
 
-RulesetPublisherImpl::RulesetPublisherImpl(
+RulesetPublisher::RulesetPublisher(
     RulesetService* ruleset_service,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
     : ruleset_service_(ruleset_service),
@@ -39,14 +38,14 @@ RulesetPublisherImpl::RulesetPublisherImpl(
         base::NotFatalUntil::M129);
 }
 
-RulesetPublisherImpl::~RulesetPublisherImpl() = default;
+RulesetPublisher::~RulesetPublisher() = default;
 
-void RulesetPublisherImpl::SetRulesetPublishedCallbackForTesting(
+void RulesetPublisher::SetRulesetPublishedCallbackForTesting(
     base::OnceClosure callback) {
   ruleset_published_callback_ = std::move(callback);
 }
 
-void RulesetPublisherImpl::TryOpenAndSetRulesetFile(
+void RulesetPublisher::TryOpenAndSetRulesetFile(
     const base::FilePath& file_path,
     int expected_checksum,
     base::OnceCallback<void(RulesetFilePtr)> callback) {
@@ -54,7 +53,7 @@ void RulesetPublisherImpl::TryOpenAndSetRulesetFile(
                                                std::move(callback));
 }
 
-void RulesetPublisherImpl::PublishNewRulesetVersion(
+void RulesetPublisher::PublishNewRulesetVersion(
     RulesetFilePtr ruleset_data) {
   CHECK(ruleset_data, base::NotFatalUntil::M129);
   CHECK(ruleset_data->IsValid(), base::NotFatalUntil::M129);
@@ -79,40 +78,26 @@ void RulesetPublisherImpl::PublishNewRulesetVersion(
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
-RulesetPublisherImpl::BestEffortTaskRunner() {
+RulesetPublisher::BestEffortTaskRunner() {
   return best_effort_task_runner_;
 }
 
-VerifiedRulesetDealer::Handle* RulesetPublisherImpl::GetRulesetDealer() {
+VerifiedRulesetDealer::Handle* RulesetPublisher::GetRulesetDealer() {
   return ruleset_dealer_.get();
 }
 
-void RulesetPublisherImpl::IndexAndStoreAndPublishRulesetIfNeeded(
+void RulesetPublisher::IndexAndStoreAndPublishRulesetIfNeeded(
     const UnindexedRulesetInfo& unindexed_ruleset_info) {
   CHECK(ruleset_service_, base::NotFatalUntil::M129);
   ruleset_service_->IndexAndStoreAndPublishRulesetIfNeeded(
       unindexed_ruleset_info);
 }
 
-void RulesetPublisherImpl::OnRenderProcessHostCreated(
+void RulesetPublisher::OnRenderProcessHostCreated(
     content::RenderProcessHost* rph) {
   if (!ruleset_data_ || !ruleset_data_->IsValid())
     return;
   SendRulesetToRenderProcess(ruleset_data_.get(), rph);
-}
-
-void RulesetPublisherImpl::SendRulesetToRenderProcess(
-    base::File* file,
-    content::RenderProcessHost* rph) {
-  CHECK(rph, base::NotFatalUntil::M129);
-  CHECK(file, base::NotFatalUntil::M129);
-  CHECK(file->IsValid(), base::NotFatalUntil::M129);
-  if (!rph->GetChannel())
-    return;
-  mojo::AssociatedRemote<mojom::SubresourceFilterRulesetObserver>
-      subresource_filter;
-  rph->GetChannel()->GetRemoteAssociatedInterface(&subresource_filter);
-  subresource_filter->SetRulesetForProcess(file->Duplicate());
 }
 
 }  // namespace subresource_filter

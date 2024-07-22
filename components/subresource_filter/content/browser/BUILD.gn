@@ -26,6 +26,8 @@ static_library("browser") {
     "safe_browsing_child_navigation_throttle.h",
     "safe_browsing_page_activation_throttle.cc",
     "safe_browsing_page_activation_throttle.h",
+    "safe_browsing_ruleset_publisher.cc",
+    "safe_browsing_ruleset_publisher.h",
     "subresource_filter_content_settings_manager.cc",
     "subresource_filter_content_settings_manager.h",
     "subresource_filter_observer.h",

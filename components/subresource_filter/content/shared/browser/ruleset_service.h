@@ -44,8 +44,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/version.h"
+#include "components/subresource_filter/content/shared/browser/ruleset_publisher.h"
 #include "components/subresource_filter/core/browser/ruleset_config.h"
-#include "components/subresource_filter/core/browser/ruleset_publisher.h"
 #include "components/subresource_filter/core/browser/ruleset_version.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 
@@ -147,7 +147,8 @@ class RulesetService {
   static std::unique_ptr<RulesetService> Create(
       const RulesetConfig& config,
       PrefService* local_state,
-      const base::FilePath& user_data_dir);
+      const base::FilePath& user_data_dir,
+      const RulesetPublisher::Factory& publisher_factory);
 
   // Creates a new instance of a ruleset This is then assigned to a
   // RulesetPublisher that calls Initialize for this ruleset service.  Starts
@@ -161,8 +162,7 @@ class RulesetService {
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const base::FilePath& indexed_ruleset_base_dir,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-      // Note: Optional publisher parameter used exclusively for testing.
-      std::unique_ptr<RulesetPublisher> publisher = nullptr);
+      const RulesetPublisher::Factory& publisher_factory);
 
   RulesetService(const RulesetService&) = delete;
   RulesetService& operator=(const RulesetService&) = delete;
@@ -198,9 +198,9 @@ class RulesetService {
   friend class SubresourceFilteringRulesetServiceTest;
   friend class SubresourceFilterBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(
-      SubresourceFilterRulesetPublisherImplTest,
+      SubresourceFilterRulesetPublisherTest,
       PublishedRuleset_IsDistributedToExistingAndNewRenderers);
-  FRIEND_TEST_ALL_PREFIXES(SubresourceFilterRulesetPublisherImplTest,
+  FRIEND_TEST_ALL_PREFIXES(SubresourceFilterRulesetPublisherTest,
                            PublishesRulesetInOnePostTask);
   FRIEND_TEST_ALL_PREFIXES(SubresourceFilteringRulesetServiceTest,
                            NewRuleset_WriteFailure);
