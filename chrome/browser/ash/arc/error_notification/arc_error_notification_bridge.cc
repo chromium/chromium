@@ -69,16 +69,24 @@ class ErrorNotificationDelegate : public message_center::NotificationDelegate {
  public:
   explicit ErrorNotificationDelegate(
       base::WeakPtr<ArcErrorNotificationBridge> bridge,
-      mojo::PendingRemote<mojom::ErrorNotificationActionHandler> action_handler)
-      : bridge_(bridge), action_handler_(std::move(action_handler)) {}
+      mojo::PendingRemote<mojom::ErrorNotificationActionHandler> action_handler,
+      std::string notification_id)
+      : bridge_(bridge),
+        action_handler_(std::move(action_handler)),
+        notification_id_(notification_id) {}
 
   void Click(const std::optional<int>& button_index,
              const std::optional<std::u16string>& reply) override {
     if (button_index && bridge_ && action_handler_) {
       action_handler_->OnNotificationButtonClicked(
           static_cast<uint32_t>(button_index.value()));
+      bridge_->CloseNotification(notification_id_);
+    }
+  }
 
-      // TODO(b/332459217): close notification.
+  void Close(bool by_user) override {
+    if (bridge_ && action_handler_) {
+      action_handler_->OnNotificationClosed();
     }
   }
 
@@ -88,6 +96,7 @@ class ErrorNotificationDelegate : public message_center::NotificationDelegate {
  private:
   base::WeakPtr<ArcErrorNotificationBridge> bridge_;
   mojo::Remote<mojom::ErrorNotificationActionHandler> action_handler_;
+  std::string notification_id_;
 };
 
 void ArcErrorNotificationBridge::SendErrorDetails(
@@ -101,16 +110,18 @@ void ArcErrorNotificationBridge::SendErrorDetails(
   }
 
   const std::string& name = details->name;
+  const std::string notification_id =
+      GenerateNotificationId(details->type, name);
 
   message_center::Notification notification = ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE /* type */,
-      GenerateNotificationId(details->type, name) /* id */,
+      message_center::NOTIFICATION_TYPE_SIMPLE /* type */, notification_id,
       base::UTF8ToUTF16(details->title.c_str()), u"" /* message */,
       base::UTF8ToUTF16(name.c_str()) /* display_source */,
       GURL() /* origin_url */, message_center::NotifierId(),
       message_center::RichNotificationData() /* optional_fields */,
       base::MakeRefCounted<ErrorNotificationDelegate>(
-          weak_ptr_factory_.GetWeakPtr(), std::move(action_handler)),
+          weak_ptr_factory_.GetWeakPtr(), std::move(action_handler),
+          notification_id),
       kErrorNotificationIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
 
@@ -126,7 +137,14 @@ void ArcErrorNotificationBridge::SendErrorDetails(
       NotificationHandler::Type::TRANSIENT, notification,
       nullptr /* metadata */);
 
-  std::move(callback).Run(ArcErrorNotificationItem::Create());
+  std::move(callback).Run(ArcErrorNotificationItem::Create(
+      weak_ptr_factory_.GetWeakPtr(), notification_id));
+}
+
+void ArcErrorNotificationBridge::CloseNotification(
+    const std::string& notification_id) {
+  NotificationDisplayService::GetForProfile(profile_)->Close(
+      NotificationHandler::Type::TRANSIENT, notification_id);
 }
 
 std::string ArcErrorNotificationBridge::GenerateNotificationId(
