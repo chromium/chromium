@@ -224,7 +224,7 @@ SavePackageFilePicker::SavePackageFilePicker(
         suggested_path_copy, &file_type_info, file_type_index,
         default_extension_copy,
         platform_util::GetTopLevel(web_contents->GetNativeView()),
-        /*params=*/nullptr, /*caller=*/
+        /*caller=*/
         web_contents
             ? &web_contents->GetPrimaryMainFrame()->GetLastCommittedURL()
             : nullptr);

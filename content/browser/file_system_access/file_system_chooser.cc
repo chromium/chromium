@@ -247,7 +247,6 @@ void FileSystemChooser::CreateAndShow(
       /*default_extension=*/base::FilePath::StringType(),
       web_contents ? web_contents->GetTopLevelNativeWindow()
                    : gfx::NativeWindow(),
-      /*params=*/nullptr,
       /*caller=*/
       web_contents ? &web_contents->GetPrimaryMainFrame()->GetLastCommittedURL()
                    : nullptr);

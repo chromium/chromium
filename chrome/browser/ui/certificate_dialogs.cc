@@ -76,8 +76,7 @@ std::string GetBase64String(const CRYPTO_BUFFER* cert) {
 void ShowCertSelectFileDialogFullExport(
     ui::SelectFileDialog* select_file_dialog,
     const base::FilePath& suggested_path,
-    gfx::NativeWindow parent,
-    void* params) {
+    gfx::NativeWindow parent) {
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.extensions = {
       {FILE_PATH_LITERAL("pem"), FILE_PATH_LITERAL("crt")}};
@@ -88,7 +87,7 @@ void ShowCertSelectFileDialogFullExport(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
       suggested_path, &file_type_info,
       1,  // 1-based index for |file_type_info.extensions| to specify default.
-      FILE_PATH_LITERAL("crt"), parent, params);
+      FILE_PATH_LITERAL("crt"), parent);
 }
 
 class Exporter : public ui::SelectFileDialog::Listener {
@@ -144,11 +143,11 @@ Exporter::Exporter(content::WebContents* web_contents,
 
   if (full_export_) {
     ShowCertSelectFileDialogFullExport(select_file_dialog_.get(),
-                                       suggested_path, parent, nullptr);
+                                       suggested_path, parent);
   } else {
     ShowCertSelectFileDialog(select_file_dialog_.get(),
                              ui::SelectFileDialog::SELECT_SAVEAS_FILE,
-                             suggested_path, parent, nullptr);
+                             suggested_path, parent);
   }
 }
 
@@ -224,8 +223,7 @@ std::string Exporter::GetCMSString(size_t start, size_t end) const {
 void ShowCertSelectFileDialog(ui::SelectFileDialog* select_file_dialog,
                               ui::SelectFileDialog::Type type,
                               const base::FilePath& suggested_path,
-                              gfx::NativeWindow parent,
-                              void* params) {
+                              gfx::NativeWindow parent) {
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.extensions.resize(kNumCertFileTypes);
   file_type_info.extensions[kBase64].push_back(FILE_PATH_LITERAL("pem"));
@@ -249,7 +247,7 @@ void ShowCertSelectFileDialog(ui::SelectFileDialog* select_file_dialog,
   select_file_dialog->SelectFile(
       type, std::u16string(), suggested_path, &file_type_info,
       1,  // 1-based index for |file_type_info.extensions| to specify default.
-      FILE_PATH_LITERAL("crt"), parent, params);
+      FILE_PATH_LITERAL("crt"), parent);
 }
 
 void ShowCertExportDialog(content::WebContents* web_contents,

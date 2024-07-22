@@ -726,10 +726,9 @@ void FileSelectHelper::RunFileChooserOnUIThread(
   const GURL* caller =
       &render_frame_host_->GetMainFrame()->GetLastCommittedURL();
 
-  select_file_dialog_->SelectFile(dialog_type_, params->title,
-                                  default_file_path, select_file_types_.get(),
-                                  file_type_index, base::FilePath::StringType(),
-                                  owning_window, nullptr, caller);
+  select_file_dialog_->SelectFile(
+      dialog_type_, params->title, default_file_path, select_file_types_.get(),
+      file_type_index, base::FilePath::StringType(), owning_window, caller);
 
   select_file_types_.reset();
 }

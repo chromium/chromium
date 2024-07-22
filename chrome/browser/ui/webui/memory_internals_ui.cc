@@ -252,7 +252,7 @@ void MemoryInternalsDOMHandler::HandleSaveDump(const base::Value::List&) {
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(), default_file,
       nullptr, 0, FILE_PATH_LITERAL(".json.gz"),
-      web_ui_->GetWebContents()->GetTopLevelNativeWindow(), nullptr);
+      web_ui_->GetWebContents()->GetTopLevelNativeWindow());
 #endif
 }
 

@@ -218,7 +218,7 @@ void MediaGalleriesPermissionController::DidClickAuxiliaryButton() {
       ui::SelectFileDialog::SELECT_FOLDER,
       l10n_util::GetStringUTF16(IDS_MEDIA_GALLERIES_DIALOG_ADD_GALLERY_TITLE),
       default_path, nullptr, 0, base::FilePath::StringType(),
-      web_contents_->GetTopLevelNativeWindow(), nullptr);
+      web_contents_->GetTopLevelNativeWindow());
 }
 
 void MediaGalleriesPermissionController::DidToggleEntry(

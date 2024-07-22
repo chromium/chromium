@@ -552,8 +552,7 @@ void WebRTCInternals::EnableAudioDebugRecordings(
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
       audio_debug_recordings_file_path_, nullptr, 0,
-      base::FilePath::StringType(), web_contents->GetTopLevelNativeWindow(),
-      nullptr);
+      base::FilePath::StringType(), web_contents->GetTopLevelNativeWindow());
 #endif
 }
 
@@ -607,7 +606,7 @@ void WebRTCInternals::EnableLocalEventLogRecordings(
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
       event_log_recordings_file_path_, nullptr, 0, FILE_PATH_LITERAL(""),
-      web_contents->GetTopLevelNativeWindow(), nullptr);
+      web_contents->GetTopLevelNativeWindow());
 #endif
 }
 

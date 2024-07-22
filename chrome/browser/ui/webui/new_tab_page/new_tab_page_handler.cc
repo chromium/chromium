@@ -667,8 +667,7 @@ void NewTabPageHandler::ChooseLocalCustomBackground(
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
       profile_->last_selected_directory(), &file_types, 0,
-      base::FilePath::StringType(), web_contents_->GetTopLevelNativeWindow(),
-      nullptr);
+      base::FilePath::StringType(), web_contents_->GetTopLevelNativeWindow());
 }
 
 void NewTabPageHandler::UpdatePromoData() {

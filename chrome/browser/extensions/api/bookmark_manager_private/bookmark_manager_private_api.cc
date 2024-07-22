@@ -753,9 +753,9 @@ void BookmarkManagerPrivateIOFunction::ShowSelectFileDialog(
   // |web_contents| can be nullptr (for background pages), which is fine. In
   // such a case if file-selection dialogs are forbidden by policy, we will not
   // show an InfoBar, which is better than letting one appear out of the blue.
-  select_file_dialog_->SelectFile(
-      type, std::u16string(), default_path, &file_type_info, 0,
-      base::FilePath::StringType(), owning_window, nullptr);
+  select_file_dialog_->SelectFile(type, std::u16string(), default_path,
+                                  &file_type_info, 0,
+                                  base::FilePath::StringType(), owning_window);
 }
 
 void BookmarkManagerPrivateIOFunction::FileSelectionCanceled() {

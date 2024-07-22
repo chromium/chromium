@@ -63,14 +63,9 @@ EntryPicker::EntryPicker(EntryPickerClient* client,
       platform_util::GetTopLevel(web_contents->GetNativeView()) :
       nullptr;
 
-  select_file_dialog_->SelectFile(picker_type,
-                                  select_title,
-                                  last_directory,
-                                  &info,
-                                  file_type_index,
-                                  base::FilePath::StringType(),
-                                  owning_window,
-                                  nullptr);
+  select_file_dialog_->SelectFile(picker_type, select_title, last_directory,
+                                  &info, file_type_index,
+                                  base::FilePath::StringType(), owning_window);
 }
 
 EntryPicker::~EntryPicker() {

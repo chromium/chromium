@@ -82,8 +82,7 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
     select_file_dialog_->SelectFile(
         ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
         default_filename, &file_type_info, 0, base::FilePath::StringType(),
-        platform_util::GetTopLevel(preview_web_contents_->GetNativeView()),
-        nullptr);
+        platform_util::GetTopLevel(preview_web_contents_->GetNativeView()));
   }
 
   bool save_failed_;

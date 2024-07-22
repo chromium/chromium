@@ -111,8 +111,7 @@ void FileChooserChromeOs::Core::Show() {
       /*file_types=*/&file_type_info,
       /*file_type_index=*/0,
       /*default_extension=*/base::FilePath::StringType(),
-      /*owning_window=*/ash_->GetSelectFileContainer(),
-      /*params=*/nullptr);
+      /*owning_window=*/ash_->GetSelectFileContainer());
 }
 
 std::unique_ptr<FileChooser> FileChooser::Create(

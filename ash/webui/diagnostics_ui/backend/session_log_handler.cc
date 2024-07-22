@@ -174,8 +174,7 @@ void SessionLogHandler::HandleSaveSessionLogRequest(
       /*default_path=*/base::FilePath(kDefaultSessionLogFileName),
       /*file_types=*/nullptr,
       /*file_type_index=*/0,
-      /*default_extension=*/base::FilePath::StringType(), owning_window,
-      /*params=*/nullptr);
+      /*default_extension=*/base::FilePath::StringType(), owning_window);
 }
 
 void SessionLogHandler::HandleInitialize(const base::Value::List& args) {

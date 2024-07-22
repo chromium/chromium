@@ -256,7 +256,7 @@ class BaseSelectFileDialogExtensionBrowserTest
         UseFileTypeFilter() ? &file_types : nullptr;
 
     dialog_->SelectFile(dialog_type, title, file_path, file_types_ptr, 0,
-                        FILE_PATH_LITERAL(""), owning_window, nullptr, caller);
+                        FILE_PATH_LITERAL(""), owning_window, caller);
     LOG(INFO) << "Waiting for JavaScript ready message.";
     ASSERT_TRUE(init_listener.WaitUntilSatisfied());
 
@@ -287,7 +287,7 @@ class BaseSelectFileDialogExtensionBrowserTest
         ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string() /* title */,
         base::FilePath() /* default_path */, nullptr /* file_types */,
         0 /* file_type_index */, FILE_PATH_LITERAL("") /* default_extension */,
-        owning_window, nullptr /* params */);
+        owning_window);
   }
 
   void ClickJsButton(content::RenderFrameHost* frame_host,

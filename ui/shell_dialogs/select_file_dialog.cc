@@ -130,9 +130,7 @@ void SelectFileDialog::SelectFile(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* params,
     const GURL* caller) {
-  CHECK(!params);
   DCHECK(listener_);
 
   if (select_file_policy_.get() &&

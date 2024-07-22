@@ -80,7 +80,7 @@ void UserImageFileSelector::SelectFile(
       ui::SelectFileDialog::SELECT_OPEN_FILE,
       l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DOWNLOADS_DIRECTORY_LABEL),
       downloads_path, &file_type_info, 0, FILE_PATH_LITERAL(""),
-      GetBrowserWindow(), nullptr);
+      GetBrowserWindow());
 }
 
 gfx::NativeWindow UserImageFileSelector::GetBrowserWindow() {
