@@ -1,21 +1,6 @@
-# ![Logo](chrome/app/theme/chromium/product_logo_64.png) Chromium
+# ![Logo](chrome/app/theme/chromium/product_logo_64.png) Murdermium 
 
-Chromium is an open-source browser project that aims to build a safer, faster,
-and more stable way for all users to experience the web.
+Murdermium is an Murder Mystery 2's Chromium fork for Windows 10 (Nese 10) or later versions. 
 
-The project's web site is https://www.chromium.org.
-
-To check out the source code locally, don't use `git clone`! Instead,
-follow [the instructions on how to get the code](docs/get_the_code.md).
-
-Documentation in the source is rooted in [docs/README.md](docs/README.md).
-
-Learn how to [Get Around the Chromium Source Code Directory
-Structure](https://www.chromium.org/developers/how-tos/getting-around-the-chrome-source-code).
-
-For historical reasons, there are some small top level directories. Now the
-guidance is that new top level directories are for product (e.g. Chrome,
-Android WebView, Ash). Even if these products have multiple executables, the
-code should be in subdirectories of the product.
-
-If you found a bug, please file it at https://crbug.com/new.
+# What's Murder Mystery 2?
+Murder Mystery 2 (MM2) is an roblox game (also includes Murder Mystery 2 film). Special for the most popular roblox game reasons, we're making Murder Mystery 2's Chromium fork browser
