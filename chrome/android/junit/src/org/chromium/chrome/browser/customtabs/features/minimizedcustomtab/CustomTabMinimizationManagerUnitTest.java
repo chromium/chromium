@@ -20,7 +20,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManager.KEY_CCT_MINIMIZATION_SYSTEM_TIME;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManager.KEY_IS_CCT_MINIMIZED;
-import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.TITLE;
 import static org.chromium.chrome.browser.tab.TabLoadIfNeededCaller.ON_ACTIVITY_SHOWN_THEN_SHOW;
 import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
 
@@ -28,6 +27,7 @@ import android.app.PictureInPictureParams;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -85,7 +85,7 @@ public class CustomTabMinimizationManagerUnitTest {
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     private static final String TITLE = "Google";
-    private static final String HOST = JUnitTestGURLs.GOOGLE_URL.getHost();
+    private static final String HOST = JUnitTestGURLs.SEARCH_URL.getHost();
 
     @Spy private AppCompatActivity mActivity;
     @Mock private ActivityTabProvider mTabProvider;
@@ -110,7 +110,7 @@ public class CustomTabMinimizationManagerUnitTest {
 
         CustomTabsConnection.setInstanceForTesting(mConnection);
         when(mTab.getWebContents()).thenReturn(mWebContents);
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
         when(mTab.getTitle()).thenReturn(TITLE);
         when(mTabProvider.hasValue()).thenReturn(true);
         when(mTabProvider.get()).thenReturn(mTab);
@@ -216,12 +216,27 @@ public class CustomTabMinimizationManagerUnitTest {
         // Simulate having a distiller URL in the tab.
         when(mTab.getUrl()).thenReturn(new GURL(distillerUrl));
         when(mDomDistillerUrlUtilsJni.isDistilledPage(distillerUrl)).thenReturn(true);
-        when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL);
+        when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
 
         mManager.minimize();
         mManager.accept(new PictureInPictureModeChangedInfo(true));
 
         assertEquals(HOST, ((TextView) mActivity.findViewById(R.id.url)).getText());
+    }
+
+    @Test
+    public void testAboutBlank() {
+        // Simulate having about:blank URL in the tab.
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.ABOUT_BLANK);
+        when(mTab.getTitle()).thenReturn("google.com");
+
+        mManager.minimize();
+        mManager.accept(new PictureInPictureModeChangedInfo(true));
+
+        assertEquals(View.GONE, mActivity.findViewById(R.id.title).getVisibility());
+        assertEquals(
+                JUnitTestGURLs.ABOUT_BLANK.getSpec(),
+                ((TextView) mActivity.findViewById(R.id.url)).getText());
     }
 
     @Test
