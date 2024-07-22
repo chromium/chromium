@@ -16403,27 +16403,6 @@
             ]
         }
     ],
-    "PlusAddressFallbackFromContextMenu": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PlusAddressFallbackFromContextMenu"
-                    ]
-                }
-            ]
-        }
-    ],
     "PlusAddressesExperiment": [
         {
             "platforms": [
@@ -16440,10 +16419,8 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PlusAddressAffiliations",
+                        "PlusAddressFallbackFromContextMenu",
                         "PlusAddressRefresh",
-                        "PlusAddressRefreshUiInAndroid",
-                        "PlusAddressRefreshUiInDesktopModal",
-                        "PlusAddressRefreshUiInIOS",
                         "PlusAddressesEnabled",
                         "SyncPlusAddress"
                     ]
