@@ -81,3 +81,7 @@ file://ash/system/OWNERS
 # New WebUI additions should be reviewed by WebUI PLATFORM_OWNERS to ensure
 # they follow the guidance at https://www.chromium.org/developers/webui
 file://ui/webui/PLATFORM_OWNERS
+
+# Core Views framework needs reviews from direct owners. Limits leakage of +1
+# from higher folder owners.
+file://ui/views/VIEWS_OWNERS
