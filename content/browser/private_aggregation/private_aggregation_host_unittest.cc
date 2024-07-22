@@ -1725,11 +1725,12 @@ TEST_F(PrivateAggregationHostTest,
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kDisabled);
 
-            // `request` should have report scheduled 1s ago.
-            CHECK_EQ(base::Time::Now() - base::Seconds(1),
-                     on_the_minute_start_time + base::Minutes(1));
+            // `request` should have report scheduled now (with some additional
+            // buffer for local processing).
+            CHECK_EQ(base::Time::Now(),
+                     on_the_minute_start_time + base::Seconds(61));
             EXPECT_EQ(request.shared_info().scheduled_report_time,
-                      on_the_minute_start_time + base::Minutes(1) +
+                      on_the_minute_start_time + base::Seconds(61) +
                           PrivateAggregationHost::kTimeForLocalProcessing);
 
             // The start time for budgeting should be based off the current

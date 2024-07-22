@@ -467,9 +467,16 @@ void PrivateAggregationHost::OnReceiverDisconnected() {
   RecordTimeoutResultHistogram(
       TimeoutResult::kOccurredAfterRemoteDisconnection);
 
+  // TODO(https://crbug.com/354124875) Add UMA histogram to measure the
+  // magnitude of negative `remaining_timeout` values. Also in
+  // `OnTimeoutBeforeDisconnect()`.
   base::TimeDelta remaining_timeout =
       current_context.timeout_timer->desired_run_time() -
       base::TimeTicks::Now();
+
+  if (remaining_timeout.is_negative()) {
+    remaining_timeout = base::TimeDelta();
+  }
 
   SendReportOnTimeoutOrDisconnect(current_context, remaining_timeout);
 }
@@ -477,6 +484,7 @@ void PrivateAggregationHost::OnReceiverDisconnected() {
 void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
     ReceiverContext& receiver_context,
     base::TimeDelta remaining_timeout) {
+  CHECK(!remaining_timeout.is_negative());
   base::ElapsedTimer timeout_or_disconnect_timer;
 
   const url::Origin& reporting_origin = receiver_context.worklet_origin;
