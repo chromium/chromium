@@ -2700,7 +2700,6 @@
         {
             "platforms": [
                 "android",
-                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
@@ -5479,6 +5478,26 @@
             ]
         }
     ],
+    "CombinedWebViewOptimizations": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AvoidResourceRequestCopies",
+                        "CreateSpareRendererOnBrowserContextCreation",
+                        "EnsureExistingRendererAlive",
+                        "LazyBindJsInjection",
+                        "SkipUnnecessaryThreadHopsForParseHeaders",
+                        "WebViewOptimizeXrwNavigationFlow"
+                    ]
+                }
+            ]
+        }
+    ],
     "CommerceHintAndroid": [
         {
             "platforms": [
@@ -6565,21 +6584,6 @@
                     "name": "Enabled_CrabbyAvif",
                     "enable_features": [
                         "CrabbyAvif"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CreateSpareRendererOnBrowserContextCreation": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CreateSpareRendererOnBrowserContextCreation"
                     ]
                 }
             ]
@@ -8800,7 +8804,6 @@
         {
             "platforms": [
                 "android",
-                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
@@ -12641,21 +12644,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "LayoutNGShapeCache"
-                    ]
-                }
-            ]
-        }
-    ],
-    "LazyBindJsInjection": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LazyBindJsInjection"
                     ]
                 }
             ]
@@ -21289,7 +21277,6 @@
         {
             "platforms": [
                 "android",
-                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
@@ -25574,21 +25561,6 @@
                     },
                     "enable_features": [
                         "MaskedDomainList"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebViewOptimizeXrwNavigationFlow": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebViewOptimizeXrwNavigationFlow"
                     ]
                 }
             ]
