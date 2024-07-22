@@ -19,6 +19,7 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_delegate_bridge.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
@@ -35,6 +36,7 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
 }  // namespace
 
 @interface LensResultPageMediator () <CRWWebStateDelegate,
+                                      CRWWebStateObserver,
                                       CRWWebStatePolicyDecider>
 
 @end
@@ -50,6 +52,8 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   BOOL _isIncognito;
   /// Web state delegate.
   std::unique_ptr<web::WebStateDelegateBridge> _webStateDelegateBridge;
+  /// Bridges C++ WebStateObserver methods to this mediator.
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
 }
 
 - (instancetype)
@@ -63,6 +67,9 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
     _webStateDelegateBridge =
         std::make_unique<web::WebStateDelegateBridge>(self);
     _webState->SetDelegate(_webStateDelegateBridge.get());
+    _webStateObserverBridge =
+        std::make_unique<web::WebStateObserverBridge>(self);
+    _webState->AddObserver(_webStateObserverBridge.get());
     AttachTabHelpers(_webState.get(), TabHelperFilter::kBottomSheet);
     _policyDeciderBridge = std::make_unique<web::WebStatePolicyDeciderBridge>(
         _webState.get(), self);
@@ -76,10 +83,13 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   CHECK(_webState, kLensOverlayNotFatalUntil);
   _webState->SetWebUsageEnabled(true);
   [self.consumer setWebView:_webState->GetView()];
+  [self updateBackgroundColor];
 }
 
 - (void)disconnect {
   _policyDeciderBridge.reset();
+  _webState->RemoveObserver(_webStateObserverBridge.get());
+  _webStateObserverBridge.reset();
   _webState.reset();
   _webStateDelegateBridge.reset();
 }
@@ -112,6 +122,17 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   } else {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
+}
+
+#pragma mark - CRWWebStateObserver
+
+- (void)webState:(web::WebState*)webState
+    didFinishNavigation:(web::NavigationContext*)navigationContext {
+  [self updateBackgroundColor];
+}
+
+- (void)webStateDidChangeBackgroundColor:(web::WebState*)webState {
+  [self updateBackgroundColor];
 }
 
 #pragma mark - CRWWebStateDelegate
@@ -181,6 +202,16 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
 - (id<CRWResponderInputView>)webStateInputViewProvider:
     (web::WebState*)webState {
   return _browserWebStateDelegate->GetResponderInputView(webState);
+}
+
+#pragma mark - Private
+
+/// Updates the consumer's background color.
+- (void)updateBackgroundColor {
+  UIColor* backgroundColor = _webState->GetUnderPageBackgroundColor();
+  if (backgroundColor) {
+    [self.consumer setBackgroundColor:backgroundColor];
+  }
 }
 
 @end

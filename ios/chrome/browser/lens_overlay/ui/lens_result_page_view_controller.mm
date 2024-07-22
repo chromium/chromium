@@ -145,6 +145,10 @@ const CGFloat kWebContainerTopPadding = 8;
   AddSameConstraints(_webView, self.webViewContainer);
 }
 
+- (void)setBackgroundColor:(UIColor*)backgroundColor {
+  self.view.backgroundColor = backgroundColor;
+}
+
 #pragma mark - Private
 
 /// Handles back button taps.

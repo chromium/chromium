@@ -13,6 +13,9 @@
 /// Sets `webView` in the consumer.
 - (void)setWebView:(UIView*)webView;
 
+/// Sets the background color of the consumer.
+- (void)setBackgroundColor:(UIColor*)backgroundColor;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_RESULT_PAGE_CONSUMER_H_
