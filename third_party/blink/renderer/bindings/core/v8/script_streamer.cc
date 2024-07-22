@@ -1226,7 +1226,8 @@ class BackgroundResourceScriptStreamer::BackgroundProcessor final
           consume_code_cache_task,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       mojo_base::BigBuffer cached_metadata,
-      base::WeakPtr<BackgroundProcessor> background_processor_weak_ptr);
+      base::WeakPtr<BackgroundProcessor> background_processor_weak_ptr,
+      const uint64_t trace_id);
 
   void SetState(BackgroundProcessorState state);
 
@@ -1455,9 +1456,11 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
   bool has_code_cache = false;
   if (auto consume_code_cache_task = MaybeCreateConsumeCodeCacheTask(
           cached_metadata_, encoding_.GetName(), isolate_, has_code_cache)) {
+    const uint64_t trace_id =
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(this));
     TRACE_EVENT_WITH_FLOW1(
         "v8," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-        "v8.deserializeOnBackground.start", TRACE_ID_LOCAL(this),
+        "v8.deserializeOnBackground.start", TRACE_ID_LOCAL(trace_id),
         TRACE_EVENT_FLAG_FLOW_OUT, "data", [&](perfetto::TracedValue context) {
           inspector_deserialize_script_event::Data(std::move(context),
                                                    script_resource_identifier_,
@@ -1472,14 +1475,8 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
         std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
             TextResourceDecoderOptions::kPlainTextContent, encoding_)),
         background_task_runner_,
-        CrossThreadBindOnce(
-            [](base::WeakPtr<BackgroundProcessor> weak_self,
-               ScriptDecoder::Result result) {
-              if (auto* self = weak_self.get()) {
-                self->OnFinishScriptDecode(std::move(result));
-              }
-            },
-            weak_factory_.GetWeakPtr()));
+        CrossThreadBindOnce(&BackgroundProcessor::OnFinishScriptDecode,
+                            weak_factory_.GetWeakPtr()));
     data_pipe_script_decoder_->Start(std::move(body_));
     // The cached metadata must be passed to the worker thread to avoid UAF,
     // because `this` is deleted when the request is canceled.
@@ -1489,7 +1486,7 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
             &BackgroundProcessor::RunConsumingCodeCacheTask, script_url_string_,
             script_resource_identifier_, std::move(consume_code_cache_task),
             background_task_runner_, std::move(*cached_metadata_),
-            weak_factory_.GetWeakPtr()));
+            weak_factory_.GetWeakPtr(), trace_id));
     return true;
   }
 
@@ -1757,11 +1754,11 @@ void BackgroundResourceScriptStreamer::BackgroundProcessor::
             consume_code_cache_task,
         scoped_refptr<base::SequencedTaskRunner> background_task_runner,
         mojo_base::BigBuffer cached_metadata,
-        base::WeakPtr<BackgroundProcessor> background_processor_weak_ptr) {
+        base::WeakPtr<BackgroundProcessor> background_processor_weak_ptr,
+        const uint64_t trace_id) {
   TRACE_EVENT_WITH_FLOW1(
       "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-      "v8.deserializeOnBackground",
-      TRACE_ID_LOCAL(background_processor_weak_ptr.get()),
+      "v8.deserializeOnBackground", TRACE_ID_LOCAL(trace_id),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "data",
       [&](perfetto::TracedValue context) {
         inspector_deserialize_script_event::Data(
@@ -1771,19 +1768,10 @@ void BackgroundResourceScriptStreamer::BackgroundProcessor::
   consume_code_cache_task->Run();
   PostCrossThreadTask(
       *background_task_runner, FROM_HERE,
-      CrossThreadBindOnce(
-          [](base::WeakPtr<BackgroundProcessor> weak_self,
-             std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
-                 consume_code_cache_task,
-             mojo_base::BigBuffer cached_metadata) {
-            if (auto* self = weak_self.get()) {
-              self->OnFinishCodeCacheConsumer(
-                  std::move(consume_code_cache_task),
-                  std::move(cached_metadata));
-            }
-          },
-          std::move(background_processor_weak_ptr),
-          std::move(consume_code_cache_task), std::move(cached_metadata)));
+      CrossThreadBindOnce(&BackgroundProcessor::OnFinishCodeCacheConsumer,
+                          std::move(background_processor_weak_ptr),
+                          std::move(consume_code_cache_task),
+                          std::move(cached_metadata)));
 }
 
 void BackgroundResourceScriptStreamer::BackgroundProcessor::
