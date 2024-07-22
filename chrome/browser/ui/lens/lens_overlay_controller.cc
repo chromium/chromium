@@ -1027,14 +1027,18 @@ class LensOverlayController::UnderlyingWebContentsObserver
   // content::WebContentsObserver
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
+    bool is_reload =
+        navigation_handle->GetReloadType() != content::ReloadType::NONE;
     // We don't need to close if:
     //   1) The navigation is not for the main page.
     //   2) The navigation hasn't been committed yet.
-    //   3) The URL did not change.
+    //   3) The URL did not change and the navigation wasn't the user reloading
+    //      the page.
     if (!navigation_handle->IsInPrimaryMainFrame() ||
         !navigation_handle->HasCommitted() ||
-        navigation_handle->GetPreviousPrimaryMainFrameURL() ==
-            navigation_handle->GetURL()) {
+        (navigation_handle->GetPreviousPrimaryMainFrameURL() ==
+             navigation_handle->GetURL() &&
+         !is_reload)) {
       return;
     }
 
