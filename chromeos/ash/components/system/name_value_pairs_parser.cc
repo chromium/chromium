@@ -21,6 +21,10 @@ namespace ash::system {
 
 namespace {
 
+// The name of the stable device secret VPD key.
+const char kStableDeviceSecretDoNotShare[] =
+    "stable_device_secret_DO_NOT_SHARE";
+
 // Runs a tool and capture its standard output into |output|. Returns false
 // if the tool cannot be run.
 bool GetToolOutput(const base::CommandLine& command, std::string* output) {
@@ -105,8 +109,13 @@ bool ParseValue(const std::string& input,
   }
 }
 
-// Return a string for logging a value.
-std::string GetLoggingStringForValue(const std::string& value) {
+// Return a string for logging a value that does not expose data that should
+// not be visible in the logs.
+std::string GetLoggingStringForValue(const std::string& name,
+                                     const std::string& value) {
+  // TODO(crbug.com/40057283): Delete special casing of secret after fixing.
+  if (name == kStableDeviceSecretDoNotShare)
+    return "value edited out for security";
   return "value: " + value;
 }
 
@@ -135,7 +144,8 @@ bool NameValuePairsParser::ParseNameValuePairsFromFile(
     NameValuePairsFormat format) {
   std::string file_contents;
   if (base::ReadFileToString(file_path, &file_contents)) {
-    return ParseNameValuePairs(file_contents, format);
+    return ParseNameValuePairs(file_contents, format,
+                               /*debug_source=*/file_path.value());
   } else {
     if (base::SysInfo::IsRunningOnChromeOS())
       VLOG(1) << "Statistics file not present: " << file_path.value();
@@ -150,13 +160,14 @@ bool NameValuePairsParser::ParseNameValuePairsFromTool(
   if (!GetToolOutput(command, &output_string))
     return false;
 
-  return ParseNameValuePairs(output_string, format);
+  return ParseNameValuePairs(output_string, format,
+                             /*debug_source=*/command.GetProgram().value());
 }
 
 bool NameValuePairsParser::ParseNameValuePairsFromString(
     const std::string& input,
     NameValuePairsFormat format) {
-  return ParseNameValuePairs(input, format);
+  return ParseNameValuePairs(input, format, /*debug_source=*/"");
 }
 
 void NameValuePairsParser::DeletePairsWithValue(const std::string& value) {
@@ -175,16 +186,19 @@ void NameValuePairsParser::AddNameValuePair(const std::string& name,
   const auto it = map_->find(name);
   if (it == map_->end()) {
     (*map_)[name] = value;
-    VLOG(1) << "Name: " << name << ", " << GetLoggingStringForValue(value);
+    VLOG(1) << "Name: " << name << ", "
+            << GetLoggingStringForValue(name, value);
   } else if (it->second != value) {
     LOG(WARNING) << "Name: " << name << " already has "
-                 << GetLoggingStringForValue(it->second) << ", ignoring new "
-                 << GetLoggingStringForValue(value);
+                 << GetLoggingStringForValue(name, it->second)
+                 << ", ignoring new " << GetLoggingStringForValue(name, value);
   }
 }
 
-bool NameValuePairsParser::ParseNameValuePairs(const std::string& input,
-                                               NameValuePairsFormat format) {
+bool NameValuePairsParser::ParseNameValuePairs(
+    const std::string& input,
+    NameValuePairsFormat format,
+    const std::string& debug_source) {
   bool all_valid = true;
 
   // We use StringPairs to parse pairs since this is the class that is also
@@ -213,6 +227,11 @@ bool NameValuePairsParser::ParseNameValuePairs(const std::string& input,
       all_valid = false;
       continue;
     }
+
+    // TODO(crbug.com/40057283): Delete logging after the bug is fixed.
+    LOG_IF(WARNING, name == kStableDeviceSecretDoNotShare)
+        << "Statistic " << kStableDeviceSecretDoNotShare << " exposed in "
+        << debug_source;
 
     AddNameValuePair(name, value);
   }

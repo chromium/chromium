@@ -93,7 +93,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) NameValuePairsParser {
   void AddNameValuePair(const std::string& key, const std::string& value);
 
   bool ParseNameValuePairs(const std::string& input,
-                           NameValuePairsFormat format);
+                           NameValuePairsFormat format,
+                           const std::string& debug_source);
 
   raw_ptr<NameValueMap> map_;
 };
