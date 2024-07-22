@@ -8400,21 +8400,6 @@
             ]
         }
     ],
-    "EnableBatchVideoDecodingInRenderer": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "VideoDecodeBatching"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableBuiltInAIAPI": [
         {
             "platforms": [
