@@ -8,8 +8,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <type_traits>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container_layout.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -116,6 +118,8 @@ class PinnedActionToolbarButtonActionViewInterface
   raw_ptr<PinnedActionToolbarButton> action_view_;
 };
 
-extern const ui::ClassProperty<int>* const kToolbarButtonFlexWeightKey;
+extern const ui::ClassProperty<
+    std::underlying_type_t<PinnedToolbarActionFlexPriority>>* const
+    kToolbarButtonFlexPriorityKey;
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_PINNED_ACTION_TOOLBAR_BUTTON_H_
