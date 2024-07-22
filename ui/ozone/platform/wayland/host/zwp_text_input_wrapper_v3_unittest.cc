@@ -13,7 +13,8 @@
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_text_input.h"
-#include "ui/ozone/platform/wayland/test/test_zwp_text_input_wrapper_client.h"
+#include "ui/ozone/platform/wayland/test/mock_zwp_text_input_wrapper_client.h"
+#include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 using ::testing::_;
@@ -43,7 +44,7 @@ class ZWPTextInputWrapperV3Test : public WaylandTestSimple {
     });
   }
 
-  TestZWPTextInputWrapperClient test_client_;
+  MockZWPTextInputWrapperClient test_client_;
   std::unique_ptr<ZWPTextInputWrapperV3> wrapper_;
 };
 
