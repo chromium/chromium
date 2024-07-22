@@ -27,6 +27,8 @@ import {
 } from '../core/reactive/lit.js';
 import {assertExhaustive, assertInstanceof} from '../core/utils/assert.js';
 
+import {GenaiResultType} from './genai-error.js';
+
 /**
  * The title suggestion popup in playback page of Recorder App.
  */
@@ -164,6 +166,7 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
       case 'error': {
         return html`<genai-error
           .error=${suggestedTitles.error}
+          .resultType=${GenaiResultType.TITLE_SUGGESTION}
         ></genai-error>`;
       }
       case 'success': {
@@ -182,7 +185,7 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
   override render(): RenderResult {
     return html`
       <div id="header">
-        <span>${i18n.titleGenerationHeader}</span>
+        <span>${i18n.titleSuggestionHeader}</span>
         <cra-icon-button
           buttonstyle="floating"
           size="small"

@@ -29,6 +29,8 @@ import {concatTextTokens, TextToken} from '../core/soda/soda.js';
 import {settings, SummaryEnableState} from '../core/state/settings.js';
 import {assertExhaustive} from '../core/utils/assert.js';
 
+import {GenaiResultType} from './genai-error.js';
+
 export class SummarizationView extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`
     :host {
@@ -205,7 +207,11 @@ export class SummarizationView extends ReactiveLitElement {
     }
     switch (summary.kind) {
       case 'error':
-        return html`<genai-error .error=${summary.error}></genai-error>`;
+        return html`<genai-error
+          .error=${summary.error}
+          .resultType=${GenaiResultType.SUMMARY}
+        >
+        </genai-error>`;
       case 'success':
         return html`<div id="summary">${summary.result}</div>
           ${this.renderSummaryFooter()}`;

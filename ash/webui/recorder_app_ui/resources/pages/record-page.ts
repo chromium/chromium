@@ -51,23 +51,19 @@ import {
 import {formatDuration} from '../core/utils/datetime.js';
 
 function getDefaultTitle(): string {
-  // TODO: b/336963138 - Handle i18n? Some other app (like screen capture /
-  // recording) seems to not having i18n for filename, but we're also using this
-  // as title.
+  // The default title is always in English and not translated, since it's also
+  // used as exported filename.
   const now = new Date();
   const year = now.getFullYear();
-  const month = now.getMonth().toString().padStart(2, '0');
-  const day = now.getDay().toString().padStart(2, '0');
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const day = now.getDate().toString().padStart(2, '0');
   const time = new Intl.DateTimeFormat('en-US', {
     hour: 'numeric',
     minute: '2-digit',
     second: '2-digit',
     hour12: true,
   });
-  // TODO(pihsun): '.' looks very weird on title, use ':' and replace it with
-  // '.' when exporting as filename?
-  return `Audio recording ${year}-${month}-${day} ${
-    time.format(now).replaceAll(':', '.')}`;
+  return `Audio recording ${year}-${month}-${day} ${time.format(now)}`;
 }
 
 /**

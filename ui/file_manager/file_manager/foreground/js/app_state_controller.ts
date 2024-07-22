@@ -7,7 +7,6 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {isRecentFileData, isRecentRoot} from '../../common/js/entry_utils.js';
 import {storage} from '../../common/js/storage.js';
 import type {DialogType} from '../../state/state.js';
-import {getFileData, getStore} from '../../state/store.js';
 
 import type {DirectoryChangeEvent, DirectoryModel} from './directory_model.js';
 import {GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME} from './file_list_model.js';
@@ -23,13 +22,13 @@ export class AppStateController {
 
   /**
    * Preferred sort field of file list. This will be ignored in the Recent
-   * folder, since it always uses descendant order of date-mofidied.
+   * folder, since it always uses descendant order of date-modified.
    */
   private fileListSortField_: string|null = DEFAULT_SORT_FIELD;
 
   /**
    * Preferred sort direction of file list. This will be ignored in the Recent
-   * folder, since it always uses descendant order of date-mofidied.
+   * folder, since it always uses descendant order of date-modified.
    */
   private fileListSortDirection_: string|null = DEFAULT_SORT_DIRECTION;
 
@@ -153,7 +152,7 @@ export class AppStateController {
     assert(this.ui_);
 
     // Sort the file list by:
-    // 1) 'date-mofidied' and 'desc' order on Recent folder.
+    // 1) 'date-modified' and 'desc' order on Recent folder.
     // 2) preferred field and direction on other folders.
     const fileData = this.directoryModel_.getCurrentFileData();
     if (!fileData) {
@@ -161,11 +160,15 @@ export class AppStateController {
     }
 
     const isOnRecent = isRecentFileData(fileData);
-    const state = getStore().getState();
     const fileListModel = this.directoryModel_.getFileList();
     this.ui_.listContainer.isOnRecent = isOnRecent;
-    const previousFileData = getFileData(state, event.detail.previousFileKey!);
-    const wasOnRecentBefore = isRecentFileData(previousFileData);
+    // TODO(b/354587005): Capture all recent categories in the store.
+    // Currently only fake-entry://recent/all is in the store, but
+    // `previousFileKey` can be other categories like fake-entry://recent/images
+    // which is not in the store, we can't rely on store data to fetch the entry
+    // by the file key here, hence matching the file key string directly here.
+    const wasOnRecentBefore =
+        event.detail.previousFileKey?.startsWith('fake-entry://recent/');
     if (isOnRecent !== wasOnRecentBefore) {
       if (isOnRecent) {
         fileListModel.groupByField = GROUP_BY_FIELD_MODIFICATION_TIME;

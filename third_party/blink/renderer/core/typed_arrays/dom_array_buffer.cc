@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 
 #include <algorithm>
@@ -349,7 +344,7 @@ DOMArrayBuffer* DOMArrayBuffer::Slice(size_t begin, size_t end) const {
   begin = std::min(begin, ByteLength());
   end = std::min(end, ByteLength());
   size_t size = begin <= end ? end - begin : 0;
-  return Create(static_cast<const char*>(Data()) + begin, size);
+  return Create(ByteSpan().subspan(begin, size));
 }
 
 void DOMArrayBuffer::Trace(Visitor* visitor) const {

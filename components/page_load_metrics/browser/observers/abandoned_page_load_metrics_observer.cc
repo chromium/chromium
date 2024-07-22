@@ -419,9 +419,9 @@ AbandonedPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     // This is the first time we're getting backgrounded. If we're allow to log
     // metrics, log the abandonment now.
     if (IsAllowedToLogMetrics()) {
+      did_log_backgrounding_ = true;
       LogMetricsOnAbandon(AbandonReason::kAppBackgrounded,
                           first_backgrounded_timestamp_);
-      did_log_backgrounding_ = true;
     }
 
     // Otherwise, we've saved the timestamp when we're first backgrounded, so if
@@ -440,8 +440,8 @@ AbandonedPageLoadMetricsObserver::OnHidden(
     // This is the first time we're getting hidden. If we're allow to log
     // metrics, log the abandonment now.
     if (IsAllowedToLogMetrics()) {
-      LogMetricsOnAbandon(AbandonReason::kHidden, first_hidden_timestamp_);
       did_log_hiding_ = true;
+      LogMetricsOnAbandon(AbandonReason::kHidden, first_hidden_timestamp_);
     }
 
     // Otherwise, we've saved the timestamp when we're first hidden,  so if
@@ -454,16 +454,16 @@ AbandonedPageLoadMetricsObserver::OnHidden(
 void AbandonedPageLoadMetricsObserver::LogPreviousHidingIfNeeded() {
   CHECK(IsAllowedToLogMetrics());
   if (WasHidden() && !did_log_hiding_) {
-    LogMetricsOnAbandon(AbandonReason::kHidden, first_hidden_timestamp_);
     did_log_hiding_ = true;
+    LogMetricsOnAbandon(AbandonReason::kHidden, first_hidden_timestamp_);
   }
 }
 void AbandonedPageLoadMetricsObserver::LogPreviousBackgroundingIfNeeded() {
   CHECK(IsAllowedToLogMetrics());
   if (WasBackgrounded() && !did_log_backgrounding_) {
+    did_log_backgrounding_ = true;
     LogMetricsOnAbandon(AbandonReason::kAppBackgrounded,
                         first_backgrounded_timestamp_);
-    did_log_backgrounding_ = true;
   }
 }
 
