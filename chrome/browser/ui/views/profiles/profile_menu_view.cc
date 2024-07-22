@@ -557,19 +557,10 @@ void ProfileMenuView::BuildIdentity() {
 
       if (management_environment !=
           chrome::enterprise_util::ManagementEnvironment::kNone) {
-        policy::BrowserManagementService* management_service =
-            static_cast<policy::BrowserManagementService*>(
-                policy::ManagementServiceFactory::GetForProfile(
-                    browser()->profile()));
-        if (management_service->GetMetadata().GetManagementLogo().IsEmpty()) {
           badge_image_model = ui::ImageModel::FromVectorIcon(
               vector_icons::kBusinessIcon, ui::kColorMenuIcon, 16);
-        } else {
-          badge_image_model = ui::ImageModel::FromImage(
-              management_service->GetMetadata().GetManagementLogo());
         }
       }
-    }
 
     SetProfileIdentityInfo(
         profile_name, background_color, edit_button_params,

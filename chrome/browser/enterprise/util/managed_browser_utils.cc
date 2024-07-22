@@ -16,15 +16,21 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/certificate_matching/certificate_principal_pattern.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/image_fetcher/core/image_fetcher.h"
+#include "components/image_fetcher/core/image_fetcher_service.h"
+#include "components/image_fetcher/core/image_fetcher_types.h"
+#include "components/image_fetcher/core/request_metadata.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -107,6 +113,18 @@ bool CertMatchesSelectionFilters(
     }
   }
   return false;
+}
+
+void OnManagementIconReceived(
+    base::OnceCallback<void(const gfx::Image&)> callback,
+    const gfx::Image& icon,
+    const image_fetcher::RequestMetadata& metadata) {
+  if (icon.IsEmpty()) {
+    LOG(WARNING) << "EnterpriseLogoUrl fetch failed with error code "
+                 << metadata.http_response_code << " and MIME type "
+                 << metadata.mime_type;
+  }
+  std::move(callback).Run(icon);
 }
 
 }  // namespace
@@ -273,6 +291,59 @@ jboolean JNI_ManagedBrowserUtils_IsProfileReportingEnabled(JNIEnv* env,
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
+void GetManagementIcon(const GURL& url,
+                       Profile* profile,
+                       base::OnceCallback<void(const gfx::Image&)> callback) {
+  constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+      net::DefineNetworkTrafficAnnotation("enterprise_logo_fetcher",
+                                          R"(
+        semantics {
+          sender: "Chrome Profiles"
+          description:
+            "Retrieves an image set by the admin as the enterprise logo. This "
+            "is used to show the user which organization manages their browser "
+            "in the profile menu."
+          trigger:
+            "When the user launches the browser and the EnterpriseLogoUrl "
+            "policy is set."
+          data:
+            "An admin-controlled URL for an image on the profile menu."
+          destination: OTHER
+          internal {
+            contacts {
+              email: "cbe-magic@google.com"
+            }
+          }
+          user_data {
+            type: SENSITIVE_URL
+          }
+          last_reviewed: "2024-07-22"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "There is no setting. This fetch is enabled for any managed user "
+            "with the EnterpriseLogoUrl policy set."
+          chrome_policy {
+            EnterpriseLogoUrl {
+              EnterpriseLogoUrl: ""
+            }
+          }
+        })");
+
+  if (!url.is_valid()) {
+    std::move(callback).Run(gfx::Image());
+    return;
+  }
+  image_fetcher::ImageFetcher* fetcher =
+      ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
+          ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
+  fetcher->FetchImage(
+      url, base::BindOnce(&OnManagementIconReceived, std::move(callback)),
+      image_fetcher::ImageFetcherParams(
+          kTrafficAnnotation,
+          /*uma_client_name=*/"BrowserManagementMetadata"));
+}
 
 }  // namespace enterprise_util
 }  // namespace chrome
