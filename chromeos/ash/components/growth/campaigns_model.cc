@@ -97,6 +97,9 @@ inline constexpr char kTriggerTargetings[] = "triggerList";
 inline constexpr char kTriggerType[] = "triggerType";
 inline constexpr char kTriggerEvents[] = "triggerEvents";
 
+// User Preference Targeting paths.
+inline constexpr char kUserPrefTargetings[] = "userPrefs";
+
 // Scheduling Targeting paths.
 inline constexpr char kSchedulingTargetings[] = "schedulings";
 inline constexpr char kTimeWindowStart[] = "start";
@@ -689,6 +692,10 @@ RuntimeTargeting::GetTriggers() const {
     triggers.push_back(std::make_unique<TriggerTargeting>(&trigger.GetDict()));
   }
   return triggers;
+}
+
+const base::Value::List* RuntimeTargeting::GetUserPrefTargetings() const {
+  return GetListCriteria(kUserPrefTargetings);
 }
 
 // Action.

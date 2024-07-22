@@ -336,11 +336,34 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
 
   {
     chrome_screen_ai::LineBox* line_0 = annotation.add_lines();
+    chrome_screen_ai::WordBox* word_0 = line_0->add_words();
+    chrome_screen_ai::WordBox* word_1 = line_0->add_words();
 
-    InitWordBox(line_0->add_words(),
-                /*x=*/350,
+    InitSymbolBox(word_0->add_symbols(),
+                  /*x=*/133,
+                  /*y=*/100,
+                  /*width=*/4,
+                  /*height=*/20,
+                  /*text=*/"ر");
+
+    InitSymbolBox(word_0->add_symbols(),
+                  /*x=*/129,
+                  /*y=*/100,
+                  /*width=*/4,
+                  /*height=*/20,
+                  /*text=*/"و");
+
+    InitSymbolBox(word_0->add_symbols(),
+                  /*x=*/125,
+                  /*y=*/100,
+                  /*width=*/4,
+                  /*height=*/20,
+                  /*text=*/"ز");
+
+    InitWordBox(word_0,
+                /*x=*/125,
                 /*y=*/100,
-                /*width=*/250,
+                /*width=*/12,
                 /*height=*/20,
                 /*text=*/"روز",
                 /*language=*/"fa",
@@ -350,12 +373,33 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
                 /*foreground_rgb_value=*/0xff000000,  // Blue on white.
                 /*angle=*/0);
 
-    InitWordBox(line_0->add_words(),
+    InitSymbolBox(word_1->add_symbols(),
+                  /*x=*/114,
+                  /*y=*/100,
+                  /*width=*/6,
+                  /*height=*/20,
+                  /*text=*/"خ");
+
+    InitSymbolBox(word_1->add_symbols(),
+                  /*x=*/110,
+                  /*y=*/4,
+                  /*width=*/50,
+                  /*height=*/20,
+                  /*text=*/"و");
+
+    InitSymbolBox(word_1->add_symbols(),
+                  /*x=*/100,
+                  /*y=*/100,
+                  /*width=*/10,
+                  /*height=*/20,
+                  /*text=*/"ش");
+
+    InitWordBox(word_1,
                 /*x=*/100,
                 /*y=*/100,
-                /*width=*/250,
+                /*width=*/20,
                 /*height=*/20,
-                /*text=*/"بخیر",
+                /*text=*/"خوش",
                 /*language=*/"fa",
                 /*direction=*/chrome_screen_ai::DIRECTION_RIGHT_TO_LEFT,
                 /*has_space_after=*/false,
@@ -366,7 +410,7 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
     InitLineBox(line_0,
                 /*x=*/100,
                 /*y=*/100,
-                /*width=*/500,
+                /*width=*/37,
                 /*height=*/20,
                 /*text=*/"روز بخیر",
                 /*language=*/"fa",
@@ -386,20 +430,21 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         "900) is_page_breaking_object=true\n"
         "  id=-3 banner child_ids=-4 (0, 0)-(1, 1)\n"
         "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
-        "  id=-5 paragraph child_ids=-6 (100, 100)-(500, 20)\n"
-        "    id=-6 staticText name=روز بخیر child_ids=-7 (100, 100)-(500, 20) "
+        "  id=-5 paragraph child_ids=-6 (100, 100)-(37, 20)\n"
+        "    id=-6 staticText name=روز بخیر child_ids=-7 (100, 100)-(37, 20) "
         "text_direction=rtl language=fa\n"
-        "      id=-7 inlineTextBox name=روز بخیر (100, 100)-(500, 20) "
+        "      id=-7 inlineTextBox name=روز خوش (100, 100)-(37, 20) "
         "background_color=&FFFFFF00 color=&FF000000 text_direction=rtl "
-        "word_starts=0,4 word_ends=3,7\n"
+        "character_offsets=4,8,12,17,23,27,37 word_starts=0,4 word_ends=3,6\n"
         "  id=-8 contentInfo child_ids=-9 (800, 900)-(1, 1)\n"
         "    id=-9 staticText name=End of extracted text (800, 900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
 }
 
-TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
-       VisualAnnotationToAXTreeUpdate_OcrResults_CharacterOffsets_LeftToRight) {
+TEST_F(
+    ScreenAIVisualAnnotatorProtoConvertorTest,
+    VisualAnnotationToAXTreeUpdate_OcrResults_CharacterOffsets_LeftToRight_NotRotated) {
   chrome_screen_ai::VisualAnnotation annotation;
   gfx::Rect snapshot_bounds(800, 900);
 
@@ -408,6 +453,7 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
   {
     chrome_screen_ai::LineBox* line_0 = annotation.add_lines();
     chrome_screen_ai::WordBox* word_0 = line_0->add_words();
+    chrome_screen_ai::WordBox* word_1 = line_0->add_words();
 
     InitSymbolBox(word_0->add_symbols(),
                   /*x=*/100,
@@ -433,7 +479,7 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
     InitWordBox(word_0,
                 /*x=*/100,
                 /*y=*/100,
-                /*width=*/19,
+                /*width=*/22,
                 /*height=*/19,
                 /*text=*/"Day",
                 /*language=*/"en",
@@ -443,12 +489,46 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
                 /*foreground_rgb_value=*/0xff000000,  // Blue on white.
                 /*angle=*/0);
 
-    InitLineBox(line_0,
-                /*x=*/100,
+    InitSymbolBox(word_1->add_symbols(),
+                  /*x=*/122,
+                  /*y=*/100,
+                  /*width=*/4,
+                  /*height=*/19,
+                  /*text=*/"O");
+
+    InitSymbolBox(word_1->add_symbols(),
+                  /*x=*/126,
+                  /*y=*/100,
+                  /*width=*/6,
+                  /*height=*/19,
+                  /*text=*/"n");
+
+    InitSymbolBox(word_1->add_symbols(),
+                  /*x=*/135,
+                  /*y=*/100,
+                  /*width=*/6,
+                  /*height=*/19,
+                  /*text=*/"e");
+
+    InitWordBox(word_1,
+                /*x=*/122,
                 /*y=*/100,
                 /*width=*/19,
                 /*height=*/19,
-                /*text=*/"Day",
+                /*text=*/"One",
+                /*language=*/"en",
+                /*direction=*/chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT,
+                /*has_space_after=*/false,
+                /*background_rgb_value=*/0xffffff00,
+                /*foreground_rgb_value=*/0xff000000,  // Blue on white.
+                /*angle=*/0);
+
+    InitLineBox(line_0,
+                /*x=*/100,
+                /*y=*/100,
+                /*width=*/41,
+                /*height=*/19,
+                /*text=*/"Day One",
                 /*language=*/"en",
                 /*direction=*/chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT,
                 /*block_id=*/1,
@@ -466,20 +546,21 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         "900) is_page_breaking_object=true\n"
         "  id=-3 banner child_ids=-4 (0, 0)-(1, 1)\n"
         "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
-        "  id=-5 paragraph child_ids=-6 (100, 100)-(19, 19)\n"
-        "    id=-6 staticText name=Day child_ids=-7 (100, 100)-(19, 19) "
+        "  id=-5 paragraph child_ids=-6 (100, 100)-(41, 19)\n"
+        "    id=-6 staticText name=Day One child_ids=-7 (100, 100)-(41, 19) "
         "text_direction=ltr language=en\n"
-        "      id=-7 inlineTextBox name=Day  (100, 100)-(19, 19) "
+        "      id=-7 inlineTextBox name=Day One (100, 100)-(41, 19) "
         "background_color=&FFFFFF00 color=&FF000000 text_direction=ltr "
-        "character_offsets=4,10,19,19 word_starts=0 word_ends=3\n"
+        "character_offsets=4,10,19,22,26,32,41 word_starts=0,4 word_ends=3,6\n"
         "  id=-8 contentInfo child_ids=-9 (800, 900)-(1, 1)\n"
         "    id=-9 staticText name=End of extracted text (800, 900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
 }
 
-TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
-       VisualAnnotationToAXTreeUpdate_OcrResults_CharacterOffsets_RightToLeft) {
+TEST_F(
+    ScreenAIVisualAnnotatorProtoConvertorTest,
+    VisualAnnotationToAXTreeUpdate_OcrResults_CharacterOffsets_LeftToRight_Rotated) {
   chrome_screen_ai::VisualAnnotation annotation;
   gfx::Rect snapshot_bounds(800, 900);
 
@@ -488,52 +569,87 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
   {
     chrome_screen_ai::LineBox* line_0 = annotation.add_lines();
     chrome_screen_ai::WordBox* word_0 = line_0->add_words();
+    chrome_screen_ai::WordBox* word_1 = line_0->add_words();
 
     InitSymbolBox(word_0->add_symbols(),
                   /*x=*/100,
                   /*y=*/100,
-                  /*width=*/4,
-                  /*height=*/19,
-                  /*text=*/"ز");
+                  /*width=*/19,
+                  /*height=*/4,
+                  /*text=*/"D");
 
     InitSymbolBox(word_0->add_symbols(),
-                  /*x=*/104,
-                  /*y=*/100,
-                  /*width=*/6,
-                  /*height=*/19,
-                  /*text=*/"و");
+                  /*x=*/100,
+                  /*y=*/104,
+                  /*width=*/19,
+                  /*height=*/6,
+                  /*text=*/"a");
 
     InitSymbolBox(word_0->add_symbols(),
-                  /*x=*/113,
-                  /*y=*/100,
-                  /*width=*/6,
-                  /*height=*/19,
-                  /*text=*/"ر");
+                  /*x=*/100,
+                  /*y=*/113,
+                  /*width=*/19,
+                  /*height=*/6,
+                  /*text=*/"y");
 
     InitWordBox(word_0,
                 /*x=*/100,
                 /*y=*/100,
                 /*width=*/19,
-                /*height=*/19,
-                /*text=*/"روز",
-                /*language=*/"fa",
-                /*direction=*/chrome_screen_ai::DIRECTION_RIGHT_TO_LEFT,
+                /*height=*/22,
+                /*text=*/"Day",
+                /*language=*/"en",
+                /*direction=*/chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT,
                 /*has_space_after=*/true,
                 /*background_rgb_value=*/0xffffff00,
                 /*foreground_rgb_value=*/0xff000000,  // Blue on white.
-                /*angle=*/0);
+                /*angle=*/90);
+
+    InitSymbolBox(word_1->add_symbols(),
+                  /*x=*/100,
+                  /*y=*/122,
+                  /*width=*/19,
+                  /*height=*/4,
+                  /*text=*/"O");
+
+    InitSymbolBox(word_1->add_symbols(),
+                  /*x=*/100,
+                  /*y=*/126,
+                  /*width=*/19,
+                  /*height=*/6,
+                  /*text=*/"n");
+
+    InitSymbolBox(word_1->add_symbols(),
+                  /*x=*/100,
+                  /*y=*/135,
+                  /*width=*/19,
+                  /*height=*/6,
+                  /*text=*/"e");
+
+    InitWordBox(word_1,
+                /*x=*/100,
+                /*y=*/122,
+                /*width=*/19,
+                /*height=*/19,
+                /*text=*/"One",
+                /*language=*/"en",
+                /*direction=*/chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT,
+                /*has_space_after=*/false,
+                /*background_rgb_value=*/0xffffff00,
+                /*foreground_rgb_value=*/0xff000000,  // Blue on white.
+                /*angle=*/90);
 
     InitLineBox(line_0,
                 /*x=*/100,
                 /*y=*/100,
                 /*width=*/19,
-                /*height=*/19,
-                /*text=*/"روز",
-                /*language=*/"fa",
-                /*direction=*/chrome_screen_ai::DIRECTION_RIGHT_TO_LEFT,
+                /*height=*/41,
+                /*text=*/"Day One",
+                /*language=*/"en",
+                /*direction=*/chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT,
                 /*block_id=*/1,
                 /*order_within_block=*/1,
-                /*angle=*/0);
+                /*angle=*/90);
   }
 
   {
@@ -546,12 +662,12 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         "900) is_page_breaking_object=true\n"
         "  id=-3 banner child_ids=-4 (0, 0)-(1, 1)\n"
         "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
-        "  id=-5 paragraph child_ids=-6 (100, 100)-(19, 19)\n"
-        "    id=-6 staticText name=روز child_ids=-7 (100, 100)-(19, 19) "
-        "text_direction=rtl language=fa\n"
-        "      id=-7 inlineTextBox name=روز  (100, 100)-(19, 19) "
-        "background_color=&FFFFFF00 color=&FF000000 text_direction=rtl "
-        "character_offsets=15,9,0,0 word_starts=0 word_ends=3\n"
+        "  id=-5 paragraph child_ids=-6 (59, 100)-(41, 19)\n"
+        "    id=-6 staticText name=Day One child_ids=-7 (59, 100)-(41, 19) "
+        "text_direction=ltr language=en\n"
+        "      id=-7 inlineTextBox name=Day One (78, 100)-(22, 41) "
+        "background_color=&FFFFFF00 color=&FF000000 text_direction=ltr "
+        "character_offsets=4,10,19,22,26,32,41 word_starts=0,4 word_ends=3,6\n"
         "  id=-8 contentInfo child_ids=-9 (800, 900)-(1, 1)\n"
         "    id=-9 staticText name=End of extracted text (800, 900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());

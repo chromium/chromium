@@ -221,6 +221,9 @@ inline constexpr char kGetCampaignBySlotHistogramName[] =
 
 inline const base::Version kDefaultVersion("1.0.0.0");
 
+inline constexpr char kTestPref1[] = "pref1";
+inline constexpr char kTestPref2[] = "pref2";
+
 // testing::InvokeArgument<N> does not work with base::OnceCallback. Use this
 // gmock action template to invoke base::OnceCallback. `k` is the k-th argument
 // and `T` is the callback's type.
@@ -543,6 +546,19 @@ class CampaignsManagerTest : public testing::Test {
         kValidCampaignsFileTemplate, session_targeting.c_str()));
   }
 
+  void LoadComponentWithUserPrefTargeting(const std::string& values) {
+    auto pref_targeting = base::StringPrintf(R"(
+            "runtime": {
+              "userPrefs": [
+                %s
+              ]
+            }
+          )",
+                                             values.c_str());
+    LoadComponentAndVerifyLoadComplete(base::StringPrintf(
+        kValidCampaignsFileTemplate, pref_targeting.c_str()));
+  }
+
   base::Version GetNewVersion(const base::Version& version,
                               int minor_version_delta) {
     auto new_version = version.components();
@@ -572,6 +588,9 @@ class CampaignsManagerTest : public testing::Test {
         ash::prefs::kDemoModeRetailerId, std::string());
     local_state_->registry()->RegisterStringPref(ash::prefs::kDemoModeStoreId,
                                                  std::string());
+    pref_->registry()->RegisterListPref(
+        kTestPref1, base::Value::List().Append("value_0").Append("value_1"));
+    pref_->registry()->RegisterStringPref(kTestPref2, "value_2");
   }
 };
 
@@ -2043,6 +2062,41 @@ TEST_F(CampaignsManagerTest, GetCampaignMatchMultiTargetingsMismatch) {
 
   LoadComponentWithMultiTargetings(kValidMultiTargetings);
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithInvalidPrefTargeting) {
+  LoadComponentWithUserPrefTargeting(R"(
+    {
+      "pref1": "value_0",
+      "pref2": ["value_2"]
+    })");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithPrefTargetingMismatch) {
+  LoadComponentWithUserPrefTargeting(R"(
+    {
+      "pref1": ["value_2"],
+      "pref2": ["value_0"]
+    })");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithPrefTargetingMatch) {
+  // This 2nd set of considtion match pref1 = value_0 and pref2 = value_2.
+  LoadComponentWithUserPrefTargeting(R"(
+    {
+      "pref1": ["value_2"]
+    },
+    {
+      "pref1": ["value_0", "value_3"],
+      "pref2": ["value_2"]
+    })");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 TEST_F(CampaignsManagerTest, CampaignsFilteringTest) {

@@ -60,8 +60,9 @@ enum class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
       kUserPrefServiceNotAvailable = 37,
       kUserPrefValueTypeMismatch = 38,
       kUserPrefNotFound = 39,
+      kTargetingUserPrefNotFound = 40,
 
-      kMaxValue = kUserPrefNotFound,
+      kMaxValue = kTargetingUserPrefNotFound,
     };
 
 // Records errors encountered during the campaigns loading and matching flow.

@@ -411,6 +411,8 @@ class RuntimeTargeting : public TargetingBase {
 
   // Returns a list of triggers against the current trigger, e.g. `kAppOpened`.
   const std::vector<std::unique_ptr<TriggerTargeting>> GetTriggers() const;
+
+  const base::Value::List* GetUserPrefTargetings() const;
 };
 
 // Wrapper around the action dictionary for performing an action, including

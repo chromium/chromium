@@ -162,6 +162,112 @@ bool MatchExperimentTags(const base::Value::List* experiment_tags,
   return base::Contains(*experiment_tags, exp_tag);
 }
 
+// Match if any entry in target values is in user pref.
+bool CompareListValue(const base::Value::List& pref_values,
+                      const base::Value::List& target_values) {
+  for (auto& value : target_values) {
+    if (base::Contains(pref_values, value)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Match if target value is not provided or any value in the target is found in
+// user pref.
+bool MatchOneUserPref(const PrefService& pref_service,
+                      const std::string_view& pref_name,
+                      const base::Value::List& target_values) {
+  if (target_values.empty()) {
+    return true;
+  }
+
+  auto* pref = pref_service.FindPreference(pref_name);
+  if (!pref) {
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kTargetingUserPrefNotFound);
+    LOG(ERROR) << "Targeting user pref not found: " << pref_name;
+    return false;
+  }
+
+  auto* pref_value = pref->GetValue();
+  CHECK(pref_value);
+
+  if (pref_value->is_none() || pref_value->is_dict()) {
+    LOG(ERROR) << "User pref type is not supported: " << pref_name;
+    return false;
+  }
+
+  // If the user pref is a list, match if any entry in target values is in user
+  // pref.
+  if (pref_value->is_list()) {
+    return CompareListValue(pref_value->GetList(), target_values);
+  }
+
+  // If the user pref is not a list, match if any entry in target values is the
+  // pref value.
+  return base::Contains(target_values, *pref_value);
+}
+
+// TODO: b/354060160 - Add more data type to pref targeting.
+// Match a set of user preference, only list is supported at this time. The
+// structure looks like:
+// {
+//   "prefA": ["A"],
+//   "prefB": ["B"]
+// }
+// conditions_met = A && B
+bool MatchUserPrefSet(const PrefService& pref_service,
+                      const base::Value::Dict& target_user_prefs) {
+  for (auto [pref_name, target_values] : target_user_prefs) {
+    if (!target_values.is_list()) {
+      LOG(ERROR) << "Invalid user pref targeting type.";
+      return false;
+    }
+    if (!MatchOneUserPref(pref_service, pref_name, target_values.GetList())) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Match the user preference. The structure looks like:
+// "userPref": [ // These two conditions are logic OR.
+//   { // These two conditions are logic AND.
+//     "prefA": ["A1", "A2"], // these means prefA contains A1 or A2.
+//     "prefB": ["B1"]
+//   },
+//   {
+//     "prefC": ["C1"]
+//   }
+// ]
+// conditions_met = (A1 OR A2) && B1 || C1;
+bool MatchUserPrefs(const PrefService* pref_service,
+                    const base::Value::List* user_pref_targettings) {
+  if (!user_pref_targettings || user_pref_targettings->empty()) {
+    return true;
+  }
+
+  if (!pref_service) {
+    RecordCampaignsManagerError(
+        CampaignsManagerError::kUserPrefUnavailableAtMatching);
+    LOG(ERROR) << "Matching user pref before user pref service is available";
+    return false;
+  }
+
+  // If any targeting set is matched, the campaign will be selected.
+  for (auto& targeting : *user_pref_targettings) {
+    if (!targeting.is_dict()) {
+      LOG(ERROR) << "Invalid user pref targeting set.";
+      continue;
+    }
+    if (MatchUserPrefSet(*pref_service, targeting.GetDict())) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool MatchVersion(const base::Version& current_version,
                   std::optional<base::Version> min_version,
                   std::optional<base::Version> max_version) {
@@ -721,7 +827,8 @@ bool CampaignsMatcher::MatchRuntimeTargeting(
          MatchSchedulings(targeting.GetSchedulings()) &&
          MatchOpenedApp(targeting.GetAppsOpened()) &&
          MatchActiveUrlRegexes(targeting.GetActiveUrlRegexes()) &&
-         MatchEvents(targeting.GetEventsConfig(), campaign_id, group_id);
+         MatchEvents(targeting.GetEventsConfig(), campaign_id, group_id) &&
+         MatchUserPrefs(prefs_, targeting.GetUserPrefTargetings());
 }
 
 bool CampaignsMatcher::Matched(const Targeting* targeting,

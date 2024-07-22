@@ -489,7 +489,7 @@ float CalculationExpressionOperationNode::Evaluate(
       Length::EvaluationInput calculation_input(input);
       calculation_input.size_keyword_basis =
           children_[0]->Evaluate(max_value, input);
-      if (max_value == kIndefiniteSize) {
+      if (max_value == kIndefiniteSize.ToFloat()) {
         // "When evaluating the calc-size calculation, if percentages are not
         // definite in the given context, the resolve to 0px. Otherwise, they
         // resolve as normal."
