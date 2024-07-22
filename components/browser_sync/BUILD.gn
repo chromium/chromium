@@ -57,6 +57,7 @@ static_library("browser_sync") {
     "//components/sync_sessions",
     "//components/sync_user_events",
     "//components/url_formatter",
+    "//components/variations/service",
     "//components/version_info",
     "//components/version_info:generate_version_info",
     "//components/webauthn/core/browser",

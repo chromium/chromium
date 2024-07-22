@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/dom_distiller/model/dom_distiller_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_receiver_service_factory.h"
@@ -172,6 +173,8 @@ IOSChromeSyncClient::CreateModelTypeControllers(
           browser_state_));
   builder.SetFaviconService(ios::FaviconServiceFactory::GetForBrowserState(
       browser_state_, ServiceAccessType::IMPLICIT_ACCESS));
+  builder.SetGoogleGroupsManager(
+      GoogleGroupsManagerFactory::GetForBrowserState(browser_state_));
   builder.SetHistoryService(ios::HistoryServiceFactory::GetForBrowserState(
       browser_state_, ServiceAccessType::EXPLICIT_ACCESS));
   builder.SetIdentityManager(GetIdentityManager());

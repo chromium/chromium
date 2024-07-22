@@ -107,6 +107,7 @@ WebViewSyncClient::WebViewSyncClient(
   controller_builder_.SetDeviceInfoSyncService(device_info_sync_service);
   controller_builder_.SetDualReadingListModel(nullptr);
   controller_builder_.SetFaviconService(nullptr);
+  controller_builder_.SetGoogleGroupsManager(nullptr);
   controller_builder_.SetHistoryService(nullptr);
   controller_builder_.SetIdentityManager(identity_manager);
   controller_builder_.SetModelTypeStoreService(model_type_store_service);

@@ -63,6 +63,7 @@
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_user_events/user_event_model_type_controller.h"
 #include "components/sync_user_events/user_event_service.h"
+#include "components/variations/service/google_groups_manager.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/webauthn/core/browser/passkey_model.h"
@@ -208,6 +209,11 @@ void CommonControllerBuilder::SetDeviceInfoSyncService(
 void CommonControllerBuilder::SetFaviconService(
     favicon::FaviconService* favicon_service) {
   favicon_service_.Set(favicon_service);
+}
+
+void CommonControllerBuilder::SetGoogleGroupsManager(
+    GoogleGroupsManager* google_groups_manager) {
+  google_groups_manager_.Set(google_groups_manager);
 }
 
 void CommonControllerBuilder::SetHistoryService(
@@ -549,8 +555,8 @@ CommonControllerBuilder::Build(syncer::ModelTypeSet disabled_types,
   // `kEnterprisePlusAddressServerUrl` is checked to prevent enabling the
   // feature in dev builds via the field trial config.
   if (!disabled_types.Has(syncer::PLUS_ADDRESS) &&
-      plus_address_webdata_service_.value() &&
-      base::FeatureList::IsEnabled(
+      plus_address_webdata_service_.value() && google_groups_manager_.value() &&
+      google_groups_manager_.value()->IsFeatureEnabledForProfile(
           plus_addresses::features::kPlusAddressesEnabled) &&
       !plus_addresses::features::kEnterprisePlusAddressServerUrl.Get()
            .empty() &&
@@ -567,8 +573,8 @@ CommonControllerBuilder::Build(syncer::ModelTypeSet disabled_types,
   // `kEnterprisePlusAddressServerUrl` is checked to prevent enabling the
   // feature in dev builds via the field trial config.
   if (!disabled_types.Has(syncer::PLUS_ADDRESS_SETTING) &&
-      plus_address_setting_service_.value() &&
-      base::FeatureList::IsEnabled(
+      plus_address_setting_service_.value() && google_groups_manager_.value() &&
+      google_groups_manager_.value()->IsFeatureEnabledForProfile(
           plus_addresses::features::kPlusAddressesEnabled) &&
       !plus_addresses::features::kEnterprisePlusAddressServerUrl.Get()
            .empty() &&
