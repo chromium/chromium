@@ -490,10 +490,8 @@ LocalFrame::~LocalFrame() {
   if (IsAdFrame())
     InstanceCounters::DecrementCounter(InstanceCounters::kAdSubframeCounter);
 
-  // Before this destructor runs, `DetachImpl()` must have shutdown
-  // `PerformanceMonitor`, if that was needed.
-  // TODO(crbug.com/337200890): Remove when investigation is complete.
-  CHECK(!must_shutdown_performance_monitor_);
+  // Before this destructor runs, `DetachImpl()` must have been run.
+  CHECK(did_run_detach_impl_);
 }
 
 void LocalFrame::Trace(Visitor* visitor) const {
@@ -668,9 +666,9 @@ bool LocalFrame::ShouldMaintainTrivialSessionHistory() const {
 
 bool LocalFrame::DetachImpl(FrameDetachType type) {
   absl::Cleanup check_post_condition = [this] {
-    // This method must shutdown the `PerformanceMonitor` if needed.
-    // TODO(crbug.com/337200890): Remove when bug investigation is complete.
-    CHECK(!must_shutdown_performance_monitor_);
+    // This method must shutdown objects associated with it (such as
+    // the `PerformanceMonitor` for local roots).
+    CHECK(did_run_detach_impl_);
   };
 
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -755,7 +753,6 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
 
   if (IsLocalRoot()) {
     performance_monitor_->Shutdown();
-    must_shutdown_performance_monitor_ = false;
 
     if (ad_tracker_)
       ad_tracker_->Shutdown();
@@ -804,6 +801,7 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
   mojo_handler_->DidDetachFrame();
   WeakIdentifierMap<LocalFrame>::NotifyObjectDestroyed(this);
 
+  did_run_detach_impl_ = true;
   return true;
 }
 
@@ -1890,7 +1888,6 @@ LocalFrame::LocalFrame(
   if (IsLocalRoot()) {
     performance_monitor_ =
         MakeGarbageCollected<PerformanceMonitor>(this, isolate);
-    must_shutdown_performance_monitor_ = true;
 
     inspector_issue_reporter_ = MakeGarbageCollected<InspectorIssueReporter>(
         &page.GetInspectorIssueStorage());

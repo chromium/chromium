@@ -1087,6 +1087,8 @@ class CORE_EXPORT LocalFrame final
   // Whether this frame is known to be completely occluded by other opaque
   // OS-level windows.
   unsigned hidden_ : 1;
+  // Whether DetachImpl() has run to completion on this LocalFrame.
+  unsigned did_run_detach_impl_ : 1 = false;
 
   float layout_zoom_factor_;
   float text_zoom_factor_;
@@ -1094,12 +1096,6 @@ class CORE_EXPORT LocalFrame final
   Member<CoreProbeSink> probe_sink_;
   scoped_refptr<InspectorTaskRunner> inspector_task_runner_;
   Member<PerformanceMonitor> performance_monitor_;
-
-  // Whether `performance_monitor_` was created by this (not a reference to a
-  // `PerformanceMonitor` created by another `LocalFrame`) and not shutdown yet.
-  //
-  // TODO(crbug.com/337200890): Remove when investigation is complete.
-  bool must_shutdown_performance_monitor_ = false;
 
   Member<AdTracker> ad_tracker_;
   Member<IdlenessDetector> idleness_detector_;
