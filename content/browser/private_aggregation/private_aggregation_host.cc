@@ -461,7 +461,6 @@ void PrivateAggregationHost::OnReceiverDisconnected() {
     return;
   }
 
-  // The timeout hasn't been reached.
   CHECK(current_context.timeout_timer->IsRunning());
   pipes_with_timeout_count_--;
 
