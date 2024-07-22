@@ -2378,6 +2378,8 @@ const char* ToString(ax::mojom::NameFrom name_from) {
       return "contents";
     case ax::mojom::NameFrom::kPlaceholder:
       return "placeholder";
+    case ax::mojom::NameFrom::kProhibited:
+      return "prohibited";
     case ax::mojom::NameFrom::kRelatedElement:
       return "relatedElement";
     case ax::mojom::NameFrom::kTitle:
@@ -2403,6 +2405,8 @@ const char* ToString(ax::mojom::DescriptionFrom description_from) {
       return "buttonLabel";
     case ax::mojom::DescriptionFrom::kPopoverAttribute:
       return "popoverAttribute";
+    case ax::mojom::DescriptionFrom::kProhibitedNameRepair:
+      return "prohibitedNameRepair";
     case ax::mojom::DescriptionFrom::kRelatedElement:
       return "relatedElement";
     case ax::mojom::DescriptionFrom::kRubyAnnotation:

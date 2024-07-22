@@ -4835,6 +4835,7 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
     case ax::mojom::blink::NameFrom::kNone:
     case ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty:
     case ax::mojom::blink::NameFrom::kContents:
+    case ax::mojom::blink::NameFrom::kProhibited:
       break;
     case ax::mojom::blink::NameFrom::kAttribute:
     case ax::mojom::blink::NameFrom::kCaption:
@@ -4849,6 +4850,7 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
     case ax::mojom::blink::NameFrom::kNone:
     case ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty:
     case ax::mojom::blink::NameFrom::kContents:
+    case ax::mojom::blink::NameFrom::kProhibited:
       break;
     case ax::mojom::blink::NameFrom::kAttribute:
     case ax::mojom::blink::NameFrom::kCaption:
@@ -7088,8 +7090,11 @@ String AXNodeObject::Description(
   // SVG-AAM specifies additional description sources when ARIA sources have not
   // been found. https://w3c.github.io/svg-aam/#mapping_additional_nd
   if (IsA<SVGElement>(GetNode())) {
-    return SVGDescription(name_from, description_from, description_sources,
-                          related_objects);
+    String svg_description = SVGDescription(
+        name_from, description_from, description_sources, related_objects);
+    if (!svg_description.empty()) {
+      return svg_description;
+    }
   }
 
   const auto* input_element = DynamicTo<HTMLInputElement>(GetNode());
@@ -7267,6 +7272,27 @@ String AXNodeObject::Description(
           }
         }
       }
+    }
+  }
+
+  // There was a name, but it is prohibited for this role. Move to description.
+  if (name_from == ax::mojom::blink::NameFrom::kProhibited) {
+    description_from = ax::mojom::blink::DescriptionFrom::kProhibitedNameRepair;
+    ax::mojom::blink::NameFrom orig_name_from_without_prohibited;
+    HeapHashSet<Member<const AXObject>> visited;
+    description = TextAlternative(false, nullptr, visited,
+                                  orig_name_from_without_prohibited,
+                                  related_objects, nullptr);
+    DCHECK(!description.empty());
+    if (description_sources) {
+      description_sources->push_back(DescriptionSource(found_description));
+      DescriptionSource& source = description_sources->back();
+      source.type = description_from;
+      source.related_objects = *related_objects;
+      source.text = description;
+      found_description = true;
+    } else {
+      return description;
     }
   }
 

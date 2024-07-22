@@ -1218,6 +1218,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       case ax::mojom::DescriptionFrom::kButtonLabel:
         from = "button-label";
         break;
+      case ax::mojom::DescriptionFrom::kProhibitedNameRepair:
+        from = "prohibited-name-repair";
+        break;
       case ax::mojom::DescriptionFrom::kRelatedElement:
         // aria-describedby=tooltip is mapped to "tooltip".
         from = IsDescribedByTooltip() ? "tooltip" : "aria-describedby";
