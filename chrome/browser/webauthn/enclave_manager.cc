@@ -138,7 +138,6 @@ struct EnclaveManager::PendingAction {
                             // state.
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin;
   std::optional<std::string> pin_public_key;
-  bool clear_secrets;
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_recovery_key;
 #endif                      // BUILDFLAG(IS_MAC)
@@ -1545,17 +1544,6 @@ class EnclaveManager::StateMachine {
       manager_->WriteState(&local_state_);
     }
 
-    if (action_->clear_secrets) {
-      user_->clear_wrapped_member_private_key();
-      user_->clear_member_public_key();
-      user_->clear_wrapped_pin();
-      user_->clear_pin_public_key();
-      user_->clear_wrapped_security_domain_secrets();
-      user_->clear_registered();
-      user_->clear_joined();
-      manager_->WriteState(&local_state_);
-    }
-
     success_ = true;
     state_ = State::kStop;
   }
@@ -2808,7 +2796,6 @@ bool EnclaveManager::ConsiderSecurityDomainState(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(user_);
   bool ret = is_ready();
-  std::unique_ptr<PendingAction> action;
 
   if (user_->joined() &&
       state.state !=
@@ -2818,11 +2805,11 @@ bool EnclaveManager::ConsiderSecurityDomainState(
        user_->wrapped_security_domain_secrets().find(*state.key_version) ==
            user_->wrapped_security_domain_secrets().end())) {
     // The security domain has been reset.
-    action = std::make_unique<PendingAction>();
-    action->callback = std::move(callback);
-    action->clear_secrets = true;
-    ret = false;
+    ClearRegistration();
     FIDO_LOG(EVENT) << "The security domain has been reset.";
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
+    return false;
   }
 
   if (ret && state.gpm_pin_metadata.has_value()) {
@@ -2833,23 +2820,21 @@ bool EnclaveManager::ConsiderSecurityDomainState(
       if (metadata.public_key.has_value() &&
           (!user_->has_wrapped_pin() ||
            user_->wrapped_pin().generation() != wrapped_pin->generation())) {
-        action = std::make_unique<PendingAction>();
+        std::unique_ptr<PendingAction> action =
+            std::make_unique<PendingAction>();
         action->callback = std::move(callback);
         action->update_wrapped_pin = true;
         action->wrapped_pin = std::move(wrapped_pin);
         action->pin_public_key = *metadata.public_key;
         FIDO_LOG(EVENT) << "The GPM PIN has been updated";
+        pending_actions_.emplace_back(std::move(action));
+        Act();
       }
     } else {
       FIDO_LOG(ERROR) << "Wrapped PIN from security domain update is invalid: "
                       << base::HexEncode(base::as_bytes(
                              base::make_span(metadata.wrapped_pin)));
     }
-  }
-
-  if (action) {
-    pending_actions_.emplace_back(std::move(action));
-    Act();
   }
 
   return ret;
