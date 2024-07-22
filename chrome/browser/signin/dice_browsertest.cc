@@ -57,10 +57,12 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/feature_engagement/public/feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -84,6 +86,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync_user_events/user_event_service.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -1803,6 +1806,109 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
   // Should still count as an explicit sign in since the choice was explicit
   // set.
   EXPECT_TRUE(prefs->GetBoolean(prefs::kExplicitBrowserSignin));
+}
+
+class DiceBrowserTestWithChromeSigninIPH
+    : public InteractiveFeaturePromoTestT<DiceBrowserTestWithExplicitSignin> {
+ public:
+  DiceBrowserTestWithChromeSigninIPH()
+      : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::
+                 kIPHExplicitBrowserSigninPreferenceRememberedFeature})) {}
+
+  void SimulateExtendedAccountInfoFetched() {
+    CoreAccountInfo core_account_info =
+        GetIdentityManager()->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSignin);
+    AccountInfo account_info =
+        GetIdentityManager()->FindExtendedAccountInfo(core_account_info);
+    account_info.full_name = "First Last";
+    account_info.given_name = "First";
+    account_info.hosted_domain = kNoHostedDomainFound;
+    account_info.picture_url = "https://example.com";
+    signin::UpdateAccountInfoForAccount(GetIdentityManager(), account_info);
+  }
+
+  void CloseIPH() {
+    EXPECT_TRUE(browser()->window()->GetFeaturePromoController()->EndPromo(
+        feature_engagement::
+            kIPHExplicitBrowserSigninPreferenceRememberedFeature,
+        user_education::EndFeaturePromoReason::kFeatureEngaged));
+    EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
+        feature_engagement::
+            kIPHExplicitBrowserSigninPreferenceRememberedFeature));
+  }
+
+  void SignoutAndResetState() {
+    signin::ClearPrimaryAccount(GetIdentityManager());
+
+    // Reset internal state to sign in again.
+    token_requested_ = false;
+    refresh_token_available_ = false;
+    reconcilor_unblocked_count_ = 0;
+    reconcilor_blocked_count_ = 0;
+
+    EXPECT_FALSE(
+        GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithChromeSigninIPH,
+                       SigninRememberedIPH) {
+  // Simulates a previous choice done with Always sign in.
+  SetChromeSigninChoice(ChromeSigninUserChoice::kSignin);
+
+  base::HistogramTester histogram_tester;
+  SimulateWebSigninMainAccount();
+
+  EXPECT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED, 1);
+
+  CoreAccountInfo core_account_info =
+      GetIdentityManager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      GetIdentityManager()->FindExtendedAccountInfo(core_account_info);
+
+  // IPH not showing yet, waiting for the name.
+  ASSERT_TRUE(account_info.given_name.empty());
+  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
+      feature_engagement::
+          kIPHExplicitBrowserSigninPreferenceRememberedFeature));
+
+  // IPH shown after receiving the name.
+  SimulateExtendedAccountInfoFetched();
+  EXPECT_TRUE(browser()->window()->IsFeaturePromoActive(
+      feature_engagement::
+          kIPHExplicitBrowserSigninPreferenceRememberedFeature));
+
+  // Sign-in once more, the IPH is not shown again.
+  CloseIPH();
+  SignoutAndResetState();
+  SimulateWebSigninMainAccount();
+  EXPECT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED, 2);
+  SimulateExtendedAccountInfoFetched();
+  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
+      feature_engagement::
+          kIPHExplicitBrowserSigninPreferenceRememberedFeature));
+
+  // Wait two weeks, and do it again: IPH shows again.
+  // TODO(crbug/345192624): The delay should start from the signout event and
+  // not from the last impression.
+  RunTestSequence(AdvanceTime(base::Days(14)));
+  SignoutAndResetState();
+  SimulateWebSigninMainAccount();
+  SimulateExtendedAccountInfoFetched();
+  EXPECT_TRUE(browser()->window()->IsFeaturePromoActive(
+      feature_engagement::
+          kIPHExplicitBrowserSigninPreferenceRememberedFeature));
 }
 
 // This test is not specifically related to DICE, but it extends
