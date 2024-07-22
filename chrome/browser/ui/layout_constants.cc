@@ -68,6 +68,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       NOTREACHED_NORETURN();
     case LOCATION_BAR_TRAILING_DECORATION_EDGE_PADDING:
       return touch_ui ? 3 : 12;
+    case LOCATION_BAR_TRAILING_DECORATION_INNER_PADDING:
+      return touch_ui ? 3 : 8;
     case LOCATION_BAR_HEIGHT:
       return touch_ui ? 36 : 34;
     case LOCATION_BAR_ICON_SIZE:

@@ -647,7 +647,8 @@ void LocationBarView::Layout(PassKey) {
 
   selected_keyword_view_->SetVisible(false);
 
-  const int edge_padding = GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING);
+  const int trailing_decoration_inner_padding =
+      GetLayoutConstant(LOCATION_BAR_TRAILING_DECORATION_INNER_PADDING);
 
   // The text should be indented only if these are all true:
   //  - The popup is open.
@@ -719,7 +720,8 @@ void LocationBarView::Layout(PassKey) {
   LocationBarLayout leading_decorations(LocationBarLayout::Position::kLeftEdge,
                                         text_left);
   LocationBarLayout trailing_decorations(
-      LocationBarLayout::Position::kRightEdge, edge_padding);
+      LocationBarLayout::Position::kRightEdge,
+      trailing_decoration_inner_padding);
 
   const std::u16string keyword(omnibox_view_->model()->keyword());
   // In some cases (e.g. fullscreen mode) we may have 0 height.  We still want
