@@ -4645,7 +4645,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.WebInspector.Enabled" enum="BooleanEnabled"
-    expires_after="2024-09-01">
+    expires_after="2024-10-01">
   <owner>ajuma@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
