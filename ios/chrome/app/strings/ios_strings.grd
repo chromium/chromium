@@ -4295,6 +4295,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SEE_ALL_OPEN_TABS_IPH_TEXT" desc="Text for the tab grid button's in-product help, explaining that all open tabs can be seen. [iOS only]">
         You can find all your open tabs here.
       </message>
+      <message name="IDS_IOS_SEGMENTED_DEFAULT_BROWSER_VIDEO_PROMO_DEVICE_SWITCHER_TITLE" desc="Title for the segmented generic default browser promo view, shown to users identified as Desktop Users or Android switchers.">
+        Get the Best from the Browser You Love
+      </message>
       <message name="IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE" desc="Message briefly displayed at the bottom of the screen to the user to inform that the tab is being sent to the target device. [Length: 35em]" meaning="The is being sent to the target device. [Length: 35em]">
         Sending to <ph name="DEVICE_NAME">$1<ex>IPhone</ex></ph>...
       </message>
