@@ -41,6 +41,10 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 #if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   // Update the custom detent with the correct initial height when trait
   // collection changed (for example when the user uses large font).
   if (self.traitCollection.preferredContentSizeCategory !=
