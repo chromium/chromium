@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "gpu/command_buffer/service/shared_image/android_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
@@ -36,6 +37,7 @@ class GPU_GLES2_EXPORT AndroidVideoImageBacking : public AndroidImageBacking {
       const gfx::ColorSpace color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
+      std::string debug_label,
       scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
       scoped_refptr<SharedContextState> context_state,
       scoped_refptr<RefCountedLock> drdc_lock);
@@ -66,6 +68,7 @@ class GPU_GLES2_EXPORT AndroidVideoImageBacking : public AndroidImageBacking {
                            const gfx::ColorSpace color_space,
                            GrSurfaceOrigin surface_origin,
                            SkAlphaType alpha_type,
+                           std::string debug_label,
                            bool is_thread_safe);
 
   std::unique_ptr<AbstractTextureAndroid> GenAbstractTexture(

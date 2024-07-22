@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_VIDEO_IMAGE_READER_IMAGE_BACKING_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -31,6 +32,7 @@ class GPU_GLES2_EXPORT VideoImageReaderImageBacking
       const gfx::ColorSpace color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
+      std::string debug_label,
       scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
       scoped_refptr<SharedContextState> shared_context_state,
       scoped_refptr<RefCountedLock> drdc_lock);

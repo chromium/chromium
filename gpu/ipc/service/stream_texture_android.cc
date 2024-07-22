@@ -240,8 +240,8 @@ gpu::Mailbox StreamTexture::CreateSharedImage(const gfx::Size& coded_size) {
   // colorspace and wire it here.
   auto shared_image = AndroidVideoImageBacking::Create(
       mailbox, coded_size, gfx::ColorSpace::CreateSRGB(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, this, context_state_,
-      GetDrDcLock());
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      /*debug_label=*/"StreamTexture", this, context_state_, GetDrDcLock());
   channel_->shared_image_stub()->factory()->RegisterBacking(
       std::move(shared_image));
 

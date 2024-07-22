@@ -29,6 +29,7 @@ VideoSurfaceTextureImageBacking::VideoSurfaceTextureImageBacking(
     const gfx::ColorSpace color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
+    std::string debug_label,
     scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
     scoped_refptr<SharedContextState> context_state)
     : AndroidVideoImageBacking(mailbox,
@@ -36,6 +37,7 @@ VideoSurfaceTextureImageBacking::VideoSurfaceTextureImageBacking(
                                color_space,
                                surface_origin,
                                alpha_type,
+                               std::move(debug_label),
                                /*is_thread_safe=*/false),
       stream_texture_sii_(std::move(stream_texture_sii)),
       context_state_(std::move(context_state)),

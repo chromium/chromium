@@ -89,7 +89,8 @@ GpuChannelSharedImageInterface::CreateSharedImageForAndroidVideo(
 
   auto shared_image_backing = AndroidVideoImageBacking::Create(
       mailbox, size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      std::move(image), std::move(shared_context), std::move(drdc_lock));
+      /*debug_label=*/"SIForAndroidVideo", std::move(image),
+      std::move(shared_context), std::move(drdc_lock));
   SharedImageMetadata metadata{shared_image_backing->format(),
                                shared_image_backing->size(),
                                shared_image_backing->color_space(),
