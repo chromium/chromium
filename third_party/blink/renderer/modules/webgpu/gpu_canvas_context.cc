@@ -387,7 +387,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
                static_cast<uint32_t>(host_size.height())},
       .format = AsDawnEnum(descriptor->format()),
       .viewFormatCount = descriptor->viewFormats().size(),
-      .viewFormats = view_formats_.get(),
+      .viewFormats = view_formats_.data(),
       // Set the size of the texture in case there was no Reshape() since the
       // creation of the context.
   };

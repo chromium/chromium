@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/containers/heap_array.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
@@ -106,11 +107,12 @@ bool ConvertToDawn(const HeapVector<Member<WebGPUType>>& in,
 }
 
 template <typename DawnEnum, typename WebGPUEnum>
-std::unique_ptr<DawnEnum[]> AsDawnEnum(const Vector<WebGPUEnum>& webgpu_enums) {
+base::HeapArray<DawnEnum> AsDawnEnum(const Vector<WebGPUEnum>& webgpu_enums) {
   wtf_size_t count = webgpu_enums.size();
   // TODO(enga): Pass in temporary memory or an allocator so we don't make a
   // separate memory allocation here.
-  std::unique_ptr<DawnEnum[]> dawn_enums(new DawnEnum[count]);
+  base::HeapArray<DawnEnum> dawn_enums =
+      base::HeapArray<DawnEnum>::Uninit(count);
   for (wtf_size_t i = 0; i < count; ++i) {
     dawn_enums[i] = AsDawnEnum(webgpu_enums[i]);
   }
@@ -120,12 +122,13 @@ std::unique_ptr<DawnEnum[]> AsDawnEnum(const Vector<WebGPUEnum>& webgpu_enums) {
 // For sequence of nullable enums, convert null value to undefined
 // dawn_enums should be a pre-allocated array with a size of count
 template <typename DawnEnum, typename WebGPUEnum>
-std::unique_ptr<DawnEnum[]> AsDawnEnum(
+base::HeapArray<DawnEnum> AsDawnEnum(
     const Vector<std::optional<WebGPUEnum>>& webgpu_enums) {
   wtf_size_t count = webgpu_enums.size();
   // TODO(enga): Pass in temporary memory or an allocator so we don't make a
   // separate memory allocation here.
-  std::unique_ptr<DawnEnum[]> dawn_enums = std::make_unique<DawnEnum[]>(count);
+  base::HeapArray<DawnEnum> dawn_enums =
+      base::HeapArray<DawnEnum>::Uninit(count);
   for (wtf_size_t i = 0; i < count; ++i) {
     if (webgpu_enums[i].has_value()) {
       dawn_enums[i] = AsDawnEnum(webgpu_enums[i].value());

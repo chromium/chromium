@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_bundle_encoder.h"
 
+#include "base/containers/heap_array.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_bundle_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_bundle_encoder_descriptor.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
@@ -36,7 +37,7 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
     }
   }
 
-  std::unique_ptr<wgpu::TextureFormat[]> color_formats =
+  base::HeapArray<wgpu::TextureFormat> color_formats =
       AsDawnEnum<wgpu::TextureFormat>(webgpu_desc->colorFormats());
 
   wgpu::TextureFormat depth_stencil_format = wgpu::TextureFormat::Undefined;
@@ -51,7 +52,7 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
 
   wgpu::RenderBundleEncoderDescriptor dawn_desc = {
       .colorFormatCount = color_formats_count,
-      .colorFormats = color_formats.get(),
+      .colorFormats = color_formats.data(),
       .depthStencilFormat = depth_stencil_format,
       .sampleCount = webgpu_desc->sampleCount(),
       .depthReadOnly = webgpu_desc->depthReadOnly(),

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_CANVAS_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_CANVAS_CONTEXT_H_
 
+#include "base/containers/heap_array.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_alpha_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -165,7 +166,7 @@ class GPUCanvasContext : public CanvasRenderingContext,
   // it may have different usage in the case that a copy is required.
   wgpu::TextureDescriptor swap_texture_descriptor_;
   wgpu::DawnTextureInternalUsageDescriptor texture_internal_usage_;
-  std::unique_ptr<wgpu::TextureFormat[]> view_formats_;
+  base::HeapArray<wgpu::TextureFormat> view_formats_;
 };
 
 }  // namespace blink
