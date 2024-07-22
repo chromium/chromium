@@ -8267,6 +8267,11 @@ const char kComposeProactiveNudgeDescription[] =
 const char kComposeNudgeAtCursorName[] = "Compose Nudge At Cursor";
 const char kComposeNudgeAtCursorDescription[] =
     "Shows the Compose proactive nudge at the cursor location";
+
+const char kComposePoliteNudgeName[] = "Compose Polite a11y announcement";
+const char kComposePoliteNudgeDescription[] =
+    "Uses polite announcements to alert the user that a compose popup is "
+    "available to interact with.";
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

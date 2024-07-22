@@ -668,6 +668,11 @@ BASE_FEATURE(kAutofillContentEditableChangeEvents,
 #endif
 );
 
+// Causes Autofill to announce the Compose popup less assertively.
+BASE_FEATURE(kComposePopupAnnouncePolitely,
+             "ComposePopupAnnouncePolitely",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls an ablation study in which autofill for addresses and payment data
 // can be suppressed.
 BASE_FEATURE(kAutofillEnableAblationStudy,

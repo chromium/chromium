@@ -134,6 +134,11 @@ bool ContentCellShouldOpenSubPopupSuggestion(const Suggestion& suggestion) {
          !suggestion.children.empty();
 }
 
+BrowserView* GetLastActiveBrowserView() {
+  Browser* browser = chrome::FindLastActive();
+  return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
+}
+
 }  // namespace
 
 // Creates a new popup view instance. The Widget parent is taken either from
@@ -229,16 +234,31 @@ bool PopupViewViews::Show(
   // Compose has separate on show announcements.
   // TODO(b/340359989): Replace with AutofillComposeDelegate::OnShow
   if (controller_->GetMainFillingProduct() == FillingProduct::kCompose) {
+    const bool announce_politely =
+        base::FeatureList::IsEnabled(features::kComposePopupAnnouncePolitely);
+
     switch (controller_->GetSuggestionAt(0).type) {
       case SuggestionType::kComposeResumeNudge:
-      case SuggestionType::kComposeSavedStateNotification:
-        AxAnnounce(l10n_util::GetStringUTF16(
-            IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_RESUME));
+      case SuggestionType::kComposeSavedStateNotification: {
+        const std::u16string saved_state_message = l10n_util::GetStringUTF16(
+            IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_RESUME);
+        if (announce_politely) {
+          AnnouncePolitely(saved_state_message);
+        } else {
+          AxAnnounce(saved_state_message);
+        }
         break;
-      case SuggestionType::kComposeProactiveNudge:
-        AxAnnounce(l10n_util::GetStringUTF16(
-            IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_PROACTIVE));
+      }
+      case SuggestionType::kComposeProactiveNudge: {
+        const std::u16string proactive_message = l10n_util::GetStringUTF16(
+            IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_PROACTIVE);
+        if (announce_politely) {
+          AnnouncePolitely(proactive_message);
+        } else {
+          AxAnnounce(proactive_message);
+        }
         break;
+      }
       case SuggestionType::kComposeDisable:
       case SuggestionType::kComposeGoToSettings:
       case SuggestionType::kComposeNeverShowOnThisSiteAgain:
@@ -631,15 +651,19 @@ std::optional<int32_t> PopupViewViews::GetAxUniqueId() {
 }
 
 void PopupViewViews::AxAnnounce(const std::u16string& text) {
-  Browser* browser = chrome::FindLastActive();
-  if (!browser) {
-    return;
-  }
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  BrowserView* browser_view = GetLastActiveBrowserView();
   if (!browser_view) {
     return;
   }
   browser_view->GetViewAccessibility().AnnounceText(text);
+}
+
+void PopupViewViews::AnnouncePolitely(const std::u16string& text) {
+  BrowserView* browser_view = GetLastActiveBrowserView();
+  if (!browser_view) {
+    return;
+  }
+  browser_view->GetViewAccessibility().AnnouncePolitely(text);
 }
 
 base::WeakPtr<AutofillPopupView> PopupViewViews::CreateSubPopupView(

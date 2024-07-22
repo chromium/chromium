@@ -16901,6 +16901,7 @@ from previous Chrome versions.
   <int value="-1527783093" label="VideoPictureInPictureMinimizeButton:enabled"/>
   <int value="-1527094429" label="ArcRtVcpuQuadCore:disabled"/>
   <int value="-1526934250" label="BorealisProvision:disabled"/>
+  <int value="-1525721407" label="ComposePopupAnnouncePolitely:enabled"/>
   <int value="-1525129540"
       label="OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover:disabled"/>
   <int value="-1524510718"
@@ -19538,6 +19539,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRefOnInteraction:enabled"/>
   <int value="-389601101" label="HelpAppAutoTriggerInstallDialog:enabled"/>
   <int value="-389283574" label="IPH_PasswordsAccountStorage:disabled"/>
+  <int value="-388038940" label="ComposePopupAnnouncePolitely:disabled"/>
   <int value="-387606010" label="ArcBootCompletedBroadcast:enabled"/>
   <int value="-387341308" label="ParentAccessJelly:disabled"/>
   <int value="-387217874" label="LinkCapturingInfoBar:enabled"/>

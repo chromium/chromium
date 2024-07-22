@@ -236,6 +236,9 @@ class PopupViewViews : public PopupBaseView,
   // level up. Returns whether this was successful.
   bool SelectParentPopupContentCell();
 
+  // Announces a string without assertively alerting a user.
+  void AnnouncePolitely(const std::u16string& text);
+
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
 

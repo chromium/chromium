@@ -1500,6 +1500,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "compose-polite-nudge",
+    "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
+    "expiry_milestone": 132
+  },
+  {
     "name": "compose-proactive-nudge",
     "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
     "expiry_milestone": 132

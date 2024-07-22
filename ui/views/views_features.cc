@@ -36,4 +36,9 @@ BASE_FEATURE(kKeyboardAccessibleTooltipInViews,
              "KeyboardAccessibleTooltipInViews",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Used to enable additional a11y attributes when announcing text.
+BASE_FEATURE(kAnnounceTextAdditionalAttributes,
+             "AnnounceTextAdditionalAttributes",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace views::features

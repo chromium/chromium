@@ -11114,6 +11114,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kComposeNudgeAtCursorDescription,
      kOsWin | kOsLinux | kOsMac | kOsCrOS,
      FEATURE_VALUE_TYPE(compose::features::kEnableComposeNudgeAtCursor)},
+
+    {"compose-polite-nudge", flag_descriptions::kComposePoliteNudgeName,
+     flag_descriptions::kComposePoliteNudgeDescription,
+     kOsWin | kOsLinux | kOsMac | kOsCrOS,
+     FEATURE_VALUE_TYPE(autofill::features::kComposePopupAnnouncePolitely)},
+
 #endif
 
     {"related-website-sets-permission-grants",
