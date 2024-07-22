@@ -18,6 +18,8 @@
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/color_space.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
+#include "ui/ozone/platform/drm/common/hardware_display_controller_info.h"
+#include "ui/ozone/platform/drm/common/tile_property.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 
