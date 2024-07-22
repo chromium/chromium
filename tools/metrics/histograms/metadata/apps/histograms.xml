@@ -172,6 +172,17 @@ chromium-metrics-reviews@google.com.
   <variant name="Launch" summary="launch"/>
 </variants>
 
+<variants name="SearchCategory">
+  <variant name="Apps" summary="installed apps"/>
+  <variant name="AppShortcut" summary="shortcut for installed apps"/>
+  <variant name="Files" summary="local and Google Drive files"/>
+  <variant name="Games" summary="system settings"/>
+  <variant name="Helps" summary="help articles"/>
+  <variant name="Images" summary="image results"/>
+  <variant name="PlayStore" summary="play store suggestions"/>
+  <variant name="Web" summary="webpages"/>
+</variants>
+
 <variants name="SearchFileExtension">
   <variant name="Jpeg" summary="jpeg"/>
   <variant name="Jpg" summary="jpg"/>
@@ -1220,7 +1231,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.Search.SearchCategoriesEnableState.{SearchCategory}"
-    enum="AppListSearchCategoryState" expires_after="2024-07-31">
+    enum="AppListSearchCategoryState" expires_after="2025-01-31">
   <owner>wcwang@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -1238,10 +1249,11 @@ chromium-metrics-reviews@google.com.
 
     Disabled: The category is available but manually disabled by users.
   </summary>
+  <token key="SearchCategory" variants="SearchCategory"/>
 </histogram>
 
 <histogram name="Apps.AppList.Search.SearchCategoryFilterMenuOpenedCount"
-    units="count" expires_after="2024-07-31">
+    units="count" expires_after="2025-01-31">
   <owner>wcwang@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
