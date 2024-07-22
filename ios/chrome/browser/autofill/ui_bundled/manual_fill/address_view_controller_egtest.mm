@@ -543,9 +543,9 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   [[EarlGrey selectElementWithMatcher:AddressDetailsPage()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Edit the address.
-  [[EarlGrey selectElementWithMatcher:grey_text(@"666 Erebus St.")]
-      performAction:grey_replaceText(@"123 new address")];
+  // Edit the city.
+  [[EarlGrey selectElementWithMatcher:grey_text(@"Elysium")]
+      performAction:grey_replaceText(@"Mountain View")];
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
 

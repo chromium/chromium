@@ -251,6 +251,7 @@ source_set("eg_app_support+eg2") {
     "//components/autofill/core/browser:test_support",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:test_support",
+    "//components/autofill/ios/common",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
     "//ios/chrome/browser/autofill/model",
