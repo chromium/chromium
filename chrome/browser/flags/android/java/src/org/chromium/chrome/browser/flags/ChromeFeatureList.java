@@ -874,6 +874,9 @@ public abstract class ChromeFeatureList {
     // Mutable*ParamWithSafeDefault instances.
     /* Alphabetical: */
     public static final MutableBooleanParamWithSafeDefault
+            sGtsCloseTabAnimationCloseAllCustomAnimation =
+                    sGtsCloseTabAnimation.newBooleanParam("close_all_custom_animation", false);
+    public static final MutableBooleanParamWithSafeDefault
             sGtsCloseTabAnimationCloseAllQuickDeleteAnimation =
                     sGtsCloseTabAnimation.newBooleanParam(
                             "close_all_quick_delete_animation", false);

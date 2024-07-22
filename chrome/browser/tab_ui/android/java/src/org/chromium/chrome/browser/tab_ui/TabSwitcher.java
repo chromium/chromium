@@ -46,6 +46,13 @@ public interface TabSwitcher {
     void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs);
 
     /**
+     * Show the Close All Tabs animation on the tab list.
+     *
+     * @param onAnimationEnd Runnable that is invoked when the animation is completed.
+     */
+    void showCloseAllTabsAnimation(Runnable onAnimationEnd);
+
+    /**
      * Open the invitation modal on top of the tab switcher view when an invitation intent is
      * intercepted.
      *

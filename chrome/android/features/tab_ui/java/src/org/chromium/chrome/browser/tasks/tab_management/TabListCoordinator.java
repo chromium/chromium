@@ -860,6 +860,12 @@ public class TabListCoordinator
     }
 
     void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
+        assert mMode == TabListMode.GRID : "Can only run animation in GRID mode.";
         mMediator.showQuickDeleteAnimation(onAnimationEnd, tabs, mRecyclerView);
+    }
+
+    void showCloseAllTabsAnimation(Runnable onAnimationEnd) {
+        assert mMode == TabListMode.GRID : "Can only run animation in GRID mode.";
+        mMediator.showCloseAllTabsAnimation(onAnimationEnd, mRecyclerView);
     }
 }

@@ -3736,6 +3736,9 @@ const FeatureEntry::FeatureParam kGtsCloseTabAnimationUseStandardEasing[] = {
 const FeatureEntry::FeatureParam
     kGtsCloseTabAnimationCloseAllQuickDeleteAnimation[] = {
         {"close_all_quick_delete_animation", "true"}};
+const FeatureEntry::FeatureParam
+    kGtsCloseTabAnimationCloseAllCustomAnimation[] = {
+        {"close_all_custom_animation", "true"}};
 
 const FeatureEntry::FeatureVariation kGtsCloseTabAnimationVariations[] = {
     {"Option A remove and move simultaneously",
@@ -3749,6 +3752,9 @@ const FeatureEntry::FeatureVariation kGtsCloseTabAnimationVariations[] = {
     {"Option D close all uses quick delete animation",
      kGtsCloseTabAnimationCloseAllQuickDeleteAnimation,
      std::size(kGtsCloseTabAnimationCloseAllQuickDeleteAnimation), nullptr},
+    {"Option E close all uses custom animation",
+     kGtsCloseTabAnimationCloseAllCustomAnimation,
+     std::size(kGtsCloseTabAnimationCloseAllCustomAnimation), nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 

@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.ComponentCallbacks;
 import android.content.Context;
@@ -40,6 +41,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
@@ -127,6 +129,8 @@ import java.util.stream.Collectors;
  * true.
  */
 class TabListMediator {
+    private static final int CLOSE_ALL_TABS_DELAY_MS = 66;
+
     // Set to true after a `resetWithListOfTabs` that used a non-null list of tabs. Remains true
     // until `postHiding` is invoked or the mediator is destroyed. While true, this mediator is
     // actively tracking updates to a TabModel.
@@ -2153,6 +2157,7 @@ class TabListMediator {
                                 TabProperties.QUICK_DELETE_ANIMATION_STATUS,
                                 QuickDeleteAnimationStatus.TAB_RESTORE)
                         .with(TabProperties.TAB_GROUP_COLOR_ID, colorId)
+                        .with(TabProperties.VISIBILITY, View.VISIBLE)
                         .build();
 
         if (!mActionsOnAllRelatedTabs || !isTabInTabGroup(tab)) {
@@ -2686,6 +2691,81 @@ class TabListMediator {
         int index = mModel.lastIndexForMessageItem();
         if (index == TabModel.INVALID_TAB_INDEX) return false;
         return index == mModel.size() - 1;
+    }
+
+    /**
+     * Prepare and run the close all tabs animation.
+     *
+     * @param onAnimationEnd Runnable that is invoked when the animation is completed.
+     * @param recyclerView The {@link TabListRecyclerView} that is showing the tab list UI.
+     */
+    public void showCloseAllTabsAnimation(
+            @NonNull Runnable onAnimationEnd, @NonNull TabListRecyclerView recyclerView) {
+        // Touch input is blocked until the animation finishes.
+        recyclerView.setBlockTouchInput(true);
+
+        // This animation closes tabs row-by-row from bottom to top of the tab switcher using the
+        // shrink and fade animation. Each tab gets its own animator, a row of tabs gets grouped
+        // into a single animator set and those row animators get played together with a staggered
+        // delay.
+
+        // TODO(ckitagawa): Use the logic from
+        // https://chromium-review.googlesource.com/c/chromium/src/+/5722241.
+        var layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        int firstVisible = layoutManager.findFirstVisibleItemPosition();
+        int lastVisible = layoutManager.findLastVisibleItemPosition();
+        List<Animator> allRowAnimators = new ArrayList<>();
+        List<Animator> currentRowAnimators = new ArrayList<>();
+        Integer lastBottomY = null;
+        int delayMs = 0;
+        for (int i = lastVisible; i >= firstVisible; i--) {
+            PropertyModel model = mModel.get(i).model;
+            if (model.get(CARD_TYPE) != TAB) continue;
+
+            RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(i);
+
+            int bottomY = viewHolder.itemView.getBottom();
+            if (lastBottomY != null && bottomY != lastBottomY.intValue()) {
+                AnimatorSet rowAnimator = new AnimatorSet();
+                rowAnimator.playTogether(currentRowAnimators);
+                rowAnimator.setStartDelay(delayMs);
+                allRowAnimators.add(rowAnimator);
+
+                currentRowAnimators = new ArrayList<>();
+                delayMs += CLOSE_ALL_TABS_DELAY_MS;
+            }
+            lastBottomY = bottomY;
+            var tabAnimator = TabListItemAnimator.buildTabRemoveAnimator(viewHolder);
+            tabAnimator.addListener(
+                    new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            // Per-item animations restore scale and alpha for re-use. However, we
+                            // need to keep the item invisible until the tabs are actually closed.
+                            // GONE would result in relayout. The visibility is restored to VISIBLE
+                            // when the tab card's view is re-used in the initial bind of its
+                            // property model.
+                            model.set(TabProperties.VISIBILITY, View.INVISIBLE);
+                        }
+                    });
+            currentRowAnimators.add(tabAnimator);
+        }
+        AnimatorSet rowAnimator = new AnimatorSet();
+        rowAnimator.playTogether(currentRowAnimators);
+        rowAnimator.setStartDelay(delayMs);
+        allRowAnimators.add(rowAnimator);
+
+        AnimatorSet fullAnimator = new AnimatorSet();
+        fullAnimator.playTogether(allRowAnimators);
+        fullAnimator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        recyclerView.setBlockTouchInput(false);
+                        onAnimationEnd.run();
+                    }
+                });
+        fullAnimator.start();
     }
 
     /**
