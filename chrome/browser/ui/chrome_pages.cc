@@ -622,13 +622,13 @@ void ShowAllSitesSettingsFilteredByFpsOwner(
   ShowSingletonTabIgnorePathOverwriteNTP(browser, url);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser) {
   // Management shows in a tab because it has a "back" arrow that takes the
   // user to the Chrome browser about page, which is part of browser settings.
   ShowSingletonTabIgnorePathOverwriteNTP(browser, GURL(kChromeUIManagementURL));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ShowAppManagementPage(Profile* profile,
                            const std::string& app_id,
                            ash::settings::AppManagementEntryPoint entry_point) {

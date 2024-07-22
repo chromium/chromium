@@ -66,6 +66,7 @@ ManagementToolbarButton::ManagementToolbarButton(BrowserView* browser_view,
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON);
 
   SetID(VIEW_ID_MANAGEMENT_BUTTON);
+  SetProperty(views::kElementIdentifierKey, kToolbarManagementButtonElementId);
 
   // The icon should not flip with RTL UI. This does not affect text rendering
   // and LabelButton image/label placement is still flipped like usual.
@@ -169,8 +170,7 @@ void ManagementToolbarButton::OnThemeChanged() {
 }
 
 void ManagementToolbarButton::ButtonPressed() {
-  // TODO(crbug/347245819) : Make this show the management menu view once
-  // implemented.
+  browser_->window()->ShowBubbleFromManagementToolbarButton();
 }
 
 ui::ImageModel ManagementToolbarButton::GetIcon() const {

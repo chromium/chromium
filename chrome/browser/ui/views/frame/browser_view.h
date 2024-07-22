@@ -604,6 +604,7 @@ class BrowserView : public BrowserWindow,
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;
   void ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) override;
+  void ShowBubbleFromManagementToolbarButton() override;
   void MaybeShowProfileSwitchIPH() override;
   void ShowHatsDialog(
       const std::string& site_id,
