@@ -147,6 +147,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UserEducation.MessageShown.RotatingPromoIndex" units="Index"
     expires_after="2024-09-01">
+  <expired_intentionally>
+    Deprecated. Replaced by UserEducation.RotatingPromoIndex.{IPHFeature}.
+  </expired_intentionally>
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>

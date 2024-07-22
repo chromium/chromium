@@ -741,6 +741,22 @@ In the future, Desktop IPH may be completely moved to the user_education folder.
   <token key="IPHFeature" variants="IPHFeature"/>
 </histogram>
 
+<histogram name="UserEducation.RotatingPromoIndex.{IPHFeature}" units="Index"
+    expires_after="2025-01-01">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Record the index of a rotating promo when it is shown to the user. This can
+    be used to determine how deep in the rotation of rotating promos users are
+    going, and also what proportion of users have seen a particular promo from a
+    rotating promo set.
+
+    This replaces the deprecated histogram
+    &quot;UserEducation.MessageShown.RotatingPromoIndex&quot;.
+  </summary>
+  <token key="IPHFeature" variants="IPHFeature"/>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

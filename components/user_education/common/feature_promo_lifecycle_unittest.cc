@@ -144,8 +144,9 @@ class FeaturePromoLifecycleTest : public testing::Test {
     return result;
   }
 
-  auto CheckShownMetrics(const std::unique_ptr<FeaturePromoLifecycle> lifecycle,
-                         int shown_count) {
+  auto CheckShownMetrics(const FeaturePromoLifecycle* lifecycle,
+                         int shown_count,
+                         std::map<int, int> rotating_counts = {}) {
     EXPECT_EQ(shown_count,
               user_action_tester_.GetActionCount("UserEducation.MessageShown"));
     EXPECT_EQ(
@@ -201,6 +202,16 @@ class FeaturePromoLifecycleTest : public testing::Test {
     histogram_tester_.ExpectBucketCount(
         "UserEducation.MessageShown.Subtype",
         static_cast<int>(lifecycle->promo_subtype()), shown_count);
+
+    const std::string rotating_histogram_name = base::StringPrintf(
+        "UserEducation.RotatingPromoIndex.%s", lifecycle->iph_feature()->name);
+    int total_count = 0;
+    for (const auto& [index, count] : rotating_counts) {
+      histogram_tester_.ExpectBucketCount(rotating_histogram_name, index + 1,
+                                          count);
+      total_count += count;
+    }
+    histogram_tester_.ExpectTotalCount(rotating_histogram_name, total_count);
   }
 
  protected:
@@ -241,7 +252,7 @@ TEST_F(FeaturePromoLifecycleTest, BubbleClosedOnDiscard) {
   auto lifecycle = CreateLifecycle(kTestIPHFeature);
   lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);
   EXPECT_CALL(tracker_, Dismissed(testing::Ref(kTestIPHFeature)));
-  CheckShownMetrics(std::move(lifecycle), /*shown_count=*/1);
+  CheckShownMetrics(lifecycle.get(), /*shown_count=*/1);
   lifecycle.reset();
   EXPECT_EQ(0, num_open_bubbles_);
 }
@@ -267,7 +278,7 @@ TEST_F(FeaturePromoLifecycleTest,
 
   EXPECT_CALL(tracker_, Dismissed(testing::Ref(kTestIPHFeature)));
   lifecycle->OnContinuedPromoEnded(true);
-  CheckShownMetrics(std::move(lifecycle), /*shown_count=*/1);
+  CheckShownMetrics(lifecycle.get(), /*shown_count=*/1);
   promo_data = storage_service_.ReadPromoData(kTestIPHFeature);
   EXPECT_TRUE(promo_data->is_dismissed);
   EXPECT_EQ(CloseReason::kAction, promo_data->last_dismissed_by);
@@ -310,7 +321,7 @@ TEST_F(FeaturePromoLifecycleTest, ClosePromoBubbleAndContinue_kLegalNotice) {
 
   EXPECT_CALL(tracker_, Dismissed(testing::Ref(kTestIPHFeature)));
   lifecycle->OnContinuedPromoEnded(false);
-  CheckShownMetrics(std::move(lifecycle), /*shown_count=*/1);
+  CheckShownMetrics(lifecycle.get(), /*shown_count=*/1);
   EXPECT_CALL(tracker_, Dismissed).Times(0);
   promo_data = storage_service_.ReadPromoData(kTestIPHFeature);
   EXPECT_TRUE(promo_data->is_dismissed);
@@ -331,7 +342,7 @@ TEST_F(FeaturePromoLifecycleTest, ClosePromoBubbleAndContinue_kKeyedNotice) {
 
   EXPECT_CALL(tracker_, Dismissed(testing::Ref(kTestIPHFeature)));
   lifecycle->OnContinuedPromoEnded(false);
-  CheckShownMetrics(std::move(lifecycle), /*shown_count=*/1);
+  CheckShownMetrics(lifecycle.get(), /*shown_count=*/1);
   EXPECT_CALL(tracker_, Dismissed).Times(0);
   promo_data = storage_service_.ReadPromoData(kTestIPHFeature);
   EXPECT_TRUE(promo_data->is_dismissed);
@@ -375,6 +386,8 @@ TEST_F(FeaturePromoLifecycleTest, RotatingPromoGetIndex) {
   lifecycle->OnPromoEnded(CloseReason::kDismiss, false);
   promo_data = storage_service_.ReadPromoData(kTestIPHFeature);
   EXPECT_EQ(1, promo_data->promo_index);
+
+  CheckShownMetrics(lifecycle.get(), 4, {{0, 2}, {1, 1}, {2, 1}});
 }
 
 TEST_F(FeaturePromoLifecycleTest, RotatingPromoSetIndex) {
