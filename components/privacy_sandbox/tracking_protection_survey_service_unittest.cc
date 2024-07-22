@@ -11,6 +11,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/mock_tracking_protection_onboarding_delegate.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_reminder_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,6 +28,7 @@ class TrackingProtectionSurveyServiceTest : public testing::Test {
  public:
   TrackingProtectionSurveyServiceTest() {
     tracking_protection::RegisterProfilePrefs(prefs()->registry());
+    // Dependency for TrackingProtectionReminderService
     PrivacySandboxNoticeStorage::RegisterProfilePrefs(prefs()->registry());
   }
 

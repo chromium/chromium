@@ -66,7 +66,8 @@ void TrackingProtectionReminderDesktopUiController::
       break;
     case ReminderType::kSilent:
       if (browser->window()->CanShowFeaturePromo(GetIPHReminderFeature())) {
-        reminder_service_->OnReminderExperienced();
+        reminder_service_->OnReminderExperienced(
+            TrackingProtectionOnboarding::SurfaceType::kDesktop);
       }
       break;
     case ReminderType::kActive:
@@ -75,7 +76,8 @@ void TrackingProtectionReminderDesktopUiController::
       // reminder interaction and delta time from reminder appearing to
       // interaction.
       if (browser->window()->MaybeShowFeaturePromo(std::move(params))) {
-        reminder_service_->OnReminderExperienced();
+        reminder_service_->OnReminderExperienced(
+            TrackingProtectionOnboarding::SurfaceType::kDesktop);
       }
       break;
   }

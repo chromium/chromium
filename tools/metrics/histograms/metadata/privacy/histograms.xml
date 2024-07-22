@@ -100,6 +100,14 @@ reviewer.
       summary="Consent notice with Topics API on Clank Browser App."/>
   <variant name="TopicsConsentModalClankCCT"
       summary="Consent notice with Topics API on Clank CCT."/>
+  <variant name="TrackingProtectionReminderClankBrApp"
+      summary="Reminder notice on Clank Browser App."/>
+  <variant name="TrackingProtectionReminderDesktopIPH"
+      summary="Reminder notice on Desktop."/>
+  <variant name="TrackingProtectionSilentReminderClankBrApp"
+      summary="Silent reminder notice on Clank Browser App."/>
+  <variant name="TrackingProtectionSilentReminderDesktopIPH"
+      summary="Silent reminder notice on Desktop."/>
 </variants>
 
 <!-- TODO(crbug.com/333408794): Add user action metrics for these. -->

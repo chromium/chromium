@@ -67,6 +67,8 @@ source_set("tracking_protection_reminder_service") {
 
   deps = [
     ":features",
+    ":privacy_sandbox_notice_constants",
+    ":privacy_sandbox_notice_storage",
     ":tracking_protection_onboarding",
     ":tracking_protection_prefs",
     "//components/keyed_service/core:core",

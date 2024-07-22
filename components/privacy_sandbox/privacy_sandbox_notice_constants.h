@@ -37,11 +37,24 @@ inline constexpr char kTopicsConsentModalClankBrApp[] =
 inline constexpr char kTopicsConsentModalClankCCT[] =
     "TopicsConsentModalClankCCT";
 
+// Reminder notice names.
+inline constexpr char kTrackingProtectionSilentReminderClank[] =
+    "TrackingProtectionSilentReminderClankBrApp";
+inline constexpr char kTrackingProtectionReminderClank[] =
+    "TrackingProtectionReminderClankBrApp";
+inline constexpr char kTrackingProtectionSilentReminderDesktopIPH[] =
+    "TrackingProtectionSilentReminderDesktopIPH";
+inline constexpr char kTrackingProtectionReminderDesktopIPH[] =
+    "TrackingProtectionReminderDesktopIPH";
+
 inline constexpr auto kPrivacySandboxNoticeNames =
     base::MakeFixedFlatSet<std::string_view>(
         {kFull3PCDIPH, kFull3PCDClankBrApp, kFull3PCDClankCCT,
          kTopicsConsentModal, kTopicsConsentModalClankBrApp,
-         kTopicsConsentModalClankCCT, kFull3PCDWithIPPIPH,
+         kTopicsConsentModalClankCCT, kTrackingProtectionSilentReminderClank,
+         kTrackingProtectionReminderClank,
+         kTrackingProtectionSilentReminderDesktopIPH,
+         kTrackingProtectionReminderDesktopIPH, kFull3PCDWithIPPIPH,
          kFull3PCDWithIPPClankBrApp, kFull3PCDWithIPPClankCCT,
          kFull3PCDSilentIPH, kFull3PCDSilentClankBrApp,
          kFull3PCDSilentClankCCT});

@@ -10,6 +10,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/mock_tracking_protection_onboarding_delegate.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -75,6 +76,7 @@ class TrackingProtectionReminderServiceTest : public testing::Test {
     return {};
   }
 
+  // TODO(crbug.com/353703170): Handle onboarding for the 3PCD Notice.
   void ShowOnboardingNotice(bool is_silent) {
     if (is_silent) {
       onboarding_service()->MaybeMarkModeBSilentEligible();
@@ -268,6 +270,34 @@ TEST_P(TrackingProtectionReminderServiceSilentReminderTest,
 
   task_env_.FastForwardBy(base::Days(7));
   EXPECT_EQ(reminder_service()->GetReminderType(), ReminderType::kSilent);
+}
+
+TEST_P(TrackingProtectionReminderServiceSilentReminderTest,
+       SilentReminderExperienced) {
+  ShowOnboardingNotice(/*is_silent=*/GetParam());
+  CallOnboardingObserver(/*is_silent=*/GetParam());
+  task_env_.FastForwardBy(base::Days(7));
+  EXPECT_EQ(reminder_service()->GetReminderType(), ReminderType::kSilent);
+  // Check that there does not exists a existing timestamp.
+  EXPECT_EQ(
+      reminder_service()->GetReminderNoticeData(
+          /*surface_type=*/TrackingProtectionOnboarding::SurfaceType::kDesktop),
+      std::nullopt);
+
+  // Simulate a successful silent reminder
+  reminder_service()->OnReminderExperienced(
+      /*surface_type=*/TrackingProtectionOnboarding::SurfaceType::kDesktop);
+
+  // Confirm that the reminder timestamp was logged.
+  EXPECT_EQ(reminder_service()
+                ->GetReminderNoticeData(
+                    /*surface_type=*/TrackingProtectionOnboarding::SurfaceType::
+                        kDesktop)
+                ->notice_first_shown,
+            base::Time::Now());
+  EXPECT_EQ(reminder_service()->GetReminderStatus(),
+            tracking_protection::TrackingProtectionReminderStatus::
+                kExperiencedReminder);
 }
 
 INSTANTIATE_TEST_SUITE_P(TrackingProtectionReminderServiceSilentReminderTest,
@@ -490,43 +520,123 @@ TEST_F(TrackingProtectionReminderServiceUnsetReminderDelayTest,
 }
 
 class TrackingProtectionReminderServiceOnReminderExperiencedTest
-    : public TrackingProtectionReminderServiceTest {
+    : public TrackingProtectionReminderServiceTest,
+      public testing::WithParamInterface<
+          TrackingProtectionOnboarding::SurfaceType> {
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     return {{kTrackingProtectionReminder, {{}}}};
   }
 };
 
-TEST_F(TrackingProtectionReminderServiceOnReminderExperiencedTest,
-       UpdatesReminderStatus) {
+TEST_P(TrackingProtectionReminderServiceOnReminderExperiencedTest,
+       ReminderShownAndLogged) {
   // Reminder status will only update if called with status = `kPendingReminder`
   prefs()->SetInteger(
       prefs::kTrackingProtectionReminderStatus,
       static_cast<int>(tracking_protection::TrackingProtectionReminderStatus::
                            kPendingReminder));
+  // Check that the experienced timestamp not been set.
+  EXPECT_EQ(reminder_service()->GetReminderNoticeData(
+                /*surface_type=*/GetParam()),
+            std::nullopt);
 
-  reminder_service()->OnReminderExperienced();
+  reminder_service()->OnReminderExperienced(
+      /*surface_type=*/GetParam());
 
   // Confirm that the status was updated to `kExperiencedReminder`.
   EXPECT_EQ(
       prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
       static_cast<int>(tracking_protection::TrackingProtectionReminderStatus::
                            kExperiencedReminder));
+  // Confirm that the reminder timestamp was correctly recorded.
+  EXPECT_EQ(reminder_service()
+                ->GetReminderNoticeData(
+                    /*surface_type=*/GetParam())
+                ->notice_first_shown,
+            base::Time::Now());
 }
 
 TEST_F(TrackingProtectionReminderServiceOnReminderExperiencedTest,
-       DoesNotUpdateReminderStatus) {
-  // Set the reminder status to a value != `kPendingReminder`
+       CrashWhenSurfaceTypeIsCCT) {
   prefs()->SetInteger(
       prefs::kTrackingProtectionReminderStatus,
-      static_cast<int>(
-          tracking_protection::TrackingProtectionReminderStatus::kUnset));
-
-  reminder_service()->OnReminderExperienced();
-
-  // Confirm that the status did not change.
-  EXPECT_EQ(prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
-            static_cast<int>(
-                tracking_protection::TrackingProtectionReminderStatus::kUnset));
+      static_cast<int>(tracking_protection::TrackingProtectionReminderStatus::
+                           kPendingReminder));
+  EXPECT_DEATH_IF_SUPPORTED(
+      reminder_service()->OnReminderExperienced(
+          TrackingProtectionOnboarding::SurfaceType::kAGACCT),
+      "");
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    TrackingProtectionReminderServiceOnReminderExperiencedTest,
+    TrackingProtectionReminderServiceOnReminderExperiencedTest,
+    /*surface_type=*/
+    testing::ValuesIn({TrackingProtectionOnboarding::SurfaceType::kDesktop,
+                       TrackingProtectionOnboarding::SurfaceType::kBrApp}));
+
+class TrackingProtectionReminderServiceOnReminderActionTakenTest
+    : public TrackingProtectionReminderServiceTest,
+      public testing::WithParamInterface<
+          TrackingProtectionOnboarding::SurfaceType> {
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {{kTrackingProtectionReminder, {{"silent-reminder", "false"}}}};
+  }
+};
+
+TEST_P(TrackingProtectionReminderServiceOnReminderActionTakenTest,
+       ReminderRecordedOnClosed) {
+  EXPECT_EQ(reminder_service()->GetReminderNoticeData(
+                /*surface_type=*/GetParam()),
+            std::nullopt);
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionReminderStatus,
+      static_cast<int>(tracking_protection::TrackingProtectionReminderStatus::
+                           kPendingReminder));
+
+  // Simulate the reminder being shown.
+  reminder_service()->OnReminderExperienced(
+      /*surface_type=*/GetParam());
+  // Simulate the reminder timing out.
+  task_env_.FastForwardBy(base::Seconds(10));
+  reminder_service()->OnReminderActionTaken(NoticeActionTaken::kOther,
+                                            base::Time::Now(),
+                                            /*surface_type=*/GetParam());
+
+  EXPECT_EQ(reminder_service()
+                ->GetReminderNoticeData(
+                    /*surface_type=*/GetParam())
+                ->notice_shown_duration,
+            base::Seconds(10));
+  EXPECT_EQ(reminder_service()
+                ->GetReminderNoticeData(
+                    /*surface_type=*/GetParam())
+                ->notice_action_taken,
+            NoticeActionTaken::kOther);
+}
+
+TEST_F(TrackingProtectionReminderServiceOnReminderActionTakenTest,
+       CrashWhenSurfaceTypeIsCCT) {
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionReminderStatus,
+      static_cast<int>(tracking_protection::TrackingProtectionReminderStatus::
+                           kExperiencedReminder));
+  EXPECT_DEATH_IF_SUPPORTED(
+      reminder_service()->OnReminderActionTaken(
+          NoticeActionTaken::kOther, base::Time::Now(),
+          TrackingProtectionOnboarding::SurfaceType::kAGACCT),
+      "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      reminder_service()->GetReminderNoticeData(
+          TrackingProtectionOnboarding::SurfaceType::kAGACCT),
+      "");
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    TrackingProtectionReminderServiceOnReminderActionTakenTest,
+    TrackingProtectionReminderServiceOnReminderActionTakenTest,
+    /*surface_type=*/
+    testing::ValuesIn({TrackingProtectionOnboarding::SurfaceType::kDesktop,
+                       TrackingProtectionOnboarding::SurfaceType::kBrApp}));
 
 }  // namespace privacy_sandbox
