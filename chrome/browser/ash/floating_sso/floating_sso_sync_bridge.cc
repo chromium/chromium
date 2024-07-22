@@ -11,6 +11,7 @@
 
 #include "base/check_deref.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_change_processor.h"
@@ -49,17 +50,50 @@ FloatingSsoSyncBridge::~FloatingSsoSyncBridge() = default;
 
 std::unique_ptr<syncer::MetadataChangeList>
 FloatingSsoSyncBridge::CreateMetadataChangeList() {
-  // TODO: b/346355106 - implement.
-  NOTIMPLEMENTED();
-  return nullptr;
+  return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<syncer::ModelError> FloatingSsoSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
-    syncer::EntityChangeList entity_changes) {
-  // TODO: b/346354354 - implement.
-  NOTIMPLEMENTED();
-  return std::nullopt;
+    syncer::EntityChangeList remote_entities) {
+  const CookieSpecificsEntries& in_memory_data = store_->in_memory_data();
+  std::set<std::string> local_keys_to_upload;
+  for (const auto& [key, specifics] : in_memory_data) {
+    local_keys_to_upload.insert(key);
+  }
+  // Go through `remote_entities` and filter out entities conflicting with local
+  // data if the local data should be preferred according to `ResolveConflict`.
+  // When remote data should be preferred, remove corresponding key from
+  // `local_keys_to_upload`.
+  std::erase_if(remote_entities,
+                [&](const std::unique_ptr<syncer::EntityChange>& change) {
+                  auto it = local_keys_to_upload.find(change->storage_key());
+                  if (it != local_keys_to_upload.end()) {
+                    syncer::ConflictResolution result =
+                        ResolveConflict(*it, change->data());
+                    if (result == syncer::ConflictResolution::kUseLocal) {
+                      return true;
+                    } else {
+                      // TODO: b/354202235 - revisit this CHECK once we have a
+                      // non-default implementation of `ResolveConflict`.
+                      CHECK_EQ(result, syncer::ConflictResolution::kUseRemote);
+                      local_keys_to_upload.erase(it);
+                      return false;
+                    }
+                  }
+                  return false;
+                });
+
+  // Send entities corresponding to `local_keys_to_upload` to Sync server.
+  for (const std::string& storage_key : local_keys_to_upload) {
+    change_processor()->Put(storage_key,
+                            CreateEntityData(in_memory_data.at(storage_key)),
+                            metadata_change_list.get());
+  }
+
+  // Add remote entities to local data.
+  return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                     std::move(remote_entities));
 }
 
 std::optional<syncer::ModelError>
