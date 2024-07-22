@@ -69,65 +69,6 @@ def ClangRevision():
     return update.PACKAGE_VERSION
 
 
-def NaclRevision():
-    nacl_dir = os.path.join(CHROMIUM_SRC, "native_client")
-    # With git submodules, nacl_dir will always exist, regardless if it is
-    # cloned or not. To detect if nacl is actually cloned, check content of the
-    # repository. We assume that if README.md exists, then the repository is
-    # cloned.
-    if not os.path.exists(os.path.join(nacl_dir, "README.md")):
-        return None
-
-    if os.path.isdir(os.path.join(nacl_dir, ".git")):
-        remote_host = subprocess.run(["git", "ls-remote", "--get-url"],
-                                     cwd=nacl_dir,
-                                     shell=os.name == "nt",
-                                     text=True,
-                                     stdout=subprocess.PIPE).stdout.strip()
-        # check nacl dir is checkout of native_client.
-        if re.match(".*native_client.*", remote_host):
-            return subprocess.run(
-                ["git", "log", "-1", "--format=%H"],
-                cwd=nacl_dir,
-                shell=os.name == "nt",
-                text=True,
-                check=True,
-                stdout=subprocess.PIPE,
-            ).stdout.strip()
-        else:
-            logging.warning(
-                'unexpected remote host for native_client dir: %s' %
-                remote_host)
-
-    # If we're in a work tree without .git directories, we can fallback to
-    # the slower method of looking the revision up via `gclient revinfo`.
-    gclient_env = os.environ.copy()
-    gclient_env["DEPOT_TOOLS_UPDATE"] = "0"
-    revinfo = subprocess.run(
-        ["gclient", "revinfo", "--filter=src/native_client"],
-        shell=os.name == "nt",
-        text=True,
-        check=True,
-        stdout=subprocess.PIPE,
-        env=gclient_env,
-    ).stdout.strip()
-    try:
-        # We expect this format: "src/native_client: {url}@{commit}"
-        commit = revinfo.split("@")[1]
-        if not re.match("^[0-9a-f]{40,}$", commit):
-            raise ValueError("invalid commit hash")
-        return commit
-    except (IndexError, ValueError):
-        logging.warning(
-            "Could not parse output of 'gclient revinfo "
-            "--filter=src/native_client': %s",
-            revinfo if revinfo else "<empty>")
-        logging.warning("src/native_client seems present, but neither Git "
-                        "nor gclient know its revision?")
-
-    return None
-
-
 class CipdError(Exception):
     """Raised by configure_reclient_cfgs on fatal cipd error."""
 
@@ -338,7 +279,6 @@ def main():
 
     tool_revisions = {
         "chromium-browser-clang": ClangRevision(),
-        "nacl": NaclRevision(),
         "python": "3.10",
     }
     for toolchain in tool_revisions:
