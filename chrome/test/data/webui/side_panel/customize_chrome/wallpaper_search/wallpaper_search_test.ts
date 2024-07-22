@@ -54,9 +54,19 @@ suite('WallpaperSearchTest', () => {
       inspirationGroups: InspirationGroup[]|null = null) {
     createWallpaperSearchElement(
         {
-          descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
-          descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
-          descriptorC: ['foo', 'bar', 'baz'],
+          groups: [{
+            category: 'foo',
+            descriptorAs: [
+              {key: 'bar key', label: 'bar'},
+              {key: 'baz key', label: 'baz'},
+            ],
+          }],
+          descriptorB: [{key: 'foo key', label: 'foo', imagePath: 'bar.png'}],
+          descriptorC: [
+            {key: 'foo key', label: 'foo'},
+            {key: 'bar key', label: 'bar'},
+            {key: 'baz key', label: 'baz'},
+          ],
         },
         inspirationGroups);
   }
@@ -274,9 +284,13 @@ suite('WallpaperSearchTest', () => {
           Promise.resolve(
               {status: WallpaperSearchStatus.kOk, results: ['123', '456']}));
       createWallpaperSearchElement({
-        descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
-        descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
-        descriptorC: ['baz'],
+        groups: [{
+          category: 'foo',
+          descriptorAs:
+              [{key: 'bar key', label: 'bar'}, {key: 'baz key', label: 'baz'}],
+        }],
+        descriptorB: [{key: 'foo key', label: 'foo', imagePath: 'bar.png'}],
+        descriptorC: [{key: 'baz key', label: 'baz'}],
       });
       await microtasksFinished();
 
@@ -347,9 +361,10 @@ suite('WallpaperSearchTest', () => {
           'getWallpaperSearchResults',
           Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
       createWallpaperSearchElement({
-        descriptorA: [{category: 'foo', labels: ['bar']}],
-        descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
-        descriptorC: ['baz'],
+        groups:
+            [{category: 'foo', descriptorAs: [{key: 'bar key', label: 'bar'}]}],
+        descriptorB: [{key: 'foo key', label: 'foo', imagePath: 'bar.png'}],
+        descriptorC: [{key: 'baz key', label: 'baz'}],
       });
       await microtasksFinished();
 
@@ -598,9 +613,15 @@ suite('WallpaperSearchTest', () => {
         ],
       }));
       createWallpaperSearchElement({
-        descriptorA: [{category: 'category', labels: ['Label A1', 'Label A2']}],
-        descriptorB: [{label: 'Label B', imagePath: 'bar.png'}],
-        descriptorC: ['Label C'],
+        groups: [{
+          category: 'category',
+          descriptorAs: [
+            {key: 'Key A1', label: 'Label A1'},
+            {key: 'Key A2', label: 'Label A2'},
+          ],
+        }],
+        descriptorB: [{key: 'Key B', label: 'Label B', imagePath: 'bar.png'}],
+        descriptorC: [{key: 'Key C', label: 'Label C'}],
       });
       await microtasksFinished();
 
@@ -639,9 +660,15 @@ suite('WallpaperSearchTest', () => {
       // Recreate element to empty out descriptors. Select options for
       // descriptors A and C only.
       createWallpaperSearchElement({
-        descriptorA: [{category: 'category', labels: ['Label A1', 'Label A2']}],
-        descriptorB: [{label: 'Label B', imagePath: 'bar.png'}],
-        descriptorC: ['Label C'],
+        groups: [{
+          category: 'category',
+          descriptorAs: [
+            {key: 'Key A1', label: 'Label A1'},
+            {key: 'Key A2', label: 'Label A2'},
+          ],
+        }],
+        descriptorB: [{key: 'Key B', label: 'Label B', imagePath: 'bar.png'}],
+        descriptorC: [{key: 'Key C', label: 'Label C'}],
       });
       await microtasksFinished();
       wallpaperSearchElement.$.descriptorComboboxA.value = 'Label A1';
@@ -662,9 +689,15 @@ suite('WallpaperSearchTest', () => {
       handler.setResultFor(
           'getWallpaperSearchResults', resultsResolver.promise);
       createWallpaperSearchElement({
-        descriptorA: [{category: 'category', labels: ['Label A1', 'Label A2']}],
-        descriptorB: [{label: 'Label B', imagePath: 'bar.png'}],
-        descriptorC: ['Label C'],
+        groups: [{
+          category: 'category',
+          descriptorAs: [
+            {key: 'Key A1', label: 'Label A1'},
+            {key: 'Key A2', label: 'Label A2'},
+          ],
+        }],
+        descriptorB: [{key: 'Key B', label: 'Label B', imagePath: 'bar.png'}],
+        descriptorC: [{key: 'Key C', label: 'Label C'}],
       });
       await microtasksFinished();
 
@@ -1022,9 +1055,20 @@ suite('WallpaperSearchTest', () => {
             handler.setResultFor('getDescriptors', Promise.resolve({
               status: WallpaperSearchStatus.kOk,
               descriptors: {
-                descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
-                descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
-                descriptorC: ['foo', 'bar', 'baz'],
+                groups: [{
+                  category: 'foo',
+                  descriptorAs: [
+                    {key: 'bar key', label: 'bar'},
+                    {key: 'baz key', label: 'baz'},
+                  ],
+                }],
+                descriptorB:
+                    [{key: 'foo key', label: 'foo', imagePath: 'bar.png'}],
+                descriptorC: [
+                  {key: 'foo key', label: 'foo'},
+                  {key: 'bar key', label: 'bar'},
+                  {key: 'baz key', label: 'baz'},
+                ],
               },
             }));
             const eventPromise =
@@ -1075,7 +1119,7 @@ suite('WallpaperSearchTest', () => {
             /*descriptors=*/ null, /*inspirationGroups=*/[
               {
                 descriptors: {
-                  subject: 'foobar',
+                  subject: {key: 'key foobar', label: 'foobar'},
                   style: null,
                   mood: null,
                   color: null,
@@ -1114,7 +1158,7 @@ suite('WallpaperSearchTest', () => {
                 /*descriptors=*/ null, /*inspirationGroups=*/[
                   {
                     descriptors: {
-                      subject: 'foobar',
+                      subject: {key: 'key foobar', label: 'foobar'},
                       style: null,
                       mood: null,
                       color: null,
@@ -1348,7 +1392,7 @@ suite('WallpaperSearchTest', () => {
                 {status: WallpaperSearchStatus.kError, results: []}));
         createWallpaperSearchElementWithDescriptors([{
           descriptors: {
-            subject: 'foobar',
+            subject: {key: 'key foobar', label: 'foobar'},
             style: null,
             mood: null,
             color: null,
@@ -1391,7 +1435,7 @@ suite('WallpaperSearchTest', () => {
                     {status: WallpaperSearchStatus.kError, results: []}));
             createWallpaperSearchElementWithDescriptors([{
               descriptors: {
-                subject: 'foobar',
+                subject: {key: 'key foobar', label: 'foobar'},
                 style: null,
                 mood: null,
                 color: null,
@@ -1766,7 +1810,7 @@ suite('WallpaperSearchTest', () => {
           /*descriptors=*/ null, /*inspirationGroups=*/[
             {
               descriptors: {
-                subject: 'foobar',
+                subject: {key: 'key foobar', label: 'foobar'},
                 style: null,
                 mood: null,
                 color: null,
@@ -1823,7 +1867,7 @@ suite('WallpaperSearchTest', () => {
           /*descriptors=*/ null, /*inspirationGroups=*/[
             {
               descriptors: {
-                subject: 'foobar',
+                subject: {key: 'key foobar', label: 'foobar'},
                 style: null,
                 mood: null,
                 color: null,
@@ -1845,7 +1889,7 @@ suite('WallpaperSearchTest', () => {
             },
             {
               descriptors: {
-                subject: 'baz',
+                subject: {key: 'key baz', label: 'baz'},
                 style: null,
                 mood: null,
                 color: null,
@@ -1909,9 +1953,9 @@ suite('WallpaperSearchTest', () => {
           /*descriptors=*/ null, /*inspirationGroups=*/[
             {
               descriptors: {
-                subject: 'foo',
-                style: 'bar',
-                mood: 'baz',
+                subject: {key: 'key foo', label: 'foo'},
+                style: {key: 'key bar', label: 'bar'},
+                mood: {key: 'key baz', label: 'baz'},
                 color: {name: DescriptorDName.kYellow},
               },
               inspirations: [
@@ -1925,9 +1969,9 @@ suite('WallpaperSearchTest', () => {
             },
             {
               descriptors: {
-                subject: 'foo',
+                subject: {key: 'key foo', label: 'foo'},
                 style: null,
-                mood: 'baz',
+                mood: {key: 'key baz', label: 'baz'},
                 color: null,
               },
               inspirations: [
@@ -1959,7 +2003,7 @@ suite('WallpaperSearchTest', () => {
           /*descriptors=*/ null, /*inspirationGroups=*/[
             {
               descriptors: {
-                subject: 'foobar',
+                subject: {key: 'key foobar', label: 'foobar'},
                 style: null,
                 mood: null,
                 color: null,
@@ -1998,16 +2042,26 @@ suite('WallpaperSearchTest', () => {
       });
       createWallpaperSearchElement(
           /*descriptors=*/ {
-            descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
-            descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
-            descriptorC: ['foo', 'bar', 'baz'],
+            groups: [{
+              category: 'foo',
+              descriptorAs: [
+                {key: 'bar key', label: 'bar'},
+                {key: 'baz key', label: 'baz'},
+              ],
+            }],
+            descriptorB: [{key: 'foo key', label: 'foo', imagePath: 'bar.png'}],
+            descriptorC: [
+              {key: 'foo key', label: 'foo'},
+              {key: 'bar key', label: 'bar'},
+              {key: 'baz key', label: 'baz'},
+            ],
           },
           /*inspirationGroups=*/[
             {
               descriptors: {
-                subject: 'baz',
-                style: 'foo',
-                mood: 'bar',
+                subject: {key: 'key baz', label: 'baz'},
+                style: {key: 'key foo', label: 'foo'},
+                mood: {key: 'key bar', label: 'bar'},
                 color: {name: DescriptorDName.kYellow},
               },
               inspirations: [
@@ -2021,8 +2075,8 @@ suite('WallpaperSearchTest', () => {
             },
             {
               descriptors: {
-                subject: 'bar',
-                mood: 'baz',
+                subject: {key: 'key bar', label: 'bar'},
+                mood: {key: 'key baz', label: 'baz'},
                 style: null,
                 color: null,
               },
@@ -2050,9 +2104,12 @@ suite('WallpaperSearchTest', () => {
       (firstGroupTitle as HTMLElement).click();
       await microtasksFinished();
 
-      assertEquals('baz', wallpaperSearchElement.$.descriptorComboboxA.value);
-      assertEquals('foo', wallpaperSearchElement.$.descriptorComboboxB.value);
-      assertEquals('bar', wallpaperSearchElement.$.descriptorComboboxC.value);
+      assertEquals(
+          'key baz', wallpaperSearchElement.$.descriptorComboboxA.value);
+      assertEquals(
+          'key foo', wallpaperSearchElement.$.descriptorComboboxB.value);
+      assertEquals(
+          'key bar', wallpaperSearchElement.$.descriptorComboboxC.value);
       const checkedColor =
           $$(wallpaperSearchElement, '#descriptorMenuD button [checked]');
       assertTrue(!!checkedColor);
@@ -2068,9 +2125,11 @@ suite('WallpaperSearchTest', () => {
           .dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
       await microtasksFinished();
 
-      assertEquals('bar', wallpaperSearchElement.$.descriptorComboboxA.value);
+      assertEquals(
+          'key bar', wallpaperSearchElement.$.descriptorComboboxA.value);
       assertEquals(null, wallpaperSearchElement.$.descriptorComboboxB.value);
-      assertEquals('baz', wallpaperSearchElement.$.descriptorComboboxC.value);
+      assertEquals(
+          'key baz', wallpaperSearchElement.$.descriptorComboboxC.value);
       assertFalse(
           !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
       assertEquals(firstGroupTitle.getAttribute('aria-current'), 'false');
@@ -2085,16 +2144,26 @@ suite('WallpaperSearchTest', () => {
       });
       createWallpaperSearchElement(
           /*descriptors=*/ {
-            descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
-            descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
-            descriptorC: ['foo', 'bar', 'baz'],
+            groups: [{
+              category: 'foo',
+              descriptorAs: [
+                {key: 'bar key', label: 'bar'},
+                {key: 'baz key', label: 'baz'},
+              ],
+            }],
+            descriptorB: [{key: 'foo key', label: 'foo', imagePath: 'bar.png'}],
+            descriptorC: [
+              {key: 'foo key', label: 'foo'},
+              {key: 'bar key', label: 'bar'},
+              {key: 'baz key', label: 'baz'},
+            ],
           },
           /*inspirationGroups=*/[
             {
               descriptors: {
-                subject: 'baz',
-                style: 'foo',
-                mood: 'bar',
+                subject: {key: 'key baz', label: 'baz'},
+                style: {key: 'key foo', label: 'foo'},
+                mood: {key: 'key bar', label: 'bar'},
                 color: {name: DescriptorDName.kYellow},
               },
               inspirations: [
@@ -2108,7 +2177,7 @@ suite('WallpaperSearchTest', () => {
             },
             {
               descriptors: {
-                subject: 'bar',
+                subject: {key: 'key bar', label: 'bar'},
                 style: null,
                 mood: null,
                 color: null,
@@ -2144,9 +2213,12 @@ suite('WallpaperSearchTest', () => {
       (inspirationTile as HTMLElement).click();
       await microtasksFinished();
 
-      assertEquals('baz', wallpaperSearchElement.$.descriptorComboboxA.value);
-      assertEquals('foo', wallpaperSearchElement.$.descriptorComboboxB.value);
-      assertEquals('bar', wallpaperSearchElement.$.descriptorComboboxC.value);
+      assertEquals(
+          'key baz', wallpaperSearchElement.$.descriptorComboboxA.value);
+      assertEquals(
+          'key foo', wallpaperSearchElement.$.descriptorComboboxB.value);
+      assertEquals(
+          'key bar', wallpaperSearchElement.$.descriptorComboboxC.value);
       const checkedColor =
           $$(wallpaperSearchElement, '#descriptorMenuD button [checked]');
       assertTrue(!!checkedColor);
@@ -2161,7 +2233,8 @@ suite('WallpaperSearchTest', () => {
       (inspirationTile as HTMLElement).click();
       await microtasksFinished();
 
-      assertEquals('bar', wallpaperSearchElement.$.descriptorComboboxA.value);
+      assertEquals(
+          'key bar', wallpaperSearchElement.$.descriptorComboboxA.value);
       assertEquals(null, wallpaperSearchElement.$.descriptorComboboxB.value);
       assertEquals(null, wallpaperSearchElement.$.descriptorComboboxC.value);
       assertFalse(
@@ -2218,7 +2291,7 @@ suite('WallpaperSearchTest', () => {
     test('inspiration card collapsible reacts to history updates', async () => {
       createWallpaperSearchElementWithDescriptors([{
         descriptors: {
-          subject: 'foobar',
+          subject: {key: 'key foobar', label: 'foobar'},
           style: null,
           mood: null,
           color: null,
@@ -2280,7 +2353,7 @@ suite('WallpaperSearchTest', () => {
           /*descriptors=*/ null, /*inspirationGroups=*/[
             {
               descriptors: {
-                subject: 'foobar',
+                subject: {key: 'key foobar', label: 'foobar'},
                 style: null,
                 mood: null,
                 color: null,
@@ -2307,7 +2380,7 @@ suite('WallpaperSearchTest', () => {
           /*descriptors=*/ null, /*inspirationGroups=*/[
             {
               descriptors: {
-                subject: 'foobar',
+                subject: {key: 'key foobar', label: 'foobar'},
                 style: null,
                 mood: null,
                 color: null,

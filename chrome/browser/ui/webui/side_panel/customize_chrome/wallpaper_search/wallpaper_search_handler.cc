@@ -115,6 +115,15 @@ OptimizationFeedbackFromWallpaperSearchFeedback(UserFeedback feedback) {
       return optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
   }
 }
+
+side_panel::customize_chrome::mojom::KeyLabelPtr MakeKeyLabel(
+    const std::string& key,
+    const std::string& label) {
+  auto key_label = side_panel::customize_chrome::mojom::KeyLabel::New();
+  key_label->key = key;
+  key_label->label = label;
+  return key_label;
+}
 }  // namespace
 
 WallpaperSearchHandler::WallpaperSearchHandler(
@@ -641,8 +650,7 @@ void WallpaperSearchHandler::OnDescriptorsJsonParsed(
     return;
   }
 
-  std::vector<side_panel::customize_chrome::mojom::DescriptorAPtr>
-      mojo_descriptor_a_list;
+  std::vector<side_panel::customize_chrome::mojom::GroupPtr> mojo_group_list;
   if (descriptor_a) {
     for (const auto& descriptor : *descriptor_a) {
       const base::Value::Dict& descriptor_a_dict = descriptor.GetDict();
@@ -651,20 +659,23 @@ void WallpaperSearchHandler::OnDescriptorsJsonParsed(
       if (!category || !label_values) {
         continue;
       }
-      auto mojo_descriptor_a =
-          side_panel::customize_chrome::mojom::DescriptorA::New();
-      mojo_descriptor_a->category = *category;
-      std::vector<std::string> labels;
+      auto mojo_group = side_panel::customize_chrome::mojom::Group::New();
+      // TODO(b/324632645): Translate.
+      mojo_group->category = *category;
+      std::vector<side_panel::customize_chrome::mojom::KeyLabelPtr>
+          mojo_descriptor_a_list;
       for (const auto& label_value : *label_values) {
-        labels.push_back(label_value.GetString());
+        // TODO(b/324632645): Translate.
+        mojo_descriptor_a_list.push_back(
+            MakeKeyLabel(label_value.GetString(), label_value.GetString()));
       }
-      mojo_descriptor_a->labels = std::move(labels);
-      mojo_descriptor_a_list.push_back(std::move(mojo_descriptor_a));
+      mojo_group->descriptor_as = std::move(mojo_descriptor_a_list);
+      mojo_group_list.push_back(std::move(mojo_group));
     }
   }
   auto mojo_descriptors =
       side_panel::customize_chrome::mojom::Descriptors::New();
-  mojo_descriptors->descriptor_a = std::move(mojo_descriptor_a_list);
+  mojo_descriptors->groups = std::move(mojo_group_list);
   std::vector<side_panel::customize_chrome::mojom::DescriptorBPtr>
       mojo_descriptor_b_list;
   if (descriptor_b) {
@@ -677,6 +688,8 @@ void WallpaperSearchHandler::OnDescriptorsJsonParsed(
       }
       auto mojo_descriptor_b =
           side_panel::customize_chrome::mojom::DescriptorB::New();
+      mojo_descriptor_b->key = *label;
+      // TODO(b/324632645): Translate.
       mojo_descriptor_b->label = *label;
       mojo_descriptor_b->image_path =
           base::StrCat({kGstaticBaseURL, *image_path});
@@ -684,13 +697,16 @@ void WallpaperSearchHandler::OnDescriptorsJsonParsed(
     }
   }
   mojo_descriptors->descriptor_b = std::move(mojo_descriptor_b_list);
-  std::vector<std::string> mojo_descriptor_c_labels;
+  std::vector<side_panel::customize_chrome::mojom::KeyLabelPtr>
+      mojo_descriptor_c_list;
   if (descriptor_c_labels) {
     for (const auto& label_value : *descriptor_c_labels) {
-      mojo_descriptor_c_labels.push_back(label_value.GetString());
+      // TODO(b/324632645): Translate.
+      mojo_descriptor_c_list.push_back(
+          MakeKeyLabel(label_value.GetString(), label_value.GetString()));
     }
   }
-  mojo_descriptors->descriptor_c = std::move(mojo_descriptor_c_labels);
+  mojo_descriptors->descriptor_c = std::move(mojo_descriptor_c_list);
   std::move(callback).Run(std::move(mojo_descriptors));
 }
 
@@ -811,15 +827,21 @@ void WallpaperSearchHandler::OnInspirationsJsonParsed(
     auto mojo_inspiration_group =
         side_panel::customize_chrome::mojom::InspirationGroup::New();
     mojo_inspiration_group->descriptors =
-        side_panel::customize_chrome::mojom::ResultDescriptors::New();
-    mojo_inspiration_group->descriptors->subject = *descriptor_a;
+        side_panel::customize_chrome::mojom::InspirationDescriptors::New();
+    // TODO(b/324632645): Translate.
+    mojo_inspiration_group->descriptors->subject =
+        MakeKeyLabel(*descriptor_a, *descriptor_a);
     if (const std::string* descriptor_b =
             inspiration_dict.FindString("descriptor_b")) {
-      mojo_inspiration_group->descriptors->style = *descriptor_b;
+      // TODO(b/324632645): Translate.
+      mojo_inspiration_group->descriptors->style =
+          MakeKeyLabel(*descriptor_b, *descriptor_b);
     }
     if (const std::string* descriptor_c =
             inspiration_dict.FindString("descriptor_c")) {
-      mojo_inspiration_group->descriptors->mood = *descriptor_c;
+      // TODO(b/324632645): Translate.
+      mojo_inspiration_group->descriptors->mood =
+          MakeKeyLabel(*descriptor_c, *descriptor_c);
     }
     if (const base::Value::Dict* descriptor_d_dict =
             inspiration_dict.FindDict("descriptor_d")) {

@@ -33,7 +33,7 @@ import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.m
 import {CustomizeChromeAction, recordCustomizeChromeAction} from '../common.js';
 import type {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from '../customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from '../customize_chrome_api_proxy.js';
-import type {DescriptorA, DescriptorB, DescriptorDValue, Descriptors, InspirationGroup, ResultDescriptors, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerInterface, WallpaperSearchResult} from '../wallpaper_search.mojom-webui.js';
+import type {DescriptorB, DescriptorDValue, Descriptors, Group, InspirationDescriptors, InspirationGroup, ResultDescriptors, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerInterface, WallpaperSearchResult} from '../wallpaper_search.mojom-webui.js';
 import {DescriptorDName, UserFeedback, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
@@ -111,11 +111,10 @@ export interface WallpaperSearchElement {
   };
 }
 
-function getRandomDescriptorA(descriptorArrayA: DescriptorA[]): string {
-  const randomLabels =
-      descriptorArrayA[Math.floor(Math.random() * descriptorArrayA.length)]!
-          .labels;
-  return randomLabels[Math.floor(Math.random() * randomLabels.length)]!;
+function getRandomDescriptorA(groups: Group[]): string {
+  const descriptorAs =
+      groups[Math.floor(Math.random() * groups.length)]!.descriptorAs;
+  return descriptorAs[Math.floor(Math.random() * descriptorAs.length)]!.key;
 }
 
 function recordStatusChange(status: WallpaperSearchStatus) {
@@ -350,12 +349,12 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     return !!this.inspirationGroups_ && this.inspirationGroups_.length > 0;
   }
 
-  private expandCategoryForDescriptorA_(label: string) {
+  private expandCategoryForDescriptorA_(key: string) {
     if (!this.descriptors_) {
       return;
     }
-    const categoryGroupIndex = this.descriptors_.descriptorA.findIndex(
-        group => group.labels.includes(label));
+    const categoryGroupIndex = this.descriptors_.groups.findIndex(
+        group => group.descriptorAs.some(descriptor => descriptor.key === key));
     if (categoryGroupIndex >= 0) {
       this.expandedCategories_[categoryGroupIndex] = true;
       this.requestUpdate();
@@ -367,18 +366,15 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       if (descriptors) {
         this.descriptors_ = descriptors;
         this.comboboxItems_ = {
-          a: descriptors.descriptorA.map((group) => {
+          a: descriptors.groups.map((group) => {
             return {
+              key: group.category,
               label: group.category,
-              items: group.labels.map((label) => {
-                return {label};
-              }),
+              items: group.descriptorAs,
             };
           }),
           b: descriptors.descriptorB,
-          c: descriptors.descriptorC.map((label) => {
-            return {label};
-          }),
+          c: descriptors.descriptorC,
         };
         this.errorCallback_ = undefined;
         recordStatusChange(WallpaperSearchStatus.kOk);
@@ -445,19 +441,23 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   }
 
   protected getInspirationDescriptorsCheckedStatus_(
-      groupDescriptors: ResultDescriptors): string {
+      groupDescriptors: InspirationDescriptors): string {
     const groupDescriptorColor = groupDescriptors.color?.name !== undefined ?
         descriptorDNameToHex(groupDescriptors.color!.name) :
         undefined;
-    return (groupDescriptors.subject || null) === this.selectedDescriptorA_ &&
-            (groupDescriptors.style || null) === this.selectedDescriptorB_ &&
-            (groupDescriptors.mood || null) === this.selectedDescriptorC_ &&
+    return (groupDescriptors.subject?.key || null) ===
+                this.selectedDescriptorA_ &&
+            (groupDescriptors.style?.key || null) ===
+                this.selectedDescriptorB_ &&
+            (groupDescriptors.mood?.key || null) ===
+                this.selectedDescriptorC_ &&
             groupDescriptorColor === this.selectedDefaultColor_ ?
         'true' :
         'false';
   }
 
-  protected getInspirationGroupTitle_(descriptors: ResultDescriptors): string {
+  protected getInspirationGroupTitle_(descriptors: InspirationDescriptors):
+      string {
     // Filter out undefined or null values, then join the rest into a comma
     // separated string.
     let colorName;
@@ -468,9 +468,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       }
     }
     return [
-      descriptors.subject,
-      descriptors.style,
-      descriptors.mood,
+      descriptors.subject?.label,
+      descriptors.style?.label,
+      descriptors.mood?.label,
       colorName,
     ].filter(Boolean)
         .join(', ');
@@ -534,7 +534,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   }
 
   protected isOptionSelectedInDescriptorB_(option: DescriptorB): boolean {
-    return option.label === this.selectedDescriptorB_;
+    return option.key === this.selectedDescriptorB_;
   }
 
   protected onBackClick_() {
@@ -697,7 +697,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
     assert(this.descriptors_);
     const selectedDescriptorA = this.selectedDescriptorA_ ||
-        getRandomDescriptorA(this.descriptors_.descriptorA);
+        getRandomDescriptorA(this.descriptors_.groups);
     this.expandCategoryForDescriptorA_(selectedDescriptorA);
     this.selectedDescriptorA_ = selectedDescriptorA;
     this.loading_ = true;
@@ -771,9 +771,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private selectDescriptorsFromInspirationGroup_(group: InspirationGroup) {
     const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
     const groupDescriptors = group.descriptors;
-    this.selectedDescriptorA_ = groupDescriptors.subject || null;
-    this.selectedDescriptorB_ = groupDescriptors.style || null;
-    this.selectedDescriptorC_ = groupDescriptors.mood || null;
+    this.selectedDescriptorA_ = groupDescriptors.subject?.key || null;
+    this.selectedDescriptorB_ = groupDescriptors.style?.key || null;
+    this.selectedDescriptorC_ = groupDescriptors.mood?.key || null;
 
     if (groupDescriptors.color?.name !== undefined) {
       const hex = descriptorDNameToHex(groupDescriptors.color.name);

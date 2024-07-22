@@ -22,11 +22,13 @@ const SELECTABLE_ITEMS_SELECTOR = '[role=option]';
 export type OptionElement = HTMLElement&{value?: string};
 
 export interface ComboboxItem {
+  key: string;
   label: string;
   imagePath?: string;
 }
 
 export interface ComboboxGroup {
+  key: string;
   label: string;
   items: ComboboxItem[];
 }
@@ -216,7 +218,7 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
   }
 
   protected isItemSelected_(item: ComboboxItem): boolean {
-    return this.value === item.label;
+    return this.value === item.key;
   }
 
   private onDomChange_() {
@@ -429,7 +431,7 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
     const selectedGroupIndex =
         this.items.filter(item => this.isGroup_(item)).findIndex(group => {
           return (group as ComboboxGroup)
-              .items.find(item => item.label === this.value);
+              .items.find(item => item.key === this.value);
         });
     if (selectedGroupIndex > -1) {
       this.expandedGroups_[selectedGroupIndex] = true;
