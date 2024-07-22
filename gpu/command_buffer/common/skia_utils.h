@@ -18,11 +18,6 @@ class ProcessMemoryDump;
 }
 }  // namespace base
 
-namespace skgpu::graphite {
-class Context;
-class Recorder;
-}  // namespace skgpu::graphite
-
 namespace gpu {
 namespace raster {
 
@@ -37,14 +32,6 @@ RASTER_EXPORT void DumpGrMemoryStatistics(
 // cache usage. Designed for background dumps.
 RASTER_EXPORT void DumpBackgroundGrMemoryStatistics(
     const GrDirectContext* context,
-    base::trace_event::ProcessMemoryDump* pmd);
-
-// Dumps "skia/gpu_resources/graphite_context{&context}" and
-// "skia/gpu_resources/gpu_main_graphite_recorder{&recorder}"  with total cache
-// usage of each. Designed for background dumps.
-void DumpBackgroundGraphiteMemoryStatistics(
-    const skgpu::graphite::Context* context,
-    const skgpu::graphite::Recorder* recorder,
     base::trace_event::ProcessMemoryDump* pmd);
 
 }  // namespace raster

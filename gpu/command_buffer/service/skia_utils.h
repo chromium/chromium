@@ -35,6 +35,12 @@ class GrBackendTexture;
 class GrContextThreadSafeProxy;
 class SkImage;
 
+namespace base {
+namespace trace_event {
+class ProcessMemoryDump;
+}
+}  // namespace base
+
 namespace gfx {
 class Size;
 class ColorSpace;
@@ -46,6 +52,8 @@ class VulkanContextProvider;
 }  // namespace viz
 
 namespace skgpu::graphite {
+class Context;
+class Recorder;
 struct InsertRecordingInfo;
 }  // namespace skgpu::graphite
 
@@ -66,6 +74,14 @@ GPU_GLES2_EXPORT GrContextOptions GetDefaultGrContextOptions();
 
 GPU_GLES2_EXPORT skgpu::graphite::ContextOptions
 GetDefaultGraphiteContextOptions(const GpuDriverBugWorkarounds& workarounds);
+
+// Dumps "skia/gpu_resources/graphite_context{&context}" and
+// "skia/gpu_resources/gpu_main_graphite_recorder{&recorder}"  with total cache
+// usage of each. Designed for background dumps.
+void DumpBackgroundGraphiteMemoryStatistics(
+    const skgpu::graphite::Context* context,
+    const skgpu::graphite::Recorder* recorder,
+    base::trace_event::ProcessMemoryDump* pmd);
 
 // Returns internal gl format of texture for Skia for given `gl_storage_format`.
 GPU_GLES2_EXPORT GLuint GetGrGLBackendTextureFormat(

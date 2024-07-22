@@ -944,8 +944,8 @@ bool SharedContextState::OnMemoryDump(
     // recorder here because it can be called only on the Viz thread. Instead,
     // we dump it in SkiaOutputSurfaceImpl.
     if (background) {
-      raster::DumpBackgroundGraphiteMemoryStatistics(
-          graphite_context(), gpu_main_graphite_recorder(), pmd);
+      DumpBackgroundGraphiteMemoryStatistics(graphite_context(),
+                                             gpu_main_graphite_recorder(), pmd);
     } else {
       // Note: The image provider's allocations are already counted in Skia's
       // unbudgeted (client) resource allocations so we skip emitted them here.
