@@ -1915,7 +1915,7 @@
           'shards': 40,
         },
       },
-      'android-14-arm64-fyi-rel': {
+      'android-14-arm64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.content_browsertests.filter',
         ],
@@ -5566,10 +5566,11 @@
           'shards': 12,
         },
       },
-      'android-14-arm64-fyi-rel': {
+      'android-14-arm64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter',
         ],
+        'ci_only': True,
       },
       'android-14-x64-rel': {
         'args': [
