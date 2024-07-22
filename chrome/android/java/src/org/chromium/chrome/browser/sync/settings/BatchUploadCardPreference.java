@@ -100,6 +100,28 @@ public class BatchUploadCardPreference extends Preference
         Button button = (Button) card.findViewById(R.id.signin_settings_card_button);
         button.setText(R.string.account_settings_bulk_upload_section_save_button);
 
+        // TODO(b/326040498): Remove the stub usages of the strings below and create a dialog here
+        // where those strings will be used.
+        stubUsage(
+                R.string.account_settings_bulk_upload_dialog_title,
+                R.string.account_settings_bulk_upload_dialog_save_button,
+                R.string.account_settings_bulk_upload_dialog_cancel_button,
+                R.string.account_settings_bulk_upload_dialog_description,
+                context.getResources()
+                        .getQuantityString(
+                                R.plurals.account_settings_bulk_upload_dialog_bookmarks, 1, 1),
+                context.getResources()
+                        .getQuantityString(
+                                R.plurals.account_settings_bulk_upload_dialog_passwords, 1, 1),
+                context.getResources()
+                        .getQuantityString(
+                                R.plurals.account_settings_bulk_upload_dialog_reading_list, 1, 1),
+                context.getResources()
+                        .getQuantityString(
+                                R.plurals.account_settings_bulk_upload_saved_snackbar_message,
+                                1,
+                                "elisa.g.beckett@gmail.com"));
+
         ImageView image = (ImageView) card.findViewById(R.id.signin_settings_card_icon);
         image.setImageDrawable(
                 UiUtils.getTintedDrawable(
@@ -147,4 +169,8 @@ public class BatchUploadCardPreference extends Preference
                                     accountInfo.getEmail()));
         }
     }
+
+    // TODO(b/326040498): This method should be removed.
+    private void stubUsage(
+            int s1, int s2, int s3, int s4, String s5, String s6, String s7, String s8) {}
 }
