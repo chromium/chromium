@@ -3634,11 +3634,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-notifier-collision",
-    "owners": ["leandre@chromium.org"],
-    "expiry_milestone": 124
-  },
-  {
     "name": "enable-oauth-ipp",
     "owners": [ "pawliczek@chromium.org", "project-bolton@google.com" ],
     "expiry_milestone": 133
@@ -5845,14 +5840,6 @@
     "name": "mac-syscall-sandbox",
     "owners": [ "rsesek@google.com" ],
     "expiry_milestone": 88
-  },
-  {
-    "name": "magic-boost",
-    "owners": [
-      "thanhdng@chromium.org",
-      "chrome-knowledge-eng@google.com"
-    ],
-    "expiry_milestone": 135
   },
   {
     "name": "mahi",

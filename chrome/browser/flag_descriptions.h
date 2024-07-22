@@ -3922,9 +3922,6 @@ extern const char kEcheSWAProcessAndroidAccessibilityTreeDescription[];
 extern const char kEnableNotificationImageDragName[];
 extern const char kEnableNotificationImageDragDescription[];
 
-extern const char kEnableNotifierCollisionName[];
-extern const char kEnableNotifierCollisionDescription[];
-
 extern const char kEnableOAuthIppName[];
 extern const char kEnableOAuthIppDescription[];
 
@@ -4196,9 +4193,6 @@ extern const char kEnableHardwareMirrorModeDescription[];
 
 extern const char kLockScreenNotificationName[];
 extern const char kLockScreenNotificationDescription[];
-
-extern const char kMagicBoostName[];
-extern const char kMagicBoostDescription[];
 
 extern const char kMahiName[];
 extern const char kMahiDescription[];

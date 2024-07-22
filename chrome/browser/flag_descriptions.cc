@@ -6808,12 +6808,6 @@ const char kEnableNotificationImageDragDescription[] =
     "Enable users to drag the image shown on the notification and drop it to "
     "directly paste or share";
 
-const char kEnableNotifierCollisionName[] = "Enable notifier collision";
-const char kEnableNotifierCollisionDescription[] =
-    "Enable popup notifications, right-anchored tray bubbles, slider bubbles, "
-    "and toasts to not overlap when displayed in the right corner of the "
-    "screen";
-
 const char kEnableOAuthIppName[] =
     "Enable OAuth when printing via the IPP protocol";
 const char kEnableOAuthIppDescription[] =
@@ -7271,9 +7265,6 @@ const char kHindiInscriptLayoutDescription[] =
 const char kLockScreenNotificationName[] = "Lock screen notification";
 const char kLockScreenNotificationDescription[] =
     "Enable notifications on the lock screen.";
-
-const char kMagicBoostName[] = "Magic Boost";
-const char kMagicBoostDescription[] = "Enable Magic Boost on ChromeOS.";
 
 const char kMahiName[] = "Mahi feature";
 const char kMahiDescription[] = "Enable Mahi feature on ChromeOS.";
