@@ -19,6 +19,7 @@
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_delegate.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -60,7 +61,10 @@ TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "TabGroupSyncServiceFactory",
           BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(BrowserListFactory::GetInstance());
+  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(SessionRestorationServiceFactory::GetInstance());
 }
 
 TabGroupSyncServiceFactory::~TabGroupSyncServiceFactory() = default;
