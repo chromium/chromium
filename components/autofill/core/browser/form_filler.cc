@@ -828,17 +828,33 @@ void FormFiller::FillOrPreviewForm(
 bool FormFiller::ShouldTriggerRefill(
     const FormStructure& form_structure,
     RefillTriggerReason refill_trigger_reason) {
-  // Should not refill if a form with the same FormGlobalId that has not been
-  // filled before.
+  std::optional<base::TimeTicks> last_filling_timestamp =
+      form_structure.last_filling_timestamp();
   FillingContext* filling_context =
       GetFillingContext(form_structure.global_id());
-  if (filling_context == nullptr) {
+  // Should not refill if a form with the same FormGlobalId that has not been
+  // filled before.
+  if (filling_context == nullptr || !last_filling_timestamp) {
+    return false;
+  }
+  // Autofill allows at most one refill per filling operation.
+  if (filling_context->attempted_refill) {
     return false;
   }
 
-  // Confirm that the form changed by running a DeepEqual check on the filled
-  // form and the received form. Other trigger reasons do not need this check
-  // since they do not depend on the form changing.
+  // Autofill doesn't allow refills after more than `limit_before_refill_`.
+  // This is done to increase confidence that the refill was a consequence
+  // of the filling operation and not some other event.
+  if (base::TimeDelta time_since_last_fill =
+          base::TimeTicks::Now() - *last_filling_timestamp;
+      time_since_last_fill >= limit_before_refill_) {
+    return false;
+  }
+
+  // In the case of kFormChanged, verify that the form actually changed
+  // dynamically since Autofill receives updated forms from the renderer on
+  // any interaction, and not necessarily ones that dynamically change the
+  // form.
   if (refill_trigger_reason == RefillTriggerReason::kFormChanged &&
       filling_context->filled_form &&
       FormData::DeepEqual(form_structure.ToFormData(),
@@ -846,12 +862,7 @@ bool FormFiller::ShouldTriggerRefill(
     return false;
   }
 
-  // TODO(crbug.com/41490871): Use form_structure.last_filling_timestamp()
-  // instead of filling_context->original_fill_time
-  base::TimeTicks now = base::TimeTicks::Now();
-  base::TimeDelta delta = now - filling_context->original_fill_time;
-
-  return !filling_context->attempted_refill && delta < limit_before_refill_;
+  return true;
 }
 
 void FormFiller::ScheduleRefill(const FormData& form,
