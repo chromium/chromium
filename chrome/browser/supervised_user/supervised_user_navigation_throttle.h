@@ -40,10 +40,13 @@ class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
   SupervisedUserNavigationThrottle(
       content::NavigationHandle* navigation_handle);
 
-  // Checks the current URL for the navigation. If called from
+  // Triggers the checks of the current URL for the navigation. If called from
   // WillRedirectRequest, checks the URL being redirected to, not the original
   // URL.
-  ThrottleCheckResult CheckURL();
+  void CheckURL();
+
+  // Wraps up common procedure for throttling new requests or redirects.
+  ThrottleCheckResult ThrottleRequest();
 
   void ShowInterstitial(const GURL& url,
                         supervised_user::FilteringBehaviorReason reason);

@@ -54,16 +54,7 @@ SupervisedUserNavigationThrottle::SupervisedUserNavigationThrottle(
 
 SupervisedUserNavigationThrottle::~SupervisedUserNavigationThrottle() {}
 
-content::NavigationThrottle::ThrottleCheckResult
-SupervisedUserNavigationThrottle::CheckURL() {
-  deferred_ = false;
-  DCHECK_EQ(supervised_user::FilteringBehavior::kInvalid, behavior_);
-
-  // We do not yet support prerendering for supervised users.
-  if (navigation_handle()->IsInPrerenderedMainFrame()) {
-    return NavigationThrottle::CANCEL;
-  }
-
+void SupervisedUserNavigationThrottle::CheckURL() {
   GURL url = navigation_handle()->GetURL();
 
   bool skip_manual_parent_filter =
@@ -93,10 +84,6 @@ SupervisedUserNavigationThrottle::CheckURL() {
   if (got_result) {
     behavior_ = supervised_user::FilteringBehavior::kInvalid;
   }
-  if (deferred_) {
-    return NavigationThrottle::DEFER;
-  }
-  return NavigationThrottle::PROCEED;
 }
 
 void SupervisedUserNavigationThrottle::ShowInterstitial(
@@ -128,13 +115,31 @@ void SupervisedUserNavigationThrottle::ShowInterstitialAsync(
 }
 
 content::NavigationThrottle::ThrottleCheckResult
+SupervisedUserNavigationThrottle::ThrottleRequest() {
+  deferred_ = false;
+  DCHECK_EQ(supervised_user::FilteringBehavior::kInvalid, behavior_);
+
+  // We do not yet support prerendering for supervised users.
+  if (navigation_handle()->IsInPrerenderedMainFrame()) {
+    return NavigationThrottle::CANCEL;
+  }
+
+  CheckURL();
+
+  if (deferred_) {
+    return NavigationThrottle::DEFER;
+  }
+  return NavigationThrottle::PROCEED;
+}
+
+content::NavigationThrottle::ThrottleCheckResult
 SupervisedUserNavigationThrottle::WillStartRequest() {
-  return CheckURL();
+  return ThrottleRequest();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 SupervisedUserNavigationThrottle::WillRedirectRequest() {
-  return CheckURL();
+  return ThrottleRequest();
 }
 
 const char* SupervisedUserNavigationThrottle::GetNameForLogging() {
