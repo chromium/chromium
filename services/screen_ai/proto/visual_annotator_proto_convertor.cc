@@ -198,33 +198,9 @@ void SerializeContentType(const chrome_screen_ai::ContentType& content_type,
   }
 }
 
-// Returns the width of the space between two consecutive words in the given
-// direction.
-int GetSpaceWidth(chrome_screen_ai::Direction direction,
-                  const chrome_screen_ai::Rect& word1,
-                  const chrome_screen_ai::Rect& word2) {
-  switch (direction) {
-    case chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT: {
-      return word2.x() - (word1.x() + word1.width());
-
-      case chrome_screen_ai::DIRECTION_RIGHT_TO_LEFT:
-        return word1.x() - (word2.x() + word2.width());
-
-      case chrome_screen_ai::DIRECTION_TOP_TO_BOTTOM:
-      case chrome_screen_ai::DIRECTION_UNSPECIFIED:
-      case chrome_screen_ai::Direction_INT_MIN_SENTINEL_DO_NOT_USE_:
-      case chrome_screen_ai::Direction_INT_MAX_SENTINEL_DO_NOT_USE_:
-        // To be added when OCR supports it.
-        return 0;
-    }
-  }
-}
-
-// TODO(crbug.com/40918372): Consider either updating based on the angle of
-// line, word, and symbol, or dropping character offesets for rotated texts.
 void UpdateCharacterOffsets(const chrome_screen_ai::WordBox& word_box,
                             ui::AXNodeData& inline_text_box,
-                            int next_space_width) {
+                            bool space_after_previous_word) {
   chrome_screen_ai::Direction direction = word_box.direction();
 
   if (direction != chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT &&
@@ -233,6 +209,7 @@ void UpdateCharacterOffsets(const chrome_screen_ai::WordBox& word_box,
     // and word boundary boxes are not drawn.
     return;
   }
+  bool left_to_right = (direction == chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT);
 
   if (word_box.symbols().empty()) {
     return;
@@ -241,23 +218,40 @@ void UpdateCharacterOffsets(const chrome_screen_ai::WordBox& word_box,
   std::vector<int32_t> character_offsets = inline_text_box.GetIntListAttribute(
       ax::mojom::IntListAttribute::kCharacterOffsets);
 
+  // Unrotate the line and symbols before computing the offsets.
+  gfx::Transform transform;
+  transform.Rotate(-word_box.bounding_box().angle());
+  transform.ApplyTransformOrigin(inline_text_box.relative_bounds.bounds.x(),
+                                 inline_text_box.relative_bounds.bounds.y(), 0);
+
+  gfx::RectF line_rect =
+      transform.MapRect(inline_text_box.relative_bounds.bounds);
+  std::vector<gfx::RectF> symbols;
+  ranges::transform(
+      word_box.symbols(), std::back_inserter(symbols),
+      [transform](const chrome_screen_ai::SymbolBox& symbol) {
+        return transform.MapRect(ToGfxRect(symbol.bounding_box()));
+      });
+
   int32_t line_offset =
-      (direction == chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT)
-          ? base::ClampRound(inline_text_box.relative_bounds.bounds.x())
-          : base::ClampRound(inline_text_box.relative_bounds.bounds.x() +
-                             inline_text_box.relative_bounds.bounds.width());
+      left_to_right ? base::ClampRound(line_rect.x())
+                    : base::ClampRound(line_rect.x() + line_rect.width());
 
-  ranges::transform(word_box.symbols(), std::back_inserter(character_offsets),
-                    [line_offset](const chrome_screen_ai::SymbolBox& symbol) {
-                      return abs(symbol.bounding_box().x() +
-                                 symbol.bounding_box().width() - line_offset);
-                    });
-
-  if (word_box.has_space_after()) {
-    // Character offsets are in the direction of text, so adding space is
-    // the same for LTR and RTL.
-    character_offsets.push_back(character_offsets.back() + next_space_width);
+  if (space_after_previous_word) {
+    gfx::RectF word_rect =
+        transform.MapRect(ToGfxRect(word_box.bounding_box()));
+    int word_start =
+        left_to_right ? word_rect.x() : (word_rect.x() + word_rect.width());
+    character_offsets.push_back(abs(line_offset - word_start));
   }
+
+  ranges::transform(
+      symbols.begin(), symbols.end(), std::back_inserter(character_offsets),
+      [line_offset, left_to_right](const gfx::RectF& symbol) {
+        int symbol_end =
+            left_to_right ? symbol.x() + symbol.width() : symbol.x();
+        return abs(symbol_end - line_offset);
+      });
 
   inline_text_box.AddIntListAttribute(
       ax::mojom::IntListAttribute::kCharacterOffsets, character_offsets);
@@ -265,7 +259,7 @@ void UpdateCharacterOffsets(const chrome_screen_ai::WordBox& word_box,
 
 void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
                       ui::AXNodeData& inline_text_box,
-                      int next_space_width) {
+                      bool space_after_previous_word) {
   DCHECK_NE(inline_text_box.id, ui::kInvalidAXNodeID);
 
   // TODO(crbug.com/347622611): Drop empty words in preprocessing.
@@ -278,7 +272,7 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
   inline_text_box.relative_bounds.bounds.Union(
       ToGfxRect(word_box.bounding_box()));
 
-  UpdateCharacterOffsets(word_box, inline_text_box, next_space_width);
+  UpdateCharacterOffsets(word_box, inline_text_box, space_after_previous_word);
 
   std::string inner_text =
       inline_text_box.GetStringAttribute(ax::mojom::StringAttribute::kName);
@@ -380,18 +374,12 @@ size_t SerializeWordBoxes(const google::protobuf::RepeatedPtrField<
                             return HaveIdenticalFormattingStyle(
                                 *formatting_context_start, word_box);
                           });
+  bool has_space_after_previous_word = false;
   for (auto word_iter = formatting_context_start;
        word_iter != formatting_context_end; ++word_iter) {
-    int next_space_width = 0;
-    if (word_iter->has_space_after() &&
-        (word_iter + 1) != formatting_context_end) {
-      // Since words belong to the same formatting context, they have the
-      // same direction.
-      next_space_width =
-          GetSpaceWidth(word_iter->direction(), word_iter->bounding_box(),
-                        (word_iter + 1)->bounding_box());
-    }
-    SerializeWordBox(*word_iter, inline_text_box_node, next_space_width);
+    SerializeWordBox(*word_iter, inline_text_box_node,
+                     has_space_after_previous_word);
+    has_space_after_previous_word = word_iter->has_space_after();
   }
 
   std::string language = formatting_context_start->language();
