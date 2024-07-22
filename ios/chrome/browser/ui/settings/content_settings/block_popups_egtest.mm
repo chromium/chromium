@@ -15,6 +15,7 @@
 #import "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/earl_grey/matchers.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -22,8 +23,8 @@
 
 using chrome_test_util::ContentSettingsButton;
 using chrome_test_util::SettingsDoneButton;
-using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::TabGridEditButton;
+using testing::NavigationBarBackButton;
 
 namespace {
 
@@ -91,9 +92,9 @@ class ScopedBlockPopupsException {
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
   // Close the settings menu.
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+  [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+  [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
@@ -217,9 +218,9 @@ class ScopedBlockPopupsException {
                             nil)] assertWithMatcher:grey_sufficientlyVisible()];
 
   // Close the settings menu.
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+  [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+  [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
