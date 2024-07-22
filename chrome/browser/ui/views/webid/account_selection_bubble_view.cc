@@ -1029,6 +1029,7 @@ void AccountSelectionBubbleView::UpdateHeader(
   if (title.compare(title_) != 0) {
     title_ = title;
     title_label_->SetText(title_);
+    SetAccessibleTitle(title_);
     // The title label is not destroyed, so announce it manually.
     webid::SendAccessibilityEvent(GetWidget(), title_);
   }
