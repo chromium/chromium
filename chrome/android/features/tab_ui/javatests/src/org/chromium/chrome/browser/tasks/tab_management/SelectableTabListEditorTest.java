@@ -202,6 +202,7 @@ public class SelectableTabListEditorTest {
                                     getMode(),
                                     /* displayGroups= */ true,
                                     mSnackbarManager,
+                                    /* bottomSheetController= */ null,
                                     TabProperties.TabActionState.SELECTABLE,
                                     /* gridCardOnClickListenerProvider= */ null);
 

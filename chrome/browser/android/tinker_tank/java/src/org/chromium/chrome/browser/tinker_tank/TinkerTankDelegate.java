@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.tinker_tank;
 import android.app.Activity;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+
+import java.util.List;
 
 /**
  * The correct version of {@link TinkerTankDelegateImpl} will be determined at compile time via
@@ -23,4 +26,7 @@ public interface TinkerTankDelegate {
             Activity activity,
             BottomSheetController bottomSheetController,
             Supplier<TabModelSelector> tabModelSelectorSupplier);
+
+    public default void maybeShowForSelectedTabs(
+            Activity activity, BottomSheetController bottomSheetController, List<Tab> tabs) {}
 }

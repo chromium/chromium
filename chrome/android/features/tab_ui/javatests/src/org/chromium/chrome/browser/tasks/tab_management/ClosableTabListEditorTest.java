@@ -93,6 +93,7 @@ public class ClosableTabListEditorTest {
                                     getMode(),
                                     /* displayGroups= */ true,
                                     mSnackbarManager,
+                                    /* bottomSheetController= */ null,
                                     TabProperties.TabActionState.CLOSABLE,
                                     /* gridCardOnClickListenerProvider= */ null);
 

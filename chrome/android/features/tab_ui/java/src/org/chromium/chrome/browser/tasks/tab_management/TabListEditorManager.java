@@ -23,7 +23,9 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Icon
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorOpenMetricGroups;
+import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegateImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ public class TabListEditorManager {
     private final @NonNull ViewGroup mCoordinatorView;
     private final @NonNull ViewGroup mRootView;
     private final @Nullable SnackbarManager mSnackbarManager;
+    private final @Nullable BottomSheetController mBottomSheetController;
     private final @NonNull BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final @NonNull ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final @NonNull TabContentManager mTabContentManager;
@@ -70,6 +73,7 @@ public class TabListEditorManager {
             @NonNull ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier,
             @NonNull TabContentManager tabContentManager,
             @NonNull TabListCoordinator tabListCoordinator,
+            BottomSheetController bottomSheetController,
             @TabListMode int mode,
             @Nullable Runnable onTabGroupCreation) {
         mActivity = activity;
@@ -79,6 +83,7 @@ public class TabListEditorManager {
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabContentManager = tabContentManager;
         mTabListCoordinator = tabListCoordinator;
+        mBottomSheetController = bottomSheetController;
         mMode = mode;
         mTabGroupCreationDialogManager =
                 new TabGroupCreationDialogManager(activity, modalDialogManager, onTabGroupCreation);
@@ -120,6 +125,7 @@ public class TabListEditorManager {
                             mMode,
                             /* displayGroups= */ true,
                             mSnackbarManager,
+                            mBottomSheetController,
                             TabProperties.TabActionState.SELECTABLE,
                             /* gridCardOnClickListenerProvider= */ null);
             mControllerSupplier.set(mTabListEditorCoordinator.getController());
@@ -156,6 +162,14 @@ public class TabListEditorManager {
                             ShowMode.MENU_ONLY,
                             ButtonType.ICON_AND_TEXT,
                             IconPosition.START));
+            if (TinkerTankDelegateImpl.enabled()) {
+                mTabListEditorActions.add(
+                        TabListEditorTinkerTankAction.createAction(
+                                mActivity,
+                                ShowMode.MENU_ONLY,
+                                ButtonType.ICON_AND_TEXT,
+                                IconPosition.START));
+            }
             mTabListEditorActions.add(
                     TabListEditorShareAction.createAction(
                             mActivity,
