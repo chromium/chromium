@@ -3477,9 +3477,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithBalancedLayout_Dev_20240601",
+                    "name": "EnabledWithSearchButton_Dev_20240718",
                     "params": {
-                        "google_bottom_bar_button_list": "0,3,2"
+                        "google_bottom_bar_button_list": "0,3,9,2"
                     },
                     "enable_features": [
                         "CCTGoogleBottomBar"
