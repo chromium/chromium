@@ -11,7 +11,6 @@
 #include "ash/bubble/bubble_constants.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/style/typography.h"
-#include "base/check_deref.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
@@ -127,11 +126,11 @@ void PickerPreviewBubbleView::SetPreviewImage(ui::ImageModel image) {
 }
 
 std::u16string_view PickerPreviewBubbleView::GetMainTextForTesting() {
-  return CHECK_DEREF(main_label_.get()).GetText();
+  return main_label_->GetText();
 }
 
 void PickerPreviewBubbleView::SetMainText(const std::u16string& text) {
-  CHECK_DEREF(main_label_.get()).SetText(text);
+  main_label_->SetText(text);
 }
 
 void PickerPreviewBubbleView::OnThemeChanged() {
