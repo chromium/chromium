@@ -124,10 +124,9 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
     return nullptr;
   }
   return std::make_unique<OzoneImageBacking>(
-      mailbox, format, gfx::BufferPlane::DEFAULT, size, color_space,
-      surface_origin, alpha_type, usage, std::move(debug_label),
-      shared_context_state_, std::move(pixmap), workarounds_,
-      std::move(buffer_usage));
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(debug_label), shared_context_state_, std::move(pixmap),
+      workarounds_, std::move(buffer_usage));
 }
 
 std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
@@ -206,9 +205,9 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
   }
 
   auto backing = std::make_unique<OzoneImageBacking>(
-      mailbox, format, gfx::BufferPlane::DEFAULT, size, color_space,
-      surface_origin, alpha_type, usage, std::move(debug_label),
-      shared_context_state_, std::move(pixmap), workarounds_);
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(debug_label), shared_context_state_, std::move(pixmap),
+      workarounds_);
   backing->SetCleared();
 
   return backing;
