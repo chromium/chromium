@@ -771,6 +771,37 @@ export async function recentsFilterResetToAll() {
 }
 
 /**
+ * Tests if directory changes to a non-Recents folder, the sorting should be
+ * reset to the original one (the one before entering Recents) and the group
+ * heading should be hidden.
+ */
+export async function recentsSortingResetAfterChangingDirectory() {
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+
+  // Change the sorting to "Size".
+  await remoteCall.waitAndClickElement(appId, '#sort-button');
+  await remoteCall.waitAndClickElement(
+      appId, '#sort-menu #sort-menu-sort-by-size');
+  await remoteCall.waitForElement(
+      appId, '.table-header-label.size #sort-direction-button');
+  // Navigate to Recents and click the "Audio" filter button.
+  await navigateToRecent(appId, RecentFilterType.AUDIO);
+  // Check the sorting is changed to "Date modified" and group heading is shown.
+  await remoteCall.waitForElement(
+      appId, '.table-header-label.modificationTime #sort-direction-button');
+  await remoteCall.waitForElement(
+      appId, '.group-heading.group-by-modificationTime');
+  // Navigate back to Downloads folder.
+  const directoryTree = await DirectoryTreePageObject.create(appId);
+  await directoryTree.selectItemByLabel('Downloads');
+  // Check the sorting resets back to "Size" and group heading is hidden.
+  await remoteCall.waitForElement(
+      appId, '.table-header-label.size #sort-direction-button');
+  await remoteCall.waitForElementLost(appId, '.group-heading');
+}
+
+/**
  * Tests when we switch the active filter button between All and others, the
  * correct a11y messages will be announced.
  */
