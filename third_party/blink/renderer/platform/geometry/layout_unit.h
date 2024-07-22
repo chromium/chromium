@@ -167,6 +167,10 @@ class PLATFORM_EXPORT LayoutUnit {
   constexpr operator float() const { return ToFloat(); }
   constexpr operator bool() const { return value_; }
 
+  std::strong_ordering operator<=>(const LayoutUnit&) const = default;
+  std::partial_ordering operator<=>(double d) const { return ToDouble() <=> d; }
+  std::partial_ordering operator<=>(float f) const { return ToFloat() <=> f; }
+
   LayoutUnit operator++(int) {
     value_ = base::ClampAdd(value_, kFixedPointDenominator);
     return *this;
@@ -384,80 +388,30 @@ class PLATFORM_EXPORT LayoutUnit {
 // additionally DCHECKs that it isn't some other negative value.
 inline constexpr LayoutUnit kIndefiniteSize(-1);
 
-constexpr bool operator<=(const LayoutUnit& a, const LayoutUnit& b) {
-  return a.RawValue() <= b.RawValue();
-}
-
-constexpr bool operator<=(const LayoutUnit& a, float b) {
-  return a.ToFloat() <= b;
-}
-
+// TODO(kojii): Using three-way comparison (spaceship) operator for `int` makes
+// too many cases ambiguous.
 inline bool operator<=(const LayoutUnit& a, int b) {
   return a <= LayoutUnit(b);
-}
-
-constexpr bool operator<=(const float a, const LayoutUnit& b) {
-  return a <= b.ToFloat();
 }
 
 inline bool operator<=(const int a, const LayoutUnit& b) {
   return LayoutUnit(a) <= b;
 }
 
-constexpr bool operator>=(const LayoutUnit& a, const LayoutUnit& b) {
-  return a.RawValue() >= b.RawValue();
-}
-
 inline bool operator>=(const LayoutUnit& a, int b) {
   return a >= LayoutUnit(b);
-}
-
-constexpr bool operator>=(const float a, const LayoutUnit& b) {
-  return a >= b.ToFloat();
-}
-
-constexpr bool operator>=(const LayoutUnit& a, float b) {
-  return a.ToFloat() >= b;
 }
 
 inline bool operator>=(const int a, const LayoutUnit& b) {
   return LayoutUnit(a) >= b;
 }
 
-constexpr bool operator<(const LayoutUnit& a, const LayoutUnit& b) {
-  return a.RawValue() < b.RawValue();
-}
-
 inline bool operator<(const LayoutUnit& a, int b) {
   return a < LayoutUnit(b);
 }
 
-constexpr bool operator<(const LayoutUnit& a, float b) {
-  return a.ToFloat() < b;
-}
-
-constexpr bool operator<(const LayoutUnit& a, double b) {
-  return a.ToDouble() < b;
-}
-
 inline bool operator<(const int a, const LayoutUnit& b) {
   return LayoutUnit(a) < b;
-}
-
-constexpr bool operator<(const float a, const LayoutUnit& b) {
-  return a < b.ToFloat();
-}
-
-constexpr bool operator>(const LayoutUnit& a, const LayoutUnit& b) {
-  return a.RawValue() > b.RawValue();
-}
-
-constexpr bool operator>(const LayoutUnit& a, double b) {
-  return a.ToDouble() > b;
-}
-
-constexpr bool operator>(const LayoutUnit& a, float b) {
-  return a.ToFloat() > b;
 }
 
 inline bool operator>(const LayoutUnit& a, int b) {
@@ -468,22 +422,6 @@ inline bool operator>(const int a, const LayoutUnit& b) {
   return LayoutUnit(a) > b;
 }
 
-constexpr bool operator>(const float a, const LayoutUnit& b) {
-  return a > b.ToFloat();
-}
-
-constexpr bool operator>(const double a, const LayoutUnit& b) {
-  return a > b.ToDouble();
-}
-
-constexpr bool operator!=(const LayoutUnit& a, const LayoutUnit& b) {
-  return a.RawValue() != b.RawValue();
-}
-
-inline bool operator!=(const LayoutUnit& a, float b) {
-  return a != LayoutUnit(b);
-}
-
 inline bool operator!=(const int a, const LayoutUnit& b) {
   return LayoutUnit(a) != b;
 }
@@ -492,24 +430,12 @@ inline bool operator!=(const LayoutUnit& a, int b) {
   return a != LayoutUnit(b);
 }
 
-constexpr bool operator==(const LayoutUnit& a, const LayoutUnit& b) {
-  return a.RawValue() == b.RawValue();
-}
-
 inline bool operator==(const LayoutUnit& a, int b) {
   return a == LayoutUnit(b);
 }
 
 inline bool operator==(const int a, const LayoutUnit& b) {
   return LayoutUnit(a) == b;
-}
-
-constexpr bool operator==(const LayoutUnit& a, float b) {
-  return a.ToFloat() == b;
-}
-
-constexpr bool operator==(const float a, const LayoutUnit& b) {
-  return a == b.ToFloat();
 }
 
 // For multiplication that's prone to overflow, this bounds it to

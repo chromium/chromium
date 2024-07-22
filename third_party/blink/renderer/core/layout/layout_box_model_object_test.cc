@@ -134,7 +134,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionConstraints) {
   const auto* constraints = sticky->StickyConstraints();
   ASSERT_TRUE(constraints);
   EXPECT_TRUE(HasStickyLayer(scrollable_area, sticky));
-  ASSERT_EQ(0.f, constraints->top_inset);
+  ASSERT_EQ(0.f, constraints->top_inset->ToFloat());
 
   // The coordinates of the constraint rects should all be with respect to the
   // unscrolled scroller.
@@ -226,7 +226,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionInlineConstraints) {
   const auto* constraints = sticky->StickyConstraints();
   ASSERT_TRUE(constraints);
   EXPECT_TRUE(HasStickyLayer(scrollable_area, sticky));
-  EXPECT_EQ(10.f, constraints->top_inset);
+  EXPECT_EQ(10.f, constraints->top_inset->ToFloat());
 
   // The coordinates of the constraint rects should all be with respect to the
   // unscrolled scroller.
@@ -282,7 +282,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionVerticalRLInlineConstraints) {
   const auto* constraints = sticky->StickyConstraints();
   ASSERT_TRUE(constraints);
   EXPECT_TRUE(HasStickyLayer(scrollable_area, sticky));
-  EXPECT_EQ(10.f, constraints->top_inset);
+  EXPECT_EQ(10.f, constraints->top_inset->ToFloat());
 
   // The coordinates of the constraint rects should all be with respect to the
   // unscrolled scroller.
@@ -322,7 +322,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionTransforms) {
   const auto* constraints = sticky->StickyConstraints();
   ASSERT_TRUE(constraints);
   EXPECT_TRUE(HasStickyLayer(scrollable_area, sticky));
-  ASSERT_EQ(0.f, constraints->top_inset);
+  ASSERT_EQ(0.f, constraints->top_inset->ToFloat());
 
   // The coordinates of the constraint rects should all be with respect to the
   // unscrolled scroller.
@@ -359,7 +359,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionPercentageStyles) {
   const auto* constraints = sticky->StickyConstraints();
   ASSERT_TRUE(constraints);
   EXPECT_TRUE(HasStickyLayer(scrollable_area, sticky));
-  ASSERT_EQ(0.f, constraints->top_inset);
+  ASSERT_EQ(0.f, constraints->top_inset->ToFloat());
 
   if (RuntimeEnabledFeatures::LayoutIgnoreMarginsForStickyEnabled()) {
     ASSERT_EQ(
@@ -502,13 +502,16 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionConstraintInvalidation) {
   ASSERT_TRUE(constraints);
   EXPECT_TRUE(HasStickyLayer(scrollable_area, sticky));
 
-  EXPECT_EQ(25.f, constraints->scroll_container_relative_sticky_box_rect.X());
+  EXPECT_EQ(
+      25.f,
+      constraints->scroll_container_relative_sticky_box_rect.X().ToFloat());
   To<HTMLElement>(target->GetNode())->classList().Add(AtomicString("hide"));
   // After updating layout we should have the updated position.
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   EXPECT_EQ(50.f, sticky->StickyConstraints()
-                      ->scroll_container_relative_sticky_box_rect.X());
+                      ->scroll_container_relative_sticky_box_rect.X()
+                      .ToFloat());
 }
 
 TEST_P(LayoutBoxModelObjectTest, StickyPositionStatusChange) {
