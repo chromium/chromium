@@ -158,11 +158,10 @@ class PerformanceInterventionInteractiveTest
     });
   }
 
-  auto SimulateMouseEnterTabRow(const ElementSpecifier& tab_row_id) {
+  auto SimulateFocusOnTextContainer(const ElementSpecifier& tab_row_id) {
     return WithView(tab_row_id, [](TabListRowView* tab_list_row) {
-      ui::MouseEvent e(ui::EventType::kMouseEntered, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), 0, 0);
-      tab_list_row->OnEvent(&e);
+      tab_list_row->GetTextContainerForTesting()->RequestFocus();
+      ASSERT_TRUE(tab_list_row->GetTextContainerForTesting()->HasFocus());
     });
   }
 
@@ -429,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
           [](TabListView* tab_list) {
             return views::AsViewClass<TabListRowView>(tab_list->children()[0]);
           }),
-      SimulateMouseEnterTabRow(kTabListRow), FlushEvents(),
+      SimulateFocusOnTextContainer(kTabListRow), FlushEvents(),
       CheckView(kTabListRow,
                 [](TabListRowView* tab_list_row) {
                   return tab_list_row->GetCloseButtonForTesting()->GetVisible();
@@ -439,7 +438,6 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
                          return tab_list_row->GetCloseButtonForTesting();
                        }),
       PressButton(kSuggestedCloseButton), WaitForHide(kSuggestedCloseButton),
-      FlushEvents(),
       PressButton(PerformanceInterventionBubble::
                       kPerformanceInterventionDialogDeactivateButton),
       Do([&]() { waiter->Wait(); }), CheckTabDiscardStatus(0, false),

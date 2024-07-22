@@ -14,6 +14,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
@@ -40,6 +41,10 @@ TabListView::~TabListView() = default;
 void TabListView::RemoveRow(resource_attribution::PageContext context,
                             TabListRowView* row_view) {
   tab_list_model_->RemovePageContext(context);
+  // Explicitly remove the ink drop for the row view to so that the InkDrop
+  // doesn't access the non-override versions of Add/RemoveLayerFromRegions()
+  // while the child is being removed from this view.
+  views::InkDrop::Remove(row_view);
   RemoveChildViewT(row_view);
   RecordTabRemovedFromTabList(tab_list_model_->count());
 }
