@@ -502,8 +502,8 @@ source_set("unit_tests") {
       "model_execution/test/request_builder.h",
       "model_execution/test/response_holder.cc",
       "model_execution/test/response_holder.h",
-      "model_execution/test_on_device_model_component.cc",
-      "model_execution/test_on_device_model_component.h",
+      "model_execution/test/test_on_device_model_component_state_manager.cc",
+      "model_execution/test/test_on_device_model_component_state_manager.h",
     ]
   }
   if (build_with_tflite_lib) {
