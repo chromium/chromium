@@ -240,6 +240,10 @@ suite('manager tests', function() {
   test(
       'bypass warning confirmation dialog shown on save-dangerous-click',
       async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({dangerousDownloadInterstitial: false});
+        manager = document.createElement('downloads-manager');
+        document.body.appendChild(manager);
         callbackRouterRemote.insertItems(0, [
           createDownload({
             id: 'itemId',

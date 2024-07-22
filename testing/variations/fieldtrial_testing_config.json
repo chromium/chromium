@@ -6862,6 +6862,24 @@
             ]
         }
     ],
+    "DangerousDownloadInterstitial": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DangerousDownloadInterstitial"
+                    ]
+                }
+            ]
+        }
+    ],
     "DataControlsDesktop": [
         {
             "platforms": [
