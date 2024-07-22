@@ -358,8 +358,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"AttributionReportingCrossAppWeb",
            raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},
-          {"AttributionReportingCrossAppWeb",
-           raw_ref(features::kAttributionReportingCrossAppWebOverride)},
           {"AndroidDownloadableFontsMatching",
            raw_ref(features::kAndroidDownloadableFontsMatching)},
 #if BUILDFLAG(IS_ANDROID)

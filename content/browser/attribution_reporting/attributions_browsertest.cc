@@ -38,7 +38,6 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -1194,7 +1193,7 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(ConversionsRegisteredOnActivatedPrerender) {
 }
 
 // Tests to verify that cross app web is not enabled when base::Feature is
-// enabled but runtime feature is disabled (without
+// enabled but runtime feature is disabled (with
 // `features::kPrivacySandboxAdsAPIsOverride` override).
 class AttributionsCrossAppWebRuntimeDisabledBrowserTest
     : public AttributionsBrowserTest {
@@ -1203,8 +1202,7 @@ class AttributionsCrossAppWebRuntimeDisabledBrowserTest
       : AttributionsBrowserTest(
             /*enabled_features=*/{network::features::
                                       kAttributionReportingCrossAppWeb},
-            /*disabled_features=*/{
-                features::kAttributionReportingCrossAppWebOverride}) {}
+            /*disabled_features=*/{features::kPrivacySandboxAdsAPIsOverride}) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -1270,8 +1268,7 @@ class AttributionsCrossAppWebEnabledBrowserTest
   AttributionsCrossAppWebEnabledBrowserTest()
       : AttributionsBrowserTest(
             /*enabled_features=*/{
-                network::features::kAttributionReportingCrossAppWeb,
-                features::kPrivacySandboxAdsAPIsOverride}) {}
+                network::features::kAttributionReportingCrossAppWeb}) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
