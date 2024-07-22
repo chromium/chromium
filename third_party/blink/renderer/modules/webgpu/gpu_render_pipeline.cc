@@ -146,11 +146,15 @@ void GPUPrimitiveStateAsWGPUPrimitiveState(
   dawn_state->dawn_desc.frontFace = AsDawnEnum(webgpu_desc->frontFace());
   dawn_state->dawn_desc.cullMode = AsDawnEnum(webgpu_desc->cullMode());
 
+#ifdef WGPU_BREAKING_CHANGE_DEPTH_CLIP_CONTROL
+  dawn_state->dawn_desc.unclippedDepth = webgpu_desc->unclippedDepth();
+#else
   if (webgpu_desc->unclippedDepth()) {
     auto* depth_clip_control = &dawn_state->depth_clip_control;
     depth_clip_control->unclippedDepth = webgpu_desc->unclippedDepth();
     dawn_state->dawn_desc.nextInChain = depth_clip_control;
   }
+#endif
 }
 
 void GPUDepthStencilStateAsWGPUDepthStencilState(
