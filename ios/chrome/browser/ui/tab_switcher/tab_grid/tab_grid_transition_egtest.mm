@@ -710,17 +710,10 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 0);
 
   [ChromeEarlGrey showTabSwitcher];
-  if (@available(iOS 18, *)) {
-    XCUIApplication* app = [[XCUIApplication alloc] init];
-    if ([app.buttons[kInactiveTabsButtonAccessibilityIdentifier] exists]) {
-      [app.buttons[kInactiveTabsButtonAccessibilityIdentifier] tap];
-    }
-  } else {
-    [[EarlGrey
-        selectElementWithMatcher:
-            grey_accessibilityID(kInactiveTabsButtonAccessibilityIdentifier)]
-        performAction:grey_tap()];
-  }
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kInactiveTabsButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:testing::NavigationBarBackButton()]
       performAction:grey_tap()];
   ShowTabViewController();
