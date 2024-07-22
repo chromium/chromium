@@ -62,17 +62,12 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
                 isIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
-    _webState = web::WebState::Create(params);
     _browserWebStateDelegate = browserWebStateDelegate;
     _webStateDelegateBridge =
         std::make_unique<web::WebStateDelegateBridge>(self);
-    _webState->SetDelegate(_webStateDelegateBridge.get());
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
-    _webState->AddObserver(_webStateObserverBridge.get());
-    AttachTabHelpers(_webState.get(), TabHelperFilter::kBottomSheet);
-    _policyDeciderBridge = std::make_unique<web::WebStatePolicyDeciderBridge>(
-        _webState.get(), self);
+    [self attachWebState:web::WebState::Create(params)];
     _isIncognito = isIncognito;
   }
   return self;
@@ -131,7 +126,7 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   [self updateBackgroundColor];
 }
 
-- (void)webStateDidChangeBackgroundColor:(web::WebState*)webState {
+- (void)webStateDidChangeUnderPageBackgroundColor:(web::WebState*)webState {
   [self updateBackgroundColor];
 }
 
@@ -205,6 +200,28 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
 }
 
 #pragma mark - Private
+
+/// Detaches and returns the current web state.
+- (std::unique_ptr<web::WebState>)detachWebState {
+  CHECK(_webState, kLensOverlayNotFatalUntil);
+  _policyDeciderBridge.reset();
+  _webState->RemoveObserver(_webStateObserverBridge.get());
+  _webState->SetDelegate(nullptr);
+  return std::move(_webState);
+}
+
+/// Attaches `webState` to the mediator.
+- (void)attachWebState:(std::unique_ptr<web::WebState>)webState {
+  /// Detach the current web state before attaching a new one.
+  CHECK(!_webState, kLensOverlayNotFatalUntil);
+  CHECK(!_policyDeciderBridge, kLensOverlayNotFatalUntil);
+  _webState = std::move(webState);
+  _webState->SetDelegate(_webStateDelegateBridge.get());
+  _webState->AddObserver(_webStateObserverBridge.get());
+  _policyDeciderBridge =
+      std::make_unique<web::WebStatePolicyDeciderBridge>(_webState.get(), self);
+  AttachTabHelpers(_webState.get(), TabHelperFilter::kBottomSheet);
+}
 
 /// Updates the consumer's background color.
 - (void)updateBackgroundColor {
