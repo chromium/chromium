@@ -149,7 +149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.EvictedBucketAccessCount" units="units"
-    expires_after="2024-08-20">
+    expires_after="2025-07-19">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -415,7 +415,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.UsageByOrigin" units="MB" expires_after="2024-07-28">
+<histogram name="Quota.UsageByOrigin" units="MB" expires_after="2025-07-19">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
