@@ -10,6 +10,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_result_page_web_state_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -84,9 +85,16 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
 - (void)disconnect {
   _policyDeciderBridge.reset();
   _webState->RemoveObserver(_webStateObserverBridge.get());
-  _webStateObserverBridge.reset();
   _webState.reset();
+  _webStateObserverBridge.reset();
   _webStateDelegateBridge.reset();
+}
+
+- (void)dealloc {
+  if (_webState) {
+    _webState->RemoveObserver(_webStateObserverBridge.get());
+    _webStateObserverBridge.reset();
+  }
 }
 
 #pragma mark - LensOverlayResultConsumer
@@ -229,6 +237,17 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   if (backgroundColor) {
     [self.consumer setBackgroundColor:backgroundColor];
   }
+}
+
+#pragma mark - CRWWebStateObserver
+
+- (void)webStateDestroyed:(web::WebState*)webState {
+  if (_webState) {
+    _webState->RemoveObserver(_webStateObserverBridge.get());
+    _webStateObserverBridge.reset();
+  }
+
+  [self.webStateDelegate lensResultPageWebStateDestroyed];
 }
 
 @end

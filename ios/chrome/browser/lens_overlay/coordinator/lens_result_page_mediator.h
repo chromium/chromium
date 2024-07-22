@@ -12,6 +12,7 @@
 
 @protocol ApplicationCommands;
 @protocol LensResultPageConsumer;
+@protocol LensResultPageWebStateDelegate;
 
 /// Mediator that handles lens result page operations.
 @interface LensResultPageMediator : NSObject <LensOverlayResultConsumer>
@@ -23,6 +24,9 @@
 
 /// Container for the web view.
 @property(nonatomic, weak) UIView* webViewContainer;
+
+/// Delegate for the result page web state.
+@property(nonatomic, weak) id<LensResultPageWebStateDelegate> webStateDelegate;
 
 - (instancetype)
      initWithWebStateParams:(const web::WebState::CreateParams&)params
