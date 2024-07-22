@@ -235,7 +235,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEdgeToEdgeBottomChin,
     &kEducationalTipModule,
     &kExperimentsForAgsa,
-    &kFedCmButtonModeUnifiedAccountChooser,
     &kFeedPositionAndroid,
     &kFocusOmniboxInIncognitoTabIntents,
     &kForceListTabSwitcher,
@@ -719,10 +718,6 @@ BASE_FEATURE(kEducationalTipModule,
 BASE_FEATURE(kExperimentsForAgsa,
              "ExperimentsForAgsa",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFedCmButtonModeUnifiedAccountChooser,
-             "FedCmButtonModeUnifiedAccountChooser",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFullscreenInsetsApiMigration,
              "FullscreenInsetsApiMigration",

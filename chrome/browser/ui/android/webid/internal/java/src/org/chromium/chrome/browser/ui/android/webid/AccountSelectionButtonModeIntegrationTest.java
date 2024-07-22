@@ -39,11 +39,8 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -61,7 +58,6 @@ import java.util.Arrays;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures(ChromeFeatureList.FEDCM_BUTTON_MODE_UNIFIED_ACCOUNT_CHOOSER)
 public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionIntegrationTestBase {
     @Before
     @Override
@@ -276,43 +272,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                 AccountSelectionProperties.ITEM_TYPE_ACCOUNT);
         assertEquals(
                 accountsList.getAdapter().getItemViewType(2),
-                AccountSelectionProperties.ITEM_TYPE_ADD_ACCOUNT);
-
-        // Check that secondary button is NOT displayed.
-        onView(withId(R.id.account_selection_add_account_btn)).check(matches(not(isDisplayed())));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.FEDCM_BUTTON_MODE_UNIFIED_ACCOUNT_CHOOSER)
-    public void testAddAccountIsAccountRowForUnifiedSingleAccountChooser() {
-        runOnUiThreadBlocking(
-                () -> {
-                    mAccountSelection.showAccounts(
-                            EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_2,
-                            Arrays.asList(NEW_BOB),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
-                            /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
-                    mAccountSelection.getMediator().setComponentShowTime(-1000);
-                });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
-
-        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
-        assertNotNull(contentView);
-
-        // Check that two items are in the accounts list, the first item is the account and the
-        // last item is an add account button.
-        RecyclerView accountsList = contentView.findViewById(R.id.sheet_item_list);
-        assertEquals(accountsList.getChildCount(), 2);
-        assertEquals(
-                accountsList.getAdapter().getItemViewType(0),
-                AccountSelectionProperties.ITEM_TYPE_ACCOUNT);
-        assertEquals(
-                accountsList.getAdapter().getItemViewType(1),
                 AccountSelectionProperties.ITEM_TYPE_ADD_ACCOUNT);
 
         // Check that secondary button is NOT displayed.

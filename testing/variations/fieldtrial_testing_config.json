@@ -9341,22 +9341,6 @@
             ]
         }
     ],
-    "FedCmButtonModeUnifiedAccountChooser": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FedCmButtonModeUnifiedAccountChooser"
-                    ]
-                }
-            ]
-        }
-    ],
     "FeedContainment": [
         {
             "platforms": [
