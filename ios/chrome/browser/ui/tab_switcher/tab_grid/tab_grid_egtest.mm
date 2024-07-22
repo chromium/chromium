@@ -3289,6 +3289,20 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // `title`.
 - (void)longPressTabWithTitle:(NSString*)title {
   // The test page may be there multiple times.
+  // Don't use -waitForUIElementToAppearWithMatcher here as it doesn't support
+  // the atIndex:0 check for multiple elements.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[[EarlGrey
+        selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(title),
+                                            grey_sufficientlyVisible(), nil)]
+        atIndex:0] assertWithMatcher:grey_notNil() error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 kWaitForUIElementTimeout, condition),
+             @"Tab did not appear.");
+
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(title),
                                           grey_sufficientlyVisible(), nil)]

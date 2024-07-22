@@ -206,8 +206,14 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 
   // This wait is required because, on devices, EG-test may tap on the button
   // while it is sliding up, which cause the tap to misses the button.
-  [ChromeEarlGreyUI waitForAppToIdle];
   // Turn off UMA.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_allOf(chrome_test_util::TableViewSwitchCell(
+                                     kImproveChromeItemAccessibilityIdentifier,
+                                     /*is_toggled_on=*/YES,
+                                     /*enabled=*/YES),
+                                 grey_sufficientlyVisible(), nil)];
+
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                    kImproveChromeItemAccessibilityIdentifier,
@@ -223,14 +229,14 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  [ChromeEarlGreyUI waitForAppToIdle];
   // Check UMA off.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                   kImproveChromeItemAccessibilityIdentifier,
-                                   /*is_toggled_on=*/NO,
-                                   /*enabled=*/YES)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_allOf(chrome_test_util::TableViewSwitchCell(
+                                     kImproveChromeItemAccessibilityIdentifier,
+                                     /*is_toggled_on=*/NO,
+                                     /*enabled=*/YES),
+                                 grey_sufficientlyVisible(), nil)];
+
   // Close UMA dialog.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
