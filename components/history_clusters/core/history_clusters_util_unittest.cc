@@ -127,26 +127,25 @@ TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
           "HiddenVisitLabel",
       }};
 
-  for (size_t i = 0; i < std::size(test_data); ++i) {
-    SCOPED_TRACE(base::StringPrintf("Testing case i=%d, query=%s",
-                                    static_cast<int>(i),
-                                    test_data[i].query.c_str()));
+  int i = 0;
+  for (const auto& test_item : test_data) {
+    SCOPED_TRACE(base::StringPrintf("Testing case i=%d, query=%s", i++,
+                                    test_item.query.c_str()));
 
     auto clusters = all_clusters;
-    ApplySearchQuery(test_data[i].query, clusters);
+    ApplySearchQuery(test_item.query, clusters);
 
-    size_t expected_size =
-        static_cast<size_t>(test_data[i].expect_first_cluster) +
-        static_cast<size_t>(test_data[i].expect_second_cluster);
+    size_t expected_size = static_cast<size_t>(test_item.expect_first_cluster) +
+                           static_cast<size_t>(test_item.expect_second_cluster);
     ASSERT_EQ(clusters.size(), expected_size);
 
-    if (test_data[i].expect_first_cluster) {
+    if (test_item.expect_first_cluster) {
       EXPECT_EQ(clusters[0].cluster_id, 1);
     }
 
-    if (test_data[i].expect_second_cluster) {
+    if (test_item.expect_second_cluster) {
       const auto& cluster =
-          test_data[i].expect_first_cluster ? clusters[1] : clusters[0];
+          test_item.expect_first_cluster ? clusters[1] : clusters[0];
       EXPECT_EQ(cluster.cluster_id, 2);
     }
   }
