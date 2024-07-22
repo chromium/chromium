@@ -96,6 +96,7 @@ class ColorPickerElementView : public views::Button {
 
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
     SetAnimateOnStateChange(true);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kRadioButton);
   }
 
   ~ColorPickerElementView() override = default;
@@ -123,7 +124,6 @@ class ColorPickerElementView : public views::Button {
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     views::Button::GetAccessibleNodeData(node_data);
-    node_data->role = ax::mojom::Role::kRadioButton;
     node_data->SetCheckedState(GetSelected() ? ax::mojom::CheckedState::kTrue
                                              : ax::mojom::CheckedState::kFalse);
   }

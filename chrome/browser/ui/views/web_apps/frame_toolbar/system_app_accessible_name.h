@@ -19,9 +19,6 @@ class SystemAppAccessibleName : public views::Label {
   SystemAppAccessibleName& operator=(const SystemAppAccessibleName&) = delete;
   ~SystemAppAccessibleName() override;
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
  private:
   std::u16string app_name_;
 };

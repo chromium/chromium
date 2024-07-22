@@ -318,7 +318,6 @@ void CandidateView::SetPositionData(int index, int total) {
 
 void CandidateView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Button::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kImeCandidate;
   // PosInSet needs to be incremented since |candidate_index_| is 0-based.
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
                              candidate_index_ + 1);

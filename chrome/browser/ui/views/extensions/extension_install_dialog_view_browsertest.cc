@@ -50,6 +50,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/test/widget_test.h"
@@ -658,7 +659,7 @@ void ExtensionInstallDialogRatingsSectionTest::TestRatingsSectionA11y(
   ASSERT_TRUE(rating_view);
   {
     ui::AXNodeData node_data;
-    rating_view->GetAccessibleNodeData(&node_data);
+    rating_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
     EXPECT_EQ(ax::mojom::Role::kStaticText, node_data.role);
     EXPECT_EQ(expected_text,
               node_data.GetStringAttribute(ax::mojom::StringAttribute::kName));
@@ -666,7 +667,7 @@ void ExtensionInstallDialogRatingsSectionTest::TestRatingsSectionA11y(
 
   for (views::View* child : rating_view->children()) {
     ui::AXNodeData node_data;
-    child->GetAccessibleNodeData(&node_data);
+    child->GetViewAccessibility().GetAccessibleNodeData(&node_data);
     EXPECT_EQ(ax::mojom::Role::kNone, node_data.role);
   }
 

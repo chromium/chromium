@@ -170,7 +170,6 @@ bool SavedTabGroupButton::IsTriggerableEvent(const ui::Event& e) {
 void SavedTabGroupButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::MenuButton::GetAccessibleNodeData(node_data);
   node_data->SetNameChecked(GetAccessibleNameForButton());
-  node_data->role = ax::mojom::Role::kButton;
 }
 
 void SavedTabGroupButton::PaintButtonContents(gfx::Canvas* canvas) {

@@ -29,10 +29,5 @@ SystemAppAccessibleName::SystemAppAccessibleName(const std::u16string& app_name)
 
 SystemAppAccessibleName::~SystemAppAccessibleName() = default;
 
-void SystemAppAccessibleName::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kApplication;
-  node_data->SetNameChecked(app_name_);
-}
-
 BEGIN_METADATA(SystemAppAccessibleName)
 END_METADATA

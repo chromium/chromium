@@ -40,6 +40,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -120,15 +121,13 @@ class RatingStar : public views::ImageView {
   METADATA_HEADER(RatingStar, views::ImageView)
 
  public:
-  explicit RatingStar(const ui::ImageModel& image) { SetImage(image); }
+  explicit RatingStar(const ui::ImageModel& image) {
+    SetImage(image);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kNone);
+  }
   RatingStar(const RatingStar&) = delete;
   RatingStar& operator=(const RatingStar&) = delete;
   ~RatingStar() override = default;
-
-  // views::ImageView:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kNone;
-  }
 };
 
 BEGIN_METADATA(RatingStar)
@@ -141,14 +140,20 @@ class RatingLabel : public views::Label {
 
  public:
   RatingLabel(const std::u16string& text, int text_context)
-      : views::Label(text, text_context, views::style::STYLE_PRIMARY) {}
+      : views::Label(text, text_context, views::style::STYLE_PRIMARY) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kNone);
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
+
   RatingLabel(const RatingLabel&) = delete;
   RatingLabel& operator=(const RatingLabel&) = delete;
   ~RatingLabel() override = default;
 
-  // views::Label:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kNone;
+  void AdjustAccessibleName(std::u16string& new_name,
+                            ax::mojom::NameFrom& name_from) override {
+    // Override and do nothing so that the name set from
+    // Label::AdjustAccessibleName isn't used.
   }
 };
 

@@ -142,6 +142,9 @@ class IntentPickerAppGridButton : public views::Button {
     name_label->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
 
     SetFocusBehavior(FocusBehavior::ALWAYS);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kRadioButton);
+    // TODO(crbug.com/325137417): `SetName` should be called whenever the
+    // `name_label` text changes, not just in the constructor.
     GetViewAccessibility().SetName(name_label->GetText());
     SetPreferredSize(gfx::Size(kGridItemPreferredSize, kGridItemPreferredSize));
 
@@ -162,7 +165,6 @@ class IntentPickerAppGridButton : public views::Button {
   void StateChanged(ButtonState old_state) override { UpdateBackground(); }
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     Button::GetAccessibleNodeData(node_data);
-    node_data->role = ax::mojom::Role::kRadioButton;
     node_data->SetCheckedState(selected_ ? ax::mojom::CheckedState::kTrue
                                          : ax::mojom::CheckedState::kFalse);
   }

@@ -16,6 +16,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -40,6 +41,9 @@ SidePanelResizeHandle::SidePanelResizeHandle(SidePanel* side_panel)
     SetImage(ui::ImageModel::FromVectorIcon(
         kDragHandleIcon, kColorSidePanelResizeAreaHandle, kIconSize));
   }
+  GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_PANEL_RESIZE));
 }
 
 void SidePanelResizeHandle::UpdateVisibility(bool visible) {
@@ -50,12 +54,6 @@ void SidePanelResizeHandle::UpdateVisibility(bool visible) {
   } else {
     SetBackground(nullptr);
   }
-}
-
-void SidePanelResizeHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kSlider;
-  node_data->SetNameChecked(
-      l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_PANEL_RESIZE));
 }
 
 void SidePanelResizeHandle::AddedToWidget() {

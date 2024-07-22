@@ -22,6 +22,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/focus_ring.h"

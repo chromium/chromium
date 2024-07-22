@@ -56,6 +56,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
@@ -87,13 +88,11 @@ class OmniboxRemoveSuggestionButton : public views::ImageButton {
         base::TimeDelta());
 
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-  }
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     // Although this appears visually as a button, expose as a list box option
     // so that it matches the other options within its list box container.
-    node_data->role = ax::mojom::Role::kListBoxOption;
-    node_data->SetNameChecked(
+    GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
+    GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_ACC_REMOVE_SUGGESTION_BUTTON));
   }
 };
