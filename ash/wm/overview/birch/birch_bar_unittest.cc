@@ -584,6 +584,26 @@ TEST_F(BirchBarTest, ShowBirchBarInTabletMode) {
       OverviewGridTestApi(Shell::GetPrimaryRootWindow()).birch_bar_view());
 }
 
+// Test that keyboard traversal on the birch bar works.
+TEST_F(BirchBarTest, KeyboardTraversal) {
+  SetCalendarItems(/*num=*/1);
+
+  EnterOverview();
+  auto birch_chips =
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips();
+  ASSERT_EQ(2u, birch_chips.size());
+
+  // Tab through the default desk button and new desk button.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
+
+  // Tab through and verify the chips are focused.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_TRUE(birch_chips[0]->HasFocus());
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_TRUE(birch_chips[1]->HasFocus());
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BirchBarMenuTest:
 // The test class of birch bar context menu.
@@ -1467,7 +1487,5 @@ TEST_P(BirchBarLayoutTest, ResponsiveLayout) {
     birch_bar_view->RemoveChip(items_[i - 1].get());
   }
 }
-
-// TODO(http://b/325335020): Add tests for tab traversal.
 
 }  // namespace ash
