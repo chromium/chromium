@@ -33,6 +33,7 @@ struct COMPONENT_EXPORT(MANTA) SparkyContext {
   std::vector<DialogTurn> dialog;
   std::optional<DiagnosticsData> diagnostics_data;
   std::optional<std::string> page_content;
+  std::optional<std::string> page_url;
   std::optional<std::string> server_url;
   bool collect_settings{false};
   proto::Task task{proto::Task::TASK_PLANNER};

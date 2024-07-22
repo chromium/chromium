@@ -117,9 +117,12 @@ void SparkyProvider::OnScreenshotObtained(
   AddDialogToSparkyContext(sparky_context->dialog, sparky_context_data);
 
   sparky_context_data->set_task(sparky_context->task);
-  if (sparky_context->page_content) {
+  if (sparky_context->page_content.has_value()) {
     sparky_context_data->set_page_contents(
         sparky_context->page_content.value());
+  }
+  if (sparky_context->page_url.has_value()) {
+    sparky_context_data->set_page_url(sparky_context->page_url.value());
   }
 
   if (jpeg_screenshot) {

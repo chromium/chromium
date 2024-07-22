@@ -146,4 +146,5 @@ message SparkyContextData {
   optional AppsData apps_data = 6;
   optional ServerConfig server_config = 7;
   optional string page_contents = 8;
+  optional string page_url = 9;
 }

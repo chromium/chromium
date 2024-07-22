@@ -99,6 +99,7 @@ void SparkyManagerImpl::AnswerQuestion(const std::u16string& question,
         dialog_turns_, base::UTF16ToUTF8(question),
         base::UTF16ToUTF8(current_panel_content_->page_content));
     sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
+    sparky_context->page_url = current_page_info_->url.spec();
 
     sparky_provider_->QuestionAndAnswer(
         std::move(sparky_context),
@@ -228,6 +229,7 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
         dialog_turns_, base::UTF16ToUTF8(question),
         base::UTF16ToUTF8(current_panel_content_->page_content));
     sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
+    sparky_context->page_url = current_page_info_->url.spec();
 
     // If the latest action is not the final action from the server, then an
     // additional request is made to the server.
@@ -263,6 +265,7 @@ void SparkyManagerImpl::OnGetPageContentForQA(
       dialog_turns_, base::UTF16ToUTF8(question),
       base::UTF16ToUTF8(current_panel_content_->page_content));
   sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
+  sparky_context->page_url = current_page_info_->url.spec();
 
   sparky_provider_->QuestionAndAnswer(
       std::move(sparky_context),
