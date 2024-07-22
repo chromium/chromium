@@ -398,10 +398,6 @@ class CORE_EXPORT HTMLCanvasElement final
   bool needs_unbuffered_input_ = false;
   bool style_is_visible_ = false;
 
-  bool HasResourceProvider() {
-    return canvas2d_bridge_ || !!CanvasResourceHost::ResourceProvider();
-  }
-
   // Canvas2DLayerBridge is used when canvas has 2d rendering context
   std::unique_ptr<Canvas2DLayerBridge> canvas2d_bridge_;
   void ReplaceExisting2dLayerBridge(

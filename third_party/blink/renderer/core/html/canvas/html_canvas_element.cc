@@ -739,8 +739,6 @@ void HTMLCanvasElement::Reset() {
 
   dirty_rect_ = gfx::Rect();
 
-  bool had_resource_provider = HasResourceProvider();
-
   unsigned w = 0;
   AtomicString value = FastGetAttribute(html_names::kWidthAttr);
   if (value.empty() || !ParseHTMLNonNegativeInteger(value, w) ||
@@ -765,7 +763,8 @@ void HTMLCanvasElement::Reset() {
 
   // If the size of an existing buffer matches, we can just clear it instead of
   // reallocating.  This optimization is only done for 2D canvases for now.
-  if (had_resource_provider && old_size == new_size && IsRenderingContext2D()) {
+  if (ResourceProvider() != nullptr && old_size == new_size &&
+      IsRenderingContext2D()) {
     if (!canvas_is_clear_) {
       canvas_is_clear_ = true;
       context_->ClearRect(0, 0, width(), height());
@@ -972,7 +971,7 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
 void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
                                       const PhysicalRect& r) {
   context_->PaintRenderingResultsToCanvas(kFrontBuffer);
-  if (HasResourceProvider()) {
+  if (ResourceProvider() != nullptr) {
     // For 2D Canvas, there are two ways of render Canvas for printing:
     // display list or image snapshot. Display list allows better PDF printing
     // and we prefer this method.
