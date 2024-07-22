@@ -573,7 +573,6 @@ ios_builder(
     name = "ios-m1-simulator",
     mirrors = ["ci/ios-m1-simulator"],
     gn_args = "ci/ios-m1-simulator",
-    os = os.MAC_BETA,
     cpu = cpu.ARM64,
 )
 
@@ -717,7 +716,6 @@ ios_builder(
     name = "ios17-sdk-simulator",
     mirrors = ["ci/ios17-sdk-simulator"],
     gn_args = "ci/ios17-sdk-simulator",
-    os = os.MAC_BETA,
     cpu = cpu.ARM64,
     xcode = xcode.x15betabots,
 )
@@ -738,7 +736,6 @@ ios_builder(
         "ci/ios18-sdk-simulator",
     ],
     gn_args = "ci/ios18-sdk-simulator",
-    os = os.MAC_BETA,
     cpu = cpu.ARM64,
     xcode = xcode.x16betabots,
 )

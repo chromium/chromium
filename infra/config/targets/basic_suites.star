@@ -1905,6 +1905,40 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "desktop_chromium_mac_osxbeta_scripts",
+    tests = {
+        "content_shell_crash_test": targets.legacy_test_config(),
+        "flatbuffers_unittests": targets.legacy_test_config(),
+        "grit_python_unittests": targets.legacy_test_config(),
+        "telemetry_gpu_unittests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                idempotent = False,  # https://crbug.com/549140
+            ),
+        ),
+        "telemetry_unittests": targets.legacy_test_config(
+            args = [
+                "--jobs=1",
+                # Disable GPU compositing, telemetry_unittests runs on VMs.
+                # https://crbug.com/871955
+                "--extra-browser-args=--disable-gpu",
+            ],
+            swarming = targets.swarming(
+                shards = 8,
+                idempotent = False,  # https://crbug.com/549140
+            ),
+            resultdb = targets.resultdb(
+                enable = True,
+            ),
+        ),
+        "views_perftests": targets.legacy_test_config(
+            args = [
+                "--gtest-benchmark-name=views_perftests",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "devtools_browser_tests_suite",
     tests = {
         "devtools_browser_tests": targets.legacy_test_config(
