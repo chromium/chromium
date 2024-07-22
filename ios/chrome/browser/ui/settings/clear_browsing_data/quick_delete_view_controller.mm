@@ -231,7 +231,16 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 #pragma mark - QuickDeleteConsumer
 
 - (void)setTimeRange:(browsing_data::TimePeriod)timeRange {
+  if (_timeRange == timeRange) {
+    return;
+  }
   _timeRange = timeRange;
+
+  // Reload the time range row with the new value.
+  NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
+      [_dataSource snapshot];
+  [snapshot reconfigureItemsWithIdentifiers:@[ @(ItemIdentifierTimeRange) ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:NO completion:nil];
 }
 
 - (void)setBrowsingDataSummary:(NSString*)summary {

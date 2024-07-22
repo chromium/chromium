@@ -9,6 +9,8 @@
 #import "components/browsing_data/core/counters/history_counter.h"
 #import "components/browsing_data/core/counters/passwords_counter.h"
 #import "components/browsing_data/core/pref_names.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
@@ -22,7 +24,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface QuickDeleteMediator () <IdentityManagerObserverBridgeDelegate>
+@interface QuickDeleteMediator () <IdentityManagerObserverBridgeDelegate,
+                                   PrefObserverDelegate>
 @end
 
 @implementation QuickDeleteMediator {
@@ -59,6 +62,11 @@
   // Observer for `IdentityManager`.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
+
+  // Pref observer to track changes to prefs.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  // Registrar for pref changes notifications.
+  PrefChangeRegistrar _prefChangeRegistrar;
 }
 
 - (instancetype)initWithPrefs:(PrefService*)prefs
@@ -77,6 +85,12 @@
             _identityManager, self);
     _browsingDataRemover = browsingDataRemover;
     _discoverFeedService = discoverFeedService;
+
+    _prefChangeRegistrar.Init(_prefs);
+    _prefObserverBridge.reset(new PrefObserverBridge(self));
+
+    // Start observing preferences.
+    [self observePreferences];
   }
   return self;
 }
@@ -99,6 +113,8 @@
 }
 
 - (void)disconnect {
+  _prefObserverBridge.reset();
+  _prefChangeRegistrar.RemoveAll();
   _counters.clear();
   _counterWrapperProducer = nil;
   _prefs = nil;
@@ -113,8 +129,6 @@
 - (void)timeRangeSelected:(browsing_data::TimePeriod)timeRange {
   _prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
                      static_cast<int>(timeRange));
-
-  [self restartCounters];
 }
 
 - (void)triggerDeletion {
@@ -183,6 +197,27 @@
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
   }
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == browsing_data::prefs::kDeleteTimePeriod) {
+    [_consumer
+        setTimeRange:static_cast<browsing_data::TimePeriod>(_prefs->GetInteger(
+                         browsing_data::prefs::kDeleteTimePeriod))];
+  }
+
+  if (preferenceName == browsing_data::prefs::kDeleteTimePeriod ||
+      preferenceName == browsing_data::prefs::kDeleteBrowsingHistory ||
+      preferenceName == browsing_data::prefs::kDeleteCookies ||
+      preferenceName == browsing_data::prefs::kDeleteCache ||
+      preferenceName == browsing_data::prefs::kDeletePasswords ||
+      preferenceName == browsing_data::prefs::kDeleteFormData) {
+    [self restartCounters];
+    return;
+  }
+  DCHECK(false) << "Unxpected clear browsing data item type.";
 }
 
 #pragma mark - Private
@@ -455,6 +490,21 @@
 
   return l10n_util::GetPluralNSStringF(
       IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS, suggestionCount);
+}
+
+- (void)observePreferences {
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeleteTimePeriod, &_prefChangeRegistrar);
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeleteBrowsingHistory, &_prefChangeRegistrar);
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeleteCookies, &_prefChangeRegistrar);
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeleteCache, &_prefChangeRegistrar);
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeletePasswords, &_prefChangeRegistrar);
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeleteFormData, &_prefChangeRegistrar);
 }
 
 @end
