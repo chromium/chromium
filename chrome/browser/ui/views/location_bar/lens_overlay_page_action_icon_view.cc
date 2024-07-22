@@ -64,9 +64,6 @@ LensOverlayPageActionIconView::LensOverlayPageActionIconView(
 
   SetProperty(views::kElementIdentifierKey,
               kLensOverlayPageActionIconElementId);
-  GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL),
-      ax::mojom::NameFrom::kAttribute);
 
   if (!lens::features::IsOmniboxEntrypointAlwaysVisible()) {
     SetLabel(
@@ -74,6 +71,12 @@ LensOverlayPageActionIconView::LensOverlayPageActionIconView(
     SetUseTonalColorsWhenExpanded(true);
     SetPaintLabelOverSolidBackground(true);
   }
+
+  // The accessible name should show the full text, independent of the what the
+  // label text is set to.
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_LENS_OVERLAY),
+      ax::mojom::NameFrom::kAttribute);
 }
 
 LensOverlayPageActionIconView::~LensOverlayPageActionIconView() = default;
