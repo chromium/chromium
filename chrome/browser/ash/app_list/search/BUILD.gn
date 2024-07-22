@@ -120,6 +120,12 @@ static_library("search") {
     "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     "//ui/events/ash",
     "//url",
+
+    # TODO(b/354633817): Use targets having headers included from
+    # chrome/browser/ash/app_list/search/os_settings_provider.cc.
+    "//ash/webui/eche_app_ui",
+    "//chrome/browser/ui/webui/ash/settings/pages/device/display_settings:mojom",
+    "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings:mojom",
   ]
 
   allow_circular_includes_from = [
