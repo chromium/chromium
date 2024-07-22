@@ -132,6 +132,7 @@ void SupervisionMixin::SetParentalControlsAccountCapability(
 
   AccountCapabilitiesTestMutator mutator(&account.capabilities);
   mutator.set_is_subject_to_parental_controls(is_supervised_profile);
+  mutator.set_can_fetch_family_member_info(is_supervised_profile);
   signin::UpdateAccountInfoForAccount(identity_manager, account);
 }
 
