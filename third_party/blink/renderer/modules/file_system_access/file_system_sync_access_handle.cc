@@ -148,7 +148,7 @@ uint64_t FileSystemSyncAccessHandle::read(const AllowSharedBufferSource* buffer,
   }
 
   ASSIGN_OR_RETURN(
-      int result, file_delegate()->Read(file_offset, AsSpan<uint8_t>(buffer)),
+      int result, file_delegate()->Read(file_offset, AsByteSpan(*buffer)),
       [&](auto) {
         exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                           "Failed to read the content");
@@ -189,7 +189,7 @@ uint64_t FileSystemSyncAccessHandle::write(
     return 0;
   }
 
-  auto buffer_span = AsSpan<uint8_t>(buffer);
+  auto buffer_span = AsByteSpan(*buffer);
   size_t write_size = buffer_span.size();
   if (!base::CheckedNumeric<int>(write_size).IsValid()) {
     exception_state.ThrowTypeError("Cannot write more than 2GB");
