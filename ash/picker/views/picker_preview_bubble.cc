@@ -35,9 +35,9 @@ constexpr ui::ColorId kBackgroundColor =
 constexpr int kBubbleOverlapOverPicker = 4;
 constexpr int kPickerBubbleCornerRadius = 12;
 // TODO(b/322899031): Translate these strings.
-constexpr std::u16string_view kLinkLabelText = u"Last action";
+constexpr std::u16string_view kEyebrowText = u"Last action";
 // TODO: b/344717756 - Use a better placeholder title for when it is not set.
-constexpr std::u16string_view kTitleText = u"…";
+constexpr std::u16string_view kMainText = u"…";
 constexpr gfx::Insets kMargins(8);
 constexpr int kPreviewBackgroundBorderRadius = 8;
 constexpr gfx::Insets kLabelPadding = gfx::Insets::TLBR(8, 8, 0, 8);
@@ -98,13 +98,13 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
               .SetInsideBorderInsets(kLabelPadding)
               .AddChildren(
                   views::Builder<views::Label>(ash::bubble_utils::CreateLabel(
-                      TypographyToken::kCrosAnnotation2, kLinkLabelText.data(),
+                      TypographyToken::kCrosAnnotation2, kEyebrowText.data(),
                       cros_tokens::kCrosSysOnSurfaceVariant)),
                   views::Builder<views::Label>(
                       ash::bubble_utils::CreateLabel(
-                          TypographyToken::kCrosBody2, kTitleText.data(),
+                          TypographyToken::kCrosBody2, kMainText.data(),
                           cros_tokens::kCrosSysOnSurface))
-                      .CopyAddressTo(&title_label_)))
+                      .CopyAddressTo(&main_label_)))
       .BuildChildren();
 
   // Show the widget.
@@ -126,12 +126,12 @@ void PickerPreviewBubbleView::SetPreviewImage(ui::ImageModel image) {
   image_view_->SetImage(std::move(image));
 }
 
-std::u16string_view PickerPreviewBubbleView::GetTitleLabelTextForTesting() {
-  return CHECK_DEREF(title_label_.get()).GetText();
+std::u16string_view PickerPreviewBubbleView::GetMainTextForTesting() {
+  return CHECK_DEREF(main_label_.get()).GetText();
 }
 
-void PickerPreviewBubbleView::SetTitleLabelText(const std::u16string& text) {
-  CHECK_DEREF(title_label_.get()).SetText(text);
+void PickerPreviewBubbleView::SetMainText(const std::u16string& text) {
+  CHECK_DEREF(main_label_.get()).SetText(text);
 }
 
 void PickerPreviewBubbleView::OnThemeChanged() {

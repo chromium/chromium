@@ -36,8 +36,8 @@ class ASH_EXPORT PickerPreviewBubbleView
   ui::ImageModel GetPreviewImage() const;
   void SetPreviewImage(ui::ImageModel image);
 
-  std::u16string_view GetTitleLabelTextForTesting();
-  void SetTitleLabelText(const std::u16string& text);
+  std::u16string_view GetMainTextForTesting();
+  void SetMainText(const std::u16string& text);
 
   // BubbleDialogDelegateView overrides
   void OnThemeChanged() override;
@@ -46,7 +46,7 @@ class ASH_EXPORT PickerPreviewBubbleView
 
  private:
   raw_ptr<views::ImageView> image_view_;
-  raw_ptr<views::Label> title_label_;
+  raw_ptr<views::Label> main_label_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT,

@@ -271,7 +271,7 @@ TEST_F(PickerPreviewBubbleControllerTest,
   ASSERT_FALSE(file_info_future.IsReady());
   ViewDrawnWaiter().Wait(bubble_view);
 
-  EXPECT_EQ(bubble_view->GetTitleLabelTextForTesting(), u"…");
+  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"…");
 }
 
 TEST_F(PickerPreviewBubbleControllerTest,
@@ -295,7 +295,7 @@ TEST_F(PickerPreviewBubbleControllerTest,
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
 
-  EXPECT_EQ(bubble_view->GetTitleLabelTextForTesting(), u"…");
+  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"…");
 }
 
 TEST_F(PickerPreviewBubbleControllerTest,
@@ -317,7 +317,7 @@ TEST_F(PickerPreviewBubbleControllerTest,
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
 
-  EXPECT_EQ(bubble_view->GetTitleLabelTextForTesting(), u"…");
+  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"…");
 }
 
 TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsModifiedTitle) {
@@ -341,7 +341,7 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsModifiedTitle) {
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
 
-  EXPECT_EQ(bubble_view->GetTitleLabelTextForTesting(), u"Edited · Dec 23");
+  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"Edited · Dec 23");
 }
 
 TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsAccessedTitle) {
@@ -365,7 +365,7 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsAccessedTitle) {
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
 
-  EXPECT_EQ(bubble_view->GetTitleLabelTextForTesting(), u"You opened · Dec 23");
+  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"You opened · Dec 23");
 }
 
 TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsModifiedTitleIfNewer) {
@@ -391,7 +391,7 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsModifiedTitleIfNewer) {
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
 
-  EXPECT_EQ(bubble_view->GetTitleLabelTextForTesting(), u"Edited · Dec 23");
+  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"Edited · Dec 23");
 }
 
 TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsAccessedTitleIfNewer) {
@@ -417,7 +417,7 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsAccessedTitleIfNewer) {
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
 
-  EXPECT_EQ(bubble_view->GetTitleLabelTextForTesting(), u"You opened · Dec 23");
+  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"You opened · Dec 23");
 }
 
 TEST_F(PickerPreviewBubbleControllerTest,
@@ -444,7 +444,7 @@ TEST_F(PickerPreviewBubbleControllerTest,
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
 
-  EXPECT_EQ(bubble_view->GetTitleLabelTextForTesting(), u"Edited · Dec 23");
+  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"Edited · Dec 23");
 }
 
 }  // namespace

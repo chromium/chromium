@@ -147,7 +147,7 @@ void PickerPreviewBubbleController::UpdateBubbleMetadata(
     return;
   }
 
-  bubble_view_->SetTitleLabelText(
+  bubble_view_->SetMainText(
       GetJustificationString(info->last_accessed, info->last_modified));
 }
 
