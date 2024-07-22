@@ -74,6 +74,7 @@ static_library("core") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/invalidation",
+    "//chrome/browser/ash/policy/scheduled_task_handler",
     "//chrome/browser/ash/printing/enterprise",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
