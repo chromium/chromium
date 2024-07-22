@@ -120,7 +120,7 @@ bool FedCmAccountSelectionView::Show(
   // TODO(crbug.com/41491333): Support modal dialogs for all types of FedCM
   // dialogs. This boolean is used to fall back to the bubble dialog where
   // modal is not yet implemented.
-  bool has_modal_support = sign_in_mode != Account::SignInMode::kAuto;
+  bool has_modal_support = true;
 
   idp_display_data_list_.clear();
   started_as_single_returning_account_ = false;
@@ -182,8 +182,17 @@ bool FedCmAccountSelectionView::Show(
   }
 
   if (sign_in_mode == Account::SignInMode::kAuto) {
-    // Auto re-authn is currently only supported on widget flows.
-    CHECK(GetDialogType() == DialogType::BUBBLE);
+    // In button mode the first UI we should should be a loading modal. When
+    // auto re-authn is triggered, we transform the UI to the single account
+    // that's available to notify user that they are being signed in with that
+    // account.
+    if (GetDialogType() == DialogType::MODAL) {
+      state_ = State::SINGLE_ACCOUNT_PICKER;
+      account_selection_view_->ShowSingleAccountConfirmDialog(
+          idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
+          /*show_back_button=*/false);
+    }
+
     state_ = State::AUTO_REAUTHN;
 
     // When auto re-authn flow is triggered, the parameter

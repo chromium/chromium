@@ -7092,7 +7092,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintAddAccount) {
   EXPECT_EQ(login_url, kIdpLoginUrl);
 }
 
-// Test that auto re-authn in button mode does not show any UI.
+// Test that auto re-authn works in button mode.
 TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonMode) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmButtonMode);
@@ -7111,13 +7111,13 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonMode) {
   // The following checks work in button mode.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
-      .Times(1);
+      .WillOnce(Return(false));
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               RequiresUserMediation(url::Origin::Create(GURL(kRpUrl))))
-      .Times(1);
+      .WillOnce(Return(false));
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnSettingEnabled())
-      .Times(1);
+      .WillOnce(Return(true));
 
   static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
       ->SimulateUserActivation();
@@ -7131,7 +7131,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonMode) {
   EXPECT_EQ(all_accounts_for_display()[0].browser_trusted_login_state,
             LoginState::kSignIn);
   EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
-  EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+  EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kAuto);
 }
 
 // Test that IdP claimed SignUp takes precedence over browser observed SignIn.
