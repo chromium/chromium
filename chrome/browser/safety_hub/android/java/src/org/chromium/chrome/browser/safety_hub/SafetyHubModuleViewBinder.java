@@ -549,7 +549,7 @@ public class SafetyHubModuleViewBinder {
         switch (state) {
             case SafetyHubModuleProperties.ModuleState.SAFE:
                 return SettingsUtils.getTintedIcon(
-                        context, R.drawable.ic_checkmark_24dp, R.color.default_green);
+                        context, R.drawable.material_ic_check_24dp, R.color.default_green);
             case SafetyHubModuleProperties.ModuleState.INFO:
             case SafetyHubModuleProperties.ModuleState.UNAVAILABLE:
                 return managed

@@ -390,6 +390,7 @@ chrome_java_resources = [
   "java/res/drawable/infobar_autofill_cc.xml",
   "java/res/drawable/lens_camera_icon.xml",
   "java/res/drawable/long_screenshot.xml",
+  "java/res/drawable/material_ic_check_24dp.xml",
   "java/res/drawable/material_ic_check_circle_filled_24dp.xml",
   "java/res/drawable/material_ic_close_24dp.xml",
   "java/res/drawable/material_ic_create_new_folder_24dp.xml",
