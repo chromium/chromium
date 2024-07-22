@@ -188,6 +188,7 @@ public class TabSwitcherPaneMediator
 
     /** Destroys the mediator unregistering all its observers. */
     public void destroy() {
+        hideDialogs();
         mTabModelFilterSupplier.removeObserver(mOnTabModelFilterChanged);
         removeTabModelObserver(mTabModelFilterSupplier.get());
 

@@ -196,6 +196,7 @@ public class TabSwitcherPaneMediatorUnitTest {
         mMediator.destroy();
 
         verify(mTabModelFilter, atLeastOnce()).removeObserver(mTabModelObserverCaptor.getValue());
+        verify(mTabGridDialogController, atLeastOnce()).hideDialog(false);
 
         assertFalse(mTabModelFilterSupplier.hasObservers());
         assertFalse(mIsVisibleSupplier.hasObservers());

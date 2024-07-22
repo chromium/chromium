@@ -121,6 +121,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.TestAnimations.EnableAnimations;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -2002,6 +2003,34 @@ public class TabGridDialogTest {
         mRenderTestRule.render(dialogView, "3_tabs_portrait_2_row_toolbar_image_tiles");
     }
 
+    @Test
+    @MediumTest
+    @EnableAnimations
+    public void testCreateIncognitoGroupAndCloseAllTabsInDialogTwice_Bug354745444() {
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        boolean incognito = true;
+        int tabCount = 2;
+        TabModel incognitoTabModel = cta.getTabModelSelectorSupplier().get().getModel(incognito);
+        createTabs(cta, incognito, tabCount);
+        enterTabSwitcher(cta);
+        List<Tab> tabGroup = List.of(incognitoTabModel.getTabAt(0), incognitoTabModel.getTabAt(1));
+        createTabGroup(cta, incognito, tabGroup);
+        openDialogFromTabSwitcherAndVerify(cta, tabCount, /* customizedTitle= */ null);
+        closeFirstTabInDialog();
+        closeFirstTabInDialog();
+        waitForDialogHidingAnimation(cta);
+
+        leaveTabSwitcher(cta);
+        createTabs(cta, incognito, tabCount);
+        enterTabSwitcher(cta);
+        tabGroup = List.of(incognitoTabModel.getTabAt(0), incognitoTabModel.getTabAt(1));
+        createTabGroup(cta, incognito, tabGroup);
+        openDialogFromTabSwitcherAndVerify(cta, tabCount, /* customizedTitle= */ null);
+        closeFirstTabInDialog();
+        closeFirstTabInDialog();
+        waitForDialogHidingAnimation(cta);
+    }
+
     private void openDialogFromTabSwitcherAndVerify(
             ChromeTabbedActivity cta, int tabCount, String customizedTitle) {
         clickFirstCardFromTabSwitcher(cta);
@@ -2060,7 +2089,8 @@ public class TabGridDialogTest {
         Resources resources = cta.getResources();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1
                 || !resources.getBoolean(R.bool.window_light_navigation_bar)
-                || isTablet(cta)) {
+                || isTablet(cta)
+                || cta.getTabModelSelectorSupplier().get().isIncognitoBrandedModelSelected()) {
             return;
         }
         @ColorInt int scrimDefaultColor = cta.getColor(R.color.default_scrim_color);

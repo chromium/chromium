@@ -23,6 +23,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -173,7 +174,7 @@ public class TabGridDialogMediatorUnitTest {
         doReturn(null).when(mRecyclerViewPositionSupplier).get();
 
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
-        mModel = new PropertyModel(TabGridDialogProperties.ALL_KEYS);
+        mModel = spy(new PropertyModel(TabGridDialogProperties.ALL_KEYS));
         mMediator =
                 new TabGridDialogMediator(
                         mActivity,
@@ -904,6 +905,28 @@ public class TabGridDialogMediatorUnitTest {
         // Animation source view should be specified.
         assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(mView));
         assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridDialogProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+        verify(mDialogController).resetWithListOfTabs(eq(null));
+    }
+
+    @Test
+    public void hideDialog_ForcesAnimationToFinish() {
+        // Mock that the animation source view is null, and the dialog is showing.
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, null);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
+
+        mMediator.setCurrentTabIdForTesting(TAB1_ID);
+        mMediator.hideDialog(true);
+
+        // Animation source view should be specified.
+        assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(mView));
+        assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
+
+        mMediator.hideDialog(false);
+        verify(mModel).set(TabGridDialogProperties.FORCE_ANIMATION_TO_FINISH, true);
+        assertFalse(mModel.get(TabGridDialogProperties.FORCE_ANIMATION_TO_FINISH));
 
         // Simulate the animation finishing.
         mModel.get(TabGridDialogProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
