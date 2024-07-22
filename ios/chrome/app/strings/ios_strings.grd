@@ -1749,6 +1749,24 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FEED_SORT_PUBLISHER" desc="Sort by publisher label text in feed sort menu.">
         Sort by Publisher
       </message>
+      <message name="IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPAD" desc="Subtitle for Default Browser promo shown during First Run Experience to users identified as Cross Device Desktop Users on iPad">
+        Get the best from the mobile browser you know and love on your iPad.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPHONE" desc="Subtitle for Default Browser promo shown during First Run Experience to users identified as Cross Device Desktop Users on iPhone">
+        Get the best from the mobile browser you know and love on your iPhone.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPAD" desc="Subtitle for Default Browser promo shown during First Run Experience to users identified as Cross Device Desktop Users on iPad">
+        Get the best from the desktop browser you know and love on your iPad.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPHONE" desc="Subtitle for Default Browser promo shown during First Run Experience to users identified as Cross Device Desktop Users on iPhone">
+        Get the best from the desktop browser you know and love on your iPhone.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPAD" desc="Title for Default Browser promo shown during First Run Experience to users identified as Cross Device Desktop Users on IPad">
+        The Browser You Love Now on iPadOS
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPHONE" desc="Title for Default Browser promo shown during First Run Experience to users identified as Cross Device Desktop Users on iPhone">
+        The Browser You Love Now on iOS
+      </message>
       <message name="IDS_IOS_FIRSTRUN_TERMS_TITLE" desc="Title for the Terms of Service page shown to user on First Run. [Length: 20em] [iOS only]">
         Terms of Service
       </message>
