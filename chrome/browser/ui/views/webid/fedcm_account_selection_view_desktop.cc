@@ -232,9 +232,11 @@ bool FedCmAccountSelectionView::Show(
               Account::LoginState::kSignIn &&
           state_ != State::LOADING;
       // The IDP claimed login state controls whether we show disclosure text,
-      // if we do not skip the next dialog.
-      bool should_hide_disclosure_text =
-          new_idp_data.accounts[0].login_state == Account::LoginState::kSignIn;
+      // if we do not skip the next dialog. Also skip when request_permission
+      // is false (controlled by the fields API).
+      bool should_hide_disclosure_text = new_idp_data.accounts[0].login_state ==
+                                             Account::LoginState::kSignIn ||
+                                         !new_accounts_idp->request_permission;
 
       if (should_skip_dialog) {
         state_ = State::VERIFYING;

@@ -2659,3 +2659,31 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, LensOverlaySuppressesDialog) {
   controller->OnLensOverlayDidShow();
   EXPECT_FALSE(dialog_widget_->IsVisible());
 }
+
+// Test that the fields API (request_permission=false) correctly hides the
+// disclosure UI after logging in through the popup when logged out.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       RequestPermissionFalseAndNewIdpDataDisclosureText) {
+  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
+      {{kAccountId1, LoginState::kSignUp}},
+      /*has_login_status_mismatch=*/false, /*request_permission=*/false);
+  std::vector<content::IdentityRequestAccount> all_accounts =
+      CreateAccount(LoginState::kSignUp, LoginState::kSignUp);
+  content::IdentityProviderData new_idp_data =
+      CreateIdentityProviderData(all_accounts);
+  new_idp_data.request_permission = false;
+
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowAccountsModalThroughPopupWindow(all_accounts, new_idp_data);
+
+  // The account chooser UI is NOT skipped if user signed in from LOADING state.
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId1));
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  // This should use the multi account picker, which does not show the
+  // disclosure text.
+  EXPECT_EQ(FedCmAccountSelectionView::State::MULTI_ACCOUNT_PICKER,
+            controller->state_);
+}

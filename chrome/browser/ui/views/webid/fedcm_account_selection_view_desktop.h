@@ -173,6 +173,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                            UserClosingPopupAfterVerifyingSheetShouldNotify);
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
                            AccountChooserResultMetric);
+  FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
+                           RequestPermissionFalseAndNewIdpDataDisclosureText);
 
   enum class State {
     // User is shown message that they are not currently signed-in to IdP.
