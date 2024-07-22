@@ -81,9 +81,7 @@ XRWebGLDrawingBuffer::ColorBuffer::~ColorBuffer() {
   gl->DeleteTextures(1, &texture_id);
   gpu::SyncToken sync_token;
   gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  auto* sii = drawing_buffer->drawing_buffer_->ContextProvider()
-                  ->SharedImageInterface();
-  sii->DestroySharedImage(sync_token, std::move(shared_image));
+  shared_image->UpdateDestructionSyncToken(sync_token);
 }
 
 scoped_refptr<XRWebGLDrawingBuffer> XRWebGLDrawingBuffer::Create(
@@ -665,8 +663,8 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
   const SkImageInfo sk_image_info =
       SkImageInfo::MakeN32Premul(size_.width(), size_.height());
 
-  return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      buffer->shared_image->mailbox(), buffer->produce_sync_token,
+  return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+      buffer->shared_image, buffer->produce_sync_token,
       /* shared_image_texture_id = */ 0, sk_image_info, GL_TEXTURE_2D,
       /* is_origin_top_left = */ false,
       drawing_buffer_->ContextProviderWeakPtr(),
