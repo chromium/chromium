@@ -61,9 +61,9 @@ void ScrollbarThemeOverlayMobile::PaintThumb(GraphicsContext& context,
   context.FillRect(rect, color, auto_dark_mode);
 }
 
-SkColor4f ScrollbarThemeOverlayMobile::GetSolidColor(
-    const std::optional<Color>& thumb_color) const {
-  return thumb_color.value_or(default_color_).toSkColor4f();
+SkColor4f ScrollbarThemeOverlayMobile::ThumbColor(
+    const Scrollbar& scrollbar) const {
+  return scrollbar.ScrollbarThumbColor().value_or(default_color_).toSkColor4f();
 }
 
 }  // namespace blink

@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/trees/layer_tree_host.h"
-
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/time/time.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/test/fake_content_layer_client.h"
-#include "cc/test/fake_painted_scrollbar_layer.h"
 #include "cc/test/fake_picture_layer.h"
+#include "cc/test/fake_scrollbar_layer.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/trees/damage_tracker.h"
+#include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_impl.h"
 
 namespace cc {
@@ -348,8 +347,8 @@ class LayerTreeHostScrollbarDamageTest : public LayerTreeHostDamageTest {
     content_layer_->SetIsDrawable(true);
     root_layer->AddChild(content_layer_);
 
-    scoped_refptr<Layer> scrollbar_layer = FakePaintedScrollbarLayer::Create(
-        false, true, content_layer_->element_id());
+    auto scrollbar_layer = base::MakeRefCounted<FakePaintedScrollbarLayer>(
+        content_layer_->element_id());
     scrollbar_layer->SetPosition(gfx::PointF(300.f, 300.f));
     scrollbar_layer->SetBounds(gfx::Size(10, 100));
     root_layer->AddChild(scrollbar_layer);

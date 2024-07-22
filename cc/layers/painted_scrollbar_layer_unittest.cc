@@ -9,8 +9,8 @@
 #include "cc/animation/animation_host.h"
 #include "cc/test/fake_layer_tree_host.h"
 #include "cc/test/fake_layer_tree_host_client.h"
-#include "cc/test/fake_painted_scrollbar_layer.h"
 #include "cc/test/fake_scrollbar.h"
+#include "cc/test/fake_scrollbar_layer.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,18 +38,16 @@ class PaintedScrollbarLayerTest : public testing::Test {
 
 class MockScrollbar : public FakeScrollbar {
  public:
-  explicit MockScrollbar(bool is_fluent = false) {
+  MockScrollbar() {
     set_should_paint(true);
     set_has_thumb(true);
     set_is_overlay(false);
-    set_is_fluent(is_fluent);
-    set_uses_nine_patch_track_and_buttons_resource(is_fluent);
   }
   MOCK_METHOD3(PaintPart,
                void(PaintCanvas* canvas,
                     ScrollbarPart part,
                     const gfx::Rect& rect));
-  MOCK_METHOD(SkColor4f, FluentThumbColor, (), (const, override));
+  MOCK_METHOD(SkColor4f, ThumbColor, (), (const, override));
   MOCK_METHOD(void, ClearThumbNeedsRepaint, (), (override));
 
  private:
@@ -136,8 +134,9 @@ TEST_F(PaintedScrollbarLayerTest, InternalContentBounds) {
   EXPECT_EQ(gfx::Size(10, 100), scrollbar_layer->internal_content_bounds());
 }
 
-TEST_F(PaintedScrollbarLayerTest, FluentDoesntGenerateThumbBitmap) {
-  auto scrollbar = base::MakeRefCounted<MockScrollbar>(/*is_fluent=*/true);
+TEST_F(PaintedScrollbarLayerTest, SolidColorThumbDoesntGenerateThumbBitmap) {
+  auto scrollbar = base::MakeRefCounted<MockScrollbar>();
+  scrollbar->set_uses_solid_color_thumb(true);
   scoped_refptr<PaintedScrollbarLayer> scrollbar_layer =
       PaintedScrollbarLayer::Create(scrollbar);
   scrollbar_layer->SetIsDrawable(true);
@@ -158,7 +157,7 @@ TEST_F(PaintedScrollbarLayerTest, FluentDoesntGenerateThumbBitmap) {
   EXPECT_CALL(*scrollbar,
               PaintPart(_, ScrollbarPart::kTrackButtonsTickmarks, _))
       .Times(1);
-  EXPECT_CALL(*scrollbar, FluentThumbColor())
+  EXPECT_CALL(*scrollbar, ThumbColor())
       .Times(1)
       .WillOnce(testing::Return(SkColor4f::FromColor(SK_ColorRED)));
   EXPECT_CALL(*scrollbar, ClearThumbNeedsRepaint()).Times(1);
@@ -170,7 +169,7 @@ TEST_F(PaintedScrollbarLayerTest, FluentDoesntGenerateThumbBitmap) {
   EXPECT_CALL(*scrollbar,
               PaintPart(_, ScrollbarPart::kTrackButtonsTickmarks, _))
       .Times(0);
-  EXPECT_CALL(*scrollbar, FluentThumbColor()).Times(0);
+  EXPECT_CALL(*scrollbar, ThumbColor()).Times(0);
   EXPECT_CALL(*scrollbar, ClearThumbNeedsRepaint()).Times(0);
   scrollbar_layer->Update();
   Mock::VerifyAndClearExpectations(scrollbar.get());
@@ -182,7 +181,7 @@ TEST_F(PaintedScrollbarLayerTest, FluentDoesntGenerateThumbBitmap) {
   EXPECT_CALL(*scrollbar,
               PaintPart(_, ScrollbarPart::kTrackButtonsTickmarks, _))
       .Times(0);
-  EXPECT_CALL(*scrollbar, FluentThumbColor()).Times(1);
+  EXPECT_CALL(*scrollbar, ThumbColor()).Times(1);
   EXPECT_CALL(*scrollbar, ClearThumbNeedsRepaint()).Times(1);
   scrollbar_layer->Update();
   Mock::VerifyAndClearExpectations(scrollbar.get());

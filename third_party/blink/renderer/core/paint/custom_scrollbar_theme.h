@@ -99,7 +99,7 @@ class CustomScrollbarTheme final : public ScrollbarTheme {
 
   void PaintTrackAndButtons(GraphicsContext&,
                             const Scrollbar&,
-                            const gfx::Vector2d&) override;
+                            const gfx::Rect&) override;
   void PaintButton(GraphicsContext&,
                    const Scrollbar&,
                    const gfx::Rect&,

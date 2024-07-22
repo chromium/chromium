@@ -1221,7 +1221,8 @@ void VisualViewport::ScrollbarColorChanged() {
 
 void VisualViewport::UpdateScrollbarColor(cc::SolidColorScrollbarLayer& layer) {
   auto& theme = ScrollbarThemeOverlayMobile::GetInstance();
-  layer.SetColor(theme.GetSolidColor(CSSScrollbarThumbColor()));
+  layer.SetColor(
+      CSSScrollbarThumbColor().value_or(theme.DefaultColor()).toSkColor4f());
 }
 
 }  // namespace blink

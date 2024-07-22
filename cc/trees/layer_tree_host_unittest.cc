@@ -45,12 +45,12 @@
 #include "cc/test/fake_frame_info.h"
 #include "cc/test/fake_layer_tree_host_client.h"
 #include "cc/test/fake_paint_image_generator.h"
-#include "cc/test/fake_painted_scrollbar_layer.h"
 #include "cc/test/fake_picture_layer.h"
 #include "cc/test/fake_picture_layer_impl.h"
 #include "cc/test/fake_proxy.h"
 #include "cc/test/fake_recording_source.h"
 #include "cc/test/fake_scoped_ui_resource.h"
+#include "cc/test/fake_scrollbar_layer.h"
 #include "cc/test/fake_video_frame_provider.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/layer_tree_test.h"
@@ -2682,10 +2682,11 @@ class LayerTreeHostTestNoExtraCommitFromScrollbarInvalidate
     root_layer_ = Layer::Create();
     root_layer_->SetBounds(gfx::Size(10, 20));
 
-    bool paint_scrollbar = true;
-    bool has_thumb = false;
-    scrollbar_ = FakePaintedScrollbarLayer::Create(paint_scrollbar, has_thumb,
-                                                   root_layer_->element_id());
+    auto scrollbar = FakePaintedScrollbarLayer::CreateScrollbar();
+    scrollbar->set_should_paint(true);
+    scrollbar->set_has_thumb(false);
+    scrollbar_ = base::MakeRefCounted<FakePaintedScrollbarLayer>(
+        root_layer_->element_id());
     scrollbar_->SetPosition(gfx::PointF(0.f, 10.f));
     scrollbar_->SetBounds(gfx::Size(10, 10));
 
@@ -4855,10 +4856,11 @@ class LayerTreeHostTestPropertyChangesDuringUpdateArePushed
     root_ = Layer::Create();
     root_->SetBounds(gfx::Size(1, 1));
 
-    bool paint_scrollbar = true;
-    bool has_thumb = false;
-    scrollbar_layer_ = FakePaintedScrollbarLayer::Create(
-        paint_scrollbar, has_thumb, root_->element_id());
+    auto scrollbar = FakePaintedScrollbarLayer::CreateScrollbar();
+    scrollbar->set_should_paint(true);
+    scrollbar->set_has_thumb(false);
+    scrollbar_layer_ =
+        base::MakeRefCounted<FakePaintedScrollbarLayer>(root_->element_id());
 
     root_->AddChild(scrollbar_layer_);
 
