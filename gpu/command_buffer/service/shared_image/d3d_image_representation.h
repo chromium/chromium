@@ -61,6 +61,7 @@ class DawnD3DImageRepresentation : public DawnImageRepresentation {
   wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
                             wgpu::TextureUsage internal_usage) override;
   void EndAccess() override;
+  bool SupportsMultipleConcurrentReadAccess() override;
 
  private:
   const wgpu::Device device_;
