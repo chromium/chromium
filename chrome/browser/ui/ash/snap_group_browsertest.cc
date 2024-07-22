@@ -2,18 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/wm/snap_group/snap_group.h"
+
 #include "ash/constants/ash_features.h"
 #include "ash/display/display_move_window_util.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
+#include "ash/test/ash_test_util.h"
+#include "ash/wm/desks/desk_action_context_menu.h"
+#include "ash/wm/desks/desks_test_api.h"
+#include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/snap_group/snap_group_test_util.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_setup_view.h"
 #include "ash/wm/splitview/split_view_setup_view_old.h"
@@ -23,8 +30,10 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/ash_test_util.h"
+#include "chrome/browser/ui/ash/chrome_new_window_client.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -34,6 +43,7 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
@@ -57,6 +67,9 @@ const GURL& GetActiveUrl(Browser* browser) {
 }
 
 }  // namespace
+
+// -----------------------------------------------------------------------------
+// FasterSplitScreenBrowserTest:
 
 using FasterSplitScreenBrowserTest = InProcessBrowserTest;
 
@@ -228,11 +241,15 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenWithOldSettingsBrowserTest,
   ASSERT_EQ(os_settings, GetActiveUrl(settings_browser));
 }
 
+// -----------------------------------------------------------------------------
+// SnapGroupBrowserTest:
+
 class SnapGroupBrowserTest : public InProcessBrowserTest {
  public:
   SnapGroupBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kSnapGroup},
+        /*enabled_features=*/{ash::features::kSnapGroup,
+                              ash::features::kForestFeature},
         /*disabled_features=*/{});
   }
   SnapGroupBrowserTest(const SnapGroupBrowserTest&) = delete;
@@ -331,4 +348,68 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, RotatedSnapGroup) {
   EXPECT_EQ(top_half, w1->GetBoundsInScreen());
   ASSERT_EQ(gfx::Rect(800, 579, 900, 573), bottom_half);
   EXPECT_EQ(bottom_half, w2->GetBoundsInScreen());
+}
+
+// Test that "Save Desk for Later" is not supported when both windows in a Snap
+// Group are in incognito mode.
+IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest,
+                       SaveDeskForLaterWithTwoIncognitoWindows) {
+  auto* desks_controller = ash::DesksController::Get();
+  desks_controller->NewDesk(ash::DesksCreationRemovalSource::kButton);
+  const auto& desks = desks_controller->desks();
+  ASSERT_EQ(2u, desks.size());
+  aura::Window* root_window = ash::Shell::GetPrimaryRootWindow();
+
+  // Explicitly move the default non-incognito browser window to another desk.
+  aura::Window* window = browser()->window()->GetNativeWindow();
+  desks_controller->MoveWindowFromActiveDeskTo(
+      window, desks[1].get(), root_window,
+      ash::DesksMoveWindowFromActiveDeskSource::kShortcut);
+
+  // Create a Snap Group with two incognito browser windows.
+  Browser* incognito_browser1 = CreateIncognitoBrowser();
+  aura::Window* window1 = incognito_browser1->window()->GetNativeWindow();
+  Browser* incognito_browser2 = CreateIncognitoBrowser();
+  aura::Window* window2 = incognito_browser2->window()->GetNativeWindow();
+
+  ui::test::EventGenerator event_generator(root_window);
+  ash::SnapTwoTestWindows(window1, window2, /*horizontal=*/true,
+                          &event_generator);
+  ash::OverviewController::Get()->StartOverview(
+      ash::OverviewStartAction::kOverviewButton);
+  ash::WaitForOverviewEntered();
+  ASSERT_TRUE(ash::IsInOverviewSession());
+
+  ASSERT_EQ(2u, ash::GetPrimaryRootDesksBarView()->mini_views().size());
+  ash::OverviewGrid* overview_grid = ash::GetOverviewGridForRoot(root_window);
+  auto* desks_bar_view0 = overview_grid->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view0);
+  ash::DeskMiniView* desk_mini_view0 = desks_bar_view0->mini_views()[0];
+  ASSERT_TRUE(desk_mini_view0);
+
+  event_generator.MoveMouseTo(
+      desk_mini_view0->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickRightButton();
+
+  // Activate the desk mini view to enable context menu.
+  ash::DeskActionContextMenu* mini_view_menu0 = desk_mini_view0->context_menu();
+  ASSERT_TRUE(mini_view_menu0);
+
+  const views::MenuItemView* save_for_later_item =
+      ash::DesksTestApi::GetDeskActionContextMenuItem(
+          mini_view_menu0,
+          ash::DeskActionContextMenu::CommandId::kSaveForLater);
+  ASSERT_TRUE(save_for_later_item);
+
+  // Click on the "Save Desk for Later" button in the context menu.
+  event_generator.MoveMouseTo(
+      save_for_later_item->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
+
+  // Verify that the "Save to Desk" feature is not supported as both windows
+  // within a Snap Group are in incognito mode.
+  EXPECT_TRUE(ash::IsInOverviewSession());
+  const auto& window_list = overview_grid->window_list();
+  EXPECT_EQ(1u, window_list.size());
+  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
 }

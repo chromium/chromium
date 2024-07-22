@@ -275,6 +275,9 @@ void DragWindowTo(ui::test::EventGenerator* event_generator,
   }
 }
 
+// -----------------------------------------------------------------------------
+// SnapGroupTestBase:
+
 class SnapGroupTestBase : public OverviewTestBase {
  public:
   template <typename... TaskEnvironmentTraits>
