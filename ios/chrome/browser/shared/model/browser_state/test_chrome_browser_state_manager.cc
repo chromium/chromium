@@ -40,6 +40,16 @@ TestChromeBrowserStateManager::GetLastUsedBrowserStateDeprecatedDoNotUse() {
   return GetLastUsedBrowserStateForTesting();
 }
 
+ChromeBrowserState* TestChromeBrowserStateManager::GetBrowserStateByName(
+    const std::string& name) {
+  for (auto& pair : browser_states_) {
+    if (pair.first.BaseName().AsUTF8Unsafe() == name) {
+      return pair.second.get();
+    }
+  }
+  return nullptr;
+}
+
 ChromeBrowserState* TestChromeBrowserStateManager::GetBrowserStateByPath(
     const base::FilePath& path) {
   if (!browser_states_[path].get()) {

@@ -120,22 +120,28 @@ ChromeBrowserStateManagerImpl::~ChromeBrowserStateManagerImpl() {}
 
 ChromeBrowserState*
 ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateDeprecatedDoNotUse() {
-  ChromeBrowserState* browser_state = GetBrowserStateByPath(
-      GetUserDataDir().Append(GetLastUsedBrowserStateName()));
+  ChromeBrowserState* browser_state =
+      GetBrowserStateByName(GetLastUsedBrowserStateName());
   CHECK(browser_state);
   return browser_state;
 }
 
-ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserStateByPath(
-    const base::FilePath& path) {
+ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserStateByName(
+    const std::string& name) {
   // If the browser state is already loaded, just return it.
-  auto iter = browser_states_.find(path);
+  auto iter = browser_states_.find(name);
   if (iter != browser_states_.end()) {
     DCHECK(iter->second.get());
     return iter->second.get();
   }
 
   return nullptr;
+}
+
+ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserStateByPath(
+    const base::FilePath& path) {
+  DCHECK_EQ(path.DirName(), GetUserDataDir());
+  return GetBrowserStateByName(path.BaseName().AsUTF8Unsafe());
 }
 
 std::string ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateName() const {
@@ -220,14 +226,13 @@ void ChromeBrowserStateManagerImpl::OnChromeBrowserStateCreationFinished(
 }
 
 void ChromeBrowserStateManagerImpl::LoadBrowserState(
-    const std::string& browser_state_name,
+    const std::string& name,
     BrowserStateLoadedCallback callback) {
-  const base::FilePath path = GetUserDataDir().Append(browser_state_name);
-  DCHECK(!base::Contains(browser_states_, path));
+  DCHECK(!base::Contains(browser_states_, name));
 
   auto [iter, inserted] = browser_states_.insert(std::make_pair(
-      path, ChromeBrowserState::CreateBrowserState(
-                path, browser_state_name,
+      name, ChromeBrowserState::CreateBrowserState(
+                GetUserDataDir().Append(name), name,
                 ChromeBrowserState::CreationMode::kSynchronous, this)));
   DCHECK(inserted);
   DCHECK(iter != browser_states_.end());

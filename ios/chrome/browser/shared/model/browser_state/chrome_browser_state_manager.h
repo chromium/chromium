@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_CHROME_BROWSER_STATE_MANAGER_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_CHROME_BROWSER_STATE_MANAGER_H_
 
+#include <string>
 #include <vector>
 
 namespace base {
@@ -31,6 +32,11 @@ class ChromeBrowserStateManager {
   // browser state. Always assume there could be multiple browser states and
   // use GetLoadedBrowserStates() instead.
   virtual ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() = 0;
+
+  // Returns the ChromeBrowserState known by `name` or nullptr if there is
+  // no loaded ChromeBrowserState with that `name`.
+  virtual ChromeBrowserState* GetBrowserStateByName(
+      const std::string& name) = 0;
 
   // Returns the ChromeBrowserState associated with `path`, returns nullptr if
   // there is no loaded ChromeBrowserState at `path`.
