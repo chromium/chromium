@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.never;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -20,6 +19,9 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -55,14 +57,42 @@ public class TabGroupCreationDialogManagerUnitTest {
     }
 
     @Test
-    public void testCreationDialogSkipped() {
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
+    public void testCreationDialogNotSkippedByParityParam() {
+        TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
+        assertFalse(
+                TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
+                        /* shouldShow= */ true));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
+    public void testCreationDialogSkippedByParityParam() {
         TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(true);
+        assertTrue(
+                TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
+                        /* shouldShow= */ true));
+        TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
+    }
 
-        mTabGroupCreationDialogManager.setDialogManagerForTesting(mTabGroupVisualDataDialogManager);
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
+    public void testCreationDialogNotSkippedByDialogFlag_shouldShow() {
+        TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(true);
+        assertFalse(
+                TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
+                        /* shouldShow= */ true));
+        TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
+    }
 
-        mTabGroupCreationDialogManager.showDialog(TAB1_ID, mTabGroupModelFilter);
-
-        verify(mTabGroupVisualDataDialogManager, never()).showDialog(anyInt(), any(), any());
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
+    public void testCreationDialogSkippedByDialogFlag_shouldNotShow() {
+        TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(true);
+        assertTrue(
+                TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
+                        /* shouldShow= */ false));
+        TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
     }
 
     @Test

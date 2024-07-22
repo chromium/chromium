@@ -285,7 +285,10 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 mTab,
                 isIncognito());
 
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled() && willMergingCreateNewGroup) {
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
+                && willMergingCreateNewGroup
+                && !TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
+                        /* shouldShow= */ false)) {
             mTabGroupCreationDialogManager.showDialog(mTab.getRootId(), filter);
         }
     }

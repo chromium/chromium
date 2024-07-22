@@ -987,6 +987,7 @@ public class TabSwitcherLayoutTest {
     @EnableFeatures({
         ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
+        ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID,
     })
     @DisableFeatures({
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
@@ -1000,6 +1001,40 @@ public class TabSwitcherLayoutTest {
         mergeNormalTabsToAGroupWithDialog(cta, 1);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
+    })
+    @DisableFeatures({
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+        ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID,
+    })
+    public void testNoTabGroupDialogSingleTab() {
+        TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(true);
+
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
+        createTabs(cta, false, 1);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+        // Create a tab group.
+        mergeNormalTabsToAGroupWithDialog(cta, 1);
+        // Verify the undo group merge snackbar is showing.
+        assertTrue(
+                snackbarManager.getCurrentSnackbarForTesting().getController()
+                        instanceof UndoGroupSnackbarController);
+        // Verify that no modal dialog was shown.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mModalDialogManager.isShowing(), Matchers.is(false));
+                });
+        verifyTabSwitcherCardCount(cta, 1);
+
+        TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
     }
 
     @Test

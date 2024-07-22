@@ -616,6 +616,7 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void addTab_TabLaunchedFromLongPressBackgroundInGroupToExistingGroup() {
         Tab newTab = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, null, TAB1_ID);
         doReturn(TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP).when(newTab).getLaunchType();
@@ -944,6 +945,7 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void moveTabOutOfGroup_LastTab_WithTabGroupId() {
         List<Tab> expectedTabModelBeforeUngroup =
                 new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6));
@@ -1115,6 +1117,7 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeOneTabToTab_Forward() {
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab1, mTab4));
         List<Tab> expectedTabModel =
@@ -1199,6 +1202,7 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeOneTabToTab_Backward() {
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab4, mTab1));
         List<Tab> expectedTabModel =
@@ -1314,6 +1318,7 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeListOfTabsToGroup_AllForward() {
         Tab newTab = addTabToTabModel();
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab4, newTab));
@@ -1342,6 +1347,7 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeListOfTabsToGroup_AnyDirection() {
         Tab newTab = addTabToTabModel();
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab1, newTab));
@@ -1370,6 +1376,7 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeListOfTabsToGroup_InOrder() {
         Tab newTab0 = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, null, Tab.INVALID_TAB_ID);
         addTabToTabModel(-1, newTab0);
@@ -1490,6 +1497,7 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void merge_OtherGroupsLastShownIdUnchanged() {
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab1, mTab4));
         List<Tab> expectedTabModel =
@@ -1640,6 +1648,7 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void undoGroupedTab_Forward_UpdateTabModel() {
         List<Tab> expectedTabModel =
                 new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6));
@@ -1680,6 +1689,7 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void undoGroupedTab_Backward_UpdateTabModel() {
         List<Tab> expectedTabModel =
                 new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6));
@@ -2087,6 +2097,7 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeTabToTab_notifyFilterObserver() {
         // Override the setup behaviour for color SharedPreferences since after #didCreateNewGroup
         // is emitted, a color will have been set.
@@ -2116,6 +2127,7 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeTabToTab_doNotNotifyFilterObserver() {
         Token tabGroupId = new Token(33L, 28L);
         when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);

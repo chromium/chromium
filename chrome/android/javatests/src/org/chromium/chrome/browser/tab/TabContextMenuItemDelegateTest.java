@@ -79,11 +79,24 @@ public class TabContextMenuItemDelegateTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
-    public void testOpenInNewTabInGroup_NewGroup_ParityEnabled() {
+    public void testOpenInNewTabInGroup_NewGroup_ParityEnabled_ContextMenuDialogEnabled() {
         openNewTabUsingContextMenu();
 
         assertTrue(mModalDialogManager.isShowing());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID
+    })
+    public void testOpenInNewTabInGroup_NewGroup_ParityEnabled_ContextMenuDialogDisabled() {
+        openNewTabUsingContextMenu();
+
+        assertFalse(mModalDialogManager.isShowing());
     }
 
     @Test
