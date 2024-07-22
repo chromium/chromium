@@ -95,6 +95,9 @@ void SparkyManagerImpl::AnswerQuestion(const std::u16string& question,
                                        bool current_panel_content,
                                        MahiAnswerQuestionCallback callback) {
   if (current_panel_content) {
+    // Add the current question to the dialog.
+    dialog_turns_.emplace_back(base::UTF16ToUTF8(question), manta::Role::kUser);
+
     auto sparky_context = std::make_unique<manta::SparkyContext>(
         dialog_turns_, base::UTF16ToUTF8(question),
         base::UTF16ToUTF8(current_panel_content_->page_content));
@@ -207,7 +210,6 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
     MahiAnswerQuestionCallback callback,
     manta::MantaStatus status,
     manta::DialogTurn* latest_turn) {
-  dialog_turns_.emplace_back(base::UTF16ToUTF8(question), manta::Role::kUser);
   // Currently the history of dialogs will only refresh if the user closes the
   // UI and then reopens it again.
   // TODO (b/352651459): Add a refresh button to reset the dialog.
@@ -260,6 +262,9 @@ void SparkyManagerImpl::OnGetPageContentForQA(
 
   // Assign current panel content and clear the current panel QA
   current_panel_content_ = std::move(mahi_content_ptr);
+
+  // Add the current question to the dialog.
+  dialog_turns_.emplace_back(base::UTF16ToUTF8(question), manta::Role::kUser);
 
   auto sparky_context = std::make_unique<manta::SparkyContext>(
       dialog_turns_, base::UTF16ToUTF8(question),
