@@ -17,10 +17,6 @@ Tests Accessibility.getAXNodeAndAncestors
                 attribute : aria-label
                 type : attribute
             }
-            [2] : {
-                attribute : title
-                type : attribute
-            }
         ]
         type : computedString
         value : 

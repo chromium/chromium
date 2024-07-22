@@ -102,7 +102,6 @@ find all elements with accessible name "Accessible Name"
 node20
 node21
 node23
-node24
 find all elements with accessible name "item1 item2 item3"
 node30
 

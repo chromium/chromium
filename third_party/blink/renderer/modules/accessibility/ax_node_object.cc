@@ -4757,12 +4757,9 @@ String AXNodeObject::TextAlternative(
   // description, or Not mapped". There's nothing in HTML-AAM that explicitly
   // forbids this, and it seems reasonable for authors to use a tooltip on any
   // visible element without causing an accessibility error or user problem.
-  // Note: https://github.com/w3c/html-aam/issues/552 has been filed to
-  // change the spec to be more explicit about this.
   // Note: if this is part of another label or description, it needs to be
   // computed as a name, in order to contribute to that.
-  if (!RuntimeEnabledFeatures::AccessibilityProhibitedNamesEnabled() ||
-      aria_label_or_description_root || !IsNameProhibited()) {
+  if (aria_label_or_description_root || !IsNameProhibited()) {
     String resulting_text = TextAlternativeFromTooltip(
         name_from, name_sources, &found_text_alternative, &text_alternative,
         related_objects);
@@ -6296,12 +6293,11 @@ String AXNodeObject::TextAlternativeFromTooltip(
   }
   name_from = ax::mojom::blink::NameFrom::kTitle;
   const AtomicString& title = GetAttribute(kTitleAttr);
-  String title_text = *text_alternative = TextAlternativeFromTitleAttribute(
+  String title_text = TextAlternativeFromTitleAttribute(
       title, name_from, name_sources, found_text_alternative);
   // Do not use if empty or if redundant with inner text.
-  if (!title_text.empty() &&
-      title_text.StripWhiteSpace() !=
-          GetElement()->GetInnerTextWithoutUpdate().StripWhiteSpace()) {
+  if (!title_text.empty()) {
+    *text_alternative = title_text;
     return title_text;
   }
 
@@ -6367,13 +6363,16 @@ String AXNodeObject::TextAlternativeFromTitleAttribute(
     ax::mojom::blink::NameFrom& name_from,
     NameSources* name_sources,
     bool* found_text_alternative) const {
+  DCHECK(GetElement());
   String text_alternative;
   if (name_sources) {
     name_sources->push_back(NameSource(*found_text_alternative, kTitleAttr));
     name_sources->back().type = name_from;
   }
   name_from = ax::mojom::blink::NameFrom::kTitle;
-  if (!title.IsNull()) {
+  if (!title.IsNull() &&
+      String(title).StripWhiteSpace() !=
+          GetElement()->GetInnerTextWithoutUpdate().StripWhiteSpace()) {
     text_alternative = title;
     if (name_sources) {
       NameSource& source = name_sources->back();
@@ -7220,7 +7219,9 @@ String AXNodeObject::Description(
       description_sources->back().type = description_from;
     }
     const AtomicString& title = GetAttribute(kTitleAttr);
-    if (!title.empty()) {
+    if (!title.empty() &&
+        String(title).StripWhiteSpace() !=
+            GetElement()->GetInnerTextWithoutUpdate().StripWhiteSpace()) {
       description = title;
       if (description_sources) {
         found_description = true;

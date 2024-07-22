@@ -1773,7 +1773,8 @@ public class WebContentsAccessibilityTest {
     public void testNodeInfo_Actions_OverflowHidden() throws Throwable {
         // Build a simple web page with a div and overflow:hidden
         setupTestWithHTML(
-                "<div title='1234' style='overflow:hidden; width: 200px; height:50px'>\n"
+                "<div role='group' title='1234' "
+                        + "style='overflow:hidden; width: 200px; height:50px'>\n"
                         + "  <p>Example Paragraph 1</p>\n"
                         + "  <p>Example Paragraph 2</p>\n"
                         + "</div>");

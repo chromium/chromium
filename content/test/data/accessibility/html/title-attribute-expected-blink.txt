@@ -7,6 +7,9 @@ rootWebArea
 ++++++group description='Moved to description' name='Has a name' descriptionFrom=title
 ++++++++staticText name='def'
 ++++++++++inlineTextBox name='def'
-++++++group description='Redundant' descriptionFrom=title
+++++++group
 ++++++++staticText name='Redundant'
 ++++++++++inlineTextBox name='Redundant'
+++++++genericContainer description='Description' descriptionFrom=title
+++++++++staticText name='Names are prohibited on generic'
+++++++++++inlineTextBox name='Names are prohibited on generic'

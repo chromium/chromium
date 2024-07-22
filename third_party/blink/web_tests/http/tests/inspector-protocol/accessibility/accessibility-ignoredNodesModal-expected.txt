@@ -101,10 +101,6 @@ Tests accessibility values of ignored nodes in model dialog.
                 attribute : aria-label
                 type : attribute
             }
-            [2] : {
-                attribute : title
-                type : attribute
-            }
         ]
         type : computedString
         value : 

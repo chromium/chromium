@@ -10,12 +10,12 @@ AXWebArea
 ++++++AXStaticText AXValue=' '
 ++++++AXGroup AXSubrole=AXDeleteStyleGroup
 ++++++++AXGroup AXDescription='3'
-++++++++++AXGroup AXDescription='oops'
+++++++++++AXGroup
 ++++++++++++AXStaticText AXValue='3'
 ++++++AXStaticText AXValue=' '
 ++++++AXGroup AXSubrole=AXInsertStyleGroup
 ++++++++AXLink AXDescription='2'
-++++++++++AXGroup AXDescription='better'
+++++++++++AXGroup
 ++++++++++++AXStaticText AXValue='2'
 ++++++AXStaticText AXValue=' '
 ++++AXStaticText AXValue='O'
