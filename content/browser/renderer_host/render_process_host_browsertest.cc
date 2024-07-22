@@ -1031,6 +1031,7 @@ class IsProcessBackgroundedObserver : public RenderProcessHostInternalObserver {
       host_observation_{this};
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, PriorityOverride) {
   // Start up a real renderer process.
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1066,7 +1067,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, PriorityOverride) {
   process->AddPendingView();
   EXPECT_TRUE(process->HasPriorityOverride());
   EXPECT_TRUE(process->IsProcessBackgrounded());
-  EXPECT_FALSE(observer.TakeValue().has_value());
+  EXPECT_EQ(observer.TakeValue().value(), process->IsProcessBackgrounded());
 
   // Clear the override. The pending view should cause the process to go back to
   // being foregrounded.
@@ -1078,6 +1079,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, PriorityOverride) {
   // Clear the pending view so the test doesn't explode.
   process->RemovePendingView();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 struct BoostRenderProcessForLoadingBrowserTestParam {
   bool enable_boost_render_process_for_loading;

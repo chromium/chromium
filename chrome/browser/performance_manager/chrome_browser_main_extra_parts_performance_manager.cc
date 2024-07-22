@@ -211,11 +211,13 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
         std::make_unique<performance_manager::policies::BFCachePolicy>());
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kPMProcessPriorityPolicy)) {
     graph->PassToGraph(std::make_unique<
                        performance_manager::policies::ProcessPriorityPolicy>());
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(

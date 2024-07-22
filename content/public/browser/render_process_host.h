@@ -352,11 +352,14 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void RemovePriorityClient(
       RenderProcessHostPriorityClient* priority_client) = 0;
 
+#if !BUILDFLAG(IS_ANDROID)
   // Sets a process priority override. This overrides the entire built-in
   // priority setting mechanism for the process.
+  // TODO(pmonette): Make this work well on Android.
   virtual void SetPriorityOverride(bool foreground) = 0;
   virtual bool HasPriorityOverride() = 0;
   virtual void ClearPriorityOverride() = 0;
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   // Return the highest importance of all widgets in this process.

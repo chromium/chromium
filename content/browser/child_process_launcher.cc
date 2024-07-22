@@ -272,6 +272,11 @@ ChildProcessLauncher::Client* ChildProcessLauncher::ReplaceClientForTest(
 }
 
 bool RenderProcessPriority::is_background() const {
+#if !BUILDFLAG(IS_ANDROID)
+  if (foreground_override) {
+    return !foreground_override.value();
+  }
+#endif
   return !visible && !has_media_stream && !boost_for_pending_views &&
          !has_foreground_service_worker && !boost_for_loading;
 }

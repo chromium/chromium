@@ -289,7 +289,7 @@ void ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread(
     const RenderProcessPriority& priority) {
   JNIEnv* env = AttachCurrentThread();
   DCHECK(env);
-  return Java_ChildProcessLauncherHelperImpl_setPriority(
+  Java_ChildProcessLauncherHelperImpl_setPriority(
       env, java_peer_, process.Handle(), priority.visible,
       priority.has_media_stream, priority.has_foreground_service_worker,
       priority.frame_depth, priority.intersects_viewport,

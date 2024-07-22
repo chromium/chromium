@@ -1312,6 +1312,10 @@ RenderProcessHostImpl::RenderProcessHostImpl(
                 ,
                 ChildProcessImportance::NORMAL
 #endif
+#if !BUILDFLAG(IS_ANDROID)
+                ,
+                std::nullopt
+#endif
                 ),
       id_(ChildProcessHostImpl::GenerateChildProcessUniqueId()),
       browser_context_(browser_context),
@@ -3978,19 +3982,21 @@ void RenderProcessHostImpl::RemovePriorityClient(
   UpdateProcessPriorityInputs();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void RenderProcessHostImpl::SetPriorityOverride(bool foregrounded) {
-  priority_override_ = foregrounded;
+  foreground_override_ = foregrounded;
   UpdateProcessPriority();
 }
 
 bool RenderProcessHostImpl::HasPriorityOverride() {
-  return priority_override_.has_value();
+  return foreground_override_.has_value();
 }
 
 void RenderProcessHostImpl::ClearPriorityOverride() {
-  priority_override_.reset();
+  foreground_override_.reset();
   UpdateProcessPriority();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void RenderProcessHostImpl::SetSuddenTerminationAllowed(bool enabled) {
   sudden_termination_allowed_ = enabled;
@@ -4949,35 +4955,17 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
                                   switches::kDisableRendererBackgrounding),
       media_stream_count_ > 0, foreground_service_worker_count_ > 0,
       frame_depth_, intersects_viewport_,
-      !!pending_views_, /* boost_for_pending_views */
+      pending_views_ > 0, /* boost_for_pending_views */
       boost_for_loading_count_ > 0
 #if BUILDFLAG(IS_ANDROID)
       ,
       GetEffectiveImportance()
 #endif
-  );
-
-  // If a priority override has been specified, use it instead.
-  // TODO(chrisha): After experimentation, either integrate the experimental
-  // logic into this class, or rip out the existing logic entirely.
-  if (priority_override_.has_value()) {
-    bool foregrounded = priority_override_.value();
-    priority = RenderProcessPriority(
-        foregrounded, /* is_visible */
-        foregrounded, /* has_media_stream */
-        foregrounded, /* has_foreground_service_worker */
-        0,            /* frame_depth */
-        foregrounded, /* intersects_viewport */
-        false,        /* boost_for_pending_views */
-        foregrounded  /* boost_for_loading */
-#if BUILDFLAG(IS_ANDROID)
-        ,
-        foregrounded ? ChildProcessImportance::NORMAL
-                     : ChildProcessImportance::MODERATE /* importance */
+#if !BUILDFLAG(IS_ANDROID)
+          ,
+      foreground_override_
 #endif
-    );
-    DCHECK_EQ(!foregrounded, priority.is_background());
-  }
+  );
 
   if (priority_ == priority)
     return;

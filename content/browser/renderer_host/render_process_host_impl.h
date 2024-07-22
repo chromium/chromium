@@ -265,9 +265,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
       RenderProcessHostPriorityClient* priority_client) override;
   void RemovePriorityClient(
       RenderProcessHostPriorityClient* priority_client) override;
+#if !BUILDFLAG(IS_ANDROID)
   void SetPriorityOverride(bool foreground) override;
   bool HasPriorityOverride() override;
   void ClearPriorityOverride() override;
+#endif
 #if BUILDFLAG(IS_ANDROID)
   ChildProcessImportance GetEffectiveImportance() override;
   base::android::ChildBindingState GetEffectiveChildBindingState() override;
@@ -1296,11 +1298,15 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   RenderProcessPriority priority_;
 
+#if !BUILDFLAG(IS_ANDROID)
   // If this is set then the built-in process priority calculation system is
   // ignored, and an externally computed process priority is used. Set to true
   // and the process will stay foreground priority; set to false and it will
   // stay background priority.
-  std::optional<bool> priority_override_;
+  // TODO(pmonette): After experimentation, either remove this or rip out the
+  // existing logic entirely.
+  std::optional<bool> foreground_override_;
+#endif
 
   // Used to allow a RenderWidgetHost to intercept various messages on the
   // IO thread.

@@ -4152,12 +4152,9 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* rfh = current_frame_host();
   ASSERT_FALSE(rfh->GetProcess()->IsProcessBackgrounded());
 
-  rfhs[1]->GetProcess()->SetPriorityOverride(
-      /*foreground=*/true);
-  rfhs[2]->GetProcess()->SetPriorityOverride(
-      /*foreground=*/true);
-  rfhs[3]->GetProcess()->SetPriorityOverride(
-      /*foreground=*/true);
+  rfhs[1]->GetProcess()->OnMediaStreamAdded();
+  rfhs[2]->GetProcess()->OnMediaStreamAdded();
+  rfhs[3]->GetProcess()->OnMediaStreamAdded();
 
   // The page should be evicted.
   ASSERT_TRUE(rfhs[1].WaitUntilRenderFrameDeleted());

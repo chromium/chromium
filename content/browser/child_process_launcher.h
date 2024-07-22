@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_CHILD_PROCESS_LAUNCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -92,6 +93,10 @@ struct RenderProcessPriority {
                         ,
                         ChildProcessImportance importance
 #endif
+#if !BUILDFLAG(IS_ANDROID)
+                        ,
+                        std::optional<bool> foreground_override
+#endif
                         )
       : visible(visible),
         has_media_stream(has_media_stream),
@@ -103,6 +108,10 @@ struct RenderProcessPriority {
 #if BUILDFLAG(IS_ANDROID)
         ,
         importance(importance)
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+        ,
+        foreground_override(foreground_override)
 #endif
   {
   }
@@ -162,6 +171,14 @@ struct RenderProcessPriority {
 
 #if BUILDFLAG(IS_ANDROID)
   ChildProcessImportance importance;
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  // If this is set then the built-in process priority calculation system is
+  // ignored, and an externally computed process priority is used. Set to true
+  // and the process will stay foreground priority; set to false and it will
+  // stay background priority.
+  std::optional<bool> foreground_override;
 #endif
 };
 

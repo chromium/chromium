@@ -130,9 +130,11 @@ class MockRenderProcessHost : public RenderProcessHost {
       RenderProcessHostPriorityClient* priority_client) override;
   void RemovePriorityClient(
       RenderProcessHostPriorityClient* priority_client) override;
+#if !BUILDFLAG(IS_ANDROID)
   void SetPriorityOverride(bool foreground) override;
   bool HasPriorityOverride() override;
   void ClearPriorityOverride() override;
+#endif
 #if BUILDFLAG(IS_ANDROID)
   ChildProcessImportance GetEffectiveImportance() override;
   base::android::ChildBindingState GetEffectiveChildBindingState() override;
