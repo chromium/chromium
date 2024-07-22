@@ -55,6 +55,7 @@ target(link_target_type, "renderer_sources") {
   ]
 
   deps = [
+    "//build:android_buildflags",
     "//content/public/child:child_sources",
     "//content/public/common:common_sources",
     "//content/renderer",
