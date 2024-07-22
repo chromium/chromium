@@ -337,6 +337,11 @@ void NavigationThrottleRunner::AddThrottle(
 void NavigationThrottleRunner::ProcessInternal() {
   TRACE_EVENT0("navigation", "NavigationThrottleRunner::ProcessInternal");
   DCHECK_NE(Event::kNoEvent, current_event_);
+  base::Time start_time = base::Time::Now();
+  if (!event_process_start_time_.has_value()) {
+    event_process_start_time_ = start_time;
+    event_process_execution_time_ = base::TimeDelta();
+  }
   base::WeakPtr<NavigationThrottleRunner> weak_ref = weak_factory_.GetWeakPtr();
 
   // Capture into a local variable the |navigation_id_| value, since this
@@ -376,6 +381,7 @@ void NavigationThrottleRunner::ProcessInternal() {
       case NavigationThrottle::CANCEL:
       case NavigationThrottle::CANCEL_AND_IGNORE:
         next_index_ = 0;
+        event_process_start_time_.reset();
         InformDelegate(result);
         return;
 
@@ -385,10 +391,22 @@ void NavigationThrottleRunner::ProcessInternal() {
         if (first_deferral_callback_for_testing_) {
           std::move(first_deferral_callback_for_testing_).Run();
         }
+        event_process_execution_time_ += base::Time::Now() - start_time;
         return;
     }
   }
 
+  base::Time end_time = base::Time::Now();
+  event_process_execution_time_ += end_time - start_time;
+  base::UmaHistogramTimes(
+      base::StrCat({"Navigation.ThrottleEventExecutionTime.",
+                    GetEventNameForHistogram(current_event_)}),
+      event_process_execution_time_);
+  base::UmaHistogramTimes(
+      base::StrCat({"Navigation.ThrottleEventDurationTime.",
+                    GetEventNameForHistogram(current_event_)}),
+      end_time - *event_process_start_time_);
+  event_process_start_time_.reset();
   next_index_ = 0;
   InformDelegate(NavigationThrottle::PROCEED);
 }

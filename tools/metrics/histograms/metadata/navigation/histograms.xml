@@ -1892,6 +1892,31 @@ chromium-metrics-reviews@google.com.
   <token key="Event" variants="NavigationThrottleEvents"/>
 </histogram>
 
+<histogram name="Navigation.ThrottleEventDurationTime.{Event}" units="ms"
+    expires_after="2024-12-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures time a navigation throttle runner took to execute all throttles for
+    {Event} including suspended duration by DEFERs. Logged every time a
+    navigation throttle runner completes processing all throttles for {Event}
+    without any objection.
+  </summary>
+  <token key="Event" variants="NavigationThrottleEvents"/>
+</histogram>
+
+<histogram name="Navigation.ThrottleEventExecutionTime.{Event}" units="ms"
+    expires_after="2024-12-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures accumulated time a navigation throttle runner took to execute all
+    throttles for {Event}. Logged every time a navigation throttle runner
+    completes processing all throttles for {Event} without any objection.
+  </summary>
+  <token key="Event" variants="NavigationThrottleEvents"/>
+</histogram>
+
 <histogram name="Navigation.ThrottleExecutionTime.{Event}" units="ms"
     expires_after="2024-12-01">
   <owner>cduvall@chromium.org</owner>

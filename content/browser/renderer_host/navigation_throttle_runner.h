@@ -7,6 +7,9 @@
 
 #include <stddef.h>
 
+#include <optional>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -120,6 +123,14 @@ class CONTENT_EXPORT NavigationThrottleRunner {
   // The total duration time that throttles deferred the navigation.
   base::TimeDelta total_defer_duration_time_;
   base::TimeDelta total_defer_duration_time_for_request_;
+
+  // The time this runner started ProcessInternal() for the current_event_.
+  // Should be reset when the processing is done.
+  std::optional<base::Time> event_process_start_time_;
+
+  // The accumulated time duration this runner took to execute throttles for the
+  // current_event_.
+  base::TimeDelta event_process_execution_time_;
 
   // The total count to know how many times a throttle defer the navigation.
   size_t defer_count_ = 0;
