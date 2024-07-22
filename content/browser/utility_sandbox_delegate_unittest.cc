@@ -9,6 +9,7 @@
 #include "base/environment.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -98,8 +99,15 @@ TEST_P(UtilitySandboxDelegateWinTest, IsAppContainerDisabled) {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     UtilitySandboxDelegateWinTest,
+// TODO(crbug.com/353583970):  Enable `kPrintCompositorLPAC` for ARM when
+// flakiness is resolved.
+#if defined(ARCH_CPU_ARM_FAMILY)
+    ::testing::Combine(/*AppContainerDisabled=*/::testing::Bool(),
+                       /*kPrintCompositorLPAC=*/::testing::Values(false)),
+#else
     ::testing::Combine(/*AppContainerDisabled=*/::testing::Bool(),
                        /*kPrintCompositorLPAC=*/::testing::Bool()),
+#endif
     [](const auto& info) {
       return base::StrCat(
           {std::get<0>(info.param) ? "ACDisabled" : "ACEnabled",
