@@ -127,7 +127,10 @@ class PrintBackendServiceManager {
   // to a specific printer.  Use the same `RemoteId` for this new printing
   // client as has been used by the indicated query with UI client.  This method
   // will DCHECK if the client ID provided is not for a query with UI client.
-  ClientId RegisterPrintDocumentClientReusingClientRemote(ClientId id);
+  // Call can return nullopt if the service has terminated by the time this call
+  // is made and the remote used by client `id` no longer exists.
+  std::optional<ClientId> RegisterPrintDocumentClientReusingClientRemote(
+      ClientId id);
 
   // Notify the manager that this client is no longer needing print backend
   // services.  This signal might alter the manager's internal optimizations.

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_browsertest.h"
@@ -510,12 +511,24 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
 
 class TestPrinterQueryOop : public PrinterQueryOop {
  public:
-  TestPrinterQueryOop(content::GlobalRenderFrameHostId rfh_id,
-                      bool simulate_spooling_memory_errors,
-                      TestPrintJobWorkerOop::PrintCallbacks* callbacks)
+  TestPrinterQueryOop(
+      content::GlobalRenderFrameHostId rfh_id,
+      bool simulate_spooling_memory_errors,
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG) && BUILDFLAG(IS_WIN)
+      base::OnceClosure terminate_service_after_update_print_settings_callback,
+#endif
+      base::OnceClosure terminate_service_after_ask_user_for_settings_callback,
+      TestPrintJobWorkerOop::PrintCallbacks* callbacks)
       : PrinterQueryOop(rfh_id),
         simulate_spooling_memory_errors_(simulate_spooling_memory_errors),
-        callbacks_(callbacks) {}
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG) && BUILDFLAG(IS_WIN)
+        terminate_service_after_update_print_settings_callback_(
+            std::move(terminate_service_after_update_print_settings_callback)),
+#endif
+        terminate_service_after_ask_user_for_settings_callback_(
+            std::move(terminate_service_after_ask_user_for_settings_callback)),
+        callbacks_(callbacks) {
+  }
 
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   void OnDidUseDefaultSettings(
@@ -539,6 +552,9 @@ class TestPrinterQueryOop : public PrinterQueryOop {
                                    ? print_settings->get_result_code()
                                    : mojom::ResultCode::kSuccess;
     callbacks_->error_check_callback.Run(result);
+    if (terminate_service_after_ask_user_for_settings_callback_) {
+      std::move(terminate_service_after_ask_user_for_settings_callback_).Run();
+    }
     PrinterQueryOop::OnDidAskUserForSettings(std::move(callback),
                                              std::move(print_settings));
     callbacks_->did_ask_user_for_settings_callback.Run(result);
@@ -555,6 +571,9 @@ class TestPrinterQueryOop : public PrinterQueryOop {
                          bool is_scripted,
                          SettingsCallback callback) override {
     DVLOG(1) << "Observed: invoke get settings with UI";
+    if (terminate_service_after_ask_user_for_settings_callback_) {
+      std::move(terminate_service_after_ask_user_for_settings_callback_).Run();
+    }
     PrinterQueryOop::GetSettingsWithUI(document_page_count, has_selection,
                                        is_scripted, std::move(callback));
     callbacks_->did_get_settings_with_ui_callback.Run();
@@ -570,6 +589,11 @@ class TestPrinterQueryOop : public PrinterQueryOop {
                                    ? print_settings->get_result_code()
                                    : mojom::ResultCode::kSuccess;
     callbacks_->error_check_callback.Run(result);
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG) && BUILDFLAG(IS_WIN)
+    if (terminate_service_after_update_print_settings_callback_) {
+      std::move(terminate_service_after_update_print_settings_callback_).Run();
+    }
+#endif
     PrinterQueryOop::OnDidUpdatePrintSettings(device_name, std::move(callback),
                                               std::move(print_settings));
     callbacks_->did_update_print_settings_callback.Run(result);
@@ -584,7 +608,11 @@ class TestPrinterQueryOop : public PrinterQueryOop {
         callbacks_);
   }
 
-  bool simulate_spooling_memory_errors_;
+  const bool simulate_spooling_memory_errors_;
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG) && BUILDFLAG(IS_WIN)
+  base::OnceClosure terminate_service_after_update_print_settings_callback_;
+#endif
+  base::OnceClosure terminate_service_after_ask_user_for_settings_callback_;
   const raw_ptr<TestPrintJobWorkerOop::PrintCallbacks> callbacks_;
 };
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -1008,6 +1036,10 @@ class SystemAccessProcessPrintBrowserTestBase
   void PrimeForFailInAskUserForSettings() {
     test_printing_context_factory()->SetFailErrorOnAskUserForSettings();
   }
+
+  void PrimeForServiceTerminatesAfterGetUserSettings() {
+    terminate_service_after_ask_user_for_settings_ = true;
+  }
 #endif
 
   void PrimeForFailInUpdatePrinterSettings() {
@@ -1030,6 +1062,12 @@ class SystemAccessProcessPrintBrowserTestBase
   }
 
 #if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+  void PrimeForServiceTerminatesAfterUpdatePrintSettings() {
+    terminate_service_after_update_print_settings_ = true;
+  }
+#endif
+
   void PrimeForAccessDeniedErrorsInRenderPrintedPage() {
     test_printing_context_factory()->SetAccessDeniedErrorOnRenderPage(
         /*cause_errors=*/true);
@@ -1042,7 +1080,7 @@ class SystemAccessProcessPrintBrowserTestBase
   void PrimeForRenderingErrorOnPage(uint32_t page_number) {
     test_printing_context_factory()->SetFailedErrorForRenderPage(page_number);
   }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
   void PrimeForAccessDeniedErrorsInRenderPrintedDocument() {
     test_printing_context_factory()->SetAccessDeniedErrorOnRenderDocument(
@@ -1146,6 +1184,18 @@ class SystemAccessProcessPrintBrowserTestBase
     if (use_service) {
       return std::make_unique<TestPrinterQueryOop>(
           rfh_id, simulate_spooling_memory_errors_,
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG) && BUILDFLAG(IS_WIN)
+          base::BindLambdaForTesting([&]() {
+            if (terminate_service_after_update_print_settings_) {
+              ResetService();
+            }
+          }),
+#endif
+          base::BindLambdaForTesting([&]() {
+            if (terminate_service_after_ask_user_for_settings_) {
+              ResetService();
+            }
+          }),
           &test_print_job_worker_oop_callbacks_);
     }
     return std::make_unique<TestPrinterQuery>(
@@ -1264,6 +1314,11 @@ class SystemAccessProcessPrintBrowserTestBase
         /*cause_errors=*/false);
   }
 
+  void ResetService() {
+    print_backend_service_.reset();
+    test_remote_.reset();
+  }
+
   base::test::ScopedFeatureList feature_list_;
 #if BUILDFLAG(IS_WIN)
   bool check_for_rendered_printed_page_ = true;
@@ -1291,13 +1346,17 @@ class SystemAccessProcessPrintBrowserTestBase
   mojom::ResultCode use_default_settings_result_ = mojom::ResultCode::kFailed;
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
   mojom::ResultCode ask_user_for_settings_result_ = mojom::ResultCode::kFailed;
+  bool terminate_service_after_ask_user_for_settings_ = false;
 #endif
   mojom::ResultCode update_print_settings_result_ = mojom::ResultCode::kFailed;
   mojom::ResultCode start_printing_result_ = mojom::ResultCode::kFailed;
 #if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+  bool terminate_service_after_update_print_settings_ = false;
+#endif
   mojom::ResultCode render_printed_page_result_ = mojom::ResultCode::kFailed;
   int render_printed_pages_count_ = 0;
-#endif
+#endif  // BUILDFLAG(IS_WIN)
   mojom::ResultCode render_printed_document_result_ =
       mojom::ResultCode::kFailed;
   mojom::ResultCode document_done_result_ = mojom::ResultCode::kFailed;
@@ -1433,7 +1492,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
 
   // Now that startup is complete, look through the list of processes in the
-  // Task Manager to see if a Print Backend service has bee started (even
+  // Task Manager to see if a Print Backend service has been started (even
   // though there has not been any request for printing).
   CHECK_EQ(DoesPrintBackendServiceTaskExist(), EarlyStartService());
 }
@@ -2990,6 +3049,83 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_EQ(did_print_document_count(), 0);
   EXPECT_EQ(print_job_construction_count(), 0);
 }
+
+IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
+                       StartBasicPrintServiceDisappearsAfterGetSettings) {
+  PrimeForServiceTerminatesAfterGetUserSettings();
+
+  // Pretending the service terminated will result in a stranded context left
+  // in the test Print Backend service which actually does still exist.
+  SkipPersistentContextsCheckOnShutdown();
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  // The expected events for this are:
+  // 1.  Get the default settings.
+  // 2.  Ask the user for settings.  This succeeds; however, because the
+  //     service is detected to have terminated, the print request is aborted.
+  // 3.  An error dialog is shown.
+  // No print job is created from such an early failure.
+  SetNumExpectedMessages(/*num=*/3);
+
+  StartBasicPrint(web_contents);
+
+  WaitUntilCallbackReceived();
+
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+  EXPECT_EQ(use_default_settings_result(), mojom::ResultCode::kSuccess);
+  EXPECT_EQ(ask_user_for_settings_result(), mojom::ResultCode::kSuccess);
+#else
+  EXPECT_TRUE(did_use_default_settings());
+  EXPECT_TRUE(did_get_settings_with_ui());
+#endif
+  EXPECT_EQ(error_dialog_shown_count(), 1u);
+  EXPECT_EQ(did_print_document_count(), 0);
+  EXPECT_EQ(print_job_construction_count(), 0);
+}
+
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG) && BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_P(
+    SystemAccessProcessServicePrintBrowserTest,
+    SystemPrintFromPrintPreviewUpdatePrintSettingsServiceDisappearsAfterGetSettings) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+  PrimeForServiceTerminatesAfterUpdatePrintSettings();
+
+  // Pretending the service terminated will result in a stranded context left
+  // in the test Print Backend service which actually does still exist.
+  SkipPersistentContextsCheckOnShutdown();
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  // Once the transition to system print is initiated, the expected events
+  // are:
+  // 1.  Ask the user for settings.  This succeeds; however, because the
+  //     service is detected to have terminated, the print request is aborted.
+  // 2.  An error dialog is shown.
+  // No print job is created because of such an early failure.
+  SetNumExpectedMessages(/*num=*/2);
+
+  SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
+
+  EXPECT_EQ(update_print_settings_result(), mojom::ResultCode::kSuccess);
+  EXPECT_EQ(error_dialog_shown_count(), 1u);
+}
+#endif  // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG) && BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
 
 #if BUILDFLAG(IS_MAC)

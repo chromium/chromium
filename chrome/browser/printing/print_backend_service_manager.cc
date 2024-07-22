@@ -171,12 +171,12 @@ PrintBackendServiceManager::RegisterPrintDocumentClient(
   return *RegisterClient(ClientType::kPrintDocument, printer_name);
 }
 
-PrintBackendServiceManager::ClientId
+std::optional<PrintBackendServiceManager::ClientId>
 PrintBackendServiceManager::RegisterPrintDocumentClientReusingClientRemote(
     ClientId id) {
-  DCHECK(query_with_ui_clients_.contains(id));
-  return *RegisterClient(ClientType::kPrintDocument,
-                         query_with_ui_clients_[id]);
+  const auto iter = query_with_ui_clients_.find(id);
+  CHECK(iter != query_with_ui_clients_.end());
+  return RegisterClient(ClientType::kPrintDocument, iter->second);
 }
 
 void PrintBackendServiceManager::UnregisterClient(ClientId id) {
@@ -749,7 +749,13 @@ PrintBackendServiceManager::RegisterClient(
   } else {
     // Service not already available, so launch it now so that it will be
     // ready by the time the client gets to point of invoking a Mojo call.
-    DCHECK(absl::holds_alternative<std::string>(destination));
+    if (absl::holds_alternative<RemoteId>(destination)) {
+      // When the destination is to reuse an existing remote, and that remote
+      // is gone, then any expected context in that remote is also gone.  Such
+      // a loss of context should be treated as a failure for the user's request
+      // to print the document, so return nullopt for the client ID.
+      return std::nullopt;
+    }
     bool should_sandbox = ShouldServiceBeSandboxed(
         /*printer_name=*/absl::get<std::string>(destination), client_type);
     GetService(remote_id, client_type, should_sandbox);

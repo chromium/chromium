@@ -100,6 +100,12 @@ void PrinterQueryOop::OnDidAskUserForSettings(
         PrintBackendServiceManager::GetInstance()
             .RegisterPrintDocumentClientReusingClientRemote(
                 *query_with_ui_client_id_);
+    if (!print_document_client_id_.has_value()) {
+      // A failure after getting settings, override result to failure.
+      result = mojom::ResultCode::kFailed;
+      PRINTER_LOG(ERROR) << "Error after getting settings from user via "
+                            "service due to service unavailable";
+    }
   } else {
     result = print_settings->get_result_code();
     DCHECK_NE(result, mojom::ResultCode::kSuccess);
@@ -127,6 +133,12 @@ void PrinterQueryOop::OnDidAskUserForSettings(
         PrintBackendServiceManager::GetInstance()
             .RegisterPrintDocumentClientReusingClientRemote(
                 *query_with_ui_client_id_);
+    if (!print_document_client_id_.has_value()) {
+      // A failure after getting settings, override result to failure.
+      result = mojom::ResultCode::kFailed;
+      PRINTER_LOG(ERROR) << "Error after getting settings from user via "
+                            "service due to service unavailable";
+    }
   }
   std::move(callback).Run(std::move(new_settings), result);
 }
@@ -277,6 +289,12 @@ void PrinterQueryOop::OnDidUpdatePrintSettings(
           PrintBackendServiceManager::GetInstance()
               .RegisterPrintDocumentClientReusingClientRemote(
                   *query_with_ui_client_id_);
+      if (!print_document_client_id_.has_value()) {
+        // A failure after getting settings, override result to failure.
+        result = mojom::ResultCode::kFailed;
+        PRINTER_LOG(ERROR) << "Error after updating print settings via service "
+                              "due to service unavailable";
+      }
     }
   }
   InvokeSettingsCallback(std::move(callback), result);
