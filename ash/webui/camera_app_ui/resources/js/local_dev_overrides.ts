@@ -21,7 +21,6 @@ import {
   PdfBuilderRemote,
   ScreenState,
   StorageMonitorStatus,
-  ToteMetricFormat,
   WifiConfig,
 } from './mojo/type.js';
 import {fakeEndpoint} from './mojo/util.js';
@@ -108,10 +107,6 @@ export class ChromeHelperFake extends ChromeHelper {
 
   override sendNewCaptureBroadcast(_args: {isVideo: boolean, name: string}):
       void {
-    /* Do nothing. */
-  }
-
-  override notifyTote(_format: ToteMetricFormat, _name: string): void {
     /* Do nothing. */
   }
 

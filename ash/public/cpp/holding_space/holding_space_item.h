@@ -92,11 +92,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     kDriveSuggestion = 11,
     kLocalSuggestion = 12,
     kScreenRecordingGif = 13,
-    kCameraAppPhoto = 14,
-    kCameraAppScanJpg = 15,
-    kCameraAppScanPdf = 16,
-    kCameraAppVideoGif = 17,
-    kCameraAppVideoMp4 = 18,
+    // kCameraAppPhoto = 14, Deprecated.
+    // kCameraAppScanJpg = 15, Deprecated.
+    // kCameraAppScanPdf = 16, Deprecated.
+    // kCameraAppVideoGif = 17, Deprecated.
+    // kCameraAppVideoMp4 = 18, Deprecated.
     kPhotoshopWeb = 19,
     kMaxValue = kPhotoshopWeb,
   };
@@ -125,9 +125,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
       const HoldingSpaceFile& file,
       const HoldingSpaceProgress& progress,
       ImageResolver image_resolver);
-
-  // Returns `true` if `type` is a Camera app type, `false` otherwise.
-  static bool IsCameraAppType(HoldingSpaceItem::Type type);
 
   // Returns `true` if `type` is a download type, `false` otherwise.
   static bool IsDownloadType(HoldingSpaceItem::Type type);

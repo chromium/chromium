@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/feature_list.h"
@@ -29,7 +28,6 @@ namespace ash {
 
 namespace {
 
-using camera_app::mojom::ToteMetricFormat;
 using chromeos::machine_learning::mojom::Rotation;
 
 camera_app::mojom::ScreenState ToMojoScreenState(ScreenBacklightState s) {
@@ -206,16 +204,14 @@ CameraAppHelperImpl::CameraAppHelperImpl(
     CameraAppUI* camera_app_ui,
     CameraResultCallback camera_result_callback,
     SendBroadcastCallback send_broadcast_callback,
-    aura::Window* window,
-    HoldingSpaceClient* holding_space_client)
+    aura::Window* window)
     : camera_app_ui_(camera_app_ui),
       camera_result_callback_(std::move(camera_result_callback)),
       send_broadcast_callback_(std::move(send_broadcast_callback)),
       has_external_screen_(HasExternalScreen()),
       pending_intent_id_(std::nullopt),
       window_(window),
-      document_scanner_service_(DocumentScannerServiceClient::Create()),
-      holding_space_client_(holding_space_client) {
+      document_scanner_service_(DocumentScannerServiceClient::Create()) {
   DCHECK(camera_app_ui);
   DCHECK(window);
   window->SetProperty(kCanConsumeSystemKeysKey, true);
@@ -370,37 +366,6 @@ void CameraAppHelperImpl::SendNewCaptureBroadcast(bool is_video,
     return;
   }
   send_broadcast_callback_.Run(is_video, file_path);
-}
-
-void CameraAppHelperImpl::NotifyTote(const ToteMetricFormat format,
-                                     const std::string& name) {
-  CHECK(holding_space_client_);
-  base::FilePath file_path =
-      camera_app_ui_->delegate()->GetFilePathByName(name);
-  switch (format) {
-    case ToteMetricFormat::kPhoto:
-      holding_space_client_->AddItemOfType(
-          HoldingSpaceItem::Type::kCameraAppPhoto, file_path);
-      return;
-    case ToteMetricFormat::kScanJpg:
-      holding_space_client_->AddItemOfType(
-          HoldingSpaceItem::Type::kCameraAppScanJpg, file_path);
-      return;
-    case ToteMetricFormat::kScanPdf:
-      holding_space_client_->AddItemOfType(
-          HoldingSpaceItem::Type::kCameraAppScanPdf, file_path);
-      return;
-    case ToteMetricFormat::kVideoGif:
-      holding_space_client_->AddItemOfType(
-          HoldingSpaceItem::Type::kCameraAppVideoGif, file_path);
-      return;
-    case ToteMetricFormat::kVideoMp4:
-      holding_space_client_->AddItemOfType(
-          HoldingSpaceItem::Type::kCameraAppVideoMp4, file_path);
-      return;
-    default:
-      NOTREACHED_IN_MIGRATION() << "Unexpected new metric format.";
-  }
 }
 
 void CameraAppHelperImpl::MonitorFileDeletion(

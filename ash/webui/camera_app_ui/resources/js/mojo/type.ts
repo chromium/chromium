@@ -29,7 +29,6 @@ export {
   StorageMonitorCallbackRouter,
   StorageMonitorStatus,
   TabletModeMonitorCallbackRouter,
-  ToteMetricFormat,
   WindowStateControllerRemote,
   WindowStateMonitorCallbackRouter,
   WindowStateType,

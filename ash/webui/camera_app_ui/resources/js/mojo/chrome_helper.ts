@@ -32,7 +32,6 @@ import {
   StorageMonitorCallbackRouter,
   StorageMonitorStatus,
   TabletModeMonitorCallbackRouter,
-  ToteMetricFormat,
   WifiConfig,
 } from './type.js';
 import {wrapEndpoint} from './util.js';
@@ -219,11 +218,6 @@ export abstract class ChromeHelper {
    */
   abstract sendNewCaptureBroadcast(args: {isVideo: boolean, name: string}):
       void;
-
-  /**
-   * Notifies Tote client when a photo/pdf/video/gif is captured.
-   */
-  abstract notifyTote(format: ToteMetricFormat, name: string): void;
 
   /**
    * Monitors for the file deletion of the file given by its `name` and
@@ -425,10 +419,6 @@ class ChromeHelperImpl extends ChromeHelper {
   override sendNewCaptureBroadcast({isVideo, name}:
                                        {isVideo: boolean, name: string}): void {
     this.remote.sendNewCaptureBroadcast(isVideo, name);
-  }
-
-  override notifyTote(format: ToteMetricFormat, name: string): void {
-    this.remote.notifyTote(format, name);
   }
 
   override async monitorFileDeletion(name: string, callback: () => void):

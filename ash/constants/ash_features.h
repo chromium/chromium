@@ -537,8 +537,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kHideShelfControlsInTabletMode);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHindiInscriptLayout);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kHoldingSpaceCameraAppIntegration);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kHoldingSpacePhotoshopWebIntegration);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kHoldingSpacePredictability);
@@ -1241,8 +1239,6 @@ bool AreAnyGlanceablesTimeManagementViewsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreHealthdInternalsTabsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHibernateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideShelfControlsInTabletModeEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsHoldingSpaceCameraAppIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsHoldingSpacePhotoshopWebIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpacePredictabilityEnabled();
