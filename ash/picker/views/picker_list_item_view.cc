@@ -254,6 +254,7 @@ void PickerListItemView::SetPreview(
   async_preview_image_ = std::make_unique<ash::HoldingSpaceImage>(
       PickerPreviewBubbleView::kPreviewImageSize, file_path,
       async_bitmap_resolver);
+  file_path_ = file_path;
   preview_bubble_controller_ = preview_bubble_controller;
 
   if (update_icon) {
@@ -274,7 +275,7 @@ void PickerListItemView::OnMouseEntered(const ui::MouseEvent& event) {
 
   if (preview_bubble_controller_ != nullptr) {
     preview_bubble_controller_->ShowBubbleAfterDelay(async_preview_image_.get(),
-                                                     this);
+                                                     file_path_, this);
   }
 }
 

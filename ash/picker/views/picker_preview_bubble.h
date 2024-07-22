@@ -5,6 +5,9 @@
 #ifndef ASH_PICKER_VIEWS_PICKER_PREVIEW_BUBBLE_H_
 #define ASH_PICKER_VIEWS_PICKER_PREVIEW_BUBBLE_H_
 
+#include <string>
+#include <string_view>
+
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/image_model.h"
@@ -14,6 +17,7 @@
 
 namespace views {
 class ImageView;
+class Label;
 }
 
 namespace ash {
@@ -32,6 +36,9 @@ class ASH_EXPORT PickerPreviewBubbleView
   ui::ImageModel GetPreviewImage() const;
   void SetPreviewImage(ui::ImageModel image);
 
+  std::u16string_view GetTitleLabelTextForTesting();
+  void SetTitleLabelText(const std::u16string& text);
+
   // BubbleDialogDelegateView overrides
   void OnThemeChanged() override;
 
@@ -39,6 +46,7 @@ class ASH_EXPORT PickerPreviewBubbleView
 
  private:
   raw_ptr<views::ImageView> image_view_;
+  raw_ptr<views::Label> title_label_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT,

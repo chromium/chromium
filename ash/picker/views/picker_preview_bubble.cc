@@ -6,10 +6,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/bubble/bubble_constants.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/style/typography.h"
+#include "base/check_deref.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
@@ -33,8 +35,9 @@ constexpr ui::ColorId kBackgroundColor =
 constexpr int kBubbleOverlapOverPicker = 4;
 constexpr int kPickerBubbleCornerRadius = 12;
 // TODO(b/322899031): Translate these strings.
-constexpr std::u16string_view kLinkLabelText = u"Link";
-constexpr std::u16string_view kTitleText = u"Placeholder";
+constexpr std::u16string_view kLinkLabelText = u"Last action";
+// TODO: b/344717756 - Use a better placeholder title for when it is not set.
+constexpr std::u16string_view kTitleText = u"…";
 constexpr gfx::Insets kMargins(8);
 constexpr int kPreviewBackgroundBorderRadius = 8;
 constexpr gfx::Insets kLabelPadding = gfx::Insets::TLBR(8, 8, 0, 8);
@@ -97,9 +100,11 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
                   views::Builder<views::Label>(ash::bubble_utils::CreateLabel(
                       TypographyToken::kCrosAnnotation2, kLinkLabelText.data(),
                       cros_tokens::kCrosSysOnSurfaceVariant)),
-                  views::Builder<views::Label>(ash::bubble_utils::CreateLabel(
-                      TypographyToken::kCrosBody2, kTitleText.data(),
-                      cros_tokens::kCrosSysOnSurface))))
+                  views::Builder<views::Label>(
+                      ash::bubble_utils::CreateLabel(
+                          TypographyToken::kCrosBody2, kTitleText.data(),
+                          cros_tokens::kCrosSysOnSurface))
+                      .CopyAddressTo(&title_label_)))
       .BuildChildren();
 
   // Show the widget.
@@ -119,6 +124,14 @@ ui::ImageModel PickerPreviewBubbleView::GetPreviewImage() const {
 
 void PickerPreviewBubbleView::SetPreviewImage(ui::ImageModel image) {
   image_view_->SetImage(std::move(image));
+}
+
+std::u16string_view PickerPreviewBubbleView::GetTitleLabelTextForTesting() {
+  return CHECK_DEREF(title_label_.get()).GetText();
+}
+
+void PickerPreviewBubbleView::SetTitleLabelText(const std::u16string& text) {
+  CHECK_DEREF(title_label_.get()).SetText(text);
 }
 
 void PickerPreviewBubbleView::OnThemeChanged() {

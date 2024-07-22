@@ -109,6 +109,7 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   // placeholder image to be dynamically generated based on the size.
   std::unique_ptr<HoldingSpaceImage> async_preview_image_;
   std::unique_ptr<HoldingSpaceImage> async_preview_icon_;
+  base::FilePath file_path_;
   raw_ptr<PickerPreviewBubbleController> preview_bubble_controller_;
   base::CallbackListSubscription async_icon_subscription_;
 };
