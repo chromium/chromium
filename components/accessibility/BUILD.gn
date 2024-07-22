@@ -9,19 +9,30 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
+source_set("reading_headers") {
+  sources = [ "reading/distillable_pages.h" ]
+  visibility = [ "./*" ]
+}
+
+source_set("reading_sources") {
+  sources = [ "reading/distillable_pages.cc" ]
+  deps = [
+    ":reading_headers",
+    "//base",
+  ]
+  visibility = [ ":reading" ]
+}
+
 source_set("reading") {
   sources = [ "reading/distillable_pages.h" ]
 
-  if (is_chrome_branded) {
-    sources += [ "internal/reading/distillable_pages.cc" ]
-  } else {
-    sources += [ "reading/distillable_pages.cc" ]
-  }
+  deps = [ ":reading_headers" ]
 
-  deps = [
-    "//base",
-    "//url",
-  ]
+  if (is_chrome_branded) {
+    deps += [ "//components/accessibility/internal:reading_sources_internal" ]
+  } else {
+    deps += [ ":reading_sources" ]
+  }
 }
 
 if (is_android) {
