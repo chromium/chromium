@@ -26,7 +26,7 @@ items:
 - caption: Disable automatic online re-authentication start.
   value: false
 owners:
-- maleksandrov@chromium.org
+- andreydav@google.com
 - chromeos-commercial-identity@google.com
 schema:
   type: boolean
