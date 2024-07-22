@@ -708,10 +708,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
                   .SetCallback(base::BindRepeating(
                       &MahiPanelView::OnLearnMoreLinkClicked,
                       weak_ptr_factory_.GetWeakPtr()))
-                  .SetID(mahi_constants::ViewId::kLearnMoreLink)
-                  // TODO(b/333111220): Re-enable the link when there's a
-                  // website available.
-                  .SetVisible(false))
+                  .SetID(mahi_constants::ViewId::kLearnMoreLink))
           .Build());
 
   // Refresh contents after all child views are built.

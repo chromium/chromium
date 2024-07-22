@@ -64,8 +64,8 @@ inline constexpr int kScrollViewWidth = kPanelDefaultWidth -
 
 inline constexpr int kScrollContentsViewBottomPadding = 40;
 
-// TODO(b/333111220): Replace the string here with the correct URL.
-inline constexpr char kLearnMorePage[] = "https://google.com";
+inline constexpr char kLearnMorePage[] =
+    "https://support.google.com/chromebook/?p=settings_help_me_read_write";
 
 inline constexpr int kRefreshBannerStackDepth = 25;
 inline constexpr int kPanelCornerRadius = 16;
