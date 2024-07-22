@@ -104,6 +104,7 @@ export class RecordingSession {
 
   private constructor(
     private readonly platformHandler: PlatformHandler,
+    private readonly sourceStreams: MediaStream[],
     private readonly stream: MediaStream,
     private readonly mediaRecorder: MediaRecorder,
     private readonly audioProcessor: AudioWorkletNode,
@@ -251,8 +252,10 @@ export class RecordingSession {
     await this.stopSodaSession().result;
     await stopped;
 
-    for (const track of this.stream.getTracks()) {
-      track.stop();
+    for (const stream of [this.stream, ...this.sourceStreams]) {
+      for (const track of stream.getTracks()) {
+        track.stop();
+      }
     }
 
     return new Blob(this.dataChunks, {type: AUDIO_MIME_TYPE});
@@ -263,7 +266,8 @@ export class RecordingSession {
   ): Promise<RecordingSession> {
     const requestingStreams = [getMicrophoneStream(config.micId)];
     if (config.includeSystemAudio) {
-      requestingStreams.push(config.platformHandler.getSystemAudioMediaStream()
+      requestingStreams.push(
+        config.platformHandler.getSystemAudioMediaStream(),
       );
     }
     const streams = await Promise.all(requestingStreams);
@@ -285,6 +289,7 @@ export class RecordingSession {
 
     return new RecordingSession(
       config.platformHandler,
+      streams,
       combinedStream,
       mediaRecorder,
       processor,
