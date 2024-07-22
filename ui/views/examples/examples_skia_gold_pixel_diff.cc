@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/examples/examples_window.h"
@@ -65,7 +66,10 @@ ExamplesExitCode ExamplesSkiaGoldPixelDiff::CompareScreenshot(
 }
 
 void ExamplesSkiaGoldPixelDiff::DoScreenshot(views::Widget* widget) {
-  result_ = CompareScreenshot("ExampleWindow", widget);
+  const auto* const test_info =
+      testing::UnitTest::GetInstance()->current_test_info();
+  result_ = CompareScreenshot(test_info ? test_info->name() : "ExampleWindow",
+                              widget);
   widget->Close();
 }
 

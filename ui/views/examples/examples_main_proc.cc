@@ -78,6 +78,8 @@ namespace views::examples {
 base::LazyInstance<base::TestDiscardableMemoryAllocator>::DestructorAtExit
     g_discardable_memory_allocator = LAZY_INSTANCE_INITIALIZER;
 
+bool g_initialized_once = false;
+
 ExamplesExitCode ExamplesMainProc(bool under_test, ExampleVector examples) {
 #if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer;
@@ -102,15 +104,31 @@ ExamplesExitCode ExamplesMainProc(bool under_test, ExampleVector examples) {
   if (under_test)
     command_line->AppendSwitch(switches::kEnablePixelOutputInTests);
 
-  mojo::core::Init();
-
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForGPU(params);
 #endif
 
-  gl::init::InitializeGLOneOff(/*gpu_preference=*/gl::GpuPreference::kDefault);
+  // ExamplesMainProc can be called multiple times in a test suite.
+  // These methods should only be initialized once.
+  if (!g_initialized_once) {
+    mojo::core::Init();
+
+    gl::init::InitializeGLOneOff(
+        /*gpu_preference=*/gl::GpuPreference::kDefault);
+
+    base::i18n::InitializeICU();
+
+    ui::RegisterPathProvider();
+
+    base::DiscardableMemoryAllocator::SetInstance(
+        g_discardable_memory_allocator.Pointer());
+
+    gfx::InitializeFonts();
+
+    g_initialized_once = true;
+  }
 
   // Viz depends on the task environment to correctly tear down.
   base::test::TaskEnvironment task_environment(
@@ -120,10 +138,6 @@ ExamplesExitCode ExamplesMainProc(bool under_test, ExampleVector examples) {
   auto context_factories =
       std::make_unique<ui::TestContextFactories>(under_test,
                                                  /*output_to_window=*/true);
-
-  base::i18n::InitializeICU();
-
-  ui::RegisterPathProvider();
 
   base::FilePath ui_test_pak_path;
   CHECK(base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path));
@@ -136,11 +150,6 @@ ExamplesExitCode ExamplesMainProc(bool under_test, ExampleVector examples) {
       views_examples_resources_pak_path.AppendASCII(
           "views_examples_resources.pak"),
       ui::k100Percent);
-
-  base::DiscardableMemoryAllocator::SetInstance(
-      g_discardable_memory_allocator.Pointer());
-
-  gfx::InitializeFonts();
 
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(&AddExamplesColorMixers));

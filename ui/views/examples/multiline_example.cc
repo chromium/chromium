@@ -168,7 +168,9 @@ MultilineExample::MultilineExample()
     : ExampleBase(GetStringUTF8(IDS_MULTILINE_SELECT_LABEL).c_str()) {}
 
 MultilineExample::~MultilineExample() {
-  textfield_->set_controller(nullptr);
+  if (textfield_) {
+    textfield_->set_controller(nullptr);
+  }
 }
 
 void MultilineExample::CreateExampleView(View* container) {

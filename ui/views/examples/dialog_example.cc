@@ -117,11 +117,21 @@ DialogExample::DialogExample()
       }) {}
 
 DialogExample::~DialogExample() {
-  title_->set_controller(nullptr);
-  body_->set_controller(nullptr);
-  ok_button_label_->set_controller(nullptr);
-  cancel_button_label_->set_controller(nullptr);
-  extra_button_label_->set_controller(nullptr);
+  if (title_) {
+    title_->set_controller(nullptr);
+  }
+  if (body_) {
+    body_->set_controller(nullptr);
+  }
+  if (ok_button_label_) {
+    ok_button_label_->set_controller(nullptr);
+  }
+  if (cancel_button_label_) {
+    cancel_button_label_->set_controller(nullptr);
+  }
+  if (extra_button_label_) {
+    extra_button_label_->set_controller(nullptr);
+  }
 }
 
 void DialogExample::CreateExampleView(View* container) {

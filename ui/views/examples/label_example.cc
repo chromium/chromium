@@ -77,7 +77,9 @@ LabelExample::LabelExample()
     : ExampleBase(l10n_util::GetStringUTF8(IDS_LABEL_SELECT_LABEL).c_str()) {}
 
 LabelExample::~LabelExample() {
-  textfield_->set_controller(nullptr);
+  if (textfield_) {
+    textfield_->set_controller(nullptr);
+  }
   observer_.Reset();
 }
 
