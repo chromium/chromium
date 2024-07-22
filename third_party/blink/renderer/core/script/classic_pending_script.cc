@@ -102,10 +102,14 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
     compile_hints_producer = &page->GetV8CrowdsourcedCompileHintsProducer();
     compile_hints_consumer = &page->GetV8CrowdsourcedCompileHintsConsumer();
   }
+  const bool v8_compile_hints_magic_comment_runtime_enabled =
+      RuntimeEnabledFeatures::JavaScriptCompileHintsMagicRuntimeEnabled(
+          element_document.GetExecutionContext());
 
   ScriptResource::Fetch(params, element_document.Fetcher(), pending_script,
                         context->GetIsolate(), ScriptResource::kAllowStreaming,
-                        compile_hints_producer, compile_hints_consumer);
+                        compile_hints_producer, compile_hints_consumer,
+                        v8_compile_hints_magic_comment_runtime_enabled);
   pending_script->CheckState();
   return pending_script;
 }

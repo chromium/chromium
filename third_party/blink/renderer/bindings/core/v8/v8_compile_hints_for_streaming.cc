@@ -24,7 +24,8 @@ static bool LocalCompileHintsEnabled() {
 CompileHintsForStreaming::Builder::Builder(
     V8CrowdsourcedCompileHintsProducer* crowdsourced_compile_hints_producer,
     V8CrowdsourcedCompileHintsConsumer* crowdsourced_compile_hints_consumer,
-    const KURL& resource_url)
+    const KURL& resource_url,
+    bool v8_compile_hints_magic_comment_runtime_enabled)
     : might_generate_crowdsourced_compile_hints_(
           crowdsourced_compile_hints_producer &&
           crowdsourced_compile_hints_producer->MightGenerateData()),
@@ -34,13 +35,26 @@ CompileHintsForStreaming::Builder::Builder(
            crowdsourced_compile_hints_consumer->HasData())
               ? crowdsourced_compile_hints_consumer->GetDataWithScriptNameHash(
                     ScriptNameHash(resource_url))
-              : nullptr) {}
+              : nullptr),
+      v8_compile_hints_magic_comment_runtime_enabled_(
+          v8_compile_hints_magic_comment_runtime_enabled) {}
 
 std::unique_ptr<CompileHintsForStreaming>
 CompileHintsForStreaming::Builder::Build(
-    scoped_refptr<CachedMetadata> cached_metadata) && {
+    scoped_refptr<CachedMetadata> hot_cached_metadata_for_local_compile_hints,
+    bool has_hot_timestamp) && {
+  // hot_cached_metadata_for_local_compile_hints != null implies
+  // has_hot_timestamp.
+  CHECK(!hot_cached_metadata_for_local_compile_hints || has_hot_timestamp);
+  v8::ScriptCompiler::CompileOptions additional_compile_options =
+      (v8_compile_hints_magic_comment_runtime_enabled_ && has_hot_timestamp)
+          ? v8::ScriptCompiler::kFollowCompileHintsMagicComment
+          : v8::ScriptCompiler::kNoCompileOptions;
+
   if (might_generate_crowdsourced_compile_hints_) {
-    return std::make_unique<CompileHintsForStreaming>(base::PassKey<Builder>());
+    return std::make_unique<CompileHintsForStreaming>(
+        /*produce_compile_hints=*/true, additional_compile_options,
+        base::PassKey<Builder>());
   }
   // We can only consume local or crowdsourced compile hints, but
   // not both at the same time. If the page has crowdsourced compile hints,
@@ -58,16 +72,16 @@ CompileHintsForStreaming::Builder::Build(
   if (crowdsourced_compile_hint_callback_data_) {
     return std::make_unique<CompileHintsForStreaming>(
         std::move(crowdsourced_compile_hint_callback_data_),
-        base::PassKey<Builder>());
+        additional_compile_options, base::PassKey<Builder>());
   }
-  if (LocalCompileHintsEnabled() && cached_metadata) {
+  if (LocalCompileHintsEnabled() &&
+      hot_cached_metadata_for_local_compile_hints) {
     auto local_compile_hints_consumer =
         std::make_unique<v8_compile_hints::V8LocalCompileHintsConsumer>(
-            cached_metadata.get());
+            hot_cached_metadata_for_local_compile_hints.get());
     if (local_compile_hints_consumer->IsRejected()) {
-      base::UmaHistogramEnumeration(kStatusHistogram,
-                                    Status::kNoCompileHintsStreaming);
-      return nullptr;
+      return std::make_unique<CompileHintsForStreaming>(
+          false, additional_compile_options, base::PassKey<Builder>());
     }
     // TODO(40286622): It's not clear what we should do if the resource is
     // not hot but we have compile hints. 1) Consume compile hints and
@@ -75,27 +89,45 @@ CompileHintsForStreaming::Builder::Build(
     // compile hints. 2) Ignore existing compile hints (we're anyway not
     // creating the code cache yet) and produce new ones.
     return std::make_unique<CompileHintsForStreaming>(
-        std::move(local_compile_hints_consumer), base::PassKey<Builder>());
+        std::move(local_compile_hints_consumer), additional_compile_options,
+        base::PassKey<Builder>());
   }
   if (LocalCompileHintsEnabled()) {
     // For producing a local compile hints.
-    return std::make_unique<CompileHintsForStreaming>(base::PassKey<Builder>());
+    return std::make_unique<CompileHintsForStreaming>(
+        /*produce_compile_hints=*/true, additional_compile_options,
+        base::PassKey<Builder>());
   }
-  base::UmaHistogramEnumeration(kStatusHistogram,
-                                Status::kNoCompileHintsStreaming);
-  return nullptr;
+  return std::make_unique<CompileHintsForStreaming>(
+      /*produce_compile_hints=*/false, additional_compile_options,
+      base::PassKey<Builder>());
 }
 
-CompileHintsForStreaming::CompileHintsForStreaming(base::PassKey<Builder>)
-    : compile_options_(v8::ScriptCompiler::kProduceCompileHints) {
-  base::UmaHistogramEnumeration(kStatusHistogram,
-                                Status::kProduceCompileHintsStreaming);
+CompileHintsForStreaming::CompileHintsForStreaming(
+    bool produce_compile_hints,
+    v8::ScriptCompiler::CompileOptions additional_compile_options,
+    base::PassKey<Builder>)
+    : compile_options_(produce_compile_hints
+                           ? v8::ScriptCompiler::CompileOptions(
+                                 v8::ScriptCompiler::kProduceCompileHints |
+                                 additional_compile_options)
+                           : additional_compile_options) {
+  if (produce_compile_hints) {
+    base::UmaHistogramEnumeration(kStatusHistogram,
+                                  Status::kProduceCompileHintsStreaming);
+  } else {
+    base::UmaHistogramEnumeration(kStatusHistogram,
+                                  Status::kNoCompileHintsStreaming);
+  }
 }
 
 CompileHintsForStreaming::CompileHintsForStreaming(
     std::unique_ptr<V8LocalCompileHintsConsumer> local_compile_hints_consumer,
+    v8::ScriptCompiler::CompileOptions additional_compile_options,
     base::PassKey<Builder>)
-    : compile_options_(v8::ScriptCompiler::kConsumeCompileHints),
+    : compile_options_(v8::ScriptCompiler::CompileOptions(
+          v8::ScriptCompiler::kConsumeCompileHints |
+          additional_compile_options)),
       local_compile_hints_consumer_(std::move(local_compile_hints_consumer)) {
   base::UmaHistogramEnumeration(kStatusHistogram,
                                 Status::kConsumeLocalCompileHintsStreaming);
@@ -104,8 +136,11 @@ CompileHintsForStreaming::CompileHintsForStreaming(
 CompileHintsForStreaming::CompileHintsForStreaming(
     std::unique_ptr<V8CrowdsourcedCompileHintsConsumer::DataAndScriptNameHash>
         crowdsourced_compile_hint_callback_data,
+    v8::ScriptCompiler::CompileOptions additional_compile_options,
     base::PassKey<Builder>)
-    : compile_options_(v8::ScriptCompiler::kConsumeCompileHints),
+    : compile_options_(v8::ScriptCompiler::CompileOptions(
+          v8::ScriptCompiler::kConsumeCompileHints |
+          additional_compile_options)),
       crowdsourced_compile_hint_callback_data_(
           std::move(crowdsourced_compile_hint_callback_data)) {
   base::UmaHistogramEnumeration(
