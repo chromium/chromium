@@ -5,6 +5,10 @@
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments::facilitated {
@@ -94,7 +98,9 @@ TEST(FacilitatedPaymentsMetricsTest, LogFopSelectorShown) {
 TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult_Success) {
   base::HistogramTester histogram_tester;
 
-  LogTransactionResult(TransactionResult::kSuccess, base::Milliseconds(10));
+  LogTransactionResult(TransactionResult::kSuccess, TriggerSource::kDOMSearch,
+                       base::Milliseconds(10),
+                       ukm::UkmRecorder::GetNewSourceID());
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.Transaction.Result",
@@ -109,7 +115,9 @@ TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult_Success) {
 TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult_Failed) {
   base::HistogramTester histogram_tester;
 
-  LogTransactionResult(TransactionResult::kFailed, base::Milliseconds(10));
+  LogTransactionResult(TransactionResult::kFailed, TriggerSource::kDOMSearch,
+                       base::Milliseconds(10),
+                       ukm::UkmRecorder::GetNewSourceID());
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.Transaction.Result",
@@ -124,7 +132,9 @@ TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult_Failed) {
 TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult_Abandoned) {
   base::HistogramTester histogram_tester;
 
-  LogTransactionResult(TransactionResult::kAbandoned, base::Milliseconds(10));
+  LogTransactionResult(TransactionResult::kAbandoned, TriggerSource::kDOMSearch,
+                       base::Milliseconds(10),
+                       ukm::UkmRecorder::GetNewSourceID());
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.Transaction.Result",
@@ -134,6 +144,33 @@ TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult_Abandoned) {
       "FacilitatedPayments.Pix.Transaction.Abandoned.Latency",
       /*sample=*/10,
       /*expected_bucket_count=*/1);
+}
+
+class FacilitatedPaymentsMetricsUkmTest : public testing::Test {
+ public:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+ protected:
+  ukm::TestAutoSetUkmRecorder ukm_recorder_;
+};
+
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogTransactionResult_UkmLogged) {
+  LogTransactionResult(TransactionResult::kSuccess, TriggerSource::kDOMSearch,
+                       base::Milliseconds(10),
+                       ukm::UkmRecorder::GetNewSourceID());
+  task_environment_.RunUntilIdle();
+
+  // Verify UKM histograms logged.
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_Pix_Transaction::kEntryName,
+      {ukm::builders::FacilitatedPayments_Pix_Transaction::kResultName,
+       ukm::builders::FacilitatedPayments_Pix_Transaction::kTriggerSourceName});
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
+            static_cast<uint8_t>(TransactionResult::kSuccess));
+  EXPECT_EQ(ukm_entries[0].metrics.at("TriggerSource"),
+            static_cast<uint8_t>(TriggerSource::kDOMSearch));
 }
 
 }  // namespace payments::facilitated

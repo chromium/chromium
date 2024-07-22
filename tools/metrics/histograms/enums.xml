@@ -5863,6 +5863,12 @@ Called by update_document_policy_enum.py.-->
   <int value="28" label="REPLACED_BY_SYSTEM_APP"/>
 </enum>
 
+<enum name="FacilitatedPayments.TriggerSource">
+  <int value="0" label="Payment triggered by an unknown source"/>
+  <int value="1" label="Payment triggered by finding the QR code in the DOM"/>
+  <int value="2" label="Payment triggered on user copying the QR code"/>
+</enum>
+
 <enum name="FastPairPairFailure">
   <int value="0" label="Failed to create a GATT connection to the device"/>
   <int value="1" label="Failed to find the expected GATT service"/>

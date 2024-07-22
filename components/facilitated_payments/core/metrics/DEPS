@@ -1,0 +1,9 @@
+include_rules = [
+  "+services/metrics/public",
+]
+
+specific_include_rules = {
+  "facilitated_payments_metrics_unittest\.cc": [
+    "+components/ukm",
+  ],
+}

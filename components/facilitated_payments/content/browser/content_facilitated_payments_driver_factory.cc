@@ -92,7 +92,8 @@ void ContentFacilitatedPaymentsDriverFactory::OnTextCopiedToClipboard(
   auto& driver = GetOrCreateForFrame(render_frame_host);
 
   driver.OnTextCopiedToClipboard(render_frame_host->GetLastCommittedURL(),
-                                 copied_text);
+                                 copied_text,
+                                 render_frame_host->GetPageUkmSourceId());
 }
 
 ContentFacilitatedPaymentsDriver&
