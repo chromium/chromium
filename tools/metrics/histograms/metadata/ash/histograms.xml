@@ -4008,6 +4008,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.FullRestore.ShowFullRestoreNotification" enum="BooleanHit"
+    expires_after="2025-07-19">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>Emitted every time the full restore notification shows up.</summary>
+</histogram>
+
+<histogram name="Ash.FullRestore.ShowInformedRestoreDialog" enum="BooleanHit"
+    expires_after="2025-07-19">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>Emmited every time the informed restore dialog shows up.</summary>
+</histogram>
+
 <histogram name="Ash.GameDashboard.ControlsFeatureToggleState"
     enum="BooleanEnabled" expires_after="2025-04-04">
   <owner>cuicuiruan@google.com</owner>

@@ -19,6 +19,11 @@ inline constexpr char kDialogScreenshotVisibility[] =
 inline constexpr char kInformedRestoreOnboardingHistogram[] =
     "Ash.Pine.OnboardingDialog.TurnRestoreOn";
 
+inline constexpr char kFullRestoreNotificationHistogram[] =
+    "Ash.FullRestore.ShowFullRestoreNotification";
+inline constexpr char kFullRestoreDialogHistogram[] =
+    "Ash.FullRestore.ShowInformedRestoreDialog";
+
 // Enumeration of the status for taking the screenshot on shutdown.
 // Note that these values are persisted to histograms so existing values should
 // remain unchanged and new values should be added to the end.
