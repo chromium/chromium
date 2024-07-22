@@ -452,6 +452,7 @@ void ArcBridgeHostImpl::OnWebApkInstanceReady(
 }
 
 size_t ArcBridgeHostImpl::GetNumMojoChannelsForTesting() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return mojo_channels_.size();
 }
 
