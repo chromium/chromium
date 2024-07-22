@@ -435,16 +435,29 @@ const LayoutResult* BlockNode::Layout(
         CalculateInitialFragmentGeometry(constraint_space, *this, break_token);
   }
 
-  if (
-      // Only consider the size of the first container fragment.
-      !IsBreakInside(break_token) && CanMatchSizeContainerQueries()) {
+  // Only consider the size of the first container fragment.
+  if (!IsBreakInside(break_token) && CanMatchSizeContainerQueries()) {
     if (auto* element = DynamicTo<Element>(GetDOMNode())) {
-      LogicalSize available_size = CalculateChildAvailableSize(
+      // Consider scrollbars if they are stable (reset any auto scrollbars).
+      BoxStrut scrollbar = fragment_geometry->scrollbar;
+      {
+        const auto& style = Style();
+        if (style.IsScrollbarGutterAuto() &&
+            style.OverflowBlockDirection() == EOverflow::kAuto) {
+          scrollbar.inline_start = LayoutUnit();
+          scrollbar.inline_end = LayoutUnit();
+        }
+        if (style.OverflowInlineDirection() == EOverflow::kAuto) {
+          scrollbar.block_start = LayoutUnit();
+          scrollbar.block_end = LayoutUnit();
+        }
+      }
+
+      const LogicalSize available_size = CalculateChildAvailableSize(
           constraint_space, *this, fragment_geometry->border_box_size,
-          fragment_geometry->border + fragment_geometry->padding);
-      LogicalAxes contained_axes = ContainedAxes();
+          fragment_geometry->border + scrollbar + fragment_geometry->padding);
       GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-          *element, available_size, contained_axes);
+          *element, available_size, ContainedAxes());
 
       // Try the cache again. Container query matching may have affected
       // elements in the subtree, so that we need full layout instead of
