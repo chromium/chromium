@@ -155,11 +155,13 @@ void VerifyContent(VerifyContentInfo info) {
   scoped_refptr<ContentVerifyJob> job(info.verifier->CreateAndStartJobFor(
       info.extension_id, info.extension_root, info.relative_path));
   if (job.get()) {
-    if (info.content)
-      job->Read(info.content->data(), info.content->size(), MOJO_RESULT_OK);
-    else
-      job->Read("", 0u, MOJO_RESULT_NOT_FOUND);
-    job->Done();
+    if (info.content) {
+      job->BytesRead(info.content->data(), info.content->size(),
+                     MOJO_RESULT_OK);
+    } else {
+      job->BytesRead("", 0u, MOJO_RESULT_NOT_FOUND);
+    }
+    job->DoneReading();
   }
 }
 

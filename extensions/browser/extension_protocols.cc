@@ -454,8 +454,8 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
         // Note: We still pass the data to |verify_job_|, even if there was a
         // read error, because some errors are ignorable. See
         // ContentVerifyJob::BytesRead() for more details.
-        verify_job_->Read(static_cast<const char*>(buffer.data()),
-                          result->bytes_read, result->result);
+        verify_job_->BytesRead(static_cast<const char*>(buffer.data()),
+                               result->bytes_read, result->result);
       }
     }
   }
@@ -463,7 +463,7 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
   void OnDone() override {
     base::AutoLock auto_lock(lock_);
     if (verify_job_.get())
-      verify_job_->Done();
+      verify_job_->DoneReading();
   }
 
  private:

@@ -82,14 +82,13 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   // Call this to add more bytes to verify. If at any point the read bytes
   // don't match the expected hashes, this will dispatch the failure callback.
   // The failure callback will only be run once even if more bytes are read.
-  // Make sure to call Done so that any final bytes that were read that didn't
-  // align exactly on a block size boundary get their hash checked as well.
-  void Read(const char* data, int count, MojoResult read_result);
+  // Make sure to call DoneReading so that any final bytes that were read that
+  // didn't align exactly on a block size boundary get their hash checked as
+  // well.
+  void BytesRead(const char* data, int count, MojoResult read_result);
 
   // Call once when finished adding bytes via OnDone.
-  // TODO(lazyboy): A more descriptive name of this method is warranted, "Done"
-  // is not so appropriate.
-  void Done();
+  void DoneReading();
 
   class TestObserver : public base::RefCountedThreadSafe<TestObserver> {
    public:
@@ -120,8 +119,8 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
 
   void DidGetContentHashOnIO(scoped_refptr<const ContentHash> hash);
 
-  // Same as Read, but is run without acquiring lock.
-  void ReadImpl(const char* data, int count, MojoResult read_result);
+  // Same as BytesRead, but is run without acquiring lock.
+  void BytesReadImpl(const char* data, int count, MojoResult read_result);
 
   // Called each time we're done adding bytes for the current block, and are
   // ready to finish the hash operation for those bytes and make sure it

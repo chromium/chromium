@@ -132,9 +132,9 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
     auto run_content_read_step = [](ContentVerifyJob* verify_job,
                                     std::string* resource_contents) {
       // Simulate serving |resource_contents| from |resource_path|.
-      verify_job->Read(std::data(*resource_contents), resource_contents->size(),
-                       MOJO_RESULT_OK);
-      verify_job->Done();
+      verify_job->BytesRead(std::data(*resource_contents),
+                            resource_contents->size(), MOJO_RESULT_OK);
+      verify_job->DoneReading();
     };
 
     switch (run_mode) {
@@ -850,8 +850,8 @@ TEST_F(ContentVerifyJobWithHashFetchUnittest, ReadErrorBeforeHashReady) {
            base::OnceClosure done_callback) {
           DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
           job->Start(content_verifier.get());
-          job->Read(nullptr, 0u, MOJO_RESULT_ABORTED);
-          job->Done();
+          job->BytesRead(nullptr, 0u, MOJO_RESULT_ABORTED);
+          job->DoneReading();
           std::move(done_callback).Run();
         };
 
