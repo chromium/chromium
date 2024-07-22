@@ -43,7 +43,7 @@ const IGNORE_NODE_NAMES = new Set([
   'HEAD',     'APPLET',   'AREA',     'AUDIO',    'BUTTON',
   'CANVAS',   'FRAME',    'FRAMESET', 'KEYGEN',   'LABEL',
   'MAP',      'OPTGROUP', 'OPTION',   'PROGRESS', 'SELECT',
-  'VIDEO',    'A',        'APP',      'FORM',
+  'VIDEO',    'A',        'APP',      'FORM',     'SVG',
 ]);
 
 // Gets the content of a meta tag by httpEquiv for `httpEquiv`. The function is
