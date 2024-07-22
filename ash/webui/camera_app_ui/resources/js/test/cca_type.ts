@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ExpertOption} from '../expert.js';
-import {StateUnion} from '../state.js';
+import {State, StateUnion} from '../state.js';
 import {ViewName} from '../type.js';
 
 export const SELECTOR_MAP = {
@@ -77,6 +77,7 @@ export const SELECTOR_MAP = {
   photoResolutionSettingButton: '#settings-photo-resolution',
   // TODO(kamchonlathorn): Remove this once its usage in Tast is removed.
   previewExposureTime: '#preview-exposure-time',
+  previewOcrOption: '#settings-preview-ocr',
   previewResolution: '#preview-resolution',
   previewVideo: '#preview-video',
   previewViewport: '#preview-viewport',
@@ -124,6 +125,10 @@ export const SETTING_OPTION_MAP = {
   showMetadataOption: {
     component: 'expertShowMetadataOption',
     state: ExpertOption.SHOW_METADATA,
+  },
+  previewOcrOption: {
+    component: 'previewOcrOption',
+    state: State.ENABLE_PREVIEW_OCR,
   },
 } satisfies Record<string, {component: UIComponent, state: StateUnion}>;
 export type SettingOption = keyof typeof SETTING_OPTION_MAP;
