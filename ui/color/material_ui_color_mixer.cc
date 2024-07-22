@@ -96,7 +96,12 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorHistoryClustersSidePanelCardSecondaryForeground] = {
       kColorSysOnSurfaceSubtle};
   mixer[kColorLabelSelectionBackground] = {kColorTextSelectionBackground};
+  mixer[kColorLinkForeground] = {kColorLinkForegroundDefault};
   mixer[kColorLinkForegroundDefault] = {kColorSysPrimary};
+  mixer[kColorLinkForegroundOnBubbleFooter] = {kColorLinkForegroundDefault};
+  mixer[kColorLinkForegroundPressed] = {kColorLinkForegroundPressedDefault};
+  mixer[kColorLinkForegroundPressedOnBubbleFooter] = {
+      kColorLinkForegroundPressedDefault};
   mixer[kColorListItemFolderIconBackground] = {kColorSysTonalContainer};
   mixer[kColorListItemFolderIconForeground] = {kColorSysOnTonalContainer};
   mixer[kColorListItemUrlFaviconBackground] = {kColorSysNeutralContainer};
