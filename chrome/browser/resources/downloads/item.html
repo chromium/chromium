@@ -380,7 +380,8 @@
       </div>
 
       <div role="gridcell">
-        <div id="referrer-url" hidden="[[!showReferrerUrl_]]">
+        <div id="referrer-url"
+            hidden="[[!shouldShowReferrerUrl_(data.displayReferrerUrl)]]">
           <!-- Text populated dynamically -->
         </div>
         <a id="url" hidden="[[showReferrerUrl_]]" target="_blank"
