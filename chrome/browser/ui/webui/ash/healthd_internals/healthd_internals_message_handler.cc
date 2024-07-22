@@ -245,8 +245,10 @@ void HealthdInternalsMessageHandler::HandleTelemetryResult(
 
   base::Value::Dict result;
   if (info->battery_result && info->battery_result->is_battery_info()) {
-    result.Set("battery",
-               ConvertBatteryValue(info->battery_result->get_battery_info()));
+    const auto& battery_info = info->battery_result->get_battery_info();
+    if (battery_info) {
+      result.Set("battery", ConvertBatteryValue(battery_info));
+    }
   }
   if (info->cpu_result && info->cpu_result->is_cpu_info()) {
     result.Set("cpu", ConvertCpuValue(info->cpu_result->get_cpu_info()));

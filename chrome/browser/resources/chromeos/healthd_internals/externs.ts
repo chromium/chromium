@@ -81,7 +81,7 @@ export interface HealthdApiThermalResult {
  * `getHealthdTelemetryInfo` api result.
  */
 export interface HealthdApiTelemetryResult {
-  battery: HealthdApiBatteryResult;
+  battery?: HealthdApiBatteryResult;
   cpu: HealthdApiCpuResult;
   fans: HealthdApiFanResult[];
   memory: HealthdApiMemoryResult;

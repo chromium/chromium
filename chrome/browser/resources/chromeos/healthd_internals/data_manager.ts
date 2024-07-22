@@ -117,7 +117,9 @@ export class DataManager {
     this.telemetryPage.updateTelemetryData(data);
 
     const timestamp: number = Date.now();
-    this.updateBatteryData(data.battery, timestamp);
+    if (data.battery !== undefined) {
+      this.updateBatteryData(data.battery, timestamp);
+    }
     this.updateCpuFrequencyData(data.cpu, timestamp);
     this.updateThermalData(data.thermals, timestamp);
 
@@ -129,7 +131,9 @@ export class DataManager {
 
     this.removeOutdatedData(timestamp);
 
-    this.batteryChart.updateEndTime(timestamp);
+    if (data.battery !== undefined) {
+      this.batteryChart.updateEndTime(timestamp);
+    }
     this.cpuFrequencyChart.updateEndTime(timestamp);
     this.thermalChart.updateEndTime(timestamp);
     if (cpuUsage !== null) {
