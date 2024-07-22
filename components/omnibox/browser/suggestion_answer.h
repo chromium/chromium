@@ -227,9 +227,6 @@ class SuggestionAnswer {
 
   bool Equals(const SuggestionAnswer& answer) const;
 
-  // Retrieves any image URLs appearing in this answer and adds them to |urls|.
-  void AddImageURLsTo(URLs* urls) const;
-
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
