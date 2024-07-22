@@ -224,7 +224,7 @@ try_.builder(
         # crbug/940930
         "chromium.enable_cleandead": 100,
         # b/346598710
-        "chromium.luci_analysis_v2": 50,
+        "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -393,7 +393,7 @@ try_.builder(
         # crbug/940930
         "chromium.enable_cleandead": 100,
         # b/346598710
-        "chromium.luci_analysis_v2": 50,
+        "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -512,7 +512,7 @@ try_.orchestrator_builder(
         # crbug/940930
         "chromium.enable_cleandead": 100,
         # b/346598710
-        "chromium.luci_analysis_v2": 50,
+        "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
@@ -563,7 +563,7 @@ try_.orchestrator_builder(
         # crbug/940930
         "chromium.enable_cleandead": 50,
         # b/346598710
-        "chromium.luci_analysis_v2": 50,
+        "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
