@@ -10,6 +10,7 @@ import type {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-pan
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import type {Descriptors, InspirationGroup, ResultDescriptors, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
 import {DescriptorDName, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
+import type {ComboboxGroup} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/combobox/customize_chrome_combobox.js';
 import type {WallpaperSearchElement, WallpaperSearchResponse} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import {DESCRIPTOR_D_VALUE} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search_proxy.js';
@@ -145,15 +146,48 @@ suite('WallpaperSearchTest', () => {
     });
 
     test('descriptor menus populate correctly', async () => {
-      createWallpaperSearchElementWithDescriptors();
+      createWallpaperSearchElement({
+        groups: [
+          {
+            category: 'foo',
+            descriptorAs: [
+              {key: 'A bar key', label: 'B bar'},
+              {key: 'B baz key', label: 'A baz'},
+              {key: 'C foo key', label: 'Ä foo'},
+            ],
+          },
+          {category: 'bar', descriptorAs: []},
+        ],
+        descriptorB: [
+          {key: 'foo key', label: 'foo', imagePath: 'bar.png'},
+          {key: 'bar key', label: 'bar', imagePath: 'foo.png'},
+        ],
+        descriptorC: [
+          {key: 'foo key', label: 'C foo'},
+          {key: 'bar key', label: 'A bar'},
+          {key: 'baz key', label: 'Ɓ baz'},
+        ],
+      });
       await microtasksFinished();
 
-      assertEquals(
-          1, wallpaperSearchElement.$.descriptorComboboxA.items.length);
-      assertEquals(
-          1, wallpaperSearchElement.$.descriptorComboboxB.items.length);
-      assertEquals(
-          3, wallpaperSearchElement.$.descriptorComboboxC.items.length);
+      const descriptorComboboxA = wallpaperSearchElement.$.descriptorComboboxA;
+      assertEquals(2, descriptorComboboxA.items.length);
+      assertEquals('bar', descriptorComboboxA.items[0]!.label);
+      assertEquals('foo', descriptorComboboxA.items[1]!.label);
+      const group1 = descriptorComboboxA.items[1]! as ComboboxGroup;
+      assertEquals(3, group1.items.length);
+      assertEquals('A baz', group1.items[0]!.label);
+      assertEquals('Ä foo', group1.items[1]!.label);
+      assertEquals('B bar', group1.items[2]!.label);
+      const descriptorComboboxB = wallpaperSearchElement.$.descriptorComboboxB;
+      assertEquals(2, descriptorComboboxB.items.length);
+      assertEquals('bar', descriptorComboboxB.items[0]!.label);
+      assertEquals('foo', descriptorComboboxB.items[1]!.label);
+      const descriptorComboboxC = wallpaperSearchElement.$.descriptorComboboxC;
+      assertEquals(3, descriptorComboboxC.items.length);
+      assertEquals('A bar', descriptorComboboxC.items[0]!.label);
+      assertEquals('Ɓ baz', descriptorComboboxC.items[1]!.label);
+      assertEquals('C foo', descriptorComboboxC.items[2]!.label);
       assertEquals(
           6,
           wallpaperSearchElement.shadowRoot!

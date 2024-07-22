@@ -364,6 +364,14 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private async fetchDescriptors_() {
     this.wallpaperSearchHandler_.getDescriptors().then(({descriptors}) => {
       if (descriptors) {
+        // Order the descriptors so they appear alphabetically in all languages.
+        descriptors.groups.sort((a, b) => a.category.localeCompare(b.category));
+        descriptors.groups.forEach(
+            (group) => group.descriptorAs.sort(
+                (a, b) => a.label.localeCompare(b.label)));
+        descriptors.descriptorB.sort((a, b) => a.label.localeCompare(b.label));
+        descriptors.descriptorC.sort((a, b) => a.label.localeCompare(b.label));
+
         this.descriptors_ = descriptors;
         this.comboboxItems_ = {
           a: descriptors.groups.map((group) => {
