@@ -339,7 +339,7 @@ def main():
     tool_revisions = {
         "chromium-browser-clang": ClangRevision(),
         "nacl": NaclRevision(),
-        "python": "3.8.0",
+        "python": "3.10",
     }
     for toolchain in tool_revisions:
         revision = tool_revisions[toolchain]
