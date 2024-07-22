@@ -95,6 +95,7 @@ source_set("browser_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/input_method:input_method",
     "//chrome/browser/ash/mahi:test_util",
     "//chrome/browser/ui/chromeos/magic_boost:magic_boost",
     "//chrome/browser/ui/chromeos/magic_boost:magic_boost_constants",
