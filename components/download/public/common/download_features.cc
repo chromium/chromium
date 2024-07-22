@@ -73,6 +73,10 @@ BASE_FEATURE(kDeleteOverwrittenDownloads,
 BASE_FEATURE(kAllowFileBufferSizeControl,
              "AllowFileBufferSizeControl",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAllowedMixedContentInlinePdf,
+             "AllowedMixedContentInlinePdf",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 }  // namespace download

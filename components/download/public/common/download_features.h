@@ -54,6 +54,9 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDeleteOverwrittenDownloads);
 
 // Whether to allow changing the size of file buffer.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kAllowFileBufferSizeControl);
+
+// Whether mixed-content PDF links can be downloaded if opening inline.
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kAllowedMixedContentInlinePdf);
 }  // namespace features
 
 }  // namespace download

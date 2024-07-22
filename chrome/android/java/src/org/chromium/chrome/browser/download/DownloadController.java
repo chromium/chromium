@@ -43,7 +43,8 @@ public class DownloadController {
      * download. This can be either a POST download or a GET download with authentication.
      */
     @CalledByNative
-    private static void onDownloadCompleted(@Nullable Tab tab, DownloadInfo downloadInfo) {
+    private static void onDownloadCompleted(
+            @Nullable Tab tab, DownloadInfo downloadInfo, boolean isDownloadSafe) {
         MediaStoreHelper.addImageToGalleryOnSDCard(
                 downloadInfo.getFilePath(), downloadInfo.getMimeType());
         if (!PdfUtils.shouldOpenPdfInline()

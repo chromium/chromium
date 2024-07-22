@@ -1113,8 +1113,20 @@ void ChromeDownloadManagerDelegate::GetInsecureDownloadStatus(
     const base::FilePath& virtual_path,
     GetInsecureDownloadStatusCallback callback) {
   DCHECK(download);
-  std::move(callback).Run(
-      GetInsecureDownloadStatusForDownload(profile_, virtual_path, download));
+  DownloadItem::InsecureDownloadStatus status =
+      GetInsecureDownloadStatusForDownload(profile_, virtual_path, download);
+#if BUILDFLAG(IS_ANDROID)
+  // Allow insecure PDF download to go through if it is displayed inline.
+  if (download->IsTransient() && download->GetMimeType() == pdf::kPDFMimeType &&
+      !download->IsMustDownload()) {
+    if (ShouldOpenPdfInline() &&
+        base::FeatureList::IsEnabled(
+            download::features::kAllowedMixedContentInlinePdf)) {
+      status = DownloadItem::InsecureDownloadStatus::SAFE;
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  std::move(callback).Run(status);
 }
 
 void ChromeDownloadManagerDelegate::NotifyExtensions(
