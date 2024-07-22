@@ -4892,9 +4892,8 @@ void InterestGroupAuction::OnScoreAdComplete(
         // A for-event private aggregation request with non-reserved event
         // type from scoreAd() should be ignored and not reported.
         if (request->contribution->is_for_event_contribution() &&
-            !base::StartsWith(
-                request->contribution->get_for_event_contribution()->event_type,
-                "reserved.")) {
+            request->contribution->get_for_event_contribution()
+                ->event_type->is_non_reserved()) {
           continue;
         }
         pa_requests_for_seller.emplace_back(std::move(request));

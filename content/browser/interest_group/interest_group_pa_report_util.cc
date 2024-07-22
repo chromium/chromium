@@ -36,10 +36,6 @@
 
 namespace content {
 
-const char kReservedAlways[] = "reserved.always";
-const char kReservedWin[] = "reserved.win";
-const char kReservedLoss[] = "reserved.loss";
-
 namespace {
 
 // Returns the actual value of `base_value` with corresponding post auction
@@ -278,33 +274,39 @@ FillInPrivateAggregationRequest(
   // The mojom API declaration should ensure `contribution` being a
   // for-event contribution if not a histogram contribution.
   CHECK(contribution->is_for_event_contribution(), base::NotFatalUntil::M128);
-  const std::string event_type =
+  const auction_worklet::mojom::EventTypePtr& event_type =
       contribution->get_for_event_contribution()->event_type;
-  std::optional<std::string> final_event_type = std::nullopt;
-  if (!base::StartsWith(event_type, "reserved.")) {
-    final_event_type = event_type;
+  std::optional<std::string> non_reserved_event_type = std::nullopt;
+  std::optional<auction_worklet::mojom::ReservedEventType> reserved_event_type =
+      std::nullopt;
+  if (event_type->is_non_reserved()) {
+    non_reserved_event_type = event_type->get_non_reserved();
+  } else {
+    reserved_event_type = event_type->get_reserved();
   }
 
-  // Rejects invalid reserved event type. The worklet code should prevent this,
-  // but the process may be compromised. This is largely preventing the owner
-  // from messing up its own private aggregation reporting function.
-  //
-  // Note that the data received here has no effect on the result of the
-  // auction, so just reject the data and continue with the auction to keep
-  // the code simple.
-  if (!final_event_type.has_value() &&
-      (event_type != kReservedWin && event_type != kReservedLoss &&
-       event_type != kReservedAlways)) {
-    return std::nullopt;
+  if (is_winner) {
+    // Don't run loss events for a winner.
+    if (reserved_event_type.has_value() &&
+        *reserved_event_type ==
+            auction_worklet::mojom::ReservedEventType::kReservedLoss) {
+      return std::nullopt;
+    }
+  } else {
+    // Private aggregation requests of non reserved event types are not kept for
+    // losing bidders.
+    if (non_reserved_event_type.has_value()) {
+      return std::nullopt;
+    }
+
+    // Don't run win events for a loser.
+    if (reserved_event_type.has_value() &&
+        *reserved_event_type ==
+            auction_worklet::mojom::ReservedEventType::kReservedWin) {
+      return std::nullopt;
+    }
   }
 
-  // Private aggregation requests of non reserved event types are not kept for
-  // losing bidders.
-  if ((is_winner && event_type == kReservedLoss) ||
-      (!is_winner &&
-       (event_type == kReservedWin || final_event_type.has_value()))) {
-    return std::nullopt;
-  }
   blink::mojom::AggregatableReportHistogramContributionPtr
       calculated_contribution = CalculateContributionBucketAndValue(
           std::move(contribution->get_for_event_contribution()), winning_bid,
@@ -318,7 +320,7 @@ FillInPrivateAggregationRequest(
           auction_worklet::mojom::AggregatableReportContribution::
               NewHistogramContribution(std::move(calculated_contribution)),
           request->aggregation_mode, std::move(request->debug_mode_details)),
-      final_event_type);
+      non_reserved_event_type);
   return request_with_event_type;
 }
 

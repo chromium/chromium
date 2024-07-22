@@ -7400,7 +7400,9 @@ TEST_F(BidderWorkletTest, ContributeToHistogramOnEventPermissionNotEnforced) {
                   /*bucket=*/mojom::ForEventSignalBucket::NewIdBucket(234),
                   /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
                   /*filtering_id=*/std::nullopt,
-                  /*event_type=*/"reserved.win")),
+                  /*event_type=*/
+                  mojom::EventType::NewReserved(
+                      mojom::ReservedEventType::kReservedWin))),
           blink::mojom::AggregationServiceMode::kDefault,
           blink::mojom::DebugModeDetails::New()));
   RunReportWinExpectingResultAsync(
@@ -10381,7 +10383,9 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
               /*bucket=*/mojom::ForEventSignalBucket::NewIdBucket(234),
               /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
               /*filtering_id=*/std::nullopt,
-              /*event_type=*/"reserved.win")),
+              /*event_type=*/
+              mojom::EventType::NewReserved(
+                  mojom::ReservedEventType::kReservedWin))),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
   mojom::PrivateAggregationRequest kExpectedForEventRequest2(
@@ -10392,7 +10396,9 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
                                    /*low=*/0)),
               /*value=*/mojom::ForEventSignalValue::NewIntValue(2),
               /*filtering_id=*/std::nullopt,
-              /*event_type=*/"reserved.win")),
+              /*event_type=*/
+              mojom::EventType::NewReserved(
+                  mojom::ReservedEventType::kReservedWin))),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 
@@ -10765,7 +10771,9 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
                 /*bucket=*/mojom::ForEventSignalBucket::NewIdBucket(234),
                 /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
                 /*filtering_id=*/255,
-                /*event_type=*/"reserved.win")),
+                /*event_type=*/
+                mojom::EventType::NewReserved(
+                    mojom::ReservedEventType::kReservedWin))),
         blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New()));
 
@@ -10816,7 +10824,9 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
                             /*scale=*/1.0,
                             /*offset=*/0)),
                     /*filtering_id=*/std::nullopt,
-                    /*event_type=*/"reserved.loss")),
+                    /*event_type=*/
+                    mojom::EventType::NewReserved(
+                        mojom::ReservedEventType::kReservedLoss))),
             blink::mojom::AggregationServiceMode::kDefault,
             blink::mojom::DebugModeDetails::New()));
 
@@ -10882,7 +10892,9 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
               /*bucket=*/mojom::ForEventSignalBucket::NewIdBucket(234),
               /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
               /*filtering_id=*/std::nullopt,
-              /*event_type=*/"reserved.win")),
+              /*event_type=*/
+              mojom::EventType::NewReserved(
+                  mojom::ReservedEventType::kReservedWin))),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
   mojom::PrivateAggregationRequest kExpectedForEventRequest2(
@@ -10893,7 +10905,9 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
                                    /*low=*/0)),
               /*value=*/mojom::ForEventSignalValue::NewIntValue(2),
               /*filtering_id=*/std::nullopt,
-              /*event_type=*/"reserved.win")),
+              /*event_type=*/
+              mojom::EventType::NewReserved(
+                  mojom::ReservedEventType::kReservedWin))),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 
@@ -11090,7 +11104,9 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
                 /*bucket=*/mojom::ForEventSignalBucket::NewIdBucket(234),
                 /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
                 /*filtering_id=*/255,
-                /*event_type=*/"reserved.win")),
+                /*event_type=*/
+                mojom::EventType::NewReserved(
+                    mojom::ReservedEventType::kReservedWin))),
         blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New()));
 
