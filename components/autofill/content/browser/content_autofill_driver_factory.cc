@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
@@ -66,6 +67,8 @@ ContentAutofillDriverFactory::~ContentAutofillDriverFactory() {
   for (Observer& observer : observers_) {
     observer.OnContentAutofillDriverFactoryDestroyed(*this);
   }
+  base::UmaHistogramCounts1000("Autofill.NumberOfDriversPerFactory",
+                               max_drivers_);
 }
 
 ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
@@ -107,6 +110,7 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
     }
   }
   DCHECK(driver.get());
+  max_drivers_ = std::max(max_drivers_, driver_map_.size());
   return driver.get();
 }
 
