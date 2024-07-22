@@ -84,11 +84,7 @@ bool g_use_thread_pool = true;
 
 }  // namespace
 
-StackSampler::~StackSampler() {
-  if (thread_pool_runner_) {
-    thread_pool_runner_->DeleteSoon(FROM_HERE, unwind_data_.release());
-  }
-}
+StackSampler::~StackSampler() = default;
 
 // static
 void StackSampler::SetUseThreadPool(bool use_thread_pool) {
