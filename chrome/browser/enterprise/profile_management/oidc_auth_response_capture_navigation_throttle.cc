@@ -209,7 +209,7 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
       base::BindOnce(
           &OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens,
           weak_ptr_factory_.GetWeakPtr(),
-          ProfileManagementOicdTokens(std::move(auth_token),
+          ProfileManagementOidcTokens(std::move(auth_token),
                                       std::move(id_token), std::move(state))));
   return DEFER;
 }
@@ -219,7 +219,7 @@ const char* OidcAuthResponseCaptureNavigationThrottle::GetNameForLogging() {
 }
 
 void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(
-    ProfileManagementOicdTokens tokens,
+    ProfileManagementOidcTokens tokens,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)

@@ -25,7 +25,7 @@ class MockOidcAuthenticationSigninInterceptor
   MOCK_METHOD(void,
               MaybeInterceptOidcAuthentication,
               (content::WebContents * intercepted_contents,
-               const ProfileManagementOicdTokens& oidc_tokens,
+               const ProfileManagementOidcTokens& oidc_tokens,
                const std::string& issuer_id,
                const std::string& subject_id,
                OidcInterceptionCallback oidc_callback),

@@ -131,8 +131,8 @@ class OidcAuthResponseCaptureNavigationThrottleTest
         OidcAuthenticationSigninInterceptorFactory::GetForProfile(profile()));
   }
 
-  void ValidateOidcTokens(ProfileManagementOicdTokens tokens,
-                          ProfileManagementOicdTokens expected_tokens) {
+  void ValidateOidcTokens(ProfileManagementOidcTokens tokens,
+                          ProfileManagementOidcTokens expected_tokens) {
     EXPECT_EQ(tokens.auth_token, expected_tokens.auth_token);
     EXPECT_EQ(tokens.id_token, expected_tokens.id_token);
     EXPECT_EQ(tokens.identity_name, expected_tokens.identity_name);
@@ -177,7 +177,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
 
   void ExpectOidcInterception(
       MockOidcAuthenticationSigninInterceptor* oidc_interceptor,
-      ProfileManagementOicdTokens expected_oidc_tokens) {
+      ProfileManagementOidcTokens expected_oidc_tokens) {
     if (!enable_oidc_interception()) {
       ASSERT_EQ(nullptr, oidc_interceptor);
     } else {
@@ -186,7 +186,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
                                          kExampleIdSubject, _))
           .WillOnce([this, expected_oidc_tokens](
                         content::WebContents* intercepted_contents,
-                        ProfileManagementOicdTokens oidc_tokens,
+                        ProfileManagementOidcTokens oidc_tokens,
                         std::string issuer_id, std::string subject_id,
                         OidcInterceptionCallback oidc_callback) {
             ValidateOidcTokens(oidc_tokens, expected_oidc_tokens);
@@ -262,7 +262,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
       } else {
         ExpectOidcInterception(
             oidc_interceptor,
-            ProfileManagementOicdTokens(auth_token, id_token, oidc_state));
+            ProfileManagementOidcTokens(auth_token, id_token, oidc_state));
       }
     } else {
       if (!enable_oidc_interception()) {
@@ -270,7 +270,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
       } else if (enable_generic_oidc()) {
         ExpectOidcInterception(
             oidc_interceptor,
-            ProfileManagementOicdTokens(auth_token, id_token, oidc_state));
+            ProfileManagementOidcTokens(auth_token, id_token, oidc_state));
       }
     }
 
@@ -349,7 +349,7 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
   } else if (enable_generic_oidc()) {
     ExpectOidcInterception(
         oidc_interceptor,
-        ProfileManagementOicdTokens(auth_token, id_token, /*state=*/""));
+        ProfileManagementOidcTokens(auth_token, id_token, /*state=*/""));
   } else {
     EXPECT_CALL(*oidc_interceptor,
                 MaybeInterceptOidcAuthentication(_, _, _, _, _))
