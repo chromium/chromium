@@ -874,5 +874,62 @@ TEST_F(CanvasResourceProviderTest, ImageCacheOnContextLost) {
                                SkSamplingOptions(), nullptr);
 }
 
+TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllReleasableOps) {
+  std::unique_ptr<CanvasResourceProvider> provider =
+      MakeCanvasResourceProvider(RasterMode::kGPU, context_provider_wrapper_);
+
+  EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
+  EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
+
+  provider->Canvas().drawRect({0, 0, 10, 10}, cc::PaintFlags());
+  EXPECT_TRUE(provider->Recorder().HasRecordedDrawOps());
+  EXPECT_TRUE(provider->Recorder().HasReleasableDrawOps());
+
+  // `FlushCanvas` releases all ops, leaving the canvas clean.
+  provider->FlushCanvas(FlushReason::kTesting);
+  EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
+  EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
+}
+
+TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllOpsOutsideLayers) {
+  std::unique_ptr<CanvasResourceProvider> provider =
+      MakeCanvasResourceProvider(RasterMode::kGPU, context_provider_wrapper_);
+
+  EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
+  EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
+  EXPECT_FALSE(provider->Recorder().HasSideRecording());
+
+  // Side canvases (used for canvas 2d layers) cannot be flushed until closed.
+  // Open one and validate that flushing the canvas only flushed that main
+  // recording, not the side one.
+  provider->Canvas().drawRect({0, 0, 10, 10}, cc::PaintFlags());
+  provider->Recorder().BeginSideRecording();
+  provider->Canvas().saveLayerAlphaf(0.5f);
+  provider->Canvas().drawRect({0, 0, 10, 10}, cc::PaintFlags());
+  EXPECT_TRUE(provider->Recorder().HasRecordedDrawOps());
+  EXPECT_TRUE(provider->Recorder().HasReleasableDrawOps());
+  EXPECT_TRUE(provider->Recorder().HasSideRecording());
+
+  provider->FlushCanvas(FlushReason::kTesting);
+  EXPECT_TRUE(provider->Recorder().HasRecordedDrawOps());
+  EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
+  EXPECT_TRUE(provider->Recorder().HasSideRecording());
+
+  provider->Canvas().restore();
+  EXPECT_TRUE(provider->Recorder().HasRecordedDrawOps());
+  EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
+  EXPECT_TRUE(provider->Recorder().HasSideRecording());
+
+  provider->Recorder().EndSideRecording();
+  EXPECT_TRUE(provider->Recorder().HasRecordedDrawOps());
+  EXPECT_TRUE(provider->Recorder().HasReleasableDrawOps());
+  EXPECT_FALSE(provider->Recorder().HasSideRecording());
+
+  provider->FlushCanvas(FlushReason::kTesting);
+  EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
+  EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
+  EXPECT_FALSE(provider->Recorder().HasSideRecording());
+}
+
 }  // namespace
 }  // namespace blink

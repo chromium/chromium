@@ -135,12 +135,6 @@ void Canvas2DLayerBridge::Hibernate() {
   // non-complementary stats. Each HibernationScheduled event is paired with
   // exactly one failure or exit event.
   resource_host_->FlushRecording(FlushReason::kHibernating);
-  // The following checks that the flush succeeded, which should always be the
-  // case because flushRecording should only fail it it fails to allocate
-  // a surface, and we have an early exit at the top of this function for when
-  // 'this' does not already have a surface.
-  DCHECK(
-      !resource_host_->ResourceProvider()->Recorder().HasReleasableDrawOps());
   SkPaint copy_paint;
   copy_paint.setBlendMode(SkBlendMode::kSrc);
   scoped_refptr<StaticBitmapImage> snapshot =
