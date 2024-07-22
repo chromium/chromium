@@ -10,13 +10,20 @@ enum class TimePeriod;
 }
 
 // Mutator for the QuickDeleteViewController to update the QuickDeleteMediator.
-@protocol QuickDeleteMutator
+@protocol QuickDeleteMutator <NSObject>
 
 // Called when the user selects a `timeRange` for the deletion of browsing data.
 - (void)timeRangeSelected:(browsing_data::TimePeriod)timeRange;
 
 // Called when the user decides to go through with the deletion.
 - (void)triggerDeletion;
+
+// Called on confirming the browsing data types selection with the user choice
+// for the autofill type.
+- (void)updateAutofillSelection:(BOOL)selected;
+
+// TODO(crbug.com/341107834): Add other update browsing data type selection
+// methods here.
 
 @end
 

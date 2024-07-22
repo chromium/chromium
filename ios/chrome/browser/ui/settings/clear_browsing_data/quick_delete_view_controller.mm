@@ -282,6 +282,15 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                   }];
 }
 
+- (void)updateAutofillWithResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result {
+  // TODO(crbug.com/341107834): Refactor summary using this result.
+}
+
+- (void)setAutofillSelection:(BOOL)selected {
+  // TODO(crbug.com/341107834): Refactor summary using this type selection.
+}
+
 #pragma mark - Private
 
 // Updates the bottom sheet height by also updating the table view height. The

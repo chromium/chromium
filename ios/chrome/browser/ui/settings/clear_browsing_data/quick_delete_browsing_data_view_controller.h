@@ -8,14 +8,20 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_consumer.h"
 
 @protocol QuickDeleteBrowsingDataViewControllerDelegate;
+@protocol QuickDeleteMutator;
 
-@interface QuickDeleteBrowsingDataViewController : ChromeTableViewController
+@interface QuickDeleteBrowsingDataViewController
+    : ChromeTableViewController <QuickDeleteConsumer>
 
 // Local dispatcher for this `QuickDeleteBrowsingDataViewController`.
 @property(nonatomic, weak) id<QuickDeleteBrowsingDataViewControllerDelegate>
     delegate;
+
+// Mutator to apply all user changes on the view.
+@property(nonatomic, weak) id<QuickDeleteMutator> mutator;
 
 @end
 

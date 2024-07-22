@@ -104,12 +104,14 @@
       setTimeRange:static_cast<browsing_data::TimePeriod>(_prefs->GetInteger(
                        browsing_data::prefs::kDeleteTimePeriod))];
 
-  [self createCounters];
-  [self restartCounters];
-
   BOOL shouldShowFooter =
       _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   [_consumer setShouldShowFooter:shouldShowFooter];
+  [_consumer setAutofillSelection:_prefs->GetBoolean(
+                                      browsing_data::prefs::kDeleteFormData)];
+
+  [self createCounters];
+  [self restartCounters];
 }
 
 - (void)disconnect {
@@ -182,6 +184,10 @@
       base::BindOnce(removeBrowsingDidFinishCompletionBlock));
 }
 
+- (void)updateAutofillSelection:(BOOL)selected {
+  _prefs->SetBoolean(browsing_data::prefs::kDeleteFormData, selected);
+}
+
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
 // Called when a user changes the sign-in state.
@@ -242,6 +248,7 @@
                               const browsing_data::BrowsingDataCounter::Result&
                                   result) {
                             [weakSelf updateSummaryWith:&result];
+                            [weakSelf updateResultOnConsumer:&result];
                           })];
   if (counter != nullptr) {
     _counters.insert(std::move(counter));
@@ -505,6 +512,16 @@
       browsing_data::prefs::kDeletePasswords, &_prefChangeRegistrar);
   _prefObserverBridge->ObserveChangesForPreference(
       browsing_data::prefs::kDeleteFormData, &_prefChangeRegistrar);
+}
+
+- (void)updateResultOnConsumer:
+    (const browsing_data::BrowsingDataCounter::Result*)result {
+  std::string prefName = result->source()->GetPrefName();
+  if (prefName == browsing_data::prefs::kDeleteFormData) {
+    [_consumer updateAutofillWithResult:*result];
+  }
+
+  // TODO(crbug.com/341107834): Update other pref results here.
 }
 
 @end
