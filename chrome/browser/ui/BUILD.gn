@@ -419,21 +419,14 @@ static_library("ui") {
 
   public_deps = [
     # WARNING WARNING WARNING
-    # Do not add a new dependency here that is outside of chrome/browser.
-    # Instead add it to ui_public_depedenencies. See
-    # ui_public_dependencies for more details.
+    # New dependencies outside of //chrome/browser should be added to
+    # ui_public_depedenencies.
+    # New dependencies inside of //chrome/browser that generate header files
+    # should be added to //chrome/browser:browser_generated_files.
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser:lcp_critical_path_predictor_proto",
     "//chrome/browser/headless",
     "//chrome/browser/ui/tabs:tab_enums",
   ]
-
-  if (enable_bound_session_credentials) {
-    public_deps += [
-      # TODO: Use //chrome/browser/ui instead after fixing cyclic dependency.
-      "//chrome/browser:bound_session_credentials_proto",
-    ]
-  }
 
   deps = [
     ":browser_element_identifiers",
@@ -457,7 +450,6 @@ static_library("ui") {
     "//chrome/browser:buildflags",
     "//chrome/browser:dev_ui_browser_resources",
     "//chrome/browser:font_pref",
-    "//chrome/browser:resource_prefetch_predictor_proto",
     "//chrome/browser/autofill",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
@@ -467,10 +459,8 @@ static_library("ui") {
     "//chrome/browser/google",
     "//chrome/browser/image_decoder",
     "//chrome/browser/image_fetcher",
-    "//chrome/browser/media:mojo_bindings",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
-    "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
     "//chrome/browser/metrics/structured:features",
     "//chrome/browser/permissions",
     "//chrome/browser/profiles",
@@ -485,14 +475,6 @@ static_library("ui") {
     "//chrome/browser/storage_access_api",
     "//chrome/browser/sync",
     "//chrome/browser/ui/webui",
-    "//chrome/browser/ui/webui/data_sharing_internals:mojo_bindings",
-    "//chrome/browser/ui/webui/location_internals:mojo_bindings",
-    "//chrome/browser/ui/webui/omnibox:mojo_bindings",
-    "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings",
-    "//chrome/browser/ui/webui/segmentation_internals:mojo_bindings",
-    "//chrome/browser/ui/webui/suggest_internals:mojo_bindings",
-    "//chrome/browser/ui/webui/usb_internals:mojo_bindings",
-    "//chrome/browser/v8_compile_hints/proto",
     "//chrome/common",
     "//chrome/common/net",
     "//chrome/common/search:mojo_bindings",
@@ -753,10 +735,6 @@ static_library("ui") {
     "//v8:v8_version",
   ]
 
-  if (enable_compose) {
-    deps += [ "//chrome/browser:compose_optimization_guide_proto" ]
-  }
-
   if (is_chrome_branded) {
     deps += [ "//components/plus_addresses/resources:vector_icons" ]
   }
@@ -1006,7 +984,6 @@ static_library("ui") {
       "//chrome/browser/touch_to_fill/autofill/android",
       "//chrome/browser/ui/android/autofill/internal:jni_headers",
       "//chrome/browser/ui/android/toolbar:jni_headers",
-      "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
       "//components/android_autofill/browser:android",
       "//components/autofill/android:payments_autofill_cc",
       "//components/autofill/android:payments_jni_headers",
@@ -2028,36 +2005,21 @@ static_library("ui") {
       "//chrome/browser/apps/app_service/app_icon:util",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/browsing_data:constants",
-      "//chrome/browser/cart:mojo_bindings",
       "//chrome/browser/companion/core",
-      "//chrome/browser/companion/core/mojom:mojo_bindings",
       "//chrome/browser/companion/text_finder",
       "//chrome/browser/companion/visual_query",
       "//chrome/browser/feedback:feedback_enum",
       "//chrome/browser/headless:command_processor",
       "//chrome/browser/image_editor",
       "//chrome/browser/image_editor:image_editor_component_util",
-      "//chrome/browser/lens/core/mojom:mojo_bindings",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/media/prefs:prefs",
       "//chrome/browser/media/router",
       "//chrome/browser/media/router/discovery:discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/new_tab_page/chrome_colors",
-      "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
-      "//chrome/browser/new_tab_page/chrome_colors:generate_colors_info",
-      "//chrome/browser/new_tab_page/modules/feed:mojo_bindings",
-      "//chrome/browser/new_tab_page/modules/file_suggestion:mojo_bindings",
-      "//chrome/browser/new_tab_page/modules/history_clusters:mojo_bindings",
-      "//chrome/browser/new_tab_page/modules/history_clusters/cart:mojo_bindings",
-      "//chrome/browser/new_tab_page/modules/history_clusters/discount:mojo_bindings",
-      "//chrome/browser/new_tab_page/modules/v2/calendar:mojo_bindings",
-      "//chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption:mojo_bindings",
-      "//chrome/browser/new_tab_page/modules/v2/tab_resumption:mojo_bindings",
-      "//chrome/browser/profile_resetter:profile_reset_report_proto",
       "//chrome/browser/safe_browsing",
       "//chrome/browser/safe_browsing:advanced_protection",
-      "//chrome/browser/support_tool:support_tool_proto",
       "//chrome/browser/themes",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:color_headers",
@@ -2065,24 +2027,7 @@ static_library("ui") {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/views/side_panel:side_panel_enums",
-      "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
-      "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
-      "//chrome/browser/ui/webui/data_sharing:mojo_bindings",
-      "//chrome/browser/ui/webui/downloads:mojo_bindings",
-      "//chrome/browser/ui/webui/hats:mojo_bindings",
-      "//chrome/browser/ui/webui/internals/user_education:mojo_bindings",
-      "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
-      "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",
-      "//chrome/browser/ui/webui/on_device_internals:mojom",
-      "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings",
-      "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings",
-      "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
-      "//chrome/browser/ui/webui/side_panel/reading_list:mojo_bindings",
-      "//chrome/browser/ui/webui/tab_search:mojo_bindings",
-      "//chrome/browser/ui/webui/tab_strip:mojo_bindings",
-      "//chrome/browser/ui/webui/web_app_internals:mojo_bindings",
-      "//chrome/browser/ui/webui/whats_new:mojo_bindings",
       "//chrome/browser/web_applications",
       "//chrome/common:buildflags",
       "//chrome/common:version_header",
@@ -2211,7 +2156,6 @@ static_library("ui") {
         "webui/new_tab_page/foo/foo_handler.cc",
         "webui/new_tab_page/foo/foo_handler.h",
       ]
-      deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
     }
   }
 
@@ -3227,10 +3171,8 @@ static_library("ui") {
       "//chrome/browser/ash/app_list/search/local_image_search",
       "//chrome/browser/ash/app_list/search/omnibox",
       "//chrome/browser/ash/app_list/search/ranking",
-      "//chrome/browser/ash/app_list/search/ranking:proto",
       "//chrome/browser/ash/app_list/search/system_info",
       "//chrome/browser/ash/app_list/search/util",
-      "//chrome/browser/ash/app_list/search/util:proto",
       "//chrome/browser/ash/app_list/vector_icons",
       "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/app_mode/web_app",
@@ -3267,7 +3209,6 @@ static_library("ui") {
       "//chrome/browser/ash/audio",
       "//chrome/browser/ash/base",
       "//chrome/browser/ash/borealis",
-      "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
       "//chrome/browser/ash/bruschetta",
       "//chrome/browser/ash/child_accounts",
       "//chrome/browser/ash/child_accounts/on_device_controls",
@@ -3276,7 +3217,6 @@ static_library("ui") {
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/crostini",
-      "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
       "//chrome/browser/ash/crostini/ansible",
       "//chrome/browser/ash/customization",
       "//chrome/browser/ash/dbus/vm",
@@ -3380,7 +3320,6 @@ static_library("ui") {
       "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
-      "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
       "//chrome/browser/nearby_sharing:share_target",
       "//chrome/browser/nearby_sharing/certificates",
       "//chrome/browser/nearby_sharing/client",
@@ -3412,30 +3351,6 @@ static_library("ui") {
       "//chrome/browser/ui/ash/multi_user",
       "//chrome/browser/ui/ash/network",
       "//chrome/browser/ui/quick_answers",
-      "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
-      "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
-      "//chrome/browser/ui/webui/ash/audio:mojo_bindings",
-      "//chrome/browser/ui/webui/ash/borealis_installer:mojo_bindings",
-      "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings",
-      "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings",
-      "//chrome/browser/ui/webui/ash/enterprise_reporting:mojo_bindings",
-      "//chrome/browser/ui/webui/ash/extended_updates:mojo_bindings",
-      "//chrome/browser/ui/webui/ash/launcher_internals:mojo_bindings",
-      "//chrome/browser/ui/webui/ash/login/mojom:mojom",
-      "//chrome/browser/ui/webui/ash/manage_mirrorsync:mojo_bindings",
-      "//chrome/browser/ui/webui/ash/office_fallback:mojo_bindings",
-      "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",
-      "//chrome/browser/ui/webui/ash/parent_access:proto",
-      "//chrome/browser/ui/webui/ash/sensor_info:mojo_bindings",
-      "//chrome/browser/ui/webui/ash/settings/pages/apps/mojom",
-      "//chrome/browser/ui/webui/ash/settings/pages/date_time/mojom",
-      "//chrome/browser/ui/webui/ash/settings/pages/device/display_settings:mojom",
-      "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings:mojom",
-      "//chrome/browser/ui/webui/ash/settings/pages/files/mojom",
-      "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom",
-      "//chrome/browser/ui/webui/ash/settings/search/mojom",
-      "//chrome/browser/ui/webui/ash/vm:mojo_bindings",
-      "//chrome/browser/ui/webui/nearby_share:mojom",
       "//chrome/browser/web_applications",
       "//chrome/browser/webshare:storage",
       "//chrome/services/file_util/public/cpp",
@@ -3628,9 +3543,6 @@ static_library("ui") {
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/quick_pair",
       "//chrome/browser/ash/usb",
-      "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings",
-      "//chrome/browser/ui/webui/ash/emoji:mojo_bindings",
-      "//chrome/browser/ui/webui/ash/emoji:seal_mojom",
     ]
 
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
@@ -3885,7 +3797,6 @@ static_library("ui") {
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/ui/views/editor_menu",
       "//chrome/browser/ui/views/mahi",
-      "//chrome/browser/ui/webui/dlp_internals:mojo_bindings",
       "//chromeos/components/kiosk",
       "//chromeos/components/security_token_pin",
       "//chromeos/constants",
@@ -4020,7 +3931,6 @@ static_library("ui") {
       "//chrome/browser/search/background",
       "//chrome/browser/themes",
       "//chrome/browser/ui/lens",
-      "//chrome/browser/ui/webui/discards:mojo_bindings",
       "//components/lens/proto/server:proto",
       "//third_party/lens_server_proto:lens_overlay_proto",
       "//third_party/omnibox_proto",
@@ -4117,8 +4027,6 @@ static_library("ui") {
     deps += [
       "//chrome/app:generated_resources",
       "//chrome/browser/shortcuts",
-      "//chrome/browser/ui/webui/app_home:mojo_bindings",
-      "//chrome/browser/ui/webui/whats_new:mojo_bindings",
       "//components/capture_mode",
       "//services/audio/public/mojom",
       "//services/video_capture/public/mojom",
@@ -4143,7 +4051,6 @@ static_library("ui") {
       "//chrome/browser/enterprise/connectors/device_trust:features",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
       "//chrome/browser/enterprise/connectors/device_trust/common",
-      "//chrome/browser/ui/webui/connectors_internals:mojo_bindings",
       "//components/device_signals/core/browser",
     ]
 
@@ -4247,10 +4154,7 @@ static_library("ui") {
       "webui/signin/turn_sync_on_helper_policy_fetch_tracker.h",
     ]
 
-    deps += [
-      "//chrome/browser/new_tab_page/chrome_colors:generate_colors_info",
-      "//components/country_codes",
-    ]
+    deps += [ "//components/country_codes" ]
 
     if (enable_dice_support) {
       sources += [
@@ -4577,7 +4481,6 @@ static_library("ui") {
     ]
     deps += [
       "//chrome/browser:titlebar_config",
-      "//chrome/browser/ui/startup:buildflags",
       "//chrome/browser/win:mica_titlebar",
       "//chrome/browser/win/conflicts:module_info",
       "//chrome/credential_provider/common:common_constants",
@@ -6179,7 +6082,6 @@ static_library("ui") {
       "//ui/lottie",
       "//ui/views:buildflags",
     ]
-    public_deps += [ ":webui_name_variants" ]
 
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
@@ -6618,7 +6520,6 @@ static_library("ui") {
       deps += [
         "//chrome/browser/ash/system_web_apps/types",
         "//chrome/browser/ui/ash/system_web_apps",
-        "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
       ]
 
       # Any circular includes must depend on the target
@@ -6770,7 +6671,6 @@ static_library("ui") {
     ]
 
     deps += [
-      "//chrome/browser/ui/webui/reset_password:mojo_bindings",
       "//chrome/common/safe_browsing:proto",
       "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
       "//components/safe_browsing/core/common/proto:csd_proto",
