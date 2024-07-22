@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -115,12 +116,12 @@ class IsGuestModeEnabledTest
 
  private:
   Profile* CreateProfile(bool is_subject_to_parental_controls) {
-    const std::string profile_name =
-        std::format("Profile {}",
-                    profile_manager_.profile_manager()->GetNumberOfProfiles());
-    const std::string email =
-        std::format("account{}@gmail.com",
-                    profile_manager_.profile_manager()->GetNumberOfProfiles());
+    const std::string profile_name = base::StringPrintf(
+        "Profile %zu",
+        profile_manager_.profile_manager()->GetNumberOfProfiles());
+    const std::string email = base::StringPrintf(
+        "account%zu@gmail.com",
+        profile_manager_.profile_manager()->GetNumberOfProfiles());
 
     Profile* profile = profile_manager_.CreateTestingProfile(
         profile_name, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),

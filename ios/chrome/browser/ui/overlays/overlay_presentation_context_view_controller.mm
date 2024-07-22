@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_view_controller.h"
 
+#import <cmath>
+
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_controller.h"
 
