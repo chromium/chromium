@@ -336,7 +336,7 @@ void TabUsageScenarioTracker::OnWebContentsRemoved(
     // video playing on a single monitor.
     size_t num_removed = contents_playing_video_fullscreen_.erase(web_contents);
     if (num_removed == 1 && contents_playing_video_fullscreen_.empty() &&
-        GetNumDisplays() == 1) {
+        last_num_displays_.has_value() && last_num_displays_.value() == 1) {
       usage_scenario_data_store_->OnFullScreenVideoEndsOnSingleMonitor();
     }
   }
