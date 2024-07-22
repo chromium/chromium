@@ -606,6 +606,10 @@ void PrintBackendServiceManager::
 void PrintBackendServiceManager::SetServiceForTesting(
     mojo::Remote<mojom::PrintBackendService>* remote) {
   sandboxed_service_remote_for_test_ = remote;
+  if (!sandboxed_service_remote_for_test_) {
+    return;
+  }
+
   // Safe to use base::Unretained(this) since `this` is a global singleton
   // which never goes away.
   sandboxed_service_remote_for_test_->set_disconnect_handler(base::BindOnce(
@@ -617,6 +621,10 @@ void PrintBackendServiceManager::SetServiceForTesting(
 void PrintBackendServiceManager::SetServiceForFallbackTesting(
     mojo::Remote<mojom::PrintBackendService>* remote) {
   unsandboxed_service_remote_for_test_ = remote;
+  if (!unsandboxed_service_remote_for_test_) {
+    return;
+  }
+
   // Safe to use base::Unretained(this) since `this` is a global singleton
   // which never goes away.
   unsandboxed_service_remote_for_test_->set_disconnect_handler(base::BindOnce(

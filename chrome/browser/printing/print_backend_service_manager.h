@@ -240,12 +240,12 @@ class PrintBackendServiceManager {
       const std::string& printer_name);
 
   // Overrides the print backend service for testing.  Caller retains ownership
-  // of `remote`.
+  // of `remote`.  Can be reset by passing in nullptr.
   void SetServiceForTesting(mojo::Remote<mojom::PrintBackendService>* remote);
 
   // Overrides the print backend service for testing when an alternate service
   // is required for fallback processing after an access denied error.  Caller
-  // retains ownership of `remote`.
+  // retains ownership of `remote`.  Can be reset by passing in nullptr.
   void SetServiceForFallbackTesting(
       mojo::Remote<mojom::PrintBackendService>* remote);
 
