@@ -156,6 +156,9 @@ class PairWithUiInteractiveUiTest : public InteractiveAshTest {
 
   ui::test::internal::InteractiveTestPrivate::MultiStep
   CheckDeviceBecomesPaired(const std::string& name) {
+    using Observer = views::test::PollingViewObserver<bool, SystemToastView>;
+    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(Observer, kPollingViewState);
+
     return Steps(
         Log("Waiting for pairing dialog to close"),
 
@@ -164,13 +167,18 @@ class PairWithUiInteractiveUiTest : public InteractiveAshTest {
         Log("Waiting for a system toast to become visible and have the "
             "expected text"),
 
-        WaitForShow(SystemToastView::kSystemToastViewElementId),
-        CheckViewProperty(
-            SystemToastView::kSystemToastViewElementId,
-            &SystemToastView::GetText,
-            l10n_util::GetStringFUTF16(
-                IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_OR_CONNECTED_TOAST,
-                base::ASCIIToUTF16(name))),
+        PollView(
+            kPollingViewState, SystemToastView::kSystemToastViewElementId,
+            base::BindRepeating(
+                [](const std::string name,
+                   const SystemToastView* system_toast_view) -> bool {
+                  return system_toast_view->GetText() ==
+                         l10n_util::GetStringFUTF16(
+                             IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_OR_CONNECTED_TOAST,
+                             base::ASCIIToUTF16(name));
+                },
+                name),
+            base::Milliseconds(50)),
 
         Log("Checking that the device became paired"),
 
