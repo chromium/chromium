@@ -4,3 +4,4 @@ file://base/metrics/OWNERS
 lucnguyen@google.com
 
 per-file structured_metrics_internals_handler*=andrewbregger@google.com
+per-file field_trials_handler.*=harringtond@chromium.org

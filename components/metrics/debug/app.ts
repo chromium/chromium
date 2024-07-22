@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
+import './field_trials.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
@@ -63,6 +64,8 @@ export class MetricsInternalsAppElement extends CustomElement {
   }
 
   private async init_(): Promise<void> {
+    this.syncTabsWithUrlHash_();
+
     // Fetch variations summary data and set up a recurring timer.
     await this.updateVariationsSummary_();
     setInterval(() => this.updateVariationsSummary_(), 3000);
@@ -90,6 +93,31 @@ export class MetricsInternalsAppElement extends CustomElement {
     // Set up the UMA "Export logs" button.
     const exportUmaLogsButton = this.getRequiredElement('#export-uma-logs');
     exportUmaLogsButton.addEventListener('click', () => this.exportUmaLogs_());
+  }
+
+  /**
+   * Synchronize the selected tab and the URL hash. Allows, for example,
+   * chrome://metrics-internals#variations to directly open the variations tab.
+   */
+  private syncTabsWithUrlHash_() {
+    const tabUrlHashes: string[] = [
+      '#uma',
+      '#variations',
+      '#field-trials',
+    ];
+
+    const tabBox = this.shadowRoot!.querySelector('cr-tab-box')!;
+    tabBox.addEventListener(
+        'selected-index-change', (e: CustomEvent<number>) => {
+          window.location.hash = tabUrlHashes[e.detail] || '';
+        });
+
+    if (window.location.hash.startsWith('#')) {
+      const entryIndex = tabUrlHashes.indexOf(window.location.hash);
+      if (entryIndex >= 0) {
+        tabBox.setAttribute('selected-index', String(entryIndex));
+      }
+    }
   }
 
   /**

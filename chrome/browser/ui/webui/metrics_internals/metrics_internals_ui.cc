@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/metrics_internals/metrics_internals_ui.h"
 
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/metrics_internals/field_trials_handler.h"
 #include "chrome/browser/ui/webui/metrics_internals/metrics_internals_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -33,6 +35,10 @@ MetricsInternalsUI::MetricsInternalsUI(content::WebUI* web_ui)
                               IDR_METRICS_INTERNALS_METRICS_INTERNALS_HTML);
 
   web_ui->AddMessageHandler(std::make_unique<MetricsInternalsHandler>());
+
+  web_ui->AddMessageHandler(
+      std::make_unique<FieldTrialsHandler>(Profile::FromBrowserContext(
+          web_ui->GetWebContents()->GetBrowserContext())));
 
 // Set up the resource and message handler for
 // chrome://metrics-internals/structured.

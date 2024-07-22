@@ -30,8 +30,8 @@ using variations::HashNameAsHexString;
 
 // Returns whether (`study_name`, `experiment_name`) is found in `studies`.
 bool ContainsExperiment(const std::vector<variations::StudyGroupNames>& studies,
-                        const std::string_view study_name,
-                        const std::string_view experiment_name) {
+                        std::string_view study_name,
+                        std::string_view experiment_name) {
   for (const auto& study : studies) {
     if (study.name == study_name) {
       if (base::Contains(study.groups, experiment_name)) {
@@ -110,8 +110,23 @@ std::vector<StudyGroupNames> GetStudiesAvailableToForce(
   VariationsLayers layers(seed, entropy_providers);
   std::vector<variations::ProcessedStudy> filtered_studies =
       FilterAndValidateStudies(seed, client_filterable_state, layers);
+
   for (const auto& processed_study : filtered_studies) {
-    result.emplace_back(*processed_study.study());
+    // Remove groups that are forced by flags or features.
+    Study study = *processed_study.study();
+    auto exp = study.mutable_experiment()->begin();
+    while (exp != study.mutable_experiment()->end()) {
+      if (exp->has_forcing_flag() ||
+          exp->feature_association().has_forcing_feature_off() ||
+          exp->feature_association().has_forcing_feature_on()) {
+        exp = study.mutable_experiment()->erase(exp);
+      } else {
+        ++exp;
+      }
+    }
+    if (study.experiment_size() > 0) {
+      result.emplace_back(study);
+    }
   }
   return result;
 }
@@ -200,7 +215,6 @@ base::flat_map<std::string, std::string> RefreshAndGetFieldTrialOverrides(
   requires_restart = false;
   ExpirationInfo expiration = GetExpirationInfo(local_state);
   if (expiration.expired) {
-    requires_restart = expiration.chrome_start_count == 0;
     return {};
   }
 

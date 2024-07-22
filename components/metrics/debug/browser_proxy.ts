@@ -54,6 +54,46 @@ export interface LogData {
   logs: Log[];
 }
 
+/**
+ * A study or group name along with its hex hash.
+ */
+export interface HashNamed {
+  // `undefined` if we only know the hash.
+  name: string|undefined;
+  hash: string;
+}
+
+/**
+ * A Field Trial Group.
+ */
+export interface Group extends HashNamed {
+  forceEnabled: boolean;
+  enabled: boolean;
+}
+
+/**
+ * A Field Trial.
+ */
+export interface Trial extends HashNamed {
+  groups: Group[];
+}
+
+/**
+ * Maps some hashes to their study/group names.
+ */
+export interface HashNameMap {
+  [hash: string]: string;
+}
+
+
+/**
+ * State of all field trials.
+ */
+export interface FieldTrialState {
+  trials: Trial[];
+  restartRequired: boolean;
+}
+
 export interface MetricsInternalsBrowserProxy {
   /**
    * Gets UMA log data. |includeLogProtoData| determines whether or not the
@@ -76,6 +116,30 @@ export interface MetricsInternalsBrowserProxy {
    * service or is owned by the page.
    */
   isUsingMetricsServiceObserver(): Promise<boolean>;
+
+  /**
+   * Overrides the enroll state of a field trial which will be realized after a
+   * restart.
+   */
+  setTrialEnrollState(
+      trialHash: string, groupHash: string,
+      forceEnable: boolean): Promise<boolean>;
+
+  /**
+   * Fetches the current state of the field trials.
+   */
+  fetchTrialState(): Promise<FieldTrialState>;
+
+  /**
+   * Given a trial name, group name, or combination with a [/.-:] separator,
+   * returns any name hashes associated with that trial or group.
+   */
+  lookupTrialOrGroupName(name: string): Promise<HashNameMap>;
+
+  /**
+   * Restarts the browser.
+   */
+  restart(): Promise<void>;
 }
 
 export class MetricsInternalsBrowserProxyImpl implements
@@ -94,6 +158,25 @@ export class MetricsInternalsBrowserProxyImpl implements
 
   isUsingMetricsServiceObserver(): Promise<boolean> {
     return sendWithPromise('isUsingMetricsServiceObserver');
+  }
+
+  setTrialEnrollState(
+      trialHash: string, groupHash: string,
+      forceEnable: boolean): Promise<boolean> {
+    return sendWithPromise(
+        'setTrialEnrollState', trialHash, groupHash, forceEnable);
+  }
+
+  fetchTrialState(): Promise<FieldTrialState> {
+    return sendWithPromise('fetchTrialState');
+  }
+
+  lookupTrialOrGroupName(name: string): Promise<HashNameMap> {
+    return sendWithPromise('lookupTrialOrGroupName', name);
+  }
+
+  restart(): Promise<void> {
+    return sendWithPromise('restart');
   }
 
   static getInstance(): MetricsInternalsBrowserProxy {
