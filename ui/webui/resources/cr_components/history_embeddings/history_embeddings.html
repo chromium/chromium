@@ -118,7 +118,9 @@ a {
             as-anchor as-anchor-target="_blank" always-show-suffix>
           <span class="time" slot="suffix">[[item.relativeTime]]</span>
           <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
-              on-click="onMoreActionsClick_">
+              on-click="onMoreActionsClick_"
+              aria-label="[[i18n('actionMenuDescription')]]"
+              aria-description="[[item.title]]">
           </cr-icon-button>
           <div slot="footer" class="source-passage"
               hidden$="[[!item.sourcePassage]]">
