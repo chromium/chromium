@@ -1351,6 +1351,14 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "plusAddressSettingInAddressSection",
       base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressSettingsRefreshDesktop));
+  // TODO: crbug.com/354633335 - Move to localized strings once the feature is
+  // no longer needed and the string is translated.
+  html_source->AddString(
+      "addressesSublabel",
+      base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressSettingsRefreshDesktop)
+          ? l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESSES_SETTINGS_SUBLABEL)
+          : u"");
 
   html_source->AddBoolean(
       "requireValidLocalCards",
