@@ -2561,21 +2561,21 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.Customization.ActionAdded"
-    enum="IOSOverflowMenuAction" expires_after="2024-09-01">
+    enum="IOSOverflowMenuAction" expires_after="2024-11-10">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>The action added during an overflow menu customization.</summary>
 </histogram>
 
 <histogram name="IOS.OverflowMenu.Customization.ActionRemoved"
-    enum="IOSOverflowMenuAction" expires_after="2024-12-24">
+    enum="IOSOverflowMenuAction" expires_after="2024-11-10">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>The action removed during an overflow menu customization.</summary>
 </histogram>
 
 <histogram name="IOS.OverflowMenu.Customization.ActionsCustomized"
-    units="bitfield value" expires_after="2024-11-17">
+    units="bitfield value" expires_after="2024-11-10">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2586,7 +2586,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.Customization.ActionsReordered.FirstPosition"
-    enum="IOSOverflowMenuAction" expires_after="2024-11-17">
+    enum="IOSOverflowMenuAction" expires_after="2024-11-10">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>The action in the first position after reordering the menu.</summary>
@@ -2594,7 +2594,7 @@ the generic promo launch. -->
 
 <histogram
     name="IOS.OverflowMenu.Customization.ActionsReordered.FourthPosition"
-    enum="IOSOverflowMenuAction" expires_after="2024-11-17">
+    enum="IOSOverflowMenuAction" expires_after="2024-11-10">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2604,7 +2604,7 @@ the generic promo launch. -->
 
 <histogram
     name="IOS.OverflowMenu.Customization.ActionsReordered.SecondPosition"
-    enum="IOSOverflowMenuAction" expires_after="2024-11-17">
+    enum="IOSOverflowMenuAction" expires_after="2024-11-10">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2613,7 +2613,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.Customization.ActionsReordered.ThirdPosition"
-    enum="IOSOverflowMenuAction" expires_after="2024-11-17">
+    enum="IOSOverflowMenuAction" expires_after="2024-11-10">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2622,7 +2622,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.Customization.DestinationAdded"
-    enum="IOSOverflowMenuDestination" expires_after="2024-09-01">
+    enum="IOSOverflowMenuDestination" expires_after="2024-11-10">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
