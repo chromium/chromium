@@ -316,10 +316,8 @@ void AnimateDeskIconButtonScale(DeskIconButton* button,
 
 }  // namespace
 
-void PerformAddDeskMiniViewAnimation(std::vector<DeskMiniView*> new_mini_views,
-                                     int shift_x) {
-  gfx::Transform mini_views_left_begin_transform;
-  mini_views_left_begin_transform.Translate(shift_x, 0);
+void PerformAddDeskMiniViewAnimation(
+    std::vector<DeskMiniView*> new_mini_views) {
   for (auto* mini_view : new_mini_views) {
     if (!mini_view->desk()->is_desk_being_removed()) {
       ScaleUpAndFadeInView(mini_view);

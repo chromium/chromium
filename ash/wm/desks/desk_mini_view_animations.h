@@ -34,14 +34,12 @@ class ExpandedDesksBarButton;
 void PerformRemoveDeskMiniViewAnimation(DeskMiniView* removed_mini_view);
 
 // Performs the animation on desk mini view when adding a new desk.
-// `new_mini_views` contains a list of the newly-created mini_views. `shift_x`
-// is the amount by which the mini_views will be moved horizontally as a result
-// of creating the new mini_views. The new mini view will scale up and fade in.
+// `new_mini_views` contains a list of the newly-created mini_views. The new
+// mini view will scale up and fade in.
 // * Notes:
 // - It assumes that the new_mini_views have already been created, and all
-// mini_views have already been laid out in their final positions.
-void PerformAddDeskMiniViewAnimation(std::vector<DeskMiniView*> new_mini_views,
-                                     int shift_x);
+//   mini_views have already been laid out in their final positions.
+void PerformAddDeskMiniViewAnimation(std::vector<DeskMiniView*> new_mini_views);
 
 // Performs individual animation for views that belong to `bar_view` during
 // desk adding/removing. On both overview and desk button bar, on desk

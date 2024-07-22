@@ -1426,7 +1426,6 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
   // This should not be called when a desk is removed.
   DCHECK_LE(mini_views_.size(), desks.size());
 
-  const int begin_x = GetFirstMiniViewXOffset();
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   DCHECK(root_window);
   // Document all the current X coordinates of the views before we perform a
@@ -1479,8 +1478,7 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
   if (type_ == Type::kDeskButton) {
     PerformDeskBarAddDeskAnimation(this, old_bar_bounds);
   }
-  PerformAddDeskMiniViewAnimation(new_mini_views,
-                                  begin_x - GetFirstMiniViewXOffset());
+  PerformAddDeskMiniViewAnimation(new_mini_views);
   PerformDeskBarChildViewShiftAnimation(this, views_previous_x_map);
 }
 
