@@ -1042,48 +1042,55 @@ class PixelTestPages():
     filter_effect_fuzzy_algo = algo.FuzzyMatchingAlgorithm(
         max_different_pixels=57500, pixel_per_channel_delta_threshold=10)
 
+    standard_crop = ca.NonWhiteContentCropAction(
+        initial_crop=ca.FixedRectCropAction(0, 0, 350, 350))
+
+    # Use a fixed crop since the fuzziness of the image is liable to make the
+    # image size change randomly.
+    filter_effects_crop = ca.FixedRectCropAction(0, 0, 300, 300)
+
     return [
         PixelTestPage('pixel_canvas2d_webgl.html',
                       base_name + '_IOSurface2DCanvasWebGL',
-                      test_rect=[0, 0, 300, 300]),
+                      crop_action=standard_crop),
 
         # On macOS, test WebGL non-Chromium Image compositing path.
         PixelTestPage('pixel_webgl_aa_alpha.html',
                       base_name +
                       '_WebGLGreenTriangle_NonChromiumImage_AA_Alpha',
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=standard_crop,
                       browser_args=non_chromium_image_args),
         PixelTestPage('pixel_webgl_noaa_alpha.html',
                       base_name +
                       '_WebGLGreenTriangle_NonChromiumImage_NoAA_Alpha',
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=standard_crop,
                       browser_args=non_chromium_image_args),
         PixelTestPage('pixel_webgl_aa_noalpha.html',
                       base_name +
                       '_WebGLGreenTriangle_NonChromiumImage_AA_NoAlpha',
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=standard_crop,
                       browser_args=non_chromium_image_args),
         PixelTestPage('pixel_webgl_noaa_noalpha.html',
                       base_name +
                       '_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha',
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=standard_crop,
                       browser_args=non_chromium_image_args),
 
         # On macOS, test CSS filter effects with and without the CA compositor.
         PixelTestPage('filter_effects.html',
                       base_name + '_CSSFilterEffects',
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=filter_effects_crop,
                       matching_algorithm=filter_effect_fuzzy_algo),
         PixelTestPage('filter_effects.html',
                       base_name + '_CSSFilterEffects_NoOverlays',
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=filter_effects_crop,
                       browser_args=no_overlays_args,
                       matching_algorithm=filter_effect_fuzzy_algo),
 
         # Test WebGL's premultipliedAlpha:false without the CA compositor.
         PixelTestPage('pixel_webgl_premultiplied_alpha_false.html',
                       base_name + '_WebGL_PremultipliedAlpha_False_NoOverlays',
-                      test_rect=[0, 0, 150, 150],
+                      crop_action=standard_crop,
                       browser_args=no_overlays_args),
 
         # Test GpuBenchmarking::AddCoreAnimationStatusEventListener.
@@ -1092,7 +1099,7 @@ class PixelTestPages():
         # this test.
         PixelTestPage('core_animation_status_api.html?error=0',
                       base_name + '_CoreAnimationStatusApiNoError',
-                      test_rect=[0, 0, 300, 300]),
+                      crop_action=standard_crop),
         # Test GpuBenchmarking::AddCoreAnimationStatusEventListener.
         # Error code is 32 (gfx::kCALayerFailedOverlayDisabled) when
         # CoreAnimationRenderer is disabled.
@@ -1100,20 +1107,20 @@ class PixelTestPages():
         # this test.
         PixelTestPage('core_animation_status_api.html?error=32',
                       base_name + '_CoreAnimationStatusApiWithError',
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=standard_crop,
                       browser_args=no_overlays_args),
 
         # --enable-gpu-benchmarking is required to run this test. it's added to
         # the pixel tests by default.
         PixelTestPage('canvas_uses_overlay.html',
                       base_name + '_CanvasUsesOverlay',
-                      test_rect=[0, 0, 100, 100]),
+                      crop_action=standard_crop),
 
         # --enable-gpu-benchmarking is required to run this test. it's added to
         # the pixel tests by default.
         PixelTestPage('canvas_uses_overlay.html',
                       base_name + '_UnacceleratedCanvasUsesOverlay',
-                      test_rect=[0, 0, 100, 100],
+                      crop_action=standard_crop,
                       browser_args=unaccelerated_2d_canvas_args),
 
         # --enable-gpu-benchmarking is required to run this test. it's added to
@@ -1121,7 +1128,7 @@ class PixelTestPages():
         PixelTestPage(
             'offscreencanvas_imagebitmap_from_worker_uses_overlay.html',
             base_name + '_OffscreenCanvasImageBitmapWorkerUsesOverlay',
-            test_rect=[0, 0, 100, 100]),
+            crop_action=standard_crop),
 
         # --enable-gpu-benchmarking is required to run this test. it's added to
         # the pixel tests by default.
@@ -1129,29 +1136,28 @@ class PixelTestPages():
             'offscreencanvas_imagebitmap_from_worker_uses_overlay.html',
             base_name +
             '_UnacceleratedOffscreenCanvasImageBitmapWorkerUsesOverlay',
-            test_rect=[0, 0, 100, 100],
+            crop_action=standard_crop,
             browser_args=unaccelerated_2d_canvas_args),
 
         # --enable-gpu-benchmarking is required to run this test. it's added to
         # the pixel tests by default.
         PixelTestPage('offscreencanvas_imagebitmap_uses_overlay.html',
                       base_name + '_OffscreenCanvasImageBitmapUsesOverlay',
-                      test_rect=[0, 0, 100, 100]),
+                      crop_action=standard_crop),
 
         # --enable-gpu-benchmarking is required to run this test. it's added to
         # the pixel tests by default.
         PixelTestPage('offscreencanvas_imagebitmap_uses_overlay.html',
                       base_name +
                       '_UnacceleratedOffscreenCanvasImageBitmapUsesOverlay',
-                      test_rect=[0, 0, 100, 100],
+                      crop_action=standard_crop,
                       browser_args=unaccelerated_2d_canvas_args),
 
         # Regression test for crbug.com/1410696
         PixelTestPage('pixel_offscreenCanvas_ibrc_worker.html',
                       base_name + '_OffscreenCanvasIBRCWorkerAngleGL',
-                      test_rect=[0, 0, 100, 100],
-                      browser_args=angle_gl,
-                      grace_period_end=date(2023, 8, 5)),
+                      crop_action=standard_crop,
+                      browser_args=angle_gl),
     ]
 
   # Pages that should be run only on dual-GPU MacBook Pros (at the
@@ -1171,11 +1177,14 @@ class PixelTestPages():
         sghitb.TestActionWaitForFinish(SHORT_GLOBAL_TIMEOUT),
     ]
 
+    standard_crop = ca.NonWhiteContentCropAction(
+        initial_crop=ca.FixedRectCropAction(0, 0, 350, 350))
+
     return [
         PixelTestPage(
             'pixel_webgl_high_to_low_power.html',
             base_name + '_WebGLHighToLowPower',
-            test_rect=[0, 0, 300, 300],
+            crop_action=standard_crop,
             test_actions=[
                 sghitb.TestActionWaitForContinue(SHORT_GLOBAL_TIMEOUT),
                 TestActionRunTestWithHighPerformanceTab(),
@@ -1183,19 +1192,19 @@ class PixelTestPages():
             ]),
         PixelTestPage('pixel_webgl_low_to_high_power.html',
                       base_name + '_WebGLLowToHighPower',
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=standard_crop,
                       test_actions=low_to_high_power_test_actions),
         PixelTestPage('pixel_webgl_low_to_high_power_alpha_false.html',
                       base_name + '_WebGLLowToHighPowerAlphaFalse',
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=standard_crop,
                       test_actions=low_to_high_power_test_actions),
         PixelTestPage('pixel_offscreen_canvas_ibrc_webgl_main.html',
                       base_name + '_OffscreenCanvasIBRCWebGLHighPerfMain',
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=standard_crop,
                       test_actions=high_perf_test_actions),
         PixelTestPage('pixel_offscreen_canvas_ibrc_webgl_worker.html',
                       base_name + '_OffscreenCanvasIBRCWebGLHighPerfWorker',
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=standard_crop,
                       test_actions=high_perf_test_actions),
     ]
 
