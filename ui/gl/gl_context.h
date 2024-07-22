@@ -128,8 +128,7 @@ struct GL_EXPORT GLContextAttribs {
 
 // Encapsulates an OpenGL context, hiding platform specific management.
 // TODO(344606399): Consider folding GLContextEGL into this class.
-class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
-                            public base::SupportsWeakPtr<GLContext> {
+class GL_EXPORT GLContext : public base::RefCounted<GLContext> {
  public:
   class GL_EXPORT GLContextObserver : public base::CheckedObserver {
    public:
@@ -170,6 +169,10 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   bool MakeCurrent(GLSurface* surface);
   // Same as above, but uses the stored offscreen surface (named as default).
   bool MakeCurrentDefault();
+
+  // Returns a weak ptr. This ptr is invalidate in the `OnContextDestroyed`
+  // call.
+  base::WeakPtr<GLContext> AsWeakPtr();
 
   // Releases this GL context and surface as current on the current thread.
   virtual void ReleaseCurrent(GLSurface* surface) = 0;
@@ -401,6 +404,7 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   bool has_called_on_destory_ = false;
 
   base::ObserverList<GLContextObserver> observer_list_;
+  base::WeakPtrFactory<GLContext> weak_ptr_factory_{this};
 };
 
 class GL_EXPORT GLContextReal : public GLContext {
