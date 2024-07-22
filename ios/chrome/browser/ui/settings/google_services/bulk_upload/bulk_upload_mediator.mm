@@ -220,7 +220,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 // Updates the enabled state of the Save in Account button
 - (void)updateButtonEnabledState {
   syncer::ModelTypeSet selectedModelTypes = [self selectedModelTypeEnumSet];
-  self.consumer.validationButtonEnabled = selectedModelTypes.size() > 0;
+  [self.consumer setValidationButtonEnabled:selectedModelTypes.size() > 0];
 }
 
 #pragma mark - BulkUploadMutator

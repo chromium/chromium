@@ -36,6 +36,9 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
   BulkUploadTableViewController* _tableViewController;
   // The button to trigger the bulk upload.
   UIButton* _saveInAccountButton;
+  // Stored as a separate field because it can be set before
+  // _saveInAccountButton is instantiated.
+  BOOL _saveInAccountButtonEnabled;
   // List of items to display.
   NSArray<BulkUploadViewItem*>* _viewItems;
 }
@@ -68,7 +71,9 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
   [_saveInAccountButton addTarget:self
                            action:@selector(saveInAccountTapped:)
                  forControlEvents:UIControlEventTouchUpInside];
-  _saveInAccountButton.enabled = NO;
+  // setValidationButtonEnabled might have been called before the button was
+  // created.
+  [self updateSaveInAccountButton];
   [self.view addSubview:_saveInAccountButton];
   // Create the Cancel button.
   self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
@@ -138,9 +143,18 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
 }
 
 - (void)setValidationButtonEnabled:(BOOL)enabled {
+  _saveInAccountButtonEnabled = enabled;
+  [self updateSaveInAccountButton];
+}
+
+#pragma mark - Private
+
+// Updates the state of `_saveInAccountButton` according to
+// `_saveInAccountButtonEnabled`.
+- (void)updateSaveInAccountButton {
   UIButtonConfiguration* buttonConfiguration =
       _saveInAccountButton.configuration;
-  if (enabled) {
+  if (_saveInAccountButtonEnabled) {
     buttonConfiguration.background.backgroundColor =
         [UIColor colorNamed:kBlueColor];
     buttonConfiguration.baseForegroundColor =
@@ -152,14 +166,8 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
         [UIColor colorNamed:kDisabledTintColor];
   }
   _saveInAccountButton.configuration = buttonConfiguration;
-  _saveInAccountButton.enabled = enabled;
+  _saveInAccountButton.enabled = _saveInAccountButtonEnabled;
 }
-
-- (BOOL)validationButtonEnabled {
-  return _saveInAccountButton.enabled;
-}
-
-#pragma mark - Private
 
 - (void)saveInAccountTapped:(UIButton*)button {
   [self.mutator requestSave];
