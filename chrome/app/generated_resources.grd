@@ -16572,6 +16572,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GPM_CREATE_SIX_DIGIT_PIN_ACCESSIBILITY" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield during creation of a 6-digit pin.">
         Create a 6-digit recovery PIN for Google Password Manager
       </message>
+      <message name="IDS_WEBAUTHN_GPM_CREATE_SIX_DIGIT_PIN_ACCESSIBILITY_WITH_FOCUSED_DIGIT" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield during creation of a 6-digit pin, additionally informing which digit needs to be typed.">
+        Create a 6-digit recovery PIN for Google Password Manager, PIN digit <ph name="NUM_DIGIT">$1<ex>3</ex></ph> of 6
+      </message>
       <message name="IDS_WEBAUTHN_GPM_CREATE_PIN_DESC" desc="The description of a dialog that is shown when a user is creating a Google Password Manager PIN explaining that it will be used to access their passkeys on all devices. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
         This helps you access your saved passkeys on any device
       </message>
@@ -16581,8 +16584,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GPM_ENTER_ALPHANUMERIC_PIN_ACCESSIBILITY" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield when entering an alphanumeric pin for user verification.">
         Enter your alphanumeric PIN for Google Password Manager
       </message>
+      <message name="IDS_WEBAUTHN_GPM_ENTER_ALPHANUMERIC_PIN_ACCESSIBILITY_WITH_WEBSITE" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield when entering an alphanumeric pin for user verification, additionally informing about the reason for user verification.">
+        <ph name="SITE">$1<ex>example.com</ex></ph> wants to verify it's you. Enter your alphanumeric PIN for Google Password Manager
+      </message>
       <message name="IDS_WEBAUTHN_GPM_ENTER_SIX_DIGIT_PIN_ACCESSIBILITY" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield when entering a 6-digit pin for user verification.">
         Enter your 6-digit PIN for Google Password Manager
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_ENTER_SIX_DIGIT_PIN_ACCESSIBILITY_WITH_FOCUSED_DIGIT" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield when entering a 6-digit pin for user verification, additionally informing about the reason for user verification and which digit needs to be typed.">
+        <ph name="SITE">$1<ex>example.com</ex></ph> wants to verify it's you. Enter your 6-digit PIN for Google Password Manager, PIN digit <ph name="NUM_DIGIT">$2<ex>3</ex></ph> of 6
       </message>
       <message name="IDS_WEBAUTHN_GPM_ENTER_PIN_DESC" desc="The description of a dialog that is shown when a user is verifying their presence in passkey creation / sign-in flows explaining that the website requires that.">
         <ph name="SITE">$1<ex>example.com</ex></ph> wants to verify it's you
