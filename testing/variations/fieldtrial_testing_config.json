@@ -22773,6 +22773,21 @@
             ]
         }
     ],
+    "UPMClearMigratedDataStudy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClearLoginDatabaseForAllMigratedUPMUsers"
+                    ]
+                }
+            ]
+        }
+    ],
     "USSMigrationEnabled": [
         {
             "platforms": [
