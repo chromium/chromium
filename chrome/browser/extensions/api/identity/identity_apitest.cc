@@ -274,10 +274,14 @@ class TestOAuth2MintTokenFlow : public OAuth2MintTokenFlow {
         break;
       }
       case MINT_TOKEN_SUCCESS: {
-        if (granted_scopes_.empty())
-          delegate_->OnMintTokenSuccess(kAccessToken, *requested_scopes_, 3600);
-        else
-          delegate_->OnMintTokenSuccess(kAccessToken, granted_scopes_, 3600);
+        OAuth2MintTokenFlow::MintTokenResult result;
+        result.access_token = kAccessToken;
+        result.time_to_live = base::Seconds(3600);
+        // In these tests, empty `granted_scopes_` means that all requested
+        // scopes should be granted.
+        result.granted_scopes =
+            !granted_scopes_.empty() ? granted_scopes_ : *requested_scopes_;
+        delegate_->OnMintTokenSuccess(result);
         break;
       }
       case MINT_TOKEN_FAILURE: {

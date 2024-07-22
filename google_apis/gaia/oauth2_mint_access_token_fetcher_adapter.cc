@@ -90,14 +90,12 @@ void OAuth2MintAccessTokenFetcherAdapter::
 }
 
 void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
-    const std::string& access_token,
-    const std::set<std::string>& granted_scopes,
-    int time_to_live) {
+    const OAuth2MintTokenFlow::MintTokenResult& result) {
   std::string decrypted_token;
   if (!token_decryptor_.is_null()) {
     // Non-null decryptor indicates that the access token should be encrypted.
     // TODO(b/353199749): rely on an explicit server indicator instead.
-    std::string decryption_result = token_decryptor_.Run(access_token);
+    std::string decryption_result = token_decryptor_.Run(result.access_token);
     if (decryption_result.empty()) {
       FireOnGetTokenFailure(
           GoogleServiceAuthError::FromUnexpectedServiceResponse(
@@ -106,12 +104,11 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
     }
     decrypted_token = std::move(decryption_result);
   } else {
-    decrypted_token = access_token;
+    decrypted_token = std::move(result.access_token);
   }
   // The token will expire in `time_to_live` seconds. Take a 10% error margin to
   // prevent reusing a token too close to its expiration date.
-  base::Time expiration_time =
-      base::Time::Now() + base::Seconds(9 * time_to_live / 10);
+  base::Time expiration_time = base::Time::Now() + result.time_to_live * 9 / 10;
   OAuth2AccessTokenConsumer::TokenResponse::Builder response_builder;
   response_builder.WithAccessToken(decrypted_token)
       .WithExpirationTime(expiration_time);

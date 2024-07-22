@@ -42,6 +42,7 @@
 #include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/oauth2_mint_token_flow.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/idle/idle.h"
 
@@ -479,20 +480,18 @@ void IdentityGetAuthTokenFunction::StartMintToken(
 }
 
 void IdentityGetAuthTokenFunction::OnMintTokenSuccess(
-    const std::string& access_token,
-    const std::set<std::string>& granted_scopes,
-    int time_to_live) {
+    const OAuth2MintTokenFlow::MintTokenResult& result) {
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("identity", "OnMintTokenSuccess", this);
 
   IdentityTokenCacheValue token = IdentityTokenCacheValue::CreateToken(
-      access_token, granted_scopes, base::Seconds(time_to_live));
+      result.access_token, result.granted_scopes, result.time_to_live);
   IdentityAPI::GetFactoryInstance()
       ->Get(GetProfile())
       ->token_cache()
       ->SetToken(token_key_, token);
 
   CompleteMintTokenFlow();
-  CompleteFunctionWithResult(access_token, granted_scopes);
+  CompleteFunctionWithResult(result.access_token, result.granted_scopes);
 }
 
 void IdentityGetAuthTokenFunction::OnMintTokenFailure(
