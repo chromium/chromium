@@ -1131,4 +1131,67 @@ TEST_F(ProductSpecificationsServiceTest, TestMigration) {
   EXPECT_EQ(set_to_migrate->name(), migrated_set->name());
 }
 
+TEST_F(ProductSpecificationsServiceTest,
+       TestMultiSpecificsIgnoredForSingleSpecificsFlagOff) {
+  std::string multi_specs_set_uuid = "50000000-0000-0000-0000-000000000000";
+  sync_pb::ProductComparisonSpecifics top_level;
+  top_level.set_uuid(multi_specs_set_uuid);
+  top_level.mutable_product_comparison()->set_name("test_name");
+
+  sync_pb::ProductComparisonSpecifics item_level;
+  item_level.set_uuid("30000000-0000-0000-0000-000000000000");
+  item_level.mutable_product_comparison_item()->set_product_comparison_uuid(
+      "50000000-0000-0000-0000-000000000000");
+  item_level.mutable_product_comparison_item()->set_url(
+      "https://a.example.com/");
+  *item_level.mutable_product_comparison_item()->mutable_unique_position() =
+      syncer::UniquePosition::InitialPosition(
+          syncer::UniquePosition::RandomSuffix())
+          .ToProto();
+
+  AddSpecifics({top_level, item_level});
+  std::vector<ProductSpecificationsSet> sets =
+      service()->GetAllProductSpecifications();
+
+  EXPECT_EQ(sets.end(), base::ranges::find_if(sets, [&multi_specs_set_uuid](
+                                                        const auto& query_set) {
+              return query_set.uuid().AsLowercaseString() ==
+                     multi_specs_set_uuid;
+            }));
+}
+
+TEST_F(ProductSpecificationsServiceTest,
+       TestMultiSpecificsIgnoredForSingleSpecificsFlagOn) {
+  EnableMultiSpecFlag();
+  std::string multi_specs_set_uuid = "50000000-0000-0000-0000-000000000000";
+  sync_pb::ProductComparisonSpecifics top_level;
+  top_level.set_uuid(multi_specs_set_uuid);
+  top_level.mutable_product_comparison()->set_name("test_name");
+
+  sync_pb::ProductComparisonSpecifics item_level;
+  item_level.set_uuid("30000000-0000-0000-0000-000000000000");
+  item_level.mutable_product_comparison_item()->set_product_comparison_uuid(
+      "50000000-0000-0000-0000-000000000000");
+  item_level.mutable_product_comparison_item()->set_url(
+      "https://a.example.com/");
+  *item_level.mutable_product_comparison_item()->mutable_unique_position() =
+      syncer::UniquePosition::InitialPosition(
+          syncer::UniquePosition::RandomSuffix())
+          .ToProto();
+
+  AddSpecifics({top_level, item_level});
+  std::vector<ProductSpecificationsSet> multi_specifics_sets =
+      service()->GetAllProductSpecifications();
+
+  const auto iter = base::ranges::find_if(
+      multi_specifics_sets, [&multi_specs_set_uuid](const auto& query_set) {
+        return query_set.uuid().AsLowercaseString() == multi_specs_set_uuid;
+      });
+  EXPECT_TRUE(iter != multi_specifics_sets.end());
+  EXPECT_EQ(multi_specs_set_uuid, iter->uuid().AsLowercaseString());
+  EXPECT_EQ("test_name", iter->name());
+  EXPECT_EQ(1u, iter->urls().size());
+  EXPECT_EQ("https://a.example.com/", iter->urls()[0].spec());
+}
+
 }  // namespace commerce
