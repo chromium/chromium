@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.ui.native_page.BasicSmoothTransitionDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
@@ -76,7 +75,6 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 public class NavigationHandlerTest {
     private static final String RENDERED_PAGE = "/chrome/test/data/android/navigate/simple.html";
-    private static final String TEST_PAGE = "/chrome/test/data/android/test.html";
     private static final boolean LEFT_EDGE = true;
     private static final boolean RIGHT_EDGE = false;
 
@@ -91,10 +89,7 @@ public class NavigationHandlerTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        InstrumentationRegistry.getInstrumentation().getContext());
-        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PAGE));
+        mActivityTestRule.startMainActivityOnBlankPage();
         CompositorAnimationHandler.setTestingMode(true);
         mNavUtils = new GestureNavigationUtils(mActivityTestRule);
         mNavigationHandler = mNavUtils.getNavigationHandler();
@@ -150,12 +145,12 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.BACK_FORWARD_TRANSITIONS})
-    public void testSwipeBackToNTPWithTransition() throws InterruptedException {
-        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+    public void testSwipeBackToNTPWithTransition() {
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
-        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivity().getActivityTab());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
 
         mNavUtils.swipeFromEdgeAndHold(true);
@@ -197,6 +192,9 @@ public class NavigationHandlerTest {
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         mActivityTestRule.loadUrl("chrome-native://bookmarks/folder/0");
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
 
         mNavUtils.swipeFromEdgeAndHold(true);
@@ -274,6 +272,9 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     public void testReleaseGlowWithoutPrecedingPullIgnored() {
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -336,6 +337,9 @@ public class NavigationHandlerTest {
     public void testSwipeNavigateOnRenderedPage() {
         // TODO(crbug.com/40899221): Write a test variation running with
         //     ChromeFeatureList.BACK_FORWARD_TRANSITIONS enabled when the feature is completed.
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
         mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
@@ -390,6 +394,9 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     public void testSwipeAfterDestroy() {
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
         ThreadUtils.runOnUiThreadBlocking(mNavigationHandler::destroy);
 
@@ -409,6 +416,9 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     public void testSwipeAfterTabDestroy() {
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
         ThreadUtils.runOnUiThreadBlocking(currentTab()::destroy);
 
@@ -422,6 +432,9 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     public void testSwipeAfterDestroyActivity_NativePage() {
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         ThreadUtils.runOnUiThreadBlocking(mActivityTestRule.getActivity()::finish);
 
@@ -481,6 +494,9 @@ public class NavigationHandlerTest {
     @SmallTest
     @EnableFeatures({UiAndroidFeatures.MIRROR_BACK_FORWARD_GESTURES_IN_RTL})
     public void testRtlUiMirrorsDirectionsWithFlagEnabled() {
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
         mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
@@ -493,6 +509,9 @@ public class NavigationHandlerTest {
     @SmallTest
     @DisableFeatures({UiAndroidFeatures.MIRROR_BACK_FORWARD_GESTURES_IN_RTL})
     public void testRtlUiMirrorsDirectionsWithFlagDisabled() {
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
         mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
