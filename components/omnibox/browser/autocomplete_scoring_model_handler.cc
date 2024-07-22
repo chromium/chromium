@@ -16,10 +16,11 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/autocomplete_scoring_model_metadata.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 
 using ModelInput = AutocompleteScoringModelExecutor::ModelInput;
 using ModelOutput = AutocompleteScoringModelExecutor::ModelOutput;
-using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+using ScoringSignals = ::metrics::OmniboxScoringSignals;
 using ::optimization_guide::proto::AutocompleteScoringModelMetadata;
 using ::optimization_guide::proto::OptimizationTarget;
 using ::optimization_guide::proto::ScoringSignalSpec;
@@ -114,13 +115,15 @@ AutocompleteScoringModelHandler::ExtractInputFromScoringSignals(
     const AutocompleteScoringModelMetadata& metadata) {
   // Keep consistent:
   // - omnibox_event.proto `ScoringSignals`
+  // - omnibox_scoring_signals.proto `OmniboxScoringSignals`
   // - autocomplete_scoring_model_handler.cc
   //   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
   // - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
   // - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
+  // - omnibox_metrics_provider.cc `GetScoringSignalsForLogging()`
   // - omnibox.mojom `struct Signals`
-  // - omnibox_page_handler.cc `TypeConverter<AutocompleteMatch::ScoringSignals,
-  //   mojom::SignalsPtr>`
+  // - omnibox_page_handler.cc
+  //   `TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr>`
   // - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
   //   AutocompleteMatch::ScoringSignals>`
   // - omnibox_util.ts `signalNames`

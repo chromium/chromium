@@ -15,9 +15,9 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 
-using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+using ScoringSignals = ::metrics::OmniboxScoringSignals;
 using ::optimization_guide::proto::AutocompleteScoringModelMetadata;
 using ::optimization_guide::proto::ScoringSignalSpec;
 using ::optimization_guide::proto::ScoringSignalTransformation;

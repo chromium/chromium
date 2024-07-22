@@ -1558,7 +1558,7 @@ AutocompleteMatch SearchProvider::NavigationToMatch(
   if (navigation.relevance_from_server()) {
     match.scoring_signals->set_search_suggest_relevance(navigation.relevance());
   }
-  SearchScoringSignalsAnnotator::UpdateIsSearchSuggestEntity(match);
+  SearchScoringSignalsAnnotator::UpdateMatchTypeScoringSignals(match, input);
 
   return match;
 }

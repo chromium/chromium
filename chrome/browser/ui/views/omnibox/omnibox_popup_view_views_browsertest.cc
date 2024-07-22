@@ -599,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
     match.description_class.emplace_back(0, ACMatchClassification::URL);
     match.allowed_to_be_default_match = true;
     match.provider = provider.get();
-    metrics::OmniboxEventProto::Suggestion::ScoringSignals scoring_signals;
+    metrics::OmniboxScoringSignals scoring_signals;
     scoring_signals.set_first_bookmark_title_match_position(3);
     scoring_signals.set_allowed_to_be_default_match(true);
     scoring_signals.set_length_of_url(20);

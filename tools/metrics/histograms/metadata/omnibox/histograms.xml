@@ -2343,10 +2343,12 @@ chromium-metrics-reviews@google.com.
 <!--
   Keep consistent:
   - omnibox_event.proto `ScoringSignals`
+  - omnibox_scoring_signals.proto `OmniboxScoringSignals`
   - autocomplete_scoring_model_handler.cc
     `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
   - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
   - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
+  - omnibox_metrics_provider.cc `GetScoringSignalsForLogging()`
   - omnibox.mojom `struct Signals`
   - omnibox_page_handler.cc `TypeConverter<AutocompleteMatch::ScoringSignals,
     mojom::SignalsPtr>`
@@ -2386,12 +2388,23 @@ chromium-metrics-reviews@google.com.
                  'www'."/>
     <variant name="host_match_at_word_boundary"
         summary="One word matches host at a word boundary."/>
+    <variant name="is_answer_suggest"
+        summary="Whether this match is a Search suggestion that contains an
+                 answer."/>
+    <variant name="is_calculator_suggest"
+        summary="Whether this match is a CALCULATOR suggestion."/>
     <variant name="is_host_only"
         summary="URL points to the root page of a website, i.e., no query,
                  path words, or references after '/'."/>
+    <variant name="is_navsuggest"
+        summary="Whether this match is a NAVSUGGEST suggestion."/>
     <variant name="is_search_suggest_entity"
         summary="Whether this match is a Search suggestion that describes an
                  entity."/>
+    <variant name="is_search_suggest_tail"
+        summary="Whether this match is a SEARCH_SUGGEST_TAIL suggestion."/>
+    <variant name="is_verbatim"
+        summary="Whether this match is a verbatim suggestion."/>
     <variant name="length_of_url" summary="Length of url."/>
     <variant name="num_bookmarks_of_url"
         summary="Number of bookmarks for this profile with this URL."/>

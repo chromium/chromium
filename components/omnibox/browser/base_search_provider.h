@@ -21,7 +21,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
-#include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 
@@ -39,8 +39,7 @@ class SimpleURLLoader;
 // autocomplete providers utilizing its functionality.
 class BaseSearchProvider : public AutocompleteProvider {
  public:
-  using ScoringSignals =
-      ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+  using ScoringSignals = ::metrics::OmniboxScoringSignals;
 
   BaseSearchProvider(AutocompleteProvider::Type type,
                      AutocompleteProviderClient* client);

@@ -48,6 +48,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -59,7 +60,7 @@ constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 namespace {
 
 using ShortcutMatch = ShortcutsProvider::ShortcutMatch;
-using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+using ScoringSignals = ::metrics::OmniboxScoringSignals;
 
 class DestinationURLEqualsURL {
  public:

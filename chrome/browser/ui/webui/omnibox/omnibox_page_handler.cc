@@ -134,10 +134,12 @@ struct TypeConverter<mojom::SignalsPtr, AutocompleteMatch::ScoringSignals> {
       const AutocompleteMatch::ScoringSignals signals) {
     // Keep consistent:
     // - omnibox_event.proto `ScoringSignals`
+    // - omnibox_scoring_signals.proto `OmniboxScoringSignals`
     // - autocomplete_scoring_model_handler.cc
     //   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
     // - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
     // - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
+    // - omnibox_metrics_provider.cc `GetScoringSignalsForLogging()`
     // - omnibox.mojom `struct Signals`
     // - omnibox_page_handler.cc
     //   `TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr>`
@@ -175,6 +177,11 @@ struct TypeConverter<mojom::SignalsPtr, AutocompleteMatch::ScoringSignals> {
     PROTO_TO_MOJOM_SIGNAL(allowed_to_be_default_match);
     PROTO_TO_MOJOM_SIGNAL(search_suggest_relevance);
     PROTO_TO_MOJOM_SIGNAL(is_search_suggest_entity);
+    PROTO_TO_MOJOM_SIGNAL(is_verbatim);
+    PROTO_TO_MOJOM_SIGNAL(is_navsuggest);
+    PROTO_TO_MOJOM_SIGNAL(is_search_suggest_tail);
+    PROTO_TO_MOJOM_SIGNAL(is_answer_suggest);
+    PROTO_TO_MOJOM_SIGNAL(is_calculator_suggest);
 
     return mojom_signals;
   }
@@ -186,15 +193,17 @@ struct TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr> {
       const mojom::SignalsPtr& mojom_signals) {
     // Keep consistent:
     // - omnibox_event.proto `ScoringSignals`
+    // - omnibox_scoring_signals.proto `OmniboxScoringSignals`
     // - autocomplete_scoring_model_handler.cc
-    // `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
+    //   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
     // - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
     // - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
+    // - omnibox_metrics_provider.cc `GetScoringSignalsForLogging()`
     // - omnibox.mojom `struct Signals`
     // - omnibox_page_handler.cc
-    // `TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr>`
+    //   `TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr>`
     // - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
-    // AutocompleteMatch::ScoringSignals>`
+    //   AutocompleteMatch::ScoringSignals>`
     // - omnibox_util.ts `signalNames`
     // - omnibox/histograms.xml
     //   `Omnibox.URLScoringModelExecuted.ScoringSignalCoverage`
@@ -227,6 +236,11 @@ struct TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr> {
     MOJOM_TO_PROTO_SIGNAL(allowed_to_be_default_match);
     MOJOM_TO_PROTO_SIGNAL(search_suggest_relevance);
     MOJOM_TO_PROTO_SIGNAL(is_search_suggest_entity);
+    MOJOM_TO_PROTO_SIGNAL(is_verbatim);
+    MOJOM_TO_PROTO_SIGNAL(is_navsuggest);
+    MOJOM_TO_PROTO_SIGNAL(is_search_suggest_tail);
+    MOJOM_TO_PROTO_SIGNAL(is_answer_suggest);
+    MOJOM_TO_PROTO_SIGNAL(is_calculator_suggest);
 
     return signals;
   }
