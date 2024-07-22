@@ -53,6 +53,20 @@ size_t CountDuplicateClientTags(const EntityMetadataMap& metadata_map) {
   return count;
 }
 
+void RecordModelTypeNumUnsyncedEntitiesOnModelReady(
+    ModelType model_type,
+    const ProcessorEntityTracker& entity_tracker) {
+  size_t num_unsynced_entities = 0;
+  for (const auto* entity :
+       entity_tracker.GetAllEntitiesIncludingTombstones()) {
+    if (entity->IsUnsynced()) {
+      num_unsynced_entities++;
+    }
+  }
+  SyncRecordModelTypeNumUnsyncedEntitiesOnModelReady(model_type,
+                                                     num_unsynced_entities);
+}
+
 }  // namespace
 
 ClientTagBasedModelTypeProcessor::ClientTagBasedModelTypeProcessor(
@@ -113,6 +127,7 @@ void ClientTagBasedModelTypeProcessor::ModelReadyToSync(
             model_type_state.initial_sync_state())) {
       entity_tracker_ = std::make_unique<ProcessorEntityTracker>(
           model_type_state, batch->TakeAllMetadata());
+      RecordModelTypeNumUnsyncedEntitiesOnModelReady(type_, *entity_tracker_);
     } else {
       // If initial sync isn't done, there must be no entity metadata (if there
       // was, ClearPersistedMetadataIfInvalid() would've detected the

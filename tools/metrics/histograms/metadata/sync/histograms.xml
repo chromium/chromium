@@ -1048,6 +1048,18 @@ chromium-metrics-reviews@google.com.
   <token key="SyncModelType" variants="SyncModelType"/>
 </histogram>
 
+<histogram name="Sync.ModelTypeNumUnsyncedEntitiesOnModelReady{SyncModelType}"
+    units="entities" expires_after="2025-01-22">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Counts the number of unsynced entities for each model type, including
+    tombstones. Recorded once model is ready to sync, i.e. typically soon after
+    browser startup. Recorded only if initial sync is done.
+  </summary>
+  <token key="SyncModelType" variants="SyncModelType"/>
+</histogram>
+
 <histogram name="Sync.ModelTypeOrphanMetadata.{Operation}"
     enum="SyncModelTypes" expires_after="2025-01-05">
   <owner>mastiz@chromium.org</owner>

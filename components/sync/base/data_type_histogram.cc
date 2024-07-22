@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
+#include "components/sync/base/model_type.h"
 
 namespace syncer {
 
@@ -14,6 +15,8 @@ namespace {
 const char kModelTypeMemoryHistogramPrefix[] = "Sync.ModelTypeMemoryKB.";
 const char kModelTypeCountHistogramPrefix[] = "Sync.ModelTypeCount4.";
 const char kModelTypeUpdateDropHistogramPrefix[] = "Sync.ModelTypeUpdateDrop.";
+const char kModelTypeNumUnsyncedEntitiesOnModelReady[] =
+    "Sync.ModelTypeNumUnsyncedEntitiesOnModelReady.";
 
 const char kEntitySizeWithMetadataHistogramPrefix[] =
     "Sync.EntitySizeOnCommit.Entity.WithMetadata.";
@@ -84,6 +87,15 @@ void SyncRecordModelTypeEntitySizeHistogram(ModelType model_type,
     base::UmaHistogramCounts100000(
         kEntitySizeWithMetadataHistogramPrefix + type_string, total_bytes);
   }
+}
+
+void SyncRecordModelTypeNumUnsyncedEntitiesOnModelReady(
+    ModelType model_type,
+    size_t num_unsynced_entities) {
+  const std::string full_histogram_name =
+      std::string(kModelTypeNumUnsyncedEntitiesOnModelReady) +
+      ModelTypeToHistogramSuffix(model_type);
+  base::UmaHistogramCounts1000(full_histogram_name, num_unsynced_entities);
 }
 
 void SyncRecordModelClearedOnceHistogram(ModelType model_type) {
