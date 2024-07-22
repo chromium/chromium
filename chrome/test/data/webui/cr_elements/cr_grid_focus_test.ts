@@ -7,8 +7,8 @@ import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import type {CrGridElement} from 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('CrElementsGridFocusTest', () => {

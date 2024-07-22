@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
-import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import type {ProfileData, Tab, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabAlertState, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {MockedMetricsReporter} from 'chrome://webui-test/mocked_metrics_reporter.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 

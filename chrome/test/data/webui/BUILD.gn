@@ -336,6 +336,7 @@ webui_ts_library("build_ts") {
     "chrome_timeticks_test.ts",
     "fake_chrome_event.ts",
     "fake_settings_private.ts",
+    "keyboard_mock_interactions.ts",
     "metrics_test_support.ts",
     "mocha_adapter_simple.ts",
     "mock_controller.ts",
