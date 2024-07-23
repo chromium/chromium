@@ -435,6 +435,7 @@ public abstract class ChromeFeatureList {
     public static final String REPLACE_PROFILE_IS_CHILD_WITH_ACCOUNT_CAPABILITIES_ON_ANDROID =
             "ReplaceProfileIsChildWithAccountCapabilitiesOnAndroid";
     public static final String SAFETY_HUB = "SafetyHub";
+    public static final String SAFETY_HUB_MAGIC_STACK = "SafetyHubMagicStack";
     public static final String SAFE_BROWSING_DELAYED_WARNINGS = "SafeBrowsingDelayedWarnings";
     public static final String SAFE_BROWSING_CALL_NEW_GMS_API_ON_STARTUP =
             "SafeBrowsingCallNewGmsApiOnStartup";
@@ -663,6 +664,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sSafeBrowsingCallNewGmsApiOnStartup =
             newCachedFlag(SAFE_BROWSING_CALL_NEW_GMS_API_ON_STARTUP, false);
     public static final CachedFlag sSafetyHub = newCachedFlag(SAFETY_HUB, false);
+    public static final CachedFlag sSafetyHubMagicStack =
+            newCachedFlag(SAFETY_HUB_MAGIC_STACK, false);
     public static final CachedFlag sSearchEngineChoice = newCachedFlag(SEARCH_ENGINE_CHOICE, false);
     public static final CachedFlag sSearchInCCT = newCachedFlag(SEARCH_IN_CCT, false);
     public static final CachedFlag sSmallerTabStripTitleLimit =
@@ -782,6 +785,7 @@ public abstract class ChromeFeatureList {
                     sRedirectExplicitCTAIntentsToExistingActivity,
                     sSafeBrowsingCallNewGmsApiOnStartup,
                     sSafetyHub,
+                    sSafetyHubMagicStack,
                     sSearchEngineChoice,
                     sSearchInCCT,
                     sSmallerTabStripTitleLimit,
