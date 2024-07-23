@@ -2092,6 +2092,10 @@ std::optional<std::vector<uint32_t>> BroadcastShapes(
   // If bidirectional is true, the rank of the output shape is the maximum rank
   // of the input shapes. Otherwise it is as the same as the rhs' rank.
   auto rank_lhs = dims_lhs.size(), rank_rhs = dims_rhs.size();
+  if (!bidirectional && rank_lhs > rank_rhs) {
+    return std::nullopt;
+  }
+
   auto rank_output = bidirectional ? std::max(rank_lhs, rank_rhs) : rank_rhs;
   std::vector<uint32_t> dims_output(rank_output);
   for (size_t i = 0; i < rank_output; ++i) {
