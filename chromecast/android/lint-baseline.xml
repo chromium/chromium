@@ -35,28 +35,6 @@
     </issue>
 
     <issue
-        id="MissingVersion"
-        message="Should set `android:versionCode` to specify the application version"
-        errorLine1="&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; xmlns:tools=&quot;http://schemas.android.com/tools&quot; package=&quot;org.chromium.chromecast.shell&quot;>"
-        errorLine2=" ~~~~~~~~">
-        <location
-            file="gen/chromecast/cast_shell_apk__lint/AndroidManifest.xml"
-            line="2"
-            column="2"/>
-    </issue>
-
-    <issue
-        id="MissingVersion"
-        message="Should set `android:versionName` to specify the application version"
-        errorLine1="&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; xmlns:tools=&quot;http://schemas.android.com/tools&quot; package=&quot;org.chromium.chromecast.shell&quot;>"
-        errorLine2=" ~~~~~~~~">
-        <location
-            file="gen/chromecast/cast_shell_apk__lint/AndroidManifest.xml"
-            line="2"
-            column="2"/>
-    </issue>
-
-    <issue
         id="Overdraw"
         message="Possible overdraw: Root element paints background `#FFFFFF` with a theme that also paints a background (inferred theme is `@style/CastShellTheme`)"
         errorLine1="    android:background=&quot;#FFFFFF&quot;"
