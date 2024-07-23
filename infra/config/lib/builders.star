@@ -774,6 +774,8 @@ def builder(
 
     if not kwargs.get("description_html", "").strip() and name not in exempted_from_description_builders.get(bucket, []) and not mirrors:
         fail("Builder " + name + " must have a description_html. All new builders must specify a description.")
+    elif kwargs.get("description_html", "").strip() and name in exempted_from_description_builders.get(bucket, []):
+        fail("Need to remove builder " + bucket + "/" + name + " from exempted_from_description_builders")
 
     cores = defaults.get_value("cores", cores)
     if cores != None:
