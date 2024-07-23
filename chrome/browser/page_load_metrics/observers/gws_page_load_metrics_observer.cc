@@ -66,6 +66,18 @@ GWSPageLoadMetricsObserver::OnStart(
     base::trace_event::EmitNamedTrigger("gws-navigation-start");
   }
 
+  // TODO(crbug.com/354748643): Change this to mutual exclusive condition with
+  // the previous condition.
+  // The current implementation of `IsGoogleSearchResultUrl` may match to
+  // Google Homepage as well, hence when using `else-if` clause, we might not
+  // trigger this event. To avoid this, we create a separate path for this until
+  // we get `IsGoogleSearchResultUrl` fixed.
+  if (page_load_metrics::IsGoogleSearchHomepageUrl(
+          navigation_handle->GetURL())) {
+    // Emit a trigger to allow trace collection tied to gws hp navigations.
+    base::trace_event::EmitNamedTrigger("gws-navigation-start-hp");
+  }
+
   return CONTINUE_OBSERVING;
 }
 
