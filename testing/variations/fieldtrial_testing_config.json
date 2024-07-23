@@ -403,6 +403,21 @@
             ]
         }
     ],
+    "AndroidBrowserControlsInViz": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240718",
+                    "enable_features": [
+                        "AndroidBrowserControlsInViz"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidHatsNext": [
         {
             "platforms": [
