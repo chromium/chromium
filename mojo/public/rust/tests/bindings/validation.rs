@@ -99,16 +99,21 @@ fn run_validation_test<I: bindings::mojom::Interface>(
     expected_result: &str,
     is_response: bool,
 ) {
+    let expected_result = expected_result.trim_end();
     match run_validation_test_impl::<I>(input_data_str, is_response) {
         Ok(()) => (),
         Err(validation_error) => {
-            expect_eq!(expected_result.trim_end(), validation_error.to_str());
+            let kind_str = validation_error.kind().to_str();
+            expect_eq!(expected_result, kind_str);
+            if expected_result != kind_str {
+                println!("{validation_error:?}");
+            }
             return;
         }
     };
 
     // Message validation succeeded. Check if it should've failed.
-    expect_eq!("PASS", expected_result.trim_end());
+    expect_eq!("PASS", expected_result);
 }
 
 fn run_validation_test_impl<I: bindings::mojom::Interface>(

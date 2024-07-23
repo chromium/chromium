@@ -16,12 +16,38 @@ use bytemuck::{Pod, Zeroable};
 
 /// Describes why a mojo message is invalid.
 ///
+/// The `Debug` impl outputs extra helpful metadata.
+#[derive(Debug)]
+pub struct ValidationError {
+    kind: ValidationErrorKind,
+    // Include code location info to help see why an error occurred. This is
+    // more intended for debugging the implementation itself, rather than for
+    // determining why an invalid message is invalid.
+    #[allow(dead_code)]
+    location: &'static std::panic::Location<'static>,
+}
+
+impl ValidationError {
+    #[track_caller]
+    pub fn new(kind: ValidationErrorKind) -> ValidationError {
+        ValidationError { kind, location: std::panic::Location::caller() }
+    }
+
+    pub fn kind(&self) -> ValidationErrorKind {
+        self.kind
+    }
+}
+
+pub type Result<T> = std::result::Result<T, ValidationError>;
+
+/// Mojo validation error category.
+///
 /// This mirrors //mojo/public/cpp/bindings/lib/validation_errors.h; refer to
 /// that file for documentation. Do not assume the integer representations are
 /// the same as in C++. `VALIDATION_ERROR_NONE` has no corresponding variant;
 /// use `Result<(), ValidationError>` if needed.
 #[derive(Clone, Copy, Debug)]
-pub enum ValidationError {
+pub enum ValidationErrorKind {
     MisalignedObject,
     IllegalMemoryRange,
     UnexpectedStructHeader,
@@ -33,9 +59,9 @@ pub enum ValidationError {
     UnknownEnumValue,
 }
 
-impl ValidationError {
+impl ValidationErrorKind {
     pub fn to_str(self) -> &'static str {
-        use ValidationError::*;
+        use ValidationErrorKind::*;
         match self {
             MisalignedObject => "VALIDATION_ERROR_MISALIGNED_OBJECT",
             IllegalMemoryRange => "VALIDATION_ERROR_ILLEGAL_MEMORY_RANGE",
@@ -49,8 +75,6 @@ impl ValidationError {
         }
     }
 }
-
-pub type Result<T> = std::result::Result<T, ValidationError>;
 
 /// A read-only view to a serialized mojo message.
 pub struct MessageView<'b> {
@@ -77,7 +101,7 @@ impl<'b> MessageView<'b> {
         match this.header.header.version {
             0 => {
                 if this.header.header.size as usize != data::MESSAGE_HEADER_V0_SIZE {
-                    return Err(ValidationError::UnexpectedStructHeader);
+                    return Err(ValidationError::new(ValidationErrorKind::UnexpectedStructHeader));
                 }
 
                 // Either of these flags require the request_id field, which
@@ -86,22 +110,24 @@ impl<'b> MessageView<'b> {
                     data::MessageHeaderFlags::EXPECTS_RESPONSE
                         | data::MessageHeaderFlags::IS_RESPONSE,
                 ) {
-                    return Err(ValidationError::MessageHeaderMissingRequestId);
+                    return Err(ValidationError::new(
+                        ValidationErrorKind::MessageHeaderMissingRequestId,
+                    ));
                 }
             }
             1 => {
                 if this.header.header.size as usize != data::MESSAGE_HEADER_V1_SIZE {
-                    return Err(ValidationError::UnexpectedStructHeader);
+                    return Err(ValidationError::new(ValidationErrorKind::UnexpectedStructHeader));
                 }
             }
             2 => {
                 if this.header.header.size as usize != data::MESSAGE_HEADER_V2_SIZE {
-                    return Err(ValidationError::UnexpectedStructHeader);
+                    return Err(ValidationError::new(ValidationErrorKind::UnexpectedStructHeader));
                 }
             }
             _ => {
                 if (this.header.header.size as usize) < data::MESSAGE_HEADER_V2_SIZE {
-                    return Err(ValidationError::UnexpectedStructHeader);
+                    return Err(ValidationError::new(ValidationErrorKind::UnexpectedStructHeader));
                 }
             }
         }
@@ -110,7 +136,7 @@ impl<'b> MessageView<'b> {
         if this.header.flags.contains(
             data::MessageHeaderFlags::EXPECTS_RESPONSE | data::MessageHeaderFlags::IS_RESPONSE,
         ) {
-            return Err(ValidationError::MessageHeaderInvalidFlags);
+            return Err(ValidationError::new(ValidationErrorKind::MessageHeaderInvalidFlags));
         }
 
         Ok(this)
@@ -128,23 +154,26 @@ impl<'b> MessageView<'b> {
 
         // Ensure alignment requirement is met.
         if offset % data::OBJECT_ALIGNMENT != 0 {
-            return Err(ValidationError::MisalignedObject);
+            return Err(ValidationError::new(ValidationErrorKind::MisalignedObject));
         }
 
         // Read header to know how many bytes to take.
         let struct_header: data::StructHeader = bytemuck::pod_read_unaligned(
             self.buf
                 .get(offset..offset + size_of::<data::StructHeader>())
-                .ok_or(ValidationError::IllegalMemoryRange)?,
+                .ok_or_else(|| ValidationError::new(ValidationErrorKind::IllegalMemoryRange))?,
         );
 
         let Some(end) = offset.checked_add(struct_header.size as usize) else {
-            return Err(ValidationError::IllegalMemoryRange);
+            return Err(ValidationError::new(ValidationErrorKind::IllegalMemoryRange));
         };
 
         Ok(MessageViewChunk {
             message: self,
-            data: self.buf.get(offset..end).ok_or(ValidationError::IllegalMemoryRange)?,
+            data: self
+                .buf
+                .get(offset..end)
+                .ok_or_else(|| ValidationError::new(ValidationErrorKind::IllegalMemoryRange))?,
             _phantom: std::marker::PhantomData::<T>,
         })
     }
@@ -167,7 +196,7 @@ impl<'b> MessageView<'b> {
 
     fn validate<I: mojom::Interface>(&self, is_response: bool) -> Result<()> {
         let Some(method_info) = I::get_method_info(self.header.name) else {
-            return Err(ValidationError::MessageHeaderUnknownMethod);
+            return Err(ValidationError::new(ValidationErrorKind::MessageHeaderUnknownMethod));
         };
 
         self.validate_impl(method_info, is_response)
@@ -179,7 +208,7 @@ impl<'b> MessageView<'b> {
 
         // Ensure the message is the kind we are expected.
         if is_response != self.header.flags.contains(data::MessageHeaderFlags::IS_RESPONSE) {
-            return Err(ValidationError::MessageHeaderInvalidFlags);
+            return Err(ValidationError::new(ValidationErrorKind::MessageHeaderInvalidFlags));
         }
 
         // If the request expects a response, ensure the interface bindings
@@ -188,7 +217,7 @@ impl<'b> MessageView<'b> {
             && (method_info.validate_response.is_some()
                 != self.header.flags.contains(data::MessageHeaderFlags::EXPECTS_RESPONSE))
         {
-            return Err(ValidationError::MessageHeaderInvalidFlags);
+            return Err(ValidationError::new(ValidationErrorKind::MessageHeaderInvalidFlags));
         }
 
         // Validate the request or response.
@@ -196,7 +225,7 @@ impl<'b> MessageView<'b> {
             if let Some(validate) = method_info.validate_response {
                 validate(&mut ctx)
             } else {
-                Err(ValidationError::MessageHeaderUnknownMethod)
+                Err(ValidationError::new(ValidationErrorKind::MessageHeaderUnknownMethod))
             }
         } else {
             (method_info.validate_request)(&mut ctx)
@@ -228,7 +257,7 @@ impl<T: ?Sized> AbsolutePointer<T> {
         chunk: &MessageViewChunk<'_, '_, U>,
     ) -> Result<Self> {
         if rel.offset > u32::MAX as _ {
-            return Err(ValidationError::IllegalPointer);
+            return Err(ValidationError::new(ValidationErrorKind::IllegalPointer));
         }
 
         let ptr_offset_in_object =
@@ -300,7 +329,7 @@ impl<'a, 'b: 'a> ValidationContext<'a, 'b> {
         ptr: AbsolutePointer<T>,
     ) -> Result<MessageViewChunk<'a, 'b, T>> {
         if ptr.offset < self.valid_offset {
-            return Err(ValidationError::IllegalMemoryRange);
+            return Err(ValidationError::new(ValidationErrorKind::IllegalMemoryRange));
         }
 
         let chunk = self.message.get_struct_chunk(ptr)?;
