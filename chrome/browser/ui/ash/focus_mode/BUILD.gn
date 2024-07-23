@@ -12,6 +12,8 @@ static_library("focus_mode") {
     "chrome_focus_mode_delegate.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//base",

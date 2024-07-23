@@ -14,6 +14,8 @@ static_library("annotator") {
     "annotator_client_impl.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/public/cpp",

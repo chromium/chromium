@@ -14,6 +14,8 @@ static_library("device_scheduled_reboot") {
     "scheduled_reboot_dialog.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/public/cpp",

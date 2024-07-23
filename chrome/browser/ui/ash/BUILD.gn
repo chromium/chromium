@@ -109,6 +109,8 @@ static_library("ash") {
     "window_properties.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//apps",
     "//ash",
