@@ -18,15 +18,11 @@ import java.util.List;
  * build rules.
  */
 public interface TinkerTankDelegate {
-    public default boolean isEnabled() {
-        return false;
-    }
-
     public void maybeShowBottomSheet(
             Activity activity,
             BottomSheetController bottomSheetController,
             Supplier<TabModelSelector> tabModelSelectorSupplier);
 
-    public default void maybeShowForSelectedTabs(
-            Activity activity, BottomSheetController bottomSheetController, List<Tab> tabs) {}
+    public void maybeShowForSelectedTabs(
+            Activity activity, BottomSheetController bottomSheetController, List<Tab> tabs);
 }
