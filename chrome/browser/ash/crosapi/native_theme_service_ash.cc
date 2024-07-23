@@ -60,10 +60,6 @@ mojom::NativeThemeInfoPtr NativeThemeServiceAsh::GetNativeThemeInfo() {
   info->dark_mode = theme->ShouldUseDarkColors();
   info->caret_blink_interval = theme->GetCaretBlinkInterval();
 
-  if (!chromeos::features::IsJellyEnabled()) {
-    return info;
-  }
-
   std::optional<ui::ColorProviderKey::SchemeVariant> scheme =
       theme->scheme_variant();
   if (scheme) {
