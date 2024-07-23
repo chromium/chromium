@@ -43,7 +43,7 @@ class WebOptionElement;
 // Provides readonly access to some properties of a DOM input element node.
 class BLINK_EXPORT WebInputElement final : public WebFormControlElement {
  public:
-  WebInputElement() : WebFormControlElement() {}
+  WebInputElement() = default;
   WebInputElement(const WebInputElement& element) = default;
 
   WebInputElement& operator=(const WebInputElement& element) {
@@ -54,17 +54,11 @@ class BLINK_EXPORT WebInputElement final : public WebFormControlElement {
     WebFormControlElement::Assign(element);
   }
 
-  // This returns true for all of textfield-looking types such as text,
-  // password, search, email, url, and number.
+  // Returns true for all of textfield-looking types such as text, password,
+  // search, email, url, and number.
   bool IsTextField() const;
-  // This returns true only for type=text.
-  bool IsText() const;
-  bool IsEmailField() const;
-  bool IsPasswordField() const;
-  bool IsImageButton() const;
-  bool IsRadioButton() const;
-  bool IsCheckbox() const;
-  bool IsPasswordFieldForAutofill() const;
+  // Makes `FormControlType()` return `mojom::FormControlType::kInputPassword`
+  // for the rest of the element's life.
   void SetHasBeenPasswordField();
   void SetActivatedSubmit(bool);
   int size() const;

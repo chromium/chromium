@@ -51,49 +51,8 @@ bool WebInputElement::IsTextField() const {
   return ConstUnwrap<HTMLInputElement>()->IsTextField();
 }
 
-bool WebInputElement::IsText() const {
-  return ConstUnwrap<HTMLInputElement>()->IsTextField() &&
-         ConstUnwrap<HTMLInputElement>()->FormControlType() !=
-             FormControlType::kInputNumber;
-}
-
-bool WebInputElement::IsEmailField() const {
-  return ConstUnwrap<HTMLInputElement>()->FormControlType() ==
-         FormControlType::kInputEmail;
-}
-
-bool WebInputElement::IsPasswordField() const {
-  return ConstUnwrap<HTMLInputElement>()->FormControlType() ==
-         FormControlType::kInputPassword;
-}
-
 void WebInputElement::SetHasBeenPasswordField() {
   Unwrap<HTMLInputElement>()->SetHasBeenPasswordField();
-}
-
-bool WebInputElement::IsPasswordFieldForAutofill() const {
-  if (ConstUnwrap<HTMLInputElement>()->IsTextField() &&
-      ConstUnwrap<HTMLInputElement>()->HasBeenPasswordField()) {
-    return true;
-  }
-
-  return ConstUnwrap<HTMLInputElement>()->FormControlType() ==
-         FormControlType::kInputPassword;
-}
-
-bool WebInputElement::IsImageButton() const {
-  return ConstUnwrap<HTMLInputElement>()->FormControlType() ==
-         FormControlType::kInputImage;
-}
-
-bool WebInputElement::IsRadioButton() const {
-  return ConstUnwrap<HTMLInputElement>()->FormControlType() ==
-         FormControlType::kInputRadio;
-}
-
-bool WebInputElement::IsCheckbox() const {
-  return ConstUnwrap<HTMLInputElement>()->FormControlType() ==
-         FormControlType::kInputCheckbox;
 }
 
 void WebInputElement::SetActivatedSubmit(bool activated) {

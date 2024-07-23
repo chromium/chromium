@@ -448,7 +448,8 @@ mojom::FocusedFieldType AutofillAgent::FocusStateNotifier::GetFieldType(
       blink::mojom::FormControlType::kInputSearch) {
     return mojom::FocusedFieldType::kFillableSearchField;
   }
-  if (input_element.IsPasswordFieldForAutofill()) {
+  if (input_element.FormControlTypeForAutofill() ==
+      blink::mojom::FormControlType::kInputPassword) {
     return mojom::FocusedFieldType::kFillablePasswordField;
   }
   if (agent_->password_autofill_agent_->IsUsernameInputField(input_element)) {
@@ -1323,8 +1324,12 @@ void AutofillAgent::AcceptDataListSuggestion(
   }
   std::u16string new_value = suggested_value;
   // If this element takes multiple values then replace the last part with
-  // the suggestion.
-  if (input_element.IsMultiple() && input_element.IsEmailField()) {
+  // the suggestion. We intentionally use `FormControlType()` instead of
+  // `FormControlTypeForAutofill()` because it does not matter here if the field
+  // has ever been a password field before.
+  if (input_element.IsMultiple() &&
+      input_element.FormControlType() ==  // nocheck
+          blink::mojom::FormControlType::kInputEmail) {
     std::u16string value = input_element.EditingValue().Utf16();
     std::vector<std::u16string_view> parts = base::SplitStringPiece(
         value, u",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -1450,11 +1455,13 @@ void AutofillAgent::ShowSuggestions(
   }
 
   // Password field elements should only have suggestions shown by the password
-  // AutofillAgent. We call IsPasswordField() instead of
-  // IsPasswordFieldForAutofill() because we are interested in whether the field
-  // is *currently* a password field, not whether it has ever been a password
-  // field.
-  if (input_element && input_element.IsPasswordField() &&  // nocheck
+  // AutofillAgent. We call `FormControlType()` instead of
+  // `FormControlTypeForAutofill()` because we are interested in whether the
+  // field is *currently* a password field, not whether it has ever been a
+  // password field.
+  if (input_element &&
+      input_element.FormControlType()  // nocheck
+          == blink::mojom::FormControlType::kInputPassword &&
       !config_.query_password_suggestions) {
     return;
   }
@@ -1897,7 +1904,8 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
 
   const auto input_element = element.DynamicTo<WebInputElement>();
   if (input_element && !element.Value().IsEmpty() &&
-      (input_element.IsPasswordFieldForAutofill() ||
+      (input_element.FormControlTypeForAutofill() ==
+           blink::mojom::FormControlType::kInputPassword ||
        password_autofill_agent_->IsUsernameInputField(input_element))) {
     password_autofill_agent_->UpdatePasswordStateForTextChange(input_element);
   }
