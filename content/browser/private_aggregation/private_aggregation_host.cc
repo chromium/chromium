@@ -24,7 +24,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
@@ -252,8 +251,7 @@ void PrivateAggregationHost::ContributeToHistogram(
         contribution_ptrs) {
   const url::Origin& reporting_origin =
       receiver_set_.current_context().worklet_origin;
-  CHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin),
-        base::NotFatalUntil::M128);
+  CHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin));
 
   if (!GetContentClient()->browser()->IsPrivateAggregationAllowed(
           &*browser_context_, receiver_set_.current_context().top_frame_origin,
@@ -271,8 +269,7 @@ void PrivateAggregationHost::ContributeToHistogram(
       receiver_set_.current_context().contributions;
 
   // Null pointers should fail mojo validation.
-  CHECK(base::ranges::none_of(incoming_ptrs, &ContributionPtr::is_null),
-        base::NotFatalUntil::M128);
+  CHECK(base::ranges::none_of(incoming_ptrs, &ContributionPtr::is_null));
 
   if (base::ranges::any_of(incoming_ptrs,
                            [](const ContributionPtr& contribution) {
@@ -488,8 +485,7 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
   base::ElapsedTimer timeout_or_disconnect_timer;
 
   const url::Origin& reporting_origin = receiver_context.worklet_origin;
-  CHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin),
-        base::NotFatalUntil::M128);
+  CHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin));
 
   if (!GetContentClient()->browser()->IsPrivateAggregationAllowed(
           &*browser_context_, receiver_context.top_frame_origin,
@@ -571,7 +567,7 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
           /*api=*/receiver_context.api_for_budgeting);
 
   // The origin should be potentially trustworthy.
-  CHECK(budget_key.has_value(), base::NotFatalUntil::M128);
+  CHECK(budget_key.has_value());
 
   on_report_request_details_received_.Run(
       std::move(report_request_generator),

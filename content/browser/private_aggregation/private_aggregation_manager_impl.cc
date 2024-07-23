@@ -23,7 +23,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -99,8 +98,8 @@ PrivateAggregationManagerImpl::PrivateAggregationManagerImpl(
     : budgeter_(std::move(budgeter)),
       host_(std::move(host)),
       storage_partition_(storage_partition) {
-  CHECK(budgeter_, base::NotFatalUntil::M128);
-  CHECK(host_, base::NotFatalUntil::M128);
+  CHECK(budgeter_);
+  CHECK(host_);
 }
 
 PrivateAggregationManagerImpl::~PrivateAggregationManagerImpl() = default;
@@ -179,7 +178,7 @@ void PrivateAggregationManagerImpl::OnReportRequestDetailsReceivedFromHost(
 }
 
 AggregationService* PrivateAggregationManagerImpl::GetAggregationService() {
-  CHECK(storage_partition_, base::NotFatalUntil::M128);
+  CHECK(storage_partition_);
   return AggregationService::GetService(storage_partition_->browser_context());
 }
 
@@ -243,7 +242,7 @@ void PrivateAggregationManagerImpl::OnContributionsFinalized(
             AggregatableReportRequest::DelayType::Unscheduled,
             std::move(immediate_debug_reporting_path),
             report_request.debug_key(), report_request.additional_fields());
-    CHECK(debug_request.has_value(), base::NotFatalUntil::M128);
+    CHECK(debug_request.has_value());
 
     aggregation_service->AssembleAndSendReport(
         std::move(debug_request.value()));
