@@ -503,6 +503,29 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Browser.MainThreadsCongestion.1MinAfterResume" units="janks"
+    expires_after="2024-12-08">
+  <owner>kawasin@google.com</owner>
+  <owner>baseos-perf@google.com</owner>
+  <summary>
+    This metric is a specialized subset of the `Browser.MainThreadsCongestion`
+    metric, designed to capture the metrics specifically during the first minute
+    after a device resumes from suspend. After the main message loop starts, the
+    calculation for Browser.MainThreadsCongestion is done on a periodic 30
+    second interval. Any calculations that occur within a minute of resuming
+    will also emit this metric. Each 30 second duration is divided into 100ms
+    intervals. This metric counts the number of these intervals that were
+    &quot;congested&quot;. An interval is congested if during it the UI or IO
+    thread executes an &quot;important&quot; task that was queued more than 100
+    ms ago, or a non-important task or a native event handler that started
+    executing more than 100 ms ago. See
+    https://docs.google.com/document/d/1vDSGFvJblh7yJ3U3RVB_7qZLubyfTbQdQjuN1GoUNkc/edit
+    for more details.
+
+    This is supported by ChromeOS only.
+  </summary>
+</histogram>
+
 <histogram
     name="Browser.MainThreadsCongestion.ExtensionContentScripts.{NumExtensions}"
     units="janks" expires_after="2024-12-24">

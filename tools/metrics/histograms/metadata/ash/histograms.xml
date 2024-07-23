@@ -3576,6 +3576,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.EventLatency.{EventType}.TotalLatency.1MinAfterResume"
+    units="microseconds" expires_after="2024-12-30">
+  <owner>kawasin@google.com</owner>
+  <owner>baseos-perf@google.com</owner>
+  <summary>
+    Tracks total latency of {EventType} for ash UI, from when the user input
+    causing the event is generated until the frame caused by the event is
+    submitted by the GPU service and presented successfully on the screen.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+
+    This metric is only recorded for 1 minute after the device is resumed.
+  </summary>
+  <token key="EventType">
+    <variant name="KeyPressed"/>
+    <variant name="MousePressed"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.ExtendedUpdates.DialogEvent"
     enum="ExtendedUpdatesDialogEventEnum" expires_after="2025-05-01">
   <owner>aluh@chromium.org</owner>
