@@ -251,11 +251,9 @@ bool FedCmAccountSelectionView::Show(
         // with most recently signed in accounts at the top to reduce the
         // exposure of extra UI surfaces and to work around the account picker
         // not having a back button.
-        state_ = State::MULTI_ACCOUNT_PICKER;
-        account_selection_view_->ShowMultiAccountPicker(
-            idp_display_data_list_,
-            /*show_back_button=*/false,
-            /*is_choose_an_account=*/false);
+        ShowMultiAccountPicker(idp_display_data_list_,
+                               /*show_back_button=*/false,
+                               /*is_choose_an_account=*/false);
       } else {
         state_ = State::REQUEST_PERMISSION;
         account_selection_view_->ShowRequestPermissionDialog(
@@ -269,12 +267,14 @@ bool FedCmAccountSelectionView::Show(
             /*show_back_button=*/accounts_or_mismatches_size > 1u ||
                 supports_add_account);
       } else {
-        state_ = State::NEWLY_LOGGED_IN_ACCOUNT_PICKER;
-        account_selection_view_->ShowMultiAccountPicker(
+        ShowMultiAccountPicker(
             new_accounts_idp_display_data_,
             /*show_back_button=*/accounts_or_mismatches_size >
                 new_idp_data.accounts.size(),
             /*is_choose_an_account=*/false);
+        // Override the state to NEWLY_LOGGED_IN_ACCOUNT_PICKER so the back
+        // button works correctly.
+        state_ = State::NEWLY_LOGGED_IN_ACCOUNT_PICKER;
       }
     }
   } else if (idp_display_data_list_.size() == 1u &&
@@ -287,10 +287,8 @@ bool FedCmAccountSelectionView::Show(
     } else if (supports_add_account) {
       // The logic to support add account is in ShowMultiAccountPicker for the
       // bubble dialog.
-      state_ = State::MULTI_ACCOUNT_PICKER;
-      account_selection_view_->ShowMultiAccountPicker(
-          idp_display_data_list_, /*show_back_button=*/false,
-          /*is_choose_an_account=*/false);
+      ShowMultiAccountPicker(idp_display_data_list_, /*show_back_button=*/false,
+                             /*is_choose_an_account=*/false);
     } else {
       state_ = State::SINGLE_ACCOUNT_PICKER;
       account_selection_view_->ShowSingleAccountConfirmDialog(
@@ -307,11 +305,9 @@ bool FedCmAccountSelectionView::Show(
     account_selection_view_->ShowSingleReturningAccountDialog(
         idp_display_data_list_);
   } else {
-    state_ = State::MULTI_ACCOUNT_PICKER;
-    account_selection_view_->ShowMultiAccountPicker(
-        idp_display_data_list_,
-        /*show_back_button=*/false,
-        /*is_choose_an_account=*/false);
+    ShowMultiAccountPicker(idp_display_data_list_,
+                           /*show_back_button=*/false,
+                           /*is_choose_an_account=*/false);
   }
 
   if (!GetDialogWidget()) {
@@ -751,11 +747,10 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
         idp_display_data_list_);
     return;
   }
-  state_ = State::MULTI_ACCOUNT_PICKER;
-  account_selection_view_->ShowMultiAccountPicker(
+  ShowMultiAccountPicker(
       idp_display_data_list_,
       /*show_back_button=*/started_as_single_returning_account_,
-      /*is_choose_an_account=*/false);
+      /*is_choose_an_account=*/last_multi_account_is_choose_an_account_);
 }
 
 void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
@@ -910,11 +905,9 @@ content::WebContents* FedCmAccountSelectionView::GetRpWebContents() {
 }
 
 void FedCmAccountSelectionView::OnChooseAnAccountClicked() {
-  state_ = State::MULTI_ACCOUNT_PICKER;
-  account_selection_view_->ShowMultiAccountPicker(
-      idp_display_data_list_,
-      /*show_back_button=*/true,
-      /*is_choose_an_account=*/true);
+  ShowMultiAccountPicker(idp_display_data_list_,
+                         /*show_back_button=*/true,
+                         /*is_choose_an_account=*/true);
   base::UmaHistogramBoolean("Blink.FedCm.ChooseAnAccountSelected.Desktop",
                             true);
 }
@@ -1152,4 +1145,14 @@ void FedCmAccountSelectionView::OnLensOverlayControllerDestroyed() {
 
 void FedCmAccountSelectionView::SetIsLensOverlayShowingForTesting(bool value) {
   is_lens_overlay_showing_ = value;
+}
+
+void FedCmAccountSelectionView::ShowMultiAccountPicker(
+    const std::vector<IdentityProviderDisplayData>& idp_data_list,
+    bool show_back_button,
+    bool is_choose_an_account) {
+  state_ = State::MULTI_ACCOUNT_PICKER;
+  last_multi_account_is_choose_an_account_ = is_choose_an_account;
+  account_selection_view_->ShowMultiAccountPicker(
+      idp_display_data_list_, show_back_button, is_choose_an_account);
 }

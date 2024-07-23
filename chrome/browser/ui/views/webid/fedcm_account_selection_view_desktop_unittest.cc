@@ -1822,14 +1822,32 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
-  // Simulate 'back' clicked.
+  // Simulate second account picked.
+  observer->OnAccountSelected(idp_list[1].accounts[0], idp_list[1],
+                              CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId2));
+  EXPECT_FALSE(account_selection_view_->is_choose_an_account_);
+
+  // Simulate 'back' clicked: now in 'choose an account'.
+  observer->OnBackButtonClicked();
+  EXPECT_TRUE(account_selection_view_->show_back_button_);
+  EXPECT_TRUE(account_selection_view_->is_choose_an_account_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId1, kAccountId2));
+
+  // Simulate 'back' clicked again: now in 'single returning account'.
   observer->OnBackButtonClicked();
   EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_FALSE(account_selection_view_->is_choose_an_account_);
   EXPECT_EQ(TestAccountSelectionView::SheetType::kSingleReturningAccount,
             account_selection_view_->sheet_type_);
   EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId1));
-  EXPECT_FALSE(account_selection_view_->is_choose_an_account_);
 
   // Simulate account picked
   observer->OnAccountSelected(idp_list[0].accounts[0], idp_list[0],
