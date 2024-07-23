@@ -117,7 +117,8 @@
 
 - (void)confirmationAlertPrimaryAction {
   [self.actionHandler didTapActionButton:self.item.type
-                           primaryAction:self.item.primaryAction];
+                           primaryAction:self.item.primaryAction
+                      baseViewController:self.whatsNewScreenshotViewController];
 }
 
 - (void)confirmationAlertSecondaryAction {

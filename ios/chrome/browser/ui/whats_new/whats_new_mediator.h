@@ -41,9 +41,6 @@ class UrlLoadingBrowserAgent;
 // Settings command handler.
 @property(nonatomic, weak) id<SettingsCommands> settingsHandler;
 
-// The view controller that presents the popup menu.
-@property(nonatomic, weak) UIViewController* baseViewController;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_WHATS_NEW_WHATS_NEW_MEDIATOR_H_

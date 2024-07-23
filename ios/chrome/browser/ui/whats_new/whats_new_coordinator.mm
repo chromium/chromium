@@ -102,7 +102,6 @@ NSString* const kTableViewNavigationDismissButtonId =
                                         animated:YES
                                       completion:nil];
   self.whatsNewStartTime = base::TimeTicks::Now();
-  self.mediator.baseViewController = self.tableViewController;
 
   [super start];
 }
@@ -112,6 +111,7 @@ NSString* const kTableViewNavigationDismissButtonId =
     [self.whatsNewDetailCoordinator stop];
     self.whatsNewDetailCoordinator = nil;
   }
+
   self.mediator = nil;
   [self.navigationController.presentingViewController
       dismissViewControllerAnimated:YES
