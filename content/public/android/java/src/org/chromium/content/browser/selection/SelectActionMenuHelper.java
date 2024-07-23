@@ -164,9 +164,9 @@ public class SelectActionMenuHelper {
                         isSelectionPassword,
                         selectedText));
 
-        SelectionMenuGroup primarySelectionAssistItems =
+        SelectionMenuGroup primaryAssistItems =
                 getPrimaryAssistItems(context, selectedText, classificationResult);
-        if (primarySelectionAssistItems != null) itemGroups.add(primarySelectionAssistItems);
+        if (primaryAssistItems != null) itemGroups.add(primaryAssistItems);
 
         SelectionMenuGroup secondaryAssistItems =
                 getSecondaryAssistItems(
@@ -252,7 +252,6 @@ public class SelectActionMenuHelper {
             @Nullable Result classificationResult,
             String selectedText) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return null;
-
         // We have to use android.R.id.textAssist as group id to make framework show icons for
         // menu items if there is selected text.
         @IdRes int groupId = selectedText.isEmpty() ? Menu.NONE : android.R.id.textAssist;

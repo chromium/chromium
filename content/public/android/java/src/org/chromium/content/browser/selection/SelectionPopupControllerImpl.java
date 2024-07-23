@@ -649,7 +649,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         if (!isActionModeValid() && hasSelection()) clearSelection();
     }
 
-    void dismissTextHandles() {
+    private void dismissTextHandles() {
         if (mWebContents.getRenderWidgetHostView() != null) {
             mWebContents.getRenderWidgetHostView().dismissTextHandles();
         }
