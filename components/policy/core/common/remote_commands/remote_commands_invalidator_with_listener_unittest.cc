@@ -26,7 +26,7 @@ using ::testing::WithArgs;
 
 namespace policy {
 
-constexpr char kRemoteCommandsInvalidationType[] = "remote_command";
+constexpr char kRemoteCommandsInvalidationType[] = "DEVICE_REMOTE_COMMAND";
 constexpr PolicyInvalidationScope kInvalidationScope =
     PolicyInvalidationScope::kDevice;
 

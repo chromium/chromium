@@ -9,6 +9,7 @@
 #include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
@@ -24,13 +25,17 @@ namespace policy {
 
 namespace {
 
-// TODO(b/351754537): Decide on final invalidation type name.
-constexpr char RemoteCommandsInvalidatorType[] = "remote_command";
+constexpr char kDeiceRemoteCommandsInvalidatorTypeName[] =
+    "DEVICE_REMOTE_COMMAND";
+constexpr char kUserRemoteCommandsInvalidatorTypeName[] =
+    "CONSUMER_USER_REMOTE_COMMAND";
 
 }  // namespace
 
-RemoteCommandsInvalidator::RemoteCommandsInvalidator(std::string owner_name)
-    : owner_name_(std::move(owner_name)) {}
+RemoteCommandsInvalidator::RemoteCommandsInvalidator(
+    std::string owner_name,
+    PolicyInvalidationScope scope)
+    : owner_name_(std::move(owner_name)), scope_(scope) {}
 
 RemoteCommandsInvalidator::~RemoteCommandsInvalidator() {
   CHECK_EQ(SHUT_DOWN, state_);
@@ -172,7 +177,16 @@ void RemoteCommandsInvalidator::OnInvalidationReceived(
 }
 
 std::string RemoteCommandsInvalidator::GetType() const {
-  return RemoteCommandsInvalidatorType;
+  switch (scope_) {
+    case PolicyInvalidationScope::kUser:
+      return kUserRemoteCommandsInvalidatorTypeName;
+    case PolicyInvalidationScope::kDevice:
+    case PolicyInvalidationScope::kCBCM:
+      return kDeiceRemoteCommandsInvalidatorTypeName;
+    case PolicyInvalidationScope::kDeviceLocalAccount:
+      NOTREACHED_NORETURN()
+          << "Device local account commands are not supported.";
+  }
 }
 
 void RemoteCommandsInvalidator::ReloadPolicyData(

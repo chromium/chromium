@@ -30,7 +30,8 @@ namespace policy {
 class MockRemoteCommandInvalidator : public RemoteCommandsInvalidator {
  public:
   MockRemoteCommandInvalidator()
-      : RemoteCommandsInvalidator("RemoteCommands.Test") {}
+      : RemoteCommandsInvalidator("RemoteCommands.Test",
+                                  PolicyInvalidationScope::kDevice) {}
   MockRemoteCommandInvalidator(const MockRemoteCommandInvalidator&) = delete;
   MockRemoteCommandInvalidator& operator=(const MockRemoteCommandInvalidator&) =
       delete;

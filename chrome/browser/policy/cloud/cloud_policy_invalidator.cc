@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -31,6 +31,12 @@
 namespace policy {
 
 namespace {
+
+constexpr char kDevicePolicyInvalidatorTypeName[] = "DEVICE_POLICY_FETCH";
+constexpr char kBrowserPolicyInvalidatorTypeName[] = "BROWSER_POLICY_FETCH";
+constexpr char kUserPolicyInvalidatorTypeName[] = "USER_POLICY_FETCH";
+constexpr char kDeviceLocalAccountPolicyInvalidatorTypeNameTemplate[] =
+    "PUBLIC_ACCOUNT_POLICY_FETCH-%s";
 
 MetricPolicyRefresh GetPolicyRefreshMetric(bool invalidations_enabled,
                                            bool policy_changed,
@@ -381,12 +387,15 @@ void CloudPolicyInvalidator::OnInvalidationReceived(
 std::string CloudPolicyInvalidator::GetType() const {
   switch (scope_) {
     case PolicyInvalidationScope::kUser:
+      return kUserPolicyInvalidatorTypeName;
     case PolicyInvalidationScope::kDevice:
+      return kDevicePolicyInvalidatorTypeName;
     case PolicyInvalidationScope::kCBCM:
-      return "policy";
+      return kBrowserPolicyInvalidatorTypeName;
     case PolicyInvalidationScope::kDeviceLocalAccount:
-      return base::StrCat(
-          {"device_local_account_policy-", device_local_account_id_});
+      return base::StringPrintf(
+          kDeviceLocalAccountPolicyInvalidatorTypeNameTemplate,
+          device_local_account_id_.c_str());
   }
 }
 
