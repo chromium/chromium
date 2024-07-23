@@ -81,7 +81,6 @@ static_library("ui") {
     "autofill/payments/credit_card_scanner_view_delegate.h",
     "autofill/payments/payments_ui_constants.h",
     "autofill/payments/view_factory.h",
-    "autofill/popup_constants.h",
     "autofill/popup_controller_common.cc",
     "autofill/popup_controller_common.h",
     "autofill/risk_util.cc",
