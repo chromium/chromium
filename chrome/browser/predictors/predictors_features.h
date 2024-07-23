@@ -58,6 +58,8 @@ size_t GetMaxInflightPrefetches();
 
 BASE_DECLARE_FEATURE(kAvoidLoadingPredictorPrefetchDuringBrowserStartup);
 
+BASE_DECLARE_FEATURE(kLoadingPredictorLimitPreconnectSocketCount);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_PREDICTORS_PREDICTORS_FEATURES_H_
