@@ -633,6 +633,11 @@
       status: "experimental",
     },
     {
+      // https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md
+      name: "CanvasPlaceElement",
+      status: "experimental",
+    },
+    {
       // Kill switch for https://crbug.com/330506337.
       name: "CanvasUsesArcPaintOp",
       status: "stable",
