@@ -94,6 +94,7 @@ static_library("file_manager") {
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/dlp/dialogs",
+    "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/smb_client",
     "//chrome/browser/ash/system_web_apps/apps",

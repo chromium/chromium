@@ -2284,6 +2284,7 @@ if (!is_android) {
         "//chrome/browser/ash/policy/handlers:test_support",
         "//chrome/browser/ash/policy/remote_commands",
         "//chrome/browser/ash/policy/remote_commands:test_support",
+        "//chrome/browser/ash/policy/skyvault",
         "//chrome/browser/ash/printing",
         "//chrome/browser/ash/printing:test_support",
         "//chrome/browser/ash/printing/print_management",
@@ -8439,8 +8440,6 @@ test("unit_tests") {
       "../browser/ui/window_sizer/window_sizer_unittest.cc",
     ]
     sources += [
-      "../browser/ash/policy/skyvault/signin_notification_helper_unittest.cc",
-      "../browser/ash/policy/skyvault/skyvault_rename_handler_unittest.cc",
       "../browser/browser_process_platform_part_ash_unittest.cc",
       "../browser/component_updater/cros_component_installer_chromeos_unittest.cc",
       "../browser/component_updater/metadata_table_chromeos_unittest.cc",
@@ -8644,6 +8643,7 @@ test("unit_tests") {
       "//chrome/browser/ash/policy/enrollment",
       "//chrome/browser/ash/policy/remote_commands/crd:test_support",
       "//chrome/browser/ash/policy/reporting/metrics_reporting",
+      "//chrome/browser/ash/policy/skyvault",
       "//chrome/browser/ash/printing:test_support",
       "//chrome/browser/ash/release_notes",
       "//chrome/browser/ash/smb_client:test_support",

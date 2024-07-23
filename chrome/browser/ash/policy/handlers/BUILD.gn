@@ -61,8 +61,10 @@ static_library("handlers") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
@@ -107,7 +109,11 @@ static_library("handlers") {
     "//chromeos/ash/components/dbus/system_proxy:system_proxy_proto",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/skyvault",
+  ]
 }
 
 static_library("test_support") {
