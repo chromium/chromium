@@ -402,6 +402,10 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   // To keep the record of any render errors reported from the infra during
   // the life cycle of the context.
   bool render_error_occurred_ = false;
+
+  // If a sink ID is given via the constructor or `setSinkId()` method,
+  // this is set to `true`.
+  bool is_sink_id_given_ = false;
 };
 
 }  // namespace blink
