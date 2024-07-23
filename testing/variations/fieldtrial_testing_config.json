@@ -24272,24 +24272,6 @@
             ]
         }
     ],
-    "VariableRefreshRateBorealis": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "ignore-availability": "false"
-                    },
-                    "enable_features": [
-                        "EnableVariableRefreshRate"
-                    ]
-                }
-            ]
-        }
-    ],
     "VerifyDidCommitParams": [
         {
             "platforms": [
