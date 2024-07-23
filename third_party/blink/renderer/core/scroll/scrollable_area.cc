@@ -1467,10 +1467,9 @@ void ScrollableArea::EnqueueScrollSnapChangingEvent() const {
 }
 
 ScrollOffset ScrollableArea::GetWebExposedScrollOffset() const {
-  ScrollOffset scroll_offset = GetScrollOffset();
-  if (RuntimeEnabledFeatures::WebExposedScrollOffsetEnabled()) {
-    return gfx::ToFlooredVector2d(scroll_offset);
-  }
+  ScrollOffset scroll_offset =
+      SnapScrollOffsetToPhysicalPixels(GetScrollOffset());
+
   // Ensure that, if fractional scroll offsets are not enabled, the scroll
   // offset is an floored value.
   CHECK_EQ(gfx::ToFlooredVector2d(scroll_offset), scroll_offset);

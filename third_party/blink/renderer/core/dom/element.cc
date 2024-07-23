@@ -2192,6 +2192,7 @@ void Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options) {
           box->Style()->EffectiveZoom());
     }
 
+    new_offset = SnapScrollOffsetToPhysicalPixels(new_offset);
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndPosition(
             scrollable_area->ScrollOffsetToPosition(new_offset),
@@ -2273,7 +2274,8 @@ void Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
         frame->LayoutZoomFactor());
   }
 
-  gfx::PointF new_position = viewport->ScrollOffsetToPosition(new_offset);
+  gfx::PointF new_position = viewport->ScrollOffsetToPosition(
+      SnapScrollOffsetToPhysicalPixels(new_offset));
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndPosition(
           new_position, scroll_to_options->hasLeft(),

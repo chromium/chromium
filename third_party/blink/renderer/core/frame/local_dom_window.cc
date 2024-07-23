@@ -1842,8 +1842,8 @@ void LocalDOMWindow::scrollTo(const ScrollToOptions* scroll_to_options) const {
                GetFrame()->LayoutZoomFactor();
   }
 
-  gfx::PointF new_scaled_position =
-      viewport->ScrollOffsetToPosition(ScrollOffset(scaled_x, scaled_y));
+  gfx::PointF new_scaled_position = viewport->ScrollOffsetToPosition(
+      SnapScrollOffsetToPhysicalPixels(ScrollOffset(scaled_x, scaled_y)));
 
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndPosition(

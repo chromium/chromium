@@ -115,7 +115,7 @@ class MockScrollableAreaForAnimatorTest
   ScrollOffset GetScrollOffset() const override {
     if (animator)
       return animator->CurrentOffset();
-    return ScrollableArea::GetScrollOffset();
+    return ScrollOffsetInt();
   }
 
   bool SetScrollOffset(const ScrollOffset& offset,
