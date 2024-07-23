@@ -212,6 +212,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/shelf/app_service",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/ash/user_education",
     "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
     "//chrome/browser/ui/quick_answers",
     "//chrome/browser/web_applications",
@@ -349,5 +350,15 @@ if (is_chromeos_device) {
     testonly = true
 
     deps = [ "//chrome/browser/ui/ash/shelf:integration_tests" ]
+  }
+} else {
+  group("interactive_ui_tests") {
+    testonly = true
+
+    deps = [
+      "//chrome/browser/ui/ash/desks:interactive_ui_tests",
+      "//chrome/browser/ui/ash/picker:interactive_ui_tests",
+      "//chrome/browser/ui/ash/user_education/welcome_tour:interactive_ui_tests",
+    ]
   }
 }

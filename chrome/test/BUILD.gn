@@ -4698,8 +4698,6 @@ if (!is_android) {
         "../browser/ui/ash/system_tray_client_impl_browsertest.cc",
         "../browser/ui/ash/system_tray_tray_cast_browsertest_media_router_chromeos.cc",
         "../browser/ui/ash/thumbnail_loader_browsertest.cc",
-        "../browser/ui/ash/user_education/chrome_user_education_delegate_browsertest.cc",
-        "../browser/ui/ash/user_education/views/help_bubble_factory_views_ash_browsertest.cc",
         "../browser/ui/ash/volume_controller_browsertest.cc",
         "../browser/ui/browser_finder_chromeos_browsertest.cc",
         "../browser/ui/browser_navigator_browsertest_chromeos.cc",
@@ -5157,6 +5155,8 @@ if (!is_android) {
         "//chrome/browser/ui/ash/sharesheet:browser_tests",
         "//chrome/browser/ui/ash/shelf:browser_tests",
         "//chrome/browser/ui/ash/shelf/app_service:browser_tests",
+        "//chrome/browser/ui/ash/user_education:browser_tests",
+        "//chrome/browser/ui/ash/user_education/views:browser_tests",
       ]
     }
     if (safe_browsing_mode == 1) {
@@ -8584,7 +8584,6 @@ test("unit_tests") {
       "../browser/ui/ash/multitask_menu_nudge_unittest.cc",
       "../browser/ui/ash/session_controller_client_impl_unittest.cc",
       "../browser/ui/ash/system_tray_client_impl_unittest.cc",
-      "../browser/ui/ash/user_education/chrome_user_education_delegate_unittest.cc",
       "../browser/ui/ash/wallpaper_controller_client_impl_unittest.cc",
       "../browser/ui/ash/window_pin_util_ash_unittest.cc",
       "../browser/ui/chromeos/magic_boost/magic_boost_card_controller_unittest.cc",
@@ -8878,6 +8877,7 @@ test("unit_tests") {
       "//chrome/browser/ui/ash/projector:unit_tests",
       "//chrome/browser/ui/ash/sharesheet:unit_tests",
       "//chrome/browser/ui/ash/shelf:unit_tests",
+      "//chrome/browser/ui/ash/user_education:unit_tests",
     ]
 
     data_deps += [ "//testing/buildbot/filters:chromeos_filters" ]
@@ -11471,7 +11471,6 @@ if (!is_android && !is_chromeos_device) {
       if (is_chromeos_ash) {
         sources += [
           "../browser/ui/ash/app_list/app_list_interactive_uitest.cc",
-          "../browser/ui/ash/user_education/welcome_tour/welcome_tour_interactive_uitest.cc",
           "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc",
           "../browser/ui/webui/ash/firmware_update_ui/integration_tests/firmware_update_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/device_page/device_settings_interactive_uitest.cc",
@@ -11504,9 +11503,8 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ash/system_web_apps/test_support",
           "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
           "//chrome/browser/ui/ash",
-          "//chrome/browser/ui/ash/desks:interactive_ui_tests",
+          "//chrome/browser/ui/ash:interactive_ui_tests",
           "//chrome/browser/ui/ash/multi_user",
-          "//chrome/browser/ui/ash/picker:interactive_ui_tests",
           "//chrome/test/base/ash/interactive:interactive_ui_tests",
           "//chrome/test/base/ash/interactive:test_support",
           "//chromeos/ash/components/dbus/fwupd",

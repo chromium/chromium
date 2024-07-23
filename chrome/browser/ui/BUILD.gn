@@ -2187,8 +2187,6 @@ static_library("ui") {
       "ash/login_screen_client_impl.cc",
       "ash/login_screen_client_impl.h",
       "ash/login_screen_shown_observer.h",
-      "ash/user_education/chrome_user_education_delegate.cc",
-      "ash/user_education/chrome_user_education_delegate.h",
       "browser_commands_chromeos.cc",
       "browser_commands_chromeos.h",
       "settings_window_manager_chromeos.cc",
@@ -3233,6 +3231,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/sharesheet",
       "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/ash/shelf/app_service",
+      "//chrome/browser/ui/ash/user_education",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/web_applications",
       "//chrome/browser/webshare:storage",
@@ -3595,6 +3594,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/sharesheet",
       "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/ash/shelf/app_service",
+      "//chrome/browser/ui/ash/user_education",
     ]
 
     if (is_chrome_branded) {
