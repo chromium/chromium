@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/http/http_text_based_stream_handle.h"
+#include "net/http/http_stream_pool_handle.h"
 
 #include <memory>
 
+#include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/socket/stream_socket.h"
 
 namespace net {
 
-HttpTextBasedStreamHandle::HttpTextBasedStreamHandle(
-    HttpStreamPool::Group* group,
-    std::unique_ptr<StreamSocket> socket,
-    int64_t generation)
+HttpStreamPoolHandle::HttpStreamPoolHandle(HttpStreamPool::Group* group,
+                                           std::unique_ptr<StreamSocket> socket,
+                                           int64_t generation)
     : group_(group), generation_(generation) {
   CHECK(group);
   CHECK(socket);
@@ -24,14 +24,18 @@ HttpTextBasedStreamHandle::HttpTextBasedStreamHandle(
   set_is_initialized(true);
 }
 
-HttpTextBasedStreamHandle::~HttpTextBasedStreamHandle() {
+HttpStreamPoolHandle::~HttpStreamPoolHandle() {
   Reset();
 }
 
-void HttpTextBasedStreamHandle::Reset() {
+void HttpStreamPoolHandle::Reset() {
   if (socket()) {
     group_->ReleaseStreamSocket(PassSocket(), generation_);
   }
+}
+
+bool HttpStreamPoolHandle::IsPoolStalled() const {
+  return group_->pool()->IsPoolStalled();
 }
 
 }  // namespace net

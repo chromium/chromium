@@ -41,6 +41,7 @@
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/stream_socket.h"
+#include "net/socket/stream_socket_handle.h"
 #include "net/spdy/buffered_spdy_framer.h"
 #include "net/spdy/http2_priority_dependencies.h"
 #include "net/spdy/multiplexed_session.h"
@@ -361,11 +362,11 @@ class NET_EXPORT SpdySession
   // |pool| is the SpdySessionPool that owns us.  Its lifetime must
   // strictly be greater than |this|.
   //
-  // The session begins reading from |client_socket_handle| on a subsequent
+  // The session begins reading from |stream_socket_handle| on a subsequent
   // event loop iteration, so the SpdySession may close immediately afterwards
-  // if the first read of |client_socket_handle| fails.
+  // if the first read of |stream_socket_handle| fails.
   void InitializeWithSocketHandle(
-      std::unique_ptr<ClientSocketHandle> client_socket_handle,
+      std::unique_ptr<StreamSocketHandle> stream_socket_handle,
       SpdySessionPool* pool);
 
   // Just like InitializeWithSocketHandle(), but for use when the session is not
@@ -1021,10 +1022,10 @@ class NET_EXPORT SpdySession
   raw_ptr<SSLConfigService> ssl_config_service_;
 
   // One of these two owns the socket for this session, which is stored in
-  // |socket_|. If |client_socket_handle_| is non-null, this session is on top
+  // |socket_|. If |stream_socket_handle_| is non-null, this session is on top
   // of a socket in a socket pool. If |owned_stream_socket_| is non-null, this
   // session is directly on top of a socket, which is not in a socket pool.
-  std::unique_ptr<ClientSocketHandle> client_socket_handle_;
+  std::unique_ptr<StreamSocketHandle> stream_socket_handle_;
   std::unique_ptr<StreamSocket> owned_stream_socket_;
 
   // This is non-null only if |owned_stream_socket_| is non-null.

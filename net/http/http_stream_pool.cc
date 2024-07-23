@@ -96,6 +96,13 @@ void HttpStreamPool::OnSSLConfigForServersChanged(
   ProcessPendingRequestsInGroups();
 }
 
+bool HttpStreamPool::IsPoolStalled() {
+  if (!ReachedMaxStreamLimit()) {
+    return false;
+  }
+  return FindHighestStalledGroup() != nullptr;
+}
+
 void HttpStreamPool::ProcessPendingRequestsInGroups() {
   // Loop until there is nothing more to do.
   while (true) {

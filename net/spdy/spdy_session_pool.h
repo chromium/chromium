@@ -37,7 +37,7 @@
 
 namespace net {
 
-class ClientSocketHandle;
+class StreamSocketHandle;
 class HostResolver;
 class HttpServerProperties;
 class NetLogWithSource;
@@ -167,17 +167,17 @@ class NET_EXPORT SpdySessionPool
   // Returns a net error code on failure, in which case the value of |*session|
   // is undefined.
   //
-  // Note that the SpdySession begins reading from |client_socket_handle| on a
+  // Note that the SpdySession begins reading from |stream_socket_handle| on a
   // subsequent event loop iteration, so it may be closed immediately afterwards
-  // if the first read of |client_socket_handle| fails.
+  // if the first read of |stream_socket_handle| fails.
   int CreateAvailableSessionFromSocketHandle(
       const SpdySessionKey& key,
-      std::unique_ptr<ClientSocketHandle> client_socket_handle,
+      std::unique_ptr<StreamSocketHandle> stream_socket_handle,
       const NetLogWithSource& net_log,
       base::WeakPtr<SpdySession>* session);
 
   // Just like the above method, except it takes a SocketStream instead of a
-  // ClientSocketHandle, and separate connect timing information. When this
+  // StreamSocketHandle, and separate connect timing information. When this
   // constructor is used, there is no socket pool beneath the SpdySession.
   // Instead, the session takes exclusive ownership of the underting socket, and
   // destroying the session will directly destroy the socket, as opposed to

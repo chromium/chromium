@@ -15,6 +15,7 @@
 namespace net {
 
 class StreamSocket;
+class HigherLayeredPool;
 
 // A base class for handles that contain a StreamSocket. A subclass may have a
 // concept of initialization, where a handle needs to be initialized before it
@@ -65,8 +66,17 @@ class NET_EXPORT_PRIVATE StreamSocketHandle {
     connect_timing_ = connect_timing;
   }
 
+  // If this handle is associated with a pool that has the concept of higher
+  // layered pools, adds/removes a higher layered pool to the pool. Otherwise,
+  // does nothing.
+  virtual void AddHigherLayeredPool(HigherLayeredPool* higher_pool);
+  virtual void RemoveHigherLayeredPool(HigherLayeredPool* higher_pool);
+
   // Releases the underlying socket and uninitializes `this`.
   virtual void Reset() = 0;
+
+  // Returns true if the pool that is associated with this handle is stalled.
+  virtual bool IsPoolStalled() const = 0;
 
  protected:
   void set_is_initialized(bool is_initialized) {

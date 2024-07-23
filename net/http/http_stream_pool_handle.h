@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_HTTP_HTTP_TEXT_BASED_STREAM_HANDLE_H_
-#define NET_HTTP_HTTP_TEXT_BASED_STREAM_HANDLE_H_
+#ifndef NET_HTTP_HTTP_STREAM_POOL_HANDLE_H_
+#define NET_HTTP_HTTP_STREAM_POOL_HANDLE_H_
 
 #include <memory>
 
@@ -17,20 +17,20 @@ namespace net {
 class StreamSocket;
 
 // A StreamSocketHandle that is associated with an HttpStreamPool::Group.
-class NET_EXPORT_PRIVATE HttpTextBasedStreamHandle : public StreamSocketHandle {
+class NET_EXPORT_PRIVATE HttpStreamPoolHandle : public StreamSocketHandle {
  public:
-  HttpTextBasedStreamHandle(HttpStreamPool::Group* group,
-                            std::unique_ptr<StreamSocket> socket,
-                            int64_t generation);
+  HttpStreamPoolHandle(HttpStreamPool::Group* group,
+                       std::unique_ptr<StreamSocket> socket,
+                       int64_t generation);
 
-  HttpTextBasedStreamHandle(const HttpTextBasedStreamHandle&) = delete;
-  HttpTextBasedStreamHandle& operator=(const HttpTextBasedStreamHandle&) =
-      delete;
+  HttpStreamPoolHandle(const HttpStreamPoolHandle&) = delete;
+  HttpStreamPoolHandle& operator=(const HttpStreamPoolHandle&) = delete;
 
-  ~HttpTextBasedStreamHandle() override;
+  ~HttpStreamPoolHandle() override;
 
   // StreamSocketHandle implementation:
   void Reset() override;
+  bool IsPoolStalled() const override;
 
  private:
   const raw_ptr<HttpStreamPool::Group> group_;
@@ -39,4 +39,4 @@ class NET_EXPORT_PRIVATE HttpTextBasedStreamHandle : public StreamSocketHandle {
 
 }  // namespace net
 
-#endif  // NET_HTTP_HTTP_TEXT_BASED_STREAM_HANDLE_H_
+#endif  // NET_HTTP_HTTP_STREAM_POOL_HANDLE_H_
