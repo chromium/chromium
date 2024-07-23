@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/media/html_media_test_helper.h"
+#include "third_party/blink/renderer/core/html/media/media_video_visibility_tracker.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -35,6 +36,9 @@ class HTMLVideoElementMockMediaPlayer : public EmptyWebMediaPlayer {
   MOCK_METHOD1(OnDisplayTypeChanged, void(DisplayType));
   MOCK_CONST_METHOD0(HasAvailableVideoFrame, bool());
   MOCK_CONST_METHOD0(HasReadableVideoFrame, bool());
+  MOCK_METHOD(void,
+              RecordVideoOcclusionState,
+              (std::string_view occlusion_state));
 };
 }  // namespace
 
@@ -59,6 +63,26 @@ class HTMLVideoElementTest : public PaintTestConfigurations,
 
   HTMLVideoElementMockMediaPlayer* MockWebMediaPlayer() {
     return media_player_;
+  }
+
+  HTMLVideoElementMockMediaPlayer* MockMediaPlayer() { return media_player_; }
+
+  MediaVideoVisibilityTracker* VideoVisibilityTracker() {
+    return video_ ? video_->visibility_tracker_for_tests() : nullptr;
+  }
+
+  MediaVideoVisibilityTracker::TrackerAttachedToDocument
+  VideoVisibilityTrackerAttachedToDocument() const {
+    DCHECK(video_);
+    DCHECK(video_->visibility_tracker_for_tests());
+    return video_->visibility_tracker_for_tests()
+        ->tracker_attached_to_document_;
+  }
+
+  void RequestVisibility(HTMLMediaElement::RequestVisibilityCallback
+                             request_visibility_callback) const {
+    DCHECK(video_);
+    video_->RequestVisibility(std::move(request_visibility_callback));
   }
 
  private:
@@ -231,6 +255,76 @@ TEST_P(HTMLVideoElementTest, DefaultPosterImage) {
                       AtomicString("http://www.example.com/bar.jpg"));
   EXPECT_FALSE(video->IsDefaultPosterImageURL());
   EXPECT_NE(kDefaultPosterImage, video->PosterImageURL());
+}
+
+TEST_P(HTMLVideoElementTest,
+       RecordVideoOcclusionStateCalledWhenVisibilityIsRequested) {
+  video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(VideoVisibilityTracker(), nullptr);
+
+  video()->Play();
+  EXPECT_TRUE(video()->GetWebMediaPlayer());
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(), nullptr);
+
+  // Request visibility and verify `RecordVideoOcclusionState` is called.
+  const std::string expected_occlusion_state =
+      "has sufficiently visible video: {True}, occluded area: {0.00}, "
+      "occluding rects: {None}, intersection rect: {x: 8, y: 8, width: 300, "
+      "height: 150}, video element rect: {x: 8, y: 8, width: 300, height: "
+      "150}, visibility threshold: {0.80}";
+  EXPECT_CALL((*MockMediaPlayer()),
+              RecordVideoOcclusionState(expected_occlusion_state));
+  RequestVisibility(base::DoNothing());
+}
+
+TEST_P(HTMLVideoElementTest,
+       RecordVideoOcclusionStateNotCalledIfVisibilityIsNotRequested) {
+  video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(VideoVisibilityTracker(), nullptr);
+
+  video()->Play();
+
+  // Update all lifecycle phases and verify `RecordVideoOcclusionState` is not
+  // called.
+  EXPECT_CALL((*MockMediaPlayer()), RecordVideoOcclusionState(_)).Times(0);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(video()->GetWebMediaPlayer());
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(), nullptr);
+}
+
+TEST_P(HTMLVideoElementTest,
+       RecordVideoOcclusionStateCalledWhenTrackerNotAttached) {
+  video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(VideoVisibilityTracker(), nullptr);
+
+  video()->Play();
+  EXPECT_TRUE(video()->GetWebMediaPlayer());
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(), nullptr);
+
+  // Remove video, and verify that the visibility tracker has been detached.
+  NonThrowableExceptionState should_not_throw;
+  video()->remove(should_not_throw);
+  test::RunPendingTasks();
+  EXPECT_EQ(VideoVisibilityTrackerAttachedToDocument(), nullptr);
+
+  // Request visibility and verify `RecordVideoOcclusionState` is called since
+  // the tracker has a request visibility callback.
+  const std::string expected_occlusion_state =
+      "has sufficiently visible video: {False}, occluded area: {0.00}, "
+      "occluding rects: {None}, intersection rect: {None}, video element rect: "
+      "{None}, visibility threshold: {0.80}";
+  EXPECT_CALL((*MockMediaPlayer()),
+              RecordVideoOcclusionState(expected_occlusion_state));
+  RequestVisibility(base::DoNothing());
 }
 
 }  // namespace blink

@@ -182,6 +182,7 @@ class CORE_EXPORT HTMLVideoElement final
   friend class HTMLMediaElementEventListenersTest;
   friend class HTMLVideoElementPersistentTest;
   friend class VideoFillingViewportTest;
+  friend class HTMLVideoElementTest;
 
   // ExecutionContextLifecycleStateObserver functions.
   void ContextDestroyed() final;
