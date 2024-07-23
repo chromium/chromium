@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/threading/platform_thread.h"
@@ -442,11 +443,11 @@ class DecoderPerfTest : public testing::Test {
       GLint log_length = 0;
       gl_->GetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
       if (log_length) {
-        std::unique_ptr<GLchar[]> log(new GLchar[log_length]);
+        auto log = base::HeapArray<GLchar>::WithSize(log_length);
         GLsizei returned_log_length = 0;
         gl_->GetShaderInfoLog(shader, log_length, &returned_log_length,
-                              log.get());
-        LOG(ERROR) << std::string(log.get(), returned_log_length);
+                              log.data());
+        LOG(ERROR) << std::string(log.data(), returned_log_length);
       }
       gl_->DeleteShader(shader);
       return 0;
