@@ -118635,6 +118635,84 @@
        {}
       ]
      ],
+     "flexbox-writing-mode-slr-row-mix.html": [
+      "a4d841f3b310fdd087ca6bf0bb21684724a36860",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/flexbox-writing-mode-slr-row-mix-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "flexbox-writing-mode-slr-rtl.html": [
+      "8bc0f54819b23405d8a6acfa859fc8bc358ebf89",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/flexbox-writing-mode-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "flexbox-writing-mode-slr.html": [
+      "4eb27c4e457d57e53b6198c49d7162df1b5da08c",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/flexbox-writing-mode-slr-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "flexbox-writing-mode-srl-row-mix.html": [
+      "8724d9574d127eb5dfb34735816c303fd4b794b5",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/flexbox-writing-mode-srl-row-mix-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "flexbox-writing-mode-srl-rtl.html": [
+      "bf9936d195711a35375d9abe8fd60f853ff2c605",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/flexbox-writing-mode-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "flexbox-writing-mode-srl.html": [
+      "cc2b5136df98a66254fae00c045278a0bb282244",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/flexbox-writing-mode-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "flexbox_align-content-center.html": [
       "37c76f4c02ce49a30ea1c293020c7e4de7dae3e3",
       [
@@ -316613,6 +316691,18 @@
       "c3a223389d0455b2fe71d74837e5ff6121567432",
       []
      ],
+     "flexbox-writing-mode-slr-ref.html": [
+      "2ca10b3e0ee9f02b70eac2f7155c33f0c7c68b83",
+      []
+     ],
+     "flexbox-writing-mode-slr-row-mix-ref.html": [
+      "6f4c1df339c5006da2f283a535e75608cff1b3c1",
+      []
+     ],
+     "flexbox-writing-mode-srl-row-mix-ref.html": [
+      "32eebea0ac47f03bdb0b1903b82ef40e81697ae1",
+      []
+     ],
      "flexbox_align-content-center-ref.html": [
       "e0118b707fc2a6e01cab0d8e16216140b1bc869b",
       []
@@ -405051,11 +405141,11 @@
        []
       ],
       "arg_max.json": [
-       "d65939d0477b7cb008e715d797d9a9e3e3991c00",
+       "a3995e4dd40f6544b4d38fee62273d537acf7acd",
        []
       ],
       "arg_min.json": [
-       "f7b3f6d10d6239cd24d3c1a930093b2de19ed28c",
+       "a065873f5aa11ed05b2496d6e1883418c3ccd43d",
        []
       ],
       "average_pool2d.json": [
@@ -405344,7 +405434,7 @@
       ]
      },
      "utils.js": [
-      "7f99e3e1593b39648fbca13c06361c3c090797a9",
+      "8f5cb298d81d0b778e1e2bd4079baa236fac3dea",
       []
      ],
      "utils_validation.js": [
@@ -406433,19 +406523,19 @@
      []
     ],
     "close.https.any-expected.txt": [
-     "d4e43edbd19a9eb16f3384c1c95e5c3d1a2f2619",
+     "8273e69072d110c30b54ca189d0d898fffd27bb7",
      []
     ],
     "close.https.any.serviceworker-expected.txt": [
-     "d4e43edbd19a9eb16f3384c1c95e5c3d1a2f2619",
+     "8273e69072d110c30b54ca189d0d898fffd27bb7",
      []
     ],
     "close.https.any.sharedworker-expected.txt": [
-     "d4e43edbd19a9eb16f3384c1c95e5c3d1a2f2619",
+     "8273e69072d110c30b54ca189d0d898fffd27bb7",
      []
     ],
     "close.https.any.worker-expected.txt": [
-     "d4e43edbd19a9eb16f3384c1c95e5c3d1a2f2619",
+     "8273e69072d110c30b54ca189d0d898fffd27bb7",
      []
     ],
     "datagrams.https.any-expected.txt": [
@@ -406503,6 +406593,10 @@
      ],
      "server-connection-close.py": [
       "9721c67170c832c9c0d6179c06744d31117289ae",
+      []
+     ],
+     "server-read-then-close.py": [
+      "7f992e0dcca3ae62277cac0fa39355fce3e57be0",
       []
      ]
     },
@@ -591299,7 +591393,7 @@
         ]
        ],
        "child-sequential-focus.html": [
-        "bc787202cf53522188238b9bc7db6537a7533100",
+        "84853fc216965037e5c84f1ed5e1c169654ebb79",
         [
          null,
          {}
@@ -609077,7 +609171,7 @@
        ]
       ],
       "stretch-along-block-axis-001.html": [
-       "31385f5388017078047481a3235c51a04e835dc8",
+       "477fa27ebe77f1dec3f708bc99c65e2829c1059a",
        [
         null,
         {}
@@ -685992,7 +686086,7 @@
       ]
      ],
      "arg_min_max.https.any.js": [
-      "dd6cd6d9181abe7070e34376b678df6d5204f076",
+      "f309cdca4cf347ecec4b83af916b55f9445baae5",
       [
        "webnn/conformance_tests/arg_min_max.https.any.html?cpu",
        {
@@ -697654,7 +697748,7 @@
     ],
     "validation_tests": {
      "argMinMax.https.any.js": [
-      "2d7b286c8711c4e236e0efa6b372cc680086426a",
+      "f6c568b95c7dd19046327e1f070d902bf8b06926",
       [
        "webnn/validation_tests/argMinMax.https.any.html",
        {
@@ -715305,7 +715399,7 @@
      ]
     ],
     "close.https.any.js": [
-     "0d8579584fbb21e74595588f663ef21c3b028c63",
+     "d7271b61cfdfa132e370400162afeea80591698c",
      [
       "webtransport/close.https.any.html",
       {
