@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_toggle_cell.h"
 
+#import "base/check.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
@@ -34,6 +35,10 @@ const CGFloat kSpacingBetweenIconAndText = 24;
   // The horizontal stack view containing all the cell's content.
   UIStackView* _contentStackView;
 
+  // The horizontal stack view containing the content which can be tapped to
+  // navigate to its submenu.
+  UIStackView* _navigableStackView;
+
   // The text stack view containing the title and subtitle.
   UIStackView* _textStackView;
   UILabel* _title;
@@ -47,6 +52,9 @@ const CGFloat kSpacingBetweenIconAndText = 24;
 
   // The switch to toggle module visibility.
   UISwitch* _switch;
+
+  // The tap recognizer for navigating to the cell's submenu, if supported.
+  UITapGestureRecognizer* _tapRecognizer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -90,12 +98,21 @@ const CGFloat kSpacingBetweenIconAndText = 24;
 
     _switch = [[UISwitch alloc] init];
     [_switch addTarget:self
-                  action:@selector(handleSwitchToggled:)
+                  action:@selector(toggleModuleVisibility:)
         forControlEvents:UIControlEventValueChanged];
 
-    _contentStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-      _iconImageView, _textStackView, _navigationImageView, _switch
+    _navigableStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+      _iconImageView,
+      _textStackView,
+      _navigationImageView,
     ]];
+    _navigableStackView.translatesAutoresizingMaskIntoConstraints = NO;
+    _navigableStackView.axis = UILayoutConstraintAxisHorizontal;
+    _navigableStackView.alignment = UIStackViewAlignmentCenter;
+    _navigableStackView.spacing = UIStackViewSpacingUseSystem;
+
+    _contentStackView = [[UIStackView alloc]
+        initWithArrangedSubviews:@[ _navigableStackView, _switch ]];
     _contentStackView.translatesAutoresizingMaskIntoConstraints = NO;
     _contentStackView.axis = UILayoutConstraintAxisHorizontal;
     _contentStackView.alignment = UIStackViewAlignmentCenter;
@@ -121,9 +138,21 @@ const CGFloat kSpacingBetweenIconAndText = 24;
   _subtitle.text = [HomeCustomizationHelper subtitleForToggleType:type];
   _iconImageView.image = [HomeCustomizationHelper iconForToggleType:type];
   _switch.on = enabled;
+  _navigationImageView.hidden =
+      ![HomeCustomizationHelper doesTypeHaveSubmenu:type];
+
+  if (enabled && [HomeCustomizationHelper doesTypeHaveSubmenu:type]) {
+    _tapRecognizer = [[UITapGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(navigateToSubmenu:)];
+    [_navigableStackView addGestureRecognizer:_tapRecognizer];
+  }
 
   self.accessibilityIdentifier =
       [HomeCustomizationHelper accessibilityIdentifierForToggleType:type];
+
+  _navigableStackView.accessibilityIdentifier = [HomeCustomizationHelper
+      navigableAccessibilityIdentifierForToggleType:type];
 }
 
 #pragma mark - Private
@@ -136,11 +165,25 @@ const CGFloat kSpacingBetweenIconAndText = 24;
   _subtitle.text = nil;
   _iconImageView.image = nil;
   _switch.on = NO;
+  _navigationImageView.hidden = NO;
+  [_navigableStackView removeGestureRecognizer:_tapRecognizer];
+  _tapRecognizer = nil;
 }
 
-// Handles the cell's UISwitch being toggled.
-- (void)handleSwitchToggled:(UISwitch*)sender {
-  [self.mutator handleModuleToggledWithType:_type enabled:sender.isOn];
+// Handles the cell's UISwitch being toggled, which triggers a change in the
+// module's visibility.
+- (void)toggleModuleVisibility:(UISwitch*)sender {
+  BOOL isEnabling = sender.isOn;
+  if ([HomeCustomizationHelper doesTypeHaveSubmenu:_type]) {
+    _tapRecognizer.enabled = isEnabling;
+  }
+  [self.mutator toggleModuleVisibilityForType:_type enabled:isEnabling];
+}
+
+// Navigates to the customization submenu for the cell's type.
+- (void)navigateToSubmenu:(UIView*)sender {
+  CHECK([HomeCustomizationHelper doesTypeHaveSubmenu:_type]);
+  [self.mutator navigateToSubmenuForType:_type];
 }
 
 @end

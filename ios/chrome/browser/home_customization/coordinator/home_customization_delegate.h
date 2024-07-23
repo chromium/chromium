@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_COORDINATOR_HOME_CUSTOMIZATION_DELEGATE_H_
 
 // Delegate protocol for the HomeCustomizationCoordinator to communicate with
-// the NewTabPageCoordinator.
+// its parent coordinator, the NewTabPageCoordinator.
 @protocol HomeCustomizationDelegate
 
 // Called when the presented customization menu is dismissed.

@@ -6,17 +6,29 @@
 
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_mediator.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_navigation_delegate.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_discover_view_controller.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_view_controller.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 @interface HomeCustomizationCoordinator () <
+    HomeCustomizationNavigationDelegate,
     UISheetPresentationControllerDelegate>
 
 // The main page of the customization menu.
 @property(nonatomic, strong)
     HomeCustomizationMainViewController* mainViewController;
+
+// The Magic Stack page of the customization menu.
+@property(nonatomic, strong)
+    HomeCustomizationMagicStackViewController* magicStackViewController;
+
+// The Discover page of the customization menu.
+@property(nonatomic, strong)
+    HomeCustomizationDiscoverViewController* discoverViewController;
 
 // The mediator for the Home customization menu.
 @property(nonatomic, strong) HomeCustomizationMediator* mediator;
@@ -32,12 +44,17 @@
 
 - (void)start {
   _mainViewController = [[HomeCustomizationMainViewController alloc] init];
+  _magicStackViewController =
+      [[HomeCustomizationMagicStackViewController alloc] init];
+  _discoverViewController =
+      [[HomeCustomizationDiscoverViewController alloc] init];
   _mediator = [[HomeCustomizationMediator alloc]
       initWithPrefService:ChromeBrowserState::FromBrowserState(
                               self.browser->GetBrowserState())
                               ->GetPrefs()];
   _mainViewController.mutator = _mediator;
   _mediator.mainPageConsumer = _mainViewController;
+  _mediator.navigationDelegate = self;
 
   [super start];
 }
@@ -96,7 +113,7 @@
   }
 }
 
-#pragma mark - Private
+#pragma mark - HomeCustomizationNavigationDelegate
 
 // Navigates to a given page within the customization menu.
 - (void)navigateToPage:(CustomizationMenuPage)page {
@@ -106,10 +123,16 @@
                                            animated:YES];
       break;
     case CustomizationMenuPage::kMagicStack:
-      // TODO(crbug.com/350990359): Push Magic Stack view controller.
-      [self.navigationController pushViewController:self.mainViewController
+      [self.navigationController
+          pushViewController:self.magicStackViewController
+                    animated:YES];
+      break;
+    case CustomizationMenuPage::kDiscover:
+      [self.navigationController pushViewController:self.discoverViewController
                                            animated:YES];
       break;
+    case CustomizationMenuPage::kUnknown:
+      NOTREACHED_NORETURN();
   }
 }
 

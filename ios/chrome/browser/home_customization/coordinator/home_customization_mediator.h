@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 
 @protocol HomeCustomizationMainConsumer;
+@protocol HomeCustomizationNavigationDelegate;
 class PrefService;
 
 // The mediator for the Home surface's customization menu.
@@ -23,6 +24,10 @@ class PrefService;
 
 // A consumer representing the main page's view controller.
 @property(nonatomic, weak) id<HomeCustomizationMainConsumer> mainPageConsumer;
+
+// The delegate which handles navigations within the menu.
+@property(nonatomic, weak) id<HomeCustomizationNavigationDelegate>
+    navigationDelegate;
 
 // Sets the data for the main page's cells and sends it to the `consumer`.
 - (void)configureMainPageData;

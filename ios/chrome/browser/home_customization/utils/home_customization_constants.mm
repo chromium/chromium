@@ -12,11 +12,21 @@ NSString* const kBottomSheetDetentIdentifier = @"BottomSheetDetentIdentifier";
 NSString* const kNavigationBarDismissButtonIdentifier =
     @"NavigationBarDismissButtonIdentifier";
 
+NSString* const kNavigationBarBackButtonIdentifier =
+    @"NavigationBarBackButtonIdentifier";
+
 NSString* const kCustomizationToggleMostVisitedIdentifier =
     @"CustomizationToggleMostVisitedIdentifier";
 NSString* const kCustomizationToggleMagicStackIdentifier =
     @"CustomizationToggleMagicStackIdentifier";
 NSString* const kCustomizationToggleDiscoverIdentifier =
     @"CustomizationToggleDiscoverIdentifier";
+
+NSString* const kCustomizationToggleMostVisitedNavigableIdentifier =
+    @"CustomizationToggleMostVisitedNavigableIdentifier";
+NSString* const kCustomizationToggleMagicStackNavigableIdentifier =
+    @"CustomizationToggleMagicStackNavigableIdentifier";
+NSString* const kCustomizationToggleDiscoverNavigableIdentifier =
+    @"CustomizationToggleDiscoverNavigableIdentifier";
 
 const CGFloat kToggleIconPointSize = 18;

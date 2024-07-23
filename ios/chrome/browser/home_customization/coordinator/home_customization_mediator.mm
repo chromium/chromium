@@ -6,8 +6,10 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_navigation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 @implementation HomeCustomizationMediator {
@@ -55,8 +57,8 @@
 
 #pragma mark - HomeCustomizationMutator
 
-- (void)handleModuleToggledWithType:(CustomizationToggleType)type
-                            enabled:(BOOL)enabled {
+- (void)toggleModuleVisibilityForType:(CustomizationToggleType)type
+                              enabled:(BOOL)enabled {
   switch (type) {
     case CustomizationToggleType::kMostVisited:
       _prefService->SetBoolean(prefs::kHomeCustomizationMostVisitedEnabled,
@@ -71,6 +73,11 @@
                                enabled);
       break;
   }
+}
+
+- (void)navigateToSubmenuForType:(CustomizationToggleType)type {
+  [self.navigationDelegate
+      navigateToPage:[HomeCustomizationHelper menuPageForToggleType:type]];
 }
 
 @end

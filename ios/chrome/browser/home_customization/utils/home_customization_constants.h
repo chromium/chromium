@@ -19,10 +19,18 @@ extern NSString* const kBottomSheetDetentIdentifier;
 // The identifier for the dismiss button on the top right of the navigation bar.
 extern NSString* const kNavigationBarDismissButtonIdentifier;
 
+// The identifier for the back button on the top left of the navigation bar.
+extern NSString* const kNavigationBarBackButtonIdentifier;
+
 // The identifiers for the main page toggle cells.
 extern NSString* const kCustomizationToggleMostVisitedIdentifier;
 extern NSString* const kCustomizationToggleMagicStackIdentifier;
 extern NSString* const kCustomizationToggleDiscoverIdentifier;
+
+// The identifiers for the navigable portions of the main page toggle cells.
+extern NSString* const kCustomizationToggleMostVisitedNavigableIdentifier;
+extern NSString* const kCustomizationToggleMagicStackNavigableIdentifier;
+extern NSString* const kCustomizationToggleDiscoverNavigableIdentifier;
 
 // The size of the toggle cell's icon.
 extern const CGFloat kToggleIconPointSize;
@@ -31,6 +39,8 @@ extern const CGFloat kToggleIconPointSize;
 enum class CustomizationMenuPage : NSInteger {
   kMain,
   kMagicStack,
+  kDiscover,
+  kUnknown,
 };
 
 // Enum representing the toggle cells to control module visibility.
