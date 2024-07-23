@@ -278,7 +278,8 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       // Pin the bookmarks side panel
       PressButton(kSidePanelPinButtonElementId),
       CheckActionPinnedToToolbar(kActionSidePanelShowBookmarks, true),
-      CheckPinButtonToggleState(true),
+      WaitForShow(kPinnedToolbarActionsContainerDividerElementId),
+      FlushEvents(), CheckPinButtonToggleState(true),
       PressButton(kSidePanelCloseButtonElementId),
       WaitForHide(kSidePanelElementId), FlushEvents(),
       CheckActionPinnedToToolbar(kActionSidePanelShowBookmarks, true),
@@ -288,7 +289,8 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       // Unpin the bookmarks side panel
       PressButton(kSidePanelPinButtonElementId),
       CheckActionPinnedToToolbar(kActionSidePanelShowBookmarks, false),
-      CheckPinButtonToggleState(false));
+      WaitForHide(kPinnedToolbarActionsContainerDividerElementId),
+      FlushEvents(), CheckPinButtonToggleState(false));
 }
 
 IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,

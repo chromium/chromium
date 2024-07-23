@@ -122,7 +122,6 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
   toolbar_divider->SetProperty(
       views::kMarginsKey,
       gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
-  toolbar_divider->SetVisible(false);
   toolbar_divider_ = AddChildView(std::move(toolbar_divider));
 
   // Initialize the pinned action buttons.
@@ -629,15 +628,11 @@ void PinnedToolbarActionsContainer::ReorderViews() {
     ReorderChildView(GetPinnedButtonFor(drop_info_->action_id),
                      drop_info_->index);
   }
-  // The divider exist and is visible after the pinned buttons if any
+  // The divider exist and is after the pinned buttons if any
   // exist.
-  if (!pinned_buttons_.empty()) {
-    toolbar_divider_->SetVisible(true);
-    ReorderChildView(toolbar_divider_, index);
-    index++;
-  } else {
-    toolbar_divider_->SetVisible(false);
-  }
+  ReorderChildView(toolbar_divider_, index);
+  index++;
+
   // Popped out buttons appear last.
   for (PinnedActionToolbarButton* popped_out_button : popped_out_buttons_) {
     ReorderChildView(popped_out_button, index);

@@ -27,6 +27,9 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
   // needed for medium priority views.
   if (size_bounded) {
     for (views::View* child : host_view()->children()) {
+      if (!IsChildIncludedInLayout(child)) {
+        continue;
+      }
       PinnedToolbarActionFlexPriority priority =
           static_cast<PinnedToolbarActionFlexPriority>(
               child->GetProperty(kToolbarButtonFlexPriorityKey));
@@ -76,6 +79,9 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
   int divider_width = 0;
   for (auto i = host_view()->children().rbegin();
        i != host_view()->children().rend(); i++) {
+    if (!IsChildIncludedInLayout(*i)) {
+      continue;
+    }
     // If the next child is the divider, skip it. It only is included in the
     // layout if one of the following children is visible.
     if (!views::Button::AsButton(*i)) {

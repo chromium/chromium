@@ -128,3 +128,18 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
   browser()->tab_strip_model()->ActivateTabAt(1);
   EXPECT_EQ(pinned_button->GetStatusIndicatorForTesting()->GetVisible(), false);
 }
+
+IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
+                       ButtonsSetToNotVisibleNotSeenAfterLayout) {
+  PinnedToolbarActionsModel* const actions_model =
+      PinnedToolbarActionsModel::Get(browser()->profile());
+  actions_model->UpdatePinnedState(kActionShowTranslate, true);
+
+  EXPECT_EQ(container()->IsActionPinned(kActionShowTranslate), true);
+
+  auto* pinned_button = container()->GetButtonFor(kActionShowTranslate);
+  EXPECT_EQ(pinned_button->GetVisible(), true);
+  pinned_button->SetVisible(false);
+  container()->InvalidateLayout();
+  EXPECT_EQ(pinned_button->GetVisible(), false);
+}
