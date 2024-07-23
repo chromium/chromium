@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
@@ -501,7 +502,8 @@ bool Framebuffer::HasSRGBAttachments() const {
 
 bool Framebuffer::PrepareDrawBuffersForClearingUninitializedAttachments(
     ) const {
-  std::unique_ptr<GLenum[]> buffers(new GLenum[manager_->max_draw_buffers_]);
+  base::HeapArray<GLenum> buffers =
+      base::HeapArray<GLenum>::Uninit(manager_->max_draw_buffers_);
   for (uint32_t i = 0; i < manager_->max_draw_buffers_; ++i)
     buffers[i] = GL_NONE;
   for (auto const& it : attachments_) {
@@ -525,7 +527,7 @@ bool Framebuffer::PrepareDrawBuffersForClearingUninitializedAttachments(
     }
   }
   if (different)
-    glDrawBuffersARB(manager_->max_draw_buffers_, buffers.get());
+    glDrawBuffersARB(manager_->max_draw_buffers_, buffers.data());
   return different;
 }
 
