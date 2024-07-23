@@ -58,6 +58,7 @@
             <data android:scheme="content" />
           </intent-filter>
         </activity>
+
         <activity-alias android:name="org.chromium.chrome.browser.media.AudioLauncherActivity"
                         android:targetActivity="org.chromium.chrome.browser.media.MediaLauncherActivity"
                         android:theme="@android:style/Theme.NoDisplay"
@@ -130,6 +131,13 @@
                  android:isolatedProcess="false"
                  android:exported="false" />
         {% endfor %}
+
+        <!-- Disables at startup init of Emoji2. See http://crbug.com/1205141 -->
+        <provider
+            android:authorities="{{ manifest_package|default(default_manifest_package) }}.androidx-startup"
+            android:name="androidx.startup.InitializationProvider"
+            android:exported="false"
+            tools:node="remove" />
     </application>
 
     <instrumentation android:name="org.chromium.android_browsertests_apk.ChromeBrowserTestsInstrumentationTestRunner"
