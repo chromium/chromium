@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/simple_message_box.h"
+#include "chrome/browser/ui/views/message_box_dialog.h"
 
 #include <utility>
 
@@ -14,12 +14,13 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/simple_message_box_internal.h"
-#include "chrome/browser/ui/views/message_box_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/screen.h"
@@ -43,6 +44,9 @@
 #endif
 
 namespace {
+
+views::Widget* g_last_message_box_widget_ = nullptr;
+
 #if BUILDFLAG(IS_WIN)
 UINT GetMessageBoxFlagsFromType(chrome::MessageBoxType type) {
   UINT flags = MB_SETFOREGROUND;
@@ -110,14 +114,16 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
     return chrome::MESSAGE_BOX_RESULT_DEFERRED;
   }
 
-// Views dialogs cannot be shown outside the UI thread message loop or if the
-// ResourceBundle is not initialized yet.
-// Fallback to logging with a default response or a Windows MessageBox.
+// Views modal dialogs cannot be shown outside the UI thread, or without a
+// parent window (except on CrOS), or if the ResourceBundle is not initialized.
+// Fallback to a Win32 MessageBox or Cocoa NSAlert if possible, otherwise log an
+// error message to the console.
 #if BUILDFLAG(IS_WIN)
-  if (!base::CurrentUIThread::IsSet() ||
-      !base::RunLoop::IsRunningOnCurrentThread() ||
-      !ui::ResourceBundle::HasSharedInstance()) {
-    LOG_IF(ERROR, !checkbox_text.empty()) << "Dialog checkbox won't be shown";
+  // Win32 MessageBox does not support showing a checkbox.
+  if (!checkbox_text.empty() &&
+      (!base::CurrentUIThread::IsSet() ||
+       !content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
+       !parent || !ui::ResourceBundle::HasSharedInstance())) {
     int result = ui::MessageBox(
         views::HWNDForNativeWindow(parent), base::AsWString(message),
         base::AsWString(title), GetMessageBoxFlagsFromType(type));
@@ -128,13 +134,13 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
   }
 #elif BUILDFLAG(IS_MAC)
   if (!base::CurrentUIThread::IsSet() ||
-      !base::RunLoop::IsRunningOnCurrentThread() ||
-      !ui::ResourceBundle::HasSharedInstance()) {
+      !content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
+      !parent || !ui::ResourceBundle::HasSharedInstance()) {
     // Even though this function could return a value synchronously here in
     // principle, in practice call sites do not expect any behavior other than a
     // return of DEFERRED and an invocation of the callback.
     std::move(callback).Run(
-        chrome::ShowMessageBoxCocoa(message, type, checkbox_text));
+        chrome::ShowMessageBoxCocoa(title, message, type, checkbox_text));
     return chrome::MESSAGE_BOX_RESULT_DEFERRED;
   }
 #else
@@ -150,31 +156,31 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // System modals are only supported on IS_CHROMEOS_ASH.
+  const bool is_modal = true;
   const bool is_system_modal = !parent;
 #else
-  // TODO(pbos): Consider whether we should disallow parentless MessageBoxes
-  // here. This currently fails from ShowProfileErrorDialog() which calls
-  // chrome::ShowWarningMessageBox*() without a parent. See
-  // https://crbug.com/1431697 which discovered this through a DCHECK failure.
+  // Modal dialogs must have a parent.
+  const bool is_modal = !!parent;
   const bool is_system_modal = false;
 #endif
 
   MessageBoxDialog* dialog = new MessageBoxDialog(
       title, message, type, yes_text, no_text, checkbox_text, is_system_modal);
   views::Widget* widget =
-      constrained_window::CreateBrowserModalDialogViews(dialog, parent);
+      is_modal
+          ? constrained_window::CreateBrowserModalDialogViews(dialog, parent)
+          : views::DialogDelegate::CreateDialogWidget(dialog, nullptr, nullptr);
 
-#if BUILDFLAG(IS_MAC)
-  // Mac does not support system modal dialogs. If there is no parent window to
-  // attach to, move the dialog's widget on top so other windows do not obscure
-  // it.
-  if (!parent)
-    widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
-#endif
+  g_last_message_box_widget_ = widget;
 
   widget->Show();
   dialog->Run(std::move(callback));
   return chrome::MESSAGE_BOX_RESULT_DEFERRED;
+}
+
+// static
+views::Widget* MessageBoxDialog::GetLastMessageBoxWidgetForTesting() {
+  return g_last_message_box_widget_;
 }
 
 void MessageBoxDialog::OnDialogAccepted() {
@@ -220,6 +226,7 @@ void MessageBoxDialog::OnWidgetDestroying(views::Widget* widget) {
   if (result_callback_) {
     Done(chrome::MESSAGE_BOX_RESULT_NO);
   }
+  g_last_message_box_widget_ = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
