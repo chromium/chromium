@@ -733,7 +733,8 @@ void WebContentsAndroid::RequestAccessibilitySnapshot(
               std::move(j_view_structure_builder), std::move(j_callback)),
           ui::AXMode(ui::kAXModeComplete.flags() | ui::AXMode::kHTMLMetadata),
           /* max_nodes= */ 5000,
-          /* timeout= */ base::Seconds(2));
+          /* timeout= */ base::Seconds(2),
+          WebContents::AXTreeSnapshotPolicy::kAll);
 }
 
 ScopedJavaLocalRef<jstring> WebContentsAndroid::GetEncoding(JNIEnv* env) const {
