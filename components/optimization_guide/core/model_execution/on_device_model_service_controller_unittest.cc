@@ -3812,6 +3812,20 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationMaximumRetry) {
     histogram_tester.ExpectTotalCount(
         "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
   }
+
+  // After a new version, we should re-check.
+  pref_service_.SetString(
+      model_execution::prefs::localstate::kOnDeviceModelChromeVersion,
+      "OLD_VERSION");
+  {
+    base::HistogramTester histogram_tester;
+    RecreateServiceController();
+    task_environment_.RunUntilIdle();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+        OnDeviceModelValidationResult::kNonMatchingOutput, 1);
+  }
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelValidationDisabled) {
