@@ -569,7 +569,6 @@ java_prebuilt("com_google_guava_failureaccess_java") {
   supports_android = true
   enable_bytecode_checks = false
 
-  # Target is swapped out when internal code is enabled.
   # Please depend on //third_party/android_deps:guava_android_java instead.
   visibility = [ "//third_party/android_deps:*" ]
 }
@@ -1318,6 +1317,9 @@ if (!limit_android_deps) {
     output_name = "net_bytebuddy_byte_buddy"
     supports_android = true
     enable_bytecode_checks = false
+
+    # Please depend on //third_party/byte_buddy:byte_buddy_android_java instead.
+    visibility = [ "//third_party/byte_buddy:*" ]
     testonly = true
   }
 
@@ -1464,8 +1466,8 @@ if (!limit_android_deps) {
     testonly = true
     deps = [
       ":net_bytebuddy_byte_buddy_agent_java",
-      ":net_bytebuddy_byte_buddy_java",
       ":org_objenesis_objenesis_java",
+      "//third_party/byte_buddy:byte_buddy_android_java",
     ]
 
     # Uses java.time which does not exist until API 26.
@@ -1474,6 +1476,9 @@ if (!limit_android_deps) {
       "org/mockito/internal/junit/ExceptionFactory*",
       "org/mockito/internal/stubbing/defaultanswers/ReturnsEmptyValues*",
     ]
+
+    # Because of dep on byte_buddy_android_java.
+    bypass_platform_checks = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
