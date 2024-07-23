@@ -3769,7 +3769,7 @@
     {
       // crbug.com/40501131
       name: "SidewaysWritingModes",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "SignatureBasedIntegrity",
