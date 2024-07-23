@@ -113,6 +113,10 @@ class CONTENT_EXPORT NavigationURLLoader {
   // started successfully. Repeated calls will be ignored (they won't reset the
   // timeout) and will return `false`.
   virtual bool SetNavigationTimeout(base::TimeDelta timeout) = 0;
+  // Cancels the request timeout for this navigation. If the navigation is still
+  // happening, it will continue as if the timer wasn't set. Otherwise, this is
+  // a no-op.
+  virtual void CancelNavigationTimeout() = 0;
 
   static uint32_t GetURLLoaderOptions(bool is_outermost_main_frame);
 

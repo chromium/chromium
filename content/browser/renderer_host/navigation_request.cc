@@ -8316,6 +8316,12 @@ bool NavigationRequest::SetNavigationTimeout(base::TimeDelta timeout) {
   return false;
 }
 
+void NavigationRequest::CancelNavigationTimeout() {
+  if (loader_) {
+    loader_->CancelNavigationTimeout();
+  }
+}
+
 void NavigationRequest::SetAllowCookiesFromBrowser(
     bool allow_cookies_from_browser) {
   allow_cookies_from_browser_ = allow_cookies_from_browser;

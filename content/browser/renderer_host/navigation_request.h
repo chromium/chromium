@@ -434,6 +434,7 @@ class CONTENT_EXPORT NavigationRequest
   bool IsPdf() override;
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const override;
   bool SetNavigationTimeout(base::TimeDelta timeout) override;
+  void CancelNavigationTimeout() override;
   void SetAllowCookiesFromBrowser(bool allow_cookies_from_browser) override;
   void GetResponseBody(ResponseBodyCallback callback) override;
   PreloadingTriggerType GetPrerenderTriggerType() override;

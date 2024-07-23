@@ -1716,6 +1716,10 @@ bool NavigationURLLoaderImpl::SetNavigationTimeout(base::TimeDelta timeout) {
   return true;
 }
 
+void NavigationURLLoaderImpl::CancelNavigationTimeout() {
+  timeout_timer_.Stop();
+}
+
 void NavigationURLLoaderImpl::NotifyResponseStarted(
     network::mojom::URLResponseHeadPtr response_head,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,

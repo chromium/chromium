@@ -633,6 +633,10 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // `true` if the timeout is being started for the first time. Repeated calls
   // will be ignored (they won't reset the timeout) and will return `false`.
   virtual bool SetNavigationTimeout(base::TimeDelta timeout) = 0;
+  // Cancels the request timeout for this navigation. If the navigation is still
+  // happening, it will continue as if the timer wasn't set. Otherwise, this is
+  // a no-op.
+  virtual void CancelNavigationTimeout() = 0;
 
   // Configures whether a Cookie header added to this request should not be
   // overwritten by the network service.
