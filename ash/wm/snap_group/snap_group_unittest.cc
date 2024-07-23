@@ -4246,7 +4246,7 @@ TEST_F(SnapGroupDividerTest,
   ASSERT_TRUE(window_util::IsStackedBelow(w1.get(), divider_window));
   ASSERT_TRUE(window_util::IsStackedBelow(w2.get(), divider_window));
 
-  // Create a dialog widget that's associated with `w1`.
+  // Create a dialog widget that's associated with `w2`.
   views::DialogDelegateView* delegate = new views::DialogDelegateView();
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       delegate, GetContext(), /*parent=*/w2.get());
@@ -4262,6 +4262,56 @@ TEST_F(SnapGroupDividerTest,
   // below it.
   top_window_parent->StackChildBelow(w2_transient, divider_window);
   EXPECT_TRUE(window_util::IsStackedBelow(divider_window, w2_transient));
+}
+
+// Tests divider stacking behavior below transient dialog transient of Snap
+// Group windows:
+//  - During resizing
+//  - After clicking post-resize
+// Regression test for http://b/349894878.
+TEST_F(SnapGroupDividerTest, DividerStackingWhenResizingWithDialogTransient) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  auto* event_generator = GetEventGenerator();
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true, event_generator);
+  ASSERT_TRUE(window_util::IsStackedBelow(w1.get(), w2.get()));
+
+  SplitViewDivider* divider = GetTopmostSnapGroupDivider();
+  ASSERT_TRUE(divider);
+  auto* divider_widget = divider->divider_widget();
+  ASSERT_TRUE(divider_widget);
+  aura::Window* divider_window = divider_widget->GetNativeWindow();
+  ASSERT_TRUE(wm::HasTransientAncestor(divider_window, w2.get()));
+
+  aura::Window* top_window = w2.get();
+  aura::Window* top_window_parent = top_window->parent();
+  ASSERT_EQ(top_window_parent, divider_window->parent());
+
+  ASSERT_TRUE(window_util::IsStackedBelow(w1.get(), w2.get()));
+  ASSERT_TRUE(window_util::IsStackedBelow(w1.get(), divider_window));
+  ASSERT_TRUE(window_util::IsStackedBelow(w2.get(), divider_window));
+
+  // Create a dialog widget that's associated with `w2`.
+  views::DialogDelegateView* delegate = new views::DialogDelegateView();
+  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
+      delegate, GetContext(), /*parent=*/w2.get());
+  aura::Window* w2_transient = widget->GetNativeWindow();
+  ASSERT_TRUE(wm::HasTransientAncestor(w2_transient, w2.get()));
+  ASSERT_EQ(top_window_parent, w2_transient->parent());
+
+  // Verify that divider remains stacked below the `w2_transient` on resize
+  // ended.
+  ResizeDividerTo(event_generator,
+                  gfx::Point(w2_transient->GetBoundsInScreen().CenterPoint()));
+  EXPECT_TRUE(window_util::IsStackedBelow(divider_window, w2_transient));
+
+  // Click on the divider and it is still stacked below the `w2_transient`.
+  event_generator->MoveMouseTo(
+      divider_widget->GetWindowBoundsInScreen().top_center());
+  event_generator->ClickLeftButton();
+  EXPECT_TRUE(window_util::IsStackedBelow(divider_window, w2_transient));
+  EXPECT_TRUE(window_util::IsStackedBelow(w1.get(), divider_window));
+  EXPECT_TRUE(window_util::IsStackedBelow(w2.get(), divider_window));
 }
 
 // Tests that the union bounds of the primary window, secondary window in a snap
