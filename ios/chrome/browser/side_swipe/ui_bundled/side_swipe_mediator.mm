@@ -404,13 +404,6 @@ const CGFloat kIpadTabSwipeDistance = 100;
 // Animate page navigation.
 - (void)animatePageNavigationInDirection:
     (UISwipeGestureRecognizerDirection)direction {
-  if (![self canNavigate:IsSwipingBack(direction)]) {
-    // Back/forward state has changed when the user begins to swipe.
-    NOTREACHED(base::NotFatalUntil::M128)
-        << "Back/forward state has changed when the user begins to swipe.";
-    return;
-  }
-
   _inSwipe = YES;
   [_swipeDelegate updateAccessoryViewsForSideSwipeWithVisibility:NO];
 
@@ -423,10 +416,11 @@ const CGFloat kIpadTabSwipeDistance = 100;
                  CGRectGetWidth(navigatingBounds),
                  CGRectGetHeight(navigatingBounds) - headerHeight);
 
+  BOOL canNavigate = [self canNavigate:IsSwipingBack(direction)];
   _pageSideSwipeView = [[SideSwipeNavigationView alloc]
       initWithFrame:navigationFrame
       withDirection:direction
-        canNavigate:YES
+        canNavigate:canNavigate
               image:[UIImage imageNamed:@"side_swipe_navigation_back"]];
   [_pageSideSwipeView setTargetView:[_swipeDelegate sideSwipeContentView]];
 
@@ -437,7 +431,11 @@ const CGFloat kIpadTabSwipeDistance = 100;
   [_pageSideSwipeView
       animateHorizontalPanWithDirection:direction
                       completionHandler:^{
-                        [weakSelf handleOverThresholdCompletion:direction];
+                        if (canNavigate) {
+                          [weakSelf handleOverThresholdCompletion:direction];
+                        } else {
+                          [weakSelf handleUnderThresholdCompletion];
+                        }
                       }];
 }
 

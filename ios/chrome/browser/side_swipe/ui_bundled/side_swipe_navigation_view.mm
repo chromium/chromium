@@ -372,9 +372,6 @@ UIColor* SelectionCircleColor() {
 - (void)animateHorizontalPanWithDirection:
             (UISwipeGestureRecognizerDirection)direction
                         completionHandler:(void (^)(void))completion {
-  if (!_canNavigate) {
-    return;
-  }
   CGFloat width = CGRectGetWidth(self.targetView.bounds);
   CGFloat distance = width * kSwipeThreshold;
   CGRect frame = self.targetView.frame;
@@ -386,9 +383,15 @@ UIColor* SelectionCircleColor() {
   self.targetView.frame = frame;
 
   [self updateFrameAndAnimateContents:distance forDirection:direction];
-  [self performNavigationAnimationWithDirection:direction
-                                       duration:kSelectionAnimationDuration
-                              completionHandler:completion];
+  if (_canNavigate) {
+    [self performNavigationAnimationWithDirection:direction
+                                         duration:kSelectionAnimationDuration
+                                completionHandler:completion];
+  } else {
+    [self animateTargetViewCompleted:NO
+                       withDirection:direction
+                        withDuration:kSelectionAnimationDuration];
+  }
 }
 
 - (void)animateTargetViewCompleted:(BOOL)completed
