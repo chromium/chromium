@@ -13,6 +13,7 @@ import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js'
 import {assert} from '//resources/js/assert.js';
 import {skColorToHexColor} from '//resources/js/color_utils.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {BigString} from '//resources/mojo/mojo/public/mojom/base/big_string.mojom-webui.js';
 import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
@@ -27,7 +28,7 @@ import type {InitialGradientElement} from './initial_gradient.js';
 import type {OverlayTheme} from './lens.mojom-webui.js';
 import {UserAction} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
-import {recordLensOverlayInteraction} from './metrics_utils.js';
+import {recordLensOverlayInteraction, recordTimeToWebUIReady} from './metrics_utils.js';
 import type {SelectionOverlayElement} from './selection_overlay.js';
 
 export let INVOCATION_SOURCE: string = 'Unknown';
@@ -100,6 +101,7 @@ export class LensOverlayAppElement extends PolymerElement {
 
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds: number[];
+  private invocationTime: number = loadTimeData.getValue('invocationTime');
 
   constructor() {
     super();
@@ -141,6 +143,7 @@ export class LensOverlayAppElement extends PolymerElement {
   override ready() {
     super.ready();
     this.addEventListener('pointermove', this.updateCursorPosition.bind(this));
+    recordTimeToWebUIReady(Number(Date.now() - this.invocationTime));
   }
 
   private handlePointerEnter() {

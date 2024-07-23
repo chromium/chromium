@@ -137,6 +137,19 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->AddInteger(
       "segmentationMaskCornerRadius",
       lens::features::GetLensOverlaySegmentationMaskCornerRadius());
+  // Two instances of LensUntrustedUI are constructed: one for the main overlay
+  // and one for the side panel. We cannot distinguish them at this time. As a
+  // hack, we try to look up the LensOverlayController, which will only be
+  // available for the main overlay, and use that to set state only used by the
+  // main overlay.
+  // TODO(b/354802414): Split this into 2 separate classes for overlay and
+  // side panel.
+  if (auto* controller =
+          LensOverlayController::GetControllerFromWebViewWebContents(
+              web_ui->GetWebContents())) {
+    html_source->AddDouble("invocationTime",
+                           controller->GetInvocationTimeSinceEpoch());
+  }
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =

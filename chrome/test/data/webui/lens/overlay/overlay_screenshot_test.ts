@@ -7,7 +7,9 @@ import 'chrome-untrusted://lens/lens_overlay_app.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import type {LensOverlayAppElement} from 'chrome-untrusted://lens/lens_overlay_app.js';
-import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {hasStyle} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -22,19 +24,22 @@ const SCREENSHOT_DATA_URI =
 suite('OverlayScreenshot', () => {
   let testBrowserProxy: TestLensOverlayBrowserProxy;
   let lensOverlayElement: LensOverlayAppElement;
+  let metrics: MetricsTracker;
 
   setup(() => {
     // Resetting the HTML needs to be the first thing we do in setup to
     // guarantee that any singleton instances don't change while any UI is still
     // attached to the DOM.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    metrics = fakeMetricsPrivate();
 
     testBrowserProxy = new TestLensOverlayBrowserProxy();
     BrowserProxyImpl.setInstance(testBrowserProxy);
 
     lensOverlayElement = document.createElement('lens-overlay-app');
     document.body.appendChild(lensOverlayElement);
-    return waitAfterNextRender(lensOverlayElement);
+    waitAfterNextRender(lensOverlayElement);
+    return assertEquals(1, metrics.count('Lens.Overlay.TimeToWebUIReady'));
   });
 
   // Verify selection overlay is hidden until screenshot data URI is received
