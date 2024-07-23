@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderState.java",
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderUtils.java",
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/DesktopWindowStateProvider.java",
@@ -13,12 +14,16 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/browser_controls/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//ui/android:ui_java",
   ]
 }
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderStateUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderUtilsUnitTest.java",
   ]
@@ -26,9 +31,16 @@ robolectric_library("junit") {
   deps = [
     ":java",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/browser_controls/android:java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
   ]
 }
