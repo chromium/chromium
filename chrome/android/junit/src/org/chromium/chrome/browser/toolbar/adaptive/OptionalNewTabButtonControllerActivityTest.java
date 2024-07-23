@@ -112,7 +112,7 @@ public class OptionalNewTabButtonControllerActivityTest {
         // To bypass a direct call to AdaptiveToolbarStatePredictor#readFromSegmentationPlatform for
         // UMA.
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
-                new Pair<>(true, AdaptiveToolbarButtonVariant.NEW_TAB));
+                new Pair<>(true, List.of(AdaptiveToolbarButtonVariant.NEW_TAB)));
         MockTabModelSelector tabModelSelector =
                 new MockTabModelSelector(
                         originalProfile,

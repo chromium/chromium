@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
+import android.content.Context;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
@@ -14,11 +15,14 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
+import java.util.List;
+
 /**
- * Central class that determines the state of the toolbar button based on finch configuration,
- * user preference, and segmentation platform backend prediction. This class is used only for the
+ * Central class that determines the state of the toolbar button based on finch configuration, user
+ * preference, and segmentation platform backend prediction. This class is used only for the
  * segmentation experiment.
  */
 public class AdaptiveToolbarStatePredictor {
@@ -26,10 +30,10 @@ public class AdaptiveToolbarStatePredictor {
      * Key used to lookup segmentation results for adaptive toolbar. Must be kept in sync with
      * components/segmentation_platform/internal/constants.cc.
      */
-    private static Pair<Boolean, Integer> sSegmentationResultsForTesting;
+    private static Pair<Boolean, List<Integer>> sSegmentationResultsForTesting;
 
     private static Integer sToolbarStateForTesting;
-
+    private final Context mContext;
     @NonNull private final Profile mProfile;
     @Nullable private final AndroidPermissionDelegate mAndroidPermissionDelegate;
 
@@ -63,11 +67,15 @@ public class AdaptiveToolbarStatePredictor {
     /**
      * Constructs {@code AdaptiveToolbarStatePredictor}
      *
+     * @param context @{@link Context} to determine form-factor.
      * @param profile The {@link Profile} associated with the toolbar state.
      * @param androidPermissionDelegate used for determining if voice search can be used
      */
     public AdaptiveToolbarStatePredictor(
-            Profile profile, @Nullable AndroidPermissionDelegate androidPermissionDelegate) {
+            Context context,
+            Profile profile,
+            @Nullable AndroidPermissionDelegate androidPermissionDelegate) {
+        mContext = context;
         mProfile = profile;
         mAndroidPermissionDelegate = androidPermissionDelegate;
     }
@@ -101,13 +109,16 @@ public class AdaptiveToolbarStatePredictor {
         }
 
         int manualOverride = readManualOverrideFromPrefs();
-        int finchDefault = AdaptiveToolbarFeatures.getSegmentationDefault();
+        int finchDefault = AdaptiveToolbarFeatures.getSegmentationDefault(mContext);
         boolean toolbarToggle = readToolbarToggleStateFromPrefs();
         boolean ignoreSegmentationResults = AdaptiveToolbarFeatures.ignoreSegmentationResults();
         readFromSegmentationPlatform(
                 segmentationResult -> {
                     boolean isReady = segmentationResult.first;
-                    int segmentSelectionResult = segmentationResult.second;
+                    List<Integer> segmentSelectionResults = segmentationResult.second;
+                    int topSegmentationResult =
+                            AdaptiveToolbarFeatures.getTopSegmentationResult(
+                                    mContext, segmentSelectionResults);
                     UiState uiState =
                             new UiState(
                                     canShowUi(isReady),
@@ -116,13 +127,13 @@ public class AdaptiveToolbarStatePredictor {
                                                     toolbarToggle,
                                                     manualOverride,
                                                     finchDefault,
-                                                    segmentSelectionResult,
+                                                    topSegmentationResult,
                                                     ignoreSegmentationResults)),
                                     getToolbarPreferenceSelection(manualOverride),
                                     replaceVariantIfDisabled(
                                             getToolbarPreferenceAutoOptionSubtitleSegment(
                                                     finchDefault,
-                                                    segmentSelectionResult,
+                                                    topSegmentationResult,
                                                     ignoreSegmentationResults)));
                     callback.onResult(uiState);
                 });
@@ -201,19 +212,21 @@ public class AdaptiveToolbarStatePredictor {
 
     /**
      * Called to read results from the segmentation backend. The result contains a pair of (1) a
-     * boolean indicating whether the backend is ready. (2) a {@link AdaptiveToolbarButtonVariant}
-     * indicating which segment should be shown.
+     * boolean indicating whether the backend is ready. (2) a list of {@link
+     * AdaptiveToolbarButtonVariant} indicating rank-ordered segments. Caller can determine which
+     * result should be shown.
      *
      * @param callback A callback for results.
      */
-    public void readFromSegmentationPlatform(Callback<Pair<Boolean, Integer>> callback) {
+    public void readFromSegmentationPlatform(Callback<Pair<Boolean, List<Integer>>> callback) {
         if (sSegmentationResultsForTesting != null) {
             callback.onResult(sSegmentationResultsForTesting);
             return;
         }
 
-        AdaptiveToolbarBridge.getSessionVariantButton(
-                mProfile, result -> callback.onResult(result));
+        boolean useRawResults = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
+        AdaptiveToolbarBridge.getSessionVariantButtons(
+                mProfile, useRawResults, result -> callback.onResult(result));
     }
 
     /**
@@ -223,7 +236,7 @@ public class AdaptiveToolbarStatePredictor {
     private @AdaptiveToolbarButtonVariant int replaceVariantIfDisabled(
             @AdaptiveToolbarButtonVariant int variant) {
         if (isVariantEnabled(variant)) return variant;
-        variant = AdaptiveToolbarFeatures.getSegmentationDefault();
+        variant = AdaptiveToolbarFeatures.getSegmentationDefault(mContext);
         if (isVariantEnabled(variant)) return variant;
         // Fallback in the unlikely situation the default is disabled.
         return AdaptiveToolbarButtonVariant.UNKNOWN;
@@ -266,7 +279,7 @@ public class AdaptiveToolbarStatePredictor {
     }
 
     /** For testing only. */
-    public static void setSegmentationResultsForTesting(Pair<Boolean, Integer> results) {
+    public static void setSegmentationResultsForTesting(Pair<Boolean, List<Integer>> results) {
         sSegmentationResultsForTesting = results;
     }
 

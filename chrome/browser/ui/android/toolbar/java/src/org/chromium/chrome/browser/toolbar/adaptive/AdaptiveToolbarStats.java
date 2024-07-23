@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
+import android.content.Context;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -84,12 +86,13 @@ public class AdaptiveToolbarStats {
 
     /** Called on startup to record the selected segment from the backend. */
     public static void recordSelectedSegmentFromSegmentationPlatformAsync(
-            AdaptiveToolbarStatePredictor adaptiveToolbarStatePredictor) {
+            Context context, AdaptiveToolbarStatePredictor adaptiveToolbarStatePredictor) {
         adaptiveToolbarStatePredictor.readFromSegmentationPlatform(
                 result -> {
                     RecordHistogram.recordEnumeratedHistogram(
                             "SegmentationPlatform.AdaptiveToolbar.SegmentSelected.Startup",
-                            result.second,
+                            AdaptiveToolbarFeatures.getTopSegmentationResult(
+                                    context, result.second),
                             AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
                 });
     }
