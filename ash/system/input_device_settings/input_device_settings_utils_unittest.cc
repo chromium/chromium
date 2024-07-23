@@ -685,7 +685,7 @@ TEST_F(GetDeviceKeyForMetadataRequestTest, DeviceKeyRewrittenWhenFlagEnabled) {
        features::kWelcomeExperienceTestUnsupportedDevices},
       {});
   auto device_key = GetDeviceKeyForMetadataRequest("040e:0726");
-  EXPECT_EQ("0111_185a", device_key);
+  EXPECT_EQ("0111:185a", device_key);
 }
 
 TEST_F(GetDeviceKeyForMetadataRequestTest, DeviceKeyUnchangedWhenFlagDisabled) {
