@@ -30,7 +30,9 @@ PreconditionState GetPreconditionStateFromAccountManagedStatus(
     return PreconditionState::kMustStopAndKeepData;
   }
   switch (finder->GetOutcome()) {
-    case signin::AccountManagedStatusFinder::Outcome::kNonEnterprise:
+    case signin::AccountManagedStatusFinder::Outcome::kConsumerGmail:
+    case signin::AccountManagedStatusFinder::Outcome::kConsumerWellKnown:
+    case signin::AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown:
     case signin::AccountManagedStatusFinder::Outcome::kEnterpriseGoogleDotCom:
       return PreconditionState::kPreconditionsMet;
     case signin::AccountManagedStatusFinder::Outcome::kEnterprise:

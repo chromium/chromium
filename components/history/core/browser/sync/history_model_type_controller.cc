@@ -45,7 +45,9 @@ GetPreconditionStateFromManagedStatus(
   }
 
   switch (finder->GetOutcome()) {
-    case signin::AccountManagedStatusFinder::Outcome::kNonEnterprise:
+    case signin::AccountManagedStatusFinder::Outcome::kConsumerGmail:
+    case signin::AccountManagedStatusFinder::Outcome::kConsumerWellKnown:
+    case signin::AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown:
     case signin::AccountManagedStatusFinder::Outcome::kEnterpriseGoogleDotCom:
       // Regular consumer accounts and @google.com accounts are supported.
       return syncer::ModelTypeController::PreconditionState::kPreconditionsMet;

@@ -40,8 +40,13 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
     kPending,
     // An error happened, e.g. the account was removed from IdentityManager.
     kError,
-    // The account is a consumer (non-enterprise) account.
-    kNonEnterprise,
+    // The account is a consumer (non-enterprise) account, split further into
+    // Gmail accounts, account from other well-known consumer domains (i.e.
+    // determined statically and synchronously), and accounts from other
+    // domains. This distinction is mainly interesting for metrics.
+    kConsumerGmail,
+    kConsumerWellKnown,
+    kConsumerNotWellKnown,
     // The account is an enterprise account but *not* an @google.com one.
     kEnterprise,
     // The account is an @google.com enterprise account.
@@ -70,7 +75,7 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
       signin::IdentityManager* identity_manager) override;
 
  private:
-  Outcome DetermineOutcome();
+  Outcome DetermineOutcome() const;
 
   void OutcomeDeterminedAsync(Outcome type);
 
