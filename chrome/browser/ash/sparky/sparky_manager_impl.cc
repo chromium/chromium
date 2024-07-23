@@ -99,16 +99,14 @@ void SparkyManagerImpl::AnswerQuestion(const std::u16string& question,
     dialog_turns_.emplace_back(base::UTF16ToUTF8(question), manta::Role::kUser);
 
     auto sparky_context = std::make_unique<manta::SparkyContext>(
-        dialog_turns_, base::UTF16ToUTF8(question),
-        base::UTF16ToUTF8(current_panel_content_->page_content));
+        dialog_turns_, base::UTF16ToUTF8(current_panel_content_->page_content));
     sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
     sparky_context->page_url = current_page_info_->url.spec();
 
     sparky_provider_->QuestionAndAnswer(
         std::move(sparky_context),
         base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
-                       weak_ptr_factory_.GetWeakPtr(), question,
-                       std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
 
@@ -206,7 +204,6 @@ void SparkyManagerImpl::OnGetPageContentForSummary(
 }
 
 void SparkyManagerImpl::OnSparkyProviderQAResponse(
-    const std::u16string& question,
     MahiAnswerQuestionCallback callback,
     manta::MantaStatus status,
     manta::DialogTurn* latest_turn) {
@@ -228,8 +225,7 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
     dialog_turns_.emplace_back(std::move(*latest_turn));
 
     auto sparky_context = std::make_unique<manta::SparkyContext>(
-        dialog_turns_, base::UTF16ToUTF8(question),
-        base::UTF16ToUTF8(current_panel_content_->page_content));
+        dialog_turns_, base::UTF16ToUTF8(current_panel_content_->page_content));
     sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
     sparky_context->page_url = current_page_info_->url.spec();
 
@@ -240,8 +236,7 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
       sparky_provider_->QuestionAndAnswer(
           std::move(sparky_context),
           base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
-                         weak_ptr_factory_.GetWeakPtr(), question,
-                         std::move(callback)));
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     }
 
   } else {
@@ -267,16 +262,14 @@ void SparkyManagerImpl::OnGetPageContentForQA(
   dialog_turns_.emplace_back(base::UTF16ToUTF8(question), manta::Role::kUser);
 
   auto sparky_context = std::make_unique<manta::SparkyContext>(
-      dialog_turns_, base::UTF16ToUTF8(question),
-      base::UTF16ToUTF8(current_panel_content_->page_content));
+      dialog_turns_, base::UTF16ToUTF8(current_panel_content_->page_content));
   sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
   sparky_context->page_url = current_page_info_->url.spec();
 
   sparky_provider_->QuestionAndAnswer(
       std::move(sparky_context),
       base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
-                     weak_ptr_factory_.GetWeakPtr(), question,
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void SparkyManagerImpl::OpenFeedbackDialog() {}
