@@ -1907,8 +1907,7 @@ TEST_F(UnassociatedListedElementTest, GetUnassociatedListedElements) {
   EXPECT_THAT(GetDocument().UnassociatedListedElements(), expected_elements());
 }
 
-// We extract unassociated listed element in a shadow DOM iff
-// `kAutofillIncludeShadowDomInUnassociatedListedElements` is enabled.
+// We extract unassociated listed element in a shadow DOM.
 TEST_F(UnassociatedListedElementTest,
        GetUnassociatedListedElementsFromShadowTree) {
   ShadowRoot& shadow_root =
@@ -1919,16 +1918,9 @@ TEST_F(UnassociatedListedElementTest,
   shadow_root.AppendChild(input);
   ListedElement::List listed_elements =
       GetDocument().UnassociatedListedElements();
-
-  if (base::FeatureList::IsEnabled(
-          blink::features::
-              kAutofillIncludeShadowDomInUnassociatedListedElements)) {
-    EXPECT_THAT(listed_elements,
-                ElementsAre(ListedElement::From(*shadow_root.getElementById(
-                    AtomicString("unassociated_input")))));
-  } else {
-    EXPECT_THAT(listed_elements, IsEmpty());
-  }
+  EXPECT_THAT(listed_elements,
+              ElementsAre(ListedElement::From(*shadow_root.getElementById(
+                  AtomicString("unassociated_input")))));
 }
 
 // Check if the dynamically added unassociated listed element is properly

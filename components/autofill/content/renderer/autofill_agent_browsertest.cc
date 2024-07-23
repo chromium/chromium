@@ -326,16 +326,11 @@ TEST_F(AutofillAgentTestWithFeatures, TriggerFormExtractionWithResponse) {
 
 class AutofillAgentShadowDomTest : public AutofillAgentTestWithFeatures {
  public:
-  AutofillAgentShadowDomTest() {
-    scoped_features_.InitWithFeatures(
-        /*enabled_features=*/
-        {blink::features::kAutofillIncludeShadowDomInUnassociatedListedElements,
-         blink::features::kAutofillIncludeFormElementsInShadowDom},
-        /*disabled_features=*/{});
-  }
+  AutofillAgentShadowDomTest() = default;
 
  private:
-  base::test::ScopedFeatureList scoped_features_;
+  base::test::ScopedFeatureList scoped_features_{
+      blink::features::kAutofillIncludeFormElementsInShadowDom};
 };
 
 // Tests that unassociated form control elements in a Shadow DOM tree that do

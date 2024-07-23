@@ -2161,11 +2161,8 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDom) {
 // Also tests that GetFormControlElements(f) == {t | GetOwningForm(t) == f} for
 // every form f that owns some t.
 TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDomWithExplicitAssociation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {blink::features::kAutofillIncludeFormElementsInShadowDom,
-       blink::features::kAutofillIncludeShadowDomInUnassociatedListedElements},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      blink::features::kAutofillIncludeFormElementsInShadowDom};
 
   LoadHTML(R"(
     <html>

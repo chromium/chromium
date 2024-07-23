@@ -162,12 +162,6 @@ BASE_FEATURE(kAudioWorkletThreadPool,
              "AudioWorkletThreadPool",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, extraction of unassociated listed elements includes elements
-// inside Shadow DOM.
-BASE_FEATURE(kAutofillIncludeShadowDomInUnassociatedListedElements,
-             "AutofillIncludeShadowDomInUnassociatedListedElements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Autofill extracts all top level shadow DOM form elements of a
 // document. Additionally, the shadow-tree-including form control elements of a
 // form `f` include all descendants that are form controls - even those whose

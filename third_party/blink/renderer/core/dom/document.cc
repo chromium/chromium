@@ -651,21 +651,11 @@ const ListedElement::List& Document::UnassociatedListedElementsList::Get(
     const Node& root = owner.GetTreeScope().RootNode();
     DCHECK(list_.empty());
 
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillIncludeShadowDomInUnassociatedListedElements)) {
-      for (Node& current :
-           ShadowIncludingTreeOrderTraversal::DescendantsOf(root)) {
-        if (HTMLElement* element = DynamicTo<HTMLElement>(current)) {
-          if (ListedElement* listed_element = ListedElement::From(*element);
-              listed_element && !listed_element->Form()) {
-            list_.push_back(listed_element);
-          }
-        }
-      }
-    } else {
-      for (HTMLElement& element : Traversal<HTMLElement>::StartsAfter(root)) {
-        ListedElement* listed_element = ListedElement::From(element);
-        if (listed_element && !listed_element->Form()) {
+    for (Node& current :
+         ShadowIncludingTreeOrderTraversal::DescendantsOf(root)) {
+      if (HTMLElement* element = DynamicTo<HTMLElement>(current)) {
+        if (ListedElement* listed_element = ListedElement::From(*element);
+            listed_element && !listed_element->Form()) {
           list_.push_back(listed_element);
         }
       }
