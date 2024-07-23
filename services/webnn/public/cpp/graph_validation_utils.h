@@ -371,7 +371,7 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
     ValidateArgMinMaxAndInferOutput(const ContextProperties& context_properties,
                                     const OperandDescriptor& input,
-                                    base::span<const uint32_t> axes,
+                                    uint32_t axis,
                                     OperandDataType output_data_type,
                                     bool keep_dimensions = false);
 

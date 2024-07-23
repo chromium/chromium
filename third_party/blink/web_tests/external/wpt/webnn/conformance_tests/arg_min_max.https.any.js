@@ -10,4 +10,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-argminmax
 
-runWebNNConformanceTests(['argMin', 'argMax'], buildOperationWithSingleInput);
+runWebNNConformanceTests(['argMin', 'argMax'], buildArgMinMax);

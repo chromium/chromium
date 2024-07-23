@@ -636,7 +636,7 @@ bool ValidateArgMinMax(const ContextProperties& context_properties,
   }
 
   const auto validated_output = ValidateArgMinMaxAndInferOutput(
-      context_properties, input->descriptor, arg_min_max.axes,
+      context_properties, input->descriptor, arg_min_max.axis,
       output->descriptor.data_type(), arg_min_max.keep_dimensions);
   if (!validated_output.has_value()) {
     return false;

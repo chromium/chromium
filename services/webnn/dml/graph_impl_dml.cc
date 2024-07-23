@@ -451,28 +451,18 @@ void CreateOperatorNodeForArgMinMax(const IdToOperandMap& id_to_operand_map,
   const uint64_t output_id = arg_min_max->output_operand_id;
   const auto& output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);
-  const auto axes = arg_min_max->axes;
+  const uint32_t axis = arg_min_max->axis;
   // Determine output sizes. Ignore output_desc->dimensions for the dimensions,
   // since DirectML expects the output dimensions to have the same rank as the
   // input, and output_desc->dimensions may have removed dimensions if
   // keepDimensions was false.
   std::vector<uint32_t> output_dimensions = input_tensor_desc.GetDimensions();
-  for (uint32_t axis : axes) {
-    CHECK_LT(axis, output_dimensions.size());
-    output_dimensions[axis] = 1u;
-  }
+  CHECK_LT(axis, output_dimensions.size());
+  output_dimensions[axis] = 1u;
 
   TensorDesc new_output_tensor_desc(output_tensor_desc.GetDataType(),
                                     std::move(output_dimensions));
 
-  std::array<const NodeOutput*, 1> inputs = {input};
-  DML_ARGMAX_OPERATOR_DESC operator_desc = {};
-  operator_desc.InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
-  operator_desc.OutputTensor = &new_output_tensor_desc.GetDMLTensorDesc(),
-  operator_desc.AxisCount = axes.size();
-  operator_desc.Axes = axes.data();
-  operator_desc.AxisDirection =
-      DML_AXIS_DIRECTION::DML_AXIS_DIRECTION_INCREASING;
   DML_OPERATOR_TYPE operator_type;
   switch (arg_min_max->kind) {
     case mojom::ArgMinMax_Kind::kMin: {
@@ -484,6 +474,17 @@ void CreateOperatorNodeForArgMinMax(const IdToOperandMap& id_to_operand_map,
       break;
     }
   }
+
+  const std::array<const uint32_t, 1> axes = {axis};
+  DML_ARGMAX_OPERATOR_DESC operator_desc = {};
+  operator_desc.InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+  operator_desc.OutputTensor = &new_output_tensor_desc.GetDMLTensorDesc(),
+  operator_desc.AxisCount = axes.size();
+  operator_desc.Axes = axes.data();
+  operator_desc.AxisDirection =
+      DML_AXIS_DIRECTION::DML_AXIS_DIRECTION_INCREASING;
+
+  std::array<const NodeOutput*, 1> inputs = {input};
   const OperatorNode* arg_min_max_node =
       graph_builder.CreateOperatorNode(operator_type, &operator_desc, inputs);
 

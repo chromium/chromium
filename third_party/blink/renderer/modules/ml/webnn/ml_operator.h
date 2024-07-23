@@ -99,6 +99,24 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
 // TODO: crbug.com/325612086 - Remove all these subclasses. This information
 // should all be contained within the respective mojo Operation struct.
 
+class MODULES_EXPORT MLArgMinMaxOperator : public MLOperator {
+ public:
+  MLArgMinMaxOperator(MLGraphBuilder* builder,
+                      OperationSubKind sub_kind,
+                      const uint32_t axis,
+                      const bindings::DictionaryBase* options);
+
+  MLArgMinMaxOperator(const MLArgMinMaxOperator&) = delete;
+  MLArgMinMaxOperator& operator=(const MLArgMinMaxOperator&) = delete;
+
+  ~MLArgMinMaxOperator() override;
+
+  uint32_t Axis() const { return axis_; }
+
+ private:
+  uint32_t axis_;
+};
+
 class MODULES_EXPORT MLConcatOperator : public MLOperator {
  public:
   MLConcatOperator(MLGraphBuilder* builder, const uint32_t axis);

@@ -527,24 +527,17 @@ ActivationPtr CreateActivation(const OperandToIdMap& operand_to_id_map,
 }
 
 OperationPtr CreateArgMinMaxOperation(const OperandToIdMap& operand_to_id_map,
-                                      const MLOperator* arg_min_max,
+                                      const MLOperator* op,
                                       blink_mojom::ArgMinMax::Kind kind) {
-  auto arg_min_max_mojo = blink_mojom::ArgMinMax::New();
-  arg_min_max_mojo->kind = kind;
-  arg_min_max_mojo->input_operand_id =
-      GetOperatorInputId(arg_min_max, operand_to_id_map);
-  arg_min_max_mojo->output_operand_id =
-      GetOperatorOutputId(arg_min_max, operand_to_id_map);
-
+  const auto* arg_min_max = static_cast<const MLArgMinMaxOperator*>(op);
+  auto input_operand_id = GetOperatorInputId(arg_min_max, operand_to_id_map);
+  auto output_operand_id = GetOperatorOutputId(arg_min_max, operand_to_id_map);
   const auto* options =
       static_cast<const blink::MLArgMinMaxOptions*>(arg_min_max->Options());
   CHECK(options);
-  const wtf_size_t input_rank = arg_min_max->Inputs()[0]->Rank();
-  const auto axes = options->getAxesOr(CreateAllAxes(input_rank));
-  CHECK_LE(axes.size(), input_rank);
-  arg_min_max_mojo->axes = axes;
-  arg_min_max_mojo->keep_dimensions = options->keepDimensions();
-
+  auto arg_min_max_mojo = blink_mojom::ArgMinMax::New(
+      kind, input_operand_id, output_operand_id, arg_min_max->Axis(),
+      options->keepDimensions());
   return blink_mojom::Operation::NewArgMinMax(std::move(arg_min_max_mojo));
 }
 

@@ -879,22 +879,16 @@ int32_t GraphBuilderTflite::InsertTransposeOperation(
 
 auto GraphBuilderTflite::SerializeArgMinMax(const mojom::ArgMinMax& arg_min_max)
     -> base::expected<OperatorOffset, std::string> {
-  // The axis is a scalar constraint in arg_min_max::Prepare() function here
-  // third_party/tflite/src/tensorflow/lite/kernels/arg_min_max.cc, the tensor
-  // axes are being discussed in the working group here
-  // https://github.com/webmachinelearning/webnn/issues/629.
-  // TODO(crbug.com/331977830): Support empty axis that means no dimensions are
-  // reduced.
-  if (arg_min_max.axes.size() != 1) {
-    return base::unexpected(OpKindToString(arg_min_max.kind) +
-                            ": Only supports scalar axis.");
+  // The WebNN axis option is uint32 data type, but TFLite axis needs int32
+  // type, so the axis need to be validated here to not overflow.
+  auto checked_axis = base::MakeCheckedNum<int32_t>(arg_min_max.axis);
+  if (!checked_axis.IsValid()) {
+    return base::unexpected("The axis in arg_min_max operation is too large.");
   }
-  ASSIGN_OR_RETURN(std::vector<int32_t> signed_axes,
-                   ToSignedDimensions(arg_min_max.axes));
-  const std::array<int32_t, 1> axis_tensor_shape = {
-      base::checked_cast<int32_t>(signed_axes.size())};
+  const std::array<int32_t, 1> axis_buffer = {checked_axis.ValueOrDie()};
+  const std::array<int32_t, 1> axis_dimensions = {axis_buffer.size()};
   const int32_t axis_tensor_index =
-      SerializeTensorWithBuffer<int32_t>(signed_axes, axis_tensor_shape);
+      SerializeTensorWithBuffer<int32_t>(axis_buffer, axis_dimensions);
 
   ::tflite::BuiltinOperator operator_code;
   ::tflite::BuiltinOptions builtin_options_type;

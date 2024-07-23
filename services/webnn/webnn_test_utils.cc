@@ -70,13 +70,13 @@ uint64_t GraphInfoBuilder::BuildOutput(const std::string& name,
 void GraphInfoBuilder::BuildArgMinMax(mojom::ArgMinMax::Kind kind,
                                       uint64_t input_operand_id,
                                       uint64_t output_operand_id,
-                                      std::vector<uint32_t> axes,
+                                      uint32_t axis,
                                       bool keep_dimensions) {
   mojom::ArgMinMaxPtr arg_min_max = mojom::ArgMinMax::New();
   arg_min_max->kind = kind;
   arg_min_max->input_operand_id = input_operand_id;
   arg_min_max->output_operand_id = output_operand_id;
-  arg_min_max->axes = axes;
+  arg_min_max->axis = axis;
   arg_min_max->keep_dimensions = keep_dimensions;
   graph_info_->operations.push_back(
       mojom::Operation::NewArgMinMax(std::move(arg_min_max)));

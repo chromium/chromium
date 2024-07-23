@@ -800,6 +800,16 @@ const buildCast = (operationName, context, builder, resources) => {
   return namedOutputOperand;
 };
 
+const buildArgMinMax = (operationName, context, builder, resources) => {
+  // MLOperand argMin/argMax(MLOperand input, unsigned long axis, optional MLArgMinMaxOptions options = {});
+  const namedOutputOperand = {};
+  const inputOperand = createSingleInputOperand(context, builder, resources);
+  let argMinMaxOptions = {...resources.options};
+  // invoke builder.argMin/argMax()
+  namedOutputOperand[resources.expected.name] = builder[operationName](inputOperand, resources.axis, argMinMaxOptions);
+  return namedOutputOperand;
+};
+
 const buildConcat = (operationName, context, builder, resources) => {
   // MLOperand concat(sequence<MLOperand> inputs, unsigned long axis);
   const namedOutputOperand = {};

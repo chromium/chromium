@@ -368,7 +368,7 @@ struct OperandInfo {
 struct ArgMinMaxTester {
   mojom::ArgMinMax::Kind kind;
   OperandInfo input;
-  std::vector<uint32_t> axes;
+  uint32_t axis;
   bool keep_dimensions = false;
   OperandInfo output;
   bool expected;
@@ -382,7 +382,7 @@ struct ArgMinMaxTester {
         builder.BuildInput("input", input.dimensions, input.type);
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    builder.BuildArgMinMax(kind, input_operand_id, output_operand_id, axes,
+    builder.BuildArgMinMax(kind, input_operand_id, output_operand_id, axis,
                            keep_dimensions);
 
     EXPECT_EQ(WebNNGraphImpl::IsValidForTesting(context_properties,
@@ -396,11 +396,11 @@ TEST_F(WebNNGraphImplTest, ArgMinMaxTest) {
                                mojom::ArgMinMax_Kind::kMax};
   for (const auto kind : ArgMinMaxKinds) {
     {
-      // Test argMinMax operator with axis = {0} and keep_dimensions = true.
+      // Test argMinMax operator with axis = 0 and keep_dimensions = true.
       ArgMinMaxTester{.kind = kind,
                       .input = {.type = OperandDataType::kFloat32,
                                 .dimensions = {2, 3, 4, 5}},
-                      .axes = {0},
+                      .axis = 0,
                       .keep_dimensions = true,
                       .output = {.type = OperandDataType::kInt32,
                                  .dimensions = {1, 3, 4, 5}},
@@ -408,40 +408,27 @@ TEST_F(WebNNGraphImplTest, ArgMinMaxTest) {
           .Test();
     }
     {
-      // Test argMinMax operator with axis = {0, 1} and keep_dimensions = false.
+      // Test argMinMax operator with axis = 1 and keep_dimensions = false.
       ArgMinMaxTester{
           .kind = kind,
           .input = {.type = OperandDataType::kFloat16,
                     .dimensions = {2, 3, 4, 5}},
-          .axes = {0, 1},
+          .axis = 1,
           .keep_dimensions = false,
-          .output = {.type = OperandDataType::kInt32, .dimensions = {4, 5}},
+          .output = {.type = OperandDataType::kInt32, .dimensions = {2, 4, 5}},
           .expected = true}
           .Test();
     }
     {
-      // Test the invalid graph when value in the axes sequence is greater than
-      // or equal to input rank.
+      // Test the invalid graph when axis is greater than or equal to input
+      // rank.
       ArgMinMaxTester{.kind = kind,
                       .input = {.type = OperandDataType::kFloat32,
                                 .dimensions = {2, 3, 4, 5}},
-                      .axes = {4},
+                      .axis = 4,
                       .keep_dimensions = true,
                       .output = {.type = OperandDataType::kInt32,
                                  .dimensions = {2, 3, 4, 1}},
-                      .expected = false}
-          .Test();
-    }
-    {
-      // Test the invalid graph when two or more values are same in the axes
-      // sequence.
-      ArgMinMaxTester{.kind = mojom::ArgMinMax::Kind::kMax,
-                      .input = {.type = OperandDataType::kFloat32,
-                                .dimensions = {2, 3, 4, 5}},
-                      .axes = {1, 1},
-                      .keep_dimensions = true,
-                      .output = {.type = OperandDataType::kInt32,
-                                 .dimensions = {1, 3, 4, 5}},
                       .expected = false}
           .Test();
     }
@@ -450,7 +437,7 @@ TEST_F(WebNNGraphImplTest, ArgMinMaxTest) {
       ArgMinMaxTester{.kind = kind,
                       .input = {.type = OperandDataType::kFloat32,
                                 .dimensions = {2, 3, 4, 5}},
-                      .axes = {0},
+                      .axis = 0,
                       .keep_dimensions = true,
                       .output = {.type = OperandDataType::kFloat32,
                                  .dimensions = {1, 3, 4, 5}},
@@ -462,7 +449,7 @@ TEST_F(WebNNGraphImplTest, ArgMinMaxTest) {
       ArgMinMaxTester{.kind = kind,
                       .input = {.type = OperandDataType::kFloat32,
                                 .dimensions = {2, 3, 4, 5}},
-                      .axes = {0},
+                      .axis = 0,
                       .keep_dimensions = false,
                       .output = {.type = OperandDataType::kInt32,
                                  .dimensions = {1, 3, 4, 5}},
@@ -475,8 +462,9 @@ TEST_F(WebNNGraphImplTest, ArgMinMaxTest) {
       GraphInfoBuilder builder;
       uint64_t input_operand_id =
           builder.BuildInput("input", {2, 3, 4, 5}, OperandDataType::kInt32);
-      builder.BuildArgMinMax(kind, input_operand_id, input_operand_id, {0},
-                             true);
+      builder.BuildArgMinMax(kind, input_operand_id, input_operand_id,
+                             /*axis=*/0,
+                             /*keep_dimensions=*/true);
       EXPECT_FALSE(WebNNGraphImpl::IsValidForTesting(context_properties,
                                                      builder.GetGraphInfo()));
     }

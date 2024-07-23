@@ -89,9 +89,11 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
 
   // The order of operations declaration is the same as spec.
   MLOperand* argMin(const MLOperand* input,
+                    const uint32_t axis,
                     const MLArgMinMaxOptions* options,
                     ExceptionState& exception_state);
   MLOperand* argMax(const MLOperand* input,
+                    const uint32_t axis,
                     const MLArgMinMaxOptions* options,
                     ExceptionState& exception_state);
 

@@ -23,7 +23,6 @@ dictionary MLOperatorOptions {
 };
 
 dictionary MLArgMinMaxOptions {
-  sequence<[EnforceRange] unsigned long> axes;
   boolean keepDimensions = false;
   // See spec issue https://github.com/webmachinelearning/webnn/issues/653.
   MLOperandDataType outputDataType = "int32";
@@ -214,8 +213,8 @@ dictionary MLTriangularOptions {
 
   [RaisesException] MLOperand constant(MLOperandDescriptor desc, ArrayBufferView bufferView);
 
-  [RaisesException] MLOperand argMin(MLOperand input, optional MLArgMinMaxOptions options = {});
-  [RaisesException] MLOperand argMax(MLOperand input, optional MLArgMinMaxOptions options = {});
+  [RaisesException] MLOperand argMin(MLOperand input, [EnforceRange] unsigned long axis, optional MLArgMinMaxOptions options = {});
+  [RaisesException] MLOperand argMax(MLOperand input, [EnforceRange] unsigned long axis, optional MLArgMinMaxOptions options = {});
 
   [RaisesException] MLOperand batchNormalization(MLOperand input, MLOperand mean, MLOperand variance, optional MLBatchNormalizationOptions options = {});
 

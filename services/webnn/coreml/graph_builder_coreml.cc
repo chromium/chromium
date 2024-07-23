@@ -1215,19 +1215,14 @@ GraphBuilderCoreml::AddOperationForArgMinMax(
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    GetOperandInfo(input_operand_id).coreml_name);
 
-  // TODO - crbug.com/352359898: Change operation.axes to scalar axis.
-  if (operation.axes.size() != 1) {
-    return NewNotSupportedError(
-        "Unsupported axes for argMin/Max. Only support single axis.");
-  }
-  int32_t axis = base::checked_cast<int32_t>(operation.axes[0]);
-
-  SetInputsWithValues(*op->mutable_inputs(),
-                      {
-                          {kOpParamAxis, CreateScalarImmediateValue(axis)},
-                          {kOpParamKeepDims, CreateScalarImmediateValue(
-                                                 operation.keep_dimensions)},
-                      });
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {
+          {kOpParamAxis, CreateScalarImmediateValue(
+                             base::checked_cast<int32_t>(operation.axis))},
+          {kOpParamKeepDims,
+           CreateScalarImmediateValue(operation.keep_dimensions)},
+      });
 
   // No need to add a reshape when keep_dimensions=false as the output is
   // already scalar.

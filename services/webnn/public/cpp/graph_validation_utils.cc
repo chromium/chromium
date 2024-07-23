@@ -351,7 +351,7 @@ base::expected<OperandDescriptor, std::string> ValidateSoftmaxAndInferOutput(
 base::expected<OperandDescriptor, std::string> ValidateArgMinMaxAndInferOutput(
     const ContextProperties& context_properties,
     const OperandDescriptor& input,
-    base::span<const uint32_t> axes,
+    uint32_t axis,
     OperandDataType output_data_type,
     bool keep_dimensions) {
   if (!context_properties.data_type_limits.arg_min_max_input.Has(
@@ -370,7 +370,8 @@ base::expected<OperandDescriptor, std::string> ValidateArgMinMaxAndInferOutput(
 
   ASSIGN_OR_RETURN(
       std::vector<uint32_t> output_shape,
-      ValidateReduceAxesAndInferOutput(input.shape(), axes, keep_dimensions));
+      ValidateReduceAxesAndInferOutput(
+          input.shape(), std::array<uint32_t, 1>{axis}, keep_dimensions));
   return OperandDescriptor::Create(output_data_type, output_shape);
 }
 
