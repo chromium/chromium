@@ -190,9 +190,8 @@ bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(
       std::vector<GURL>{url});
 
   DVLOG(1) << "Checking for client " << client << " and URL " << url;
-  auto callback =
-      std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
-          base::BindOnce(&ClientRequest::OnRequestDone, req->GetWeakPtr()));
+  SafeBrowsingApiHandlerBridge::ResponseCallback callback =
+      base::BindOnce(&ClientRequest::OnRequestDone, req->GetWeakPtr());
   req->AddPendingCheck();
   switch (check_type) {
     case CheckBrowseUrlType::kHashDatabase:
@@ -239,9 +238,8 @@ bool RemoteSafeBrowsingDatabaseManager::CheckDownloadUrl(
       continue;
     }
     DVLOG(1) << "Checking for client " << client << " and URL " << url;
-    auto callback =
-        std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
-            base::BindOnce(&ClientRequest::OnRequestDone, req->GetWeakPtr()));
+    auto callback = SafeBrowsingApiHandlerBridge::ResponseCallback(
+        base::BindOnce(&ClientRequest::OnRequestDone, req->GetWeakPtr()));
     SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
         std::move(callback), url,
         CreateSBThreatTypeSet({SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
@@ -304,9 +302,8 @@ bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
       std::vector<GURL>{url});
 
   DVLOG(1) << "Checking for client " << client << " and URL " << url;
-  auto callback =
-      std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
-          base::BindOnce(&ClientRequest::OnRequestDone, req->GetWeakPtr()));
+  auto callback = SafeBrowsingApiHandlerBridge::ResponseCallback(
+      base::BindOnce(&ClientRequest::OnRequestDone, req->GetWeakPtr()));
   req->AddPendingCheck();
   SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
       std::move(callback), url,

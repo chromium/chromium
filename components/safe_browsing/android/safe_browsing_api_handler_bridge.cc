@@ -384,9 +384,8 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToSafeBrowsingJavaArray(
 // The map that holds the callback_id used to reference each pending SafetyNet
 // request sent to Java, and the corresponding callback to call on receiving the
 // response.
-using PendingSafetyNetCallbacksMap = std::unordered_map<
-    jlong,
-    std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback>>;
+using PendingSafetyNetCallbacksMap =
+    std::unordered_map<jlong, SafeBrowsingApiHandlerBridge::ResponseCallback>;
 
 PendingSafetyNetCallbacksMap& GetPendingSafetyNetCallbacksMap() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -403,15 +402,14 @@ PendingSafetyNetCallbacksMap& GetPendingSafetyNetCallbacksMap() {
 // used to make that call. The protocol is stored for histogram logging.
 struct SafeBrowsingResponseCallback {
   SafeBrowsingJavaProtocol protocol;
-  std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback>
-      response_callback;
+  SafeBrowsingApiHandlerBridge::ResponseCallback response_callback;
 };
 
 // The map that holds the callback_id used to reference each pending
 // SafeBrowsing request sent to Java, and the corresponding callback to call on
 // receiving the response.
 using PendingSafeBrowsingCallbacksMap =
-    std::unordered_map<jlong, std::unique_ptr<SafeBrowsingResponseCallback>>;
+    std::unordered_map<jlong, SafeBrowsingResponseCallback>;
 
 PendingSafeBrowsingCallbacksMap& GetPendingSafeBrowsingCallbacksMap() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -477,8 +475,8 @@ void OnUrlCheckDoneBySafetyNetApi(jlong callback_id,
   if (!found)
     return;
 
-  std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback> callback =
-      std::move((pending_callbacks)[callback_id]);
+  SafeBrowsingApiHandlerBridge::ResponseCallback callback =
+      std::move(pending_callbacks[callback_id]);
   pending_callbacks.erase(callback_id);
 
   SafetyNetRemoteCallResultStatus result_status =
@@ -490,16 +488,16 @@ void OnUrlCheckDoneBySafetyNetApi(jlong callback_id,
       DCHECK_EQ(result_status, SafetyNetRemoteCallResultStatus::INTERNAL_ERROR);
       ReportUmaResult(UmaRemoteCallResult::INTERNAL_ERROR);
     }
-    std::move(*callback).Run(SBThreatType::SB_THREAT_TYPE_SAFE,
-                             ThreatMetadata());
+    std::move(callback).Run(SBThreatType::SB_THREAT_TYPE_SAFE,
+                            ThreatMetadata());
     return;
   }
 
   // Shortcut for safe, so we don't have to parse JSON.
   if (metadata == "{}") {
     ReportUmaResult(UmaRemoteCallResult::SAFE);
-    std::move(*callback).Run(SBThreatType::SB_THREAT_TYPE_SAFE,
-                             ThreatMetadata());
+    std::move(callback).Run(SBThreatType::SB_THREAT_TYPE_SAFE,
+                            ThreatMetadata());
   } else {
     // Unsafe, assuming we can parse the JSON.
     SBThreatType worst_threat;
@@ -507,7 +505,7 @@ void OnUrlCheckDoneBySafetyNetApi(jlong callback_id,
     ReportUmaResult(
         ParseJsonFromGMSCore(metadata, &worst_threat, &threat_metadata));
 
-    std::move(*callback).Run(worst_threat, threat_metadata);
+    std::move(callback).Run(worst_threat, threat_metadata);
   }
 }
 
@@ -563,17 +561,17 @@ void OnUrlCheckDoneBySafeBrowsingApi(
     return;
   }
 
-  std::unique_ptr<SafeBrowsingResponseCallback> callback =
-      std::move((pending_callbacks)[callback_id]);
+  SafeBrowsingResponseCallback callback =
+      std::move(pending_callbacks[callback_id]);
   pending_callbacks.erase(callback_id);
 
-  ReportSafeBrowsingJavaResponse(callback->protocol, lookup_result, threat_type,
+  ReportSafeBrowsingJavaResponse(callback.protocol, lookup_result, threat_type,
                                  threat_attributes, response_status,
                                  check_delta_microseconds);
 
-  if (!IsResponseFromJavaValid(callback->protocol, lookup_result, threat_type,
+  if (!IsResponseFromJavaValid(callback.protocol, lookup_result, threat_type,
                                threat_attributes, response_status)) {
-    std::move(*(callback->response_callback))
+    std::move(callback.response_callback)
         .Run(SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata());
     return;
   }
@@ -583,12 +581,12 @@ void OnUrlCheckDoneBySafeBrowsingApi(
       SafeBrowsingApiHandlerBridge::GetInstance()
           .OnSafeBrowsingApiNonRecoverableFailure();
     }
-    std::move(*(callback->response_callback))
+    std::move(callback.response_callback)
         .Run(SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata());
     return;
   }
 
-  std::move(*(callback->response_callback))
+  std::move(callback.response_callback)
       .Run(
           SafeBrowsingJavaToSBThreatType(threat_type),
           GetThreatMetadataFromSafeBrowsingApi(threat_type, threat_attributes));
@@ -659,7 +657,7 @@ void JNI_SafeBrowsingApiBridge_OnVerifyAppsEnabledDone(JNIEnv* env,
 SafeBrowsingApiHandlerBridge::~SafeBrowsingApiHandlerBridge() {}
 
 void SafeBrowsingApiHandlerBridge::StartHashDatabaseUrlCheck(
-    std::unique_ptr<ResponseCallback> callback,
+    ResponseCallback callback,
     const GURL& url,
     const SBThreatTypeSet& threat_types) {
   bool for_browse_url = SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types);
@@ -680,7 +678,7 @@ void SafeBrowsingApiHandlerBridge::StartHashDatabaseUrlCheck(
 }
 
 void SafeBrowsingApiHandlerBridge::StartHashRealTimeUrlCheck(
-    std::unique_ptr<ResponseCallback> callback,
+    ResponseCallback callback,
     const GURL& url,
     const SBThreatTypeSet& threat_types) {
   StartUrlCheckBySafeBrowsing(std::move(callback), url, threat_types,
@@ -688,7 +686,7 @@ void SafeBrowsingApiHandlerBridge::StartHashRealTimeUrlCheck(
 }
 
 void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafetyNet(
-    std::unique_ptr<ResponseCallback> callback,
+    ResponseCallback callback,
     const GURL& url,
     const SBThreatTypeSet& threat_types) {
   if (interceptor_for_testing_) {
@@ -703,7 +701,7 @@ void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafetyNet(
     // have sideloaded Chrome w/o PlayStore should land here.
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*callback), SBThreatType::SB_THREAT_TYPE_SAFE,
+        base::BindOnce(std::move(callback), SBThreatType::SB_THREAT_TYPE_SAFE,
                        ThreatMetadata()));
     ReportUmaResult(UmaRemoteCallResult::UNSUPPORTED);
     return;
@@ -723,7 +721,7 @@ void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafetyNet(
 }
 
 void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafeBrowsing(
-    std::unique_ptr<ResponseCallback> callback,
+    ResponseCallback callback,
     const GURL& url,
     const SBThreatTypeSet& threat_types,
     const SafeBrowsingJavaProtocol& protocol) {
@@ -745,15 +743,15 @@ void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafeBrowsing(
     // have sideloaded Chrome w/o PlayStore should land here.
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*callback), SBThreatType::SB_THREAT_TYPE_SAFE,
+        base::BindOnce(std::move(callback), SBThreatType::SB_THREAT_TYPE_SAFE,
                        ThreatMetadata()));
     return;
   }
 
   JNIEnv* env = AttachCurrentThread();
   jlong callback_id = next_safe_browsing_callback_id_++;
-  auto safe_browsing_callback = std::make_unique<SafeBrowsingResponseCallback>(
-      protocol, std::move(callback));
+  auto safe_browsing_callback =
+      SafeBrowsingResponseCallback(protocol, std::move(callback));
   GetPendingSafeBrowsingCallbacksMap().insert(
       {callback_id, std::move(safe_browsing_callback)});
 

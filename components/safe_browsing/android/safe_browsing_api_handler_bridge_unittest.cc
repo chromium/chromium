@@ -151,19 +151,18 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
       SubresourceFilterMatch expected_subresource_filter_match) {
     bool callback_executed = false;
     auto callback =
-        std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
-            base::BindOnce(
-                [](bool* callback_executed, SBThreatType expected_threat_type,
-                   SubresourceFilterMatch expected_subresource_filter_match,
-                   SBThreatType returned_threat_type,
-                   const ThreatMetadata& returned_metadata) {
-                  *callback_executed = true;
-                  EXPECT_EQ(returned_threat_type, expected_threat_type);
-                  EXPECT_EQ(returned_metadata.subresource_filter_match,
-                            expected_subresource_filter_match);
-                },
-                &callback_executed, expected_threat_type,
-                expected_subresource_filter_match));
+        SafeBrowsingApiHandlerBridge::ResponseCallback(base::BindOnce(
+            [](bool* callback_executed, SBThreatType expected_threat_type,
+               SubresourceFilterMatch expected_subresource_filter_match,
+               SBThreatType returned_threat_type,
+               const ThreatMetadata& returned_metadata) {
+              *callback_executed = true;
+              EXPECT_EQ(returned_threat_type, expected_threat_type);
+              EXPECT_EQ(returned_metadata.subresource_filter_match,
+                        expected_subresource_filter_match);
+            },
+            &callback_executed, expected_threat_type,
+            expected_subresource_filter_match));
     SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
         std::move(callback), url, threat_types);
     task_environment_.RunUntilIdle();
@@ -175,15 +174,14 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
                                SBThreatType expected_threat_type) {
     bool callback_executed = false;
     auto callback =
-        std::make_unique<SafeBrowsingApiHandlerBridge::ResponseCallback>(
-            base::BindOnce(
-                [](bool* callback_executed, SBThreatType expected_threat_type,
-                   SBThreatType returned_threat_type,
-                   const ThreatMetadata& returned_metadata) {
-                  *callback_executed = true;
-                  EXPECT_EQ(returned_threat_type, expected_threat_type);
-                },
-                &callback_executed, expected_threat_type));
+        SafeBrowsingApiHandlerBridge::ResponseCallback(base::BindOnce(
+            [](bool* callback_executed, SBThreatType expected_threat_type,
+               SBThreatType returned_threat_type,
+               const ThreatMetadata& returned_metadata) {
+              *callback_executed = true;
+              EXPECT_EQ(returned_threat_type, expected_threat_type);
+            },
+            &callback_executed, expected_threat_type));
     SafeBrowsingApiHandlerBridge::GetInstance().StartHashRealTimeUrlCheck(
         std::move(callback), url, threat_types);
     task_environment_.RunUntilIdle();
