@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.tab_ui;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.IphDialogView;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -21,7 +20,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinator for the IPH dialog in grid tab switcher. */
-class TabGridIphDialogCoordinator implements TabSwitcherIphController {
+public class TabGridIphDialogCoordinator implements TabSwitcherIphController {
     private final IphDialogView mIphDialogView;
     private final PropertyModel mModel;
     private final ModalDialogManager mModalDialogManager;
@@ -30,7 +29,7 @@ class TabGridIphDialogCoordinator implements TabSwitcherIphController {
     private @Nullable ViewGroup mParentView;
     private boolean mGlobalLayoutListenerAttached;
 
-    TabGridIphDialogCoordinator(Context context, ModalDialogManager modalDialogManager) {
+    public TabGridIphDialogCoordinator(Context context, ModalDialogManager modalDialogManager) {
         try (TraceEvent e = TraceEvent.scoped("TabGridIphDialogCoordinator.constructor")) {
             mIphDialogView =
                     (IphDialogView)

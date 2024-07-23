@@ -377,12 +377,6 @@
       <message name="IDS_IPH_DRAG_AND_DROP_SHOW_ME" desc="This text button shows on the entry point for the in-product help for drag-and-drop. When user clicks on the text button, the dialog for IPH shows up.">
         Show me
       </message>
-      <message name="IDS_IPH_DRAG_AND_DROP_TITLE" desc="This text shows on the in-product help dialog for drag-and-drop. It decribes why drag-and-drop is useful.">
-        Get organized
-      </message>
-      <message name="IDS_IPH_DRAG_AND_DROP_CONTENT" desc="This text shows on the in-product help dialog for drag-and-drop. It gives instructions on how to drag and drop to create a group.">
-        To group tabs, touch &amp; hold a tab. Then, drag it onto another tab.
-      </message>
 
       <!-- Single Tab module strings -->
       <message name="IDS_SINGLE_TAB_MODULE_TITLE" desc="Title of the single Tab module on the magic space of the start surface or NTP home surface.">
