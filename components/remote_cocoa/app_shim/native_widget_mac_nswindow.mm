@@ -191,7 +191,7 @@ void OrderChildWindow(NSWindow* child_window,
       "NativeWidgetMacNSWindowBorderlessFrame_currentStyleMask");
   static crash_reporter::CrashKeyString<11> collectionBehaviorKey(
       "NativeWidgetMacNSWindowBorderlessFrame_collectionBehavior");
-  static crash_reporter::CrashKeyString<11> windowDebugDescriptionKey(
+  static crash_reporter::CrashKeyString<1024> windowDebugDescriptionKey(
       "NativeWidgetMacNSWindowBorderlessFrame_windowDebugDescription");
   static crash_reporter::CrashKeyString<5> initHasParentWindowKey(
       "NativeWidgetMacNSWindowBorderlessFrame_hasParentWindow");
