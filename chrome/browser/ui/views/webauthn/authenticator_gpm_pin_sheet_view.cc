@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_common_views.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_pin_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
-#include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "ui/views/view.h"
 
 AuthenticatorGpmPinSheetView::AuthenticatorGpmPinSheetView(
@@ -33,14 +32,10 @@ AuthenticatorGpmPinSheetView::BuildStepSpecificHeader() {
 std::pair<std::unique_ptr<views::View>, AuthenticatorGpmPinSheetView::AutoFocus>
 AuthenticatorGpmPinSheetView::BuildStepSpecificContent() {
   bool ui_disabled = gpm_pin_sheet_model()->ui_disabled();
-  return std::make_pair(
-      std::make_unique<AuthenticatorGPMPinView>(
-          gpm_pin_sheet_model()->pin_digits_count(), ui_disabled,
-          gpm_pin_sheet_model()->pin(),
-          gpm_pin_sheet_model()->mode() ==
-              AuthenticatorGpmPinSheetModelBase::Mode::kPinCreate,
-          this),
-      ui_disabled ? AutoFocus::kNo : AutoFocus::kYes);
+  return std::make_pair(std::make_unique<AuthenticatorGPMPinView>(
+                            gpm_pin_sheet_model()->pin_digits_count(),
+                            ui_disabled, gpm_pin_sheet_model()->pin(), this),
+                        ui_disabled ? AutoFocus::kNo : AutoFocus::kYes);
 }
 
 void AuthenticatorGpmPinSheetView::OnPinChanged(std::u16string pin) {
@@ -49,4 +44,8 @@ void AuthenticatorGpmPinSheetView::OnPinChanged(std::u16string pin) {
 
 void AuthenticatorGpmPinSheetView::PinCharTyped(bool is_digit) {
   gpm_pin_sheet_model()->PinCharTyped(is_digit);
+}
+
+std::u16string AuthenticatorGpmPinSheetView::GetPinAccessibleName() {
+  return gpm_pin_sheet_model()->GetAccessibleName();
 }

@@ -734,6 +734,9 @@ class AuthenticatorGpmPinSheetModelBase : public AuthenticatorSheetModelBase {
   // Sets currently typed pin in the sheet.
   virtual void SetPin(std::u16string pin) = 0;
 
+  // Returns the accessibility label of the pin view based on its type and mode.
+  virtual std::u16string GetAccessibleName() const = 0;
+
  protected:
   std::u16string pin_;
   const Mode mode_;
@@ -765,6 +768,7 @@ class AuthenticatorGpmPinSheetModel : public AuthenticatorGpmPinSheetModelBase {
 
   // AuthenticatorGpmPinSheetModelBase:
   void SetPin(std::u16string pin) override;
+  std::u16string GetAccessibleName() const override;
 
  private:
   bool FullPinTyped() const;
@@ -792,6 +796,7 @@ class AuthenticatorGpmArbitraryPinSheetModel
 
   // AuthenticatorGpmPinSheetModelBase:
   void SetPin(std::u16string pin) override;
+  std::u16string GetAccessibleName() const override;
 
  private:
   // AuthenticatorSheetModelBase:
