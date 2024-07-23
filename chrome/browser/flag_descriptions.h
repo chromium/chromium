@@ -1818,6 +1818,9 @@ extern const char kQuickDeleteForAndroidDescription[];
 extern const char kQuickDeleteAndroidFollowupName[];
 extern const char kQuickDeleteAndroidFollowupDescription[];
 
+extern const char kQuickDeleteAndroidSurveyName[];
+extern const char kQuickDeleteAndroidSurveyDescription[];
+
 extern const char kQuickShareV2Name[];
 extern const char kQuickShareV2Description[];
 
