@@ -270,6 +270,14 @@ int GetMaxTemporalLayerVendorLimit(
     return 1;
   }
 
+  // Intel drivers with issues of dynamically changing bitrate at CBR mode for
+  // HEVC should be blocked from L1T3 encoding, as there is no SW BRC support
+  // for that at present.
+  if (codec == VideoCodec::kHEVC && vendor == DriverVendor::kIntel &&
+      workarounds.disable_hevc_hmft_cbr_encoding) {
+    return 2;
+  }
+
   // Temporal layer encoding is disabled for VP9 unless a flag is enabled.
   //
   // For example, the Intel VP9 HW encoder reports supporting 3 temporal layers
@@ -891,9 +899,10 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   if (use_sw_brc &&
       (codec_ == VideoCodec::kVP9
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-       || (codec_ == VideoCodec::kHEVC &&
-           base::FeatureList::IsEnabled(kMediaFoundationUseSWBRCForH265) &&
-           num_temporal_layers_ <= 2)
+       || (codec_ == VideoCodec::kHEVC && num_temporal_layers_ <= 2 &&
+           ((vendor_ == DriverVendor::kIntel &&
+             workarounds_.disable_hevc_hmft_cbr_encoding) ||
+            base::FeatureList::IsEnabled(kMediaFoundationUseSWBRCForH265)))
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #if BUILDFLAG(ENABLE_LIBAOM)
        || codec_ == VideoCodec::kAV1
