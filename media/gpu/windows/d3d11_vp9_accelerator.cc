@@ -17,7 +17,9 @@ using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
 
 D3D11VP9Accelerator::D3D11VP9Accelerator(D3D11VideoDecoderClient* client,
                                          MediaLog* media_log)
-    : D3DAccelerator(client, media_log), status_feedback_(0) {}
+    : media_log_(media_log->Clone()), client_(client), status_feedback_(0) {
+  DCHECK(client_);
+}
 
 D3D11VP9Accelerator::~D3D11VP9Accelerator() = default;
 
@@ -29,7 +31,7 @@ scoped_refptr<VP9Picture> D3D11VP9Accelerator::CreateVP9Picture() {
 }
 
 bool D3D11VP9Accelerator::BeginFrame(const D3D11VP9Picture& pic) {
-  return video_decoder_wrapper_->WaitForFrameBegins(pic.picture_buffer());
+  return client_->GetWrapper()->WaitForFrameBegins(pic.picture_buffer());
 }
 
 void D3D11VP9Accelerator::CopyFrameParams(const D3D11VP9Picture& pic,
@@ -197,7 +199,7 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
     const DXVA_PicParams_VP9& pic_params,
     const D3D11VP9Picture& pic) {
   auto pic_params_buffer =
-      video_decoder_wrapper_->GetPictureParametersBuffer(sizeof(pic_params));
+      client_->GetWrapper()->GetPictureParametersBuffer(sizeof(pic_params));
   if (pic_params_buffer.size() < sizeof(pic_params)) {
     MEDIA_LOG(ERROR, media_log_)
         << "Insufficient picture parameter buffer size";
@@ -211,11 +213,11 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
   }
 
   bool ok =
-      video_decoder_wrapper_
+      client_->GetWrapper()
           ->AppendBitstreamAndSliceDataWithStartCode<DXVA_Slice_VPx_Short>(
               pic.frame_hdr->data);
 
-  return ok && video_decoder_wrapper_->SubmitSlice();
+  return ok && client_->GetWrapper()->SubmitSlice();
 }
 
 DecodeStatus D3D11VP9Accelerator::SubmitDecode(
@@ -240,7 +242,7 @@ DecodeStatus D3D11VP9Accelerator::SubmitDecode(
   if (!SubmitDecoderBuffer(pic_params, *pic))
     return DecodeStatus::kFail;
 
-  if (!video_decoder_wrapper_->SubmitDecode()) {
+  if (!client_->GetWrapper()->SubmitDecode()) {
     return DecodeStatus::kFail;
   }
 

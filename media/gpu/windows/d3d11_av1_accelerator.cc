@@ -52,7 +52,9 @@ class D3D11AV1Picture : public AV1Picture {
 
 D3D11AV1Accelerator::D3D11AV1Accelerator(D3D11VideoDecoderClient* client,
                                          MediaLog* media_log)
-    : D3DAccelerator(client, media_log) {}
+    : media_log_(media_log->Clone()), client_(client) {
+  DCHECK(client_);
+}
 
 D3D11AV1Accelerator::~D3D11AV1Accelerator() {}
 
@@ -69,7 +71,7 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
     const libgav1::Vector<libgav1::TileBuffer>& tile_buffers) {
   // Buffer #1 - AV1 specific picture parameters.
   auto params_buffer =
-      video_decoder_wrapper_->GetPictureParametersBuffer(sizeof(pic_params));
+      client_->GetWrapper()->GetPictureParametersBuffer(sizeof(pic_params));
   if (params_buffer.size() < sizeof(pic_params)) {
     MEDIA_LOG(ERROR, media_log_)
         << "Insufficient picture parameter buffer size";
@@ -80,7 +82,7 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
 
   // Buffer #2 - Slice control data.
   const auto tile_size = sizeof(DXVA_Tile_AV1) * tile_buffers.size();
-  auto tile_buffer = video_decoder_wrapper_->GetSliceControlBuffer(tile_size);
+  auto tile_buffer = client_->GetWrapper()->GetSliceControlBuffer(tile_size);
   if (tile_buffer.size() < tile_size) {
     MEDIA_LOG(ERROR, media_log_) << "Insufficient slice control buffer size";
     return false;
@@ -93,7 +95,7 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
       tile_buffers.begin(), tile_buffers.end(), 0,
       [](size_t acc, const auto& buffer) { return acc + buffer.size; });
   auto& bitstream_buffer =
-      video_decoder_wrapper_->GetBitstreamBuffer(bitstream_size);
+      client_->GetWrapper()->GetBitstreamBuffer(bitstream_size);
   if (bitstream_buffer.size() < bitstream_size) {
     MEDIA_LOG(ERROR, media_log_) << "Insufficient bitstream buffer size";
     return false;
@@ -115,7 +117,7 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
   // Commit the buffers we prepared above. Bitstream buffer will be committed
   // by SubmitSlice() so we don't explicitly commit here.
   return params_buffer.Commit() && tile_buffer.Commit() &&
-         video_decoder_wrapper_->SubmitSlice();
+         client_->GetWrapper()->SubmitSlice();
 }
 
 DecodeStatus D3D11AV1Accelerator::SubmitDecode(
@@ -125,7 +127,7 @@ DecodeStatus D3D11AV1Accelerator::SubmitDecode(
     const libgav1::Vector<libgav1::TileBuffer>& tile_buffers,
     base::span<const uint8_t> data) {
   const D3D11AV1Picture* pic_ptr = static_cast<const D3D11AV1Picture*>(&pic);
-  if (!video_decoder_wrapper_->WaitForFrameBegins(pic_ptr->picture_buffer())) {
+  if (!client_->GetWrapper()->WaitForFrameBegins(pic_ptr->picture_buffer())) {
     return DecodeStatus::kFail;
   }
 
@@ -139,8 +141,8 @@ DecodeStatus D3D11AV1Accelerator::SubmitDecode(
     return DecodeStatus::kFail;
   }
 
-  return video_decoder_wrapper_->SubmitDecode() ? DecodeStatus::kOk
-                                                : DecodeStatus::kFail;
+  return client_->GetWrapper()->SubmitDecode() ? DecodeStatus::kOk
+                                               : DecodeStatus::kFail;
 }
 
 bool D3D11AV1Accelerator::OutputPicture(const AV1Picture& pic) {

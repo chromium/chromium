@@ -95,7 +95,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   void UpdateTimestamp(D3D11PictureBuffer* picture_buffer) override;
   bool OutputResult(const CodecPicture* picture,
                     D3D11PictureBuffer* picture_buffer) override;
-  void SetDecoderWrapperCB(const SetAcceleratorDecoderWrapperCB&) override;
+  D3DVideoDecoderWrapper* GetWrapper() override;
 
   bool ResetD3DVideoDecoder();
 
@@ -282,9 +282,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // texture with multiple array slices (false)?
   bool use_single_video_decoder_texture_ = false;
 
-  // Word-salad callback to set / update D3D11 Video callback to the
-  // accelerator.  Needed for config changes.
-  SetAcceleratorDecoderWrapperCB set_accelerator_decoder_wrapper_cb_;
+  std::unique_ptr<D3DVideoDecoderWrapper> d3d_video_decoder_wrapper_;
 
   // The currently configured bit depth for the decoder. When this changes we
   // need to recreate the decoder.

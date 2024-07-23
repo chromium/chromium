@@ -159,9 +159,6 @@ bool D3D11VideoDecoder::InitializeAcceleratedDecoder(
     const VideoDecoderConfig& config) {
   TRACE_EVENT0("gpu", "D3D11VideoDecoder::InitializeAcceleratedDecoder");
 
-  // Clear callback in case this is a codec change.
-  set_accelerator_decoder_wrapper_cb_.Reset();
-
   profile_ = config.profile();
   if (config.codec() == VideoCodec::kVP9) {
     accelerated_video_decoder_ = std::make_unique<VP9Decoder>(
@@ -256,9 +253,7 @@ bool D3D11VideoDecoder::ResetD3DVideoDecoder() {
   bit_depth_ = bit_depth;
   decoder_configurator_ = std::move(decoder_configurator);
   texture_selector_ = std::move(texture_selector);
-
-  CHECK(set_accelerator_decoder_wrapper_cb_);
-  set_accelerator_decoder_wrapper_cb_.Run(std::move(video_decoder_wrapper));
+  d3d_video_decoder_wrapper_ = std::move(video_decoder_wrapper);
 
   return true;
 }
@@ -985,9 +980,8 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
   return true;
 }
 
-void D3D11VideoDecoder::SetDecoderWrapperCB(
-    const SetAcceleratorDecoderWrapperCB& cb) {
-  set_accelerator_decoder_wrapper_cb_ = cb;
+D3DVideoDecoderWrapper* D3D11VideoDecoder::GetWrapper() {
+  return d3d_video_decoder_wrapper_.get();
 }
 
 void D3D11VideoDecoder::NotifyError(D3D11Status reason,

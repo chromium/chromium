@@ -12,13 +12,12 @@
 #include "base/memory/raw_ptr.h"
 #include "media/base/media_log.h"
 #include "media/gpu/vp9_decoder.h"
+#include "media/gpu/windows/d3d11_video_decoder_client.h"
 #include "media/gpu/windows/d3d11_vp9_picture.h"
-#include "media/gpu/windows/d3d_accelerator.h"
 
 namespace media {
 
-class D3D11VP9Accelerator : public D3DAccelerator,
-                            public VP9Decoder::VP9Accelerator {
+class D3D11VP9Accelerator : public VP9Decoder::VP9Accelerator {
  public:
   D3D11VP9Accelerator(D3D11VideoDecoderClient* client, MediaLog* media_log);
 
@@ -60,6 +59,9 @@ class D3D11VP9Accelerator : public D3DAccelerator,
                            const D3D11VP9Picture& pic);
   bool SubmitDecoderBuffer(const DXVA_PicParams_VP9& pic_params,
                            const D3D11VP9Picture& pic);
+
+  std::unique_ptr<MediaLog> media_log_;
+  raw_ptr<D3D11VideoDecoderClient> client_;
 
   UINT status_feedback_;
 
