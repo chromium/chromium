@@ -98,10 +98,6 @@ void SyntheticTrialSyncer::OnSyntheticTrialsChanged(
 
 void SyntheticTrialSyncer::BrowserChildProcessLaunchedAndConnected(
     const ChildProcessData& data) {
-  if (!data.GetProcess().IsValid()) {
-    return;
-  }
-
   const int unique_id = data.id;
   ChildProcessHost* host = FindChildProcessHost(unique_id);
   if (host == nullptr) {
