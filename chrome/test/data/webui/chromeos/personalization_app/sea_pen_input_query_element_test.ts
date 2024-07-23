@@ -262,17 +262,6 @@ suite('SeaPenInputQueryElementTest', function() {
     chai.assert.sameMembers(originalSuggestions, getSuggestions());
   });
 
-
-  test('displays prompting guide link', async () => {
-    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
-    await waitAfterNextRender(seaPenInputQueryElement);
-
-    const promptingGuide =
-        seaPenInputQueryElement.shadowRoot!.getElementById('promptingGuide');
-
-    assertTrue(!!promptingGuide, 'prompting guide link should exist');
-  });
-
   test('clicking suggestion adds text to whitespace input', async () => {
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
     await waitAfterNextRender(seaPenInputQueryElement);

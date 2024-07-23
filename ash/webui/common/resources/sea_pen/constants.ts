@@ -79,7 +79,7 @@ export const SEA_PEN_SUGGESTIONS: string[] = [
 
 export const SEA_PEN_SAMPLES: SeaPenSamplePrompt[] = [
   {
-    prompt: 'A fluffy golden retreiver puppy with floppy ears',
+    prompt: 'A fluffy golden retriever puppy with floppy ears',
     preview: {
       url:
           'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_glowscapes.jpg',

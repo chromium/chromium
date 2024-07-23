@@ -25,11 +25,6 @@
     width: 100%;
   }
 
-  #searchButtons #promptingGuide {
-    left: 0;
-    position: absolute;
-  }
-
   #thumbnailsLoadingText {
     color: var(--cros-sys-on_primary_container);
     font: var(--cros-annotation-1-font);
@@ -64,11 +59,6 @@
         </span>
       </template>
       <template is="dom-if" if="[[!thumbnailsLoading_]]" restamp>
-        <a id="promptingGuide"
-            href="chrome://help-app/help/sub/3399710/id/1251809"
-            target="_blank">
-          [[i18n('seaPenFreeformPromptingGuide')]]
-        </a>
         <cr-button
             id="inspire"
             on-click="onClickInspire_"
