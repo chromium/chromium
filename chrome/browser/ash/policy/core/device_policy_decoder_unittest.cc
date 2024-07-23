@@ -860,4 +860,19 @@ TEST_F(DevicePolicyDecoderTest, DeviceAllowEnterpriseRemoteAccessConnections) {
       std::move(value));
 }
 
+TEST_F(DevicePolicyDecoderTest, DevicePostQuantumKeyAgreementEnabled) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kDevicePostQuantumKeyAgreementEnabled);
+
+  base::Value devicepostquantumkeyagreementenabled(true);
+  device_policy.mutable_devicepostquantumkeyagreementenabled()->set_value(
+      devicepostquantumkeyagreementenabled.GetBool());
+
+  DecodeDevicePolicyTestHelper(device_policy,
+                               key::kDevicePostQuantumKeyAgreementEnabled,
+                               std::move(devicepostquantumkeyagreementenabled));
+}
+
 }  // namespace policy
