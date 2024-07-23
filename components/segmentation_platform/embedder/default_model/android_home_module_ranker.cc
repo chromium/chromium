@@ -22,13 +22,13 @@ using proto::SegmentId;
 // Default parameters for AndroidHomeModuleRanker model.
 constexpr SegmentId kSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ANDROID_HOME_MODULE_RANKER;
-constexpr int64_t kModelVersion = 5;
+constexpr int64_t kModelVersion = 6;
 // Store 28 buckets of input data (28 days).
 constexpr int64_t kSignalStorageLength = 28;
 // Wait until we have 0 days of data.
 constexpr int64_t kMinSignalCollectionLength = 0;
 // Refresh the result every time.
-constexpr int64_t kResultTTLDays = 7;
+constexpr int64_t kResultTTLMinutes = 5;
 
 constexpr std::array<const char*, 4> kAndroidHomeModuleLabels = {
     kPriceChange, kSingleTab, kTabResumptionForAndroidHome, kSafetyHub};
@@ -133,7 +133,7 @@ std::unique_ptr<Config> AndroidHomeModuleRanker::GetConfig() {
 
 AndroidHomeModuleRanker::AndroidHomeModuleRanker()
     : DefaultModelProvider(kSegmentId),
-      isAndroidHomeModuleRankerV2Enabled(base::FeatureList::IsEnabled(
+      is_android_home_module_ranker_v2_enabled(base::FeatureList::IsEnabled(
           features::kSegmentationPlatformAndroidHomeModuleRankerV2)) {}
 
 std::unique_ptr<DefaultModelProvider::ModelConfig>
@@ -150,12 +150,14 @@ AndroidHomeModuleRanker::GetModelConfig() {
                                                 /*threshold=*/-99999.0);
   writer.AddPredictedResultTTLInOutputConfig(
       /*top_label_to_ttl_list=*/{},
-      /*default_ttl=*/kResultTTLDays, proto::TimeUnit::DAY);
+      /*default_ttl=*/kResultTTLMinutes, proto::TimeUnit::MINUTE);
+
+  writer.SetIgnorePreviousModelTTLInOutputConfig();
 
   // Set features.
   writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());
 
-  if (isAndroidHomeModuleRankerV2Enabled) {
+  if (is_android_home_module_ranker_v2_enabled) {
     // Add freshness for all modules as custom input.
     writer.AddFromInputContext("single_tab_input", kSingleTabFreshness);
     writer.AddFromInputContext("price_change_input", kPriceChangeFreshness);
@@ -172,7 +174,7 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
     ExecutionCallback callback) {
   // Invalid inputs.
   size_t expected_input_size =
-      isAndroidHomeModuleRankerV2Enabled
+      is_android_home_module_ranker_v2_enabled
           ? kUMAFeatures.size() + kAndroidHomeModuleInputContextKeys.size()
           : kUMAFeatures.size();
   if (inputs.size() != expected_input_size) {
@@ -186,7 +188,7 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
   float single_tab_weights[3] = {1.5, -0.5, 1.0};
   float single_tab_engagement = inputs[0];
   float single_tab_impression = inputs[1];
-  float single_tab_freshness = isAndroidHomeModuleRankerV2Enabled
+  float single_tab_freshness = is_android_home_module_ranker_v2_enabled
                                    ? TransformFreshness(inputs[8], 1.0)
                                    : 0.0;
   float single_tab_score = single_tab_weights[0] * single_tab_engagement +
@@ -197,7 +199,7 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
   float price_change_weights[3] = {2.0, -1.0, 2.0};
   float price_change_engagement = inputs[2];
   float price_change_impression = inputs[3];
-  float price_change_freshness = isAndroidHomeModuleRankerV2Enabled
+  float price_change_freshness = is_android_home_module_ranker_v2_enabled
                                      ? TransformFreshness(inputs[9], 1.0)
                                      : 0.0;
   float price_change_score = price_change_weights[0] * price_change_engagement +
@@ -208,7 +210,7 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
   float tab_resumption_weights[3] = {1.5, -0.5, 1.0};
   float tab_resumption_engagement = inputs[4];
   float tab_resumption_impression = inputs[5];
-  float tab_resumption_freshness = isAndroidHomeModuleRankerV2Enabled
+  float tab_resumption_freshness = is_android_home_module_ranker_v2_enabled
                                        ? TransformFreshness(inputs[10], 1.0)
                                        : 0.0;
   float tab_resumption_score =
@@ -220,7 +222,7 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
   float safety_hub_weights[3] = {2.5, -2, 2.5};
   float safety_hub_engagement = inputs[6];
   float safety_hub_impression = inputs[7];
-  float safety_hub_freshness = isAndroidHomeModuleRankerV2Enabled
+  float safety_hub_freshness = is_android_home_module_ranker_v2_enabled
                                    ? TransformFreshness(inputs[11], 1.0)
                                    : 0.0;
   float safety_hub_score = safety_hub_weights[0] * safety_hub_engagement +

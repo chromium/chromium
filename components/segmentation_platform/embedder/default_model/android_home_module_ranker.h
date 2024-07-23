@@ -30,7 +30,7 @@ class AndroidHomeModuleRanker : public DefaultModelProvider {
   void ExecuteModelWithInput(const ModelProvider::Request& inputs,
                              ExecutionCallback callback) override;
 
-  bool isAndroidHomeModuleRankerV2Enabled{false};
+  bool is_android_home_module_ranker_v2_enabled{false};
 };
 
 }  // namespace segmentation_platform
