@@ -4312,11 +4312,6 @@ if (!is_android) {
     }
 
     if (use_aura) {
-      sources += [
-        "../browser/ui/test/test_app_window_icon_observer.cc",
-        "../browser/ui/test/test_app_window_icon_observer.h",
-      ]
-
       deps += [ "//components/eye_dropper" ]
 
       if (use_nss_certs) {

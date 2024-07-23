@@ -6895,7 +6895,12 @@ static_library("test_support") {
       "views/webauthn/authenticator_request_dialog_view_test_api.h",
     ]
     if (use_aura) {
-      sources += [ "views/extensions/extension_action_test_helper_aura.cc" ]
+      sources += [
+        "test/test_app_window_icon_observer.cc",
+        "test/test_app_window_icon_observer.h",
+        "views/extensions/extension_action_test_helper_aura.cc",
+      ]
+
       deps += [
         "//ui/aura",
         "//ui/wm",
