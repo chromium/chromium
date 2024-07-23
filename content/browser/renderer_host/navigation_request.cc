@@ -460,7 +460,7 @@ bool ShouldPropagateUserActivation(const url::Origin& previous_origin,
 }
 
 // LOG_NAVIGATION_TIMING_HISTOGRAM logs |value| for "Navigation.<histogram>" UMA
-// as well as supplementary UMAs (depending on |transition| and |is_background|)
+// as well as supplementary UMAs (depending on |transition| and |priority|)
 // for BackForward/Reload/NewNavigation variants.
 //
 // kMaxTime and kBuckets constants are consistent with
@@ -470,7 +470,7 @@ bool ShouldPropagateUserActivation(const url::Origin& previous_origin,
 // TODO(csharrison,nasko): This macro is incorrect for subframe navigations,
 // which will only have subframe-specific transition types. This means that all
 // subframes currently are tagged as NewNavigations.
-#define LOG_NAVIGATION_TIMING_HISTOGRAM(histogram, transition, is_background, \
+#define LOG_NAVIGATION_TIMING_HISTOGRAM(histogram, transition, priority,      \
                                         duration)                             \
   do {                                                                        \
     const base::TimeDelta kMinTime = base::Milliseconds(1);                   \
@@ -491,8 +491,8 @@ bool ShouldPropagateUserActivation(const url::Origin& previous_origin,
     } else {                                                                  \
       NOTREACHED_IN_MIGRATION() << "Invalid page transition: " << transition; \
     }                                                                         \
-    if (is_background.has_value()) {                                          \
-      if (is_background.value()) {                                            \
+    if (priority.has_value()) {                                               \
+      if (priority.value() == base::Process::Priority::kBestEffort) {         \
         UMA_HISTOGRAM_CUSTOM_TIMES("Navigation." histogram                    \
                                    ".BackgroundProcessPriority",              \
                                    duration, kMinTime, kMaxTime, kBuckets);   \
@@ -507,44 +507,43 @@ bool ShouldPropagateUserActivation(const url::Origin& previous_origin,
 void RecordStartToCommitMetrics(base::TimeTicks navigation_start_time,
                                 ui::PageTransition transition,
                                 const base::TimeTicks& ready_to_commit_time,
-                                std::optional<bool> is_background,
+                                std::optional<base::Process::Priority> priority,
                                 bool is_same_process,
                                 bool is_main_frame) {
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta delta = now - navigation_start_time;
-  LOG_NAVIGATION_TIMING_HISTOGRAM("StartToCommit", transition, is_background,
-                                  delta);
+  LOG_NAVIGATION_TIMING_HISTOGRAM("StartToCommit", transition, priority, delta);
   if (is_main_frame) {
     LOG_NAVIGATION_TIMING_HISTOGRAM("StartToCommit.MainFrame", transition,
-                                    is_background, delta);
+                                    priority, delta);
   } else {
     LOG_NAVIGATION_TIMING_HISTOGRAM("StartToCommit.Subframe", transition,
-                                    is_background, delta);
+                                    priority, delta);
   }
   if (is_same_process) {
     LOG_NAVIGATION_TIMING_HISTOGRAM("StartToCommit.SameProcess", transition,
-                                    is_background, delta);
+                                    priority, delta);
     if (is_main_frame) {
       LOG_NAVIGATION_TIMING_HISTOGRAM("StartToCommit.SameProcess.MainFrame",
-                                      transition, is_background, delta);
+                                      transition, priority, delta);
     } else {
       LOG_NAVIGATION_TIMING_HISTOGRAM("StartToCommit.SameProcess.Subframe",
-                                      transition, is_background, delta);
+                                      transition, priority, delta);
     }
   } else {
     LOG_NAVIGATION_TIMING_HISTOGRAM("StartToCommit.CrossProcess", transition,
-                                    is_background, delta);
+                                    priority, delta);
     if (is_main_frame) {
       LOG_NAVIGATION_TIMING_HISTOGRAM("StartToCommit.CrossProcess.MainFrame",
-                                      transition, is_background, delta);
+                                      transition, priority, delta);
     } else {
       LOG_NAVIGATION_TIMING_HISTOGRAM("StartToCommit.CrossProcess.Subframe",
-                                      transition, is_background, delta);
+                                      transition, priority, delta);
     }
   }
   if (!ready_to_commit_time.is_null()) {
     LOG_NAVIGATION_TIMING_HISTOGRAM("ReadyToCommitUntilCommit2", transition,
-                                    is_background, now - ready_to_commit_time);
+                                    priority, now - ready_to_commit_time);
   }
 }
 
@@ -610,32 +609,32 @@ void RecordReadyToCommitMetrics(
 
   // TimeToReadyToCommit2
   {
-    constexpr std::optional<bool> kIsBackground = std::nullopt;
+    constexpr std::optional<base::Process::Priority> kPriority = std::nullopt;
     base::TimeDelta delta =
         ready_to_commit_time - common_params.navigation_start;
     ui::PageTransition transition =
         ui::PageTransitionFromInt(common_params.transition);
 
     LOG_NAVIGATION_TIMING_HISTOGRAM("TimeToReadyToCommit2", transition,
-                                    kIsBackground, delta);
+                                    kPriority, delta);
     if (is_main_frame) {
       LOG_NAVIGATION_TIMING_HISTOGRAM("TimeToReadyToCommit2.MainFrame",
-                                      transition, kIsBackground, delta);
+                                      transition, kPriority, delta);
     } else {
       LOG_NAVIGATION_TIMING_HISTOGRAM("TimeToReadyToCommit2.Subframe",
-                                      transition, kIsBackground, delta);
+                                      transition, kPriority, delta);
     }
     if (is_same_process) {
       LOG_NAVIGATION_TIMING_HISTOGRAM("TimeToReadyToCommit2.SameProcess",
-                                      transition, kIsBackground, delta);
+                                      transition, kPriority, delta);
     } else {
       LOG_NAVIGATION_TIMING_HISTOGRAM("TimeToReadyToCommit2.CrossProcess",
-                                      transition, kIsBackground, delta);
+                                      transition, kPriority, delta);
     }
     if (did_receive_early_hints_before_cross_origin_redirect) {
       LOG_NAVIGATION_TIMING_HISTOGRAM(
           "TimeToReadyToCommit2.CrossOriginRedirectAfterEarlyHints", transition,
-          kIsBackground, delta);
+          kPriority, delta);
     }
   }
 
@@ -7672,12 +7671,12 @@ void NavigationRequest::DidCommitNavigation(
   if (!IsSameDocument() && state_ != DID_COMMIT_ERROR_PAGE) {
     ui::PageTransition transition =
         ui::PageTransitionFromInt(common_params_->transition);
-    std::optional<bool> is_background =
-        GetRenderFrameHost()->GetProcess()->IsProcessBackgrounded();
+    base::Process::Priority priority =
+        GetRenderFrameHost()->GetProcess()->GetPriority();
 
     RecordStartToCommitMetrics(
         common_params_->navigation_start, transition, ready_to_commit_time_,
-        is_background, is_same_process_, frame_tree_node_->IsMainFrame());
+        priority, is_same_process_, frame_tree_node_->IsMainFrame());
   }
 
   DCHECK(!frame_tree_node_->IsMainFrame() || navigation_entry_committed)

@@ -75,7 +75,7 @@ MockRenderProcessHost::MockRenderProcessHost(
       fast_shutdown_started_(false),
       deletion_callback_called_(false),
       is_for_guests_only_(is_for_guests_only),
-      is_process_backgrounded_(false),
+      priority_(base::Process::Priority::kUserBlocking),
       is_unused_(true),
       worker_ref_count_(0),
       pending_reuse_ref_count_(0),
@@ -339,7 +339,8 @@ void MockRenderProcessHost::RemovePriorityClient(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void MockRenderProcessHost::SetPriorityOverride(bool foreground) {}
+void MockRenderProcessHost::SetPriorityOverride(
+    base::Process::Priority priority) {}
 
 bool MockRenderProcessHost::HasPriorityOverride() {
   return false;
@@ -407,8 +408,8 @@ const base::TimeTicks& MockRenderProcessHost::GetLastInitTime() {
   return dummy_time;
 }
 
-bool MockRenderProcessHost::IsProcessBackgrounded() {
-  return is_process_backgrounded_;
+base::Process::Priority MockRenderProcessHost::GetPriority() {
+  return priority_;
 }
 
 std::string MockRenderProcessHost::GetKeepAliveDurations() const {

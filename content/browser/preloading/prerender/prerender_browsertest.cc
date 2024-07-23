@@ -11709,18 +11709,19 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, VerifyPrerenderProcessVisibility) {
   RenderProcessHost* prerender_process_host =
       prerender_frame_host->GetProcess();
   ASSERT_NE(prerender_frame_host, nullptr);
-  // Ensure that a prerender process is invisible in
-  // ChildProcessLauncherPriority. This will put prerender processes in lower
-  // priority compared to other active processes. (See
+  // Ensure that a prerender process is backgrounded. This will put prerender
+  // processes in lower priority compared to other active processes. (See
   // https://crbug.com/1211665)
-  EXPECT_TRUE(prerender_process_host->IsProcessBackgrounded());
+  EXPECT_TRUE(prerender_process_host->GetPriority() ==
+              base::Process::Priority::kBestEffort);
 
   // Activate the prerendered page.
   test::PrerenderHostObserver host_observer(*web_contents(), kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);
   EXPECT_TRUE(host_observer.was_activated());
-  // Expect the change in the ChildProcessLauncherPriority to become visible.
-  EXPECT_FALSE(prerender_process_host->IsProcessBackgrounded());
+  // Expect the change in the ChildProcessLauncherPriority to increase priority.
+  EXPECT_NE(prerender_process_host->GetPriority(),
+            base::Process::Priority::kBestEffort);
 }
 
 class PrerenderPurposePrefetchBrowserTest : public PrerenderBrowserTest {

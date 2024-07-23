@@ -6038,7 +6038,8 @@ IN_PROC_BROWSER_TEST_P(
   // TODO(gab, nasko): On Android IsProcessBackgrounded is currently giving
   // incorrect value at this stage of the process lifetime. This should be
   // fixed in follow up cleanup work. See https://crbug.com/560446.
-  EXPECT_FALSE(speculative_rph->IsProcessBackgrounded());
+  EXPECT_NE(speculative_rph->GetPriority(),
+            base::Process::Priority::kBestEffort);
 #endif
 
   // Wait for the underlying OS process to have launched and be ready to
@@ -6087,7 +6088,7 @@ IN_PROC_BROWSER_TEST_P(
   RenderProcessHost* spare_rph =
       RenderProcessHostImpl::GetSpareRenderProcessHostForTesting();
   EXPECT_TRUE(spare_rph);
-  EXPECT_TRUE(spare_rph->IsProcessBackgrounded());
+  EXPECT_EQ(spare_rph->GetPriority(), base::Process::Priority::kBestEffort);
 
   // Start a navigation to b.com to ensure a cross-process navigation is
   // in progress and ensure the process for the speculative host is
@@ -6121,7 +6122,7 @@ IN_PROC_BROWSER_TEST_P(
   // The creation of the speculative RenderFrameHost should change the
   // RenderProcessHost's copy of the priority of the spare process from
   // background to foreground.
-  EXPECT_FALSE(spare_rph->IsProcessBackgrounded());
+  EXPECT_NE(spare_rph->GetPriority(), base::Process::Priority::kBestEffort);
 
   // The OS process itself is updated on the process launcher thread, so it
   // cannot be observed immediately here. Perform a thread hop to and back to

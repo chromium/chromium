@@ -266,7 +266,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void RemovePriorityClient(
       RenderProcessHostPriorityClient* priority_client) override;
 #if !BUILDFLAG(IS_ANDROID)
-  void SetPriorityOverride(bool foreground) override;
+  void SetPriorityOverride(base::Process::Priority priority) override;
   bool HasPriorityOverride() override;
   void ClearPriorityOverride() override;
 #endif
@@ -295,7 +295,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   std::unique_ptr<base::PersistentMemoryAllocator> TakeMetricsAllocator()
       override;
   const base::TimeTicks& GetLastInitTime() override;
-  bool IsProcessBackgrounded() override;
+  base::Process::Priority GetPriority() override;
   std::string GetKeepAliveDurations() const override;
   size_t GetShutdownDelayRefCount() const override;
   int GetRenderFrameHostCount() const override;
@@ -1300,12 +1300,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
 #if !BUILDFLAG(IS_ANDROID)
   // If this is set then the built-in process priority calculation system is
-  // ignored, and an externally computed process priority is used. Set to true
-  // and the process will stay foreground priority; set to false and it will
-  // stay background priority.
+  // ignored, and an externally computed process priority is used.
   // TODO(pmonette): After experimentation, either remove this or rip out the
   // existing logic entirely.
-  std::optional<bool> foreground_override_;
+  std::optional<base::Process::Priority> priority_override_;
 #endif
 
   // Used to allow a RenderWidgetHost to intercept various messages on the
@@ -1465,6 +1463,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // atomically communicate the last time the hosted renderer was foregrounded.
   // This is preferable to IPC as it ensures the timing is visible immediately
   // after recovering from a jank (e.g. important for metrics).
+  // TODO(pmonette): Update this to support all process priority levels.
   base::MappedReadOnlyRegion last_foreground_time_region_;
 
   // Tracks active audio and video streams within the render process; used to

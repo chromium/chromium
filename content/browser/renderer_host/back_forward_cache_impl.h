@@ -117,7 +117,7 @@ struct CONTENT_EXPORT BackForwardCacheCanStoreDocumentResultWithTree {
 //
 // 1. `EnforceCacheSizeLimit()` is called to prune the cache size down on
 //    storing a new cache entry, or when the renderer process's
-//    `IsProcessBackgrounded()` state changes.
+//    `GetPriority()` state changes.
 //    A. [Android-only] The number of entries where `HasForegroundedProcess()`
 //       is true is pruned to `GetForegroundedEntriesCacheSize()`.
 //    B. Prunes to `GetCacheSize()` entries no matter what kinds of tabs
@@ -408,7 +408,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
       const StoragePartition::StorageKeyMatcherFunction& storage_key_filter);
 
   // RenderProcessHostInternalObserver methods
-  void RenderProcessBackgroundedChanged(RenderProcessHostImpl* host) override;
+  void RenderProcessPriorityChanged(RenderProcessHostImpl* host) override;
 
   // Returns true if we are managing the cache size using foreground and
   // background limits (if finch parameter "foreground_cache_size" > 0).

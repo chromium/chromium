@@ -1342,10 +1342,10 @@ bool IsTargetUrlOfBoostRenderProcessForLoading(const GURL& url) {
 }
 
 void RecordIsProcessBackgrounded(const char* timing_string,
-                                 bool is_process_backgrounded) {
+                                 base::Process::Priority process_priority) {
   base::UmaHistogramBoolean(
       base::StrCat({"Navigation.IsProcessBackgrounded.", timing_string}),
-      is_process_backgrounded);
+      process_priority == base::Process::Priority::kBestEffort);
 }
 
 // These are directly cast to UKM enums of the same name and logged,
@@ -5707,7 +5707,7 @@ void RenderFrameHostImpl::MaybeDispatchDOMContentLoadedOnPrerenderActivation() {
   delegate_->DOMContentLoaded(this);
   if (last_committed_url_.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame()) {
     RecordIsProcessBackgrounded("OnDOMContentLoaded",
-                                GetProcess()->IsProcessBackgrounded());
+                                GetProcess()->GetPriority());
   }
   MaybeResetBoostRenderProcessForLoading();
 }
@@ -8085,7 +8085,7 @@ void RenderFrameHostImpl::DidDispatchDOMContentLoadedEvent() {
   delegate_->DOMContentLoaded(this);
   if (last_committed_url_.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame()) {
     RecordIsProcessBackgrounded("OnDOMContentLoaded",
-                                GetProcess()->IsProcessBackgrounded());
+                                GetProcess()->GetPriority());
   }
   MaybeResetBoostRenderProcessForLoading();
 }
@@ -11547,8 +11547,7 @@ void RenderFrameHostImpl::CommitNavigation(
       if (IsTargetUrlOfBoostRenderProcessForLoading(common_params->url)) {
         BoostRenderProcessForLoading();
       }
-      RecordIsProcessBackgrounded("OnCommit",
-                                  GetProcess()->IsProcessBackgrounded());
+      RecordIsProcessBackgrounded("OnCommit", GetProcess()->GetPriority());
     }
 
     SendCommitNavigation(

@@ -27,25 +27,21 @@ size_t g_instance_count = 0;
 // the RenderProcessHost.
 ProcessPriorityPolicy::SetPriorityOnUiThreadCallback* g_callback = nullptr;
 
-// Maps a TaskPriority to a "is_foreground" bool. Process priorities are
-// currently simply "background" or "foreground", despite there actually being
-// more expressive power on most platforms.
-bool IsForegroundTaskPriority(base::TaskPriority priority) {
+base::Process::Priority ToProcessPriority(base::TaskPriority priority) {
   switch (priority) {
     case base::TaskPriority::BEST_EFFORT:
-      return false;
+      return base::Process::Priority::kBestEffort;
 
+    // Only one foreground priority for now.
     case base::TaskPriority::USER_VISIBLE:
     case base::TaskPriority::USER_BLOCKING:
-      break;
+      return base::Process::Priority::kUserBlocking;
   }
-
-  return true;
 }
 
 // Helper function for setting the RenderProcessHost priority.
 void SetProcessPriorityOnUIThread(RenderProcessHostProxy rph_proxy,
-                                  bool foreground) {
+                                  base::Process::Priority priority) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Deliver the policy message if the RPH still exists by the time the
@@ -53,18 +49,18 @@ void SetProcessPriorityOnUIThread(RenderProcessHostProxy rph_proxy,
   // the process launcher thread.
   auto* rph = rph_proxy.Get();
   if (rph)
-    rph->SetPriorityOverride(foreground);
+    rph->SetPriorityOverride(priority);
 
   // Invoke the testing seam callback if one was provided.
   if (g_callback && !g_callback->is_null())
-    g_callback->Run(rph_proxy, foreground);
+    g_callback->Run(rph_proxy, priority);
 }
 
 // Dispatches a process priority change to the RenderProcessHost associated with
 // a given ProcessNode. The task is posted to the UI thread, where the RPH
 // lives.
 void DispatchSetProcessPriority(const ProcessNode* process_node,
-                                bool foreground) {
+                                base::Process::Priority priority) {
   if (process_node->GetProcessType() != content::PROCESS_TYPE_RENDERER) {
     // This is triggered from ProcessNode observers that fire for all process
     // types, but only renderer processes have a RenderProcessHostProxy.
@@ -75,7 +71,7 @@ void DispatchSetProcessPriority(const ProcessNode* process_node,
   // skipping the thread-hop.
   if (base::FeatureList::IsEnabled(features::kRunOnMainThreadSync)) {
     SetProcessPriorityOnUIThread(process_node->GetRenderProcessHostProxy(),
-                                 foreground);
+                                 priority);
     return;
   }
 
@@ -86,7 +82,7 @@ void DispatchSetProcessPriority(const ProcessNode* process_node,
   const auto& proxy = process_node->GetRenderProcessHostProxy();
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&SetProcessPriorityOnUIThread, proxy, foreground));
+      base::BindOnce(&SetProcessPriorityOnUIThread, proxy, priority));
 }
 
 }  // namespace
@@ -139,20 +135,21 @@ void ProcessPriorityPolicy::OnProcessNodeAdded(
   // TODO(chrisha): Make process creation take a detour through the graph in
   // order to get the initial priority parameter that is set here. Currently
   // this is effectively a nop.
-  DispatchSetProcessPriority(
-      process_node, IsForegroundTaskPriority(process_node->GetPriority()));
+  DispatchSetProcessPriority(process_node,
+                             ToProcessPriority(process_node->GetPriority()));
 }
 
 void ProcessPriorityPolicy::OnPriorityChanged(
     const ProcessNode* process_node,
     base::TaskPriority previous_value) {
-  bool previous_foreground = IsForegroundTaskPriority(previous_value);
-  bool current_foreground =
-      IsForegroundTaskPriority(process_node->GetPriority());
+  base::Process::Priority previous_priority = ToProcessPriority(previous_value);
+  base::Process::Priority current_priority =
+      ToProcessPriority(process_node->GetPriority());
 
   // Only dispatch a message if the resulting process priority has changed.
-  if (previous_foreground != current_foreground)
-    DispatchSetProcessPriority(process_node, current_foreground);
+  if (previous_priority != current_priority) {
+    DispatchSetProcessPriority(process_node, current_priority);
+  }
 }
 
 }  // namespace policies
