@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/command_line.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -21,7 +22,7 @@
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/credential_provider_extension/account_verification_provider.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
-#import "ios/chrome/credential_provider_extension/password_util.h"
+#import "ios/chrome/credential_provider_extension/passkey_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_coordinator.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_coordinator.h"
@@ -72,7 +73,11 @@ UIColor* BackgroundColor() {
 
 @end
 
-@implementation CredentialProviderViewController
+@implementation CredentialProviderViewController {
+  // Information about a passkey credential request.
+  ASPasskeyCredentialRequestParameters* _requestParameters
+      API_AVAILABLE(ios(17.0));
+}
 
 + (void)initialize {
   if (self == [CredentialProviderViewController self]) {
@@ -120,6 +125,19 @@ UIColor* BackgroundColor() {
   // authenticating and showing the credentials, store the list of
   // identifiers and authenticate once the extension is visible.
   self.serviceIdentifiers = serviceIdentifiers;
+}
+
+// Only available in iOS 17.0+.
+// The system calls this method when there’s an active passkey request in the
+// app or website.
+- (void)prepareCredentialListForServiceIdentifiers:
+            (NSArray<ASCredentialServiceIdentifier*>*)serviceIdentifiers
+                                 requestParameters:
+                                     (ASPasskeyCredentialRequestParameters*)
+                                         requestParameters
+    API_AVAILABLE(ios(17.0)) {
+  self.serviceIdentifiers = serviceIdentifiers;
+  _requestParameters = requestParameters;
 }
 
 // Deprecated in iOS 17.0+.
@@ -261,11 +279,38 @@ UIColor* BackgroundColor() {
       [self.credentialStore credentialWithRecordIdentifier:identifier];
   if (credential) {
     UpdateUMACountForKey(app_group::kCredentialExtensionQuickPasswordUseCount);
-    ASPasswordCredential* ASCredential =
+    ASPasswordCredential* passwordCredential =
         [ASPasswordCredential credentialWithUser:credential.username
                                         password:credential.password];
-    [self completeRequestWithSelectedCredential:ASCredential];
+    [self completeRequestWithSelectedCredential:passwordCredential];
     return;
+  }
+  [self exitWithErrorCode:ASExtensionErrorCodeCredentialIdentityNotFound];
+}
+
+- (void)provideCredentialForRequest:(id<ASCredentialRequest>)credentialRequest
+    API_AVAILABLE(ios(17.0)) {
+  NSString* identifier = credentialRequest.credentialIdentity.recordIdentifier;
+  if (credentialRequest.type == ASCredentialRequestTypePassword) {
+    [self provideCredentialForIdentifier:identifier];
+    return;
+  }
+
+  if (credentialRequest.type == ASCredentialRequestTypePasskeyAssertion) {
+    id<Credential> credential =
+        [self.credentialStore credentialWithRecordIdentifier:identifier];
+    if (credential) {
+      // TODO(crbug.com/330355124): Add UMA metric.
+      ASPasskeyCredentialRequest* passkeyCredentialRequest =
+          base::apple::ObjCCastStrict<ASPasskeyCredentialRequest>(
+              credentialRequest);
+      // TODO(crbug.com/330355124): Handle
+      // passkeyCredentialRequest.userVerificationPreference.
+      ASPasskeyAssertionCredential* passkeyCredential = PerformPasskeyAssertion(
+          credential, passkeyCredentialRequest.clientDataHash, nil);
+      [self userSelectedPasskey:passkeyCredential];
+      return;
+    }
   }
   [self exitWithErrorCode:ASExtensionErrorCodeCredentialIdentityNotFound];
 }
@@ -347,6 +392,9 @@ UIColor* BackgroundColor() {
               serviceIdentifiers:serviceIdentifiers
          reauthenticationHandler:self.reauthenticationHandler
        credentialResponseHandler:self];
+  if (@available(iOS 17.0, *)) {
+    self.listCoordinator.requestParameters = _requestParameters;
+  }
   [self.listCoordinator start];
   UpdateUMACountForKey(app_group::kCredentialExtensionDisplayCount);
 }

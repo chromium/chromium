@@ -31,7 +31,7 @@ source_set("credential_provider") {
   deps = [
     ":account_verification_provider",
     ":metrics_util",
-    ":password_util",
+    ":passkey_util",
     ":reauthentication_handler",
     ":system_strings",
     "//base",
@@ -67,12 +67,17 @@ generate_localizable_strings("system_strings") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "metrics_util_unittest.mm" ]
+  sources = [
+    "metrics_util_unittest.mm",
+    "passkey_util_unittest.mm",
+  ]
   deps = [
     ":metrics_util",
+    ":passkey_util",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/common/app_group",
+    "//ios/chrome/common/credential_provider",
     "//testing/gtest",
   ]
 }
@@ -93,6 +98,20 @@ source_set("reauthentication_handler") {
 buildflag_header("password_spec_fetcher_buildflags") {
   header = "password_spec_fetcher_buildflags.h"
   flags = [ "GOOGLE_API_KEY=@\"$ios_credential_provider_extension_api_key\"" ]
+}
+
+source_set("passkey_util") {
+  sources = [
+    "passkey_util.h",
+    "passkey_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/sync/protocol",
+    "//components/webauthn/core/browser:passkey_model",
+    "//ios/chrome/common/credential_provider:ui",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("password_util") {

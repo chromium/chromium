@@ -10,6 +10,7 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/credential_provider_extension/passkey_util.h"
 #import "ios/chrome/credential_provider_extension/password_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_details_consumer.h"
@@ -132,14 +133,19 @@
             ReauthenticationResult result) {
     if (result != ReauthenticationResult::kFailure) {
       if (!credential.isPasskey) {
-        ASPasswordCredential* ASCredential =
+        ASPasswordCredential* passwordCredential =
             [ASPasswordCredential credentialWithUser:credential.username
                                             password:credential.password];
-        [self.credentialResponseHandler userSelectedPassword:ASCredential];
+        [self.credentialResponseHandler
+            userSelectedPassword:passwordCredential];
       } else if (@available(iOS 17.0, *)) {
-        // TODO(crbug.com/330355124): Perform passkey assertion.
-        ASPasskeyAssertionCredential* ASCredential = nil;
-        [self.credentialResponseHandler userSelectedPasskey:ASCredential];
+        // TODO(crbug.com/330355124): Handle
+        // self.requestParameters.userVerificationPreference.
+        ASPasskeyAssertionCredential* passkeyCredential =
+            PerformPasskeyAssertion(credential,
+                                    self.requestParameters.clientDataHash,
+                                    self.allowedCredentials);
+        [self.credentialResponseHandler userSelectedPasskey:passkeyCredential];
       }
     }
   }];
