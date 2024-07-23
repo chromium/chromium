@@ -8513,6 +8513,10 @@ static_library("browser") {
   if (is_chrome_for_testing) {
     deps += [ "//chrome/browser/chrome_for_testing" ]
   }
+
+  if (!is_chromeos && enable_reporting) {
+    deps += [ "//components/tpcd/enterprise_reporting" ]
+  }
 }
 
 # These are the dependencies for the "browser" target that are outside of

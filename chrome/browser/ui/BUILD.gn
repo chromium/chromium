@@ -6657,6 +6657,10 @@ static_library("ui") {
       "//components/compose/core/browser:mojo_bindings",
     ]
   }
+
+  if (!is_chromeos && enable_reporting) {
+    deps += [ "//components/tpcd/enterprise_reporting" ]
+  }
 }
 
 # These are the dependencies for the "ui" target that are outside of
