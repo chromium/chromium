@@ -292,6 +292,13 @@ BASE_FEATURE(kAutofillEnableLabelPrecedenceForTurkishAddresses,
              "AutofillEnableLabelPrecedenceForTurkishAddresses",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, focusing on a credit card number field that was traditionally
+// autofilled will yield all credit card suggestions.
+// TODO(crbug.com/354175563): Remove when launched.
+BASE_FEATURE(kAutofillEnablePaymentsFieldSwapping,
+             "AutofillEnablePaymentsFieldSwapping",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, trunk prefix-related phone number types are added to the
 // supported and matching types of |PhoneNumber|. Local heuristics for these
 // types are enabled as well.
