@@ -138,10 +138,14 @@ public class AdaptiveToolbarFeatures {
             return Boolean.TRUE.equals(sActionChipOverridesForTesting.get(buttonVariant));
         }
 
-        if (buttonVariant == AdaptiveToolbarButtonVariant.PRICE_TRACKING
-                || buttonVariant == AdaptiveToolbarButtonVariant.READER_MODE) {
-            // Price tracking and reader mode launched with the action chip variant.
-            return true;
+        // Price tracking, price insights and reader mode launched with the action chip variant.
+        switch (buttonVariant) {
+            case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
+            case AdaptiveToolbarButtonVariant.READER_MODE:
+            case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
+                return true;
+            default:
+                break;
         }
 
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
@@ -154,12 +158,14 @@ public class AdaptiveToolbarFeatures {
      */
     public static int getContextualPageActionDelayMs(
             @AdaptiveToolbarButtonVariant int buttonVariant) {
-        if (buttonVariant == AdaptiveToolbarButtonVariant.PRICE_TRACKING) {
-            // Price tracking launched with an action chip delay of 6 seconds.
-            return DEFAULT_PRICE_TRACKING_ACTION_CHIP_DELAY_MS;
-        } else if (buttonVariant == AdaptiveToolbarButtonVariant.READER_MODE) {
-            // Reader mode launched with an action chip delay of 3 seconds.
-            return DEFAULT_READER_MODE_ACTION_CHIP_DELAY_MS;
+        switch (buttonVariant) {
+            case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
+            case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
+                return DEFAULT_PRICE_TRACKING_ACTION_CHIP_DELAY_MS;
+            case AdaptiveToolbarButtonVariant.READER_MODE:
+                return DEFAULT_READER_MODE_ACTION_CHIP_DELAY_MS;
+            default:
+                break;
         }
 
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
@@ -177,11 +183,14 @@ public class AdaptiveToolbarFeatures {
                 && sAlternativeColorOverridesForTesting.containsKey(buttonVariant)) {
             return Boolean.TRUE.equals(sAlternativeColorOverridesForTesting.get(buttonVariant));
         }
-
-        if (buttonVariant == AdaptiveToolbarButtonVariant.PRICE_TRACKING
-                || buttonVariant == AdaptiveToolbarButtonVariant.READER_MODE) {
-            // Price tracking and reader mode launched without using alternative color.
-            return false;
+        // Price tracking, price insights and reader mode launched without using alternative color.
+        switch (buttonVariant) {
+            case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
+            case AdaptiveToolbarButtonVariant.READER_MODE:
+            case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
+                return false;
+            default:
+                break;
         }
 
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
