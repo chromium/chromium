@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_SERVICE_WORKER_ROUTER_INFO_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-blink-forward.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
@@ -72,6 +73,14 @@ class PLATFORM_EXPORT ServiceWorkerRouterInfo
     evaluation_worker_status_ = evaluation_worker_status;
   }
 
+  const base::TimeDelta& RouterEvaluationTime() const {
+    return router_evaluation_time_;
+  }
+
+  void SetRouterEvaluationTime(const base::TimeDelta& router_evaluation_time) {
+    router_evaluation_time_ = router_evaluation_time;
+  }
+
  private:
   ServiceWorkerRouterInfo();
 
@@ -82,6 +91,8 @@ class PLATFORM_EXPORT ServiceWorkerRouterInfo
       actual_source_type_;
   uint64_t route_rule_num_;
   std::optional<network::mojom::ServiceWorkerStatus> evaluation_worker_status_;
+
+  base::TimeDelta router_evaluation_time_;
 };
 }  // namespace blink
 
