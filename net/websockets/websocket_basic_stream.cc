@@ -293,8 +293,8 @@ int WebSocketBasicStream::ReadEverything(
     DCHECK_GE(http_read_buffer_->offset(), 0);
     is_http_read_buffer_decoded_ = true;
     std::vector<std::unique_ptr<WebSocketFrameChunk>> frame_chunks;
-    auto data = base::as_chars(http_read_buffer_->span_before_offset());
-    if (!parser_.Decode(data.data(), data.size(), &frame_chunks)) {
+    if (!parser_.Decode(http_read_buffer_->span_before_offset(),
+                        &frame_chunks)) {
       return WebSocketErrorToNetError(parser_.websocket_error());
     }
     if (!frame_chunks.empty()) {
@@ -393,8 +393,11 @@ int WebSocketBasicStream::HandleReadResult(
   buffer_size_manager_.OnReadComplete(base::TimeTicks::Now(), result);
 
   std::vector<std::unique_ptr<WebSocketFrameChunk>> frame_chunks;
-  if (!parser_.Decode(read_buffer_->data(), result, &frame_chunks))
+  if (!parser_.Decode(base::as_bytes(read_buffer_->span().first(
+                          base::checked_cast<size_t>(result))),
+                      &frame_chunks)) {
     return WebSocketErrorToNetError(parser_.websocket_error());
+  }
   if (frame_chunks.empty())
     return ERR_IO_PENDING;
   return ConvertChunksToFrames(&frame_chunks, frames);

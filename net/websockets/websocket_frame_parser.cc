@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/websockets/websocket_frame_parser.h"
 
 #include <algorithm>
@@ -16,6 +11,8 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/extend.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "net/websockets/websocket_frame.h"
@@ -46,17 +43,15 @@ WebSocketFrameParser::WebSocketFrameParser() = default;
 WebSocketFrameParser::~WebSocketFrameParser() = default;
 
 bool WebSocketFrameParser::Decode(
-    const char* data,
-    size_t length,
+    base::span<const uint8_t> data_span,
     std::vector<std::unique_ptr<WebSocketFrameChunk>>* frame_chunks) {
-  if (websocket_error_ != kWebSocketNormalClosure)
+  if (websocket_error_ != kWebSocketNormalClosure) {
     return false;
-  if (!length)
+  }
+  if (data_span.empty()) {
     return true;
+  }
 
-  // TODO(crbug.com/40284755): This span construction can't be sound, the Decode
-  // method should be receiving a span, not a pointer and length.
-  auto data_span = UNSAFE_BUFFERS(base::span(data, length));
   // If we have incomplete frame header, try to decode a header combining with
   // |data|.
   bool first_chunk = false;
@@ -64,11 +59,11 @@ bool WebSocketFrameParser::Decode(
     DCHECK(!current_frame_header_.get());
     const size_t original_size = incomplete_header_buffer_.size();
     DCHECK_LE(original_size, kMaximumFrameHeaderSize);
-    incomplete_header_buffer_.insert(
-        incomplete_header_buffer_.end(), data,
-        data + std::min(length, kMaximumFrameHeaderSize - original_size));
-    const size_t consumed =
-        DecodeFrameHeader(base::as_byte_span(incomplete_header_buffer_));
+    base::Extend(
+        incomplete_header_buffer_,
+        data_span.first(std::min(data_span.size(),
+                                 kMaximumFrameHeaderSize - original_size)));
+    const size_t consumed = DecodeFrameHeader(incomplete_header_buffer_);
     if (websocket_error_ != kWebSocketNormalClosure)
       return false;
     if (!current_frame_header_.get())
@@ -83,16 +78,14 @@ bool WebSocketFrameParser::Decode(
   DCHECK(incomplete_header_buffer_.empty());
   while (data_span.size() > 0 || first_chunk) {
     if (!current_frame_header_.get()) {
-      const size_t consumed = DecodeFrameHeader(base::as_bytes(data_span));
+      const size_t consumed = DecodeFrameHeader(data_span);
       if (websocket_error_ != kWebSocketNormalClosure)
         return false;
       // If frame header is incomplete, then carry over the remaining
       // data to the next round of Decode().
       if (!current_frame_header_.get()) {
         DCHECK(!consumed);
-        incomplete_header_buffer_.insert(incomplete_header_buffer_.end(),
-                                         data_span.data(),
-                                         data_span.data() + data_span.size());
+        base::Extend(incomplete_header_buffer_, data_span);
         // Sanity check: the size of carried-over data should not exceed
         // the maximum possible length of a frame header.
         DCHECK_LT(incomplete_header_buffer_.size(), kMaximumFrameHeaderSize);
@@ -167,8 +160,8 @@ size_t WebSocketFrameParser::DecodeFrameHeader(base::span<const uint8_t> data) {
   if (masked) {
     if (data.size() < current + kMaskingKeyLength)
       return 0;
-    std::copy(&data[current], &data[current] + kMaskingKeyLength,
-              masking_key.key);
+    base::as_writable_byte_span(masking_key.key)
+        .copy_from(data.subspan(current, kMaskingKeyLength));
     current += kMaskingKeyLength;
   }
 
@@ -186,7 +179,7 @@ size_t WebSocketFrameParser::DecodeFrameHeader(base::span<const uint8_t> data) {
 
 std::unique_ptr<WebSocketFrameChunk> WebSocketFrameParser::DecodeFramePayload(
     bool first_chunk,
-    base::span<const char>* data) {
+    base::span<const uint8_t>* data) {
   // The cast here is safe because |payload_length| is already checked to be
   // less than std::numeric_limits<int>::max() when the header is parsed.
   const int chunk_data_size = static_cast<int>(
@@ -199,7 +192,7 @@ std::unique_ptr<WebSocketFrameChunk> WebSocketFrameParser::DecodeFramePayload(
   }
   frame_chunk->final_chunk = false;
   if (chunk_data_size > 0) {
-    frame_chunk->payload = data->subspan(0, chunk_data_size);
+    frame_chunk->payload = base::as_chars(data->subspan(0, chunk_data_size));
     *data = data->subspan(chunk_data_size);
     frame_offset_ += chunk_data_size;
   }

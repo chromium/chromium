@@ -18,9 +18,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::vector<std::unique_ptr<net::WebSocketFrameChunk>> frame_chunks;
   while (fuzzed_data_provider.remaining_bytes() > 0) {
     size_t chunk_size = fuzzed_data_provider.ConsumeIntegralInRange(1, 32);
-    std::vector<char> chunk =
-        fuzzed_data_provider.ConsumeBytes<char>(chunk_size);
-    parser.Decode(chunk.data(), chunk.size(), &frame_chunks);
+    std::vector<uint8_t> chunk =
+        fuzzed_data_provider.ConsumeBytes<uint8_t>(chunk_size);
+    parser.Decode(chunk, &frame_chunks);
   }
   return 0;
 }
