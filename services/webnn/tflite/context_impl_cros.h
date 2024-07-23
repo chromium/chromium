@@ -20,7 +20,6 @@ namespace webnn::tflite {
 class ContextImplCrOS final : public WebNNContextImpl {
  public:
   ContextImplCrOS(mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                  mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
                   WebNNContextProviderImpl* context_provider,
                   mojom::CreateContextOptionsPtr options,
                   base::UnguessableToken context_handle);

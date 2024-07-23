@@ -17,7 +17,6 @@ class ContextImplTflite final : public WebNNContextImpl {
  public:
   ContextImplTflite(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
-      mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
       WebNNContextProviderImpl* context_provider,
       mojom::CreateContextOptionsPtr options,
       base::UnguessableToken context_handle);

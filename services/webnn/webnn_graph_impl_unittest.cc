@@ -8,7 +8,6 @@
 #include <limits>
 
 #include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -124,11 +123,9 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
  public:
   FakeWebNNContextImpl(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
-      mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
       WebNNContextProviderImpl* context_provider,
       base::UnguessableToken context_handle)
       : WebNNContextImpl(std::move(receiver),
-                         std::move(client_remote),
                          context_provider,
                          GetContextPropertiesForTesting(),
                          mojom::CreateContextOptions::New(),
@@ -162,23 +159,6 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
   base::WeakPtrFactory<FakeWebNNContextImpl> weak_factory_{this};
 };
 
-// A fake WebNNContextClient Mojo interface implementation that binds a pipe for
-// context lost message.
-class FakeWebNNContextClientImpl : public mojom::WebNNContextClient {
- public:
-  explicit FakeWebNNContextClientImpl(
-      mojo::PendingReceiver<mojom::WebNNContextClient> client_receiver)
-      : client_receiver_(this, std::move(client_receiver)) {}
-
-  void OnLost(const std::string& message) override { is_lost_ = true; }
-
-  bool IsLost() const { return is_lost_; }
-
- private:
-  mojo::Receiver<mojom::WebNNContextClient> client_receiver_;
-  bool is_lost_ = false;
-};
-
 // Helper class to create the FakeWebNNContext that is intended to test
 // the graph validation steps and computation resources.
 class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
@@ -190,30 +170,18 @@ class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
       override {
     mojo::PendingRemote<mojom::WebNNContext> remote;
     base::UnguessableToken context_handle = base::UnguessableToken::Create();
-    mojo::PendingReceiver<mojom::WebNNContextClient> client_receiver;
     auto context_impl = std::make_unique<FakeWebNNContextImpl>(
-        remote.InitWithNewPipeAndPassReceiver(),
-        client_receiver.InitWithNewPipeAndPassRemote(), context_provider_impl,
+        remote.InitWithNewPipeAndPassReceiver(), context_provider_impl,
         context_handle);
     ContextProperties context_properties = context_impl->properties();
     // The receiver bound to FakeWebNNContext.
-    context_impl_ = context_impl.get();
     auto success = mojom::CreateContextSuccess::New(
-        std::move(remote), std::move(client_receiver),
-        std::move(context_properties), std::move(context_handle));
+        std::move(remote), std::move(context_properties),
+        std::move(context_handle));
     std::move(callback).Run(
         mojom::CreateContextResult::NewSuccess(std::move(success)));
     return context_impl;
   }
-
-  void DestroyWebNNContext() {
-    if (context_impl_) {
-      context_impl_.ExtractAsDangling()->OnLost("Context is lost");
-    }
-  }
-
- private:
-  raw_ptr<FakeWebNNContextImpl, DanglingUntriaged> context_impl_ = nullptr;
 };
 
 bool ValidateInputsForComputing(
@@ -379,8 +347,6 @@ class WebNNGraphImplTest : public testing::Test {
     WebNNContextProviderImpl::SetBackendForTesting(nullptr);
   }
 
-  void DestroyWebNNContext() { backend_for_testing_.DestroyWebNNContext(); }
-
  protected:
   WebNNGraphImplTest()
       : scoped_feature_list_(
@@ -424,27 +390,6 @@ struct ArgMinMaxTester {
               expected);
   }
 };
-
-TEST_F(WebNNGraphImplTest, ValidateContextLost) {
-  // Creates WebNN Context mojo interface with the provider.
-  mojo::Remote<mojom::WebNNContextProvider> provider_remote;
-  WebNNContextProviderImpl::CreateForTesting(
-      provider_remote.BindNewPipeAndPassReceiver());
-
-  base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
-  provider_remote->CreateWebNNContext(mojom::CreateContextOptions::New(),
-                                      create_context_future.GetCallback());
-  mojom::CreateContextResultPtr create_context_result =
-      create_context_future.Take();
-  mojo::PendingReceiver<mojom::WebNNContextClient> context_client_receiver =
-      std::move(create_context_result->get_success()->context_client_receiver);
-  FakeWebNNContextClientImpl context_client_impl(
-      std::move(context_client_receiver));
-  EXPECT_FALSE(context_client_impl.IsLost());
-  DestroyWebNNContext();
-  EXPECT_TRUE(
-      base::test::RunUntil([&]() { return context_client_impl.IsLost(); }));
-}
 
 TEST_F(WebNNGraphImplTest, ArgMinMaxTest) {
   const auto ArgMinMaxKinds = {mojom::ArgMinMax_Kind::kMin,

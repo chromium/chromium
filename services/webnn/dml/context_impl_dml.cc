@@ -91,14 +91,12 @@ ContextProperties GetProperties(DML_FEATURE_LEVEL feature_level) {
 ContextImplDml::ContextImplDml(
     scoped_refptr<Adapter> adapter,
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
-    mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options,
     std::unique_ptr<CommandRecorder> command_recorder,
     const gpu::GpuFeatureInfo& gpu_feature_info,
     base::UnguessableToken context_handle)
     : WebNNContextImpl(std::move(receiver),
-                       std::move(client_remote),
                        context_provider,
                        GetProperties(adapter->max_supported_feature_level()),
                        std::move(options),

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_ML_CONTEXT_H_
 
 #include <optional>
+#include <string>
 
 #include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -37,9 +38,7 @@ class MLComputeResult;
 class MLContextLostInfo;
 class MLOpSupportLimits;
 
-class MODULES_EXPORT MLContext
-    : public ScriptWrappable,
-      public webnn::mojom::blink::WebNNContextClient {
+class MODULES_EXPORT MLContext : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -138,11 +137,8 @@ class MODULES_EXPORT MLContext
  private:
   using LostProperty = ScriptPromiseProperty<MLContextLostInfo, IDLUndefined>;
 
-  // Closes the `context_remote_` and `context_client_receiver_` pipes
-  // because the context has been lost.
-  void OnLost(const String& message) override;
-
-  void OnDisconnected();
+  // Close the `context_remote_` pipe because the context has been lost.
+  void OnLost(uint32_t custom_reason, const std::string& description);
 
   // Validate and write ArrayBuffer data to hardware accelerated OS
   // machine learning buffers in the WebNN Service.
@@ -169,8 +165,6 @@ class MODULES_EXPORT MLContext
   // The `WebNNContext` is a initialized context that can be used by the
   // hardware accelerated OS machine learning API.
   HeapMojoRemote<webnn::mojom::blink::WebNNContext> context_remote_;
-  HeapMojoReceiver<webnn::mojom::blink::WebNNContextClient, MLContext>
-      context_client_receiver_;
   webnn::ContextProperties properties_;
 
   // Identifies this `WebNNContext` mojo instance in the service process.
