@@ -113,23 +113,6 @@ VerticalDateView::VerticalDateView()
 
 VerticalDateView::~VerticalDateView() = default;
 
-void VerticalDateView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  // For Jelly: color ids are already set and theme change will be handled
-  // automatically.
-  if (chromeos::features::IsJellyEnabled()) {
-    return;
-  }
-
-  text_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-  icon_->SetImage(gfx::CreateVectorIcon(
-      kCalendarBackgroundIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
-}
-
 void VerticalDateView::UpdateText() {
   const base::Time time_to_show = GetTimeToShow();
   const std::u16string new_text = calendar_utils::GetDayIntOfMonth(
@@ -141,10 +124,6 @@ void VerticalDateView::UpdateText() {
 }
 
 void VerticalDateView::UpdateIconAndLabelColorId(ui::ColorId color_id) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
-
   text_label_->SetEnabledColorId(color_id);
   icon_->SetImage(
       ui::ImageModel::FromVectorIcon(kCalendarBackgroundIcon, color_id));
@@ -272,7 +251,7 @@ void TimeView::SetTextShadowValues(const gfx::ShadowValues& shadows) {
 }
 
 void TimeView::SetDateViewColorId(ui::ColorId color_id) {
-  if (chromeos::features::IsJellyEnabled() && vertical_date_view_) {
+  if (vertical_date_view_) {
     vertical_date_view_->UpdateIconAndLabelColorId(color_id);
   }
 }

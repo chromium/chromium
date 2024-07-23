@@ -40,9 +40,6 @@ class VerticalDateView : public views::View {
   VerticalDateView& operator=(const VerticalDateView& other) = delete;
   ~VerticalDateView() override;
 
-  // views::View:
-  void OnThemeChanged() override;
-
   // Updates the date label text.
   void UpdateText();
 
