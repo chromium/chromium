@@ -27,16 +27,16 @@ through `builders.cpu` and `builders.os` respectively.
 
 load("//project.star", "settings")
 load("./args.star", "args")
-load("./branches.star", "branches")
-load("./consoles.star", "register_builder_to_console_view")
-load("./gn_args.star", "register_gn_args")
 load("./bootstrap.star", "register_bootstrap")
+load("./branches.star", "branches")
 load("./builder_config.star", "register_builder_config")
 load("./builder_health_indicators.star", "register_health_spec")
+load("./consoles.star", "register_builder_to_console_view")
+load("./description_exceptions.star", "exempted_from_description_builders")
+load("./gn_args.star", "register_gn_args")
 load("./nodes.star", "nodes")
 load("./recipe_experiments.star", "register_recipe_experiments_ref")
 load("./sheriff_rotations.star", "register_gardener_builder")
-load("./description_exceptions.star", "exempted_from_description_builders")
 
 ################################################################################
 # Constants for use with the builder function                                  #
@@ -365,6 +365,7 @@ defaults = args.defaults(
     siso_experiments = [],
     siso_remote_jobs = None,
     siso_fail_if_reapi_used = None,
+    siso_output_local_strategy = None,
     health_spec = None,
     builder_config_settings = None,
 
@@ -450,6 +451,7 @@ def builder(
         siso_experiments = args.DEFAULT,
         siso_remote_jobs = args.DEFAULT,
         siso_fail_if_reapi_used = None,
+        siso_output_local_strategy = args.DEFAULT,
         skip_profile_upload = args.DEFAULT,
         health_spec = args.DEFAULT,
         shadow_builderless = args.DEFAULT,
@@ -658,6 +660,8 @@ def builder(
             to run when building with Siso.
         siso_fail_if_reapi_used: If True, check siso_metrics.json to see if the build
             used remote execution and fail the build if any step used it.
+        siso_output_local_strategy: a string indicating the output strategy
+            for `--output_local_strategy`. full, greedy or minimum.
         health_spec: a health spec instance describing the threshold for when
             the builder should be considered unhealthy.
         shadow_builderless: If set to True, then led builds created for this
@@ -876,6 +880,9 @@ def builder(
             siso["remote_jobs"] = remote_jobs
         if siso_fail_if_reapi_used:
             siso["fail_if_reapi_used"] = siso_fail_if_reapi_used
+        siso_output_local_strategy = defaults.get_value("siso_output_local_strategy", siso_output_local_strategy)
+        if siso_output_local_strategy:
+            siso["output_local_strategy"] = siso_output_local_strategy
         properties["$build/siso"] = siso
         if shadow_rbe_project:
             shadow_siso = dict(siso)
