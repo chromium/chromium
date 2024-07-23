@@ -2762,19 +2762,6 @@ static_library("device_policy_remover_generated") {
   public_deps = [ ":device_policy_remover_generate" ]
 }
 
-fuzzer_test("zeroconf_printer_detector_fuzzer") {
-  sources = [ "printing/zeroconf_printer_detector_fuzzer.cc" ]
-  deps = [
-    ":ash",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser",
-    "//chrome/browser/ash/printing",
-    "//components/exo/wayland:test_controller_stub",
-    "//components/exo/wayland:ui_controls_protocol_stub",
-  ]
-}
-
 if (use_fuzzing_engine_with_lpm) {
   fuzzer_test("policy_fuzzer") {
     sources = [ "policy/fuzzer/policy_fuzzer.cc" ]
