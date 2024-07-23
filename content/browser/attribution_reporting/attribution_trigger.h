@@ -49,6 +49,8 @@ class CONTENT_EXPORT AttributionTrigger {
 
   bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
 
+  bool HasAggregatableData() const;
+
   friend bool operator==(const AttributionTrigger&,
                          const AttributionTrigger&) = default;
 

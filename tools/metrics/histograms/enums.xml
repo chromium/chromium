@@ -3402,7 +3402,7 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Both"/>
 </enum>
 
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_storage_sql.cc:AttributionResult) -->
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_resolver_impl.cc:AttributionResult) -->
 
 <enum name="ConversionAttributionSrcRequestStatus">
   <int value="0" label="Requested"/>

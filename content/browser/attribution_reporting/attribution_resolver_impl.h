@@ -74,6 +74,23 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
       std::optional<StoredSource::Id>) override;
   void SetDelegate(std::unique_ptr<AttributionResolverDelegate>) override;
 
+  AttributionTrigger::EventLevelResult MaybeCreateEventLevelReport(
+      const AttributionInfo& attribution_info,
+      const StoredSource& source,
+      const AttributionTrigger& trigger,
+      std::optional<AttributionReport>& report,
+      std::optional<uint64_t>& dedup_key);
+
+  AttributionTrigger::AggregatableResult
+  MaybeCreateAggregatableAttributionReport(
+      const AttributionInfo& attribution_info,
+      const StoredSource& source,
+      const AttributionTrigger& trigger,
+      std::optional<AttributionReport>& report,
+      std::optional<uint64_t>& dedup_key,
+      std::optional<int>& max_aggregatable_reports_per_destination,
+      std::optional<int64_t>& rate_limits_max_attributions);
+
   std::unique_ptr<AttributionResolverDelegate> delegate_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
