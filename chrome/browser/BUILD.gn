@@ -5452,6 +5452,7 @@ static_library("browser") {
       "//chrome/browser/ui/ash/lobster",
       "//chrome/browser/ui/ash/multi_user",
       "//chrome/browser/ui/ash/network",
+      "//chrome/browser/ui/ash/projector",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/services/sharing/public/cpp",
       "//chrome/services/sharing/public/proto",
@@ -5779,6 +5780,7 @@ static_library("browser") {
       "//chrome/browser/ui/ash/lobster",
       "//chrome/browser/ui/ash/multi_user",
       "//chrome/browser/ui/ash/network",
+      "//chrome/browser/ui/ash/projector",
     ]
 
     if (is_chrome_branded) {

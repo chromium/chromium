@@ -4697,10 +4697,6 @@ if (!is_android) {
         "../browser/ui/ash/feature_discovery_duration_reporter_browsertest.cc",
         "../browser/ui/ash/float_controller_browsertest.cc",
         "../browser/ui/ash/google_one_offer_iph_tab_helper_browsertest.cc",
-        "../browser/ui/ash/projector/pending_screencast_manager_browsertest.cc",
-        "../browser/ui/ash/projector/projector_client_impl_browsertest.cc",
-        "../browser/ui/ash/projector/projector_navigation_throttle_browsertest.cc",
-        "../browser/ui/ash/projector/screencast_manager_browsertest.cc",
         "../browser/ui/ash/screen_orientation_delegate_chromeos_browsertest.cc",
         "../browser/ui/ash/sharesheet/sharesheet_bubble_view_browsertest.cc",
         "../browser/ui/ash/shelf/app_service/app_service_app_window_browsertest.cc",
@@ -5172,6 +5168,7 @@ if (!is_android) {
         "//chrome/browser/ui/ash/keyboard:browser_tests",
         "//chrome/browser/ui/ash/network:browser_tests",
         "//chrome/browser/ui/ash/picker:browser_tests",
+        "//chrome/browser/ui/ash/projector:browser_tests",
       ]
     }
     if (safe_browsing_mode == 1) {
@@ -8597,9 +8594,6 @@ test("unit_tests") {
       "../browser/ui/ash/in_session_auth_dialog_client_unittest.cc",
       "../browser/ui/ash/media_client_impl_unittest.cc",
       "../browser/ui/ash/multitask_menu_nudge_unittest.cc",
-      "../browser/ui/ash/projector/projector_client_impl_unittest.cc",
-      "../browser/ui/ash/projector/projector_soda_installation_controller_unittest.cc",
-      "../browser/ui/ash/projector/projector_utils_unittest.cc",
       "../browser/ui/ash/session_controller_client_impl_unittest.cc",
       "../browser/ui/ash/sharesheet/sharesheet_bubble_view_unittest.cc",
       "../browser/ui/ash/shelf/arc_app_shelf_id_unittest.cc",
@@ -8898,6 +8892,7 @@ test("unit_tests") {
       "//chrome/browser/ui/ash/multi_user:unit_tests",
       "//chrome/browser/ui/ash/network:unit_tests",
       "//chrome/browser/ui/ash/picker:unit_tests",
+      "//chrome/browser/ui/ash/projector:unit_tests",
     ]
 
     data_deps += [ "//testing/buildbot/filters:chromeos_filters" ]
