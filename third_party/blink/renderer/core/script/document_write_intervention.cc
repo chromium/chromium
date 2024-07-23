@@ -218,11 +218,9 @@ void PossiblyFetchBlockedDocWriteScript(
       kNoCompileHintsProducer = nullptr;
   constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
       kNoCompileHintsConsumer = nullptr;
-  constexpr bool kNoV8CompileHintsMagicCommentRuntimeEnabledFeature = false;
   ScriptResource::Fetch(params, element_document.Fetcher(), nullptr,
                         context->GetIsolate(), ScriptResource::kNoStreaming,
-                        kNoCompileHintsProducer, kNoCompileHintsConsumer,
-                        kNoV8CompileHintsMagicCommentRuntimeEnabledFeature);
+                        kNoCompileHintsProducer, kNoCompileHintsConsumer);
 }
 
 }  // namespace blink

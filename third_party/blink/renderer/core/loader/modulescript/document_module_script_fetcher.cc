@@ -46,14 +46,10 @@ void DocumentModuleScriptFetcher::Fetch(
       kNoCompileHintsProducer = nullptr;
   constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
       kNoCompileHintsConsumer = nullptr;
-  const bool v8_compile_hints_magic_comment_runtime_enabled =
-      RuntimeEnabledFeatures::JavaScriptCompileHintsMagicRuntimeEnabled(
-          GetExecutionContext());
   ScriptResource::Fetch(fetch_params, fetch_client_settings_object_fetcher,
                         this, GetExecutionContext()->GetIsolate(),
                         streaming_allowed, kNoCompileHintsProducer,
-                        kNoCompileHintsConsumer,
-                        v8_compile_hints_magic_comment_runtime_enabled);
+                        kNoCompileHintsConsumer);
 }
 
 void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
