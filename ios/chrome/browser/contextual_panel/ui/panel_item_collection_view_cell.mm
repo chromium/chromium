@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/contextual_panel/ui/panel_item_collection_view_cell.h"
 
+#import <optional>
+
 #import "base/time/time.h"
 
 @implementation PanelItemCollectionViewCell {
