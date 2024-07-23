@@ -9,3 +9,6 @@
 
 # crbug.com/354214032
 -BackgroundTracingManagerBrowserTest.RunStartupTracing
+
+# crbug.com/354786936
+-TouchActionBrowserTest.PanXAtYAreaWithTimeout
