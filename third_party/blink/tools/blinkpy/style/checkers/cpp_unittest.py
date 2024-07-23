@@ -2166,6 +2166,20 @@ class WebKitStyleTest(CppStyleTestBase):
             '  doSomethingElseAgain();\n'
             '}\n', '')
         self.assert_multi_line_lint(
+            'if (condition) {\n'
+            '  doSomething();\n'
+            '} else [[likely]] {\n'
+            '  doSomethingElse();\n'
+            '}\n', '')
+        self.assert_multi_line_lint(
+            'if (condition)\n'
+            '    [[unlikely]] {\n'
+            '  doSomething();\n'
+            '} else {\n'
+            '  doSomethingElse();\n'
+            '  doSomethingElseAgain();\n'
+            '}\n', '')
+        self.assert_multi_line_lint(
             '#define TEST_ASSERT(expression) do { if (!(expression)) { '
             'TestsController::shared().testFailed(__FILE__, __LINE__, #expression); '
             'return; } } while (0)\n', '')

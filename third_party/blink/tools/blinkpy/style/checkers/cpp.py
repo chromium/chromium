@@ -1622,6 +1622,15 @@ def check_conditional_and_loop_bodies_for_brace_violations(
         if not current_pos:
             return
 
+        likely_attribute = match(r'\[\[(?:un)?likely\]\]\s*',
+                                 lines[current_pos.row][current_pos.column:])
+        if likely_attribute:
+            current_pos.column += likely_attribute.end()
+            end_line_of_conditional = current_pos.row
+            current_pos = _find_in_lines(r'\S', lines, current_pos, None)
+            if not current_pos:
+                return
+
         current_arm_uses_brace = False
         if lines[current_pos.row][current_pos.column] == '{':
             current_arm_uses_brace = True
