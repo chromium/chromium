@@ -35,13 +35,12 @@ import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.usage_stats.UsageStatsConsentDialog;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
@@ -53,7 +52,7 @@ import org.chromium.ui.text.SpanApplier;
 
 /** Fragment to keep track of the all the privacy related preferences. */
 public class PrivacySettings extends ChromeBaseSettingsFragment
-        implements Preference.OnPreferenceChangeListener, FragmentSettingsLauncher {
+        implements Preference.OnPreferenceChangeListener {
     private static final String PREF_CAN_MAKE_PAYMENT = "can_make_payment";
     private static final String PREF_PRELOAD_PAGES = "preload_pages";
     private static final String PREF_HTTPS_FIRST_MODE = "https_first_mode";
@@ -75,7 +74,6 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     static final String PREF_CLEAR_BROWSING_DATA_ADVANCED = "clear_browsing_data_advanced";
 
     private IncognitoLockSettings mIncognitoLockSettings;
-    private SettingsLauncher mSettingsLauncher;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -99,9 +97,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         sandboxPreference.setOnPreferenceClickListener(
                 preference -> {
                     PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
-                            getContext(),
-                            mSettingsLauncher,
-                            PrivacySandboxReferrer.PRIVACY_SETTINGS);
+                            getContext(), PrivacySandboxReferrer.PRIVACY_SETTINGS);
                     return true;
                 });
 
@@ -229,27 +225,24 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         updatePreferences();
     }
 
-    @Override
-    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
-        mSettingsLauncher = settingsLauncher;
-    }
-
     private SpannableString buildFooterString() {
         NoUnderlineClickableSpan servicesLink =
                 new NoUnderlineClickableSpan(
                         getContext(),
                         v -> {
-                            mSettingsLauncher.launchSettingsActivity(
-                                    getActivity(), GoogleServicesSettings.class);
+                            SettingsLauncherFactory.createSettingsLauncher()
+                                    .launchSettingsActivity(
+                                            getActivity(), GoogleServicesSettings.class);
                         });
         NoUnderlineClickableSpan accountSettingsLink =
                 new NoUnderlineClickableSpan(
                         getContext(),
                         v -> {
-                            mSettingsLauncher.launchSettingsActivity(
-                                    getActivity(),
-                                    ManageSyncSettings.class,
-                                    ManageSyncSettings.createArguments(false));
+                            SettingsLauncherFactory.createSettingsLauncher()
+                                    .launchSettingsActivity(
+                                            getActivity(),
+                                            ManageSyncSettings.class,
+                                            ManageSyncSettings.createArguments(false));
                         });
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {

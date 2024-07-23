@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -305,7 +306,7 @@ public class SafeBrowsingSettingsFragmentTest {
         launchSettingsActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mSafeBrowsingSettingsFragment.setSettingsLauncher(mSettingsLauncher);
+                    SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
                     getEnhancedProtectionButton().getAuxButtonForTests().performClick();
                     Mockito.verify(mSettingsLauncher)
                             .launchSettingsActivity(
@@ -321,7 +322,7 @@ public class SafeBrowsingSettingsFragmentTest {
         launchSettingsActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mSafeBrowsingSettingsFragment.setSettingsLauncher(mSettingsLauncher);
+                    SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
                     getStandardProtectionButton().getAuxButtonForTests().performClick();
                     Mockito.verify(mSettingsLauncher)
                             .launchSettingsActivity(

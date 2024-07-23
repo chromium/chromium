@@ -275,9 +275,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
 
     @Override
     public void showAdPersonalizationSettings() {
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
-                mContext, settingsLauncher, PrivacySandboxReferrer.PAGE_INFO_AD_PRIVACY_SECTION);
+                mContext, PrivacySandboxReferrer.PAGE_INFO_AD_PRIVACY_SECTION);
     }
 
     @NonNull

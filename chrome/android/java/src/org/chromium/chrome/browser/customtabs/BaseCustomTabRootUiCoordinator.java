@@ -657,9 +657,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                     didShowPrompt =
                                             PrivacySandboxDialogController
                                                     .maybeLaunchPrivacySandboxDialog(
-                                                            mActivity,
-                                                            new SettingsLauncherImpl(),
-                                                            currentModelProfile);
+                                                            mActivity, currentModelProfile);
                                 }
                             }
                             if (!didShowPrompt) {

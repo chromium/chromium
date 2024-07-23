@@ -93,9 +93,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     /** Used to set an instance of {@link SnackbarManager} by the parent activity. */
     public void setSnackbarManager(SnackbarManager manager) {
         if (manager != null) {
-            mPrivacySandboxController =
-                    new PrivacySandboxSnackbarController(
-                            mContext, manager, new SettingsLauncherImpl());
+            mPrivacySandboxController = new PrivacySandboxSnackbarController(mContext, manager);
         }
     }
 

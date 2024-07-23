@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -179,7 +180,7 @@ public class PreloadPagesSettingsFragmentTest {
         launchSettingsActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPreloadPagesSettingsFragment.setSettingsLauncher(mSettingsLauncher);
+                    SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
                     getExtendedPreloadingButton().getAuxButtonForTests().performClick();
                     Mockito.verify(mSettingsLauncher)
                             .launchSettingsActivity(
@@ -195,7 +196,7 @@ public class PreloadPagesSettingsFragmentTest {
         launchSettingsActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPreloadPagesSettingsFragment.setSettingsLauncher(mSettingsLauncher);
+                    SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
                     getStandardPreloadingButton().getAuxButtonForTests().performClick();
                     Mockito.verify(mSettingsLauncher)
                             .launchSettingsActivity(

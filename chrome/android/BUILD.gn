@@ -1121,6 +1121,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/search_engines/android:junit",
       "//chrome/browser/search_resumption:junit",
       "//chrome/browser/segmentation_platform:factory_java",
+      "//chrome/browser/settings:factory_java",
       "//chrome/browser/settings:junit_test_support",
       "//chrome/browser/share:java",
       "//chrome/browser/signin/services/android:java",
