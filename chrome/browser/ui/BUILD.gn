@@ -2184,9 +2184,6 @@ static_library("ui") {
     assert(toolkit_views)
     sources += [
       "app_icon_loader_delegate.h",
-      "ash/login_screen_client_impl.cc",
-      "ash/login_screen_client_impl.h",
-      "ash/login_screen_shown_observer.h",
       "browser_commands_chromeos.cc",
       "browser_commands_chromeos.h",
       "settings_window_manager_chromeos.cc",
