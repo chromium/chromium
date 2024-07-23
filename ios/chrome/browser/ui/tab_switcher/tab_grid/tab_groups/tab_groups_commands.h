@@ -39,11 +39,19 @@ enum class TabGroupActionType {
 // Show the current active tab.
 - (void)showActiveTab;
 
-// Displays an action sheet at `sourceView` on iPad or at the bottom on iPhone
-// to confirm that selected `group` is going to take an `actionType`.
+// Displays a confirmation dialog anchoring to `sourceView` on iPad or at the
+// bottom on iPhone to confirm that selected `group` is going to take an
+// `actionType`.
 - (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
                                     group:(const TabGroup*)tabGroup
                                sourceView:(UIView*)sourceView;
+
+// Displays a confirmation dialog anchoring to `sourceButtonItem` on iPad or at
+// the bottom on iPhone to confirm that selected `group` is going to take an
+// `actionType`.
+- (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
+                                    group:(const TabGroup*)tabGroup
+                         sourceButtonItem:(UIBarButtonItem*)sourceButtonItem;
 
 @end
 

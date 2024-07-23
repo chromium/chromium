@@ -584,6 +584,114 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
                                           1)] assertWithMatcher:grey_nil()];
 }
 
+// Tests ungrouping of a group from the overflow menu in the group view.
+- (void)testUngroupingGroupFromGroupView {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // Open the group view.
+  OpenTabGroupAtIndex(0);
+
+  // Display the tab group overflow menu.
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Tap the ungroup button.
+  [[EarlGrey selectElementWithMatcher:UngroupButton()]
+      performAction:grey_tap()];
+  // Tap a delete button again to confirm the deletion.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::AlertAction(
+                                          l10n_util::GetNSString(
+                                              IDS_IOS_CONTENT_CONTEXT_UNGROUP))]
+      performAction:grey_tap()];
+
+  // `Tab 1` tab cell is now present in the grid.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabWithTitle(kTab1Title)];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_notNil()];
+
+  // The created group is no longer in the grid.
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(
+                                          l10n_util::GetPluralNSStringF(
+                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
+                                          1)] assertWithMatcher:grey_nil()];
+}
+
+// Tests the group deletion from the overflow menu in the group view.
+- (void)testDeletingGroupUsingFromGroupView {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // Open the group view.
+  OpenTabGroupAtIndex(0);
+
+  // Display the tab group overflow menu.
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Tap the delete button.
+  [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]
+      performAction:grey_tap()];
+  // Tap a delete button again to confirm the deletion.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AlertAction(
+                                   l10n_util::GetNSString(
+                                       IDS_IOS_CONTENT_CONTEXT_DELETEGROUP))]
+      performAction:grey_tap()];
+
+  // The tab and the group are deleted.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(
+                                          l10n_util::GetPluralNSStringF(
+                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
+                                          1)] assertWithMatcher:grey_nil()];
+}
+
+// Tests cancelling of the deletion of a group from the overflow menu in the
+// group view.
+- (void)testCancellingActionToGroupFromGroupView {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // Open the group view.
+  OpenTabGroupAtIndex(0);
+
+  // Display the tab group overflow menu.
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Tap the delete button.
+  [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]
+      performAction:grey_tap()];
+  // Cancel the action by tapping a tab itself (= outside the delete button).
+  // We have a cancel button only on iPhone.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      performAction:grey_tap()];
+
+  // Check that `Tab 1` tab cell still exists in the group.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_notNil()];
+
+  // Go back to the tab grid.
+  [[EarlGrey selectElementWithMatcher:TabGroupBackButtonMatcher()]
+      performAction:grey_tap()];
+  // Check that the group still exists.
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(
+                                          l10n_util::GetPluralNSStringF(
+                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
+                                          1)] assertWithMatcher:grey_notNil()];
+}
+
 // Tests closing the group from the close button.
 - (void)testCloseTabGroup {
   AppLaunchConfiguration config = [self appConfigurationForTestCase];

@@ -1079,6 +1079,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)deleteTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView {
+  // TODO(crbug.com/329627336): Do not show the confirmation when
+  // IsTabGroupSyncEnabled() is disabled.
   [self.tabGroupsHandler
       showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
                                   group:group
@@ -1090,6 +1092,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)ungroupTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView {
+  // TODO(crbug.com/329631586): Do not show the confirmation when
+  // IsTabGroupSyncEnabled() is disabled.
   [self.tabGroupsHandler
       showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
                                   group:group

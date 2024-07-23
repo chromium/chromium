@@ -25,12 +25,22 @@ typedef void (^TabGroupActionBlock)();
 // The action that a tab group is going to take.
 @property(nonatomic, strong) TabGroupActionBlock action;
 
-// Designated initializer.
+// Designated initializer with a parameter for anchoring the popover to a
+// UIView.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                 actionType:(TabGroupActionType)actionType
                                 sourceView:(UIView*)sourceView
     NS_DESIGNATED_INITIALIZER;
+
+// Designated initializer with a parameter for anchoring the popover to a
+// UIBarButtonItem.
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                actionType:(TabGroupActionType)actionType
+                          sourceButtonItem:(UIBarButtonItem*)sourceButtonItem
+    NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 

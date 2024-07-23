@@ -72,7 +72,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
   _viewController = [[TabGroupViewController alloc]
       initWithHandler:handler
-           lightTheme:!self.browser->GetBrowserState()->IsOffTheRecord()
+            incognito:self.browser->GetBrowserState()->IsOffTheRecord()
              tabGroup:_tabGroup];
 
   _viewController.gridViewController.delegate = self;
