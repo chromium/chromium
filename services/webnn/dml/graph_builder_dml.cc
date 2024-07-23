@@ -107,8 +107,8 @@ const OperatorNode* GraphBuilderDml::CreateOperatorNode(
     std::string_view label) {
   DML_OPERATOR_DESC op_desc{.Type = type, .Desc = operator_desc};
   Microsoft::WRL::ComPtr<IDMLOperator> dml_operator;
-  RETURN_NULL_IF_FAILED(
-      dml_device_->CreateOperator(&op_desc, IID_PPV_ARGS(&dml_operator)));
+  CHECK_EQ(dml_device_->CreateOperator(&op_desc, IID_PPV_ARGS(&dml_operator)),
+           S_OK);
 
   // Set the name of the operator node to the label if it is provided.
   if (!label.empty()) {
