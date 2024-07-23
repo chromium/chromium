@@ -115,7 +115,7 @@ namespace {
 // TODO(crbug.com/347909405): Remove this
 BASE_FEATURE(kDumpWithoutCrashingOnMissingRenderPassBacking,
              "DumpWithoutCrashingOnMissingRenderPassBacking",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Smallest unit that impacts anti-aliasing output. We use this to determine
 // when an exterior edge (with AA) has been clipped (no AA). The specific value
@@ -3398,10 +3398,57 @@ void SkiaRenderer::DrawRenderPassQuad(
                  << " in the render pass overlay backings";
 
       SCOPED_CRASH_KEY_STRING32(
-          "DrawRenderPassQuad", "backing not found",
-          "seen before = " +
-              base::NumberToString(
-                  seen_render_pass_ids_.contains(quad->render_pass_id)));
+          "missing rp backing", "seen before?",
+          base::NumberToString(
+              seen_render_pass_ids_.contains(quad->render_pass_id)));
+
+      // This is derived from |DirectRenderer::ShouldSkipQuad|.
+      gfx::Rect target_rect = quad->visible_rect;
+      SCOPED_CRASH_KEY_STRING32("missing rp backing", "visible rect",
+                                target_rect.ToString());
+      auto filter_it = render_pass_filters_.find(quad->render_pass_id);
+      if (filter_it != render_pass_filters_.end()) {
+        target_rect =
+            filter_it->second->ExpandRectForPixelMovement(target_rect);
+      }
+      SCOPED_CRASH_KEY_STRING32("missing rp backing", "filter expansion",
+                                filter_it != render_pass_filters_.end()
+                                    ? target_rect.ToString()
+                                    : "no filter expansion");
+
+      const gfx::QuadF target_quad =
+          quad->shared_quad_state->quad_to_target_transform.MapQuad(
+              gfx::QuadF(gfx::RectF(target_rect)));
+      SCOPED_CRASH_KEY_STRING256("missing rp backing", "rpdq in draw space",
+                                 target_quad.IsRectilinear()
+                                     ? target_quad.BoundingBox().ToString()
+                                     : target_quad.ToString());
+
+      gfx::Rect draw_rect_in_draw_space = OutputSurfaceRectInDrawSpace();
+      SCOPED_CRASH_KEY_STRING32("missing rp backing", "output surface",
+                                draw_rect_in_draw_space.ToString());
+      if (scissor_rect_) {
+        draw_rect_in_draw_space = scissor_rect_.value();
+        draw_rect_in_draw_space.Offset(
+            current_frame()
+                ->current_render_pass->output_rect.OffsetFromOrigin());
+      }
+      SCOPED_CRASH_KEY_STRING32(
+          "missing rp backing", "with scissor?",
+          scissor_rect_ ? draw_rect_in_draw_space.ToString() : "no scissor");
+
+      if (quad->shared_quad_state->clip_rect) {
+        draw_rect_in_draw_space.Intersect(*quad->shared_quad_state->clip_rect);
+      }
+      SCOPED_CRASH_KEY_STRING32("missing rp backing", "with quad clip?",
+                                quad->shared_quad_state->clip_rect
+                                    ? draw_rect_in_draw_space.ToString()
+                                    : "no quad clip");
+
+      const bool intersects =
+          target_quad.IntersectsRect(gfx::RectF(draw_rect_in_draw_space));
+      SCOPED_CRASH_KEY_STRING32("missing rp backing", "intersects?",
+                                base::NumberToString(intersects));
 
       // Collect a dump so we can investigate the root cause, but fallback to a
       // solid color to avoid disrupting the user.
