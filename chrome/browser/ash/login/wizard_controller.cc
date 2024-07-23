@@ -108,6 +108,7 @@
 #include "chrome/browser/ash/login/screens/osauth/password_selection_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/recovery_eligibility_screen.h"
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
+#include "chrome/browser/ash/login/screens/perks_discovery_screen.h"
 #include "chrome/browser/ash/login/screens/personalized_recommend_apps_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
@@ -210,6 +211,7 @@
 #include "chrome/browser/ui/webui/ash/login/packaged_license_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/perks_discovery_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/personalized_recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
@@ -998,6 +1000,13 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnEnterOldPasswordScreenExit,
                           weak_factory_.GetWeakPtr())));
 
+  if (features::IsOobePerksDiscoveryEnabled()) {
+    append(std::make_unique<PerksDiscoveryScreen>(
+        oobe_ui->GetView<PerksDiscoveryScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnPerksDiscoveryScreenExit,
+                            weak_factory_.GetWeakPtr())));
+  }
+
   append(std::make_unique<OSAuthErrorScreen>(
       oobe_ui->GetView<OSAuthErrorScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnOSAuthErrorScreenExit,
@@ -1293,6 +1302,10 @@ void WizardController::ShowCategoriesSelectionScreen() {
 
 void WizardController::ShowPersonalizedRecomendAppsScreen() {
   SetCurrentScreen(GetScreen(PersonalizedRecommendAppsScreenView::kScreenId));
+}
+
+void WizardController::ShowPerksDiscoveryScreen() {
+  SetCurrentScreen(GetScreen(PerksDiscoveryScreenView::kScreenId));
 }
 
 void WizardController::ShowTouchpadScrollScreen() {
@@ -1897,6 +1910,19 @@ void WizardController::OnCategoriesSelectionScreenExit(
   }
 }
 
+void WizardController::OnPerksDiscoveryScreenExit(
+    PerksDiscoveryScreen::Result result) {
+  OnScreenExit(PerksDiscoveryScreenView::kScreenId,
+               PerksDiscoveryScreen::GetResultString(result));
+  if (features::IsOobeAiIntroEnabled()) {
+    ShowAiIntroScreen();
+  } else if (features::IsOobeGeminiIntroEnabled()) {
+    ShowGeminiIntroScreen();
+  } else {
+    ShowAssistantOptInFlowScreen();
+  }
+}
+
 void WizardController::OnPersonalizedRecomendAppsScreenExit(
     PersonalizedRecommendAppsScreen::Result result) {
   OnScreenExit(PersonalizedRecommendAppsScreenView::kScreenId,
@@ -1912,7 +1938,9 @@ void WizardController::OnPersonalizedRecomendAppsScreenExit(
     case PersonalizedRecommendAppsScreen::Result::kDataMalformed:
     case PersonalizedRecommendAppsScreen::Result::kError:
     case PersonalizedRecommendAppsScreen::Result::kTimeout:
-      if (features::IsOobeAiIntroEnabled()) {
+      if (features::IsOobePerksDiscoveryEnabled()) {
+        ShowPerksDiscoveryScreen();
+      } else if (features::IsOobeAiIntroEnabled()) {
         ShowAiIntroScreen();
       } else if (features::IsOobeGeminiIntroEnabled()) {
         ShowGeminiIntroScreen();
@@ -2616,7 +2644,9 @@ void WizardController::OnRecommendAppsScreenExit(
     case RecommendAppsScreen::Result::kSkipped:
     case RecommendAppsScreen::Result::kNotApplicable:
     case RecommendAppsScreen::Result::kLoadError:
-      if (features::IsOobeAiIntroEnabled()) {
+      if (features::IsOobePerksDiscoveryEnabled()) {
+        ShowPerksDiscoveryScreen();
+      } else if (features::IsOobeAiIntroEnabled()) {
         ShowAiIntroScreen();
       } else if (features::IsOobeGeminiIntroEnabled()) {
         ShowGeminiIntroScreen();
@@ -2647,7 +2677,9 @@ void WizardController::OnRemoteActivityNotificationScreenExit() {
 void WizardController::OnAppDownloadingScreenExit() {
   OnScreenExit(AppDownloadingScreenView::kScreenId, kDefaultExitReason);
 
-  if (features::IsOobeAiIntroEnabled()) {
+  if (features::IsOobePerksDiscoveryEnabled()) {
+    ShowPerksDiscoveryScreen();
+  } else if (features::IsOobeAiIntroEnabled()) {
     ShowAiIntroScreen();
   } else if (features::IsOobeGeminiIntroEnabled()) {
     ShowGeminiIntroScreen();

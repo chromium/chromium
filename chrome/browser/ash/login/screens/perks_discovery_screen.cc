@@ -56,12 +56,22 @@ SinglePerkDiscoveryPayload::SinglePerkDiscoveryPayload(
 
 SinglePerkDiscoveryPayload::~SinglePerkDiscoveryPayload() = default;
 
+SinglePerkDiscoveryPayload::SinglePerkDiscoveryPayload(
+    const SinglePerkDiscoveryPayload& perk_data)
+    : id(perk_data.id),
+      title(perk_data.title),
+      subtitle(perk_data.subtitle),
+      icon_url(perk_data.icon_url),
+      primary_button(perk_data.primary_button.Clone()),
+      secondary_button(perk_data.secondary_button.Clone()) {}
+
 Content::Content() = default;
 
 Content::~Content() = default;
 
 // static
 std::string PerksDiscoveryScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kNext:
       return "Next";
@@ -70,6 +80,7 @@ std::string PerksDiscoveryScreen::GetResultString(Result result) {
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 PerksDiscoveryScreen::PerksDiscoveryScreen(

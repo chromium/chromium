@@ -67,6 +67,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Osauth-error"/>
   <variant name="Parental-handoff"/>
   <variant name="Password-selection"/>
+  <variant name="Perks-discovery"/>
   <variant name="Personalized-apps"/>
   <variant name="Pin-setup"/>
   <variant name="Quick-start"/>
@@ -161,6 +162,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Packaged-license"/>
   <variant name="Parental-handoff"/>
   <variant name="Password-selection"/>
+  <variant name="Perks-discovery"/>
   <variant name="Pin-setup"/>
   <variant name="Quick-start"/>
   <variant name="Recommend-apps"/>
@@ -375,6 +377,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Password-selection.GaiaPasswordFallback"/>
   <variant name="Password-selection.LocalPasswordChoice"/>
   <variant name="Password-selection.LocalPasswordForced"/>
+  <variant name="Perks-discovery.Error"/>
+  <variant name="Perks-discovery.Next"/>
   <variant name="Personalized-apps.Back"/>
   <variant name="Personalized-apps.DataMalformed"/>
   <variant name="Personalized-apps.Error"/>
