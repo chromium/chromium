@@ -170,8 +170,6 @@ void HoldingSpacePersistenceDelegate::MaybeRemoveItemsFromPersistence() {
 
   const auto known_types = holding_space_util::GetAllItemTypes();
 
-  const bool remove_photoshop_web_items =
-      !features::IsHoldingSpacePhotoshopWebIntegrationEnabled();
   const bool remove_suggestion_items =
       !features::IsHoldingSpaceSuggestionsEnabled();
 
@@ -185,9 +183,7 @@ void HoldingSpacePersistenceDelegate::MaybeRemoveItemsFromPersistence() {
     }
 
     // Remove items associated with disabled features.
-    using Type = HoldingSpaceItem::Type;
-    if ((remove_photoshop_web_items && type == Type::kPhotoshopWeb) ||
-        (remove_suggestion_items && HoldingSpaceItem::IsSuggestionType(type))) {
+    if (remove_suggestion_items && HoldingSpaceItem::IsSuggestionType(type)) {
       return true;
     }
 

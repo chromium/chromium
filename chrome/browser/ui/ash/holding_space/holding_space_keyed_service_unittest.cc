@@ -267,10 +267,6 @@ std::map<std::string, std::vector<Bucket>> MergeHistogramSamples(
 }
 
 bool ShouldRestoreFromPersistence(HoldingSpaceItem::Type type) {
-  if (type == HoldingSpaceItem::Type::kPhotoshopWeb &&
-      !features::IsHoldingSpacePhotoshopWebIntegrationEnabled()) {
-    return false;
-  }
   if (HoldingSpaceItem::IsSuggestionType(type) &&
       !features::IsHoldingSpaceSuggestionsEnabled()) {
     return false;
@@ -2813,28 +2809,18 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 }
 
 // Base class for tests which verify adding and removing items from holding
-// space works as intended, parameterized by:
-// (a) holding space item type, and
-// (b) whether Photoshop Web integration is enabled.
+// space works as intended, parameterized by holding space item type.
 class HoldingSpaceKeyedServiceAddAndRemoveItemTest
     : public HoldingSpaceKeyedServiceTest,
-      public ::testing::WithParamInterface<
-          std::tuple<HoldingSpaceItem::Type,
-                     /*enable_photoshop_web_integration=*/bool>> {
+      public ::testing::WithParamInterface<HoldingSpaceItem::Type> {
  public:
-  HoldingSpaceKeyedServiceAddAndRemoveItemTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kHoldingSpacePhotoshopWebIntegration,
-          /*enable_photoshop_web_integration=*/std::get<1>(GetParam())}});
-  }
-
   // Returns the holding space service associated with the specified `profile`.
   HoldingSpaceKeyedService* GetService(Profile* profile) {
     return HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
   }
 
   // Returns the type of holding space item under test.
-  HoldingSpaceItem::Type GetType() const { return std::get<0>(GetParam()); }
+  HoldingSpaceItem::Type GetType() const { return GetParam(); }
 
   // Adds an item of `type` to the holding space belonging to `profile`, backed
   // by the file at the specified absolute `file_path`. Returns the `id` of the
@@ -2881,18 +2867,11 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
                                 file_path, HoldingSpaceProgress())
                 .empty());
         break;
-      case HoldingSpaceItem::Type::kPhotoshopWeb: {
-        const auto& id = holding_space_service->AddItemOfType(type, file_path);
-        if (!features::IsHoldingSpacePhotoshopWebIntegrationEnabled()) {
-          EXPECT_TRUE(id.empty());
-          return id;
-        }
-        break;
-      }
       case HoldingSpaceItem::Type::kPrintedPdf:
         holding_space_service->AddPrintedPdf(file_path,
                                              /*from_incognito_profile=*/false);
         break;
+      case HoldingSpaceItem::Type::kPhotoshopWeb:
       case HoldingSpaceItem::Type::kScan:
       case HoldingSpaceItem::Type::kScreenRecording:
       case HoldingSpaceItem::Type::kScreenRecordingGif:
@@ -2905,16 +2884,12 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
     EXPECT_TRUE(item);
     return item->id();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceKeyedServiceAddAndRemoveItemTest,
-    testing::Combine(testing::ValuesIn(holding_space_util::GetAllItemTypes()),
-                     /*enable_photoshop_web_integration=*/testing::Bool()));
+    testing::ValuesIn(holding_space_util::GetAllItemTypes()));
 
 TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
   // Wait for the holding space model to attach.
@@ -2942,18 +2917,6 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
 
   // Add a holding space item of the type under test.
   const std::string id = AddItem(profile, GetType(), file_path);
-
-  // Insertion into the model should only fail if the item is a Photoshop Web
-  // item and Photoshop Web integration is disabled.
-  if (id.empty()) {
-    EXPECT_EQ(model->items().size(), 0u);
-    EXPECT_THAT(
-        GetType(),
-        AllOf(Eq(HoldingSpaceItem::Type::kPhotoshopWeb),
-              And(features::IsHoldingSpacePhotoshopWebIntegrationEnabled(),
-                  IsFalse())));
-    return;
-  }
 
   // Verify a holding space item has been added to the model.
   ASSERT_EQ(model->items().size(), 1u);
@@ -3037,18 +3000,6 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItemOfType) {
 
   // Add a holding space item of the type under test.
   const auto& id = GetService(profile)->AddItemOfType(GetType(), file_path);
-
-  // Insertion into the model should only fail if the item is a Photoshop Web
-  // item and Photoshop Web integration is disabled.
-  if (id.empty()) {
-    EXPECT_EQ(model->items().size(), 0u);
-    EXPECT_THAT(
-        GetType(),
-        AllOf(Eq(HoldingSpaceItem::Type::kPhotoshopWeb),
-              And(features::IsHoldingSpacePhotoshopWebIntegrationEnabled(),
-                  IsFalse())));
-    return;
-  }
 
   // Verify a holding space item has been added to the model.
   ASSERT_EQ(model->items().size(), 1u);
@@ -3172,44 +3123,24 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
   EXPECT_EQ(u"File 2.png", item_2->GetText());
 }
 
-// Base class for tests of Photoshop Web integration. Parameterized by:
-// (a) whether to enable Photoshop Web integration, and
-// (b) the binding context to use for the file picker during testing.
+// Base class for tests of Photoshop Web integration. Parameterized by the
+// binding context to use for the file picker during testing.
 class HoldingSpaceKeyedServicePhotoshopWebIntegrationTest
     : public HoldingSpaceKeyedServiceTest,
-      public ::testing::WithParamInterface<std::tuple<
-          /*enable_photoshop_web_integration=*/bool,
-          /*file_picker_binding_context=*/GURL>> {
+      public ::testing::WithParamInterface<
+          /*file_picker_binding_context=*/GURL> {
  public:
-  HoldingSpaceKeyedServicePhotoshopWebIntegrationTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kHoldingSpacePhotoshopWebIntegration,
-        IsPhotoshopWebIntegrationEnabled());
-  }
-
   // The binding context to use for the file picker given test parameterization.
-  const GURL& GetFilePickerBindingContext() const {
-    return std::get<1>(GetParam());
-  }
-
-  // Whether Photoshop Web integration is enabled given test parameterization.
-  bool IsPhotoshopWebIntegrationEnabled() const {
-    return std::get<0>(GetParam());
-  }
-
- private:
-  // Used to enable/disable Photoshop Web integration.
-  base::test::ScopedFeatureList scoped_feature_list_;
+  const GURL& GetFilePickerBindingContext() const { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceKeyedServicePhotoshopWebIntegrationTest,
-    ::testing::Combine(/*enable_photoshop_web_integration=*/::testing::Bool(),
-                       /*file_picker_binding_context=*/::testing::Values(
-                           GURL(),
-                           GURL("https://google.com/"),
-                           GURL("https://photoshop.adobe.com/"))));
+    /*file_picker_binding_context=*/
+    ::testing::Values(GURL(),
+                      GURL("https://google.com/"),
+                      GURL("https://photoshop.adobe.com/")));
 
 // Verifies that a Photoshop Web item will be added to the user's Holding Space
 // under expected circumstances.
@@ -3251,21 +3182,17 @@ TEST_P(HoldingSpaceKeyedServicePhotoshopWebIntegrationTest,
           file_manager::util::GetFileManagerFileSystemContext(profile)
               ->CrackURLInFirstPartyContext(file_system_url));
 
-  // A Photoshop Web item should be added to the user's Holding Space iff:
-  // (a) Photoshop Web integration is enabled, and
-  // (b) the binding context for the file picker is from the domain associated
-  //     with Photoshop Web.
+  // A Photoshop Web item should be added to the user's Holding Space iff the
+  // binding context for the file picker is from the domain associated with
+  // Photoshop Web.
   const bool is_file_picker_binding_context_photoshop_web =
       GetFilePickerBindingContext().DomainIs("photoshop.adobe.com");
-  const bool expect_to_add_photoshop_web_item =
-      IsPhotoshopWebIntegrationEnabled() &&
-      is_file_picker_binding_context_photoshop_web;
 
   // Verify model state.
   EXPECT_THAT(
       model->items(),
       Conditional(
-          expect_to_add_photoshop_web_item,
+          is_file_picker_binding_context_photoshop_web,
           ElementsAre(Pointee(AllOf(
               Property(&HoldingSpaceItem::type,
                        HoldingSpaceItem::Type::kPhotoshopWeb),
