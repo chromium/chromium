@@ -93,6 +93,7 @@ class CORE_EXPORT AnchorElementMetricsSender final
 
   void AddAnchorElement(HTMLAnchorElement& element);
   void RemoveAnchorElement(HTMLAnchorElement& element);
+  void DocumentDetached(Document& document);
 
   void SetTickClockForTesting(const base::TickClock* clock);
   void SetNowAsNavigationStartForTesting();

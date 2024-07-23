@@ -204,6 +204,7 @@ class CORE_EXPORT FrameLoader final {
   void SaveScrollState();
   void RestoreScrollPositionAndViewState();
 
+  bool IsCommittingNavigation() const { return committing_navigation_; }
   bool HasProvisionalNavigation() const {
     return committing_navigation_ || client_navigation_.get();
   }

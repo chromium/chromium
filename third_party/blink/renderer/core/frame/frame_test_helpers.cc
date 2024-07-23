@@ -809,6 +809,7 @@ void TestWebFrameClient::Bind(WebLocalFrame* frame,
 }
 
 void TestWebFrameClient::FrameDetached() {
+  std::move(frame_detached_callback_).Run();
   frame_->Close();
   self_owned_.reset();
 }
@@ -966,6 +967,10 @@ WebView* TestWebFrameClient::CreateNewWindow(
 
 void TestWebFrameClient::DestroyChildViews() {
   child_web_views_.clear();
+}
+
+void TestWebFrameClient::SetFrameDetachedCallback(base::OnceClosure callback) {
+  frame_detached_callback_ = std::move(callback);
 }
 
 TestWidgetInputHandlerHost* TestWebFrameWidget::GetInputHandlerHost() {
