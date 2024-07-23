@@ -9539,11 +9539,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTestThirdPartyCookiePhaseoutDescription, kOsAll,
      SINGLE_VALUE_TYPE(network::switches::kTestThirdPartyCookiePhaseout)},
 
-    {"third-party-storage-partitioning",
-     flag_descriptions::kThirdPartyStoragePartitioningName,
-     flag_descriptions::kThirdPartyStoragePartitioningDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kThirdPartyStoragePartitioning)},
-
     {"tpc-phase-out-facilitated-testing",
      flag_descriptions::kTPCPhaseOutFacilitatedTestingName,
      flag_descriptions::kTPCPhaseOutFacilitatedTestingDescription, kOsAll,
