@@ -611,6 +611,18 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
     if (!email.empty()) {
       request->set_email(std::move(email));
     }
+
+    // Check for the profile token here because we want to avoid cases where the
+    // value is populated in the non-enterprise case.
+    std::string profile_dm_token = GetProfileDMTokenString();
+    if (!profile_dm_token.empty()) {
+      request->set_profile_dm_token(std::move(profile_dm_token));
+    }
+  }
+
+  std::string browser_dm_token = GetBrowserDMTokenString();
+  if (!browser_dm_token.empty()) {
+    request->set_browser_dm_token(std::move(browser_dm_token));
   }
 
   *request->mutable_population() = get_user_population_callback_.Run();

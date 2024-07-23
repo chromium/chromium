@@ -240,4 +240,19 @@ std::string ChromeEnterpriseRealTimeUrlLookupService::GetUserEmail() const {
   return GetProfileEmail(profile_);
 }
 
+std::string ChromeEnterpriseRealTimeUrlLookupService::GetBrowserDMTokenString()
+    const {
+  return connectors_service_->GetBrowserDmToken().value_or("");
+}
+
+std::string ChromeEnterpriseRealTimeUrlLookupService::GetProfileDMTokenString()
+    const {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  if (chrome::enterprise_util::IsProfileAffiliated(profile_)) {
+    return connectors_service_->GetProfileDmToken().value_or("");
+  }
+#endif
+  return "";
+}
+
 }  // namespace safe_browsing

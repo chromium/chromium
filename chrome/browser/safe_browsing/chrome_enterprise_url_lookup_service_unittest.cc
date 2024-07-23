@@ -286,6 +286,8 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
         EXPECT_EQ("http://example.test/", request_proto.url());
         EXPECT_EQ("dm_token", request_proto.dm_token());
         EXPECT_EQ("test@example.com", request_proto.email());
+        EXPECT_EQ("dm_token", request_proto.browser_dm_token());
+        EXPECT_EQ("", request_proto.profile_dm_token());
         EXPECT_EQ(ChromeUserPopulation::SAFE_BROWSING,
                   request_proto.population().user_population());
         EXPECT_TRUE(request_proto.population().is_history_sync_enabled());

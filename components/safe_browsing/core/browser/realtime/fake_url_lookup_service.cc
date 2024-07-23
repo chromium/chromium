@@ -45,6 +45,14 @@ std::string FakeRealTimeUrlLookupService::GetUserEmail() const {
   return "test@user.com";
 }
 
+std::string FakeRealTimeUrlLookupService::GetBrowserDMTokenString() const {
+  return "browser_dm_token";
+}
+
+std::string FakeRealTimeUrlLookupService::GetProfileDMTokenString() const {
+  return "profile_dm_token";
+}
+
 std::string FakeRealTimeUrlLookupService::GetMetricSuffix() const {
   return ".Mock";
 }

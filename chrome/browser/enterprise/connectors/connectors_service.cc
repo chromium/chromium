@@ -507,34 +507,41 @@ std::optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
     const char* scope_pref) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On CrOS the settings from primary profile applies to all profiles.
-  return GetBrowserDmToken();
+  auto dm_token = GetBrowserDmToken();
+  return dm_token ? std::make_optional<DmToken>(*dm_token,
+                                                policy::POLICY_SCOPE_MACHINE)
+                  : std::nullopt;
 #else
+  auto browser_dm_token = GetBrowserDmToken();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   Profile* profile = Profile::FromBrowserContext(context_);
-  if (profile->IsMainProfile()) {
-    return GetBrowserDmToken();
+  if (profile->IsMainProfile() && browser_dm_token) {
+    return DmToken(*browser_dm_token, policy::POLICY_SCOPE_MACHINE);
   }
 #endif
-  return GetPolicyScope(scope_pref) == policy::POLICY_SCOPE_USER
-             ? GetProfileDmToken()
-             : GetBrowserDmToken();
+  policy::PolicyScope scope = GetPolicyScope(scope_pref);
+  std::string token_string = scope == policy::POLICY_SCOPE_USER
+                                 ? GetProfileDmToken().value_or("")
+                                 : browser_dm_token.value_or("");
+  if (token_string.empty()) {
+    return std::nullopt;
+  }
+  return DmToken(token_string, scope);
 #endif
 }
 
-std::optional<ConnectorsService::DmToken> ConnectorsService::GetBrowserDmToken()
-    const {
+std::optional<std::string> ConnectorsService::GetBrowserDmToken() const {
   policy::DMToken dm_token =
       policy::GetDMToken(Profile::FromBrowserContext(context_));
 
   if (!dm_token.is_valid())
     return std::nullopt;
 
-  return DmToken(dm_token.value(), policy::POLICY_SCOPE_MACHINE);
+  return dm_token.value();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-std::optional<ConnectorsService::DmToken> ConnectorsService::GetProfileDmToken()
-    const {
+std::optional<std::string> ConnectorsService::GetProfileDmToken() const {
   Profile* profile = Profile::FromBrowserContext(context_);
 
   policy::CloudPolicyManager* policy_manager = profile->GetCloudPolicyManager();
@@ -543,8 +550,7 @@ std::optional<ConnectorsService::DmToken> ConnectorsService::GetProfileDmToken()
     return std::nullopt;
   }
 
-  return DmToken(policy_manager->core()->client()->dm_token(),
-                 policy::POLICY_SCOPE_USER);
+  return policy_manager->core()->client()->dm_token();
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)

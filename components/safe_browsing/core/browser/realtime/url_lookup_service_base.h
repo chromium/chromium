@@ -147,6 +147,12 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // string if none is available.
   virtual std::string GetUserEmail() const = 0;
 
+  // Returns DM Token for the managed browser.
+  virtual std::string GetBrowserDMTokenString() const = 0;
+
+  // Returns DM Token for the managed profile.
+  virtual std::string GetProfileDMTokenString() const = 0;
+
   // KeyedService:
   // Called before the actual deletion of the object.
   void Shutdown() override;
