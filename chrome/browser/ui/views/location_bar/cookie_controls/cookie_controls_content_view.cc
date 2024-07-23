@@ -44,7 +44,7 @@ int GetDefaultIconSize() {
 
 bool IsNewUiEnabled() {
   return base::FeatureList::IsEnabled(
-      privacy_sandbox::kTrackingProtectionSettingsLaunch);
+      privacy_sandbox::kTrackingProtectionContentSettingFor3pcb);
 }
 
 std::unique_ptr<views::View> CreateSeparator(bool padded) {
