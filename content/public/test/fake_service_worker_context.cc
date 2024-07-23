@@ -39,7 +39,7 @@ void FakeServiceWorkerContext::RegisterServiceWorker(
 void FakeServiceWorkerContext::UnregisterServiceWorker(
     const GURL& scope,
     const blink::StorageKey& key,
-    ResultCallback callback) {
+    StatusCodeCallback callback) {
   NOTREACHED_IN_MIGRATION();
 }
 void FakeServiceWorkerContext::UnregisterServiceWorkerImmediately(

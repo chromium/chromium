@@ -134,10 +134,11 @@ void ExpectRegisterResultAndRun(blink::ServiceWorkerStatusCode expected,
   continuation.Run();
 }
 
-void ExpectUnregisterResultAndRun(bool expected,
-                                  base::RepeatingClosure continuation,
-                                  bool actual) {
-  EXPECT_EQ(expected, actual);
+void ExpectUnregisterResultAndRun(
+    blink::ServiceWorkerStatusCode expected_status,
+    base::RepeatingClosure continuation,
+    blink::ServiceWorkerStatusCode actual_status) {
+  EXPECT_EQ(expected_status, actual_status);
   continuation.Run();
 }
 
@@ -630,7 +631,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, FetchPageWithSaveData) {
   base::RunLoop run_loop;
   public_context()->UnregisterServiceWorker(
       embedded_test_server()->GetURL(kPageUrl), key,
-      base::BindOnce(&ExpectUnregisterResultAndRun, true,
+      base::BindOnce(&ExpectUnregisterResultAndRun,
+                     blink::ServiceWorkerStatusCode::kOk,
                      run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -679,7 +681,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, CrossOriginFetchWithSaveData) {
   base::RunLoop run_loop;
   public_context()->UnregisterServiceWorker(
       embedded_test_server()->GetURL(kPageUrl), key,
-      base::BindOnce(&ExpectUnregisterResultAndRun, true,
+      base::BindOnce(&ExpectUnregisterResultAndRun,
+                     blink::ServiceWorkerStatusCode::kOk,
                      run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -717,7 +720,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   base::RunLoop run_loop;
   public_context()->UnregisterServiceWorker(
       embedded_test_server()->GetURL(kPageUrl), key,
-      base::BindOnce(&ExpectUnregisterResultAndRun, true,
+      base::BindOnce(&ExpectUnregisterResultAndRun,
+                     blink::ServiceWorkerStatusCode::kOk,
                      run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -754,7 +758,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, Reload) {
   base::RunLoop run_loop;
   public_context()->UnregisterServiceWorker(
       embedded_test_server()->GetURL(kPageUrl), key,
-      base::BindOnce(&ExpectUnregisterResultAndRun, true,
+      base::BindOnce(&ExpectUnregisterResultAndRun,
+                     blink::ServiceWorkerStatusCode::kOk,
                      run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -910,7 +915,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
       blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
   public_context()->UnregisterServiceWorker(
       url, key,
-      base::BindOnce(&ExpectUnregisterResultAndRun, true,
+      base::BindOnce(&ExpectUnregisterResultAndRun,
+                     blink::ServiceWorkerStatusCode::kOk,
                      run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -949,7 +955,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   base::RunLoop run_loop;
   public_context()->UnregisterServiceWorker(
       embedded_test_server()->GetURL(kPageUrl), key,
-      base::BindOnce(&ExpectUnregisterResultAndRun, true,
+      base::BindOnce(&ExpectUnregisterResultAndRun,
+                     blink::ServiceWorkerStatusCode::kOk,
                      run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -2157,7 +2164,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, Registration) {
         blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
     public_context()->UnregisterServiceWorker(
         embedded_test_server()->GetURL("/"), key,
-        base::BindOnce(&ExpectUnregisterResultAndRun, false,
+        base::BindOnce(&ExpectUnregisterResultAndRun,
+                       blink::ServiceWorkerStatusCode::kErrorNotFound,
                        run_loop.QuitClosure()));
     run_loop.Run();
   }
@@ -2228,7 +2236,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, Registration) {
         blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
     public_context()->UnregisterServiceWorker(
         url, key,
-        base::BindOnce(&ExpectUnregisterResultAndRun, true,
+        base::BindOnce(&ExpectUnregisterResultAndRun,
+                       blink::ServiceWorkerStatusCode::kOk,
                        run_loop.QuitClosure()));
     run_loop.Run();
   }
@@ -4014,7 +4023,8 @@ IN_PROC_BROWSER_TEST_F(
         blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
     public_context()->UnregisterServiceWorker(
         url, key,
-        base::BindOnce(&ExpectUnregisterResultAndRun, true,
+        base::BindOnce(&ExpectUnregisterResultAndRun,
+                       blink::ServiceWorkerStatusCode::kOk,
                        loop.QuitClosure()));
     loop.Run();
   }

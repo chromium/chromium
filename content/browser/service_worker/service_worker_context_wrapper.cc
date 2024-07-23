@@ -628,7 +628,7 @@ void ServiceWorkerContextWrapper::RegisterServiceWorker(
 void ServiceWorkerContextWrapper::UnregisterServiceWorker(
     const GURL& scope,
     const blink::StorageKey& key,
-    ResultCallback callback) {
+    StatusCodeCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   UnregisterServiceWorkerImpl(scope, key, std::move(callback));
 }
@@ -644,17 +644,18 @@ void ServiceWorkerContextWrapper::UnregisterServiceWorkerImmediately(
 void ServiceWorkerContextWrapper::UnregisterServiceWorkerImpl(
     const GURL& scope,
     const blink::StorageKey& key,
-    ResultCallback callback) {
+    StatusCodeCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!context_core_) {
     GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), /*success=*/false));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
-  context()->UnregisterServiceWorker(
-      net::SimplifyUrlForRequest(scope), key, /*is_immediate=*/false,
-      WrapResultCallbackToTakeStatusCode(std::move(callback)));
+  context()->UnregisterServiceWorker(net::SimplifyUrlForRequest(scope), key,
+                                     /*is_immediate=*/false,
+                                     std::move(callback));
 }
 
 void ServiceWorkerContextWrapper::UnregisterServiceWorkerImmediatelyImpl(

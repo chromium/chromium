@@ -128,7 +128,7 @@ void ServiceWorkerContextAdapter::RegisterServiceWorker(
 void ServiceWorkerContextAdapter::UnregisterServiceWorker(
     const GURL& scope,
     const blink::StorageKey& key,
-    ResultCallback callback) {
+    StatusCodeCallback callback) {
   NOTIMPLEMENTED();
 }
 

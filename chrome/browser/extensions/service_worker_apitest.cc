@@ -91,6 +91,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/url_constants.h"
@@ -2650,7 +2651,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTestWithEarlyReadyMesssage,
     context->UnregisterServiceWorker(
         scope, blink::StorageKey::CreateFirstParty(extension->origin()),
         base::BindLambdaForTesting(
-            [&run_loop](bool success) { run_loop.QuitWhenIdle(); }));
+            [&run_loop](blink::ServiceWorkerStatusCode status) {
+              run_loop.QuitWhenIdle();
+            }));
     run_loop.Run();
   }
 

@@ -28,6 +28,7 @@
 #include "extensions/browser/task_queue_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -536,7 +537,8 @@ void ExtensionRegistrar::UnregisterServiceWorkerWithRootScope(
 
 void ExtensionRegistrar::NotifyServiceWorkerUnregistered(
     const ExtensionId& extension_id,
-    bool success) {
+    blink::ServiceWorkerStatusCode status) {
+  bool success = status == blink::ServiceWorkerStatusCode::kOk;
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState", success);
   base::UmaHistogramBoolean(

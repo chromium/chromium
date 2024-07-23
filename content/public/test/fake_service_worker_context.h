@@ -49,7 +49,7 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
       StatusCodeCallback callback) override;
   void UnregisterServiceWorker(const GURL& scope,
                                const blink::StorageKey& key,
-                               ResultCallback callback) override;
+                               StatusCodeCallback callback) override;
   void UnregisterServiceWorkerImmediately(const GURL& scope,
                                           const blink::StorageKey& key,
                                           StatusCodeCallback callback) override;
