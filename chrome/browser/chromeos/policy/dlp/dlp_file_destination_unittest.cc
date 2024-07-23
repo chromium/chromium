@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 
-#include "components/enterprise/data_controls/core/component.h"
+#include "components/enterprise/data_controls/core/browser/component.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 

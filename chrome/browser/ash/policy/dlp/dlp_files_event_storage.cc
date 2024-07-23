@@ -10,7 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "components/enterprise/data_controls/core/dlp_histogram_helper.h"
+#include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
 
 namespace policy {
 

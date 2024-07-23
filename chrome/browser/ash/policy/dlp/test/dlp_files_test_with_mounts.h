@@ -11,7 +11,7 @@
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
-#include "components/enterprise/data_controls/core/dlp_policy_event.pb.h"
+#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 

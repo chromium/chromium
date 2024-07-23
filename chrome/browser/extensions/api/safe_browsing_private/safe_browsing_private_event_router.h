@@ -25,7 +25,7 @@
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-#include "components/enterprise/data_controls/core/verdict.h"
+#include "components/enterprise/data_controls/core/browser/verdict.h"
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 namespace content {

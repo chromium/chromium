@@ -940,7 +940,7 @@ static_library("test_support") {
 
   if (is_chromeos_lacros) {
     public_deps += [
-      "//components/enterprise/data_controls/core:dlp_policy_event_proto",
+      "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
       "//components/reporting/client:report_queue",
       "//components/reporting/client:test_support",
       "//components/reporting/storage:test_support",
@@ -5060,7 +5060,7 @@ if (!is_android) {
         "//components/device_event_log",
         "//components/device_signals/core/browser",
         "//components/drive",
-        "//components/enterprise/data_controls/core:dlp_policy_event_proto",
+        "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
         "//components/exo:test_support",
         "//components/feedback:feedback",
         "//components/feedback/content:content",
@@ -8861,7 +8861,7 @@ test("unit_tests") {
       "//chromeos/ui/wm",
       "//components/account_manager_core",
       "//components/account_manager_core:test_support",
-      "//components/enterprise/data_controls/core:dlp_policy_event_proto",
+      "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
       "//components/reporting/metrics:metrics_data_collection",
       "//components/reporting/metrics/fakes:test_support",
     ]
@@ -9272,13 +9272,13 @@ test("unit_tests") {
 
     if (enterprise_data_controls) {
       sources += [
-        "../../components/enterprise/data_controls/core/data_controls_policy_handler_unittest.cc",
+        "../../components/enterprise/data_controls/core/browser/data_controls_policy_handler_unittest.cc",
         "../browser/enterprise/data_controls/dlp_reporting_manager_unittest.cc",
       ]
       deps += [
         "//chrome/browser/enterprise/data_controls",
         "//chrome/browser/enterprise/data_controls:test_support",
-        "//components/enterprise/data_controls/core",
+        "//components/enterprise/data_controls/core/browser",
       ]
     }
 
@@ -11725,7 +11725,7 @@ if (!is_android && !is_chromeos_device) {
     if (enterprise_data_controls) {
       deps += [
         "//chrome/browser/enterprise/data_controls:test_support",
-        "//components/enterprise/data_controls/core",
+        "//components/enterprise/data_controls/core/browser",
       ]
     }
 

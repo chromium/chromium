@@ -18,7 +18,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
-#include "components/enterprise/data_controls/core/component.h"
+#include "components/enterprise/data_controls/core/browser/component.h"
 #include "components/file_access/scoped_file_access_copy.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"

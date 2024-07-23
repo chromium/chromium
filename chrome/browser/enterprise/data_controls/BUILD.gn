@@ -24,8 +24,8 @@ source_set("data_controls") {
 
   public_deps = [
     "//components/enterprise/data_controls/content/browser",
-    "//components/enterprise/data_controls/core",
-    "//components/enterprise/data_controls/core:features",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/enterprise/data_controls/core/browser:features",
   ]
 
   deps = [
@@ -36,7 +36,7 @@ source_set("data_controls") {
     "//chrome/browser/safe_browsing",
     "//components/constrained_window",
     "//components/enterprise/content",
-    "//components/enterprise/data_controls/core:dlp_policy_event_proto",
+    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
     "//components/prefs",
@@ -78,8 +78,8 @@ source_set("test_support") {
     "//base/test:test_support",
     "//chrome/test:test_support",
     "//components/account_id",
-    "//components/enterprise/data_controls/core:dlp_policy_event_proto",
-    "//components/enterprise/data_controls/core:test_support",
+    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
+    "//components/enterprise/data_controls/core/browser:test_support",
     "//components/prefs",
     "//components/reporting/client:test_support",
     "//components/reporting/util:status",
@@ -107,7 +107,7 @@ source_set("unit_tests") {
     ":data_controls",
     ":test_support",
     "//chrome/browser/enterprise/connectors/test:test_support",
-    "//components/enterprise/data_controls/core:unit_tests",
+    "//components/enterprise/data_controls/core/browser:unit_tests",
   ]
   if (is_chromeos_ash) {
     deps += [ "//chrome/browser/ash:test_support" ]

@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "components/enterprise/data_controls/core/dlp_histogram_helper.h"
+#include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"

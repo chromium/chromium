@@ -11,8 +11,8 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/data_controls/chrome_dlp_rules_manager.h"
-#include "components/enterprise/data_controls/core/component.h"
-#include "components/enterprise/data_controls/core/dlp_rules_manager_base.h"
+#include "components/enterprise/data_controls/core/browser/component.h"
+#include "components/enterprise/data_controls/core/browser/dlp_rules_manager_base.h"
 #include "url/gurl.h"
 
 class Profile;

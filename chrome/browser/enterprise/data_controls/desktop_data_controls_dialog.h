@@ -9,7 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "components/enterprise/data_controls/core/data_controls_dialog.h"
+#include "components/enterprise/data_controls/core/browser/data_controls_dialog.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
