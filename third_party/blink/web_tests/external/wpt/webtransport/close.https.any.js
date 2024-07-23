@@ -156,12 +156,14 @@ promise_test(async t => {
 
 promise_test(async t => {
   const wt = new WebTransport(webtransport_url('server-close.py'));
-  promise_rejects_dom(t, "InvalidStateError", wt.createUnidirectionalStream());
+  await promise_rejects_dom(t, "InvalidStateError",
+                            wt.createUnidirectionalStream());
 }, 'server initiated closure while opening unidirectional stream before ready');
 
 promise_test(async t => {
   const wt = new WebTransport(webtransport_url('server-close.py'));
-  promise_rejects_dom(t, "InvalidStateError", wt.createBidirectionalStream());
+  await promise_rejects_dom(t, "InvalidStateError",
+                            wt.createBidirectionalStream());
 }, 'server initiated closure while opening bidirectional stream before ready');
 
 // Regression test for https://crbug.com/347710668.
