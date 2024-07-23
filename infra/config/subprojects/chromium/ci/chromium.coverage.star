@@ -636,6 +636,7 @@ coverage_builder(
             short_name = "lnx-fuzz",
         ),
     ],
+    notifies = ["chrome-fuzzing-core"],
     properties = {
         "collect_fuzz_coverage": True,
     },
