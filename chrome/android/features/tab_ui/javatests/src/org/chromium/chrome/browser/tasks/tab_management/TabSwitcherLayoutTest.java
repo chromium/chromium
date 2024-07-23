@@ -223,7 +223,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/1122657")
     public void testThumbnailAspectRatio_default() {
         prepareTabs(2, 0, "about:blank");
         enterTabSwitcher(mActivityTestRule.getActivity());
@@ -267,7 +266,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1297930")
     public void testRecycling_defaultAspectRatio() {
         prepareTabs(10, 0, mUrl);
         ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
@@ -429,7 +427,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "b/337061378")
     public void verifyTabGroupStateAfterReparenting() throws Exception {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         assertTrue(
