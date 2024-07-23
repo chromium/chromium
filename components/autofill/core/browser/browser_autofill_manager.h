@@ -259,7 +259,7 @@ class BrowserAutofillManager : public AutofillManager {
                                               const FieldGlobalId& field_id,
                                               const std::u16string& old_value,
                                               bool formatting_only) override;
-  void Reset() override;
+  void ResetImpl() override;
 
   // Retrieves the four digit combinations from the DOM of the current web page
   // and stores them in `four_digit_combinations_in_dom_`. This is used to check

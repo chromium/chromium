@@ -5,13 +5,19 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 
 #include "base/check_deref.h"
+#include "components/autofill/core/browser/autofill_manager_test_api.h"
 
 namespace autofill {
 
 TestAutofillDriver::TestAutofillDriver(AutofillClient* client)
     : autofill_client_(CHECK_DEREF(client)) {}
 
-TestAutofillDriver::~TestAutofillDriver() = default;
+TestAutofillDriver::~TestAutofillDriver() {
+  if (autofill_manager_) {
+    test_api(*autofill_manager_)
+        .SetLifecycleState(AutofillManager::LifecycleState::kPendingDeletion);
+  }
+}
 
 AutofillClient& TestAutofillDriver::GetAutofillClient() {
   return *autofill_client_;

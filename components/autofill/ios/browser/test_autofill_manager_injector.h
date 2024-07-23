@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
@@ -83,6 +84,8 @@ class TestAutofillManagerInjector : public web::WebFramesManager::Observer,
   void Inject(web::WebFrame* web_frame) {
     AutofillDriverIOS* driver =
         AutofillDriverIOS::FromWebStateAndWebFrame(web_state_, web_frame);
+    test_api(driver->GetAutofillManager())
+        .SetLifecycleState(AutofillManager::LifecycleState::kPendingDeletion);
     driver->set_autofill_manager_for_testing(std::make_unique<T>(driver));
   }
 

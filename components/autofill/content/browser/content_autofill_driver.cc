@@ -264,6 +264,17 @@ ContentAutofillDriver::~ContentAutofillDriver() {
   owner_->router().UnregisterDriver(*this, /*driver_is_dying=*/true);
 }
 
+void ContentAutofillDriver::SetLifecycleState(
+    LifecycleState state,
+    ContentAutofillDriverFactoryPassKey) {
+  autofill_manager_->SetLifecycleState(state, {});
+}
+
+void ContentAutofillDriver::Reset(ContentAutofillDriverFactoryPassKey) {
+  autofill_manager_->Reset({});
+  owner_->router().UnregisterDriver(*this, /*driver_is_dying=*/false);
+}
+
 void ContentAutofillDriver::TriggerFormExtractionInDriverFrame() {
   if (!IsActive()) {
     LOG(WARNING) << "Skipped Autofill message for inactive frame";
@@ -587,11 +598,6 @@ void ContentAutofillDriver::JavaScriptChangedAutofilledValue(
                  &AutofillDriverRouter::JavaScriptChangedAutofilledValue,
                  &AutofillManager::OnJavaScriptChangedAutofilledValue, form,
                  field_id, old_value, formatting_only);
-}
-
-void ContentAutofillDriver::Reset() {
-  owner_->router().UnregisterDriver(*this, /*driver_is_dying=*/false);
-  autofill_manager_->Reset();
 }
 
 const mojo::AssociatedRemote<mojom::AutofillAgent>&

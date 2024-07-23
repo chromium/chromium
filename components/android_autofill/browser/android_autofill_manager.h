@@ -51,8 +51,6 @@ class AndroidAutofillManager : public AutofillManager,
   void OnSelectOrSelectListFieldOptionsDidChangeImpl(
       const FormData& form) override {}
 
-  void Reset() override;
-
   void ReportAutofillWebOTPMetrics(bool used_web_otp) override {}
 
   bool has_server_prediction(FormGlobalId form) const {
@@ -73,6 +71,8 @@ class AndroidAutofillManager : public AutofillManager,
                          const url::Origin& triggered_origin);
 
  protected:
+  void ResetImpl() override;
+
   void OnFormSubmittedImpl(const FormData& form,
                            bool known_success,
                            mojom::SubmissionSource source) override;

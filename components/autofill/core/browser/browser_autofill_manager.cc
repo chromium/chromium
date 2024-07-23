@@ -2420,7 +2420,7 @@ void BrowserAutofillManager::OnSubmissionFieldTypesDetermined(
 // - `weak_ptr_factory_` is used for vote uploading (but also in other cases)
 // TODO: crbug.com/354649269 - Several other members aren't recreated or reset
 // either, which is probably a bug.
-void BrowserAutofillManager::Reset() {
+void BrowserAutofillManager::ResetImpl() {
   // Process log events and record into UKM when the FormStructure is destroyed.
   for (const auto& [form_id, form_structure] : form_structures()) {
     ProcessFieldLogEventsInForm(*form_structure);
@@ -2433,17 +2433,17 @@ void BrowserAutofillManager::Reset() {
   // `credit_card_form_event_logger_`, since it keeps a raw pointer to it.
   credit_card_access_manager_.reset();
   // {address, credit_card}_form_event_logger_ need to be reset before
-  // AutofillManager::Reset() because ~FormEventLoggerBase() uses
+  // AutofillManager::ResetImpl() because ~FormEventLoggerBase() uses
   // form_interactions_ukm_logger_ that is created and assigned in
-  // AutofillManager::Reset(). The new form_interactions_ukm_logger_ instance
-  // is needed for constructing the new *form_event_logger_ instances which is
-  // why calling AutofillManager::Reset() after constructing *form_event_logger_
-  // instances is not an option.
+  // AutofillManager::ResetImpl(). The new form_interactions_ukm_logger_
+  // instance is needed for constructing the new *form_event_logger_ instances
+  // which is why calling AutofillManager::ResetImpl() after constructing
+  // *form_event_logger_ instances is not an option.
   address_form_event_logger_->OnDestroyed();
   address_form_event_logger_.reset();
   credit_card_form_event_logger_->OnDestroyed();
   credit_card_form_event_logger_.reset();
-  AutofillManager::Reset();
+  AutofillManager::ResetImpl();
   address_form_event_logger_ =
       std::make_unique<autofill_metrics::AddressFormEventLogger>(
           driver().IsInAnyMainFrame(), form_interactions_ukm_logger(),

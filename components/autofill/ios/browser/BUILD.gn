@@ -123,6 +123,7 @@ source_set("test_support") {
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
     "//components/leveldb_proto:leveldb_proto",
     "//ios/web/public",
     "//ios/web/public/js_messaging",

@@ -28,6 +28,7 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -352,7 +353,7 @@ TEST_F(AndroidAutofillProviderTest, HasServerPrediction) {
       android_autofill_manager().has_server_prediction(form.global_id()));
 
   // Resetting removes prediction state.
-  android_autofill_manager().Reset();
+  test_api(android_autofill_manager()).Reset();
   EXPECT_FALSE(
       android_autofill_manager().has_server_prediction(form.global_id()));
 }
@@ -670,7 +671,7 @@ TEST_F(AndroidAutofillProviderTest, FormSubmissionHappensOnReset) {
   EXPECT_CALL(
       provider_bridge(),
       OnFormSubmitted(mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED));
-  android_autofill_manager().Reset();
+  test_api(android_autofill_manager()).Reset();
 }
 
 // Tests that a form submission of an ongoing Autofill session is propagated to
@@ -852,7 +853,7 @@ TEST_F(AndroidAutofillProviderTest, CancelSessionOnNavigation) {
       form, form.fields().front());
 
   EXPECT_CALL(provider_bridge(), CancelSession());
-  android_autofill_manager().Reset();
+  test_api(android_autofill_manager()).Reset();
 }
 
 class AndroidAutofillProviderWithCredManTest
@@ -1022,7 +1023,7 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
       form.global_id());
   android_autofill_manager().SimulateOnAskForValuesToFill(
       form, form.fields().front());
-  android_autofill_manager().Reset();
+  test_api(android_autofill_manager()).Reset();
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
   android_autofill_manager().SimulatePropagateAutofillPredictions(
       form.global_id());

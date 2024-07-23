@@ -1559,7 +1559,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   auto simulate_user_ignored_suggestions = [&](const FormData& form,
                                                const FormFieldData& field) {
-    browser_autofill_manager_->Reset();
+    test_api(*browser_autofill_manager_).Reset();
     browser_autofill_manager_->AddSeenForm(form, {NAME_FIRST, NAME_LAST});
     GetAutofillSuggestions(form, field);
     // This ensures that the field has `did_trigger_suggestion_` set.
@@ -3295,7 +3295,7 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
     FormSubmitted(form);
 
   // Flush FormEventLoggers.
-  browser_autofill_manager_->Reset();
+  test_api(*browser_autofill_manager_).Reset();
 
   // Validate the recorded metrics.
   std::string form_type_str = (form_type == LogAblationFormType::kAddress ||
@@ -3607,7 +3607,7 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFields_KeyMetrics) {
     FormSubmitted(form);
 
     base::HistogramTester histogram_tester;
-    browser_autofill_manager_->Reset();
+    test_api(*browser_autofill_manager_).Reset();
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingAssistance.Address", 1);
   }
@@ -3620,7 +3620,7 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFields_KeyMetrics) {
     FormSubmitted(form);
 
     base::HistogramTester histogram_tester;
-    browser_autofill_manager_->Reset();
+    test_api(*browser_autofill_manager_).Reset();
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingAssistance.Address", 0);
   }
@@ -5115,7 +5115,7 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictions_ResetManager) {
   std::string response_string;
   ASSERT_TRUE(response.SerializeToString(&response_string));
   // Reset the manager (such as during a navigation).
-  browser_autofill_manager_->Reset();
+  test_api(*browser_autofill_manager_).Reset();
 
   base::HistogramTester histogram_tester;
   test_api(*browser_autofill_manager_)
@@ -5560,7 +5560,7 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndNavigation_Upload) {
       form, form.fields().front().global_id(), base::TimeTicks::Now());
 
   // Simulate a navigation so that the pending form is uploaded.
-  browser_autofill_manager_->Reset();
+  test_api(*browser_autofill_manager_).Reset();
 }
 
 // Test that unfocusing a filled form sends an upload with types matching the
@@ -7871,7 +7871,7 @@ TEST_F(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
   browser_autofill_manager_->OnFocusOnNonFormField(true);
 
   // Simulate a navigation. This is when the vote is sent.
-  browser_autofill_manager_->Reset();
+  test_api(*browser_autofill_manager_).Reset();
 }
 
 // Ensure that a submission vote blocks sending a blur vote for the same form

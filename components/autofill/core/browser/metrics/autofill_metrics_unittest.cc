@@ -905,7 +905,7 @@ TEST_F(AutofillMetricsTest, DeveloperEngagement) {
   {
     base::HistogramTester histogram_tester;
     SeeForm(form);
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
     histogram_tester.ExpectTotalCount("Autofill.DeveloperEngagement", 0);
   }
 
@@ -917,7 +917,7 @@ TEST_F(AutofillMetricsTest, DeveloperEngagement) {
   {
     base::HistogramTester histogram_tester;
     SeeForm(form);
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
     histogram_tester.ExpectUniqueSample(
         "Autofill.DeveloperEngagement",
         AutofillMetrics::FILLABLE_FORM_PARSED_WITHOUT_TYPE_HINTS, 1);
@@ -939,7 +939,7 @@ TEST_F(AutofillMetricsTest, DeveloperEngagement) {
   {
     base::HistogramTester histogram_tester;
     SeeForm(form);
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
     histogram_tester.ExpectBucketCount(
         "Autofill.DeveloperEngagement",
         AutofillMetrics::FILLABLE_FORM_PARSED_WITH_TYPE_HINTS, 1);
@@ -957,7 +957,7 @@ TEST_F(AutofillMetricsTest,
   // Ensure no entries are logged when loading a non-fillable form.
   {
     SeeForm(form);
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
 
     EXPECT_EQ(0ul, test_ukm_recorder().entries_count());
   }
@@ -970,7 +970,7 @@ TEST_F(AutofillMetricsTest,
   // "form loaded" form interaction event to be logged.
   {
     SeeForm(form);
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
 
     VerifyDeveloperEngagementUkm(
         &test_ukm_recorder(), form, /*is_for_credit_card=*/false,
@@ -1002,7 +1002,7 @@ TEST_F(AutofillMetricsTest,
   // "form loaded" form interaction event to be logged.
   {
     SeeForm(form);
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
 
     VerifyDeveloperEngagementUkm(
         &test_ukm_recorder(), form, /*is_for_credit_card=*/false,
@@ -1646,7 +1646,7 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
   }
 
   {
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
     form.set_host_frame(test::MakeLocalFrameToken());
     form.set_renderer_id(test::MakeFormRendererId());
     form.set_url(GURL("https://example.com/form.html"));
@@ -1757,7 +1757,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardInteractedFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -1806,7 +1806,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardShownFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -1827,7 +1827,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardShownFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -1896,7 +1896,7 @@ TEST_P(AutofillMetricsIFrameTest, VirtualCreditCardShownFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -1926,7 +1926,7 @@ TEST_P(AutofillMetricsIFrameTest, VirtualCreditCardShownFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -1962,7 +1962,7 @@ TEST_P(AutofillMetricsIFrameTest, VirtualCreditCardShownFormEvents) {
                       /*masked_card_is_enrolled_for_virtual_card*/ false);
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -2034,7 +2034,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -2064,7 +2064,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -2091,7 +2091,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -2235,7 +2235,7 @@ TEST_P(AutofillMetricsIFrameTest,
       CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -2343,7 +2343,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -2369,7 +2369,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -2402,7 +2402,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -2495,7 +2495,7 @@ TEST_P(AutofillMetricsIFrameTest,
   std::vector<FieldType> field_types = {
       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
 
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
   // Simulate filling a server card suggestion with a duplicate local card.
   base::HistogramTester histogram_tester;
@@ -2561,7 +2561,7 @@ TEST_P(AutofillMetricsIFrameTest,
   std::vector<FieldType> field_types = {
       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
 
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
   // Simulate filling a server card suggestion with a duplicate local card.
   base::HistogramTester histogram_tester;
@@ -2643,7 +2643,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
   // Creating masked card
   RecreateCreditCards(/*include_local_credit_card=*/false,
@@ -3122,7 +3122,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
         form, form.fields().back().global_id());
     SubmitForm(form);
     // Trigger UploadFormDataAsyncCallback.
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(
@@ -3279,7 +3279,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -3416,7 +3416,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -3439,7 +3439,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -3465,7 +3465,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -3495,7 +3495,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -3527,7 +3527,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -3571,7 +3571,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -3680,7 +3680,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
                                      autofill_client_->form_origin(),
                                      /*id=*/0x4fff);
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -3728,7 +3728,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -3785,7 +3785,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
                                      /*id=*/0x3fff, /*offer_expired=*/true);
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -3847,7 +3847,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
                                      /*id=*/0x5fff);
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -3904,7 +3904,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -3955,7 +3955,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -4110,7 +4110,7 @@ TEST_F(AutofillMetricsTest, AddressInteractedFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   PurgeUKM();
   autofill_manager().AddSeenForm(form, field_types);
 
@@ -4183,7 +4183,7 @@ TEST_F(AutofillMetricsTest, AddressShownFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   PurgeUKM();
   autofill_manager().AddSeenForm(form, field_types);
 
@@ -4225,7 +4225,7 @@ TEST_F(AutofillMetricsTest, AddressShownFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   PurgeUKM();
   autofill_manager().AddSeenForm(form, field_types);
 
@@ -4291,7 +4291,7 @@ TEST_F(AutofillMetricsTest, AddressFilledFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   PurgeUKM();
   autofill_manager().AddSeenForm(form, field_types);
 
@@ -4347,7 +4347,7 @@ TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
                                                 form.fields()[0].global_id());
     SubmitForm(form);
     // Trigger UploadFormDataAsyncCallback.
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
         BucketsInclude(Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1),
@@ -4373,7 +4373,7 @@ TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   PurgeUKM();
   autofill_manager().AddSeenForm(form, field_types);
 
@@ -4391,7 +4391,7 @@ TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -4415,7 +4415,7 @@ TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   PurgeUKM();
   autofill_manager().AddSeenForm(form, field_types);
 
@@ -4476,7 +4476,7 @@ TEST_F(AutofillMetricsTest, AddressWillSubmitFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   PurgeUKM();
   autofill_manager().AddSeenForm(form, field_types);
 
@@ -4494,7 +4494,7 @@ TEST_F(AutofillMetricsTest, AddressWillSubmitFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   PurgeUKM();
   autofill_manager().AddSeenForm(form, field_types);
 
@@ -4512,7 +4512,7 @@ TEST_F(AutofillMetricsTest, AddressWillSubmitFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   PurgeUKM();
   autofill_manager().AddSeenForm(form, field_types);
 
@@ -4545,7 +4545,7 @@ TEST_F(AutofillMetricsTest, AddressWillSubmitFormEvents) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   PurgeUKM();
   autofill_manager().AddSeenForm(form, field_types);
 
@@ -4621,7 +4621,7 @@ TEST_F(AutofillMetricsTest, CreditCardFormEventsAreSegmented) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   PurgeUKM();
   autofill_manager().AddSeenForm(form, field_types);
   RecreateCreditCards(/*include_local_credit_card=*/true,
@@ -4639,7 +4639,7 @@ TEST_F(AutofillMetricsTest, CreditCardFormEventsAreSegmented) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   PurgeUKM();
   autofill_manager().AddSeenForm(form, field_types);
   RecreateCreditCards(/*include_local_credit_card=*/false,
@@ -4657,7 +4657,7 @@ TEST_F(AutofillMetricsTest, CreditCardFormEventsAreSegmented) {
   }
 
   // Reset the autofill manager state.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   PurgeUKM();
   autofill_manager().AddSeenForm(form, field_types);
   RecreateCreditCards(/*include_local_credit_card=*/true,
@@ -4812,7 +4812,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill", 0);
 
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
   }
 
   // Expect metric to be logged if the user manually edited a form field.
@@ -4842,7 +4842,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
         "Autofill.FillDuration.FromInteraction.WithoutAutofill", 14, 1);
 
     // We expected an upload to be triggered when the manager is reset.
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
   }
 
   // Expect metric to be logged if the user autofilled the form.
@@ -4870,7 +4870,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
         "Autofill.FillDuration.FromInteraction.WithoutAutofill", 0);
 
     // We expected an upload to be triggered when the manager is reset.
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
   }
 
   // Expect metric to be logged if the user both manually filled some fields
@@ -4907,7 +4907,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
         "Autofill.FillDuration.FromInteraction.WithoutAutofill", 0);
 
     // We expected an upload to be triggered when the manager is reset.
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
   }
 
   // Make sure that loading another form doesn't affect metrics from the first
@@ -4942,7 +4942,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
         "Autofill.FillDuration.FromInteraction.WithoutAutofill", 0);
 
     // We expected an upload to be triggered when the manager is reset.
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
   }
 
   // Make sure that submitting a form that was loaded later will report the
@@ -4970,7 +4970,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill", 0);
 
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
   }
 }
 
@@ -5809,7 +5809,7 @@ TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
         "Autofill.WebOTP.OneTimeCode.FillDuration.FromLoad", 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.WebOTP.OneTimeCode.FillDuration.FromLoad", 16, 1);
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
   }
 
   {
@@ -5827,7 +5827,7 @@ TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
 
     histogram_tester.ExpectUniqueSample(
         "Autofill.WebOTP.OneTimeCode.FillDuration.FromInteraction", 14, 1);
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
   }
 }
 
@@ -6442,7 +6442,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
     SubmitForm(form);
 
     // Record Autofill2.FieldInfo UKM event at autofill manager reset.
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
 
     // Verify FieldInfo UKM event for every field.
     auto field_entries =
@@ -6516,7 +6516,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
     SubmitForm(form);
 
     // Record Autofill2.FieldInfo UKM event at autofill manager reset.
-    autofill_manager().Reset();
+    test_api(autofill_manager()).Reset();
 
     // Verify FieldInfo UKM event for every field.
     auto field_entries =
@@ -6730,7 +6730,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   base::HistogramTester histogram_tester;
   SubmitForm(form);
   // Record Autofill2.FieldInfo UKM event at autofill manager reset.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
 
   auto entries =
       test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
@@ -6927,7 +6927,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   SubmitForm(form);
 
   // Record Autofill2.FieldInfo UKM event at autofill manager reset.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
 
   // Verify FieldInfo UKM event for every field.
   auto entries =
@@ -7047,7 +7047,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   SeeForm(form);
   SubmitForm(form);
 
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
 
   // This form is not parsed in |AutofillManager::OnFormsSeen|.
   auto entries =
@@ -7071,7 +7071,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   SeeForm(form);
   SubmitForm(form);
 
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
 
   // The form that only has a search box is not recorded into any UKM events.
   auto entries =
@@ -7099,7 +7099,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
 
   SeeForm(form);
   SubmitForm(form);
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
 
   // The form with two checkboxes is not recorded into any UKM events.
   auto entries =
@@ -7135,7 +7135,7 @@ TEST_F(
 
   SeeForm(form);
   SubmitForm(form);
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
 
   // This form only has one non-checkable field, so the local heuristics are
   // not executed.
@@ -7173,7 +7173,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   task_environment_.FastForwardBy(base::Milliseconds(3500));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
 
   auto entries =
       test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
@@ -7275,7 +7275,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   task_environment_.FastForwardBy(base::Milliseconds(9));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
 
   auto entries =
       test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
@@ -7313,7 +7313,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   task_environment_.FastForwardBy(base::Milliseconds(1980000));  // 33m
   base::HistogramTester histogram_tester;
   SubmitForm(form);
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
 
   // Verify FieldInfo UKM event for each field.
   auto entries =
@@ -7968,7 +7968,7 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
     SubmitForm(form);
   }
   // Record Autofill2.FocusedComplexForm UKM event at autofill manager / reset.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
 
   // Verify UKM event for the form.
   auto interacted_entries = test_ukm_recorder().GetEntriesByName(

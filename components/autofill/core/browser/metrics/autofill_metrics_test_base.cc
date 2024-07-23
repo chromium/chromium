@@ -7,6 +7,7 @@
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
@@ -116,7 +117,7 @@ void AutofillMetricsBaseTest::TearDownHelper() {
 }
 
 void AutofillMetricsBaseTest::PurgeUKM() {
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   test_ukm_recorder().Purge();
   autofill_client_->InitializeUKMSources();
 }
