@@ -1083,15 +1083,17 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="2" label="Affiliated android app">
     A credential exists for an affiliated android app but not for the current
-    security origin.
+    security origin. This is provided as a credential sharing affiliation by
+    AffiliationService.
   </int>
   <int value="3" label="Affiliated website">
     A credential exists for an affiliated site but not for the current security
-    origin.
+    origin. This is provided as a credential sharing affiliation by
+    AffiliationService.
   </int>
-  <int value="4" label="Grouped website">
-    A credential exists for a web site, which is grouped with the current domain
-    by the AffiliationService.
+  <int value="4" label="Grouped">
+    A credential exists for another entity, which is grouped with the current
+    domain by the AffiliationService through a grouping affiliation.
   </int>
 </enum>
 

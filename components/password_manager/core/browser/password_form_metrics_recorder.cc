@@ -585,7 +585,7 @@ void PasswordFormMetricsRecorder::RecordMatchedFormType(
       match_type = FormMatchType::kPublicSuffixMatch;
       break;
     case password_manager_util::GetLoginMatchType::kGrouped:
-      match_type = FormMatchType::kGroupedWebsites;
+      match_type = FormMatchType::kGrouped;
       break;
   }
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.MatchedFormType", match_type);
@@ -605,7 +605,7 @@ void PasswordFormMetricsRecorder::RecordPotentialPreferredMatch(
   if (!preferred_match) {
     if (were_grouped_credentials_availible) {
       UMA_HISTOGRAM_ENUMERATION("PasswordManager.PotentialBestMatchFormType",
-                                FormMatchType::kGroupedWebsites);
+                                FormMatchType::kGrouped);
     }
     return;
   }
@@ -624,7 +624,7 @@ void PasswordFormMetricsRecorder::RecordPotentialPreferredMatch(
       match_type = FormMatchType::kPublicSuffixMatch;
       break;
     case password_manager_util::GetLoginMatchType::kGrouped:
-      match_type = FormMatchType::kGroupedWebsites;
+      match_type = FormMatchType::kGrouped;
       break;
   }
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.PotentialBestMatchFormType",
