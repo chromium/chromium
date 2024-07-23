@@ -169,6 +169,10 @@
         <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
       </intent-filter>  # DIFF-ANCHOR: aae22013
     </receiver>  # DIFF-ANCHOR: f1c9c29d
+    <receiver  # DIFF-ANCHOR: c787586e
+        android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskBroadcastReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: c787586e
     <service  # DIFF-ANCHOR: 749391ed
         android:name="com.google.android.gms.cast.framework.ReconnectionService"
         android:exported="false">
@@ -194,6 +198,11 @@
         <action android:name="com.google.firebase.MESSAGING_EVENT"/>
       </intent-filter>  # DIFF-ANCHOR: 69e70070
     </service>  # DIFF-ANCHOR: 2295960c
+    <service  # DIFF-ANCHOR: a550decc
+        android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskJobService"
+        android:exported="false"
+        android:permission="android.permission.BIND_JOB_SERVICE">
+    </service>  # DIFF-ANCHOR: a550decc
     <service  # DIFF-ANCHOR: 0c6c4fd9
         android:name="org.chromium.content.app.PrivilegedProcessService0"
         android:exported="false"

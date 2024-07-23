@@ -850,10 +850,6 @@
         android:name="org.chromium.chrome.browser.webapps.WebApkInstallBroadcastReceiver"
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: 2553238b
-    <receiver  # DIFF-ANCHOR: c787586e
-        android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskBroadcastReceiver"
-        android:exported="false">
-    </receiver>  # DIFF-ANCHOR: c787586e
     <service android:name="androidx.browser.customtabs.PostMessageService"/>
     <service  # DIFF-ANCHOR: 4c2196d9
         android:name="com.google.ipc.invalidation.ticl.android2.channel.GcmRegistrationTaskService"
@@ -988,11 +984,6 @@
         android:name="org.chromium.chrome.browser.tracing.TracingNotificationService"
         android:exported="false">
     </service>  # DIFF-ANCHOR: c26364a8
-    <service  # DIFF-ANCHOR: a550decc
-        android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskJobService"
-        android:exported="false"
-        android:permission="android.permission.BIND_JOB_SERVICE">
-    </service>  # DIFF-ANCHOR: a550decc
     <service  # DIFF-ANCHOR: 2a1cd701
         android:name="org.chromium.components.payments.PaymentDetailsUpdateService"
         android:exported="true">
