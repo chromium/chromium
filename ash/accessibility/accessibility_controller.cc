@@ -16,6 +16,7 @@
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/disable_trackpad_event_rewriter.h"
+#include "ash/accessibility/flash_screen_controller.h"
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/switch_access/point_scan_controller.h"
@@ -1085,6 +1086,8 @@ AccessibilityController::AccessibilityController()
 
   accessibility_notification_controller_ =
       std::make_unique<AccessibilityNotificationController>();
+
+  flash_screen_controller_ = std::make_unique<FlashScreenController>();
 }
 
 AccessibilityController::~AccessibilityController() {

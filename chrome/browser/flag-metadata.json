@@ -2368,6 +2368,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-accessibility-flash-screen-feature",
+    "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
+    "expiry_milestone": 149
+  },
+  {
     "name": "enable-accessibility-include-long-click-action",
     "owners": ["mschillaci@google.com", "//ui/accessibility/OWNERS"],
     "expiry_milestone": 130

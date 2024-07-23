@@ -165,6 +165,37 @@ gfx::Matrix3F ComputeColorVisionFilterMatrix(ColorVisionCorrectionType type,
 
 ColorEnhancementController::ColorEnhancementController() {
   Shell::Get()->AddShellObserver(this);
+
+  // Set up the notification flash color matrix.
+  // TODO(b/341554143): These could be configurable in settings.
+  const float r = 254;
+  const float g = 229;
+  const float b = 154;
+
+  notification_flash_matrix_ = std::make_unique<cc::FilterOperation::Matrix>();
+  // First row: Red.
+  (*notification_flash_matrix_)[0] = r / 255.0;
+  (*notification_flash_matrix_)[1] = 0;
+  (*notification_flash_matrix_)[2] = 0;
+  (*notification_flash_matrix_)[3] = (*notification_flash_matrix_)[4] = 0;
+
+  // Second row: Green.
+  (*notification_flash_matrix_)[5] = 0;
+  (*notification_flash_matrix_)[6] = g / 255.0;
+  (*notification_flash_matrix_)[7] = 0;
+  (*notification_flash_matrix_)[8] = (*notification_flash_matrix_)[9] = 0;
+
+  // Third row: Blue.
+  (*notification_flash_matrix_)[10] = 0;
+  (*notification_flash_matrix_)[11] = 0;
+  (*notification_flash_matrix_)[12] = b / 255.0;
+  (*notification_flash_matrix_)[13] = (*notification_flash_matrix_)[14] = 0;
+
+  // Fourth row: Opacity. Keep as-is.
+  (*notification_flash_matrix_)[15] = (*notification_flash_matrix_)[16] =
+      (*notification_flash_matrix_)[17] = 0;
+  (*notification_flash_matrix_)[18] = 1;
+  (*notification_flash_matrix_)[19] = 0;
 }
 
 ColorEnhancementController::~ColorEnhancementController() {
@@ -225,6 +256,18 @@ void ColorEnhancementController::SetColorVisionCorrectionFilter(
       } else {
         (*cvd_correction_matrix_)[index] = 1;
       }
+    }
+  }
+}
+
+// TODO(b:341554143): Add tests.
+void ColorEnhancementController::FlashScreenForNotification(bool show_flash) {
+  if (!show_flash) {
+    UpdateAllDisplays();
+  } else {
+    for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+      ui::Layer* layer = root_window->layer();
+      layer->SetLayerCustomColorMatrix(*notification_flash_matrix_);
     }
   }
 }

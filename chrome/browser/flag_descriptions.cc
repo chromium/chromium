@@ -1156,6 +1156,12 @@ const char kAccessibilityDisableTrackpadName[] =
 const char kAccessibilityDisableTrackpadDescription[] =
     "Adds a setting that allows the user to disable the built-in trackpad.";
 
+const char kAccessibilityFlashScreenFeatureName[] =
+    "Accessibility feature to flash the screen for each notification";
+const char kAccessibilityFlashScreenFeatureDescription[] =
+    "Allows the user to use a feature which flashes the screen for each "
+    "notification.";
+
 const char kAccessibilityOverscrollSettingFeatureName[] =
     "Adds overscroll to navigate setting";
 const char kAccessibilityOverscrollSettingFeatureDescription[] =

@@ -129,6 +129,8 @@ component("ash") {
     "accessibility/default_accessibility_delegate.h",
     "accessibility/disable_trackpad_event_rewriter.cc",
     "accessibility/disable_trackpad_event_rewriter.h",
+    "accessibility/flash_screen_controller.cc",
+    "accessibility/flash_screen_controller.h",
     "accessibility/magnifier/docked_magnifier_controller.cc",
     "accessibility/magnifier/docked_magnifier_controller.h",
     "accessibility/magnifier/docked_magnifier_controller.h",
