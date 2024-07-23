@@ -70,7 +70,8 @@ enum class InvalidationsExpected {
 // listening.
 class InvalidationListener {
  public:
-  static constexpr char app_id_[] = "com.google.chrome.fcm.invalidations";
+  // Application id for the `GCMDriver` used by invalidations.
+  static constexpr char kFmAppId[] = "com.google.chrome.fcm.invalidations";
   // The pantheon project number was decided by the serverside team.
   // The number is used to deliver invalidations with FCM.
   static constexpr char kProjectNumberEnterprise[] = "1013309121859";
