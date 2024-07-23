@@ -369,6 +369,7 @@ class MemorySaverAggressivenessSettingsInteractiveTest
       const DeepQuery& element,
       MemorySaverModeAggressiveness aggressiveness) {
     return Steps(
+        ScrollIntoView(kPerformanceSettingsPage, element),
         ClickElement(kPerformanceSettingsPage, element),
         WaitForButtonStateChange(kPerformanceSettingsPage, element, true),
         CheckMemorySaverModePrefState(MemorySaverModeState::kEnabled),
@@ -391,6 +392,7 @@ class MemorySaverAggressivenessSettingsInteractiveTest
       MemorySaverModeAggressiveness aggressiveness,
       const base::HistogramTester& histogram_tester) {
     return Steps(
+        ScrollIntoView(kPerformanceSettingsPage, element),
         ClickElement(kPerformanceSettingsPage, element),
         WaitForButtonStateChange(kPerformanceSettingsPage, element, true),
         CheckMemorySaverModeAggressivenessLogged(aggressiveness, 1,
