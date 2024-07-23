@@ -9,6 +9,9 @@ import {CustomizeChromeImpression} from 'chrome://customize-chrome-side-panel.to
 import type {BackgroundCollection, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromeSection} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
+import {CustomizeToolbarClientCallbackRouter, CustomizeToolbarHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar.mojom-webui.js';
+import type {CustomizeToolbarClientRemote, CustomizeToolbarHandlerInterface} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar.mojom-webui.js';
+import {CustomizeToolbarApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar/customize_toolbar_api_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -232,5 +235,138 @@ suite('AppTest', () => {
             flagEnabled);
       });
     });
+  });
+
+  test('isSourceTabFirstPartyNtp should update the cards', async () => {
+    const idsControlledByIsSourceTabFirstPartyNtp = [
+      '#shortcuts',
+      '#modules',
+      '#categoriesPage',
+      '#themesPage',
+      '#wallpaperSearchPage',
+    ];
+
+    const idsNotControlledByIsSourceTabFirstPartyNtp = [
+      '#container',
+      '#overviewPage',
+      '#appearance',
+      '#appearanceElement',
+      '#toolbarButton',
+      '#extensions',
+      '#buttonContainer',
+    ];
+
+    const checkIdsVisibility = (isSourceTabFirstPartyNtp: boolean) => {
+      idsControlledByIsSourceTabFirstPartyNtp.forEach(
+          id => assertEquals(
+              isSourceTabFirstPartyNtp,
+              !!customizeChromeApp.shadowRoot!.querySelector(id)));
+      idsNotControlledByIsSourceTabFirstPartyNtp.forEach(
+          id => assertTrue(!!customizeChromeApp.shadowRoot!.querySelector(id)));
+    };
+
+    await[true, false].forEach(async b => {
+      callbackRouter.attachedTabStateUpdated(b);
+      await microtasksFinished();
+      checkIdsVisibility(b);
+    });
+  });
+
+  suite('PageTransitions', () => {
+    let toolbarCustomizationHandler: TestMock<CustomizeToolbarHandlerInterface>;
+    let customizeToolbarCallbackRouterRemote: CustomizeToolbarClientRemote;
+
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        'toolbarCustomizationEnabled': true,
+      });
+
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+      handler = installMock(
+          CustomizeChromePageHandlerRemote,
+          (mock: CustomizeChromePageHandlerRemote) =>
+              CustomizeChromeApiProxy.setInstance(
+                  mock, new CustomizeChromePageCallbackRouter()));
+
+      handler.setResultFor('getBackgroundImages', new Promise(() => {}));
+      handler.setResultFor('getBackgroundCollections', new Promise(() => {}));
+
+      callbackRouter = CustomizeChromeApiProxy.getInstance()
+                           .callbackRouter.$.bindNewPipeAndPassRemote();
+
+      toolbarCustomizationHandler = installMock(
+          CustomizeToolbarHandlerRemote,
+          (mock: CustomizeToolbarHandlerRemote) =>
+              CustomizeToolbarApiProxy.setInstance(
+                  mock, new CustomizeToolbarClientCallbackRouter()));
+      toolbarCustomizationHandler.setResultFor(
+          'listActions', Promise.resolve([]));
+      toolbarCustomizationHandler.setResultFor(
+          'listCategories', Promise.resolve([]));
+      toolbarCustomizationHandler.setResultFor(
+          'getIsCustomized', Promise.resolve({customized: false}));
+
+      customizeToolbarCallbackRouterRemote =
+          CustomizeToolbarApiProxy.getInstance()
+              .callbackRouter.$.bindNewPipeAndPassRemote();
+      assertTrue(!!customizeToolbarCallbackRouterRemote);
+
+      customizeChromeApp = document.createElement('customize-chrome-app');
+      document.body.appendChild(customizeChromeApp);
+
+      metrics = fakeMetricsPrivate();
+    });
+
+    test(
+        'page transitions back to overview if not supported by non first party',
+        async () => {
+          // start on the overview page
+          assertTrue(
+              customizeChromeApp.$.overviewPage.classList.contains('selected'));
+          assertEquals(document.body, document.activeElement);
+
+          // Send event for edit theme being clicked.
+          customizeChromeApp.$.appearanceElement.dispatchEvent(
+              new Event('edit-theme-click'));
+          await microtasksFinished();
+
+          // Current page should now be categories.
+          assertTrue(customizeChromeApp.$.categoriesPage.classList.contains(
+              'selected'));
+          assertEquals(customizeChromeApp, document.activeElement);
+
+          callbackRouter.attachedTabStateUpdated(false);
+          await microtasksFinished();
+
+          assertTrue(
+              customizeChromeApp.$.overviewPage.classList.contains('selected'));
+          assertEquals(document.body, document.activeElement);
+        });
+
+    test(
+        'page does not transition back to overview if supported by non first ' +
+            'party',
+        async () => {
+          assertTrue(
+              !!customizeChromeApp.shadowRoot!.querySelector('#toolbarButton'));
+
+          // Send event for toolbar button being clicked.
+          customizeChromeApp.shadowRoot!.querySelector('#toolbarButton')!
+              .dispatchEvent(new Event('click'));
+          await microtasksFinished();
+          // Current page should now be toolbar.
+          assertTrue(
+              customizeChromeApp.shadowRoot!.querySelector('#toolbarPage')!
+                  .classList.contains('selected'));
+
+          callbackRouter.attachedTabStateUpdated(false);
+          await microtasksFinished();
+
+          // Current page should now be toolbar.
+          assertTrue(
+              customizeChromeApp.shadowRoot!.querySelector('#toolbarPage')!
+                  .classList.contains('selected'));
+        });
   });
 });
