@@ -44,6 +44,7 @@ namespace commerce {
 
 class ShoppingService;
 struct PriceInsightsInfo;
+struct ProductSpecifications;
 
 class ShoppingServiceHandler
     : public shopping_service::mojom::ShoppingServiceHandler,
@@ -205,6 +206,11 @@ class ShoppingServiceHandler
   void OnGetPriceTrackingStatusForCurrentUrl(
       GetPriceTrackingStatusForCurrentUrlCallback callback,
       bool tracked);
+  void OnGetProductSpecificationsForUrls(
+      std::vector<GURL> input_urls,
+      GetProductSpecificationsForUrlsCallback callback,
+      std::vector<uint64_t> ids,
+      std::optional<ProductSpecifications> specs);
 
   mojo::Remote<shopping_service::mojom::Page> remote_page_;
   mojo::Receiver<shopping_service::mojom::ShoppingServiceHandler> receiver_;
