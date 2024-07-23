@@ -165,9 +165,9 @@ export class ViewerToolbarElement extends PolymerElement {
       // </if> enable_ink
 
       // <if expr="enable_pdf_ink2">
-      showInk2AnnotationButton_: {
+      showInk2Buttons_: {
         type: Boolean,
-        computed: 'computeShowInk2AnnotationButton_(' +
+        computed: 'computeShowInk2Buttons_(' +
             'pdfAnnotationsEnabled, pdfInk2Enabled)',
       },
       // </if>
@@ -281,7 +281,7 @@ export class ViewerToolbarElement extends PolymerElement {
 
 
   // <if expr="enable_pdf_ink2">
-  private computeShowInk2AnnotationButton_(): boolean {
+  private computeShowInk2Buttons_(): boolean {
     return this.pdfInk2Enabled && this.pdfAnnotationsEnabled;
   }
   // </if>
@@ -497,34 +497,33 @@ export class ViewerToolbarElement extends PolymerElement {
   }
 
   private onUndoClick_() {
-    if (this.pdfInk2Enabled) {
-      assert(this.currentStroke > 0);
-      this.pluginController_.undo();
-      this.currentStroke--;
+    assert(this.pdfInk2Enabled);
+    assert(this.currentStroke > 0);
 
-      this.canUndoAnnotation_ = this.currentStroke > 0;
-      if (!this.canUndoAnnotation_) {
-        this.dispatchEvent(new CustomEvent(
-            'can-undo-changed',
-            {detail: false, bubbles: true, composed: true}));
-      }
-      this.canRedoAnnotation_ = true;
+    this.pluginController_.undo();
+    this.currentStroke--;
+
+    this.canUndoAnnotation_ = this.currentStroke > 0;
+    if (!this.canUndoAnnotation_) {
+      this.dispatchEvent(new CustomEvent(
+          'can-undo-changed', {detail: false, bubbles: true, composed: true}));
     }
+    this.canRedoAnnotation_ = true;
   }
 
   private onRedoClick_() {
-    if (this.pdfInk2Enabled) {
-      assert(this.currentStroke < this.mostRecentStroke);
-      this.pluginController_.redo();
-      this.currentStroke++;
+    assert(this.pdfInk2Enabled);
+    assert(this.currentStroke < this.mostRecentStroke);
 
-      if (!this.canUndoAnnotation_) {
-        this.canUndoAnnotation_ = true;
-        this.dispatchEvent(new CustomEvent(
-            'can-undo-changed', {detail: true, bubbles: true, composed: true}));
-      }
-      this.canRedoAnnotation_ = this.currentStroke < this.mostRecentStroke;
+    this.pluginController_.redo();
+    this.currentStroke++;
+
+    if (!this.canUndoAnnotation_) {
+      this.canUndoAnnotation_ = true;
+      this.dispatchEvent(new CustomEvent(
+          'can-undo-changed', {detail: true, bubbles: true, composed: true}));
     }
+    this.canRedoAnnotation_ = this.currentStroke < this.mostRecentStroke;
   }
   // </if>
 
