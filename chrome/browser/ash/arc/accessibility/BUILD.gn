@@ -94,7 +94,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/shelf/app_service",
     "//chrome/test:test_support",
     "//components/exo",
     "//components/exo:test_support",

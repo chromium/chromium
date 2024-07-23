@@ -281,6 +281,7 @@ source_set("app_service") {
       "//chrome/browser/ui/ash/calendar",
       "//chrome/browser/ui/ash/multi_user",
       "//chrome/browser/ui/ash/shelf",
+      "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/login/login_state",
@@ -343,6 +344,7 @@ source_set("app_service") {
       "//chrome/browser/ash/system_web_apps/apps/media_app",
       "//chrome/browser/ui/ash/calendar",
       "//chrome/browser/ui/ash/shelf",
+      "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/ash/system_web_apps",
     ]
   }
