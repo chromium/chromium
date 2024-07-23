@@ -790,6 +790,12 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
         0, static_cast<int>(per_account_size * num_visible_rows));
   }
   if (!has_mismatches) {
+    // We already had some spacing between the scroller and the separator at the
+    // top but we need some additional spacing to match the bottom margin, which
+    // is slightly larger in single IDP case.
+    account_scroll_view->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        is_multi_idp ? kVerticalSpacing - kTopBottomPadding : kVerticalSpacing,
+        0, 0, 0)));
     return account_scroll_view;
   }
 
@@ -797,8 +803,12 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
   // mismatches. This allows us to show accounts at the top while still always
   // showing mismatches in the UI before any scrolling occurs.
   auto container = std::make_unique<views::View>();
+  // We already had some spacing between the scroller and the separator at the
+  // top but we need some additional spacing to match the bottom margin.
   container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets::TLBR(kVerticalSpacing - kTopBottomPadding, 0, 0, 0),
+      kVerticalSpacing));
   if (num_rows > 0) {
     container->AddChildView(std::move(account_scroll_view));
     container->AddChildView(std::make_unique<views::Separator>());
@@ -946,8 +956,13 @@ AccountSelectionBubbleView::CreateSingleReturningAccountChooser(
   }
   CHECK(returning_account && returning_idp);
   auto content = std::make_unique<views::View>();
+  // Add spacing at the top to make the total spacing between it and the
+  // separator be kVertical spacing, and also add kVertical spacing between
+  // children since there is a separator between them.1
   content->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets::TLBR(kVerticalSpacing - kTopBottomPadding, 0, 0, 0),
+      kVerticalSpacing));
   std::optional<std::u16string> last_used_string =
       returning_account->last_used_timestamp
           ? std::make_optional<std::u16string>(l10n_util::GetStringUTF16(
