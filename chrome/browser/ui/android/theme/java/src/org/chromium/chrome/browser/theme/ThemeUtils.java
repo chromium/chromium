@@ -11,6 +11,7 @@ import android.graphics.Color;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
@@ -25,7 +26,15 @@ import org.chromium.ui.util.ColorUtils;
 
 /** Utility methods for theme colors. */
 public class ThemeUtils {
-    private static final float LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA = 0.2f;
+    /**
+     * Alpha used when TextBox color is computed by brightening the Toolbar color using Color.WHITE.
+     */
+    @VisibleForTesting static final float LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA = 0.2f;
+
+    /**
+     * Alpha used when TextBox color is computed by darkening the Toolbar color using Color.BLACK.
+     */
+    @VisibleForTesting static final float LOCATION_BAR_TRANSPARENT_BACKGROUND_DARKEN_ALPHA = 0.1f;
 
     /**
      * The background color to use for a given {@link Tab}. This will either be the color specified
@@ -48,6 +57,7 @@ public class ThemeUtils {
 
     /**
      * Determine the text box background color given the current tab.
+     *
      * @param context {@link Context} used to retrieve colors.
      * @param tab The current {@link Tab}
      * @param backgroundColor The color of the toolbar background.
@@ -56,10 +66,11 @@ public class ThemeUtils {
     public static @ColorInt int getTextBoxColorForToolbarBackground(
             Context context, @Nullable Tab tab, @ColorInt int backgroundColor) {
         boolean isIncognito = tab != null && tab.isIncognito();
+        boolean isCustomTab = tab != null && tab.isCustomTab();
         @ColorInt
         int defaultColor =
                 getTextBoxColorForToolbarBackgroundInNonNativePage(
-                        context, backgroundColor, isIncognito);
+                        context, backgroundColor, isIncognito, isCustomTab);
         NativePage nativePage = tab != null ? tab.getNativePage() : null;
         return nativePage != null
                 ? nativePage.getToolbarTextBoxBackgroundColor(defaultColor)
@@ -68,13 +79,15 @@ public class ThemeUtils {
 
     /**
      * Determine the text box background color given a toolbar background color
+     *
      * @param context {@link Context} used to retrieve colors.
      * @param color The color of the toolbar background.
      * @param isIncognito Whether or not the color is used for incognito mode.
+     * @param isCustomTab Whether TextBox color is requested for Custom Tab.
      * @return The base color for the textbox given a toolbar background color.
      */
     public static @ColorInt int getTextBoxColorForToolbarBackgroundInNonNativePage(
-            Context context, @ColorInt int color, boolean isIncognito) {
+            Context context, @ColorInt int color, boolean isIncognito, boolean isCustomTab) {
         // Text box color on default toolbar background in incognito mode is a pre-defined color.
         if (isIncognito) {
             return context.getColor(R.color.toolbar_text_box_background_incognito);
@@ -87,16 +100,23 @@ public class ThemeUtils {
             return ChromeColors.getSurfaceColor(context, tabElevation);
         }
 
-        // TODO(mdjones): Clean up shouldUseOpaqueTextboxBackground logic.
-        if (ColorUtils.shouldUseOpaqueTextboxBackground(color)) return Color.WHITE;
-
-        return ColorUtils.getColorWithOverlay(
-                color, Color.WHITE, LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA);
+        if (ColorUtils.shouldUseOpaqueTextboxBackground(color)) {
+            if (isCustomTab) {
+                return ColorUtils.getColorWithOverlay(
+                        color, Color.BLACK, LOCATION_BAR_TRANSPARENT_BACKGROUND_DARKEN_ALPHA);
+            }
+            // TODO(mdjones): Clean up shouldUseOpaqueTextboxBackground logic.
+            return Color.WHITE;
+        } else {
+            return ColorUtils.getColorWithOverlay(
+                    color, Color.WHITE, LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA);
+        }
     }
 
     /**
-     * Returns the icon tint for based on the given parameters. Does not adjust color based on
-     * night mode as this may conflict with toolbar theme colors.
+     * Returns the icon tint for based on the given parameters. Does not adjust color based on night
+     * mode as this may conflict with toolbar theme colors.
+     *
      * @param context The {@link Context} used to retrieve colors.
      * @param useLight Whether or not the icon tint should be light.
      * @return The {@link ColorStateList} for the icon tint of themed toolbar.
