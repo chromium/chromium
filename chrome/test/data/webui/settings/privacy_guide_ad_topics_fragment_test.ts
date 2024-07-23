@@ -6,17 +6,19 @@ import 'chrome://settings/lazy_load.js';
 
 import type {PrivacyGuideAdTopicsFragmentElement} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, PrivacySandboxBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, PrivacySandboxBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPrivacySandboxBrowserProxy} from './test_privacy_sandbox_browser_proxy.js';
 
 suite('AdTopicsFragment', function() {
   let fragment: PrivacyGuideAdTopicsFragmentElement;
   let settingsPrefs: SettingsPrefsElement;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -26,11 +28,11 @@ suite('AdTopicsFragment', function() {
   setup(function() {
     testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
     PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
     assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
-
     fragment = document.createElement('privacy-guide-ad-topics-fragment');
     fragment.prefs = settingsPrefs.prefs!;
     document.body.appendChild(fragment);
@@ -89,5 +91,83 @@ suite('AdTopicsFragment', function() {
     assertTrue(!!adTopicsToggle);
     adTopicsToggle.click();
     return testPrivacySandboxBrowserProxy.whenCalled('topicsToggleChanged');
+  });
+
+  test('AdTopicsCardSettingsStatesOffToOff', async function() {
+    fragment.setPrefValue('privacy_sandbox.m1.topics_enabled', false);
+    await flushTasks();
+
+    // Trigger view-enter-start so that initial state of pref can be updated.
+    fragment.dispatchEvent(
+        new CustomEvent('view-enter-start', {bubbles: true, composed: true}));
+
+    // The fragment is informed that it becomes invisible by receiving a
+    // view-exit-finish event.
+    fragment.dispatchEvent(
+        new CustomEvent('view-exit-finish', {bubbles: true, composed: true}));
+    const settingState = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideSettingsStatesHistogram');
+    assertEquals(PrivacyGuideSettingsStates.AD_TOPICS_OFF_TO_OFF, settingState);
+  });
+
+  test('AdTopicsCardSettingsStatesOffToOn', async function() {
+    fragment.setPrefValue('privacy_sandbox.m1.topics_enabled', false);
+    await flushTasks();
+
+    // Trigger view-enter-start so that initial state of pref can be updated.
+    fragment.dispatchEvent(
+        new CustomEvent('view-enter-start', {bubbles: true, composed: true}));
+
+    const adTopicsToggle =
+        fragment.shadowRoot!.querySelector('settings-toggle-button');
+    assertTrue(!!adTopicsToggle);
+    adTopicsToggle.click();
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals('Settings.PrivacyGuide.ChangeAdTopicsOn', actionResult);
+    // The fragment is informed that it becomes invisible by receiving a
+    // view-exit-finish event.
+    fragment.dispatchEvent(
+        new CustomEvent('view-exit-finish', {bubbles: true, composed: true}));
+    const settingState = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideSettingsStatesHistogram');
+    assertEquals(PrivacyGuideSettingsStates.AD_TOPICS_OFF_TO_ON, settingState);
+  });
+
+  test('AdTopicsCardSettingsStatesOnToOff', async function() {
+    fragment.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
+    await flushTasks();
+    // Trigger view-enter-start so that initial state of pref can be updated.
+    fragment.dispatchEvent(
+        new CustomEvent('view-enter-start', {bubbles: true, composed: true}));
+    const adTopicsToggle =
+        fragment.shadowRoot!.querySelector('settings-toggle-button');
+    assertTrue(!!adTopicsToggle);
+    adTopicsToggle.click();
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals('Settings.PrivacyGuide.ChangeAdTopicsOff', actionResult);
+    // The fragment is informed that it becomes invisible by receiving a
+    // view-exit-finish event.
+    fragment.dispatchEvent(
+        new CustomEvent('view-exit-finish', {bubbles: true, composed: true}));
+    const settingState = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideSettingsStatesHistogram');
+    assertEquals(PrivacyGuideSettingsStates.AD_TOPICS_ON_TO_OFF, settingState);
+  });
+
+  test('AdTopicsCardSettingsStatesOnToOn', async function() {
+    fragment.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
+    await flushTasks();
+    // Trigger view-enter-start so that initial state of pref can be updated.
+    fragment.dispatchEvent(
+        new CustomEvent('view-enter-start', {bubbles: true, composed: true}));
+    // The fragment is informed that it becomes invisible by receiving a
+    // view-exit-finish event.
+    fragment.dispatchEvent(
+        new CustomEvent('view-exit-finish', {bubbles: true, composed: true}));
+    const settingState = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideSettingsStatesHistogram');
+    assertEquals(PrivacyGuideSettingsStates.AD_TOPICS_ON_TO_ON, settingState);
   });
 });

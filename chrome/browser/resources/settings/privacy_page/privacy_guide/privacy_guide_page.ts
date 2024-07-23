@@ -65,6 +65,8 @@ function eligibilityToRecord(step: PrivacyGuideStep):
       return PrivacyGuideStepsEligibleAndReached.COOKIES_ELIGIBLE;
     case PrivacyGuideStep.SAFE_BROWSING:
       return PrivacyGuideStepsEligibleAndReached.SAFE_BROWSING_ELIGIBLE;
+    case PrivacyGuideStep.AD_TOPICS:
+      return PrivacyGuideStepsEligibleAndReached.AD_TOPICS_ELIGIBLE;
     case PrivacyGuideStep.COMPLETION:
       return PrivacyGuideStepsEligibleAndReached.COMPLETION_ELIGIBLE;
     default:
@@ -302,8 +304,17 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       [
         PrivacyGuideStep.AD_TOPICS,
         {
-          // TODO(crbug.com/331970504): Add Metrics.
           nextStep: PrivacyGuideStep.COMPLETION,
+          onForwardNavigation: () => {
+            this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
+                PrivacyGuideInteractions.AD_TOPICS_NEXT_BUTTON);
+            this.metricsBrowserProxy_.recordAction(
+                'Settings.PrivacyGuide.NextClickAdTopics');
+          },
+          onBackwardNavigation: () => {
+            this.metricsBrowserProxy_.recordAction(
+                'Settings.PrivacyGuide.BackClickAdTopics');
+          },
           previousStep: PrivacyGuideStep.COOKIES,
           isAvailable: () => this.shouldShowAdTopicsCard_,
         },
@@ -399,11 +410,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       const component = this.privacyGuideStepToComponentsMap_.get(step);
       assert(component);
       if (!component.isAvailable()) {
-        continue;
-      }
-      // TODO(crbug.com/331970504): Add Metrics for Eligibility and Completion
-      // of Ad Topics Card.
-      if (step === PrivacyGuideStep.AD_TOPICS) {
         continue;
       }
       this.metricsBrowserProxy_

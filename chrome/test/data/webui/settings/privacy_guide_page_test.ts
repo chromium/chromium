@@ -9,7 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SettingsPrivacyGuideDialogElement, SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
 import {CookiePrimarySetting, PrivacyGuideStep, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SyncStatus} from 'chrome://settings/settings.js';
-import {HatsBrowserProxyImpl, TrustSafetyInteraction, CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, TrustSafetyInteraction, CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideStepsEligibleAndReached, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -1021,6 +1021,19 @@ suite('AdTopicsCardNavigations', function() {
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
+  test('BackNavigationMetrics', async function() {
+    await navigateToStep(PrivacyGuideStep.AD_TOPICS);
+    assertAdTopicsCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+
+    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
+    await flushTasks();
+
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals('Settings.PrivacyGuide.BackClickAdTopics', actionResult);
+  });
+
   test('BackNavigationCookiesNotShown', async function() {
     await navigateToStep(PrivacyGuideStep.AD_TOPICS);
     assertAdTopicsCardVisible(
@@ -1079,12 +1092,45 @@ suite('AdTopicsCardNavigations', function() {
         page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideNextNavigationHistogram');
+    assertEquals(PrivacyGuideInteractions.AD_TOPICS_NEXT_BUTTON, result);
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals('Settings.PrivacyGuide.NextClickAdTopics', actionResult);
+
     await microtasksFinished();
     assertCompletionCardVisible(page);
     // HaTS gets triggered if the user navigates to the completion page.
     const interaction =
         await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
     assertEquals(TrustSafetyInteraction.COMPLETED_PRIVACY_GUIDE, interaction);
+  });
+
+  test('AdTopicsEligibleAndReached', async function() {
+    Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
+    await flushTasks();
+
+    await clickNextOnWelcomeStep(page);
+
+    await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideStepsEligibleAndReachedHistogram');
+
+    let eligibleAndReachedSteps = new Set(testMetricsBrowserProxy.getArgs(
+        'recordPrivacyGuideStepsEligibleAndReachedHistogram'));
+    assertTrue(eligibleAndReachedSteps.has(
+        PrivacyGuideStepsEligibleAndReached.AD_TOPICS_ELIGIBLE));
+
+    await navigateToStep(PrivacyGuideStep.AD_TOPICS);
+
+    await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideStepsEligibleAndReachedHistogram');
+
+    eligibleAndReachedSteps = new Set(testMetricsBrowserProxy.getArgs(
+        'recordPrivacyGuideStepsEligibleAndReachedHistogram'));
+    assertTrue(eligibleAndReachedSteps.has(
+        PrivacyGuideStepsEligibleAndReached.AD_TOPICS_REACHED));
   });
 });
 

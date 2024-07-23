@@ -351,6 +351,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Privacy Sandbox Completion Link"/>
   <int value="10" label="Search Suggestions Next Button"/>
   <int value="11" label="Tracking Protection Completion Link"/>
+  <int value="12" label="Ad Topics Next Button"/>
 </enum>
 
 <enum name="SettingsPrivacyGuideSettingsStates">
@@ -374,6 +375,10 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Search Suggestions Turned Off"/>
   <int value="18" label="Search Suggestions Turned On"/>
   <int value="19" label="Search Suggestions Remain Off"/>
+  <int value="20" label="Ad Topics Remain On"/>
+  <int value="21" label="Ad Topics Turned Off"/>
+  <int value="22" label="Ad Topics Turned On"/>
+  <int value="23" label="Ad Topics Remain Off"/>
 </enum>
 
 <enum name="SettingsPrivacyGuideStepsEligibleAndReached">
@@ -389,6 +394,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Completion card is reached"/>
   <int value="10" label="Search Suggestions card is eligible to be shown"/>
   <int value="11" label="Search Suggestions card is reached"/>
+  <int value="12" label="Ad Topics card is eligible to be shown"/>
+  <int value="13" label="Ad Topics card is reached"/>
 </enum>
 
 <enum name="SettingsPrivacySandboxDialogDisplayHostHash">

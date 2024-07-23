@@ -33066,6 +33066,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacyGuide.BackClickAdTopics">
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <description>
+    User clicks the back button on the ad topics card in Privacy guide.
+  </description>
+</action>
+
 <action name="Settings.PrivacyGuide.BackClickCompletion">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
@@ -33117,6 +33125,18 @@ should be able to be added at any place in this file.
   <description>
     User clicks the back button on the search suggestions card in Privacy guide.
   </description>
+</action>
+
+<action name="Settings.PrivacyGuide.ChangeAdTopicsOff">
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <description>User changes Ad Topics to off in Privacy guide.</description>
+</action>
+
+<action name="Settings.PrivacyGuide.ChangeAdTopicsOn">
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <description>User changes Ad Topics to on in Privacy guide.</description>
 </action>
 
 <action name="Settings.PrivacyGuide.ChangeCookiesBlock3P">
@@ -33224,6 +33244,14 @@ should be able to be added at any place in this file.
   <description>
     User clicks on the Tracking Protection link in the completion step of
     Privacy Guide.
+  </description>
+</action>
+
+<action name="Settings.PrivacyGuide.NextClickAdTopics">
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <description>
+    User clicks the next button on the ad topics card in Privacy guide.
   </description>
 </action>
 
