@@ -1023,6 +1023,11 @@ class MockReportingService : public net::ReportingService {
     NOTREACHED_IN_MIGRATION();
   }
 
+  void SetEnterpriseReportingEndpoints(
+      const base::flat_map<std::string, GURL>& endpoints) override {
+    NOTREACHED_NORETURN();
+  }
+
   void SendReportsAndRemoveSource(
       const base::UnguessableToken& reporting_source) override {
     NOTREACHED_IN_MIGRATION();

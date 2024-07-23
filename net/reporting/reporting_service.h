@@ -107,6 +107,12 @@ class NET_EXPORT ReportingService {
       const IsolationInfo& isolation_info,
       const base::flat_map<std::string, std::string>& endpoints) = 0;
 
+  // Configures reporting endpoints set by the ReportingEndpoints enterprise
+  // policy.
+  // `endpoints` is a mapping of endpoint names to URLs.
+  virtual void SetEnterpriseReportingEndpoints(
+      const base::flat_map<std::string, GURL>& endpoints) = 0;
+
   // Attempts to send any queued reports and removes all associated
   // configuration for `reporting_source`. This is called when a source is
   // destroyed.

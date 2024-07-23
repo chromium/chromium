@@ -1212,6 +1212,13 @@ interface NetworkContext {
       url.mojom.Origin origin, IsolationInfo isolation_info,
       map<string,string> endpoints);
 
+  // Configures reporting endpoints set by the ReportingEndpoints enterprise
+  // policy.
+  // `endpoints` is a mapping of endpoint name to URL (URLs will be rejected if
+  // they fail to parse or are not secure).
+  SetEnterpriseReportingEndpoints(
+      map<string,url.mojom.Url> endpoints);
+
   // Queues any outstanding reports for a single |reporting_source| (which
   // must not be empty), and removes the reporting endpoint configuration for
   // that source. This is called when the reporting source (document or worker)

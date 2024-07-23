@@ -183,6 +183,11 @@ class ProfileNetworkContextService
 
   void UpdateCorsNonWildcardRequestHeadersSupport();
 
+#if BUILDFLAG(ENABLE_REPORTING)
+  base::flat_map<std::string, GURL> GetEnterpriseReportingEndpoints() const;
+  void UpdateEnterpriseReportingEndpoints();
+#endif
+
   // Creates parameters for the NetworkContext. Use |in_memory| instead of
   // |profile_->IsOffTheRecord()| because sometimes normal profiles want off the
   // record partitions (e.g. for webview tag).
