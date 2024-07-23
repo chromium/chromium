@@ -81,8 +81,6 @@
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/kiosk_autolaunch_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/kiosk_enable_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
@@ -604,12 +602,6 @@ void ExistingUserController::OnGaiaScreenReady() {
   StartAutoLoginTimer();
 }
 
-void ExistingUserController::OnStartKioskEnableScreen() {
-  KioskChromeAppManager::Get()->GetConsumerKioskAutoLaunchStatus(base::BindOnce(
-      &ExistingUserController::OnConsumerKioskAutoLaunchCheckCompleted,
-      weak_factory_.GetWeakPtr()));
-}
-
 void ExistingUserController::SetDisplayEmail(const std::string& email) {
   display_email_ = email;
 }
@@ -638,18 +630,6 @@ bool ExistingUserController::IsUserSigninCompleted() const {
 void ExistingUserController::LocalStateChanged(
     user_manager::UserManager* user_manager) {
   DeviceSettingsChanged();
-}
-
-void ExistingUserController::OnConsumerKioskAutoLaunchCheckCompleted(
-    KioskChromeAppManager::ConsumerKioskAutoLaunchStatus status) {
-  if (status ==
-      KioskChromeAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable) {
-    ShowKioskEnableScreen();
-  }
-}
-
-void ExistingUserController::ShowKioskEnableScreen() {
-  GetLoginDisplayHost()->StartWizard(KioskEnableScreenView::kScreenId);
 }
 
 void ExistingUserController::ShowEncryptionMigrationScreen(
