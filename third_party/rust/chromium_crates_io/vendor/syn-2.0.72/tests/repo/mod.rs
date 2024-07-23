@@ -15,13 +15,41 @@ use std::path::{Path, PathBuf};
 use tar::Archive;
 use walkdir::{DirEntry, WalkDir};
 
-const REVISION: &str = "becebb3158149a115cad8a402612e25436a7e37b";
+const REVISION: &str = "5069856495870486134dd2ca0b0e2516308c5c2a";
 
 #[rustfmt::skip]
 static EXCLUDE_FILES: &[&str] = &[
+    // TODO: parenthesization of `{ (match () {})() }`
+    "compiler/rustc_lint/src/context/diagnostics.rs",
+
+    // TODO: `unsafe static`, `safe fn`
+    // https://github.com/dtolnay/syn/issues/1675
+    "src/tools/rustfmt/tests/target/unsafe_extern_blocks.rs",
+    "tests/rustdoc/unsafe-extern-blocks.rs",
+    "tests/ui/rust-2024/unsafe-extern-blocks/safe-items.rs",
+
+    // TODO: unsafe attributes: `#[unsafe(path::to)]`
+    // https://github.com/dtolnay/syn/issues/1710
+    "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/0213_metas.rs",
+    "src/tools/rustfmt/tests/target/unsafe_attributes.rs",
+    "tests/ui/attributes/unsafe/unsafe-attributes.rs",
+    "tests/ui/rust-2024/unsafe-attributes/unsafe-attribute-marked.rs",
+
+    // TODO: vararg in function pointer type: `extern fn(_: *mut _, _: ...)`
+    // https://github.com/dtolnay/syn/issues/1711
+    "library/std/src/sys/pal/uefi/helpers.rs",
+
     // TODO: explicit tail calls: `become _g()`
     // https://github.com/dtolnay/syn/issues/1501
+    "src/tools/miri/tests/fail/tail_calls/cc-mismatch.rs",
+    "src/tools/miri/tests/fail/tail_calls/signature-mismatch-arg.rs",
+    "src/tools/miri/tests/pass/tail_call.rs",
     "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/0209_become_expr.rs",
+    "tests/mir-opt/tail_call_drops.rs",
+    "tests/ui/explicit-tail-calls/ctfe-arg-good-borrow.rs",
+    "tests/ui/explicit-tail-calls/ctfe-arg-move.rs",
+    "tests/ui/explicit-tail-calls/ctfe-collatz-multi-rec.rs",
+    "tests/ui/explicit-tail-calls/drop-order.rs",
     "tests/ui/explicit-tail-calls/return-lifetime-sub.rs",
 
     // TODO: non-lifetime binders: `where for<'a, T> &'a Struct<T>: Trait`
@@ -37,6 +65,7 @@ static EXCLUDE_FILES: &[&str] = &[
     // TODO: return type notation: `where T: Trait<method(): Send>`
     // https://github.com/dtolnay/syn/issues/1434
     "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/0208_associated_return_type_bounds.rs",
+    "src/tools/rustfmt/tests/target/return-type-notation.rs",
     "tests/ui/associated-type-bounds/return-type-notation/basic.rs",
     "tests/ui/associated-type-bounds/return-type-notation/unpretty-parenthesized.rs",
     "tests/ui/feature-gates/feature-gate-return_type_notation.rs",
@@ -62,7 +91,9 @@ static EXCLUDE_FILES: &[&str] = &[
 
     // TODO: `!` as a pattern
     // https://github.com/dtolnay/syn/issues/1546
+    "tests/mir-opt/building/match/never_patterns.rs",
     "tests/ui/rfcs/rfc-0000-never_patterns/diverges.rs",
+    "tests/ui/rfcs/rfc-0000-never_patterns/use-bindings.rs",
 
     // TODO: async trait bounds: `impl async Fn()`
     // https://github.com/dtolnay/syn/issues/1628
@@ -79,6 +110,7 @@ static EXCLUDE_FILES: &[&str] = &[
     "tests/ui/async-await/async-closures/captures.rs",
     "tests/ui/async-await/async-closures/constrained-but-no-upvars-yet.rs",
     "tests/ui/async-await/async-closures/drop.rs",
+    "tests/ui/async-await/async-closures/force-move-due-to-inferred-kind.rs",
     "tests/ui/async-await/async-closures/mangle.rs",
     "tests/ui/async-await/async-closures/moro-example.rs",
     "tests/ui/async-await/async-closures/move-is-async-fn.rs",
@@ -104,7 +136,7 @@ static EXCLUDE_FILES: &[&str] = &[
     // https://github.com/dtolnay/syn/issues/1630
     "src/tools/rustfmt/tests/source/postfix-match/pf-match.rs",
     "src/tools/rustfmt/tests/target/postfix-match/pf-match.rs",
-    "tests/pretty/postfix-match.rs",
+    "tests/pretty/postfix-match/simple-matches.rs",
     "tests/ui/match/postfix-match/no-unused-parens.rs",
     "tests/ui/match/postfix-match/pf-match-chain.rs",
     "tests/ui/match/postfix-match/postfix-match.rs",
@@ -112,10 +144,23 @@ static EXCLUDE_FILES: &[&str] = &[
     // TODO: delegation
     // https://github.com/dtolnay/syn/issues/1580
     "tests/pretty/delegation.rs",
+    "tests/ui/delegation/body-identity-glob.rs",
+    "tests/ui/delegation/body-identity-list.rs",
     "tests/ui/delegation/explicit-paths-in-traits-pass.rs",
     "tests/ui/delegation/explicit-paths-pass.rs",
     "tests/ui/delegation/explicit-paths-signature-pass.rs",
+    "tests/ui/delegation/fn-header.rs",
+    "tests/ui/delegation/glob-glob.rs",
+    "tests/ui/delegation/glob-override.rs",
+    "tests/ui/delegation/glob.rs",
+    "tests/ui/delegation/impl-trait.rs",
+    "tests/ui/delegation/list.rs",
+    "tests/ui/delegation/macro-inside-glob.rs",
+    "tests/ui/delegation/macro-inside-list.rs",
+    "tests/ui/delegation/method-call-priority.rs",
     "tests/ui/delegation/parse.rs",
+    "tests/ui/delegation/rename.rs",
+    "tests/ui/delegation/self-coercion.rs",
 
     // TODO: for await
     // https://github.com/dtolnay/syn/issues/1631
@@ -133,6 +178,9 @@ static EXCLUDE_FILES: &[&str] = &[
     // TODO: `|| .. .method()`
     "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/0208_closure_range_method_call.rs",
     "src/tools/rustfmt/tests/source/issue-4808.rs",
+
+    // Several of the above
+    "tests/ui/unpretty/expanded-exhaustive.rs",
 
     // Compile-fail expr parameter in const generic position: f::<1 + 2>()
     "tests/ui/const-generics/early/closing-args-token.rs",
@@ -234,7 +282,7 @@ static EXCLUDE_FILES: &[&str] = &[
     // Placeholder syntax for "throw expressions"
     "compiler/rustc_errors/src/translation.rs",
     "compiler/rustc_expand/src/module.rs",
-    "compiler/rustc_infer/src/infer/error_reporting/need_type_info.rs",
+    "compiler/rustc_infer/src/infer/need_type_info.rs",
     "src/tools/clippy/tests/ui/needless_return.rs",
     "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/0204_yeet_expr.rs",
     "tests/pretty/yeet-expr.rs",

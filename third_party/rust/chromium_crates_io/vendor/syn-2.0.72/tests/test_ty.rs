@@ -395,3 +395,50 @@ fn test_tuple_comma() {
     }
     "###);
 }
+
+#[test]
+fn test_impl_trait_use() {
+    let tokens = quote! {
+        impl Sized + use<'_, 'a, A, Test>
+    };
+
+    snapshot!(tokens as Type, @r###"
+    Type::ImplTrait {
+        bounds: [
+            TypeParamBound::Trait(TraitBound {
+                path: Path {
+                    segments: [
+                        PathSegment {
+                            ident: "Sized",
+                        },
+                    ],
+                },
+            }),
+            Token![+],
+            TypeParamBound::Verbatim(`use < '_ , 'a , A , Test >`),
+        ],
+    }
+    "###);
+
+    let trailing = quote! {
+        impl Sized + use<'_,>
+    };
+
+    snapshot!(trailing as Type, @r###"
+    Type::ImplTrait {
+        bounds: [
+            TypeParamBound::Trait(TraitBound {
+                path: Path {
+                    segments: [
+                        PathSegment {
+                            ident: "Sized",
+                        },
+                    ],
+                },
+            }),
+            Token![+],
+            TypeParamBound::Verbatim(`use < '_ , >`),
+        ],
+    }
+    "###);
+}
