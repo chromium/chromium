@@ -100,8 +100,8 @@ class EVENTS_EXPORT GestureRecognizer {
   // Returns whether `consumer` has active touch or not.
   virtual bool DoesConsumerHaveActiveTouch(GestureConsumer* consumer) const = 0;
 
-  // Synthesizes gesture end events (including ET_GESTURE_END and
-  // ET_GESTURE_SCROLL_END) and send to `consumer`.
+  // Synthesizes gesture end events (including EventType::kGestureEnd and
+  // EventType::kGestureScrollEnd) and send to `consumer`.
   virtual void SendSynthesizedEndEvents(GestureConsumer* consumer) = 0;
 };
 

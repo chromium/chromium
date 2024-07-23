@@ -109,7 +109,7 @@ class ToastOverlay::ToastHoverObserver : public ui::EventObserver {
       : event_monitor_(views::EventMonitor::CreateWindowMonitor(
             /*event_observer=*/this,
             widget_window,
-            {ui::ET_MOUSE_ENTERED, ui::ET_MOUSE_EXITED})),
+            {ui::EventType::kMouseEntered, ui::EventType::kMouseExited})),
         on_hover_state_changed_(std::move(on_hover_state_changed)) {}
 
   ToastHoverObserver(const ToastHoverObserver&) = delete;
@@ -120,10 +120,10 @@ class ToastOverlay::ToastHoverObserver : public ui::EventObserver {
   // ui::EventObserver:
   void OnEvent(const ui::Event& event) override {
     switch (event.type()) {
-      case ui::ET_MOUSE_ENTERED:
+      case ui::EventType::kMouseEntered:
         on_hover_state_changed_.Run(/*is_hovering=*/true);
         break;
-      case ui::ET_MOUSE_EXITED:
+      case ui::EventType::kMouseExited:
         on_hover_state_changed_.Run(/*is_hovering=*/false);
         break;
       default:
@@ -134,8 +134,8 @@ class ToastOverlay::ToastHoverObserver : public ui::EventObserver {
 
  private:
   // While this `EventMonitor` object exists, this object will only look for
-  // `ui::ET_MOUSE_ENTERED` and `ui::ET_MOUSE_EXITED` events that occur in the
-  // `widget_window` indicated in the constructor.
+  // `ui::EventType::kMouseEntered` and `ui::EventType::kMouseExited` events
+  // that occur in the `widget_window` indicated in the constructor.
   std::unique_ptr<views::EventMonitor> event_monitor_;
 
   // This is run whenever the mouse enters or exits the observed window with a
@@ -162,7 +162,7 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
           &ToastOverlay::OnButtonClicked,
           // Unretained is safe because `this` owns `overlay_view_`.
           base::Unretained(this)),
-      toast_data.leading_icon, /*use_custom_focus=*/!toast_data.activatable);
+      toast_data.leading_icon);
 
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
@@ -257,18 +257,11 @@ bool ToastOverlay::RequestFocusOnActiveToastDismissButton() {
   return overlay_view_->dismiss_button()->HasFocus();
 }
 
-bool ToastOverlay::MaybeToggleA11yHighlightOnDismissButton() {
-  overlay_view_->ToggleButtonA11yFocus();
-  return overlay_view_->is_dismiss_button_highlighted();
-}
-
-bool ToastOverlay::MaybeActivateHighlightedDismissButton() {
-  if (!overlay_view_->is_dismiss_button_highlighted()) {
-    return false;
+bool ToastOverlay::IsDismissButtonFocused() const {
+  if (auto* dismiss_button = overlay_view_->dismiss_button()) {
+    return dismiss_button->HasFocus();
   }
-
-  OnButtonClicked();
-  return true;
+  return false;
 }
 
 void ToastOverlay::OnSliderBubbleHeightChanged() {
@@ -276,16 +269,6 @@ void ToastOverlay::OnSliderBubbleHeightChanged() {
   if (features::AreSideAlignedToastsEnabled()) {
     UpdateOverlayBounds();
   }
-}
-
-bool ToastOverlay::IsDismissButtonFocused() const {
-  if (overlay_view_->is_dismiss_button_highlighted()) {
-    return true;
-  }
-  if (auto* dismiss_button = overlay_view_->dismiss_button()) {
-    return dismiss_button->HasFocus();
-  }
-  return false;
 }
 
 gfx::Rect ToastOverlay::CalculateOverlayBounds() {

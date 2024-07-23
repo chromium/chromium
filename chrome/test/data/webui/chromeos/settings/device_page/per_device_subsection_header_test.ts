@@ -70,4 +70,14 @@ suite(PerDeviceSubsectionHeaderElement.is, () => {
     assertTrue(isVisible(
         subsectionHeader!.shadowRoot!.querySelector('.device-image')));
   });
+
+  test('Device icon displayed when image is unavailable', async () => {
+    setWelcomeExperienceFeatureState(true);
+    await createHeaderElement(fakeMice[0]!.batteryInfo, /*dataUrl=*/ '');
+    const deviceIcon =
+        subsectionHeader.shadowRoot!.querySelector('#deviceIcon');
+    assertTrue(isVisible(deviceIcon));
+    assertFalse(isVisible(
+        subsectionHeader!.shadowRoot!.querySelector('.device-image')));
+  });
 });

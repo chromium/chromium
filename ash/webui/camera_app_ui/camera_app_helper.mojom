@@ -173,14 +173,6 @@ interface WindowStateController {
   Focus() => ();
 };
 
-enum ToteMetricFormat {
-  kPhoto = 0,
-  kScanJpg = 1,
-  kScanPdf = 2,
-  kVideoGif = 3,
-  kVideoMp4 = 4,
-};
-
 // Interface for communication between Chrome Camera App (Remote) and Chrome
 // (Receiver).
 interface CameraAppHelper {
@@ -243,9 +235,6 @@ interface CameraAppHelper {
   // video is captured and false for a picture. |name| is the file name which
   // will be used to generate the URI for the broadcast.
   SendNewCaptureBroadcast(bool is_video, string name);
-
-  // Notifies Tote client when a photo/pdf/video/gif is captured.
-  NotifyTote(ToteMetricFormat format, string name);
 
   // Monitors the deletion for given file |name| in the camera folder. The
   // function will return when the deletion happens, or when another monitor

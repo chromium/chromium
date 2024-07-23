@@ -60,7 +60,7 @@ class EventRecorder : public ui::EventRewriter {
 
   // Count of events sent to the rewriter.
   size_t recorded_event_count_ = 0;
-  ui::EventType last_recorded_event_type_ = ui::EventType::ET_UNKNOWN;
+  ui::EventType last_recorded_event_type_ = ui::EventType::kUnknown;
 };
 
 class AutoclickDragEventRewriterTest : public AshTestBase {
@@ -111,21 +111,21 @@ TEST_F(AutoclickDragEventRewriterTest, EventsNotConsumedWhenDisabled) {
   EXPECT_EQ(2U, event_recorder_.recorded_event_count_);
   generator_->PressLeftButton();
   EXPECT_EQ(3U, event_recorder_.recorded_event_count_);
-  EXPECT_EQ(ui::EventType::ET_MOUSE_PRESSED,
+  EXPECT_EQ(ui::EventType::kMousePressed,
             event_recorder_.last_recorded_event_type_);
   generator_->MoveMouseTo(gfx::Point(200, 200), 1);
   EXPECT_EQ(4U, event_recorder_.recorded_event_count_);
-  EXPECT_EQ(ui::EventType::ET_MOUSE_DRAGGED,
+  EXPECT_EQ(ui::EventType::kMouseDragged,
             event_recorder_.last_recorded_event_type_);
   generator_->ReleaseLeftButton();
   EXPECT_EQ(5U, event_recorder_.recorded_event_count_);
-  EXPECT_EQ(ui::EventType::ET_MOUSE_RELEASED,
+  EXPECT_EQ(ui::EventType::kMouseReleased,
             event_recorder_.last_recorded_event_type_);
 
   // Move events are not consumed either.
   generator_->MoveMouseTo(gfx::Point(100, 100), 1);
   EXPECT_EQ(6U, event_recorder_.recorded_event_count_);
-  EXPECT_EQ(ui::EventType::ET_MOUSE_MOVED,
+  EXPECT_EQ(ui::EventType::kMouseMoved,
             event_recorder_.last_recorded_event_type_);
 }
 
@@ -138,15 +138,15 @@ TEST_F(AutoclickDragEventRewriterTest, OnlyMouseMoveEventsConsumedWhenEnabled) {
   EXPECT_EQ(2U, event_recorder_.recorded_event_count_);
   generator_->PressLeftButton();
   EXPECT_EQ(3U, event_recorder_.recorded_event_count_);
-  EXPECT_EQ(ui::EventType::ET_MOUSE_PRESSED,
+  EXPECT_EQ(ui::EventType::kMousePressed,
             event_recorder_.last_recorded_event_type_);
   generator_->MoveMouseTo(gfx::Point(200, 200), 1);
   EXPECT_EQ(4U, event_recorder_.recorded_event_count_);
-  EXPECT_EQ(ui::EventType::ET_MOUSE_DRAGGED,
+  EXPECT_EQ(ui::EventType::kMouseDragged,
             event_recorder_.last_recorded_event_type_);
   generator_->ReleaseLeftButton();
   EXPECT_EQ(5U, event_recorder_.recorded_event_count_);
-  EXPECT_EQ(ui::EventType::ET_MOUSE_RELEASED,
+  EXPECT_EQ(ui::EventType::kMouseReleased,
             event_recorder_.last_recorded_event_type_);
 
   // Mouse move events are consumed and changed into drag events.
@@ -163,7 +163,7 @@ TEST_F(AutoclickDragEventRewriterTest, RewritesMouseMovesToDrags) {
   gfx::Point root_location(150, 150);
   int flags = ui::EF_SHIFT_DOWN;                        // Set a random flag.
   int changed_button_flags = ui::EF_LEFT_MOUSE_BUTTON;  // Set a random flag.
-  ui::MouseEvent event(ui::EventType::ET_MOUSE_MOVED, location, root_location,
+  ui::MouseEvent event(ui::EventType::kMouseMoved, location, root_location,
                        time_stamp, flags, changed_button_flags);
 
   auto window = CreateToplevelTestWindow(gfx::Rect(50, 50, 400, 300),
@@ -179,7 +179,7 @@ TEST_F(AutoclickDragEventRewriterTest, RewritesMouseMovesToDrags) {
   ui::Event* rewritten_event = sink.last_event();
 
   // The type should be a drag.
-  ASSERT_EQ(ui::ET_MOUSE_DRAGGED, rewritten_event->type());
+  ASSERT_EQ(ui::EventType::kMouseDragged, rewritten_event->type());
 
   // Flags should include left mouse button.
   EXPECT_EQ(flags | ui::EF_LEFT_MOUSE_BUTTON, rewritten_event->flags());

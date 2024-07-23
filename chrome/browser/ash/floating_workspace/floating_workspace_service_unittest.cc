@@ -264,9 +264,7 @@ class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
   }
 
   void RestoreLocalSessionWindows() override {
-    const sync_sessions::SyncedSession* session;
-    mock_open_tabs_->GetLocalSession(&session);
-    restored_session_ = session;
+    mock_open_tabs_->GetLocalSession(&restored_session_.AsEphemeralRawAddr());
   }
 
   void RestoreForeignSessionWindows(

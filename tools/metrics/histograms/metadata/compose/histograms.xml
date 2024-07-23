@@ -135,6 +135,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.EntryPoint.SessionResume" enum="ComposeEntryPoint"
+    expires_after="2025-01-05">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    The entry point used to resume a Compose session. Recorded when a Compose
+    session is resumed.
+  </summary>
+</histogram>
+
+<histogram name="Compose.EntryPoint.SessionStart" enum="ComposeEntryPoint"
+    expires_after="2025-01-05">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    The entry point used to start a Compose Session. Recorded once per session
+    start.
+  </summary>
+</histogram>
+
 <histogram name="Compose.ProactiveNudge.CTR"
     enum="ComposeProactiveNudgeCtrEvent" expires_after="2025-01-05">
   <owner>perrier@chromium.org</owner>

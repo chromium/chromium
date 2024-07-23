@@ -1143,6 +1143,8 @@ extern const char kCastStreamingVp9Description[];
 #if BUILDFLAG(IS_MAC)
 extern const char kCastStreamingMacHardwareH264Name[];
 extern const char kCastStreamingMacHardwareH264Description[];
+extern const char kUseNetworkFrameworkForCastDiscoveryName[];
+extern const char kUseNetworkFrameworkForCastDiscoveryDescription[];
 #endif
 
 extern const char kCastEnableStreamingWithHiDPIName[];
@@ -2005,9 +2007,6 @@ extern const char kSmoothScrollingDescription[];
 
 extern const char kSplitCacheByNetworkIsolationKeyName[];
 extern const char kSplitCacheByNetworkIsolationKeyDescription[];
-
-extern const char kStopAppIndexingReportName[];
-extern const char kStopAppIndexingReportDescription[];
 
 extern const char kStorageAccessHeadersName[];
 extern const char kStorageAccessHeadersDescription[];
@@ -2922,6 +2921,8 @@ extern const char kDialMediaRouteProviderName[];
 extern const char kDialMediaRouteProviderDescription[];
 extern const char kDelayMediaSinkDiscoveryName[];
 extern const char kDelayMediaSinkDiscoveryDescription[];
+extern const char kShowCastPermissionRejectedErrorName[];
+extern const char kShowCastPermissionRejectedErrorDescription[];
 
 extern const char kCastMirroringTargetPlayoutDelayName[];
 extern const char kCastMirroringTargetPlayoutDelayDescription[];
@@ -3921,9 +3922,6 @@ extern const char kEcheSWAProcessAndroidAccessibilityTreeDescription[];
 extern const char kEnableNotificationImageDragName[];
 extern const char kEnableNotificationImageDragDescription[];
 
-extern const char kEnableNotifierCollisionName[];
-extern const char kEnableNotifierCollisionDescription[];
-
 extern const char kEnableOAuthIppName[];
 extern const char kEnableOAuthIppDescription[];
 
@@ -4195,9 +4193,6 @@ extern const char kEnableHardwareMirrorModeDescription[];
 
 extern const char kLockScreenNotificationName[];
 extern const char kLockScreenNotificationDescription[];
-
-extern const char kMagicBoostName[];
-extern const char kMagicBoostDescription[];
 
 extern const char kMahiName[];
 extern const char kMahiDescription[];

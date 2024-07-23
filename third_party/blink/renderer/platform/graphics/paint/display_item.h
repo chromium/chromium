@@ -286,9 +286,7 @@ class PLATFORM_EXPORT DisplayItem {
   static WTF::String TypeAsDebugString(DisplayItem::Type);
   WTF::String AsDebugString(const PaintArtifact&) const;
   WTF::String IdAsString(const PaintArtifact&) const;
-  void PropertiesAsJSON(JSONObject&,
-                        const PaintArtifact&,
-                        bool client_known_to_be_alive = false) const;
+  void PropertiesAsJSON(JSONObject&, const PaintArtifact&) const;
 #endif
 
  protected:

@@ -151,8 +151,8 @@ class ModelTypeController {
   // histograms. May do nothing if state() is NOT_RUNNING or FAILED.
   virtual void RecordMemoryUsageAndCountsHistograms();
 
-  // Returns the uploader passed on construction. Virtual for testing.
-  virtual ModelTypeLocalDataBatchUploader* GetModelTypeLocalDataBatchUploader();
+  // Returns the uploader passed on construction.
+  ModelTypeLocalDataBatchUploader* GetModelTypeLocalDataBatchUploader();
 
   // Reports model type error to simulate the error reported by the bridge.
   virtual void ReportBridgeErrorForTest();

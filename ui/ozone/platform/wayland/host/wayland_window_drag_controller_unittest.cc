@@ -103,7 +103,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
     if (ensure_dispatched) {
       EXPECT_CALL(*delegate, DispatchEvent(_)).WillOnce([](Event* event) {
         EXPECT_TRUE(event->IsMouseEvent());
-        EXPECT_EQ(ET_MOUSE_DRAGGED, event->type());
+        EXPECT_EQ(EventType::kMouseDragged, event->type());
       });
     }
 
@@ -197,7 +197,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
                      int id,
                      const gfx::Point& location) override {
     EXPECT_CALL(*delegate, DispatchEvent(_)).WillOnce([](Event* event) {
-      EXPECT_EQ(ET_TOUCH_PRESSED, event->type());
+      EXPECT_EQ(EventType::kTouchPressed, event->type());
     });
     WaylandDragDropTest::SendTouchDown(window, delegate, id, location);
     Mock::VerifyAndClearExpectations(delegate);
@@ -209,7 +209,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
                        int id,
                        const gfx::Point& location) override {
     EXPECT_CALL(*delegate, DispatchEvent(_)).WillOnce([](Event* event) {
-      EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+      EXPECT_EQ(EventType::kTouchMoved, event->type());
     });
     WaylandDragDropTest::SendTouchMotion(window, delegate, id, location);
     Mock::VerifyAndClearExpectations(delegate);
@@ -251,7 +251,7 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
     EXPECT_TRUE(event->IsMouseEvent());
     switch (test_step) {
       case kStarted:
-        EXPECT_EQ(ET_MOUSE_ENTERED, event->type());
+        EXPECT_EQ(EventType::kMouseEntered, event->type());
         EXPECT_EQ(State::kDetached, drag_controller_state());
         // Ensure PlatformScreen keeps consistent.
         EXPECT_EQ(window_->GetWidget(),
@@ -266,7 +266,7 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
         test_step = kDragging;
         break;
       case kDropping: {
-        EXPECT_EQ(ET_MOUSE_RELEASED, event->type());
+        EXPECT_EQ(EventType::kMouseReleased, event->type());
         EXPECT_EQ(State::kDropped, drag_controller_state());
         // Ensure PlatformScreen keeps consistent.
         gfx::Point expected_point{20, 20};
@@ -277,7 +277,7 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
         break;
       }
       case kDone:
-        EXPECT_EQ(ET_MOUSE_EXITED, event->type());
+        EXPECT_EQ(EventType::kMouseExited, event->type());
         EXPECT_EQ(window_->GetWidget(),
                   screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
         break;
@@ -336,9 +336,9 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
       /*allow_system_drag=*/false);
 
   // While in |kAttached| state, motion events are expected to be dispatched
-  // plain ET_TOUCH_MOVED events.
+  // plain EventType::kTouchMoved events.
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([&](Event* event) {
-    EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+    EXPECT_EQ(EventType::kTouchMoved, event->type());
     EXPECT_EQ(gfx::Point(10, 10), event->AsLocatedEvent()->root_location());
     EXPECT_EQ(State::kAttached, drag_controller_state());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -357,12 +357,12 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
       // Lacros dispatches TOUCH_MOVED event so that aura can update the touch
       // position.
       .WillOnce([&](Event* event) {
-        EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+        EXPECT_EQ(EventType::kTouchMoved, event->type());
         EXPECT_EQ(gfx::Point(20, 20), event->AsLocatedEvent()->root_location());
       })
 #endif
       .WillOnce([&](Event* event) {
-        EXPECT_EQ(ET_TOUCH_RELEASED, event->type());
+        EXPECT_EQ(EventType::kTouchReleased, event->type());
         ASSERT_EQ(kDropping, test_step);
         EXPECT_EQ(State::kDropped, drag_controller_state());
     // Ensure PlatformScreen keeps consistent.
@@ -442,10 +442,10 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDropTwoFingerTouch) {
       /*allow_system_drag=*/false);
 
   // While in |kAttached| state, motion events are expected to be dispatched
-  // plain ET_TOUCH_MOVED events.
+  // plain EventType::kTouchMoved events.
   EXPECT_CALL(delegate_, DispatchEvent(_))
       .WillOnce([&](Event* event) {
-        EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+        EXPECT_EQ(EventType::kTouchMoved, event->type());
         EXPECT_EQ(0, event->AsTouchEvent()->pointer_details().id);
         EXPECT_EQ(gfx::Point(10, 10), event->AsLocatedEvent()->root_location());
         EXPECT_EQ(State::kAttached, drag_controller_state());
@@ -457,7 +457,7 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDropTwoFingerTouch) {
 #endif
       })
       .WillOnce([&](Event* event) {
-        EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+        EXPECT_EQ(EventType::kTouchMoved, event->type());
         EXPECT_EQ(1, event->AsTouchEvent()->pointer_details().id);
         EXPECT_EQ(gfx::Point(10, 10), event->AsLocatedEvent()->root_location());
         EXPECT_EQ(State::kAttached, drag_controller_state());
@@ -483,14 +483,14 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDropTwoFingerTouch) {
       // position.
       .WillOnce([&](Event* event) {
         ASSERT_EQ(kDragging, test_step);
-        EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+        EXPECT_EQ(EventType::kTouchMoved, event->type());
         EXPECT_EQ(0, event->AsTouchEvent()->pointer_details().id);
         EXPECT_EQ(State::kDetached, drag_controller_state());
         EXPECT_EQ(gfx::Point(20, 20), event->AsLocatedEvent()->root_location());
       })
       .WillOnce([&](Event* event) {
         ASSERT_EQ(kDragging, test_step);
-        EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+        EXPECT_EQ(EventType::kTouchMoved, event->type());
         EXPECT_EQ(1, event->AsTouchEvent()->pointer_details().id);
 
         EXPECT_EQ(State::kDetached, drag_controller_state());
@@ -500,7 +500,7 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDropTwoFingerTouch) {
       // delegate_ should receive two touch release events in a sequence.
       .WillOnce([&](Event* event) {
         ASSERT_EQ(kDropping, test_step);
-        EXPECT_EQ(ET_TOUCH_RELEASED, event->type());
+        EXPECT_EQ(EventType::kTouchReleased, event->type());
         EXPECT_EQ(0, event->AsTouchEvent()->pointer_details().id);
         EXPECT_EQ(State::kDropped, drag_controller_state());
 
@@ -520,7 +520,7 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDropTwoFingerTouch) {
       })
       .WillOnce([&](Event* event) {
         ASSERT_EQ(kFirstFingerReleased, test_step);
-        EXPECT_EQ(ET_TOUCH_RELEASED, event->type());
+        EXPECT_EQ(EventType::kTouchReleased, event->type());
         EXPECT_EQ(1, event->AsTouchEvent()->pointer_details().id);
         EXPECT_EQ(State::kDropped, drag_controller_state());
 
@@ -704,7 +704,7 @@ TEST_P(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
     EXPECT_TRUE(event->IsMouseEvent());
     switch (test_step) {
       case kStarted:
-        EXPECT_EQ(ET_MOUSE_ENTERED, event->type());
+        EXPECT_EQ(EventType::kMouseEntered, event->type());
         EXPECT_EQ(State::kDetached, drag_controller_state());
         // Ensure PlatformScreen keeps consistent.
         EXPECT_EQ(window_->GetWidget(),
@@ -719,7 +719,7 @@ TEST_P(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
         test_step = kDragging;
         break;
       case kExitedDropping: {
-        EXPECT_EQ(ET_MOUSE_RELEASED, event->type());
+        EXPECT_EQ(EventType::kMouseReleased, event->type());
         EXPECT_EQ(State::kDropped, drag_controller_state());
         // Ensure PlatformScreen keeps consistent.
         gfx::Point expected_point{20, 20};
@@ -730,7 +730,7 @@ TEST_P(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
         test_step = kDone;
       } break;
       case kDone:
-        EXPECT_EQ(ET_MOUSE_EXITED, event->type());
+        EXPECT_EQ(EventType::kMouseExited, event->type());
         break;
       case kDragging:
       default:
@@ -822,7 +822,7 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
     EXPECT_TRUE(event->IsMouseEvent());
     switch (test_step) {
       case kStarted:
-        EXPECT_EQ(ET_MOUSE_ENTERED, event->type());
+        EXPECT_EQ(EventType::kMouseEntered, event->type());
         EXPECT_EQ(State::kDetached, drag_controller_state());
         // Ensure PlatformScreen keeps consistent.
         EXPECT_EQ(source_window->GetWidget(),
@@ -837,7 +837,7 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
         test_step = kDragging;
         break;
       case kEnteredTarget:
-        EXPECT_EQ(ET_MOUSE_ENTERED, event->type());
+        EXPECT_EQ(EventType::kMouseEntered, event->type());
         EXPECT_EQ(State::kDetached, drag_controller_state());
         // Ensure PlatformScreen keeps consistent.
         EXPECT_EQ(target_window->GetWidget(),
@@ -908,7 +908,7 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
     EXPECT_TRUE(event->IsMouseEvent());
     switch (test_step) {
       case kSnapped:
-        EXPECT_EQ(ET_MOUSE_RELEASED, event->type());
+        EXPECT_EQ(EventType::kMouseReleased, event->type());
         EXPECT_EQ(State::kDropped, drag_controller_state());
         EXPECT_EQ(target_window,
                   window_manager()->GetCurrentPointerOrTouchFocusedWindow());
@@ -973,12 +973,12 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
       // Lacros dispatches TOUCH_MOVED event so that aura can update the touch
       // position.
       .WillOnce([&](Event* event) {
-        EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+        EXPECT_EQ(EventType::kTouchMoved, event->type());
         EXPECT_EQ(gfx::Point(10, 10), event->AsLocatedEvent()->root_location());
       })
 #endif
       .WillOnce([&](Event* event) {
-        EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+        EXPECT_EQ(EventType::kTouchMoved, event->type());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
         // On Lacros, touch event will not update the cursor position.
         EXPECT_EQ(gfx::Point(0, 0), screen_->GetCursorScreenPoint());
@@ -1066,7 +1066,7 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
     EXPECT_TRUE(event->IsTouchEvent());
     switch (test_step) {
       case kSnapped:
-        EXPECT_EQ(ET_TOUCH_RELEASED, event->type());
+        EXPECT_EQ(EventType::kTouchReleased, event->type());
         EXPECT_EQ(State::kDropped, drag_controller_state());
         EXPECT_EQ(target_window,
                   window_manager()->GetCurrentPointerOrTouchFocusedWindow());
@@ -1144,7 +1144,7 @@ TEST_P(WaylandWindowDragControllerTest,
     EXPECT_TRUE(event->IsMouseEvent());
     switch (test_step) {
       case kStarted:
-        EXPECT_EQ(ET_MOUSE_ENTERED, event->type());
+        EXPECT_EQ(EventType::kMouseEntered, event->type());
         EXPECT_EQ(State::kDetached, drag_controller_state());
         // Ensure PlatformScreen keeps consistent.
         EXPECT_EQ(source_window->GetWidget(),
@@ -1159,7 +1159,7 @@ TEST_P(WaylandWindowDragControllerTest,
         test_step = kDragging;
         break;
       case kEnteredTarget:
-        EXPECT_EQ(ET_MOUSE_ENTERED, event->type());
+        EXPECT_EQ(EventType::kMouseEntered, event->type());
         EXPECT_EQ(State::kDetached, drag_controller_state());
         // Ensure PlatformScreen keeps consistent.
         EXPECT_EQ(target_window->GetWidget(),
@@ -1243,7 +1243,7 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached) {
   SendDndMotionForWindowDrag({50, 50});
 
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([&](Event* event) {
-    EXPECT_EQ(ET_MOUSE_DRAGGED, event->type());
+    EXPECT_EQ(EventType::kMouseDragged, event->type());
     EXPECT_EQ(gfx::Point(50, -1).ToString(),
               event->AsMouseEvent()->location().ToString());
   });
@@ -1291,7 +1291,7 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached_TOUCH) {
   SendDndMotionForWindowDrag({50, 50});
 
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([&](Event* event) {
-    EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+    EXPECT_EQ(EventType::kTouchMoved, event->type());
     EXPECT_EQ(gfx::Point(50, -10).ToString(),
               event->AsTouchEvent()->location().ToString());
   });
@@ -1381,7 +1381,7 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
     EXPECT_TRUE(event->IsMouseEvent());
     switch (test_step) {
       case kStarted:
-        EXPECT_EQ(ET_MOUSE_ENTERED, event->type());
+        EXPECT_EQ(EventType::kMouseEntered, event->type());
         EXPECT_EQ(State::kDetached, drag_controller_state());
         // Ensure PlatformScreen keeps consistent.
         EXPECT_EQ(window_->GetWidget(),
@@ -1400,7 +1400,7 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
         test_step = kDragging;
         break;
       case kDropping: {
-        EXPECT_EQ(ET_MOUSE_RELEASED, event->type());
+        EXPECT_EQ(EventType::kMouseReleased, event->type());
         EXPECT_EQ(State::kDropped, drag_controller_state());
 
         // Ensure |window_|'s bounds did not change in response to 20,20
@@ -1418,7 +1418,7 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
         test_step = kDone;
       } break;
       case kDone:
-        EXPECT_EQ(ET_MOUSE_EXITED, event->type());
+        EXPECT_EQ(EventType::kMouseExited, event->type());
         EXPECT_EQ(window_->GetWidget(),
                   screen_->GetLocalProcessWidgetAtPoint({100, 100}, {}));
         break;
@@ -1808,7 +1808,7 @@ TEST_P(WaylandWindowDragControllerTest, ExtendedDragUnavailable) {
     EXPECT_TRUE(event->IsMouseEvent());
     switch (test_step) {
       case kStarted:
-        EXPECT_EQ(ET_MOUSE_ENTERED, event->type());
+        EXPECT_EQ(EventType::kMouseEntered, event->type());
         EXPECT_EQ(State::kDetached, drag_controller_state());
 
         // We are in the middle of
@@ -1820,14 +1820,14 @@ TEST_P(WaylandWindowDragControllerTest, ExtendedDragUnavailable) {
         test_step = kDropping;
         break;
       case kDropping: {
-        EXPECT_EQ(ET_MOUSE_RELEASED, event->type());
+        EXPECT_EQ(EventType::kMouseReleased, event->type());
         EXPECT_EQ(State::kDropped, drag_controller_state());
 
         test_step = kDone;
         break;
       }
       case kDone:
-        EXPECT_EQ(ET_MOUSE_EXITED, event->type());
+        EXPECT_EQ(EventType::kMouseExited, event->type());
         EXPECT_EQ(window_->GetWidget(),
                   screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
         break;
@@ -2073,7 +2073,7 @@ TEST_P(WaylandWindowDragControllerTest,
   // Simulate a pointer release event arriving at the client before the server
   // has acknowledged the drag request. This should cancel the drag.
   pointer_delegate()->OnPointerButtonEvent(
-      ET_MOUSE_RELEASED, EF_LEFT_MOUSE_BUTTON, base::TimeTicks::Now(),
+      EventType::kMouseReleased, EF_LEFT_MOUSE_BUTTON, base::TimeTicks::Now(),
       window_.get(), wl::EventDispatchPolicy::kImmediate,
       /*allow_release_of_unpressed_button=*/false,
       /*is_synthesized=*/false);

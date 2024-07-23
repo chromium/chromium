@@ -369,10 +369,9 @@
     },
     {
       name: "AttributionReportingCrossAppWeb",
-      origin_trial_feature_name: "AttributionReportingCrossAppWeb",
-      origin_trial_allows_third_party: true,
       base_feature: "none",
       public: true,
+      status: "stable",
     },
     {
       // This only exists so we can use RuntimeEnabled in the IDL file
@@ -569,6 +568,8 @@
       name: "BuiltInAIAPI",
       status: "test",
       base_feature: "EnableBuiltInAIAPI",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
       implied_by: ["AIPromptAPI"]
     },
     {
@@ -1929,9 +1930,19 @@
     },
     {
       name: "FluentOverlayScrollbars",
+      // The associated base feature is defined in
+      // ui/native_theme/native_theme_features.cc.
+      base_feature: "none",
     },
     {
       name: "FluentScrollbars",
+      // The associated base feature is defined in
+      // ui/native_theme/native_theme_features.cc.
+      base_feature: "none",
+    },
+    {
+      name: "FluentScrollbarUsesNinePatchTrack",
+      status: "stable",
     },
     {
       // Kill switch for crbug.com/1420810 fix
@@ -3758,7 +3769,7 @@
     {
       // crbug.com/40501131
       name: "SidewaysWritingModes",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "SignatureBasedIntegrity",

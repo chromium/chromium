@@ -62,7 +62,8 @@ LinuxInputMethodContext* InputMethodAuraLinux::GetContextForTesting() {
 
 ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
     ui::KeyEvent* event) {
-  DCHECK(event->type() == ET_KEY_PRESSED || event->type() == ET_KEY_RELEASED);
+  DCHECK(event->type() == EventType::kKeyPressed ||
+         event->type() == EventType::kKeyReleased);
   // If there's pending deadkey event, i.e. a key event which is expected to
   // trigger input method actions (like OnCommit, OnPreedit* invocation)
   // and to be dispatched from there, but not yet, dispatch the pending event
@@ -109,7 +110,8 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
     // dispatched. crbug.com/1225747
     // Do not keep release events. Non-peek Release key event is dispatched,
     // so the event will be stale. See WaylandKeyboard::OnKey for details.
-    if (event->type() == ET_KEY_PRESSED && context_->IsPeekKeyEvent(*event)) {
+    if (event->type() == EventType::kKeyPressed &&
+        context_->IsPeekKeyEvent(*event)) {
       ime_filtered_key_event_ = std::move(*event);
       return ui::EventDispatchDetails();
     }
@@ -124,7 +126,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
       return details;
     }
     if ((event->is_char() || event->GetDomKey().IsCharacter()) &&
-        event->type() == ui::ET_KEY_PRESSED) {
+        event->type() == ui::EventType::kKeyPressed) {
       GetTextInputClient()->InsertChar(*event);
     }
     return details;
@@ -178,7 +180,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
   // before updating commit/preedit string so that, e.g., JavaScript keydown
   // event is delivered to the page before keypress.
   ui::EventDispatchDetails details;
-  if (event->type() == ui::ET_KEY_PRESSED && filtered) {
+  if (event->type() == ui::EventType::kKeyPressed && filtered) {
     details = DispatchImeFilteredKeyPressEvent(event);
     if (details.target_destroyed || details.dispatcher_destroyed ||
         event->stopped_propagation()) {
@@ -215,7 +217,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
     }
     if (event->stopped_propagation() || details.target_destroyed) {
       ResetContext();
-    } else if (event->type() == ui::ET_KEY_PRESSED) {
+    } else if (event->type() == ui::EventType::kKeyPressed) {
       // If a key event was not filtered by |context_|,
       // then it means the key event didn't generate any result text. For some
       // cases, the key event may still generate a valid character, eg. a
@@ -497,7 +499,7 @@ void InputMethodAuraLinux::OnCommit(const std::u16string& text) {
   // the focused text input client does not support text input.
   if (!is_sync_mode_ && !IsTextInputTypeNone()) {
     ui::KeyEvent event =
-        ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_PROCESSKEY, 0);
+        ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_PROCESSKEY, 0);
     if (ime_filtered_key_event_.has_value()) {
       event = std::move(*ime_filtered_key_event_);
       ime_filtered_key_event_.reset();
@@ -656,8 +658,8 @@ bool InputMethodAuraLinux::NeedInsertChar(
 
 ui::EventDispatchDetails InputMethodAuraLinux::SendFakeProcessKeyEvent(
     ui::KeyEvent* event) const {
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_PROCESSKEY, event->code(),
-                         event->flags(), ui::DomKey::PROCESS,
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_PROCESSKEY,
+                         event->code(), event->flags(), ui::DomKey::PROCESS,
                          event->time_stamp());
   ui::EventDispatchDetails details = DispatchKeyEventPostIME(&key_event);
   if (key_event.stopped_propagation())

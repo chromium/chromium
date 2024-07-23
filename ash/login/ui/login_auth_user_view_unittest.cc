@@ -418,8 +418,8 @@ TEST_F(LoginAuthUserViewUnittest, PwdWithToggleFieldModeCorrectness) {
   SetUserCount(1);
   SetAuthPin(/*autosubmit_length*/ 6);
   ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PIN_WITH_TOGGLE);
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), 0, 0);
+  const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi(auth_test.pin_password_toggle())
       .NotifyClick(event);
   base::RunLoop().RunUntilIdle();
@@ -488,8 +488,8 @@ TEST_P(LoginAuthUserViewOnlineUnittest, OnlineSignInMessage) {
   EXPECT_CALL(
       *client,
       ShowGaiaSignin(user_view->current_user().basic_user_info.account_id));
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), 0, 0);
+  const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi(online_sign_in_message).NotifyClick(event);
   base::RunLoop().RunUntilIdle();
 

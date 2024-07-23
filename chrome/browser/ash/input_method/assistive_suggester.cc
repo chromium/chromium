@@ -399,7 +399,7 @@ AssistiveSuggesterKeyResult AssistiveSuggester::OnKeyEvent(
   // surrounding text change, which is triggered by a keydown event. As a
   // result, the next key event after suggesting would be a keyup event of the
   // same key, and that event is meaningless to us.
-  if (IsSuggestionShown() && event.type() == ui::ET_KEY_PRESSED &&
+  if (IsSuggestionShown() && event.type() == ui::EventType::kKeyPressed &&
       !event.IsControlDown() && !event.IsAltDown() && !event.IsShiftDown()) {
     SuggestionStatus status = current_suggester_->HandleKeyEvent(event);
     switch (status) {
@@ -458,7 +458,7 @@ AssistiveSuggesterKeyResult AssistiveSuggester::HandleLongpressEnabledKeyEvent(
 
   // Process longpress keydown event.
   if (current_longpress_keydown_ == std::nullopt &&
-      event.type() == ui::EventType::ET_KEY_PRESSED) {
+      event.type() == ui::EventType::kKeyPressed) {
     current_longpress_keydown_ = event;
 
     if (IsLongpressEnabledControlV(event)) {
@@ -475,7 +475,7 @@ AssistiveSuggesterKeyResult AssistiveSuggester::HandleLongpressEnabledKeyEvent(
   // Process longpress interrupted event (key press up before timer callback
   // fired)
   if (current_longpress_keydown_.has_value() &&
-      event.type() == ui::EventType::ET_KEY_RELEASED &&
+      event.type() == ui::EventType::kKeyReleased &&
       current_longpress_keydown_->code() == event.code()) {
     current_longpress_keydown_ = std::nullopt;
     longpress_timer_.Stop();

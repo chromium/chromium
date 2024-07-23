@@ -195,7 +195,8 @@ suite('ShoppingInsightsAppTest', () => {
     assertEquals(
         loadTimeData.getString('feedback'), feedbackButton.textContent!.trim());
     feedbackButton.click();
-    assertEquals(1, shoppingServiceApi.getCallCount('showFeedback'));
+    assertEquals(
+        1, shoppingServiceApi.getCallCount('showFeedbackForPriceInsights'));
     assertEquals(
         1, metrics.count('Commerce.PriceInsights.InlineFeedbackLinkClicked'));
 

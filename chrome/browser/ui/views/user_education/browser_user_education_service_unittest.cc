@@ -187,7 +187,6 @@ TEST(BrowserUserEducationServiceTest, PreventNewHardCodedConfigurations) {
       "IPH_DiscardRing",
       "IPH_DownloadEsbPromo",
       "IPH_ExperimentalAIPromo",
-      "IPH_ExplicitBrowserSigninPreferenceRemembered",
       "IPH_ExtensionsMenu",
       "IPH_ExtensionsRequestAccessButton",
       "IPH_GMCCastStartStop",

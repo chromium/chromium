@@ -186,6 +186,16 @@ void ProductSpecificationsEntryPointController::OnEntryPointHidden() {
   current_entry_point_info_.reset();
 }
 
+bool ProductSpecificationsEntryPointController::ShouldExecuteEntryPointShow() {
+  DCHECK(current_entry_point_info_.has_value());
+  GURL current_url = browser_->tab_strip_model()
+                         ->GetActiveWebContents()
+                         ->GetLastCommittedURL();
+  std::map<GURL, uint64_t> candidate_products =
+      current_entry_point_info_->similar_candidate_products;
+  return base::Contains(candidate_products, current_url);
+}
+
 void ProductSpecificationsEntryPointController::OnClusterFinishedForNavigation(
     const GURL& url) {
   // Cluster finished for a navigation that didn't happen in this window, or the

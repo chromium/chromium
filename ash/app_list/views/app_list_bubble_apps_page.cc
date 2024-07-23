@@ -137,7 +137,7 @@ class ClickableView : public views::View {
 
   void OnGestureEvent(ui::GestureEvent* event) override {
     views::View::OnGestureEvent(event);
-    if (event->type() == ui::ET_GESTURE_TAP) {
+    if (event->type() == ui::EventType::kGestureTap) {
       event->SetHandled();
       click_callback_.Run();
     }

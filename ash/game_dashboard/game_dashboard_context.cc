@@ -467,7 +467,7 @@ void GameDashboardContext::OnEvent(ui::Event* event) {
   // Close the main menu if the user clicks outside of both the main menu
   // widget and the Game Dashboard button.
   auto event_type = event->type();
-  if (event_type == ui::ET_KEY_PRESSED) {
+  if (event_type == ui::EventType::kKeyPressed) {
     const ui::KeyEvent* key_event = event->AsKeyEvent();
     if (toolbar_widget_ && toolbar_widget_->IsActive() && main_menu_widget_ &&
         WillToolbarViewProcessKeyCode(key_event->key_code())) {
@@ -489,8 +489,8 @@ void GameDashboardContext::OnEvent(ui::Event* event) {
     }
   } else if (main_menu_widget_) {
     switch (event_type) {
-      case ui::ET_TOUCH_PRESSED:
-      case ui::ET_MOUSE_PRESSED: {
+      case ui::EventType::kTouchPressed:
+      case ui::EventType::kMousePressed: {
         // TODO(b/328852471): Update logic to compare event target with native
         // window.
         const ui::LocatedEvent* located_event = event->AsLocatedEvent();
@@ -844,7 +844,7 @@ bool GameDashboardContext::ShouldNavigateToNewWidget(
   // Tab navigation between Game Dashboard sibling widgets is only supported
   // when the GD button is enabled.
   if (!game_dashboard_button_->GetEnabled() ||
-      event->type() != ui::ET_KEY_PRESSED ||
+      event->type() != ui::EventType::kKeyPressed ||
       event->key_code() != ui::VKEY_TAB) {
     return false;
   }

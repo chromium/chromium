@@ -16,8 +16,6 @@
 class ChromeBrowserState;
 
 namespace browser_sync {
-class LocalDataQueryHelper;
-class LocalDataMigrationHelper;
 class SyncApiComponentFactoryImpl;
 }  // namespace browser_sync
 
@@ -48,12 +46,6 @@ class IOSChromeSyncClient : public syncer::SyncClient {
   bool IsPasswordSyncAllowed() override;
   void SetPasswordSyncAllowedChangeCb(
       const base::RepeatingClosure& cb) override;
-  void GetLocalDataDescriptions(
-      syncer::ModelTypeSet types,
-      base::OnceCallback<void(
-          std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback)
-      override;
-  void TriggerLocalDataMigration(syncer::ModelTypeSet types) override;
   void RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
       const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group)
       override;
@@ -68,10 +60,6 @@ class IOSChromeSyncClient : public syncer::SyncClient {
       profile_password_store_;
   scoped_refptr<password_manager::PasswordStoreInterface>
       account_password_store_;
-
-  std::unique_ptr<browser_sync::LocalDataQueryHelper> local_data_query_helper_;
-  std::unique_ptr<browser_sync::LocalDataMigrationHelper>
-      local_data_migration_helper_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_IOS_CHROME_SYNC_CLIENT_H__

@@ -47,6 +47,14 @@ OnDeviceModelAccessController::OnDeviceModelAccessController(
     if (features::ShouldOnDeviceModelClearValidationOnVersionChange()) {
       pref_service_->SetDict(kOnDeviceModelValidationResult,
                              base::Value::Dict());
+    } else {
+      // If the full validation result is not cleared, at least reset the
+      // attempt count to allow validation to continue.
+      ValidationState state = GetValidationState();
+      if (state.attempt_count > 0) {
+        state.attempt_count = 0;
+        SetValidationState(state);
+      }
     }
   }
 }

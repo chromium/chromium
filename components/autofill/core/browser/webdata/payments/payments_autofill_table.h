@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/webdata/common/web_database_table.h"
 
 class WebDatabase;
@@ -550,6 +551,13 @@ class PaymentsAutofillTable : public WebDatabaseTable {
       std::optional<int64_t> instrument_id,
       std::vector<CreditCardBenefit>& credit_card_benefits);
   bool ClearAllCreditCardBenefits();
+
+  // Sets and gets the `payment_instruments` table. Return true if the operation
+  // succeeded.
+  bool SetPaymentInstruments(
+      const std::vector<sync_pb::PaymentInstrument>& payment_instruments);
+  bool GetPaymentInstruments(
+      std::vector<sync_pb::PaymentInstrument>& payment_instruments);
 
   // Testing helper to access the database for checking the result of database
   // update.

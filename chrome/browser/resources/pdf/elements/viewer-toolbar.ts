@@ -17,14 +17,20 @@ import './viewer-annotations-bar.js';
 // </if>
 // <if expr="enable_ink">
 import './viewer-annotations-mode-dialog.js';
-
 // </if>
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+// <if expr="enable_pdf_ink2">
+import {assert} from 'chrome://resources/js/assert.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+// </if>
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FittingType} from '../constants.js';
+// <if expr="enable_pdf_ink2">
+import {PluginController, PluginControllerEventType} from '../controller.js';
+// </if>
 import {record, UserAction} from '../metrics.js';
 
 import {getTemplate} from './viewer-toolbar.html.js';
@@ -63,6 +69,18 @@ export class ViewerToolbarElement extends PolymerElement {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
+      },
+      // </if>
+
+      // <if expr="enable_pdf_ink2">
+      canRedoAnnotation_: {
+        type: Boolean,
+        value: false,
+      },
+
+      canUndoAnnotation_: {
+        type: Boolean,
+        value: false,
       },
       // </if>
 
@@ -147,9 +165,9 @@ export class ViewerToolbarElement extends PolymerElement {
       // </if> enable_ink
 
       // <if expr="enable_pdf_ink2">
-      showInk2AnnotationButton_: {
+      showInk2Buttons_: {
         type: Boolean,
-        computed: 'computeShowInk2AnnotationButton_(' +
+        computed: 'computeShowInk2Buttons_(' +
             'pdfAnnotationsEnabled, pdfInk2Enabled)',
       },
       // </if>
@@ -203,6 +221,21 @@ export class ViewerToolbarElement extends PolymerElement {
 
   // <if expr="enable_pdf_ink2">
   pdfInk2Enabled: boolean;
+  private canRedoAnnotation_: boolean;
+  private canUndoAnnotation_: boolean;
+  private currentStroke: number = 0;
+  private mostRecentStroke: number = 0;
+  private pluginController_: PluginController = PluginController.getInstance();
+  private tracker_: EventTracker = new EventTracker();
+
+  constructor() {
+    super();
+
+    this.tracker_.add(
+        this.pluginController_.getEventTarget(),
+        PluginControllerEventType.FINISH_INK_STROKE,
+        this.handleFinishInkStroke_.bind(this));
+  }
   // </if>
 
   private onSidenavToggleClick_() {
@@ -248,7 +281,7 @@ export class ViewerToolbarElement extends PolymerElement {
 
 
   // <if expr="enable_pdf_ink2">
-  private computeShowInk2AnnotationButton_(): boolean {
+  private computeShowInk2Buttons_(): boolean {
     return this.pdfInk2Enabled && this.pdfAnnotationsEnabled;
   }
   // </if>
@@ -447,6 +480,52 @@ export class ViewerToolbarElement extends PolymerElement {
     }
   }
   // </if> enable_ink or enable_pdf_ink2
+
+  // <if expr="enable_pdf_ink2">
+  /**
+   * Handles whether the undo and redo buttons should be enabled or disabled
+   * when a new ink stroke is added to the page.
+   */
+  private handleFinishInkStroke_() {
+    this.currentStroke++;
+    this.mostRecentStroke = this.currentStroke;
+
+    // When a new stroke is added, it can always be undone. Since it's the most
+    // recent stroke, the redo action cannot be performed.
+    this.canUndoAnnotation_ = true;
+    this.canRedoAnnotation_ = false;
+  }
+
+  private onUndoClick_() {
+    assert(this.pdfInk2Enabled);
+    assert(this.currentStroke > 0);
+
+    this.pluginController_.undo();
+    this.currentStroke--;
+
+    this.canUndoAnnotation_ = this.currentStroke > 0;
+    if (!this.canUndoAnnotation_) {
+      this.dispatchEvent(new CustomEvent(
+          'can-undo-changed', {detail: false, bubbles: true, composed: true}));
+    }
+    this.canRedoAnnotation_ = true;
+  }
+
+  private onRedoClick_() {
+    assert(this.pdfInk2Enabled);
+    assert(this.currentStroke < this.mostRecentStroke);
+
+    this.pluginController_.redo();
+    this.currentStroke++;
+
+    if (!this.canUndoAnnotation_) {
+      this.canUndoAnnotation_ = true;
+      this.dispatchEvent(new CustomEvent(
+          'can-undo-changed', {detail: true, bubbles: true, composed: true}));
+    }
+    this.canRedoAnnotation_ = this.currentStroke < this.mostRecentStroke;
+  }
+  // </if>
 
   /**
    * Updates the toolbar's presentation mode available flag depending on current

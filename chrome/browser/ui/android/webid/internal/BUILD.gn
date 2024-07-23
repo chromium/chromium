@@ -67,7 +67,6 @@ android_resources("java_resources") {
   ]
   sources = [
     "java/res/drawable/arrow_range.xml",
-    "java/res/drawable/globe.xml",
     "java/res/layout/account_selection_account_item.xml",
     "java/res/layout/account_selection_add_account_button.xml",
     "java/res/layout/account_selection_add_account_row_item.xml",
@@ -160,6 +159,7 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android/test:java",
+    "//components/image_fetcher:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java_test_support",

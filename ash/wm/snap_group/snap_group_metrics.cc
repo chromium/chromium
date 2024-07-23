@@ -12,7 +12,7 @@
 namespace ash {
 
 void RecordPartialOverviewMetrics(OverviewItemBase* item) {
-  auto& item_list = item->overview_grid()->window_list();
+  auto& item_list = item->overview_grid()->item_list();
   base::UmaHistogramCounts1000(kPartialOverviewWindowListSize,
                                item_list.size());
   for (size_t i = 0; i < item_list.size(); ++i) {

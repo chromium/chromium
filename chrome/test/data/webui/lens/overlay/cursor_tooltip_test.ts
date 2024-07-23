@@ -54,7 +54,6 @@ suite('OverlayCursorTooltip', () => {
     // to prevent from causing issues in the tests. Also override localized
     // strings so tests don't fail if the strings change.
     loadTimeData.overrideValues({
-      'debugMode': true,
       'enableShimmer': false,
       'cursorTooltipTextHighlightMessage': 'Select text',
       'cursorTooltipClickMessage': 'Select object',
@@ -64,18 +63,11 @@ suite('OverlayCursorTooltip', () => {
 
     lensOverlayElement = document.createElement('lens-overlay-app');
     document.body.appendChild(lensOverlayElement);
-    waitBeforeNextRender(lensOverlayElement);
+    await waitBeforeNextRender(lensOverlayElement);
 
     selectionOverlayElement = lensOverlayElement.$.selectionOverlay;
     cursorTooltip = lensOverlayElement.$.cursorTooltip;
     tooltipEl = cursorTooltip.$.cursorTooltip;
-
-    // Since the size of the Selection Overlay is based on the screenshot which
-    // is not loaded in the test, we need to force the overlay to take up the
-    // viewport.
-    selectionOverlayElement.$.selectionOverlay.style.width = '100%';
-    selectionOverlayElement.$.selectionOverlay.style.height = '100%';
-    flushTasks();
 
     // Send a fake screenshot to unhide the selection overlay.
     const dataUriBytes = new TextEncoder().encode(SCREENSHOT_DATA_URI);
@@ -84,6 +76,13 @@ suite('OverlayCursorTooltip', () => {
         bytes: Array.from(dataUriBytes),
       } as BigBuffer,
     });
+
+    // Since the size of the Selection Overlay is based on the screenshot which
+    // is not loaded in the test, we need to force the overlay to take up the
+    // viewport.
+    selectionOverlayElement.$.selectionOverlay.style.width = '100%';
+    selectionOverlayElement.$.selectionOverlay.style.height = '100%';
+    await waitBeforeNextRender(lensOverlayElement);
 
     await addWords();
     await addObjects();
@@ -100,7 +99,7 @@ suite('OverlayCursorTooltip', () => {
     };
   }
 
-  function addWords() {
+  function addWords(): Promise<void> {
     const text = createText([
       createParagraph([
         createLine([
@@ -117,7 +116,7 @@ suite('OverlayCursorTooltip', () => {
     return flushTasks();
   }
 
-  function addObjects() {
+  function addObjects(): Promise<void> {
     const objects =
         [
           {x: 80, y: 20, width: 25, height: 10},
@@ -250,7 +249,8 @@ suite('OverlayCursorTooltip', () => {
 
     // Open the info menu.
     lensOverlayElement.$.moreOptionsButton.click();
-    assertFalse(isRendered(lensOverlayElement.$.moreOptionsMenu));
+    await flushTasks();
+    assertTrue(isVisible(lensOverlayElement.$.moreOptionsMenu));
 
     // Hover the background.
     await simulateUnhover(lensOverlayElement.$.moreOptionsButton);

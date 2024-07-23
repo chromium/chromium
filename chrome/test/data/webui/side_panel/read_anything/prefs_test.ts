@@ -122,31 +122,27 @@ suite('PrefsTest', () => {
           chrome.readingMode.getStoredVoice = () => '';
         });
 
-        suite('and no voices at all for this language', () => {
-          setup(() => {
-            app.speechSynthesisLanguage = langWithNoVoices;
-          });
-
-          test('to the current voice if there is one', () => {
-            emitEvent(
-                app, ToolbarEvent.VOICE, {detail: {selectedVoice: otherVoice}});
-            app.enabledLangs = [otherVoice.lang];
-            app.restoreSettingsFromPrefs();
-            assertEquals(otherVoice, app.getSpeechSynthesisVoice());
-          });
-
-          test('to the device default if there\'s no current voice', () => {
-            app.enabledLangs = [langForDefaultVoice, otherVoice.lang];
-            app.restoreSettingsFromPrefs();
-            assertEquals(defaultVoice, app.getSpeechSynthesisVoice());
-          });
-        });
-
         test('to the default voice for this language', () => {
           app.enabledLangs = [lang1];
           app.speechSynthesisLanguage = lang1;
           app.restoreSettingsFromPrefs();
           assertEquals(defaultVoiceWithLang1, app.getSpeechSynthesisVoice());
+        });
+
+        test('uses current voice if there\'s none for this language', () => {
+          app.speechSynthesisLanguage = langWithNoVoices;
+          emitEvent(
+              app, ToolbarEvent.VOICE, {detail: {selectedVoice: otherVoice}});
+          app.enabledLangs = [otherVoice.lang];
+          app.restoreSettingsFromPrefs();
+          assertEquals(otherVoice, app.getSpeechSynthesisVoice());
+        });
+
+        test('uses the device default if there\'s no current voice', () => {
+          app.speechSynthesisLanguage = langWithNoVoices;
+          app.enabledLangs = [langForDefaultVoice, otherVoice.lang];
+          app.restoreSettingsFromPrefs();
+          assertEquals(defaultVoice, app.getSpeechSynthesisVoice());
         });
 
         test(

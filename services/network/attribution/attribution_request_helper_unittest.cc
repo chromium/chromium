@@ -255,8 +255,6 @@ TEST_F(AttributionCrossAppWebRequestHelperTest,
     resource_request.attribution_reporting_eligibility =
         AttributionReportingEligibility::kEventSource;
     resource_request.attribution_reporting_support = test_case.support;
-    resource_request.attribution_reporting_runtime_features.Put(
-        AttributionReportingRuntimeFeature::kCrossAppWeb);
     SetAttributionReportingHeaders(*request, resource_request);
 
     std::string actual;

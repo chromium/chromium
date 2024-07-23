@@ -67,6 +67,11 @@ public class AccountManagerTestRule implements TestRule {
                     .fullName("Test1 Full")
                     .givenName("Test1 Given")
                     .accountImage(createAvatar())
+                    .accountCapabilities(
+                            new AccountCapabilitiesBuilder()
+                                    .setIsSubjectToParentalControls(true)
+                                    .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
+                                    .build())
                     .build();
 
     public static final AccountInfo TEST_NON_GMAIL_ACCOUNT =

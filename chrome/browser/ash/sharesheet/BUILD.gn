@@ -23,6 +23,7 @@ static_library("sharesheet") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/fusebox",
     "//chrome/browser/profiles",
+    "//chrome/browser/ui/ash/sharesheet",
     "//chromeos/components/sharesheet:constants",
     "//components/services/app_service",
     "//storage/browser",

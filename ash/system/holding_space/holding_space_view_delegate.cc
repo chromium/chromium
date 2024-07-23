@@ -221,23 +221,24 @@ bool HoldingSpaceViewDelegate::OnHoldingSpaceItemViewGestureEvent(
 
   // When a long press or two finger tap gesture occurs we are going to show the
   // context menu. Ensure that the pressed `view` is part of the selection.
-  if (event.type() == ui::ET_GESTURE_LONG_PRESS ||
-      event.type() == ui::ET_GESTURE_TWO_FINGER_TAP) {
+  if (event.type() == ui::EventType::kGestureLongPress ||
+      event.type() == ui::EventType::kGestureTwoFingerTap) {
     view->SetSelected(true);
     return false;
   }
   // If a scroll begin gesture is received while the context menu is showing,
   // that means the user is trying to initiate a drag. Close the context menu
   // and start the item drag.
-  if (event.type() == ui::ET_GESTURE_SCROLL_BEGIN && context_menu_runner_ &&
-      context_menu_runner_->IsRunning()) {
+  if (event.type() == ui::EventType::kGestureScrollBegin &&
+      context_menu_runner_ && context_menu_runner_->IsRunning()) {
     context_menu_runner_.reset();
     view->StartDrag(event, ui::mojom::DragEventSource::kTouch);
     return false;
   }
 
-  if (event.type() != ui::ET_GESTURE_TAP)
+  if (event.type() != ui::EventType::kGestureTap) {
     return false;
+  }
 
   // When a tap gesture occurs and *no* views are currently selected, select and
   // open the tapped `view`. Note that the tap `event` should *not* propagate
@@ -408,8 +409,9 @@ bool HoldingSpaceViewDelegate::OnHoldingSpaceTrayBubbleKeyPressed(
 
 void HoldingSpaceViewDelegate::OnHoldingSpaceTrayChildBubbleGestureEvent(
     const ui::GestureEvent& event) {
-  if (event.type() == ui::ET_GESTURE_TAP)
+  if (event.type() == ui::EventType::kGestureTap) {
     ClearSelection();
+  }
 }
 
 void HoldingSpaceViewDelegate::OnHoldingSpaceTrayChildBubbleMousePressed(
@@ -433,10 +435,10 @@ void HoldingSpaceViewDelegate::ShowContextMenuForViewImpl(
     ui::MenuSourceType source_type) {
   // In touch mode, gesture events continue to be sent to holding space views
   // after showing the context menu so that it can be aborted if the user
-  // initiates a drag sequence. This means both `ui::ET_GESTURE_LONG_TAP` and
-  // `ui::ET_GESTURE_LONG_PRESS` may be received while showing the context menu
-  // which would result in trying to show the context menu twice. This would not
-  // be a fatal failure but would result in UI jank.
+  // initiates a drag sequence. This means both `ui::EventType::kGestureLongTap`
+  // and `ui::EventType::kGestureLongPress` may be received while showing the
+  // context menu which would result in trying to show the context menu twice.
+  // This would not be a fatal failure but would result in UI jank.
   if (context_menu_runner_ && context_menu_runner_->IsRunning())
     return;
 

@@ -20,17 +20,14 @@ public class AdditionalNavigationParams {
     // Parameters related to Attribution Reporting Impressions. May not always
     // be set.
     private final @Nullable UnguessableToken mAttributionSrcToken;
-    private final long mAttributionRuntimeFeatures;
 
     public AdditionalNavigationParams(
             UnguessableToken initiatorFrameToken,
             int initiatorProcessId,
-            @Nullable UnguessableToken attributionSrcToken,
-            long attributionRuntimeFeatures) {
+            @Nullable UnguessableToken attributionSrcToken) {
         mInitiatorFrameToken = initiatorFrameToken;
         mInitiatorProcessId = initiatorProcessId;
         mAttributionSrcToken = attributionSrcToken;
-        mAttributionRuntimeFeatures = attributionRuntimeFeatures;
     }
 
     public UnguessableToken getInitiatorFrameToken() {
@@ -43,9 +40,5 @@ public class AdditionalNavigationParams {
 
     public @Nullable UnguessableToken getAttributionSrcToken() {
         return mAttributionSrcToken;
-    }
-
-    public long getAttributionRuntimeFeatures() {
-        return mAttributionRuntimeFeatures;
     }
 }

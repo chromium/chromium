@@ -629,12 +629,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
   gfx::Rect button_local_bounds =
       result_view->remove_suggestion_button_->GetLocalBounds();
   ui::MouseEvent mouse_pressed_event(
-      ui::ET_MOUSE_PRESSED, button_local_bounds.CenterPoint(),
+      ui::EventType::kMousePressed, button_local_bounds.CenterPoint(),
       button_local_bounds.CenterPoint(), base::TimeTicks(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   result_view->remove_suggestion_button_->OnMousePressed(mouse_pressed_event);
   ui::MouseEvent mouse_released_event(
-      ui::ET_MOUSE_RELEASED, button_local_bounds.CenterPoint(),
+      ui::EventType::kMouseReleased, button_local_bounds.CenterPoint(),
       button_local_bounds.CenterPoint(), base::TimeTicks(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   result_view->remove_suggestion_button_->OnMouseReleased(mouse_released_event);
@@ -672,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   popup_view()->UpdatePopupAppearance();
 
   EXPECT_FALSE(edit_model()->is_keyword_selected());
-  ui::KeyEvent space(ui::ET_KEY_PRESSED, ui::VKEY_SPACE, 0);
+  ui::KeyEvent space(ui::EventType::kKeyPressed, ui::VKEY_SPACE, 0);
   omnibox_view()->OnKeyEvent(&space);
   EXPECT_TRUE(edit_model()->is_keyword_selected());
 }

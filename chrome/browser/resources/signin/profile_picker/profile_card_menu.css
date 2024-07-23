@@ -31,7 +31,7 @@ cr-action-menu {
   font-weight: normal;
 }
 
-#actionMenu iron-icon {
+#actionMenu cr-icon {
   --iron-icon-fill-color: var(--google-grey-700);
   padding-inline-end: 14px;
 }

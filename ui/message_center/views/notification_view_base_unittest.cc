@@ -331,15 +331,16 @@ void NotificationViewBaseTest::DispatchGesture(
 }
 
 void NotificationViewBaseTest::BeginScroll() {
-  DispatchGesture(ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN));
+  DispatchGesture(ui::GestureEventDetails(ui::EventType::kGestureScrollBegin));
 }
 
 void NotificationViewBaseTest::EndScroll() {
-  DispatchGesture(ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
+  DispatchGesture(ui::GestureEventDetails(ui::EventType::kGestureScrollEnd));
 }
 
 void NotificationViewBaseTest::ScrollBy(int dx) {
-  DispatchGesture(ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, dx, 0));
+  DispatchGesture(
+      ui::GestureEventDetails(ui::EventType::kGestureScrollUpdate, dx, 0));
 }
 
 views::View* NotificationViewBaseTest::GetCloseButton() {

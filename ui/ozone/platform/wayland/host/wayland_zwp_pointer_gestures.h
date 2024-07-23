@@ -105,7 +105,7 @@ class WaylandZwpPointerGestures
 class WaylandZwpPointerGestures::Delegate {
  public:
   // Handles the events coming during the pinch zoom session.
-  // |event_type| is one of ET_GESTURE_PINCH_### members.
+  // |event_type| is one of EventType::kGesturePinch### members.
   // |delta| is empty on the BEGIN and END, and shows the movement of the centre
   // of the gesture compared to the previous event.
   // |scale_delta| is the change to the scale compared to the previous event, to

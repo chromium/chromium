@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354693352): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/manta/sparky/sparky_provider.h"
 
 #include <memory>
@@ -132,6 +137,7 @@ void SparkyProvider::OnScreenshotObtained(
     const uint8_t* data_ptr =
         reinterpret_cast<const uint8_t*>(jpeg_screenshot->front());
     size_t data_size = jpeg_screenshot->size();
+    // TODO(crbug.com/354693352): Explicit size when making string is unsafe.
     image_proto->set_serialized_bytes(std::string(
         data_ptr, data_ptr + data_size));  // Construct string from data
   }

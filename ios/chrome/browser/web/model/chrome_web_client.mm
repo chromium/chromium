@@ -69,7 +69,6 @@
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature.h"
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature_factory.h"
 #import "ios/chrome/browser/web/model/print/print_java_script_feature.h"
-#import "ios/chrome/browser/web/model/session_state/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_java_script_feature.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_java_script_feature.h"
 #import "ios/chrome/common/channel_info.h"
@@ -480,12 +479,6 @@ void ChromeWebClient::LogDefaultUserAgent(web::WebState* web_state,
   bool use_desktop_agent = ShouldLoadUrlInDesktopMode(url, settings_map);
   base::UmaHistogramBoolean("IOS.PageLoad.DefaultModeMobile",
                             !use_desktop_agent);
-}
-
-NSData* ChromeWebClient::FetchSessionFromCache(web::WebState* web_state) const {
-  WebSessionStateTabHelper* tab_helper =
-      WebSessionStateTabHelper::FromWebState(web_state);
-  return tab_helper ? tab_helper->FetchSessionFromCache() : nil;
 }
 
 void ChromeWebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {

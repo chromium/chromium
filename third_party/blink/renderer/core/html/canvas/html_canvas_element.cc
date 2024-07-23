@@ -739,8 +739,6 @@ void HTMLCanvasElement::Reset() {
 
   dirty_rect_ = gfx::Rect();
 
-  bool had_resource_provider = HasResourceProvider();
-
   unsigned w = 0;
   AtomicString value = FastGetAttribute(html_names::kWidthAttr);
   if (value.empty() || !ParseHTMLNonNegativeInteger(value, w) ||
@@ -765,7 +763,8 @@ void HTMLCanvasElement::Reset() {
 
   // If the size of an existing buffer matches, we can just clear it instead of
   // reallocating.  This optimization is only done for 2D canvases for now.
-  if (had_resource_provider && old_size == new_size && IsRenderingContext2D()) {
+  if (ResourceProvider() != nullptr && old_size == new_size &&
+      IsRenderingContext2D()) {
     if (!canvas_is_clear_) {
       canvas_is_clear_ = true;
       context_->ClearRect(0, 0, width(), height());
@@ -972,7 +971,8 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
 void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
                                       const PhysicalRect& r) {
   context_->PaintRenderingResultsToCanvas(kFrontBuffer);
-  if (HasResourceProvider()) {
+  CanvasResourceProvider* provider = ResourceProvider();
+  if (provider != nullptr) {
     // For 2D Canvas, there are two ways of render Canvas for printing:
     // display list or image snapshot. Display list allows better PDF printing
     // and we prefer this method.
@@ -988,13 +988,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
     // web test printing/manual/canvas2d-vector-text.html
     // That test should be run manually against CLs that touch this code.
     if (IsPrinting() && IsRenderingContext2D() && canvas2d_bridge_) {
-      canvas2d_bridge_->FlushRecording(FlushReason::kPrinting);
-      CanvasResourceProvider* provider = ResourceProvider();
-      // The provider must be checked after calling `FlushRecording` in case
-      // the playback crashed the context.
-      if (provider == nullptr) {
-        return;
-      }
+      FlushRecording(FlushReason::kPrinting);
       // `FlushRecording` might be a no-op if a flush already happened before.
       // Fortunately, the last flush recording was kept by the provider.
       const std::optional<cc::PaintRecord>& last_recording =
@@ -1937,15 +1931,6 @@ bool HTMLCanvasElement::IsHibernating() const {
 
 bool HTMLCanvasElement::IsAccelerated() const {
   return GetRasterMode() == RasterMode::kGPU;
-}
-
-// Temporary plumbing
-void HTMLCanvasElement::FlushRecording(FlushReason reason) {
-  if (canvas2d_bridge_) {
-    canvas2d_bridge_->FlushRecording(reason);
-  } else {
-    CanvasResourceHost::FlushRecording(reason);
-  }
 }
 
 }  // namespace blink

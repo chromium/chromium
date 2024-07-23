@@ -27,11 +27,11 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_test_utils.h"
+#include "components/optimization_guide/core/model_execution/test/fake_on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
 #include "components/optimization_guide/core/model_execution/test/response_holder.h"
-#include "components/optimization_guide/core/model_execution/test_on_device_model_component.h"
+#include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -3811,6 +3811,20 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationMaximumRetry) {
 
     histogram_tester.ExpectTotalCount(
         "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
+  }
+
+  // After a new version, we should re-check.
+  pref_service_.SetString(
+      model_execution::prefs::localstate::kOnDeviceModelChromeVersion,
+      "OLD_VERSION");
+  {
+    base::HistogramTester histogram_tester;
+    RecreateServiceController();
+    task_environment_.RunUntilIdle();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+        OnDeviceModelValidationResult::kNonMatchingOutput, 1);
   }
 }
 

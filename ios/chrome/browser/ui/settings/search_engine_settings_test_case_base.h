@@ -7,6 +7,7 @@
 
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 
+@protocol GREYMatcher;
 namespace TemplateURLPrepopulateData {
 struct PrepopulatedEngine;
 }  // namespace TemplateURLPrepopulateData
@@ -26,6 +27,9 @@ extern NSString* const kCustomSearchEngineName;
 // This method needs to be overridden by the subclass.
 + (const TemplateURLPrepopulateData::PrepopulatedEngine*)
     secondPrepopulatedSearchEngine;
+
+// Returns edit button matcher.
++ (id<GREYMatcher>)editButtonMatcherWithEnabled:(BOOL)enabled;
 
 // Adds a custom search engine by navigating to a fake search engine page, then
 // enters the search engine screen in Settings.

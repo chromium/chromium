@@ -127,7 +127,7 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
 
   // |touch_id_target_| maps a touch-id to its target window.
   // touch-ids are removed from |touch_id_target_| on
-  // ET_TOUCH_RELEASE and ET_TOUCH_CANCEL.
+  // EventType::kTouchRelease and EventType::kTouchCancel.
   TouchIdToConsumerMap touch_id_target_;
 
   std::vector<raw_ptr<GestureEventHelper, VectorExperimental>> helpers_;

@@ -424,17 +424,17 @@ void Slider::NotifyPendingAccessibilityValueChanged() {
 void Slider::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     // In a multi point gesture only the touch point will generate
-    // an ET_GESTURE_TAP_DOWN event.
-    case ui::ET_GESTURE_TAP_DOWN:
+    // an EventType::kGestureTapDown event.
+    case ui::EventType::kGestureTapDown:
       OnSliderDragStarted();
       PrepareForMove(event->location().x());
       [[fallthrough]];
-    case ui::ET_GESTURE_SCROLL_BEGIN:
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollBegin:
+    case ui::EventType::kGestureScrollUpdate:
       MoveButtonTo(event->location());
       event->SetHandled();
       break;
-    case ui::ET_GESTURE_END:
+    case ui::EventType::kGestureEnd:
       MoveButtonTo(event->location());
       event->SetHandled();
       if (event->details().touch_points() <= 1)

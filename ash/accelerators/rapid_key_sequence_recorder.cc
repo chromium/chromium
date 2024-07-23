@@ -69,7 +69,7 @@ void RapidKeySequenceRecorder::OnPrerewriteKeyInputEvent(
   const bool same_key_pressed_again =
       key_event.code() == last_dom_code_pressed_;
 
-  if (key_event.type() == ui::ET_KEY_RELEASED) {
+  if (key_event.type() == ui::EventType::kKeyReleased) {
     // Reset last_dom_code_pressed_ to NONE to avoid other key
     // pressed in the middle of pressing shift key triggers metrics record.
     if (!same_key_pressed_again) {

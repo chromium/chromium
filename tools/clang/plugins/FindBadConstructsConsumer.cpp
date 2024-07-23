@@ -19,6 +19,23 @@ namespace chrome_checker {
 
 namespace {
 
+// A more efficient alternative to NamedDecl::getQualifiedNameAsString():
+// `hasName(decl, "foo", "Bar") iff
+// `decl->getQualifiedNameAsString() == "foo::Bar".
+bool hasName(const TagDecl* decl,
+             StringRef namespace_name,
+             StringRef decl_name) {
+  if (decl->getName() == decl_name) {
+    auto* nd = clang::dyn_cast<clang::NamespaceDecl>(decl->getParent());
+    while (nd && nd->isInline()) {
+      nd = clang::dyn_cast<clang::NamespaceDecl>(nd->getParent());
+    }
+    return nd && nd->getParent()->getRedeclContext()->isTranslationUnit() &&
+           nd->getName() == namespace_name;
+  }
+  return false;
+}
+
 // Returns the underlying Type for |type| by expanding typedefs and removing
 // any namespace qualifiers. This is similar to desugaring, except that for
 // ElaboratedTypes, desugar will unwrap too much.
@@ -37,7 +54,7 @@ bool InTestingNamespace(const Decl* record) {
 }
 
 bool IsGtestTestFixture(const CXXRecordDecl* decl) {
-  return decl->getQualifiedNameAsString() == "testing::Test";
+  return hasName(decl, "testing", "Test");
 }
 
 bool IsMethodInTestingNamespace(const CXXMethodDecl* method) {
@@ -791,14 +808,12 @@ FindBadConstructsConsumer::ClassifyType(const Type* type) {
         return TypeClassification::kTrivial;
       }
 
-      const auto name = record_decl->getQualifiedNameAsString();
-
       // `std::basic_string` is externed by libc++, so even though it's a
       // non-trivial type wrapped by a template, we shouldn't classify it as a
       // `kNonTrivialTemplate`. The `kNonTrivialExternTemplate` classification
       // exists for this purpose.
       // https://github.com/llvm-mirror/libcxx/blob/78d6a7767ed57b50122a161b91f59f19c9bd0d19/include/string#L4317
-      if (name == "std::basic_string") {
+      if (hasName(record_decl, "std", "basic_string")) {
         return TypeClassification::kNonTrivialExternTemplate;
       }
 
@@ -807,9 +822,9 @@ FindBadConstructsConsumer::ClassifyType(const Type* type) {
       // there are many existing types using this that we don't wish to burden
       // with defining custom ctors/dtors, and we'd rather not vary on
       // triviality by build config, treat this as always trivial.
-      if (name == "base::raw_ptr" ||
+      if (hasName(record_decl, "base", "raw_ptr") ||
           (options_.raw_ref_template_as_trivial_member &&
-           name == "base::raw_ref")) {
+           hasName(record_decl, "base", "raw_ref"))) {
         return TypeClassification::kTrivialTemplate;
       }
 
@@ -1327,17 +1342,7 @@ void FindBadConstructsConsumer::CheckConstructingSpanFromStringLiteral(
     clang::SourceLocation loc) {
   auto* record_decl = clang::cast<clang::RecordDecl>(ctor_decl->getParent());
 
-  bool is_base_span = false;
-  if (record_decl->getName() == "span") {
-    auto* namespace_decl =
-        clang::dyn_cast<clang::NamespaceDecl>(record_decl->getParent());
-    if (namespace_decl && namespace_decl->getName() == "base") {
-      if (clang::isa<clang::TranslationUnitDecl>(namespace_decl->getParent())) {
-        is_base_span = true;
-      }
-    }
-  }
-  if (!is_base_span) {
+  if (!hasName(record_decl, "base", "span")) {
     return;
   }
 

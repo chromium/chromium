@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354691088): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/history_clusters/history_clusters_internals/webui/history_clusters_internals_ui.h"
 
 #include "components/grit/history_clusters_internals_resources.h"
@@ -16,6 +21,7 @@ HistoryClustersInternalsUI::HistoryClustersInternalsUI(
     : MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
       history_clusters_service_(history_clusters_service),
       history_service_(history_service) {
+  // TODO(crbug.com/354691088): Explicit use of size when making span is unsafe.
   std::move(set_up_data_source_callback)
       .Run(base::make_span(kHistoryClustersInternalsResources,
                            kHistoryClustersInternalsResourcesSize),

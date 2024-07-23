@@ -37,11 +37,6 @@ SnoopingProtectionView::SnoopingProtectionView(Shelf* shelf)
   controller_observation_.Observe(controller);
 
   SetVisible(controller->SnooperPresent());
-  if (!chromeos::features::IsJellyEnabled()) {
-    image_view()->SetImage(ui::ImageModel::FromVectorIcon(
-        kSystemTraySnoopingProtectionIcon, kColorAshIconColorPrimary,
-        kUnifiedTrayIconSize));
-  }
   UpdateLabelOrImageViewColor(/*active=*/false);
   image_view()->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_SYSTEM_TRAY_TOOLTIP_TEXT));
@@ -52,9 +47,6 @@ SnoopingProtectionView::~SnoopingProtectionView() = default;
 void SnoopingProtectionView::HandleLocaleChange() {}
 
 void SnoopingProtectionView::UpdateLabelOrImageViewColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
   image_view()->SetImage(ui::ImageModel::FromVectorIcon(

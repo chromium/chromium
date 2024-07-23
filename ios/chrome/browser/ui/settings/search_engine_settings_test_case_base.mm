@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/search_engine_settings_test_case_base.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
+#import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -112,6 +113,17 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 + (const TemplateURLPrepopulateData::PrepopulatedEngine*)
     secondPrepopulatedSearchEngine {
   return nil;
+}
+
++ (id<GREYMatcher>)editButtonMatcherWithEnabled:(BOOL)enabled {
+  id<GREYMatcher> enabledMatcher =
+      enabled
+          ? grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled))
+          : grey_accessibilityTrait(UIAccessibilityTraitNotEnabled);
+  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                        IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
+                    grey_accessibilityID(kSettingsToolbarEditButtonId),
+                    enabledMatcher, nil);
 }
 
 - (void)startHTTPServer {

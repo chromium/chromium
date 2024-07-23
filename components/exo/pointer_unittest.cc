@@ -1129,7 +1129,7 @@ TEST_P(PointerTest, DragDropAndPointerEnterLeaveEvents_NoOpOnTouchDrag) {
   EXPECT_TRUE(seat_->get_drag_drop_operation_for_testing());
 
   // Initiate the gesture sequence.
-  DispatchGesture(ui::ET_GESTURE_BEGIN, gfx::Point(10, 10));
+  DispatchGesture(ui::EventType::kGestureBegin, gfx::Point(10, 10));
 
   // As soon as the runloop gets triggered, emit a mouse release event.
   drag_drop_controller->SetLoopClosureForTesting(
@@ -1528,7 +1528,7 @@ TEST_P(PointerOrdinalMotionTest, OrdinalMotionOverridesRelativeMotion) {
 
   // By default, ordinal and relative are the same.
   gfx::Point new_location = origin + gfx::Vector2d(1, 1);
-  ui::MouseEvent ev1(ui::ET_MOUSE_MOVED, new_location, new_location,
+  ui::MouseEvent ev1(ui::EventType::kMouseMoved, new_location, new_location,
                      ui::EventTimeForNow(), generator.flags(), 0);
   EXPECT_CALL(relative_delegate,
               OnPointerRelativeMotion(testing::_, gfx::Vector2dF(1, 1),
@@ -1537,7 +1537,7 @@ TEST_P(PointerOrdinalMotionTest, OrdinalMotionOverridesRelativeMotion) {
 
   // When set, ordinal overrides the relative motion.
   new_location = new_location + gfx::Vector2d(1, 1);
-  ui::MouseEvent ev2(ui::ET_MOUSE_MOVED, new_location, new_location,
+  ui::MouseEvent ev2(ui::EventType::kMouseMoved, new_location, new_location,
                      ui::EventTimeForNow(), generator.flags(), 0);
   ui::MouseEvent::DispatcherApi(&ev2).set_movement(gfx::Vector2dF(99, 99));
   EXPECT_CALL(relative_delegate,
@@ -1919,7 +1919,7 @@ TEST_P(PointerConstraintTest, DeskSwitchSwipeGesture) {
   // sequence.
   int kNumFingersForDesksSwitch = 4;
   base::TimeTicks timestamp = ui::EventTimeForNow();
-  ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gfx::Point(),
+  ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel, gfx::Point(),
                                timestamp, 0, 0, 0, 0, 0,
                                kNumFingersForDesksSwitch);
   generator_->Dispatch(&fling_cancel);
@@ -1934,8 +1934,8 @@ TEST_P(PointerConstraintTest, DeskSwitchSwipeGesture) {
   const int initial_move_x =
       (ash::WmGestureHandler::kContinuousGestureMoveThresholdDp + 5) *
       direction;
-  ui::ScrollEvent initial_move(ui::ET_SCROLL, gfx::Point(), timestamp, 0,
-                               initial_move_x, 0, initial_move_x, 0,
+  ui::ScrollEvent initial_move(ui::EventType::kScroll, gfx::Point(), timestamp,
+                               0, initial_move_x, 0, initial_move_x, 0,
                                kNumFingersForDesksSwitch);
   generator_->Dispatch(&initial_move);
 
@@ -1961,13 +1961,13 @@ TEST_P(PointerConstraintTest, DeskSwitchSwipeGesture) {
     float dx = x_offset / steps;
     for (int i = 0; i < steps; ++i) {
       timestamp += step_delay;
-      ui::ScrollEvent move(ui::ET_SCROLL, gfx::Point(), timestamp, 0, dx, 0, dx,
-                           0, kNumFingersForDesksSwitch);
+      ui::ScrollEvent move(ui::EventType::kScroll, gfx::Point(), timestamp, 0,
+                           dx, 0, dx, 0, kNumFingersForDesksSwitch);
       generator_->Dispatch(&move);
     }
 
     // End the swipe and wait for the animation to finish.
-    ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, gfx::Point(),
+    ui::ScrollEvent fling_start(ui::EventType::kScrollFlingStart, gfx::Point(),
                                 timestamp, 0, x_offset, 0, x_offset, 0,
                                 kNumFingersForDesksSwitch);
     ash::DeskSwitchAnimationWaiter animation_finished_waiter;
@@ -2043,7 +2043,7 @@ TEST_P(PointerTest, PointerStylus2) {
   EXPECT_CALL(delegate, OnPointerFrame()).Times(1);
   EXPECT_CALL(stylus_delegate, OnPointerToolChange(ui::EventPointerType::kPen));
 
-  ui::MouseEvent ev1(ui::ET_MOUSE_PRESSED, location, location,
+  ui::MouseEvent ev1(ui::EventType::kMousePressed, location, location,
                      ui::EventTimeForNow(), generator.flags(), 0,
                      ui::PointerDetails(ui::EventPointerType::kPen));
   generator.Dispatch(&ev1);

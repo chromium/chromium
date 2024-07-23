@@ -807,7 +807,7 @@ void WaylandDataDragController::DispatchPointerRelease(
     base::TimeTicks timestamp) {
   DCHECK(pointer_grabber_for_window_drag_);
   pointer_delegate_->OnPointerButtonEvent(
-      ET_MOUSE_RELEASED, EF_LEFT_MOUSE_BUTTON, timestamp,
+      EventType::kMouseReleased, EF_LEFT_MOUSE_BUTTON, timestamp,
       pointer_grabber_for_window_drag_, wl::EventDispatchPolicy::kImmediate,
       /*allow_release_of_unpressed_button=*/true,
       /*is_synthesized=*/true);

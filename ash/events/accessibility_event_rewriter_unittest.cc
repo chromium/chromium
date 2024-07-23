@@ -373,11 +373,11 @@ TEST_P(ChromeVoxAccessibilityEventRewriterTest,
   EXPECT_EQ(2, event_recorder().events_seen());
 
   accessibility_event_rewriter().OnUnhandledSpokenFeedbackEvent(
-      std::make_unique<ui::KeyEvent>(ui::ET_KEY_PRESSED, ui::VKEY_A,
+      std::make_unique<ui::KeyEvent>(ui::EventType::kKeyPressed, ui::VKEY_A,
                                      ui::EF_NONE));
   EXPECT_EQ(3, event_recorder().events_seen());
   accessibility_event_rewriter().OnUnhandledSpokenFeedbackEvent(
-      std::make_unique<ui::KeyEvent>(ui::ET_KEY_RELEASED, ui::VKEY_A,
+      std::make_unique<ui::KeyEvent>(ui::EventType::kKeyReleased, ui::VKEY_A,
                                      ui::EF_NONE));
   EXPECT_EQ(4, event_recorder().events_seen());
 }
@@ -525,7 +525,7 @@ TEST_P(ChromeVoxAccessibilityEventRewriterTest,
 
   // Bracket right is a dom code which always causes an absolute key code to be
   // sent to ChromeVox. The key code below is irrelevant.
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A,
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A,
                          ui::DomCode::BRACKET_RIGHT, ui::EF_NONE);
   AccessibilityEventRewriter::Continuation continuation;
   RewriteEventForChromeVox(key_event, continuation);

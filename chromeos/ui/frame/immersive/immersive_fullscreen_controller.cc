@@ -180,24 +180,24 @@ void ImmersiveFullscreenController::OnGestureEvent(ui::GestureEvent* event) {
     return;
 
   switch (event->type()) {
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       if (ShouldHandleGestureEvent(
               event->target()->GetScreenLocation(*event))) {
         gesture_begun_ = true;
         // Do not consume the event. Otherwise, we end up consuming all
-        // ui::ET_GESTURE_SCROLL_BEGIN events in the top-of-window views
+        // ui::EventType::kGestureScrollBegin events in the top-of-window views
         // when the top-of-window views are revealed.
       }
       break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       if (gesture_begun_) {
         if (UpdateRevealedLocksForSwipe(GetSwipeType(*event)))
           event->SetHandled();
         gesture_begun_ = false;
       }
       break;
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kGestureScrollEnd:
+    case ui::EventType::kScrollFlingStart:
       gesture_begun_ = false;
       break;
     default:
@@ -335,8 +335,9 @@ void ImmersiveFullscreenController::EnableEventObservers(bool enable) {
   if (enable) {
     immersive_focus_watcher_ = std::make_unique<ImmersiveFocusWatcher>(this);
     std::set<ui::EventType> types = {
-        ui::ET_MOUSE_MOVED, ui::ET_MOUSE_PRESSED,         ui::ET_MOUSE_RELEASED,
-        ui::ET_MOUSEWHEEL,  ui::ET_MOUSE_CAPTURE_CHANGED, ui::ET_TOUCH_PRESSED};
+        ui::EventType::kMouseMoved,          ui::EventType::kMousePressed,
+        ui::EventType::kMouseReleased,       ui::EventType::kMousewheel,
+        ui::EventType::kMouseCaptureChanged, ui::EventType::kTouchPressed};
     env->AddEventObserver(this, env, types);
     window->AddPreTargetHandler(this);
   } else {
@@ -355,10 +356,10 @@ void ImmersiveFullscreenController::HandleMouseEvent(
   if (!enabled_)
     return;
 
-  if (event.type() != ui::ET_MOUSE_MOVED &&
-      event.type() != ui::ET_MOUSE_PRESSED &&
-      event.type() != ui::ET_MOUSE_RELEASED &&
-      event.type() != ui::ET_MOUSE_CAPTURE_CHANGED) {
+  if (event.type() != ui::EventType::kMouseMoved &&
+      event.type() != ui::EventType::kMousePressed &&
+      event.type() != ui::EventType::kMouseReleased &&
+      event.type() != ui::EventType::kMouseCaptureChanged) {
     return;
   }
 
@@ -367,7 +368,7 @@ void ImmersiveFullscreenController::HandleMouseEvent(
   if (reveal_state_ == SLIDING_OPEN || reveal_state_ == REVEALED) {
     top_edge_hover_timer_.Stop();
     UpdateLocatedEventRevealedLock(&event, location_in_screen);
-  } else if (event.type() != ui::ET_MOUSE_CAPTURE_CHANGED) {
+  } else if (event.type() != ui::EventType::kMouseCaptureChanged) {
     // Trigger reveal if the cursor pauses at the top of the screen for a while.
     UpdateTopEdgeHoverTimer(event, location_in_screen, target);
   }
@@ -376,8 +377,9 @@ void ImmersiveFullscreenController::HandleMouseEvent(
 void ImmersiveFullscreenController::HandleTouchEvent(
     const ui::TouchEvent& event,
     const gfx::Point& location_in_screen) {
-  if (!enabled_ || event.type() != ui::ET_TOUCH_PRESSED)
+  if (!enabled_ || event.type() != ui::EventType::kTouchPressed) {
     return;
+  }
 
   // Touch should not initiate revealing the top-of-window views while |widget_|
   // is inactive.
@@ -478,7 +480,7 @@ void ImmersiveFullscreenController::UpdateLocatedEventRevealedLock(
     // sliding closed. In the case of ImmersiveModeControllerAsh, this helps
     // when the user is attempting to click on the bookmark bar and
     // overshoots slightly.
-    if (event && event->type() == ui::ET_MOUSE_MOVED) {
+    if (event && event->type() == ui::EventType::kMouseMoved) {
       const int kBoundsOffsetY = 8;
       hit_bounds_in_screen[i].Inset(
           gfx::Insets::TLBR(0, 0, -kBoundsOffsetY, 0));
@@ -653,8 +655,9 @@ void ImmersiveFullscreenController::OnSlideClosedAnimationCompleted() {
 ImmersiveFullscreenController::SwipeType
 ImmersiveFullscreenController::GetSwipeType(
     const ui::GestureEvent& event) const {
-  if (event.type() != ui::ET_GESTURE_SCROLL_UPDATE)
+  if (event.type() != ui::EventType::kGestureScrollUpdate) {
     return SWIPE_NONE;
+  }
   // Make sure that it is a clear vertical gesture.
   if (std::abs(event.details().scroll_y()) <=
       kSwipeVerticalThresholdMultiplier * std::abs(event.details().scroll_x()))

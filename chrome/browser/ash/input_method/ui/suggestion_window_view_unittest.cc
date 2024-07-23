@@ -401,8 +401,9 @@ TEST_P(SuggestionWindowViewTest,
        SendsCorrectWindowTypeForLearnMoreButtonClick) {
   window_.type = ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
   suggestion_window_view_->ShowMultipleCandidates(window_, GetParam());
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), ui::EF_NONE,
+                             ui::EF_NONE);
 
   views::test::ButtonTestApi(
       suggestion_window_view_->learn_more_button_for_testing())

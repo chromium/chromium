@@ -205,23 +205,24 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // Called when |contents_| scrolled. This can be triggered by each single
   // event that is able to scroll the contents. KeyEvents like ui::VKEY_LEFT,
-  // ui::VKEY_RIGHT, or only ui::ET_MOUSEWHEEL will only trigger this function
-  // but not OnContentsScrollEnded below, since they do not belong to any
-  // events sequence. This function will also be triggered by each
-  // ui::ET_GESTURE_SCROLL_UPDATE event in the gesture scroll sequence or
-  // each ui::ET_MOUSEWHEEL event that associated with the ScrollEvent in the
-  // scroll events sequence while the OnContentsScrollEnded below will only be
-  // triggered once at the end of the events sequence.
+  // ui::VKEY_RIGHT, or only ui::EventType::kMousewheel will only trigger this
+  // function but not OnContentsScrollEnded below, since they do not belong to
+  // any events sequence. This function will also be triggered by each
+  // ui::EventType::kGestureScrollUpdate event in the gesture scroll sequence or
+  // each ui::EventType::kMousewheel event that associated with the ScrollEvent
+  // in the scroll events sequence while the OnContentsScrollEnded below will
+  // only be triggered once at the end of the events sequence.
   base::CallbackListSubscription AddContentsScrolledCallback(
       ScrollViewCallback callback);
 
   // Called at the end of a sequence of events that are generated to scroll
-  // the contents. The gesture scroll sequence {ui::ET_GESTURE_SCROLL_BEGIN,
-  // ui::ET_GESTURE_SCROLL_UPDATE, ..., ui::ET_GESTURE_SCROLL_UPDATE,
-  // ui::ET_GESTURE_SCROLL_END or ui::ET_SCROLL_FLING_START} or the scroll
-  // events sequence {ui::ET_SCROLL_FLING_CANCEL, ui::ET_SCROLL, ...,
-  // ui::ET_SCROLL, ui::ET_SCROLL_FLING_START} both will trigger this function
-  // on the events sequence end.
+  // the contents. The gesture scroll sequence
+  // {ui::EventType::kGestureScrollBegin, ui::EventType::kGestureScrollUpdate,
+  // ..., ui::EventType::kGestureScrollUpdate, ui::EventType::kGestureScrollEnd
+  // or ui::EventType::kScrollFlingStart} or the scroll events sequence
+  // {ui::EventType::kScrollFlingCancel, ui::EventType::kScroll, ...,
+  // ui::EventType::kScroll, ui::EventType::kScrollFlingStart} both will trigger
+  // this function on the events sequence end.
   base::CallbackListSubscription AddContentsScrollEndedCallback(
       ScrollViewCallback callback);
 

@@ -106,12 +106,12 @@ void ShelfTooltipManager::ShowTooltipWithDelay(views::View* view) {
 }
 
 void ShelfTooltipManager::OnMouseEvent(ui::MouseEvent* event) {
-  if (bubble_ && event->type() == ui::ET_MOUSE_PRESSED) {
+  if (bubble_ && event->type() == ui::EventType::kMousePressed) {
     ProcessPressedEvent(*event);
     return;
   }
 
-  if (bubble_ && event->type() == ui::ET_MOUSE_EXITED &&
+  if (bubble_ && event->type() == ui::EventType::kMouseExited &&
       bubble_->ShouldCloseOnMouseExit()) {
     Close();
     return;
@@ -125,7 +125,7 @@ void ShelfTooltipManager::OnMouseEvent(ui::MouseEvent* event) {
   views::View* delegate_view = shelf_tooltip_delegate_->GetViewForEvent(*event);
 
   // The code below handles mouse move events within the shelf window.
-  if (event->type() != ui::ET_MOUSE_MOVED || !delegate_view) {
+  if (event->type() != ui::EventType::kMouseMoved || !delegate_view) {
     // Don't show delayed tooltips if the mouse is being active elsewhere.
     timer_.Stop();
     return;
@@ -148,8 +148,9 @@ void ShelfTooltipManager::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void ShelfTooltipManager::OnTouchEvent(ui::TouchEvent* event) {
-  if (bubble_ && event->type() == ui::ET_TOUCH_PRESSED)
+  if (bubble_ && event->type() == ui::EventType::kTouchPressed) {
     ProcessPressedEvent(*event);
+  }
 }
 
 void ShelfTooltipManager::OnScrollEvent(ui::ScrollEvent* event) {

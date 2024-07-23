@@ -43,19 +43,20 @@ TEST_F(AuthIconViewTest, OnGestureEvent) {
   EXPECT_FALSE(on_tap_or_click_callback_called_);
   ui::GestureEvent scroll_begin(
       /*x=*/0, /*y=*/0, /*flags=*/0, /*time_stamp=*/base::TimeTicks(),
-      /*details=*/ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 0, 1));
+      /*details=*/
+      ui::GestureEventDetails(ui::EventType::kGestureScrollBegin, 0, 1));
   auth_icon_view_->OnGestureEvent(&scroll_begin);
   EXPECT_FALSE(on_tap_or_click_callback_called_);
   ui::GestureEvent tap(
       /*x=*/0, /*y=*/0, /*flags=*/0, /*time_stamp=*/base::TimeTicks(),
-      /*details=*/ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+      /*details=*/ui::GestureEventDetails(ui::EventType::kGestureTap));
   auth_icon_view_->OnGestureEvent(&tap);
   EXPECT_TRUE(on_tap_or_click_callback_called_);
 }
 
 TEST_F(AuthIconViewTest, OnMousePressed) {
-  ui::MouseEvent mouse(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
-                       base::TimeTicks(), 0, 0);
+  ui::MouseEvent mouse(ui::EventType::kMousePressed, gfx::PointF(),
+                       gfx::PointF(), base::TimeTicks(), 0, 0);
   EXPECT_FALSE(auth_icon_view_->OnMousePressed(mouse));
   auth_icon_view_->set_on_tap_or_click_callback(base::BindRepeating(
       &AuthIconViewTest::OnTapOrClickCallback, base::Unretained(this)));

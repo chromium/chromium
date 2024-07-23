@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -599,7 +600,7 @@ void MediaFileSystemRegistry::OnPermissionRemoved(
   Profile* profile = prefs->profile();
   ExtensionGalleriesHostMap::const_iterator host_map_it =
       extension_hosts_map_.find(profile);
-  DCHECK(host_map_it != extension_hosts_map_.end());
+  CHECK(host_map_it != extension_hosts_map_.end(), base::NotFatalUntil::M130);
   const ExtensionHostMap& extension_host_map = host_map_it->second;
   auto gallery_host_it = extension_host_map.find(extension_id);
   if (gallery_host_it == extension_host_map.end())
@@ -617,7 +618,7 @@ void MediaFileSystemRegistry::OnGalleryRemoved(
       extensions::ExtensionRegistry::Get(profile);
   ExtensionGalleriesHostMap::const_iterator host_map_it =
       extension_hosts_map_.find(profile);
-  DCHECK(host_map_it != extension_hosts_map_.end());
+  CHECK(host_map_it != extension_hosts_map_.end(), base::NotFatalUntil::M130);
   const ExtensionHostMap& extension_host_map = host_map_it->second;
 
   // Go through ExtensionHosts, and remove indicated gallery, if any.
@@ -647,7 +648,8 @@ ExtensionGalleriesHost* MediaFileSystemRegistry::GetExtensionGalleryHost(
   auto extension_hosts = extension_hosts_map_.find(profile);
   // GetPreferences(), which had to be called because preferences is an
   // argument, ensures that profile is in the map.
-  DCHECK(extension_hosts != extension_hosts_map_.end());
+  CHECK(extension_hosts != extension_hosts_map_.end(),
+        base::NotFatalUntil::M130);
   if (extension_hosts->second.empty())
     preferences->AddGalleryChangeObserver(this);
 
@@ -671,7 +673,8 @@ void MediaFileSystemRegistry::OnExtensionGalleriesHostEmpty(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto extension_hosts = extension_hosts_map_.find(profile);
-  DCHECK(extension_hosts != extension_hosts_map_.end());
+  CHECK(extension_hosts != extension_hosts_map_.end(),
+        base::NotFatalUntil::M130);
   ExtensionHostMap::size_type erase_count =
       extension_hosts->second.erase(extension_id);
   DCHECK_EQ(1U, erase_count);
@@ -689,11 +692,13 @@ void MediaFileSystemRegistry::OnProfileShutdown(Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto extension_hosts_it = extension_hosts_map_.find(profile);
-  DCHECK(extension_hosts_it != extension_hosts_map_.end());
+  CHECK(extension_hosts_it != extension_hosts_map_.end(),
+        base::NotFatalUntil::M130);
   extension_hosts_map_.erase(extension_hosts_it);
 
   auto profile_subscription_it = profile_subscription_map_.find(profile);
-  DCHECK(profile_subscription_it != profile_subscription_map_.end());
+  CHECK(profile_subscription_it != profile_subscription_map_.end(),
+        base::NotFatalUntil::M130);
   profile_subscription_map_.erase(profile_subscription_it);
 }
 

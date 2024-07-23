@@ -6,8 +6,6 @@
 
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/views/webauthn/reveal_button_util.h"
-#include "chrome/grit/generated_resources.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -20,7 +18,6 @@ constexpr int kBetweenChildSpacing = 8;
 AuthenticatorGPMPinView::AuthenticatorGPMPinView(int pin_digits_count,
                                                  bool ui_disabled,
                                                  const std::u16string& pin,
-                                                 bool is_pin_creation,
                                                  Delegate* delegate)
     : delegate_(delegate) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
@@ -31,9 +28,8 @@ AuthenticatorGPMPinView::AuthenticatorGPMPinView(int pin_digits_count,
 
   auto pin_textfield = std::make_unique<PinTextfield>(pin_digits_count);
   pin_textfield->SetController(this);
-  pin_textfield->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
-      is_pin_creation ? IDS_WEBAUTHN_GPM_CREATE_SIX_DIGIT_PIN_ACCESSIBILITY
-                      : IDS_WEBAUTHN_GPM_ENTER_SIX_DIGIT_PIN_ACCESSIBILITY));
+  pin_textfield->GetViewAccessibility().SetName(
+      delegate_->GetPinAccessibleName());
   pin_textfield->SetDisabled(ui_disabled);
   pin_textfield->SetPin(pin);
   pin_textfield->SetEnabled(!ui_disabled);
@@ -53,7 +49,7 @@ void AuthenticatorGPMPinView::RequestFocus() {
 
 bool AuthenticatorGPMPinView::HandleKeyEvent(views::Textfield* textfield,
                                              const ui::KeyEvent& event) {
-  if (event.type() != ui::ET_KEY_PRESSED) {
+  if (event.type() != ui::EventType::kKeyPressed) {
     return false;
   }
 
@@ -70,12 +66,22 @@ bool AuthenticatorGPMPinView::HandleKeyEvent(views::Textfield* textfield,
 
   if (pin_changed) {
     delegate_->OnPinChanged(pin_textfield_->GetPin());
+
+    // The view might be destroyed in `OnPinChanged` (e.g. after typing last
+    // digit during UV).
+    if (!weak_this) {
+      return true;
+    }
+
+    // Pin textfield accessibility label contains information about the
+    // currently focused digit.
+    pin_textfield_->GetViewAccessibility().SetName(
+        delegate_->GetPinAccessibleName());
   }
 
   // This might result in recreating this view if the hint visibility changes,
-  // hence it should be the last call in this function. The view might have also
-  // been destroyed in `OnPinChanged`, hence the need to check the weak ptr.
-  if (weak_this && base::IsAsciiPrintable(c)) {
+  // hence it should be the last call in this function.
+  if (base::IsAsciiPrintable(c)) {
     delegate_->PinCharTyped(is_digit);
   }
 

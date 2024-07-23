@@ -26,7 +26,8 @@
 namespace {
 // Constants used by the ResizeAreaTest.SuccessfulGestureDrag test to simulate
 // a gesture drag by |kGestureScrollDistance| resulting from
-// |kGestureScrollSteps| ui::ET_GESTURE_SCROLL_UPDATE events being delivered.
+// |kGestureScrollSteps| ui::EventType::kGestureScrollUpdate events being
+// delivered.
 const int kGestureScrollDistance = 100;
 const int kGestureScrollSteps = 4;
 const int kDistancePerGestureScrollUpdate =
@@ -98,7 +99,7 @@ class ResizeAreaTest : public ViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 
-  // The number of ui::ET_GESTURE_SCROLL_UPDATE events seen by
+  // The number of ui::EventType::kGestureScrollUpdate events seen by
   // ProcessGesture().
   int gesture_scroll_updates_seen_ = 0;
 };
@@ -109,16 +110,16 @@ ResizeAreaTest::~ResizeAreaTest() = default;
 
 void ResizeAreaTest::ProcessGesture(ui::EventType type,
                                     const gfx::Vector2dF& delta) {
-  if (type == ui::ET_GESTURE_SCROLL_BEGIN) {
+  if (type == ui::EventType::kGestureScrollBegin) {
     EXPECT_FALSE(done_resizing());
     EXPECT_FALSE(on_resize_called());
-  } else if (type == ui::ET_GESTURE_SCROLL_UPDATE) {
+  } else if (type == ui::EventType::kGestureScrollUpdate) {
     gesture_scroll_updates_seen_++;
     EXPECT_EQ(kDistancePerGestureScrollUpdate * gesture_scroll_updates_seen_,
               resize_amount());
     EXPECT_FALSE(done_resizing());
     EXPECT_TRUE(on_resize_called());
-  } else if (type == ui::ET_GESTURE_SCROLL_END) {
+  } else if (type == ui::EventType::kGestureScrollEnd) {
     EXPECT_TRUE(done_resizing());
   }
 }

@@ -383,7 +383,7 @@ std::optional<AcceleratorConfigResult> ValidateAccelerator(
       key_code_entry = FindKeyCodeEntry(accelerator.key_code());
   if (key_code_entry.has_value()) {
     const ui::KeyEvent key_event(
-        ui::ET_KEY_PRESSED, key_code_entry->resulting_key_code,
+        ui::EventType::kKeyPressed, key_code_entry->resulting_key_code,
         key_code_entry->dom_code, accelerator.modifiers());
     const AcceleratorKeyInputType input_type =
         GetKeyInputTypeFromKeyEvent(key_event);

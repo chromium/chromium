@@ -267,9 +267,11 @@ class InteractionTestUtilSimulatorBrowser
       return ui::test::ActionResult::kNotAttempted;
     auto* const view = element->AsA<views::TrackedElementViews>()->view();
     if (auto* const omnibox = views::AsViewClass<OmniboxViewViews>(view)) {
-      ui::KeyEvent press(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::EF_NONE);
+      ui::KeyEvent press(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                         ui::EF_NONE);
       omnibox->OnKeyEvent(&press);
-      ui::KeyEvent release(ui::ET_KEY_RELEASED, ui::VKEY_RETURN, ui::EF_NONE);
+      ui::KeyEvent release(ui::EventType::kKeyReleased, ui::VKEY_RETURN,
+                           ui::EF_NONE);
       omnibox->OnKeyEvent(&release);
       return ui::test::ActionResult::kSucceeded;
     }

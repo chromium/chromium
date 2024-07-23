@@ -43,10 +43,14 @@ source_set("browser_instance") {
     ]
 
     # TODO(crbug.com/1402145): Remove circular dependencies.
-    allow_circular_includes_from = [ "//chrome/browser/ash/crosapi" ]
+    allow_circular_includes_from = [
+      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ui/ash/shelf",
+    ]
 
     deps += [
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ui/ash/shelf",
       "//components/exo",
     ]
   }

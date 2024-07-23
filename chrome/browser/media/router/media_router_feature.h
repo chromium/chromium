@@ -53,6 +53,11 @@ BASE_DECLARE_FEATURE(kDialMediaRouteProvider);
 // until explicit user interaction with the Cast feature.
 BASE_DECLARE_FEATURE(kDelayMediaSinkDiscovery);
 
+// If enabled, the Cast or Global Media Controls UI shows error messages when
+// Chrome doesn't have necessary permission for discovery devices connected to
+// the local network.
+BASE_DECLARE_FEATURE(kShowCastPermissionRejectedError);
+
 // If enabled, sinks that do not support presentation or remote playback, will
 // fall back to audio tab mirroring when casting from the Global Media Controls.
 BASE_DECLARE_FEATURE(kFallbackToAudioTabMirroring);
@@ -67,6 +72,11 @@ BASE_DECLARE_FEATURE(kCastMirroringPlayoutDelay);
 // TODO(crbug.com/1508704): Remove the flag when confident that the default-
 // enabled feature is not causing a regression.
 BASE_DECLARE_FEATURE(kCastSilentlyRemoveVcOnNavigation);
+
+#if BUILDFLAG(IS_MAC)
+// If enabled, Chrome uses the Network Framework API for discovery on Mac.
+BASE_DECLARE_FEATURE(kUseNetworkFrameworkForCastDiscovery);
+#endif
 
 extern const base::FeatureParam<int> kCastMirroringPlayoutDelayMs;
 

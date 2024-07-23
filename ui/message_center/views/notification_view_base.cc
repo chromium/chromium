@@ -261,7 +261,7 @@ void NotificationViewBase::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void NotificationViewBase::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_LONG_TAP) {
+  if (event->type() == ui::EventType::kGestureLongTap) {
     ToggleInlineSettings(*event);
     return;
   }

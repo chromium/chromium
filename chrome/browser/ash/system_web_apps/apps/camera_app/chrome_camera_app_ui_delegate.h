@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/webui/camera_app_ui/camera_app_ui_delegate.h"
 #include "ash/webui/camera_app_ui/pdf_builder.mojom.h"
 #include "base/containers/flat_map.h"
@@ -200,7 +199,6 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   ~ChromeCameraAppUIDelegate() override;
 
   // ash::CameraAppUIDelegate
-  ash::HoldingSpaceClient* GetHoldingSpaceClient() override;
   void SetLaunchDirectory() override;
   void PopulateLoadTimeData(content::WebUIDataSource* source) override;
   bool IsMetricsAndCrashReportingEnabled() override;

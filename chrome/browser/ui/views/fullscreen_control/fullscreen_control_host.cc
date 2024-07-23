@@ -85,8 +85,9 @@ FullscreenControlHost::FullscreenControlHost(BrowserView* browser_view)
   if (IsFullscreenExitUIEnabled()) {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this, browser_view->GetNativeWindow(),
-        {ui::ET_MOUSE_MOVED, ui::ET_KEY_PRESSED, ui::ET_KEY_RELEASED,
-         ui::ET_TOUCH_PRESSED, ui::ET_GESTURE_LONG_PRESS});
+        {ui::EventType::kMouseMoved, ui::EventType::kKeyPressed,
+         ui::EventType::kKeyReleased, ui::EventType::kTouchPressed,
+         ui::EventType::kGestureLongPress});
   }
 }
 
@@ -145,7 +146,7 @@ void FullscreenControlHost::OnKeyEvent(const ui::KeyEvent& event) {
   // Note: This logic handles the UI feedback element used when holding down the
   // esc key, however the logic for exiting fullscreen is handled by the
   // KeyboardLockController class.
-  if (event.type() == ui::ET_KEY_PRESSED &&
+  if (event.type() == ui::EventType::kKeyPressed &&
       !key_press_delay_timer_.IsRunning() &&
       exclusive_access_manager->keyboard_lock_controller()
           ->RequiresPressAndHoldEscToExit()) {
@@ -153,7 +154,7 @@ void FullscreenControlHost::OnKeyEvent(const ui::KeyEvent& event) {
         FROM_HERE, kKeyPressPopupDelay,
         base::BindOnce(&FullscreenControlHost::ShowForInputEntryMethod,
                        base::Unretained(this), InputEntryMethod::KEYBOARD));
-  } else if (event.type() == ui::ET_KEY_RELEASED) {
+  } else if (event.type() == ui::EventType::kKeyReleased) {
     key_press_delay_timer_.Stop();
     if (IsVisible() && input_entry_method_ == InputEntryMethod::KEYBOARD)
       Hide(true);
@@ -164,7 +165,7 @@ void FullscreenControlHost::OnMouseEvent(const ui::MouseEvent& event) {
   if (!IsExitUiEnabled())
     return;
 
-  if (event.type() != ui::ET_MOUSE_MOVED || IsAnimating() ||
+  if (event.type() != ui::EventType::kMouseMoved || IsAnimating() ||
       (input_entry_method_ != InputEntryMethod::NOT_ACTIVE &&
        input_entry_method_ != InputEntryMethod::MOUSE)) {
     return;
@@ -213,15 +214,16 @@ void FullscreenControlHost::OnTouchEvent(const ui::TouchEvent& event) {
   DCHECK(IsVisible());
 
   // Hide the popup if it is showing and the user touches outside of the popup.
-  if (event.type() == ui::ET_TOUCH_PRESSED && !IsAnimating())
+  if (event.type() == ui::EventType::kTouchPressed && !IsAnimating()) {
     Hide(true);
+  }
 }
 
 void FullscreenControlHost::OnGestureEvent(const ui::GestureEvent& event) {
   if (!IsExitUiEnabled())
     return;
 
-  if (event.type() == ui::ET_GESTURE_LONG_PRESS && IsExitUiNeeded() &&
+  if (event.type() == ui::EventType::kGestureLongPress && IsExitUiNeeded() &&
       !IsVisible()) {
     ShowForInputEntryMethod(InputEntryMethod::TOUCH);
   }

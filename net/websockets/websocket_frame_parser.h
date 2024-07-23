@@ -36,7 +36,7 @@ class NET_EXPORT WebSocketFrameParser {
 
   // Decodes the given byte stream and stores parsed WebSocket frames in
   // |frame_chunks|.
-  // Each WebSocketFrameChunk's payload is a subspan of [data, data + length).
+  // Each WebSocketFrameChunk's payload is a subspan of data_span.
   // Thus callers must take care of its lifecycle.
   //
   // If the parser encounters invalid payload length format, Decode() fails
@@ -45,8 +45,7 @@ class NET_EXPORT WebSocketFrameParser {
   //
   // Payload data of parsed WebSocket frames may be incomplete; see comments in
   // websocket_frame.h for more details.
-  bool Decode(const char* data,
-              size_t length,
+  bool Decode(base::span<const uint8_t> data_span,
               std::vector<std::unique_ptr<WebSocketFrameChunk>>* frame_chunks);
 
   // Returns kWebSocketNormalClosure if the parser has not failed to decode
@@ -73,10 +72,10 @@ class NET_EXPORT WebSocketFrameParser {
   // |current_frame_header_|, |frame_offset_| and |masking_key_|.
   std::unique_ptr<WebSocketFrameChunk> DecodeFramePayload(
       bool first_chunk,
-      base::span<const char>* data);
+      base::span<const uint8_t>* data);
 
   // Internal buffer to store the data to parse header.
-  std::vector<char> incomplete_header_buffer_;
+  std::vector<uint8_t> incomplete_header_buffer_;
 
   // Frame header and masking key of the current frame.
   // |masking_key_| is filled with zeros if the current frame is not masked.

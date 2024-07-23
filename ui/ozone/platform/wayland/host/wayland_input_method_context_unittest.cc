@@ -1898,8 +1898,8 @@ std::unique_ptr<KeyEvent> CreateKeyEventForCharacterComposer(
     DomCode dom_code,
     DomKey dom_key) {
   auto event =
-      std::make_unique<KeyEvent>(ET_KEY_PRESSED, keyboard_code, dom_code,
-                                 EF_NONE, dom_key, EventTimeForNow());
+      std::make_unique<KeyEvent>(EventType::kKeyPressed, keyboard_code,
+                                 dom_code, EF_NONE, dom_key, EventTimeForNow());
   // We need to set this flag to make sure the event is sent to
   // CharacterComposer.
   ui::SetKeyboardImeFlags(event.get(), ui::kPropertyKeyboardImeIgnoredFlag);

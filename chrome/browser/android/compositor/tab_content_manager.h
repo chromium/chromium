@@ -119,6 +119,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
       const base::android::JavaParamRef<jobject>& tab);
   std::unique_ptr<thumbnail::ThumbnailCaptureTracker, base::OnTaskRunnerDeleter>
   TrackCapture(thumbnail::TabId tab_id);
+  void CleanupTrackers();
   void OnTrackingFinished(int tab_id,
                           thumbnail::ThumbnailCaptureTracker* tracker);
   void OnTabReadback(int tab_id,

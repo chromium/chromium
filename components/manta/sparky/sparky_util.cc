@@ -155,14 +155,9 @@ proto::Role GetRole(Role role) {
 }
 
 void AddSettingProto(const SettingsData& setting,
-                     ::manta::proto::Setting* setting_proto) {
-  auto setting_type = VerifyValueAndConvertPrefTypeToSettingType(
-      setting.pref_type, setting.GetValue());
-  if (setting_type == std::nullopt) {
-    DVLOG(1) << "Invalid setting type for" << setting.pref_name;
-    return;
-  }
-  setting_proto->set_type(setting_type.value());
+                     ::manta::proto::Setting* setting_proto,
+                     SettingType setting_type) {
+  setting_proto->set_type(setting_type);
   setting_proto->set_settings_id(setting.pref_name);
   auto* settings_value = setting_proto->mutable_value();
   if (setting.pref_type == PrefType::kBoolean) {
@@ -179,8 +174,14 @@ void AddSettingProto(const SettingsData& setting,
 void AddSettingsProto(const SparkyDelegate::SettingsDataList& settings_list,
                       ::manta::proto::SettingsData* settings_data) {
   for (auto const& [pref_name, setting] : settings_list) {
+    auto setting_type = VerifyValueAndConvertPrefTypeToSettingType(
+        setting->pref_type, setting->GetValue());
+    if (setting_type == std::nullopt) {
+      DVLOG(1) << "Invalid setting type for" << setting->pref_name;
+      continue;
+    }
     auto* setting_data = settings_data->add_setting();
-    AddSettingProto(*setting, setting_data);
+    AddSettingProto(*setting, setting_data, setting_type.value());
   }
 }
 
@@ -310,8 +311,17 @@ void AddDialogToSparkyContext(const std::vector<DialogTurn>& dialog,
         action_proto->set_launch_app_id(action.launched_app);
       } else if (action.type == ActionType::kSetting &&
                  action.updated_setting.has_value()) {
+        auto setting_type = VerifyValueAndConvertPrefTypeToSettingType(
+            action.updated_setting.value().pref_type,
+            action.updated_setting.value().GetValue());
+        if (setting_type == std::nullopt) {
+          DVLOG(1) << "Invalid setting type for"
+                   << action.updated_setting.value().pref_name;
+          continue;
+        }
         auto* setting_proto = action_proto->mutable_update_setting();
-        AddSettingProto(action.updated_setting.value(), setting_proto);
+        AddSettingProto(action.updated_setting.value(), setting_proto,
+                        setting_type.value());
       }
     }
   }

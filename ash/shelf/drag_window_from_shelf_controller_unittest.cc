@@ -1324,11 +1324,11 @@ TEST_F(DragWindowFromShelfControllerTest,
       overview_controller->overview_session()->GetGridWithRootWindow(
           Shell::GetPrimaryRootWindow());
   EXPECT_TRUE(overview_grid);
-  ASSERT_EQ(1u, overview_grid->window_list().size());
-
-  auto* overview_item = overview_grid->window_list()[0].get();
+  const auto& overview_items = overview_grid->item_list();
+  ASSERT_EQ(1u, overview_items.size());
 
   // Press on `overview_item` to exit overview mode and show windows.
+  auto* overview_item = overview_items[0].get();
   auto* event_generator = GetEventGenerator();
   event_generator->set_current_screen_location(
       gfx::ToRoundedPoint(overview_item->GetTransformedBounds().CenterPoint()));

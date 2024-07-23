@@ -27,20 +27,20 @@ namespace {
 
 ui::EventType GetMouseEventType(const std::string& type) {
   if (type == protocol::DOM::MouseEvent::TypeEnum::MousePressed)
-    return ui::ET_MOUSE_PRESSED;
+    return ui::EventType::kMousePressed;
   if (type == protocol::DOM::MouseEvent::TypeEnum::MouseDragged)
-    return ui::ET_MOUSE_DRAGGED;
+    return ui::EventType::kMouseDragged;
   if (type == protocol::DOM::MouseEvent::TypeEnum::MouseReleased)
-    return ui::ET_MOUSE_RELEASED;
+    return ui::EventType::kMouseReleased;
   if (type == protocol::DOM::MouseEvent::TypeEnum::MouseMoved)
-    return ui::ET_MOUSE_MOVED;
+    return ui::EventType::kMouseMoved;
   if (type == protocol::DOM::MouseEvent::TypeEnum::MouseEntered)
-    return ui::ET_MOUSE_ENTERED;
+    return ui::EventType::kMouseEntered;
   if (type == protocol::DOM::MouseEvent::TypeEnum::MouseExited)
-    return ui::ET_MOUSE_EXITED;
+    return ui::EventType::kMouseExited;
   if (type == protocol::DOM::MouseEvent::TypeEnum::MouseWheel)
-    return ui::ET_MOUSEWHEEL;
-  return ui::ET_UNKNOWN;
+    return ui::EventType::kMousewheel;
+  return ui::EventType::kUnknown;
 }
 
 int GetButtonFlags(const std::string& button) {
@@ -187,10 +187,11 @@ bool ViewElement::FindMatchByElementID(
 bool ViewElement::DispatchMouseEvent(protocol::DOM::MouseEvent* event) {
   ui::EventType event_type = GetMouseEventType(event->getType());
   int button_flags = GetButtonFlags(event->getButton());
-  if (event_type == ui::ET_UNKNOWN)
+  if (event_type == ui::EventType::kUnknown) {
     return false;
+  }
   gfx::Point location(event->getX(), event->getY());
-  if (event_type == ui::ET_MOUSEWHEEL) {
+  if (event_type == ui::EventType::kMousewheel) {
     int x_offset = GetMouseWheelXOffset(event->getWheelDirection());
     int y_offset = GetMouseWheelYOffset(event->getWheelDirection());
     ui::MouseWheelEvent mouse_wheel_event(

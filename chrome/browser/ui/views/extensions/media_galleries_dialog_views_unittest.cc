@@ -126,7 +126,7 @@ TEST_F(MediaGalleriesDialogTest, ToggleCheckboxes) {
 
   EXPECT_CALL(*controller(), DidToggleEntry(1, false));
   views::test::ButtonTestApi test_api(checkbox());
-  ui::KeyEvent dummy_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  ui::KeyEvent dummy_event(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
   test_api.NotifyClick(dummy_event);  // Toggles to unchecked before notifying.
 
   EXPECT_CALL(*controller(), DidToggleEntry(1, true));

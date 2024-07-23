@@ -94,7 +94,7 @@ void PopupSearchBarView::OnDidChangeFocus(views::View* focused_before,
 
 bool PopupSearchBarView::HandleKeyEvent(views::Textfield* sender,
                                         const ui::KeyEvent& key_event) {
-  if (key_event.type() == ui::ET_KEY_PRESSED) {
+  if (key_event.type() == ui::EventType::kKeyPressed) {
     return delegate_->SearchBarHandleKeyPressed(key_event);
   }
   return false;

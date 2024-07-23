@@ -69,25 +69,15 @@ suite('ReadAloudHighlight', () => {
     chrome.readingMode.setContentForTesting(axTree, leafIds);
   });
 
-  suite('on speak first sentence', () => {
-    let currentHighlight: HTMLElement|null;
-    let previousHighlight: HTMLElement|null;
+  test('on speak first sentence highlights are correct', () => {
+    app.playSpeech();
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    const previousHighlight =
+        app.$.container.querySelector('.previous-read-highlight');
 
-    setup(() => {
-      app.playSpeech();
-      currentHighlight =
-          app.$.container.querySelector('.current-read-highlight');
-      previousHighlight =
-          app.$.container.querySelector('.previous-read-highlight');
-    });
-
-    test('sentence is highlighted', () => {
-      assertEquals(sentence1, currentHighlight!.textContent);
-    });
-
-    test('no previous highlight', () => {
-      assertFalse(!!previousHighlight);
-    });
+    assertEquals(sentence1, currentHighlight!.textContent);
+    assertFalse(!!previousHighlight);
   });
 
   suite('on sentence spread across multiple segments', () => {
@@ -129,26 +119,16 @@ suite('ReadAloudHighlight', () => {
     });
   });
 
-  suite('on speak next sentence', () => {
-    let currentHighlight: HTMLElement|null;
-    let previousHighlight: HTMLElement|null;
+  test('on speak next sentence highlights are correct', () => {
+    app.playSpeech();
+    emitNextGranularity();
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    const previousHighlight =
+        app.$.container.querySelector('.previous-read-highlight');
 
-    setup(() => {
-      app.playSpeech();
-      emitNextGranularity();
-      currentHighlight =
-          app.$.container.querySelector('.current-read-highlight');
-      previousHighlight =
-          app.$.container.querySelector('.previous-read-highlight');
-    });
-
-    test('sentence is highlighted', () => {
-      assertEquals(sentence2, currentHighlight!.textContent);
-    });
-
-    test('previous sentence has highlight', () => {
-      assertEquals(sentence1, previousHighlight!.textContent);
-    });
+    assertEquals(sentence2, currentHighlight!.textContent);
+    assertEquals(sentence1, previousHighlight!.textContent);
   });
 
   suite('on finish speaking', () => {
@@ -167,12 +147,10 @@ suite('ReadAloudHighlight', () => {
           app.$.container.querySelectorAll('.previous-read-highlight');
     });
 
-    test('no highlights', () => {
+    test('no highlights and keeps content', () => {
       assertFalse(!!currentHighlight);
       assertEquals(0, previousHighlights.length);
-    });
 
-    test('text content is still there', () => {
       const expectedText =
           sentence1 + sentence2 + sentenceSegment1 + sentenceSegment2;
       assertEquals(expectedText, app.$.container.textContent);
@@ -199,11 +177,8 @@ suite('ReadAloudHighlight', () => {
           app.$.container.querySelectorAll('.previous-read-highlight');
     });
 
-    test('previous sentence is now current', () => {
+    test('previous sentence is now current and nothing marked previous', () => {
       assertEquals(sentence1, currentHighlight!.textContent);
-    });
-
-    test('nothing marked previous', () => {
       assertEquals(0, previousHighlights.length);
     });
 

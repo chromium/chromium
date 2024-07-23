@@ -1091,8 +1091,9 @@ bool AXMediaAppUntrustedHandler::HasRendererTerminatedDueToBadPageId(
     const std::string& method_name,
     const std::string& page_id) {
   if (!page_metadata_.contains(page_id)) {
-    const std::string error_str = std::format(
-        "`{}` called with previously non-existent page ID", method_name);
+    const std::string error_str =
+        base::StringPrintf("`%s` called with previously non-existent page ID",
+                           method_name.c_str());
     if (bad_message_callback_ && !(*bad_message_callback_).is_null()) {
       std::move(*bad_message_callback_).Run(error_str);
     } else {

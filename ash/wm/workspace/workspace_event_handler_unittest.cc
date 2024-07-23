@@ -39,10 +39,10 @@ void ClickButtonWithFlags(ui::test::EventGenerator* generator,
                           int button,
                           int flags) {
   gfx::Point location = generator->current_screen_location();
-  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, location, location,
+  ui::MouseEvent press(ui::EventType::kMousePressed, location, location,
                        ui::EventTimeForNow(), button | flags, button);
   generator->Dispatch(&press);
-  ui::MouseEvent release(ui::ET_MOUSE_RELEASED, location, location,
+  ui::MouseEvent release(ui::EventType::kMouseReleased, location, location,
                          ui::EventTimeForNow(), button | flags, button);
   generator->Dispatch(&release);
 }

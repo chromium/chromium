@@ -308,7 +308,7 @@ void Event::SetType(EventType type) {
 // CancelModeEvent
 
 CancelModeEvent::CancelModeEvent()
-    : Event(ET_CANCEL_MODE, base::TimeTicks(), 0) {
+    : Event(EventType::kCancelMode, base::TimeTicks(), 0) {
   set_cancelable(false);
 }
 
@@ -385,12 +385,13 @@ MouseEvent::MouseEvent(EventType type,
     : LocatedEvent(type, location, root_location, time_stamp, flags),
       changed_button_flags_(changed_button_flags),
       pointer_details_(pointer_details) {
-  DCHECK_NE(ET_MOUSEWHEEL, type);
+  DCHECK_NE(EventType::kMousewheel, type);
   DCHECK_EQ(changed_button_flags_,
             changed_button_flags_ & kChangedButtonFlagMask);
   latency()->AddLatencyNumber(INPUT_EVENT_LATENCY_UI_COMPONENT);
-  if (this->type() == ET_MOUSE_MOVED && IsAnyButton())
-    SetType(ET_MOUSE_DRAGGED);
+  if (this->type() == EventType::kMouseMoved && IsAnyButton()) {
+    SetType(EventType::kMouseDragged);
+  }
 }
 
 MouseEvent::MouseEvent(EventType type,
@@ -413,7 +414,8 @@ MouseEvent::MouseEvent(const MouseEvent& other) = default;
 MouseEvent::~MouseEvent() = default;
 
 void MouseEvent::InitializeNative() {
-  if (type() == ET_MOUSE_PRESSED || type() == ET_MOUSE_RELEASED) {
+  if (type() == EventType::kMousePressed ||
+      type() == EventType::kMouseReleased) {
     SetClickCount(GetRepeatCount(*this));
   }
 }
@@ -425,8 +427,10 @@ bool MouseEvent::IsRepeatedClickEvent(const MouseEvent& event1,
   static const int kDoubleClickWidth = 4;
   static const int kDoubleClickHeight = 4;
 
-  if (event1.type() != ET_MOUSE_PRESSED || event2.type() != ET_MOUSE_PRESSED)
+  if (event1.type() != EventType::kMousePressed ||
+      event2.type() != EventType::kMousePressed) {
     return false;
+  }
 
   // Compare flags, but ignore EF_IS_DOUBLE_CLICK to allow triple clicks.
   if ((event1.flags() & ~EF_IS_DOUBLE_CLICK) !=
@@ -450,7 +454,7 @@ bool MouseEvent::IsRepeatedClickEvent(const MouseEvent& event1,
 int MouseEvent::GetRepeatCount(const MouseEvent& event) {
   int click_count = 1;
   if (last_click_event_) {
-    if (event.type() == ET_MOUSE_RELEASED) {
+    if (event.type() == EventType::kMouseReleased) {
       if (event.changed_button_flags() ==
           last_click_event_->changed_button_flags()) {
         return last_click_event_->GetClickCount();
@@ -486,8 +490,10 @@ void MouseEvent::ResetLastClickForTest() {
 MouseEvent* MouseEvent::last_click_event_ = nullptr;
 
 int MouseEvent::GetClickCount() const {
-  if (type() != ET_MOUSE_PRESSED && type() != ET_MOUSE_RELEASED)
+  if (type() != EventType::kMousePressed &&
+      type() != EventType::kMouseReleased) {
     return 0;
+  }
 
   if (flags() & EF_IS_TRIPLE_CLICK)
     return 3;
@@ -498,8 +504,10 @@ int MouseEvent::GetClickCount() const {
 }
 
 void MouseEvent::SetClickCount(int click_count) {
-  if (type() != ET_MOUSE_PRESSED && type() != ET_MOUSE_RELEASED)
+  if (type() != EventType::kMousePressed &&
+      type() != EventType::kMouseReleased) {
     return;
+  }
 
   DCHECK_LT(0, click_count);
   DCHECK_GE(3, click_count);
@@ -547,21 +555,21 @@ MouseWheelEvent::MouseWheelEvent(const ScrollEvent& scroll_event)
     : MouseEvent(scroll_event),
       offset_(base::ClampRound(scroll_event.x_offset()),
               base::ClampRound(scroll_event.y_offset())) {
-  SetType(ET_MOUSEWHEEL);
+  SetType(EventType::kMousewheel);
 }
 
 MouseWheelEvent::MouseWheelEvent(const MouseEvent& mouse_event,
                                  int x_offset,
                                  int y_offset)
     : MouseEvent(mouse_event), offset_(x_offset, y_offset) {
-  SetType(ET_MOUSEWHEEL);
+  SetType(EventType::kMousewheel);
 }
 
 MouseWheelEvent::MouseWheelEvent(const MouseWheelEvent& mouse_wheel_event)
     : MouseEvent(mouse_wheel_event),
       offset_(mouse_wheel_event.offset()),
       tick_120ths_(mouse_wheel_event.tick_120ths()) {
-  DCHECK_EQ(ET_MOUSEWHEEL, type());
+  DCHECK_EQ(EventType::kMousewheel, type());
 }
 
 MouseWheelEvent::MouseWheelEvent(const gfx::Vector2d& offset,
@@ -571,17 +579,17 @@ MouseWheelEvent::MouseWheelEvent(const gfx::Vector2d& offset,
                                  int flags,
                                  int changed_button_flags,
                                  const std::optional<gfx::Vector2d> tick_120ths)
-    : MouseEvent(ET_UNKNOWN,
+    : MouseEvent(EventType::kUnknown,
                  location,
                  root_location,
                  time_stamp,
                  flags,
                  changed_button_flags),
       offset_(offset) {
-  // Set event type to ET_UNKNOWN initially in MouseEvent() to pass the
+  // Set event type to EventType::kUnknown initially in MouseEvent() to pass the
   // DCHECK for type to enforce that we use MouseWheelEvent() to create
   // a MouseWheelEvent.
-  SetType(ET_MOUSEWHEEL);
+  SetType(EventType::kMousewheel);
 
   if (!tick_120ths) {
     // Since no wheel ticks have been specified, assume that scrolling is linear
@@ -859,7 +867,7 @@ KeyEvent KeyEvent::FromCharacter(char16_t character,
                                  DomCode code,
                                  int flags,
                                  base::TimeTicks time_stamp) {
-  return KeyEvent(ET_KEY_PRESSED, key_code, code, flags,
+  return KeyEvent(EventType::kKeyPressed, key_code, code, flags,
                   DomKey::FromCharacter(character), time_stamp, true);
 }
 
@@ -918,8 +926,8 @@ void KeyEvent::ApplyLayout() const {
   // so this is a synthetic or native keystroke event.
   // Therefore, perform only the fallback action.
   if (IsPlatformEventValid(native_event())) {
-    DCHECK(EventTypeFromNative(native_event()) == ET_KEY_PRESSED ||
-           EventTypeFromNative(native_event()) == ET_KEY_RELEASED);
+    DCHECK(EventTypeFromNative(native_event()) == EventType::kKeyPressed ||
+           EventTypeFromNative(native_event()) == EventType::kKeyReleased);
   }
 #endif
 
@@ -936,13 +944,13 @@ bool KeyEvent::IsRepeated(KeyEvent** last_key_event) {
 
   if (is_char())
     return false;
-  if (type() == ET_KEY_RELEASED) {
+  if (type() == EventType::kKeyReleased) {
     delete *last_key_event;
     *last_key_event = nullptr;
     return false;
   }
 
-  CHECK_EQ(ET_KEY_PRESSED, type());
+  CHECK_EQ(EventType::kKeyPressed, type());
   KeyEvent* last = *last_key_event;
 
   if (!last) {
@@ -1089,10 +1097,11 @@ void KeyEvent::NormalizeFlags() {
     default:
       return;
   }
-  if (type() == ET_KEY_PRESSED)
+  if (type() == EventType::kKeyPressed) {
     SetFlags(flags() | mask);
-  else
+  } else {
     SetFlags(flags() & ~mask);
+  }
 }
 
 std::string KeyEvent::ToString() const {
@@ -1149,11 +1158,11 @@ ScrollEvent::ScrollEvent(const PlatformEvent& native_event)
       scroll_event_phase_(ScrollEventPhase::kNone) {
   // TODO(bokan): This should be populating the |scroll_event_phase_| member but
   // currently isn't.
-  if (type() == ET_SCROLL) {
+  if (type() == EventType::kScroll) {
     GetScrollOffsets(native_event, &x_offset_, &y_offset_, &x_offset_ordinal_,
                      &y_offset_ordinal_, &finger_count_, &momentum_phase_);
-  } else if (type() == ET_SCROLL_FLING_START ||
-             type() == ET_SCROLL_FLING_CANCEL) {
+  } else if (type() == EventType::kScrollFlingStart ||
+             type() == EventType::kScrollFlingCancel) {
     GetFlingData(native_event, &x_offset_, &y_offset_, &x_offset_ordinal_,
                  &y_offset_ordinal_, nullptr);
   } else {

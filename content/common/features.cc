@@ -24,12 +24,6 @@ BASE_FEATURE(kAndroidDownloadableFontsMatching,
              "AndroidDownloadableFontsMatching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables exposure of the Cross App Web Attribution Reporting in the renderer
-// without an origin trial token.
-BASE_FEATURE(kAttributionReportingCrossAppWebOverride,
-             "AttributionReportingCrossAppWebOverride",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables controlling the time to live for pages in the BackForwardCache.
 // The time to live is defined by the param 'time_to_live_seconds'; if this
 // param is not specified then this feature is ignored and the default is used.

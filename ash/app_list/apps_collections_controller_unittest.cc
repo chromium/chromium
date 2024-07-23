@@ -166,7 +166,7 @@ TEST_F(AppsCollectionsControllerTest,
   ui::test::EventGenerator* generator = GetEventGenerator();
   ui::GestureEvent long_press(
       empty_space.x(), empty_space.y(), 0, base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   generator->Dispatch(&long_press);
   GetAppListTestHelper()->WaitUntilIdle();
 

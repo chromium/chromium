@@ -65,6 +65,12 @@ class ProductSpecificationsEntryPointController
   // been clicked (4) is no longer valid.
   virtual void OnEntryPointHidden();
 
+  // The moment when (1) the entry point being triggered to show and (2) the
+  // entry point becoming eligible to show on the UI-side could be different.
+  // This method allows the entry point to check if it should still show when it
+  // becomes eligible to show on the UI side.
+  virtual bool ShouldExecuteEntryPointShow();
+
   // ClusterManager::Observer
   void OnClusterFinishedForNavigation(const GURL& url) override;
 

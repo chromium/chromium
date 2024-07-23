@@ -166,12 +166,13 @@ void InputMethodTestInterfaceAsh::SetComposition(
 
 void InputMethodTestInterfaceAsh::SendKeyEvent(mojom::KeyEventPtr event,
                                                SendKeyEventCallback callback) {
-  ui::KeyEvent key_press(
-      event->type == mojom::KeyEventType::kKeyPress ? ui::ET_KEY_PRESSED
-                                                    : ui::ET_KEY_RELEASED,
-      static_cast<ui::KeyboardCode>(event->key_code),
-      static_cast<ui::DomCode>(event->dom_code), event->flags,
-      static_cast<ui::DomKey>(event->dom_key), ui::EventTimeForNow());
+  ui::KeyEvent key_press(event->type == mojom::KeyEventType::kKeyPress
+                             ? ui::EventType::kKeyPressed
+                             : ui::EventType::kKeyReleased,
+                         static_cast<ui::KeyboardCode>(event->key_code),
+                         static_cast<ui::DomCode>(event->dom_code),
+                         event->flags, static_cast<ui::DomKey>(event->dom_key),
+                         ui::EventTimeForNow());
   text_input_target_->SendKeyEvent(&key_press);
   std::move(callback).Run(fake_text_input_method_.GetCurrentKeyEventId());
 }

@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/customize_chrome_colors.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_string_map.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -136,13 +137,15 @@ WallpaperSearchHandler::WallpaperSearchHandler(
     Profile* profile,
     image_fetcher::ImageDecoder* image_decoder,
     WallpaperSearchBackgroundManager* wallpaper_search_background_manager,
-    int64_t session_id)
+    int64_t session_id,
+    WallpaperSearchStringMap* string_map)
     : profile_(profile),
       data_decoder_(std::make_unique<data_decoder::DataDecoder>()),
       image_decoder_(*image_decoder),
       wallpaper_search_background_manager_(
           *wallpaper_search_background_manager),
       session_id_(session_id),
+      string_map_(*string_map),
       client_(std::move(pending_client)),
       receiver_(this, std::move(pending_handler)) {
   wallpaper_search_background_manager_observation_.Observe(
@@ -659,15 +662,22 @@ void WallpaperSearchHandler::OnDescriptorsJsonParsed(
       if (!category || !label_values) {
         continue;
       }
+      auto category_label = string_map_->FindCategory(*category);
+      if (!category_label) {
+        continue;
+      }
       auto mojo_group = side_panel::customize_chrome::mojom::Group::New();
-      // TODO(b/324632645): Translate.
-      mojo_group->category = *category;
+      mojo_group->category = *category_label;
       std::vector<side_panel::customize_chrome::mojom::KeyLabelPtr>
           mojo_descriptor_a_list;
       for (const auto& label_value : *label_values) {
-        // TODO(b/324632645): Translate.
+        auto descriptor_a_label =
+            string_map_->FindDescriptorA(label_value.GetString());
+        if (!descriptor_a_label) {
+          continue;
+        }
         mojo_descriptor_a_list.push_back(
-            MakeKeyLabel(label_value.GetString(), label_value.GetString()));
+            MakeKeyLabel(label_value.GetString(), *descriptor_a_label));
       }
       mojo_group->descriptor_as = std::move(mojo_descriptor_a_list);
       mojo_group_list.push_back(std::move(mojo_group));
@@ -688,9 +698,12 @@ void WallpaperSearchHandler::OnDescriptorsJsonParsed(
       }
       auto mojo_descriptor_b =
           side_panel::customize_chrome::mojom::DescriptorB::New();
+      auto descriptor_b_label = string_map_->FindDescriptorB(*label);
+      if (!descriptor_b_label) {
+        continue;
+      }
       mojo_descriptor_b->key = *label;
-      // TODO(b/324632645): Translate.
-      mojo_descriptor_b->label = *label;
+      mojo_descriptor_b->label = *descriptor_b_label;
       mojo_descriptor_b->image_path =
           base::StrCat({kGstaticBaseURL, *image_path});
       mojo_descriptor_b_list.push_back(std::move(mojo_descriptor_b));
@@ -701,9 +714,13 @@ void WallpaperSearchHandler::OnDescriptorsJsonParsed(
       mojo_descriptor_c_list;
   if (descriptor_c_labels) {
     for (const auto& label_value : *descriptor_c_labels) {
-      // TODO(b/324632645): Translate.
+      auto descriptor_c_label =
+          string_map_->FindDescriptorC(label_value.GetString());
+      if (!descriptor_c_label) {
+        continue;
+      }
       mojo_descriptor_c_list.push_back(
-          MakeKeyLabel(label_value.GetString(), label_value.GetString()));
+          MakeKeyLabel(label_value.GetString(), *descriptor_c_label));
     }
   }
   mojo_descriptors->descriptor_c = std::move(mojo_descriptor_c_list);
@@ -824,24 +841,33 @@ void WallpaperSearchHandler::OnInspirationsJsonParsed(
     if (!images || !descriptor_a) {
       continue;
     }
+    auto descriptor_a_label = string_map_->FindDescriptorA(*descriptor_a);
+    if (!descriptor_a_label) {
+      continue;
+    }
     auto mojo_inspiration_group =
         side_panel::customize_chrome::mojom::InspirationGroup::New();
     mojo_inspiration_group->descriptors =
         side_panel::customize_chrome::mojom::InspirationDescriptors::New();
-    // TODO(b/324632645): Translate.
     mojo_inspiration_group->descriptors->subject =
-        MakeKeyLabel(*descriptor_a, *descriptor_a);
+        MakeKeyLabel(*descriptor_a, *descriptor_a_label);
     if (const std::string* descriptor_b =
             inspiration_dict.FindString("descriptor_b")) {
-      // TODO(b/324632645): Translate.
+      auto descriptor_b_label = string_map_->FindDescriptorB(*descriptor_b);
+      if (!descriptor_b_label) {
+        continue;
+      }
       mojo_inspiration_group->descriptors->style =
-          MakeKeyLabel(*descriptor_b, *descriptor_b);
+          MakeKeyLabel(*descriptor_b, *descriptor_b_label);
     }
     if (const std::string* descriptor_c =
             inspiration_dict.FindString("descriptor_c")) {
-      // TODO(b/324632645): Translate.
+      auto descriptor_c_label = string_map_->FindDescriptorC(*descriptor_c);
+      if (!descriptor_c_label) {
+        continue;
+      }
       mojo_inspiration_group->descriptors->mood =
-          MakeKeyLabel(*descriptor_c, *descriptor_c);
+          MakeKeyLabel(*descriptor_c, *descriptor_c_label);
     }
     if (const base::Value::Dict* descriptor_d_dict =
             inspiration_dict.FindDict("descriptor_d")) {
@@ -861,9 +887,12 @@ void WallpaperSearchHandler::OnInspirationsJsonParsed(
           image_dict.FindString("background_image");
       const std::string* thumbnail_image =
           image_dict.FindString("thumbnail_image");
-      const std::string* description = image_dict.FindString("description");
       const std::string* id_string = image_dict.FindString("id");
-      if (!background_image || !thumbnail_image || !description || !id_string) {
+      if (!background_image || !thumbnail_image || !id_string) {
+        continue;
+      }
+      auto description = string_map_->FindInspirationDescription(*id_string);
+      if (!description) {
         continue;
       }
       const std::optional<base::Token> id_token =

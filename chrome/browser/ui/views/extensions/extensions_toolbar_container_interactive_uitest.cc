@@ -109,10 +109,10 @@ class ExtensionsToolbarContainerUITest : public ExtensionsToolbarUITest {
   }
 
   void ClickOnAction(ToolbarActionView* action) {
-    ui::MouseEvent click_down_event(ui::ET_MOUSE_PRESSED, gfx::Point(),
+    ui::MouseEvent click_down_event(ui::EventType::kMousePressed, gfx::Point(),
                                     gfx::Point(), base::TimeTicks(),
                                     ui::EF_LEFT_MOUSE_BUTTON, 0);
-    ui::MouseEvent click_up_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
+    ui::MouseEvent click_up_event(ui::EventType::kMouseReleased, gfx::Point(),
                                   gfx::Point(), base::TimeTicks(),
                                   ui::EF_LEFT_MOUSE_BUTTON, 0);
     action->OnMouseEvent(&click_down_event);

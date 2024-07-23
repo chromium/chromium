@@ -10,10 +10,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/model/session_service_ios.h"
+#import "ios/chrome/browser/sessions/model/web_session_state_cache.h"
+#import "ios/chrome/browser/sessions/model/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web/model/session_state/web_session_state_cache.h"
-#import "ios/chrome/browser/web/model/session_state/web_session_state_tab_helper.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state.h"
@@ -232,7 +232,8 @@ LegacySessionRestorationService::CreateUnrealizedWebState(
       web::WebState::CreateParams(browser->GetBrowserState()),
       [[CRWSessionStorage alloc] initWithProto:storage
                               uniqueIdentifier:web::WebStateID::NewUnique()
-                              stableIdentifier:[[NSUUID UUID] UUIDString]]);
+                              stableIdentifier:[[NSUUID UUID] UUIDString]],
+      base::ReturnValueOnce<NSData*>(nil));
 }
 
 void LegacySessionRestorationService::DeleteDataForDiscardedSessions(

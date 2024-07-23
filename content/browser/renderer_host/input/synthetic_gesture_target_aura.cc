@@ -45,20 +45,20 @@ enum class TouchEventCoordinateSystem { SCREEN_COORDINATES, LOCAL_COORDINATES };
 ui::EventType WebTouchPointStateToEventType(blink::WebTouchPoint::State state) {
   switch (state) {
     case blink::WebTouchPoint::State::kStateReleased:
-      return ui::ET_TOUCH_RELEASED;
+      return ui::EventType::kTouchReleased;
 
     case blink::WebTouchPoint::State::kStatePressed:
-      return ui::ET_TOUCH_PRESSED;
+      return ui::EventType::kTouchPressed;
 
     case blink::WebTouchPoint::State::kStateMoved:
-      return ui::ET_TOUCH_MOVED;
+      return ui::EventType::kTouchMoved;
 
     case blink::WebTouchPoint::State::kStateCancelled:
-      return ui::ET_TOUCH_CANCELLED;
+      return ui::EventType::kTouchCancelled;
 
     case blink::WebTouchPoint::State::kStateStationary:
     case blink::WebTouchPoint::State::kStateUndefined:
-      return ui::ET_UNKNOWN;
+      return ui::EventType::kUnknown;
   }
 }
 
@@ -77,19 +77,19 @@ bool MakeUITouchEventsFromWebTouchEvents(
     std::vector<std::unique_ptr<ui::TouchEvent>>* list,
     TouchEventCoordinateSystem coordinate_system) {
   const blink::WebTouchEvent& touch = touch_with_latency.event;
-  ui::EventType type = ui::ET_UNKNOWN;
+  ui::EventType type = ui::EventType::kUnknown;
   switch (touch.GetType()) {
     case blink::WebInputEvent::Type::kTouchStart:
-      type = ui::ET_TOUCH_PRESSED;
+      type = ui::EventType::kTouchPressed;
       break;
     case blink::WebInputEvent::Type::kTouchEnd:
-      type = ui::ET_TOUCH_RELEASED;
+      type = ui::EventType::kTouchReleased;
       break;
     case blink::WebInputEvent::Type::kTouchMove:
-      type = ui::ET_TOUCH_MOVED;
+      type = ui::EventType::kTouchMoved;
       break;
     case blink::WebInputEvent::Type::kTouchCancel:
-      type = ui::ET_TOUCH_CANCELLED;
+      type = ui::EventType::kTouchCancelled;
       break;
     default:
       NOTREACHED_IN_MIGRATION();
@@ -228,8 +228,9 @@ void SyntheticGestureTargetAura::DispatchWebGestureEventToPlatform(
   if (blink::WebInputEvent::IsPinchGestureEventType(web_gesture.GetType())) {
     ui::GestureEventDetails pinch_details(event_type);
     pinch_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
-    if (event_type == ui::ET_GESTURE_PINCH_UPDATE)
+    if (event_type == ui::EventType::kGesturePinchUpdate) {
       pinch_details.set_scale(web_gesture.data.pinch_update.scale);
+    }
 
     ui::GestureEvent pinch_event(web_gesture.PositionInWidget().x(),
                                  web_gesture.PositionInWidget().y(), flags,
@@ -279,8 +280,8 @@ void SyntheticGestureTargetAura::DispatchWebMouseEventToPlatform(
       web_mouse_event.tilt_x, web_mouse_event.tilt_y,
       web_mouse_event.tangential_pressure);
   int changed_button_flags = 0;
-  if (event_type == ui::ET_MOUSE_PRESSED ||
-      event_type == ui::ET_MOUSE_RELEASED) {
+  if (event_type == ui::EventType::kMousePressed ||
+      event_type == ui::EventType::kMouseReleased) {
     changed_button_flags =
         WebEventButtonToUIEventButtonFlags(web_mouse_event.button);
   }

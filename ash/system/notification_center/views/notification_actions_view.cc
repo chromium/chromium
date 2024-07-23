@@ -189,7 +189,7 @@ bool NotificationActionsView::HandleKeyEvent(views::Textfield* sender,
     return false;
   }
 
-  if (event.type() == ui::ET_KEY_PRESSED &&
+  if (event.type() == ui::EventType::kKeyPressed &&
       event.key_code() == ui::VKEY_RETURN) {
     send_reply_callback_.Run();
     return true;

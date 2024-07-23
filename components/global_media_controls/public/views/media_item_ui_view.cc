@@ -198,7 +198,7 @@ void MediaItemUIView::OnMouseExited(const ui::MouseEvent& event) {
 void MediaItemUIView::OnGestureEvent(ui::GestureEvent* event) {
   // Tap gesture event should have the same behavior as a button click event, so
   // the button callback may be triggered.
-  if (event->type() == ui::ET_GESTURE_TAP) {
+  if (event->type() == ui::EventType::kGestureTap) {
     views::Button::OnGestureEvent(event);
   }
   if (scroll_view_ && event->IsScrollGestureEvent()) {

@@ -277,8 +277,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
   // top edge of the screen.
   int mouse_x_when_hit_top_in_screen_ = -1;
 
-  // Tracks if the controller has seen a ET_GESTURE_SCROLL_BEGIN, without the
-  // following events.
+  // Tracks if the controller has seen a EventType::kGestureScrollBegin, without
+  // the following events.
   bool gesture_begun_ = false;
 
   // Lock which keeps the top-of-window views revealed based on the current

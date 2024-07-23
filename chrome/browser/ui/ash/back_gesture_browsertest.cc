@@ -40,7 +40,7 @@ class BackGestureEventRecorder : public ui::EventHandler {
     received_event_types_.insert(event->type());
     if (wait_for_event_ == event->type() && run_loop_) {
       run_loop_->Quit();
-      wait_for_event_ = ui::EventType::ET_UNKNOWN;
+      wait_for_event_ = ui::EventType::kUnknown;
     }
   }
 
@@ -62,7 +62,7 @@ class BackGestureEventRecorder : public ui::EventHandler {
 
   void Reset() {
     received_event_types_.clear();
-    wait_for_event_ = ui::EventType::ET_UNKNOWN;
+    wait_for_event_ = ui::EventType::kUnknown;
     if (run_loop_)
       run_loop_->Quit();
   }
@@ -70,7 +70,7 @@ class BackGestureEventRecorder : public ui::EventHandler {
  private:
   // Stores the event types of the received gesture events.
   base::flat_set<ui::EventType> received_event_types_;
-  ui::EventType wait_for_event_ = ui::EventType::ET_UNKNOWN;
+  ui::EventType wait_for_event_ = ui::EventType::kUnknown;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
@@ -137,21 +137,19 @@ IN_PROC_BROWSER_TEST_F(BackGestureBrowserTest, TouchActions) {
   event_generator.PressTouch();
   event_generator.MoveTouch(end_point);
   event_generator.ReleaseTouch();
-  recorder.WaitUntilReceivedGestureEvent(ui::EventType::ET_GESTURE_END);
+  recorder.WaitUntilReceivedGestureEvent(ui::EventType::kGestureEnd);
 
   // BackGestureEventHandler did not handle gesture scroll events, so |recorder|
   // should be able to get the scroll events.
-  EXPECT_TRUE(recorder.HasReceivedEvent(ui::EventType::ET_GESTURE_TAP_DOWN));
-  EXPECT_TRUE(
-      recorder.HasReceivedEvent(ui::EventType::ET_GESTURE_SCROLL_BEGIN));
-  EXPECT_TRUE(
-      recorder.HasReceivedEvent(ui::EventType::ET_GESTURE_SCROLL_UPDATE));
-  EXPECT_TRUE(recorder.HasReceivedEvent(ui::EventType::ET_GESTURE_SCROLL_END) ||
-              recorder.HasReceivedEvent(ui::EventType::ET_SCROLL_FLING_START));
+  EXPECT_TRUE(recorder.HasReceivedEvent(ui::EventType::kGestureTapDown));
+  EXPECT_TRUE(recorder.HasReceivedEvent(ui::EventType::kGestureScrollBegin));
+  EXPECT_TRUE(recorder.HasReceivedEvent(ui::EventType::kGestureScrollUpdate));
+  EXPECT_TRUE(recorder.HasReceivedEvent(ui::EventType::kGestureScrollEnd) ||
+              recorder.HasReceivedEvent(ui::EventType::kScrollFlingStart));
   // ui::VKEY_BROWSR_BACK key pressed and key released will not be generated
   // because back operation is not performed.
-  EXPECT_FALSE(recorder.HasReceivedEvent(ui::EventType::ET_KEY_PRESSED));
-  EXPECT_FALSE(recorder.HasReceivedEvent(ui::EventType::ET_KEY_RELEASED));
+  EXPECT_FALSE(recorder.HasReceivedEvent(ui::EventType::kKeyPressed));
+  EXPECT_FALSE(recorder.HasReceivedEvent(ui::EventType::kKeyReleased));
 
   recorder.Reset();
 
@@ -163,21 +161,19 @@ IN_PROC_BROWSER_TEST_F(BackGestureBrowserTest, TouchActions) {
   event_generator.PressTouch();
   event_generator.MoveTouch(end_point);
   event_generator.ReleaseTouch();
-  recorder.WaitUntilReceivedGestureEvent(ui::EventType::ET_GESTURE_END);
+  recorder.WaitUntilReceivedGestureEvent(ui::EventType::kGestureEnd);
 
   // BackGestureEventHandler has handled gesture scroll events, so |recorder|
   // should not be able to get the scroll events.
-  EXPECT_FALSE(recorder.HasReceivedEvent(ui::EventType::ET_GESTURE_TAP_DOWN));
-  EXPECT_FALSE(
-      recorder.HasReceivedEvent(ui::EventType::ET_GESTURE_SCROLL_BEGIN));
-  EXPECT_FALSE(
-      recorder.HasReceivedEvent(ui::EventType::ET_GESTURE_SCROLL_UPDATE));
-  EXPECT_FALSE(recorder.HasReceivedEvent(ui::EventType::ET_GESTURE_SCROLL_END));
-  EXPECT_FALSE(recorder.HasReceivedEvent(ui::EventType::ET_SCROLL_FLING_START));
+  EXPECT_FALSE(recorder.HasReceivedEvent(ui::EventType::kGestureTapDown));
+  EXPECT_FALSE(recorder.HasReceivedEvent(ui::EventType::kGestureScrollBegin));
+  EXPECT_FALSE(recorder.HasReceivedEvent(ui::EventType::kGestureScrollUpdate));
+  EXPECT_FALSE(recorder.HasReceivedEvent(ui::EventType::kGestureScrollEnd));
+  EXPECT_FALSE(recorder.HasReceivedEvent(ui::EventType::kScrollFlingStart));
   // ui::VKEY_BROWSR_BACK key pressed and key released will be generated because
   // back operation can be performed.
-  EXPECT_TRUE(recorder.HasReceivedEvent(ui::EventType::ET_KEY_PRESSED));
-  EXPECT_TRUE(recorder.HasReceivedEvent(ui::EventType::ET_KEY_RELEASED));
+  EXPECT_TRUE(recorder.HasReceivedEvent(ui::EventType::kKeyPressed));
+  EXPECT_TRUE(recorder.HasReceivedEvent(ui::EventType::kKeyReleased));
   browser_window->RemovePreTargetHandler(&recorder);
 }
 
@@ -203,11 +199,11 @@ IN_PROC_BROWSER_TEST_F(BackGestureBrowserTest, PreventDefault) {
   event_generator.PressTouch();
   event_generator.MoveTouch(end_point);
   event_generator.ReleaseTouch();
-  recorder.WaitUntilReceivedGestureEvent(ui::EventType::ET_GESTURE_END);
+  recorder.WaitUntilReceivedGestureEvent(ui::EventType::kGestureEnd);
 
   // ui::VKEY_BROWSR_BACK key pressed and key released will not be generated
   // because back operation is not performed.
-  EXPECT_FALSE(recorder.HasReceivedEvent(ui::EventType::ET_KEY_PRESSED));
-  EXPECT_FALSE(recorder.HasReceivedEvent(ui::EventType::ET_KEY_RELEASED));
+  EXPECT_FALSE(recorder.HasReceivedEvent(ui::EventType::kKeyPressed));
+  EXPECT_FALSE(recorder.HasReceivedEvent(ui::EventType::kKeyReleased));
   browser_window->RemovePreTargetHandler(&recorder);
 }

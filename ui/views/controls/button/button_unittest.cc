@@ -372,13 +372,13 @@ TEST_F(ButtonTest, NotifyAction) {
 
   // By default the button should notify the callback on mouse release.
   button()->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(Button::STATE_PRESSED, button()->GetState());
   EXPECT_FALSE(button()->pressed());
 
   button()->OnMouseReleased(ui::MouseEvent(
-      ui::ET_MOUSE_RELEASED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMouseReleased, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(Button::STATE_HOVERED, button()->GetState());
   EXPECT_TRUE(button()->pressed());
@@ -388,7 +388,7 @@ TEST_F(ButtonTest, NotifyAction) {
   button()->button_controller()->set_notify_action(
       ButtonController::NotifyAction::kOnPress);
   button()->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(Button::STATE_PRESSED, button()->GetState());
   EXPECT_TRUE(button()->pressed());
@@ -396,7 +396,7 @@ TEST_F(ButtonTest, NotifyAction) {
   // The button should no longer notify on mouse release.
   button()->Reset();
   button()->OnMouseReleased(ui::MouseEvent(
-      ui::ET_MOUSE_RELEASED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMouseReleased, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(Button::STATE_HOVERED, button()->GetState());
   EXPECT_FALSE(button()->pressed());
@@ -409,12 +409,12 @@ TEST_F(ButtonTest, NotifyActionNoClick) {
 
   // By default the button should notify the callback on mouse release.
   button()->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
       ui::EF_RIGHT_MOUSE_BUTTON, ui::EF_RIGHT_MOUSE_BUTTON));
   EXPECT_FALSE(button()->canceled());
 
   button()->OnMouseReleased(ui::MouseEvent(
-      ui::ET_MOUSE_RELEASED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMouseReleased, center, center, ui::EventTimeForNow(),
       ui::EF_RIGHT_MOUSE_BUTTON, ui::EF_RIGHT_MOUSE_BUTTON));
   EXPECT_TRUE(button()->canceled());
 
@@ -423,7 +423,7 @@ TEST_F(ButtonTest, NotifyActionNoClick) {
   button()->button_controller()->set_notify_action(
       ButtonController::NotifyAction::kOnPress);
   button()->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
       ui::EF_RIGHT_MOUSE_BUTTON, ui::EF_RIGHT_MOUSE_BUTTON));
   // OnClickCanceled is only sent on mouse release.
   EXPECT_FALSE(button()->canceled());
@@ -431,7 +431,7 @@ TEST_F(ButtonTest, NotifyActionNoClick) {
   // The button should no longer notify on mouse release.
   button()->Reset();
   button()->OnMouseReleased(ui::MouseEvent(
-      ui::ET_MOUSE_RELEASED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMouseReleased, center, center, ui::EventTimeForNow(),
       ui::EF_RIGHT_MOUSE_BUTTON, ui::EF_RIGHT_MOUSE_BUTTON));
   EXPECT_FALSE(button()->canceled());
 }
@@ -461,13 +461,13 @@ TEST_F(ButtonTest, GestureEventsSetState) {
 
   EXPECT_EQ(Button::STATE_NORMAL, button()->GetState());
 
-  PerformGesture(button(), ui::ET_GESTURE_TAP_DOWN);
+  PerformGesture(button(), ui::EventType::kGestureTapDown);
   EXPECT_EQ(Button::STATE_PRESSED, button()->GetState());
 
-  PerformGesture(button(), ui::ET_GESTURE_SHOW_PRESS);
+  PerformGesture(button(), ui::EventType::kGestureShowPress);
   EXPECT_EQ(Button::STATE_PRESSED, button()->GetState());
 
-  PerformGesture(button(), ui::ET_GESTURE_TAP_CANCEL);
+  PerformGesture(button(), ui::EventType::kGestureTapCancel);
   EXPECT_EQ(Button::STATE_NORMAL, button()->GetState());
 }
 
@@ -588,7 +588,7 @@ TEST_F(ButtonTest, HideInkDropOnBlur) {
   button()->OnFocus();
 
   button()->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(InkDropState::ACTION_PENDING, ink_drop->GetTargetInkDropState());
 
@@ -596,7 +596,7 @@ TEST_F(ButtonTest, HideInkDropOnBlur) {
   EXPECT_EQ(InkDropState::HIDDEN, ink_drop->GetTargetInkDropState());
 
   button()->OnMouseReleased(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_TRUE(button()->pressed());
 }
@@ -676,32 +676,32 @@ TEST_F(ButtonTest, InkDropShowHideOnMouseDraggedNotifyOnRelease) {
       ButtonController::NotifyAction::kOnRelease);
 
   button()->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
   EXPECT_EQ(InkDropState::ACTION_PENDING, ink_drop->GetTargetInkDropState());
 
-  button()->OnMouseDragged(
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, oob, oob, ui::EventTimeForNow(),
-                     ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button()->OnMouseDragged(ui::MouseEvent(
+      ui::EventType::kMousePressed, oob, oob, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
   EXPECT_EQ(InkDropState::HIDDEN, ink_drop->GetTargetInkDropState());
 
   button()->OnMouseDragged(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
   EXPECT_EQ(InkDropState::ACTION_PENDING, ink_drop->GetTargetInkDropState());
 
-  button()->OnMouseDragged(
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, oob, oob, ui::EventTimeForNow(),
-                     ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button()->OnMouseDragged(ui::MouseEvent(
+      ui::EventType::kMousePressed, oob, oob, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
   EXPECT_EQ(InkDropState::HIDDEN, ink_drop->GetTargetInkDropState());
 
-  button()->OnMouseReleased(
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, oob, oob, ui::EventTimeForNow(),
-                     ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button()->OnMouseReleased(ui::MouseEvent(
+      ui::EventType::kMousePressed, oob, oob, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
   EXPECT_FALSE(button()->pressed());
 }
@@ -717,33 +717,33 @@ TEST_F(ButtonTest, InkDropShowHideOnMouseDraggedNotifyOnPress) {
       ButtonController::NotifyAction::kOnPress);
 
   button()->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
   EXPECT_EQ(InkDropState::ACTION_TRIGGERED, ink_drop->GetTargetInkDropState());
   EXPECT_TRUE(button()->pressed());
 
-  button()->OnMouseDragged(
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, oob, oob, ui::EventTimeForNow(),
-                     ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-
-  EXPECT_EQ(InkDropState::ACTION_TRIGGERED, ink_drop->GetTargetInkDropState());
-
   button()->OnMouseDragged(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, oob, oob, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
   EXPECT_EQ(InkDropState::ACTION_TRIGGERED, ink_drop->GetTargetInkDropState());
 
-  button()->OnMouseDragged(
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, oob, oob, ui::EventTimeForNow(),
-                     ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button()->OnMouseDragged(ui::MouseEvent(
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
   EXPECT_EQ(InkDropState::ACTION_TRIGGERED, ink_drop->GetTargetInkDropState());
 
-  button()->OnMouseReleased(
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, oob, oob, ui::EventTimeForNow(),
-                     ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button()->OnMouseDragged(ui::MouseEvent(
+      ui::EventType::kMousePressed, oob, oob, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+
+  EXPECT_EQ(InkDropState::ACTION_TRIGGERED, ink_drop->GetTargetInkDropState());
+
+  button()->OnMouseReleased(ui::MouseEvent(
+      ui::EventType::kMousePressed, oob, oob, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
   EXPECT_EQ(InkDropState::ACTION_TRIGGERED, ink_drop->GetTargetInkDropState());
 }
@@ -755,7 +755,7 @@ TEST_F(ButtonTest, InkDropStaysHiddenWhileDragging) {
   TestInkDrop* ink_drop = CreateButtonWithInkDrop(false);
 
   button()->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
   EXPECT_EQ(InkDropState::ACTION_PENDING, ink_drop->GetTargetInkDropState());
@@ -766,14 +766,14 @@ TEST_F(ButtonTest, InkDropStaysHiddenWhileDragging) {
 
   EXPECT_EQ(InkDropState::HIDDEN, ink_drop->GetTargetInkDropState());
 
-  button()->OnMouseDragged(
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, oob, oob, ui::EventTimeForNow(),
-                     ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button()->OnMouseDragged(ui::MouseEvent(
+      ui::EventType::kMousePressed, oob, oob, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
   EXPECT_EQ(InkDropState::HIDDEN, ink_drop->GetTargetInkDropState());
 
   button()->OnMouseDragged(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
   EXPECT_EQ(InkDropState::HIDDEN, ink_drop->GetTargetInkDropState());
@@ -789,11 +789,11 @@ TEST_F(ButtonTest, SetCallback) {
 
   const gfx::Point center(10, 10);
   button()->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   // Default button controller notifies callback at mouse release.
   button()->OnMouseReleased(ui::MouseEvent(
-      ui::ET_MOUSE_RELEASED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMouseReleased, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_TRUE(pressed);
 }
@@ -848,7 +848,8 @@ TEST_F(ButtonTest, ActionOnSpace) {
   button()->RequestFocus();
   EXPECT_TRUE(button()->HasFocus());
 
-  ui::KeyEvent space_press(ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE);
+  ui::KeyEvent space_press(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                           ui::EF_NONE);
   EXPECT_TRUE(button()->OnKeyPressed(space_press));
 
 #if BUILDFLAG(IS_MAC)
@@ -859,7 +860,8 @@ TEST_F(ButtonTest, ActionOnSpace) {
   EXPECT_FALSE(button()->pressed());
 #endif
 
-  ui::KeyEvent space_release(ui::ET_KEY_RELEASED, ui::VKEY_SPACE, ui::EF_NONE);
+  ui::KeyEvent space_release(ui::EventType::kKeyReleased, ui::VKEY_SPACE,
+                             ui::EF_NONE);
 
 #if BUILDFLAG(IS_MAC)
   EXPECT_FALSE(button()->OnKeyReleased(space_release));
@@ -879,7 +881,8 @@ TEST_F(ButtonTest, ActionOnReturn) {
   button()->RequestFocus();
   EXPECT_TRUE(button()->HasFocus());
 
-  ui::KeyEvent return_press(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::EF_NONE);
+  ui::KeyEvent return_press(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                            ui::EF_NONE);
 
 #if BUILDFLAG(IS_MAC)
   EXPECT_FALSE(button()->OnKeyPressed(return_press));
@@ -891,7 +894,7 @@ TEST_F(ButtonTest, ActionOnReturn) {
   EXPECT_TRUE(button()->pressed());
 #endif
 
-  ui::KeyEvent return_release(ui::ET_KEY_RELEASED, ui::VKEY_RETURN,
+  ui::KeyEvent return_release(ui::EventType::kKeyReleased, ui::VKEY_RETURN,
                               ui::EF_NONE);
   EXPECT_FALSE(button()->OnKeyReleased(return_release));
 }
@@ -905,12 +908,13 @@ TEST_F(ButtonTest, CustomActionOnKeyPressedEvent) {
   // Set the button to handle any key pressed event as kOnKeyPress.
   button()->set_custom_key_click_action(Button::KeyClickAction::kOnKeyPress);
 
-  ui::KeyEvent control_press(ui::ET_KEY_PRESSED, ui::VKEY_CONTROL, ui::EF_NONE);
+  ui::KeyEvent control_press(ui::EventType::kKeyPressed, ui::VKEY_CONTROL,
+                             ui::EF_NONE);
   EXPECT_TRUE(button()->OnKeyPressed(control_press));
   EXPECT_EQ(Button::STATE_NORMAL, button()->GetState());
   EXPECT_TRUE(button()->pressed());
 
-  ui::KeyEvent control_release(ui::ET_KEY_RELEASED, ui::VKEY_CONTROL,
+  ui::KeyEvent control_release(ui::EventType::kKeyReleased, ui::VKEY_CONTROL,
                                ui::EF_NONE);
   EXPECT_FALSE(button()->OnKeyReleased(control_release));
 }
@@ -1088,7 +1092,7 @@ TEST_F(ButtonActionViewInterfaceTest, TestActionChanged) {
 }
 
 TEST_F(ButtonActionViewInterfaceTest, TestActionTriggered) {
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   bool called = false;
   button()->GetActionViewInterface()->LinkActionInvocationToView(

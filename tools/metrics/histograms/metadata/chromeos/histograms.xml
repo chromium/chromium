@@ -2535,7 +2535,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.MagicBoost.OptInCard.{OptInFeatures}"
-    enum="OptInCardAction" expires_after="2025-06-24">
+    enum="OptInCardAction" expires_after="2025-02-01">
   <owner>leandre@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -2574,7 +2574,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Mahi.ContextMenuView.Activated"
-    enum="MahiContextMenuButtonType" expires_after="2025-04-04">
+    enum="MahiContextMenuButtonType" expires_after="2025-02-01">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -2584,7 +2584,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Mahi.ContextMenuView.ActivatedFailed"
-    enum="MahiContextMenuButtonType" expires_after="2025-04-04">
+    enum="MahiContextMenuButtonType" expires_after="2025-02-01">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -2594,7 +2594,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Mahi.ContextMenuView.ButtonClicked"
-    enum="MahiMenuButton" expires_after="2025-04-09">
+    enum="MahiMenuButton" expires_after="2025-02-01">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -2603,7 +2603,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Mahi.ContextMenuView.Distillable"
-    enum="BooleanDistillable" expires_after="2025-04-09">
+    enum="BooleanDistillable" expires_after="2025-02-01">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -2623,7 +2623,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.MessageCenter.ScrollActionReason"
-    enum="ChromeOSMessageCenterScrollActionReason" expires_after="2024-07-28">
+    enum="ChromeOSMessageCenterScrollActionReason" expires_after="2025-02-01">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -4245,8 +4245,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.TypeC.CableSpeed" enum="CableSpeedMetric"
     expires_after="2025-01-05">
-  <owner>pmalani@chromium.org</owner>
-  <owner>chromeos-power@google.com</owner>
+  <owner>jthies@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
   <summary>
     This value represents the speed of the USB Type-C cable which is connected
     to a device. It is recorded every time a new peripheral is connected.
@@ -4278,20 +4278,23 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.TypeC.PartnerLocation" enum="PartnerLocationMetric"
-    expires_after="2024-03-17">
-  <owner>wonchung@google.com</owner>
+    expires_after="2025-01-01">
+  <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
     This value represents the location and order of a USB Type-C peripheral
     (partner) which is connected to a device. It is recorded every time a new
     peripheral is connected.
+
+    Warning: this histogram was expired from March 17, 2024 to July 19, 2024;
+    data may be missing.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.TypeC.PartnerType" enum="PartnerTypeMetric"
     expires_after="2025-01-05">
-  <owner>pmalani@chromium.org</owner>
-  <owner>chromeos-power@google.com</owner>
+  <owner>jthies@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
   <summary>
     This value represents the type of a USB Type-C peripheral (the Partner)
     which is connected to a device. It is recorded every time a new peripheral
@@ -4300,20 +4303,23 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.TypeC.PowerSourceLocation"
-    enum="PowerSourceLocationMetric" expires_after="2024-03-17">
-  <owner>wonchung@google.com</owner>
+    enum="PowerSourceLocationMetric" expires_after="2025-01-01">
+  <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
     This value represents the location and order of a USB Type-C power source
     which is connected to a device. It is recorded every time a new power source
     is connected.
+
+    Warning: this histogram was expired from March 17, 2024 to July 19, 2024;
+    data may be missing.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.TypeC.WrongConfiguration"
     enum="WrongConfigurationMetric" expires_after="2025-01-01">
-  <owner>pmalani@chromium.org</owner>
-  <owner>chromeos-power@google.com</owner>
+  <owner>jthies@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
   <summary>
     This value represents events where a USB Type-C peripheral couldn't be
     configured correctly, or experienced some other unexpected behaviour. It is
@@ -4356,7 +4362,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram
     name="ChromeOS.USB.ExternalDeviceAttached.{USBDeviceRecognized}.{USBDeviceClass}"
     enum="ChromeOSUsbEventTiming" expires_after="2025-01-05">
-  <owner>wonchung@google.com</owner>
+  <owner>jthies@google.com</owner>
   <owner>allenwebb@chromium.org</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4399,7 +4405,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.USB.ExternalDeviceAttached.{USBPortType}.DeviceClass"
     enum="ChromeOSUsbDeviceClass" expires_after="2025-01-05">
-  <owner>wonchung@google.com</owner>
+  <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
     USB device class per {USBPortType}. This is emitted each time an external
@@ -4414,7 +4420,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.USB.ExternalDeviceAttached.{USBPortType}.DeviceSpeed"
     enum="ChromeOSUsbDeviceSpeed" expires_after="2025-01-05">
-  <owner>wonchung@google.com</owner>
+  <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
     USB device speed per {USBPortType}. This is emitted each time an external
@@ -4552,7 +4558,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Zram.{PctMetric}" units="%"
-    expires_after="2024-11-17">
+    expires_after="2025-01-19">
   <owner>ctshao@google.com</owner>
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>

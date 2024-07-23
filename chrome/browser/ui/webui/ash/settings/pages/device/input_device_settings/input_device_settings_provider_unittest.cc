@@ -41,7 +41,8 @@ const ::ash::mojom::Keyboard kKeyboard1 =
                            /*modifier_keys=*/{},
                            /*top_row_action_keys=*/{},
                            ::ash::mojom::KeyboardSettings::New(),
-                           ::ash::mojom::BatteryInfo::New());
+                           ::ash::mojom::BatteryInfo::New(),
+                           ::ash::mojom::CompanionAppInfo::New());
 const ::ash::mojom::Keyboard kKeyboard2 =
     ::ash::mojom::Keyboard(/*name=*/"Logitech K580",
                            /*is_external=*/true,
@@ -51,7 +52,8 @@ const ::ash::mojom::Keyboard kKeyboard2 =
                            /*modifier_keys=*/{},
                            /*top_row_action_keys=*/{},
                            ::ash::mojom::KeyboardSettings::New(),
-                           ::ash::mojom::BatteryInfo::New());
+                           ::ash::mojom::BatteryInfo::New(),
+                           ::ash::mojom::CompanionAppInfo::New());
 const ::ash::mojom::Keyboard kKeyboard3 =
     ::ash::mojom::Keyboard(/*name=*/"HP 910 White Bluetooth Keyboard",
                            /*is_external=*/true,
@@ -61,7 +63,8 @@ const ::ash::mojom::Keyboard kKeyboard3 =
                            /*modifier_keys=*/{},
                            /*top_row_action_keys=*/{},
                            ::ash::mojom::KeyboardSettings::New(),
-                           ::ash::mojom::BatteryInfo::New());
+                           ::ash::mojom::BatteryInfo::New(),
+                           ::ash::mojom::CompanionAppInfo::New());
 const ::ash::mojom::Touchpad kTouchpad1 =
     ::ash::mojom::Touchpad(/*name=*/"test touchpad",
                            /*is_external=*/false,
@@ -69,7 +72,8 @@ const ::ash::mojom::Touchpad kTouchpad1 =
                            /*device_key=*/"fake-device-key3",
                            /*is_haptic=*/true,
                            ::ash::mojom::TouchpadSettings::New(),
-                           ::ash::mojom::BatteryInfo::New());
+                           ::ash::mojom::BatteryInfo::New(),
+                           ::ash::mojom::CompanionAppInfo::New());
 const ::ash::mojom::Touchpad kTouchpad2 =
     ::ash::mojom::Touchpad(/*name=*/"Logitech T650",
                            /*is_external=*/true,
@@ -77,7 +81,8 @@ const ::ash::mojom::Touchpad kTouchpad2 =
                            /*device_key=*/"fake-device-key4",
                            /*is_haptic=*/false,
                            ::ash::mojom::TouchpadSettings::New(),
-                           ::ash::mojom::BatteryInfo::New());
+                           ::ash::mojom::BatteryInfo::New(),
+                           ::ash::mojom::CompanionAppInfo::New());
 const ::ash::mojom::PointingStick kPointingStick1 =
     ::ash::mojom::PointingStick(/*name=*/"test pointing stick",
                                 /*is_external=*/false,
@@ -121,7 +126,8 @@ const ::ash::mojom::GraphicsTablet kGraphicsTablet1 =
         ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
         ::ash::mojom::GraphicsTabletButtonConfig::kNoConfig,
         ::ash::mojom::GraphicsTabletSettings::New(),
-        ::ash::mojom::BatteryInfo::New());
+        ::ash::mojom::BatteryInfo::New(),
+        ::ash::mojom::CompanionAppInfo::New());
 const ::ash::mojom::GraphicsTablet kGraphicsTablet2 =
     ::ash::mojom::GraphicsTablet(
         /*name=*/"Huion H1060P",
@@ -131,7 +137,8 @@ const ::ash::mojom::GraphicsTablet kGraphicsTablet2 =
         ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
         ::ash::mojom::GraphicsTabletButtonConfig::kNoConfig,
         ::ash::mojom::GraphicsTabletSettings::New(),
-        ::ash::mojom::BatteryInfo::New());
+        ::ash::mojom::BatteryInfo::New(),
+        ::ash::mojom::CompanionAppInfo::New());
 
 template <bool sorted = false, typename T>
 void ExpectListsEqual(const std::vector<T>& expected_list,

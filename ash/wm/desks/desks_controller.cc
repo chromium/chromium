@@ -169,7 +169,7 @@ void RemoveAllWindowsFromOverview() {
       Shell::Get()->overview_controller()->overview_session();
   for (const auto& grid : overview_session->grid_list()) {
     while (!grid->empty()) {
-      OverviewItemBase* overview_item = grid->window_list()[0].get();
+      OverviewItemBase* overview_item = grid->item_list()[0].get();
 
       // We want to restore the window here primarily because when we are
       // undoing the removal of an active desk outside of overview, we do not
@@ -1509,29 +1509,6 @@ bool DesksController::RequestFocusOnUndoDeskRemovalToast() {
 
   return ToastManager::Get()->RequestFocusOnActiveToastDismissButton(
       temporary_removed_desk_->toast_id());
-}
-
-bool DesksController::MaybeToggleA11yHighlightOnUndoDeskRemovalToast() {
-  if (!Shell::Get()->accessibility_controller()->spoken_feedback().enabled() ||
-      !temporary_removed_desk_ ||
-      !ToastManager::Get()->IsToastShown(temporary_removed_desk_->toast_id())) {
-    return false;
-  }
-
-  return ToastManager::Get()
-      ->MaybeToggleA11yHighlightOnActiveToastDismissButton(
-          temporary_removed_desk_->toast_id());
-}
-
-bool DesksController::MaybeActivateDeskRemovalUndoButtonOnHighlightedToast() {
-  if (!temporary_removed_desk_ ||
-      !ToastManager::Get()->IsToastShown(temporary_removed_desk_->toast_id())) {
-    return false;
-  }
-
-  return ToastManager::Get()
-      ->MaybeActivateHighlightedDismissButtonOnActiveToast(
-          temporary_removed_desk_->toast_id());
 }
 
 bool DesksController::CanEnterOverview() const {

@@ -232,42 +232,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Webapp.AmbientBadge.Click" enum="InstallAmbientBadgeAppType"
-    expires_after="2024-09-01">
-  <owner>eirage@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    On mobile, an install ambient badge may automatically shows to promote an
-    application related to the current website when the site meets all install
-    criteria. When the ambient badge was clicked by the user and displaying the
-    app banner UI, record the type of the app (native app or web app).
-  </summary>
-</histogram>
-
-<histogram name="Webapp.AmbientBadge.Dismiss" enum="InstallAmbientBadgeAppType"
-    expires_after="2024-09-01">
-  <owner>eirage@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    On mobile, an install ambient badge may automatically shows to promote an
-    application related to the current website when the site meets all install
-    criteria. When the ambient badge was explictly dismissed by the user, record
-    the type of the app (native app or web app).
-  </summary>
-</histogram>
-
-<histogram name="Webapp.AmbientBadge.Display" enum="InstallAmbientBadgeAppType"
-    expires_after="2024-09-01">
-  <owner>eirage@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    On mobile, an install ambient badge may automatically shows to promote an
-    application related to the current website when the site meets all install
-    criteria. When an ambient badge was shown, record the type of the app
-    (native app or web app).
-  </summary>
-</histogram>
-
 <histogram name="Webapp.AmbientBadge.Terminate"
     enum="InstallableAmbientBadgeState" expires_after="2025-01-05">
   <owner>eirage@chromium.org</owner>

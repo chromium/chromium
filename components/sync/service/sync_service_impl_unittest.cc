@@ -71,6 +71,13 @@ namespace {
 
 constexpr char kTestUser[] = "test_user@gmail.com";
 
+// Construction parameters for FakeModelTypeController.
+struct FakeControllerInitParams {
+  ModelType model_type;
+  bool enable_transport_mode = false;
+  std::unique_ptr<ModelTypeLocalDataBatchUploader> batch_uploader;
+};
+
 MATCHER_P(ContainsDataType, type, "") {
   return arg.Has(type);
 }
@@ -158,20 +165,25 @@ class SyncServiceImplTest : public ::testing::Test {
         kTestUser, signin::ConsentLevel::kSync);
   }
 
-  void InitializeService(std::vector<std::pair<ModelType, bool>>
-                             registered_types_and_transport_mode_support = {
-                                 {BOOKMARKS, false},
-                                 {DEVICE_INFO, true}}) {
+  void InitializeService() {
+    std::vector<FakeControllerInitParams> params;
+    params.emplace_back(BOOKMARKS, /*enable_transport_mode=*/false);
+    params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
+    InitializeService(std::move(params));
+  }
+
+  void InitializeService(std::vector<FakeControllerInitParams>
+                             registered_types_controller_params) {
     DCHECK(!service_);
 
     // Default includes a regular controller and a transport-mode controller.
     ModelTypeController::TypeVector controllers;
-    for (const auto& [type, transport_mode_support] :
-         registered_types_and_transport_mode_support) {
+    for (auto& params : registered_types_controller_params) {
       auto controller = std::make_unique<FakeModelTypeController>(
-          type, transport_mode_support);
+          params.model_type, params.enable_transport_mode,
+          std::move(params.batch_uploader));
       // Hold a raw pointer to directly interact with the controller.
-      controller_map_[type] = controller.get();
+      controller_map_[params.model_type] = controller.get();
       controllers.push_back(std::move(controller));
     }
 
@@ -293,8 +305,6 @@ class SyncServiceImplTest : public ::testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kSyncEnableModelTypeLocalDataBatchUploaders};
   SyncServiceImplBundle sync_service_impl_bundle_;
   std::unique_ptr<SyncServiceImpl> service_;
   raw_ptr<SyncClientMock, DanglingUntriaged> sync_client_ =
@@ -654,7 +664,9 @@ TEST_F(
   // Sign-in.
   SignInWithoutSyncConsent();
   // Registering CONTACT_INFO which includes addresses.
-  InitializeService({{CONTACT_INFO, true}});
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(CONTACT_INFO, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Sync-the-feature is normally enabled in Ash. Triggering a dashboard reset
@@ -716,7 +728,9 @@ TEST_F(
 #endif
 
   // Registering CONTACT_INFO which includes addresses.
-  InitializeService({{CONTACT_INFO, true}});
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(CONTACT_INFO, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Sync-the-feature is normally enabled in Ash. Triggering a dashboard reset
@@ -1378,7 +1392,10 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClientClearsPassphrasePrefForAccount) {
   const PassphraseType kPassphraseType = PassphraseType::kCustomPassphrase;
 
   SignInWithoutSyncConsent();
-  InitializeService({{AUTOFILL, false}, {AUTOFILL_WALLET_DATA, true}});
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(AUTOFILL, /*enable_transport_mode=*/false);
+  params.emplace_back(AUTOFILL_WALLET_DATA, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
   base::RunLoop().RunUntilIdle();
 
   // This call represents the initial passphrase type coming in from the server.
@@ -1413,7 +1430,10 @@ TEST_F(SyncServiceImplTest,
 
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
-  InitializeService({{AUTOFILL, false}, {AUTOFILL_WALLET_DATA, true}});
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(AUTOFILL, /*enable_transport_mode=*/false);
+  params.emplace_back(AUTOFILL_WALLET_DATA, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
   base::RunLoop().RunUntilIdle();
 
   // This call represents the initial passphrase type coming in from the server.
@@ -1446,7 +1466,10 @@ TEST_F(SyncServiceImplTest, EncryptionObsoleteClearsPassphrasePrefForAccount) {
   const PassphraseType kPassphraseType = PassphraseType::kCustomPassphrase;
 
   SignInWithoutSyncConsent();
-  InitializeService({{AUTOFILL, false}, {AUTOFILL_WALLET_DATA, true}});
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(AUTOFILL, /*enable_transport_mode=*/false);
+  params.emplace_back(AUTOFILL_WALLET_DATA, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
   base::RunLoop().RunUntilIdle();
 
   // This call represents the initial passphrase type coming in from the server.
@@ -1551,12 +1574,10 @@ TEST_F(SyncServiceImplTest, ShouldProvideDisableReasonsAfterShutdown) {
 TEST_F(SyncServiceImplTest, ShouldSendDataTypesToSyncInvalidationsService) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {
-          {BOOKMARKS, false},
-          {DEVICE_INFO, true},
-      });
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(BOOKMARKS, /*enable_transport_mode=*/false);
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
   // Note: Even though NIGORI technically isn't registered, it should always be
   // considered part of the interested data types.
   EXPECT_CALL(*sync_invalidations_service(),
@@ -1572,12 +1593,10 @@ TEST_F(SyncServiceImplTest, ShouldSendDataTypesToSyncInvalidationsService) {
 TEST_F(SyncServiceImplTest,
        ShouldSendDataTypesToSyncInvalidationsServiceInTransportMode) {
   SignInWithoutSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {
-          {BOOKMARKS, false},
-          {DEVICE_INFO, true},
-      });
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(BOOKMARKS, /*enable_transport_mode=*/false);
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
 
   // In this test, BOOKMARKS doesn't support transport mode, so it should *not*
   // be included.
@@ -1596,12 +1615,10 @@ TEST_F(SyncServiceImplTest,
 TEST_F(SyncServiceImplTest,
        ShouldSendDataTypesToSyncInvalidationsServiceInTransportModeAsh) {
   SignInWithSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {
-          {BOOKMARKS, false},
-          {DEVICE_INFO, true},
-      });
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(BOOKMARKS, /*enable_transport_mode=*/false);
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
   base::RunLoop().RunUntilIdle();
 
   // In this test, BOOKMARKS doesn't support transport mode, so it should *not*
@@ -1631,7 +1648,10 @@ TEST_F(SyncServiceImplTest,
 TEST_F(SyncServiceImplTest, ShouldEnableAndDisableInvalidationsForSessions) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
-  InitializeService({{SESSIONS, false}, {BOOKMARKS, false}});
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(SESSIONS, /*enable_transport_mode=*/false);
+  params.emplace_back(BOOKMARKS, /*enable_transport_mode=*/false);
+  InitializeService(std::move(params));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(*sync_invalidations_service(),
@@ -1645,12 +1665,10 @@ TEST_F(SyncServiceImplTest, ShouldEnableAndDisableInvalidationsForSessions) {
 TEST_F(SyncServiceImplTest, ShouldNotSubscribeToProxyTypes) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {
-          {BOOKMARKS, false},
-          {DEVICE_INFO, true},
-      });
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(BOOKMARKS, /*enable_transport_mode=*/false);
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
   get_controller(BOOKMARKS)
       ->model()
       ->EnableSkipEngineConnectionForActivationResponse();
@@ -1664,12 +1682,10 @@ TEST_F(SyncServiceImplTest, ShouldNotSubscribeToProxyTypes) {
 TEST_F(SyncServiceImplTest, ShouldNotSubscribeToFailedTypes) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {
-          {BOOKMARKS, false},
-          {DEVICE_INFO, true},
-      });
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(BOOKMARKS, /*enable_transport_mode=*/false);
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
   get_controller(BOOKMARKS)->model()->SimulateModelError(
       ModelError(FROM_HERE, "Model error"));
 
@@ -1682,12 +1698,10 @@ TEST_F(SyncServiceImplTest, ShouldNotSubscribeToFailedTypes) {
 TEST_F(SyncServiceImplTest, ShouldNotSubscribeToStopAndClearDataTypes) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {
-          {BOOKMARKS, false},
-          {DEVICE_INFO, true},
-      });
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(BOOKMARKS, /*enable_transport_mode=*/false);
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
   get_controller(BOOKMARKS)->SetPreconditionState(
       ModelTypeController::PreconditionState::kMustStopAndClearData);
 
@@ -1709,12 +1723,10 @@ TEST_F(SyncServiceImplTest, ShouldNotSubscribeToStopAndClearDataTypes) {
 TEST_F(SyncServiceImplTest, ShouldSubscribeToStopAndKeepDataTypes) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {
-          {BOOKMARKS, false},
-          {DEVICE_INFO, true},
-      });
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(BOOKMARKS, /*enable_transport_mode=*/false);
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
   get_controller(BOOKMARKS)->SetPreconditionState(
       ModelTypeController::PreconditionState::kMustStopAndKeepData);
 
@@ -1727,12 +1739,10 @@ TEST_F(SyncServiceImplTest, ShouldSubscribeToStopAndKeepDataTypes) {
 TEST_F(SyncServiceImplTest, ShouldUnsubscribeWhenStopAndClear) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {
-          {BOOKMARKS, false},
-          {DEVICE_INFO, true},
-      });
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(BOOKMARKS, /*enable_transport_mode=*/false);
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
   EXPECT_CALL(*sync_invalidations_service(),
               SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
                                            ContainsDataType(BOOKMARKS))));
@@ -1750,12 +1760,10 @@ TEST_F(SyncServiceImplTest, ShouldUnsubscribeWhenStopAndClear) {
 TEST_F(SyncServiceImplTest, ShouldUnsubscribeOnTypeFailure) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {
-          {BOOKMARKS, false},
-          {DEVICE_INFO, true},
-      });
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(BOOKMARKS, /*enable_transport_mode=*/false);
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
   EXPECT_CALL(*sync_invalidations_service(),
               SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
                                            ContainsDataType(BOOKMARKS))));
@@ -2022,12 +2030,10 @@ TEST_F(
     SyncServiceImplTest,
     GetTypesWithPendingDownloadForInitialSyncDuringFirstSyncInTransportMode) {
   component_factory()->AllowFakeEngineInitCompletion(false);
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {
-          {AUTOFILL_WALLET_DATA, true},
-          {DEVICE_INFO, true},
-      });
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(AUTOFILL_WALLET_DATA, /*enable_transport_mode=*/true);
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
   base::RunLoop().RunUntilIdle();
 
   SignInWithoutSyncConsent();
@@ -2123,68 +2129,77 @@ TEST_F(SyncServiceImplTest, EarlyCallToGetTypesWithUnsyncedDataShouldNotCrash) {
 TEST_F(SyncServiceImplTest,
        ShouldOnlyForwardEnabledTypesToSyncClientUponGetLocalDataDescriptions) {
   SignInWithoutSyncConsent();
-  // Only DEVICE_INFO datatype is enabled for transport mode.
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {{DEVICE_INFO, true}, {AUTOFILL, false}});
-  base::RunLoop().RunUntilIdle();
 
-  ASSERT_EQ(service()->GetActiveDataTypes(),
-            ModelTypeSet({NIGORI, DEVICE_INFO}));
-
-  // DEVICE_INFO and AUTOFILL are queried from the sync service.
-  ModelTypeSet requested_types{DEVICE_INFO, AUTOFILL};
-  // Only the DEVICE_INFO uploader is queried.
+  // Both DEVICE_INFO and AUTOFILL will be passed to GetLocalDataDescription(),
+  // but only DEVICE_INFO is enabled in transport mode. So only the DEVICE_INFO
+  // uploader should be queried.
   auto device_info_uploader =
       std::make_unique<MockModelTypeLocalDataBatchUploader>();
   auto autofill_uploader =
       std::make_unique<MockModelTypeLocalDataBatchUploader>();
   EXPECT_CALL(*device_info_uploader, GetLocalDataDescription);
   EXPECT_CALL(*autofill_uploader, GetLocalDataDescription).Times(0);
-  get_controller(DEVICE_INFO)
-      ->SetLocalDataBatchUploader(std::move(device_info_uploader));
-  get_controller(AUTOFILL)->SetLocalDataBatchUploader(
-      std::move(autofill_uploader));
 
-  service()->GetLocalDataDescriptions(requested_types, base::DoNothing());
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
+                      std::move(device_info_uploader));
+  params.emplace_back(AUTOFILL, /*enable_transport_mode=*/false,
+                      std::move(autofill_uploader));
+  InitializeService(std::move(params));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(service()->GetActiveDataTypes(),
+            ModelTypeSet({NIGORI, DEVICE_INFO}));
+
+  service()->GetLocalDataDescriptions({DEVICE_INFO, AUTOFILL},
+                                      base::DoNothing());
 }
 
 TEST_F(SyncServiceImplTest,
        ShouldNotForwardTypesWithErrorToSyncClientUponGetLocalDataDescriptions) {
   SignInWithoutSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {{DEVICE_INFO, true}, {AUTOFILL_WALLET_DATA, true}});
-  base::RunLoop().RunUntilIdle();
 
-  // Simulate a data type error.
-  service()->ReportDataTypeErrorForTest(AUTOFILL_WALLET_DATA);
-  ASSERT_FALSE(service()->GetActiveDataTypes().Has(AUTOFILL_WALLET_DATA));
-
-  // DEVICE_INFO and AUTOFILL_WALLET_DATA are queried from the sync service.
-  ModelTypeSet requested_types{DEVICE_INFO, AUTOFILL_WALLET_DATA};
-  // Only the DEVICE_INFO uploader is queried.
+  // Both DEVICE_INFO and AUTOFILL_WALLET_DATA will be passed to
+  // GetLocalDataDescription(), but AUTOFILL_WALLET_DATA will be in an error
+  // state. So only the DEVICE_INFO uploader should be queried.
   auto device_info_uploader =
       std::make_unique<MockModelTypeLocalDataBatchUploader>();
   auto wallet_uploader =
       std::make_unique<MockModelTypeLocalDataBatchUploader>();
   EXPECT_CALL(*device_info_uploader, GetLocalDataDescription);
   EXPECT_CALL(*wallet_uploader, GetLocalDataDescription).Times(0);
-  get_controller(DEVICE_INFO)
-      ->SetLocalDataBatchUploader(std::move(device_info_uploader));
-  get_controller(AUTOFILL_WALLET_DATA)
-      ->SetLocalDataBatchUploader(std::move(wallet_uploader));
 
-  service()->GetLocalDataDescriptions(requested_types, base::DoNothing());
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
+                      std::move(device_info_uploader));
+  params.emplace_back(AUTOFILL_WALLET_DATA, /*enable_transport_mode=*/true,
+                      std::move(wallet_uploader));
+  InitializeService(std::move(params));
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate a data type error.
+  service()->ReportDataTypeErrorForTest(AUTOFILL_WALLET_DATA);
+  ASSERT_FALSE(service()->GetActiveDataTypes().Has(AUTOFILL_WALLET_DATA));
+
+  service()->GetLocalDataDescriptions({DEVICE_INFO, AUTOFILL_WALLET_DATA},
+                                      base::DoNothing());
 }
 
 TEST_F(SyncServiceImplTest,
        ShouldNotForwardToSyncClientUponGetLocalDataDescriptionsIfSyncDisabled) {
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignInWithoutSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {{DEVICE_INFO, true}});
+
+  // DEVICE_INFO will be passed to GetLocalDataDescription(), but sync is
+  // disabled by policy. So the uploader should not be queried.
+  auto device_info_uploader =
+      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+  EXPECT_CALL(*device_info_uploader, GetLocalDataDescription).Times(0);
+
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
+                      std::move(device_info_uploader));
+  InitializeService(std::move(params));
   base::RunLoop().RunUntilIdle();
 
   // Sync was disabled due to the policy.
@@ -2194,73 +2209,75 @@ TEST_F(SyncServiceImplTest,
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
 
-  // DEVICE_INFO is queried from the sync service.
-  ModelTypeSet requested_types{DEVICE_INFO};
-  // No data type queried from the uploader.
-  auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, GetLocalDataDescription).Times(0);
-  get_controller(DEVICE_INFO)
-      ->SetLocalDataBatchUploader(std::move(device_info_uploader));
-
-  service()->GetLocalDataDescriptions(requested_types, base::DoNothing());
+  service()->GetLocalDataDescriptions({DEVICE_INFO}, base::DoNothing());
 }
 
 TEST_F(SyncServiceImplTest,
        ShouldReturnEmptyUponGetLocalDataDescriptionsForNotSignedInUsers) {
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {{DEVICE_INFO, true}});
+  // DEVICE_INFO will be passed to GetLocalDataDescription(), but the user is
+  // signed out. So the uploader should not be queried.
+  auto device_info_uploader =
+      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+  EXPECT_CALL(*device_info_uploader, GetLocalDataDescription).Times(0);
+
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
+                      std::move(device_info_uploader));
+  InitializeService(std::move(params));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(service()->GetPreferredDataTypes().Has(DEVICE_INFO));
 
-  // DEVICE_INFO is queried from the sync service.
-  ModelTypeSet requested_types{DEVICE_INFO};
-  // No data type queried from the uploader.
-  auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, GetLocalDataDescription).Times(0);
-  get_controller(DEVICE_INFO)
-      ->SetLocalDataBatchUploader(std::move(device_info_uploader));
-
-  service()->GetLocalDataDescriptions(requested_types, base::DoNothing());
+  service()->GetLocalDataDescriptions({DEVICE_INFO}, base::DoNothing());
 }
 
 TEST_F(SyncServiceImplTest,
        ShouldReturnEmptyUponGetLocalDataDescriptionsForSyncingUsers) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {{DEVICE_INFO, true}});
+
+  // DEVICE_INFO will be passed to GetLocalDataDescription(), but the user is
+  // syncing. So the uploader should not be queried.
+  auto device_info_uploader =
+      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+  EXPECT_CALL(*device_info_uploader, GetLocalDataDescription).Times(0);
+
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
+                      std::move(device_info_uploader));
+  InitializeService(std::move(params));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(service()->GetPreferredDataTypes().Has(DEVICE_INFO));
 
-  // DEVICE_INFO is queried from the sync service.
-  ModelTypeSet requested_types{DEVICE_INFO};
+  // Returns empty.
   base::MockOnceCallback<void(std::map<ModelType, LocalDataDescription>)>
       callback;
-  // No query to the uploader.
-  auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, GetLocalDataDescription).Times(0);
-  get_controller(DEVICE_INFO)
-      ->SetLocalDataBatchUploader(std::move(device_info_uploader));
-
-  // Returns empty.
   EXPECT_CALL(callback, Run(IsEmpty()));
 
-  service()->GetLocalDataDescriptions(requested_types, callback.Get());
+  service()->GetLocalDataDescriptions({DEVICE_INFO}, callback.Get());
 }
 
 TEST_F(SyncServiceImplTest,
        ShouldOnlyForwardEnabledTypesToSyncClientUponTriggerLocalDataMigration) {
   SignInWithoutSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {{DEVICE_INFO, true}, {AUTOFILL, false}});
+
+  // Both DEVICE_INFO and AUTOFILL will be passed to TriggerLocalDataMigration()
+  // but only DEVICE_INFO is enabled in transport mode. So only DEVICE_INFO
+  // should be uploaded.
+  auto device_info_uploader =
+      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+  auto autofill_uploader =
+      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration);
+  EXPECT_CALL(*autofill_uploader, TriggerLocalDataMigration).Times(0);
+
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
+                      std::move(device_info_uploader));
+  params.emplace_back(AUTOFILL, /*enable_transport_mode=*/false,
+                      std::move(autofill_uploader));
+  InitializeService(std::move(params));
   base::RunLoop().RunUntilIdle();
 
   // Only DEVICE_INFO is enabled since AUTOFILL is not supported in
@@ -2268,52 +2285,37 @@ TEST_F(SyncServiceImplTest,
   ASSERT_EQ(service()->GetActiveDataTypes(),
             ModelTypeSet({NIGORI, DEVICE_INFO}));
 
-  // DEVICE_INFO and AUTOFILL are requested to upload from the sync service.
-  ModelTypeSet requested_types{DEVICE_INFO, AUTOFILL};
-  // Only DEVICE_INFO is uploaded.
-  auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
-  auto autofill_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration);
-  EXPECT_CALL(*autofill_uploader, TriggerLocalDataMigration).Times(0);
-  get_controller(DEVICE_INFO)
-      ->SetLocalDataBatchUploader(std::move(device_info_uploader));
-  get_controller(AUTOFILL)->SetLocalDataBatchUploader(
-      std::move(autofill_uploader));
-
-  service()->TriggerLocalDataMigration(requested_types);
+  service()->TriggerLocalDataMigration({DEVICE_INFO, AUTOFILL});
 }
 
 TEST_F(
     SyncServiceImplTest,
     ShouldNotForwardTypesWithErrorToSyncClientUponTriggerLocalDataMigration) {
   SignInWithoutSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {{DEVICE_INFO, true}, {AUTOFILL_WALLET_DATA, true}});
-  base::RunLoop().RunUntilIdle();
 
-  // Simulate a data type error.
-  service()->ReportDataTypeErrorForTest(AUTOFILL_WALLET_DATA);
-  ASSERT_FALSE(service()->GetActiveDataTypes().Has(AUTOFILL_WALLET_DATA));
-
-  // DEVICE_INFO and AUTOFILL_WALLET_DATA are requested to upload from the sync
-  // service.
-  ModelTypeSet requested_types{DEVICE_INFO, AUTOFILL_WALLET_DATA};
-  // Only DEVICE_INFO is uploaded.
+  // Both DEVICE_INFO and AUTOFILL_WALLET_DATA will be passed to
+  // TriggerLocalDataMigration(), but AUTOFILL_WALLET_DATA will be in an error
+  // state. So only DEVICE_INFO should be uploaded.
   auto device_info_uploader =
       std::make_unique<MockModelTypeLocalDataBatchUploader>();
   auto wallet_uploader =
       std::make_unique<MockModelTypeLocalDataBatchUploader>();
   EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration);
   EXPECT_CALL(*wallet_uploader, TriggerLocalDataMigration).Times(0);
-  get_controller(DEVICE_INFO)
-      ->SetLocalDataBatchUploader(std::move(device_info_uploader));
-  get_controller(AUTOFILL_WALLET_DATA)
-      ->SetLocalDataBatchUploader(std::move(wallet_uploader));
 
-  service()->TriggerLocalDataMigration(requested_types);
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
+                      std::move(device_info_uploader));
+  params.emplace_back(AUTOFILL_WALLET_DATA, /*enable_transport_mode=*/true,
+                      std::move(wallet_uploader));
+  InitializeService(std::move(params));
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate a data type error.
+  service()->ReportDataTypeErrorForTest(AUTOFILL_WALLET_DATA);
+  ASSERT_FALSE(service()->GetActiveDataTypes().Has(AUTOFILL_WALLET_DATA));
+
+  service()->TriggerLocalDataMigration({DEVICE_INFO, AUTOFILL_WALLET_DATA});
 }
 
 TEST_F(
@@ -2321,9 +2323,17 @@ TEST_F(
     ShouldNotForwardToSyncClientUponTriggerLocalDataMigrationIfSyncDisabled) {
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignInWithoutSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {{DEVICE_INFO, true}});
+
+  // DEVICE_INFO will be passed to TriggerLocalDataMigration(), but sync is
+  // disabled by policy. So data should not be uploaded.
+  auto device_info_uploader =
+      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration).Times(0);
+
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
+                      std::move(device_info_uploader));
+  InitializeService(std::move(params));
   base::RunLoop().RunUntilIdle();
 
   // Sync was disabled due to the policy.
@@ -2333,68 +2343,56 @@ TEST_F(
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
 
-  // DEVICE_INFO is requested to upload from the sync service.
-  ModelTypeSet requested_types{DEVICE_INFO};
-  // No upload should happen.
-  auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration).Times(0);
-  get_controller(DEVICE_INFO)
-      ->SetLocalDataBatchUploader(std::move(device_info_uploader));
-
-  service()->TriggerLocalDataMigration(requested_types);
+  service()->TriggerLocalDataMigration({DEVICE_INFO});
 }
 
 TEST_F(SyncServiceImplTest,
        ShouldDoNothingUponTriggerLocalDataMigrationForNotSignedInUsers) {
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {{DEVICE_INFO, true}});
+  // DEVICE_INFO will be passed to TriggerLocalDataMigration(), but the user is
+  // signed out. So data should not be uploaded.
+  auto device_info_uploader =
+      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration).Times(0);
+
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
+                      std::move(device_info_uploader));
+  InitializeService(std::move(params));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(service()->GetPreferredDataTypes().Has(DEVICE_INFO));
 
-  // DEVICE_INFO is requested to upload from the sync service.
-  ModelTypeSet requested_types{DEVICE_INFO};
-  // No upload should happen.
-  auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration).Times(0);
-  get_controller(DEVICE_INFO)
-      ->SetLocalDataBatchUploader(std::move(device_info_uploader));
-
-  service()->TriggerLocalDataMigration(requested_types);
+  service()->TriggerLocalDataMigration({DEVICE_INFO});
 }
 
 TEST_F(SyncServiceImplTest,
        ShouldDoNothingUponTriggerLocalDataMigrationForSyncingUsers) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {{DEVICE_INFO, true}});
+
+  // DEVICE_INFO will be passed to TriggerLocalDataMigration(), but the user is
+  // syncing. So data should not be uploaded.
+  auto device_info_uploader =
+      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration).Times(0);
+
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
+                      std::move(device_info_uploader));
+  InitializeService(std::move(params));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(service()->GetPreferredDataTypes().Has(DEVICE_INFO));
 
-  // DEVICE_INFO is requested to upload from the sync service.
-  ModelTypeSet requested_types{DEVICE_INFO};
-  // No upload.
-  auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration).Times(0);
-  get_controller(DEVICE_INFO)
-      ->SetLocalDataBatchUploader(std::move(device_info_uploader));
-
-  service()->TriggerLocalDataMigration(requested_types);
+  service()->TriggerLocalDataMigration({DEVICE_INFO});
 }
 
 TEST_F(SyncServiceImplTest, ShouldRecordLocalDataMigrationRequests) {
   base::HistogramTester histogram_tester;
   SignInWithoutSyncConsent();
-  InitializeService(
-      /*registered_types_and_transport_mode_support=*/
-      {{DEVICE_INFO, true}});
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
   base::RunLoop().RunUntilIdle();
 
   service()->TriggerLocalDataMigration({DEVICE_INFO, AUTOFILL_WALLET_DATA});
@@ -2411,7 +2409,10 @@ TEST_F(SyncServiceImplTest, ShouldNotifyOnManagedPrefDisabled) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignInWithSyncConsent();
-  InitializeService({{PASSWORDS, true}, {BOOKMARKS, true}});
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(PASSWORDS, /*enable_transport_mode=*/true);
+  params.emplace_back(BOOKMARKS, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
   base::RunLoop().RunUntilIdle();
 
   testing::NiceMock<MockSyncServiceObserver> mock_sync_service_observer;

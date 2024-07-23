@@ -250,27 +250,32 @@ gfx::Rect ScrollbarThemeFluent::ShrinkMainThreadedMinimalModeThumbRect(
 
 void ScrollbarThemeFluent::PaintTrackAndButtons(GraphicsContext& context,
                                                 const Scrollbar& scrollbar,
-                                                const gfx::Vector2d& offset) {
-  if (!scrollbar.UsesNinePatchTrackAndButtonsResource() ||
-      scrollbar.HasTickmarks()) {
-    ScrollbarTheme::PaintTrackAndButtons(context, scrollbar, offset);
+                                                const gfx::Rect& rect) {
+  if (rect.size() == scrollbar.FrameRect().size()) {
+    // The non-nine-patch code path. The caller should use this code path if
+    // - UsesNinePatchTrackAndButtonsResource() is false;
+    // - There are tickmarks; or
+    // - Is painting non-composited scrollbars
+    //   (from ScrollbarDisplayItem::Paint()).
+    ScrollbarTheme::PaintTrackAndButtons(context, scrollbar, rect);
     return;
   }
+
+  CHECK(!scrollbar.HasTickmarks());
+
   if (DrawingRecorder::UseCachedDrawingIfPossible(
           context, scrollbar, DisplayItem::kScrollbarTrackAndButtons)) {
     return;
   }
+  DrawingRecorder recorder(context, scrollbar,
+                           DisplayItem::kScrollbarTrackAndButtons, rect);
+
+  CHECK_EQ(rect.size(), NinePatchTrackAndButtonsCanvasSize(scrollbar));
+  gfx::Vector2d offset = rect.origin() - scrollbar.Location();
   const int aperture_track_space =
       scrollbar.Orientation() == kVerticalScrollbar
           ? NinePatchTrackAndButtonsAperture(scrollbar).height()
           : NinePatchTrackAndButtonsAperture(scrollbar).width();
-
-  gfx::Size paint_size = NinePatchTrackAndButtonsCanvasSize(scrollbar);
-  gfx::Rect visual_rect = scrollbar.FrameRect();
-  visual_rect.Offset(offset);
-  visual_rect.set_size(paint_size);
-  DrawingRecorder recorder(context, scrollbar,
-                           DisplayItem::kScrollbarTrackAndButtons, visual_rect);
 
   gfx::Rect back_button_rect = BackButtonRect(scrollbar);
   back_button_rect.Offset(offset);
@@ -295,6 +300,10 @@ void ScrollbarThemeFluent::PaintTrackAndButtons(GraphicsContext& context,
     track_rect.set_width(aperture_track_space);
   }
   PaintTrack(context, scrollbar, track_rect);
+}
+
+bool ScrollbarThemeFluent::UsesNinePatchTrackAndButtonsResource() const {
+  return RuntimeEnabledFeatures::FluentScrollbarUsesNinePatchTrackEnabled();
 }
 
 gfx::Size ScrollbarThemeFluent::NinePatchTrackAndButtonsCanvasSize(
@@ -333,8 +342,7 @@ gfx::Rect ScrollbarThemeFluent::NinePatchTrackAndButtonsAperture(
   return aperture;
 }
 
-SkColor4f ScrollbarThemeFluent::FluentThumbColor(
-    const Scrollbar& scrollbar) const {
+SkColor4f ScrollbarThemeFluent::ThumbColor(const Scrollbar& scrollbar) const {
   WebThemeEngine::State state;
   if (scrollbar.PressedPart() == kThumbPart) {
     state = WebThemeEngine::kStatePressed;

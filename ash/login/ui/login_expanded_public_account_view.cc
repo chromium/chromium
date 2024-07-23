@@ -126,13 +126,13 @@ class LoginExpandedPublicAccountEventHandler : public ui::EventHandler {
  private:
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() == ui::ET_MOUSE_PRESSED) {
+    if (event->type() == ui::EventType::kMousePressed) {
       view_->ProcessPressedEvent(event->AsLocatedEvent());
     }
   }
   void OnGestureEvent(ui::GestureEvent* event) override {
-    if ((event->type() == ui::ET_GESTURE_TAP ||
-         event->type() == ui::ET_GESTURE_TAP_DOWN)) {
+    if ((event->type() == ui::EventType::kGestureTap ||
+         event->type() == ui::EventType::kGestureTapDown)) {
       view_->ProcessPressedEvent(event->AsLocatedEvent());
     }
   }
@@ -952,7 +952,7 @@ void LoginExpandedPublicAccountView::Layout(PassKey) {
 }
 
 void LoginExpandedPublicAccountView::OnKeyEvent(ui::KeyEvent* event) {
-  if (!GetVisible() || event->type() != ui::ET_KEY_PRESSED) {
+  if (!GetVisible() || event->type() != ui::EventType::kKeyPressed) {
     return;
   }
 

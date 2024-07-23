@@ -293,10 +293,11 @@ void BrowserTabStripController::SelectTab(int model_index,
       TabStripUserGestureDetails::GestureType::kOther, event.time_stamp());
   TabStripUserGestureDetails::GestureType type =
       TabStripUserGestureDetails::GestureType::kOther;
-  if (event.type() == ui::ET_MOUSE_PRESSED)
+  if (event.type() == ui::EventType::kMousePressed) {
     type = TabStripUserGestureDetails::GestureType::kMouse;
-  else if (event.type() == ui::ET_GESTURE_TAP_DOWN)
+  } else if (event.type() == ui::EventType::kGestureTapDown) {
     type = TabStripUserGestureDetails::GestureType::kTouch;
+  }
   gesture_detail.type = type;
   model_->ActivateTabAt(model_index, gesture_detail);
 

@@ -434,20 +434,6 @@ HoldingSpaceKeyedService::AddItems(
   std::vector<std::unique_ptr<HoldingSpaceItem>> items_to_add;
 
   for (auto& item : items) {
-    // Ignore any `items` that are of Camera app types if Camera app integration
-    // is disabled.
-    if (HoldingSpaceItem::IsCameraAppType(item->type()) &&
-        !features::IsHoldingSpaceCameraAppIntegrationEnabled()) {
-      result.push_back(std::cref(base::EmptyString()));
-      continue;
-    }
-    // Ignore any `items` that are from Photoshop Web if Photoshop Web
-    // integration is disabled.
-    if (item->type() == HoldingSpaceItem::Type::kPhotoshopWeb &&
-        !features::IsHoldingSpacePhotoshopWebIntegrationEnabled()) {
-      result.push_back(std::cref(base::EmptyString()));
-      continue;
-    }
     // Ignore any `items` that already exist in the `holding_space_model_` if
     // `allow_duplicates` is false.
     if (!allow_duplicates && holding_space_model_.ContainsItem(

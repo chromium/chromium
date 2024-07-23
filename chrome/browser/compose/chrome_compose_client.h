@@ -225,12 +225,20 @@ class ChromeComposeClient
   raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;
 
+  // Prepares to open the dialog with an existing session for the active field.
+  // Must be called when there is an existing session for the active field (i.e.
+  // |GetSessionForACtiveComposeField| returns a valid session.
+  // Also records resumption metrics for the existing session.
+  void PrepareToResumeExistingSession(ComposeCallback callback,
+                                      bool has_selection,
+                                      bool popup_clicked);
   // Creates a session for `trigger_field` and initializes it as necessary.
   // `callback` is a callback to the renderer to insert the compose response
   // into the compose field.
-  void CreateOrUpdateSession(EntryPoint ui_entry_point,
-                             const autofill::FormFieldData& trigger_field,
-                             ComposeCallback callback);
+  void CreateNewSession(ComposeCallback callback,
+                        const autofill::FormFieldData& trigger_field,
+                        std::string_view selected_text,
+                        bool popup_clicked);
 
   // Set the exit reason for a session that does not progress past the FRE.
   void SetFirstRunSessionCloseReason(
@@ -277,6 +285,11 @@ class ChromeComposeClient
   // The unique renderer and form IDs of the last field the user selected
   // compose on.
   std::optional<FieldIdentifier> active_compose_ids_;
+
+  // The last trigger source used when calling |ShouldTriggerPopup|. This is
+  // reset after the dialog is shown.
+  autofill::AutofillSuggestionTriggerSource last_popup_trigger_source_ =
+      autofill::AutofillSuggestionTriggerSource::kUnspecified;
 
   std::optional<InnerTextProvider*> inner_text_provider_for_test_;
 

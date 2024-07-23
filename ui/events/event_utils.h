@@ -51,8 +51,8 @@ constexpr char kPropertyKeyboardGroup[] = "_keyevent_kbd_group_";
 // Key used to store 'hardware key code' values in Event::Properties.
 constexpr char kPropertyKeyboardHwKeyCode[] = "_keyevent_kbd_hw_keycode_";
 
-// Key used to store mouse event flag telling ET_MOUSE_EXITED must actually be
-// interpreted as "crossing intermediate window" in blink context.
+// Key used to store mouse event flag telling EventType::kMouseExited must
+// actually be interpreted as "crossing intermediate window" in blink context.
 constexpr char kPropertyMouseCrossedIntermediateWindow[] =
     "_mouseevent_cros_window_";
 

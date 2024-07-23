@@ -29,83 +29,83 @@ WebInputEvent::DispatchType WebInputEvent::MergeDispatchTypes(
 ui::EventType WebInputEvent::GetTypeAsUiEventType() const {
   switch (type_) {
     case WebInputEvent::Type::kMouseDown:
-      return ui::EventType::ET_MOUSE_PRESSED;
+      return ui::EventType::kMousePressed;
     case WebInputEvent::Type::kMouseUp:
-      return ui::EventType::ET_MOUSE_RELEASED;
+      return ui::EventType::kMouseReleased;
     case WebInputEvent::Type::kMouseMove:
-      return modifiers_ & kButtonModifiers ? ui::EventType::ET_MOUSE_DRAGGED
-                                           : ui::EventType::ET_MOUSE_MOVED;
+      return modifiers_ & kButtonModifiers ? ui::EventType::kMouseDragged
+                                           : ui::EventType::kMouseMoved;
     case WebInputEvent::Type::kMouseEnter:
-      return ui::EventType::ET_MOUSE_ENTERED;
+      return ui::EventType::kMouseEntered;
     case WebInputEvent::Type::kMouseLeave:
-      return ui::EventType::ET_MOUSE_EXITED;
+      return ui::EventType::kMouseExited;
     case WebInputEvent::Type::kContextMenu:
-      return ui::EventType::ET_UNKNOWN;
+      return ui::EventType::kUnknown;
     case WebInputEvent::Type::kMouseWheel:
-      return ui::EventType::ET_MOUSEWHEEL;
+      return ui::EventType::kMousewheel;
     case WebInputEvent::Type::kRawKeyDown:
-      return ui::EventType::ET_KEY_PRESSED;
+      return ui::EventType::kKeyPressed;
     case WebInputEvent::Type::kKeyDown:
-      return ui::EventType::ET_KEY_PRESSED;
+      return ui::EventType::kKeyPressed;
     case WebInputEvent::Type::kKeyUp:
-      return ui::EventType::ET_KEY_RELEASED;
+      return ui::EventType::kKeyReleased;
     case WebInputEvent::Type::kChar:
-      return ui::EventType::ET_KEY_PRESSED;
+      return ui::EventType::kKeyPressed;
     case WebInputEvent::Type::kGestureScrollBegin:
-      return ui::EventType::ET_GESTURE_SCROLL_BEGIN;
+      return ui::EventType::kGestureScrollBegin;
     case WebInputEvent::Type::kGestureScrollEnd:
-      return ui::EventType::ET_GESTURE_SCROLL_END;
+      return ui::EventType::kGestureScrollEnd;
     case WebInputEvent::Type::kGestureScrollUpdate:
-      return ui::EventType::ET_GESTURE_SCROLL_UPDATE;
+      return ui::EventType::kGestureScrollUpdate;
     case WebInputEvent::Type::kGestureFlingStart:
-      return ui::EventType::ET_SCROLL_FLING_START;
+      return ui::EventType::kScrollFlingStart;
     case WebInputEvent::Type::kGestureFlingCancel:
-      return ui::EventType::ET_SCROLL_FLING_CANCEL;
+      return ui::EventType::kScrollFlingCancel;
     case WebInputEvent::Type::kGesturePinchBegin:
-      return ui::EventType::ET_GESTURE_PINCH_BEGIN;
+      return ui::EventType::kGesturePinchBegin;
     case WebInputEvent::Type::kGesturePinchEnd:
-      return ui::EventType::ET_GESTURE_PINCH_END;
+      return ui::EventType::kGesturePinchEnd;
     case WebInputEvent::Type::kGesturePinchUpdate:
-      return ui::EventType::ET_GESTURE_PINCH_UPDATE;
+      return ui::EventType::kGesturePinchUpdate;
     case WebInputEvent::Type::kGestureTapDown:
-      return ui::EventType::ET_GESTURE_TAP_DOWN;
+      return ui::EventType::kGestureTapDown;
     case WebInputEvent::Type::kGestureShowPress:
-      return ui::EventType::ET_GESTURE_SHOW_PRESS;
+      return ui::EventType::kGestureShowPress;
     case WebInputEvent::Type::kGestureTap:
-      return ui::EventType::ET_GESTURE_TAP;
+      return ui::EventType::kGestureTap;
     case WebInputEvent::Type::kGestureTapCancel:
-      return ui::EventType::ET_GESTURE_TAP_CANCEL;
+      return ui::EventType::kGestureTapCancel;
     case WebInputEvent::Type::kGestureShortPress:
-      return ui::EventType::ET_GESTURE_SHORT_PRESS;
+      return ui::EventType::kGestureShortPress;
     case WebInputEvent::Type::kGestureLongPress:
-      return ui::EventType::ET_GESTURE_LONG_PRESS;
+      return ui::EventType::kGestureLongPress;
     case WebInputEvent::Type::kGestureLongTap:
-      return ui::EventType::ET_GESTURE_LONG_TAP;
+      return ui::EventType::kGestureLongTap;
     case WebInputEvent::Type::kGestureTwoFingerTap:
-      return ui::EventType::ET_GESTURE_TWO_FINGER_TAP;
+      return ui::EventType::kGestureTwoFingerTap;
     case WebInputEvent::Type::kGestureTapUnconfirmed:
-      return ui::EventType::ET_GESTURE_TAP_UNCONFIRMED;
+      return ui::EventType::kGestureTapUnconfirmed;
     case WebInputEvent::Type::kGestureDoubleTap:
-      return ui::EventType::ET_GESTURE_DOUBLE_TAP;
+      return ui::EventType::kGestureDoubleTap;
     case WebInputEvent::Type::kTouchStart:
-      return ui::EventType::ET_TOUCH_PRESSED;
+      return ui::EventType::kTouchPressed;
     case WebInputEvent::Type::kTouchMove:
-      return ui::EventType::ET_TOUCH_MOVED;
+      return ui::EventType::kTouchMoved;
     case WebInputEvent::Type::kTouchEnd:
-      return ui::EventType::ET_TOUCH_RELEASED;
+      return ui::EventType::kTouchReleased;
     case WebInputEvent::Type::kTouchCancel:
-      return ui::EventType::ET_TOUCH_CANCELLED;
+      return ui::EventType::kTouchCancelled;
     case WebInputEvent::Type::kTouchScrollStarted:
     case WebInputEvent::Type::kPointerDown:
-      return ui::EventType::ET_TOUCH_PRESSED;
+      return ui::EventType::kTouchPressed;
     case WebInputEvent::Type::kPointerUp:
-      return ui::EventType::ET_TOUCH_RELEASED;
+      return ui::EventType::kTouchReleased;
     case WebInputEvent::Type::kPointerMove:
-      return ui::EventType::ET_TOUCH_MOVED;
+      return ui::EventType::kTouchMoved;
     case WebInputEvent::Type::kPointerCancel:
-      return ui::EventType::ET_TOUCH_CANCELLED;
+      return ui::EventType::kTouchCancelled;
     default:
-      return ui::EventType::ET_UNKNOWN;
+      return ui::EventType::kUnknown;
   }
 }
 

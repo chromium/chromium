@@ -577,6 +577,10 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
   EXPECT_EQ("Cucumbers", result->result);
   EXPECT_FALSE(result->on_device_evaluation_used);
 
+  // Check that the session entry point histogram is recorded.
+  histograms().ExpectUniqueSample(compose::kComposeStartSessionEntryPoint,
+                                  compose::ComposeEntryPoint::kContextMenu, 1);
+
   // Check that a user action for the Compose request was emitted.
   EXPECT_EQ(1, user_action_tester().GetActionCount(
                    "Compose.ComposeRequest.CreateClicked"));
@@ -2401,6 +2405,11 @@ TEST_F(ChromeComposeClientTest,
   // Close session to record UMA
   client().CloseUI(compose::mojom::CloseReason::kInsertButton);
 
+  // Check that the session entry point histogram is recorded.
+  histograms().ExpectUniqueSample(compose::kComposeStartSessionEntryPoint,
+                                  compose::ComposeEntryPoint::kProactiveNudge,
+                                  1);
+
   // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
@@ -2442,6 +2451,13 @@ TEST_F(ChromeComposeClientTest, TestSelectedTextWithSavedStateNudge) {
   EXPECT_EQ("web ui state", result->compose_state->webui_state);
   EXPECT_EQ("text is first", result->initial_input);
   EXPECT_TRUE(result->text_selected);
+
+  // Check that the session entry point histogram is recorded.
+  histograms().ExpectUniqueSample(compose::kComposeStartSessionEntryPoint,
+                                  compose::ComposeEntryPoint::kContextMenu, 1);
+  histograms().ExpectUniqueSample(compose::kComposeResumeSessionEntryPoint,
+                                  compose::ComposeEntryPoint::kSavedStateNudge,
+                                  1);
 }
 
 TEST_F(ChromeComposeClientTest,

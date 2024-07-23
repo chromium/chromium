@@ -47,10 +47,12 @@ export class GoogleCalendarModuleElement extends
   static override get properties() {
     return {
       events_: {type: Object},
+      showInfoDialog_: {type: Boolean},
     };
   }
 
   protected events_: CalendarEvent[];
+  protected showInfoDialog_: boolean;
 
   private handler_: GoogleCalendarPageHandlerRemote;
 
@@ -72,6 +74,11 @@ export class GoogleCalendarModuleElement extends
           action: 'disable',
           icon: 'modules:block',
           text: this.i18n('modulesGoogleCalendarDisableButtonText'),
+        },
+        {
+          action: 'info',
+          icon: 'modules:info',
+          text: this.i18n('moduleInfoButtonTitle'),
         },
       ],
       [
@@ -104,6 +111,14 @@ export class GoogleCalendarModuleElement extends
         restoreCallback: this.handler_.restoreModule,
       },
     }));
+  }
+
+  protected onInfoButtonClick_() {
+    this.showInfoDialog_ = true;
+  }
+
+  protected onInfoDialogClose_() {
+    this.showInfoDialog_ = false;
   }
 
   protected onMenuButtonClick_(e: Event) {

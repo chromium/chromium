@@ -112,7 +112,7 @@ void PrivacySandboxNoticeStorage::RegisterProfilePrefs(
 
 void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
     PrefService* pref_service,
-    std::string_view notice) {
+    std::string_view notice) const {
   CheckNoticeNameEligibility(notice);
   auto notice_data = ReadNoticeData(pref_service, notice);
 
@@ -165,7 +165,7 @@ void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
 
 std::optional<PrivacySandboxNoticeData>
 PrivacySandboxNoticeStorage::ReadNoticeData(PrefService* pref_service,
-                                            std::string_view notice) {
+                                            std::string_view notice) const {
   CheckNoticeNameEligibility(notice);
   const base::Value::Dict& pref_data =
       pref_service->GetDict(kPrivacySandboxNoticeDataPath);
@@ -272,28 +272,28 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
       base::StrCat({"PrivacySandbox.Notice.NoticeAction.", notice}),
       notice_action_taken);
 
-    std::string notice_action_str = GetNoticeActionString(notice_action_taken);
-    // First shown to interacted duration.
-    if (!notice_action_str.empty()) {
-      // Set first shown to interacted.
-      base::TimeDelta first_shown_to_interacted_duration =
-          notice_action_taken_time - notice_data->notice_first_shown;
-      update.Get().SetByDottedPath(
-          CreatePrefPath(notice, kPrivacySandboxNoticeShownDuration),
-          base::TimeDeltaToValue(first_shown_to_interacted_duration));
-      CreateTimingHistogram(
-          base::StrCat({"PrivacySandbox.Notice.FirstShownToInteractedDuration.",
-                        notice, "_", notice_action_str}),
-          first_shown_to_interacted_duration);
+  std::string notice_action_str = GetNoticeActionString(notice_action_taken);
+  // First shown to interacted duration.
+  if (!notice_action_str.empty()) {
+    // Set first shown to interacted.
+    base::TimeDelta first_shown_to_interacted_duration =
+        notice_action_taken_time - notice_data->notice_first_shown;
+    update.Get().SetByDottedPath(
+        CreatePrefPath(notice, kPrivacySandboxNoticeShownDuration),
+        base::TimeDeltaToValue(first_shown_to_interacted_duration));
+    CreateTimingHistogram(
+        base::StrCat({"PrivacySandbox.Notice.FirstShownToInteractedDuration.",
+                      notice, "_", notice_action_str}),
+        first_shown_to_interacted_duration);
 
-      // Set last shown to interacted.
-      auto last_shown_to_interacted_duration =
-          notice_action_taken_time - notice_data->notice_last_shown;
-      CreateTimingHistogram(
-          base::StrCat({"PrivacySandbox.Notice.LastShownToInteractedDuration.",
-                        notice, "_", notice_action_str}),
-          last_shown_to_interacted_duration);
-    }
+    // Set last shown to interacted.
+    auto last_shown_to_interacted_duration =
+        notice_action_taken_time - notice_data->notice_last_shown;
+    CreateTimingHistogram(
+        base::StrCat({"PrivacySandbox.Notice.LastShownToInteractedDuration.",
+                      notice, "_", notice_action_str}),
+        last_shown_to_interacted_duration);
+  }
 }
 
 void PrivacySandboxNoticeStorage::SetNoticeShown(PrefService* pref_service,

@@ -16,7 +16,7 @@
 cr-icon-button {
   --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
   --cr-icon-button-icon-size: 16px;
-  --cr-icon-button-size: 24px;
+  --cr-icon-button-size: 16px;
   margin: 0
 }
 
@@ -57,6 +57,7 @@ tab-search-item {
 .group-header-row {
   align-items: center;
   display: flex;
+  gap: 8px;
   justify-content: space-between;
   margin: 0 var(--mwb-list-item-horizontal-margin);
 }
@@ -74,6 +75,10 @@ tab-search-item {
   display: flex;
   flex: auto;
   justify-content: space-between;
+}
+
+.icon-edit {
+  margin-inline-end: 4px;
 }
 
 :host(:not([show-reject])) .icon-edit,

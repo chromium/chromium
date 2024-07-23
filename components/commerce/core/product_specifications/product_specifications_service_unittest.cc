@@ -20,6 +20,7 @@
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/product_specifications/product_specifications_sync_bridge.h"
+#include "components/sync/base/unique_position.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
@@ -212,8 +213,8 @@ class ProductSpecificationsServiceTest : public testing::Test {
     return service()->deferred_operations_.size();
   }
 
-  void EnableMultiSpecFlag() {
-    scoped_feature_list_.InitAndEnableFeature(
+  void DisableMultiSpecFlag() {
+    scoped_feature_list_.InitAndDisableFeature(
         commerce::kProductSpecificationsMultiSpecifics);
   }
 
@@ -373,6 +374,7 @@ class ProductSpecificationsServiceSyncDisabledTest
 };
 
 TEST_F(ProductSpecificationsServiceTest, TestGetProductSpecifications) {
+  DisableMultiSpecFlag();
   for (const sync_pb::ProductComparisonSpecifics& specifics :
        kProductComparisonSpecifics) {
     AddCompareSpecificsForTesting(specifics);
@@ -387,6 +389,7 @@ TEST_F(ProductSpecificationsServiceTest, TestGetProductSpecifications) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestGetProductSpecificationsAsync) {
+  DisableMultiSpecFlag();
   SetIsInitialized(false);
   for (const sync_pb::ProductComparisonSpecifics& specifics :
        kProductComparisonSpecifics) {
@@ -410,6 +413,7 @@ TEST_F(ProductSpecificationsServiceTest, TestGetProductSpecificationsAsync) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestGetSetByUuidAsync) {
+  DisableMultiSpecFlag();
   SetIsInitialized(false);
   for (const sync_pb::ProductComparisonSpecifics& specifics :
        kProductComparisonSpecifics) {
@@ -432,6 +436,7 @@ TEST_F(ProductSpecificationsServiceTest, TestGetSetByUuidAsync) {
 
 TEST_F(ProductSpecificationsServiceTest,
        TestGetSetByUuidAsyncAlreadyInitialized) {
+  DisableMultiSpecFlag();
   SetIsInitialized(true);
   for (const sync_pb::ProductComparisonSpecifics& specifics :
        kProductComparisonSpecifics) {
@@ -450,6 +455,7 @@ TEST_F(ProductSpecificationsServiceTest,
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestAddProductSpecificationsSuccess) {
+  DisableMultiSpecFlag();
   std::vector<GURL> expected_product_urls{GURL(kProductOneUrl),
                                           GURL(kProductTwoUrl)};
   EXPECT_CALL(*observer(),
@@ -466,6 +472,7 @@ TEST_F(ProductSpecificationsServiceTest, TestAddProductSpecificationsSuccess) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestRemoveProductSpecifications) {
+  DisableMultiSpecFlag();
   AddTestSpecifics(bridge());
   EXPECT_CALL(
       *observer(),
@@ -477,6 +484,7 @@ TEST_F(ProductSpecificationsServiceTest, TestRemoveProductSpecifications) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestObserverNewSpecifics) {
+  DisableMultiSpecFlag();
   syncer::EntityChangeList add_changes;
   for (const auto& specifics : kProductComparisonSpecifics) {
     add_changes.push_back(syncer::EntityChange::CreateAdd(
@@ -491,6 +499,7 @@ TEST_F(ProductSpecificationsServiceTest, TestObserverNewSpecifics) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestSetUrls) {
+  DisableMultiSpecFlag();
   for (const sync_pb::ProductComparisonSpecifics& specifics :
        kProductComparisonSpecifics) {
     AddCompareSpecificsForTesting(specifics);
@@ -521,6 +530,7 @@ TEST_F(ProductSpecificationsServiceTest, TestSetUrls) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestSetName) {
+  DisableMultiSpecFlag();
   for (const sync_pb::ProductComparisonSpecifics& specifics :
        kProductComparisonSpecifics) {
     AddCompareSpecificsForTesting(specifics);
@@ -555,6 +565,7 @@ TEST_F(ProductSpecificationsServiceTest, TestSetName) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestSetNameAndUrls_BadId) {
+  DisableMultiSpecFlag();
   for (const sync_pb::ProductComparisonSpecifics& specifics :
        kProductComparisonSpecifics) {
     AddCompareSpecificsForTesting(specifics);
@@ -586,6 +597,7 @@ TEST_F(ProductSpecificationsServiceTest, TestSetNameAndUrls_BadId) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestObserverUpdateSpecifics) {
+  DisableMultiSpecFlag();
   AddTestSpecifics(bridge());
   syncer::EntityChangeList update_changes;
   sync_pb::ProductComparisonSpecifics new_specifics =
@@ -623,6 +635,7 @@ TEST_F(ProductSpecificationsServiceTest, TestObserverUpdateSpecifics) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestObserverRemoveSpecifics) {
+  DisableMultiSpecFlag();
   AddTestSpecifics(bridge());
   syncer::EntityChangeList remove_changes;
   for (const auto& specifics : kProductComparisonSpecifics) {
@@ -639,8 +652,6 @@ TEST_F(ProductSpecificationsServiceTest, TestObserverRemoveSpecifics) {
 
 TEST_F(ProductSpecificationsServiceTest,
        TestGetProductSpecificationsMultiSpecifics) {
-  EnableMultiSpecFlag();
-
   std::vector<GURL> expected_product_urls{GURL(kProductOneUrl),
                                           GURL(kProductTwoUrl)};
   service()->AddProductSpecificationsSet(kProductSpecsName,
@@ -658,8 +669,6 @@ TEST_F(ProductSpecificationsServiceTest,
 
 TEST_F(ProductSpecificationsServiceTest,
        TestGetProductSpecificationsLargeURLList) {
-  EnableMultiSpecFlag();
-
   // Test robustness of ordering - restored product specifications should be
   // in the same order they are passed to AddProductSpecificationsSet.
   std::vector<GURL> expected_product_urls;
@@ -689,7 +698,6 @@ TEST_F(ProductSpecificationsServiceTest,
 
 TEST_F(ProductSpecificationsServiceTest,
        TestAddProductSpecificationsMultipleSpecifics) {
-  EnableMultiSpecFlag();
   std::vector<GURL> expected_urls = {GURL("https://foo.com/"),
                                      GURL("https://bar.com/")};
   service()->AddProductSpecificationsSet("name", expected_urls);
@@ -740,8 +748,6 @@ TEST_F(ProductSpecificationsServiceTest,
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestDeleteProductSpecsMultiSpecifics) {
-  EnableMultiSpecFlag();
-
   std::vector<ProductSpecificationsSet> sets;
   for (int i = 0; i < 3; i++) {
     sets.push_back(
@@ -766,8 +772,6 @@ TEST_F(ProductSpecificationsServiceTest, TestDeleteProductSpecsMultiSpecifics) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestSetUrlsMultiSpecifics) {
-  EnableMultiSpecFlag();
-
   std::vector<ProductSpecificationsSet> sets;
   for (int i = 0; i <= 2; i++) {
     sets.push_back(
@@ -801,8 +805,6 @@ TEST_F(ProductSpecificationsServiceTest, TestSetUrlsMultiSpecifics) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestSetNameMultiSpecifics) {
-  EnableMultiSpecFlag();
-
   std::vector<ProductSpecificationsSet> sets;
   for (int i = 0; i < 2; i++) {
     sets.push_back(
@@ -825,8 +827,6 @@ TEST_F(ProductSpecificationsServiceTest, TestSetNameMultiSpecifics) {
 
 TEST_F(ProductSpecificationsServiceTest,
        TestSetNameMultiSpecificsTopLevelSpecificAbsent) {
-  EnableMultiSpecFlag();
-
   std::vector<ProductSpecificationsSet> sets;
   for (int i = 0; i < 2; i++) {
     sets.push_back(
@@ -846,8 +846,6 @@ TEST_F(ProductSpecificationsServiceTest,
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestGetByUuidMultiSpecifics) {
-  EnableMultiSpecFlag();
-
   std::vector<ProductSpecificationsSet> sets;
   sets.push_back(service()
                      ->AddProductSpecificationsSet(
@@ -880,8 +878,6 @@ TEST_F(ProductSpecificationsServiceTest, TestGetByUuidMultiSpecifics) {
 TEST_F(ProductSpecificationsServiceTest,
        TestGetByUuidMultiSpecificsTopLevelAbsent) {
   // TODO(crbug.com/353256094) Ensure flag is set in constructor of test.
-  EnableMultiSpecFlag();
-
   std::vector<ProductSpecificationsSet> sets;
   for (int i = 0; i < 2; i++) {
     sets.push_back(
@@ -947,8 +943,6 @@ TEST_F(ProductSpecificationsServiceSyncDisabledTest, TestDelete) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestMultiSpecificsAdded) {
-  EnableMultiSpecFlag();
-
   std::string expected_name = "New set";
   std::vector<GURL> expected_urls = {GURL("https://a.example.com"),
                                      GURL("https://b.example.com")};
@@ -984,7 +978,6 @@ TEST_F(ProductSpecificationsServiceTest, TestMultiSpecificsAdded) {
 TEST_F(ProductSpecificationsServiceTest, TestMultiSpecificsSetUrls) {
   // TODO(crbug.com/353979028) investigate re-writing tests in
   // crrev.com/c/5713999 as unit tests in the bridge unit tests.
-  EnableMultiSpecFlag();
 
   // Add ProductSpecificationsSet, then update its urls to acquire the
   // underlying specifics which are then used to simulate the specifics
@@ -1042,8 +1035,6 @@ TEST_F(ProductSpecificationsServiceTest, TestMultiSpecificsSetUrls) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestMultiSpecificsSetNameUpdate) {
-  EnableMultiSpecFlag();
-
   std::optional<ProductSpecificationsSet> new_set =
       service()->AddProductSpecificationsSet(
           "New set",
@@ -1088,8 +1079,6 @@ TEST_F(ProductSpecificationsServiceTest, TestMultiSpecificsSetNameUpdate) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestMultiSpecificsDelete) {
-  EnableMultiSpecFlag();
-
   std::optional<ProductSpecificationsSet> new_set =
       service()->AddProductSpecificationsSet(
           "New set",
@@ -1114,25 +1103,33 @@ TEST_F(ProductSpecificationsServiceTest, TestMultiSpecificsDelete) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestMigration) {
-  std::optional<ProductSpecificationsSet> set_to_migrate =
-      service()->AddProductSpecificationsSet(
-          "New set",
-          {GURL("https://a.example.com"), GURL("https://b.example.com")});
-
+  std::string expected_name = "test_name";
+  std::vector<GURL> expected_urls = {GURL("https://a.example.com/"),
+                                     GURL("https://b.example.com/")};
+  base::Uuid expected_uuid =
+      base::Uuid::ParseLowercase("50000000-0000-0000-0000-000000000000");
+  sync_pb::ProductComparisonSpecifics specifics;
+  specifics.set_uuid(expected_uuid.AsLowercaseString());
+  specifics.set_name(expected_name);
+  for (const GURL& url : expected_urls) {
+    specifics.add_data()->set_url(url.spec());
+  }
+  AddSpecifics({specifics});
   EnableMigrateProductSpecificationsSets();
-  EXPECT_EQ(std::nullopt, service()->GetSetByUuid(set_to_migrate->uuid()));
+  EXPECT_EQ(std::nullopt, service()->GetSetByUuid(expected_uuid));
   MigrateLegacySpecificsIfApplicable();
   std::optional<ProductSpecificationsSet> migrated_set =
-      service()->GetSetByUuid(set_to_migrate->uuid());
+      service()->GetSetByUuid(expected_uuid);
   EXPECT_NE(std::nullopt, migrated_set);
-  EXPECT_EQ(set_to_migrate->uuid(), migrated_set->uuid());
-  EXPECT_EQ(set_to_migrate->urls(), migrated_set->urls());
+  EXPECT_EQ(expected_uuid, migrated_set->uuid());
+  EXPECT_EQ(expected_urls, migrated_set->urls());
   // TODO(crbug.com/353746117) add in time checks
-  EXPECT_EQ(set_to_migrate->name(), migrated_set->name());
+  EXPECT_EQ(expected_name, migrated_set->name());
 }
 
 TEST_F(ProductSpecificationsServiceTest,
        TestMultiSpecificsIgnoredForSingleSpecificsFlagOff) {
+  DisableMultiSpecFlag();
   std::string multi_specs_set_uuid = "50000000-0000-0000-0000-000000000000";
   sync_pb::ProductComparisonSpecifics top_level;
   top_level.set_uuid(multi_specs_set_uuid);
@@ -1162,7 +1159,6 @@ TEST_F(ProductSpecificationsServiceTest,
 
 TEST_F(ProductSpecificationsServiceTest,
        TestMultiSpecificsIgnoredForSingleSpecificsFlagOn) {
-  EnableMultiSpecFlag();
   std::string multi_specs_set_uuid = "50000000-0000-0000-0000-000000000000";
   sync_pb::ProductComparisonSpecifics top_level;
   top_level.set_uuid(multi_specs_set_uuid);

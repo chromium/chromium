@@ -108,10 +108,6 @@ void PasswordLocalDataBatchUploader::TriggerLocalDataMigration() {
     return;
   }
 
-  // TODO(crbug.com/40072432): Record Sync.BatchUpload.Requests2. Histograms
-  // should be logged in a single layer, so this should probably be done in
-  // the caller, modulo exposing CanUpload().
-
   auto profile_store_request = std::make_unique<PasswordFetchRequest>();
   auto account_store_request = std::make_unique<PasswordFetchRequest>();
   PasswordFetchRequest* profile_store_request_ptr = profile_store_request.get();

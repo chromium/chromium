@@ -117,17 +117,17 @@ class NET_EXPORT ClientSocketHandle : public StreamSocketHandle {
   // initialized the ClientSocketHandle.
   LoadState GetLoadState() const;
 
-  bool IsPoolStalled() const;
+  bool IsPoolStalled() const override;
 
   // Adds a higher layered pool on top of the socket pool that |socket_| belongs
   // to.  At most one higher layered pool can be added to a
   // ClientSocketHandle at a time.  On destruction or reset, automatically
   // removes the higher pool if RemoveHigherLayeredPool has not been called.
-  void AddHigherLayeredPool(HigherLayeredPool* higher_pool);
+  void AddHigherLayeredPool(HigherLayeredPool* higher_pool) override;
 
   // Removes a higher layered pool from the socket pool that |socket_| belongs
   // to.  |higher_pool| must have been added by the above function.
-  void RemoveHigherLayeredPool(HigherLayeredPool* higher_pool);
+  void RemoveHigherLayeredPool(HigherLayeredPool* higher_pool) override;
 
   // Closes idle sockets that are in the same group with |this|.
   void CloseIdleSocketsInGroup(const char* net_log_reason_utf8);

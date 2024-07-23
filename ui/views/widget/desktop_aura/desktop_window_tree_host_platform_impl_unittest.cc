@@ -185,12 +185,12 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, MouseNCEvents) {
       widget->GetNativeWindow()->GetHost());
   ASSERT_TRUE(host_platform);
 
-  ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::PointF(500, 500),
+  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::PointF(500, 500),
                        gfx::PointF(500, 500), base::TimeTicks::Now(), 0, 0, {});
   host_platform->DispatchEvent(&event);
 
   ASSERT_EQ(1u, recorder.mouse_events().size());
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, recorder.mouse_events()[0].type());
+  EXPECT_EQ(ui::EventType::kMousePressed, recorder.mouse_events()[0].type());
   EXPECT_TRUE(recorder.mouse_events()[0].flags() & ui::EF_IS_NON_CLIENT);
 
   widget->GetNativeWindow()->RemovePreTargetHandler(&recorder);
@@ -294,14 +294,14 @@ TEST_F(DesktopWindowTreeHostPlatformImplHighDPITest, MouseNCEvents) {
       widget->GetNativeWindow()->GetHost());
   ASSERT_TRUE(host_platform);
 
-  ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::PointF(1001, 1001),
+  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::PointF(1001, 1001),
                        gfx::PointF(1001, 1001), base::TimeTicks::Now(), 0, 0,
                        {});
   host_platform->DispatchEvent(&event);
 
   EXPECT_EQ(1u, recorder.mouse_events().size());
   EXPECT_EQ(gfx::Point(500, 500), recorder.mouse_events()[0].location());
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, recorder.mouse_events()[0].type());
+  EXPECT_EQ(ui::EventType::kMousePressed, recorder.mouse_events()[0].type());
   EXPECT_TRUE(recorder.mouse_events()[0].flags() & ui::EF_IS_NON_CLIENT);
 
   widget->GetNativeWindow()->RemovePreTargetHandler(&recorder);

@@ -9,11 +9,14 @@ import './new_column_selector.js';
 import './product_selector.js';
 import './table.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import type {PageCallbackRouter, ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {CrFeedbackButtonsElement} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
@@ -25,6 +28,7 @@ import type {NewColumnSelectorElement} from './new_column_selector.js';
 import type {ProductSelectorElement} from './product_selector.js';
 import {Router} from './router.js';
 import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
+import {UserFeedback} from './shopping_service.mojom-webui.js';
 import type {TableElement} from './table.js';
 import type {UrlListEntry} from './utils.js';
 
@@ -51,6 +55,7 @@ export interface TableColumn {
 
 export interface ProductSpecificationsElement {
   $: {
+    feedbackButtons: CrFeedbackButtonsElement,
     header: HeaderElement,
     loading: HTMLElement,
     newColumnSelector: NewColumnSelectorElement,
@@ -398,6 +403,24 @@ export class ProductSpecificationsElement extends PolymerElement {
   private onSetRemoved_(id: Uuid) {
     if (id.value === this.id_?.value) {
       window.location.replace(window.location.origin);
+    }
+  }
+
+  private onFeedbackSelectedOptionChanged_(
+      e: CustomEvent<{value: CrFeedbackOption}>) {
+    switch (e.detail.value) {
+      case CrFeedbackOption.UNSPECIFIED:
+        this.shoppingApi_.setProductSpecificationsUserFeedback(
+            UserFeedback.kUnspecified);
+        return;
+      case CrFeedbackOption.THUMBS_UP:
+        this.shoppingApi_.setProductSpecificationsUserFeedback(
+            UserFeedback.kThumbsUp);
+        return;
+      case CrFeedbackOption.THUMBS_DOWN:
+        this.shoppingApi_.setProductSpecificationsUserFeedback(
+            UserFeedback.kThumbsDown);
+        return;
     }
   }
 }

@@ -32,6 +32,10 @@ void WhatsNewRegistry::RegisterModule(WhatsNewModule module) {
   modules_.emplace_back(std::move(module));
 }
 
+void WhatsNewRegistry::RegisterEdition(WhatsNewEdition edition) {
+  editions_.emplace_back(std::move(edition));
+}
+
 const std::vector<BrowserCommand> WhatsNewRegistry::GetActiveCommands() const {
   std::vector<BrowserCommand> commands;
   base::ranges::for_each(modules_, [&commands](const WhatsNewModule& module) {

@@ -316,4 +316,33 @@ bool PermissiveMte::HandleCrash(int signo,
 }
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING) && PA_BUILDFLAG(IS_ANDROID)
 
+SuspendTagCheckingScope::SuspendTagCheckingScope() noexcept {
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+  if (PA_UNLIKELY(internal::base::CPU::GetInstanceNoAllocation().has_mte())) {
+    asm volatile(
+        R"(
+        .arch_extension memtag
+        mrs %0, tco
+        msr tco, #1
+        )"
+        : "=r"(previous_tco_));
+  }
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+}
+
+SuspendTagCheckingScope::~SuspendTagCheckingScope() {
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+  if (PA_UNLIKELY(internal::base::CPU::GetInstanceNoAllocation().has_mte())) {
+    // Restore previous tco value.
+    __asm__ __volatile__(
+        R"(
+        .arch_extension memtag
+        msr tco, %0
+        )"
+        :
+        : "r"(previous_tco_));
+  }
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+}
+
 }  // namespace partition_alloc

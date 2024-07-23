@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_common_views.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_arbitrary_pin_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
-#include "chrome/browser/ui/webauthn/sheet_models.h"
 
 AuthenticatorGPMArbitraryPinSheetView::AuthenticatorGPMArbitraryPinSheetView(
     std::unique_ptr<AuthenticatorGpmArbitraryPinSheetModel> sheet_model)
@@ -37,9 +36,7 @@ AuthenticatorGPMArbitraryPinSheetView::BuildStepSpecificContent() {
   return std::make_pair(
       std::make_unique<AuthenticatorGPMArbitraryPinView>(
           ui_disabled, gpm_arbitrary_pin_sheet_model()->pin(),
-          gpm_arbitrary_pin_sheet_model()->mode() ==
-              AuthenticatorGpmPinSheetModelBase::Mode::kPinCreate,
-          this),
+          gpm_arbitrary_pin_sheet_model()->GetAccessibleName(), this),
       ui_disabled ? AutoFocus::kNo : AutoFocus::kYes);
 }
 

@@ -48,7 +48,9 @@ class AbandonedPageLoadMetricsObserver
     kParseStart = 10,
     kFirstContentfulPaint = 11,
     kDOMContentLoaded = 12,
-    kMaxValue = kDOMContentLoaded,
+    kLoadEventStarted = 13,
+    kLargestContentfulPaint = 14,
+    kMaxValue = kLargestContentfulPaint,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationMilestoneEnum)
 
@@ -117,6 +119,10 @@ class AbandonedPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnDomContentLoadedEventStart(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnLoadEventStart(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnComplete(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
   // Signals that the navigation is abandoned: backgrounded, hidden, or failed.
   ObservePolicy FlushMetricsOnAppEnterBackground(
@@ -179,6 +185,11 @@ class AbandonedPageLoadMetricsObserver
   virtual ObservePolicy OnNavigationEvent(
       content::NavigationHandle* navigation_handle);
   virtual bool IsAllowedToLogMetrics() const;
+
+  // Gets LCP and records UMA if it's valid. This is called from `OnComplete()`
+  // and `FlushMetricsOnAppEnterBackground()` because LCP is finalized when the
+  // page load is complete (or navigate away from the page).
+  void FinalizeLCP();
 
   // The ID of the navigation being tracked.
   int64_t navigation_id_ = 0;

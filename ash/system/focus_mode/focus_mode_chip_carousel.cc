@@ -91,11 +91,11 @@ bool IsVerticalScrollGesture(const ui::Event& event) {
   };
 
   const auto& details = event.AsGestureEvent()->details();
-  return (event.type() == ui::ET_GESTURE_SCROLL_UPDATE &&
+  return (event.type() == ui::EventType::kGestureScrollUpdate &&
           is_vertical(details.scroll_x(), details.scroll_y())) ||
-         (event.type() == ui::ET_GESTURE_SCROLL_BEGIN &&
+         (event.type() == ui::EventType::kGestureScrollBegin &&
           is_vertical(details.scroll_x_hint(), details.scroll_y_hint())) ||
-         (event.type() == ui::ET_SCROLL_FLING_START &&
+         (event.type() == ui::EventType::kScrollFlingStart &&
           is_vertical(details.velocity_x(), details.velocity_y()));
 }
 

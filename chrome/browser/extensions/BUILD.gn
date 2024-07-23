@@ -1126,6 +1126,7 @@ source_set("extensions") {
     }
     deps += [
       "//chrome/browser/chromeos/app_mode",
+      "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/chromeos/drivefs:native_message_host_origins",
       "//chrome/browser/chromeos/extensions:constants",
       "//chrome/browser/chromeos/extensions/smart_card_provider_private:smart_card_provider_private",
@@ -1146,7 +1147,10 @@ source_set("extensions") {
       "//remoting/host/it2me:chrome_os_host",
     ]
 
-    allow_circular_includes_from += [ "//chrome/browser/chromeos/app_mode" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/chromeos/app_mode",
+      "//chrome/browser/chromeos/drivefs",
+    ]
   } else {
     sources += [
       "api/enterprise_reporting_private/chrome_desktop_report_request_helper.cc",
@@ -1249,6 +1253,7 @@ source_set("extensions") {
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/account_manager",
       "//chrome/browser/ash/app_list",
+      "//chrome/browser/ash/app_list/app_service",
       "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/app_restore",
@@ -1265,6 +1270,7 @@ source_set("extensions") {
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
       "//chrome/browser/ash/crostini/throttle",
       "//chrome/browser/ash/customization",
+      "//chrome/browser/ash/drive",
       "//chrome/browser/ash/extensions",
       "//chrome/browser/ash/extensions/autotest_private",
       "//chrome/browser/ash/extensions/file_manager",
@@ -1297,6 +1303,8 @@ source_set("extensions") {
       "//chrome/browser/devtools",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/ui/ash/keyboard",
+      "//chrome/browser/ui/ash/shelf",
+      "//chrome/browser/ui/ash/shelf/app_service",
       "//chromeos/ash/components/attestation",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/cryptohome",
@@ -1353,30 +1361,35 @@ source_set("extensions") {
     ]
 
     allow_circular_includes_from += [
+      "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/account_manager",
+      "//chrome/browser/ash/attestation",
+      "//chrome/browser/ash/app_list",
+      "//chrome/browser/ash/app_list/app_service",
       "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/app_mode/web_app",
-      "//chrome/browser/ash/app_list",
-      "//chrome/browser/ash/accessibility",
-      "//chrome/browser/ash/input_method",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/arc",
       "//chrome/browser/ash/arc/optin",
-      "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/bruschetta",
-      "//chrome/browser/ash/file_manager",
-      "//chrome/browser/ash/fileapi",
+      "//chrome/browser/ash/child_accounts",
+      "//chrome/browser/ash/child_accounts/time_limits",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crostini",
       "//chrome/browser/ash/customization",
-      "//chrome/browser/ash/file_system_provider",
-      "//chrome/browser/ash/guest_os",
-      "//chrome/browser/ash/guest_os/public",
-      "//chrome/browser/ash/guest_os/virtual_machines",
+      "//chrome/browser/ash/drive",
       "//chrome/browser/ash/extensions",
       "//chrome/browser/ash/extensions/autotest_private",
       "//chrome/browser/ash/extensions/file_manager",
       "//chrome/browser/ash/extensions/speech",
       "//chrome/browser/ash/extensions/users_private",
+      "//chrome/browser/ash/file_manager",
+      "//chrome/browser/ash/file_system_provider",
+      "//chrome/browser/ash/fileapi",
+      "//chrome/browser/ash/guest_os",
+      "//chrome/browser/ash/guest_os/public",
+      "//chrome/browser/ash/guest_os/virtual_machines",
+      "//chrome/browser/ash/input_method",
       "//chrome/browser/ash/login",
       "//chrome/browser/ash/login/app_mode",
       "//chrome/browser/ash/login/demo_mode",
@@ -1390,9 +1403,8 @@ source_set("extensions") {
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/system_web_apps/apps",
       "//chrome/browser/ash/system_logs",
-      "//chrome/browser/ash/account_manager",
-      "//chrome/browser/ash/child_accounts",
-      "//chrome/browser/ash/child_accounts/time_limits",
+      "//chrome/browser/ui/ash/shelf",
+      "//chrome/browser/ui/ash/shelf/app_service",
     ]
 
     if (is_cfm) {

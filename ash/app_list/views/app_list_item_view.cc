@@ -111,8 +111,8 @@ constexpr int kMouseDragUIDelayInMs = 200;
 
 // Delay in milliseconds of when the dragging UI should be shown for touch drag.
 // Note: For better user experience, this is made shorter than
-// ET_GESTURE_LONG_PRESS delay, which is too long for this case, e.g., about
-// 650ms.
+// EventType::kGestureLongPress delay, which is too long for this case, e.g.,
+// about 650ms.
 constexpr int kTouchLongpressDelayInMs = 300;
 
 // For touch initiated dragging, shift the cursor anchor point of the scaled
@@ -1462,9 +1462,9 @@ bool AppListItemView::ShouldEnterPushedState(const ui::Event& event) {
   if (drag_state_ != DragState::kNone) {
     return false;
   }
-  // Don't enter pushed state for ET_GESTURE_TAP_DOWN so that hover gray
+  // Don't enter pushed state for EventType::kGestureTapDown so that hover gray
   // background does not show up during scroll.
-  if (event.type() == ui::ET_GESTURE_TAP_DOWN) {
+  if (event.type() == ui::EventType::kGestureTapDown) {
     return false;
   }
 
@@ -1708,7 +1708,7 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
       app_list_features::IsDragAndDropRefactorEnabled();
 
   switch (event->type()) {
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       if (touch_dragging_) {
         if (is_drag_and_drop_enabled) {
           OnDragStarted();
@@ -1720,7 +1720,7 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
         touch_drag_timer_.Stop();
       }
       break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       if (touch_dragging_ && drag_state_ != DragState::kNone) {
         if (is_drag_and_drop_enabled &&
             MaybeStartTouchDrag(event->location())) {
@@ -1731,8 +1731,8 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
         }
       }
       break;
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kGestureScrollEnd:
+    case ui::EventType::kScrollFlingStart:
       if (touch_dragging_) {
         if (!is_drag_and_drop_enabled) {
           SetTouchDragging(false);
@@ -1740,7 +1740,7 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
         }
       }
       break;
-    case ui::ET_GESTURE_TAP_DOWN:
+    case ui::EventType::kGestureTapDown:
       if (GetState() != STATE_DISABLED && IsItemDraggable()) {
         SetState(STATE_PRESSED);
         touch_drag_timer_.Start(
@@ -1751,15 +1751,15 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
         event->SetHandled();
       }
       break;
-    case ui::ET_GESTURE_TAP:
-    case ui::ET_GESTURE_TAP_CANCEL:
+    case ui::EventType::kGestureTap:
+    case ui::EventType::kGestureTapCancel:
       if (GetState() != STATE_DISABLED) {
         touch_drag_timer_.Stop();
         SetState(STATE_NORMAL);
       }
       break;
-    case ui::ET_GESTURE_LONG_TAP:
-    case ui::ET_GESTURE_END:
+    case ui::EventType::kGestureLongTap:
+    case ui::EventType::kGestureEnd:
       if (is_drag_and_drop_enabled && drag_state_ == DragState::kInitialized) {
         // Reset `drag_state_` if there was an attempt to initiate it (i.e. the
         // touch drag timer fired) but was not properly started (i.e. the app
@@ -1772,7 +1772,7 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
         grid_delegate_->SetSelectedView(this);
       }
       break;
-    case ui::ET_GESTURE_LONG_PRESS:
+    case ui::EventType::kGestureLongPress:
       if (is_drag_and_drop_enabled) {
         // Handle the long press event on long press to avoid RootView to
         // trigger View::DoDrag for this view before the item is dragged.
@@ -1782,7 +1782,7 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
         event->SetHandled();
       }
       break;
-    case ui::ET_GESTURE_TWO_FINGER_TAP:
+    case ui::EventType::kGestureTwoFingerTap:
       if (touch_dragging_) {
         SetTouchDragging(false);
       } else {

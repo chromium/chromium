@@ -225,10 +225,10 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
   }
 
   void RightClickExtensionInToolbar(ToolbarActionView* extension) {
-    ui::MouseEvent click_down_event(ui::ET_MOUSE_PRESSED, gfx::Point(),
+    ui::MouseEvent click_down_event(ui::EventType::kMousePressed, gfx::Point(),
                                     gfx::Point(), base::TimeTicks(),
                                     ui::EF_RIGHT_MOUSE_BUTTON, 0);
-    ui::MouseEvent click_up_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
+    ui::MouseEvent click_up_event(ui::EventType::kMouseReleased, gfx::Point(),
                                   gfx::Point(), base::TimeTicks(),
                                   ui::EF_RIGHT_MOUSE_BUTTON, 0);
     extension->OnMouseEvent(&click_down_event);
@@ -522,12 +522,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   // Pin extension from menu.
   ASSERT_TRUE(VerifyUi());
   ASSERT_EQ(1u, GetExtensionMenuItemViews().size());
-  ui::MouseEvent click_pressed_event(ui::ET_MOUSE_PRESSED, gfx::Point(),
+  ui::MouseEvent click_pressed_event(ui::EventType::kMousePressed, gfx::Point(),
                                      gfx::Point(), base::TimeTicks(),
                                      ui::EF_LEFT_MOUSE_BUTTON, 0);
-  ui::MouseEvent click_released_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
-                                      gfx::Point(), base::TimeTicks(),
-                                      ui::EF_LEFT_MOUSE_BUTTON, 0);
+  ui::MouseEvent click_released_event(
+      ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, 0);
   ExtensionMenuItemView* const menu_item_view =
       *GetExtensionMenuItemViews().begin();
   menu_item_view->pin_button_for_testing()->OnMousePressed(click_pressed_event);
@@ -612,8 +612,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   EXPECT_TRUE(ExtensionsMenuView::IsShowing());
 
-  ui::MouseEvent click_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, 0);
+  ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), base::TimeTicks(),
+                             ui::EF_LEFT_MOUSE_BUTTON, 0);
   ExtensionsMenuView::GetExtensionsMenuViewForTesting()
       ->manage_extensions_button_for_testing()
       ->button_controller()
@@ -646,10 +647,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   HoverButton* context_menu_button =
       item_view->context_menu_button_for_testing();
-  ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, 0);
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), base::TimeTicks(),
+                             ui::EF_LEFT_MOUSE_BUTTON, 0);
   context_menu_button->OnMousePressed(press_event);
-  ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
+  ui::MouseEvent release_event(ui::EventType::kMouseReleased, gfx::Point(),
                                gfx::Point(), base::TimeTicks(),
                                ui::EF_LEFT_MOUSE_BUTTON, 0);
   context_menu_button->OnMouseReleased(release_event);

@@ -244,7 +244,7 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchReportsHistograms) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<SearchResult> future;
   OverrideVisibilityScoresForTesting({{"", 0.99}});
-  service_->Search("", {}, 1, future.GetCallback());
+  service_->Search("", {}, 1, future.GetRepeatingCallback());
   EXPECT_TRUE(future.Take().scored_url_rows.empty());
 
   histogram_tester.ExpectUniqueSample("History.Embeddings.Search.Completed",
@@ -280,14 +280,16 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
   // Should default to .9 when neither the feature param nor metadata thresholds
   // are set.
   base::test::TestFuture<SearchResult> future;
-  service_->OnSearchCompleted(future.GetCallback(), {}, scored_url_rows);
+  service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
+                              scored_url_rows);
   SearchResult result = future.Take();
   ASSERT_EQ(result.scored_url_rows.size(), 1u);
   EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
 
   // Should use the metadata threshold when it's set.
   SetMetadataScoreThreshold(0.7);
-  service_->OnSearchCompleted(future.GetCallback(), {}, scored_url_rows);
+  service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
+                              scored_url_rows);
   result = future.Take();
   ASSERT_EQ(result.scored_url_rows.size(), 2u);
   EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
@@ -302,7 +304,8 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
                               {"SearchPassageMinimumWordCount", "3"},
                               {"SearchScoreThreshold", "0.5"},
                           });
-  service_->OnSearchCompleted(future.GetCallback(), {}, scored_url_rows);
+  service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
+                              scored_url_rows);
   result = future.Take();
   ASSERT_EQ(result.scored_url_rows.size(), 3u);
   EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
@@ -342,7 +345,7 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchFiltersLowScoringResults) {
       {"test passage 5", 0.99},
       {"test passage 6", 0.99},
   });
-  service_->Search("test query", {}, 3, future.GetCallback());
+  service_->Search("test query", {}, 3, future.GetRepeatingCallback());
   SearchResult result = future.Take();
 
   EXPECT_EQ(result.query, "test query");

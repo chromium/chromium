@@ -1129,6 +1129,11 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     }
   }
 
+  private shouldShowReferrerUrl_(): boolean {
+    return loadTimeData.getBoolean('showReferrerUrl') &&
+        this.data.displayReferrerUrl.data.length > 0;
+  }
+
   getReferrerUrlAnchorElement(): HTMLAnchorElement|null {
     return this.$['referrer-url'].querySelector('a') || null;
   }
@@ -1160,14 +1165,11 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       return;
     }
 
-    // Else clause is not optional. We must clear the innerHTML if no displayReferrerUrl is
-    // present for the current download because this downloads-item may be reused.
+    // "else" case already handled by `shouldShowReferrerUrl_`.
     if (this.data.displayReferrerUrl.data.length > 0) {
       const referrerLine = loadTimeData.getStringF(
           'referrerLine', mojoString16ToString(this.data.displayReferrerUrl));
       this.$['referrer-url'].innerHTML = sanitizeInnerHtml(referrerLine);
-    } else {
-      this.$['referrer-url'].innerHTML = window.trustedTypes!.emptyHTML;
     }
 
     // Returns whether to use the file icon, and additionally clears file url

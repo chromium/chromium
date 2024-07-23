@@ -19,6 +19,9 @@
 #import "ios/chrome/browser/sessions/model/session_tab_group.h"
 #import "ios/chrome/browser/sessions/model/session_window_ios.h"
 #import "ios/chrome/browser/sessions/model/session_window_ios_factory.h"
+#import "ios/chrome/browser/sessions/model/web_session_state_cache.h"
+#import "ios/chrome/browser/sessions/model/web_session_state_cache_factory.h"
+#import "ios/chrome/browser/sessions/model/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/sessions/model/web_state_list_serialization.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -28,7 +31,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web/model/session_state/web_session_state_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/crw_session_storage.h"
@@ -258,19 +260,19 @@ SessionWindowIOS* FilterInvalidTabs(SessionWindowIOS* session_window) {
                                       selectedIndex:selected_index];
 }
 
-// Creates a WebState with `params` and `session_storage`. Ensures that the
-// WebSessionStateTabHelper is attached to the WebState after its creation.
-// Note: the WebSessionStateTabHelper needs to be created before inserting
-// the WebState into the WebStateList since the insertion can cause the
-// realisation of the WebState and the WebSessionStateTabHelper is needed
-// for the realisation.
+// Creates a WebState with `params` and `session_storage`.
 std::unique_ptr<web::WebState> CreateWebState(
     const web::WebState::CreateParams& params,
     CRWSessionStorage* session_storage) {
-  auto web_state =
-      web::WebState::CreateWithStorageSession(params, session_storage);
-  WebSessionStateTabHelper::CreateForWebState(web_state.get());
-  return web_state;
+  __weak WebSessionStateCache* weak_cache =
+      WebSessionStateCacheFactory::GetForBrowserState(
+          ChromeBrowserState::FromBrowserState(params.browser_state.get()));
+
+  const web::WebStateID web_state_id = session_storage.uniqueIdentifier;
+  return web::WebState::CreateWithStorageSession(
+      params, session_storage, base::BindOnce(^{
+        return [weak_cache sessionStateDataForWebStateID:web_state_id];
+      }));
 }
 
 }  // namespace

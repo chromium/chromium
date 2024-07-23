@@ -205,7 +205,6 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   //   you specify this you must also specify |file_types|.
   // |owning_window| is the window the dialog is modal to, or NULL for a
   //   modeless dialog.
-  // |params| must be nullptr and is otherwise ignored.
   // |caller| is the URL of the dialog caller which can be used to check further
   //   policy restrictions, when applicable. Can be NULL. Non-NULL values of
   //   |caller| are deprecated - store the state in the calling object directly.
@@ -218,7 +217,6 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
                   int file_type_index,
                   const base::FilePath::StringType& default_extension,
                   gfx::NativeWindow owning_window,
-                  void* params,
                   const GURL* caller = nullptr);
   bool HasMultipleFileTypeChoices();
 

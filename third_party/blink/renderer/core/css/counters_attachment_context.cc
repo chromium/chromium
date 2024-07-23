@@ -410,7 +410,8 @@ int CountersAttachmentContext::GetCounterValue(
     return 0;
   }
   auto counter_value_it = counter_value_table_->find(counter_name);
-  DCHECK_NE(counter_value_it, counter_value_table_->end());
+  CHECK_NE(counter_value_it, counter_value_table_->end(),
+           base::NotFatalUntil::M130);
   CounterValues& counter_values = *counter_value_it->value;
   auto current_value_it = counter_values.find(&element);
   DCHECK_NE(current_value_it, counter_values.end());
@@ -444,7 +445,8 @@ void CountersAttachmentContext::UpdateCounterValue(
   // update it.
   const Element* current = counter_stack.back();
   auto counter_value_it = counter_value_table_->find(counter_name);
-  DCHECK_NE(counter_value_it, counter_value_table_->end());
+  CHECK_NE(counter_value_it, counter_value_table_->end(),
+           base::NotFatalUntil::M130);
   CounterValues& counter_values = *counter_value_it->value;
   auto current_value_it = counter_values.find(current);
   DCHECK_NE(current_value_it, counter_values.end());

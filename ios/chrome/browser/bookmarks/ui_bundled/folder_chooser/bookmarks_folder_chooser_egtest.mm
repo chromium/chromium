@@ -481,6 +481,9 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey
       removeBookmarkWithTitle:@"Folder 2"
                     inStorage:kindOfTestToStorageType(kindOfTest)];
+  // TODO(crbug.com/354761339): This shouldn't be necessary, needs more
+  // investigation.
+  [ChromeEarlGreyUI waitForAppToIdle];
   [BookmarkEarlGrey
       removeBookmarkWithTitle:@"Folder 1"
                     inStorage:kindOfTestToStorageType(kindOfTest)];

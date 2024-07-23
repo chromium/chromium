@@ -37,6 +37,8 @@ class PaymentInstrument {
   // instrument's proto. Values are persisted, don't change or re-use them.
   enum class PaymentInstrumentType {
     kUnknown = 0,
+    kBankAccount = 1,
+    kIban = 2,
   };
 
   PaymentInstrument(int64_t instrument_id,

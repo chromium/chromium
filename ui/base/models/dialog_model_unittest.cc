@@ -57,12 +57,12 @@ TEST_F(DialogModelButtonTest, UsesCallback) {
                           DialogModel::Button::Params().SetLabel(u"button"))
           .Build());
 
-  KeyEvent first_event(ET_KEY_PRESSED, VKEY_RETURN, EF_NONE);
+  KeyEvent first_event(EventType::kKeyPressed, VKEY_RETURN, EF_NONE);
   host->TriggerExtraButton(first_event);
   EXPECT_EQ(1, callback_count);
   EXPECT_EQ(first_event.key_code(), last_event->key_code());
 
-  KeyEvent second_event(ET_KEY_PRESSED, VKEY_SPACE, EF_NONE);
+  KeyEvent second_event(EventType::kKeyPressed, VKEY_SPACE, EF_NONE);
   host->TriggerExtraButton(second_event);
   EXPECT_EQ(2, callback_count);
   EXPECT_EQ(second_event.key_code(), last_event->key_code());
@@ -122,7 +122,7 @@ class DialogModelDialogButtonTest : public testing::Test {
         break;
       case TestDialogModelHost::ButtonId::kExtra:
         host->TriggerExtraButton(
-            KeyEvent(ET_KEY_PRESSED, VKEY_RETURN, EF_NONE));
+            KeyEvent(EventType::kKeyPressed, VKEY_RETURN, EF_NONE));
         break;
       case TestDialogModelHost::ButtonId::kOk:
         TestDialogModelHost::Accept(std::move(host));

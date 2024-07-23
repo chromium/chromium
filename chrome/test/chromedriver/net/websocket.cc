@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354307328): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/test/chromedriver/net/websocket.h"
 
 #include <stddef.h>
@@ -14,6 +19,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/sha1.h"
@@ -306,7 +312,13 @@ void WebSocket::OnReadDuringHandshake(const char* data, int len) {
 
 void WebSocket::OnReadDuringOpen(const char* data, int len) {
   std::vector<std::unique_ptr<net::WebSocketFrameChunk>> frame_chunks;
-  CHECK(parser_.Decode(data, len, &frame_chunks));
+  CHECK(parser_.Decode(
+      base::as_bytes(
+          // TODO(crbug.com/354307328): It's not possible to construct this span
+          // soundedly here. OnReadDuringOpen() should receive a span instead of
+          // a pointer and length.
+          UNSAFE_BUFFERS(base::span(data, base::checked_cast<size_t>(len)))),
+      &frame_chunks));
   for (size_t i = 0; i < frame_chunks.size(); ++i) {
     const auto& header = frame_chunks[i]->header;
     if (header) {

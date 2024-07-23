@@ -41,7 +41,6 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/http/structured_headers.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
@@ -363,8 +362,6 @@ void FrameFetchContext::PrepareRequest(
           GetFrame()->GetAttributionSrcLoader()) {
     request.SetAttributionReportingSupport(
         attribution_src_loader->GetSupport());
-    request.SetAttributionReportingRuntimeFeatures(
-        attribution_src_loader->GetRuntimeFeatures());
   }
 
   // If the original request included the attribute to opt-in to shared storage,

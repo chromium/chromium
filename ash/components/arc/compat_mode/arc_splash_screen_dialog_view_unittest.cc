@@ -98,7 +98,8 @@ TEST_F(ArcSplashScreenDialogViewTest, TestEscKey) {
         anchor()->GetIndexOf(dialog_view_test.highlight_border()).has_value());
 
     // Simulates esc key event to close the dialog.
-    ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, ui::EF_NONE);
+    ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE,
+                       ui::EF_NONE);
     bubble->OnKeyEvent(&event);
 
     EXPECT_TRUE(on_close_callback_called);

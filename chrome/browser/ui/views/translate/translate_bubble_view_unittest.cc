@@ -210,8 +210,9 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
   void PressButton(TranslateBubbleView::ButtonID id) {
     views::Button* button =
         static_cast<views::Button*>(bubble_->GetViewByID(id));
-    views::test::ButtonTestApi(button).NotifyClick(ui::KeyEvent(
-        ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::DomCode::ENTER, ui::EF_NONE));
+    views::test::ButtonTestApi(button).NotifyClick(
+        ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                     ui::DomCode::ENTER, ui::EF_NONE));
   }
 
   void TearDown() override {

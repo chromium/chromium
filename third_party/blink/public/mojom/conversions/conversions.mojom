@@ -15,9 +15,6 @@ struct Impression {
   // API parameters will be used from the the `AttributionDataHost`
   // that is associated with `attribution_src_token`.
   AttributionSrcToken attribution_src_token;
-  // Indicates whether Attribution Reporting API related runtime features are
-  // enabled.
-  network.mojom.AttributionReportingRuntimeFeatures runtime_features;
 };
 
 // Sent from renderer to browser process when a resource request matching the

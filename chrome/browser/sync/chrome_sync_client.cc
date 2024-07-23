@@ -156,7 +156,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/webapk/webapk_sync_service.h"
-#include "components/browser_sync/sync_client_utils.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using content::BrowserThread;
@@ -277,29 +276,6 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       DeviceInfoSyncServiceFactory::GetForProfile(profile_)
           ->GetDeviceInfoTracker(),
       GetModelTypeStoreService()->GetSyncDataPath());
-
-#if BUILDFLAG(IS_ANDROID)
-  scoped_refptr<password_manager::PasswordStoreInterface>
-      profile_password_store = ProfilePasswordStoreFactory::GetForProfile(
-          profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  scoped_refptr<password_manager::PasswordStoreInterface>
-      account_password_store = AccountPasswordStoreFactory::GetForProfile(
-          profile_, ServiceAccessType::IMPLICIT_ACCESS);
-
-  local_data_query_helper_ =
-      std::make_unique<browser_sync::LocalDataQueryHelper>(
-          profile_password_store.get(), account_password_store.get(),
-          BookmarkModelFactory::GetForBrowserContext(profile_),
-          ReadingListModelFactory::GetAsDualReadingListForBrowserContext(
-              profile_));
-
-  local_data_migration_helper_ =
-      std::make_unique<browser_sync::LocalDataMigrationHelper>(
-          profile_password_store.get(), account_password_store.get(),
-          BookmarkModelFactory::GetForBrowserContext(profile_),
-          ReadingListModelFactory::GetAsDualReadingListForBrowserContext(
-              profile_));
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 ChromeSyncClient::~ChromeSyncClient() = default;
@@ -342,19 +318,6 @@ base::FilePath ChromeSyncClient::GetLocalSyncBackendFolder() {
 
   return local_sync_backend_folder;
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void ChromeSyncClient::GetLocalDataDescriptions(
-    syncer::ModelTypeSet types,
-    base::OnceCallback<void(
-        std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback) {
-  local_data_query_helper_->Run(types, std::move(callback));
-}
-
-void ChromeSyncClient::TriggerLocalDataMigration(syncer::ModelTypeSet types) {
-  local_data_migration_helper_->Run(types);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 syncer::ModelTypeController::TypeVector
 ChromeSyncClient::CreateModelTypeControllers(

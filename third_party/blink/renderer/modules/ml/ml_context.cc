@@ -68,17 +68,13 @@ MLContext::MLContext(
       num_threads_(num_threads),
       lost_property_(MakeGarbageCollected<LostProperty>(execution_context)),
       context_remote_(execution_context),
-      context_client_receiver_(this, execution_context),
       properties_(std::move(create_context_success->context_properties)),
       webnn_handle_(std::move(create_context_success->context_handle)) {
   context_remote_.Bind(
       std::move(create_context_success->context_remote),
       execution_context->GetTaskRunner(TaskType::kMachineLearning));
-  context_client_receiver_.Bind(
-      std::move(create_context_success->context_client_receiver),
-      execution_context->GetTaskRunner(TaskType::kMachineLearning));
-  context_client_receiver_.set_disconnect_handler(
-      WTF::BindOnce(&MLContext::OnDisconnected, WrapWeakPersistent(this)));
+  context_remote_.set_disconnect_with_reason_handler(
+      WTF::BindOnce(&MLContext::OnLost, WrapWeakPersistent(this)));
 }
 
 MLContext::~MLContext() = default;
@@ -106,7 +102,6 @@ unsigned int MLContext::GetNumThreads() const {
 void MLContext::Trace(Visitor* visitor) const {
   visitor->Trace(lost_property_);
   visitor->Trace(context_remote_);
-  visitor->Trace(context_client_receiver_);
 
   ScriptWrappable::Trace(visitor);
 }
@@ -153,18 +148,19 @@ void MLContext::CreateWebNNGraph(
                                WTF::BindOnce(std::move(callback)));
 }
 
-void MLContext::OnLost(const String& message) {
+void MLContext::OnLost(uint32_t custom_reason, const std::string& description) {
   context_remote_.reset();
-  context_client_receiver_.reset();
+
+  auto* context_lost_info = MLContextLostInfo::Create();
+  if (description.empty()) {
+    context_lost_info->setMessage(
+        "WebNN context is lost due to connection error.");
+  } else {
+    context_lost_info->setMessage(String::FromUTF8(description));
+  }
 
   CHECK_EQ(lost_property_->GetState(), LostProperty::kPending);
-  auto* context_lost_info = MLContextLostInfo::Create();
-  context_lost_info->setMessage(message);
   lost_property_->Resolve(context_lost_info);
-}
-
-void MLContext::OnDisconnected() {
-  OnLost("WebNN context is lost due to connection error.");
 }
 
 void MLContext::CreateWebNNBuffer(
@@ -416,13 +412,8 @@ void MLContext::dispatch(ScriptState* script_state,
     return;
   }
 
-  if (device_type_ == V8MLDeviceType::Enum::kGpu) {
-    return graph->Dispatch(std::move(scoped_trace), inputs, outputs,
-                           exception_state);
-  }
-
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Not implemented");
+  return graph->Dispatch(std::move(scoped_trace), inputs, outputs,
+                         exception_state);
 }
 
 }  // namespace blink

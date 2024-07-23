@@ -64,8 +64,8 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
   done_ = false;
   service->Search(
       base::UTF16ToUTF8(adjusted_input.text()), {}, provider_max_matches_,
-      base::BindOnce(&HistoryEmbeddingsProvider::OnReceivedSearchResult,
-                     weak_factory_.GetWeakPtr(), adjusted_input.text()));
+      base::BindRepeating(&HistoryEmbeddingsProvider::OnReceivedSearchResult,
+                          weak_factory_.GetWeakPtr(), adjusted_input.text()));
 }
 
 void HistoryEmbeddingsProvider::Stop(bool clear_cached_results,

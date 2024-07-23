@@ -5,7 +5,7 @@
 import {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertShowAnnotationsButton, createMockPdfPluginForTest, enterFullscreenWithUserGesture} from './test_util.js';
+import {assertShowAnnotationsButton, createMockPdfPluginForTest, enterFullscreenWithUserGesture, finishInkStroke} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
@@ -111,6 +111,63 @@ chrome.test.runTests([
     document.exitFullscreen();
     await eventToPromise('fullscreenchange', viewer.$.scroller);
     chrome.test.assertTrue(viewerToolbar.annotationMode);
+    chrome.test.succeed();
+  },
+  // Test the behavior of the undo and redo buttons.
+  function testUndoRedo() {
+    const controller = PluginController.getInstance();
+    const mockPlugin = createMockPdfPluginForTest();
+    controller.setPluginForTesting(mockPlugin);
+
+    const undoButton = toolbarQuerySelector('#undo') as HTMLButtonElement;
+    const redoButton = toolbarQuerySelector('#redo') as HTMLButtonElement;
+
+    // The buttons should be disabled when there aren't any strokes.
+    chrome.test.assertTrue(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+
+    // Draw a stroke. The undo button should be enabled.
+    finishInkStroke(controller);
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') === undefined);
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+
+    // Undo the stroke. The redo button should be enabled.
+    undoButton.click();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') !== undefined);
+    chrome.test.assertTrue(undoButton.disabled);
+    chrome.test.assertFalse(redoButton.disabled);
+
+    // Redo the stroke. The undo button should be enabled.
+    mockPlugin.clearMessages();
+    redoButton.click();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') !== undefined);
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+
+    // After redo, draw a stroke and undo it after. The undo button and redo
+    // button should both be enabled.
+    mockPlugin.clearMessages();
+    finishInkStroke(controller);
+    undoButton.click();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') !== undefined);
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertFalse(redoButton.disabled);
+
+    // Draw another stroke, overriding the stroke that could've been redone. The
+    // undo button should be enabled.
+    finishInkStroke(controller);
+
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
     chrome.test.succeed();
   },
 ]);

@@ -91,6 +91,7 @@ class BuildConfigGenerator extends DefaultTask {
         com_google_guava_failureaccess: '//third_party/android_deps:guava_android_java',
         com_google_guava_guava_android: '//third_party/android_deps:guava_android_java',
         com_google_protobuf_protobuf_javalite: '//third_party/android_deps:protobuf_lite_runtime_java',
+        net_bytebuddy_byte_buddy: '//third_party/byte_buddy:byte_buddy_android_java',
         // Logic for google_play_services_package added below.
     ]
 
@@ -624,7 +625,9 @@ class BuildConfigGenerator extends DefaultTask {
         if (aliasedLib) {
             // Cannot add only the specific target because doing so breaks nested template target.
             String visibilityLabel = aliasedLib.replaceAll(':.*', ':*')
-            sb.append('  # Target is swapped out when internal code is enabled.\n')
+            if (CONDITIONAL_LIBS.containsKey(dependency.id)) {
+              sb.append('  # Target is swapped out when internal code is enabled.\n')
+            }
             sb.append("  # Please depend on $aliasedLib instead.\n")
             sb.append("  visibility = [ \"$visibilityLabel\" ]\n")
         } else if (!dependency.visible) {
@@ -840,7 +843,10 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  jar_excluded_patterns = [\n')
                 sb.append('    "org/mockito/internal/junit/ExceptionFactory*",\n')
                 sb.append('    "org/mockito/internal/stubbing/defaultanswers/ReturnsEmptyValues*",\n')
-                sb.append('  ]')
+                sb.append('  ]\n')
+                sb.append('\n')
+                sb.append('  # Because of dep on byte_buddy_android_java.\n')
+                sb.append('  bypass_platform_checks = true\n')
                 break
         }
     }

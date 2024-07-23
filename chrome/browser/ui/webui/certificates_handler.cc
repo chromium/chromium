@@ -541,7 +541,7 @@ void CertificatesHandler::HandleExportPersonal(const base::Value::List& args) {
   select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE,
                                   std::u16string(), base::FilePath(),
                                   &file_type_info, 1, FILE_PATH_LITERAL("p12"),
-                                  GetParentWindow(), nullptr);
+                                  GetParentWindow());
 }
 
 void CertificatesHandler::ExportPersonalFileSelected(
@@ -643,7 +643,7 @@ void CertificatesHandler::HandleImportPersonal(const base::Value::List& args) {
   select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE,
                                   std::u16string(), base::FilePath(),
                                   &file_type_info, 1, FILE_PATH_LITERAL("p12"),
-                                  GetParentWindow(), nullptr);
+                                  GetParentWindow());
 }
 
 void CertificatesHandler::ImportPersonalFileSelected(
@@ -810,7 +810,7 @@ void CertificatesHandler::HandleImportServer(const base::Value::List& args) {
   pending_operation_ = IMPORT_SERVER_FILE;
   ShowCertSelectFileDialog(select_file_dialog_.get(),
                            ui::SelectFileDialog::SELECT_OPEN_FILE,
-                           base::FilePath(), GetParentWindow(), nullptr);
+                           base::FilePath(), GetParentWindow());
 }
 
 void CertificatesHandler::ImportServerFileSelected(
@@ -893,7 +893,7 @@ void CertificatesHandler::HandleImportCA(const base::Value::List& args) {
   pending_operation_ = IMPORT_CA_FILE;
   ShowCertSelectFileDialog(select_file_dialog_.get(),
                            ui::SelectFileDialog::SELECT_OPEN_FILE,
-                           base::FilePath(), GetParentWindow(), nullptr);
+                           base::FilePath(), GetParentWindow());
 }
 
 void CertificatesHandler::ImportCAFileSelected(

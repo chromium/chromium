@@ -15,6 +15,16 @@
 #include "components/commerce/core/mock_shopping_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+class MockProductSpecificationsEntryPointController
+    : public commerce::ProductSpecificationsEntryPointController {
+ public:
+  explicit MockProductSpecificationsEntryPointController(Browser* browser)
+      : commerce::ProductSpecificationsEntryPointController(browser) {}
+  ~MockProductSpecificationsEntryPointController() override = default;
+
+  MOCK_METHOD(bool, ShouldExecuteEntryPointShow, (), (override));
+};
+
 class ProductSpecificationsButtonTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
@@ -34,12 +44,14 @@ class ProductSpecificationsButtonTest : public ChromeViewsTestBase {
     tab_strip_model_ = std::make_unique<TabStripModel>(
         &tab_strip_model_delegate_, profile_.get());
     entry_point_controller_ =
-        std::make_unique<commerce::ProductSpecificationsEntryPointController>(
+        std::make_unique<MockProductSpecificationsEntryPointController>(
             browser_.get());
     locked_expansion_view_ = std::make_unique<views::View>();
     button_ = std::make_unique<ProductSpecificationsButton>(
         tab_strip_controller_.get(), tab_strip_model_.get(),
         entry_point_controller_.get(), true, locked_expansion_view_.get());
+    ON_CALL(*entry_point_controller_, ShouldExecuteEntryPointShow)
+        .WillByDefault(testing::Return(true));
   }
 
   void SetWidthFactor(float factor) { button_->SetWidthFactor(factor); }
@@ -53,7 +65,7 @@ class ProductSpecificationsButtonTest : public ChromeViewsTestBase {
   TestTabStripModelDelegate tab_strip_model_delegate_;
   std::unique_ptr<TabStripController> tab_strip_controller_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
-  std::unique_ptr<commerce::ProductSpecificationsEntryPointController>
+  std::unique_ptr<MockProductSpecificationsEntryPointController>
       entry_point_controller_;
   std::unique_ptr<views::View> locked_expansion_view_;
   std::unique_ptr<ProductSpecificationsButton> button_;

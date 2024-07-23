@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/test/pixel_test_utils.h"
@@ -255,7 +256,7 @@ class NavigationEntryScreenshotBrowserTestBase : public ContentBrowserTest {
           << "; error bounding box: " << err_bounding_box.ToString()
           << "; bitmap size: "
           << gfx::Size(bitmap.width(), bitmap.height()).ToString()
-          << "; expect color " << std::format("{:x}", color)
+          << "; expect color " << base::StringPrintf("%x", color)
           << "; actual bitmap " << cc::GetPNGDataUrl(bitmap);
     }
   }

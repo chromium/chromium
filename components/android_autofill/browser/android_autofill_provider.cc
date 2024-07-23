@@ -217,9 +217,7 @@ bool AndroidAutofillProvider::IsFormSimilarToCachedForm(
   if (!cached_data_ || !cached_data_->cached_form) {
     return false;
   }
-  if (form_structure &&
-      base::FeatureList::IsEnabled(
-          features::kAndroidAutofillUsePwmPredictionsForOverrides)) {
+  if (form_structure) {
     CHECK_EQ(form.global_id(), form_structure->global_id());
     std::unique_ptr<PasswordForm> pw_form =
         ParseToPasswordForm(*form_structure);
@@ -773,10 +771,7 @@ void AndroidAutofillProvider::MaybeSendPrefillRequest(
       form_structure->ToFormData(), CreateSessionId());
   cached_data_->cached_form->UpdateFieldTypes(*form_structure);
   if (std::optional<PasswordParserOverrides> overrides =
-          PasswordParserOverrides::FromLoginForm(*pw_form, *form_structure);
-      overrides &&
-      base::FeatureList::IsEnabled(
-          features::kAndroidAutofillUsePwmPredictionsForOverrides)) {
+          PasswordParserOverrides::FromLoginForm(*pw_form, *form_structure)) {
     // If we manage to match the fields that the password form parser
     // identified as username and password fields, override their types.
     cached_data_->password_parser_overrides = *std::move(overrides);

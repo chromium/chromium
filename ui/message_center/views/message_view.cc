@@ -301,7 +301,7 @@ void MessageView::OnBlur() {
 }
 
 void MessageView::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_TAP) {
+  if (event->type() == ui::EventType::kGestureTap) {
     MessageCenter::Get()->ClickOnNotification(notification_id_);
     event->SetHandled();
     return;

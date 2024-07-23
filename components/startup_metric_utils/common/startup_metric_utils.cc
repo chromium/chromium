@@ -91,11 +91,16 @@ base::TimeTicks CommonStartupMetricRecorder::StartupTimeToTimeTicks(
   // with this computation.
   std::optional<base::ScopedBoostPriority> scoped_boost_priority;
 
+  // Enabling this logic on OS X causes a significant performance regression.
+  // TODO(crbug.com/40464036): Remove IS_APPLE ifdef once utility processes
+  // set their desired main thread priority.
+#if !BUILDFLAG(IS_APPLE)
   static bool statics_initialized = false;
   if (!statics_initialized) {
     statics_initialized = true;
     scoped_boost_priority.emplace(base::ThreadType::kDisplayCritical);
   }
+#endif  // !BUILDFLAG(IS_APPLE)
 
   static const base::Time time_base = base::Time::Now();
   static const base::TimeTicks trace_ticks_base = base::TimeTicks::Now();

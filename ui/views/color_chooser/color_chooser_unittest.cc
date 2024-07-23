@@ -116,7 +116,7 @@ class ColorChooserTest : public views::ViewsTestBase {
     generator_->MoveMouseTo(po + p.OffsetFromOrigin());
     generator_->ClickLeftButton();
 #endif
-    ui::MouseEvent press(ui::ET_MOUSE_PRESSED,
+    ui::MouseEvent press(ui::EventType::kMousePressed,
                          gfx::Point(view->x() + p.x(), view->y() + p.y()),
                          gfx::Point(0, 0), base::TimeTicks::Now(), 0, 0);
     view->OnMousePressed(press);

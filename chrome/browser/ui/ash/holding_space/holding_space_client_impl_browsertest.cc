@@ -121,24 +121,6 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, AddItemOfType) {
     const std::string& expected_id =
         client->AddItemOfType(expected_type, expected_file_path);
 
-    // Insertion into the model should only fail if the item is:
-    // (a) a Camera app item and Camera app integration is disabled, or
-    // (b) a Photoshop Web item and Photoshop Web integration is disabled.
-    if (expected_id.empty()) {
-      EXPECT_EQ(model->items().size(), expected_count);
-      EXPECT_THAT(
-          expected_type,
-          ::testing::AnyOf(
-              AllOf(ResultOf(&HoldingSpaceItem::IsCameraAppType, IsTrue()),
-                    And(features::IsHoldingSpaceCameraAppIntegrationEnabled(),
-                        IsFalse())),
-              AllOf(
-                  Eq(HoldingSpaceItem::Type::kPhotoshopWeb),
-                  And(features::IsHoldingSpacePhotoshopWebIntegrationEnabled(),
-                      IsFalse()))));
-      continue;
-    }
-
     // Verify the item was created as expected.
     ASSERT_EQ(model->items().size(), ++expected_count);
     const HoldingSpaceItem* item = model->items().back().get();

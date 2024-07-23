@@ -186,27 +186,27 @@ void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
   gfx::Point location(event->location());
   views::View::ConvertPointToScreen(this, &location);
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP:
+    case ui::EventType::kGestureTap:
       if (event->details().tap_count() == 2) {
         SwapWindows();
       }
       break;
-    case ui::ET_GESTURE_TAP_DOWN:
+    case ui::EventType::kGestureTapDown:
       divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/true);
       break;
-    case ui::ET_GESTURE_TAP_CANCEL:
+    case ui::EventType::kGestureTapCancel:
       divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
       break;
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       StartResizing(location);
       break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       divider_->ResizeWithDivider(location);
       break;
-    case ui::ET_GESTURE_SCROLL_END:
+    case ui::EventType::kGestureScrollEnd:
       divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
       break;
-    case ui::ET_GESTURE_END: {
+    case ui::EventType::kGestureEnd: {
       EndResizing(location, /*swap_windows=*/false);
 
       // `EndResizing()` may set `divider_` to nullptr and causing crash.
@@ -229,7 +229,7 @@ ui::Cursor SplitViewDividerView::GetCursor(const ui::MouseEvent& event) {
 }
 
 void SplitViewDividerView::OnKeyEvent(ui::KeyEvent* event) {
-  if (event->type() != ui::ET_KEY_PRESSED) {
+  if (event->type() != ui::EventType::kKeyPressed) {
     return;
   }
   const bool horizontal = IsLayoutHorizontal(divider_->GetRootWindow());

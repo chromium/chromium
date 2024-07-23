@@ -41,28 +41,6 @@ void WebNNGraphBuilderDmlTest::SetUp() {
   SKIP_TEST_IF(!adapter->IsDMLDeviceCompileGraphSupportedForTesting());
 }
 
-// Test creating an invalid operator node with inconsistent tensor dimensions.
-TEST_F(WebNNGraphBuilderDmlTest, CreateInvalidOperator) {
-  GraphBuilderDml graph_builder(dml_device_);
-
-  TensorDesc input_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 2, 3, 4});
-  TensorDesc output_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 2, 3});
-  const InputNode* input_node = graph_builder.CreateInputNode();
-  ASSERT_NE(input_node, nullptr);
-  ASSERT_EQ(input_node->GetType(), Node::Type::kInput);
-  const NodeOutput* input =
-      graph_builder.CreateNodeOutput(input_node, input_tensor_desc);
-
-  DML_ACTIVATION_RELU_OPERATOR_DESC invalid_operator_desc{
-      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
-      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
-
-  std::array<const NodeOutput*, 1> inputs = {input};
-  const OperatorNode* operator_node = graph_builder.CreateOperatorNode(
-      DML_OPERATOR_ACTIVATION_RELU, &invalid_operator_desc, inputs);
-  EXPECT_EQ(operator_node, nullptr);
-}
-
 // Test building a DML graph with single operator relu.
 TEST_F(WebNNGraphBuilderDmlTest, BuildSingleOperatorRelu) {
   GraphBuilderDml graph_builder(dml_device_);

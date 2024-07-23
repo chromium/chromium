@@ -219,6 +219,7 @@ TabListRowView::TabListRowView(
 
   inkdrop_container_->SetProperty(views::kViewIgnoredByLayoutKey, true);
   SetNotifyEnterExitOnChild(true);
+  tab_list_model_observation_.Observe(tab_list_model_);
 }
 
 TabListRowView::~TabListRowView() {
@@ -240,22 +241,18 @@ views::ImageButton* TabListRowView::GetCloseButtonForTesting() {
   return close_button_;
 }
 
+views::View* TabListRowView::GetTextContainerForTesting() {
+  return text_container_;
+}
+
 void TabListRowView::OnMouseEntered(const ui::MouseEvent& event) {
   views::View::OnMouseEntered(event);
-  // Show the highlight and "X" button when there is more than one item in the
-  // tab list.
-  const bool should_show_highlight =
-      tab_list_model_->page_contexts().size() > 1;
-  if (!should_show_highlight) {
-    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
-  }
-  close_button_->SetVisible(should_show_highlight);
+  RefreshInkDropAndCloseButton();
 }
 
 void TabListRowView::OnMouseExited(const ui::MouseEvent& event) {
   View::OnMouseExited(event);
-  close_button_->SetVisible(text_container_->HasFocus() ||
-                            close_button_->HasFocus());
+  RefreshInkDropAndCloseButton();
 }
 
 void TabListRowView::AddLayerToRegion(ui::Layer* layer,
@@ -281,13 +278,28 @@ void TabListRowView::RemovedFromWidget() {
 
 void TabListRowView::OnDidChangeFocus(views::View* before, views::View* now) {
   if (now) {
-    const bool show_focus_ink_drop =
-        Contains(now) && (tab_list_model_->page_contexts().size() > 1);
-    // The close button should still be visible when the mouse is still hovered
-    // over the row even though focus has changed to something else.
-    close_button_->SetVisible(show_focus_ink_drop || IsMouseHovered());
-    views::InkDrop::Get(this)->GetInkDrop()->SetFocused(show_focus_ink_drop);
+    RefreshInkDropAndCloseButton();
   }
+}
+
+void TabListRowView::OnTabCountChanged(int count) {
+  if (count <= 1) {
+    RefreshInkDropAndCloseButton();
+  }
+}
+
+void TabListRowView::RefreshInkDropAndCloseButton() {
+  const bool has_focus =
+      text_container_->HasFocus() || close_button_->HasFocus();
+  const bool showing_multiple_rows =
+      tab_list_model_->page_contexts().size() > 1;
+  if (!showing_multiple_rows) {
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
+  }
+  close_button_->SetVisible(showing_multiple_rows &&
+                            (has_focus || IsMouseHovered()));
+  views::InkDrop::Get(this)->GetInkDrop()->SetFocused(showing_multiple_rows &&
+                                                      has_focus);
 }
 
 void TabListRowView::MaybeFocusCloseButton() {

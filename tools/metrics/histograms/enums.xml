@@ -15904,6 +15904,7 @@ from previous Chrome versions.
   <int value="-2092067251" label="NativeFilesystemAPI:disabled"/>
   <int value="-2091414992" label="DlcSettingsUi:disabled"/>
   <int value="-2091404586" label="TabStripKeyboardFocus:enabled"/>
+  <int value="-2091355143" label="ShowCastPermissionRejectedError:enabled"/>
   <int value="-2090484194" label="ContextualSearchUrlActions:disabled"/>
   <int value="-2088555929" label="EnableAppGridGhost:enabled"/>
   <int value="-2088472280" label="KeyboardShortcutViewerApp:disabled"/>
@@ -18349,6 +18350,8 @@ from previous Chrome versions.
   <int value="-1064302126"
       label="OmniboxAlternateMatchDescriptionSeparator:enabled"/>
   <int value="-1062534902" label="SyncingCompromisedCredentials:disabled"/>
+  <int value="-1062338822"
+      label="UseNetworkFrameworkForCastDiscovery:disabled"/>
   <int value="-1062119671" label="enable-password-force-saving"/>
   <int value="-1061203892" label="VideoToolboxVp9Decoding:disabled"/>
   <int value="-1060574877"
@@ -18541,6 +18544,7 @@ from previous Chrome versions.
   <int value="-985445963" label="TabSearchFuzzySearch:disabled"/>
   <int value="-984340827" label="OidcAuthProfileManagement:enabled"/>
   <int value="-984052166" label="DoodlesOnLocalNtp:enabled"/>
+  <int value="-983845861" label="ShowCastPermissionRejectedError:disabled"/>
   <int value="-983342281" label="TabSwitcherLongpressMenu:disabled"/>
   <int value="-983335806" label="DelegatedCompositing:disabled"/>
   <int value="-983087919"
@@ -18858,6 +18862,7 @@ from previous Chrome versions.
   <int value="-851924474" label="FastPairDebugMetadata:disabled"/>
   <int value="-851413329" label="AnnotatorMode:disabled"/>
   <int value="-850821337" label="WebContentsForceDark:enabled"/>
+  <int value="-850108109" label="UseNetworkFrameworkForCastDiscovery:enabled"/>
   <int value="-849792130" label="UserMediaCaptureOnFocus:disabled"/>
   <int value="-848691867" label="DesktopPWAWindowing:enabled"/>
   <int value="-847735582" label="NotificationsViaHelperApp:enabled"/>
@@ -22144,7 +22149,6 @@ from previous Chrome versions.
   <int value="552158955" label="NotificationPermissionBottomSheet:enabled"/>
   <int value="552317551" label="MediaAppHandlesPdf:disabled"/>
   <int value="552421509" label="AssistMultiWordExpanded:enabled"/>
-  <int value="552724079" label="NotifierCollision:enabled"/>
   <int value="553197994" label="FedCmMetricsEndpoint:enabled"/>
   <int value="554454443" label="SeparateUserDisplayModeForCrOS:enabled"/>
   <int value="555959995" label="ChromeSharingHub:enabled"/>
@@ -22343,7 +22347,6 @@ from previous Chrome versions.
   <int value="642037198" label="SoleIntegration:disabled"/>
   <int value="642601306" label="ForceInitialSyncWhenDecryptionFails:enabled"/>
   <int value="642678255" label="ExoGamepadVibration:disabled"/>
-  <int value="642996845" label="NotifierCollision:disabled"/>
   <int value="643068614"
       label="CrossOriginOpenerPolicyAccessReporting:enabled"/>
   <int value="643637203" label="FastPairSoftwareScanningSupport:enabled"/>
@@ -25164,7 +25167,6 @@ from previous Chrome versions.
   <int value="1820442907" label="CrostiniMultiContainer:disabled"/>
   <int value="1820445741" label="SwapAndroidShareHubRows:disabled"/>
   <int value="1820451991" label="enable-offline-auto-reload"/>
-  <int value="1820940797" label="MagicBoost:enabled"/>
   <int value="1821723343" label="disable-saml-signin"/>
   <int value="1822184614" label="DeviceBoundSessions:enabled"/>
   <int value="1822452137" label="ClipboardHistoryLongpress:enabled"/>
@@ -25894,7 +25896,6 @@ from previous Chrome versions.
   <int value="2127648677" label="OmniboxExperimentalSuggestScoring:disabled"/>
   <int value="2127700228" label="NtpHistoryClustersModule:enabled"/>
   <int value="2129184006" label="NTPOfflinePageDownloadSuggestions:enabled"/>
-  <int value="2129190428" label="MagicBoost:disabled"/>
   <int value="2129524809" label="PasswordCheck:disabled"/>
   <int value="2129639191" label="ArcWindowPredictor:disabled"/>
   <int value="2129814401" label="SyncTrustedVaultPassphrasePromo:enabled"/>
@@ -33829,6 +33830,7 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="University user on unmanaged device"/>
   <int value="3" label="Nonprofit user on unmanaged device"/>
   <int value="4" label="Enterprise user on unmanaged device"/>
+  <int value="65533" label="Demo Mode on an unmanaged device"/>
   <int value="65534" label="Kiosk app on unmanaged device"/>
 <!--
     There is no value for Managed Guest Session on Unmanaged device because that

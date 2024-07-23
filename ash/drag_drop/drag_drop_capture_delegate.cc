@@ -26,8 +26,9 @@ void NotifyWindowOfTouchDispatchGestureEnd(aura::Window* window) {
 
   ui::PointerDetails touch_details(ui::EventPointerType::kTouch,
                                    /*pointer_id=*/0, 1.0f, 1.0f, 1.0f);
-  ui::TouchEvent touch_cancel_event(ui::ET_TOUCH_CANCELLED, gfx::Point(),
-                                    ui::EventTimeForNow(), touch_details);
+  ui::TouchEvent touch_cancel_event(ui::EventType::kTouchCancelled,
+                                    gfx::Point(), ui::EventTimeForNow(),
+                                    touch_details);
   window->delegate()->OnTouchEvent(&touch_cancel_event);
 }
 
@@ -35,7 +36,7 @@ void NotifyWindowOfTouchDispatchGestureEnd(aura::Window* window) {
 
 void DispatchGestureEndToWindow(aura::Window* window) {
   DCHECK(window && window->delegate());
-  ui::GestureEventDetails details(ui::ET_GESTURE_END);
+  ui::GestureEventDetails details(ui::EventType::kGestureEnd);
   details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   ui::GestureEvent gesture_end(0, 0, 0, ui::EventTimeForNow(), details);
   window->delegate()->OnGestureEvent(&gesture_end);

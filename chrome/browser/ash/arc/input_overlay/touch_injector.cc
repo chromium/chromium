@@ -142,7 +142,7 @@ bool ProcessKeyEventOnFocusedMenuEntry(const ui::KeyEvent& event) {
   // instead of getting back to view mode.
   if (ash::IsArrowKey(key_code) || key_code == ui::KeyboardCode::VKEY_SPACE ||
       key_code == ui::KeyboardCode::VKEY_RETURN ||
-      event.type() != ui::ET_KEY_PRESSED) {
+      event.type() != ui::EventType::kKeyPressed) {
     return true;
   }
   return false;
@@ -235,7 +235,7 @@ class TouchInjector::KeyCommand {
     if (auto* key_event = event.AsKeyEvent();
         key_ == key_event->code() &&
         modifiers_ == (key_event->flags() & kInterestingFlagsMask)) {
-      if (key_event->type() == ui::ET_KEY_PRESSED) {
+      if (key_event->type() == ui::EventType::kKeyPressed) {
         callback_.Run();
       }
       return true;
@@ -533,7 +533,7 @@ void TouchInjector::DispatchTouchReleaseEvent() {
     const auto root_location = touch_point_info.touch_root_location;
 
     auto touch_to_release = std::make_unique<ui::TouchEvent>(ui::TouchEvent(
-        ui::EventType::ET_TOUCH_RELEASED, root_location, root_location,
+        ui::EventType::kTouchReleased, root_location, root_location,
         ui::EventTimeForNow(),
         ui::PointerDetails(ui::EventPointerType::kTouch, managed_touch_id)));
     if (SendEventFinally(continuation_, &*touch_to_release)
@@ -612,11 +612,11 @@ bool TouchInjector::LocatedEventOnMenuEntry(const ui::Event& event,
   }
 
   if (event.IsMouseEvent() &&
-      event.AsMouseEvent()->type() == ui::ET_MOUSE_PRESSED &&
+      event.AsMouseEvent()->type() == ui::EventType::kMousePressed &&
       menu_anchor_bounds->Contains(event_location)) {
     return true;
   } else if (event.IsTouchEvent() &&
-             event.AsTouchEvent()->type() == ui::ET_TOUCH_PRESSED &&
+             event.AsTouchEvent()->type() == ui::EventType::kTouchPressed &&
              menu_anchor_bounds->Contains(event_location)) {
     return true;
   }
@@ -653,7 +653,7 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     // events in `kView` mode.
     if (display_mode_ == DisplayMode::kView && event.IsKeyEvent() &&
         views::FocusManager::IsTabTraversalKeyEvent(*(event.AsKeyEvent()))) {
-      if (event.AsKeyEvent()->type() == ui::ET_KEY_PRESSED) {
+      if (event.AsKeyEvent()->type() == ui::EventType::kKeyPressed) {
         CleanupTouchEvents();
         display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kPreMenu);
       }
@@ -727,7 +727,7 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
       return SendEventFinally(continuation, &touch_events.front());
     }
     if (touch_events.size() == 2) {
-      if (touch_events.back().type() == ui::EventType::ET_TOUCH_MOVED) {
+      if (touch_events.back().type() == ui::EventType::kTouchMoved) {
         // Some apps can't process correctly on the touch move event which
         // follows touch press event immediately, so send the touch move event
         // delayed here.
@@ -768,14 +768,15 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
 
   if (it == rewritten_touch_infos_.end()) {
     // When touching on the window to regain the focus, the first
-    // `ui::ET_TOUCH_PRESSED` will not be received and then it may send
-    // `ui::ET_TOUCH_MOVED` event to the window. So no need to add DCHECK here.
-    if (touch_event->type() != ui::ET_TOUCH_PRESSED) {
+    // `ui::EventType::kTouchPressed` will not be received and then it may send
+    // `ui::EventType::kTouchMoved` event to the window. So no need to add
+    // DCHECK here.
+    if (touch_event->type() != ui::EventType::kTouchPressed) {
       return nullptr;
     }
   } else {
-    DCHECK(touch_event->type() != ui::ET_TOUCH_PRESSED);
-    if (touch_event->type() == ui::ET_TOUCH_PRESSED) {
+    DCHECK(touch_event->type() != ui::EventType::kTouchPressed);
+    if (touch_event->type() == ui::EventType::kTouchPressed) {
       return nullptr;
     }
   }
@@ -783,7 +784,7 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
   // Confirmed the input is valid.
   auto root_location_f = touch_event->root_location_f();
 
-  if (touch_event->type() == ui::ET_TOUCH_PRESSED) {
+  if (touch_event->type() == ui::EventType::kTouchPressed) {
     // Generate new touch id that we can manage and add to map.
     std::optional<int> managed_touch_id =
         TouchIdManager::GetInstance()->ObtainTouchID();
@@ -795,7 +796,7 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
     rewritten_touch_infos_.emplace(original_id, touch_point);
     return CreateTouchEvent(touch_event, original_id, *managed_touch_id,
                             root_location_f);
-  } else if (touch_event->type() == ui::ET_TOUCH_RELEASED) {
+  } else if (touch_event->type() == ui::EventType::kTouchReleased) {
     std::optional<int> managed_touch_id = it->second.rewritten_touch_id;
     DCHECK(managed_touch_id);
     rewritten_touch_infos_.erase(original_id);

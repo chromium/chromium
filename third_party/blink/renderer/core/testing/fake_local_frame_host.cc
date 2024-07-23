@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/testing/fake_local_frame_host.h"
 
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "skia/public/mojom/skcolor.mojom-blink.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
@@ -287,9 +286,6 @@ void FakeLocalFrameHost::SendLegacyTechEvent(
 
 void FakeLocalFrameHost::SendPrivateAggregationRequestsForFencedFrameEvent(
     const WTF::String& event_type) {}
-
-void FakeLocalFrameHost::SetAttributionReportingRuntimeFeatures(
-    network::AttributionReportingRuntimeFeatures features) {}
 
 void FakeLocalFrameHost::CreateFencedFrame(
     mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>,

@@ -58,6 +58,10 @@ inline constexpr char kOgTypeProductItem[] = "product.item";
 // Http POST method.
 inline constexpr char kPostHttpMethod[] = "POST";
 
+// Prefix for model quality logging entry for product specifications.
+inline constexpr char kProductSpecificationsLoggingPrefix[] =
+    "product-specifications:";
+
 // A means of specifying the URL for the product specifications backend from
 // the command line.
 inline constexpr char kProductSpecificationsUrlKey[] =

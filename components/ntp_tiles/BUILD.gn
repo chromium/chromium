@@ -72,6 +72,7 @@ static_library("ntp_tiles") {
     "//extensions/buildflags",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
+    "//third_party/re2",
     "//ui/base",
   ]
 

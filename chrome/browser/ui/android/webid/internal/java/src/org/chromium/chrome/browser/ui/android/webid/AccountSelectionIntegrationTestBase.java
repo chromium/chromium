@@ -26,6 +26,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -45,7 +46,7 @@ public class AccountSelectionIntegrationTestBase {
             new IdentityProviderMetadata(
                     /* brandTextColor= */ Color.WHITE,
                     /* brandBackgroundColor= */ Color.BLACK,
-                    /* brandIconUrl= */ null,
+                    /* brandIconUrl= */ EXAMPLE_ETLD_PLUS_ONE,
                     /* configUrl= */ null,
                     /* loginUrl= */ null,
                     /* supportsAddAccount= */ false);
@@ -53,7 +54,7 @@ public class AccountSelectionIntegrationTestBase {
             new IdentityProviderMetadata(
                     /* brandTextColor= */ Color.WHITE,
                     /* brandBackgroundColor= */ Color.BLACK,
-                    /* brandIconUrl= */ null,
+                    /* brandIconUrl= */ EXAMPLE_ETLD_PLUS_ONE,
                     /* configUrl= */ null,
                     /* loginUrl= */ null,
                     /* supportsAddAccount= */ true);
@@ -61,6 +62,7 @@ public class AccountSelectionIntegrationTestBase {
     AccountSelectionCoordinator mAccountSelection;
 
     @Mock AccountSelectionComponent.Delegate mMockBridge;
+    @Mock ImageFetcher mMockImageFetcher;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -99,6 +101,7 @@ public class AccountSelectionIntegrationTestBase {
                                     mBottomSheetController,
                                     mRpMode,
                                     mMockBridge);
+                    mAccountSelection.getMediator().setImageFetcher(mMockImageFetcher);
                 });
     }
 

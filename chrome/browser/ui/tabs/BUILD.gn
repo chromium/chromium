@@ -6,11 +6,14 @@
 # //chrome/browser depend on this interface, and thus to prevent circular
 # dependencies this interface should not depend on anything else in //chrome.
 source_set("tabs") {
-  sources = [
+  public = [
     "public/tab_features.h",
     "public/tab_interface.h",
+    "tab_network_state.h",
   ]
+  sources = [ "tab_network_state.cc" ]
   public_deps = [ "//base" ]
+  deps = [ "//content/public/browser" ]
 }
 
 # These enums should not need to depend on chrome/browser/ui. They have been

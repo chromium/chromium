@@ -9,18 +9,29 @@ import static android.view.accessibility.AccessibilityEvent.TYPE_VIEW_FOCUSED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BLOCK_TOUCH_INPUT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BOTTOM_PADDING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BROWSER_CONTROLS_STATE_PROVIDER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FETCH_VIEW_BY_INDEX_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.GET_VISIBLE_RANGE_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_SCROLLING_SUPPLIER_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.MODE;
 
 import android.app.Activity;
 import android.graphics.Rect;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.core.util.Function;
+import androidx.core.util.Pair;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -40,7 +51,7 @@ class TabListContainerViewBinder {
         if (BLOCK_TOUCH_INPUT == propertyKey) {
             view.setBlockTouchInput(model.get(BLOCK_TOUCH_INPUT));
         } else if (INITIAL_SCROLL_INDEX == propertyKey) {
-            int index = (Integer) model.get(INITIAL_SCROLL_INDEX);
+            int index = model.get(INITIAL_SCROLL_INDEX);
             int offset = computeOffset(view, model);
             // RecyclerView#scrollToPosition(int) behaves incorrectly first time after cold start.
             ((LinearLayoutManager) view.getLayoutManager())
@@ -59,6 +70,38 @@ class TabListContainerViewBinder {
             int right = view.getPaddingRight();
             int bottom = model.get(BOTTOM_PADDING);
             view.setPadding(left, top, right, bottom);
+        } else if (FETCH_VIEW_BY_INDEX_CALLBACK == propertyKey) {
+            Callback<Function<Integer, View>> callback = model.get(FETCH_VIEW_BY_INDEX_CALLBACK);
+            callback.onResult(
+                    (Integer index) -> {
+                        RecyclerView.ViewHolder viewHolder =
+                                view.findViewHolderForAdapterPosition(index);
+                        return viewHolder == null ? null : viewHolder.itemView;
+                    });
+        } else if (GET_VISIBLE_RANGE_CALLBACK == propertyKey) {
+            Callback<Supplier<Pair<Integer, Integer>>> callback =
+                    model.get(GET_VISIBLE_RANGE_CALLBACK);
+            callback.onResult(
+                    () -> {
+                        LinearLayoutManager layoutManager =
+                                (LinearLayoutManager) view.getLayoutManager();
+                        int start = layoutManager.findFirstCompletelyVisibleItemPosition();
+                        int end = layoutManager.findLastCompletelyVisibleItemPosition();
+                        return new Pair<>(start, end);
+                    });
+        } else if (IS_SCROLLING_SUPPLIER_CALLBACK == propertyKey) {
+            Callback<ObservableSupplier<Boolean>> callback =
+                    model.get(IS_SCROLLING_SUPPLIER_CALLBACK);
+            ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>(false);
+            view.addOnScrollListener(
+                    new OnScrollListener() {
+                        @Override
+                        public void onScrollStateChanged(
+                                @NonNull RecyclerView recyclerView, int newState) {
+                            supplier.set(newState != RecyclerView.SCROLL_STATE_IDLE);
+                        }
+                    });
+            callback.onResult(supplier);
         }
     }
 

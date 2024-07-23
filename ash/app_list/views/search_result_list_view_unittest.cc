@@ -276,7 +276,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
   void DeleteResultAt(int index) { GetResults()->DeleteAt(index); }
 
   bool KeyPress(ui::KeyboardCode key_code) {
-    ui::KeyEvent event(ui::ET_KEY_PRESSED, key_code, ui::EF_NONE);
+    ui::KeyEvent event(ui::EventType::kKeyPressed, key_code, ui::EF_NONE);
     return default_view_->OnKeyPressed(event);
   }
 

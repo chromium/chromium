@@ -17,51 +17,51 @@ struct EventTypeMappingEntry {
 };
 
 constexpr EventTypeMappingEntry kEventTypeMappings[] = {
-    {ui::ET_MOUSE_PRESSED, InputTypes::MOUSE_CLICK},
-    {ui::ET_MOUSE_DRAGGED, InputTypes::MOUSE_CLICK},
-    {ui::ET_MOUSE_RELEASED, InputTypes::MOUSE_CLICK},
+    {ui::EventType::kMousePressed, InputTypes::MOUSE_CLICK},
+    {ui::EventType::kMouseDragged, InputTypes::MOUSE_CLICK},
+    {ui::EventType::kMouseReleased, InputTypes::MOUSE_CLICK},
 
-    {ui::ET_MOUSE_MOVED, InputTypes::MOUSE_MOVE},
-    {ui::ET_MOUSE_ENTERED, InputTypes::MOUSE_MOVE},
-    {ui::ET_MOUSE_EXITED, InputTypes::MOUSE_MOVE},
+    {ui::EventType::kMouseMoved, InputTypes::MOUSE_MOVE},
+    {ui::EventType::kMouseEntered, InputTypes::MOUSE_MOVE},
+    {ui::EventType::kMouseExited, InputTypes::MOUSE_MOVE},
 
-    {ui::ET_MOUSEWHEEL, InputTypes::MOUSE_WHEEL},
+    {ui::EventType::kMousewheel, InputTypes::MOUSE_WHEEL},
 
-    {ui::ET_GESTURE_TAP, InputTypes::GESTURE_TAP},
-    {ui::ET_GESTURE_TAP_DOWN, InputTypes::GESTURE_TAP},
-    {ui::ET_GESTURE_TAP_CANCEL, InputTypes::GESTURE_TAP},
-    {ui::ET_GESTURE_TAP_UNCONFIRMED, InputTypes::GESTURE_TAP},
-    {ui::ET_GESTURE_DOUBLE_TAP, InputTypes::GESTURE_TAP},
-    {ui::ET_GESTURE_TWO_FINGER_TAP, InputTypes::GESTURE_TAP},
-    {ui::ET_GESTURE_LONG_PRESS, InputTypes::GESTURE_TAP},
-    {ui::ET_GESTURE_LONG_TAP, InputTypes::GESTURE_TAP},
+    {ui::EventType::kGestureTap, InputTypes::GESTURE_TAP},
+    {ui::EventType::kGestureTapDown, InputTypes::GESTURE_TAP},
+    {ui::EventType::kGestureTapCancel, InputTypes::GESTURE_TAP},
+    {ui::EventType::kGestureTapUnconfirmed, InputTypes::GESTURE_TAP},
+    {ui::EventType::kGestureDoubleTap, InputTypes::GESTURE_TAP},
+    {ui::EventType::kGestureTwoFingerTap, InputTypes::GESTURE_TAP},
+    {ui::EventType::kGestureLongPress, InputTypes::GESTURE_TAP},
+    {ui::EventType::kGestureLongTap, InputTypes::GESTURE_TAP},
 
-    {ui::ET_GESTURE_PINCH_BEGIN, InputTypes::GESTURE_PINCH},
-    {ui::ET_GESTURE_PINCH_END, InputTypes::GESTURE_PINCH},
-    {ui::ET_GESTURE_PINCH_UPDATE, InputTypes::GESTURE_PINCH},
+    {ui::EventType::kGesturePinchBegin, InputTypes::GESTURE_PINCH},
+    {ui::EventType::kGesturePinchEnd, InputTypes::GESTURE_PINCH},
+    {ui::EventType::kGesturePinchUpdate, InputTypes::GESTURE_PINCH},
 
-    {ui::ET_GESTURE_SCROLL_BEGIN, InputTypes::GESTURE_DRAG},
-    {ui::ET_GESTURE_SCROLL_END, InputTypes::GESTURE_DRAG},
-    {ui::ET_GESTURE_SCROLL_UPDATE, InputTypes::GESTURE_DRAG},
-    {ui::ET_GESTURE_SWIPE, InputTypes::GESTURE_DRAG},
-    {ui::ET_SCROLL, InputTypes::GESTURE_DRAG},
-    {ui::ET_SCROLL_FLING_START, InputTypes::GESTURE_DRAG},
-    {ui::ET_SCROLL_FLING_CANCEL, InputTypes::GESTURE_DRAG},
+    {ui::EventType::kGestureScrollBegin, InputTypes::GESTURE_DRAG},
+    {ui::EventType::kGestureScrollEnd, InputTypes::GESTURE_DRAG},
+    {ui::EventType::kGestureScrollUpdate, InputTypes::GESTURE_DRAG},
+    {ui::EventType::kGestureSwipe, InputTypes::GESTURE_DRAG},
+    {ui::EventType::kScroll, InputTypes::GESTURE_DRAG},
+    {ui::EventType::kScrollFlingStart, InputTypes::GESTURE_DRAG},
+    {ui::EventType::kScrollFlingCancel, InputTypes::GESTURE_DRAG},
 
-    {ui::ET_KEY_PRESSED, InputTypes::KEY},
-    {ui::ET_KEY_RELEASED, InputTypes::KEY},
+    {ui::EventType::kKeyPressed, InputTypes::KEY},
+    {ui::EventType::kKeyReleased, InputTypes::KEY},
 };
 
 constexpr ui::EventType kAlwaysAllowedEventTypes[] = {
-    ui::ET_TOUCH_RELEASED,    ui::ET_TOUCH_PRESSED,
-    ui::ET_TOUCH_MOVED,       ui::ET_TOUCH_CANCELLED,
-    ui::ET_DROP_TARGET_EVENT, ui::ET_GESTURE_SHOW_PRESS,
-    ui::ET_GESTURE_BEGIN,     ui::ET_GESTURE_END,
-    ui::ET_CANCEL_MODE,       ui::ET_MOUSE_CAPTURE_CHANGED,
+    ui::EventType::kTouchReleased,   ui::EventType::kTouchPressed,
+    ui::EventType::kTouchMoved,      ui::EventType::kTouchCancelled,
+    ui::EventType::kDropTargetEvent, ui::EventType::kGestureShowPress,
+    ui::EventType::kGestureBegin,    ui::EventType::kGestureEnd,
+    ui::EventType::kCancelMode,      ui::EventType::kMouseCaptureChanged,
 };
 
 constexpr ui::EventType kUserEvent =
-    static_cast<ui::EventType>(ui::ET_LAST + 1);
+    static_cast<ui::EventType>(ui::EventType::kLast + 1);
 
 class EventFilterTest : public testing::Test {
  public:
@@ -125,18 +125,18 @@ TEST_F(EventFilterTest, AllowCombination) {
       InputTypes::MOUSE_CLICK | InputTypes::MOUSE_WHEEL,
       fuchsia::web::AllowInputState::ALLOW);
 
-  ui::test::TestEvent event1(ui::ET_MOUSE_PRESSED);
+  ui::test::TestEvent event1(ui::EventType::kMousePressed);
   ASSERT_FALSE(event1.stopped_propagation());
   OnEvent(&event1);
   EXPECT_FALSE(event1.stopped_propagation());
 
-  ui::test::TestEvent event2(ui::ET_MOUSEWHEEL);
+  ui::test::TestEvent event2(ui::EventType::kMousewheel);
   ASSERT_FALSE(event2.stopped_propagation());
   OnEvent(&event2);
   EXPECT_FALSE(event2.stopped_propagation());
 
   // Events not explicitly re-enabled are still denied.
-  ui::test::TestEvent dropped_event(ui::ET_KEY_PRESSED);
+  ui::test::TestEvent dropped_event(ui::EventType::kKeyPressed);
   ASSERT_FALSE(dropped_event.stopped_propagation());
   OnEvent(&dropped_event);
   EXPECT_TRUE(dropped_event.stopped_propagation());
@@ -148,7 +148,7 @@ TEST_F(EventFilterTest, AllowUnknown) {
   OnEvent(&event);
   EXPECT_FALSE(event.stopped_propagation());
 
-  ui::test::TestEvent event2(ui::ET_UNKNOWN);
+  ui::test::TestEvent event2(ui::EventType::kUnknown);
   ASSERT_FALSE(event2.stopped_propagation());
   OnEvent(&event);
   EXPECT_FALSE(event2.stopped_propagation());
@@ -162,7 +162,7 @@ TEST_F(EventFilterTest, DenyUnknown) {
   OnEvent(&event);
   EXPECT_TRUE(event.stopped_propagation());
 
-  ui::test::TestEvent event2(ui::ET_UNKNOWN);
+  ui::test::TestEvent event2(ui::EventType::kUnknown);
   ASSERT_FALSE(event2.stopped_propagation());
   OnEvent(&event2);
   EXPECT_TRUE(event2.stopped_propagation());

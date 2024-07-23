@@ -28,7 +28,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
-#include "net/socket/client_socket_handle.h"
+#include "net/socket/stream_socket_handle.h"
 #include "net/spdy/spdy_session.h"
 #include "net/third_party/quiche/src/quiche/http2/hpack/hpack_constants.h"
 #include "net/third_party/quiche/src/quiche/http2/hpack/hpack_static_table.h"
@@ -149,7 +149,7 @@ SpdySessionPool::~SpdySessionPool() {
 
 int SpdySessionPool::CreateAvailableSessionFromSocketHandle(
     const SpdySessionKey& key,
-    std::unique_ptr<ClientSocketHandle> client_socket_handle,
+    std::unique_ptr<StreamSocketHandle> stream_socket_handle,
     const NetLogWithSource& net_log,
     base::WeakPtr<SpdySession>* session) {
   TRACE_EVENT0(NetTracingCategory(),
@@ -158,9 +158,9 @@ int SpdySessionPool::CreateAvailableSessionFromSocketHandle(
   std::unique_ptr<SpdySession> new_session =
       CreateSession(key, net_log.net_log());
   std::set<std::string> dns_aliases =
-      client_socket_handle->socket()->GetDnsAliases();
+      stream_socket_handle->socket()->GetDnsAliases();
 
-  new_session->InitializeWithSocketHandle(std::move(client_socket_handle),
+  new_session->InitializeWithSocketHandle(std::move(stream_socket_handle),
                                           this);
 
   base::expected<base::WeakPtr<SpdySession>, int> insert_result = InsertSession(

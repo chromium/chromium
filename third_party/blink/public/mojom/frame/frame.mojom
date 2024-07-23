@@ -751,12 +751,6 @@ interface LocalFrameHost {
   // browser to send private aggregation requests associated with `event_type`.
   SendPrivateAggregationRequestsForFencedFrameEvent(string event_type);
 
-  // Indicates whether the Attribution Reporting API's runtime features are
-  // enabled or not for this document, and are required for integration of
-  // fenced frames (and URN iframes) with the Attribution Reporting API.
-  SetAttributionReportingRuntimeFeatures(
-      network.mojom.AttributionReportingRuntimeFeatures features);
-
   // Sent by the frame in a renderer process that hosts/owns a <fencedframe>
   // element, to the browser process requesting the creation of a new fenced
   // frame tree that will host the contents of the <fencedframe> element.

@@ -8,7 +8,6 @@ import * as dom from '../dom.js';
 import {reportError} from '../error.js';
 import {GalleryButton} from '../lit/components/gallery-button.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
-import {ToteMetricFormat} from '../mojo/type.js';
 import {
   Awaitable,
   ErrorLevel,
@@ -34,13 +33,10 @@ export interface ResultSaver {
    * Saves photo capture result.
    *
    * @param blob Data of the photo to be added.
-   * @param format Tote metric format of the photo to be added.
    * @param name Name of the photo to be saved.
    * @param metadata Data of the photo to be added.
    */
-  savePhoto(
-      blob: Blob, format: ToteMetricFormat, name: string,
-      metadata: Metadata|null): Promise<void>;
+  savePhoto(blob: Blob, name: string, metadata: Metadata|null): Promise<void>;
 
   /**
    * Saves gif capture result.
@@ -182,9 +178,8 @@ export class DefaultResultSaver implements ResultSaver {
     }
   }
 
-  async savePhoto(
-      blob: Blob, format: ToteMetricFormat, name: string,
-      metadata: Metadata|null): Promise<void> {
+  async savePhoto(blob: Blob, name: string, metadata: Metadata|null):
+      Promise<void> {
     const file = await filesystem.saveBlob(blob, name);
     if (metadata !== null) {
       const metadataBlob =
@@ -194,13 +189,11 @@ export class DefaultResultSaver implements ResultSaver {
 
     ChromeHelper.getInstance().sendNewCaptureBroadcast(
         {isVideo: false, name: file.name});
-    ChromeHelper.getInstance().notifyTote(format, name);
     await this.updateCover(file);
   }
 
   async saveGif(blob: Blob, name: string): Promise<void> {
     const file = await filesystem.saveBlob(blob, name);
-    ChromeHelper.getInstance().notifyTote(ToteMetricFormat.kVideoGif, name);
     await this.updateCover(file);
   }
 
@@ -210,8 +203,6 @@ export class DefaultResultSaver implements ResultSaver {
     await file.moveTo(this.directory, videoName);
     ChromeHelper.getInstance().sendNewCaptureBroadcast(
         {isVideo: true, name: file.name});
-    ChromeHelper.getInstance().notifyTote(
-        ToteMetricFormat.kVideoMp4, file.name);
     await this.updateCover(file);
   }
 }

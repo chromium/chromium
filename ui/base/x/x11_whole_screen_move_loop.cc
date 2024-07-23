@@ -93,8 +93,8 @@ uint32_t X11WholeScreenMoveLoop::DispatchEvent(const ui::PlatformEvent& event) {
   }
 
   switch (event->type()) {
-    case ui::ET_MOUSE_MOVED:
-    case ui::ET_MOUSE_DRAGGED: {
+    case ui::EventType::kMouseMoved:
+    case ui::EventType::kMouseDragged: {
       auto& current_xevent = *x11::Connection::Get()->dispatching_event();
       x11::Event last_xevent;
       std::unique_ptr<ui::Event> last_motion;
@@ -110,7 +110,7 @@ uint32_t X11WholeScreenMoveLoop::DispatchEvent(const ui::PlatformEvent& event) {
                                  mouse_event->time_stamp());
       return ui::POST_DISPATCH_NONE;
     }
-    case ui::ET_MOUSE_RELEASED: {
+    case ui::EventType::kMouseReleased: {
       if (event->AsMouseEvent()->IsLeftMouseButton()) {
         // Assume that drags are being done with the left mouse button. Only
         // break the drag if the left mouse button was released.
@@ -125,7 +125,7 @@ uint32_t X11WholeScreenMoveLoop::DispatchEvent(const ui::PlatformEvent& event) {
       }
       return ui::POST_DISPATCH_NONE;
     }
-    case ui::ET_KEY_PRESSED:
+    case ui::EventType::kKeyPressed:
       if (event->AsKeyEvent()->key_code() == ui::VKEY_ESCAPE) {
         canceled_ = true;
         EndMoveLoop();

@@ -76,7 +76,7 @@ class ASH_EXPORT InformedRestoreController
   void OnInformedRestoreImageDecoded(base::TimeTicks start_time,
                                      const gfx::ImageSkia& image);
 
-  void StartPineOverviewSession();
+  void StartInformedRestoreSession();
 
   // Called when the accept or cancel button in the onboarding dialog is
   // pressed.

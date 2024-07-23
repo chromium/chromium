@@ -1519,7 +1519,10 @@ uint32_t ScrollTree::GetMainThreadRepaintReasons(const ScrollNode& node) const {
   // kPopupNoThreadedInput is not a repaint reason so should be excluded.
   uint32_t reasons = node.main_thread_scrolling_reasons &
                      ~MainThreadScrollingReason::kPopupNoThreadedInput;
-  CHECK(MainThreadScrollingReason::AreRepaintReasons(reasons)) << reasons;
+  if (!MainThreadScrollingReason::AreRepaintReasons(reasons)) {
+    SCOPED_CRASH_KEY_NUMBER("Bug349709014", "reasons", reasons);
+    NOTREACHED_NORETURN();
+  }
   return reasons;
 }
 

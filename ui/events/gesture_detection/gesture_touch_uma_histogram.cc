@@ -66,19 +66,19 @@ void GestureTouchUMAHistogram::RecordTouchEvent(const MotionEvent& event) {
 UMAEventType GestureTouchUMAHistogram::UMAEventTypeFromEvent(
     const GestureEventData& gesture) {
   switch (gesture.type()) {
-    case ET_TOUCH_RELEASED:
+    case EventType::kTouchReleased:
       return UMA_ET_TOUCH_RELEASED;
-    case ET_TOUCH_PRESSED:
+    case EventType::kTouchPressed:
       return UMA_ET_TOUCH_PRESSED;
-    case ET_TOUCH_MOVED:
+    case EventType::kTouchMoved:
       return UMA_ET_TOUCH_MOVED;
-    case ET_TOUCH_CANCELLED:
+    case EventType::kTouchCancelled:
       return UMA_ET_TOUCH_CANCELLED;
-    case ET_GESTURE_SCROLL_BEGIN:
+    case EventType::kGestureScrollBegin:
       return UMA_ET_GESTURE_SCROLL_BEGIN;
-    case ET_GESTURE_SCROLL_END:
+    case EventType::kGestureScrollEnd:
       return UMA_ET_GESTURE_SCROLL_END;
-    case ET_GESTURE_SCROLL_UPDATE: {
+    case EventType::kGestureScrollUpdate: {
       int touch_points = gesture.details.touch_points();
       if (touch_points == 1)
         return UMA_ET_GESTURE_SCROLL_UPDATE;
@@ -88,7 +88,7 @@ UMAEventType GestureTouchUMAHistogram::UMAEventTypeFromEvent(
         return UMA_ET_GESTURE_SCROLL_UPDATE_3;
       return UMA_ET_GESTURE_SCROLL_UPDATE_4P;
     }
-    case ET_GESTURE_TAP: {
+    case EventType::kGestureTap: {
       int tap_count = gesture.details.tap_count();
       if (tap_count == 1)
         return UMA_ET_GESTURE_TAP;
@@ -99,19 +99,19 @@ UMAEventType GestureTouchUMAHistogram::UMAEventTypeFromEvent(
       NOTREACHED_IN_MIGRATION() << "Received tap with tapcount " << tap_count;
       return UMA_ET_UNKNOWN;
     }
-    case ET_GESTURE_TAP_DOWN:
+    case EventType::kGestureTapDown:
       return UMA_ET_GESTURE_TAP_DOWN;
-    case ET_GESTURE_BEGIN:
+    case EventType::kGestureBegin:
       return UMA_ET_GESTURE_BEGIN;
-    case ET_GESTURE_END:
+    case EventType::kGestureEnd:
       return UMA_ET_GESTURE_END;
-    case ET_GESTURE_TWO_FINGER_TAP:
+    case EventType::kGestureTwoFingerTap:
       return UMA_ET_GESTURE_TWO_FINGER_TAP;
-    case ET_GESTURE_PINCH_BEGIN:
+    case EventType::kGesturePinchBegin:
       return UMA_ET_GESTURE_PINCH_BEGIN;
-    case ET_GESTURE_PINCH_END:
+    case EventType::kGesturePinchEnd:
       return UMA_ET_GESTURE_PINCH_END;
-    case ET_GESTURE_PINCH_UPDATE: {
+    case EventType::kGesturePinchUpdate: {
       int touch_points = gesture.details.touch_points();
       if (touch_points >= 4)
         return UMA_ET_GESTURE_PINCH_UPDATE_4P;
@@ -119,13 +119,13 @@ UMAEventType GestureTouchUMAHistogram::UMAEventTypeFromEvent(
         return UMA_ET_GESTURE_PINCH_UPDATE_3;
       return UMA_ET_GESTURE_PINCH_UPDATE;
     }
-    case ET_GESTURE_SHORT_PRESS:
+    case EventType::kGestureShortPress:
       return UMA_ET_GESTURE_SHORT_PRESS;
-    case ET_GESTURE_LONG_PRESS:
+    case EventType::kGestureLongPress:
       return UMA_ET_GESTURE_LONG_PRESS;
-    case ET_GESTURE_LONG_TAP:
+    case EventType::kGestureLongTap:
       return UMA_ET_GESTURE_LONG_TAP;
-    case ET_GESTURE_SWIPE: {
+    case EventType::kGestureSwipe: {
       int touch_points = gesture.details.touch_points();
       if (touch_points == 1)
         return UMA_ET_GESTURE_SWIPE_1;
@@ -135,19 +135,19 @@ UMAEventType GestureTouchUMAHistogram::UMAEventTypeFromEvent(
         return UMA_ET_GESTURE_SWIPE_3;
       return UMA_ET_GESTURE_SWIPE_4P;
     }
-    case ET_GESTURE_TAP_CANCEL:
+    case EventType::kGestureTapCancel:
       return UMA_ET_GESTURE_TAP_CANCEL;
-    case ET_GESTURE_SHOW_PRESS:
+    case EventType::kGestureShowPress:
       return UMA_ET_GESTURE_SHOW_PRESS;
-    case ET_SCROLL:
+    case EventType::kScroll:
       return UMA_ET_SCROLL;
-    case ET_SCROLL_FLING_START:
+    case EventType::kScrollFlingStart:
       return UMA_ET_SCROLL_FLING_START;
-    case ET_SCROLL_FLING_CANCEL:
+    case EventType::kScrollFlingCancel:
       return UMA_ET_SCROLL_FLING_CANCEL;
-    case ET_GESTURE_TAP_UNCONFIRMED:
+    case EventType::kGestureTapUnconfirmed:
       return UMA_ET_GESTURE_TAP_UNCONFIRMED;
-    case ET_GESTURE_DOUBLE_TAP:
+    case EventType::kGestureDoubleTap:
       return UMA_ET_GESTURE_DOUBLE_TAP;
     default:
       NOTREACHED_IN_MIGRATION();

@@ -19,10 +19,10 @@ void EnvInputStateController::UpdateStateForMouseEvent(
     const Window* window,
     const ui::MouseEvent& event) {
   switch (event.type()) {
-    case ui::ET_MOUSE_PRESSED:
+    case ui::EventType::kMousePressed:
       env_->set_mouse_button_flags(event.button_flags());
       break;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       env_->set_mouse_button_flags(event.button_flags() &
                                    ~event.changed_button_flags());
       break;
@@ -33,7 +33,7 @@ void EnvInputStateController::UpdateStateForMouseEvent(
   // If a synthesized event is created from a native event (e.g. EnterNotify
   // XEvents), then we should take the location as we would for a
   // non-synthesized event.
-  if (event.type() != ui::ET_MOUSE_CAPTURE_CHANGED &&
+  if (event.type() != ui::EventType::kMouseCaptureChanged &&
       (!(event.flags() & ui::EF_IS_SYNTHESIZED) || event.HasNativeEvent())) {
     SetLastMouseLocation(window, event.root_location());
   }
@@ -43,23 +43,23 @@ void EnvInputStateController::UpdateStateForTouchEvent(
     const aura::Window* window,
     const ui::TouchEvent& event) {
   switch (event.type()) {
-    case ui::ET_TOUCH_PRESSED:
+    case ui::EventType::kTouchPressed:
       touch_ids_down_ |= (1 << event.pointer_details().id);
       env_->SetTouchDown(touch_ids_down_ != 0);
       break;
 
-    // Handle ET_TOUCH_CANCELLED only if it has a native event.
-    case ui::ET_TOUCH_CANCELLED:
+    // Handle EventType::kTouchCancelled only if it has a native event.
+    case ui::EventType::kTouchCancelled:
       if (!event.HasNativeEvent())
         break;
       [[fallthrough]];
-    case ui::ET_TOUCH_RELEASED:
+    case ui::EventType::kTouchReleased:
       touch_ids_down_ = (touch_ids_down_ | (1 << event.pointer_details().id)) ^
                         (1 << event.pointer_details().id);
       env_->SetTouchDown(touch_ids_down_ != 0);
       break;
 
-    case ui::ET_TOUCH_MOVED:
+    case ui::EventType::kTouchMoved:
       break;
 
     default:

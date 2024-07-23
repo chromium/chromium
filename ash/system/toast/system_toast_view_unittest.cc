@@ -86,24 +86,4 @@ TEST_F(SystemToastViewTest, WithButton) {
   EXPECT_EQ(GetToastButton(system_toast_view)->GetText(), kTestDismissText);
 }
 
-// Tests that the dismiss button can be directly a11y focused by calling
-// `ToggleButtonA11yFocus`.
-TEST_F(SystemToastViewTest, ToggleA11yFocus) {
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
-  auto* system_toast_view =
-      widget->SetContentsView(std::make_unique<SystemToastView>(
-          /*text=*/kTestText, /*dismiss_text=*/kTestDismissText));
-
-  // The dismiss button's focus ring should not be visible initially.
-  auto* focus_ring = views::FocusRing::Get(GetToastButton(system_toast_view));
-  EXPECT_FALSE(focus_ring->GetVisible());
-
-  // Toggle a11y focus and test the button's focus ring visiblity.
-  system_toast_view->ToggleButtonA11yFocus();
-  EXPECT_TRUE(focus_ring->GetVisible());
-
-  system_toast_view->ToggleButtonA11yFocus();
-  EXPECT_FALSE(focus_ring->GetVisible());
-}
-
 }  // namespace ash

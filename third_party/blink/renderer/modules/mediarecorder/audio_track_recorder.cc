@@ -28,8 +28,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-#if BUILDFLAG(IS_WIN) || \
-    (BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS))
+#if BUILDFLAG(IS_WIN) || ((BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)) && \
+                          BUILDFLAG(USE_PROPRIETARY_CODECS))
 #define HAS_AAC_ENCODER 1
 #endif
 

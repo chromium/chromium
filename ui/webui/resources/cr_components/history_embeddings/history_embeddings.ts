@@ -107,6 +107,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   private loadingStateMinimumMs_ = LOADING_STATE_MINIMUM_MS;
   private queryResultMinAge_ = QUERY_RESULT_MINIMUM_AGE;
   private searchResult_: SearchResult;
+  private searchTimestamp_: number = 0;
   /**
    * When this is non-null, that means there's a SearchResult that's pending
    * metrics logging since this debouncer timestamp. The debouncing is needed
@@ -120,6 +121,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   private numCharsForLastResultQuery_: number = 0;
   searchQuery: string;
   timeRangeStart?: Date;
+  private searchResultChangedId_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -128,6 +130,9 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       // closing the tab or navigating to another URL.
       this.flushDebouncedUserMetrics_(/* forceFlush= */ true);
     });
+    this.searchResultChangedId_ =
+        this.browserProxy_.callbackRouter.searchResultChanged.addListener(
+            this.searchResultChanged_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -137,6 +142,11 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     // navigated to another history page.
     this.flushDebouncedUserMetrics_(/* forceFlush= */ true);
     this.eventTracker_.removeAll();
+    if (this.searchResultChangedId_ !== null) {
+      this.browserProxy_.callbackRouter.removeListener(
+          this.searchResultChangedId_);
+      this.searchResultChangedId_ = null;
+    }
   }
 
   private computeIsEmpty_(): boolean {
@@ -225,26 +235,35 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       timeRangeStart:
           this.timeRangeStart ? jsDateToMojoDate(this.timeRangeStart) : null,
     };
-    Promise
-        .all([
-          this.browserProxy_.search(query),
-          new Promise(
-              resolve => setTimeout(resolve, this.loadingStateMinimumMs_)),
-        ])
-        .then(([result]) => {
-          if (query.query !== this.searchQuery) {
-            // Results are for an outdated query. Skip these results.
-            return;
-          }
+    this.searchTimestamp_ = performance.now();
+    this.browserProxy_.search(query);
+  }
 
-          // Reset feedback state for new results.
-          this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
+  private searchResultChanged_(result: SearchResult) {
+    // Artificial delay for UX. Note, timeout is always used for consistency,
+    // and this can affect test behavior, so don't change to direct calls
+    // even if no additional delay is necessary.
+    setTimeout(
+        this.searchResultChangedImpl_.bind(this, result),
+        Math.max(
+            0,
+            this.searchTimestamp_ + this.loadingStateMinimumMs_ -
+                performance.now()));
+  }
 
-          this.searchResult_ = result;
-          this.loading_ = false;
+  private searchResultChangedImpl_(result: SearchResult) {
+    if (result.query !== this.searchQuery) {
+      // Results are for an outdated query. Skip these results.
+      return;
+    }
 
-          this.resultPendingMetricsTimestamp_ = performance.now();
-        });
+    // Reset feedback state for new results.
+    this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
+
+    this.searchResult_ = result;
+    this.loading_ = false;
+
+    this.resultPendingMetricsTimestamp_ = performance.now();
   }
 
   /**
@@ -287,6 +306,10 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
   overrideQueryResultMinAgeForTesting(ms: number) {
     this.queryResultMinAge_ = ms;
+  }
+
+  searchResultChangedForTesting(result: SearchResult) {
+    this.searchResultChanged_(result);
   }
 }
 

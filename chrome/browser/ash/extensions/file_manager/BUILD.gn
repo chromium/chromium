@@ -82,6 +82,7 @@ static_library("file_manager") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/drive",
     "//chrome/browser/ash/exo",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_system_provider",
@@ -96,6 +97,7 @@ static_library("file_manager") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/smb_client",
     "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/chromeos/drivefs",
     "//chrome/browser/chromeos/drivefs:native_message_host_origins",
     "//chrome/browser/devtools",
     "//chrome/browser/pdf",
@@ -150,6 +152,7 @@ static_library("file_manager") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/drive",
     "//chrome/browser/ash/exo",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/system_web_apps/apps",

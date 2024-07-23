@@ -160,7 +160,7 @@ template <ui::DomCode code,
 struct TestKey {
   // Returns press key event.
   static constexpr TestKeyEvent Pressed(ui::EventFlags flags = ui::EF_NONE) {
-    return {ui::ET_KEY_PRESSED, code,
+    return {ui::EventType::kKeyPressed, code,
             (flags & ui::EF_SHIFT_DOWN) ? shifted_key : key, keycode,
             flags | modifier_flag};
   }
@@ -168,7 +168,7 @@ struct TestKey {
   // Returns release key event.
   static constexpr TestKeyEvent Released(ui::EventFlags flags = ui::EF_NONE) {
     // Note: modifier flag should not be present on release events.
-    return {ui::ET_KEY_RELEASED, code,
+    return {ui::EventType::kKeyReleased, code,
             (flags & ui::EF_SHIFT_DOWN) ? shifted_key : key, keycode, flags};
   }
 
@@ -194,13 +194,13 @@ template <ui::EventFlags changed_button_flag, uint32_t linux_key_code = 0>
 struct TestButton {
   // Returns press button event.
   static constexpr TestMouseEvent Pressed(ui::EventFlags flags = ui::EF_NONE) {
-    return {ui::ET_MOUSE_PRESSED, flags | changed_button_flag,
+    return {ui::EventType::kMousePressed, flags | changed_button_flag,
             changed_button_flag, linux_key_code};
   }
 
   // Returns release button events.
   static constexpr TestMouseEvent Released(ui::EventFlags flags = ui::EF_NONE) {
-    return {ui::ET_MOUSE_RELEASED, flags | changed_button_flag,
+    return {ui::EventType::kMouseReleased, flags | changed_button_flag,
             changed_button_flag, linux_key_code};
   }
 
@@ -602,8 +602,8 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
         continue;
       }
       current_flags |= modifier.flag;
-      SendKeyEvent(TestKeyEvent{ui::ET_KEY_PRESSED, modifier.code, modifier.key,
-                                modifier.keycode, current_flags},
+      SendKeyEvent(TestKeyEvent{ui::EventType::kKeyPressed, modifier.code,
+                                modifier.key, modifier.keycode, current_flags},
                    kRandomKeyboardDeviceId);
     }
     CHECK_EQ(current_flags, extra_flags);
@@ -637,7 +637,7 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
         continue;
       }
       current_flags &= ~modifier.flag;
-      SendKeyEvent(TestKeyEvent{ui::ET_KEY_RELEASED, modifier.code,
+      SendKeyEvent(TestKeyEvent{ui::EventType::kKeyReleased, modifier.code,
                                 modifier.key, modifier.keycode, current_flags},
                    kRandomKeyboardDeviceId);
     }
@@ -779,8 +779,8 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
       /*customization_restriction=*/mojom::CustomizationRestriction::
           kAllowCustomizations);
 
-  ui::MouseEvent event =
-      CreateMouseButtonEvent(ui::ET_MOUSE_DRAGGED, ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent event = CreateMouseButtonEvent(ui::EventType::kMouseDragged,
+                                                ui::EF_NONE, ui::EF_NONE);
 
   rewriter_->RewriteEvent(event, continuation.weak_ptr_factory_.GetWeakPtr());
   ASSERT_TRUE(continuation.passthrough_event);
@@ -1748,7 +1748,7 @@ TEST_P(ModifierRewritingTest, ModifierKeyCombo) {
   auto modifier_pressed_event = data;
   modifier_pressed_event.flags |= ui::EF_IS_CUSTOMIZED_FROM_BUTTON;
   auto modifier_released_event = data;
-  modifier_released_event.type = ui::ET_KEY_RELEASED;
+  modifier_released_event.type = ui::EventType::kKeyReleased;
   modifier_released_event.flags = ui::EF_IS_CUSTOMIZED_FROM_BUTTON;
 
   // Press down remapped button that maps to a modifier.
@@ -1782,7 +1782,7 @@ TEST_P(ModifierRewritingTest, MultiModifierKeyCombo) {
   auto modifier_pressed_event = data;
   modifier_pressed_event.flags |= ui::EF_IS_CUSTOMIZED_FROM_BUTTON;
   auto modifier_released_event = data;
-  modifier_released_event.type = ui::ET_KEY_RELEASED;
+  modifier_released_event.type = ui::EventType::kKeyReleased;
   modifier_released_event.flags = ui::EF_IS_CUSTOMIZED_FROM_BUTTON;
 
   // Press down remapped button that maps to a modifier.
@@ -1818,7 +1818,7 @@ TEST_P(ModifierRewritingTest, MouseEvent) {
   auto modifier_pressed_event = data;
   modifier_pressed_event.flags |= ui::EF_IS_CUSTOMIZED_FROM_BUTTON;
   auto modifier_released_event = data;
-  modifier_released_event.type = ui::ET_KEY_RELEASED;
+  modifier_released_event.type = ui::EventType::kKeyReleased;
   modifier_released_event.flags = ui::EF_IS_CUSTOMIZED_FROM_BUTTON;
 
   // Press down remapped button that maps to a modifier.

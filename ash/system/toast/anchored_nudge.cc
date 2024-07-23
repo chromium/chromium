@@ -268,7 +268,7 @@ void AnchoredNudge::OnMouseReleased(const ui::MouseEvent& event) {
 
 void AnchoredNudge::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP: {
+    case ui::EventType::kGestureTap: {
       if (!click_callback_.is_null()) {
         std::move(click_callback_).Run();
         event->SetHandled();

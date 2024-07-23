@@ -137,7 +137,7 @@ void LaserPointerController::UpdatePointerView(ui::TouchEvent* event) {
     return;
   }
 
-  if (event->type() != ui::ET_TOUCH_CANCELLED) {
+  if (event->type() != ui::EventType::kTouchCancelled) {
     // Unlock mouse cursor when switch to touch event.
     scoped_locked_hidden_cursor_.reset();
 
@@ -148,8 +148,8 @@ void LaserPointerController::UpdatePointerView(ui::TouchEvent* event) {
   // Upon disabling the touch display, a canceled touch event is received. The
   // `laser_pointer_view` should be destroyed to avoid visual artifacts. See
   // b/303924797 for more information.
-  if (event->type() == ui::ET_TOUCH_RELEASED ||
-      event->type() == ui::ET_TOUCH_CANCELLED) {
+  if (event->type() == ui::EventType::kTouchReleased ||
+      event->type() == ui::EventType::kTouchCancelled) {
     laser_pointer_view->FadeOut(base::BindOnce(
         &LaserPointerController::DestroyPointerView, base::Unretained(this)));
   }
@@ -157,7 +157,7 @@ void LaserPointerController::UpdatePointerView(ui::TouchEvent* event) {
 
 void LaserPointerController::UpdatePointerView(ui::MouseEvent* event) {
   LaserPointerView* laser_pointer_view = GetLaserPointerView();
-  if (event->type() == ui::ET_MOUSE_MOVED) {
+  if (event->type() == ui::EventType::kMouseMoved) {
     if (IsPointerInExcludedWindows(event)) {
       // Destroy the |LaserPointerView| and unlock the cursor since the cursor
       // is in the bound of excluded windows.
@@ -174,7 +174,7 @@ void LaserPointerController::UpdatePointerView(ui::MouseEvent* event) {
 
   laser_pointer_view->AddNewPoint(event->root_location_f(),
                                   event->time_stamp());
-  if (event->type() == ui::ET_MOUSE_RELEASED) {
+  if (event->type() == ui::EventType::kMouseReleased) {
     laser_pointer_view->FadeOut(base::BindOnce(
         &LaserPointerController::DestroyPointerView, base::Unretained(this)));
   }
@@ -198,8 +198,8 @@ bool LaserPointerController::CanStartNewGesture(ui::LocatedEvent* event) {
 
 bool LaserPointerController::ShouldProcessEvent(ui::LocatedEvent* event) {
   // Allow clicking when laser pointer is enabled.
-  if (event->type() == ui::ET_MOUSE_PRESSED ||
-      event->type() == ui::ET_MOUSE_RELEASED) {
+  if (event->type() == ui::EventType::kMousePressed ||
+      event->type() == ui::EventType::kMouseReleased) {
     return false;
   }
 

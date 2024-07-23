@@ -1248,7 +1248,8 @@ void SwitchToLastUsedIme(bool key_pressed) {
   if (key_pressed) {
     Shell::Get()->ime_controller()->SwitchToLastUsedIme();
   }
-  // Else: consume the Ctrl+Space ET_KEY_RELEASED event but do not do anything.
+  // Else: consume the Ctrl+Space EventType::kKeyReleased event but do not do
+  // anything.
 }
 
 void ToggleAppList(AppListShowSource show_source,

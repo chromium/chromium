@@ -212,10 +212,10 @@ export class RecordingFileListItem extends ReactiveLitElement {
 
   private renderTitle(title: string, highlight: [number, number]|null) {
     if (highlight === null) {
-      return html`<div class="title">${title}</div>`;
+      return html`<div id="title">${title}</div>`;
     }
     const [start, end] = highlight;
-    return html`<div class="title">
+    return html`<div id="title">
       ${title.slice(0, start)}<span class="highlight"
         >${title.slice(start, end)}</span
       >${title.slice(end)}

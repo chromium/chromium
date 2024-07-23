@@ -136,6 +136,10 @@ void RunGetClassificationMultipleResultCallback(
     ranked_buttons.emplace_back(
         static_cast<int32_t>(ActionLabelToAdaptiveToolbarButtonVariant(label)));
   }
+  if (ranked_buttons.empty()) {
+    ranked_buttons.emplace_back(
+        static_cast<int32_t>(AdaptiveToolbarButtonVariant::kUnknown));
+  }
 
   std::move(callback).Run(is_ready, ranked_buttons);
 }
@@ -166,6 +170,10 @@ void RunGetAnnotatedNumericResultCallback(
   for (std::pair<float, AdaptiveToolbarButtonVariant> score_button :
        sorted_button_scores) {
     sorted_buttons.emplace_back(static_cast<int32_t>(score_button.second));
+  }
+  if (sorted_buttons.empty()) {
+    sorted_buttons.emplace_back(
+        static_cast<int32_t>(AdaptiveToolbarButtonVariant::kUnknown));
   }
 
   std::move(callback).Run(is_ready, sorted_buttons);

@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProp
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.FORCE_ANIMATION_TO_FINISH;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.HAIRLINE_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.HEADER_TITLE;
@@ -260,6 +261,10 @@ class TabGridDialogViewBinder {
             if (model.get(ANIMATION_BACKGROUND_COLOR) != null) {
                 viewHolder.dialogView.updateAnimationBackgroundColor(
                         model.get(ANIMATION_BACKGROUND_COLOR));
+            }
+        } else if (FORCE_ANIMATION_TO_FINISH == propertyKey) {
+            if (model.get(FORCE_ANIMATION_TO_FINISH)) {
+                viewHolder.dialogView.forceAnimationToFinish();
             }
         }
     }

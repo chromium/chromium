@@ -1215,8 +1215,8 @@ class DelegatedInkPointTest
     DCHECK(!(use_enter_event && use_exit_event));
 
     // Hovering creates and sends ui::MouseEvents with
-    // ET_MOUSE_{MOVED,ENTERED,EXITED} types, so do the same here in hovering
-    // scenarios.
+    // EventType::kMouse{Moved,Entered,Exited} types, so do the same here in
+    // hovering scenarios.
     if (GetEventParam() == TestEvent::kTouchEvent &&
         !Hovering(match_test_hovering_state)) {
       blink::WebInputEvent::Type event_type =

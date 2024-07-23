@@ -161,7 +161,6 @@ static_library("test_support") {
       "//chrome/browser/autofill",
       "//chrome/browser/keyboard_accessory/test_utils/android",
     ]
-    public_deps += [ "test:test_support" ]
   }
 }
 

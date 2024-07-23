@@ -96,8 +96,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   bool NotifyNavigationRegistrationData(
       const blink::AttributionSrcToken& attribution_src_token,
       const net::HttpResponseHeaders* headers,
-      GURL reporting_url,
-      network::AttributionReportingRuntimeFeatures) override;
+      GURL reporting_url) override;
   void NotifyNavigationRegistrationCompleted(
       const blink::AttributionSrcToken& attribution_src_token) override;
 
@@ -107,11 +106,9 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
       attribution_reporting::mojom::RegistrationEligibility,
       std::optional<blink::AttributionSrcToken> attribution_src_token,
       std::optional<std::string> devtools_request_id) override;
-  bool NotifyBackgroundRegistrationData(
-      BackgroundRegistrationsId id,
-      const net::HttpResponseHeaders* headers,
-      GURL reporting_url,
-      network::AttributionReportingRuntimeFeatures) override;
+  bool NotifyBackgroundRegistrationData(BackgroundRegistrationsId id,
+                                        const net::HttpResponseHeaders* headers,
+                                        GURL reporting_url) override;
   void NotifyBackgroundRegistrationCompleted(
       BackgroundRegistrationsId id) override;
 
@@ -122,7 +119,6 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
       std::string devtools_request_id) override;
   void NotifyFencedFrameReportingBeaconData(
       BeaconId beacon_id,
-      network::AttributionReportingRuntimeFeatures,
       GURL reporting_url,
       const net::HttpResponseHeaders* headers,
       bool is_final_response) override;

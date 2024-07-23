@@ -129,7 +129,7 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventTypesAreSynthesized) {
       }));
   RunLoopUntilIdle();  // Server gets watch call.
 
-  // Fuchsia button press -> Chrome ET_MOUSE_PRESSED and
+  // Fuchsia button press -> Chrome EventType::kMousePressed and
   // EF_RIGHT_MOUSE_BUTTON
   std::vector events = MakeVector<fup::MouseEvent>(
       MouseEventBuilder().SetPressedButtons({0}).SetButtons({2, 0, 1}).Build());
@@ -137,11 +137,11 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventTypesAreSynthesized) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
-  EXPECT_EQ(mouse_events[0].type(), ET_MOUSE_PRESSED);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kMousePressed);
   EXPECT_EQ(mouse_events[0].flags(), EF_RIGHT_MOUSE_BUTTON);
   mouse_events.clear();
 
-  // Keep Fuchsia button press -> Chrome ET_MOUSE_DRAGGED and
+  // Keep Fuchsia button press -> Chrome EventType::kMouseDragged and
   // EF_RIGHT_MOUSE_BUTTON
   events = MakeVector<fup::MouseEvent>(MouseEventBuilder()
                                            .SetPressedButtons({0})
@@ -152,11 +152,11 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventTypesAreSynthesized) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
-  EXPECT_EQ(mouse_events[0].type(), ET_MOUSE_DRAGGED);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kMouseDragged);
   EXPECT_EQ(mouse_events[0].flags(), EF_RIGHT_MOUSE_BUTTON);
   mouse_events.clear();
 
-  // Release Fuchsia button -> Chrome ET_MOUSE_RELEASED
+  // Release Fuchsia button -> Chrome EventType::kMouseReleased
   events = MakeVector<fup::MouseEvent>(MouseEventBuilder()
                                            .SetPressedButtons({})
                                            .WithoutViewParameters()
@@ -166,11 +166,11 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventTypesAreSynthesized) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
-  EXPECT_EQ(mouse_events[0].type(), ET_MOUSE_RELEASED);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kMouseReleased);
   EXPECT_EQ(mouse_events[0].flags(), EF_RIGHT_MOUSE_BUTTON);
   mouse_events.clear();
 
-  // Release Fuchsia button -> Chrome ET_MOUSE_MOVED
+  // Release Fuchsia button -> Chrome EventType::kMouseMoved
   events = MakeVector<fup::MouseEvent>(MouseEventBuilder()
                                            .SetPressedButtons({})
                                            .WithoutViewParameters()
@@ -180,7 +180,7 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventTypesAreSynthesized) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
-  EXPECT_EQ(mouse_events[0].type(), ET_MOUSE_MOVED);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kMouseMoved);
   EXPECT_EQ(mouse_events[0].flags(), EF_NONE);
 }
 
@@ -192,18 +192,19 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventFlagsAreSynthesized) {
       }));
   RunLoopUntilIdle();  // Server gets watch call.
 
-  // Fuchsia button press -> Chrome ET_MOUSE_PRESSED and EF_RIGHT_MOUSE_BUTTON
+  // Fuchsia button press -> Chrome EventType::kMousePressed and
+  // EF_RIGHT_MOUSE_BUTTON
   std::vector events = MakeVector<fup::MouseEvent>(
       MouseEventBuilder().SetPressedButtons({0}).SetButtons({2, 0, 1}).Build());
   fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
-  EXPECT_EQ(mouse_events[0].type(), ET_MOUSE_PRESSED);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kMousePressed);
   EXPECT_EQ(mouse_events[0].flags(), EF_RIGHT_MOUSE_BUTTON);
   mouse_events.clear();
 
-  // Switch Fuchsia button press -> Chrome ET_MOUSE_DRAGGED and
+  // Switch Fuchsia button press -> Chrome EventType::kMouseDragged and
   // EF_LEFT_MOUSE_BUTTON
   events = MakeVector<fup::MouseEvent>(MouseEventBuilder()
                                            .SetPressedButtons({2})
@@ -214,9 +215,9 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventFlagsAreSynthesized) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 2u);
-  EXPECT_EQ(mouse_events[0].type(), ET_MOUSE_PRESSED);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kMousePressed);
   EXPECT_EQ(mouse_events[0].flags(), EF_LEFT_MOUSE_BUTTON);
-  EXPECT_EQ(mouse_events[1].type(), ET_MOUSE_RELEASED);
+  EXPECT_EQ(mouse_events[1].type(), EventType::kMouseReleased);
   EXPECT_EQ(mouse_events[1].flags(), EF_RIGHT_MOUSE_BUTTON);
 }
 
@@ -228,17 +229,17 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventFlagCombo) {
       }));
   RunLoopUntilIdle();  // Server gets watch call.
 
-  // Fuchsia button press -> Chrome ET_MOUSE_PRESSED on EF_LEFT_MOUSE_BUTTON
-  // and EF_RIGHT_MOUSE_BUTTON
+  // Fuchsia button press -> Chrome EventType::kMousePressed on
+  // EF_LEFT_MOUSE_BUTTON and EF_RIGHT_MOUSE_BUTTON
   std::vector events = MakeVector<fup::MouseEvent>(
       MouseEventBuilder().SetPressedButtons({0, 1}).Build());
   fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 2u);
-  EXPECT_EQ(mouse_events[0].type(), ET_MOUSE_PRESSED);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kMousePressed);
   EXPECT_EQ(mouse_events[0].flags(), EF_LEFT_MOUSE_BUTTON);
-  EXPECT_EQ(mouse_events[1].type(), ET_MOUSE_PRESSED);
+  EXPECT_EQ(mouse_events[1].type(), EventType::kMousePressed);
   EXPECT_EQ(mouse_events[1].flags(), EF_RIGHT_MOUSE_BUTTON);
 }
 
@@ -260,13 +261,13 @@ TEST_F(PointerEventsHandlerTest, ChromeMouseEventDoubleClick) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 4u);
-  EXPECT_EQ(mouse_events[0].type(), ET_MOUSE_PRESSED);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kMousePressed);
   EXPECT_EQ(mouse_events[0].flags(), EF_LEFT_MOUSE_BUTTON);
-  EXPECT_EQ(mouse_events[1].type(), ET_MOUSE_RELEASED);
+  EXPECT_EQ(mouse_events[1].type(), EventType::kMouseReleased);
   EXPECT_EQ(mouse_events[1].flags(), EF_LEFT_MOUSE_BUTTON);
-  EXPECT_EQ(mouse_events[2].type(), ET_MOUSE_PRESSED);
+  EXPECT_EQ(mouse_events[2].type(), EventType::kMousePressed);
   EXPECT_EQ(mouse_events[2].flags(), EF_LEFT_MOUSE_BUTTON | EF_IS_DOUBLE_CLICK);
-  EXPECT_EQ(mouse_events[3].type(), ET_MOUSE_RELEASED);
+  EXPECT_EQ(mouse_events[3].type(), EventType::kMouseReleased);
   EXPECT_EQ(mouse_events[3].flags(), EF_LEFT_MOUSE_BUTTON | EF_IS_DOUBLE_CLICK);
 }
 
@@ -312,20 +313,20 @@ TEST_F(PointerEventsHandlerTest, MouseMultiButtonDrag) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 7u);
-  EXPECT_EQ(mouse_events[0].type(), ET_MOUSE_PRESSED);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kMousePressed);
   EXPECT_EQ(mouse_events[0].flags(), EF_LEFT_MOUSE_BUTTON);
-  EXPECT_EQ(mouse_events[1].type(), ET_MOUSE_PRESSED);
+  EXPECT_EQ(mouse_events[1].type(), EventType::kMousePressed);
   EXPECT_EQ(mouse_events[1].flags(), EF_RIGHT_MOUSE_BUTTON);
-  EXPECT_EQ(mouse_events[2].type(), ET_MOUSE_DRAGGED);
+  EXPECT_EQ(mouse_events[2].type(), EventType::kMouseDragged);
   EXPECT_EQ(mouse_events[2].flags(),
             EF_LEFT_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON);
-  EXPECT_EQ(mouse_events[3].type(), ET_MOUSE_RELEASED);
+  EXPECT_EQ(mouse_events[3].type(), EventType::kMouseReleased);
   EXPECT_EQ(mouse_events[3].flags(), EF_RIGHT_MOUSE_BUTTON);
-  EXPECT_EQ(mouse_events[4].type(), ET_MOUSE_DRAGGED);
+  EXPECT_EQ(mouse_events[4].type(), EventType::kMouseDragged);
   EXPECT_EQ(mouse_events[4].flags(), EF_LEFT_MOUSE_BUTTON);
-  EXPECT_EQ(mouse_events[5].type(), ET_MOUSE_RELEASED);
+  EXPECT_EQ(mouse_events[5].type(), EventType::kMouseReleased);
   EXPECT_EQ(mouse_events[5].flags(), EF_LEFT_MOUSE_BUTTON);
-  EXPECT_EQ(mouse_events[6].type(), ET_MOUSE_MOVED);
+  EXPECT_EQ(mouse_events[6].type(), EventType::kMouseMoved);
   EXPECT_EQ(mouse_events[6].flags(), 0);
 }
 
@@ -333,7 +334,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEvent) {
   std::vector<MouseWheelEvent> mouse_events;
   pointer_handler_->StartWatching(
       base::BindLambdaForTesting([&mouse_events](Event* event) {
-        ASSERT_EQ(event->type(), ET_MOUSEWHEEL);
+        ASSERT_EQ(event->type(), EventType::kMousewheel);
         mouse_events.push_back(*event->AsMouseWheelEvent());
       }));
   RunLoopUntilIdle();  // Server gets watch call.
@@ -345,7 +346,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEvent) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
-  EXPECT_EQ(mouse_events[0].type(), ET_MOUSEWHEEL);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kMousewheel);
   EXPECT_EQ(mouse_events[0].flags(), EF_NONE);
   EXPECT_EQ(mouse_events[0].AsMouseWheelEvent()->x_offset(), 0);
   EXPECT_EQ(mouse_events[0].AsMouseWheelEvent()->y_offset(), 120);
@@ -358,7 +359,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEvent) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
-  EXPECT_EQ(mouse_events[0].type(), ET_MOUSEWHEEL);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kMousewheel);
   EXPECT_EQ(mouse_events[0].flags(), EF_NONE);
   EXPECT_EQ(mouse_events[0].AsMouseWheelEvent()->x_offset(), 120);
   EXPECT_EQ(mouse_events[0].AsMouseWheelEvent()->y_offset(), 0);
@@ -368,7 +369,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventDeltaInPhysicalPixel) {
   std::vector<MouseWheelEvent> mouse_events;
   pointer_handler_->StartWatching(
       base::BindLambdaForTesting([&mouse_events](Event* event) {
-        ASSERT_EQ(event->type(), ET_MOUSEWHEEL);
+        ASSERT_EQ(event->type(), EventType::kMousewheel);
         mouse_events.push_back(*event->AsMouseWheelEvent());
       }));
   RunLoopUntilIdle();  // Server gets watch call.
@@ -383,7 +384,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventDeltaInPhysicalPixel) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
-  EXPECT_EQ(mouse_events[0].type(), ET_MOUSEWHEEL);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kMousewheel);
   EXPECT_EQ(mouse_events[0].flags(), EF_NONE);
   EXPECT_EQ(mouse_events[0].AsMouseWheelEvent()->x_offset(), 0);
   EXPECT_EQ(mouse_events[0].AsMouseWheelEvent()->y_offset(), 100);
@@ -398,7 +399,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventDeltaInPhysicalPixel) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
-  EXPECT_EQ(mouse_events[0].type(), ET_MOUSEWHEEL);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kMousewheel);
   EXPECT_EQ(mouse_events[0].flags(), EF_NONE);
   EXPECT_EQ(mouse_events[0].AsMouseWheelEvent()->x_offset(), 100);
   EXPECT_EQ(mouse_events[0].AsMouseWheelEvent()->y_offset(), 0);
@@ -408,7 +409,7 @@ TEST_F(PointerEventsHandlerTest, ScrollEventDeltaInPhysicalPixel) {
   std::vector<ScrollEvent> mouse_events;
   pointer_handler_->StartWatching(
       base::BindLambdaForTesting([&mouse_events](Event* event) {
-        ASSERT_EQ(event->type(), ET_SCROLL);
+        ASSERT_EQ(event->type(), EventType::kScroll);
         mouse_events.push_back(*event->AsScrollEvent());
       }));
   RunLoopUntilIdle();  // Server gets watch call.
@@ -424,7 +425,7 @@ TEST_F(PointerEventsHandlerTest, ScrollEventDeltaInPhysicalPixel) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
-  EXPECT_EQ(mouse_events[0].type(), ET_SCROLL);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kScroll);
   EXPECT_EQ(mouse_events[0].flags(), EF_NONE);
   EXPECT_EQ(mouse_events[0].AsScrollEvent()->x_offset(), 0);
   EXPECT_EQ(mouse_events[0].AsScrollEvent()->y_offset(), 100);
@@ -440,7 +441,7 @@ TEST_F(PointerEventsHandlerTest, ScrollEventDeltaInPhysicalPixel) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
-  EXPECT_EQ(mouse_events[0].type(), ET_SCROLL);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kScroll);
   EXPECT_EQ(mouse_events[0].flags(), EF_NONE);
   EXPECT_EQ(mouse_events[0].AsScrollEvent()->x_offset(), 100);
   EXPECT_EQ(mouse_events[0].AsScrollEvent()->y_offset(), 0);
@@ -450,7 +451,7 @@ TEST_F(PointerEventsHandlerTest, ScrollEventDeltaInPhysicalPixelNoTickDelta) {
   std::vector<ScrollEvent> mouse_events;
   pointer_handler_->StartWatching(
       base::BindLambdaForTesting([&mouse_events](Event* event) {
-        ASSERT_EQ(event->type(), ET_SCROLL);
+        ASSERT_EQ(event->type(), EventType::kScroll);
         mouse_events.push_back(*event->AsScrollEvent());
       }));
   RunLoopUntilIdle();  // Server gets watch call.
@@ -465,7 +466,7 @@ TEST_F(PointerEventsHandlerTest, ScrollEventDeltaInPhysicalPixelNoTickDelta) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
-  EXPECT_EQ(mouse_events[0].type(), ET_SCROLL);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kScroll);
   EXPECT_EQ(mouse_events[0].flags(), EF_NONE);
   EXPECT_EQ(mouse_events[0].AsScrollEvent()->x_offset(), 0);
   EXPECT_EQ(mouse_events[0].AsScrollEvent()->y_offset(), 100);
@@ -480,7 +481,7 @@ TEST_F(PointerEventsHandlerTest, ScrollEventDeltaInPhysicalPixelNoTickDelta) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
-  EXPECT_EQ(mouse_events[0].type(), ET_SCROLL);
+  EXPECT_EQ(mouse_events[0].type(), EventType::kScroll);
   EXPECT_EQ(mouse_events[0].flags(), EF_NONE);
   EXPECT_EQ(mouse_events[0].AsScrollEvent()->x_offset(), 100);
   EXPECT_EQ(mouse_events[0].AsScrollEvent()->y_offset(), 0);
@@ -516,9 +517,9 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventWithButtonPressed) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 2u);
-  EXPECT_EQ(mouse_events[0]->type(), ET_MOUSE_PRESSED);
+  EXPECT_EQ(mouse_events[0]->type(), EventType::kMousePressed);
   EXPECT_EQ(mouse_events[0]->flags(), EF_LEFT_MOUSE_BUTTON);
-  EXPECT_EQ(mouse_events[1]->type(), ET_MOUSEWHEEL);
+  EXPECT_EQ(mouse_events[1]->type(), EventType::kMousewheel);
   EXPECT_EQ(mouse_events[1]->flags(), EF_LEFT_MOUSE_BUTTON);
   EXPECT_EQ(mouse_events[1]->AsMouseWheelEvent()->x_offset(), 0);
   EXPECT_EQ(mouse_events[1]->AsMouseWheelEvent()->y_offset(), 120);
@@ -550,9 +551,9 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventWithButtonDownBundled) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 2u);
-  EXPECT_EQ(mouse_events[0]->type(), ET_MOUSE_PRESSED);
+  EXPECT_EQ(mouse_events[0]->type(), EventType::kMousePressed);
   EXPECT_EQ(mouse_events[0]->flags(), EF_LEFT_MOUSE_BUTTON);
-  EXPECT_EQ(mouse_events[1]->type(), ET_MOUSEWHEEL);
+  EXPECT_EQ(mouse_events[1]->type(), EventType::kMousewheel);
   EXPECT_EQ(mouse_events[1]->flags(), EF_LEFT_MOUSE_BUTTON);
   EXPECT_EQ(mouse_events[1]->AsMouseWheelEvent()->x_offset(), 0);
   EXPECT_EQ(mouse_events[1]->AsMouseWheelEvent()->y_offset(), 120);
@@ -566,7 +567,7 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeTouchEventTypesAreSynthesized) {
       }));
   RunLoopUntilIdle();  // Server gets watch call.
 
-  // Fuchsia ADD -> Chrome ET_TOUCH_PRESSED
+  // Fuchsia ADD -> Chrome EventType::kTouchPressed
   std::vector events = MakeVector<fup::TouchEvent>(
       TouchEventBuilder()
           .SetTime(zx::time{1111000u})
@@ -576,10 +577,10 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeTouchEventTypesAreSynthesized) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
-  EXPECT_EQ(touch_events[0].type(), ET_TOUCH_PRESSED);
+  EXPECT_EQ(touch_events[0].type(), EventType::kTouchPressed);
   touch_events.clear();
 
-  // Fuchsia CHANGE -> Chrome ET_TOUCH_MOVED
+  // Fuchsia CHANGE -> Chrome EventType::kTouchMoved
   events = MakeVector<fup::TouchEvent>(TouchEventBuilder()
                                            .SetTime(zx::time{2222000u})
                                            .SetPhase(fup::EventPhase::kChange)
@@ -588,10 +589,10 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeTouchEventTypesAreSynthesized) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
-  EXPECT_EQ(touch_events[0].type(), ET_TOUCH_MOVED);
+  EXPECT_EQ(touch_events[0].type(), EventType::kTouchMoved);
   touch_events.clear();
 
-  // Fuchsia REMOVE -> Chrome ET_TOUCH_RELEASED
+  // Fuchsia REMOVE -> Chrome EventType::kTouchReleased
   events = MakeVector<fup::TouchEvent>(TouchEventBuilder()
                                            .SetTime(zx::time{3333000u})
                                            .SetPhase(fup::EventPhase::kRemove)
@@ -600,7 +601,7 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeTouchEventTypesAreSynthesized) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
-  EXPECT_EQ(touch_events[0].type(), ET_TOUCH_RELEASED);
+  EXPECT_EQ(touch_events[0].type(), EventType::kTouchReleased);
 }
 
 TEST_F(PointerEventsHandlerTest, Phase_FuchsiaCancelBecomesChromeCancel) {
@@ -611,7 +612,7 @@ TEST_F(PointerEventsHandlerTest, Phase_FuchsiaCancelBecomesChromeCancel) {
       }));
   RunLoopUntilIdle();  // Server gets watch call.
 
-  // Fuchsia ADD -> Chrome ET_TOUCH_PRESSED
+  // Fuchsia ADD -> Chrome EventType::kTouchPressed
   std::vector events = MakeVector<fup::TouchEvent>(
       TouchEventBuilder()
           .SetTime(zx::time{1111000u})
@@ -621,7 +622,7 @@ TEST_F(PointerEventsHandlerTest, Phase_FuchsiaCancelBecomesChromeCancel) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
-  EXPECT_EQ(touch_events[0].type(), ET_TOUCH_PRESSED);
+  EXPECT_EQ(touch_events[0].type(), EventType::kTouchPressed);
   touch_events.clear();
 
   // Fuchsia CANCEL -> Chrome CANCEL
@@ -633,7 +634,7 @@ TEST_F(PointerEventsHandlerTest, Phase_FuchsiaCancelBecomesChromeCancel) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
-  EXPECT_EQ(touch_events[0].type(), ET_TOUCH_CANCELLED);
+  EXPECT_EQ(touch_events[0].type(), EventType::kTouchCancelled);
 }
 
 TEST_F(PointerEventsHandlerTest, Coordinates_CorrectMapping) {
@@ -826,8 +827,8 @@ TEST_F(PointerEventsHandlerTest, Protocol_LateGrant) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 2u);
-  EXPECT_EQ(touch_events[0].type(), ET_TOUCH_PRESSED);
-  EXPECT_EQ(touch_events[1].type(), ET_TOUCH_MOVED);
+  EXPECT_EQ(touch_events[0].type(), EventType::kTouchPressed);
+  EXPECT_EQ(touch_events[1].type(), EventType::kTouchMoved);
   touch_events.clear();
 
   // Fuchsia CHANGE, grant result - release immediately.
@@ -839,7 +840,7 @@ TEST_F(PointerEventsHandlerTest, Protocol_LateGrant) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
-  EXPECT_EQ(touch_events[0].type(), ET_TOUCH_MOVED);
+  EXPECT_EQ(touch_events[0].type(), EventType::kTouchMoved);
   EXPECT_EQ(zx::nsec(touch_events[0].time_stamp().ToZxTime()).to_usecs(),
             /* in microseconds */ 4444u);
   touch_events.clear();
@@ -887,13 +888,13 @@ TEST_F(PointerEventsHandlerTest, Protocol_LateGrantCombo) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 3u);
-  EXPECT_EQ(touch_events[0].type(), ET_TOUCH_PRESSED);
+  EXPECT_EQ(touch_events[0].type(), EventType::kTouchPressed);
   EXPECT_EQ(zx::nsec(touch_events[0].time_stamp().ToZxTime()).to_usecs(),
             /* in microseconds */ 1111u);
-  EXPECT_EQ(touch_events[1].type(), ET_TOUCH_MOVED);
+  EXPECT_EQ(touch_events[1].type(), EventType::kTouchMoved);
   EXPECT_EQ(zx::nsec(touch_events[1].time_stamp().ToZxTime()).to_usecs(),
             /* in microseconds */ 2222u);
-  EXPECT_EQ(touch_events[2].type(), ET_TOUCH_MOVED);
+  EXPECT_EQ(touch_events[2].type(), EventType::kTouchMoved);
   EXPECT_EQ(zx::nsec(touch_events[2].time_stamp().ToZxTime()).to_usecs(),
             /* in microseconds */ 3333u);
   touch_events.clear();
@@ -918,7 +919,7 @@ TEST_F(PointerEventsHandlerTest, Protocol_EarlyGrant) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
-  EXPECT_EQ(touch_events[0].type(), ET_TOUCH_PRESSED);
+  EXPECT_EQ(touch_events[0].type(), EventType::kTouchPressed);
   touch_events.clear();
 
   // Fuchsia CHANGE, after grant result - release immediately.
@@ -930,7 +931,7 @@ TEST_F(PointerEventsHandlerTest, Protocol_EarlyGrant) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
-  EXPECT_EQ(touch_events[0].type(), ET_TOUCH_MOVED);
+  EXPECT_EQ(touch_events[0].type(), EventType::kTouchMoved);
   touch_events.clear();
 }
 
@@ -1065,7 +1066,7 @@ TEST_F(PointerEventsHandlerTest, Protocol_PointersAreIndependent) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
-  EXPECT_EQ(touch_events[0].type(), ET_TOUCH_PRESSED);
+  EXPECT_EQ(touch_events[0].type(), EventType::kTouchPressed);
   EXPECT_EQ(touch_events[0].pointer_details().id, 2);
   touch_events.clear();
 
@@ -1080,7 +1081,7 @@ TEST_F(PointerEventsHandlerTest, Protocol_PointersAreIndependent) {
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
-  EXPECT_EQ(touch_events[0].type(), ET_TOUCH_PRESSED);
+  EXPECT_EQ(touch_events[0].type(), EventType::kTouchPressed);
   EXPECT_EQ(touch_events[0].pointer_details().id, 1);
   touch_events.clear();
 }

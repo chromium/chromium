@@ -46,6 +46,9 @@ class AbandonedPageLoadMetricsObserverBrowserTest
 
  protected:
   std::vector<NavigationMilestone> all_milestones() {
+    // `NavigationMilestone::kLargestContentfulPaint` isn't included in this
+    // list, because LCP is collected only at the end of the page lifecycle, the
+    // browser has to navigate to another page for testing.
     return {NavigationMilestone::kNavigationStart,
             NavigationMilestone::kLoaderStart,
             NavigationMilestone::kFirstRedirectedRequestStart,
@@ -58,7 +61,8 @@ class AbandonedPageLoadMetricsObserverBrowserTest
             NavigationMilestone::kDidCommit,
             NavigationMilestone::kParseStart,
             NavigationMilestone::kFirstContentfulPaint,
-            NavigationMilestone::kDOMContentLoaded};
+            NavigationMilestone::kDOMContentLoaded,
+            NavigationMilestone::kLoadEventStarted};
   }
   std::vector<NavigationMilestone> all_testable_milestones() {
     return {NavigationMilestone::kNavigationStart,
@@ -142,10 +146,27 @@ class AbandonedPageLoadMetricsObserverBrowserTest
     }
   }
 
+  std::unique_ptr<PageLoadMetricsTestWaiter>
+  CreatePageLoadMetricsTestWaiterForLoading() {
+    auto waiter = CreatePageLoadMetricsTestWaiter();
+    waiter->AddPageExpectation(
+        PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
+    waiter->AddPageExpectation(
+        PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+    waiter->AddPageExpectation(
+        PageLoadMetricsTestWaiter::TimingField::kLargestContentfulPaint);
+    return waiter;
+  }
+
   std::unique_ptr<PageLoadMetricsTestWaiter> CreatePageLoadMetricsTestWaiter() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     return std::make_unique<PageLoadMetricsTestWaiter>(web_contents);
+  }
+
+  void NavigateToUntrackedUrl() {
+    ASSERT_TRUE(
+        content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
   }
 };
 
@@ -159,9 +180,7 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   ExpectEmptyNavigationAbandonment();
 
   // Navigate to `url_a`.
-  auto waiter = CreatePageLoadMetricsTestWaiter();
-  waiter->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+  auto waiter = CreatePageLoadMetricsTestWaiterForLoading();
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
   waiter->Wait();
 
@@ -176,6 +195,13 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   // There should be no new entry for the navigation abandonment metrics.
   ExpectEmptyNavigationAbandonment();
   EXPECT_TRUE(ukm_recorder.GetEntriesByName("AbandonedNavigation").empty());
+
+  // LCP is collected only at the end of the page lifecycle. Navigate to
+  // flush.
+  NavigateToUntrackedUrl();
+  histogram_tester().ExpectTotalCount(
+      GetMilestoneHistogramName(NavigationMilestone::kLargestContentfulPaint),
+      1);
 }
 
 // Test that a successful history navigation will log all the navigation
@@ -187,9 +213,7 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.test", "/title1.html"));
   // 1) Navigate to A.
-  auto waiter1 = CreatePageLoadMetricsTestWaiter();
-  waiter1->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
+  auto waiter1 = CreatePageLoadMetricsTestWaiterForLoading();
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
   waiter1->Wait();
   content::RenderFrameHostWrapper rfh_a(web_contents()->GetPrimaryMainFrame());
@@ -198,9 +222,7 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 1);
 
   // 2) Navigate to B.
-  auto waiter2 = CreatePageLoadMetricsTestWaiter();
-  waiter2->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
+  auto waiter2 = CreatePageLoadMetricsTestWaiterForLoading();
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_b));
   waiter2->Wait();
   content::RenderFrameHostWrapper rfh_b(web_contents()->GetPrimaryMainFrame());
@@ -214,18 +236,14 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 3) Go back to A without restoring from BFCache.
-  auto waiter3 = CreatePageLoadMetricsTestWaiter();
-  waiter3->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
+  auto waiter3 = CreatePageLoadMetricsTestWaiterForLoading();
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   waiter3->Wait();
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 3);
 
   // 4) Navigate forward to B, potentially restoring from BFCache.
-  auto waiter4 = CreatePageLoadMetricsTestWaiter();
-  waiter4->AddPageExpectation(
-      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
+  auto waiter4 = CreatePageLoadMetricsTestWaiterForLoading();
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     rfh_b->IsInLifecycleState(
         content::RenderFrameHost::LifecycleState::kInBackForwardCache);

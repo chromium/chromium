@@ -36,8 +36,8 @@ void XUserInputMonitor::OnEvent(const x11::Event& event) {
   }
 
   EventType type = raw->opcode == x11::Input::RawDeviceEvent::RawKeyPress
-                       ? ET_KEY_PRESSED
-                       : ET_KEY_RELEASED;
+                       ? EventType::kKeyPressed
+                       : EventType::kKeyReleased;
 
   auto key_sym =
       connection_->KeycodeToKeysym(static_cast<x11::KeyCode>(raw->detail), 0);

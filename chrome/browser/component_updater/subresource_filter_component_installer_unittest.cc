@@ -25,6 +25,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/subresource_filter/content/browser/safe_browsing_ruleset_publisher.h"
+#include "components/subresource_filter/content/shared/browser/ruleset_publisher.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
@@ -49,7 +51,8 @@ class TestRulesetService : public subresource_filter::RulesetService {
             local_state,
             task_runner,
             base_dir,
-            blocking_task_runner) {}
+            blocking_task_runner,
+            subresource_filter::SafeBrowsingRulesetPublisher::Factory()) {}
 
   TestRulesetService(const TestRulesetService&) = delete;
   TestRulesetService& operator=(const TestRulesetService&) = delete;

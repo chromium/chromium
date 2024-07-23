@@ -342,7 +342,7 @@ void ZoomBubbleView::OnBlur() {
 
 void ZoomBubbleView::OnGestureEvent(ui::GestureEvent* event) {
   if (!zoom_bubble_ || !zoom_bubble_->auto_close_ ||
-      event->type() != ui::ET_GESTURE_TAP) {
+      event->type() != ui::EventType::kGestureTap) {
     return;
   }
 

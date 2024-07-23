@@ -88,6 +88,11 @@ class ConnectorsService : public KeyedService {
   // is no token to use.
   std::optional<std::string> GetDMTokenForRealTimeUrlCheck() const;
 
+  std::optional<std::string> GetBrowserDmToken() const;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  std::optional<std::string> GetProfileDmToken() const;
+#endif
+
   // Returns the value to used by the enterprise real-time URL check Connector
   // if it is set and if the scope it's set at has a valid browser-profile
   // affiliation.
@@ -116,7 +121,6 @@ class ConnectorsService : public KeyedService {
                            ChromeOsManagedGuestSessionFlagSetInMgs);
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceReportingFeatureTest,
                            ChromeOsManagedGuestSessionFlagNotSetInUserSession);
-
   struct DmToken {
     DmToken(const std::string& value, policy::PolicyScope scope);
     DmToken(DmToken&&);
@@ -131,18 +135,13 @@ class ConnectorsService : public KeyedService {
     policy::PolicyScope scope;
   };
 
-  std::optional<AnalysisSettings> GetCommonAnalysisSettings(
-      std::optional<AnalysisSettings> settings,
-      AnalysisConnector connector);
-
   // Returns the DM token to use with the given |scope_pref|. That pref should
   // contain either POLICY_SCOPE_MACHINE or POLICY_SCOPE_USER.
   std::optional<DmToken> GetDmToken(const char* scope_pref) const;
-  std::optional<DmToken> GetBrowserDmToken() const;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  std::optional<DmToken> GetProfileDmToken() const;
 
-#endif
+  std::optional<AnalysisSettings> GetCommonAnalysisSettings(
+      std::optional<AnalysisSettings> settings,
+      AnalysisConnector connector);
 
   // Returns the policy::PolicyScope stored in the given |scope_pref|.
   policy::PolicyScope GetPolicyScope(const char* scope_pref) const;

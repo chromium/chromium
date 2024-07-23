@@ -1439,6 +1439,10 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
       << "RenderProcessHostImpl is destroyed by something other than itself";
 #endif
 
+  // No RenderFrameHost should be associated with a deleted RenderProcessHost.
+  // Check here to avoid future use-after-free.
+  CHECK(render_frame_host_id_set_.empty());
+
   // Make sure to clean up the in-process renderer before the channel, otherwise
   // it may still run and have its IPCs fail, causing asserts.
   in_process_renderer_.reset();

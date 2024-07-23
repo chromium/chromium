@@ -186,8 +186,8 @@ TEST_F(SelectToSpeakTrayTest, SelectToSpeakStateImpactsTooltipText) {
 TEST_F(SelectToSpeakTrayTest, OverriddenFunctionsDoNothing) {
   GetTray()->HideBubbleWithView(nullptr);
 
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), 0, 0);
+  const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
   GetTray()->ClickedOutsideBubble(event);
 }
 

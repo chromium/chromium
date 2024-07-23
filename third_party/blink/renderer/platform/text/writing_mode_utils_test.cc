@@ -258,25 +258,6 @@ TEST(WritingModeUtilsTest, LogicalToPhysicalGetter) {
   EXPECT_EQ(kInlineStart, getter.Bottom());
 }
 
-TEST(WritingModeUtilsTest, IsFlippedXY) {
-  struct TestData {
-    WritingDirectionMode writing_direction;
-    bool is_flipped_x;
-    bool is_flipped_y;
-  } test_data_list[] = {
-      {{WritingMode::kHorizontalTb, TextDirection::kLtr}, false, false},
-      {{WritingMode::kHorizontalTb, TextDirection::kRtl}, true, false},
-      {{WritingMode::kVerticalRl, TextDirection::kLtr}, true, false},
-      {{WritingMode::kVerticalRl, TextDirection::kRtl}, true, true},
-      {{WritingMode::kVerticalLr, TextDirection::kLtr}, false, false},
-      {{WritingMode::kVerticalLr, TextDirection::kRtl}, false, true},
-  };
-  for (const TestData& data : test_data_list) {
-    EXPECT_EQ(data.writing_direction.IsFlippedX(), data.is_flipped_x);
-    EXPECT_EQ(data.writing_direction.IsFlippedY(), data.is_flipped_y);
-  }
-}
-
 }  // namespace
 
 }  // namespace blink

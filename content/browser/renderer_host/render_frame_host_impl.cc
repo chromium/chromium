@@ -226,7 +226,6 @@
 #include "render_frame_host_impl.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -5238,6 +5237,7 @@ void RenderFrameHostImpl::OnBackForwardCacheDisablingStickyFeatureUsed(
 void RenderFrameHostImpl::OnBackForwardCacheDisablingFeatureRemoved(
     BackForwardCacheDisablingFeature feature) {
   auto it = browser_reported_bfcache_disabling_features_counts_.find(feature);
+  CHECK(it != browser_reported_bfcache_disabling_features_counts_.end());
   DCHECK(it->second >= 1);
   if (it->second == 1) {
     browser_reported_bfcache_disabling_features_counts_.erase(it);
@@ -9067,12 +9067,6 @@ void RenderFrameHostImpl::SendPrivateAggregationRequestsForFencedFrameEvent(
       ->SendPrivateAggregationRequestsForEvent(event_type);
 }
 
-void RenderFrameHostImpl::SetAttributionReportingRuntimeFeatures(
-    network::AttributionReportingRuntimeFeatures features) {
-  FencedDocumentData::GetOrCreateForCurrentDocument(this)->SetFeatures(
-      features);
-}
-
 std::vector<FencedFrame*> RenderFrameHostImpl::GetFencedFrames() const {
   std::vector<FencedFrame*> result;
   for (const std::unique_ptr<FencedFrame>& fenced_frame : fenced_frames_)
@@ -9527,9 +9521,6 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
   blink::mojom::ConsoleMessageLevel console_message_level =
       blink::mojom::ConsoleMessageLevel::kError;
 
-  FencedDocumentData* fenced_frame_data =
-      FencedDocumentData::GetForCurrentDocument(this);
-
   auto properties = frame_tree_node()->GetFencedFrameProperties(
       FencedFramePropertiesNodeSource::kFrameTreeRoot);
   if (properties.has_value() &&
@@ -9538,18 +9529,6 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
         "Cannot send fenced frame event-level reports after "
         "calling window.fence.disableUntrustedNetwork().";
     AddMessageToConsole(console_message_level, error_message);
-    return;
-  }
-
-  // The FencedDocumentData is created on the initiative of the renderer when
-  // creating the document. It is expected to be received before receiving an
-  // IPC about the document initiating a new navigation, and before any
-  // window.fence.reportEvent call. They are using the same interface:
-  // LocalFrameHost, so they are expected to be received in order. The only
-  // other possibility is a compromised renderer:
-  if (!fenced_frame_data) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(), bad_message::RFH_FENCED_DOCUMENT_DATA_NOT_FOUND);
     return;
   }
 
@@ -9570,8 +9549,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
   if (!frame_tree_node_->GetFencedFrameProperties()
            ->fenced_frame_reporter()
            ->SendReport(event_variant, destination,
-                        /*request_initiator_frame=*/this,
-                        fenced_frame_data->features(), error_message,
+                        /*request_initiator_frame=*/this, error_message,
                         console_message_level, GetFrameTreeNodeId(),
                         navigation_id, ad_root_origin)) {
     AddMessageToConsole(console_message_level, error_message);

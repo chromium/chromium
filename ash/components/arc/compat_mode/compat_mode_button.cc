@@ -18,8 +18,9 @@ bool CompatModeButton::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void CompatModeButton::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_TAP_DOWN)
+  if (event->type() == ui::EventType::kGestureTapDown) {
     controller_->OnButtonPressed();
+  }
   chromeos::FrameCenterButton::OnGestureEvent(event);
 }
 

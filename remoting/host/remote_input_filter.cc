@@ -44,7 +44,7 @@ bool RemoteInputFilter::LocalPointerMoved(const webrtc::DesktopVector& pos,
   //
   // Note that no platforms both inject and monitor for touch events, so echo
   // suppression is only applied to mouse input.
-  if (expect_local_echo_ && type == ui::ET_MOUSE_MOVED) {
+  if (expect_local_echo_ && type == ui::EventType::kMouseMoved) {
     auto found_position = injected_mouse_positions_.begin();
     while (found_position != injected_mouse_positions_.end() &&
            !pos.equals(*found_position)) {

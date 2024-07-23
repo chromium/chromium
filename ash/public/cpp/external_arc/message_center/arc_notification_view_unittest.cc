@@ -135,19 +135,21 @@ class ArcNotificationViewTest : public AshTestBase {
 
   void PerformClick(const gfx::Point& point) {
     ui::MouseEvent pressed_event = ui::MouseEvent(
-        ui::ET_MOUSE_PRESSED, point, point, ui::EventTimeForNow(),
+        ui::EventType::kMousePressed, point, point, ui::EventTimeForNow(),
         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
     widget()->OnMouseEvent(&pressed_event);
     ui::MouseEvent released_event = ui::MouseEvent(
-        ui::ET_MOUSE_RELEASED, point, point, ui::EventTimeForNow(),
+        ui::EventType::kMouseReleased, point, point, ui::EventTimeForNow(),
         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
     widget()->OnMouseEvent(&released_event);
   }
 
   void PerformKeyEvents(ui::KeyboardCode code) {
-    ui::KeyEvent event1 = ui::KeyEvent(ui::ET_KEY_PRESSED, code, ui::EF_NONE);
+    ui::KeyEvent event1 =
+        ui::KeyEvent(ui::EventType::kKeyPressed, code, ui::EF_NONE);
     widget()->OnKeyEvent(&event1);
-    ui::KeyEvent event2 = ui::KeyEvent(ui::ET_KEY_RELEASED, code, ui::EF_NONE);
+    ui::KeyEvent event2 =
+        ui::KeyEvent(ui::EventType::kKeyReleased, code, ui::EF_NONE);
     widget()->OnKeyEvent(&event2);
   }
 
@@ -180,16 +182,17 @@ class ArcNotificationViewTest : public AshTestBase {
   }
 
   void BeginScroll() {
-    DispatchGesture(ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN));
+    DispatchGesture(
+        ui::GestureEventDetails(ui::EventType::kGestureScrollBegin));
   }
 
   void EndScroll() {
-    DispatchGesture(ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
+    DispatchGesture(ui::GestureEventDetails(ui::EventType::kGestureScrollEnd));
   }
 
   void ScrollBy(int dx) {
     DispatchGesture(
-        ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, dx, 0));
+        ui::GestureEventDetails(ui::EventType::kGestureScrollUpdate, dx, 0));
   }
 
   ArcNotificationContentView* content_view() {
@@ -238,7 +241,7 @@ TEST_F(ArcNotificationViewTest, Events) {
             widget()->GetRootView()->GetEventHandlerForPoint(cursor_location));
 
   content_view()->RequestFocus();
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
   EXPECT_EQ(content_view(),
             static_cast<ui::EventTargeter*>(
                 widget()->GetRootView()->GetEffectiveViewTargeter())

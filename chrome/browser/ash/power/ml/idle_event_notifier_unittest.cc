@@ -201,7 +201,7 @@ TEST_F(IdleEventNotifierTest, LongSuspendDone) {
 
 TEST_F(IdleEventNotifierTest, UserActivityKey) {
   const base::Time now = base::Time::Now();
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
   idle_event_notifier_->OnUserActivity(&key_event);
   IdleEventNotifier::ActivityData data;
   data.last_activity_day = GetDayOfWeek(now);
@@ -217,7 +217,7 @@ TEST_F(IdleEventNotifierTest, UserActivityKey) {
 
 TEST_F(IdleEventNotifierTest, UserActivityMouse) {
   const base::Time now = base::Time::Now();
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(0, 0),
+  ui::MouseEvent mouse_event(ui::EventType::kMouseExited, gfx::Point(0, 0),
                              gfx::Point(0, 0), base::TimeTicks(), 0, 0);
 
   idle_event_notifier_->OnUserActivity(&mouse_event);
@@ -235,8 +235,9 @@ TEST_F(IdleEventNotifierTest, UserActivityMouse) {
 
 TEST_F(IdleEventNotifierTest, UserActivityOther) {
   const base::Time now = base::Time::Now();
-  ui::GestureEvent gesture_event(0, 0, 0, base::TimeTicks(),
-                                 ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+  ui::GestureEvent gesture_event(
+      0, 0, 0, base::TimeTicks(),
+      ui::GestureEventDetails(ui::EventType::kGestureTap));
 
   idle_event_notifier_->OnUserActivity(&gesture_event);
   IdleEventNotifier::ActivityData data;
@@ -253,13 +254,13 @@ TEST_F(IdleEventNotifierTest, UserActivityOther) {
 // different timestamps for the two activities.
 TEST_F(IdleEventNotifierTest, TwoQuickUserActivities) {
   const base::Time now_1 = base::Time::Now();
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(0, 0),
+  ui::MouseEvent mouse_event(ui::EventType::kMouseExited, gfx::Point(0, 0),
                              gfx::Point(0, 0), base::TimeTicks(), 0, 0);
   idle_event_notifier_->OnUserActivity(&mouse_event);
 
   scoped_task_env_.FastForwardBy(base::Seconds(2));
   const base::Time now_2 = base::Time::Now();
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
   idle_event_notifier_->OnUserActivity(&key_event);
 
   IdleEventNotifier::ActivityData data;
@@ -277,7 +278,7 @@ TEST_F(IdleEventNotifierTest, TwoQuickUserActivities) {
 }
 
 TEST_F(IdleEventNotifierTest, ActivityAfterVideoStarts) {
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(0, 0),
+  ui::MouseEvent mouse_event(ui::EventType::kMouseExited, gfx::Point(0, 0),
                              gfx::Point(0, 0), base::TimeTicks(), 0, 0);
   const base::Time now_1 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityStarted();
@@ -305,12 +306,12 @@ TEST_F(IdleEventNotifierTest, ActivityAfterVideoStarts) {
 
 TEST_F(IdleEventNotifierTest, IdleEventFieldReset) {
   const base::Time now_1 = base::Time::Now();
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
   idle_event_notifier_->OnUserActivity(&key_event);
 
   scoped_task_env_.FastForwardBy(base::Seconds(10));
   const base::Time now_2 = base::Time::Now();
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(0, 0),
+  ui::MouseEvent mouse_event(ui::EventType::kMouseExited, gfx::Point(0, 0),
                              gfx::Point(0, 0), base::TimeTicks(), 0, 0);
   idle_event_notifier_->OnUserActivity(&mouse_event);
 
@@ -362,7 +363,7 @@ TEST_F(IdleEventNotifierTest, TwoConsecutiveVideoPlaying) {
 
   scoped_task_env_.FastForwardBy(base::Seconds(10));
   const base::Time now_3 = base::Time::Now();
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(0, 0),
+  ui::MouseEvent mouse_event(ui::EventType::kMouseExited, gfx::Point(0, 0),
                              gfx::Point(0, 0), base::TimeTicks(), 0, 0);
   idle_event_notifier_->OnUserActivity(&mouse_event);
 
@@ -387,7 +388,7 @@ TEST_F(IdleEventNotifierTest, TwoVideoPlayingFarApartOneIdleEvent) {
   scoped_task_env_.FastForwardBy(base::Seconds(2));
   idle_event_notifier_->OnVideoActivityEnded();
 
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(0, 0),
+  ui::MouseEvent mouse_event(ui::EventType::kMouseExited, gfx::Point(0, 0),
                              gfx::Point(0, 0), base::TimeTicks(), 0, 0);
 
   scoped_task_env_.FastForwardBy(base::Seconds(20));
@@ -528,11 +529,12 @@ TEST_F(IdleEventNotifierTest, VideoPlayingPausedByLongSuspend) {
 }
 
 TEST_F(IdleEventNotifierTest, UserInputEventsOneIdleEvent) {
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(0, 0),
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
+  ui::MouseEvent mouse_event(ui::EventType::kMouseExited, gfx::Point(0, 0),
                              gfx::Point(0, 0), base::TimeTicks(), 0, 0);
   ui::TouchEvent touch_event(
-      ui::ET_TOUCH_PRESSED, gfx::Point(0, 0), base::TimeTicks::UnixEpoch(),
+      ui::EventType::kTouchPressed, gfx::Point(0, 0),
+      base::TimeTicks::UnixEpoch(),
       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
 
   const base::Time first_activity_time = base::Time::Now();
@@ -590,11 +592,12 @@ TEST_F(IdleEventNotifierTest, UserInputEventsOneIdleEvent) {
 }
 
 TEST_F(IdleEventNotifierTest, UserInputEventsTwoIdleEvents) {
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(0, 0),
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
+  ui::MouseEvent mouse_event(ui::EventType::kMouseExited, gfx::Point(0, 0),
                              gfx::Point(0, 0), base::TimeTicks(), 0, 0);
   ui::TouchEvent touch_event(
-      ui::ET_TOUCH_PRESSED, gfx::Point(0, 0), base::TimeTicks::UnixEpoch(),
+      ui::EventType::kTouchPressed, gfx::Point(0, 0),
+      base::TimeTicks::UnixEpoch(),
       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
 
   const base::Time now_1 = base::Time::Now();

@@ -22,7 +22,9 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
+import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.TextView;
 
@@ -37,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.blink.mojom.RpContext;
@@ -476,6 +479,115 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                 });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testAccountChooserToVerifyingDialogHeaderReused() {
+        doCallback(
+                        /* index= */ 1,
+                        (Callback<Bitmap> callback) -> {
+                            callback.onResult(Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888));
+                        })
+                .when(mMockImageFetcher)
+                .fetchImage(any(), any());
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(RETURNING_ANA),
+                            IDP_METADATA_WITH_ADD_ACCOUNT,
+                            mClientIdMetadata,
+                            /* isAutoReauthn= */ false,
+                            RpContext.SIGN_IN,
+                            /* requestPermission= */ true);
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+
+        // Dialog is initially an account chooser.
+        assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.SIGN_IN);
+        String expectedTitle =
+                ((TextView) contentView.findViewById(R.id.header_title)).getText().toString();
+        String expectedSubtitle =
+                ((TextView) contentView.findViewById(R.id.header_subtitle)).getText().toString();
+        onView(withId(R.id.header_idp_icon)).check(matches(isDisplayed()));
+        onView(withId(R.id.header_rp_icon)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.arrow_range_icon)).check(matches(not(isDisplayed())));
+
+        // Clicking an account should show the verifying dialog.
+        clickFirstAccountInAccountsList();
+        assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.VERIFY);
+        assertEquals(
+                expectedTitle,
+                ((TextView) contentView.findViewById(R.id.header_title)).getText().toString());
+        assertEquals(
+                expectedSubtitle,
+                ((TextView) contentView.findViewById(R.id.header_subtitle)).getText().toString());
+        onView(withId(R.id.header_idp_icon)).check(matches(isDisplayed()));
+        onView(withId(R.id.header_rp_icon)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.arrow_range_icon)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    public void testRequestPermissionDialogToVerifyingDialogHeaderReused() {
+        doCallback(
+                        /* index= */ 1,
+                        (Callback<Bitmap> callback) -> {
+                            callback.onResult(Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888));
+                        })
+                .when(mMockImageFetcher)
+                .fetchImage(any(), any());
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(NEW_BOB),
+                            IDP_METADATA_WITH_ADD_ACCOUNT,
+                            mClientIdMetadata,
+                            /* isAutoReauthn= */ false,
+                            RpContext.SIGN_IN,
+                            /* requestPermission= */ true);
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+
+        // Dialog is initially an account chooser.
+        assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.SIGN_IN);
+
+        // Clicking an account should show the request permission dialog.
+        clickFirstAccountInAccountsList();
+        assertEquals(
+                mAccountSelection.getMediator().getHeaderType(), HeaderType.REQUEST_PERMISSION);
+        String expectedTitle =
+                ((TextView) contentView.findViewById(R.id.header_title)).getText().toString();
+        String expectedSubtitle =
+                ((TextView) contentView.findViewById(R.id.header_subtitle)).getText().toString();
+        onView(withId(R.id.header_idp_icon)).check(matches(isDisplayed()));
+        onView(withId(R.id.header_rp_icon)).check(matches(isDisplayed()));
+        onView(withId(R.id.arrow_range_icon)).check(matches(isDisplayed()));
+
+        // Clicking continue should show the verifying dialog.
+        clickContinueButton();
+        assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.VERIFY);
+        assertEquals(
+                expectedTitle,
+                ((TextView) contentView.findViewById(R.id.header_title)).getText().toString());
+        assertEquals(
+                expectedSubtitle,
+                ((TextView) contentView.findViewById(R.id.header_subtitle)).getText().toString());
+        onView(withId(R.id.header_idp_icon)).check(matches(isDisplayed()));
+        onView(withId(R.id.header_rp_icon)).check(matches(isDisplayed()));
+        onView(withId(R.id.arrow_range_icon)).check(matches(isDisplayed()));
     }
 
     private void clickFirstAccountInAccountsList() {

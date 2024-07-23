@@ -63,7 +63,9 @@ static constexpr auto kAutofillHeuristicsVsHtmlOverrides =
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLine3},
          {ADDRESS_HOME_OVERFLOW_AND_LANDMARK, HtmlFieldType::kAddressLine2},
          {ADDRESS_HOME_OVERFLOW, HtmlFieldType::kAddressLine2},
-         {ADDRESS_HOME_OVERFLOW, HtmlFieldType::kAddressLine3}});
+         {ADDRESS_HOME_OVERFLOW, HtmlFieldType::kAddressLine3},
+         {ADDRESS_HOME_HOUSE_NUMBER, HtmlFieldType::kStreetAddress},
+         {ADDRESS_HOME_STREET_NAME, HtmlFieldType::kStreetAddress}});
 
 // This list includes pairs (heuristic_type, server_type) that express which
 // heuristics predictions should be prioritized over server predictions. The

@@ -64,7 +64,8 @@ proto::Role COMPONENT_EXPORT(MANTA) GetRole(Role role);
 
 void COMPONENT_EXPORT(MANTA)
     AddSettingProto(const SettingsData& setting,
-                    ::manta::proto::Setting* setting_proto);
+                    ::manta::proto::Setting* setting_proto,
+                    proto::SettingType setting_type);
 
 void COMPONENT_EXPORT(MANTA)
     AddSettingsProto(const SparkyDelegate::SettingsDataList& settings_list,

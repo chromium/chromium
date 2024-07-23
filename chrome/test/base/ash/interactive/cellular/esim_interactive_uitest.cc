@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest,
             if (!has_clicked_add_esim_entry) {
               views::test::ButtonTestApi(
                   views::Button::AsButton(const_cast<views::View*>(view)))
-                  .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED,
+                  .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed,
                                               gfx::PointF(), gfx::PointF(),
                                               base::TimeTicks(), 0, 0));
             }

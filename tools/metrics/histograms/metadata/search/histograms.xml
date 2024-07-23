@@ -1134,6 +1134,60 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.SearchEngineCountryDelegate.Connection{Result}Time"
+    units="ms" expires_after="2024-12-31">
+  <owner>triploblastic@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
+  <summary>
+    Time taken to connect to the country code providing Play Service. Only
+    includes {Result} connection attempts.
+
+    Recorded every time Chrome tries to obtain the country code for the search
+    choice screen, which happens on every startup.
+
+    Android only.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="failed"/>
+    <variant name="Success" summary="successful"/>
+  </token>
+</histogram>
+
+<histogram name="Search.SearchEngineCountryDelegate.Fetch{Result}Time"
+    units="ms" expires_after="2024-12-31">
+  <owner>triploblastic@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
+  <summary>
+    Time taken to fetch the country code from the country code providing Play
+    Service. Only includes {Result} fetch attempts.
+
+    Recorded every time Chrome tries to obtain the country code for the search
+    choice screen after successfully connecting to the Play Service, which
+    happens on every startup.
+
+    Android only.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="failed"/>
+    <variant name="Success" summary="successful"/>
+  </token>
+</histogram>
+
+<histogram name="Search.SearchEngineCountryDelegate.ServiceBindStatus"
+    enum="BooleanStartedCompleted" expires_after="2024-12-31">
+  <owner>triploblastic@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
+  <summary>
+    Boolean status marking the beginning of connection request to country code
+    provider service from Play and also the completion of the request.
+
+    Recorded every time Chrome tries to obtain the country code for the search
+    choice screen, which happens on every startup.
+
+    Android only.
+  </summary>
+</histogram>
+
 <histogram name="Search.SearchEngineDuplicateCounts" units="keyword duplicates"
     expires_after="2024-12-08">
   <owner>dgn@chromium.org</owner>

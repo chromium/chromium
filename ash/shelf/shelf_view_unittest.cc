@@ -572,7 +572,7 @@ class ShelfViewTest : public AshTestBase {
   // Simulate a mouse press event on the shelf's view at |view_index|.
   views::View* SimulateViewPressed(ShelfView::Pointer pointer, int view_index) {
     views::View* view = test_api_->GetViewAt(view_index);
-    ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, gfx::Point(),
+    ui::MouseEvent pressed_event(ui::EventType::kMousePressed, gfx::Point(),
                                  view->GetBoundsInScreen().origin(),
                                  ui::EventTimeForNow(), 0, 0);
     shelf_view_->PointerPressedOnButton(view, pointer, pressed_event);
@@ -592,7 +592,7 @@ class ShelfViewTest : public AshTestBase {
   void SimulateClick(int button_index) {
     ShelfAppButton* button =
         SimulateButtonPressed(ShelfView::MOUSE, button_index);
-    ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
+    ui::MouseEvent release_event(ui::EventType::kMouseReleased, gfx::Point(),
                                  button->GetBoundsInScreen().origin(),
                                  ui::EventTimeForNow(), 0, 0);
     button->NotifyClick(release_event);
@@ -603,7 +603,7 @@ class ShelfViewTest : public AshTestBase {
   void SimulateDoubleClick(int button_index) {
     ShelfAppButton* button =
         SimulateButtonPressed(ShelfView::MOUSE, button_index);
-    ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
+    ui::MouseEvent release_event(ui::EventType::kMouseReleased, gfx::Point(),
                                  button->GetBoundsInScreen().origin(),
                                  ui::EventTimeForNow(), ui::EF_IS_DOUBLE_CLICK,
                                  0);
@@ -616,9 +616,9 @@ class ShelfViewTest : public AshTestBase {
               views::View* button,
               ShelfView::Pointer pointer,
               views::View* to) {
-    ui::MouseEvent drag_event(ui::ET_MOUSE_DRAGGED, gfx::Point(dist_x, dist_y),
-                              to->GetBoundsInScreen().origin(),
-                              ui::EventTimeForNow(), 0, 0);
+    ui::MouseEvent drag_event(
+        ui::EventType::kMouseDragged, gfx::Point(dist_x, dist_y),
+        to->GetBoundsInScreen().origin(), ui::EventTimeForNow(), 0, 0);
     shelf_view_->PointerDraggedOnButton(button, pointer, drag_event);
   }
 
@@ -1158,26 +1158,26 @@ TEST_P(LtrRtlShelfViewTest, ClickAndMoveSlightly) {
   gfx::Point press_location_in_screen =
       button->GetBoundsInScreen().origin() + press_offset;
 
-  ui::MouseEvent click_event(ui::ET_MOUSE_PRESSED, press_location,
+  ui::MouseEvent click_event(ui::EventType::kMousePressed, press_location,
                              press_location_in_screen, ui::EventTimeForNow(),
                              ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMousePressed(click_event);
   EXPECT_EQ(0u, selection_tracker->item_selected_count());
 
   ui::MouseEvent drag_event1(
-      ui::ET_MOUSE_DRAGGED, press_location + gfx::Vector2d(0, 1),
+      ui::EventType::kMouseDragged, press_location + gfx::Vector2d(0, 1),
       press_location_in_screen + gfx::Vector2d(0, 1), ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMouseDragged(drag_event1);
   ui::MouseEvent drag_event2(
-      ui::ET_MOUSE_DRAGGED, press_location + gfx::Vector2d(-1, 0),
+      ui::EventType::kMouseDragged, press_location + gfx::Vector2d(-1, 0),
       press_location_in_screen + gfx::Vector2d(-1, 0), ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMouseDragged(drag_event2);
   EXPECT_EQ(0u, selection_tracker->item_selected_count());
 
   ui::MouseEvent release_event(
-      ui::ET_MOUSE_RELEASED, press_location + gfx::Vector2d(-1, 0),
+      ui::EventType::kMouseReleased, press_location + gfx::Vector2d(-1, 0),
       press_location_in_screen + gfx::Vector2d(-1, 0), ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMouseReleased(release_event);
@@ -1916,7 +1916,7 @@ TEST_P(LtrRtlShelfViewTest, InProgressItemDragPreventsContextMenuShow) {
   generator->PressTouch();
 
   // Generate long press, which should start context menu request.
-  ui::GestureEventDetails event_details(ui::ET_GESTURE_LONG_PRESS);
+  ui::GestureEventDetails event_details(ui::EventType::kGestureLongPress);
   ui::GestureEvent long_press(location.x(), location.y(), 0,
                               ui::EventTimeForNow(), event_details);
   generator->Dispatch(&long_press);
@@ -1957,7 +1957,8 @@ TEST_P(LtrRtlShelfViewTest, InProgressItemDragPreventsContextMenuShow) {
   // Another long press starts context menu request.
   generator->set_current_screen_location(location);
   generator->PressTouch();
-  ui::GestureEventDetails second_press_event_details(ui::ET_GESTURE_LONG_PRESS);
+  ui::GestureEventDetails second_press_event_details(
+      ui::EventType::kGestureLongPress);
   ui::GestureEvent second_long_press(location.x(), location.y(), 0,
                                      ui::EventTimeForNow(),
                                      second_press_event_details);
@@ -1983,7 +1984,7 @@ TEST_P(LtrRtlShelfViewTest, CompletedItemDragPreventsContextMenuShow) {
   generator->PressTouch();
 
   // Generate long press, which should start context menu request.
-  ui::GestureEventDetails event_details(ui::ET_GESTURE_LONG_PRESS);
+  ui::GestureEventDetails event_details(ui::EventType::kGestureLongPress);
   ui::GestureEvent long_press(location.x(), location.y(), 0,
                               ui::EventTimeForNow(), event_details);
   generator->Dispatch(&long_press);
@@ -2028,7 +2029,8 @@ TEST_P(LtrRtlShelfViewTest, CompletedItemDragPreventsContextMenuShow) {
   // Another long press starts context menu request.
   generator->set_current_screen_location(location);
   generator->PressTouch();
-  ui::GestureEventDetails second_press_event_details(ui::ET_GESTURE_LONG_PRESS);
+  ui::GestureEventDetails second_press_event_details(
+      ui::EventType::kGestureLongPress);
   ui::GestureEvent second_long_press(location.x(), location.y(), 0,
                                      ui::EventTimeForNow(),
                                      second_press_event_details);
@@ -2064,7 +2066,7 @@ TEST_P(LtrRtlShelfViewTest, DragAppAfterContextMenuIsShownInAlwaysShownShelf) {
   button->FireRippleActivationTimerForTest();
 
   // Generate long press, which should start context menu request.
-  ui::GestureEventDetails event_details(ui::ET_GESTURE_LONG_PRESS);
+  ui::GestureEventDetails event_details(ui::EventType::kGestureLongPress);
   ui::GestureEvent long_press(start.x(), start.y(), 0, ui::EventTimeForNow(),
                               event_details);
   generator->Dispatch(&long_press);
@@ -2138,7 +2140,7 @@ TEST_P(LtrRtlShelfViewTest, DragAppAfterContextMenuIsShownInAutoHideShelf) {
   button->FireRippleActivationTimerForTest();
 
   // Generate long press, which should start context menu request.
-  ui::GestureEventDetails event_details(ui::ET_GESTURE_LONG_PRESS);
+  ui::GestureEventDetails event_details(ui::EventType::kGestureLongPress);
   ui::GestureEvent long_press(start.x(), start.y(), 0, ui::EventTimeForNow(),
                               event_details);
   generator->Dispatch(&long_press);
@@ -2199,7 +2201,7 @@ TEST_P(LtrRtlShelfViewTest,
   button->FireRippleActivationTimerForTest();
 
   // Generate long press, which should start context menu request.
-  ui::GestureEventDetails event_details(ui::ET_GESTURE_LONG_PRESS);
+  ui::GestureEventDetails event_details(ui::EventType::kGestureLongPress);
   ui::GestureEvent long_press(location.x(), location.y(), 0,
                               ui::EventTimeForNow(), event_details);
   generator->Dispatch(&long_press);
@@ -2271,7 +2273,7 @@ TEST_P(LtrRtlShelfViewTest,
   button->FireRippleActivationTimerForTest();
 
   // Generate long press, which should start context menu request.
-  ui::GestureEventDetails event_details(ui::ET_GESTURE_LONG_PRESS);
+  ui::GestureEventDetails event_details(ui::EventType::kGestureLongPress);
   ui::GestureEvent long_press(location.x(), location.y(), 0,
                               ui::EventTimeForNow(), event_details);
   generator->Dispatch(&long_press);
@@ -3203,7 +3205,7 @@ TEST_F(ShelfViewInkDropTest, ShelfButtonWithoutMenuPressRelease) {
   views::Button* button = browser_button_;
   gfx::Point mouse_location = button->GetLocalBounds().CenterPoint();
 
-  ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, mouse_location,
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, mouse_location,
                              mouse_location, ui::EventTimeForNow(),
                              ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMousePressed(press_event);
@@ -3212,7 +3214,7 @@ TEST_F(ShelfViewInkDropTest, ShelfButtonWithoutMenuPressRelease) {
   EXPECT_THAT(browser_button_ink_drop_->GetAndResetRequestedStates(),
               ElementsAre(views::InkDropState::ACTION_PENDING));
 
-  ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, mouse_location,
+  ui::MouseEvent release_event(ui::EventType::kMouseReleased, mouse_location,
                                mouse_location, ui::EventTimeForNow(),
                                ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMouseReleased(release_event);
@@ -3269,7 +3271,7 @@ TEST_F(ShelfViewInkDropTest, ShelfButtonWithoutMenuPressDragReleaseOutside) {
   views::Button* button = browser_button_;
   gfx::Point mouse_location = button->GetLocalBounds().CenterPoint();
 
-  ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, mouse_location,
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, mouse_location,
                              mouse_location, ui::EventTimeForNow(),
                              ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMousePressed(press_event);
@@ -3279,7 +3281,7 @@ TEST_F(ShelfViewInkDropTest, ShelfButtonWithoutMenuPressDragReleaseOutside) {
               ElementsAre(views::InkDropState::ACTION_PENDING));
 
   mouse_location.Offset(test_api_->GetMinimumDragDistance() / 2, 0);
-  ui::MouseEvent drag_event_small(ui::ET_MOUSE_DRAGGED, mouse_location,
+  ui::MouseEvent drag_event_small(ui::EventType::kMouseDragged, mouse_location,
                                   mouse_location, ui::EventTimeForNow(),
                                   ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMouseDragged(drag_event_small);
@@ -3289,7 +3291,7 @@ TEST_F(ShelfViewInkDropTest, ShelfButtonWithoutMenuPressDragReleaseOutside) {
               IsEmpty());
 
   mouse_location.Offset(test_api_->GetMinimumDragDistance(), 0);
-  ui::MouseEvent drag_event_large(ui::ET_MOUSE_DRAGGED, mouse_location,
+  ui::MouseEvent drag_event_large(ui::EventType::kMouseDragged, mouse_location,
                                   mouse_location, ui::EventTimeForNow(),
                                   ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMouseDragged(drag_event_large);
@@ -3298,7 +3300,7 @@ TEST_F(ShelfViewInkDropTest, ShelfButtonWithoutMenuPressDragReleaseOutside) {
   EXPECT_THAT(browser_button_ink_drop_->GetAndResetRequestedStates(),
               ElementsAre(views::InkDropState::HIDDEN));
 
-  ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, mouse_location,
+  ui::MouseEvent release_event(ui::EventType::kMouseReleased, mouse_location,
                                mouse_location, ui::EventTimeForNow(),
                                ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMouseReleased(release_event);
@@ -3316,7 +3318,7 @@ TEST_F(ShelfViewInkDropTest, ShelfButtonWithoutMenuPressDragReleaseInside) {
   views::Button* button = browser_button_;
   gfx::Point mouse_location = button->GetLocalBounds().CenterPoint();
 
-  ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, mouse_location,
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, mouse_location,
                              mouse_location, ui::EventTimeForNow(),
                              ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMousePressed(press_event);
@@ -3326,9 +3328,9 @@ TEST_F(ShelfViewInkDropTest, ShelfButtonWithoutMenuPressDragReleaseInside) {
               ElementsAre(views::InkDropState::ACTION_PENDING));
 
   mouse_location.Offset(test_api_->GetMinimumDragDistance() * 2, 0);
-  ui::MouseEvent drag_event_outside(ui::ET_MOUSE_DRAGGED, mouse_location,
-                                    mouse_location, ui::EventTimeForNow(),
-                                    ui::EF_LEFT_MOUSE_BUTTON, 0);
+  ui::MouseEvent drag_event_outside(
+      ui::EventType::kMouseDragged, mouse_location, mouse_location,
+      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMouseDragged(drag_event_outside);
   EXPECT_EQ(views::InkDropState::HIDDEN,
             browser_button_ink_drop_->GetTargetInkDropState());
@@ -3336,7 +3338,7 @@ TEST_F(ShelfViewInkDropTest, ShelfButtonWithoutMenuPressDragReleaseInside) {
               ElementsAre(views::InkDropState::HIDDEN));
 
   mouse_location.Offset(-test_api_->GetMinimumDragDistance() * 2, 0);
-  ui::MouseEvent drag_event_inside(ui::ET_MOUSE_DRAGGED, mouse_location,
+  ui::MouseEvent drag_event_inside(ui::EventType::kMouseDragged, mouse_location,
                                    mouse_location, ui::EventTimeForNow(),
                                    ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMouseDragged(drag_event_inside);
@@ -3345,7 +3347,7 @@ TEST_F(ShelfViewInkDropTest, ShelfButtonWithoutMenuPressDragReleaseInside) {
   EXPECT_THAT(browser_button_ink_drop_->GetAndResetRequestedStates(),
               IsEmpty());
 
-  ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, mouse_location,
+  ui::MouseEvent release_event(ui::EventType::kMouseReleased, mouse_location,
                                mouse_location, ui::EventTimeForNow(),
                                ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMouseReleased(release_event);
@@ -3367,7 +3369,7 @@ TEST_F(ShelfViewInkDropTest, ShelfButtonWithMenuPressRelease) {
   views::Button* button = browser_button_;
   gfx::Point mouse_location = button->GetLocalBounds().CenterPoint();
 
-  ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, mouse_location,
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, mouse_location,
                              mouse_location, ui::EventTimeForNow(),
                              ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMousePressed(press_event);
@@ -3377,7 +3379,7 @@ TEST_F(ShelfViewInkDropTest, ShelfButtonWithMenuPressRelease) {
               ElementsAre(views::InkDropState::ACTION_PENDING));
 
   // Mouse release will spawn a menu which we will then close.
-  ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, mouse_location,
+  ui::MouseEvent release_event(ui::EventType::kMouseReleased, mouse_location,
                                mouse_location, ui::EventTimeForNow(),
                                ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMouseReleased(release_event);
@@ -3597,7 +3599,8 @@ TEST_F(ShelfViewFocusTest, UnfocusWithEsc) {
   ExpectFocused(shelf_view_);
 
   // Press Escape. Nothing should be focused.
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, ui::EF_NONE);
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE,
+                         ui::EF_NONE);
   shelf_view_->GetWidget()->OnKeyEvent(&key_event);
   ExpectNotFocused(status_area_);
   ExpectNotFocused(shelf_view_);
@@ -3672,10 +3675,10 @@ TEST_F(ShelfViewGestureTapTest, MouseClickInterruptionAfterGestureLongPress) {
       app_icon1_->GetBoundsInScreen().CenterPoint();
   GetEventGenerator()->PressTouch(app_icon1_center_point);
 
-  // Fast forward to generate the ET_GESTURE_SHOW_PRESS event.
+  // Fast forward to generate the EventType::kGestureShowPress event.
   task_environment()->FastForwardBy(base::Milliseconds(200));
 
-  // Fast forward to generate the ET_GESTURE_LONG_PRESS event to show the
+  // Fast forward to generate the EventType::kGestureLongPress event to show the
   // context menu.
   task_environment()->FastForwardBy(base::Milliseconds(1000));
   ASSERT_TRUE(shelf_view_->IsShowingMenu());
@@ -3717,10 +3720,10 @@ TEST_F(ShelfViewGestureTapTest, InterruptContextMenuShowByItemRemoval) {
   GetEventGenerator()->MoveTouch(app_button->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->PressTouch();
 
-  // Fast forward to generate the ET_GESTURE_SHOW_PRESS event.
+  // Fast forward to generate the EventType::kGestureShowPress event.
   task_environment()->FastForwardBy(base::Milliseconds(200));
 
-  // Fast forward to generate the ET_GESTURE_LONG_PRESS event to show the
+  // Fast forward to generate the EventType::kGestureLongPress event to show the
   // context menu.
   task_environment()->FastForwardBy(base::Milliseconds(1000));
   EXPECT_TRUE(item_delegate->HasPendingContextMenuCallback());
@@ -3757,10 +3760,10 @@ TEST_F(ShelfViewGestureTapTest,
   GetEventGenerator()->MoveTouch(app_button->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->PressTouch();
 
-  // Fast forward to generate the ET_GESTURE_SHOW_PRESS event.
+  // Fast forward to generate the EventType::kGestureShowPress event.
   task_environment()->FastForwardBy(base::Milliseconds(200));
 
-  // Fast forward to generate the ET_GESTURE_LONG_PRESS event to show the
+  // Fast forward to generate the EventType::kGestureLongPress event to show the
   // context menu.
   task_environment()->FastForwardBy(base::Milliseconds(1000));
   EXPECT_TRUE(item_delegate->HasPendingContextMenuCallback());
@@ -3803,7 +3806,7 @@ TEST_F(ShelfViewGestureTapTest, MouseClickInterruptionBeforeGestureLongPress) {
       app_icon1_->GetBoundsInScreen().CenterPoint();
   GetEventGenerator()->PressTouch(app_icon1_center_point);
 
-  // Fast forward to generate the ET_GESTURE_SHOW_PRESS event.
+  // Fast forward to generate the EventType::kGestureShowPress event.
   task_environment()->FastForwardBy(base::Milliseconds(200));
 
   // Mouse click at `app_icon2_` while gesture pressing `app_icon1_`. Note that

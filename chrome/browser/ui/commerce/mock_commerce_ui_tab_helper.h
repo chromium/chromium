@@ -34,6 +34,10 @@ class MockCommerceUiTabHelper : public commerce::CommerceUiTabHelper {
   MOCK_METHOD(void, OnProductSpecificationsIconClicked, (), (override));
   MOCK_METHOD(bool, IsPriceTracking, ());
   MOCK_METHOD(bool, IsInRecommendedSet, (), (override));
+  MOCK_METHOD(std::u16string,
+              GetProductSpecificationsLabel,
+              (bool is_added),
+              (override));
   MOCK_METHOD(void,
               SetPriceTrackingState,
               (bool enable,

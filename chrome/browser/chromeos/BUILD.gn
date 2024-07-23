@@ -446,6 +446,7 @@ source_set("chromeos") {
       "//chrome/browser/ash/system_web_apps/apps/help_app",
       "//chrome/browser/ash/video_conference",
       "//chrome/browser/ui/ash/network",
+      "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/chaps_util",

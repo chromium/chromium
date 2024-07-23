@@ -738,7 +738,8 @@ DownloadToolbarButtonView::BubbleCloser::BubbleCloser(
       toolbar_button->GetWidget()->GetNativeWindow()) {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this, toolbar_button->GetWidget()->GetNativeWindow(),
-        {ui::ET_MOUSE_PRESSED, ui::ET_KEY_PRESSED, ui::ET_TOUCH_PRESSED});
+        {ui::EventType::kMousePressed, ui::EventType::kKeyPressed,
+         ui::EventType::kTouchPressed});
   }
 }
 

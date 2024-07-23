@@ -8,3 +8,4 @@ per-file network_throttling_observer*=acostinas@google.com
 per-file onc_utils*=emaxx@chromium.org
 per-file system_proxy_manager*=acostinas@google.com
 per-file xdr_manager*=acostinas@google.com
+per-file secure_dns_manager*=jasongustaman@chromium.org

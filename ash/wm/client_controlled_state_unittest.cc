@@ -2149,7 +2149,7 @@ TEST_F(ClientControlledStateTest, FlingFloatedWindowInTabletMode) {
       start, start + offset, base::Milliseconds(10), /*steps=*/2,
       base::BindLambdaForTesting(
           [&](ui::EventType event_type, const gfx::Vector2dF& delta) {
-            if (event_type != ui::ET_GESTURE_SCROLL_UPDATE) {
+            if (event_type != ui::EventType::kGestureScrollUpdate) {
               return;
             }
             EXPECT_TRUE(window_state_delegate()->drag_in_progress());

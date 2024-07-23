@@ -84,6 +84,8 @@ void DriveSearchProvider::Start(const std::u16string& query) {
   weak_factory_.InvalidateWeakPtrs();
 
   if (!drive_service_ || !drive_service_->is_enabled()) {
+    Results empty_results;
+    SwapResults(&empty_results);
     LogStatus(Status::kDriveUnavailable);
     return;
   }
@@ -112,6 +114,8 @@ void DriveSearchProvider::OnSearchDriveByFileName(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error != drive::FileError::FILE_ERROR_OK) {
+    Results empty_results;
+    SwapResults(&empty_results);
     LogStatus(Status::kFileError);
     return;
   }

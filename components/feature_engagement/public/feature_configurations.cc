@@ -279,22 +279,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHExplicitBrowserSigninPreferenceRememberedFeature.name ==
-      feature->name) {
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->session_rate_impact.type = SessionRateImpact::Type::ALL;
-    config->trigger = EventConfig(
-        "iph_explicit_browser_signin_preference_remembered_triggered",
-        Comparator(ANY, 0), 0, 0);
-    config->used =
-        EventConfig("iph_explicit_browser_signin_preference_remembered_used",
-                    Comparator(ANY, 0), 0, 0);
-    return config;
-  }
-
   if (kIPHTrackingProtectionOnboardingFeature.name == feature->name) {
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
@@ -1090,6 +1074,21 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         "iph_tabgroups_drag_and_drop", Comparator(LESS_THAN, 2), 90, 360));
     config->used = EventConfig("tab_drag_and_drop_to_group",
                                Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+  if (kIPHTabGroupsRemoteGroupFeature.name == feature->name) {
+    // Allows an IPH for highlighting a remote tab group when:
+    // * Only once per day.
+    // * Up to 3 times per year.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 1);
+    config->trigger = EventConfig("tab_groups_remote_group_triggered",
+                                  Comparator(EQUAL, 0), 1, 1);
+    config->event_configs.insert(
+        EventConfig("tab_groups_remote_group_triggered",
+                    Comparator(LESS_THAN, 3), 360, 360));
     return config;
   }
   if (kIPHTabGroupsSurfaceFeature.name == feature->name) {

@@ -35,6 +35,10 @@ VisitedLinkDatabase::VisitedLinkEnumerator::VisitedLinkEnumerator()
 
 VisitedLinkDatabase::VisitedLinkEnumerator::~VisitedLinkEnumerator() = default;
 
+bool VisitedLinkDatabase::DropVisitedLinkTable() {
+  return GetDB().Execute("DROP TABLE visited_links");
+}
+
 bool VisitedLinkDatabase::VisitedLinkEnumerator::GetNextVisitedLink(
     VisitedLinkRow& r) {
   if (statement_.Step()) {

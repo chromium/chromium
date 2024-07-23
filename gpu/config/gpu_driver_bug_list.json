@@ -3376,6 +3376,28 @@
       "features": [
         "disable_webnn_for_gpu"
       ]
+    },
+    {
+      "id": 434,
+      "cr_bugs": [41480904],
+      "description": "Disable CBR encoding of HEVC on Intel GPUs with older drivers",
+      "comment":[
+        "Intel HEVC HMFT will stop accepting inputs if you configure it to encode",
+        "at CBR mode and later change the target bitrate during encoding. This issue",
+        "has been fixed on driver version 32.0.101.5762."
+      ],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "driver_version": {
+            "op": "<",
+            "value": "32.0.101.5762"
+      },
+      "features": [
+        "disable_hevc_hmft_cbr_encoding"
+      ]
     }
   ]
 }

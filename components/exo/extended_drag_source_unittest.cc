@@ -423,7 +423,7 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet_Touch) {
             *extended_drag_source_->GetDragOffsetForTesting());
 
   // Initiate the gesture sequence.
-  DispatchGesture(ui::ET_GESTURE_BEGIN, gfx::Point(10, 10));
+  DispatchGesture(ui::EventType::kGestureBegin, gfx::Point(10, 10));
 
   // Map the |detached_surface|.
   auto detached_buffer = CreateBuffer({50, 50});
@@ -474,7 +474,7 @@ TEST_F(ExtendedDragSourceTest, DestroyDraggedSurfaceWhileDragging) {
   // Create an drag event instance to be dispatched manually
   // and hold a dangling target pointer.
   auto event = std::make_unique<ui::MouseEvent>(
-      ui::ET_MOUSE_DRAGGED, dragged_window->bounds().origin(),
+      ui::EventType::kMouseDragged, dragged_window->bounds().origin(),
       dragged_window->bounds().origin(), ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   ui::Event::DispatcherApi(event.get())

@@ -435,14 +435,14 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::OnGestureEvent(
     return;
   }
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP_DOWN:
+    case ui::EventType::kGestureTapDown:
       controller_->SetSelected();
       break;
-    case ui::ET_GESTURE_TAP:
+    case ui::EventType::kGestureTap:
       controller_->PasswordAccepted();
       break;
-    case ui::ET_GESTURE_TAP_CANCEL:
-    case ui::ET_GESTURE_END:
+    case ui::EventType::kGestureTapCancel:
+    case ui::EventType::kGestureEnd:
       controller_->SelectionCleared();
       break;
     default:

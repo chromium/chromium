@@ -85,8 +85,8 @@ ScopedDrmModeRectPtr CreateDCBlob(const gfx::Rect& rect);
 // Returns the display infos parsed in
 // |GetDisplayInfosAndInvalidCrtcs| and disables the invalid CRTCs
 // that weren't picked as preferred CRTCs.
-HardwareDisplayControllerInfoList GetDisplayInfosAndUpdateCrtcs(
-    DrmWrapper& drm);
+std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>
+GetDisplayInfosAndUpdateCrtcs(DrmWrapper& drm);
 
 void DrmWriteIntoTraceHelper(const drmModeModeInfo& mode_info,
                              perfetto::TracedValue context);

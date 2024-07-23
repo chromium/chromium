@@ -1194,7 +1194,7 @@ void NativeWidgetAura::OnKeyEvent(ui::KeyEvent* event) {
 void NativeWidgetAura::OnMouseEvent(ui::MouseEvent* event) {
   DCHECK(window_);
   DCHECK(window_->IsVisible());
-  if (delegate_ && event->type() == ui::ET_MOUSEWHEEL) {
+  if (delegate_ && event->type() == ui::EventType::kMousewheel) {
     delegate_->OnMouseEvent(event);
     return;
   }

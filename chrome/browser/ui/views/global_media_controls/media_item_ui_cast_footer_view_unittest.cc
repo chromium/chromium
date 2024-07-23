@@ -43,7 +43,7 @@ TEST_F(MediaItemUICastFooterViewTest, ClickingOnStopCastingButton) {
 
   EXPECT_CALL(*mock_stop_casting_callback(), Run());
   views::test::ButtonTestApi(stop_casting_button())
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   EXPECT_FALSE(stop_casting_button()->GetEnabled());
 }

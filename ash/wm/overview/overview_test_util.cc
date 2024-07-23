@@ -98,7 +98,7 @@ OverviewGrid* GetOverviewGridForRoot(aura::Window* root) {
 
 const std::vector<std::unique_ptr<OverviewItemBase>>& GetOverviewItemsForRoot(
     int index) {
-  return GetOverviewSession()->grid_list()[index]->window_list();
+  return GetOverviewSession()->grid_list()[index]->item_list();
 }
 
 std::vector<aura::Window*> GetWindowsListInOverviewGrids() {
@@ -108,7 +108,7 @@ std::vector<aura::Window*> GetWindowsListInOverviewGrids() {
   std::vector<aura::Window*> windows;
   for (const std::unique_ptr<OverviewGrid>& grid :
        overview_controller->overview_session()->grid_list()) {
-    for (const std::unique_ptr<OverviewItemBase>& item : grid->window_list()) {
+    for (const std::unique_ptr<OverviewItemBase>& item : grid->item_list()) {
       for (aura::Window* window : item->GetWindows()) {
         CHECK(window);
         windows.push_back(window);
@@ -174,7 +174,7 @@ void WaitForOcclusionStateChange(aura::Window* window,
 
 bool IsWindowInItsCorrespondingOverviewGrid(aura::Window* window) {
   const auto& overview_items =
-      GetOverviewGridForRoot(window->GetRootWindow())->window_list();
+      GetOverviewGridForRoot(window->GetRootWindow())->item_list();
   for (auto& overview_item : overview_items) {
     if (overview_item->Contains(window)) {
       return true;

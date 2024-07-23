@@ -373,12 +373,13 @@ void VideoCaptureManager::OnDeviceLaunched(VideoCaptureController* controller) {
 
   auto it = photo_request_queue_.begin();
   while (it != photo_request_queue_.end()) {
-    auto request = it++;
     VideoCaptureController* maybe_entry =
-        LookupControllerBySessionId(request->first);
+        LookupControllerBySessionId(it->first);
     if (maybe_entry && maybe_entry->IsDeviceAlive()) {
-      std::move(request->second).Run();
-      photo_request_queue_.erase(request);
+      std::move(it->second).Run();
+      it = photo_request_queue_.erase(it);
+    } else {
+      ++it;
     }
   }
 

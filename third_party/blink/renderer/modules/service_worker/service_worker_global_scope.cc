@@ -179,7 +179,7 @@ ServiceWorkerEventQueue::AbortCallback CreateAbortCallback(MapType* map,
       [](MapType* map, Args&&... args, int event_id,
          mojom::blink::ServiceWorkerEventStatus status) {
         auto iter = map->find(event_id);
-        DCHECK(iter != map->end());
+        CHECK(iter != map->end(), base::NotFatalUntil::M130);
         std::move(iter->value).Run(status, std::forward<Args>(args)...);
         map->erase(iter);
       },

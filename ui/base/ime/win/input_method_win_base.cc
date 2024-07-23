@@ -212,7 +212,7 @@ ui::EventDispatchDetails InputMethodWinBase::DispatchKeyEvent(
   // Handles ctrl-shift key to change text direction and layout alignment.
   if (IsRTLKeyboardLayoutInstalled() && !IsTextInputTypeNone()) {
     ui::KeyboardCode code = event->key_code();
-    if (event->type() == ui::ET_KEY_PRESSED) {
+    if (event->type() == ui::EventType::kKeyPressed) {
       if (code == ui::VKEY_SHIFT) {
         base::i18n::TextDirection dir;
         if (IsCtrlShiftPressed(&dir))
@@ -220,7 +220,7 @@ ui::EventDispatchDetails InputMethodWinBase::DispatchKeyEvent(
       } else if (code != ui::VKEY_CONTROL) {
         pending_requested_direction_ = base::i18n::UNKNOWN_DIRECTION;
       }
-    } else if (event->type() == ui::ET_KEY_RELEASED &&
+    } else if (event->type() == ui::EventType::kKeyReleased &&
                (code == ui::VKEY_SHIFT || code == ui::VKEY_CONTROL) &&
                pending_requested_direction_ != base::i18n::UNKNOWN_DIRECTION) {
       GetTextInputClient()->ChangeTextDirectionAndLayoutAlignment(

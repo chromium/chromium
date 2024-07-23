@@ -18,7 +18,6 @@ namespace {
 const base::Feature* kFeaturesExposedToJava[] = {
     &kAndroidAutofillBottomSheetWorkaround,
     &kAndroidAutofillPrefillRequestsForLoginForms,
-    &kAndroidAutofillUsePwmPredictionsForOverrides,
 };
 
 }  // namespace
@@ -53,16 +52,6 @@ BASE_FEATURE(kAndroidAutofillDirectFormSubmission,
 // Future features may extend prefill requests to more form types.
 BASE_FEATURE(kAndroidAutofillPrefillRequestsForLoginForms,
              "AndroidAutofillPrefillRequestsForLoginForms",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, username and password field predictions are taken from
-// `password_manager::FormDataParser` and overwrite Autofill's native
-// predictions. Furthermore, similarity checks between cached forms and focused
-// forms that serve to decide whether to show a bottomsheet are performed using
-// these predictions: Two forms are considered similar iff they have the same
-// `FormDataParser` predictions.
-BASE_FEATURE(kAndroidAutofillUsePwmPredictionsForOverrides,
-             "AndroidAutofillUsePwmPredictionsForOverrides",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, offer prefill requests (i.e. calls to

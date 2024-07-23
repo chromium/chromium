@@ -259,7 +259,7 @@ void DragHandle::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
 
-  if (event->type() == ui::ET_GESTURE_TAP) {
+  if (event->type() == ui::EventType::kGestureTap) {
     HandleTapOnNudge();
     event->StopPropagation();
   }

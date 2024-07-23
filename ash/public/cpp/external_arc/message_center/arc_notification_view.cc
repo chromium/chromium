@@ -120,10 +120,7 @@ ArcNotificationView::ArcNotificationView(
                      message_center::kNotificationCornerRadius);
 
   auto* const focus_ring = views::FocusRing::Get(this);
-  focus_ring->SetColorId(
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing)
-          : ui::kColorAshFocusRing);
+  focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
   // Focus control is delegated to its content view if it's available. So we
   // need to set the focus predicate to let `focus_ring` know the focus change
   // on the content.

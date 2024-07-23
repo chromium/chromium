@@ -10,6 +10,7 @@
 #include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_search_bar_textfield.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_section_list_view.h"
@@ -32,6 +33,8 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -104,8 +107,76 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.Call([view]() { view->RequestFocus(); });
 
-  sm_.ExpectSpeechPattern("Edit text");
   sm_.ExpectSpeechPattern("cat");
+  sm_.ExpectSpeechPattern("Edit text");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       SetDescendantAnnouncesDescendant) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  ash::PickerKeyEventHandler key_event_handler;
+  ash::PickerPerformanceMetrics metrics;
+  auto* container_view =
+      widget->SetContentsView(views::Builder<views::BoxLayoutView>().Build());
+  auto* search_field_view =
+      container_view->AddChildView(std::make_unique<ash::PickerSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* other_view =
+      container_view->AddChildView(std::make_unique<views::Label>(u"test"));
+  search_field_view->SetPlaceholderText(u"cat");
+
+  sm_.Call([search_field_view]() { search_field_view->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern("cat");
+  sm_.ExpectSpeechPattern("Edit text");
+
+  sm_.Call([search_field_view, other_view]() {
+    search_field_view->SetTextfieldActiveDescendant(other_view);
+  });
+
+  sm_.ExpectSpeechPattern("test");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       SetDescendantToTextfieldAnnouncesPlaceholder) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  ash::PickerKeyEventHandler key_event_handler;
+  ash::PickerPerformanceMetrics metrics;
+  auto* container_view =
+      widget->SetContentsView(views::Builder<views::BoxLayoutView>().Build());
+  auto* search_field_view =
+      container_view->AddChildView(std::make_unique<ash::PickerSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* other_view =
+      container_view->AddChildView(std::make_unique<views::Label>(u"test"));
+  search_field_view->SetPlaceholderText(u"cat");
+
+  sm_.Call([search_field_view]() { search_field_view->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern("cat");
+  sm_.ExpectSpeechPattern("Edit text");
+
+  sm_.Call([search_field_view, other_view]() {
+    search_field_view->SetTextfieldActiveDescendant(other_view);
+  });
+
+  sm_.ExpectSpeechPattern("test");
+
+  sm_.Call([search_field_view]() {
+    search_field_view->SetTextfieldActiveDescendant(
+        search_field_view->textfield());
+  });
+
+  sm_.ExpectSpeechPattern("cat");
+  sm_.ExpectSpeechPattern("Edit text");
   sm_.Replay();
 }
 
@@ -125,8 +196,8 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.Call([view]() { view->RequestFocus(); });
 
-  sm_.ExpectSpeechPattern("Edit text");
   sm_.ExpectSpeechPattern("cat");
+  sm_.ExpectSpeechPattern("Edit text");
   sm_.Replay();
 }
 

@@ -64,6 +64,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/arc/nearby_share/ui",
     "//chrome/browser/ash/fusebox",
+    "//chrome/browser/ui/ash/shelf",
     "//chrome/test:test_support",
     "//chromeos/ui/base",
     "//components/exo",

@@ -33,6 +33,7 @@
 #include "ui/display/types/display_mode.h"
 #include "ui/display/util/display_util.h"
 #include "ui/display/util/edid_parser.h"
+#include "ui/ozone/platform/drm/common/hardware_display_controller_info.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/common/tile_property.h"
 
@@ -327,7 +328,8 @@ void SortDisplayModeListDesc(
 // tile that will represent all the tiles. Primary tile is the only active tile
 // if the display is configured with a non-tile mode.
 const HardwareDisplayControllerInfo* GetPrimaryTileInfo(
-    const HardwareDisplayControllerInfoList& tiled_infos) {
+    const std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>&
+        tiled_infos) {
   if (tiled_infos.empty()) {
     return nullptr;
   }
@@ -463,8 +465,8 @@ void PruneTileModesForIncompleteGroup(
     return;
   }
 
-  const ui::HardwareDisplayControllerInfoList& nonprimary_tiles =
-      tiled_display_info.nonprimary_tile_infos();
+  const std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>&
+      nonprimary_tiles = tiled_display_info.nonprimary_tile_infos();
   // Prune all tile modes if not all tiles in the display are connected yet.
   if (tile_property->tile_layout.GetArea() !=
       static_cast<int>(nonprimary_tiles.size()) + 1) {
@@ -517,7 +519,7 @@ void ConvertTileModesToCompositedModes(
 
 std::unique_ptr<HardwareDisplayControllerInfo> PopPrimaryTileInfo(
     const HardwareDisplayControllerInfo* primary_tile_info_ptr,
-    HardwareDisplayControllerInfoList& infos) {
+    std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>& infos) {
   std::unique_ptr<HardwareDisplayControllerInfo> primary_tile_info;
   for (auto tile_info = infos.begin(); tile_info != infos.end(); tile_info++) {
     if (tile_info->get() == primary_tile_info_ptr) {
@@ -600,40 +602,8 @@ display::VariableRefreshRateState GetVariableRefreshRateState(
   return display::kVrrDisabled;
 }
 
-HardwareDisplayControllerInfo::HardwareDisplayControllerInfo(
-    ScopedDrmConnectorPtr connector,
-    ScopedDrmCrtcPtr crtc,
-    uint8_t index,
-    std::optional<display::EdidParser> edid_parser,
-    std::optional<TileProperty> tile_property)
-    : connector_(std::move(connector)),
-      crtc_(std::move(crtc)),
-      index_(index),
-      edid_parser_(std::move(edid_parser)),
-      tile_property_(std::move(tile_property)) {}
-
-HardwareDisplayControllerInfo::~HardwareDisplayControllerInfo() = default;
-
-void HardwareDisplayControllerInfo::AcquireNonprimaryTileInfo(
-    std::unique_ptr<HardwareDisplayControllerInfo> tile_info) {
-  DCHECK(tile_info->tile_property().has_value());
-  nonprimary_tile_infos_.push_back(std::move(tile_info));
-}
-
-display::DisplaySnapshot::DisplayModeList
-HardwareDisplayControllerInfo::GetModesOfSize(const gfx::Size& size) {
-  display::DisplaySnapshot::DisplayModeList modes;
-  for (int i = 0; i < connector_->count_modes; ++i) {
-    const drmModeModeInfo& mode = connector_->modes[i];
-    if (ModeSize(mode) == size) {
-      modes.push_back(CreateDisplayMode(mode));
-    }
-  }
-
-  return modes;
-}
-
-std::pair<HardwareDisplayControllerInfoList, std::vector<uint32_t>>
+std::pair<std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>,
+          std::vector<uint32_t>>
 GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
   ScopedDrmResourcesPtr resources = drm.GetResources();
   DCHECK(resources) << "Failed to get DRM resources";
@@ -749,8 +719,8 @@ GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
   return std::make_pair(std::move(displays), std::move(invalid_crtcs));
 }
 
-HardwareDisplayControllerInfoList GetAvailableDisplayControllerInfos(
-    const DrmWrapper& drm) {
+std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>
+GetAvailableDisplayControllerInfos(const DrmWrapper& drm) {
   return GetDisplayInfosAndInvalidCrtcs(drm).first;
 }
 
@@ -1201,12 +1171,16 @@ std::vector<const char*> GetPreferredDrmDrivers() {
 }
 
 void ConsolidateTiledDisplayInfo(
-    HardwareDisplayControllerInfoList& display_infos) {
+    std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>&
+        display_infos) {
   // Ignore all non-tiled displays, group all tile displays into |tile_groups|
   // by tile group IDs.
-  HardwareDisplayControllerInfoList new_display_infos;
-  HardwareDisplayControllerInfoList nontiled_display_infos;
-  std::unordered_map<int /*tile_group_id*/, HardwareDisplayControllerInfoList>
+  std::vector<std::unique_ptr<HardwareDisplayControllerInfo>> new_display_infos;
+  std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>
+      nontiled_display_infos;
+  std::unordered_map<
+      int /*tile_group_id*/,
+      std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>>
       tile_groups;
   for (auto& info : display_infos) {
     const std::optional<TileProperty>& tile_property = info->tile_property();

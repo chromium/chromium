@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
-#include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/ash/input_method/editor_query_context.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
+#include "chromeos/components/editor_menu/public/cpp/editor_helpers.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/display/screen.h"
@@ -257,8 +257,9 @@ void EditorMediator::HandleTrigger(
 void EditorMediator::CacheContext() {
   mako_bubble_coordinator_.CacheContextCaretBounds();
 
-  size_t selected_length = NonWhitespaceAndSymbolsLength(
-      surrounding_text_.text, surrounding_text_.selection_range);
+  size_t selected_length =
+      chromeos::editor_helpers::NonWhitespaceAndSymbolsLength(
+          surrounding_text_.text, surrounding_text_.selection_range);
   editor_context_.OnTextSelectionLengthChanged(selected_length);
 
   if (IsServiceConnected()) {

@@ -60,14 +60,14 @@ bool ExistingSettingsHasValue(std::string_view setting_key,
 
 bool IsAlphaKeyboardCode(ui::KeyboardCode key_code) {
   return GetKeyInputTypeFromKeyEvent(ui::KeyEvent(
-             ui::ET_KEY_PRESSED, key_code, ui::DomCode::NONE, ui::EF_NONE)) ==
-         AcceleratorKeyInputType::kAlpha;
+             ui::EventType::kKeyPressed, key_code, ui::DomCode::NONE,
+             ui::EF_NONE)) == AcceleratorKeyInputType::kAlpha;
 }
 
 bool IsNumberKeyboardCode(ui::KeyboardCode key_code) {
   return GetKeyInputTypeFromKeyEvent(ui::KeyEvent(
-             ui::ET_KEY_PRESSED, key_code, ui::DomCode::NONE, ui::EF_NONE)) ==
-         AcceleratorKeyInputType::kDigit;
+             ui::EventType::kKeyPressed, key_code, ui::DomCode::NONE,
+             ui::EF_NONE)) == AcceleratorKeyInputType::kDigit;
 }
 
 // Verify if the customization restriction blocks the button remapping.

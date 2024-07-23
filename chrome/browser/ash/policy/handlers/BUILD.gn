@@ -101,6 +101,10 @@ static_library("handlers") {
     "//third_party/protobuf:protobuf_lite",
     "//ui/chromeos",
     "//url",
+
+    # TODO(b/354839582): Use targets having headers included from
+    # chrome/browser/ash/policy/handlers/system_proxy_handler.cc.
+    "//chromeos/ash/components/dbus/system_proxy:system_proxy_proto",
   ]
 
   allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
@@ -170,6 +174,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/handlers:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/shelf",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chrome/test:test_support",

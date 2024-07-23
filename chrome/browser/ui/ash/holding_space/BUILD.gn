@@ -49,6 +49,7 @@ static_library("holding_space") {
     "//chrome/browser/ash/file_suggest",
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/phonehub",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/profiles:profile",
@@ -70,6 +71,7 @@ static_library("holding_space") {
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/phonehub",
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
   ]
 }

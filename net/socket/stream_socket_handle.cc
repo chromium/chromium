@@ -45,4 +45,8 @@ bool StreamSocketHandle::GetLoadTimingInfo(
   return true;
 }
 
+void StreamSocketHandle::AddHigherLayeredPool(HigherLayeredPool* pool) {}
+
+void StreamSocketHandle::RemoveHigherLayeredPool(HigherLayeredPool* pool) {}
+
 }  // namespace net

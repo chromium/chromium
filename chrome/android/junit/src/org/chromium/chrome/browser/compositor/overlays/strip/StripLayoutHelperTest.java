@@ -3091,14 +3091,13 @@ public class StripLayoutHelperTest {
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testTabGroupDeleteDialog_ImmediateContinue() {
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupAndDragEdgeTabOut(0, 1, 0, true, false);
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        setUpTabGroupAndDialog(0, 1, true);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
-        // Verify group title is temporarily disappeared from the tab strip
-        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        // Start dragging tab out of group.
+        startDraggingTab(tabs, false, 0);
 
-        // Verify action confirmation dialog shows.
+        // Verify action confirmation dialog triggers.
         verify(mActionConfirmationManager)
                 .processRemoveTabAttempt(mConfirmationResultCaptor.capture());
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
@@ -3108,7 +3107,7 @@ public class StripLayoutHelperTest {
         verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(tabs[0].getId(), true);
 
         // Verify group title is removed from the tab strip
-        views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
     }
 
@@ -3116,11 +3115,14 @@ public class StripLayoutHelperTest {
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testTabGroupDeleteDialog_ConfirmationPositive() {
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupAndDragEdgeTabOut(0, 1, 0, false, false);
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        setUpTabGroupAndDialog(0, 1, false);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
+        // Start dragging tab out of group.
+        startDraggingTab(tabs, false, 0);
+
         // Verify group title is temporarily disappeared from the tab strip
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
 
         // Verify action confirmation dialog shows.
@@ -3140,11 +3142,14 @@ public class StripLayoutHelperTest {
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testTabGroupDeleteDialog_ConfirmationNegative() {
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupAndDragEdgeTabOut(0, 1, 0, false, false);
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        setUpTabGroupAndDialog(0, 1, false);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
+        // Start dragging tab out of group.
+        startDraggingTab(tabs, false, 0);
+
         // Verify group title is temporarily disappeared from the tab strip
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
 
         // Verify action confirmation dialog shows.
@@ -3164,14 +3169,13 @@ public class StripLayoutHelperTest {
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testTabGroupDeleteDialog_DragTabOffStrip_ImmediateContinue() {
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupAndDragEdgeTabOut(0, 1, 0, true, true);
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        setUpTabGroupAndDialog(0, 1, true);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
-        // Verify group title is temporarily disappeared from the tab strip
-        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        // Start dragging tab out of group.
+        startDraggingTab(tabs, true, 0);
 
-        // Verify action confirmation dialog shows.
+        // Verify action confirmation dialog triggers.
         verify(mActionConfirmationManager)
                 .processRemoveTabAttempt(mConfirmationResultCaptor.capture());
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
@@ -3184,7 +3188,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.clearTabDragState();
 
         // Verify group title is restored back on the tab strip.
-        views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
     }
 
@@ -3192,11 +3196,14 @@ public class StripLayoutHelperTest {
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testTabGroupDeleteDialog_DragTabOffStrip_ConfirmationPositive() {
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupAndDragEdgeTabOut(0, 1, 0, false, true);
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        setUpTabGroupAndDialog(0, 1, false);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
+        // Start dragging tab out of group.
+        startDraggingTab(tabs, true, 0);
+
         // Verify group title is temporarily disappeared from the tab strip
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
 
         // Verify action confirmation dialog shows.
@@ -3216,11 +3223,14 @@ public class StripLayoutHelperTest {
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testTabGroupDeleteDialog_DragTabOffStrip_ConfirmationNegative() {
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupAndDragEdgeTabOut(0, 1, 0, false, true);
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        setUpTabGroupAndDialog(0, 1, false);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
+        // Start dragging tab out of group.
+        startDraggingTab(tabs, true, 0);
+
         // Verify group title is temporarily disappeared from the tab strip
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
 
         // Verify action confirmation dialog shows.
@@ -3236,12 +3246,85 @@ public class StripLayoutHelperTest {
         assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
     }
 
-    private void setUpTabGroupAndDragEdgeTabOut(
-            int groupStartIndex,
-            int groupEndIndex,
-            int tabIndexToDrag,
-            boolean skipDialog,
-            boolean draggingTabOffStrip) {
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testTabGroupDeleteDialog_CloseTab_ImmediateContinue() {
+        // Set up resources for testing tab group delete dialog.
+        setUpTabGroupAndDialog(0, 1, true);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+
+        // Close the first tab
+        mStripLayoutHelper.handleCloseButtonClick(tabs[0], TIMESTAMP);
+
+        // Verify action confirmation dialog shows.
+        verify(mActionConfirmationManager)
+                .processCloseTabAttempt(mConfirmationResultCaptor.capture());
+        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
+
+        // Assert tab is being closed.
+        assertTrue("Tab should be closing", tabs[0].isDying());
+
+        // Verify group title is removed from the tab strip
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testTabGroupDeleteDialog_CloseTab_ConfirmationPositive() {
+        // Set up resources for testing tab group delete dialog.
+        setUpTabGroupAndDialog(0, 1, false);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+
+        // Close the first tab
+        mStripLayoutHelper.handleCloseButtonClick(tabs[0], TIMESTAMP);
+
+        // Verify group title is temporarily disappeared from the tab strip
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
+
+        // Verify action confirmation dialog triggered.
+        verify(mActionConfirmationManager)
+                .processCloseTabAttempt(mConfirmationResultCaptor.capture());
+        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
+
+        // Assert tab is being closed.
+        assertTrue("Tab should be closing", tabs[0].isDying());
+
+        // Verify group title is removed from the tab strip
+        views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testTabGroupDeleteDialog_CloseTab_ConfirmationNegative() {
+        // Set up resources for testing tab group delete dialog.
+        setUpTabGroupAndDialog(0, 1, false);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+
+        // Close the first tab
+        mStripLayoutHelper.handleCloseButtonClick(tabs[0], TIMESTAMP);
+
+        // Verify group title is temporarily disappeared from the tab strip
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
+
+        // Verify action confirmation dialog shows.
+        verify(mActionConfirmationManager)
+                .processCloseTabAttempt(mConfirmationResultCaptor.capture());
+        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_NEGATIVE);
+
+        // Assert tab should not be closed.
+        assertFalse("Tab should not be closing", tabs[0].isDying());
+
+        // Verify group title is restored back to the tab strip
+        views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
+    }
+
+    private void setUpTabGroupAndDialog(
+            int groupStartIndex, int groupEndIndex, boolean skipDialog) {
         // Mock 5 tabs. Group tab from start to endIndex.
         initializeTest(false, false, true, 0, 5);
         mStripLayoutHelper.onSizeChanged(
@@ -3249,12 +3332,14 @@ public class StripLayoutHelperTest {
         groupTabs(groupStartIndex, groupEndIndex);
 
         // Assert: View should be group title.
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue(EXPECTED_TITLE, views[groupStartIndex] instanceof StripLayoutGroupTitle);
         mStripLayoutHelper.setPrefServiceForTesting(mPrefService);
         when(mPrefService.getBoolean(any())).thenReturn(skipDialog);
+    }
 
+    private void startDraggingTab(
+            StripLayoutTab[] tabs, boolean draggingTabOffStrip, int tabIndexToDrag) {
         // Start drag tab out of group or drag off strip.
         if (draggingTabOffStrip) {
             mStripLayoutHelper.clearForTabDrop(TIMESTAMP, true, false);

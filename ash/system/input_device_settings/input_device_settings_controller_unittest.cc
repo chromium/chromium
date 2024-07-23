@@ -501,6 +501,18 @@ class FakeInputDeviceSettingsControllerObserver
   void OnMouseCompanionAppInfoChanged(const mojom::Mouse& mouse) override {
     num_mouse_companion_app_info_updated_++;
   }
+  void OnKeyboardCompanionAppInfoChanged(
+      const mojom::Keyboard& keyboard) override {
+    num_keyboard_companion_app_info_updated_++;
+  }
+  void OnTouchpadCompanionAppInfoChanged(
+      const mojom::Touchpad& touchpad) override {
+    num_keyboard_companion_app_info_updated_++;
+  }
+  void OnGraphicsTabletCompanionAppInfoChanged(
+      const mojom::GraphicsTablet& graphics_tablet) override {
+    num_keyboard_companion_app_info_updated_++;
+  }
 
   uint32_t num_keyboards_connected() { return num_keyboards_connected_; }
   uint32_t num_graphics_tablets_connected() {
@@ -545,6 +557,18 @@ class FakeInputDeviceSettingsControllerObserver
     return num_mouse_companion_app_info_updated_;
   }
 
+  uint32_t num_keyboard_companion_app_info_updated() {
+    return num_keyboard_companion_app_info_updated_;
+  }
+
+  uint32_t num_touchpad_companion_app_info_updated() {
+    return num_touchpad_companion_app_info_updated_;
+  }
+
+  uint32_t num_graphics_tablet_companion_app_info_updated() {
+    return num_graphics_tablet_companion_app_info_updated_;
+  }
+
  private:
   uint32_t num_keyboards_connected_ = 0;
   uint32_t num_graphics_tablets_connected_ = 0;
@@ -563,6 +587,9 @@ class FakeInputDeviceSettingsControllerObserver
   uint32_t num_mouse_battery_info_updated_ = 0;
   uint32_t num_touchpad_battery_info_updated_ = 0;
   uint32_t num_mouse_companion_app_info_updated_ = 0;
+  uint32_t num_keyboard_companion_app_info_updated_ = 0;
+  uint32_t num_touchpad_companion_app_info_updated_ = 0;
+  uint32_t num_graphics_tablet_companion_app_info_updated_ = 0;
 };
 
 class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {

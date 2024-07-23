@@ -4722,6 +4722,7 @@ test("ash_pixeltests") {
     "user_education/views/help_bubble_view_ash_pixeltest.cc",
     "user_education/welcome_tour/welcome_tour_dialog_pixeltest.cc",
     "utility/arc_curve_path_util_pixeltest.cc",
+    "wm/overview/birch/birch_bar_pixeltest.cc",
     "wm/snap_group/snap_group_pixeltest.cc",
     "wm/test/wm_pixel_diff_test.cc",
   ]
@@ -4878,6 +4879,8 @@ static_library("test_support") {
     "auth/views/test_support/mock_auth_input_row_view_observer.h",
     "auth/views/test_support/mock_auth_textfield_observer.cc",
     "auth/views/test_support/mock_auth_textfield_observer.h",
+    "birch/stub_birch_client.cc",
+    "birch/stub_birch_client.h",
     "capture_mode/capture_mode_demo_tools_test_api.cc",
     "capture_mode/capture_mode_demo_tools_test_api.h",
     "capture_mode/capture_mode_session_test_api.cc",

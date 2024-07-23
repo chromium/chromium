@@ -264,8 +264,9 @@ class SplitViewControllerTest : public AshTestBase {
   void EndSplitView() { split_view_controller()->EndSplitView(); }
 
   void LongPressOnOverviewButtonTray() {
-    ui::GestureEvent event(0, 0, 0, base::TimeTicks(),
-                           ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+    ui::GestureEvent event(
+        0, 0, 0, base::TimeTicks(),
+        ui::GestureEventDetails(ui::EventType::kGestureLongPress));
     StatusAreaWidgetTestHelper::GetStatusAreaWidget()
         ->overview_button_tray()
         ->OnGestureEvent(&event);
@@ -631,8 +632,9 @@ TEST_F(SplitViewControllerTest,
   ASSERT_TRUE(divider);
   auto* divider_view = divider->divider_view_for_testing();
   ASSERT_TRUE(divider_view);
-  ui::GestureEvent gesture_end(0, 0, 0, ui::EventTimeForNow(),
-                               ui::GestureEventDetails(ui::ET_GESTURE_END));
+  ui::GestureEvent gesture_end(
+      0, 0, 0, ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::EventType::kGestureEnd));
   divider->divider_view_for_testing()->OnGestureEvent(&gesture_end);
 
   // Trigger a second tap, using a different `touch_id` for this tap, to

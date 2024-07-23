@@ -1295,7 +1295,7 @@ TEST_P(DesksTest, ActivateDeskFromOverview) {
     const auto* desks_bar_view = overview_grid->desks_bar_view();
     ASSERT_TRUE(desks_bar_view);
     ASSERT_EQ(4u, desks_bar_view->mini_views().size());
-    EXPECT_EQ(2u, overview_grid->window_list().size());
+    EXPECT_EQ(2u, overview_grid->item_list().size());
 
     // Activate desk_4 (last one on the right) by clicking on its mini view.
     const Desk* desk_4 = controller->GetDeskAtIndex(3);
@@ -1324,7 +1324,7 @@ TEST_P(DesksTest, ActivateDeskFromOverview) {
     EnterOverview();
     EXPECT_TRUE(overview_controller->InOverviewSession());
     overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-    EXPECT_EQ(1u, overview_grid->window_list().size());
+    EXPECT_EQ(1u, overview_grid->item_list().size());
 
     // When exiting overview mode without changing desks, the focus should be
     // restored to the same window.
@@ -1440,7 +1440,7 @@ TEST_P(DesksTest, RemoveInactiveDeskFromOverview) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  EXPECT_EQ(1u, overview_grid->window_list().size());
+  EXPECT_EQ(1u, overview_grid->item_list().size());
 
   // Remove desk_1 using the close button on its mini view. desk_1 is currently
   // inactive. Its windows should be moved to desk_4 and added to the overview
@@ -1468,20 +1468,20 @@ TEST_P(DesksTest, RemoveInactiveDeskFromOverview) {
 
   ASSERT_EQ(3u, desks_bar_view->mini_views().size());
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  ASSERT_EQ(4u, overview_grid->window_list().size());
+  ASSERT_EQ(4u, overview_grid->item_list().size());
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win0.get()));
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win1.get()));
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win2.get()));
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win3.get()));
   // Expected order of items: win3, win0, win2, win1.
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win3.get()),
-            overview_grid->window_list()[0].get());
+            overview_grid->item_list()[0].get());
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win0.get()),
-            overview_grid->window_list()[1].get());
+            overview_grid->item_list()[1].get());
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win2.get()),
-            overview_grid->window_list()[2].get());
+            overview_grid->item_list()[2].get());
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win1.get()),
-            overview_grid->window_list()[3].get());
+            overview_grid->item_list()[3].get());
 
   // Make sure overview mode remains active.
   base::RunLoop().RunUntilIdle();
@@ -1558,7 +1558,7 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  EXPECT_EQ(2u, overview_grid->window_list().size());
+  EXPECT_EQ(2u, overview_grid->item_list().size());
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
   ASSERT_EQ(2u, desks_bar_view->mini_views().size());
@@ -1592,7 +1592,7 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
   ASSERT_EQ(1u, desks_bar_view->mini_views().size());
   EXPECT_TRUE(desk_1->is_active());
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_EQ(4u, overview_grid->window_list().size());
+  EXPECT_EQ(4u, overview_grid->item_list().size());
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win0.get()));
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win1.get()));
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win2.get()));
@@ -1607,13 +1607,13 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
                 win3.get(),
             }));
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win0.get()),
-            overview_grid->window_list()[0].get());
+            overview_grid->item_list()[0].get());
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win1.get()),
-            overview_grid->window_list()[1].get());
+            overview_grid->item_list()[1].get());
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win2.get()),
-            overview_grid->window_list()[2].get());
+            overview_grid->item_list()[2].get());
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win3.get()),
-            overview_grid->window_list()[3].get());
+            overview_grid->item_list()[3].get());
 
   // Make sure overview mode remains active.
   base::RunLoop().RunUntilIdle();
@@ -6233,11 +6233,11 @@ TEST_P(DesksTest, GradientsVisibility) {
   const gfx::Point center_point = desks_bar->bounds().CenterPoint();
   ui::GestureEvent scroll_begin(
       center_point.x(), center_point.y(), ui::EF_NONE, base::TimeTicks::Now(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 1, 0));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollBegin, 1, 0));
   scroll_view->OnGestureEvent(&scroll_begin);
   ui::GestureEvent scroll_update(
       center_point.x(), center_point.y(), ui::EF_NONE, base::TimeTicks::Now(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, -100, 0));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollUpdate, -100, 0));
   scroll_view->OnGestureEvent(&scroll_update);
   EXPECT_TRUE(scroll_view->is_scrolling());
   EXPECT_TRUE(left_button->GetVisible());
@@ -6252,7 +6252,7 @@ TEST_P(DesksTest, GradientsVisibility) {
   ui::GestureEvent second_scroll_update(
       center_point.x() - 100, center_point.y(), ui::EF_NONE,
       base::TimeTicks::Now(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, 100, 0));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollUpdate, 100, 0));
   scroll_view->OnGestureEvent(&second_scroll_update);
   EXPECT_TRUE(scroll_view->is_scrolling());
   EXPECT_FALSE(left_button->GetVisible());
@@ -6264,7 +6264,7 @@ TEST_P(DesksTest, GradientsVisibility) {
 
   ui::GestureEvent scroll_end(
       center_point.x(), center_point.y(), ui::EF_NONE, base::TimeTicks::Now(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollEnd));
   scroll_view->OnGestureEvent(&scroll_end);
   EXPECT_FALSE(scroll_view->is_scrolling());
   EXPECT_FALSE(left_button->GetVisible());
@@ -10713,10 +10713,9 @@ TEST_P(DeskBarTest, BottomLockedShelf) {
 // Tests that we can undo close-all solely via keyboard navigation (tabbing to
 // the undo toast and pressing enter).
 TEST_P(DeskBarTest, CanUndoDeskClosureThroughKeyboardNavigation) {
-  // TODO(http://b/325335020): Support tabbing to the undo toast. We may want
-  // this applied for non chromevox as well.
-  if (use_overview_new_focus_) {
-    return;
+  if (!use_overview_new_focus_) {
+    GTEST_SKIP() << "Overview old focus is being deprecated. See "
+                    "http://b/325335020 for more details.";
   }
 
   // Scenarios in which we can try to undo desk closure. If the active desk is
@@ -10782,11 +10781,7 @@ TEST_P(DeskBarTest, CanUndoDeskClosureThroughKeyboardNavigation) {
       waiter.Wait();
     } else {
       ASSERT_EQ(DeskBarViewBase::Type::kOverview, bar_type_);
-      ASSERT_EQ(mini_views[0]->desk_preview(), Shell::Get()
-                                                   ->overview_controller()
-                                                   ->overview_session()
-                                                   ->focus_cycler_old()
-                                                   ->focused_view());
+      ASSERT_TRUE(mini_views[0]->desk_preview()->HasFocus());
 
       PressAndReleaseKey(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
     }

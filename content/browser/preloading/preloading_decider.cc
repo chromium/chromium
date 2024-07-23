@@ -487,6 +487,7 @@ bool PreloadingDecider::MaybePrefetch(
       std::move(matched_candidate_pair.value().second), enacting_predictor);
 
   auto it = on_standby_candidates_.find(key);
+  CHECK(it != on_standby_candidates_.end());
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates_for_key =
       std::move(it->second);
   RemoveStandbyCandidate(key);
@@ -616,6 +617,7 @@ std::pair<bool, bool> PreloadingDecider::MaybePrerender(
       result.first && PredictionOccursInOtherWebContents(*candidate);
 
   auto it = on_standby_candidates_.find(key);
+  CHECK(it != on_standby_candidates_.end());
   std::vector<blink::mojom::SpeculationCandidatePtr> processed =
       std::move(it->second);
   RemoveStandbyCandidate(it->first);

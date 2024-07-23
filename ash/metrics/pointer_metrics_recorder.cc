@@ -99,13 +99,15 @@ PointerMetricsRecorder::~PointerMetricsRecorder() {
 }
 
 void PointerMetricsRecorder::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_PRESSED)
+  if (event->type() == ui::EventType::kMousePressed) {
     RecordUMA(event->pointer_details().pointer_type, event->target());
+  }
 }
 
 void PointerMetricsRecorder::OnTouchEvent(ui::TouchEvent* event) {
-  if (event->type() == ui::ET_TOUCH_PRESSED)
+  if (event->type() == ui::EventType::kTouchPressed) {
     RecordUMA(event->pointer_details().pointer_type, event->target());
+  }
 }
 
 }  // namespace ash

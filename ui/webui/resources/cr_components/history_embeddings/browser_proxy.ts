@@ -2,31 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PageHandlerRemote, SearchQuery, SearchResult, UserFeedback} from './history_embeddings.mojom-webui.js';
-import {PageHandler} from './history_embeddings.mojom-webui.js';
+import type {PageHandlerRemote, SearchQuery, UserFeedback} from './history_embeddings.mojom-webui.js';
+import {PageCallbackRouter, PageHandler} from './history_embeddings.mojom-webui.js';
 
 export interface HistoryEmbeddingsBrowserProxy {
-  search(query: SearchQuery): Promise<SearchResult>;
+  search(query: SearchQuery): void;
   sendQualityLog(selectedIndices: number[], numCharsForQuery: number): void;
   recordSearchResultsMetrics(
       nonEmptyResults: boolean, userClickedResult: boolean): void;
   setUserFeedback(userFeedback: UserFeedback): void;
   maybeShowFeaturePromo(): void;
+
+  handler: PageHandlerRemote;
+  callbackRouter: PageCallbackRouter;
 }
 
 export class HistoryEmbeddingsBrowserProxyImpl implements
     HistoryEmbeddingsBrowserProxy {
   static instance: HistoryEmbeddingsBrowserProxy|null = null;
   handler: PageHandlerRemote;
+  callbackRouter: PageCallbackRouter;
 
-  constructor(handler: PageHandlerRemote) {
+  constructor(handler: PageHandlerRemote, callbackRouter?: PageCallbackRouter) {
     this.handler = handler;
+    this.callbackRouter = callbackRouter || new PageCallbackRouter();
   }
 
   static getInstance(): HistoryEmbeddingsBrowserProxy {
-    return HistoryEmbeddingsBrowserProxyImpl.instance ||
-        (HistoryEmbeddingsBrowserProxyImpl.instance =
-             new HistoryEmbeddingsBrowserProxyImpl(PageHandler.getRemote()));
+    if (HistoryEmbeddingsBrowserProxyImpl.instance) {
+      return HistoryEmbeddingsBrowserProxyImpl.instance;
+    }
+    const handler = PageHandler.getRemote();
+    const callbackRouter = new PageCallbackRouter();
+    handler.setPage(callbackRouter.$.bindNewPipeAndPassRemote());
+    HistoryEmbeddingsBrowserProxyImpl.instance =
+        new HistoryEmbeddingsBrowserProxyImpl(handler, callbackRouter);
+    return HistoryEmbeddingsBrowserProxyImpl.instance;
   }
 
   static setInstance(newInstance: HistoryEmbeddingsBrowserProxy) {
@@ -34,9 +45,8 @@ export class HistoryEmbeddingsBrowserProxyImpl implements
   }
 
   search(query: SearchQuery) {
-    return this.handler.search(query).then(response => response.result);
+    this.handler.search(query);
   }
-
 
   sendQualityLog(selectedIndices: number[], numCharsForQuery: number) {
     return this.handler.sendQualityLog(selectedIndices, numCharsForQuery);

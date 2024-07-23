@@ -13,7 +13,6 @@
 #include "content/browser/fenced_frame/automatic_beacon_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 
 namespace content {
@@ -42,14 +41,6 @@ class CONTENT_EXPORT FencedDocumentData
   void MaybeResetAutomaticBeaconData(
       blink::mojom::AutomaticBeaconType event_type);
 
-  network::AttributionReportingRuntimeFeatures features() const {
-    return features_;
-  }
-
-  void SetFeatures(network::AttributionReportingRuntimeFeatures features) {
-    features_ = features;
-  }
-
   void AddDisabledUntrustedNetworkCallback(base::OnceClosure callback) {
     on_disabled_untrusted_network_callbacks_.push_back(std::move(callback));
   }
@@ -63,8 +54,6 @@ class CONTENT_EXPORT FencedDocumentData
 
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();
-
-  network::AttributionReportingRuntimeFeatures features_;
 
   // Stores data registered by the document in a fenced frame tree using
   // the `fence.setReportEventDataForAutomaticBeacons` API. Maps an event type

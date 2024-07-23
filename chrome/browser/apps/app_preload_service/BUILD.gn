@@ -50,12 +50,14 @@ source_set("app_preload_service") {
   deps += [
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/extensions",
+    "//chrome/browser/ui/ash/shelf",
   ]
 
   # TODO(crbug.com/40251079): Remove circular dependencies.
   allow_circular_includes_from = [
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/extensions",
+    "//chrome/browser/ui/ash/shelf",
   ]
 }
 

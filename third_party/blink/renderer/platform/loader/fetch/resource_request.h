@@ -38,7 +38,6 @@
 #include "net/filter/source_stream.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom-blink-forward.h"
 #include "services/network/public/mojom/cors.mojom-blink-forward.h"
@@ -603,16 +602,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
     attribution_reporting_eligibility_ = eligibility;
   }
 
-  const network::AttributionReportingRuntimeFeatures&
-  GetAttributionReportingRuntimeFeatures() const {
-    return attribution_reporting_runtime_features_;
-  }
-
-  void SetAttributionReportingRuntimeFeatures(
-      network::AttributionReportingRuntimeFeatures runtime_features) {
-    attribution_reporting_runtime_features_ = runtime_features;
-  }
-
   const std::optional<base::UnguessableToken>& GetAttributionSrcToken() const {
     return attribution_reporting_src_token_;
   }
@@ -790,9 +779,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   network::mojom::AttributionReportingEligibility
       attribution_reporting_eligibility_ =
           network::mojom::AttributionReportingEligibility::kUnset;
-
-  network::AttributionReportingRuntimeFeatures
-      attribution_reporting_runtime_features_;
 
   std::optional<base::UnguessableToken> attribution_reporting_src_token_;
 

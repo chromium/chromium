@@ -20,23 +20,6 @@ source_set("v4l2") {
     "legacy/v4l2_video_decode_accelerator.h",
     "legacy/v4l2_video_decoder_backend_stateful.cc",
     "legacy/v4l2_video_decoder_backend_stateful.h",
-    "stateless/device.cc",
-    "stateless/device.h",
-    "stateless/h264_delegate.cc",
-    "stateless/h264_delegate.h",
-    "stateless/queue.cc",
-    "stateless/queue.h",
-    "stateless/stateless_decode_surface.cc",
-    "stateless/stateless_decode_surface.h",
-    "stateless/stateless_decode_surface_handler.h",
-    "stateless/stateless_device.cc",
-    "stateless/stateless_device.h",
-    "stateless/v4l2_stateless_video_decoder.cc",
-    "stateless/v4l2_stateless_video_decoder.h",
-    "stateless/vp8_delegate.cc",
-    "stateless/vp8_delegate.h",
-    "stateless/vp9_delegate.cc",
-    "stateless/vp9_delegate.h",
     "v4l2_decode_surface.cc",
     "v4l2_decode_surface.h",
     "v4l2_decode_surface_handler.h",
@@ -74,8 +57,6 @@ source_set("v4l2") {
 
   if (enable_hevc_parser_and_hw_decoder) {
     sources += [
-      "stateless/h265_delegate.cc",
-      "stateless/h265_delegate.h",
       "v4l2_video_decoder_delegate_h265.cc",
       "v4l2_video_decoder_delegate_h265.h",
     ]
@@ -92,8 +73,6 @@ source_set("v4l2") {
   if (is_chromeos) {
     sources += [
       # AV1 delegate depends on header files only in ChromeOS SDK
-      "stateless/av1_delegate.cc",
-      "stateless/av1_delegate.h",
       "v4l2_video_decoder_delegate_av1.cc",
       "v4l2_video_decoder_delegate_av1.h",
 

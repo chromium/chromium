@@ -69,8 +69,7 @@ FolderSelectionDialogController::FolderSelectionDialogController(
       /*file_types=*/nullptr,
       /*file_type_index=*/0,
       /*default_extension=*/base::FilePath::StringType(),
-      /*owning_window=*/owner,
-      /*params=*/nullptr);
+      /*owning_window=*/owner);
 }
 
 FolderSelectionDialogController::~FolderSelectionDialogController() {

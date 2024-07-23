@@ -434,7 +434,7 @@ std::optional<ui::TouchEvent> Action::GetTouchCanceledEvent() {
     return std::nullopt;
   }
   auto touch_event = std::make_optional<ui::TouchEvent>(
-      ui::EventType::ET_TOUCH_CANCELLED, last_touch_root_location_,
+      ui::EventType::kTouchCancelled, last_touch_root_location_,
       last_touch_root_location_, ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch, touch_id_.value()));
   ui::Event::DispatcherApi(&*touch_event).set_target(touch_injector_->window());
@@ -448,7 +448,7 @@ std::optional<ui::TouchEvent> Action::GetTouchReleasedEvent() {
     return std::nullopt;
   }
   auto touch_event = std::make_optional<ui::TouchEvent>(
-      ui::EventType::ET_TOUCH_RELEASED, last_touch_root_location_,
+      ui::EventType::kTouchReleased, last_touch_root_location_,
       last_touch_root_location_, ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch, touch_id_.value()));
   ui::Event::DispatcherApi(&*touch_event).set_target(touch_injector_->window());
@@ -499,29 +499,29 @@ bool Action::CreateTouchPressedEvent(const base::TimeTicks& time_stamp,
     return false;
   }
 
-  CreateTouchEvent(ui::EventType::ET_TOUCH_PRESSED, time_stamp, touch_events);
+  CreateTouchEvent(ui::EventType::kTouchPressed, time_stamp, touch_events);
   return true;
 }
 
 void Action::CreateTouchMovedEvent(const base::TimeTicks& time_stamp,
                                    std::list<ui::TouchEvent>& touch_events) {
-  CreateTouchEvent(ui::EventType::ET_TOUCH_MOVED, time_stamp, touch_events);
+  CreateTouchEvent(ui::EventType::kTouchMoved, time_stamp, touch_events);
 }
 
 void Action::CreateTouchReleasedEvent(const base::TimeTicks& time_stamp,
                                       std::list<ui::TouchEvent>& touch_events) {
-  CreateTouchEvent(ui::EventType::ET_TOUCH_RELEASED, time_stamp, touch_events);
+  CreateTouchEvent(ui::EventType::kTouchReleased, time_stamp, touch_events);
   OnTouchReleased();
 }
 
 bool Action::IsRepeatedKeyEvent(const ui::KeyEvent& key_event) {
   if ((key_event.flags() & ui::EF_IS_REPEAT) &&
-      (key_event.type() == ui::ET_KEY_PRESSED)) {
+      (key_event.type() == ui::EventType::kKeyPressed)) {
     return true;
   }
 
   // TODO (b/200210666): Can remove this after the bug is fixed.
-  if (key_event.type() == ui::ET_KEY_PRESSED &&
+  if (key_event.type() == ui::EventType::kKeyPressed &&
       keys_pressed_.contains(key_event.code())) {
     return true;
   }

@@ -41,7 +41,6 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/url_request/url_request.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -265,8 +264,7 @@ void AttributionHost::NotifyNavigationRegistrationData(
   bool had_header =
       attribution_manager->GetDataHostManager()
           ->NotifyNavigationRegistrationData(impression->attribution_src_token,
-                                             headers, std::move(reporting_url),
-                                             impression->runtime_features);
+                                             headers, std::move(reporting_url));
 
   if (had_header) {
     tracker->NotifySecureRegistrationAttempt();

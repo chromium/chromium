@@ -164,10 +164,6 @@ class WebClient {
   virtual void LogDefaultUserAgent(web::WebState* web_state,
                                    const GURL& url) const;
 
-  // Fetches the session data blob from cache for `web_state`. Returns nil if
-  // the blob could not be loaded (missing, feature disabled, ...).
-  virtual NSData* FetchSessionFromCache(web::WebState* web_state) const;
-
   // Correct missing NTP and reading list virtualURLs and titles. Native session
   // restoration may not properly restore these items.
   virtual void CleanupNativeRestoreURLs(web::WebState* web_state) const;

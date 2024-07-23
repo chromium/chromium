@@ -221,22 +221,22 @@ class PLATFORM_EXPORT DisplayItemList {
   }
 
 #if DCHECK_IS_ON()
-  enum JsonOptions {
-    kDefault = 0,
-    kClientKnownToBeAlive = 1,
+  enum JsonOption {
+    kDefault,
     // Only show a compact representation of the display item list. This flag
     // cannot be used with kShowPaintRecords.
-    kCompact = 1 << 1,
-    kShowPaintRecords = 1 << 2,
+    kCompact,
+    kShowPaintRecords,
   };
-  typedef unsigned JsonFlags;
 
   static std::unique_ptr<JSONArray> DisplayItemsAsJSON(
       const PaintArtifact&,
       wtf_size_t first_item_index,
       const Range<const_iterator>& display_items,
-      JsonFlags);
-#endif  // DCHECK_IS_ON()
+      JsonOption);
+#else  // DCHECK_IS_ON()
+  enum JsonOption { kDefault };
+#endif
 
  private:
   static_assert(std::is_trivially_copyable<value_type>::value,

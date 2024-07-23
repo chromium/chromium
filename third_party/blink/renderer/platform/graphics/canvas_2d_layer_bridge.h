@@ -99,7 +99,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
     logger_ = std::move(logger);
   }
   CanvasResourceProvider* GetOrCreateResourceProvider();
-  void FlushRecording(FlushReason);
 
   CanvasHibernationHandler& GetHibernationHandlerForTesting() {
     return hibernation_handler_;

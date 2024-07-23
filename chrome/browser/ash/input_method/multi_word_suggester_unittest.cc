@@ -33,9 +33,9 @@ constexpr int kFocusedContextId = 5;
 constexpr size_t kTakeLastNChars = 100;
 
 void SendKeyEvent(MultiWordSuggester* suggester, const ui::DomCode& code) {
-  suggester->HandleKeyEvent(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN,
-                                         code, ui::EF_NONE, ui::DomKey::NONE,
-                                         ui::EventTimeForNow()));
+  suggester->HandleKeyEvent(
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_UNKNOWN, code,
+                   ui::EF_NONE, ui::DomKey::NONE, ui::EventTimeForNow()));
 }
 
 void SetFirstAcceptTimeTo(Profile* profile, int days_ago) {

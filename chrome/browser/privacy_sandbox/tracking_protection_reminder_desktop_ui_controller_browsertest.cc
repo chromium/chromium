@@ -14,6 +14,8 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/privacy_sandbox/tracking_protection_reminder_service.h"
+#include "components/user_education/views/help_bubble_factory_views.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -93,8 +95,15 @@ class TrackingProtectionReminderDesktopUiControllerTest
     return {feature_engagement::kIPHTrackingProtectionReminderFeature};
   }
 
+  static base::Time FakeTimeNow() { return fake_time_; }
+  static void SetFakeNow(base::Time fake_now) { fake_time_ = fake_now; }
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+
+ private:
+  static base::Time fake_time_;
 };
+
+base::Time TrackingProtectionReminderDesktopUiControllerTest::fake_time_;
 
 class TrackingProtectionReminderDesktopUiControllerIphTest
     : public TrackingProtectionReminderDesktopUiControllerTest {
@@ -114,6 +123,13 @@ class TrackingProtectionReminderDesktopUiControllerIphTest
 
 IN_PROC_BROWSER_TEST_F(TrackingProtectionReminderDesktopUiControllerIphTest,
                        ReminderIsShown) {
+  base::Time current_time;
+  EXPECT_TRUE(base::Time::FromString("22 Jul 2024 12:00 GMT", &current_time));
+  SetFakeNow(current_time);
+  base::subtle::ScopedTimeClockOverrides override(
+      &TrackingProtectionReminderDesktopUiControllerTest::FakeTimeNow,
+      /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
   // Set reminder status to `kPendingReminder`.
   SetIsModeBUser(false);
   ShowOnboardingNotice(/*is_silent=*/false);
@@ -121,6 +137,9 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionReminderDesktopUiControllerIphTest,
   EXPECT_EQ(
       reminder_service()->GetReminderStatus(),
       tracking_protection::TrackingProtectionReminderStatus::kPendingReminder);
+  EXPECT_EQ(reminder_service()->GetReminderNoticeData(
+                TrackingProtectionOnboarding::SurfaceType::kDesktop),
+            std::nullopt);
 
   // Open a new tab with the tracking protection icon visible.
   browser()->window()->Activate();
@@ -136,6 +155,133 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionReminderDesktopUiControllerIphTest,
   EXPECT_EQ(reminder_service()->GetReminderStatus(),
             tracking_protection::TrackingProtectionReminderStatus::
                 kExperiencedReminder);
+  // Confirm that the timestamp was recorded.
+  EXPECT_EQ(reminder_service()
+                ->GetReminderNoticeData(
+                    TrackingProtectionOnboarding::SurfaceType::kDesktop)
+                ->notice_first_shown,
+            FakeTimeNow());
+}
+
+IN_PROC_BROWSER_TEST_F(TrackingProtectionReminderDesktopUiControllerIphTest,
+                       ReminderCanceled) {
+  // Set up the environment such that we will receive a reminder.
+  SetIsModeBUser(false);
+  ShowOnboardingNotice(/*is_silent=*/false);
+  CallOnboardingObserver(/*is_silent=*/false);
+  // Ensure that values have not yet been set.
+  EXPECT_EQ(reminder_service()->GetReminderNoticeData(
+                TrackingProtectionOnboarding::SurfaceType::kDesktop),
+            std::nullopt);
+
+  // Open a new tab with the tracking protection icon visible.
+  browser()->window()->Activate();
+  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+      browser(),
+      https_server_.GetURL("a.test", "/third_party_partitioned_cookies.html"),
+      1, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  EXPECT_TRUE(IsReminderIphActive(browser()));
+  // Close the IPH via the cancel button.
+  RunTestSequence(
+      PressButton(user_education::HelpBubbleView::kCloseButtonIdForTesting),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+          true));
+  EXPECT_FALSE(IsReminderIphActive(browser()));
+
+  // Confirm that the reminder close event was recorded.
+  EXPECT_GT(reminder_service()
+                ->GetReminderNoticeData(
+                    TrackingProtectionOnboarding::SurfaceType::kDesktop)
+                ->notice_shown_duration,
+            base::Seconds(0));
+  EXPECT_EQ(reminder_service()
+                ->GetReminderNoticeData(
+                    TrackingProtectionOnboarding::SurfaceType::kDesktop)
+                ->notice_action_taken,
+            privacy_sandbox::NoticeActionTaken::kClosed);
+}
+
+IN_PROC_BROWSER_TEST_F(TrackingProtectionReminderDesktopUiControllerIphTest,
+                       ReminderIsCanceledOnTabSwitch) {
+  // Set up the environment such that we will receive a reminder.
+  SetIsModeBUser(false);
+  ShowOnboardingNotice(/*is_silent=*/false);
+  CallOnboardingObserver(/*is_silent=*/false);
+  // Ensure that values have not yet been set.
+  EXPECT_EQ(reminder_service()->GetReminderNoticeData(
+                TrackingProtectionOnboarding::SurfaceType::kDesktop),
+            std::nullopt);
+
+  // Open a new tab with the tracking protection icon visible.
+  browser()->window()->Activate();
+  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+      browser(),
+      https_server_.GetURL("a.test", "/third_party_partitioned_cookies.html"),
+      1, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  // Creates new background tab to switch to.
+  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("b.test", "/empty.html"), 1,
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  EXPECT_TRUE(IsReminderIphActive(browser()));
+  // Switch to the next tab.
+  browser()->tab_strip_model()->SelectNextTab();
+  EXPECT_FALSE(IsReminderIphActive(browser()));
+
+  // Confirm that the reminder close event was recorded.
+  EXPECT_GT(reminder_service()
+                ->GetReminderNoticeData(
+                    TrackingProtectionOnboarding::SurfaceType::kDesktop)
+                ->notice_shown_duration,
+            base::Seconds(0));
+  EXPECT_EQ(reminder_service()
+                ->GetReminderNoticeData(
+                    TrackingProtectionOnboarding::SurfaceType::kDesktop)
+                ->notice_action_taken,
+            privacy_sandbox::NoticeActionTaken::kClosed);
+}
+
+IN_PROC_BROWSER_TEST_F(TrackingProtectionReminderDesktopUiControllerIphTest,
+                       ReminderTimesOut) {
+  // Set up the environment such that we will receive a reminder.
+  SetIsModeBUser(false);
+  ShowOnboardingNotice(/*is_silent=*/false);
+  CallOnboardingObserver(/*is_silent=*/false);
+  // Ensure that values have not yet been set.
+  EXPECT_EQ(reminder_service()->GetReminderNoticeData(
+                TrackingProtectionOnboarding::SurfaceType::kDesktop),
+            std::nullopt);
+
+  // Open a new tab with the tracking protection icon visible.
+  browser()->window()->Activate();
+  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+      browser(),
+      https_server_.GetURL("a.test", "/third_party_partitioned_cookies.html"),
+      1, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  EXPECT_TRUE(IsReminderIphActive(browser()));
+  // Wait for the IPH to timeout.
+  RunTestSequence(WaitForHide(
+      user_education::HelpBubbleView::kHelpBubbleElementIdForTesting, true));
+  EXPECT_FALSE(IsReminderIphActive(browser()));
+
+  // Confirm that the reminder close event was recorded.
+  EXPECT_GT(reminder_service()
+                ->GetReminderNoticeData(
+                    TrackingProtectionOnboarding::SurfaceType::kDesktop)
+                ->notice_shown_duration,
+            base::Seconds(0));
+  EXPECT_EQ(reminder_service()
+                ->GetReminderNoticeData(
+                    TrackingProtectionOnboarding::SurfaceType::kDesktop)
+                ->notice_action_taken,
+            privacy_sandbox::NoticeActionTaken::kTimedOut);
 }
 
 IN_PROC_BROWSER_TEST_F(TrackingProtectionReminderDesktopUiControllerIphTest,
@@ -213,6 +359,11 @@ class TrackingProtectionReminderDesktopUiControllerSilentReminderIphTest
 IN_PROC_BROWSER_TEST_P(
     TrackingProtectionReminderDesktopUiControllerSilentReminderIphTest,
     SilentReminderExperienced) {
+  SetFakeNow(base::Time::Now());
+  base::subtle::ScopedTimeClockOverrides override(
+      &TrackingProtectionReminderDesktopUiControllerTest::FakeTimeNow,
+      /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
   // Update the profile such that they are eligible to experience a silent
   // reminder.
   SetIsModeBUser(false);
@@ -221,6 +372,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(
       reminder_service()->GetReminderStatus(),
       tracking_protection::TrackingProtectionReminderStatus::kPendingReminder);
+  EXPECT_EQ(reminder_service()->GetReminderNoticeData(
+                TrackingProtectionOnboarding::SurfaceType::kDesktop),
+            std::nullopt);
 
   // Force the User bypass icon to be visible.
   EnableTrackingProtection();
@@ -241,6 +395,12 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(reminder_service()->GetReminderStatus(),
             tracking_protection::TrackingProtectionReminderStatus::
                 kExperiencedReminder);
+  // Confirm that the experienced timestamp was logged.
+  EXPECT_EQ(reminder_service()
+                ->GetReminderNoticeData(
+                    TrackingProtectionOnboarding::SurfaceType::kDesktop)
+                ->notice_first_shown,
+            FakeTimeNow());
 }
 IN_PROC_BROWSER_TEST_P(
     TrackingProtectionReminderDesktopUiControllerSilentReminderIphTest,

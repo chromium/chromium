@@ -282,13 +282,13 @@ void DockedMagnifierController::OnScrollEvent(ui::ScrollEvent* event) {
   if (!event->IsAltDown() || !event->IsControlDown())
     return;
 
-  if (event->type() == ui::ET_SCROLL_FLING_START ||
-      event->type() == ui::ET_SCROLL_FLING_CANCEL) {
+  if (event->type() == ui::EventType::kScrollFlingStart ||
+      event->type() == ui::EventType::kScrollFlingCancel) {
     event->StopPropagation();
     return;
   }
 
-  if (event->type() == ui::ET_SCROLL) {
+  if (event->type() == ui::EventType::kScroll) {
     // Notes: - Clamping of the new scale value happens inside SetScale().
     //        - Refreshing the viewport happens in the handler of the scale pref
     //          changes.
@@ -444,7 +444,7 @@ void DockedMagnifierController::MaybePerformViewportResizing(
   // If user releases left mouse button, or any other mouse button is pressed,
   // ignore and stop resizing.
   if (!event->IsOnlyLeftMouseButton() ||
-      event->type() == ui::ET_MOUSE_RELEASED) {
+      event->type() == ui::EventType::kMouseReleased) {
     if (is_resizing_) {
       is_resizing_ = false;
       ConfineMouseCursorOutsideViewport();
@@ -455,7 +455,7 @@ void DockedMagnifierController::MaybePerformViewportResizing(
       root_bounds.height() / std::max(1.0f, root_y + resize_offset_);
 
   switch (event->type()) {
-    case ui::ET_MOUSE_PRESSED:
+    case ui::EventType::kMousePressed:
       // User clicks within separator to start resizing Docked Magnifier.
       // Subtracting one is needed to capture when mouse is at the very top.
       if (!is_resizing_ && cursor_is_over_resizer) {
@@ -466,7 +466,7 @@ void DockedMagnifierController::MaybePerformViewportResizing(
             ->ConfineCursorToRootWindow();
       }
       break;
-    case ui::ET_MOUSE_DRAGGED:
+    case ui::EventType::kMouseDragged:
       // User continues holding and drags separator to resize Docked Magnifier.
       if (is_resizing_) {
         SetScreenHeightDivisor(std::clamp(new_screen_height_divisor,

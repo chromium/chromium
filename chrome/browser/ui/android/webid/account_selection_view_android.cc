@@ -172,10 +172,13 @@ bool AccountSelectionViewAndroid::Show(
                                     identity_provider_data[0].client_metadata);
 
   // TODO(crbug.com/41490360): Use `new_account_idp` on Android.
+  // TODO(crbug.com/329235198): Support auto re-authn on Android.
   Java_AccountSelectionBridge_showAccounts(
       env, java_object_internal_, rp_for_display,
       identity_provider_data[0].idp_for_display, accounts_obj, idp_metadata_obj,
-      client_id_metadata_obj, sign_in_mode == Account::SignInMode::kAuto,
+      client_id_metadata_obj,
+      sign_in_mode == Account::SignInMode::kAuto &&
+          rp_mode == blink::mojom::RpMode::kWidget,
       static_cast<jint>(identity_provider_data[0].rp_context),
       identity_provider_data[0].request_permission);
   return true;

@@ -187,6 +187,7 @@ struct Keyboard {
   array<TopRowActionKey> top_row_action_keys;
   KeyboardSettings settings;
   BatteryInfo? battery_info;
+  CompanionAppInfo? app_info;
 };
 
 // Contains all existing keyboard settings available for use.
@@ -264,6 +265,7 @@ struct Touchpad {
   bool is_haptic;
   TouchpadSettings settings;
   BatteryInfo? battery_info;
+  CompanionAppInfo? app_info;
 };
 
 // Contains all existing touchpad settings available for use.
@@ -348,6 +350,7 @@ struct GraphicsTablet {
   GraphicsTabletButtonConfig graphics_tablet_button_config;
   GraphicsTabletSettings settings;
   BatteryInfo? battery_info;
+  CompanionAppInfo? app_info;
 };
 
 // Contains all existing graphics tablet settings available for use.

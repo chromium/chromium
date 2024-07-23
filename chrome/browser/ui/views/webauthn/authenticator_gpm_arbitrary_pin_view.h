@@ -27,10 +27,11 @@ class AuthenticatorGPMArbitraryPinView : public views::View,
     virtual void UpdateHintVisibility() = 0;
   };
 
-  explicit AuthenticatorGPMArbitraryPinView(bool ui_disabled,
-                                            const std::u16string& pin,
-                                            bool is_pin_creation,
-                                            Delegate* delegate);
+  explicit AuthenticatorGPMArbitraryPinView(
+      bool ui_disabled,
+      const std::u16string& pin,
+      const std::u16string& pin_accessible_name,
+      Delegate* delegate);
 
   AuthenticatorGPMArbitraryPinView(const AuthenticatorGPMArbitraryPinView&) =
       delete;

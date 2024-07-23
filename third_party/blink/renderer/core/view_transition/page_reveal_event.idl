@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://drafts.csswg.org/css-view-transitions-2/#reveal-event
-
+// https://html.spec.whatwg.org/multipage/nav-history-apis.html#pagerevealevent
 [
   Exposed=Window,
   RuntimeEnabled=PageRevealEvent
 ] interface PageRevealEvent : Event {
+  constructor(DOMString type, optional PageRevealEventInit eventInitDict = {});
   [RuntimeEnabled=ViewTransitionOnNavigation] readonly attribute ViewTransition? viewTransition;
 };

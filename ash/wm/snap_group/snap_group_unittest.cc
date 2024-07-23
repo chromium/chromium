@@ -256,7 +256,7 @@ void LongTapAt(ui::test::EventGenerator* event_generator,
                const gfx::Point& point) {
   ui::GestureEvent long_press(
       point.x(), point.y(), 0, base::TimeTicks::Now(),
-      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   event_generator->Dispatch(&long_press);
 }
 
@@ -4850,7 +4850,7 @@ TEST_F(SnapGroupOverviewTest, OverviewGroupItemCreationBasic) {
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  EXPECT_EQ(overview_grid->window_list().size(), 2u);
+  EXPECT_EQ(2u, overview_grid->item_list().size());
 }
 
 // Verifies that the divider doesn't appear precipitously before the exit
@@ -4907,19 +4907,19 @@ TEST_F(SnapGroupOverviewTest, WindowDestructionInOverview) {
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  ASSERT_EQ(overview_grid->window_list().size(), 2u);
+  ASSERT_EQ(2u, overview_grid->item_list().size());
 
   // On one window in snap group destroying, the group item will host the other
   // window.
   w2.reset();
   ASSERT_TRUE(overview_grid);
-  EXPECT_EQ(overview_grid->window_list().size(), 2u);
+  EXPECT_EQ(2u, overview_grid->item_list().size());
 
   // On the only remaining window in snap group destroying, the group item will
   // be removed from the overview grid.
   w1.reset();
   ASSERT_TRUE(overview_grid);
-  EXPECT_EQ(overview_grid->window_list().size(), 1u);
+  EXPECT_EQ(1u, overview_grid->item_list().size());
 }
 
 // Tests that the rounded corners of the remaining item in the snap group on
@@ -4939,12 +4939,12 @@ TEST_F(SnapGroupOverviewTest, RefreshVisualsOnWindowDestructionInOverview) {
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  const auto& overview_items = overview_grid->window_list();
-  ASSERT_EQ(overview_items.size(), 2u);
+  const auto& overview_items = overview_grid->item_list();
+  ASSERT_EQ(2u, overview_items.size());
 
   w2.reset();
   ASSERT_TRUE(overview_grid);
-  EXPECT_EQ(overview_grid->window_list().size(), 2u);
+  EXPECT_EQ(2u, overview_grid->item_list().size());
 
   for (const auto& overview_item : overview_items) {
     const gfx::RoundedCornersF rounded_corners =
@@ -4983,13 +4983,13 @@ TEST_F(SnapGroupOverviewTest,
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  ASSERT_EQ(overview_grid->window_list().size(), 2u);
+  ASSERT_EQ(2u, overview_grid->item_list().size());
 
   // On one window in snap group destroying, the group item will host the other
   // window.
   w2.reset();
   ASSERT_TRUE(overview_grid);
-  EXPECT_EQ(overview_grid->window_list().size(), 2u);
+  EXPECT_EQ(2u, overview_grid->item_list().size());
 
   ClickOverviewItem(GetEventGenerator(), w1.get());
   EXPECT_FALSE(overview_controller->InOverviewSession());
@@ -5060,7 +5060,7 @@ TEST_F(SnapGroupOverviewTest, ReflectSnapRatioInOverviewGroupItem) {
 
   const auto& overview_items =
       overview_group_item->overview_items_for_testing();
-  ASSERT_EQ(overview_items.size(), 2u);
+  ASSERT_EQ(2u, overview_items.size());
 
   // Since `w1` is roughly half the width of `w2`, verify that `item1_bounds` is
   // also half the width of `item2_bounds`.
@@ -5138,7 +5138,7 @@ TEST_F(SnapGroupOverviewTest, CloseIndividualWindowByCloseButton) {
 
   const auto& overview_items =
       overview_group_item->overview_items_for_testing();
-  ASSERT_EQ(overview_items.size(), 2u);
+  ASSERT_EQ(2u, overview_items.size());
 
   // Since the window will be deleted in overview, release the ownership to
   // avoid double deletion.
@@ -5189,7 +5189,7 @@ TEST_F(SnapGroupOverviewTest, TabbingBasic) {
 
   const auto& overview_items =
       overview_group_item->overview_items_for_testing();
-  ASSERT_EQ(overview_items.size(), 2u);
+  ASSERT_EQ(2u, overview_items.size());
 
   OverviewFocusCycler* focus_cycler =
       overview_controller->overview_session()->focus_cycler();
@@ -5306,9 +5306,9 @@ TEST_F(SnapGroupOverviewTest, OverviewGroupItemRoundedCornersInHorizontal) {
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  const auto& window_list = overview_grid->window_list();
-  ASSERT_EQ(window_list.size(), 2u);
-  for (const auto& overview_item : window_list) {
+  const auto& item_list = overview_grid->item_list();
+  ASSERT_EQ(2u, item_list.size());
+  for (const auto& overview_item : item_list) {
     EXPECT_EQ(overview_item->GetRoundedCorners(),
               gfx::RoundedCornersF(kWindowMiniViewCornerRadius));
   }
@@ -5365,9 +5365,9 @@ TEST_F(SnapGroupOverviewTest, OverviewGroupItemRoundedCornersInVertical) {
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  const auto& window_list = overview_grid->window_list();
-  ASSERT_EQ(window_list.size(), 2u);
-  for (const auto& overview_item : window_list) {
+  const auto& item_list = overview_grid->item_list();
+  ASSERT_EQ(2u, item_list.size());
+  for (const auto& overview_item : item_list) {
     EXPECT_EQ(overview_item->GetRoundedCorners(),
               gfx::RoundedCornersF(kWindowMiniViewCornerRadius));
   }
@@ -5389,15 +5389,15 @@ TEST_F(SnapGroupOverviewTest, OverviewGroupItemShadow) {
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  const auto& window_list = overview_grid->window_list();
-  ASSERT_EQ(window_list.size(), 2u);
+  const auto& item_list = overview_grid->item_list();
+  ASSERT_EQ(2u, item_list.size());
 
   // Wait until the post task to `UpdateRoundedCornersAndShadow()` triggered in
   // `OverviewController::DelayedUpdateRoundedCornersAndShadow()` is finished.
   ShellTestApi().WaitForOverviewAnimationState(
       OverviewAnimationState::kEnterAnimationComplete);
   base::RunLoop().RunUntilIdle();
-  for (const auto& overview_item : window_list) {
+  for (const auto& overview_item : item_list) {
     const auto shadow_content_bounds =
         overview_item->get_shadow_content_bounds_for_testing();
     ASSERT_FALSE(shadow_content_bounds.IsEmpty());
@@ -5434,17 +5434,17 @@ TEST_F(SnapGroupOverviewTest, CorrectShadowBoundsOnRemainingItemInOverview) {
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  const auto& window_list = overview_grid->window_list();
-  ASSERT_EQ(window_list.size(), 5u);
+  const auto& item_list = overview_grid->item_list();
+  ASSERT_EQ(5u, item_list.size());
 
   OverviewGroupItem* overview_group_item =
-      static_cast<OverviewGroupItem*>(window_list[4].get());
+      static_cast<OverviewGroupItem*>(item_list[4].get());
   const auto& overview_items =
       overview_group_item->overview_items_for_testing();
-  ASSERT_EQ(overview_items.size(), 2u);
+  ASSERT_EQ(2u, overview_items.size());
 
   w0.reset();
-  EXPECT_EQ(window_list.size(), 5u);
+  EXPECT_EQ(item_list.size(), 5u);
   EXPECT_EQ(overview_items.size(), 1u);
 
   // Verify that the group-level shadow will be reset and the window-level
@@ -5495,8 +5495,8 @@ TEST_F(SnapGroupOverviewTest, GroupItemActivation) {
     const auto* overview_grid =
         GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
     ASSERT_TRUE(overview_grid);
-    const auto& window_list = overview_grid->window_list();
-    ASSERT_EQ(window_list.size(), 2u);
+    const auto& item_list = overview_grid->item_list();
+    ASSERT_EQ(2u, item_list.size());
 
     OverviewSession* overview_session = overview_controller->overview_session();
     auto* overview_item =
@@ -5544,8 +5544,8 @@ TEST_F(SnapGroupOverviewTest, DragAndDropBasic) {
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  const auto& window_list = overview_grid->window_list();
-  ASSERT_EQ(window_list.size(), 1u);
+  const auto& item_list = overview_grid->item_list();
+  ASSERT_EQ(1u, item_list.size());
 
   OverviewSession* overview_session = overview_controller->overview_session();
   auto* overview_item =
@@ -5594,8 +5594,8 @@ TEST_F(SnapGroupOverviewTest, DropTargetBoundsForGroupItem) {
   aura::Window* primary_root_window = Shell::GetPrimaryRootWindow();
   auto* overview_grid = GetOverviewGridForRoot(primary_root_window);
   ASSERT_TRUE(overview_grid);
-  const auto& window_list = overview_grid->window_list();
-  ASSERT_EQ(window_list.size(), 1u);
+  const auto& item_list = overview_grid->item_list();
+  ASSERT_EQ(1u, item_list.size());
 
   OverviewSession* overview_session = overview_controller->overview_session();
   auto* overview_item =
@@ -5646,8 +5646,8 @@ TEST_F(SnapGroupOverviewTest, StackingOrderWhileDraggingInOverview) {
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  const auto& window_list = overview_grid->window_list();
-  ASSERT_EQ(window_list.size(), 2u);
+  const auto& item_list = overview_grid->item_list();
+  ASSERT_EQ(2u, item_list.size());
 
   OverviewSession* overview_session = overview_controller->overview_session();
   auto* group_item = overview_session->GetOverviewItemForWindow(w0.get());
@@ -5824,8 +5824,8 @@ TEST_F(SnapGroupOverviewTest, GroupItemSnapBehaviorInOverview) {
 
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  const auto& window_list = overview_grid->window_list();
-  ASSERT_EQ(window_list.size(), 1u);
+  const auto& item_list = overview_grid->item_list();
+  ASSERT_EQ(1u, item_list.size());
 
   OverviewSession* overview_session = overview_controller->overview_session();
   auto* overview_item =
@@ -6097,7 +6097,7 @@ TEST_F(SnapGroupOverviewTest, NoDuplicateGroupItemsWithActivatableTransient) {
   ASSERT_TRUE(overview_grid);
 
   // Verify that there will be only one Overview item in the list.
-  EXPECT_EQ(1u, overview_grid->window_list().size());
+  EXPECT_EQ(1u, overview_grid->item_list().size());
 }
 
 // -----------------------------------------------------------------------------
@@ -6126,12 +6126,12 @@ TEST_F(SnapGroupDesksTest, DragOverviewGroupItemToAnotherDesk) {
 
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  const auto& window_list = overview_grid->window_list();
-  ASSERT_EQ(window_list.size(), 1u);
+  const auto& item_list = overview_grid->item_list();
+  ASSERT_EQ(1u, item_list.size());
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
   const auto& mini_views = desks_bar_view->mini_views();
-  ASSERT_EQ(mini_views.size(), 2u);
+  ASSERT_EQ(2u, mini_views.size());
 
   const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
   const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
@@ -6206,12 +6206,12 @@ TEST_F(SnapGroupDesksTest,
 
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  const auto& window_list = overview_grid->window_list();
-  ASSERT_EQ(window_list.size(), 1u);
+  const auto& item_list = overview_grid->item_list();
+  ASSERT_EQ(1u, item_list.size());
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
   const auto& mini_views = desks_bar_view->mini_views();
-  ASSERT_EQ(mini_views.size(), 2u);
+  ASSERT_EQ(2u, mini_views.size());
 
   const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
   const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
@@ -6560,12 +6560,12 @@ TEST_F(SnapGroupDesksTest, ResizeThenMoveGroupToAnotherDesk) {
 
   auto* overview_grid = GetOverviewGridForRoot(w0->GetRootWindow());
   ASSERT_TRUE(overview_grid);
-  const auto& window_list = overview_grid->window_list();
-  ASSERT_EQ(window_list.size(), 1u);
+  const auto& item_list = overview_grid->item_list();
+  ASSERT_EQ(1u, item_list.size());
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
   const auto& mini_views = desks_bar_view->mini_views();
-  ASSERT_EQ(mini_views.size(), 2u);
+  ASSERT_EQ(2u, mini_views.size());
 
   DragGroupItemToPoint(
       overview_controller->overview_session()->GetOverviewItemForWindow(
@@ -6908,7 +6908,7 @@ TEST_F(SnapGroupDesksTest, SaveDeskForSnapGroupWithAnotherSavedDesk) {
   auto* root_window = Shell::GetPrimaryRootWindow();
   OverviewGrid* overview_grid = GetOverviewGridForRoot(root_window);
   ASSERT_TRUE(overview_grid);
-  ASSERT_EQ(1u, overview_grid->window_list().size());
+  ASSERT_EQ(1u, overview_grid->item_list().size());
 
   auto* save_for_later_button = overview_grid->GetSaveDeskForLaterButton();
   ASSERT_TRUE(save_for_later_button);
@@ -7858,12 +7858,12 @@ TEST_F(SnapGroupTabletConversionTest, TransitionToTabletInOverview) {
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
   // Verify that there is one `OverviewGroupItem` initially in clamshell mode.
-  EXPECT_EQ(1u, overview_grid->window_list().size());
+  EXPECT_EQ(1u, overview_grid->item_list().size());
 
   // Upon switching to tablet mode, the `OverviewGroupItem` is removed and
   // replaced with two separate items, there is no overlap in their bounds.
   SwitchToTabletMode();
-  EXPECT_EQ(2u, overview_grid->window_list().size());
+  EXPECT_EQ(2u, overview_grid->item_list().size());
 
   OverviewItemBase* overview_item1 = GetOverviewItemForWindow(w1.get());
   OverviewItemBase* overview_item2 = GetOverviewItemForWindow(w2.get());
@@ -7883,7 +7883,7 @@ TEST_F(SnapGroupTabletConversionTest, TransitionToTabletInOverview) {
   // distinctly separate within the Overview grid, with no intersection of their
   // bounds.
   ExitTabletMode();
-  EXPECT_EQ(2u, overview_grid->window_list().size());
+  EXPECT_EQ(2u, overview_grid->item_list().size());
 
   overview_item1 = GetOverviewItemForWindow(w1.get());
   overview_item2 = GetOverviewItemForWindow(w2.get());
@@ -7933,14 +7933,14 @@ TEST_F(SnapGroupTabletConversionTest, TransitionToTabletInPartialOverview) {
   auto* root_window = Shell::GetPrimaryRootWindow();
   const auto* overview_grid = GetOverviewGridForRoot(root_window);
   ASSERT_TRUE(overview_grid);
-  EXPECT_EQ(2u, overview_grid->window_list().size());
+  EXPECT_EQ(2u, overview_grid->item_list().size());
   EXPECT_TRUE(w1->IsVisible());
   EXPECT_TRUE(w2->IsVisible());
 
   // Verify that the the `OverviewGroupItem` is removed and replaced with two
   // separate items after converting to tablet mode.
   SwitchToTabletMode();
-  EXPECT_EQ(3u, overview_grid->window_list().size());
+  EXPECT_EQ(3u, overview_grid->item_list().size());
 }
 
 // -----------------------------------------------------------------------------
@@ -8103,7 +8103,7 @@ TEST_F(SnapGroupMultipleSnapGroupsTest,
   auto* root_window = Shell::GetPrimaryRootWindow();
   const auto* overview_grid = GetOverviewGridForRoot(root_window);
   ASSERT_TRUE(overview_grid);
-  EXPECT_EQ(2u, overview_grid->window_list().size());
+  EXPECT_EQ(2u, overview_grid->item_list().size());
   EXPECT_TRUE(w1->IsVisible());
   EXPECT_TRUE(w2->IsVisible());
 
@@ -8151,7 +8151,7 @@ TEST_F(SnapGroupMultipleSnapGroupsTest,
 
   overview_grid = GetOverviewGridForRoot(root_window);
   ASSERT_TRUE(overview_grid);
-  EXPECT_EQ(2u, overview_grid->window_list().size());
+  EXPECT_EQ(2u, overview_grid->item_list().size());
   EXPECT_TRUE(w2->IsVisible());
   EXPECT_TRUE(w4->IsVisible());
 
@@ -8193,7 +8193,7 @@ TEST_F(SnapGroupMultipleSnapGroupsTest,
   auto* root_window = Shell::GetPrimaryRootWindow();
   const auto* overview_grid = GetOverviewGridForRoot(root_window);
   ASSERT_TRUE(overview_grid);
-  EXPECT_EQ(overview_grid->window_list().size(), 2u);
+  EXPECT_EQ(2u, overview_grid->item_list().size());
   EXPECT_TRUE(w1->IsVisible());
   EXPECT_TRUE(w2->IsVisible());
 
@@ -8219,7 +8219,7 @@ TEST_F(SnapGroupMultipleSnapGroupsTest,
 
   overview_grid = GetOverviewGridForRoot(root_window);
   ASSERT_TRUE(overview_grid);
-  EXPECT_EQ(1u, overview_grid->window_list().size());
+  EXPECT_EQ(1u, overview_grid->item_list().size());
   EXPECT_TRUE(w1->IsVisible());
   EXPECT_TRUE(w2->IsVisible());
 
@@ -8246,7 +8246,7 @@ TEST_F(SnapGroupMultipleSnapGroupsTest,
 
   overview_grid = GetOverviewGridForRoot(root_window);
   ASSERT_TRUE(overview_grid);
-  EXPECT_EQ(overview_grid->window_list().size(), 2u);
+  EXPECT_EQ(2u, overview_grid->item_list().size());
   EXPECT_TRUE(w1->IsVisible());
   EXPECT_TRUE(w2->IsVisible());
 
@@ -8267,7 +8267,7 @@ TEST_F(SnapGroupMultipleSnapGroupsTest,
 
   overview_grid = GetOverviewGridForRoot(root_window);
   ASSERT_TRUE(overview_grid);
-  EXPECT_EQ(1u, overview_grid->window_list().size());
+  EXPECT_EQ(1u, overview_grid->item_list().size());
   EXPECT_TRUE(w1->IsVisible());
   EXPECT_TRUE(w2->IsVisible());
 
@@ -8321,7 +8321,7 @@ TEST_F(SnapGroupMultipleSnapGroupsTest,
   auto* root_window = Shell::GetPrimaryRootWindow();
   const auto* overview_grid = GetOverviewGridForRoot(root_window);
   ASSERT_TRUE(overview_grid);
-  EXPECT_EQ(2u, overview_grid->window_list().size());
+  EXPECT_EQ(2u, overview_grid->item_list().size());
   EXPECT_TRUE(w1->IsVisible());
   EXPECT_TRUE(w2->IsVisible());
 
@@ -9968,7 +9968,7 @@ TEST_F(SnapGroupMultiDisplayTest, GroupItemCrossDisplayDragInteractivity) {
 
   const auto& overview_items =
       overview_group_item->overview_items_for_testing();
-  ASSERT_EQ(overview_items.size(), 2u);
+  ASSERT_EQ(2u, overview_items.size());
   auto* group_item_widget = overview_group_item->item_widget();
   ASSERT_TRUE(group_item_widget);
   auto* group_item_widget_window = group_item_widget->GetNativeWindow();

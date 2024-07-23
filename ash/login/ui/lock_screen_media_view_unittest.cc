@@ -171,7 +171,7 @@ TEST_F(LockScreenMediaViewTest, DismissButtonCheck) {
   EXPECT_TRUE(media_view()->GetVisible());
 
   views::test::ButtonTestApi(media_view()->GetDismissButtonForTesting())
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   media_view()->FlushForTesting();
   EXPECT_EQ(1, media_controller()->stop_count());

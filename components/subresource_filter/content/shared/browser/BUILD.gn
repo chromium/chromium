@@ -12,8 +12,8 @@ static_library("browser") {
     "child_frame_navigation_filtering_throttle.h",
     "page_load_statistics.cc",
     "page_load_statistics.h",
-    "ruleset_publisher_impl.cc",
-    "ruleset_publisher_impl.h",
+    "ruleset_publisher.cc",
+    "ruleset_publisher.h",
     "ruleset_service.cc",
     "ruleset_service.h",
     "unindexed_ruleset_stream_generator.cc",
@@ -65,7 +65,7 @@ source_set("unit_tests") {
   sources = [
     "activation_state_computing_navigation_throttle_unittest.cc",
     "child_frame_navigation_filtering_throttle_unittest.cc",
-    "ruleset_publisher_impl_unittest.cc",
+    "ruleset_publisher_unittest.cc",
     "ruleset_service_unittest.cc",
   ]
   deps = [

@@ -98,13 +98,13 @@ void PointerMetricsRecorderTest::CreateDownEvent(
                                 display::Display::RotationSource::ACTIVE);
   }
   if (pointer_type == ui::EventPointerType::kMouse) {
-    ui::MouseEvent mouse_down(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                              base::TimeTicks(), 0, 0);
+    ui::MouseEvent mouse_down(ui::EventType::kMousePressed, gfx::Point(),
+                              gfx::Point(), base::TimeTicks(), 0, 0);
     ui::Event::DispatcherApi(&mouse_down).set_target(window);
     pointer_metrics_recorder_->OnMouseEvent(&mouse_down);
   } else {
     // Pen and eraser events are touch events.
-    ui::TouchEvent touch_down(ui::ET_TOUCH_PRESSED, gfx::Point(),
+    ui::TouchEvent touch_down(ui::EventType::kTouchPressed, gfx::Point(),
                               base::TimeTicks(),
                               ui::PointerDetails(pointer_type, 0));
     ui::Event::DispatcherApi(&touch_down).set_target(window);
@@ -117,8 +117,8 @@ void PointerMetricsRecorderTest::CreateDownEvent(
 // Verifies that histogram is not recorded when receiving events that are not
 // down events.
 TEST_F(PointerMetricsRecorderTest, NonDownEventsInAllPointerHistogram) {
-  ui::MouseEvent mouse_up(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                          base::TimeTicks(), 0, 0);
+  ui::MouseEvent mouse_up(ui::EventType::kMouseReleased, gfx::Point(),
+                          gfx::Point(), base::TimeTicks(), 0, 0);
   pointer_metrics_recorder_->OnMouseEvent(&mouse_up);
 
   histogram_tester_->ExpectTotalCount(kCombinationHistogramName, 0);

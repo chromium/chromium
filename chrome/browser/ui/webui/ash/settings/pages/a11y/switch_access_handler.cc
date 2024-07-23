@@ -156,7 +156,7 @@ void SwitchAccessHandler::OnKeyEvent(ui::KeyEvent* event) {
   event->StopPropagation();
   event->SetHandled();
 
-  if (event->type() == ui::ET_KEY_RELEASED) {
+  if (event->type() == ui::EventType::kKeyReleased) {
     return;
   }
 

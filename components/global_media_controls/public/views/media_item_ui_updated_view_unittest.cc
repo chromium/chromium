@@ -93,7 +93,7 @@ class MediaItemUIUpdatedViewTest : public views::ViewsTestBase {
     auto* button = view_->GetMediaActionButtonForTesting(action);
     EXPECT_TRUE(button && button->GetVisible());
     views::test::ButtonTestApi(button).NotifyClick(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), 0, 0));
   }
 
@@ -128,9 +128,9 @@ TEST_F(MediaItemUIUpdatedViewTest, ProgressRowCheck) {
               0.5f, 0.01f);
 
   // Check that key event on the view can seek the progress.
-  ui::KeyEvent key_event{ui::ET_KEY_PRESSED,       ui::VKEY_RIGHT,
-                         ui::DomCode::ARROW_RIGHT, ui::EF_NONE,
-                         ui::DomKey::ARROW_RIGHT,  ui::EventTimeForNow()};
+  ui::KeyEvent key_event{ui::EventType::kKeyPressed, ui::VKEY_RIGHT,
+                         ui::DomCode::ARROW_RIGHT,   ui::EF_NONE,
+                         ui::DomKey::ARROW_RIGHT,    ui::EventTimeForNow()};
   EXPECT_CALL(item(), SeekTo(testing::_));
   view()->OnKeyPressed(key_event);
 
@@ -143,9 +143,9 @@ TEST_F(MediaItemUIUpdatedViewTest, ProgressRowCheck) {
 }
 
 TEST_F(MediaItemUIUpdatedViewTest, OnMousePressed) {
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                             0);
+  ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON, 0);
   EXPECT_CALL(observer(),
               OnMediaItemUIClicked(kTestId, /*activate_original_media=*/true));
   view()->OnMousePressed(mouse_event);
@@ -303,7 +303,7 @@ TEST_F(MediaItemUIUpdatedViewTest, DeviceSelectorViewCheck) {
       .WillOnce(Return(false));
   EXPECT_CALL(*device_selector(), ShowDevices());
   views::test::ButtonTestApi(view()->GetStartCastingButtonForTesting())
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   ExpectActionHistogramCount(
       MediaItemUIUpdatedViewAction::kShowDeviceListForCasting);
@@ -323,7 +323,7 @@ TEST_F(MediaItemUIUpdatedViewTest, DeviceSelectorViewCheck) {
       .WillOnce(Return(true));
   EXPECT_CALL(*device_selector(), HideDevices());
   views::test::ButtonTestApi(view()->GetStartCastingButtonForTesting())
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   ExpectActionHistogramCount(
       MediaItemUIUpdatedViewAction::kHideDeviceListForCasting);
@@ -364,7 +364,7 @@ TEST_F(MediaItemUIUpdatedViewTest, DragProgressBackwardForPlayingMedia) {
 
   // Starts dragging the progress view should pause the media.
   gfx::Point point(progress_view->width() / 2, progress_view->height() / 2);
-  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, point, point,
+  ui::MouseEvent pressed_event(ui::EventType::kMousePressed, point, point,
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(item(), SeekTo(testing::_));
@@ -383,9 +383,10 @@ TEST_F(MediaItemUIUpdatedViewTest, DragProgressBackwardForPlayingMedia) {
       /*playback_rate=*/1, /*duration=*/base::Seconds(10),
       /*position=*/base::Seconds(5), /*end_of_media=*/false);
   view()->UpdateWithMediaPosition(media_position_released);
-  ui::MouseEvent released_event = ui::MouseEvent(
-      ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent released_event =
+      ui::MouseEvent(ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(item(), SeekTo(testing::_));
   EXPECT_CALL(item(),
               OnMediaSessionActionButtonPressed(MediaSessionAction::kPlay));
@@ -411,7 +412,7 @@ TEST_F(MediaItemUIUpdatedViewTest, DragProgressForwardForPausedMedia) {
 
   // Starts dragging the progress view.
   gfx::Point point(progress_view->width() / 2, progress_view->height() / 2);
-  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, point, point,
+  ui::MouseEvent pressed_event(ui::EventType::kMousePressed, point, point,
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(item(), SeekTo(testing::_));
@@ -429,9 +430,10 @@ TEST_F(MediaItemUIUpdatedViewTest, DragProgressForwardForPausedMedia) {
       /*playback_rate=*/1, /*duration=*/base::Seconds(10),
       /*position=*/base::Seconds(5), /*end_of_media=*/false);
   view()->UpdateWithMediaPosition(media_position_released);
-  ui::MouseEvent released_event = ui::MouseEvent(
-      ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent released_event =
+      ui::MouseEvent(ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(item(), SeekTo(testing::_));
   EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(testing::_)).Times(0);
   progress_view->OnMouseReleased(released_event);
@@ -459,7 +461,7 @@ TEST_F(MediaItemUIUpdatedViewTest, TimestampLabelsCheck) {
 
   // Starts dragging the progress view should show the timestamp labels.
   gfx::Point point(progress_view->width() / 2, progress_view->height() / 2);
-  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, point, point,
+  ui::MouseEvent pressed_event(ui::EventType::kMousePressed, point, point,
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(item(), SeekTo(testing::_));
@@ -470,9 +472,10 @@ TEST_F(MediaItemUIUpdatedViewTest, TimestampLabelsCheck) {
   EXPECT_EQ(u"0:10", view()->GetDurationTimestampLabelForTesting()->GetText());
 
   // Ends dragging the progress view should hide the timestamp labels.
-  ui::MouseEvent released_event = ui::MouseEvent(
-      ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent released_event =
+      ui::MouseEvent(ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON);
   EXPECT_CALL(item(), SeekTo(testing::_));
   progress_view->OnMouseReleased(released_event);
   EXPECT_FALSE(view()->GetCurrentTimestampLabelForTesting()->GetVisible());

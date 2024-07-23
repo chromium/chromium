@@ -106,13 +106,13 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
     gfx::Point toggle_center = toggle_button->GetLocalBounds().CenterPoint();
     gfx::Point root_center = toggle_center;
     views::View::ConvertPointToWidget(price_tracking_view_, &root_center);
-    ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, toggle_center,
+    ui::MouseEvent pressed_event(ui::EventType::kMousePressed, toggle_center,
                                  root_center, base::TimeTicks(),
                                  ui::EF_LEFT_MOUSE_BUTTON, 0);
 
     toggle_button->OnMousePressed(pressed_event);
 
-    ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, toggle_center,
+    ui::MouseEvent released_event(ui::EventType::kMouseReleased, toggle_center,
                                   root_center, base::TimeTicks(),
                                   ui::EF_LEFT_MOUSE_BUTTON, 0);
     toggle_button->OnMouseReleased(released_event);

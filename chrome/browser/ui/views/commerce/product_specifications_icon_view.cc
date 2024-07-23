@@ -125,12 +125,12 @@ bool ProductSpecificationsIconView::ShouldShow() {
 void ProductSpecificationsIconView::SetVisualState(bool is_added) {
   icon_ = is_added ? &omnibox::kProductSpecificationsAddedIcon
                    : &omnibox::kProductSpecificationsAddIcon;
-  if (is_added) {
-    SetLabel(l10n_util::GetStringUTF16(
-        IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED_DEFAULT));
-  } else {
-    SetLabel(l10n_util::GetStringUTF16(
-        IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT));
+  if (GetWebContents()) {
+    auto* tab_helper =
+        commerce::CommerceUiTabHelper::FromWebContents(GetWebContents());
+    CHECK(tab_helper);
+
+    SetLabel(tab_helper->GetProductSpecificationsLabel(is_added));
   }
   SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
   UpdateIconImage();

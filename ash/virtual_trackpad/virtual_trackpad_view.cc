@@ -138,7 +138,7 @@ class TrackpadInternalSurfaceView : public views::View {
   bool OnMousePressed(const ui::MouseEvent& event) override {
     scroll_data_ = ScrollData{event.location_f(), event.location_f()};
     SchedulePaint();
-    GenerateScrollEvent(ui::ET_SCROLL_FLING_CANCEL, event);
+    GenerateScrollEvent(ui::EventType::kScrollFlingCancel, event);
     return true;
   }
 
@@ -150,7 +150,7 @@ class TrackpadInternalSurfaceView : public views::View {
     // We generate the scroll event before we update `current_location` because
     // calculating the current scroll event's offset requires us to know where
     // it began, which is the `current_location` from the previous scroll.
-    GenerateScrollEvent(ui::ET_SCROLL, event);
+    GenerateScrollEvent(ui::EventType::kScroll, event);
     CHECK(scroll_data_);
     scroll_data_->current_location = event.location_f();
     SchedulePaint();
@@ -162,7 +162,7 @@ class TrackpadInternalSurfaceView : public views::View {
       return;
     }
 
-    GenerateScrollEvent(ui::ET_SCROLL_FLING_START, event);
+    GenerateScrollEvent(ui::EventType::kScrollFlingStart, event);
     scroll_data_.reset();
     SchedulePaint();
   }
@@ -183,7 +183,7 @@ class TrackpadInternalSurfaceView : public views::View {
     // `scroll_data_->current_location` is the position of the last mouse event.
     const gfx::Vector2dF distance =
         event.location_f() - scroll_data_->current_location;
-    if (type == ui::ET_SCROLL_FLING_CANCEL) {
+    if (type == ui::EventType::kScrollFlingCancel) {
       CHECK_EQ(gfx::Vector2dF(), distance);
     }
 

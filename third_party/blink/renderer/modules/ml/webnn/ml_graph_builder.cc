@@ -505,21 +505,20 @@ bool ValidateClampOptions(const MLClampOptions* options,
 }
 
 MLOperand* BuildArgMinMax(MLGraphBuilder* builder,
-                          webnn::mojom::blink::ArgMinMax::Kind kind,
+                          webnn::mojom::blink::ArgMinMax::Kind sub_kind,
                           const MLOperand* input,
+                          const uint32_t axis,
                           const MLArgMinMaxOptions* options,
                           ExceptionState& exception_state) {
-  const auto axes = options->getAxesOr(CreateAllAxes(input->Rank()));
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
       webnn::ValidateArgMinMaxAndInferOutput(
-          builder->GetContext()->GetProperties(), input->Descriptor(), axes,
+          builder->GetContext()->GetProperties(), input->Descriptor(), axis,
           FromBlinkDataType(options->outputDataType().AsEnum()),
           options->keepDimensions()));
 
-  auto* arg_min_max = MakeGarbageCollected<MLOperator>(
-      builder, /*kind=*/webnn::mojom::blink::Operation::Tag::kArgMinMax,
-      /*sub_kind=*/kind, options);
+  auto* arg_min_max = MakeGarbageCollected<MLArgMinMaxOperator>(
+      builder, sub_kind, axis, options);
   MLOperand* output = MLOperand::CreateOutput(
       builder, std::move(output_descriptor), arg_min_max);
   arg_min_max->Connect({input}, {output});
@@ -929,19 +928,21 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
 }
 
 MLOperand* MLGraphBuilder::argMin(const MLOperand* input,
+                                  const uint32_t axis,
                                   const MLArgMinMaxOptions* options,
                                   ExceptionState& exception_state) {
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
   return BuildArgMinMax(this, webnn::mojom::blink::ArgMinMax::Kind::kMin, input,
-                        options, exception_state);
+                        axis, options, exception_state);
 }
 
 MLOperand* MLGraphBuilder::argMax(const MLOperand* input,
+                                  const uint32_t axis,
                                   const MLArgMinMaxOptions* options,
                                   ExceptionState& exception_state) {
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
   return BuildArgMinMax(this, webnn::mojom::blink::ArgMinMax::Kind::kMax, input,
-                        options, exception_state);
+                        axis, options, exception_state);
 }
 
 MLOperand* MLGraphBuilder::batchNormalization(

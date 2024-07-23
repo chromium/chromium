@@ -60,7 +60,7 @@ class ThreeFingerSwipeView : public View {
  public:
   // View:
   void OnGestureEvent(ui::GestureEvent* event) override {
-    EXPECT_EQ(ui::ET_GESTURE_SWIPE, event->details().type());
+    EXPECT_EQ(ui::EventType::kGestureSwipe, event->details().type());
 
     if (event->details().swipe_left()) {
       last_swipe_ = SWIPE_LEFT;

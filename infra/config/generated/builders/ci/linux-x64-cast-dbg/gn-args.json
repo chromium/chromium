@@ -1,6 +1,7 @@
 {
   "gn_args": {
     "enable_cast_receiver": true,
+    "is_castos": true,
     "symbol_level": 1,
     "target_cpu": "x64",
     "target_os": "linux",

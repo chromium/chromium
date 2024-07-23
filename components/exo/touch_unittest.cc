@@ -239,7 +239,7 @@ TEST_F(TouchTest, OnTouchCancel) {
   EXPECT_CALL(delegate, OnTouchCancel());
   EXPECT_CALL(delegate, OnTouchFrame());
   ui::TouchEvent cancel_event(
-      ui::ET_TOUCH_CANCELLED, gfx::Point(), ui::EventTimeForNow(),
+      ui::EventType::kTouchCancelled, gfx::Point(), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   generator.Dispatch(&cancel_event);
 

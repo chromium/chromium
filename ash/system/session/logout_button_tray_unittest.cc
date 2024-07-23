@@ -86,8 +86,8 @@ TEST_F(LogoutButtonTrayTest, DISABLED_ButtonPressed) {
   TestSessionControllerClient* const session_client =
       GetSessionControllerClient();
   base::UserActionTester user_action_tester;
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), 0, 0);
+  const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
   PrefService* const pref_service =
       Shell::Get()->session_controller()->GetUserPrefServiceForUser(
           AccountId::FromUserEmail(kUserEmail));

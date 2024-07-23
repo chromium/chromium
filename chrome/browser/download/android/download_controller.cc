@@ -31,6 +31,7 @@
 #include "chrome/browser/download/download_offline_content_provider.h"
 #include "chrome/browser/download/download_offline_content_provider_factory.h"
 #include "chrome/browser/download/download_stats.h"
+#include "chrome/browser/download/insecure_download_blocking.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/offline_pages/android/offline_page_bridge.h"
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
@@ -567,6 +568,7 @@ void DownloadController::OnDownloadComplete(download::DownloadItem* item) {
   // Multiple OnDownloadUpdated() notifications may be issued while the
   // download is in the COMPLETE state. Only handle one.
   item->RemoveObserver(this);
+  bool is_download_safe = true;
   // Call onDownloadCompleted
   TabAndroid* tab = nullptr;
   if (base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline)) {
@@ -575,9 +577,17 @@ void DownloadController::OnDownloadComplete(download::DownloadItem* item) {
     if (web_contents) {
       tab = TabAndroid::FromWebContents(web_contents);
     }
+    download::DownloadItem::InsecureDownloadStatus status =
+        GetInsecureDownloadStatusForDownload(
+            Profile::FromBrowserContext(
+                content::DownloadItemUtils::GetBrowserContext(item)),
+            item->GetTargetFilePath(), item);
+    is_download_safe =
+        (status == download::DownloadItem::InsecureDownloadStatus::SAFE ||
+         status == download::DownloadItem::InsecureDownloadStatus::VALIDATED);
   }
   Java_DownloadController_onDownloadCompleted(
-      env, tab ? tab->GetJavaObject() : nullptr, j_item);
+      env, tab ? tab->GetJavaObject() : nullptr, j_item, is_download_safe);
 }
 
 void DownloadController::StartContextMenuDownload(

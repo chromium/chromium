@@ -262,8 +262,9 @@ void WaylandInputMethodContext::Init(
 }
 
 bool WaylandInputMethodContext::DispatchKeyEvent(const KeyEvent& key_event) {
-  if (key_event.type() != ET_KEY_PRESSED)
+  if (key_event.type() != EventType::kKeyPressed) {
     return false;
+  }
 
   // Consume all peek key event.
   if (IsPeekKeyEvent(key_event))
@@ -741,8 +742,9 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
                       ? connection_->seat()->keyboard()->device_id()
                       : 0;
 
-  EventType type =
-      state == WL_KEYBOARD_KEY_STATE_PRESSED ? ET_KEY_PRESSED : ET_KEY_RELEASED;
+  EventType type = state == WL_KEYBOARD_KEY_STATE_PRESSED
+                       ? EventType::kKeyPressed
+                       : EventType::kKeyReleased;
   key_delegate_->OnKeyboardKeyEvent(
       type, dom_code, /*repeat=*/false, std::nullopt,
       wl::EventMillisecondsToTimeTicks(time), device_id,

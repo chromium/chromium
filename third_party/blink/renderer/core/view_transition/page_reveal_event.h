@@ -7,12 +7,15 @@
 
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
 class DOMViewTransition;
+class PageRevealEventInit;
 
 // Implementation for the pagereveal event. Fired before the first
 // rendering update after a Document is activated (loaded, restored from
@@ -24,7 +27,13 @@ class PageRevealEvent final : public Event {
 
  public:
   explicit PageRevealEvent();
+  PageRevealEvent(const AtomicString&, const PageRevealEventInit*);
   ~PageRevealEvent() override;
+
+  static PageRevealEvent* Create(const AtomicString& type,
+                                 const PageRevealEventInit* initializer) {
+    return MakeGarbageCollected<PageRevealEvent>(type, initializer);
+  }
 
   const AtomicString& InterfaceName() const override;
 

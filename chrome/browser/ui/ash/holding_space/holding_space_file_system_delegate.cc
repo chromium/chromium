@@ -420,8 +420,7 @@ void HoldingSpaceFileSystemDelegate::OnFileCreatedFromShowSaveFilePicker(
   holding_space_metrics::RecordFileCreatedFromShowSaveFilePicker(
       file_picker_binding_context, url.path());
 
-  if (features::IsHoldingSpacePhotoshopWebIntegrationEnabled() &&
-      file_picker_binding_context.DomainIs("photoshop.adobe.com")) {
+  if (file_picker_binding_context.DomainIs("photoshop.adobe.com")) {
     service()->AddItemOfType(HoldingSpaceItem::Type::kPhotoshopWeb, url.path());
   }
 }

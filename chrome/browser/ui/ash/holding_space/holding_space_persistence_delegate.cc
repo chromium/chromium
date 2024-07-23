@@ -10,6 +10,7 @@
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
+#include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -167,28 +168,25 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
 void HoldingSpacePersistenceDelegate::MaybeRemoveItemsFromPersistence() {
   CHECK(is_restoring_persistence());
 
-  const bool remove_camera_app_items =
-      !features::IsHoldingSpaceCameraAppIntegrationEnabled();
-  const bool remove_photoshop_web_items =
-      !features::IsHoldingSpacePhotoshopWebIntegrationEnabled();
+  const auto known_types = holding_space_util::GetAllItemTypes();
+
   const bool remove_suggestion_items =
       !features::IsHoldingSpaceSuggestionsEnabled();
-
-  // No-op when there are no item types we'd attempt to remove.
-  if (!remove_camera_app_items && !remove_photoshop_web_items &&
-      !remove_suggestion_items) {
-    return;
-  }
 
   ScopedListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
   update->EraseIf([&](const base::Value& persisted_item) {
     auto type = HoldingSpaceItem::DeserializeType(persisted_item.GetDict());
-    if ((remove_camera_app_items && HoldingSpaceItem::IsCameraAppType(type)) ||
-        (remove_photoshop_web_items &&
-         type == HoldingSpaceItem::Type::kPhotoshopWeb) ||
-        (remove_suggestion_items && HoldingSpaceItem::IsSuggestionType(type))) {
+
+    // Remove items associated with unknown `type`s.
+    if (!base::Contains(known_types, type)) {
       return true;
     }
+
+    // Remove items associated with disabled features.
+    if (remove_suggestion_items && HoldingSpaceItem::IsSuggestionType(type)) {
+      return true;
+    }
+
     return false;
   });
 }

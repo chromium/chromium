@@ -283,12 +283,12 @@ TEST_P(AppListItemViewTest, AppItemDragStateAfterLongPress) {
   // Verify that actual drag state is not started until the item is moved.
   ui::GestureEvent long_press(
       from.x(), from.y(), 0, ui::EventTimeForNow(),
-      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   generator->Dispatch(&long_press);
   EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kInitialized);
 
-  // After a long press, the first event type is ET_GESTURE_SCROLL_BEGIN
-  // but drag does not start until ET_GESTURE_SCROLL_UPDATE, so do the
+  // After a long press, the first event type is EventType::kGestureScrollBegin
+  // but drag does not start until EventType::kGestureScrollUpdate, so do the
   // movement in two steps.
   generator->MoveTouchBy(5, 5);
   generator->MoveTouchBy(5, 5);
@@ -350,7 +350,7 @@ TEST_P(AppListItemViewTest, AppItemReleaseTouchBeforeDragStartWithLongPress) {
 
   ui::GestureEvent long_press(
       from.x(), from.y(), 0, ui::EventTimeForNow(),
-      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   generator->Dispatch(&long_press);
 
   generator->ReleaseTouch();

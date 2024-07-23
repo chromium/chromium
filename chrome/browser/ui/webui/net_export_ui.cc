@@ -359,7 +359,7 @@ void NetExportMessageHandler::ShowSelectFileDialog(
   gfx::NativeWindow owning_window = webcontents->GetTopLevelNativeWindow();
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(), default_path,
-      &file_type_info, 0, base::FilePath::StringType(), owning_window, nullptr);
+      &file_type_info, 0, base::FilePath::StringType(), owning_window);
 }
 
 }  // namespace

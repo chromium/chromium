@@ -94,10 +94,6 @@ bool WebClient::EnableWebInspector(BrowserState* browser_state) const {
   return false;
 }
 
-NSData* WebClient::FetchSessionFromCache(web::WebState* web_state) const {
-  return nil;
-}
-
 void WebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {}
 
 void WebClient::WillDisplayMediaCapturePermissionPrompt(

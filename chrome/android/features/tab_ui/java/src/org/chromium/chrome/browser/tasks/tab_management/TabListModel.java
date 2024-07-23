@@ -110,8 +110,26 @@ class TabListModel extends ModelList {
         return lastTabIndex + 1;
     }
 
+    /** Returns the filter index of a tab from its view index. */
+    public int indexOfTabCardsOrInvalid(int viewIndex) {
+        if (viewIndex < 0) return TabModel.INVALID_TAB_INDEX;
+        int tabCount = 0;
+        for (int i = 0; i < size(); i++) {
+            PropertyModel model = get(i).model;
+            boolean isTab = model.get(CARD_TYPE) == TAB;
+            if (viewIndex == i) {
+                return isTab ? tabCount : TabModel.INVALID_TAB_INDEX;
+            }
+            if (isTab) {
+                tabCount++;
+            }
+        }
+        return TabModel.INVALID_TAB_INDEX;
+    }
+
     /**
      * Get the number of TAB cards before the given index in TabListModel.
+     *
      * @param index The given index in TabListModel.
      * @return The number of TAB cards before the given index.
      */

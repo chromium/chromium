@@ -45,7 +45,7 @@ int XkbBuildCoreState(int key_button_mask, int group) {
 TEST(XEventTranslationTest, KeyEventDomKeyExtraction) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
   ScopedXI2Event xev;
-  xev.InitKeyEvent(ET_KEY_PRESSED, VKEY_RETURN, EF_NONE);
+  xev.InitKeyEvent(EventType::kKeyPressed, VKEY_RETURN, EF_NONE);
 
   auto keyev = ui::BuildKeyEventFromXEvent(*xev);
   EXPECT_TRUE(keyev);
@@ -70,7 +70,7 @@ TEST(XEventTranslationTest, KeyEventDomKeyExtraction) {
 TEST(XEventTranslationTest, KeyEventXEventPropertiesSet) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
   ScopedXI2Event scoped_xev;
-  scoped_xev.InitKeyEvent(ET_KEY_PRESSED, VKEY_A, EF_NONE);
+  scoped_xev.InitKeyEvent(EventType::kKeyPressed, VKEY_A, EF_NONE);
 
   x11::Event* xev = scoped_xev;
   auto* connection = x11::Connection::Get();
@@ -123,7 +123,7 @@ TEST(XEventTranslationTest, BogusTimestampCorrection) {
 
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
   ScopedXI2Event scoped_xev;
-  scoped_xev.InitKeyEvent(ET_KEY_PRESSED, VKEY_RETURN, EF_NONE);
+  scoped_xev.InitKeyEvent(EventType::kKeyPressed, VKEY_RETURN, EF_NONE);
   x11::Event* xev = scoped_xev;
 
   test::ScopedEventTestTickClock test_clock;
@@ -166,7 +166,7 @@ TEST(XEventTranslationTest, BogusTimestampCorrection) {
 TEST(XEventTranslationTest, ChangedMouseButtonFlags) {
   ui::ScopedXI2Event event;
   // Taking in a ButtonPress XEvent, with left button pressed.
-  event.InitButtonEvent(ui::ET_MOUSE_PRESSED, gfx::Point(500, 500),
+  event.InitButtonEvent(ui::EventType::kMousePressed, gfx::Point(500, 500),
                         ui::EF_LEFT_MOUSE_BUTTON);
   auto mouseev = ui::BuildMouseEventFromXEvent(*event);
   EXPECT_TRUE(mouseev);
@@ -199,7 +199,7 @@ TEST(XEventTranslationTest, KeyModifiersCounterpartRepeat) {
 
   // Create and init a XEvent for ShiftLeft key.
   ui::ScopedXI2Event shift_l_pressed;
-  shift_l_pressed.InitKeyEvent(ET_KEY_PRESSED, VKEY_LSHIFT, EF_NONE);
+  shift_l_pressed.InitKeyEvent(EventType::kKeyPressed, VKEY_LSHIFT, EF_NONE);
 
   // Press ShiftLeft a first time and hold it.
   auto keyev_shift_l_pressed = BuildKeyEventFromXEvent(*shift_l_pressed);
@@ -222,25 +222,27 @@ TEST(XEventTranslationTest, KeyModifiersCounterpartRepeat) {
 
   // Create and init XEvent for emulating a ShiftRight key press.
   ui::ScopedXI2Event shift_r_pressed;
-  shift_r_pressed.InitKeyEvent(ET_KEY_PRESSED, VKEY_RSHIFT, EF_SHIFT_DOWN);
+  shift_r_pressed.InitKeyEvent(EventType::kKeyPressed, VKEY_RSHIFT,
+                               EF_SHIFT_DOWN);
 
   test_clock.Advance(base::Seconds(1));
   auto keyev_shift_r_pressed = BuildKeyEventFromXEvent(*shift_r_pressed);
   EXPECT_FALSE(keyev_shift_r_pressed->is_repeat());
-  EXPECT_EQ(ET_KEY_PRESSED, keyev_shift_r_pressed->type());
+  EXPECT_EQ(EventType::kKeyPressed, keyev_shift_r_pressed->type());
 
   // Create and init XEvent for emulating a ShiftRight key release.
   ui::ScopedXI2Event shift_r_released;
-  shift_r_released.InitKeyEvent(ET_KEY_RELEASED, VKEY_RSHIFT, EF_SHIFT_DOWN);
+  shift_r_released.InitKeyEvent(EventType::kKeyReleased, VKEY_RSHIFT,
+                                EF_SHIFT_DOWN);
 
   test_clock.Advance(base::Milliseconds(300));
   auto keyev_shift_r_released = BuildKeyEventFromXEvent(*shift_r_released);
   EXPECT_FALSE(keyev_shift_r_released->is_repeat());
-  EXPECT_EQ(ET_KEY_RELEASED, keyev_shift_r_released->type());
+  EXPECT_EQ(EventType::kKeyReleased, keyev_shift_r_released->type());
 }
 
-// Verifies that scroll events remain ET_SCROLL type or are translated to
-// ET_SCROLL_FLING_START depending on their X and Y offsets.
+// Verifies that scroll events remain EventType::kScroll type or are translated
+// to EventType::kScrollFlingStart depending on their X and Y offsets.
 TEST(XEventTranslationTest, ScrollEventType) {
   int device_id = 1;
   ui::SetUpTouchPadForTest(device_id);
@@ -253,15 +255,15 @@ TEST(XEventTranslationTest, ScrollEventType) {
     EventType expectedEventType_;
   };
   const std::vector<ScrollEventTestData> test_data = {
-      // Ordinary horizontal scrolling remains ET_SCROLL.
-      {1, 0, 1, 0, EventType::ET_SCROLL},
-      // Ordinary vertical scrolling remains ET_SCROLL.
-      {0, 10, 0, 10, EventType::ET_SCROLL},
-      // Ordinary diagonal scrolling remains ET_SCROLL.
-      {47, -11, 47, -11, EventType::ET_SCROLL},
+      // Ordinary horizontal scrolling remains EventType::kScroll.
+      {1, 0, 1, 0, EventType::kScroll},
+      // Ordinary vertical scrolling remains EventType::kScroll.
+      {0, 10, 0, 10, EventType::kScroll},
+      // Ordinary diagonal scrolling remains EventType::kScroll.
+      {47, -11, 47, -11, EventType::kScroll},
       // If x_offset and y_offset both are 0, expected event type is
-      // ET_SCROLL_FLING_START and not ET_SCROLL.
-      {0, 0, 0, 0, EventType::ET_SCROLL_FLING_START}};
+      // EventType::kScrollFlingStart and not EventType::kScroll.
+      {0, 0, 0, 0, EventType::kScrollFlingStart}};
 
   for (const auto& data : test_data) {
     ui::ScopedXI2Event xev;

@@ -119,6 +119,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/sessions/core/session_id_generator.h"
+#include "components/subresource_filter/content/browser/safe_browsing_ruleset_publisher.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
@@ -1476,10 +1477,12 @@ void BrowserProcessImpl::CreateSubresourceFilterRulesetService() {
 
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+
   subresource_filter_ruleset_service_ =
       subresource_filter::RulesetService::Create(
           subresource_filter::kSafeBrowsingRulesetConfig, local_state(),
-          user_data_dir);
+          user_data_dir,
+          subresource_filter::SafeBrowsingRulesetPublisher::Factory());
 }
 
 void BrowserProcessImpl::CreateFingerprintingProtectionRulesetService() {
@@ -1490,11 +1493,14 @@ void BrowserProcessImpl::CreateFingerprintingProtectionRulesetService() {
 
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+
+  // TODO(https://crbug.com/347304498): Use FP publisher when implemented.
   fingerprinting_protection_ruleset_service_ =
       subresource_filter::RulesetService::Create(
           fingerprinting_protection_filter::
               kFingerprintingProtectionRulesetConfig,
-          local_state(), user_data_dir);
+          local_state(), user_data_dir,
+          subresource_filter::SafeBrowsingRulesetPublisher::Factory());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

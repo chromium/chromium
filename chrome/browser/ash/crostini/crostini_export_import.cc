@@ -211,7 +211,7 @@ void CrostiniExportImport::OpenFileDialog(content::WebContents* web_contents) {
   select_folder_dialog_->SelectFile(
       file_selector_mode, l10n_util::GetStringUTF16(title), default_path,
       &file_types, 0, base::FilePath::StringType(),
-      web_contents->GetTopLevelNativeWindow(), nullptr);
+      web_contents->GetTopLevelNativeWindow());
 }
 
 void CrostiniExportImport::FileSelected(const ui::SelectedFileInfo& file,

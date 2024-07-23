@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -94,7 +95,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   int GetCvcTooltipResourceId() override;
 #endif
 
-  PrefService* pref_service_for_testing() const { return pref_service_; }
+  PrefService* pref_service_for_testing() const { return &pref_service_.get(); }
   CreditCard card_for_testing() const { return card_; }
   CardUnmaskPromptOptions card_unmask_prompt_options_for_testing() const {
     return card_unmask_prompt_options_;
@@ -115,7 +116,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   void LogOnCloseEvents();
   AutofillMetrics::UnmaskPromptEvent GetCloseReasonEvent();
 
-  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
+  const raw_ref<PrefService> pref_service_;
   CreditCard card_;
   CardUnmaskPromptOptions card_unmask_prompt_options_;
   base::WeakPtr<CardUnmaskDelegate> delegate_;

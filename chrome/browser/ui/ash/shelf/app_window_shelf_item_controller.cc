@@ -208,7 +208,7 @@ void AppWindowShelfItemController::ItemSelected(
   // item if the window we are trying to activate is already active.
   ash::ShelfAction action = ash::SHELF_ACTION_NONE;
   if (filtered_windows.size() >= 1 && window_to_show->IsActive() && event &&
-      event->type() == ui::ET_KEY_RELEASED) {
+      event->type() == ui::EventType::kKeyReleased) {
     action = ActivateOrAdvanceToNextAppWindow(window_to_show, filtered_windows);
   } else if (filtered_windows.size() <= 1 || source != ash::LAUNCH_FROM_SHELF) {
     action = ShowAndActivateOrMinimize(

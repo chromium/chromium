@@ -16,6 +16,7 @@
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
 #include "components/commerce/core/subscriptions/subscriptions_observer.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -23,6 +24,10 @@
 #include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 class PrefService;
+
+namespace optimization_guide {
+class ModelQualityLogsUploaderService;
+}  // namespace optimization_guide
 
 namespace base {
 class Uuid;
@@ -67,20 +72,25 @@ class ShoppingServiceHandler
 
     virtual void ShowBookmarkEditorForCurrentUrl() = 0;
 
-    virtual void ShowFeedback() = 0;
+    virtual void ShowFeedbackForPriceInsights() = 0;
+
+    virtual void ShowFeedbackForProductSpecifications(
+        const std::string& log_id) = 0;
 
     virtual ukm::SourceId GetCurrentTabUkmSourceId() = 0;
   };
 
   ShoppingServiceHandler(
       mojo::PendingRemote<shopping_service::mojom::Page> page,
-      mojo::PendingReceiver<
-            shopping_service::mojom::ShoppingServiceHandler> receiver,
+      mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
+          receiver,
       bookmarks::BookmarkModel* bookmark_model,
       ShoppingService* shopping_service,
       PrefService* prefs,
       feature_engagement::Tracker* tracker,
-      std::unique_ptr<Delegate> delegate);
+      std::unique_ptr<Delegate> delegate,
+      optimization_guide::ModelQualityLogsUploaderService*
+          model_quality_logs_uploader_service);
   ShoppingServiceHandler(const ShoppingServiceHandler&) = delete;
   ShoppingServiceHandler& operator=(const ShoppingServiceHandler&) = delete;
   ~ShoppingServiceHandler() override;
@@ -118,7 +128,7 @@ class ShoppingServiceHandler
       GetParentBookmarkFolderNameForCurrentUrlCallback callback) override;
   void ShowBookmarkEditorForCurrentUrl() override;
   void ShowProductSpecificationsSetForUuid(const base::Uuid& uuid) override;
-  void ShowFeedback() override;
+  void ShowFeedbackForPriceInsights() override;
   void GetAllProductSpecificationsSets(
       GetAllProductSpecificationsSetsCallback callback) override;
   void GetProductSpecificationsSetByUuid(
@@ -137,6 +147,8 @@ class ShoppingServiceHandler
       const base::Uuid& uuid,
       const std::vector<GURL>& urls,
       SetUrlsForProductSpecificationsSetCallback callback) override;
+  void SetProductSpecificationsUserFeedback(
+      shopping_service::mojom::UserFeedback feedback) override;
 
   // SubscriptionsObserver
   void OnSubscribe(const CommerceSubscription& subscription,
@@ -167,6 +179,11 @@ class ShoppingServiceHandler
       bookmarks::BookmarkModel& model,
       const std::vector<const bookmarks::BookmarkNode*>& bookmarks,
       const std::string& locale);
+
+  optimization_guide::ModelQualityLogEntry*
+  current_log_quality_entry_for_testing() {
+    return current_log_quality_entry_.get();
+  }
 
  private:
   void onPriceTrackResult(int64_t bookmark_id,
@@ -201,6 +218,10 @@ class ShoppingServiceHandler
   raw_ptr<feature_engagement::Tracker> tracker_;
   std::string locale_;
   std::unique_ptr<Delegate> delegate_;
+  raw_ptr<optimization_guide::ModelQualityLogsUploaderService>
+      model_quality_logs_uploader_service_;
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+      current_log_quality_entry_;
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<ShoppingService, SubscriptionsObserver>
       scoped_subscriptions_observation_{this};

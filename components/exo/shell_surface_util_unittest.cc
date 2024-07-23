@@ -35,7 +35,7 @@ TEST_F(ShellSurfaceUtilTest, TargetForLocatedEvent) {
   child_surface->Commit();
   root_surface->Commit();
 
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),
+  ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(0, 0),
                              gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
   aura::Window* root_window = root_surface->window()->GetRootWindow();
   ui::Event::DispatcherApi(&mouse_event).set_target(root_window);

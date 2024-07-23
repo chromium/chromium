@@ -145,12 +145,12 @@ CaptureModeDemoToolsController::~CaptureModeDemoToolsController() {
 }
 
 void CaptureModeDemoToolsController::OnKeyEvent(ui::KeyEvent* event) {
-  if (event->type() == ui::ET_KEY_RELEASED) {
+  if (event->type() == ui::EventType::kKeyReleased) {
     OnKeyUpEvent(event);
     return;
   }
 
-  DCHECK_EQ(event->type(), ui::ET_KEY_PRESSED);
+  DCHECK_EQ(event->type(), ui::EventType::kKeyPressed);
   OnKeyDownEvent(event);
 }
 
@@ -203,16 +203,16 @@ void CaptureModeDemoToolsController::OnTouchEvent(
     ui::PointerId pointer_id,
     const gfx::PointF& event_location_in_window) {
   switch (event_type) {
-    case ui::ET_TOUCH_PRESSED: {
+    case ui::EventType::kTouchPressed: {
       OnTouchDown(pointer_id, event_location_in_window);
       return;
     }
-    case ui::ET_TOUCH_RELEASED:
-    case ui::ET_TOUCH_CANCELLED: {
+    case ui::EventType::kTouchReleased:
+    case ui::EventType::kTouchCancelled: {
       OnTouchUp(pointer_id, event_location_in_window);
       return;
     }
-    case ui::ET_TOUCH_MOVED: {
+    case ui::EventType::kTouchMoved: {
       OnTouchDragged(pointer_id, event_location_in_window);
       return;
     }

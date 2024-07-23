@@ -6,14 +6,12 @@
 
 namespace manta {
 
-SparkyContext::SparkyContext(const std::vector<DialogTurn>& dialog,
-                             const std::string& question)
-    : question(question), dialog(dialog) {}
+SparkyContext::SparkyContext(const std::vector<DialogTurn>& dialog)
+    : dialog(dialog) {}
 
 SparkyContext::SparkyContext(const std::vector<DialogTurn>& dialog,
-                             const std::string& question,
                              const std::string& page_content)
-    : question(question), dialog(dialog), page_content(page_content) {}
+    : dialog(dialog), page_content(page_content) {}
 
 SparkyContext::~SparkyContext() = default;
 

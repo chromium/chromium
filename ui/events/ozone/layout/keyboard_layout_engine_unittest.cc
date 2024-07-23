@@ -205,8 +205,8 @@ void TestLookup(const char* name, KeyboardLayoutEngine* engine) {
         engine->Lookup(t.input_dom_code, t.input_flags, &dom_key, &keycode));
     EXPECT_EQ(t.output_dom_key, dom_key);
     EXPECT_EQ(t.output_keycode, keycode);
-    KeyEvent key_event(ET_KEY_PRESSED, keycode, t.input_dom_code, t.input_flags,
-                       dom_key, EventTimeForNow());
+    KeyEvent key_event(EventType::kKeyPressed, keycode, t.input_dom_code,
+                       t.input_flags, dom_key, EventTimeForNow());
     EXPECT_EQ(t.output_character, key_event.GetCharacter());
   }
 }

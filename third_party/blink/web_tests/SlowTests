@@ -1478,5 +1478,3 @@ crbug.com/349639998 virtual/attribution-reporting-aggregatable-debug/external/wp
 crbug.com/352643600 [ Mac10.15 ] external/wpt/dom/events/scrolling/scrollend-event-fired-to-window.html [ Slow ]
 
 crbug.com/351944362 external/wpt/fetch/metadata/generated/element-iframe.https.sub.html [ Slow ]
-
-crbug.com/40255478 http/tests/inspector-protocol/tracing/advanced-painting-instrumentation.js [ Slow ]

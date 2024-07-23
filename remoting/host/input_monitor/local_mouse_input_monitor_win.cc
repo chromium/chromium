@@ -129,7 +129,7 @@ void MouseRawInputHandlerWin::OnInputEvent(const RAWINPUT* input) {
 
   caller_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(on_mouse_move_, std::move(new_position),
-                                ui::ET_MOUSE_MOVED));
+                                ui::EventType::kMouseMoved));
 }
 
 void MouseRawInputHandlerWin::OnError() {

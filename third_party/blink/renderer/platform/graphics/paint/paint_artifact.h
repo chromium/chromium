@@ -69,10 +69,11 @@ class PLATFORM_EXPORT PaintArtifact final
   String IdAsString(const DisplayItem::Id& id) const;
 
   std::unique_ptr<JSONArray> ToJSON() const;
-  void AppendChunksAsJSON(wtf_size_t start_chunk_index,
-                          wtf_size_t end_chunk_index,
-                          JSONArray&,
-                          unsigned flags) const;
+  void AppendChunksAsJSON(
+      wtf_size_t start_chunk_index,
+      wtf_size_t end_chunk_index,
+      JSONArray&,
+      DisplayItemList::JsonOption = DisplayItemList::kDefault) const;
 
   void clear();
 

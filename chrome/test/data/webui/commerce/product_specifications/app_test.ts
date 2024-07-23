@@ -4,11 +4,12 @@
 
 import 'chrome://compare/app.js';
 
+import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {ProductSpecificationsElement} from 'chrome://compare/app.js';
 import {Router} from 'chrome://compare/router.js';
 import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct, ProductSpecificationsSet, ProductSpecificationsValue} from 'chrome://compare/shopping_service.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
-import {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import {PageCallbackRouter, UserFeedback} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -1012,6 +1013,28 @@ suite('AppTest', () => {
     assertTrue(appElement.$.header.$.menuButton.disabled);
   });
 
+  test('show feedback loading state while loading', async () => {
+    const minLoadingAnimationMs = 10;
+    const promiseValues = createAppPromiseValues({
+      urlsParam: ['https://example.com/'],
+    });
+    createAppElementWithPromiseValues(promiseValues);
+    const feedbackButtonPlacholder =
+        appElement.shadowRoot!.querySelector('#feedbackLoading');
+    const feedbackButtons = appElement.$.feedbackButtons;
+    appElement.resetMinLoadingAnimationMsForTesting(minLoadingAnimationMs);
+    await flushTasks();
+
+    assertTrue(isVisible(feedbackButtonPlacholder));
+    assertFalse(isVisible(feedbackButtons));
+
+    // Wait for the loading animation to finish.
+    await new Promise(res => setTimeout(res, minLoadingAnimationMs));
+
+    assertFalse(isVisible(feedbackButtonPlacholder));
+    assertTrue(isVisible(feedbackButtons));
+  });
+
   test('updates on selection change', async () => {
     const urlsParam = ['https://example.com/', 'https://example2.com/'];
     const specsSetUrls =
@@ -1202,6 +1225,8 @@ suite('AppTest', () => {
 
       assertNotStyle($$(appElement, '#empty')!, 'display', 'none');
       assertStyle($$(appElement, '#specs')!, 'display', 'none');
+      const footer = appElement.shadowRoot!.querySelector('#footer');
+      assertFalse(isVisible(footer));
     });
 
     test('hides empty state if app loads with urls', async () => {
@@ -1285,5 +1310,38 @@ suite('AppTest', () => {
       assertNotStyle($$(appElement, '#empty')!, 'display', 'none');
       assertStyle($$(appElement, '#specs')!, 'display', 'none');
     });
+  });
+
+  test('sends feedback', async () => {
+    const urlsParam = ['https://example.com/'];
+    const promiseValues = createAppPromiseValues(
+        {urlsParam: urlsParam, specsSet: createSpecsSet()});
+    await createAppElementWithPromiseValues(promiseValues);
+
+    function updateCrFeedbackButtons(option: CrFeedbackOption) {
+      appElement.$.feedbackButtons.dispatchEvent(
+          new CustomEvent('selected-option-changed', {
+            bubbles: true,
+            composed: true,
+            detail: {value: option},
+          }));
+    }
+
+    updateCrFeedbackButtons(CrFeedbackOption.THUMBS_DOWN);
+    let feedbackArgs = await shoppingServiceApi.whenCalled(
+        'setProductSpecificationsUserFeedback');
+    assertEquals(UserFeedback.kThumbsDown, feedbackArgs);
+    shoppingServiceApi.resetResolver('setProductSpecificationsUserFeedback');
+
+    updateCrFeedbackButtons(CrFeedbackOption.THUMBS_UP);
+    feedbackArgs = await shoppingServiceApi.whenCalled(
+        'setProductSpecificationsUserFeedback');
+    assertEquals(UserFeedback.kThumbsUp, feedbackArgs);
+    shoppingServiceApi.resetResolver('setProductSpecificationsUserFeedback');
+
+    updateCrFeedbackButtons(CrFeedbackOption.UNSPECIFIED);
+    feedbackArgs = await shoppingServiceApi.whenCalled(
+        'setProductSpecificationsUserFeedback');
+    assertEquals(UserFeedback.kUnspecified, feedbackArgs);
   });
 });

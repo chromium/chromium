@@ -374,7 +374,7 @@ class ImeObserverChromeOS
         engine->AddPendingKeyEvent(component_id, std::move(callback));
 
     input_ime::KeyboardEvent keyboard_event;
-    keyboard_event.type = (event.type() == ui::ET_KEY_RELEASED)
+    keyboard_event.type = (event.type() == ui::EventType::kKeyReleased)
                               ? input_ime::KeyboardEventType::kKeyup
                               : input_ime::KeyboardEventType::kKeydown;
 

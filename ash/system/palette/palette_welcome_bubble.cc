@@ -176,14 +176,14 @@ void PaletteWelcomeBubble::DisconnectObservers() {
 }
 
 void PaletteWelcomeBubble::OnMouseEvent(ui::MouseEvent* event) {
-  if (bubble_view_ && event->type() == ui::ET_MOUSE_PRESSED &&
+  if (bubble_view_ && event->type() == ui::EventType::kMousePressed &&
       event->target() != bubble_view_->GetWidget()->GetNativeView()) {
     bubble_view_->GetWidget()->Close();
   }
 }
 
 void PaletteWelcomeBubble::OnTouchEvent(ui::TouchEvent* event) {
-  if (bubble_view_ && event->type() == ui::ET_TOUCH_PRESSED &&
+  if (bubble_view_ && event->type() == ui::EventType::kTouchPressed &&
       event->target() != bubble_view_->GetWidget()->GetNativeView()) {
     bubble_view_->GetWidget()->Close();
   }

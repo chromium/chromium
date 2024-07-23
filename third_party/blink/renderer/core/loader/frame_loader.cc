@@ -71,7 +71,6 @@
 #include "third_party/blink/renderer/core/events/page_transition_event.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"
-#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
@@ -1213,11 +1212,6 @@ void FrameLoader::CommitNavigation(
   RestoreScrollPositionAndViewState();
 
   TakeObjectSnapshot();
-
-  // Let the browser know about the Attribution Reporting runtime features of
-  // this frame.
-  frame_->GetLocalFrameHostRemote().SetAttributionReportingRuntimeFeatures(
-      frame_->GetAttributionSrcLoader()->GetRuntimeFeatures());
 }
 
 bool FrameLoader::WillStartNavigation(const WebNavigationInfo& info) {

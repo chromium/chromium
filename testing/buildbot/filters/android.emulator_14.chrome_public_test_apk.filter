@@ -43,3 +43,9 @@
 
 # crbug.com/351026514
 -org.chromium.chrome.browser.gsa.GSAAccountChangeListenerTest.testReceivesBroadcastIntents
+
+# crbug.com/343800065
+-org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.testContinueButtonWithChildAccountWithNonDisplayableAccountEmail_replaceSyncWithSigninPromosEnabled
+-org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.testContinueButtonWithChildAccount_replaceSyncWithSigninPromosEnabled
+-org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.testFragmentSigninWhenAddedAccountIsNotYetAvailable
+-org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.testSigninWithDefaultAccount

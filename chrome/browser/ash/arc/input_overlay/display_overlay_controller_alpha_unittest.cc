@@ -90,7 +90,7 @@ TEST_F(DisplayOverlayControllerAlphaTest, TestEducationNudgeDismissesOnClick) {
   EXPECT_TRUE(ShowingNudge());
   auto center = injector_->window()->bounds().CenterPoint();
   auto mouse_pressed = ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   controller_->OnMouseEvent(&mouse_pressed);
   EXPECT_FALSE(ShowingNudge());

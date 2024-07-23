@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "components/webapps/browser/android/add_to_homescreen_installer.h"
-#include "components/webapps/browser/android/ambient_badge_metrics.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_message_controller.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -243,12 +242,6 @@ class AppBannerManagerAndroid
                               std::u16string app_title,
                               GURL primary_icon_url,
                               const SkBitmap& bitmap);
-
-  // Run before showing the ambient badge. This calls back to the
-  // InstallableManager to continue checking service worker criteria for showing
-  // ambient badge.
-  void PerformWorkerCheckForAmbientBadge(InstallableParams params,
-                                         InstallableCallback callback);
 
   const std::unique_ptr<ChromeDelegate> delegate_;
 

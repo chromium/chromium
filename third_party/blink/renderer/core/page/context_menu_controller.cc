@@ -819,9 +819,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
             attribution_src_loader->CanRegister(result.AbsoluteLinkURL(),
                                                 /*element=*/anchor,
                                                 /*request_id=*/std::nullopt)) {
-          data.impression = blink::Impression{
-              .runtime_features = attribution_src_loader->GetRuntimeFeatures(),
-          };
+          data.impression = blink::Impression();
         }
       }
     }

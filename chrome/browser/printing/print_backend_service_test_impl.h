@@ -141,6 +141,7 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
   // Use LaunchForTesting() or LaunchForTestingWithServiceThread().
   PrintBackendServiceTestImpl(
       mojo::PendingReceiver<mojom::PrintBackendService> receiver,
+      bool is_sandboxed,
       scoped_refptr<TestPrintBackend> backend);
 
   void OnDidGetDefaultPrinterName(
@@ -155,13 +156,14 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
   static std::unique_ptr<PrintBackendServiceTestImpl>
   CreateServiceOnServiceThread(
       mojo::PendingReceiver<mojom::PrintBackendService> receiver,
+      bool is_sandboxed,
       scoped_refptr<TestPrintBackend> backend,
       mojo::PendingRemote<mojom::PrinterXmlParser> xml_parser_remote);
 #endif  // BUILDFLAG(IS_WIN)
 
   // When pretending to be sandboxed, have the possibility of getting access
   // denied errors.
-  bool is_sandboxed_ = false;
+  const bool is_sandboxed_;
 
   // Marker for skipping check for empty persistent contexts at destruction.
   bool skip_dtor_persistent_contexts_check_ = false;

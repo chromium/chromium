@@ -116,7 +116,7 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
 
   // Simulates mouse press event on a |button|.
   void SimulateButtonPress(views::Button* button) {
-    ui::MouseEvent event(/*type=*/ui::ET_MOUSE_PRESSED,
+    ui::MouseEvent event(/*type=*/ui::EventType::kMousePressed,
                          /*location=*/gfx::Point(),
                          /*root_location=*/gfx::Point(),
                          /*time_stamp=*/ui::EventTimeForNow(),

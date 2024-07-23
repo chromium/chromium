@@ -73,11 +73,12 @@ TEST_F(GestureEventDataPacketTest, Basic) {
   EXPECT_EQ(0U, packet.gesture_count());
   EXPECT_EQ(gfx::PointF(kTouchX, kTouchY), packet.touch_location());
 
-  for (size_t i = ET_GESTURE_TYPE_START; i < ET_GESTURE_TYPE_END; ++i) {
+  for (size_t i = EventType::kGestureTypeStart; i < EventType::kGestureTypeEnd;
+       ++i) {
     const EventType type = static_cast<EventType>(i);
     GestureEventData gesture = CreateGesture(type);
     packet.Push(gesture);
-    const size_t index = (i - ET_GESTURE_TYPE_START);
+    const size_t index = (i - EventType::kGestureTypeStart);
     ASSERT_EQ(index + 1U, packet.gesture_count());
     EXPECT_TRUE(GestureEqualsExceptForTouchId(gesture, packet.gesture(index)));
     EXPECT_EQ(packet.unique_touch_event_id(),
@@ -88,8 +89,8 @@ TEST_F(GestureEventDataPacketTest, Basic) {
 TEST_F(GestureEventDataPacketTest, Copy) {
   GestureEventDataPacket packet0 = GestureEventDataPacket::FromTouch(
       MockMotionEvent(MotionEvent::Action::UP));
-  packet0.Push(CreateGesture(ET_GESTURE_TAP_DOWN));
-  packet0.Push(CreateGesture(ET_GESTURE_SCROLL_BEGIN));
+  packet0.Push(CreateGesture(EventType::kGestureTapDown));
+  packet0.Push(CreateGesture(EventType::kGestureScrollBegin));
 
   GestureEventDataPacket packet1 = packet0;
   EXPECT_TRUE(PacketEquals(packet0, packet1));
@@ -126,7 +127,7 @@ TEST_F(GestureEventDataPacketTest, GestureSource) {
       MockMotionEvent(MotionEvent::Action::POINTER_UP));
   EXPECT_EQ(GestureEventDataPacket::TOUCH_END, packet.gesture_source());
 
-  GestureEventData gesture = CreateGesture(ET_GESTURE_TAP);
+  GestureEventData gesture = CreateGesture(EventType::kGestureTap);
   packet = GestureEventDataPacket::FromTouchTimeout(gesture);
   EXPECT_EQ(GestureEventDataPacket::TOUCH_TIMEOUT, packet.gesture_source());
   EXPECT_EQ(1U, packet.gesture_count());
@@ -137,9 +138,9 @@ TEST_F(GestureEventDataPacketTest, GestureSource) {
 TEST_F(GestureEventDataPacketTest, AddEventLatencyMetadataToGestures) {
   GestureEventDataPacket packet = GestureEventDataPacket::FromTouch(
       MockMotionEvent(MotionEvent::Action::DOWN));
-  packet.Push(CreateGesture(ET_GESTURE_TAP));
-  packet.Push(CreateGesture(ET_GESTURE_SCROLL_UPDATE));
-  packet.Push(CreateGesture(ET_GESTURE_PINCH_UPDATE));
+  packet.Push(CreateGesture(EventType::kGestureTap));
+  packet.Push(CreateGesture(EventType::kGestureScrollUpdate));
+  packet.Push(CreateGesture(EventType::kGesturePinchUpdate));
 
   EventLatencyMetadata event_latency_metadata;
   event_latency_metadata.scrolls_blocking_touch_dispatched_to_renderer =
@@ -147,7 +148,7 @@ TEST_F(GestureEventDataPacketTest, AddEventLatencyMetadataToGestures) {
   packet.AddEventLatencyMetadataToGestures(
       event_latency_metadata,
       base::BindRepeating([](const ui::GestureEventData& data) {
-        return data.type() == ET_GESTURE_SCROLL_UPDATE;
+        return data.type() == EventType::kGestureScrollUpdate;
       }));
 
   EXPECT_TRUE(packet.gesture(0)

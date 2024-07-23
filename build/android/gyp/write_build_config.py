@@ -1355,13 +1355,14 @@ def main(argv):
   all_deps = deps.All()
   all_library_deps = deps.All('java_library')
 
+  direct_resources_deps = deps.Direct('android_resources')
   if options.type == 'java_library':
     # For Java libraries, restrict to resource targets that are direct deps, or
     # are indirect via other resource targets.
     # The indirect-through-other-targets ones are picked up because
     # _ResolveGroupsAndPublicDeps() treats resource deps of resource targets as
     # public_deps.
-    all_resources_deps = deps.Direct('android_resources')
+    all_resources_deps = direct_resources_deps
   else:
     all_resources_deps = deps.All('android_resources')
 
@@ -1497,11 +1498,11 @@ def main(argv):
     # You are allowed to depend on both android |deps_require_android| and
     # non-android |deps_not_support_android| targets.
     if not options.bypass_platform_checks and not options.is_robolectric:
-      deps_require_android = all_resources_deps + [
-          d for d in all_library_deps if d['requires_android']
+      deps_require_android = direct_resources_deps + [
+          d for d in deps.Direct() if d.get('requires_android', False)
       ]
       deps_not_support_android = [
-          d for d in all_library_deps if not d['supports_android']
+          d for d in deps.Direct() if not d.get('supports_android', True)
       ]
 
       if deps_require_android and not options.requires_android:

@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -221,4 +223,56 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   browser()->tab_strip_model()->DetachTabAtForInsertion(0);
   ASSERT_FALSE(GetDialog());
+}
+
+// Test that the dialog is disabled when occluded by a PiP window.
+IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
+                       DisabledWhenOccluded) {
+  Show();
+  ASSERT_TRUE(GetDialog());
+  EXPECT_TRUE(GetDialog()->IsVisible());
+
+  views::View* dialog_view = GetDialog()->GetContentsView();
+  ASSERT_NE(dialog_view, nullptr);
+
+  // Create a picture-in-picture widget that does not occlude the prompt.
+  gfx::Rect prompt_widget_bounds =
+      dialog_view->GetWidget()->GetWindowBoundsInScreen();
+  gfx::Rect non_occluding_bounds =
+      gfx::Rect(prompt_widget_bounds.right() + 1, 0, 100, 100);
+  views::Widget::InitParams init_params(views::Widget::InitParams::TYPE_WINDOW);
+  init_params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  init_params.bounds = non_occluding_bounds;
+  auto pip_widget = std::make_unique<views::Widget>(std::move(init_params));
+  pip_widget->Show();
+  PictureInPictureWindowManager::GetInstance()
+      ->GetOcclusionTracker()
+      ->OnPictureInPictureWidgetOpened(pip_widget.get());
+
+  // The prompt should be enabled, as it's not occluded.
+  EXPECT_TRUE(dialog_view->GetEnabled());
+
+  // Move the picture-in-picture window to occlude the prompt.
+  pip_widget->SetBounds(prompt_widget_bounds);
+
+  // The prompt should be disabled. We may need to wait for that to happen.
+  if (dialog_view->GetEnabled()) {
+    base::RunLoop wait_loop;
+    auto subscription =
+        dialog_view->AddEnabledChangedCallback(wait_loop.QuitClosure());
+    wait_loop.Run();
+  }
+  EXPECT_FALSE(dialog_view->GetEnabled());
+
+  // Move the picture-in-picture window to no longer occlude the prompt.
+  pip_widget->SetBounds(non_occluding_bounds);
+
+  // The prompt should be enabled again. We may need to wait for that to happen.
+  if (!dialog_view->GetEnabled()) {
+    base::RunLoop wait_loop;
+    auto subscription =
+        dialog_view->AddEnabledChangedCallback(wait_loop.QuitClosure());
+    wait_loop.Run();
+  }
+  EXPECT_TRUE(dialog_view->GetEnabled());
 }

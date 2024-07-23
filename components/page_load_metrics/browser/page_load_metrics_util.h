@@ -215,6 +215,10 @@ std::optional<base::TimeDelta> GetInitialForegroundDuration(
 //   https://docs.google.com -> false
 bool IsGoogleSearchHostname(const GURL& url);
 
+// Determine if the given url has query associated with it. Note that we do
+// not check the domain name, but only check the parameters.
+bool HasGoogleSearchQuery(const GURL& url);
+
 // Whether the given url is for a Google Search results page. See
 // https://docs.google.com/document/d/1jNPZ6Aeh0KV6umw1yZrrkfXRfxWNruwu7FELLx_cpOg/edit
 // for additional details.
@@ -224,6 +228,14 @@ bool IsGoogleSearchHostname(const GURL& url);
 //   https://www.google.com/ -> false
 //   https://www.google.com/about/ -> false
 bool IsGoogleSearchResultUrl(const GURL& url);
+
+// Whether the given url is for a Google home page.
+// Examples:
+//   https://www.google.com/ -> true
+//   https://www.google.com/search/ -> true
+//   https://www.google.com/search?q=test -> false
+//   https://www.google.com/maps/ -> false
+bool IsGoogleSearchHomepageUrl(const GURL& url);
 
 // Whether the given url is a Google Search redirector URL.
 bool IsGoogleSearchRedirectorUrl(const GURL& url);

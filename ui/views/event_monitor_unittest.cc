@@ -68,7 +68,7 @@ class EventMonitorTest : public WidgetTest {
 TEST_F(EventMonitorTest, ShouldReceiveAppEventsWhileInstalled) {
   std::unique_ptr<EventMonitor> monitor(EventMonitor::CreateApplicationMonitor(
       &observer_, widget_->GetNativeWindow(),
-      {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_RELEASED}));
+      {ui::EventType::kMousePressed, ui::EventType::kMouseReleased}));
 
   generator_->ClickLeftButton();
   EXPECT_EQ(2u, observer_.observed_event_count());
@@ -81,7 +81,7 @@ TEST_F(EventMonitorTest, ShouldReceiveAppEventsWhileInstalled) {
 TEST_F(EventMonitorTest, ShouldReceiveWindowEventsWhileInstalled) {
   std::unique_ptr<EventMonitor> monitor(EventMonitor::CreateWindowMonitor(
       &observer_, widget_->GetNativeWindow(),
-      {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_RELEASED}));
+      {ui::EventType::kMousePressed, ui::EventType::kMouseReleased}));
 
   generator_->ClickLeftButton();
   EXPECT_EQ(2u, observer_.observed_event_count());
@@ -95,7 +95,7 @@ TEST_F(EventMonitorTest, ShouldNotReceiveEventsFromOtherWindow) {
   Widget* widget2 = CreateTopLevelNativeWidget();
   std::unique_ptr<EventMonitor> monitor(EventMonitor::CreateWindowMonitor(
       &observer_, widget2->GetNativeWindow(),
-      {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_RELEASED}));
+      {ui::EventType::kMousePressed, ui::EventType::kMouseReleased}));
 
   generator_->ClickLeftButton();
   EXPECT_EQ(0u, observer_.observed_event_count());
@@ -107,7 +107,7 @@ TEST_F(EventMonitorTest, ShouldNotReceiveEventsFromOtherWindow) {
 TEST_F(EventMonitorTest, ShouldOnlyReceiveRequestedEventTypes) {
   // This event monitor only listens to mouse press, not release.
   std::unique_ptr<EventMonitor> monitor(EventMonitor::CreateWindowMonitor(
-      &observer_, widget_->GetNativeWindow(), {ui::ET_MOUSE_PRESSED}));
+      &observer_, widget_->GetNativeWindow(), {ui::EventType::kMousePressed}));
 
   generator_->ClickLeftButton();
   EXPECT_EQ(1u, observer_.observed_event_count());
@@ -120,7 +120,7 @@ TEST_F(EventMonitorTest, WindowMonitorTornDownOnWindowClose) {
   widget2->Show();
 
   std::unique_ptr<EventMonitor> monitor(EventMonitor::CreateWindowMonitor(
-      &observer_, widget2->GetNativeWindow(), {ui::ET_MOUSE_PRESSED}));
+      &observer_, widget2->GetNativeWindow(), {ui::EventType::kMousePressed}));
 
   // Closing the widget before destroying the monitor should not crash.
   widget2->CloseNow();
@@ -132,7 +132,8 @@ class DeleteOtherOnEventObserver : public ui::EventObserver {
  public:
   explicit DeleteOtherOnEventObserver(gfx::NativeWindow context) {
     monitor_ = EventMonitor::CreateApplicationMonitor(
-        this, context, {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_RELEASED});
+        this, context,
+        {ui::EventType::kMousePressed, ui::EventType::kMouseReleased});
   }
 
   DeleteOtherOnEventObserver(const DeleteOtherOnEventObserver&) = delete;

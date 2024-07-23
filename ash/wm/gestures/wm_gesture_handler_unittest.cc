@@ -263,7 +263,7 @@ TEST_F(WmGestureHandlerTest, EnterOverviewOnScrollEnd) {
   base::TimeTicks timestamp = base::TimeTicks::Now();
   const int num_fingers = 3;
   base::TimeDelta step_delay(base::Milliseconds(5));
-  ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gfx::Point(),
+  ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel, gfx::Point(),
                                timestamp, 0, 0, 0, 0, 0, num_fingers);
   GetEventGenerator()->Dispatch(&fling_cancel);
 
@@ -271,14 +271,14 @@ TEST_F(WmGestureHandlerTest, EnterOverviewOnScrollEnd) {
   // still ongoing.
   for (int i = 0; i < 100; ++i) {
     timestamp += step_delay;
-    ui::ScrollEvent move(ui::ET_SCROLL, gfx::Point(), timestamp, 0, 0,
+    ui::ScrollEvent move(ui::EventType::kScroll, gfx::Point(), timestamp, 0, 0,
                          GetOffsetY(10), 0, GetOffsetY(10), num_fingers);
     GetEventGenerator()->Dispatch(&move);
   }
   ASSERT_FALSE(InOverviewSession());
 
   timestamp += step_delay;
-  ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, gfx::Point(),
+  ui::ScrollEvent fling_start(ui::EventType::kScrollFlingStart, gfx::Point(),
                               timestamp, 0, 0, GetOffsetY(-10), 0,
                               GetOffsetY(-10), num_fingers);
   GetEventGenerator()->Dispatch(&fling_start);
@@ -297,21 +297,21 @@ TEST_F(WmGestureHandlerTest, EnterOverviewWithNormalCaptureWindow) {
       CreateTestWindow(gfx::Rect(100, 100));
   normal_window->SetCapture();
 
-  ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gfx::Point(),
+  ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel, gfx::Point(),
                                timestamp, 0, 0, 0, 0, 0, num_fingers);
   GetEventGenerator()->Dispatch(&fling_cancel);
 
-  // Send ET_SCROLL events to initializae ScrollData.
+  // Send EventType::kScroll events to initializae ScrollData.
   for (int i = 0; i < 100; ++i) {
     timestamp += step_delay;
-    ui::ScrollEvent move(ui::ET_SCROLL, gfx::Point(), timestamp, 0, 0,
+    ui::ScrollEvent move(ui::EventType::kScroll, gfx::Point(), timestamp, 0, 0,
                          GetOffsetY(10), 0, GetOffsetY(10), num_fingers);
     GetEventGenerator()->Dispatch(&move);
   }
 
   timestamp += step_delay;
 
-  ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, gfx::Point(),
+  ui::ScrollEvent fling_start(ui::EventType::kScrollFlingStart, gfx::Point(),
                               timestamp, 0, 0, GetOffsetY(-10), 0,
                               GetOffsetY(-10), num_fingers);
   GetEventGenerator()->Dispatch(&fling_start);
@@ -336,21 +336,21 @@ TEST_F(WmGestureHandlerTest, EnterOverviewWithPopupCaptureWindow) {
           normal_window.get(), /*show_on_creation=*/true));
   popup_window->SetCapture();
 
-  ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gfx::Point(),
+  ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel, gfx::Point(),
                                timestamp, 0, 0, 0, 0, 0, num_fingers);
   GetEventGenerator()->Dispatch(&fling_cancel);
 
-  // Send ET_SCROLL events to initializae ScrollData.
+  // Send EventType::kScroll events to initializae ScrollData.
   for (int i = 0; i < 100; ++i) {
     timestamp += step_delay;
-    ui::ScrollEvent move(ui::ET_SCROLL, gfx::Point(), timestamp, 0, 0,
+    ui::ScrollEvent move(ui::EventType::kScroll, gfx::Point(), timestamp, 0, 0,
                          GetOffsetY(10), 0, GetOffsetY(10), num_fingers);
     GetEventGenerator()->Dispatch(&move);
   }
 
   timestamp += step_delay;
 
-  ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, gfx::Point(),
+  ui::ScrollEvent fling_start(ui::EventType::kScrollFlingStart, gfx::Point(),
                               timestamp, 0, 0, GetOffsetY(-10), 0,
                               GetOffsetY(-10), num_fingers);
   GetEventGenerator()->Dispatch(&fling_start);

@@ -44,6 +44,7 @@ source_set("eg2_tests") {
   sources = [ "plus_addresses_egtest.mm" ]
   deps = [
     ":constants",
+    "//components/feature_engagement/public",
     "//components/plus_addresses",
     "//components/plus_addresses:test_support",
     "//components/plus_addresses/metrics",

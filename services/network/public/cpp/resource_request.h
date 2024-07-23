@@ -25,7 +25,6 @@
 #include "net/log/net_log_source.h"
 #include "net/storage_access_api/status.h"
 #include "net/url_request/referrer_policy.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
@@ -226,8 +225,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
       network::mojom::AttributionSupport::kUnset;
   mojom::AttributionReportingEligibility attribution_reporting_eligibility =
       mojom::AttributionReportingEligibility::kUnset;
-  network::AttributionReportingRuntimeFeatures
-      attribution_reporting_runtime_features;
   bool shared_dictionary_writer_enabled = false;
   std::optional<base::UnguessableToken> attribution_reporting_src_token;
   bool is_ad_tagged = false;

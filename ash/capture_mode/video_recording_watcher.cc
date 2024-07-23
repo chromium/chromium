@@ -554,8 +554,9 @@ void VideoRecordingWatcher::OnKeyEvent(ui::KeyEvent* event) {
   if (demo_tools_controller_)
     demo_tools_controller_->OnKeyEvent(event);
 
-  if (event->type() != ui::ET_KEY_PRESSED)
+  if (event->type() != ui::EventType::kKeyPressed) {
     return;
+  }
 
   auto* camera_preview_view = GetCameraPreviewView();
   if (camera_preview_view && camera_preview_view->MaybeHandleKeyEvent(event)) {
@@ -569,11 +570,11 @@ void VideoRecordingWatcher::OnMouseEvent(ui::MouseEvent* event) {
   const gfx::PointF location_in_window =
       GetEventLocationInWindow(window_being_recorded_, *event);
   switch (event->type()) {
-    case ui::ET_MOUSEWHEEL:
-    case ui::ET_MOUSE_CAPTURE_CHANGED:
+    case ui::EventType::kMousewheel:
+    case ui::EventType::kMouseCaptureChanged:
       return;
 
-    case ui::ET_MOUSE_PRESSED: {
+    case ui::EventType::kMousePressed: {
       auto* camera_preview_view = GetCameraPreviewView();
       if (camera_preview_view)
         camera_preview_view->MaybeBlurFocus(*event);
@@ -583,7 +584,7 @@ void VideoRecordingWatcher::OnMouseEvent(ui::MouseEvent* event) {
       }
     }
       [[fallthrough]];
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       // Pressed/released events are important, so we handle them immediately.
       UpdateCursorOverlayNow(location_in_window);
       return;

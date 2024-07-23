@@ -10,7 +10,6 @@
 #include <optional>
 
 #include "components/attribution_reporting/registration_eligibility.mojom-blink-forward.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -107,8 +106,6 @@ class CORE_EXPORT AttributionSrcLoader
   void Trace(Visitor* visitor) const;
 
   network::mojom::AttributionSupport GetSupport() const;
-
-  network::AttributionReportingRuntimeFeatures GetRuntimeFeatures() const;
 
   // Records whether the permission policy allows for Attribution support to
   // 'Conversions.AllowedByPermissionPolicy'.

@@ -100,6 +100,14 @@ reviewer.
       summary="Consent notice with Topics API on Clank Browser App."/>
   <variant name="TopicsConsentModalClankCCT"
       summary="Consent notice with Topics API on Clank CCT."/>
+  <variant name="TrackingProtectionReminderClankBrApp"
+      summary="Reminder notice on Clank Browser App."/>
+  <variant name="TrackingProtectionReminderDesktopIPH"
+      summary="Reminder notice on Desktop."/>
+  <variant name="TrackingProtectionSilentReminderClankBrApp"
+      summary="Silent reminder notice on Clank Browser App."/>
+  <variant name="TrackingProtectionSilentReminderDesktopIPH"
+      summary="Silent reminder notice on Desktop."/>
 </variants>
 
 <!-- TODO(crbug.com/333408794): Add user action metrics for these. -->
@@ -380,7 +388,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseEntryCount" units="entries"
-    expires_after="2024-09-01">
+    expires_after="2025-03-01">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -403,7 +411,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseHealthMetricsTime" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2025-03-01">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -1067,7 +1075,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.Attestations.InitializationDuration.ComponentReadyFromApplicationStart"
-    units="ms" expires_after="2024-11-17">
+    units="ms" expires_after="2025-01-19">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1079,7 +1087,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.Attestations.InitializationDuration.ComponentReadyFromApplicationStartWithInterruption"
-    units="ms" expires_after="2024-11-17">
+    units="ms" expires_after="2025-01-19">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1094,7 +1102,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.Attestations.InitializationDuration.ComponentReadyFromBrowserWindowFirstPaint"
-    units="ms" expires_after="2024-11-17">
+    units="ms" expires_after="2025-01-19">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1118,7 +1126,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.Attestations.IsSiteAttested"
-    enum="PrivacySandboxApiAllowed" expires_after="2024-11-17">
+    enum="PrivacySandboxApiAllowed" expires_after="2025-01-19">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>

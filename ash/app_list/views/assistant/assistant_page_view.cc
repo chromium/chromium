@@ -216,7 +216,7 @@ void AssistantPageView::VisibilityChanged(views::View* starting_from,
 
 void AssistantPageView::OnMouseEvent(ui::MouseEvent* event) {
   switch (event->type()) {
-    case ui::ET_MOUSE_PRESSED:
+    case ui::EventType::kMousePressed:
       // Prevents closing the AppListView when a click event is not handled.
       event->StopPropagation();
       break;
@@ -227,11 +227,11 @@ void AssistantPageView::OnMouseEvent(ui::MouseEvent* event) {
 
 void AssistantPageView::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP:
-    case ui::ET_GESTURE_DOUBLE_TAP:
-    case ui::ET_GESTURE_LONG_PRESS:
-    case ui::ET_GESTURE_LONG_TAP:
-    case ui::ET_GESTURE_TWO_FINGER_TAP:
+    case ui::EventType::kGestureTap:
+    case ui::EventType::kGestureDoubleTap:
+    case ui::EventType::kGestureLongPress:
+    case ui::EventType::kGestureLongTap:
+    case ui::EventType::kGestureTwoFingerTap:
       // Prevents closing the AppListView when a tap event is not handled.
       event->StopPropagation();
       break;

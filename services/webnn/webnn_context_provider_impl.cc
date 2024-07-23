@@ -213,9 +213,6 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   mojo::PendingRemote<mojom::WebNNContext> remote;
   auto receiver = remote.InitWithNewPipeAndPassReceiver();
 
-  mojo::PendingReceiver<mojom::WebNNContextClient> client_receiver;
-  auto client_remote = client_receiver.InitWithNewPipeAndPassRemote();
-
 #if BUILDFLAG(IS_WIN)
   if (ShouldCreateDmlContext(*options)) {
     DCHECK(gpu_feature_info_.IsInitialized());
@@ -265,9 +262,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         std::move(callback));
 
     context_impl = new dml::ContextImplDml(
-        std::move(adapter), std::move(receiver), std::move(client_remote), this,
-        std::move(options), std::move(command_recorder), gpu_feature_info_,
-        context_handle);
+        std::move(adapter), std::move(receiver), this, std::move(options),
+        std::move(command_recorder), gpu_feature_info_, context_handle);
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -276,8 +272,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   // with TFLite or a more restrictive implementation on CoreML.
   if (__builtin_available(macOS 14, *)) {
     context_impl = new coreml::ContextImplCoreml(
-        std::move(receiver), std::move(client_remote), this, std::move(options),
-        context_handle);
+        std::move(receiver), this, std::move(options), context_handle);
   }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -286,12 +281,10 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #if BUILDFLAG(IS_CHROMEOS)
     // TODO: crbug.com/41486052 - Create the TFLite context using `options`.
     context_impl = new tflite::ContextImplCrOS(
-        std::move(receiver), std::move(client_remote), this, std::move(options),
-        context_handle);
+        std::move(receiver), this, std::move(options), context_handle);
 #else
     context_impl = new tflite::ContextImplTflite(
-        std::move(receiver), std::move(client_remote), this, std::move(options),
-        context_handle);
+        std::move(receiver), this, std::move(options), context_handle);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
@@ -308,9 +301,9 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   ContextProperties context_properties = context_impl->properties();
   impls_.emplace(base::WrapUnique<WebNNContextImpl>(context_impl));
 
-  auto success = mojom::CreateContextSuccess::New(
-      std::move(remote), std::move(client_receiver),
-      std::move(context_properties), std::move(context_handle));
+  auto success = mojom::CreateContextSuccess::New(std::move(remote),
+                                                  std::move(context_properties),
+                                                  std::move(context_handle));
   std::move(callback).Run(
       mojom::CreateContextResult::NewSuccess(std::move(success)));
 }

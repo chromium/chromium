@@ -10,7 +10,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/unguessable_token.h"
 #include "content/public/browser/android/additional_navigation_params_android.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
@@ -26,11 +25,6 @@ int GetInitiatorProcessIdFromJavaAdditionalNavigationParams(
 
 std::optional<blink::AttributionSrcToken>
 GetAttributionSrcTokenFromJavaAdditionalNavigationParams(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_object);
-
-network::AttributionReportingRuntimeFeatures
-GetAttributionRuntimeFeaturesFromJavaAdditionalNavigationParams(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_object);
 

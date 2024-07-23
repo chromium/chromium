@@ -448,8 +448,10 @@ void ModelExecutionFeaturesController::ResetInvalidFeaturePrefs() {
     auto pref_state = GetPrefState(feature);
 
     // When the main toggle is enabled, and the feature pref was never disabled
-    // by the user, it can be enabled, if it is visible in settings.
+    // by the user, it can be enabled, if it is visible in settings, and allowed
+    // for automatic turning on.
     if (main_toggle_enabled && IsSettingVisible(feature) &&
+        features::internal::ShouldEnableFeatureWhenMainToggleOn(feature) &&
         (pref_state == prefs::FeatureOptInState::kNotInitialized)) {
       browser_context_profile_service_->SetInteger(
           prefs::GetSettingEnabledPrefName(feature),

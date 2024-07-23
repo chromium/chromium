@@ -19,7 +19,7 @@ SystemGestureEventFilter::SystemGestureEventFilter()
 SystemGestureEventFilter::~SystemGestureEventFilter() = default;
 
 void SystemGestureEventFilter::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_PRESSED &&
+  if (event->type() == ui::EventType::kMousePressed &&
       ui::GetTouchScreensAvailability() ==
           ui::TouchScreensAvailability::ENABLED) {
     base::RecordAction(base::UserMetricsAction("Mouse_Down"));

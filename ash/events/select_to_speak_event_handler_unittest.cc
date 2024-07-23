@@ -149,13 +149,13 @@ TEST_F(SelectToSpeakEventHandlerTest, SearchPlusClick) {
   generator_->PressLeftButton();
   EXPECT_FALSE(event_capturer_.LastMouseEvent());
 
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_PRESSED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMousePressed));
   EXPECT_EQ(click_location, delegate_->last_mouse_event_location());
 
   generator_->ReleaseLeftButton();
   EXPECT_FALSE(event_capturer_.LastMouseEvent());
 
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_RELEASED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMouseReleased));
   EXPECT_EQ(click_location, delegate_->last_mouse_event_location());
 
   event_capturer_.ClearEvents();
@@ -177,13 +177,13 @@ TEST_F(SelectToSpeakEventHandlerTest, SearchPlusDrag) {
   gfx::Point drag_location = gfx::Point(120, 32);
   generator_->DragMouseTo(drag_location);
   EXPECT_EQ(drag_location, delegate_->last_mouse_event_location());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_DRAGGED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMouseDragged));
   EXPECT_FALSE(event_capturer_.LastMouseEvent());
   event_capturer_.ClearEvents();
 
   generator_->ReleaseLeftButton();
   EXPECT_EQ(drag_location, delegate_->last_mouse_event_location());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_RELEASED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMouseReleased));
 
   generator_->ReleaseKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
 }
@@ -219,14 +219,14 @@ TEST_F(SelectToSpeakEventHandlerTest, SearchPlusDragOnLargeDisplay) {
   generator_->DragMouseTo(drag_location_px);
   EXPECT_EQ(gfx::Point(drag_location_px.x() / 2, drag_location_px.y() / 2),
             delegate_->last_mouse_event_location());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_DRAGGED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMouseDragged));
   EXPECT_TRUE(event_capturer_.LastMouseEvent());
   event_capturer_.ClearEvents();
 
   generator_->ReleaseLeftButton();
   EXPECT_EQ(gfx::Point(drag_location_px.x() / 2, drag_location_px.y() / 2),
             delegate_->last_mouse_event_location());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_RELEASED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMouseReleased));
 
   generator_->ReleaseKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
 }
@@ -241,7 +241,7 @@ TEST_F(SelectToSpeakEventHandlerTest, RepeatSearchKey) {
   generator_->PressLeftButton();
   EXPECT_FALSE(event_capturer_.LastMouseEvent());
 
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_PRESSED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMousePressed));
 
   generator_->PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
   generator_->PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
@@ -249,7 +249,7 @@ TEST_F(SelectToSpeakEventHandlerTest, RepeatSearchKey) {
   generator_->ReleaseLeftButton();
   EXPECT_FALSE(event_capturer_.LastMouseEvent());
 
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_RELEASED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMouseReleased));
 
   event_capturer_.ClearEvents();
   generator_->ReleaseKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
@@ -279,23 +279,23 @@ TEST_F(SelectToSpeakEventHandlerTest, SearchPlusClickTwice) {
   generator_->set_current_screen_location(gfx::Point(100, 12));
   generator_->PressLeftButton();
   EXPECT_FALSE(event_capturer_.LastMouseEvent());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_PRESSED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMousePressed));
 
   generator_->ReleaseLeftButton();
   EXPECT_FALSE(event_capturer_.LastMouseEvent());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_RELEASED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMouseReleased));
 
   delegate_->Reset();
-  EXPECT_FALSE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_PRESSED));
-  EXPECT_FALSE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_RELEASED));
+  EXPECT_FALSE(delegate_->CapturedMouseEvent(ui::EventType::kMousePressed));
+  EXPECT_FALSE(delegate_->CapturedMouseEvent(ui::EventType::kMouseReleased));
 
   generator_->PressLeftButton();
   EXPECT_FALSE(event_capturer_.LastMouseEvent());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_PRESSED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMousePressed));
 
   generator_->ReleaseLeftButton();
   EXPECT_FALSE(event_capturer_.LastMouseEvent());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_RELEASED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMouseReleased));
 
   event_capturer_.ClearEvents();
   generator_->ReleaseKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
@@ -320,13 +320,13 @@ TEST_F(SelectToSpeakEventHandlerTest, SearchPlusKeyIgnoresClicks) {
   ASSERT_TRUE(event_capturer_.LastMouseEvent());
   EXPECT_FALSE(event_capturer_.LastMouseEvent()->handled());
 
-  EXPECT_FALSE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_PRESSED));
+  EXPECT_FALSE(delegate_->CapturedMouseEvent(ui::EventType::kMousePressed));
 
   generator_->ReleaseLeftButton();
   ASSERT_TRUE(event_capturer_.LastMouseEvent());
   EXPECT_FALSE(event_capturer_.LastMouseEvent()->handled());
 
-  EXPECT_FALSE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_RELEASED));
+  EXPECT_FALSE(delegate_->CapturedMouseEvent(ui::EventType::kMouseReleased));
 
   event_capturer_.ClearEvents();
   generator_->ReleaseKey(ui::VKEY_I, ui::EF_COMMAND_DOWN);
@@ -445,10 +445,10 @@ TEST_F(SelectToSpeakEventHandlerTest,
   generator_->set_current_screen_location(click_location);
   generator_->PressLeftButton();
   EXPECT_FALSE(event_capturer_.LastMouseEvent());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_PRESSED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMousePressed));
   generator_->ReleaseLeftButton();
   EXPECT_FALSE(event_capturer_.LastMouseEvent());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_RELEASED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMouseReleased));
 
   // Set the state to inactive.
   // This is realistic because Select-to-Speak will set the state to inactive
@@ -494,13 +494,13 @@ TEST_F(SelectToSpeakEventHandlerTest, SelectionRequestedWorksWithMouse) {
 
   generator_->PressLeftButton();
   EXPECT_FALSE(event_capturer_.LastMouseEvent());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_PRESSED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMousePressed));
   event_capturer_.ClearEvents();
 
   gfx::Point drag_location = gfx::Point(120, 32);
   generator_->DragMouseTo(drag_location);
   EXPECT_EQ(drag_location, delegate_->last_mouse_event_location());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_DRAGGED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMouseDragged));
   EXPECT_FALSE(event_capturer_.LastMouseEvent());
   event_capturer_.ClearEvents();
 
@@ -537,20 +537,20 @@ TEST_F(SelectToSpeakEventHandlerTest, SelectionRequestedWorksWithTouch) {
   generator_->PressTouch();
   EXPECT_FALSE(event_capturer_.LastTouchEvent());
   // Touch events are converted to mouse events for the extension.
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_PRESSED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMousePressed));
   event_capturer_.ClearEvents();
 
   gfx::Point drag_location = gfx::Point(120, 32);
   generator_->MoveTouch(drag_location);
   EXPECT_EQ(drag_location, delegate_->last_mouse_event_location());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_DRAGGED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMouseDragged));
   EXPECT_TRUE(event_capturer_.LastTouchEvent());
   event_capturer_.ClearEvents();
 
   // Touch up is the last event captured in the sequence
   generator_->ReleaseTouch();
   EXPECT_FALSE(event_capturer_.LastTouchEvent());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_RELEASED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMouseReleased));
   event_capturer_.ClearEvents();
 
   // Another touch event is let through normally.
@@ -575,7 +575,7 @@ TEST_F(SelectToSpeakEventHandlerTest, SelectionRequestedIgnoresOtherInput) {
   // Start a touch selection, it should get captured and forwarded.
   generator_->PressTouch();
   EXPECT_FALSE(event_capturer_.LastTouchEvent());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_PRESSED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMousePressed));
   event_capturer_.ClearEvents();
 
   // Mouse event happening during the touch selection are not impacted;
@@ -619,33 +619,33 @@ TEST_F(SelectToSpeakEventHandlerTest, TrackingTouchIgnoresOtherTouchPointers) {
   // The first touch event is captured and sent to the extension.
   generator_->PressTouchId(1);
   EXPECT_FALSE(event_capturer_.LastTouchEvent());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_PRESSED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMousePressed));
   event_capturer_.ClearEvents();
   delegate_->Reset();
 
   // A second touch event up and down is canceled but not sent to the extension.
   generator_->PressTouchId(2);
   EXPECT_FALSE(event_capturer_.LastTouchEvent());
-  EXPECT_FALSE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_PRESSED));
+  EXPECT_FALSE(delegate_->CapturedMouseEvent(ui::EventType::kMousePressed));
   generator_->MoveTouchId(drag_location, 2);
   EXPECT_FALSE(event_capturer_.LastTouchEvent());
-  EXPECT_FALSE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_DRAGGED));
+  EXPECT_FALSE(delegate_->CapturedMouseEvent(ui::EventType::kMouseDragged));
   generator_->ReleaseTouchId(2);
   EXPECT_FALSE(event_capturer_.LastTouchEvent());
-  EXPECT_FALSE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_RELEASED));
+  EXPECT_FALSE(delegate_->CapturedMouseEvent(ui::EventType::kMouseReleased));
 
   // A pointer type event will not be sent either, as we are tracking touch,
   // even if the ID is the same.
   generator_->EnterPenPointerMode();
   generator_->PressTouchId(1);
   EXPECT_FALSE(event_capturer_.LastTouchEvent());
-  EXPECT_FALSE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_PRESSED));
+  EXPECT_FALSE(delegate_->CapturedMouseEvent(ui::EventType::kMousePressed));
   generator_->ExitPenPointerMode();
 
   // The first pointer is still tracked.
   generator_->MoveTouchId(drag_location, 1);
   EXPECT_EQ(drag_location, delegate_->last_mouse_event_location());
-  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_DRAGGED));
+  EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::EventType::kMouseDragged));
   EXPECT_TRUE(event_capturer_.LastTouchEvent());
   event_capturer_.ClearEvents();
 

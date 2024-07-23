@@ -212,7 +212,7 @@ TEST_F(AccessibilityHighlightControllerTest, CursorWorksOnMultipleDisplays) {
   AccessibilityHighlightController highlight_controller;
   highlight_controller.HighlightCursor(true);
   gfx::Point location(90, 90);
-  ui::MouseEvent event0(ui::ET_MOUSE_MOVED, location, location,
+  ui::MouseEvent event0(ui::EventType::kMouseMoved, location, location,
                         ui::EventTimeForNow(), 0, 0);
   ui::Event::DispatcherApi event_mod(&event0);
   event_mod.set_target(root_windows[0]);
@@ -229,7 +229,7 @@ TEST_F(AccessibilityHighlightControllerTest, CursorWorksOnMultipleDisplays) {
       std::abs(cursor_layer->layer()->GetTargetBounds().y() - location.y()),
       50);
 
-  ui::MouseEvent event1(ui::ET_MOUSE_MOVED, location, location,
+  ui::MouseEvent event1(ui::EventType::kMouseMoved, location, location,
                         ui::EventTimeForNow(), 0, 0);
   ui::Event::DispatcherApi event_mod1(&event1);
   event_mod1.set_target(root_windows[1]);

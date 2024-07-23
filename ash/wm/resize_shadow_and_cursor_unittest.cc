@@ -117,7 +117,7 @@ class ResizeShadowAndCursorTest : public AshTestBase {
   // corner of |window_|. Tests whether the resize shadow is shown.
   void ProcessBottomRightResizeGesture(ui::EventType type,
                                        const gfx::Vector2dF& delta) {
-    if (type == ui::ET_GESTURE_SCROLL_END) {
+    if (type == ui::EventType::kGestureScrollEnd) {
       // After gesture scroll ends, there should be no resize shadow.
       VerifyResizeShadow(false);
     } else {

@@ -314,9 +314,9 @@ TEST_F(CastStartStopMediaNotificationProviderImplTest, ShowCastFooterView) {
   views::Button* stop_casting_button =
       static_cast<views::Button*>(footer_view->children()[0]);
   views::test::ButtonTestApi(stop_casting_button)
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),
-                                  gfx::Point(0, 0), ui::EventTimeForNow(),
-                                  ui::EF_LEFT_MOUSE_BUTTON, 0));
+      .NotifyClick(ui::MouseEvent(
+          ui::EventType::kMousePressed, gfx::Point(0, 0), gfx::Point(0, 0),
+          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
 }
 
 TEST_F(CastStartStopMediaNotificationProviderImplTest, ShowDeviceSelectorView) {

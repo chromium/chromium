@@ -271,9 +271,10 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       WithElement(kSavedTabGroupButtonElementId,
                   [](ui::TrackedElement* el) {
                     const ui::KeyEvent event(
-                        ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_RETURN,
-                        ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
-                        base::TimeTicks(), /*is_char=*/false);
+                        ui::EventType::kKeyPressed,
+                        ui::KeyboardCode::VKEY_RETURN, ui::DomCode::ENTER,
+                        ui::EF_NONE, ui::DomKey::ENTER, base::TimeTicks(),
+                        /*is_char=*/false);
 
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),
@@ -314,9 +315,10 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest, UnpinGroupFromButtonMenu) {
       WithElement(kSavedTabGroupButtonElementId,
                   [](ui::TrackedElement* el) {
                     const ui::KeyEvent event(
-                        ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_RETURN,
-                        ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
-                        base::TimeTicks(), /*is_char=*/false);
+                        ui::EventType::kKeyPressed,
+                        ui::KeyboardCode::VKEY_RETURN, ui::DomCode::ENTER,
+                        ui::EF_NONE, ui::DomKey::ENTER, base::TimeTicks(),
+                        /*is_char=*/false);
 
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),
@@ -645,9 +647,10 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       WithElement(kSavedTabGroupButtonElementId,
                   [](ui::TrackedElement* el) {
                     const ui::KeyEvent event(
-                        ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_RETURN,
-                        ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
-                        base::TimeTicks(), /*is_char=*/false);
+                        ui::EventType::kKeyPressed,
+                        ui::KeyboardCode::VKEY_RETURN, ui::DomCode::ENTER,
+                        ui::EF_NONE, ui::DomKey::ENTER, base::TimeTicks(),
+                        /*is_char=*/false);
 
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),
@@ -690,9 +693,10 @@ IN_PROC_BROWSER_TEST_P(
       WithElement(kSavedTabGroupButtonElementId,
                   [](ui::TrackedElement* el) {
                     const ui::KeyEvent event(
-                        ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_RETURN,
-                        ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
-                        base::TimeTicks(), /*is_char=*/false);
+                        ui::EventType::kKeyPressed,
+                        ui::KeyboardCode::VKEY_RETURN, ui::DomCode::ENTER,
+                        ui::EF_NONE, ui::DomKey::ENTER, base::TimeTicks(),
+                        /*is_char=*/false);
 
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),
@@ -975,9 +979,10 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       WithElement(kSavedTabGroupButtonElementId,
                   [](ui::TrackedElement* el) {
                     const ui::KeyEvent event(
-                        ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_RETURN,
-                        ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
-                        base::TimeTicks(), /*is_char=*/false);
+                        ui::EventType::kKeyPressed,
+                        ui::KeyboardCode::VKEY_RETURN, ui::DomCode::ENTER,
+                        ui::EF_NONE, ui::DomKey::ENTER, base::TimeTicks(),
+                        /*is_char=*/false);
 
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -10,6 +11,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_string_map.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
@@ -24,6 +26,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/ui_base_features.h"
@@ -31,8 +34,22 @@
 #include "ui/views/interaction/interaction_test_util_views.h"
 
 namespace {
+using testing::Return;
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabPageElementId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCustomizeChromeElementId);
+
+class MockWallpaperSearchStringMap : public WallpaperSearchStringMap {
+ public:
+  MOCK_CONST_METHOD1(FindCategory,
+                     std::optional<std::string>(std::string_view key));
+  MOCK_CONST_METHOD1(FindDescriptorA,
+                     std::optional<std::string>(std::string_view key));
+  MOCK_CONST_METHOD1(FindDescriptorB,
+                     std::optional<std::string>(std::string_view key));
+  MOCK_CONST_METHOD1(FindDescriptorC,
+                     std::optional<std::string>(std::string_view key));
+};
 }  // namespace
 
 class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
@@ -184,6 +201,18 @@ class WallpaperSearchOptimizationGuideInteractiveTest
 
   std::unique_ptr<content::URLLoaderInterceptor>
   SetUpDescriptorsResponseWithData() {
+    // Set up translations.
+    auto factory = base::BindRepeating([]() -> std::unique_ptr<
+                                                WallpaperSearchStringMap> {
+      auto mock =
+          std::make_unique<testing::NiceMock<MockWallpaperSearchStringMap>>();
+      ON_CALL(*mock, FindCategory("foo")).WillByDefault(Return("foo label"));
+      ON_CALL(*mock, FindDescriptorA("bar")).WillByDefault(Return("bar label"));
+      ON_CALL(*mock, FindDescriptorB("foo")).WillByDefault(Return("foo label"));
+      ON_CALL(*mock, FindDescriptorC("foo")).WillByDefault(Return("foo label"));
+      return mock;
+    });
+    MockWallpaperSearchStringMap::SetFactory(factory);
     return std::make_unique<content::URLLoaderInterceptor>(
         base::BindLambdaForTesting(
             [&](content::URLLoaderInterceptor::RequestParams* params) -> bool {

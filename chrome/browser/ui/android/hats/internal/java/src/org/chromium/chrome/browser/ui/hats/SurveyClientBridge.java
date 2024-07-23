@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.ui.hats;
 
 import android.app.Activity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -25,11 +27,12 @@ import java.util.Map;
  */
 @JNINamespace("hats")
 class SurveyClientBridge implements SurveyClient {
+    private static final String TAG = "SurveyClient";
 
-    private final SurveyClient mDelegate;
+    private @NonNull final SurveyClient mDelegate;
     private final long mNativeSurveyClient;
 
-    private SurveyClientBridge(long nativeSurveyClient, SurveyClient delegate) {
+    private SurveyClientBridge(long nativeSurveyClient, @NonNull SurveyClient delegate) {
         mNativeSurveyClient = nativeSurveyClient;
         mDelegate = delegate;
     }
@@ -48,9 +51,13 @@ class SurveyClientBridge implements SurveyClient {
             return null;
         }
 
-        return new SurveyClientBridge(
-                nativeSurveyClient,
-                SurveyClientFactory.getInstance().createClient(config, uiDelegate, profile));
+        SurveyClient client =
+                SurveyClientFactory.getInstance().createClient(config, uiDelegate, profile);
+        if (client == null) {
+            Log.d(TAG, "SurveyClient is null. config: " + SurveyConfig.toString(config));
+            return null;
+        }
+        return new SurveyClientBridge(nativeSurveyClient, client);
     }
 
     /**

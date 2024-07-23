@@ -18,8 +18,8 @@ namespace {
 
 ui::KeyEvent CreateKeyEvent(ui::KeyboardCode key_code,
                             int flags = ui::EF_NONE) {
-  return ui::KeyEvent(ui::ET_KEY_PRESSED, key_code, ui::DomCode::NONE, flags,
-                      ui::EventTimeForNow());
+  return ui::KeyEvent(ui::EventType::kKeyPressed, key_code, ui::DomCode::NONE,
+                      flags, ui::EventTimeForNow());
 }
 
 class MockPseudoFocusHandler : public PickerPseudoFocusHandler {

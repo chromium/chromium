@@ -66,14 +66,14 @@ class ColorPickerViewTest : public ChromeViewsTestBase {
     gfx::Point root_center = center;
     views::View::ConvertPointToWidget(color_picker_, &root_center);
 
-    ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, center, root_center,
-                                 base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
-                                 0);
+    ui::MouseEvent pressed_event(ui::EventType::kMousePressed, center,
+                                 root_center, base::TimeTicks(),
+                                 ui::EF_LEFT_MOUSE_BUTTON, 0);
     element->OnMousePressed(pressed_event);
 
-    ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, center, root_center,
-                                  base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
-                                  0);
+    ui::MouseEvent released_event(ui::EventType::kMouseReleased, center,
+                                  root_center, base::TimeTicks(),
+                                  ui::EF_LEFT_MOUSE_BUTTON, 0);
     element->OnMouseReleased(released_event);
   }
 
@@ -149,7 +149,7 @@ TEST_F(ColorPickerViewTest, KeyboardFocusBehavesLikeRadioButtons) {
 
   // Pressing arrow keys should cycle through the elements.
   ui::KeyEvent arrow_event(
-      ui::EventType::ET_KEY_PRESSED,
+      ui::EventType::kKeyPressed,
       ui::DomCodeToUsLayoutKeyboardCode(ui::DomCode::ARROW_RIGHT),
       ui::DomCode::ARROW_RIGHT, ui::EF_NONE);
   EXPECT_FALSE(focus_manager->OnKeyEvent(arrow_event));

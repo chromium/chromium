@@ -523,6 +523,8 @@ chromium-metrics-reviews@google.com.
       summary="educating user to drop one tab on another tab to create group"/>
   <variant name="IPH_TabGroupsQuicklyComparePages"
       summary="long pressing a link to open in a tab group"/>
+  <variant name="IPH_TabGroupsRemoteGroup"
+      summary="IPH highlighting a synced tab group"/>
   <variant name="IPH_TabGroupsSaveV2CloseGroup"
       summary="IPH for tab group closing adding them to a new location"/>
   <variant name="IPH_TabGroupsSaveV2Intro"
@@ -579,7 +581,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="InProductHelp.Config.ParsingEvent" enum="ConfigParsingEvent"
-    expires_after="2024-11-17">
+    expires_after="2025-01-19">
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records if in-product help configuration is parsed correctly, and the
@@ -735,6 +737,22 @@ In the future, Desktop IPH may be completely moved to the user_education folder.
     to the user. The failure defines the state of the User Education system,
     which can be many varieties (e.g. snoozed, disabled blocked by another
     promo, etc.).
+  </summary>
+  <token key="IPHFeature" variants="IPHFeature"/>
+</histogram>
+
+<histogram name="UserEducation.RotatingPromoIndex.{IPHFeature}" units="Index"
+    expires_after="2025-01-01">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Record the index of a rotating promo when it is shown to the user. This can
+    be used to determine how deep in the rotation of rotating promos users are
+    going, and also what proportion of users have seen a particular promo from a
+    rotating promo set.
+
+    This replaces the deprecated histogram
+    &quot;UserEducation.MessageShown.RotatingPromoIndex&quot;.
   </summary>
   <token key="IPHFeature" variants="IPHFeature"/>
 </histogram>

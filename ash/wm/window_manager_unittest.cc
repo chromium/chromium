@@ -144,7 +144,7 @@ TEST_F(WindowManagerTest, Focus) {
   ui::EventSink* sink = root_window->GetHost()->GetEventSink();
 
   // The key press should be sent to the focused sub-window.
-  ui::KeyEvent keyev(ui::ET_KEY_PRESSED, ui::VKEY_E, ui::EF_NONE);
+  ui::KeyEvent keyev(ui::EventType::kKeyPressed, ui::VKEY_E, ui::EF_NONE);
   ui::EventDispatchDetails details = sink->OnEventFromSource(&keyev);
   ASSERT_FALSE(details.dispatcher_destroyed);
   EXPECT_EQ(ui::VKEY_E, w121delegate->last_key_code());
@@ -152,7 +152,7 @@ TEST_F(WindowManagerTest, Focus) {
   // Touch on a sub-window (w122) to focus it.
   gfx::Point click_point = w122->bounds().CenterPoint();
   aura::Window::ConvertPointToTarget(w122->parent(), root_window, &click_point);
-  ui::TouchEvent touchev(ui::ET_TOUCH_PRESSED, click_point,
+  ui::TouchEvent touchev(ui::EventType::kTouchPressed, click_point,
                          ui::EventTimeForNow(),
                          ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   details = sink->OnEventFromSource(&touchev);
@@ -161,7 +161,7 @@ TEST_F(WindowManagerTest, Focus) {
   EXPECT_EQ(w122.get(), focus_client->GetFocusedWindow());
 
   // The key press should be sent to the focused sub-window.
-  keyev = ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_E, ui::EF_NONE);
+  keyev = ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_E, ui::EF_NONE);
   details = sink->OnEventFromSource(&keyev);
   ASSERT_FALSE(details.dispatcher_destroyed);
   EXPECT_EQ(ui::VKEY_E, w122delegate->last_key_code());
@@ -200,7 +200,7 @@ TEST_F(WindowManagerTest, Focus) {
   EXPECT_EQ(aura::client::GetFocusClient(w12.get()),
             aura::client::GetFocusClient(w123.get()));
   EXPECT_EQ(NULL, aura::client::GetFocusClient(w12.get())->GetFocusedWindow());
-  keyev = ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_E, ui::EF_NONE);
+  keyev = ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_E, ui::EF_NONE);
   details = sink->OnEventFromSource(&keyev);
   EXPECT_FALSE(keyev.handled() || details.dispatcher_destroyed);
 
@@ -216,7 +216,7 @@ TEST_F(WindowManagerTest, Focus) {
   // parent window is not focusable.
   w12->RemoveChild(w123.get());
   EXPECT_EQ(NULL, aura::client::GetFocusClient(w123.get()));
-  keyev = ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_E, ui::EF_NONE);
+  keyev = ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_E, ui::EF_NONE);
   details = sink->OnEventFromSource(&keyev);
   EXPECT_FALSE(keyev.handled() || details.dispatcher_destroyed);
 
@@ -410,7 +410,7 @@ TEST_F(WindowManagerTest, ActivateOnTouch) {
   // Touch window2.
   gfx::Point press_point = w2->bounds().CenterPoint();
   aura::Window::ConvertPointToTarget(w2->parent(), root_window, &press_point);
-  ui::TouchEvent touchev1(ui::ET_TOUCH_PRESSED, press_point,
+  ui::TouchEvent touchev1(ui::EventType::kTouchPressed, press_point,
                           ui::EventTimeForNow(),
                           ui::PointerDetails(ui::EventPointerType::kTouch, 0));
 
@@ -432,7 +432,7 @@ TEST_F(WindowManagerTest, ActivateOnTouch) {
   press_point = w1->bounds().CenterPoint();
   aura::Window::ConvertPointToTarget(w1->parent(), root_window, &press_point);
   d1.set_activate(false);
-  ui::TouchEvent touchev2(ui::ET_TOUCH_PRESSED, press_point,
+  ui::TouchEvent touchev2(ui::EventType::kTouchPressed, press_point,
                           ui::EventTimeForNow(),
                           ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   details = sink->OnEventFromSource(&touchev2);
@@ -485,7 +485,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
   {
     // Resize edges and corners show proper cursors.
     window_delegate.set_window_component(HTBOTTOM);
-    ui::MouseEvent move1(ui::ET_MOUSE_MOVED, point1, point1,
+    ui::MouseEvent move1(ui::EventType::kMouseMoved, point1, point1,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move1);
     ASSERT_FALSE(details.dispatcher_destroyed);
@@ -494,7 +494,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
 
   {
     window_delegate.set_window_component(HTBOTTOMLEFT);
-    ui::MouseEvent move2(ui::ET_MOUSE_MOVED, point2, point2,
+    ui::MouseEvent move2(ui::EventType::kMouseMoved, point2, point2,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move2);
     ASSERT_FALSE(details.dispatcher_destroyed);
@@ -504,7 +504,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
 
   {
     window_delegate.set_window_component(HTBOTTOMRIGHT);
-    ui::MouseEvent move1(ui::ET_MOUSE_MOVED, point1, point1,
+    ui::MouseEvent move1(ui::EventType::kMouseMoved, point1, point1,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move1);
     ASSERT_FALSE(details.dispatcher_destroyed);
@@ -514,7 +514,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
 
   {
     window_delegate.set_window_component(HTLEFT);
-    ui::MouseEvent move2(ui::ET_MOUSE_MOVED, point2, point2,
+    ui::MouseEvent move2(ui::EventType::kMouseMoved, point2, point2,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move2);
     ASSERT_FALSE(details.dispatcher_destroyed);
@@ -523,7 +523,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
 
   {
     window_delegate.set_window_component(HTRIGHT);
-    ui::MouseEvent move1(ui::ET_MOUSE_MOVED, point1, point1,
+    ui::MouseEvent move1(ui::EventType::kMouseMoved, point1, point1,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move1);
     ASSERT_FALSE(details.dispatcher_destroyed);
@@ -532,7 +532,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
 
   {
     window_delegate.set_window_component(HTTOP);
-    ui::MouseEvent move2(ui::ET_MOUSE_MOVED, point2, point2,
+    ui::MouseEvent move2(ui::EventType::kMouseMoved, point2, point2,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move2);
     ASSERT_FALSE(details.dispatcher_destroyed);
@@ -541,7 +541,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
 
   {
     window_delegate.set_window_component(HTTOPLEFT);
-    ui::MouseEvent move1(ui::ET_MOUSE_MOVED, point1, point1,
+    ui::MouseEvent move1(ui::EventType::kMouseMoved, point1, point1,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move1);
     ASSERT_FALSE(details.dispatcher_destroyed);
@@ -551,7 +551,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
 
   {
     window_delegate.set_window_component(HTTOPRIGHT);
-    ui::MouseEvent move2(ui::ET_MOUSE_MOVED, point2, point2,
+    ui::MouseEvent move2(ui::EventType::kMouseMoved, point2, point2,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move2);
     ASSERT_FALSE(details.dispatcher_destroyed);
@@ -562,7 +562,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
   {
     // Client area uses null cursor.
     window_delegate.set_window_component(HTCLIENT);
-    ui::MouseEvent move1(ui::ET_MOUSE_MOVED, point1, point1,
+    ui::MouseEvent move1(ui::EventType::kMouseMoved, point1, point1,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move1);
     ASSERT_FALSE(details.dispatcher_destroyed);
@@ -594,14 +594,14 @@ TEST_F(WindowManagerTest, TransformActivate) {
 
   gfx::Point miss_point(5, 5);
   miss_point = transform.MapPoint(miss_point);
-  ui::MouseEvent mouseev1(ui::ET_MOUSE_PRESSED, miss_point, miss_point,
+  ui::MouseEvent mouseev1(ui::EventType::kMousePressed, miss_point, miss_point,
                           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                           ui::EF_LEFT_MOUSE_BUTTON);
   ui::EventSink* sink = root_window->GetHost()->GetEventSink();
   ui::EventDispatchDetails details = sink->OnEventFromSource(&mouseev1);
   ASSERT_FALSE(details.dispatcher_destroyed);
   EXPECT_EQ(NULL, aura::client::GetFocusClient(w1.get())->GetFocusedWindow());
-  ui::MouseEvent mouseup(ui::ET_MOUSE_RELEASED, miss_point, miss_point,
+  ui::MouseEvent mouseup(ui::EventType::kMouseReleased, miss_point, miss_point,
                          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                          ui::EF_LEFT_MOUSE_BUTTON);
   details = sink->OnEventFromSource(&mouseup);
@@ -609,7 +609,7 @@ TEST_F(WindowManagerTest, TransformActivate) {
 
   gfx::Point hit_point(5, 15);
   hit_point = transform.MapPoint(hit_point);
-  ui::MouseEvent mouseev2(ui::ET_MOUSE_PRESSED, hit_point, hit_point,
+  ui::MouseEvent mouseev2(ui::EventType::kMousePressed, hit_point, hit_point,
                           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                           ui::EF_LEFT_MOUSE_BUTTON);
   details = sink->OnEventFromSource(&mouseev2);
@@ -640,11 +640,11 @@ TEST_F(WindowManagerTest, AdditionalFilters) {
   env_filter->AddHandler(f2.get());
 
   // Dispatches mouse and keyboard events.
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
   ui::EventSink* sink = root_window->GetHost()->GetEventSink();
   ui::EventDispatchDetails details = sink->OnEventFromSource(&key_event);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  ui::MouseEvent mouse_pressed(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),
+  ui::MouseEvent mouse_pressed(ui::EventType::kMousePressed, gfx::Point(0, 0),
                                gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
   details = sink->OnEventFromSource(&mouse_pressed);
   ASSERT_FALSE(details.dispatcher_destroyed);
@@ -665,7 +665,7 @@ TEST_F(WindowManagerTest, AdditionalFilters) {
   // Dispatches events.
   details = sink->OnEventFromSource(&key_event);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  ui::MouseEvent mouse_released(ui::ET_MOUSE_RELEASED, gfx::Point(0, 0),
+  ui::MouseEvent mouse_released(ui::EventType::kMouseReleased, gfx::Point(0, 0),
                                 gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
   details = sink->OnEventFromSource(&mouse_released);
   ASSERT_FALSE(details.dispatcher_destroyed);

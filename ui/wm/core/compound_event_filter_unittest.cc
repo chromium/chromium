@@ -72,20 +72,20 @@ TEST_F(CompoundEventFilterTest, CursorVisibilityChange) {
   EXPECT_FALSE(cursor_client.IsCursorVisible());
 
   // Synthesized mouse event should not show the cursor.
-  ui::MouseEvent enter(ui::ET_MOUSE_ENTERED, gfx::Point(10, 10),
+  ui::MouseEvent enter(ui::EventType::kMouseEntered, gfx::Point(10, 10),
                        gfx::Point(10, 10), ui::EventTimeForNow(), 0, 0);
   enter.SetFlags(enter.flags() | ui::EF_IS_SYNTHESIZED);
   DispatchEventUsingWindowDispatcher(&enter);
   EXPECT_FALSE(cursor_client.IsCursorVisible());
 
-  ui::MouseEvent move(ui::ET_MOUSE_MOVED, gfx::Point(10, 10),
+  ui::MouseEvent move(ui::EventType::kMouseMoved, gfx::Point(10, 10),
                       gfx::Point(10, 10), ui::EventTimeForNow(), 0, 0);
   move.SetFlags(enter.flags() | ui::EF_IS_SYNTHESIZED);
   DispatchEventUsingWindowDispatcher(&move);
   EXPECT_FALSE(cursor_client.IsCursorVisible());
 
   // A real mouse event should show the cursor.
-  ui::MouseEvent real_move(ui::ET_MOUSE_MOVED, gfx::Point(10, 10),
+  ui::MouseEvent real_move(ui::EventType::kMouseMoved, gfx::Point(10, 10),
                            gfx::Point(10, 10), ui::EventTimeForNow(), 0, 0);
   DispatchEventUsingWindowDispatcher(&real_move);
   EXPECT_TRUE(cursor_client.IsCursorVisible());
@@ -105,7 +105,7 @@ TEST_F(CompoundEventFilterTest, CursorVisibilityChange) {
   EXPECT_FALSE(cursor_client.IsCursorVisible());
 
   // Mouse synthesized exit event should not show the cursor.
-  ui::MouseEvent exit(ui::ET_MOUSE_EXITED, gfx::Point(10, 10),
+  ui::MouseEvent exit(ui::EventType::kMouseExited, gfx::Point(10, 10),
                       gfx::Point(10, 10), ui::EventTimeForNow(), 0, 0);
   exit.SetFlags(enter.flags() | ui::EF_IS_SYNTHESIZED);
   DispatchEventUsingWindowDispatcher(&exit);
@@ -128,7 +128,7 @@ TEST_F(CompoundEventFilterTest, TouchHidesCursor) {
 
   aura::test::TestCursorClient cursor_client(root_window());
 
-  ui::MouseEvent mouse0(ui::ET_MOUSE_MOVED, gfx::Point(10, 10),
+  ui::MouseEvent mouse0(ui::EventType::kMouseMoved, gfx::Point(10, 10),
                         gfx::Point(10, 10), ui::EventTimeForNow(), 0, 0);
   DispatchEventUsingWindowDispatcher(&mouse0);
   EXPECT_TRUE(cursor_client.IsMouseEventsEnabled());
@@ -136,25 +136,27 @@ TEST_F(CompoundEventFilterTest, TouchHidesCursor) {
 
   // This press is required for the GestureRecognizer to associate a target
   // with kTouchId
-  ui::TouchEvent press0(ui::ET_TOUCH_PRESSED, gfx::Point(90, 90), GetTime(),
+  ui::TouchEvent press0(ui::EventType::kTouchPressed, gfx::Point(90, 90),
+                        GetTime(),
                         ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   DispatchEventUsingWindowDispatcher(&press0);
   EXPECT_FALSE(cursor_client.IsMouseEventsEnabled());
   EXPECT_FALSE(cursor_client.IsCursorVisible());
 
-  ui::TouchEvent move(ui::ET_TOUCH_MOVED, gfx::Point(10, 10), GetTime(),
+  ui::TouchEvent move(ui::EventType::kTouchMoved, gfx::Point(10, 10), GetTime(),
                       ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   DispatchEventUsingWindowDispatcher(&move);
   EXPECT_FALSE(cursor_client.IsMouseEventsEnabled());
   EXPECT_FALSE(cursor_client.IsCursorVisible());
 
-  ui::TouchEvent release(ui::ET_TOUCH_RELEASED, gfx::Point(10, 10), GetTime(),
+  ui::TouchEvent release(ui::EventType::kTouchReleased, gfx::Point(10, 10),
+                         GetTime(),
                          ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   DispatchEventUsingWindowDispatcher(&release);
   EXPECT_FALSE(cursor_client.IsMouseEventsEnabled());
   EXPECT_FALSE(cursor_client.IsCursorVisible());
 
-  ui::MouseEvent mouse1(ui::ET_MOUSE_MOVED, gfx::Point(10, 10),
+  ui::MouseEvent mouse1(ui::EventType::kMouseMoved, gfx::Point(10, 10),
                         gfx::Point(10, 10), ui::EventTimeForNow(), 0, 0);
   // Move the cursor again. The cursor should be visible.
   DispatchEventUsingWindowDispatcher(&mouse1);
@@ -162,7 +164,8 @@ TEST_F(CompoundEventFilterTest, TouchHidesCursor) {
   EXPECT_TRUE(cursor_client.IsCursorVisible());
 
   // Now activate the window and press on it again.
-  ui::TouchEvent press1(ui::ET_TOUCH_PRESSED, gfx::Point(90, 90), GetTime(),
+  ui::TouchEvent press1(ui::EventType::kTouchPressed, gfx::Point(90, 90),
+                        GetTime(),
                         ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   GetActivationClient(root_window())->ActivateWindow(window.get());
   DispatchEventUsingWindowDispatcher(&press1);
@@ -243,7 +246,7 @@ TEST_F(CompoundEventFilterTest, DontShowCursorOnMouseMovesFromTouch) {
   cursor_client.DisableMouseEvents();
   EXPECT_FALSE(cursor_client.IsMouseEventsEnabled());
 
-  ui::MouseEvent mouse0(ui::ET_MOUSE_MOVED, gfx::Point(10, 10),
+  ui::MouseEvent mouse0(ui::EventType::kMouseMoved, gfx::Point(10, 10),
                         gfx::Point(10, 10), ui::EventTimeForNow(), 0, 0);
   mouse0.SetFlags(mouse0.flags() | ui::EF_FROM_TOUCH);
 

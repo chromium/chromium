@@ -50,6 +50,10 @@ void SurveyClientAndroid::LaunchSurvey(
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data) {
   JNIEnv* env = base::android::AttachCurrentThread();
+  // Ignore the call if the java object is null.
+  if (!jobj_) {
+    return;
+  }
 
   // Parse bit PSDs.
   std::vector<std::string> bits_fields;

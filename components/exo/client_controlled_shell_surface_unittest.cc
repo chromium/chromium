@@ -731,8 +731,8 @@ TEST_P(ClientControlledShellSurfaceTest,
   // There should be 2 events.  One for mouse enter and the other for move.
   const auto& events = event_handler.mouse_events();
   ASSERT_EQ(events.size(), 2UL);
-  EXPECT_EQ(events[0].type(), ui::ET_MOUSE_ENTERED);
-  EXPECT_EQ(events[1].type(), ui::ET_MOUSE_MOVED);
+  EXPECT_EQ(events[0].type(), ui::EventType::kMouseEntered);
+  EXPECT_EQ(events[1].type(), ui::EventType::kMouseMoved);
 
   shell_surface->host_window()->RemovePreTargetHandler(&event_handler);
 }
@@ -956,26 +956,28 @@ TEST_P(ClientControlledShellSurfaceTest, MouseAndTouchTarget) {
 
   constexpr gfx::Point kMouseLocation(256 + 5, 150);
 
-  ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, kMouseLocation, kMouseLocation,
-                       ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent mouse(ui::EventType::kMouseMoved, kMouseLocation,
+                       kMouseLocation, ui::EventTimeForNow(), ui::EF_NONE,
+                       ui::EF_NONE);
   EXPECT_EQ(window, targeter->FindTargetForEvent(root, &mouse));
 
   // Move 20px further away. Touch event can hit the window but
   // mouse event will not.
   constexpr gfx::Point kTouchLocation(256 + 25, 150);
-  ui::MouseEvent touch(ui::ET_TOUCH_PRESSED, kTouchLocation, kTouchLocation,
-                       ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent touch(ui::EventType::kTouchPressed, kTouchLocation,
+                       kTouchLocation, ui::EventTimeForNow(), ui::EF_NONE,
+                       ui::EF_NONE);
   EXPECT_EQ(window, targeter->FindTargetForEvent(root, &touch));
 
-  ui::MouseEvent mouse_with_touch_loc(ui::ET_MOUSE_MOVED, kTouchLocation,
-                                      kTouchLocation, ui::EventTimeForNow(),
-                                      ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent mouse_with_touch_loc(
+      ui::EventType::kMouseMoved, kTouchLocation, kTouchLocation,
+      ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
   EXPECT_FALSE(window->Contains(static_cast<aura::Window*>(
       targeter->FindTargetForEvent(root, &mouse_with_touch_loc))));
 
   // Touching further away shouldn't hit the window.
   constexpr gfx::Point kNoTouchLocation(256 + 35, 150);
-  ui::MouseEvent no_touch(ui::ET_TOUCH_PRESSED, kNoTouchLocation,
+  ui::MouseEvent no_touch(ui::EventType::kTouchPressed, kNoTouchLocation,
                           kNoTouchLocation, ui::EventTimeForNow(), ui::EF_NONE,
                           ui::EF_NONE);
   EXPECT_FALSE(window->Contains(static_cast<aura::Window*>(
@@ -1005,7 +1007,7 @@ TEST_P(ClientControlledShellSurfaceTest, ShellSurfaceInSystemModalHitTest) {
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
   aura::Window* root = window->GetRootWindow();
 
-  ui::MouseEvent event(ui::ET_MOUSE_MOVED, gfx::Point(100, 0),
+  ui::MouseEvent event(ui::EventType::kMouseMoved, gfx::Point(100, 0),
                        gfx::Point(100, 0), ui::EventTimeForNow(), 0, 0);
   aura::WindowTargeter targeter;
   aura::Window* found =
@@ -1577,8 +1579,8 @@ TEST_P(ClientControlledShellSurfaceTest, WideFrame) {
   aura::WindowTargeter targeter;
   aura::Window* target;
   {
-    ui::MouseEvent event(ui::ET_MOUSE_MOVED, kMouseLocation, kMouseLocation,
-                         ui::EventTimeForNow(), 0, 0);
+    ui::MouseEvent event(ui::EventType::kMouseMoved, kMouseLocation,
+                         kMouseLocation, ui::EventTimeForNow(), 0, 0);
     target =
         static_cast<aura::Window*>(targeter.FindTargetForEvent(root, &event));
   }
@@ -1588,8 +1590,8 @@ TEST_P(ClientControlledShellSurfaceTest, WideFrame) {
   surface->SetInputRegion(gfx::Rect(0, 0, 0, 0));
   surface->Commit();
   {
-    ui::MouseEvent event(ui::ET_MOUSE_MOVED, kMouseLocation, kMouseLocation,
-                         ui::EventTimeForNow(), 0, 0);
+    ui::MouseEvent event(ui::EventType::kMouseMoved, kMouseLocation,
+                         kMouseLocation, ui::EventTimeForNow(), 0, 0);
     target =
         static_cast<aura::Window*>(targeter.FindTargetForEvent(root, &event));
   }
@@ -1616,8 +1618,8 @@ TEST_P(ClientControlledShellSurfaceTest, WideFrame) {
   surface->Commit();
   EXPECT_FALSE(shell_surface->wide_frame_for_test());
   {
-    ui::MouseEvent event(ui::ET_MOUSE_MOVED, kMouseLocation, kMouseLocation,
-                         ui::EventTimeForNow(), 0, 0);
+    ui::MouseEvent event(ui::EventType::kMouseMoved, kMouseLocation,
+                         kMouseLocation, ui::EventTimeForNow(), 0, 0);
     target =
         static_cast<aura::Window*>(targeter.FindTargetForEvent(root, &event));
   }
@@ -1629,8 +1631,8 @@ TEST_P(ClientControlledShellSurfaceTest, WideFrame) {
 
   EXPECT_FALSE(shell_surface->wide_frame_for_test());
   {
-    ui::MouseEvent event(ui::ET_MOUSE_MOVED, kMouseLocation, kMouseLocation,
-                         ui::EventTimeForNow(), 0, 0);
+    ui::MouseEvent event(ui::EventType::kMouseMoved, kMouseLocation,
+                         kMouseLocation, ui::EventTimeForNow(), 0, 0);
     target =
         static_cast<aura::Window*>(targeter.FindTargetForEvent(root, &event));
   }
@@ -1640,8 +1642,8 @@ TEST_P(ClientControlledShellSurfaceTest, WideFrame) {
   surface->SetInputRegion(gfx::Rect(0, 0, 64, 64));
   surface->Commit();
   {
-    ui::MouseEvent event(ui::ET_MOUSE_MOVED, kMouseLocation, kMouseLocation,
-                         ui::EventTimeForNow(), 0, 0);
+    ui::MouseEvent event(ui::EventType::kMouseMoved, kMouseLocation,
+                         kMouseLocation, ui::EventTimeForNow(), 0, 0);
     target =
         static_cast<aura::Window*>(targeter.FindTargetForEvent(root, &event));
   }

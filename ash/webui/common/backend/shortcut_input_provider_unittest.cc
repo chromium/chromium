@@ -51,8 +51,9 @@ class FakeShortcutInputObserver : public common::mojom::ShortcutInputObserver {
 };
 
 ui::KeyEvent CreateKeyEvent(bool pressed) {
-  return ui::KeyEvent(pressed ? ui::ET_KEY_PRESSED : ui::ET_KEY_RELEASED,
-                      ui::VKEY_A, ui::EF_NONE);
+  return ui::KeyEvent(
+      pressed ? ui::EventType::kKeyPressed : ui::EventType::kKeyReleased,
+      ui::VKEY_A, ui::EF_NONE);
 }
 
 }  // namespace

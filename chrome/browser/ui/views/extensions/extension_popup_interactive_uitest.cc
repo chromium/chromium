@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   if (lbv->GetChipController()->IsPermissionPromptChipVisible() &&
       !lbv->GetChipController()->IsBubbleShowing()) {
     views::test::ButtonTestApi(lbv->GetChipController()->chip())
-        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(),
                                     ui::EF_LEFT_MOUSE_BUTTON, 0));
     base::RunLoop().RunUntilIdle();

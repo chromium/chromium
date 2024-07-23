@@ -61,9 +61,9 @@ class MockEventHandler : public ui::EventHandler {
     }
 
     ui::EventType type = event->type();
-    if (type == ui::EventType::ET_MOUSE_PRESSED ||
-        type == ui::EventType::ET_MOUSE_RELEASED ||
-        type == ui::EventType::ET_MOUSE_MOVED) {
+    if (type == ui::EventType::kMousePressed ||
+        type == ui::EventType::kMouseReleased ||
+        type == ui::EventType::kMouseMoved) {
       mouse_events_.push_back(*event);
     }
   }
@@ -157,10 +157,10 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, UpdateCursorLocation) {
   const std::vector<ui::MouseEvent> mouse_events =
       event_handler().mouse_events();
   ASSERT_EQ(2u, mouse_events.size());
-  ASSERT_EQ(ui::ET_MOUSE_MOVED, mouse_events[0].type());
+  ASSERT_EQ(ui::EventType::kMouseMoved, mouse_events[0].type());
   ASSERT_EQ(gfx::Point(360, 560), mouse_events[0].root_location());
   ASSERT_TRUE(mouse_events[0].IsSynthesized());
-  ASSERT_EQ(ui::ET_MOUSE_MOVED, mouse_events[1].type());
+  ASSERT_EQ(ui::EventType::kMouseMoved, mouse_events[1].type());
   ASSERT_EQ(gfx::Point(360, 560), mouse_events[1].root_location());
   ASSERT_TRUE(mouse_events[1].IsSynthesized());
 }
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
   const std::vector<ui::MouseEvent> mouse_events =
       event_handler().mouse_events();
   ASSERT_EQ(1u, mouse_events.size());
-  ASSERT_EQ(ui::ET_MOUSE_MOVED, mouse_events[0].type());
+  ASSERT_EQ(ui::EventType::kMouseMoved, mouse_events[0].type());
   ASSERT_EQ(gfx::Point(600, 400), mouse_events[0].root_location());
   ASSERT_TRUE(mouse_events[0].IsSynthesized());
 }
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, SpaceKeyEvents) {
   std::vector<ui::KeyEvent> key_events = event_handler().key_events();
   ASSERT_EQ(1u, key_events.size());
   ASSERT_EQ(ui::KeyboardCode::VKEY_SPACE, key_events[0].key_code());
-  ASSERT_EQ(ui::EventType::ET_KEY_PRESSED, key_events[0].type());
+  ASSERT_EQ(ui::EventType::kKeyPressed, key_events[0].type());
 
   // Release gesture for space key release.
   utils()->ProcessFaceLandmarkerResult(
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, SpaceKeyEvents) {
   key_events = event_handler().key_events();
   ASSERT_EQ(2u, event_handler().key_events().size());
   ASSERT_EQ(ui::KeyboardCode::VKEY_SPACE, key_events[1].key_code());
-  ASSERT_EQ(ui::EventType::ET_KEY_RELEASED, key_events[1].type());
+  ASSERT_EQ(ui::EventType::kKeyReleased, key_events[1].type());
 }
 
 // The BrowsDown gesture is special because it is the combination of two
@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, BrowsDownGesture) {
           .WithGesture(MediapipeGesture::BROW_DOWN_LEFT, 50)
           .WithGesture(MediapipeGesture::BROW_DOWN_RIGHT, 30));
   utils()->AssertCursorAt(gfx::Point(600, 400));
-  AssertLatestMouseEvent(1, ui::ET_MOUSE_MOVED, gfx::Point(600, 400));
+  AssertLatestMouseEvent(1, ui::EventType::kMouseMoved, gfx::Point(600, 400));
 
   // Reset the mouse cursor away from the center.
   utils()->MoveMouseTo(gfx::Point(0, 0));
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, BrowsDownGesture) {
           .WithGesture(MediapipeGesture::BROW_DOWN_LEFT, 30)
           .WithGesture(MediapipeGesture::BROW_DOWN_RIGHT, 50));
   utils()->AssertCursorAt(gfx::Point(600, 400));
-  AssertLatestMouseEvent(1, ui::ET_MOUSE_MOVED, gfx::Point(600, 400));
+  AssertLatestMouseEvent(1, ui::EventType::kMouseMoved, gfx::Point(600, 400));
 
   // Reset the mouse cursor away from the center.
   utils()->MoveMouseTo(gfx::Point(0, 0));
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, BrowsDownGesture) {
           .WithGesture(MediapipeGesture::BROW_DOWN_LEFT, 50)
           .WithGesture(MediapipeGesture::BROW_DOWN_RIGHT, 50));
   utils()->AssertCursorAt(gfx::Point(600, 400));
-  AssertLatestMouseEvent(1, ui::ET_MOUSE_MOVED, gfx::Point(600, 400));
+  AssertLatestMouseEvent(1, ui::EventType::kMouseMoved, gfx::Point(600, 400));
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MousePressAndReleaseEvents) {
@@ -338,9 +338,9 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MousePressAndReleaseEvents) {
   utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
       MediapipeGesture::MOUTH_PUCKER, 60));
   auto press_events =
-      event_handler().mouse_events(ui::EventType::ET_MOUSE_PRESSED);
+      event_handler().mouse_events(ui::EventType::kMousePressed);
   auto release_events =
-      event_handler().mouse_events(ui::EventType::ET_MOUSE_RELEASED);
+      event_handler().mouse_events(ui::EventType::kMouseReleased);
   ASSERT_EQ(1u, press_events.size());
   ASSERT_EQ(1u, release_events.size());
   ASSERT_TRUE(press_events.back().IsOnlyLeftMouseButton());
@@ -369,9 +369,9 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
       MediapipeGesture::MOUTH_RIGHT, 40));
   std::vector<ui::MouseEvent> mouse_events =
-      event_handler().mouse_events(ui::EventType::ET_MOUSE_PRESSED);
+      event_handler().mouse_events(ui::EventType::kMousePressed);
   ASSERT_EQ(1u, mouse_events.size());
-  ASSERT_EQ(ui::ET_MOUSE_PRESSED, mouse_events.back().type());
+  ASSERT_EQ(ui::EventType::kMousePressed, mouse_events.back().type());
   ASSERT_TRUE(mouse_events.back().IsOnlyLeftMouseButton());
   ASSERT_EQ(gfx::Point(600, 400), mouse_events.back().root_location());
   ASSERT_TRUE(mouse_events.back().IsSynthesized());
@@ -380,9 +380,9 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   event_handler().ClearEvents();
   utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
       MediapipeGesture::MOUTH_RIGHT, 20));
-  mouse_events = event_handler().mouse_events(ui::EventType::ET_MOUSE_RELEASED);
+  mouse_events = event_handler().mouse_events(ui::EventType::kMouseReleased);
   ASSERT_EQ(1u, mouse_events.size());
-  ASSERT_EQ(ui::ET_MOUSE_RELEASED, mouse_events.back().type());
+  ASSERT_EQ(ui::EventType::kMouseReleased, mouse_events.back().type());
   ASSERT_TRUE(mouse_events.back().IsOnlyLeftMouseButton());
   ASSERT_EQ(gfx::Point(600, 400), mouse_events.back().root_location());
   ASSERT_TRUE(mouse_events.back().IsSynthesized());

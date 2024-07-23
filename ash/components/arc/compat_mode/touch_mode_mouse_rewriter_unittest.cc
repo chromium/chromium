@@ -55,11 +55,11 @@ class LongPressReceiverView : public views::View {
 class ScrollReceiverView : public views::View {
  public:
   void OnScrollEvent(ui::ScrollEvent* event) override {
-    if (event->type() == ui::ET_SCROLL_FLING_START) {
+    if (event->type() == ui::EventType::kScrollFlingStart) {
       fling_started_ = true;
-    } else if (event->type() == ui::ET_SCROLL_FLING_CANCEL) {
+    } else if (event->type() == ui::EventType::kScrollFlingCancel) {
       fling_cancelled_ = true;
-    } else if (event->type() == ui::ET_SCROLL) {
+    } else if (event->type() == ui::EventType::kScroll) {
       smooth_scrolled_ = true;
       x_offset_ += event->x_offset();
       y_offset_ += event->y_offset();

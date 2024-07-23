@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/stringprintf.h"
 #import "base/test/ios/wait_util.h"
 #import "components/policy/policy_constants.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_constants.h"
@@ -132,8 +133,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
         std::string(kTestDriveFileUploaderCommandLineSwitch);
     const std::string commandLineValue =
         std::string(kTestDriveFileUploaderCommandLineSwitchFailAndThenSucceed);
-    configuration.additional_args.push_back(
-        std::format("--{}={}", commandLineSwitch, commandLineValue));
+    configuration.additional_args.push_back(base::StringPrintf(
+        "--%s=%s", commandLineSwitch.c_str(), commandLineValue.c_str()));
   }
   return configuration;
 }

@@ -161,21 +161,20 @@ template <typename GestureHandler>
 void SendTap(GestureHandler* handler, const gfx::Point& location) {
   ui::GestureEvent tap_down(
       location.x(), location.y(), 0, base::TimeTicks::Now(),
-      ui::GestureEventDetails(ui::EventType::ET_GESTURE_TAP_DOWN));
+      ui::GestureEventDetails(ui::EventType::kGestureTapDown));
   handler->OnGestureEvent(&tap_down);
-  ui::GestureEvent tap_up(
-      location.x(), location.y(), 0, base::TimeTicks::Now(),
-      ui::GestureEventDetails(ui::EventType::ET_GESTURE_TAP));
+  ui::GestureEvent tap_up(location.x(), location.y(), 0, base::TimeTicks::Now(),
+                          ui::GestureEventDetails(ui::EventType::kGestureTap));
   handler->OnGestureEvent(&tap_up);
 }
 
 template <typename EventHandler>
 void SendPress(EventHandler* handler, const gfx::Point& location) {
-  ui::MouseEvent press_down(ui::ET_MOUSE_PRESSED,
+  ui::MouseEvent press_down(ui::EventType::kMousePressed,
                             gfx::PointF(location.x(), location.y()),
                             gfx::PointF(0, 0), base::TimeTicks::Now(), 0, 0);
   handler->OnMouseEvent(&press_down);
-  ui::MouseEvent press_up(ui::ET_MOUSE_RELEASED,
+  ui::MouseEvent press_up(ui::EventType::kMouseReleased,
                           gfx::PointF(location.x(), location.y()),
                           gfx::PointF(0, 0), base::TimeTicks::Now(), 0, 0);
   handler->OnMouseEvent(&press_up);

@@ -47,7 +47,6 @@ class SigninMetricsServiceTest : public ::testing::Test {
       : identity_test_environment_(/*test_url_loader_factory=*/nullptr,
                                    &pref_service_) {
     SigninMetricsService::RegisterProfilePrefs(pref_service_.registry());
-    SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
   }
 
   void CreateSigninMetricsService() {

@@ -46,11 +46,15 @@ HistoryEmbeddingsHandler::HistoryEmbeddingsHandler(
 
 HistoryEmbeddingsHandler::~HistoryEmbeddingsHandler() = default;
 
+void HistoryEmbeddingsHandler::SetPage(
+    mojo::PendingRemote<history_embeddings::mojom::Page> pending_page) {
+  page_.Bind(std::move(pending_page));
+}
+
 void HistoryEmbeddingsHandler::Search(
-    history_embeddings::mojom::SearchQueryPtr query,
-    SearchCallback callback) {
+    history_embeddings::mojom::SearchQueryPtr query) {
   if (!profile_) {
-    std::move(callback).Run(history_embeddings::mojom::SearchResult::New());
+    OnReceivedSearchResult({});
     return;
   }
 
@@ -61,18 +65,19 @@ void HistoryEmbeddingsHandler::Search(
   service->Search(
       query->query, query->time_range_start,
       history_embeddings::kSearchResultItemCount.Get(),
-      base::BindOnce(&HistoryEmbeddingsHandler::OnReceivedSearchResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindRepeating(&HistoryEmbeddingsHandler::OnReceivedSearchResult,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HistoryEmbeddingsHandler::OnReceivedSearchResult(
-    SearchCallback callback,
     history_embeddings::SearchResult native_search_result) {
   last_result_ = native_search_result;
   user_feedback_ =
       optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
 
   auto mojom_search_result = history_embeddings::mojom::SearchResult::New();
+  mojom_search_result->query = native_search_result.query;
+  mojom_search_result->answer = native_search_result.answer;
   for (history_embeddings::ScoredUrlRow& scored_url_row :
        native_search_result.scored_url_rows) {
     auto item = history_embeddings::mojom::SearchResultItem::New();
@@ -98,7 +103,7 @@ void HistoryEmbeddingsHandler::OnReceivedSearchResult(
 
     mojom_search_result->items.push_back(std::move(item));
   }
-  std::move(callback).Run(std::move(mojom_search_result));
+  page_->SearchResultChanged(std::move(mojom_search_result));
 }
 
 void HistoryEmbeddingsHandler::SendQualityLog(

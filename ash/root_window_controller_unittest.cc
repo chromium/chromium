@@ -763,7 +763,7 @@ class TargetHitTestEventHandler : public ui::test::TestEventHandler {
 
   // ui::test::TestEventHandler overrides.
   void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() == ui::ET_MOUSE_PRESSED) {
+    if (event->type() == ui::EventType::kMousePressed) {
       ui::test::TestEventHandler::OnMouseEvent(event);
     }
     event->StopPropagation();
@@ -1100,16 +1100,16 @@ TEST_F(VirtualKeyboardRootWindowControllerTest, ClickDoesNotFocusKeyboard) {
   EXPECT_TRUE(background_window->HasFocus());
   EXPECT_FALSE(keyboard_window->HasFocus());
   EXPECT_EQ("0 0", delegate.GetMouseButtonCountsAndReset());
-  EXPECT_EQ(1, observer.GetEventCount(ui::ET_MOUSE_PRESSED));
-  EXPECT_EQ(1, observer.GetEventCount(ui::ET_MOUSE_RELEASED));
+  EXPECT_EQ(1, observer.GetEventCount(ui::EventType::kMousePressed));
+  EXPECT_EQ(1, observer.GetEventCount(ui::EventType::kMouseReleased));
 
   // Click outside of the keyboard. It should reach the window behind.
   observer.ResetAllEventCounts();
   generator.MoveMouseTo(gfx::Point());
   generator.ClickLeftButton();
   EXPECT_EQ("1 1", delegate.GetMouseButtonCountsAndReset());
-  EXPECT_EQ(0, observer.GetEventCount(ui::ET_MOUSE_PRESSED));
-  EXPECT_EQ(0, observer.GetEventCount(ui::ET_MOUSE_RELEASED));
+  EXPECT_EQ(0, observer.GetEventCount(ui::EventType::kMousePressed));
+  EXPECT_EQ(0, observer.GetEventCount(ui::EventType::kMouseReleased));
   keyboard_window->RemovePreTargetHandler(&observer);
 }
 

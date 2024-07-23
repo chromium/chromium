@@ -605,7 +605,8 @@ void ExternallyManagedAppManager::InstallForSynchronizeCallback(
   }
 
   auto source_and_request = synchronize_requests_.find(source);
-  DCHECK(source_and_request != synchronize_requests_.end());
+  CHECK(source_and_request != synchronize_requests_.end(),
+        base::NotFatalUntil::M130);
   SynchronizeRequest& request = source_and_request->second;
   request.install_results[install_url] = std::move(result);
   --request.remaining_install_requests;
@@ -619,7 +620,8 @@ void ExternallyManagedAppManager::UninstallForSynchronizeCallback(
     const GURL& install_url,
     webapps::UninstallResultCode code) {
   auto source_and_request = synchronize_requests_.find(source);
-  DCHECK(source_and_request != synchronize_requests_.end());
+  CHECK(source_and_request != synchronize_requests_.end(),
+        base::NotFatalUntil::M130);
   SynchronizeRequest& request = source_and_request->second;
   request.uninstall_results[install_url] = code;
   --request.remaining_uninstall_requests;
@@ -631,7 +633,8 @@ void ExternallyManagedAppManager::UninstallForSynchronizeCallback(
 void ExternallyManagedAppManager::ContinueSynchronization(
     ExternalInstallSource source) {
   auto source_and_request = synchronize_requests_.find(source);
-  DCHECK(source_and_request != synchronize_requests_.end());
+  CHECK(source_and_request != synchronize_requests_.end(),
+        base::NotFatalUntil::M130);
 
   SynchronizeRequest& request = source_and_request->second;
 
@@ -663,7 +666,8 @@ void ExternallyManagedAppManager::ContinueSynchronization(
 void ExternallyManagedAppManager::CompleteSynchronization(
     ExternalInstallSource source) {
   auto source_and_request = synchronize_requests_.find(source);
-  DCHECK(source_and_request != synchronize_requests_.end());
+  CHECK(source_and_request != synchronize_requests_.end(),
+        base::NotFatalUntil::M130);
 
   SynchronizeRequest& request = source_and_request->second;
   CHECK(request.callback);

@@ -119,8 +119,8 @@ class PinRequestViewTest : public LoginTestBase,
 
     PinRequestView* view = PinRequestWidget::TestApi(widget).pin_request_view();
     PinRequestView::TestApi test_api(view);
-    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(), 0, 0);
+    ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(), 0, 0);
     views::test::ButtonTestApi(test_api.back_button()).NotifyClick(event);
   }
 
@@ -589,9 +589,9 @@ TEST_F(PinRequestViewTest, VirtualKeyboardHidden) {
 
   views::Textfield* text_field = test_api.GetInputTextField(0);
 
-  ui::GestureEvent event(
-      text_field->x(), text_field->y(), 0, base::TimeTicks::Now(),
-      ui::GestureEventDetails(ui::EventType::ET_GESTURE_TAP));
+  ui::GestureEvent event(text_field->x(), text_field->y(), 0,
+                         base::TimeTicks::Now(),
+                         ui::GestureEventDetails(ui::EventType::kGestureTap));
   text_field->OnGestureEvent(&event);
   base::RunLoop().RunUntilIdle();
 

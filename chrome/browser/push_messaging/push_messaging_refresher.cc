@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
@@ -76,7 +77,7 @@ void PushMessagingRefresher::OnUnsubscribed(const std::string& old_app_id) {
   refresh_map_.erase(found_new_app_id);
 
   RefreshInfo::iterator result = old_subscriptions_.find(new_app_id);
-  DCHECK(result != old_subscriptions_.end());
+  CHECK(result != old_subscriptions_.end(), base::NotFatalUntil::M130);
 
   PushMessagingAppIdentifier old_identifier = result->second.old_identifier;
   old_subscriptions_.erase(result);

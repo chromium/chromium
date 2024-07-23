@@ -1,0 +1,16 @@
+# crbug.com/344654477
+-org.chromium.android_webview.test.devui.*
+
+# crbug.com/350405043
+-org.chromium.android_webview.test.AwContentsClientFullScreenTest.testOnShowAndHideCustomViewWithBackKey_video
+-org.chromium.android_webview.test.AwContentsClientFullScreenTest.testOnShowAndHideCustomViewWithBackKey_videoInsideDiv
+
+# crbug.com/351017155
+-org.chromium.android_webview.test.VariationsSeedLoaderTest.testFinchSeedExpirationAgeFlag
+
+# crbug.com/323344356
+-org.chromium.android_webview.test.ContextMenuTest.testCopyLinkText
+-org.chromium.android_webview.test.ContextMenuTest.testCopyLinkURL
+-org.chromium.android_webview.test.ContextMenuTest.testDismissContextMenuOnBack
+-org.chromium.android_webview.test.ContextMenuTest.testDismissContextMenuOnClick
+-org.chromium.android_webview.test.ContextMenuTest.testOpenInBrowser

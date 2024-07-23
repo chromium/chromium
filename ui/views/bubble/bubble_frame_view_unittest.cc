@@ -1412,14 +1412,14 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksClose) {
 
   BubbleFrameView* frame = delegate->GetBubbleFrameView();
   test::ButtonTestApi(frame->close_)
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(),
                                   ui::EF_NONE, ui::EF_NONE));
   EXPECT_FALSE(bubble->IsClosed());
 
   test::ButtonTestApi(frame->close_)
       .NotifyClick(ui::MouseEvent(
-          ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+          ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
           ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
           ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(bubble->IsClosed());
@@ -1438,7 +1438,7 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksMinimize) {
 
   BubbleFrameView* frame = delegate->GetBubbleFrameView();
   test::ButtonTestApi(frame->minimize_)
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(),
                                   ui::EF_NONE, ui::EF_NONE));
   EXPECT_FALSE(bubble->IsClosed());
@@ -1448,7 +1448,7 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksMinimize) {
       true);
   test::ButtonTestApi(frame->minimize_)
       .NotifyClick(ui::MouseEvent(
-          ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+          ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
           ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
           ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(minimize_waiter.Wait());
@@ -1466,8 +1466,9 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksAnchorBoundsChanged) {
   Widget* bubble =
       BubbleDialogDelegateView::CreateBubble(std::move(delegate_unique));
   bubble->Show();
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), ui::EF_NONE,
+                             ui::EF_NONE);
   BubbleFrameView* frame = delegate->GetBubbleFrameView();
   test::ButtonTestApi(frame->minimize_).NotifyClick(mouse_event);
   auto* widget = delegate->GetWidget();
@@ -1481,15 +1482,16 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksAnchorBoundsChanged) {
       base::Milliseconds(GetDoubleClickInterval()));
   anchor.widget().SetBounds(gfx::Rect(10, 10, 100, 100));
 
-  ui::MouseEvent mouse_event_1(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                               ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent mouse_event_1(ui::EventType::kMousePressed, gfx::Point(),
+                               gfx::Point(), ui::EventTimeForNow(), ui::EF_NONE,
+                               ui::EF_NONE);
   test::ButtonTestApi(ok_button).NotifyClick(mouse_event_1);
   test::ButtonTestApi(frame->minimize_).NotifyClick(mouse_event_1);
   EXPECT_FALSE(widget->IsClosed());
   EXPECT_FALSE(bubble->IsMinimized());
 
   test::ButtonTestApi(ok_button).NotifyClick(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
       ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
       ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(widget->IsClosed());

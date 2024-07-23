@@ -125,7 +125,8 @@ constexpr char kOpGatherTypeName[] = "gather_along_axis";
 constexpr char kOpHardSigmoidTypeName[] = "sigmoid_hard";
 constexpr char kOpInstanceNormalizationTypeName[] = "instance_norm";
 constexpr char kOpLeakyReluTypeName[] = "leaky_relu";
-constexpr char kOpMatmul[] = "matmul";
+constexpr char kOpMatmulTypeName[] = "matmul";
+constexpr char kOpPadTypeName[] = "pad";
 constexpr char kOpReluTypeName[] = "relu";
 constexpr char kOpReshapeTypeName[] = "reshape";
 constexpr char kOpSigmoidTypeName[] = "sigmoid";
@@ -184,15 +185,15 @@ constexpr char kOpUpsampleBilinearTypeName[] = "upsample_bilinear";
 constexpr char kOpUpsampleNearestNeighborTypeName[] =
     "upsample_nearest_neighbor";
 // General op params that are shared across multiple ops.
+constexpr char kOpParamAlpha[] = "alpha";
+constexpr char kOpParamAxis[] = "axis";
+constexpr char kOpParamBeta[] = "beta";
+constexpr char kOpParamDataTypeName[] = "dtype";
+constexpr char kOpParamEpsilon[] = "epsilon";
+constexpr char kOpParamKeepDims[] = "keep_dims";
+constexpr char kOpParamPad[] = "pad";
 constexpr char kOpParamX[] = "x";
 constexpr char kOpParamY[] = "y";
-constexpr char kOpDataTypeName[] = "dtype";
-constexpr char kOpParamAlpha[] = "alpha";
-constexpr char kOpParamBeta[] = "beta";
-constexpr char kOpParamEpsilon[] = "epsilon";
-constexpr char kOpParamAxis[] = "axis";
-constexpr char kOpParamKeepDims[] = "keep_dims";
-
 // Hard coded path used in the model file to point at the weight path.
 constexpr char kWeightsRelativeFilePath[] = "@model_path/weights/weights.bin";
 
@@ -345,7 +346,7 @@ OperandDataType MILDataTypeToOperandType(
 
 std::string_view MilDataTypeToString(
     CoreML::Specification::MILSpec::DataType mil_data_type) {
-  // String values accepted by Core ML for the kOpDataTypeName parameter.
+  // String values accepted by Core ML for the kOpParamDataTypeName parameter.
   // Expand as needed when adding new ops that support other types.
   switch (mil_data_type) {
     case CoreML::Specification::MILSpec::DataType::FLOAT32:
@@ -798,6 +799,10 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForMatmul(*operation->get_matmul(), block));
         break;
       }
+      case mojom::Operation::Tag::kPad: {
+        RETURN_IF_ERROR(AddOperationForPad(*operation->get_pad(), block));
+        break;
+      }
       case mojom::Operation::Tag::kPool2d: {
         RETURN_IF_ERROR(AddOperationForPool2d(*operation->get_pool2d(), block));
         break;
@@ -870,7 +875,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       case mojom::Operation::Tag::kLayerNormalization:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
-      case mojom::Operation::Tag::kPad:
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kSplit:
       case mojom::Operation::Tag::kTriangular:
@@ -1211,19 +1215,14 @@ GraphBuilderCoreml::AddOperationForArgMinMax(
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    GetOperandInfo(input_operand_id).coreml_name);
 
-  // TODO - crbug.com/352359898: Change operation.axes to scalar axis.
-  if (operation.axes.size() != 1) {
-    return NewNotSupportedError(
-        "Unsupported axes for argMin/Max. Only support single axis.");
-  }
-  int32_t axis = base::checked_cast<int32_t>(operation.axes[0]);
-
-  SetInputsWithValues(*op->mutable_inputs(),
-                      {
-                          {kOpParamAxis, CreateScalarImmediateValue(axis)},
-                          {kOpParamKeepDims, CreateScalarImmediateValue(
-                                                 operation.keep_dimensions)},
-                      });
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {
+          {kOpParamAxis, CreateScalarImmediateValue(
+                             base::checked_cast<int32_t>(operation.axis))},
+          {kOpParamKeepDims,
+           CreateScalarImmediateValue(operation.keep_dimensions)},
+      });
 
   // No need to add a reshape when keep_dimensions=false as the output is
   // already scalar.
@@ -1337,7 +1336,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForCast(
                    input_operand_info.coreml_name);
   op->set_type(kOpCastTypeName);
   SetInputWithValue(
-      *op->mutable_inputs(), kOpDataTypeName,
+      *op->mutable_inputs(), kOpParamDataTypeName,
       CreateStringImmediateValue(MilDataTypeToString(output_data_type)));
   PopulateNamedValueType(output_operand_id, *op->add_outputs());
   return base::ok();
@@ -1415,7 +1414,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForConv2d(
   static constexpr char kParamStrides[] = "strides";
   static constexpr char kParamPadType[] = "pad_type";
   static constexpr char kParamPadTypeValue[] = "custom";
-  static constexpr char kParamPad[] = "pad";
   static constexpr char kParamDilations[] = "dilations";
   static constexpr char kParamGroups[] = "groups";
   static constexpr char kParamBias[] = "bias";
@@ -1451,7 +1449,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForConv2d(
       *op->mutable_inputs(),
       {{kParamStrides, Create1DTensorImmediateValue<int32_t>(strides)},
        {kParamPadType, CreateStringImmediateValue(kParamPadTypeValue)},
-       {kParamPad, Create1DTensorImmediateValue<int32_t>(pad)},
+       {kOpParamPad, Create1DTensorImmediateValue<int32_t>(pad)},
        {kParamDilations, Create1DTensorImmediateValue<int32_t>(dilations)},
        {kParamGroups, CreateScalarImmediateValue(
                           base::checked_cast<int32_t>(operation.groups))}});
@@ -2113,7 +2111,7 @@ GraphBuilderCoreml::AddOperationForMatmul(
   }
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
-  op->set_type(kOpMatmul);
+  op->set_type(kOpMatmulTypeName);
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
 
@@ -2138,6 +2136,85 @@ GraphBuilderCoreml::AddOperationForMatmul(
   return (AddOperationForMatmul(
       operation.a_operand_id, operation.b_operand_id, /*transpose_x=*/false,
       /*transpose_y=*/false, operation.output_operand_id, block));
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPad(
+    const mojom::Pad& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+
+  if (!kFloatDataTypes.contains(input_operand_info.mil_data_type)) {
+    return NewNotSupportedError(NotSupportedInputArgumentTypeError(
+        ops::kPad, MILDataTypeToOperandType(input_operand_info.mil_data_type)));
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpPadTypeName);
+
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  std::vector<int32_t> paddings;
+  paddings.reserve(operation.beginning_padding.size() +
+                   operation.ending_padding.size());
+  CHECK_EQ(operation.beginning_padding.size(), operation.ending_padding.size());
+  for (size_t i = 0; i < operation.beginning_padding.size(); ++i) {
+    paddings.push_back(operation.beginning_padding[i]);
+    paddings.push_back(operation.ending_padding[i]);
+  }
+
+  constexpr char kParamMode[] = "mode";
+  constexpr char kParamConstantVal[] = "constant_val";
+
+  std::string_view mode;
+  float constant = 0;
+  switch (operation.mode->which()) {
+    case mojom::PaddingMode::Tag::kConstant:
+      mode = "constant";
+      constant = operation.mode->get_constant()->value;
+      break;
+    case mojom::PaddingMode::Tag::kSymmetric:
+      // TODO: crbug.com/354101904 - figure out out how to emulate this or
+      // resolve the incompabitility at spec level.
+      return NewNotSupportedError("Unsupported mode symmetric for pad.");
+    case mojom::PaddingMode::Tag::kEdge:
+      mode = "replicate";
+      break;
+    case mojom::PaddingMode::Tag::kReflection:
+      mode = "reflect";
+      break;
+  }
+
+  // TODO: crbug.com/354101905 - figure out out how to emulate this or resolve
+  // the incompabitility at spec level.
+  if (!operation.mode->is_constant() &&
+      operation.beginning_padding.size() > 2) {
+    return NewNotSupportedError(
+        "Unsupported padding for pad, padding for more than two dimensions "
+        "only supports 'constant' mode.");
+  }
+
+  CoreML::Specification::MILSpec::Value constant_value;
+  switch (input_operand_info.mil_data_type) {
+    case CoreML::Specification::MILSpec::DataType::FLOAT32:
+      constant_value = CreateScalarImmediateValue(constant);
+      break;
+    case CoreML::Specification::MILSpec::DataType::FLOAT16:
+      constant_value = CreateScalarImmediateValue(
+          static_cast<Float16>(fp16_ieee_from_fp32_value(constant)));
+      break;
+    default:
+      NOTREACHED_NORETURN() << "Invalid input datatype for pad.";
+  }
+
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {{kOpParamPad, Create1DTensorImmediateValue<int32_t>(paddings)},
+       {kParamMode, CreateStringImmediateValue(mode)},
+       {kParamConstantVal, constant_value}});
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPool2d(
@@ -2167,7 +2244,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPool2d(
   static constexpr char kParamStrides[] = "strides";
   static constexpr char kParamPadType[] = "pad_type";
   static constexpr char kParamPadTypeValue[] = "custom";
-  static constexpr char kParamPad[] = "pad";
   static constexpr char kParamExcludePaddingFromAverage[] =
       "exclude_padding_from_average";
   static constexpr char kParamCeilMode[] = "ceil_mode";
@@ -2215,7 +2291,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPool2d(
       {{kParamKernelSizes, Create1DTensorImmediateValue<int32_t>(kernel_sizes)},
        {kParamStrides, Create1DTensorImmediateValue<int32_t>(strides)},
        {kParamPadType, CreateStringImmediateValue(kParamPadTypeValue)},
-       {kParamPad, Create1DTensorImmediateValue<int32_t>(pad)},
+       {kOpParamPad, Create1DTensorImmediateValue<int32_t>(pad)},
        // TODO: crbug.com/334914466 - Support `ceil_mode` by calculating the
        // expected output shape and comparing it to the shape of the output
        // operand. Note that Core ML requires padding to be symmetric if

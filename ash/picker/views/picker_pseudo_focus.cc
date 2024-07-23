@@ -102,7 +102,7 @@ bool DoPickerPseudoFocusedActionOnView(views::View* view) {
   // calling `OnKeyEvent` (since the focused view may forward key events to be
   // handled by the pseudo focused view).
   CHECK(!view->HasFocus());
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
                          ui::DomCode::ENTER, ui::EF_NONE);
   view->OnKeyEvent(&key_event);
   return key_event.handled();

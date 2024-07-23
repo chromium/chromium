@@ -213,10 +213,10 @@ class InputMethodDelegateForTesting : public ImeKeyEventDispatcher {
       ui::KeyEvent* key_event) override {
     std::string action;
     switch (key_event->type()) {
-      case ET_KEY_PRESSED:
+      case EventType::kKeyPressed:
         action = "keydown:";
         break;
-      case ET_KEY_RELEASED:
+      case EventType::kKeyReleased:
         action = "keyup:";
         break;
       default:
@@ -383,7 +383,7 @@ TEST_F(InputMethodAuraLinuxTest, BasicSyncModeTest) {
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client1.get());
 
-  KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key_new(EventType::kKeyPressed, VKEY_A, 0);
   key_new.set_character(L'a');
 
   KeyEvent key = key_new;
@@ -418,7 +418,7 @@ TEST_F(InputMethodAuraLinuxTest, BasicAsyncModeTest) {
   auto client1 =
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client1.get());
-  KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key_new(EventType::kKeyPressed, VKEY_A, 0);
   key_new.set_character(L'a');
   KeyEvent key = key_new;
   input_method_auralinux_->DispatchKeyEvent(&key);
@@ -460,7 +460,7 @@ TEST_F(InputMethodAuraLinuxTest, IBusUSTest) {
   auto client =
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client.get());
-  KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key_new(EventType::kKeyPressed, VKEY_A, 0);
   key_new.set_character(L'a');
   KeyEvent key = key_new;
   input_method_auralinux_->DispatchKeyEvent(&key);
@@ -480,7 +480,7 @@ TEST_F(InputMethodAuraLinuxTest, IBusUSTest) {
 
   // IBus does NOT handle the key up.
   context_->SetEatKey(false);
-  KeyEvent key_up(ET_KEY_RELEASED, VKEY_A, 0);
+  KeyEvent key_up(EventType::kKeyReleased, VKEY_A, 0);
   input_method_auralinux_->DispatchKeyEvent(&key_up);
 
   test_result_->ExpectAction("keyup:65");
@@ -496,7 +496,7 @@ TEST_F(InputMethodAuraLinuxTest, IBusPinyinTest) {
   auto client =
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client.get());
-  KeyEvent key(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key(EventType::kKeyPressed, VKEY_A, 0);
   key.set_character(L'a');
   input_method_auralinux_->DispatchKeyEvent(&key);
 
@@ -512,7 +512,7 @@ TEST_F(InputMethodAuraLinuxTest, IBusPinyinTest) {
   test_result_->Verify();
 
   // IBus issues a commit text with composition after muting the space key down.
-  KeyEvent key_up(ET_KEY_RELEASED, VKEY_SPACE, 0);
+  KeyEvent key_up(EventType::kKeyReleased, VKEY_SPACE, 0);
   input_method_auralinux_->DispatchKeyEvent(&key_up);
 
   input_method_auralinux_->OnPreeditEnd();
@@ -533,7 +533,7 @@ TEST_F(InputMethodAuraLinuxTest, FcitxPinyinTest) {
   auto client =
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client.get());
-  KeyEvent key(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key(EventType::kKeyPressed, VKEY_A, 0);
   key.set_character(L'a');
   input_method_auralinux_->DispatchKeyEvent(&key);
   input_method_auralinux_->OnPreeditStart();
@@ -542,7 +542,7 @@ TEST_F(InputMethodAuraLinuxTest, FcitxPinyinTest) {
   // When input characters with fcitx+chinese, there has no
   // composing text and no composition updated.
   // So do nothing here is to emulate the fcitx+chinese input.
-  KeyEvent key_up(ET_KEY_RELEASED, VKEY_RETURN, 0);
+  KeyEvent key_up(EventType::kKeyReleased, VKEY_RETURN, 0);
   input_method_auralinux_->DispatchKeyEvent(&key_up);
 
   input_method_auralinux_->OnCommit(u"a");
@@ -564,7 +564,7 @@ TEST_F(InputMethodAuraLinuxTest, Fcitx5PinyinTest) {
   auto client =
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client.get());
-  KeyEvent key(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key(EventType::kKeyPressed, VKEY_A, 0);
   key.set_character(L'a');
   input_method_auralinux_->DispatchKeyEvent(&key);
   input_method_auralinux_->OnPreeditStart();
@@ -580,7 +580,7 @@ TEST_F(InputMethodAuraLinuxTest, Fcitx5PinyinTest) {
 
   // Typing return issues a commit, followed by preedit change (to make
   // composition empty), then preedit end.
-  KeyEvent key_up(ET_KEY_RELEASED, VKEY_RETURN, 0);
+  KeyEvent key_up(EventType::kKeyReleased, VKEY_RETURN, 0);
   input_method_auralinux_->DispatchKeyEvent(&key_up);
 
   input_method_auralinux_->OnCommit(u"a");
@@ -603,7 +603,7 @@ TEST_F(InputMethodAuraLinuxTest, JapaneseCommit) {
   auto client =
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client.get());
-  KeyEvent key(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key(EventType::kKeyPressed, VKEY_A, 0);
   key.set_character(L'a');
   input_method_auralinux_->DispatchKeyEvent(&key);
 
@@ -621,7 +621,7 @@ TEST_F(InputMethodAuraLinuxTest, JapaneseCommit) {
   // IBus issues a commit text with composition after muting the space key down.
   // Typing return issues a commit, followed by preedit change (to make
   // composition empty), then preedit end.
-  KeyEvent key_up(ET_KEY_PRESSED, VKEY_RETURN, 0);
+  KeyEvent key_up(EventType::kKeyPressed, VKEY_RETURN, 0);
   input_method_auralinux_->DispatchKeyEvent(&key_up);
 
   input_method_auralinux_->OnCommit(u"a");
@@ -645,7 +645,7 @@ TEST_F(InputMethodAuraLinuxTest, EmptyCommit) {
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client.get());
 
-  KeyEvent key(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key(EventType::kKeyPressed, VKEY_A, 0);
   key.set_character(L'a');
   input_method_auralinux_->DispatchKeyEvent(&key);
   input_method_auralinux_->OnPreeditStart();
@@ -685,7 +685,7 @@ void DeadKeyTest(TextInputType text_input_type,
   constexpr int32_t kCombiningGraveAccent = 0x0300;
   {
     KeyEvent dead_key(
-        ET_KEY_PRESSED, VKEY_OEM_4, ui::DomCode::BRACKET_LEFT,
+        EventType::kKeyPressed, VKEY_OEM_4, ui::DomCode::BRACKET_LEFT,
         /* flags= */ 0,
         DomKey::DeadKeyFromCombiningCharacter(kCombiningGraveAccent),
         base::TimeTicks());
@@ -696,7 +696,7 @@ void DeadKeyTest(TextInputType text_input_type,
   context->SetEatKey(false);
   {
     KeyEvent dead_key(
-        ET_KEY_RELEASED, VKEY_OEM_4, ui::DomCode::BRACKET_LEFT,
+        EventType::kKeyReleased, VKEY_OEM_4, ui::DomCode::BRACKET_LEFT,
         /* flags= */ 0,
         DomKey::DeadKeyFromCombiningCharacter(kCombiningGraveAccent),
         base::TimeTicks());
@@ -712,7 +712,7 @@ void DeadKeyTest(TextInputType text_input_type,
   context->SetEatKey(true);
 
   context->AddCommitAction("X");
-  KeyEvent key(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key(EventType::kKeyPressed, VKEY_A, 0);
   key.set_character(L'a');
   input_method_auralinux->DispatchKeyEvent(&key);
 
@@ -739,12 +739,12 @@ TEST_F(InputMethodAuraLinuxTest, DeadKeyTestTypeNone) {
 // Wayland may send both a peek key event and a key event for key events not
 // consumed by IME. In that case, the peek key should not be dispatched.
 TEST_F(InputMethodAuraLinuxTest, MockWaylandEventsTest) {
-  KeyEvent peek_key(ET_KEY_PRESSED, VKEY_TAB, 0);
+  KeyEvent peek_key(EventType::kKeyPressed, VKEY_TAB, 0);
   input_method_auralinux_->DispatchKeyEvent(&peek_key);
   // No expected action for peek key events.
   test_result_->Verify();
 
-  KeyEvent key(ET_KEY_PRESSED, VKEY_TAB, 0);
+  KeyEvent key(EventType::kKeyPressed, VKEY_TAB, 0);
   SetKeyboardImeFlags(&key, kPropertyKeyboardImeIgnoredFlag);
   input_method_auralinux_->DispatchKeyEvent(&key);
   test_result_->ExpectAction("keydown:9");
@@ -762,7 +762,7 @@ TEST_F(InputMethodAuraLinuxTest, MultiCommitsTest) {
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client.get());
 
-  KeyEvent key(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key(EventType::kKeyPressed, VKEY_A, 0);
   key.set_character(L'a');
   input_method_auralinux_->DispatchKeyEvent(&key);
 
@@ -786,7 +786,7 @@ TEST_F(InputMethodAuraLinuxTest, MixedCompositionAndCommitTest) {
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client.get());
 
-  KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key_new(EventType::kKeyPressed, VKEY_A, 0);
   key_new.set_character(L'a');
   KeyEvent key = key_new;
   input_method_auralinux_->DispatchKeyEvent(&key);
@@ -819,7 +819,7 @@ TEST_F(InputMethodAuraLinuxTest, CompositionEndWithoutCommitTest) {
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client.get());
 
-  KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key_new(EventType::kKeyPressed, VKEY_A, 0);
   key_new.set_character(L'a');
   KeyEvent key = key_new;
   input_method_auralinux_->DispatchKeyEvent(&key);
@@ -850,7 +850,7 @@ TEST_F(InputMethodAuraLinuxTest, CompositionEndWithEmptyCommitTest) {
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client.get());
 
-  KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key_new(EventType::kKeyPressed, VKEY_A, 0);
   key_new.set_character(L'a');
   KeyEvent key = key_new;
   input_method_auralinux_->DispatchKeyEvent(&key);
@@ -883,7 +883,7 @@ TEST_F(InputMethodAuraLinuxTest, CompositionEndWithCommitTest) {
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client.get());
 
-  KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key_new(EventType::kKeyPressed, VKEY_A, 0);
   key_new.set_character(L'a');
   KeyEvent key = key_new;
   input_method_auralinux_->DispatchKeyEvent(&key);
@@ -919,7 +919,7 @@ TEST_F(InputMethodAuraLinuxTest, CompositionUpdateWithCommitTest) {
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client.get());
 
-  KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key_new(EventType::kKeyPressed, VKEY_A, 0);
   key_new.set_character(L'a');
   KeyEvent key = key_new;
   input_method_auralinux_->DispatchKeyEvent(&key);
@@ -954,7 +954,7 @@ TEST_F(InputMethodAuraLinuxTest, MixedAsyncAndSyncTest) {
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client.get());
 
-  KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key_new(EventType::kKeyPressed, VKEY_A, 0);
   key_new.set_character(L'a');
   KeyEvent key = key_new;
   input_method_auralinux_->DispatchKeyEvent(&key);
@@ -992,7 +992,7 @@ TEST_F(InputMethodAuraLinuxTest, MixedSyncAndAsyncTest) {
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client.get());
 
-  KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key_new(EventType::kKeyPressed, VKEY_A, 0);
   key_new.set_character(L'a');
   KeyEvent key = key_new;
   input_method_auralinux_->DispatchKeyEvent(&key);
@@ -1034,7 +1034,7 @@ TEST_F(InputMethodAuraLinuxTest, ReleaseKeyTest) {
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
   InstallFirstClient(client.get());
 
-  KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key_new(EventType::kKeyPressed, VKEY_A, 0);
   key_new.set_character(L'A');
   KeyEvent key = key_new;
   input_method_auralinux_->DispatchKeyEvent(&key);
@@ -1071,7 +1071,7 @@ TEST_F(InputMethodAuraLinuxTest, ReleaseKeyTest_PeekKey) {
   context_->SetSyncMode(true);
   context_->SetEatKey(true);
 
-  KeyEvent key(ET_KEY_RELEASED, VKEY_A, 0);
+  KeyEvent key(EventType::kKeyReleased, VKEY_A, 0);
   key.set_character(L'A');
   input_method_auralinux_->DispatchKeyEvent(&key);
 

@@ -414,7 +414,7 @@ void GestureInterpreterLibevdevCros::OnGestureScroll(
         StimeToTimeTicks(gesture->end_time)));
   } else {
     dispatcher_->DispatchScrollEvent(ScrollEventParams(
-        id_, ET_SCROLL, cursor_->GetLocation(),
+        id_, EventType::kScroll, cursor_->GetLocation(),
         gfx::Vector2dF(scroll->dx, scroll->dy),
         gfx::Vector2dF(scroll->ordinal_dx, scroll->ordinal_dy),
         kGestureScrollFingerCount, StimeToTimeTicks(gesture->end_time)));
@@ -472,9 +472,9 @@ void GestureInterpreterLibevdevCros::OnGestureFling(const Gesture* gesture,
   if (!cursor_)
     return;  // No cursor!
 
-  EventType type =
-      (fling->fling_state == GESTURES_FLING_START ? ET_SCROLL_FLING_START
-                                                  : ET_SCROLL_FLING_CANCEL);
+  EventType type = (fling->fling_state == GESTURES_FLING_START
+                        ? EventType::kScrollFlingStart
+                        : EventType::kScrollFlingCancel);
 
   // Fling is like 2-finger scrolling but with velocity instead of displacement.
   dispatcher_->DispatchScrollEvent(ScrollEventParams(
@@ -496,7 +496,7 @@ void GestureInterpreterLibevdevCros::OnGestureSwipe(const Gesture* gesture,
 
   // Swipe is 3-finger scrolling.
   dispatcher_->DispatchScrollEvent(ScrollEventParams(
-      id_, ET_SCROLL, cursor_->GetLocation(),
+      id_, EventType::kScroll, cursor_->GetLocation(),
       gfx::Vector2dF(swipe->dx, swipe->dy),
       gfx::Vector2dF(swipe->ordinal_dx, swipe->ordinal_dy),
       kGestureSwipeFingerCount, StimeToTimeTicks(gesture->end_time)));
@@ -514,7 +514,7 @@ void GestureInterpreterLibevdevCros::OnGestureSwipeLift(
   // TODO(spang): Figure out why and put it in this comment.
 
   dispatcher_->DispatchScrollEvent(ScrollEventParams(
-      id_, ET_SCROLL_FLING_START, cursor_->GetLocation(),
+      id_, EventType::kScrollFlingStart, cursor_->GetLocation(),
       gfx::Vector2dF() /* delta */, gfx::Vector2dF() /* ordinal_delta */,
       kGestureScrollFingerCount, StimeToTimeTicks(gesture->end_time)));
 }
@@ -530,7 +530,7 @@ void GestureInterpreterLibevdevCros::OnGestureFourFingerSwipe(
     return;  // No cursor!
 
   dispatcher_->DispatchScrollEvent(ScrollEventParams(
-      id_, ET_SCROLL, cursor_->GetLocation(),
+      id_, EventType::kScroll, cursor_->GetLocation(),
       gfx::Vector2dF(swipe->dx, swipe->dy),
       gfx::Vector2dF(swipe->ordinal_dx, swipe->ordinal_dy),
       /*finger_count=*/4, StimeToTimeTicks(gesture->end_time)));
@@ -548,7 +548,7 @@ void GestureInterpreterLibevdevCros::OnGestureFourFingerSwipeLift(
   // TODO(spang): Figure out why and put it in this comment.
 
   dispatcher_->DispatchScrollEvent(ScrollEventParams(
-      id_, ET_SCROLL_FLING_START, cursor_->GetLocation(),
+      id_, EventType::kScrollFlingStart, cursor_->GetLocation(),
       /*delta=*/gfx::Vector2dF(), /*ordinal_delta=*/gfx::Vector2dF(),
       /*finger_count=*/4, StimeToTimeTicks(gesture->end_time)));
 }
@@ -565,13 +565,13 @@ void GestureInterpreterLibevdevCros::OnGesturePinch(const Gesture* gesture,
   EventType type;
   switch (pinch->zoom_state) {
     case GESTURES_ZOOM_START:
-      type = ET_GESTURE_PINCH_BEGIN;
+      type = EventType::kGesturePinchBegin;
       break;
     case GESTURES_ZOOM_UPDATE:
-      type = ET_GESTURE_PINCH_UPDATE;
+      type = EventType::kGesturePinchUpdate;
       break;
     case GESTURES_ZOOM_END:
-      type = ET_GESTURE_PINCH_END;
+      type = EventType::kGesturePinchEnd;
       break;
     default:
       LOG(WARNING) << base::StringPrintf("Unrecognized pinch zoom state (%u)",

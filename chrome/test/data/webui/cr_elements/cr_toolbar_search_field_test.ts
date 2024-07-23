@@ -6,7 +6,7 @@
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 
 import type {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
-import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
@@ -64,7 +64,7 @@ suite('cr-toolbar-search-field', function() {
     assertTrue(field.showingSearch);
     assertEquals(searchInput, field.shadowRoot!.activeElement);
 
-    pressAndReleaseKeyOn(searchInput, 27, '', 'Escape');
+    pressAndReleaseKeyOn(searchInput, 27, undefined, 'Escape');
     assertFalse(field.showingSearch, 'Pressing escape closes field.');
     assertNotEquals(searchInput, field.shadowRoot!.activeElement);
   });

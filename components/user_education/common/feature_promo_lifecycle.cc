@@ -472,7 +472,7 @@ void FeaturePromoLifecycle::RecordShown() {
     case PromoType::kTutorial:
       type_action_name.append("Tutorial");
       break;
-    case PromoType::kRotating:
+    case PromoType::kRotating: {
       // Want to track exactly which messages are being shown in a rotating
       // promo. Because the suggested cap on exact linear histograms is 100, use
       // that as the max allowed value.
@@ -480,11 +480,13 @@ void FeaturePromoLifecycle::RecordShown() {
       // Note that the +1 is not an increment, but rather reflects that
       // histograms are 1-indexed rather than 0-indexed. Therefore, the first
       // promo is promo 1, not 0.
-      UMA_HISTOGRAM_EXACT_LINEAR(
-          "UserEducation.MessageShown.RotatingPromoIndex", GetPromoIndex() + 1,
-          100);
+      const std::string histogram_name =
+          std::string("UserEducation.RotatingPromoIndex.")
+              .append(iph_feature()->name);
+      base::UmaHistogramExactLinear(histogram_name, GetPromoIndex() + 1, 100);
       type_action_name.append("Rotating");
       break;
+    }
     case PromoType::kUnspecified:
       NOTREACHED_IN_MIGRATION();
   }

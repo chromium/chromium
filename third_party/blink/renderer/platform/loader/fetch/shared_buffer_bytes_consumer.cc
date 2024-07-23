@@ -11,6 +11,8 @@
 
 #include <utility>
 
+#include "base/not_fatal_until.h"
+
 namespace blink {
 
 SharedBufferBytesConsumer::SharedBufferBytesConsumer(
@@ -29,7 +31,7 @@ BytesConsumer::Result SharedBufferBytesConsumer::BeginRead(const char** buffer,
 }
 
 BytesConsumer::Result SharedBufferBytesConsumer::EndRead(size_t read_size) {
-  DCHECK(iterator_ != data_->end());
+  CHECK(iterator_ != data_->end(), base::NotFatalUntil::M130);
   DCHECK_LE(read_size + bytes_read_in_chunk_, iterator_->size());
   bytes_read_in_chunk_ += read_size;
   if (bytes_read_in_chunk_ == iterator_->size()) {

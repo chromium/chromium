@@ -1124,9 +1124,9 @@ void AppListFolderView::OnScrollEvent(ui::ScrollEvent* event) {
 }
 
 void AppListFolderView::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSEWHEEL) {
+  if (event->type() == ui::EventType::kMousewheel) {
     items_grid_view_->HandleScrollFromParentView(
-        event->AsMouseWheelEvent()->offset(), ui::ET_MOUSEWHEEL);
+        event->AsMouseWheelEvent()->offset(), ui::EventType::kMousewheel);
     event->SetHandled();
   }
 }
@@ -1291,8 +1291,9 @@ void AppListFolderView::OnGestureEvent(ui::GestureEvent* event) {
   // Capture scroll events so they don't bubble up to the apps container, where
   // they may cause the root apps grid view to scroll, or get translated into
   // apps grid view drag.
-  if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN)
+  if (event->type() == ui::EventType::kGestureScrollBegin) {
     event->SetHandled();
+  }
 }
 
 void AppListFolderView::SetItemName(AppListFolderItem* item,

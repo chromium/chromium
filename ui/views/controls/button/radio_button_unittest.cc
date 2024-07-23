@@ -79,7 +79,8 @@ TEST_F(RadioButtonTest, Focus) {
   // Tabbing through only focuses the checked button.
   button1->SetChecked(true);
   auto* focus_manager = button_container().GetFocusManager();
-  ui::KeyEvent pressed_tab(ui::ET_KEY_PRESSED, ui::VKEY_TAB, ui::EF_NONE);
+  ui::KeyEvent pressed_tab(ui::EventType::kKeyPressed, ui::VKEY_TAB,
+                           ui::EF_NONE);
   focus_manager->OnKeyEvent(pressed_tab);
   EXPECT_EQ(button1, focus_manager->GetFocusedView());
   focus_manager->OnKeyEvent(pressed_tab);
@@ -87,13 +88,13 @@ TEST_F(RadioButtonTest, Focus) {
 
   // The checked button can be moved using arrow keys.
   focus_manager->OnKeyEvent(
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_DOWN, ui::EF_NONE));
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_DOWN, ui::EF_NONE));
   EXPECT_EQ(button2, focus_manager->GetFocusedView());
   EXPECT_FALSE(button1->GetChecked());
   EXPECT_TRUE(button2->GetChecked());
 
   focus_manager->OnKeyEvent(
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UP, ui::EF_NONE));
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_UP, ui::EF_NONE));
   EXPECT_EQ(button1, focus_manager->GetFocusedView());
   EXPECT_TRUE(button1->GetChecked());
   EXPECT_FALSE(button2->GetChecked());
@@ -109,7 +110,7 @@ TEST_F(RadioButtonTest, FocusOnClick) {
   button_container().AddChildView(button2);
 
   const gfx::Point point(1, 1);
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, point, point,
+  const ui::MouseEvent event(ui::EventType::kMousePressed, point, point,
                              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
   button2->OnMousePressed(event);
@@ -120,7 +121,8 @@ TEST_F(RadioButtonTest, FocusOnClick) {
   // No focus on click.
   EXPECT_EQ(nullptr, focus_manager->GetFocusedView());
 
-  ui::KeyEvent pressed_tab(ui::ET_KEY_PRESSED, ui::VKEY_TAB, ui::EF_NONE);
+  ui::KeyEvent pressed_tab(ui::EventType::kKeyPressed, ui::VKEY_TAB,
+                           ui::EF_NONE);
   focus_manager->OnKeyEvent(pressed_tab);
   EXPECT_EQ(button2, focus_manager->GetFocusedView());
 

@@ -36,8 +36,8 @@ void MahiPanelDragController::OnLocatedPanelEvent(ui::LocatedEvent* event) {
   }
 
   switch (event->type()) {
-    case ui::ET_MOUSE_PRESSED:
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kMousePressed:
+    case ui::EventType::kGestureScrollBegin:
       is_dragging_ = true;
       panel_widget_initial_bounds_ =
           mahi_panel_widget->GetWindowBoundsInScreen();
@@ -45,8 +45,8 @@ void MahiPanelDragController::OnLocatedPanelEvent(ui::LocatedEvent* event) {
           event->target()->GetScreenLocation(*event);
       event->SetHandled();
       break;
-    case ui::ET_MOUSE_DRAGGED:
-    case ui::ET_GESTURE_SCROLL_UPDATE: {
+    case ui::EventType::kMouseDragged:
+    case ui::EventType::kGestureScrollUpdate: {
       if (!is_dragging_) {
         break;
       }
@@ -75,9 +75,9 @@ void MahiPanelDragController::OnLocatedPanelEvent(ui::LocatedEvent* event) {
       event->SetHandled();
       break;
     }
-    case ui::ET_MOUSE_RELEASED:
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_GESTURE_END:
+    case ui::EventType::kMouseReleased:
+    case ui::EventType::kGestureScrollEnd:
+    case ui::EventType::kGestureEnd:
       if (!is_dragging_) {
         break;
       }

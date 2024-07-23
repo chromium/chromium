@@ -114,6 +114,11 @@ tast_disabled_tests_from_chrome_all = [
   # b/354218429
   "crostini.LaunchBrowser.bookworm_stable_lacros@betty",
 
+  # b/354660409, tests will be re-enabled after the tast test is updated to work with the new change. Disabling these to unblock uprev and LKGM.
+  "inputs.PhysicalKeyboardEmojiSuggestion",
+  "inputs.PhysicalKeyboardEmojiSuggestion.guest",
+  "inputs.PhysicalKeyboardEmojiSuggestion.incognito",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 

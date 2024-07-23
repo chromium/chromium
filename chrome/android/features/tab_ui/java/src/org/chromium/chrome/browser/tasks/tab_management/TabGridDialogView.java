@@ -143,6 +143,12 @@ public class TabGridDialogView extends FrameLayout {
                         mContext, false);
     }
 
+    void forceAnimationToFinish() {
+        if (mCurrentDialogAnimator != null) {
+            mCurrentDialogAnimator.end();
+        }
+    }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {

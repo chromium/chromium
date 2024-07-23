@@ -1009,5 +1009,31 @@ BankAccount CreatePixBankAccount(int64_t instrument_id) {
   return bank_account;
 }
 
+sync_pb::PaymentInstrument CreatePaymentInstrumentWithBankAccount(
+    int64_t instrument_id) {
+  sync_pb::PaymentInstrument payment_instrument;
+  payment_instrument.set_instrument_id(instrument_id);
+  sync_pb::BankAccountDetails* bank_account =
+      payment_instrument.mutable_bank_account();
+  bank_account->set_bank_name("bank_name");
+  bank_account->set_account_number_suffix("1234");
+  bank_account->set_account_type(
+      sync_pb::BankAccountDetails_AccountType_CHECKING);
+  return payment_instrument;
+}
+
+sync_pb::PaymentInstrument CreatePaymentInstrumentWithIban(
+    int64_t instrument_id) {
+  sync_pb::PaymentInstrument payment_instrument;
+  payment_instrument.set_instrument_id(instrument_id);
+  sync_pb::WalletMaskedIban* iban = payment_instrument.mutable_iban();
+  iban->set_instrument_id("instrument_id");
+  iban->set_prefix("FR76");
+  iban->set_suffix("0189");
+  iban->set_length(27);
+  iban->set_nickname("nickname");
+  return payment_instrument;
+}
+
 }  // namespace test
 }  // namespace autofill

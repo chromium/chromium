@@ -13,7 +13,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/wm_mode/wm_mode_controller.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -53,12 +52,8 @@ WmModeButtonTray::~WmModeButtonTray() {
 
 void WmModeButtonTray::UpdateButtonVisuals(bool is_wm_mode_active) {
   const ui::ColorId color_id =
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(
-                is_wm_mode_active
-                    ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                    : cros_tokens::kCrosSysOnSurface)
-          : kColorAshIconColorPrimary;
+      is_wm_mode_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                        : cros_tokens::kCrosSysOnSurface;
   image_view_->SetImage(ui::ImageModel::FromVectorIcon(
       is_wm_mode_active ? kWmModeOnIcon : kWmModeOffIcon, color_id));
   SetIsActive(is_wm_mode_active);

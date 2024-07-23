@@ -206,8 +206,10 @@ void TouchCalibratorController::OnKeyEvent(ui::KeyEvent* key) {
   if (state_ != CalibrationState::kNativeCalibration)
     return;
   // Detect ESC key press.
-  if (key->type() == ui::ET_KEY_PRESSED && key->key_code() == ui::VKEY_ESCAPE)
+  if (key->type() == ui::EventType::kKeyPressed &&
+      key->key_code() == ui::VKEY_ESCAPE) {
     StopCalibrationAndResetParams();
+  }
 
   key->StopPropagation();
 }
@@ -215,8 +217,9 @@ void TouchCalibratorController::OnKeyEvent(ui::KeyEvent* key) {
 void TouchCalibratorController::OnTouchEvent(ui::TouchEvent* touch) {
   if (!IsCalibrating())
     return;
-  if (touch->type() != ui::ET_TOUCH_RELEASED)
+  if (touch->type() != ui::EventType::kTouchReleased) {
     return;
+  }
   if (base::Time::Now() - last_touch_timestamp_ < kTouchIntervalThreshold)
     return;
   last_touch_timestamp_ = base::Time::Now();

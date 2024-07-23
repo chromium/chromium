@@ -31,7 +31,7 @@ bool IsControlVPressed() {
 }  // namespace
 
 void ControlVHistogramRecorder::OnKeyEvent(ui::KeyEvent* event) {
-  if (event->type() == ui::ET_KEY_PRESSED) {
+  if (event->type() == ui::EventType::kKeyPressed) {
     switch (event->key_code()) {
       case ui::VKEY_CONTROL:
         // If Ctrl is held down and either auto-repeat begins or the other Ctrl
@@ -65,7 +65,7 @@ void ControlVHistogramRecorder::OnKeyEvent(ui::KeyEvent* event) {
     }
   }
 
-  if (event->type() == ui::ET_KEY_RELEASED) {
+  if (event->type() == ui::EventType::kKeyReleased) {
     switch (event->key_code()) {
       case ui::VKEY_CONTROL:
       case ui::VKEY_V:

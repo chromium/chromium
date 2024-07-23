@@ -24,19 +24,21 @@ ui::EventDispatchDetails AutoclickDragEventRewriter::RewriteEvent(
   // On touchpads, a SCROLL_FLING_CANCEL can also indicate the start of a drag.
   // If this rewriter is enabled, a SCROLL_FLING_CANCEL should simply be
   // ignored.
-  if (event.type() == ui::ET_SCROLL_FLING_CANCEL)
+  if (event.type() == ui::EventType::kScrollFlingCancel) {
     return DiscardEvent(continuation);
+  }
 
   // Only rewrite move events, but any other type should still go through.
-  if (event.type() != ui::ET_MOUSE_MOVED)
+  if (event.type() != ui::EventType::kMouseMoved) {
     return SendEvent(continuation, &event);
+  }
 
   const ui::MouseEvent* mouse_event = event.AsMouseEvent();
   // "Press" the left mouse button to make it seem like the user is holding it
   // down.
   int flags = mouse_event->flags() | ui::EF_LEFT_MOUSE_BUTTON;
   ui::MouseEvent rewritten_event(
-      ui::ET_MOUSE_DRAGGED, mouse_event->location(),
+      ui::EventType::kMouseDragged, mouse_event->location(),
       mouse_event->root_location(), mouse_event->time_stamp(), flags,
       mouse_event->changed_button_flags(), mouse_event->pointer_details());
   SetEventTarget(rewritten_event, event.target());

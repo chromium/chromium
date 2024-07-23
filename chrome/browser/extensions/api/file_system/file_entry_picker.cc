@@ -38,7 +38,7 @@ FileEntryPicker::FileEntryPicker(
 
   select_file_dialog_->SelectFile(
       picker_type, std::u16string(), suggested_name, &file_type_info, 0,
-      base::FilePath::StringType(), owning_window, /*params=*/nullptr, caller);
+      base::FilePath::StringType(), owning_window, caller);
 }
 
 FileEntryPicker::~FileEntryPicker() {

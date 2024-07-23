@@ -44,10 +44,10 @@ class ScopedEventWaiterTest : public testing::Test {
 
 // Waits until an event target receives the key pressed event.
 TEST_F(ScopedEventWaiterTest, Basic) {
-  ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
   Event::DispatcherApi(&event).set_target(root_target());
   DispatchEventAsync(&event);
-  ScopedEventWaiter(root_target(), ui::ET_KEY_PRESSED).Wait();
+  ScopedEventWaiter(root_target(), ui::EventType::kKeyPressed).Wait();
 
   // Verify that the original event handler of the root target still receives
   // the event.

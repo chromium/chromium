@@ -413,7 +413,7 @@ void LibInputEventConverter::HandlePointerAxis(const LibInputEvent& evt) {
 
   DVLOG(3) << "Pointer axis h:" << h << ", v:" << v;
 
-  dispatcher_->DispatchScrollEvent({input_device_.id, ET_SCROLL,
+  dispatcher_->DispatchScrollEvent({input_device_.id, EventType::kScroll,
                                     cursor_->GetLocation(), delta, delta, 2,
                                     Timestamp(evt)});
 }

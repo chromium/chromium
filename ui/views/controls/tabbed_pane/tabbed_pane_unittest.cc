@@ -167,7 +167,7 @@ class TabbedPaneWithWidgetTest : public ViewsTestBase {
 
   void SendKeyPressToSelectedTab(ui::KeyboardCode keyboard_code) {
     tabbed_pane_->GetSelectedTab()->OnKeyPressed(
-        ui::KeyEvent(ui::ET_KEY_PRESSED, keyboard_code,
+        ui::KeyEvent(ui::EventType::kKeyPressed, keyboard_code,
                      ui::UsLayoutKeyboardCodeToDomCode(keyboard_code), 0));
   }
 

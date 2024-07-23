@@ -239,11 +239,6 @@ public final class ProductionSupportedFlagList {
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME,
                 "When enabled, prefill requests are supported for login forms."),
         Flag.baseFeature(
-                AndroidAutofillFeatures.ANDROID_AUTOFILL_USE_PWM_PREDICTIONS_FOR_OVERRIDES_NAME,
-                "When enabled, the comparison between the cached form and the currently focused"
-                        + " form that is used to decide whether to show a bottom sheet is performed"
-                        + " by comparing password manager's FormDataParser predictions."),
-        Flag.baseFeature(
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUEST_FOR_CHANGE_PASSWORD_NAME,
                 "Enables sending prefill requests for Change Password forms."),
         Flag.baseFeature(

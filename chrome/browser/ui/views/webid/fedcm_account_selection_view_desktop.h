@@ -173,6 +173,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                            UserClosingPopupAfterVerifyingSheetShouldNotify);
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
                            AccountChooserResultMetric);
+  FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
+                           RequestPermissionFalseAndNewIdpDataDisclosureText);
 
   enum class State {
     // User is shown message that they are not currently signed-in to IdP.
@@ -318,6 +320,12 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Hides the dialog widget and notifies the input protector.
   void HideDialogWidget();
 
+  // Shows the multi account picker and updates the internal state.
+  void ShowMultiAccountPicker(
+      const std::vector<IdentityProviderDisplayData>& idp_data_list,
+      bool show_back_button,
+      bool is_choose_an_account);
+
   std::vector<IdentityProviderDisplayData> idp_display_data_list_;
 
   // This class needs to own the IDP display data for a newly logged in account
@@ -381,6 +389,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Whether the Lens overlay is showing. Updated by LensOverlayController and
   // observer events.
   bool is_lens_overlay_showing_{false};
+
+  // Whether the last ShowMultiAccountPicker() is from a "Choose an account"
+  // button. This is used to determine whether to show this title when coming
+  // back from the single account confirmation dialog.
+  bool last_multi_account_is_choose_an_account_{false};
 
   // Time when IdentityProvider.close() was called for metrics purposes.
   base::TimeTicks idp_close_popup_time_;

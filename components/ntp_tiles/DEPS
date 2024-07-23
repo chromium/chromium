@@ -25,4 +25,5 @@ include_rules = [
   "+services/network/test",
   "+ui/base",
   "+ui/gfx",
+  "+third_party/re2",
 ]

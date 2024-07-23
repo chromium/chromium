@@ -147,6 +147,8 @@ source_set("permissions") {
     deps += [ "//chrome//browser/web_applications" ]
   } else if (is_chromeos_ash) {
     sources += [ "system/system_permission_settings_chromeos.cc" ]
+  } else if (is_win) {
+    sources += [ "system/system_permission_settings_win.cc" ]
   } else {
     sources += [ "system/system_permission_settings_default.cc" ]
   }

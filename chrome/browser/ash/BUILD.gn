@@ -235,6 +235,7 @@ static_library("ash") {
     "//chrome/browser/ash/account_manager",
     "//chrome/browser/ash/android_sms",
     "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/app_service",
     "//chrome/browser/ash/app_list/search/local_image_search",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/app_mode/auto_sleep",
@@ -912,6 +913,7 @@ static_library("ash") {
     "//chrome/browser/ash/accessibility/live_caption",
     "//chrome/browser/ash/accessibility/service",
     "//chrome/browser/ash/android_sms",
+    "//chrome/browser/ash/app_list/app_service",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/app_mode/auto_sleep",
     "//chrome/browser/ash/app_mode/web_app",
@@ -2630,7 +2632,6 @@ if (is_chromeos_device) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     sources = [
-      "child_accounts/web_approvals_integration_test.cc",
       "external_metrics_integration_test.cc",
       "featured_integration_test.cc",
       "ml_integration_test.cc",
@@ -2638,10 +2639,6 @@ if (is_chromeos_device) {
       "security_files_integration_test.cc",
       "web_handwriting_integration_test.cc",
     ]
-
-    if (is_chrome_branded) {
-      sources += [ "arc/arc_integration_test.cc" ]
-    }
 
     deps = [
       "//chrome/browser/ash:test_support",
@@ -2655,11 +2652,16 @@ if (is_chromeos_device) {
       "//chrome/browser/ash/accessibility:integration_tests",
       "//chrome/browser/ash/assistant:integration_tests",
       "//chrome/browser/ash/bluetooth:integration_tests",
+      "//chrome/browser/ash/child_accounts:integration_tests",
       "//chrome/browser/ash/login:integration_tests",
       "//chrome/browser/ash/power/ml/smart_dim:integration_tests",
       "//chrome/browser/ash/scanning:integration_tests",
       "//chrome/browser/ash/system_web_apps:integration_tests",
     ]
+
+    if (is_chrome_branded) {
+      deps += [ "//chrome/browser/ash/arc:integration_tests" ]
+    }
   }
 } else {
   group("interactive_ui_tests") {

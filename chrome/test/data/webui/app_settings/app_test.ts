@@ -9,8 +9,8 @@ import {AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool,
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestAppManagementBrowserProxy} from './test_app_management_browser_proxy.js';
@@ -474,7 +474,7 @@ suite('AppSettingsAppTest', () => {
     assertTrue(!!closeButton);
 
     // Check that the focus stays on the close button.
-    keyDownOn(appContentDialogElement, 0, '', 'Tab');
+    keyDownOn(appContentDialogElement, 0, undefined, 'Tab');
     assertEquals(getDeepActiveElement(), closeButton);
   });
 });

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -35,7 +36,7 @@ base::Version GetComponentVersion(
 
   auto components = component_update_service->GetComponents();
   auto iter = base::ranges::find(components, kComponentId, &ComponentInfo::id);
-  DCHECK(iter != components.end());
+  CHECK(iter != components.end(), base::NotFatalUntil::M130);
 
   return iter->version;
 }

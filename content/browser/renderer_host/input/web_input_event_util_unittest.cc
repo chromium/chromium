@@ -90,9 +90,8 @@ TEST(WebInputEventUtilTest, ScrollUpdateConversion) {
   size_t touch_points = 1;
   gfx::RectF rect(pos, gfx::SizeF());
   int flags = 0;
-  ui::GestureEventDetails details(ui::ET_GESTURE_SCROLL_UPDATE,
-                                  delta.x(),
-                                  delta.y());
+  ui::GestureEventDetails details(ui::EventType::kGestureScrollUpdate,
+                                  delta.x(), delta.y());
   details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   ui::GestureEventData event(details,
                              motion_event_id,

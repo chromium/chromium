@@ -2375,7 +2375,7 @@ TEST_F(ShelfLayoutManagerTest, PressHomeBtnWhenAutoHideShelfBeingDragged) {
 
   ui::GestureEvent start_event = ui::GestureEvent(
       gesture_location.x(), gesture_location.y(), ui::EF_NONE, timestamp,
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 0, delta_y));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollBegin, 0, delta_y));
   GetShelfLayoutManager()->ProcessGestureEventOfAutoHideShelf(
       &start_event, GetShelfWidget()->GetNativeView());
   gesture_location.Offset(0, delta_y);
@@ -2387,7 +2387,7 @@ TEST_F(ShelfLayoutManagerTest, PressHomeBtnWhenAutoHideShelfBeingDragged) {
   timestamp += base::Milliseconds(200);
   ui::GestureEvent update_event = ui::GestureEvent(
       gesture_location.x(), gesture_location.y(), ui::EF_NONE, timestamp,
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, 0, delta_y));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollUpdate, 0, delta_y));
   GetShelfLayoutManager()->ProcessGestureEventOfAutoHideShelf(
       &update_event, GetShelfWidget()->GetNativeView());
 
@@ -2401,12 +2401,12 @@ TEST_F(ShelfLayoutManagerTest, PressHomeBtnWhenAutoHideShelfBeingDragged) {
   timestamp += base::Milliseconds(200);
   ui::GestureEvent scroll_end_event = ui::GestureEvent(
       gesture_location.x(), gesture_location.y(), ui::EF_NONE, timestamp,
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollEnd));
   GetShelfLayoutManager()->ProcessGestureEventOfAutoHideShelf(
       &scroll_end_event, GetShelfWidget()->GetNativeView());
-  ui::GestureEvent gesture_end_event =
-      ui::GestureEvent(gesture_location.x(), gesture_location.y(), ui::EF_NONE,
-                       timestamp, ui::GestureEventDetails(ui::ET_GESTURE_END));
+  ui::GestureEvent gesture_end_event = ui::GestureEvent(
+      gesture_location.x(), gesture_location.y(), ui::EF_NONE, timestamp,
+      ui::GestureEventDetails(ui::EventType::kGestureEnd));
   GetShelfLayoutManager()->ProcessGestureEventOfAutoHideShelf(
       &gesture_end_event, GetShelfWidget()->GetNativeView());
 
@@ -2437,13 +2437,13 @@ TEST_F(ShelfLayoutManagerTest, MousePressAppListBtnWhenShelfBeingDragged) {
   base::TimeTicks timestamp = base::TimeTicks::Now();
   ui::GestureEvent start_event = ui::GestureEvent(
       gesture_location.x(), gesture_location.y(), ui::EF_NONE, timestamp,
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 0, delta_y));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollBegin, 0, delta_y));
   GetPrimaryShelf()->shelf_widget()->OnGestureEvent(&start_event);
   delta_y = -5;
   timestamp += base::Milliseconds(200);
   ui::GestureEvent update_event = ui::GestureEvent(
       gesture_location.x(), gesture_location.y(), ui::EF_NONE, timestamp,
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, 0, delta_y));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollUpdate, 0, delta_y));
   GetPrimaryShelf()->shelf_widget()->OnGestureEvent(&update_event);
 
   // Press the AppList button by mouse.
@@ -2459,7 +2459,7 @@ TEST_F(ShelfLayoutManagerTest, MousePressAppListBtnWhenShelfBeingDragged) {
   timestamp += base::Milliseconds(200);
   ui::GestureEvent scroll_end_event = ui::GestureEvent(
       gesture_location.x(), gesture_location.y(), ui::EF_NONE, timestamp,
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollEnd));
   GetPrimaryShelf()->shelf_widget()->OnGestureEvent(&scroll_end_event);
 
   // Verify that the shelf has expected bounds.
@@ -2942,7 +2942,7 @@ class ShelfLayoutManagerDragDropTest
           generator_->current_screen_location().x(),
           generator_->current_screen_location().y(), ui::EF_NONE,
           ui::EventTimeForNow(),
-          ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+          ui::GestureEventDetails(ui::EventType::kGestureLongPress));
       generator_->Dispatch(&long_press);
     }
   }

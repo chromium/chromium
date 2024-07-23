@@ -571,7 +571,7 @@ TEST_F(TextInputTest, InsertChar) {
   text_input()->Activate(seat(), surface(),
                          ui::TextInputClient::FOCUS_REASON_OTHER);
 
-  ui::KeyEvent ev(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, 0);
+  ui::KeyEvent ev(ui::EventType::kKeyPressed, ui::VKEY_RETURN, 0);
   ui::SetKeyboardImeFlags(&ev, ui::kPropertyKeyboardImeHandledFlag);
 
   EXPECT_CALL(*delegate(), SendKey(testing::Ref(ev))).Times(1);
@@ -584,7 +584,7 @@ TEST_F(TextInputTest, InsertCharCtrlV) {
 
   // CTRL+V is interpreted as non-IME consumed KeyEvent, so should
   // not be sent.
-  ui::KeyEvent ev(ui::ET_KEY_PRESSED, ui::VKEY_V, ui::EF_CONTROL_DOWN);
+  ui::KeyEvent ev(ui::EventType::kKeyPressed, ui::VKEY_V, ui::EF_CONTROL_DOWN);
   EXPECT_CALL(*delegate(), SendKey(_)).Times(0);
   text_input()->InsertChar(ev);
 }
@@ -607,7 +607,7 @@ TEST_F(TextInputTest, InsertCharNumpadEqual) {
                          ui::TextInputClient::FOCUS_REASON_OTHER);
 
   // NUMPAD_EQUAL is set key_code to VKEY_UNKNOWN, but code t- NUMPAD_EQUAL.
-  ui::KeyEvent ev(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN,
+  ui::KeyEvent ev(ui::EventType::kKeyPressed, ui::VKEY_UNKNOWN,
                   ui::DomCode::NUMPAD_EQUAL, /*flags=*/0, /*key=*/0,
                   base::TimeTicks());
   ev.set_character(u'=');

@@ -65,7 +65,7 @@ class MoveWindowByClickEventHandler : public ui::EventHandler {
  private:
   // ui::EventHandler overrides:
   void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() == ui::ET_MOUSE_RELEASED) {
+    if (event->type() == ui::EventType::kMouseReleased) {
       aura::Window::Windows root_windows = Shell::GetAllRootWindows();
       DCHECK_LT(1u, root_windows.size());
       root_windows[1]->AddChild(target_);
@@ -101,8 +101,8 @@ class EventLocationRecordingEventHandler : public ui::EventHandler {
  private:
   // ui::EventHandler overrides:
   void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() == ui::ET_MOUSE_MOVED ||
-        event->type() == ui::ET_MOUSE_DRAGGED) {
+    if (event->type() == ui::EventType::kMouseMoved ||
+        event->type() == ui::EventType::kMouseDragged) {
       location_ = event->location();
       root_location_ = event->root_location();
     }
@@ -127,10 +127,11 @@ class EventLocationHandler : public ui::EventHandler {
  private:
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() == ui::ET_MOUSE_PRESSED)
+    if (event->type() == ui::EventType::kMousePressed) {
       press_location_ = event->location();
-    else if (event->type() == ui::ET_MOUSE_RELEASED)
+    } else if (event->type() == ui::EventType::kMouseReleased) {
       release_location_ = event->location();
+    }
   }
 
   gfx::Point press_location_;

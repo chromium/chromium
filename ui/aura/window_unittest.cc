@@ -325,8 +325,9 @@ class CaptureWindowDelegateImpl : public TestWindowDelegate {
   int gesture_event_count() const { return gesture_event_count_; }
 
   void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() == ui::ET_MOUSE_CAPTURE_CHANGED)
+    if (event->type() == ui::EventType::kMouseCaptureChanged) {
       capture_changed_event_count_++;
+    }
     mouse_event_count_++;
   }
   void OnTouchEvent(ui::TouchEvent* event) override { touch_event_count_++; }
@@ -1007,7 +1008,8 @@ TEST_F(WindowTest, CaptureTests) {
   EXPECT_EQ(2, delegate.mouse_event_count());
   delegate.ResetCounts();
 
-  ui::TouchEvent touchev(ui::ET_TOUCH_PRESSED, gfx::Point(50, 50), getTime(),
+  ui::TouchEvent touchev(ui::EventType::kTouchPressed, gfx::Point(50, 50),
+                         getTime(),
                          ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&touchev);
   EXPECT_EQ(1, delegate.touch_event_count());
@@ -1023,7 +1025,8 @@ TEST_F(WindowTest, CaptureTests) {
   generator.PressLeftButton();
   EXPECT_EQ(1, delegate.mouse_event_count());
 
-  ui::TouchEvent touchev2(ui::ET_TOUCH_PRESSED, gfx::Point(250, 250), getTime(),
+  ui::TouchEvent touchev2(ui::EventType::kTouchPressed, gfx::Point(250, 250),
+                          getTime(),
                           ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   DispatchEventUsingWindowDispatcher(&touchev2);
   EXPECT_EQ(0, delegate.touch_event_count());
@@ -1046,7 +1049,8 @@ TEST_F(WindowTest, TouchCaptureCancelsOtherTouches) {
       &delegate2, 0, gfx::Rect(50, 50, 50, 50), root_window()));
 
   // Press on w1.
-  ui::TouchEvent press1(ui::ET_TOUCH_PRESSED, gfx::Point(10, 10), getTime(),
+  ui::TouchEvent press1(ui::EventType::kTouchPressed, gfx::Point(10, 10),
+                        getTime(),
                         ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&press1);
   // We will get both GESTURE_BEGIN and GESTURE_TAP_DOWN.
@@ -1061,7 +1065,7 @@ TEST_F(WindowTest, TouchCaptureCancelsOtherTouches) {
   delegate2.ResetCounts();
 
   // Events are now untargeted.
-  ui::TouchEvent move(ui::ET_TOUCH_MOVED, gfx::Point(10, 20), getTime(),
+  ui::TouchEvent move(ui::EventType::kTouchMoved, gfx::Point(10, 20), getTime(),
                       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&move);
   EXPECT_EQ(0, delegate1.gesture_event_count());
@@ -1069,14 +1073,16 @@ TEST_F(WindowTest, TouchCaptureCancelsOtherTouches) {
   EXPECT_EQ(0, delegate2.gesture_event_count());
   EXPECT_EQ(0, delegate2.touch_event_count());
 
-  ui::TouchEvent release(ui::ET_TOUCH_RELEASED, gfx::Point(10, 20), getTime(),
+  ui::TouchEvent release(ui::EventType::kTouchReleased, gfx::Point(10, 20),
+                         getTime(),
                          ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&release);
   EXPECT_EQ(0, delegate1.gesture_event_count());
   EXPECT_EQ(0, delegate2.gesture_event_count());
 
   // A new press is captured by w2.
-  ui::TouchEvent press2(ui::ET_TOUCH_PRESSED, gfx::Point(10, 10), getTime(),
+  ui::TouchEvent press2(ui::EventType::kTouchPressed, gfx::Point(10, 10),
+                        getTime(),
                         ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&press2);
   EXPECT_EQ(0, delegate1.gesture_event_count());
@@ -1100,7 +1106,7 @@ TEST_F(WindowTest, TouchCaptureDoesntCancelCapturedTouches) {
   base::TimeTicks time = getTime();
   const int kTimeDelta = 100;
 
-  ui::TouchEvent press(ui::ET_TOUCH_PRESSED, gfx::Point(10, 10), time,
+  ui::TouchEvent press(ui::EventType::kTouchPressed, gfx::Point(10, 10), time,
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&press);
 
@@ -1117,7 +1123,7 @@ TEST_F(WindowTest, TouchCaptureDoesntCancelCapturedTouches) {
   // On move We will get TOUCH_MOVED, GESTURE_TAP_CANCEL,
   // GESTURE_SCROLL_START and GESTURE_SCROLL_UPDATE.
   time += base::Milliseconds(kTimeDelta);
-  ui::TouchEvent move(ui::ET_TOUCH_MOVED, gfx::Point(10, 20), time,
+  ui::TouchEvent move(ui::EventType::kTouchMoved, gfx::Point(10, 20), time,
                       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&move);
   EXPECT_EQ(1, delegate.touch_event_count());
@@ -1132,7 +1138,7 @@ TEST_F(WindowTest, TouchCaptureDoesntCancelCapturedTouches) {
 
   // On move we still get TOUCH_MOVED and GESTURE_SCROLL_UPDATE.
   time += base::Milliseconds(kTimeDelta);
-  ui::TouchEvent move2(ui::ET_TOUCH_MOVED, gfx::Point(10, 30), time,
+  ui::TouchEvent move2(ui::EventType::kTouchMoved, gfx::Point(10, 30), time,
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&move2);
   EXPECT_EQ(1, delegate.touch_event_count());
@@ -1141,7 +1147,8 @@ TEST_F(WindowTest, TouchCaptureDoesntCancelCapturedTouches) {
 
   // And on release we get TOUCH_RELEASED, GESTURE_SCROLL_END, GESTURE_END
   time += base::Milliseconds(kTimeDelta);
-  ui::TouchEvent release(ui::ET_TOUCH_RELEASED, gfx::Point(10, 20), time,
+  ui::TouchEvent release(ui::EventType::kTouchReleased, gfx::Point(10, 20),
+                         time,
                          ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&release);
   EXPECT_EQ(1, delegate.touch_event_count());
@@ -1154,7 +1161,7 @@ TEST_F(WindowTest, TransferCaptureTouchEvents) {
   CaptureWindowDelegateImpl d1;
   std::unique_ptr<Window> w1(CreateTestWindowWithDelegate(
       &d1, 0, gfx::Rect(0, 0, 20, 20), root_window()));
-  ui::TouchEvent p1(ui::ET_TOUCH_PRESSED, gfx::Point(10, 10), getTime(),
+  ui::TouchEvent p1(ui::EventType::kTouchPressed, gfx::Point(10, 10), getTime(),
                     ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&p1);
   // We will get both GESTURE_BEGIN and GESTURE_TAP_DOWN.
@@ -1166,7 +1173,7 @@ TEST_F(WindowTest, TransferCaptureTouchEvents) {
   CaptureWindowDelegateImpl d2;
   std::unique_ptr<Window> w2(CreateTestWindowWithDelegate(
       &d2, 0, gfx::Rect(40, 0, 40, 20), root_window()));
-  ui::TouchEvent p2(ui::ET_TOUCH_PRESSED, gfx::Point(41, 10), getTime(),
+  ui::TouchEvent p2(ui::EventType::kTouchPressed, gfx::Point(41, 10), getTime(),
                     ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   DispatchEventUsingWindowDispatcher(&p2);
   EXPECT_EQ(0, d1.touch_event_count());
@@ -1202,7 +1209,7 @@ TEST_F(WindowTest, TransferCaptureTouchEvents) {
 
   // Move touch id originally associated with |w2|. The touch has been
   // cancelled, so no events should be dispatched.
-  ui::TouchEvent m3(ui::ET_TOUCH_MOVED, gfx::Point(110, 105), getTime(),
+  ui::TouchEvent m3(ui::EventType::kTouchMoved, gfx::Point(110, 105), getTime(),
                     ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   DispatchEventUsingWindowDispatcher(&m3);
   EXPECT_EQ(0, d1.touch_event_count());
@@ -1222,7 +1229,7 @@ TEST_F(WindowTest, TransferCaptureTouchEvents) {
   EXPECT_EQ(0, d3.gesture_event_count());
 
   // The touch has been cancelled, so no events are dispatched.
-  ui::TouchEvent m4(ui::ET_TOUCH_MOVED, gfx::Point(120, 105), getTime(),
+  ui::TouchEvent m4(ui::EventType::kTouchMoved, gfx::Point(120, 105), getTime(),
                     ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   DispatchEventUsingWindowDispatcher(&m4);
   EXPECT_EQ(0, d1.touch_event_count());
@@ -1389,11 +1396,11 @@ class MouseEnterExitWindowDelegate : public TestWindowDelegate {
 
   void OnMouseEvent(ui::MouseEvent* event) override {
     switch (event->type()) {
-      case ui::ET_MOUSE_ENTERED:
+      case ui::EventType::kMouseEntered:
         EXPECT_TRUE(event->flags() & ui::EF_IS_SYNTHESIZED);
         entered_ = true;
         break;
-      case ui::ET_MOUSE_EXITED:
+      case ui::EventType::kMouseExited:
         EXPECT_TRUE(event->flags() & ui::EF_IS_SYNTHESIZED);
         exited_ = true;
         break;
@@ -1440,7 +1447,8 @@ TEST_F(WindowTest, MouseEnterExit) {
   EXPECT_FALSE(d2.exited());
 }
 
-// Verifies that the WindowDelegate receives MouseExit from ET_MOUSE_EXITED.
+// Verifies that the WindowDelegate receives MouseExit from
+// EventType::kMouseExited.
 TEST_F(WindowTest, WindowTreeHostExit) {
   MouseEnterExitWindowDelegate d1;
   std::unique_ptr<Window> w1(CreateTestWindowWithDelegate(
@@ -1452,8 +1460,8 @@ TEST_F(WindowTest, WindowTreeHostExit) {
   EXPECT_FALSE(d1.exited());
   d1.ResetExpectations();
 
-  ui::MouseEvent exit_event(ui::ET_MOUSE_EXITED, gfx::Point(), gfx::Point(),
-                            ui::EventTimeForNow(), 0, 0);
+  ui::MouseEvent exit_event(ui::EventType::kMouseExited, gfx::Point(),
+                            gfx::Point(), ui::EventTimeForNow(), 0, 0);
   DispatchEventUsingWindowDispatcher(&exit_event);
   EXPECT_FALSE(d1.entered());
   EXPECT_TRUE(d1.exited());
@@ -1523,7 +1531,7 @@ TEST_F(WindowTest, MouseEnterExitWithWindowAppearAndDelete) {
       &d1, 1, gfx::Rect(10, 10, 50, 50), root_window()));
 
   // The cursor is moved into the bounds of |w1|. We expect the delegate
-  // of |w1| to see an ET_MOUSE_ENTERED event.
+  // of |w1| to see an EventType::kMouseEntered event.
   ui::test::EventGenerator generator(root_window());
   generator.MoveMouseToCenterOf(w1.get());
   EXPECT_TRUE(d1.entered());
@@ -1538,7 +1546,8 @@ TEST_F(WindowTest, MouseEnterExitWithWindowAppearAndDelete) {
     RunAllPendingInMessageLoop();
 
     // |w2| appears over top of |w1|. We expect the delegate of |w1| to see
-    // an ET_MOUSE_EXITED and the delegate of |w2| to see an ET_MOUSE_ENTERED.
+    // an EventType::kMouseExited and the delegate of |w2| to see an
+    // EventType::kMouseEntered.
     EXPECT_FALSE(d1.entered());
     EXPECT_TRUE(d1.exited());
     EXPECT_TRUE(d2.entered());
@@ -1551,7 +1560,7 @@ TEST_F(WindowTest, MouseEnterExitWithWindowAppearAndDelete) {
   RunAllPendingInMessageLoop();
 
   // |w2| has been destroyed, so its delegate should see no further events.
-  // The delegate of |w1| should see an ET_MOUSE_ENTERED event.
+  // The delegate of |w1| should see an EventType::kMouseEntered event.
   EXPECT_TRUE(d1.entered());
   EXPECT_FALSE(d1.exited());
   EXPECT_FALSE(d2.entered());
@@ -1867,8 +1876,8 @@ TEST_F(WindowTest, TransformGesture) {
   host()->SetRootTransform(OverlayTransformToTransform(
       gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90, gfx::SizeF(size)));
 
-  ui::TouchEvent press(ui::ET_TOUCH_PRESSED, gfx::Point(size.height() - 10, 10),
-                       getTime(),
+  ui::TouchEvent press(ui::EventType::kTouchPressed,
+                       gfx::Point(size.height() - 10, 10), getTime(),
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&press);
   EXPECT_EQ(gfx::Point(10, 10).ToString(), delegate->position().ToString());
@@ -3587,9 +3596,9 @@ class HandleGestureEndDelegate : public TestWindowDelegate {
   // WindowDelegate:
   void OnGestureEvent(ui::GestureEvent* event) override {
     switch (event->type()) {
-      case ui::ET_GESTURE_SCROLL_END:
-      case ui::ET_GESTURE_END:
-      case ui::ET_GESTURE_PINCH_END: {
+      case ui::EventType::kGestureScrollEnd:
+      case ui::EventType::kGestureEnd:
+      case ui::EventType::kGesturePinchEnd: {
         if (on_gesture_end_)
           std::move(on_gesture_end_).Run(static_cast<Window*>(event->target()));
         break;
@@ -3669,7 +3678,7 @@ class TestTouchWindowDelegate : public TestWindowDelegate {
   ~TestTouchWindowDelegate() override = default;
 
   void OnTouchEvent(ui::TouchEvent* event) override {
-    if (event->type() == ui::ET_TOUCH_CANCELLED) {
+    if (event->type() == ui::EventType::kTouchCancelled) {
       if (on_touch_cancel_callback_) {
         std::move(on_touch_cancel_callback_)
             .Run(static_cast<Window*>(event->target()));

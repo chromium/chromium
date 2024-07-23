@@ -78,7 +78,7 @@ class CalendarViewPixelTest
   void OpenCalendarView() {
     // Presses the `DateTray` to open the `CalendarView`.
     GetPrimaryShelf()->GetStatusAreaWidget()->date_tray()->OnButtonPressed(
-        ui::KeyEvent(ui::EventType::ET_MOUSE_PRESSED, ui::VKEY_UNKNOWN,
+        ui::KeyEvent(ui::EventType::kMousePressed, ui::VKEY_UNKNOWN,
                      ui::EF_NONE));
     calendar_view_ = GetPrimaryUnifiedSystemTray()
                          ->bubble()

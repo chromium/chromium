@@ -392,7 +392,8 @@ bool LocationIconView::IsTriggerableEvent(const ui::Event& event) {
   if (event.IsMouseEvent()) {
     if (event.AsMouseEvent()->IsOnlyMiddleMouseButton())
       return false;
-  } else if (event.IsGestureEvent() && event.type() != ui::ET_GESTURE_TAP) {
+  } else if (event.IsGestureEvent() &&
+             event.type() != ui::EventType::kGestureTap) {
     return false;
   }
 

@@ -145,7 +145,7 @@ class MahiMenuView::MenuTextfieldController
       return false;
     }
 
-    if (event.type() == ui::ET_KEY_PRESSED &&
+    if (event.type() == ui::EventType::kKeyPressed &&
         event.key_code() == ui::VKEY_RETURN) {
       menu_view_->OnQuestionSubmitted();
       return true;

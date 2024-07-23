@@ -28,9 +28,7 @@ class CORE_EXPORT ScrollbarLayerDelegate : public cc::Scrollbar {
   bool IsLeftSideVerticalScrollbar() const override;
   bool HasThumb() const override;
   bool IsSolidColor() const override;
-  SkColor4f GetSolidColor() const override;
   bool IsOverlay() const override;
-  bool IsFluent() const override;
   bool IsRunningWebTest() const override;
   bool IsFluentOverlayScrollbarMinimalMode() const override;
   bool SupportsDragSnapBack() const override;
@@ -52,13 +50,13 @@ class CORE_EXPORT ScrollbarLayerDelegate : public cc::Scrollbar {
                  cc::ScrollbarPart part,
                  const gfx::Rect& rect) override;
   void ClearThumbNeedsRepaint() override;
-  SkColor4f FluentThumbColor() const override;
+  SkColor4f ThumbColor() const override;
 
   bool UsesNinePatchThumbResource() const override;
   gfx::Size NinePatchThumbCanvasSize() const override;
   gfx::Rect NinePatchThumbAperture() const override;
+  bool UsesSolidColorThumb() const override;
   bool UsesNinePatchTrackAndButtonsResource() const override;
-  void SetUsesNinePatchTrackAndButtonsResource(bool uses_nine_patch) override;
   gfx::Size NinePatchTrackAndButtonsCanvasSize() const override;
   gfx::Rect NinePatchTrackAndButtonsAperture() const override;
   gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(

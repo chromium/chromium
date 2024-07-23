@@ -35,6 +35,7 @@
 #include "media/filters/ffmpeg_audio_decoder.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/services/gpu_mojo_media_client_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -132,6 +133,7 @@ class AudioDecoderTest
         pending_decode_(false),
         pending_reset_(false),
         last_decode_status_(DecoderStatus::Codes::kFailed) {
+    AddSupplementalCodecsForTesting();
     switch (decoder_type_) {
       case AudioDecoderType::kFFmpeg:
         decoder_ = std::make_unique<FFmpegAudioDecoder>(

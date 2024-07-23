@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -82,9 +83,14 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
          AutocompleteProvider::TYPE_SEARCH |
          AutocompleteProvider::TYPE_SHORTCUTS |
          AutocompleteProvider::TYPE_HISTORY_FUZZY |
-         AutocompleteProvider::TYPE_CALCULATOR
+         AutocompleteProvider::TYPE_CALCULATOR |
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-         | AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS
+         (history_embeddings::kOmniboxScoped.Get() ||
+                  history_embeddings::kOmniboxUnscoped.Get()
+              ? AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS
+              : 0)
+#else
+         0
 #endif
       ;
 }

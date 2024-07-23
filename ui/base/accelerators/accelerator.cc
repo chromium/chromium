@@ -85,8 +85,9 @@ Accelerator::Accelerator(KeyboardCode key_code,
 
 Accelerator::Accelerator(const KeyEvent& key_event)
     : key_code_(key_event.key_code()),
-      key_state_(key_event.type() == ET_KEY_PRESSED ? KeyState::PRESSED
-                                                    : KeyState::RELEASED),
+      key_state_(key_event.type() == EventType::kKeyPressed
+                     ? KeyState::PRESSED
+                     : KeyState::RELEASED),
       // |modifiers_| may include the repeat flag.
       modifiers_(key_event.flags() & kInterestingFlagsMask),
       time_stamp_(key_event.time_stamp()),
@@ -118,8 +119,8 @@ int Accelerator::MaskOutKeyEventFlags(int flags) {
 
 KeyEvent Accelerator::ToKeyEvent() const {
   return KeyEvent(key_state() == Accelerator::KeyState::PRESSED
-                      ? ET_KEY_PRESSED
-                      : ET_KEY_RELEASED,
+                      ? EventType::kKeyPressed
+                      : EventType::kKeyReleased,
                   key_code(),
 #if BUILDFLAG(IS_CHROMEOS)
                   code(),

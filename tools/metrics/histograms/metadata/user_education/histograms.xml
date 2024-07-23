@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="WhatsNewModule">
-  <variant name="Test" summary="the module used for testing only"/>
+  <variant name="TestModule" summary="the module used for testing only"/>
 </variants>
 
 <histogram name="Tutorial.TabGroup.EditedTitle" enum="BooleanSuccess"
@@ -147,6 +147,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UserEducation.MessageShown.RotatingPromoIndex" units="Index"
     expires_after="2024-09-01">
+  <expired_intentionally>
+    Deprecated. Replaced by UserEducation.RotatingPromoIndex.{IPHFeature}.
+  </expired_intentionally>
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -220,7 +223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.ActivePeriodDuration.Min.Under24Hours"
-    units="minutes" expires_after="2024-09-21">
+    units="minutes" expires_after="2025-01-19">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>

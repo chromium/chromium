@@ -97,7 +97,7 @@ TEST_F(ChromeLabsButtonTest, ShowAndHideChromeLabsBubbleOnPress) {
 #endif
 
   EXPECT_FALSE(coordinator->BubbleExists());
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(labs_button);
   test_api.NotifyClick(e);
@@ -133,7 +133,7 @@ TEST_F(ChromeLabsButtonTest, DotIndicatorTest) {
   ChromeLabsButton* chrome_labs_button =
       browser_view()->toolbar()->chrome_labs_button();
   EXPECT_TRUE(chrome_labs_button->GetDotIndicatorVisibilityForTesting());
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(chrome_labs_button);
   test_api.NotifyClick(e);

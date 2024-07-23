@@ -60,7 +60,7 @@ void UserInputImpl::SendSyntheticMouseEvent(
   ui::EventType type = mojo::ConvertTo<ui::EventType>(mouse_event->type);
 
   int flags = 0;
-  if (type != ui::ET_MOUSE_MOVED) {
+  if (type != ui::EventType::kMouseMoved) {
     if (mouse_event->mouse_button) {
       switch (*mouse_event->mouse_button) {
         case ax::mojom::SyntheticMouseEventButton::kLeft:

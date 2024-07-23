@@ -312,6 +312,7 @@ std::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
   using base::android::SDK_VERSION_Q;
   using base::android::SDK_VERSION_R;
   using base::android::SDK_VERSION_Sv2;
+  using base::android::SDK_VERSION_U;
   constexpr CodecAlignment kCodecAlignmentMap[] = {
       // Codec2 software decoders.
       {"c2.android.avc", gfx::Size(128, 2), SDK_VERSION_Sv2},
@@ -326,6 +327,7 @@ std::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
       {"omx.google.(h264|hevc|vp8|vp9)", gfx::Size(2, 2)},
 
       // Google AV1 hardware decoder.
+      {"c2.google.av1", gfx::Size(64, 16), SDK_VERSION_U},
       {"c2.google.av1", gfx::Size(64, 8)},
 
       // Qualcomm

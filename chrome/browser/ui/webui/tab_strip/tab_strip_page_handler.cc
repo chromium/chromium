@@ -70,8 +70,8 @@ namespace {
 
 // Delay in milliseconds of when the dragging UI should be shown for touch drag.
 // Note: For better user experience, this is made shorter than
-// ET_GESTURE_LONG_PRESS delay, which is too long for this case, e.g., about
-// 650ms.
+// EventType::kGestureLongPress delay, which is too long for this case, e.g.,
+// about 650ms.
 constexpr base::TimeDelta kTouchLongpressDelay = base::Milliseconds(300);
 
 class WebUIBackgroundMenuModel : public ui::SimpleMenuModel {
@@ -358,7 +358,7 @@ bool TabStripPageHandler::PreHandleGestureEvent(
         // Synthesize a long press event to start the drag and drop session.
         // TODO(tluk): Replace this with a better drag and drop trigger when
         // available.
-        ui::GestureEventDetails press_details(ui::ET_GESTURE_LONG_PRESS);
+        ui::GestureEventDetails press_details(ui::EventType::kGestureLongPress);
         press_details.set_device_type(
             ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
         ui::GestureEvent press_event(
@@ -370,7 +370,8 @@ bool TabStripPageHandler::PreHandleGestureEvent(
 
         // Following the long press we need to dispatch a scroll end event to
         // ensure the gesture stream is not left in an inconsistent state.
-        ui::GestureEventDetails scroll_end_details(ui::ET_GESTURE_SCROLL_END);
+        ui::GestureEventDetails scroll_end_details(
+            ui::EventType::kGestureScrollEnd);
         scroll_end_details.set_device_type(
             ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
         ui::GestureEvent scroll_end_event(

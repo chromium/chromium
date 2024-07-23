@@ -82,15 +82,10 @@ class CalendarEmptyEventListView : public PillButton {
                        &CalendarEmptyEventListView::OpenCalendarDefault,
                        base::Unretained(this))),
                    l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS),
-                   chromeos::features::IsJellyEnabled()
-                       ? PillButton::Type::kSecondaryWithoutIcon
-                       : PillButton::Type::kFloatingWithoutIcon,
+                   PillButton::Type::kSecondaryWithoutIcon,
                    /*icon=*/nullptr),
         controller_(controller) {
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-    if (!chromeos::features::IsJellyEnabled()) {
-      label()->SetTextContext(CONTEXT_CALENDAR_DATE);
-    }
 
     SetBorder(views::CreateThemedRoundedRectBorder(
         kOpenGoogleCalendarBorderThickness, GetPreferredSize().height() / 2,

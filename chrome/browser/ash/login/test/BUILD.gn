@@ -100,6 +100,7 @@ static_library("test_support") {
     "//chrome/browser/ash/login/enrollment:test_support",
     "//chrome/browser/ash/login/screens",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/userdataauth",

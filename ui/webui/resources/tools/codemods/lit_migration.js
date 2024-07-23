@@ -4,14 +4,26 @@
 
 const path = require('node:path');
 
-const POLYMER_IMPORT =
-    `import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';`;
-const POLYMER_IMPORT_WITH_SCHEME =
-    `import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';`;
-const LIT_IMPORT =
-    `import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';`;
-const LIT_IMPORT_WITH_SCHEME =
-    `import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';`;
+const replacements = new Map([
+  // Classes/Mixins
+  ['I18nMixin', 'I18nMixinLit'],
+  ['PolymerElement', 'CrLitElement'],
+  ['WebUiListenerMixin', 'WebUiListenerMixinLit'],
+
+  // URLs
+  [
+    '//resources/cr_elements/i18n_mixin.js',
+    '//resources/cr_elements/i18n_mixin_lit.js',
+  ],
+  [
+    '//resources/cr_elements/web_ui_listener_mixin.js',
+    '//resources/cr_elements/web_ui_listener_mixin_lit.js',
+  ],
+  [
+    '//resources/polymer/v3_0/polymer/polymer_bundled.min.js',
+    '//resources/lit/v3_0/lit.rollup.js',
+  ],
+]);
 
 const OLD_GET_TEMPLATE = `static get template() {
     return getTemplate();
@@ -40,9 +52,10 @@ module.exports = function transformer(file, api) {
 
   let source = file.source;
 
-  // Step 1: Replace PolymerElement import.
-  source = source.replace(POLYMER_IMPORT, LIT_IMPORT);
-  source = source.replace(POLYMER_IMPORT_WITH_SCHEME, LIT_IMPORT_WITH_SCHEME);
+  // Step 1: Replace Classes, Mixins and URLs.
+  for (const [from, to] of replacements.entries()) {
+    source = source.replaceAll(from, to);
+  }
 
   // Step 2: Replace getTemplate import.
   const basename = path.basename(file.path, '.ts');
@@ -50,20 +63,17 @@ module.exports = function transformer(file, api) {
   const NEW_TEMPLATE_IMPORT = getNewTemplateImport(basename);
   source = source.replace(OLD_TEMPLATE_IMPORT, NEW_TEMPLATE_IMPORT);
 
-  // Step 3: Replace extends PolymerElement
-  source = source.replace('extends PolymerElement', 'extends CrLitElement');
-
-  // Step 4: Replace 'getTemplate()' calls.
+  // Step 3: Replace 'getTemplate()' calls.
   source = source.replace(OLD_GET_TEMPLATE, NEW_GET_TEMPLATE);
 
-  // Step 5: Replace 'static get properties() {...}'
+  // Step 4: Replace 'static get properties() {...}'
   source = source.replace(
       'static get properties() {', 'static override get properties() {');
 
-  // Step6: Update 'reflectToAttribute' attribute
+  // Step5: Update 'reflectToAttribute' attribute
   source = source.replaceAll('reflectToAttribute: true', 'reflect: true');
 
-  // Step7: Update ready() callbacks.
+  // Step6: Update ready() callbacks.
   source = source.replace('override ready() {', 'override firstUpdated() {');
   source = source.replace(/\s+super.ready\(\);\n/, '');
 
@@ -73,7 +83,7 @@ module.exports = function transformer(file, api) {
   const j = api.jscodeshift;
   const root = j(source);
 
-  // Step8: Replace "foo: <Type>" shorthand with "foo: {type: <Type>}"
+  // Step7: Replace "foo: <Type>" shorthand with "foo: {type: <Type>}"
   root.find(j.Function, {key: {name: 'properties'}})
       .find(j.ObjectExpression)
       .forEach(p => {

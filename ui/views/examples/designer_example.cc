@@ -545,7 +545,7 @@ void DesignerExample::OnEvent(ui::Event* event) {
 void DesignerExample::HandleDesignerMouseEvent(ui::Event* event) {
   ui::MouseEvent* mouse_event = event->AsMouseEvent();
   switch (mouse_event->type()) {
-    case ui::ET_MOUSE_PRESSED:
+    case ui::EventType::kMousePressed:
       if (mouse_event->IsOnlyLeftMouseButton()) {
         DCHECK(!dragging_);
         View* event_view = GetDesignerChild(static_cast<View*>(event->target()),
@@ -566,7 +566,7 @@ void DesignerExample::HandleDesignerMouseEvent(ui::Event* event) {
         return;
       }
       break;
-    case ui::ET_MOUSE_DRAGGED:
+    case ui::EventType::kMouseDragged:
       if (dragging_) {
         if (grab_handles_.IsGrabHandle(dragging_))
           return;
@@ -582,7 +582,7 @@ void DesignerExample::HandleDesignerMouseEvent(ui::Event* event) {
         return;
       }
       break;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       grab_handles_.SetAttachedView(selected_);
       if (dragging_) {
         bool dragging_handle = grab_handles_.IsGrabHandle(dragging_);

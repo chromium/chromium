@@ -258,6 +258,10 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       const std::optional<mojom::CompanionAppInfo>& info);
 
   void DispatchMouseCompanionAppInfoChanged(const mojom::Mouse& mouse);
+  void DispatchKeyboardCompanionAppInfoChanged(const mojom::Keyboard& keyboard);
+  void DispatchTouchpadCompanionAppInfoChanged(const mojom::Touchpad& touchpad);
+  void DispatchGraphicsTabletCompanionAppInfoChanged(
+      const mojom::GraphicsTablet& graphics_tablet);
 
   // Get the mouse customization restriction based on the mouse metadata. Return
   // kDisableKeyEventRewrites by default if there is no mouse metadata.

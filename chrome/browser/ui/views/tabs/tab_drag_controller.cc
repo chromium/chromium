@@ -240,7 +240,8 @@ class EventTracker : public ui::EventObserver {
       : end_drag_callback_(std::move(end_drag_callback)),
         revert_drag_callback_(std::move(revert_drag_callback)) {
     event_monitor_ = views::EventMonitor::CreateApplicationMonitor(
-        this, context, {ui::ET_KEY_PRESSED, ui::ET_MOUSE_RELEASED});
+        this, context,
+        {ui::EventType::kKeyPressed, ui::EventType::kMouseReleased});
   }
   EventTracker(const EventTracker&) = delete;
   EventTracker& operator=(const EventTracker&) = delete;
@@ -258,7 +259,7 @@ class EventTracker : public ui::EventObserver {
         std::move(end_drag_callback_).Run();
       }
     } else {
-      CHECK(event.type() == ui::ET_MOUSE_RELEASED);
+      CHECK(event.type() == ui::EventType::kMouseReleased);
       if (TabDragController::IsSystemDragAndDropSessionRunning()) {
         TabDragController::OnSystemDragAndDropEnded();
       }

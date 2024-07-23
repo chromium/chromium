@@ -114,9 +114,14 @@ struct SearchResult {
   // The actual search result data. Note that the size of this vector will
   // not necessarily match the above requested `count`.
   std::vector<ScoredUrlRow> scored_url_rows;
+
+  // This may be empty for initial embeddings search results, as the answer
+  // isn't ready yet. When the answerer finishes work, a second search
+  // result is provided with this answer filled.
+  std::string answer;
 };
 
-using SearchResultCallback = base::OnceCallback<void(SearchResult)>;
+using SearchResultCallback = base::RepeatingCallback<void(SearchResult)>;
 
 using QualityLogEntry =
     std::unique_ptr<optimization_guide::ModelQualityLogEntry>;
@@ -157,6 +162,9 @@ class HistoryEmbeddingsService : public KeyedService,
   // time range if `time_range_start` is provided. In that case, the start of
   // the time range is inclusive and the end is unbounded. Practically, this can
   // be thought of as [start, now) but now isn't fixed. Virtual for testing.
+  // The `callback` may be called back later with another search result
+  // containing an answer. This two-phase result callback scheme lets callers
+  // receive initial search results without having to wait longer for answers.
   virtual void Search(std::string query,
                       std::optional<base::Time> time_range_start,
                       size_t count,

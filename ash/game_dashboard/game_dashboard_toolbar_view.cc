@@ -134,11 +134,11 @@ class ToolbarDragHandler : public ui::EventHandler {
         capture_mode_util::GetEventScreenLocation(*event);
 
     switch (event->type()) {
-      case ui::ET_MOUSE_PRESSED:
+      case ui::EventType::kMousePressed:
         is_dragging_ = false;
         previous_location_in_screen_ = event_location;
         break;
-      case ui::ET_MOUSE_DRAGGED:
+      case ui::EventType::kMouseDragged:
         if (!is_dragging_) {
           // It's confirmed that the user is trying to drag rather than press a
           // button in the toolbar.
@@ -149,7 +149,7 @@ class ToolbarDragHandler : public ui::EventHandler {
         toolbar_view_->RepositionToolbar(GetOffset(event_location));
         previous_location_in_screen_ = event_location;
         break;
-      case ui::ET_MOUSE_RELEASED:
+      case ui::EventType::kMouseReleased:
         if (!is_dragging_) {
           // Allow the toolbar to receive this event so it can handle any button
           // clicks.
@@ -176,26 +176,26 @@ class ToolbarDragHandler : public ui::EventHandler {
         capture_mode_util::GetEventScreenLocation(*event);
 
     switch (event->type()) {
-      case ui::ET_GESTURE_SCROLL_BEGIN:
+      case ui::EventType::kGestureScrollBegin:
         is_dragging_ = true;
         previous_location_in_screen_ = event_location;
         break;
-      case ui::ET_GESTURE_SCROLL_UPDATE:
+      case ui::EventType::kGestureScrollUpdate:
         DCHECK(is_dragging_)
-            << "Received ET_GESTURE_SCROLL_UPDATE event but the "
+            << "Received EventType::kGestureScrollUpdate event but the "
                "toolbar isn't dragging.";
         toolbar_view_->RepositionToolbar(GetOffset(event_location));
         previous_location_in_screen_ = event_location;
         break;
-      case ui::ET_GESTURE_END:
+      case ui::EventType::kGestureEnd:
         if (!is_dragging_) {
           // Pass along event if it occurred outside of a dragging instance.
           return;
         }
-        // Treat dragging `ui::ET_GESTURE_END` events the same as
-        // `ui::ET_GESTURE_SCROLL_END` events.
+        // Treat dragging `ui::EventType::kGestureEnd` events the same as
+        // `ui::EventType::kGestureScrollEnd` events.
         [[fallthrough]];
-      case ui::ET_GESTURE_SCROLL_END:
+      case ui::EventType::kGestureScrollEnd:
         DCHECK(is_dragging_) << "Attempting to call end drag logic but the "
                                 "toolbar wasn't dragging. Event = "
                              << event->type();

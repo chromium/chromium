@@ -56,7 +56,6 @@ class ChromeWebClient : public web::WebClient {
                                          const GURL& url) const override;
   void LogDefaultUserAgent(web::WebState* web_state,
                            const GURL& url) const override;
-  NSData* FetchSessionFromCache(web::WebState* web_state) const override;
   void CleanupNativeRestoreURLs(web::WebState* web_state) const override;
   void WillDisplayMediaCapturePermissionPrompt(
       web::WebState* web_state) const override;

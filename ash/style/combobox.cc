@@ -301,14 +301,14 @@ class Combobox::ComboboxEventHandler : public ui::EventHandler {
     const bool event_in_menu =
         combobox_->menu_->GetWindowBoundsInScreen().Contains(event_location);
     switch (event->type()) {
-      case ui::ET_MOUSEWHEEL:
+      case ui::EventType::kMousewheel:
         // Close menu if scrolling outside menu.
         if (!event_in_menu) {
           combobox_->CloseDropDownMenu();
         }
         break;
-      case ui::ET_MOUSE_PRESSED:
-      case ui::ET_TOUCH_PRESSED:
+      case ui::EventType::kMousePressed:
+      case ui::EventType::kTouchPressed:
         // Close menu if pressing outside menu and combobox.
         if (!event_in_menu && !event_in_combobox) {
           event->StopPropagation();
@@ -710,7 +710,7 @@ bool Combobox::SkipDefaultKeyEventProcessing(const ui::KeyEvent& e) {
 }
 
 bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
-  CHECK_EQ(e.type(), ui::ET_KEY_PRESSED);
+  CHECK_EQ(e.type(), ui::EventType::kKeyPressed);
 
   CHECK(selected_index_.has_value());
   CHECK_LT(selected_index_.value(), model_->GetItemCount());

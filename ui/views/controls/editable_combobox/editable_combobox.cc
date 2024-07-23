@@ -311,14 +311,14 @@ class EditableCombobox::EditableComboboxPreTargetHandler
 
   // ui::EventHandler overrides.
   void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() == ui::ET_MOUSE_PRESSED &&
+    if (event->type() == ui::EventType::kMousePressed &&
         event->button_flags() == event->changed_button_flags()) {
       HandlePressEvent(event->root_location());
     }
   }
 
   void OnTouchEvent(ui::TouchEvent* event) override {
-    if (event->type() == ui::ET_TOUCH_PRESSED) {
+    if (event->type() == ui::EventType::kTouchPressed) {
       HandlePressEvent(event->root_location());
     }
   }
@@ -459,7 +459,7 @@ void EditableCombobox::ContentsChanged(Textfield* sender,
 
 bool EditableCombobox::HandleKeyEvent(Textfield* sender,
                                       const ui::KeyEvent& key_event) {
-  if (key_event.type() == ui::ET_KEY_PRESSED &&
+  if (key_event.type() == ui::EventType::kKeyPressed &&
       (key_event.key_code() == ui::VKEY_UP ||
        key_event.key_code() == ui::VKEY_DOWN)) {
     ShowDropDownMenu(ui::MENU_SOURCE_KEYBOARD);

@@ -83,6 +83,7 @@ static_library("crostini") {
     "//ash/webui/settings/public/constants:mojom",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/drive",
     "//chrome/browser/profiles:profile",
     "//chromeos/dbus/power",
     "//components/exo",

@@ -133,14 +133,14 @@ void InputMappingView::OnActionAddedInternal(Action& action) {
 }
 
 void InputMappingView::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_PRESSED) {
+  if (event->type() == ui::EventType::kMousePressed) {
     ProcessPressedEvent(*event);
   }
 }
 
 void InputMappingView::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_TAP ||
-      event->type() == ui::ET_GESTURE_TAP_DOWN) {
+  if (event->type() == ui::EventType::kGestureTap ||
+      event->type() == ui::EventType::kGestureTapDown) {
     ProcessPressedEvent(*event);
   }
 }

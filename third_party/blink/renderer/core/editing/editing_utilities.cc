@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
+#include "third_party/blink/renderer/core/clipboard/data_transfer_access_policy.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/local_caret_rect.h"
 #include "third_party/blink/renderer/core/editing/plain_text_range.h"
@@ -1624,6 +1626,52 @@ DispatchEventResult DispatchBeforeInputDataTransfer(
         TargetRangesForInputEvent(*target));
   }
   return target->DispatchEvent(*before_input_event);
+}
+
+void InsertTextAndSendInputEventsOfTypeInsertReplacementText(
+    LocalFrame& frame,
+    const String& replacement) {
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  See http://crbug.com/590369 for more details.
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kSpellCheck);
+
+  Document& current_document = *frame.GetDocument();
+
+  // Dispatch 'beforeinput'.
+  Element* const target = FindEventTargetFrom(
+      frame, frame.Selection().ComputeVisibleSelectionInDOMTree());
+
+  DataTransfer* const data_transfer = DataTransfer::Create(
+      DataTransfer::DataTransferType::kInsertReplacementText,
+      DataTransferAccessPolicy::kReadable,
+      DataObject::CreateFromString(replacement));
+
+  const bool is_canceled =
+      DispatchBeforeInputDataTransfer(
+          target, InputEvent::InputType::kInsertReplacementText,
+          data_transfer) != DispatchEventResult::kNotCanceled;
+
+  // 'beforeinput' event handler may destroy target frame.
+  if (current_document != frame.GetDocument()) {
+    return;
+  }
+
+  // No DOM mutation if EditContext is active.
+  if (frame.GetInputMethodController().GetActiveEditContext()) {
+    return;
+  }
+
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  See http://crbug.com/590369 for more details.
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kSpellCheck);
+
+  if (is_canceled) {
+    return;
+  }
+
+  frame.GetEditor().InsertTextWithoutSendingTextEvent(
+      replacement, false, nullptr,
+      InputEvent::InputType::kInsertReplacementText);
 }
 
 // |IsEmptyNonEditableNodeInEditable()| is introduced for fixing

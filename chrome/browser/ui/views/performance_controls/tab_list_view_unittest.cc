@@ -16,10 +16,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 class TabListViewUnitTest : public TestWithBrowserView {
@@ -46,6 +49,18 @@ class TabListViewUnitTest : public TestWithBrowserView {
       contexts.emplace_back(context.value());
     }
     return contexts;
+  }
+
+  std::unique_ptr<views::Widget> CreateWidget() {
+    auto widget = std::make_unique<views::Widget>();
+    views::Widget::InitParams params(
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    params.context = GetContext();
+    params.bounds = gfx::Rect(0, 0, 650, 650);
+    widget->Init(std::move(params));
+    widget->Show();
+    return widget;
   }
 
   void TriggerMouseEvent(views::View* view, ui::EventType event_type) {
@@ -101,7 +116,7 @@ TEST_F(TabListViewUnitTest, CloseButtonRemovesListItem) {
       views::AsViewClass<TabListRowView>(children[0]);
   views::ImageButton* const close_button =
       first_row->GetCloseButtonForTesting();
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(close_button);
   test_api.NotifyClick(e);
@@ -110,13 +125,17 @@ TEST_F(TabListViewUnitTest, CloseButtonRemovesListItem) {
   EXPECT_EQ(tab_list_model->page_contexts().size(), 1u);
 }
 
-TEST_F(TabListViewUnitTest, CloseButtonShowsAndHides) {
+TEST_F(TabListViewUnitTest, CloseButtonShowsAndHidesUpdate) {
   AddTab(browser(), GURL("https://a.com"));
   AddTab(browser(), GURL("https://b.com"));
 
   auto tab_list_model =
       std::make_unique<TabListModel>(GetPageContextAtIndices({0, 1}));
-  auto tab_list_view = std::make_unique<TabListView>(tab_list_model.get());
+  auto widget = CreateWidget();
+  TabListView* const tab_list_view = widget->SetContentsView(
+      std::make_unique<TabListView>(tab_list_model.get()));
+  auto event_generator = std::make_unique<ui::test::EventGenerator>(
+      GetContext(), widget->GetNativeWindow());
 
   std::vector<resource_attribution::PageContext> page_contexts =
       tab_list_model->page_contexts();
@@ -130,26 +149,82 @@ TEST_F(TabListViewUnitTest, CloseButtonShowsAndHides) {
 
   EXPECT_FALSE(close_button->GetVisible());
 
-  TriggerMouseEvent(first_row, ui::EventType::ET_MOUSE_ENTERED);
+  event_generator->MoveMouseTo(first_row->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(first_row->IsMouseHovered());
   EXPECT_TRUE(close_button->GetVisible());
-
-  TriggerMouseEvent(first_row, ui::EventType::ET_MOUSE_EXITED);
-  EXPECT_FALSE(close_button->GetVisible());
 
   TabListRowView* const second_row =
       views::AsViewClass<TabListRowView>(children[1]);
   views::ImageButton* const second_close_button =
       second_row->GetCloseButtonForTesting();
 
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  event_generator->MoveMouseTo(second_row->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(first_row->IsMouseHovered());
+  EXPECT_FALSE(close_button->GetVisible());
+  EXPECT_TRUE(second_close_button->GetVisible());
+
+  ui::MouseEvent e(ui::kMousePressed, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(second_close_button);
   test_api.NotifyClick(e);
 
   // The close button should now stay hidden regardless of the mouse movement
   // since there is only one item being displayed in the tab list.
-  TriggerMouseEvent(first_row, ui::EventType::ET_MOUSE_ENTERED);
+  event_generator->MoveMouseTo(first_row->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(first_row->IsMouseHovered());
   EXPECT_FALSE(close_button->GetVisible());
-  TriggerMouseEvent(first_row, ui::EventType::ET_MOUSE_EXITED);
+}
+
+TEST_F(TabListViewUnitTest, CloseButtonShowsAndHidesWithFocus) {
+  AddTab(browser(), GURL("https://a.com"));
+  AddTab(browser(), GURL("https://b.com"));
+
+  auto tab_list_model =
+      std::make_unique<TabListModel>(GetPageContextAtIndices({0, 1}));
+  auto widget = CreateWidget();
+  TabListView* const tab_list_view = widget->SetContentsView(
+      std::make_unique<TabListView>(tab_list_model.get()));
+  auto event_generator = std::make_unique<ui::test::EventGenerator>(
+      GetContext(), widget->GetNativeWindow());
+
+  std::vector<resource_attribution::PageContext> page_contexts =
+      tab_list_model->page_contexts();
+  auto children = tab_list_view->children();
+  ASSERT_EQ(children.size(), 2u);
+
+  TabListRowView* const first_row =
+      views::AsViewClass<TabListRowView>(children[0]);
+  views::ImageButton* const close_button =
+      first_row->GetCloseButtonForTesting();
+
+  EXPECT_FALSE(close_button->GetVisible());
+
+  event_generator->MoveMouseTo(first_row->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(first_row->IsMouseHovered());
+  EXPECT_TRUE(close_button->GetVisible());
+
+  close_button->RequestFocus();
+  EXPECT_TRUE(close_button->HasFocus());
+
+  TabListRowView* const second_row =
+      views::AsViewClass<TabListRowView>(children[1]);
+  views::ImageButton* const second_close_button =
+      second_row->GetCloseButtonForTesting();
+
+  // Move the mouse to hover over the second row but keep the focus on the first
+  // row. The close buttons for both rows should show since they are either
+  // being focused or have the mouse hovering over the row.
+  event_generator->MoveMouseTo(second_row->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(first_row->IsMouseHovered());
+  EXPECT_TRUE(close_button->GetVisible());
+  EXPECT_TRUE(second_close_button->GetVisible());
+
+  // Remove the second row from the suggested tab list. The close button for the
+  // first row should be hidden at this point because there is only one row left
+  // in the list and a single item in the list is not removable.
+  ui::MouseEvent e(ui::kMousePressed, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(second_close_button);
+  test_api.NotifyClick(e);
   EXPECT_FALSE(close_button->GetVisible());
 }

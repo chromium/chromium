@@ -251,7 +251,7 @@ void PasswordManagerPorter::PresentImportFileSelector(
       ui::SelectFileDialog::SELECT_OPEN_FILE,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_IMPORT_DIALOG_TITLE),
       GetDefaultFilepathForPasswordFile(info.extensions[0][0]), &info, 1,
-      info.extensions[0][0], web_contents->GetTopLevelNativeWindow(), nullptr);
+      info.extensions[0][0], web_contents->GetTopLevelNativeWindow());
 #endif
 }
 

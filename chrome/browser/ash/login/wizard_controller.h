@@ -70,6 +70,7 @@
 #include "chrome/browser/ash/login/screens/osauth/recovery_eligibility_screen.h"
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 #include "chrome/browser/ash/login/screens/parental_handoff_screen.h"
+#include "chrome/browser/ash/login/screens/perks_discovery_screen.h"
 #include "chrome/browser/ash/login/screens/personalized_recommend_apps_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
@@ -355,6 +356,7 @@ class WizardController : public OobeUI::Observer {
   void ShowFactorSetupSuccessScreen();
   void ShowCategoriesSelectionScreen();
   void ShowPersonalizedRecomendAppsScreen();
+  void ShowPerksDiscoveryScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -472,6 +474,7 @@ class WizardController : public OobeUI::Observer {
       CategoriesSelectionScreen::Result result);
   void OnPersonalizedRecomendAppsScreenExit(
       PersonalizedRecommendAppsScreen::Result result);
+  void OnPerksDiscoveryScreenExit(PerksDiscoveryScreen::Result result);
   // Callback invoked once it has been determined whether the device is disabled
   // or not.
   void OnDeviceDisabledChecked(bool device_disabled);

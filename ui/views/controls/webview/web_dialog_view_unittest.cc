@@ -150,7 +150,7 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
 
 TEST_F(WebDialogViewUnitTest, WebDialogViewClosedOnEscape) {
   web_dialog_delegate()->set_close_on_escape(true);
-  const ui::KeyEvent escape_event(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE,
+  const ui::KeyEvent escape_event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE,
                                   ui::EF_NONE);
   SimulateKeyEvent(escape_event);
 
@@ -160,7 +160,7 @@ TEST_F(WebDialogViewUnitTest, WebDialogViewClosedOnEscape) {
 
 TEST_F(WebDialogViewUnitTest, WebDialogViewNotClosedOnEscape) {
   web_dialog_delegate()->set_close_on_escape(false);
-  const ui::KeyEvent escape_event(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE,
+  const ui::KeyEvent escape_event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE,
                                   ui::EF_NONE);
   SimulateKeyEvent(escape_event);
 
@@ -171,7 +171,7 @@ TEST_F(WebDialogViewUnitTest, WebDialogViewNotClosedOnEscape) {
 TEST_F(WebDialogViewUnitTest, ObservableWebViewOnWebDialogViewClosed) {
   // Close the widget by pressing ESC key.
   web_dialog_delegate()->set_close_on_escape(true);
-  const ui::KeyEvent escape_event(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE,
+  const ui::KeyEvent escape_event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE,
                                   ui::EF_NONE);
   SimulateKeyEvent(escape_event);
 

@@ -10,6 +10,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "base/json/json_writer.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
@@ -223,8 +224,8 @@ class ShortcutCustomizationInteractiveUiTest : public InteractiveAshTest {
 
   auto AddKeyboard(bool is_external) {
     return Steps(
-        Log(std::format("Adding {0} keyboard",
-                        is_external ? "external" : "internal")),
+        Log(base::StringPrintf("Adding %s keyboard",
+                               is_external ? "external" : "internal")),
         Do([is_external, this]() {
           int id = kDeviceId1++;
           const auto id_string = base::NumberToString(id);
@@ -271,8 +272,8 @@ class ShortcutCustomizationInteractiveUiTest : public InteractiveAshTest {
   auto WaitForShortcutToContainNumAcceleartors(const DeepQuery& query,
                                                const int expected) {
     return Steps(
-        Log(std::format("Expecting shortcut to contain {0} accelerators",
-                        expected)),
+        Log(base::StringPrintf("Expecting shortcut to contain %d accelerators",
+                               expected)),
         CheckJsResultAt(webcontents_id_, query,
                         "e => e.querySelectorAll('accelerator-view').length",
                         expected));
@@ -318,13 +319,15 @@ class ShortcutCustomizationInteractiveUiTest : public InteractiveAshTest {
       int category_index,
       const std::vector<std::string>& expected_subcategories) {
     return Steps(
-        Log(std::format("Verifying that '{0}' is the active category when "
-                        "the Shortcut Customization app is first launched",
-                        category)),
+        Log(base::StringPrintf(
+            "Verifying that '%s' is the active category when "
+            "the Shortcut Customization app is first launched",
+            category.c_str())),
         WaitForElementTextContains(webcontents_id_, kActiveNavTabQuery,
                                    category),
-        Log(std::format("Verifying subcategories within the '{0}' category",
-                        category)),
+        Log(base::StringPrintf(
+            "Verifying subcategories within the '%s' category",
+            category.c_str())),
         CheckJsResult(
             webcontents_id_,
             base::StringPrintf(

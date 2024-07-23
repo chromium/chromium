@@ -474,10 +474,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   OverviewSession* overview_session() { return overview_session_; }
 
-  const std::vector<std::unique_ptr<OverviewItemBase>>& window_list() const {
+  const std::vector<std::unique_ptr<OverviewItemBase>>& item_list() const {
     return item_list_;
   }
-
 
   const SplitViewDragIndicators* split_view_drag_indicators() const {
     return split_view_drag_indicators_.get();

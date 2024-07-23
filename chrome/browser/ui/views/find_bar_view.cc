@@ -483,7 +483,7 @@ bool FindBarView::HandleKeyEvent(views::Textfield* sender,
     return true;  // Handled, we are done!
 
   if (key_event.key_code() == ui::VKEY_RETURN &&
-      key_event.type() == ui::ET_KEY_PRESSED) {
+      key_event.type() == ui::EventType::kKeyPressed) {
     // Pressing Return/Enter starts the search (unless text box is empty).
     std::u16string find_string = find_text_->GetText();
     if (!find_string.empty()) {

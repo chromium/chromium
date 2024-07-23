@@ -169,8 +169,9 @@ class EventHandlingView : public View {
         handled_gestures_set_.cend()) {
       EXPECT_TRUE(handled_gestures_set_.insert(event->type()).second);
     } else {
-      // Only ET_GESTURE_SCROLL_UPDATE events can be received more than once.
-      EXPECT_EQ(ui::ET_GESTURE_SCROLL_UPDATE, event->type());
+      // Only EventType::kGestureScrollUpdate events can be received more than
+      // once.
+      EXPECT_EQ(ui::EventType::kGestureScrollUpdate, event->type());
     }
 
     event->SetHandled();
@@ -202,8 +203,9 @@ TEST_F(NativeWidgetAuraTest, MouseClickInterruptsGestureScroll) {
   auto scroll_callback = [](ui::test::EventGenerator* event_generator,
                             int* step_count, ui::EventType event_type,
                             const gfx::Vector2dF& offset) {
-    if (event_type != ui::ET_GESTURE_SCROLL_UPDATE)
+    if (event_type != ui::EventType::kGestureScrollUpdate) {
       return;
+    }
 
     *step_count -= 1;
     if (*step_count)
@@ -228,8 +230,8 @@ TEST_F(NativeWidgetAuraTest, MouseClickInterruptsGestureScroll) {
       base::BindRepeating(scroll_callback, &generator, &step_count));
 
   // Verify that `child_view` receives gesture end events.
-  EXPECT_TRUE(child_view->HandledEventBefore(ui::ET_GESTURE_SCROLL_END));
-  EXPECT_TRUE(child_view->HandledEventBefore(ui::ET_GESTURE_END));
+  EXPECT_TRUE(child_view->HandledEventBefore(ui::EventType::kGestureScrollEnd));
+  EXPECT_TRUE(child_view->HandledEventBefore(ui::EventType::kGestureEnd));
 }
 
 TEST_F(NativeWidgetAuraTest, CreateMinimized) {
@@ -557,7 +559,7 @@ TEST_F(NativeWidgetAuraTest, DontCaptureOnGesture) {
   GestureTrackingView* view = widget->SetContentsView(std::move(content_view));
   widget->Show();
 
-  ui::TouchEvent press(ui::ET_TOUCH_PRESSED, gfx::Point(41, 51),
+  ui::TouchEvent press(ui::EventType::kTouchPressed, gfx::Point(41, 51),
                        ui::EventTimeForNow(),
                        ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   ui::EventDispatchDetails details = GetEventSink()->OnEventFromSource(&press);
@@ -572,7 +574,7 @@ TEST_F(NativeWidgetAuraTest, DontCaptureOnGesture) {
 
   // Release touch. Only |view| should get the release since that it consumed
   // the press.
-  ui::TouchEvent release(ui::ET_TOUCH_RELEASED, gfx::Point(250, 251),
+  ui::TouchEvent release(ui::EventType::kTouchReleased, gfx::Point(250, 251),
                          ui::EventTimeForNow(),
                          ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   details = GetEventSink()->OnEventFromSource(&release);
@@ -1034,18 +1036,19 @@ TEST_F(NativeWidgetAuraWithNoDelegateTest, OnCaptureLostTest) {
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnGestureEventTest) {
-  ui::GestureEvent gesture(0, 0, 0, ui::EventTimeForNow(),
-                           ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
+  ui::GestureEvent gesture(
+      0, 0, 0, ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::EventType::kGestureTapDown));
   native_widget_->OnGestureEvent(&gesture);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnKeyEventTest) {
-  ui::KeyEvent key(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE);
+  ui::KeyEvent key(ui::EventType::kKeyPressed, ui::VKEY_0, ui::EF_NONE);
   native_widget_->OnKeyEvent(&key);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnMouseEventTest) {
-  ui::MouseEvent move(ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent move(ui::EventType::kMouseMoved, gfx::Point(), gfx::Point(),
                       ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
   native_widget_->OnMouseEvent(&move);
 }
@@ -1063,8 +1066,8 @@ TEST_F(NativeWidgetAuraWithNoDelegateTest, OnResizeLoopStartedTest) {
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnScrollEventTest) {
-  ui::ScrollEvent scroll(ui::ET_SCROLL, gfx::Point(), ui::EventTimeForNow(), 0,
-                         0, 0, 0, 0, 0);
+  ui::ScrollEvent scroll(ui::EventType::kScroll, gfx::Point(),
+                         ui::EventTimeForNow(), 0, 0, 0, 0, 0, 0);
   native_widget_->OnScrollEvent(&scroll);
 }
 

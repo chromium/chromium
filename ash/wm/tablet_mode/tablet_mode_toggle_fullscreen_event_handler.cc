@@ -51,7 +51,7 @@ void TabletModeToggleFullscreenEventHandler::OnWindowDestroying(
 bool TabletModeToggleFullscreenEventHandler::ProcessEvent(
     const ui::TouchEvent& event) {
   switch (event.type()) {
-    case ui::ET_TOUCH_PRESSED: {
+    case ui::EventType::kTouchPressed: {
       // Another drag is already underway from another finger.
       if (drag_data_) {
         return false;
@@ -74,7 +74,7 @@ bool TabletModeToggleFullscreenEventHandler::ProcessEvent(
       active_window->AddObserver(this);
       return true;
     }
-    case ui::ET_TOUCH_RELEASED: {
+    case ui::EventType::kTouchReleased: {
       if (!drag_data_)
         return false;
 
@@ -92,9 +92,9 @@ bool TabletModeToggleFullscreenEventHandler::ProcessEvent(
       ResetDragData();
       return true;
     }
-    case ui::ET_TOUCH_MOVED:
+    case ui::EventType::kTouchMoved:
       return drag_data_.has_value();
-    case ui::ET_TOUCH_CANCELLED: {
+    case ui::EventType::kTouchCancelled: {
       const bool drag_in_progress = drag_data_.has_value();
       ResetDragData();
       return drag_in_progress;

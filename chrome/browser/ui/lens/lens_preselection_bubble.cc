@@ -37,9 +37,11 @@ const int kPreselectionBubbleMinY = 8;
 
 LensPreselectionBubble::LensPreselectionBubble(views::View* anchor_view)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::NONE) {
-  // Toast bubble doesn't have any buttons and cannot be active.
+  // Toast bubble doesn't have any buttons, cannot be active, and should not be
+  // focus traversable.
   SetShowCloseButton(false);
   SetCanActivate(false);
+  set_focus_traversable_from_anchor_view(false);
   DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
   set_corner_radius(48);
   SetProperty(views::kElementIdentifierKey, kLensPreselectionBubbleElementId);

@@ -7,12 +7,13 @@
 
 #include <string>
 
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/performance_controls/tab_list_model.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
-class TabListModel;
 class TextContainer;
 
 namespace views {
@@ -20,7 +21,9 @@ class ImageButton;
 class InkDropContainerView;
 }  // namespace views
 
-class TabListRowView : public views::View, public views::FocusChangeListener {
+class TabListRowView : public views::View,
+                       public views::FocusChangeListener,
+                       public TabListModel::Observer {
   METADATA_HEADER(TabListRowView, views::View)
  public:
   TabListRowView(
@@ -35,6 +38,7 @@ class TabListRowView : public views::View, public views::FocusChangeListener {
   std::u16string GetTitleTextForTesting();
   std::u16string GetDomainTextForTesting();
   views::ImageButton* GetCloseButtonForTesting();
+  views::View* GetTextContainerForTesting();
 
   // views::View override:
   void OnMouseEntered(const ui::MouseEvent& event) override;
@@ -44,9 +48,14 @@ class TabListRowView : public views::View, public views::FocusChangeListener {
   void AddedToWidget() override;
   void RemovedFromWidget() override;
 
-  // views::FocusChangeListener
+  // views::FocusChangeListener:
   void OnWillChangeFocus(views::View* before, views::View* now) override {}
   void OnDidChangeFocus(views::View* before, views::View* now) override;
+
+  // TabListModel::Observer:
+  void OnTabCountChanged(int count) override;
+
+  void RefreshInkDropAndCloseButton();
 
  private:
   std::unique_ptr<views::View> CreateTextView(std::u16string title,
@@ -61,6 +70,8 @@ class TabListRowView : public views::View, public views::FocusChangeListener {
   raw_ptr<views::ImageButton> close_button_ = nullptr;
   raw_ptr<TextContainer> text_container_ = nullptr;
   raw_ptr<views::InkDropContainerView> inkdrop_container_ = nullptr;
+  base::ScopedObservation<TabListModel, TabListModel::Observer>
+      tab_list_model_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_TAB_LIST_ROW_VIEW_H_

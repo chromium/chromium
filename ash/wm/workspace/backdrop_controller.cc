@@ -61,12 +61,12 @@ class BackdropEventHandler : public ui::EventHandler {
     // behind-windows from receiving it) and play an earcon to notify the user.
     if (event->IsLocatedEvent()) {
       switch (event->type()) {
-        case ui::ET_MOUSE_PRESSED:
-        case ui::ET_MOUSEWHEEL:
-        case ui::ET_TOUCH_PRESSED:
-        case ui::ET_GESTURE_BEGIN:
-        case ui::ET_SCROLL:
-        case ui::ET_SCROLL_FLING_START:
+        case ui::EventType::kMousePressed:
+        case ui::EventType::kMousewheel:
+        case ui::EventType::kTouchPressed:
+        case ui::EventType::kGestureBegin:
+        case ui::EventType::kScroll:
+        case ui::EventType::kScrollFlingStart:
           Shell::Get()->accessibility_controller()->PlayEarcon(
               Sound::kVolumeAdjust);
           break;

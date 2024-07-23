@@ -34,14 +34,6 @@ class FakeToastManager : public ash::ToastManager {
   bool RequestFocusOnActiveToastDismissButton(std::string_view id) override {
     return false;
   }
-  bool MaybeToggleA11yHighlightOnActiveToastDismissButton(
-      std::string_view id) override {
-    return false;
-  }
-  bool MaybeActivateHighlightedDismissButtonOnActiveToast(
-      std::string_view id) override {
-    return false;
-  }
   bool IsToastShown(std::string_view id) const override { return false; }
   bool IsToastDismissButtonFocused(std::string_view id) const override {
     return false;

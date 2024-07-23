@@ -56,7 +56,8 @@ void DispatchVKEvent(ui::test::EventGenerator* event_generator,
                      ui::KeyboardCode key_code,
                      int flags,
                      int source_device_id) {
-  ui::EventType type = is_press ? ui::ET_KEY_PRESSED : ui::ET_KEY_RELEASED;
+  ui::EventType type =
+      is_press ? ui::EventType::kKeyPressed : ui::EventType::kKeyReleased;
   ui::KeyEvent keyev(type, key_code, flags);
 
   keyev.SetProperties({{

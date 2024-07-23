@@ -119,7 +119,7 @@ class SelectFileDialog : public ui::SelectFileDialog::Listener {
     }
     select_file_dialog_->SelectFile(
         type, std::u16string(), default_path, &file_type_info, 0, ext,
-        platform_util::GetTopLevel(web_contents->GetNativeView()), nullptr);
+        platform_util::GetTopLevel(web_contents->GetNativeView()));
   }
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;

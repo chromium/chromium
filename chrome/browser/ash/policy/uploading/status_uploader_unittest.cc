@@ -166,7 +166,7 @@ class StatusUploaderTest : public testing::Test {
   }
 
   void MockUserInput() {
-    ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+    ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                      ui::EventTimeForNow(), 0, 0);
     const ui::PlatformEvent& native_event = &e;
     ui::UserActivityDetector::Get()->DidProcessEvent(native_event);

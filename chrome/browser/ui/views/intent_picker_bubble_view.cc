@@ -419,8 +419,9 @@ class IntentPickerAppListView
 
   void OnKeyEvent(ui::KeyEvent* event) override {
     if (!IsKeyboardCodeArrow(event->key_code()) ||
-        event->type() != ui::ET_KEY_RELEASED)
+        event->type() != ui::EventType::kKeyReleased) {
       return;
+    }
 
     int delta = 0;
     switch (event->key_code()) {

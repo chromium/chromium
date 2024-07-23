@@ -102,8 +102,8 @@ void FinishSearchResultWithHistory(
       }
     }
   }
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(std::move(callback), std::move(result)));
+  task_runner->PostTask(FROM_HERE, base::BindOnce(callback, std::move(result)));
+  // TODO(b/353733210): Invoke answerer with same callback.
 }
 
 size_t CountWords(const std::string& s) {

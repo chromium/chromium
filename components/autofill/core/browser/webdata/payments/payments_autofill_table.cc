@@ -247,6 +247,15 @@ constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
         {kPaymentInstrumentType, "INTEGER NOT NULL DEFAULT 0"},
         {kSerializedValueEncrypted, "VARCHAR NOT NULL"}};
 
+void BindEncryptedStringToColumn(sql::Statement* s,
+                                 int column_index,
+                                 const std::string& value,
+                                 const AutofillTableEncryptor& encryptor) {
+  std::string encrypted_data;
+  encryptor.EncryptString(value, &encrypted_data);
+  s->BindBlob(column_index, encrypted_data);
+}
+
 void BindEncryptedU16StringToColumn(sql::Statement* s,
                                     int column_index,
                                     const std::u16string& value,
@@ -336,6 +345,28 @@ void BindVirtualCardUsageDataToStatement(
   s.BindString16(3, *virtual_card_usage_data.virtual_card_last_four());
 }
 
+PaymentInstrument::PaymentInstrumentType GetPaymentInstrumentType(
+    sync_pb::PaymentInstrument payment_instrument) {
+  if (payment_instrument.has_bank_account()) {
+    return PaymentInstrument::PaymentInstrumentType::kBankAccount;
+  } else if (payment_instrument.has_iban()) {
+    return PaymentInstrument::PaymentInstrumentType::kIban;
+  }
+  return PaymentInstrument::PaymentInstrumentType::kUnknown;
+}
+
+void BindPaymentInstrumentToStatement(
+    const sync_pb::PaymentInstrument& payment_instrument,
+    sql::Statement* s,
+    const AutofillTableEncryptor& encryptor) {
+  int index = 0;
+  s->BindInt64(index++, payment_instrument.instrument_id());
+  s->BindInt(index++,
+             static_cast<int>(GetPaymentInstrumentType(payment_instrument)));
+  BindEncryptedStringToColumn(
+      s, index++, payment_instrument.SerializeAsString(), encryptor);
+}
+
 std::unique_ptr<VirtualCardUsageData> GetVirtualCardUsageDataFromStatement(
     sql::Statement& s) {
   int index = 0;
@@ -349,6 +380,18 @@ std::unique_ptr<VirtualCardUsageData> GetVirtualCardUsageDataFromStatement(
       VirtualCardUsageData::InstrumentId(instrument_id),
       VirtualCardUsageData::VirtualCardLastFour(last_four),
       url::Origin::Create(GURL(merchant_domain)));
+}
+
+std::string DecryptStringFromColumn(sql::Statement& s,
+                                    int column_index,
+                                    const AutofillTableEncryptor& encryptor) {
+  std::string value;
+  std::string encrypted_value;
+  s.ColumnBlobAsString(column_index, &encrypted_value);
+  if (!encrypted_value.empty()) {
+    encryptor.DecryptString(encrypted_value, &value);
+  }
+  return value;
 }
 
 std::u16string DecryptU16StringFromColumn(
@@ -1534,7 +1577,8 @@ bool PaymentsAutofillTable::ClearAllServerData() {
         kOfferDataTable, kOfferEligibleInstrumentTable,
         kOfferMerchantDomainTable, kVirtualCardUsageDataTable,
         kMaskedCreditCardBenefitsTable, kBenefitMerchantDomainsTable,
-        kMaskedBankAccountsTable, kMaskedBankAccountsMetadataTable}) {
+        kMaskedBankAccountsTable, kMaskedBankAccountsMetadataTable,
+        kGenericPaymentInstrumentsTable}) {
     Delete(db_, table_name);
     changed |= db_->GetLastChangeCount() > 0;
   }
@@ -1765,6 +1809,66 @@ bool PaymentsAutofillTable::ClearAllCreditCardBenefits() {
   sql::Transaction transaction(db_);
   return transaction.Begin() && Delete(db_, kMaskedCreditCardBenefitsTable) &&
          Delete(db_, kBenefitMerchantDomainsTable) && transaction.Commit();
+}
+
+bool PaymentsAutofillTable::SetPaymentInstruments(
+    const std::vector<sync_pb::PaymentInstrument>& payment_instruments) {
+  sql::Transaction transaction(db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  // Delete the existing values.
+  Delete(db_, kGenericPaymentInstrumentsTable);
+
+  // Insert the new values.
+  sql::Statement insert;
+  InsertBuilder(
+      db_, insert, kGenericPaymentInstrumentsTable,
+      {kInstrumentId, kPaymentInstrumentType, kSerializedValueEncrypted});
+  for (const sync_pb::PaymentInstrument& payment_instrument :
+       payment_instruments) {
+    // Don't store unknown payment instruments in the table.
+    if (GetPaymentInstrumentType(payment_instrument) ==
+        PaymentInstrument::PaymentInstrumentType::kUnknown) {
+      continue;
+    }
+    BindPaymentInstrumentToStatement(payment_instrument, &insert,
+                                     *autofill_table_encryptor_);
+    insert.Run();
+    insert.Reset(/*clear_bound_vars=*/true);
+  }
+
+  return transaction.Commit();
+}
+
+bool PaymentsAutofillTable::GetPaymentInstruments(
+    std::vector<sync_pb::PaymentInstrument>& payment_instruments) {
+  payment_instruments.clear();
+
+  sql::Statement s;
+  SelectBuilder(
+      db_, s, kGenericPaymentInstrumentsTable,
+      {kInstrumentId, kPaymentInstrumentType, kSerializedValueEncrypted});
+
+  while (s.Step()) {
+    int index = 0;
+    int64_t instrument_id = s.ColumnInt64(index++);
+    int payment_instrument_type = s.ColumnInt(index++);
+    auto serialized_value =
+        DecryptStringFromColumn(s, index++, *autofill_table_encryptor_);
+    sync_pb::PaymentInstrument payment_instrument;
+    if (payment_instrument.ParseFromString(serialized_value)) {
+      payment_instruments.emplace_back(payment_instrument);
+    } else {
+      DLOG(WARNING)
+          << "Instrument dropped: Failed to deserialize AUTOFILL model type "
+             "sync_pb::PaymentInstrument with id = "
+          << instrument_id << " and type = " << payment_instrument_type;
+    }
+  }
+
+  return s.Succeeded();
 }
 
 bool PaymentsAutofillTable::MigrateToVersion83RemoveServerCardTypeColumn() {

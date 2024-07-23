@@ -205,7 +205,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         // If this is a new tab group creation that will show a dialog, do not trigger a snackbar.
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
-                && !SKIP_TAB_GROUP_CREATION_DIALOG.getValue()) {
+                && !shouldSkipGroupCreationDialog()) {
             notify = false;
         }
 
@@ -348,7 +348,7 @@ public class TabGroupModelFilter extends TabModelFilter {
                     // If this is a new tab group creation that will show a dialog, do not trigger a
                     // snackbar.
                     if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
-                            && !SKIP_TAB_GROUP_CREATION_DIALOG.getValue()) {
+                            && !shouldSkipGroupCreationDialog()) {
                         continue;
                     }
                 }
@@ -493,7 +493,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             boolean skipSnackbarForCreation =
                     willMergingCreateNewGroup
                             && ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
-                            && !SKIP_TAB_GROUP_CREATION_DIALOG.getValue();
+                            && !shouldSkipGroupCreationDialog();
             if (notify && !skipSnackbarForCreation) {
                 observer.didCreateGroup(
                         mergedTabs,
@@ -1772,5 +1772,13 @@ public class TabGroupModelFilter extends TabModelFilter {
         tab.setRootId(rootId);
         tab.setTabGroupId(tabGroupId);
         tabStateAttributes.endBatchEdit();
+    }
+
+    private static boolean shouldSkipGroupCreationDialog() {
+        if (ChromeFeatureList.sTabGroupCreationDialogAndroid.isEnabled()) {
+            return false;
+        } else {
+            return SKIP_TAB_GROUP_CREATION_DIALOG.getValue();
+        }
     }
 }

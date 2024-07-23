@@ -454,10 +454,11 @@ class DeskBarHoverObserver : public ui::EventObserver {
         event_monitor_(views::EventMonitor::CreateWindowMonitor(
             this,
             widget_window,
-            {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_DRAGGED, ui::ET_MOUSE_RELEASED,
-             ui::ET_MOUSE_MOVED, ui::ET_MOUSE_ENTERED, ui::ET_MOUSE_EXITED,
-             ui::ET_GESTURE_LONG_PRESS, ui::ET_GESTURE_LONG_TAP,
-             ui::ET_GESTURE_TAP, ui::ET_GESTURE_TAP_DOWN})) {}
+            {ui::EventType::kMousePressed, ui::EventType::kMouseDragged,
+             ui::EventType::kMouseReleased, ui::EventType::kMouseMoved,
+             ui::EventType::kMouseEntered, ui::EventType::kMouseExited,
+             ui::EventType::kGestureLongPress, ui::EventType::kGestureLongTap,
+             ui::EventType::kGestureTap, ui::EventType::kGestureTapDown})) {}
 
   DeskBarHoverObserver(const DeskBarHoverObserver&) = delete;
   DeskBarHoverObserver& operator=(const DeskBarHoverObserver&) = delete;
@@ -467,23 +468,23 @@ class DeskBarHoverObserver : public ui::EventObserver {
   // ui::EventObserver:
   void OnEvent(const ui::Event& event) override {
     switch (event.type()) {
-      case ui::ET_MOUSE_PRESSED:
-      case ui::ET_MOUSE_DRAGGED:
-      case ui::ET_MOUSE_RELEASED:
-      case ui::ET_MOUSE_MOVED:
-      case ui::ET_MOUSE_ENTERED:
-      case ui::ET_MOUSE_EXITED:
+      case ui::EventType::kMousePressed:
+      case ui::EventType::kMouseDragged:
+      case ui::EventType::kMouseReleased:
+      case ui::EventType::kMouseMoved:
+      case ui::EventType::kMouseEntered:
+      case ui::EventType::kMouseExited:
         owner_->OnHoverStateMayHaveChanged();
         break;
 
-      case ui::ET_GESTURE_LONG_PRESS:
-      case ui::ET_GESTURE_LONG_TAP:
+      case ui::EventType::kGestureLongPress:
+      case ui::EventType::kGestureLongTap:
         owner_->OnGestureTap(GetGestureEventScreenRect(event),
                              /*is_long_gesture=*/true);
         break;
 
-      case ui::ET_GESTURE_TAP:
-      case ui::ET_GESTURE_TAP_DOWN:
+      case ui::EventType::kGestureTap:
+      case ui::EventType::kGestureTapDown:
         owner_->OnGestureTap(GetGestureEventScreenRect(event),
                              /*is_long_gesture=*/false);
         break;
@@ -780,10 +781,10 @@ void DeskBarViewBase::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
   switch (event->type()) {
-    case ui::ET_GESTURE_LONG_PRESS:
-    case ui::ET_GESTURE_LONG_TAP:
-    case ui::ET_GESTURE_TAP:
-    case ui::ET_GESTURE_TAP_DOWN:
+    case ui::EventType::kGestureLongPress:
+    case ui::EventType::kGestureLongTap:
+    case ui::EventType::kGestureTap:
+    case ui::EventType::kGestureTapDown:
       DeskNameView::CommitChanges(GetWidget());
       break;
 
@@ -992,7 +993,7 @@ void DeskBarViewBase::UpdateDeskIconButtonState(
   button->UpdateState(target_state);
   DeprecatedLayoutImmediately();
 
-  gfx::RectF target_bounds = gfx::RectF(new_desk_button_->GetBoundsInScreen());
+  gfx::RectF target_bounds = gfx::RectF(button->GetBoundsInScreen());
   gfx::Transform scale_transform;
   const int shift_x = begin_x - GetFirstMiniViewXOffset();
   scale_transform.Translate(shift_x, 0);
@@ -1130,9 +1131,9 @@ bool DeskBarViewBase::HandleReleaseEvent(DeskMiniView* mini_view,
       return false;
     case DeskDragProxy::State::kStarted:
       // During a mouse drag, if we touch any other mini view, since the other
-      // mini view receives `ET_GESTURE_END` event, hence `mini_view` here might
-      // be different than `drag_view_`. Thus, we use `drag_view_`. Please refer
-      // to b/296106746.
+      // mini view receives `EventType::kGestureEnd` event, hence `mini_view`
+      // here might be different than `drag_view_`. Thus, we use `drag_view_`.
+      // Please refer to b/296106746.
       EndDragDesk(drag_view_, /*end_by_user=*/true);
       break;
     default:
@@ -1425,7 +1426,6 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
   // This should not be called when a desk is removed.
   DCHECK_LE(mini_views_.size(), desks.size());
 
-  const int begin_x = GetFirstMiniViewXOffset();
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   DCHECK(root_window);
   // Document all the current X coordinates of the views before we perform a
@@ -1478,8 +1478,7 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
   if (type_ == Type::kDeskButton) {
     PerformDeskBarAddDeskAnimation(this, old_bar_bounds);
   }
-  PerformAddDeskMiniViewAnimation(new_mini_views,
-                                  begin_x - GetFirstMiniViewXOffset());
+  PerformAddDeskMiniViewAnimation(new_mini_views);
   PerformDeskBarChildViewShiftAnimation(this, views_previous_x_map);
 }
 

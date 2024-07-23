@@ -165,10 +165,10 @@ EventCountDelegate::EventCountDelegate()
 
 void EventCountDelegate::OnKeyEvent(ui::KeyEvent* event) {
   switch (event->type()) {
-    case ui::ET_KEY_PRESSED:
+    case ui::EventType::kKeyPressed:
       key_press_count_++;
       break;
-    case ui::ET_KEY_RELEASED:
+    case ui::EventType::kKeyReleased:
       key_release_count_++;
       break;
     default:
@@ -178,19 +178,19 @@ void EventCountDelegate::OnKeyEvent(ui::KeyEvent* event) {
 
 void EventCountDelegate::OnMouseEvent(ui::MouseEvent* event) {
   switch (event->type()) {
-    case ui::ET_MOUSE_MOVED:
+    case ui::EventType::kMouseMoved:
       mouse_move_count_++;
       break;
-    case ui::ET_MOUSE_ENTERED:
+    case ui::EventType::kMouseEntered:
       mouse_enter_count_++;
       break;
-    case ui::ET_MOUSE_EXITED:
+    case ui::EventType::kMouseExited:
       mouse_leave_count_++;
       break;
-    case ui::ET_MOUSE_PRESSED:
+    case ui::EventType::kMousePressed:
       mouse_press_count_++;
       break;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       mouse_release_count_++;
       break;
     default:

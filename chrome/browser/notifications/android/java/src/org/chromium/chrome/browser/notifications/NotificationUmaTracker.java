@@ -523,10 +523,15 @@ public class NotificationUmaTracker {
      * @param grantResults List of grant results.
      */
     public void onNotificationPermissionRequestResult(String[] permissions, int[] grantResults) {
-        if (permissions.length != 1
+        if (permissions == null
+                || permissions.length != 1
                 || grantResults.length != 1
                 || !permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS)) {
-            assert false;
+            assert permissions != null : "Parameter permissions should not be null";
+            assert permissions.length == 1 : "A single permission should have been requested";
+            assert grantResults.length == 1 : "A single result should have been returned";
+            assert permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS)
+                    : "The requested permission should be for notifications";
             return;
         }
 

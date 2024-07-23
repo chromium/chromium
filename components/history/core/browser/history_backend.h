@@ -1111,8 +1111,11 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // Tracks page transition types.
   VisitTracker tracker_;
 
-  // List of QueuedHistoryDBTasks to run;
+  // List of QueuedHistoryDBTasks to run.
   std::list<std::unique_ptr<QueuedHistoryDBTask>> queued_history_db_tasks_;
+  // A single task, taken out of the above list, that has already been posted to
+  // the `task_runner_`. Stored so that it can be canceled at shutdown.
+  base::CancelableOnceClosure posted_history_db_task_;
 
   // Used to determine if a URL is bookmarked; may be null.
   std::unique_ptr<HistoryBackendClient> backend_client_;

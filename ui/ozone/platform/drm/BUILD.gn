@@ -21,6 +21,8 @@ source_set("gbm") {
     "common/drm_util.h",
     "common/drm_wrapper.cc",
     "common/drm_wrapper.h",
+    "common/hardware_display_controller_info.cc",
+    "common/hardware_display_controller_info.h",
     "common/scoped_drm_types.cc",
     "common/scoped_drm_types.h",
     "common/tile_property.h",
@@ -186,6 +188,7 @@ source_set("gbm_unittests") {
   testonly = true
   sources = [
     "common/drm_util_unittest.cc",
+    "common/hardware_display_controller_info_unittest.cc",
     "gpu/drm_gpu_display_manager_unittest.cc",
     "gpu/drm_gpu_util_unittest.cc",
     "gpu/drm_overlay_manager_unittest.cc",

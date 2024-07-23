@@ -38,24 +38,24 @@ constexpr char kAssistantCardElementHistogram[] =
 
 void CreateAndSendMouseClick(aura::WindowTreeHost* host,
                              const gfx::Point& location_in_pixels) {
-  ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, location_in_pixels,
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, location_in_pixels,
                              location_in_pixels, ui::EventTimeForNow(),
                              ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
 
-  // Send an ET_MOUSE_PRESSED event.
+  // Send an kMousePressed event.
   ui::EventDispatchDetails details =
       host->GetEventSink()->OnEventFromSource(&press_event);
 
   if (details.dispatcher_destroyed)
     return;
 
-  ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, location_in_pixels,
-                               location_in_pixels, ui::EventTimeForNow(),
-                               ui::EF_LEFT_MOUSE_BUTTON,
+  ui::MouseEvent release_event(ui::EventType::kMouseReleased,
+                               location_in_pixels, location_in_pixels,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
 
-  // Send an ET_MOUSE_RELEASED event.
+  // Send an EventType::kMouseReleased event.
   std::ignore = host->GetEventSink()->OnEventFromSource(&release_event);
 }
 
@@ -116,7 +116,7 @@ void AssistantCardElementView::OnGestureEvent(ui::GestureEvent* event) {
   // We need to route GESTURE_TAP events to our Assistant card because links
   // should be tappable. The Assistant card window will not receive gesture
   // events so we convert the gesture into analogous mouse events.
-  if (event->type() != ui::ET_GESTURE_TAP) {
+  if (event->type() != ui::EventType::kGestureTap) {
     views::View::OnGestureEvent(event);
     return;
   }

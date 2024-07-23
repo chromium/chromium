@@ -245,6 +245,8 @@ TEST_F(CellularNetworkMetricsLoggerTest, AutoStatusTransitionsRevampEnabled) {
 }
 
 TEST_F(CellularNetworkMetricsLoggerTest, AutoStatusTransitionsRevampDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kApnRevamp);
   SetUpGenericCellularNetwork();
   ApnHistogramCounts counts;
   // Successful connect from disconnected to connected.

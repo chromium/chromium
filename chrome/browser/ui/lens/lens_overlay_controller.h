@@ -299,6 +299,10 @@ class LensOverlayController : public LensSearchboxClient,
     return lens_overlay_event_handler_.get();
   }
 
+  // Returns invocation time since epoch. Used to set up html source for metric
+  // logging.
+  uint64_t GetInvocationTimeSinceEpoch();
+
   // Testing helper method for checking view housing our overlay.
   views::View* GetOverlayViewForTesting();
 
@@ -886,6 +890,10 @@ class LensOverlayController : public LensSearchboxClient,
 
   // The time at which the overlay was invoked. Used to compute timing metrics.
   base::TimeTicks invocation_time_;
+
+  // The time at which the overlay was invoked, since epoch. Used to calculate
+  // timeToWebUIReady on the WebUI side.
+  base::Time invocation_time_since_epoch_;
 
   // ---------------Browser window scoped state: START---------------------
   // State that is scoped to the browser window must be reset when the tab is

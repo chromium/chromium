@@ -425,6 +425,12 @@ void LensOverlayController::ShowUI(
     omnibox_tab_helper_observer_.Observe(helper);
   }
 
+  scoped_tab_modal_ui_ = tab_->ShowModalUI();
+  fullscreen_observation_.Observe(
+      tab_browser->exclusive_access_manager()->fullscreen_controller());
+
+  // This should be the last thing called in ShowUI, so if something goes wrong
+  // in capturing the screenshot, the state gets cleaned up correctly.
   if (side_panel_coordinator_->IsSidePanelShowing()) {
     // Close the currently opened side panel and postpone taking the screenshot
     // until OnSidePanelDidClose
@@ -434,17 +440,10 @@ void LensOverlayController::ShowUI(
     CaptureScreenshot();
   }
 
-  scoped_tab_modal_ui_ = tab_->ShowModalUI();
-  fullscreen_observation_.Observe(
-      tab_browser->exclusive_access_manager()->fullscreen_controller());
-
-  if (!pending_region_) {
-    ShowPreselectionBubble();
-  }
-
   // Establish data required for session metrics.
   search_performed_in_session_ = false;
   invocation_time_ = base::TimeTicks::Now();
+  invocation_time_since_epoch_ = base::Time::Now();
 }
 
 void LensOverlayController::CloseUIAsync(
@@ -534,6 +533,13 @@ void LensOverlayController::BindOverlay(
 
   InitializeOverlayUI(*initialization_data_);
   base::UmaHistogramBoolean("Lens.Overlay.Shown", true);
+
+  // Show the preselection overlay now that the overlay is initialized and ready
+  // to be shown.
+  if (!pending_region_) {
+    ShowPreselectionBubble();
+  }
+
   state_ = State::kOverlay;
 
   // Only start the query flow again if we don't already have a full image
@@ -589,6 +595,10 @@ void LensOverlayController::SetSearchboxHandler(
 
 void LensOverlayController::ResetSearchboxHandler() {
   searchbox_handler_.reset();
+}
+
+uint64_t LensOverlayController::GetInvocationTimeSinceEpoch() {
+  return invocation_time_since_epoch_.InMillisecondsSinceUnixEpoch();
 }
 
 views::View* LensOverlayController::GetOverlayViewForTesting() {
@@ -1045,6 +1055,12 @@ class LensOverlayController::UnderlyingWebContentsObserver
 
     lens_overlay_controller_->CloseUISync(
         lens::LensOverlayDismissalSource::kPageChanged);
+  }
+
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
+    lens_overlay_controller_->CloseUISync(
+        lens::LensOverlayDismissalSource::kRendererClosed);
   }
 
  private:

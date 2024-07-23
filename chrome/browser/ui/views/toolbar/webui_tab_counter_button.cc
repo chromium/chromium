@@ -154,9 +154,9 @@ class InteractionTracker : public ui::EventHandler,
  private:
   // ui::EventHandler:
   void OnEvent(ui::Event* event) override {
-    if (event->type() == ui::ET_MOUSE_PRESSED ||
-        event->type() == ui::ET_MOUSE_RELEASED ||
-        event->type() == ui::ET_TOUCH_PRESSED) {
+    if (event->type() == ui::EventType::kMousePressed ||
+        event->type() == ui::EventType::kMouseReleased ||
+        event->type() == ui::EventType::kTouchPressed) {
       const ui::LocatedEvent* const located = event->AsLocatedEvent();
       last_interaction_location_ =
           located->target()->GetScreenLocation(*located);

@@ -7,8 +7,8 @@
 #include "net/http/http_basic_stream.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_key.h"
+#include "net/http/http_stream_pool_handle.h"
 #include "net/http/http_stream_pool_job.h"
-#include "net/http/http_text_based_stream_handle.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_socket.h"
 
@@ -80,7 +80,7 @@ std::unique_ptr<HttpStream> HttpStreamPool::Group::CreateTextBasedStream(
   ++handed_out_stream_count_;
   pool_->IncrementTotalHandedOutStreamCount();
 
-  auto stream_handle = std::make_unique<HttpTextBasedStreamHandle>(
+  auto stream_handle = std::make_unique<HttpStreamPoolHandle>(
       this, std::move(socket), generation_);
   return std::make_unique<HttpBasicStream>(std::move(stream_handle),
                                            /*is_for_get_to_http_proxy=*/false);

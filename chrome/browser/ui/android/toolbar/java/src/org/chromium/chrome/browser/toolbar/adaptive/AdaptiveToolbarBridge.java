@@ -37,8 +37,10 @@ public class AdaptiveToolbarBridge {
      * @param useRawResults If true it'll get the raw model results, without applying any
      *     thresholds, should only be used on tablets.
      * @param callback Callback to be invoked after getting the button. It returns a boolean
-     *     indicating whether the model was ready to execute and an sorted list of
-     *     AdaptiveToolbarButtonVariant values, where the first element is the highest ranked.
+     *     indicating whether the model was ready to execute and a sorted list of
+     *     AdaptiveToolbarButtonVariant values, where the first element is the highest ranked. This
+     *     list will contain a single value of AdaptiveToolbarButtonVariant.UNKNOWN if the model was
+     *     not executed.
      */
     public static void getSessionVariantButtons(
             Profile profile,

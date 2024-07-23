@@ -698,8 +698,9 @@ bool TableView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void TableView::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() != ui::ET_GESTURE_TAP_DOWN)
+  if (event->type() != ui::EventType::kGestureTapDown) {
     return;
+  }
 
   RequestFocus();
 

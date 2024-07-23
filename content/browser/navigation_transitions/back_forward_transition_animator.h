@@ -55,6 +55,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
         const ui::BackGestureEvent& gesture,
         BackForwardTransitionAnimationManager::NavigationDirection
             nav_direction,
+        ui::BackGestureEventSwipeEdge initiating_edge,
         NavigationEntryImpl* destination_entry,
         BackForwardTransitionAnimationManagerAndroid* animation_manager);
   };
@@ -95,7 +96,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       WebContentsViewAndroid* web_contents_view_android,
       NavigationControllerImpl* controller,
       const ui::BackGestureEvent& gesture,
-      BackForwardTransitionAnimationManager::NavigationDirection nav_type,
+      BackForwardTransitionAnimationManager::NavigationDirection nav_direction,
+      ui::BackGestureEventSwipeEdge initiating_edge,
       NavigationEntryImpl* destination_entry,
       BackForwardTransitionAnimationManagerAndroid* animation_manager);
 
@@ -232,6 +234,10 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   };
   static std::string ToString(NavigationState state);
 
+  ui::BackGestureEventSwipeEdge initiating_edge() const {
+    return initiating_edge_;
+  }
+
  private:
   // Initializes `effect_` for the scrim and cross-fade animation.
   void InitializeEffectForGestureProgressAnimation();
@@ -255,6 +261,22 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // or cancel animation based on the return value.
   [[nodiscard]] bool StartNavigationAndTrackRequest();
 
+  struct ComputedAnimationValues {
+    // The offset that will be applied to the live, outgoing page.
+    float live_page_offset = 0.f;
+    // The offset that will be applied to the incoming screenshot layer.
+    float screenshot_offset = 0.f;
+    // The current progress of the animation, running from 0 to 1.
+    float progress = 0.f;
+  };
+
+  // The physics model is agnostic of UI writing mode (LTR vs RTL) as well as
+  // navigation direction and functions in terms of a spring on the left side
+  // applied to a layer moving to the right. This method transforms the physics
+  // result values into values usable by the animator.
+  ComputedAnimationValues ComputeAnimationValues(
+      const PhysicsModel::Result& result);
+
   // Forwards the calls to `CompositorImpl`.
   cc::UIResourceId CreateUIResource(cc::UIResourceClient* client);
   void DeleteUIResource(cc::UIResourceId resource_id);
@@ -276,6 +298,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   const BackForwardTransitionAnimationManager::NavigationDirection
       nav_direction_;
+
+  const ui::BackGestureEventSwipeEdge initiating_edge_;
 
   // The ID of the destination `NavigationEntry`. Constant through out the
   // lifetime of a gesture so we are guaranteed to target the correct entry.

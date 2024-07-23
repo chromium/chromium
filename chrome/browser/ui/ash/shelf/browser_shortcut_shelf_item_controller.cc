@@ -121,27 +121,29 @@ void BrowserShortcutShelfItemController::ItemSelected(
   // activate the next item in line if an item of our list is already active.
   //
   // Here we check the implicit assumption that the type of the event that gets
-  // passed in is never ui::ET_KEY_PRESSED. One may find it strange as usually
-  // ui::ET_KEY_RELEASED comes in pair with ui::ET_KEY_PRESSED, i.e, if we need
-  // to handle ui::ET_KEY_RELEASED, then we probably need to handle
-  // ui::ET_KEY_PRESSED too. However this is not the case here. The ui::KeyEvent
-  // that gets passed in is manufactured as an ui::ET_KEY_RELEASED typed
-  // KeyEvent right before being passed in. This is similar to the situations of
-  // AppShortcutShelfItemController and BrowserAppShelfItemController.
+  // passed in is never ui::EventType::kKeyPressed. One may find it strange as
+  // usually ui::EventType::kKeyReleased comes in pair with
+  // ui::EventType::kKeyPressed, i.e, if we need to handle
+  // ui::EventType::kKeyReleased, then we probably need to handle
+  // ui::EventType::kKeyPressed too. However this is not the case here. The
+  // ui::KeyEvent that gets passed in is manufactured as an
+  // ui::EventType::kKeyReleased typed KeyEvent right before being passed in.
+  // This is similar to the situations of AppShortcutShelfItemController and
+  // BrowserAppShelfItemController.
   //
   // One other thing regarding the KeyEvent here that one may find confusing is
-  // that even though the code here says ET_KEY_RELEASED, one only needs to
-  // conduct a press action (e.g., pressing Alt+1 on a physical device without
-  // letting go) to trigger this ItemSelected() function call. The subsequent
-  // key release action is not required. This naming disparity comes from the
-  // fact that while the key accelerator is triggered and handled by
+  // that even though the code here says EventType::kKeyReleased, one only needs
+  // to conduct a press action (e.g., pressing Alt+1 on a physical device
+  // without letting go) to trigger this ItemSelected() function call. The
+  // subsequent key release action is not required. This naming disparity comes
+  // from the fact that while the key accelerator is triggered and handled by
   // ui::AcceleratorManager::Process() with a KeyEvent instance as one of its
   // inputs, further down the callstack, the same KeyEvent instance is not
   // passed over into ash::Shelf::ActivateShelfItemOnDisplay(). Instead, a new
   // KeyEvent instance is fabricated inside
   // ash::Shelf::ActivateShelfItemOnDisplay(), with its type being
-  // ET_KEY_RELEASED, to represent the original KeyEvent, whose type is
-  // ET_KEY_PRESSED.
+  // EventType::kKeyReleased, to represent the original KeyEvent, whose type is
+  // EventType::kKeyPressed.
   //
   // The fabrication of the release typed key event was first introduced in this
   // CL in 2013.
@@ -149,7 +151,7 @@ void BrowserShortcutShelfItemController::ItemSelected(
   //
   // That said, there also exist other UX where the original KeyEvent instance
   // gets passed down intact. And in those UX, we should still expect a
-  // ET_KEY_PRESSED type. This type of UX can happen when the user keeps
+  // EventType::kKeyPressed type. This type of UX can happen when the user keeps
   // pressing the Tab key to move to the next icon, and then presses the Enter
   // key to launch the app. It can also happen in a ChromeVox session, in which
   // the Space key can be used to activate the app. More can be found in this
@@ -157,7 +159,7 @@ void BrowserShortcutShelfItemController::ItemSelected(
   //
   // A bug is filed to track future works for fixing this confusing naming
   // disparity. https://crbug.com/1473895
-  if (event && event->type() == ui::ET_KEY_RELEASED) {
+  if (event && event->type() == ui::EventType::kKeyReleased) {
     std::move(callback).Run(ActivateOrAdvanceToNextBrowser(), std::move(items));
     return;
   }

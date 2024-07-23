@@ -56,7 +56,7 @@ void DesktopMediaPickerViewsTestApi::PressMouseOnSourceAtIndex(
   views::View* source_view = GetSourceAtIndex(index);
   if (source_view) {
     source_view->OnMousePressed(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), flags, ui::EF_LEFT_MOUSE_BUTTON));
   } else {
     // There's no source view to target, and trying to target a specific source
@@ -83,7 +83,7 @@ void DesktopMediaPickerViewsTestApi::PressKeyOnSourceAtIndex(
 }
 
 void DesktopMediaPickerViewsTestApi::DoubleTapSourceAtIndex(size_t index) {
-  ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+  ui::GestureEventDetails details(ui::EventType::kGestureTap);
   details.set_tap_count(2);
   ui::GestureEvent double_tap(10, 10, 0, base::TimeTicks(), details);
   views::View* source_view = GetSourceAtIndex(index);

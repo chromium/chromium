@@ -73,7 +73,7 @@ void PreTargetHandler::OnEvent(ui::Event* event) {
   }
 
   // Filter scroll event due to potential timing issue (b/258750397).
-  if (event->IsScrollEvent() || event->type() == ui::ET_MOUSEWHEEL) {
+  if (event->IsScrollEvent() || event->type() == ui::EventType::kMousewheel) {
     return;
   }
 
@@ -92,10 +92,10 @@ void PreTargetHandler::OnEvent(ui::Event* event) {
   // `DoDispatchEvent()` is run.
   views::ViewTracker view_tracker(root_view);
 
-  // `ET_MOUSE_MOVED` events outside the top-view's bounds are also dispatched
-  // to clear any set hover-state.
-  bool dispatch_event = (contains_location ||
-                         to_dispatch->type() == ui::EventType::ET_MOUSE_MOVED);
+  // `EventType::kMouseMoved` events outside the top-view's bounds are also
+  // dispatched to clear any set hover-state.
+  bool dispatch_event =
+      (contains_location || to_dispatch->type() == ui::EventType::kMouseMoved);
   if (dispatch_event) {
     // Convert to local coordinates and forward to the top-view.
     views::View::ConvertPointFromScreen(root_view, &location);
@@ -105,10 +105,11 @@ void PreTargetHandler::OnEvent(ui::Event* event) {
     // Convert touch-event to gesture before dispatching since views do not
     // process touch-events.
     std::unique_ptr<ui::GestureEvent> gesture_event;
-    if (to_dispatch->type() == ui::ET_TOUCH_PRESSED) {
+    if (to_dispatch->type() == ui::EventType::kTouchPressed) {
       gesture_event = std::make_unique<ui::GestureEvent>(
           to_dispatch->x(), to_dispatch->y(), ui::EF_NONE,
-          base::TimeTicks::Now(), ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+          base::TimeTicks::Now(),
+          ui::GestureEventDetails(ui::EventType::kGestureTap));
       to_dispatch = gesture_event.get();
     }
 
@@ -118,7 +119,7 @@ void PreTargetHandler::OnEvent(ui::Event* event) {
     // outside menu-bounds and are thus not propagated to it to prevent so.
     // Active menu instance will instead be cancelled when |root_view| is
     // deleted.
-    if (event->type() != ui::ET_MOUSE_MOVED) {
+    if (event->type() != ui::EventType::kMouseMoved) {
       event->StopPropagation();
     }
   }
@@ -141,11 +142,11 @@ bool PreTargetHandler::DoDispatchEvent(views::View* view,
                                        ui::LocatedEvent* event) {
   DCHECK(view && event);
 
-  // Out-of-bounds `ET_MOUSE_MOVED` events are allowed to sift through to
-  // clear any set hover-state.
+  // Out-of-bounds `EventType::kMouseMoved` events are allowed to sift through
+  // to clear any set hover-state.
   // TODO (siabhijeet): Two-phased dispatching via widget should fix this.
   if (!view->HitTestPoint(event->location()) &&
-      event->type() != ui::ET_MOUSE_MOVED) {
+      event->type() != ui::EventType::kMouseMoved) {
     return false;
   }
 
@@ -181,7 +182,7 @@ bool PreTargetHandler::DoDispatchEvent(views::View* view,
 }
 
 void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
-  if (key_event->type() != ui::ET_KEY_PRESSED) {
+  if (key_event->type() != ui::EventType::kKeyPressed) {
     return;
   }
 

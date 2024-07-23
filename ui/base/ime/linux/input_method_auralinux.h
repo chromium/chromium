@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
                                 TextInputClient* focused) override;
 
  private:
-  // Continues to dispatch the ET_KEY_PRESSED event to the client.
+  // Continues to dispatch the EventType::kKeyPressed event to the client.
   // This needs to be called "before" committing the result string or
   // the composition string.
   ui::EventDispatchDetails DispatchImeFilteredKeyPressEvent(

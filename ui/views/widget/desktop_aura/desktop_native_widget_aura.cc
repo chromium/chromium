@@ -1318,7 +1318,7 @@ void DesktopNativeWidgetAura::OnMouseEvent(ui::MouseEvent* event) {
   DCHECK(content_window_->IsVisible());
 
 #if BUILDFLAG(IS_WIN)
-  if (event->type() == ui::ET_MOUSE_MOVED) {
+  if (event->type() == ui::EventType::kMouseMoved) {
     // Showing a tooltip causes Windows to generate a MOUSE_MOVED
     // event to the same location it was already at; when that happens,
     // we need to throw the event away rather than acting as if someone
@@ -1342,7 +1342,7 @@ void DesktopNativeWidgetAura::OnScrollEvent(ui::ScrollEvent* event) {
   if (!native_widget_delegate_)
     return;
 
-  if (event->type() == ui::ET_SCROLL) {
+  if (event->type() == ui::EventType::kScroll) {
     native_widget_delegate_->OnScrollEvent(event);
     if (event->handled())
       return;

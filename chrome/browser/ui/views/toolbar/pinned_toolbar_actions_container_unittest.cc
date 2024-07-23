@@ -168,10 +168,10 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
   void SendKeyPress(views::View* view,
                     ui::KeyboardCode code,
                     int flags = ui::EF_NONE) {
-    view->OnKeyPressed(
-        ui::KeyEvent(ui::ET_KEY_PRESSED, code, flags, ui::EventTimeForNow()));
-    view->OnKeyReleased(
-        ui::KeyEvent(ui::ET_KEY_PRESSED, code, flags, ui::EventTimeForNow()));
+    view->OnKeyPressed(ui::KeyEvent(ui::EventType::kKeyPressed, code, flags,
+                                    ui::EventTimeForNow()));
+    view->OnKeyReleased(ui::KeyEvent(ui::EventType::kKeyPressed, code, flags,
+                                     ui::EventTimeForNow()));
   }
 
  protected:
@@ -634,4 +634,32 @@ TEST_F(PinnedToolbarActionsContainerTest,
   container()->ShowActionEphemerallyInToolbar(actions::kActionCut, false);
   CheckIsPoppedOut(actions::kActionCut, false);
   CheckIsPinned(actions::kActionCut, false);
+}
+
+TEST_F(PinnedToolbarActionsContainerTest, ActiveActionSkipsExecution) {
+  actions::ActionItem* browser_action_item =
+      browser_view()->browser()->browser_actions()->root_action_item();
+  browser_action_item->AddChild(CreateActionItem(actions::kActionCut));
+  container()->UpdateActionState(actions::kActionCut, true);
+  auto toolbar_buttons = GetChildToolbarButtons();
+  ASSERT_EQ(toolbar_buttons.size(), 1u);
+
+  auto* pinned_button = toolbar_buttons[0];
+
+  EXPECT_FALSE(pinned_button->ShouldSkipExecutionForTesting());
+
+  pinned_button->SetIsActionShowingBubble(true);
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                             0);
+  ui::MouseEvent release_event(ui::EventType::kMouseReleased, gfx::Point(),
+                               gfx::Point(), ui::EventTimeForNow(),
+                               ui::EF_LEFT_MOUSE_BUTTON, 0);
+  pinned_button->OnMousePressed(press_event);
+
+  EXPECT_TRUE(pinned_button->ShouldSkipExecutionForTesting());
+
+  pinned_button->OnMouseReleased(release_event);
+
+  EXPECT_FALSE(pinned_button->ShouldSkipExecutionForTesting());
 }

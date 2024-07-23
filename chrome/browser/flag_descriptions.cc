@@ -2026,6 +2026,11 @@ const char kCastStreamingMacHardwareH264Name[] =
 const char kCastStreamingMacHardwareH264Description[] =
     "Offers the H264 video codec when negotiating Cast Streaming, and uses "
     "hardware-accelerated H264 encoding if selected for the session";
+const char kUseNetworkFrameworkForCastDiscoveryName[] =
+    "Use the Network Framework for Cast device discovery on Mac";
+const char kUseNetworkFrameworkForCastDiscoveryDescription[] =
+    "Use the Network Framework to replace the Bonjour API for Cast device "
+    "discovery on Mac.";
 #endif
 
 const char kCastEnableStreamingWithHiDPIName[] =
@@ -3463,9 +3468,6 @@ const char kSplitCacheByNetworkIsolationKeyName[] = "HTTP Cache Partitioning";
 const char kSplitCacheByNetworkIsolationKeyDescription[] =
     "Partitions the HTTP Cache by (top-level site, current-frame site) to "
     "disallow cross-site tracking.";
-
-const char kStopAppIndexingReportName[] = "Stop app indexing report";
-const char kStopAppIndexingReportDescription[] = "Stop report app indexing.";
 
 const char kStorageAccessHeadersName[] = "Storage Access Headers";
 const char kStorageAccessHeadersDescription[] =
@@ -5032,6 +5034,12 @@ const char kDelayMediaSinkDiscoveryDescription[] =
     "Delay the browser background discovery of Cast and DIAL devices until "
     "users have interacted with the Cast UI or visited a site supporting Cast "
     "SDK or Remote Playback API.";
+
+const char kShowCastPermissionRejectedErrorName[] =
+    "Show the permission rejected error message in the Cast/GMC UI.";
+const char kShowCastPermissionRejectedErrorDescription[] =
+    "Show an error message in the Cast/GMC UI to inform users when the network "
+    "permission is rejected and Chrome's Cast feature is disabled.";
 
 const char kCastMirroringTargetPlayoutDelayName[] =
     "Changes the target playout delay for cast mirroring.";
@@ -6800,12 +6808,6 @@ const char kEnableNotificationImageDragDescription[] =
     "Enable users to drag the image shown on the notification and drop it to "
     "directly paste or share";
 
-const char kEnableNotifierCollisionName[] = "Enable notifier collision";
-const char kEnableNotifierCollisionDescription[] =
-    "Enable popup notifications, right-anchored tray bubbles, slider bubbles, "
-    "and toasts to not overlap when displayed in the right corner of the "
-    "screen";
-
 const char kEnableOAuthIppName[] =
     "Enable OAuth when printing via the IPP protocol";
 const char kEnableOAuthIppDescription[] =
@@ -7263,9 +7265,6 @@ const char kHindiInscriptLayoutDescription[] =
 const char kLockScreenNotificationName[] = "Lock screen notification";
 const char kLockScreenNotificationDescription[] =
     "Enable notifications on the lock screen.";
-
-const char kMagicBoostName[] = "Magic Boost";
-const char kMagicBoostDescription[] = "Enable Magic Boost on ChromeOS.";
 
 const char kMahiName[] = "Mahi feature";
 const char kMahiDescription[] = "Enable Mahi feature on ChromeOS.";

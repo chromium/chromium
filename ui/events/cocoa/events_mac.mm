@@ -30,32 +30,33 @@ EventType EventTypeFromNative(const PlatformEvent& platform_event) {
     case NSEventTypeKeyDown:
     case NSEventTypeKeyUp:
     case NSEventTypeFlagsChanged:
-      return IsKeyUpEvent(event) ? ET_KEY_RELEASED : ET_KEY_PRESSED;
+      return IsKeyUpEvent(event) ? EventType::kKeyReleased
+                                 : EventType::kKeyPressed;
     case NSEventTypeLeftMouseDown:
     case NSEventTypeRightMouseDown:
     case NSEventTypeOtherMouseDown:
-      return ET_MOUSE_PRESSED;
+      return EventType::kMousePressed;
     case NSEventTypeLeftMouseUp:
     case NSEventTypeRightMouseUp:
     case NSEventTypeOtherMouseUp:
-      return ET_MOUSE_RELEASED;
+      return EventType::kMouseReleased;
     case NSEventTypeLeftMouseDragged:
     case NSEventTypeRightMouseDragged:
     case NSEventTypeOtherMouseDragged:
-      return ET_MOUSE_DRAGGED;
+      return EventType::kMouseDragged;
     case NSEventTypeMouseMoved:
-      return ET_MOUSE_MOVED;
+      return EventType::kMouseMoved;
     case NSEventTypeScrollWheel:
-      return ET_SCROLL;
+      return EventType::kScroll;
     case NSEventTypeMouseEntered:
-      return ET_MOUSE_ENTERED;
+      return EventType::kMouseEntered;
     case NSEventTypeMouseExited:
-      return ET_MOUSE_EXITED;
+      return EventType::kMouseExited;
     case NSEventTypeSwipe:
-      return ET_SCROLL_FLING_START;
+      return EventType::kScrollFlingStart;
     case NSEventTypeAppKitDefined:
     case NSEventTypeSystemDefined:
-      return ET_UNKNOWN;
+      return EventType::kUnknown;
     case NSEventTypeApplicationDefined:
     case NSEventTypePeriodic:
     case NSEventTypeCursorUpdate:
@@ -72,7 +73,7 @@ EventType EventTypeFromNative(const PlatformEvent& platform_event) {
       NOTIMPLEMENTED() << type;
       break;
   }
-  return ET_UNKNOWN;
+  return EventType::kUnknown;
 }
 
 int EventFlagsFromNative(const PlatformEvent& platform_event) {

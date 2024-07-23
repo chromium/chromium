@@ -45,6 +45,7 @@ public class ActionConfirmationManager {
     private static final String REMOVE_TAB_USER_ACTION = TAB_GROUP_CONFIRMATION + "RemoveTab.";
     private static final String REMOVE_TAB_FULL_GROUP_USER_ACTION =
             TAB_GROUP_CONFIRMATION + "RemoveTabFullGroup.";
+    private static final String CLOSE_TAB_USER_ACTION = TAB_GROUP_CONFIRMATION + "CloseTab.";
 
     // The result of processing an action.
     @IntDef({
@@ -145,6 +146,21 @@ public class ActionConfirmationManager {
         } else {
             onResult.onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
         }
+    }
+
+    /**
+     * This processes closing tabs within groups. The caller needs to ensure this action will delete
+     * the group.
+     */
+    public void processCloseTabAttempt(Callback<Integer> onResult) {
+        processGenericAction(
+                CLOSE_TAB_USER_ACTION,
+                Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_CLOSE,
+                R.string.close_from_group_dialog_title,
+                R.string.close_from_group_description,
+                R.string.delete_tab_group_no_sync_description,
+                R.string.delete_tab_group_action,
+                onResult);
     }
 
     private boolean isFullGroup(List<Integer> tabIdList) {

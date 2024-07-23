@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
@@ -30,6 +31,7 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -72,6 +74,7 @@ class PrimaryAccountManagerTest : public testing::Test,
     AccountTrackerService::RegisterPrefs(user_prefs_.registry());
     ProfileOAuth2TokenService::RegisterProfilePrefs(user_prefs_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(user_prefs_.registry());
+    SigninPrefs::RegisterProfilePrefs(user_prefs_.registry());
     account_tracker_ = std::make_unique<AccountTrackerService>();
     account_tracker_->Initialize(&user_prefs_, base::FilePath());
     token_service_ = std::make_unique<ProfileOAuth2TokenService>(
@@ -206,9 +209,15 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
   CreatePrimaryAccountManager();
   CoreAccountId main_account_id =
       AddToAccountTracker("account_id", "user@gmail.com");
-  manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(main_account_id), ConsentLevel::kSync,
-      AccessPoint::ACCESS_POINT_UNKNOWN);
+  AccountInfo account_info = account_tracker()->GetAccountInfo(main_account_id);
+  {
+    SigninPrefs signin_prefs(*prefs());
+    std::optional<base::Time> last_signout_time =
+        signin_prefs.GetChromeLastSignoutTime(account_info.gaia);
+    EXPECT_FALSE(last_signout_time.has_value());
+  }
+  manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSync,
+                                  AccessPoint::ACCESS_POINT_UNKNOWN);
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_UNKNOWN,
                       .sync_opt_in = AccessPoint::ACCESS_POINT_UNKNOWN});
 
@@ -223,6 +232,13 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
                       .sync_opt_in = AccessPoint::ACCESS_POINT_UNKNOWN,
                       .sign_out = signin_metrics::ProfileSignout::kTest,
                       .turn_off_sync = signin_metrics::ProfileSignout::kTest});
+  {
+    SigninPrefs signin_prefs(*prefs());
+    std::optional<base::Time> last_signout_time =
+        signin_prefs.GetChromeLastSignoutTime(account_info.gaia);
+    ASSERT_TRUE(last_signout_time.has_value());
+    EXPECT_LE(base::Time::Now() - last_signout_time.value(), base::Seconds(10));
+  }
 
   // Should not be persisted anymore
   ShutDownManager();

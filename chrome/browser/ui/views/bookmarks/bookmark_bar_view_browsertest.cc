@@ -410,18 +410,18 @@ class PrerenderBookmarkBarNavigationTestBase
 
     gfx::Point center(10, 10);
     button->OnMouseEntered(ui::MouseEvent(
-        ui::ET_MOUSE_ENTERED, center, center, ui::EventTimeForNow(),
+        ui::EventType::kMouseEntered, center, center, ui::EventTimeForNow(),
         /*flags=*/ui::EF_NONE,
         /*changed_button_flags=*/ui::EF_NONE));
     button->OnMousePressed(ui::MouseEvent(
-        ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+        ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
     if (expect_activation) {
       content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
           *GetActiveWebContents(), prerender_url);
     }
     button->OnMouseReleased(ui::MouseEvent(
-        ui::ET_MOUSE_RELEASED, center, center, ui::EventTimeForNow(),
+        ui::EventType::kMouseReleased, center, center, ui::EventTimeForNow(),
         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
     if (expect_activation) {
@@ -640,7 +640,7 @@ class PrerenderBookmarkBarOnHoverNavigationTest
 
     gfx::Point center(10, 10);
     button->OnMouseEntered(ui::MouseEvent(
-        ui::ET_MOUSE_ENTERED, center, center, ui::EventTimeForNow(),
+        ui::EventType::kMouseEntered, center, center, ui::EventTimeForNow(),
         /*flags=*/ui::EF_NONE,
         /*changed_button_flags=*/ui::EF_NONE));
 
@@ -657,8 +657,8 @@ class PrerenderBookmarkBarOnHoverNavigationTest
     views::LabelButton* button = GetBookmarkButton(0);
 
     gfx::Point center(10, 10);
-    button->OnMouseExited(ui::MouseEvent(ui::ET_MOUSE_EXITED, center, center,
-                                         ui::EventTimeForNow(),
+    button->OnMouseExited(ui::MouseEvent(ui::EventType::kMouseExited, center,
+                                         center, ui::EventTimeForNow(),
                                          /*flags=*/ui::EF_NONE,
                                          /*changed_button_flags=*/ui::EF_NONE));
   }
@@ -827,12 +827,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
 
   // Mouse enters and exits the button immediately.
   gfx::Point center(10, 10);
-  button->OnMouseEntered(ui::MouseEvent(ui::ET_MOUSE_ENTERED, center, center,
-                                        ui::EventTimeForNow(),
+  button->OnMouseEntered(ui::MouseEvent(ui::EventType::kMouseEntered, center,
+                                        center, ui::EventTimeForNow(),
                                         /*flags=*/ui::EF_NONE,
                                         /*changed_button_flags=*/ui::EF_NONE));
-  button->OnMouseExited(ui::MouseEvent(ui::ET_MOUSE_EXITED, center, center,
-                                       ui::EventTimeForNow(),
+  button->OnMouseExited(ui::MouseEvent(ui::EventType::kMouseExited, center,
+                                       center, ui::EventTimeForNow(),
                                        /*flags=*/ui::EF_NONE,
                                        /*changed_button_flags=*/ui::EF_NONE));
 
@@ -927,10 +927,10 @@ class PrerenderBookmarkBarDisabledNavigationTest
 
     gfx::Point center(10, 10);
     button->OnMousePressed(ui::MouseEvent(
-        ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+        ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
     button->OnMouseReleased(ui::MouseEvent(
-        ui::ET_MOUSE_RELEASED, center, center, ui::EventTimeForNow(),
+        ui::EventType::kMouseReleased, center, center, ui::EventTimeForNow(),
         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   }
 

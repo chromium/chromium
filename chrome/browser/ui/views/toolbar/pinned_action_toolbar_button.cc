@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 
 #include <string>
+#include <type_traits>
 
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container_layout.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
@@ -36,7 +38,12 @@ namespace {
 const gfx::VectorIcon kEmptyIcon;
 }  // namespace
 
-DEFINE_UI_CLASS_PROPERTY_KEY(int, kToolbarButtonFlexWeightKey, 2)
+DEFINE_UI_CLASS_PROPERTY_TYPE(PinnedToolbarActionFlexPriority)
+DEFINE_UI_CLASS_PROPERTY_KEY(
+    std::underlying_type_t<PinnedToolbarActionFlexPriority>,
+    kToolbarButtonFlexPriorityKey,
+    std::underlying_type_t<PinnedToolbarActionFlexPriority>(
+        PinnedToolbarActionFlexPriority::kLow))
 
 PinnedActionToolbarButton::PinnedActionToolbarButton(
     Browser* browser,
@@ -81,7 +88,9 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
   GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
 }
 
-PinnedActionToolbarButton::~PinnedActionToolbarButton() = default;
+PinnedActionToolbarButton::~PinnedActionToolbarButton() {
+  action_count_changed_subscription_ = {};
+}
 
 void PinnedActionToolbarButton::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
@@ -136,7 +145,8 @@ bool PinnedActionToolbarButton::OnKeyPressed(const ui::KeyEvent& event) {
 #else
       ui::EF_CONTROL_DOWN;
 #endif
-  if (event.type() == ui::ET_KEY_PRESSED && (event.flags() & kModifiedFlag)) {
+  if (event.type() == ui::EventType::kKeyPressed &&
+      (event.flags() & kModifiedFlag)) {
     const bool is_right = event.key_code() == ui::VKEY_RIGHT;
     const bool is_left = event.key_code() == ui::VKEY_LEFT;
     if (is_right || is_left) {
@@ -173,8 +183,8 @@ gfx::Size PinnedActionToolbarButton::CalculatePreferredSize(
 void PinnedActionToolbarButton::Layout(PassKey) {
   LayoutSuperclass<ToolbarButton>(this);
   gfx::Rect status_rect(14, 2);
-  status_indicator_->SetColor(
-      GetColorProvider()->GetColor(ui::kColorSysPrimary));
+  status_indicator_->SetColorId(kColorToolbarActionItemEngaged,
+                                kColorToolbarButtonIconInactive);
 
   gfx::Rect image_container_bounds = image_container_view()->GetLocalBounds();
   int new_x = image_container_bounds.x() +
@@ -183,6 +193,18 @@ void PinnedActionToolbarButton::Layout(PassKey) {
   // Set the new origin for status_rect
   status_rect.set_origin(gfx::Point(new_x, new_y));
   status_indicator_->SetBoundsRect(status_rect);
+}
+
+bool PinnedActionToolbarButton::OnMousePressed(const ui::MouseEvent& event) {
+  skip_execution_ = is_action_showing_bubble_;
+  return ToolbarButton::OnMousePressed(event);
+}
+
+void PinnedActionToolbarButton::OnMouseReleased(const ui::MouseEvent& event) {
+  if (!skip_execution_) {
+    ToolbarButton::OnMouseReleased(event);
+  }
+  skip_execution_ = false;
 }
 
 void PinnedActionToolbarButton::UpdateIcon() {
@@ -196,11 +218,11 @@ void PinnedActionToolbarButton::UpdateIcon() {
                                     : icons->icon;
 
   if (is_icon_visible_ && action_engaged_) {
-    UpdateIconsWithColors(icon,
-                          GetColorProvider()->GetColor(ui::kColorSysPrimary),
-                          GetColorProvider()->GetColor(ui::kColorSysPrimary),
-                          GetColorProvider()->GetColor(ui::kColorSysPrimary),
-                          GetForegroundColor(ButtonState::STATE_DISABLED));
+    UpdateIconsWithColors(
+        icon, GetColorProvider()->GetColor(kColorToolbarActionItemEngaged),
+        GetColorProvider()->GetColor(kColorToolbarActionItemEngaged),
+        GetColorProvider()->GetColor(kColorToolbarActionItemEngaged),
+        GetForegroundColor(ButtonState::STATE_DISABLED));
   } else {
     UpdateIconsWithColors(icon, GetForegroundColor(ButtonState::STATE_NORMAL),
                           GetForegroundColor(ButtonState::STATE_HOVERED),
@@ -210,6 +232,18 @@ void PinnedActionToolbarButton::UpdateIcon() {
 }
 
 void PinnedActionToolbarButton::SetActionEngaged(bool action_engaged) {
+  if (!IsActive()) {
+    SetProperty(
+        kToolbarButtonFlexPriorityKey,
+        action_engaged
+            ? static_cast<
+                  std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
+                  PinnedToolbarActionFlexPriority::kMedium)
+            : static_cast<
+                  std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
+                  PinnedToolbarActionFlexPriority::kLow));
+    InvalidateLayout();
+  }
   action_engaged_ = action_engaged;
 }
 
@@ -246,13 +280,24 @@ void PinnedActionToolbarButton::OnAnchorCountChanged(size_t anchor_count) {
   // If there is something anchored to the button we want to make sure the
   // button will be visible in the toolbar in cases where the window might be
   // small enough that icons must overflow. Update the
-  // kToolbarButtonFlexWeightKey to make sure icons are forced visible or able
+  // kToolbarButtonFlexPriorityKey to make sure icons are forced visible or able
   // to overflow.
   if (anchor_count > 0) {
-    SetProperty(kToolbarButtonFlexWeightKey, 0);
+    SetProperty(
+        kToolbarButtonFlexPriorityKey,
+        static_cast<std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
+            PinnedToolbarActionFlexPriority::kHigh));
     InvalidateLayout();
   } else {
-    SetProperty(kToolbarButtonFlexWeightKey, 2);
+    SetProperty(
+        kToolbarButtonFlexPriorityKey,
+        action_engaged_
+            ? static_cast<
+                  std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
+                  PinnedToolbarActionFlexPriority::kMedium)
+            : static_cast<
+                  std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
+                  PinnedToolbarActionFlexPriority::kLow));
     InvalidateLayout();
   }
 }
@@ -334,6 +379,7 @@ void PinnedActionToolbarButtonActionViewInterface::ActionItemChangedImpl(
   OnViewChangedImpl(action_item);
   action_view_->SetIsPinnable(
       action_item->GetProperty(actions::kActionItemPinnableKey));
+  action_view_->SetIsActionShowingBubble(action_item->GetIsShowingBubble());
 }
 
 void PinnedActionToolbarButtonActionViewInterface::InvokeActionImpl(

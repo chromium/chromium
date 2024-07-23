@@ -44,6 +44,8 @@ build_webui("build") {
     "line_chart/utils/unit_label.ts",
   ]
 
+  ts_composite = true
+
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/cr_elements:build_ts",

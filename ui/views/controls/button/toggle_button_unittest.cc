@@ -96,7 +96,7 @@ class ToggleButtonTest : public ViewsTestBase {
 TEST_F(ToggleButtonTest, ToggleButtonDestroyed) {
   gfx::Point center(10, 10);
   button()->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(1, counter());
   delete button();

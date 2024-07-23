@@ -128,7 +128,7 @@ class MakoBubbleEventHandlerTest : public ChromeViewsTestBase {
 
 TEST_F(MakoBubbleEventHandlerTest, TouchPressedEventStartsDragging) {
   std::unique_ptr<ui::TouchEvent> event = MakeTouchEvent(
-      /*type=*/ui::ET_TOUCH_PRESSED,
+      /*type=*/ui::EventType::kTouchPressed,
       /*location=*/EventLocation::DRAGGABLE_REGION);
 
   handler_.OnTouchEvent(event.get());
@@ -139,7 +139,7 @@ TEST_F(MakoBubbleEventHandlerTest, TouchPressedEventStartsDragging) {
 
 TEST_F(MakoBubbleEventHandlerTest, TouchPressedEventIsIgnored) {
   std::unique_ptr<ui::TouchEvent> event = MakeTouchEvent(
-      /*type=*/ui::ET_TOUCH_PRESSED,
+      /*type=*/ui::EventType::kTouchPressed,
       /*location=*/EventLocation::OTHER);
 
   handler_.OnTouchEvent(event.get());
@@ -150,7 +150,7 @@ TEST_F(MakoBubbleEventHandlerTest, TouchPressedEventIsIgnored) {
 
 TEST_F(MakoBubbleEventHandlerTest, MousePressedEventStartsDragging) {
   std::unique_ptr<ui::MouseEvent> event = MakeMouseEvent(
-      /*type=*/ui::ET_MOUSE_PRESSED,
+      /*type=*/ui::EventType::kMousePressed,
       /*location=*/EventLocation::DRAGGABLE_REGION);
 
   handler_.OnMouseEvent(event.get());
@@ -161,7 +161,7 @@ TEST_F(MakoBubbleEventHandlerTest, MousePressedEventStartsDragging) {
 
 TEST_F(MakoBubbleEventHandlerTest, MousePressedEventIsIgnored) {
   std::unique_ptr<ui::MouseEvent> event = MakeMouseEvent(
-      /*type=*/ui::ET_MOUSE_PRESSED,
+      /*type=*/ui::EventType::kMousePressed,
       /*location=*/EventLocation::OTHER);
 
   handler_.OnMouseEvent(event.get());
@@ -184,7 +184,7 @@ TEST_F(MakoBubbleEventHandlerTest, TouchMovedEventProcceedsDragging) {
       .original_pointer_pos = gfx::Vector2d(/*x=*/140 + 50, /*y=*/140 + 50),
   });
   std::unique_ptr<ui::TouchEvent> event = MakeTouchEvent(
-      /*type=*/ui::ET_TOUCH_MOVED,
+      /*type=*/ui::EventType::kTouchMoved,
       /*location=*/EventLocation::DRAGGABLE_REGION);
 
   handler_.OnTouchEvent(event.get());
@@ -200,7 +200,7 @@ TEST_F(MakoBubbleEventHandlerTest, TouchMovedEventProcceedsDragging) {
 TEST_F(MakoBubbleEventHandlerTest, TouchMovedEventIsIgnored) {
   handler_.set_state_for_testing(MakoBubbleEventHandler::InitialState{});
   std::unique_ptr<ui::TouchEvent> event = MakeTouchEvent(
-      /*type=*/ui::ET_TOUCH_MOVED,
+      /*type=*/ui::EventType::kTouchMoved,
       /*location=*/EventLocation::DRAGGABLE_REGION);
 
   handler_.OnTouchEvent(event.get());
@@ -221,7 +221,7 @@ TEST_F(MakoBubbleEventHandlerTest, MouseDraggedEventProcceedsDragging) {
       // The original pointer position is relative to screen, so it's 140 + 50.
       .original_pointer_pos = gfx::Vector2d(/*x=*/140 + 50, /*y=*/140 + 50)});
   std::unique_ptr<ui::MouseEvent> event = MakeMouseEvent(
-      /*type=*/ui::ET_MOUSE_DRAGGED,
+      /*type=*/ui::EventType::kMouseDragged,
       /*location=*/EventLocation::DRAGGABLE_REGION);
 
   handler_.OnMouseEvent(event.get());
@@ -237,7 +237,7 @@ TEST_F(MakoBubbleEventHandlerTest, MouseDraggedEventProcceedsDragging) {
 TEST_F(MakoBubbleEventHandlerTest, MouseDraggedEventIsIgnored) {
   handler_.set_state_for_testing(MakoBubbleEventHandler::InitialState{});
   std::unique_ptr<ui::MouseEvent> event = MakeMouseEvent(
-      /*type=*/ui::ET_MOUSE_DRAGGED,
+      /*type=*/ui::EventType::kMouseDragged,
       /*location=*/EventLocation::DRAGGABLE_REGION);
 
   handler_.OnMouseEvent(event.get());
@@ -249,7 +249,7 @@ TEST_F(MakoBubbleEventHandlerTest, TouchReleasedEventStopsDragging) {
   handler_.set_state_for_testing(MakoBubbleEventHandler::DraggingState{});
 
   std::unique_ptr<ui::TouchEvent> event = MakeTouchEvent(
-      /*type=*/ui::ET_TOUCH_RELEASED,
+      /*type=*/ui::EventType::kTouchReleased,
       /*location=*/EventLocation::DRAGGABLE_REGION);
 
   handler_.OnTouchEvent(event.get());
@@ -262,7 +262,7 @@ TEST_F(MakoBubbleEventHandlerTest, MouseReleasedEventStopsDragging) {
   handler_.set_state_for_testing(MakoBubbleEventHandler::DraggingState{});
 
   std::unique_ptr<ui::MouseEvent> event = MakeMouseEvent(
-      /*type=*/ui::ET_MOUSE_RELEASED,
+      /*type=*/ui::EventType::kMouseReleased,
       /*location=*/EventLocation::DRAGGABLE_REGION);
 
   handler_.OnMouseEvent(event.get());

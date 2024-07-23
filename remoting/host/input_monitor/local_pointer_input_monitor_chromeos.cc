@@ -125,7 +125,8 @@ void LocalPointerInputMonitorChromeos::Core::DidProcessEvent(
   }
 
   ui::EventType type = ui::EventTypeFromNative(event);
-  if (type == ui::ET_MOUSE_MOVED || type == ui::ET_TOUCH_MOVED) {
+  if (type == ui::EventType::kMouseMoved ||
+      type == ui::EventType::kTouchMoved) {
     HandlePointerMove(event, type);
   }
 }

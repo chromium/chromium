@@ -1680,12 +1680,6 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
         is_auto_reauthn_embargoed, time_from_embargo, requires_user_mediation);
   }
 
-  if (identity_selection_type_ == kAutoButton) {
-    OnAccountSelected(auto_reauthn_idp->idp_metadata.config_url,
-                      auto_reauthn_account->id, /*is_sign_in=*/true);
-    return;
-  }
-
   // The RenderFrameHost may be alive but not visible in the following
   // situations:
   // Situation #1: User switched tabs
@@ -2537,11 +2531,13 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
   // fast, we still want to show the "Verify" sheet for at least
   // `kTokenRequestDelay` seconds for better UX.
   // Note that for button flow we can complete without delay because the UI
-  // difference between the verifying UI and its predecessors are minor.
+  // difference between the verifying UI and its predecessors are minor in case
+  // of manual sign-in where a user has read and made selection explicitly.
   id_assertion_response_time_ = base::TimeTicks::Now();
   base::TimeDelta fetch_time =
       id_assertion_response_time_ - select_account_time_;
-  if (should_complete_request_immediately_ || rp_mode_ == RpMode::kButton ||
+  if (should_complete_request_immediately_ ||
+      (rp_mode_ == RpMode::kButton && identity_selection_type_ == kExplicit) ||
       fetch_time >= kTokenRequestDelay) {
     std::move(complete_request_callback).Run();
     return;

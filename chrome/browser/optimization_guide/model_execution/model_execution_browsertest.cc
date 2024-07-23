@@ -773,9 +773,9 @@ class ModelExecutionNewFeaturesEnabledAutomaticallyTest
     : public ModelExecutionEnabledBrowserTest {
  public:
   void InitializeFeatureList() override {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kOptimizationGuideModelExecution,
-        features::internal::kTabOrganizationSettingsVisibility};
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kOptimizationGuideModelExecution, {}},
+        {features::internal::kTabOrganizationSettingsVisibility, {}}};
     std::vector<base::test::FeatureRef> disabled_features = {
         features::internal::kTabOrganizationGraduated,
         features::internal::kComposeGraduated};
@@ -785,11 +785,16 @@ class ModelExecutionNewFeaturesEnabledAutomaticallyTest
     // Make the new feature visible in the second start of the test.
     if (!base::StartsWith(test_name, "PRE_")) {
       enabled_features.push_back(
-          features::internal::kComposeSettingsVisibility);
+          {features::internal::kComposeSettingsVisibility, {}});
+      enabled_features.push_back(
+          {features::internal::kHistorySearchSettingsVisibility,
+           {{"enable_feature_when_main_toggle_on", "false"}}});
     }
-    enabled_features.push_back(::switches::kExplicitBrowserSigninUIOnDesktop);
+    enabled_features.push_back(
+        {::switches::kExplicitBrowserSigninUIOnDesktop, {}});
 
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 };
 
@@ -798,6 +803,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
   EnableSignin();
   EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
+  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
 
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kModelExecutionMainToggleSettingState,
@@ -806,6 +812,8 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
       UserVisibleFeatureKey::kTabOrganization));
   EXPECT_FALSE(
       ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
+  EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
+      UserVisibleFeatureKey::kHistorySearch));
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
@@ -820,6 +828,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
       UserVisibleFeatureKey::kTabOrganization));
   EXPECT_TRUE(
       ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
+  // The feature with automatic enabling disallowed should be visible but not
+  // enabled.
+  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
+  EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
+      UserVisibleFeatureKey::kHistorySearch));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -941,8 +954,9 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   // Disable via the enterprise policy.
   policy::PolicyMap policies;
-  policies.Set(policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
-               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+  policies.Set(policy::key::kHelpMeWriteSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
                base::Value(static_cast<int>(
                    model_execution::prefs::ModelExecutionEnterprisePolicyValue::
                        kDisable)),

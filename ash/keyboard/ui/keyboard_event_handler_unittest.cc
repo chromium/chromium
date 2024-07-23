@@ -18,12 +18,13 @@ TEST(KeyboardEventHandlerTest, HandleGestureEvents) {
   KeyboardEventHandler filter;
   ui::GestureEvent pinch_begin(
       15, 15, 0, base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_GESTURE_PINCH_BEGIN));
+      ui::GestureEventDetails(ui::EventType::kGesturePinchBegin));
   ui::GestureEvent pinch_update(
       20, 20, 0, base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_GESTURE_PINCH_UPDATE));
-  ui::GestureEvent pinch_end(30, 30, 0, base::TimeTicks(),
-                             ui::GestureEventDetails(ui::ET_GESTURE_PINCH_END));
+      ui::GestureEventDetails(ui::EventType::kGesturePinchUpdate));
+  ui::GestureEvent pinch_end(
+      30, 30, 0, base::TimeTicks(),
+      ui::GestureEventDetails(ui::EventType::kGesturePinchEnd));
   filter.OnGestureEvent(&pinch_begin);
   filter.OnGestureEvent(&pinch_update);
   filter.OnGestureEvent(&pinch_end);
@@ -33,7 +34,7 @@ TEST(KeyboardEventHandlerTest, HandleGestureEvents) {
   EXPECT_TRUE(pinch_end.stopped_propagation());
 
   ui::GestureEvent tap(15, 15, 0, base::TimeTicks(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+                       ui::GestureEventDetails(ui::EventType::kGestureTap));
   filter.OnGestureEvent(&tap);
   EXPECT_FALSE(tap.stopped_propagation());
 }

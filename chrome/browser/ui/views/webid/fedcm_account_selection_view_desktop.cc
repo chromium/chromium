@@ -120,7 +120,7 @@ bool FedCmAccountSelectionView::Show(
   // TODO(crbug.com/41491333): Support modal dialogs for all types of FedCM
   // dialogs. This boolean is used to fall back to the bubble dialog where
   // modal is not yet implemented.
-  bool has_modal_support = sign_in_mode != Account::SignInMode::kAuto;
+  bool has_modal_support = true;
 
   idp_display_data_list_.clear();
   started_as_single_returning_account_ = false;
@@ -182,8 +182,17 @@ bool FedCmAccountSelectionView::Show(
   }
 
   if (sign_in_mode == Account::SignInMode::kAuto) {
-    // Auto re-authn is currently only supported on widget flows.
-    CHECK(GetDialogType() == DialogType::BUBBLE);
+    // In button mode the first UI we should should be a loading modal. When
+    // auto re-authn is triggered, we transform the UI to the single account
+    // that's available to notify user that they are being signed in with that
+    // account.
+    if (GetDialogType() == DialogType::MODAL) {
+      state_ = State::SINGLE_ACCOUNT_PICKER;
+      account_selection_view_->ShowSingleAccountConfirmDialog(
+          idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
+          /*show_back_button=*/false);
+    }
+
     state_ = State::AUTO_REAUTHN;
 
     // When auto re-authn flow is triggered, the parameter
@@ -223,9 +232,11 @@ bool FedCmAccountSelectionView::Show(
               Account::LoginState::kSignIn &&
           state_ != State::LOADING;
       // The IDP claimed login state controls whether we show disclosure text,
-      // if we do not skip the next dialog.
-      bool should_hide_disclosure_text =
-          new_idp_data.accounts[0].login_state == Account::LoginState::kSignIn;
+      // if we do not skip the next dialog. Also skip when request_permission
+      // is false (controlled by the fields API).
+      bool should_hide_disclosure_text = new_idp_data.accounts[0].login_state ==
+                                             Account::LoginState::kSignIn ||
+                                         !new_accounts_idp->request_permission;
 
       if (should_skip_dialog) {
         state_ = State::VERIFYING;
@@ -240,11 +251,9 @@ bool FedCmAccountSelectionView::Show(
         // with most recently signed in accounts at the top to reduce the
         // exposure of extra UI surfaces and to work around the account picker
         // not having a back button.
-        state_ = State::MULTI_ACCOUNT_PICKER;
-        account_selection_view_->ShowMultiAccountPicker(
-            idp_display_data_list_,
-            /*show_back_button=*/false,
-            /*is_choose_an_account=*/false);
+        ShowMultiAccountPicker(idp_display_data_list_,
+                               /*show_back_button=*/false,
+                               /*is_choose_an_account=*/false);
       } else {
         state_ = State::REQUEST_PERMISSION;
         account_selection_view_->ShowRequestPermissionDialog(
@@ -258,12 +267,14 @@ bool FedCmAccountSelectionView::Show(
             /*show_back_button=*/accounts_or_mismatches_size > 1u ||
                 supports_add_account);
       } else {
-        state_ = State::NEWLY_LOGGED_IN_ACCOUNT_PICKER;
-        account_selection_view_->ShowMultiAccountPicker(
+        ShowMultiAccountPicker(
             new_accounts_idp_display_data_,
             /*show_back_button=*/accounts_or_mismatches_size >
                 new_idp_data.accounts.size(),
             /*is_choose_an_account=*/false);
+        // Override the state to NEWLY_LOGGED_IN_ACCOUNT_PICKER so the back
+        // button works correctly.
+        state_ = State::NEWLY_LOGGED_IN_ACCOUNT_PICKER;
       }
     }
   } else if (idp_display_data_list_.size() == 1u &&
@@ -276,10 +287,8 @@ bool FedCmAccountSelectionView::Show(
     } else if (supports_add_account) {
       // The logic to support add account is in ShowMultiAccountPicker for the
       // bubble dialog.
-      state_ = State::MULTI_ACCOUNT_PICKER;
-      account_selection_view_->ShowMultiAccountPicker(
-          idp_display_data_list_, /*show_back_button=*/false,
-          /*is_choose_an_account=*/false);
+      ShowMultiAccountPicker(idp_display_data_list_, /*show_back_button=*/false,
+                             /*is_choose_an_account=*/false);
     } else {
       state_ = State::SINGLE_ACCOUNT_PICKER;
       account_selection_view_->ShowSingleAccountConfirmDialog(
@@ -296,11 +305,9 @@ bool FedCmAccountSelectionView::Show(
     account_selection_view_->ShowSingleReturningAccountDialog(
         idp_display_data_list_);
   } else {
-    state_ = State::MULTI_ACCOUNT_PICKER;
-    account_selection_view_->ShowMultiAccountPicker(
-        idp_display_data_list_,
-        /*show_back_button=*/false,
-        /*is_choose_an_account=*/false);
+    ShowMultiAccountPicker(idp_display_data_list_,
+                           /*show_back_button=*/false,
+                           /*is_choose_an_account=*/false);
   }
 
   if (!GetDialogWidget()) {
@@ -667,7 +674,8 @@ void FedCmAccountSelectionView::OnAccountSelected(
   DCHECK(state_ != State::IDP_SIGNIN_STATUS_MISMATCH);
   DCHECK(state_ != State::AUTO_REAUTHN);
 
-  if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
+  if (input_protector_->IsPossiblyUnintendedInteraction(event) ||
+      account_selection_view_->IsOccluded()) {
     return;
   }
 
@@ -710,7 +718,8 @@ void FedCmAccountSelectionView::OnAccountSelected(
 void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
                                               const GURL& url,
                                               const ui::Event& event) {
-  if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
+  if (input_protector_->IsPossiblyUnintendedInteraction(event) ||
+      account_selection_view_->IsOccluded()) {
     return;
   }
   ShowUrl(link_type, url);
@@ -738,14 +747,16 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
         idp_display_data_list_);
     return;
   }
-  state_ = State::MULTI_ACCOUNT_PICKER;
-  account_selection_view_->ShowMultiAccountPicker(
+  ShowMultiAccountPicker(
       idp_display_data_list_,
       /*show_back_button=*/started_as_single_returning_account_,
-      /*is_choose_an_account=*/false);
+      /*is_choose_an_account=*/last_multi_account_is_choose_an_account_);
 }
 
 void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
+  // Because the close button is a safe button to click and may be visible
+  // even when the widget is (partially) occluded, we do not check
+  // IsOccluded here.
   if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
     return;
   }
@@ -778,7 +789,8 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
 void FedCmAccountSelectionView::OnLoginToIdP(const GURL& idp_config_url,
                                              const GURL& idp_login_url,
                                              const ui::Event& event) {
-  if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
+  if (input_protector_->IsPossiblyUnintendedInteraction(event) ||
+      account_selection_view_->IsOccluded()) {
     return;
   }
 
@@ -799,7 +811,8 @@ void FedCmAccountSelectionView::OnLoginToIdP(const GURL& idp_config_url,
 }
 
 void FedCmAccountSelectionView::OnGotIt(const ui::Event& event) {
-  if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
+  if (input_protector_->IsPossiblyUnintendedInteraction(event) ||
+      account_selection_view_->IsOccluded()) {
     return;
   }
 
@@ -807,7 +820,8 @@ void FedCmAccountSelectionView::OnGotIt(const ui::Event& event) {
 }
 
 void FedCmAccountSelectionView::OnMoreDetails(const ui::Event& event) {
-  if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
+  if (input_protector_->IsPossiblyUnintendedInteraction(event) ||
+      account_selection_view_->IsOccluded()) {
     return;
   }
 
@@ -891,11 +905,9 @@ content::WebContents* FedCmAccountSelectionView::GetRpWebContents() {
 }
 
 void FedCmAccountSelectionView::OnChooseAnAccountClicked() {
-  state_ = State::MULTI_ACCOUNT_PICKER;
-  account_selection_view_->ShowMultiAccountPicker(
-      idp_display_data_list_,
-      /*show_back_button=*/true,
-      /*is_choose_an_account=*/true);
+  ShowMultiAccountPicker(idp_display_data_list_,
+                         /*show_back_button=*/true,
+                         /*is_choose_an_account=*/true);
   base::UmaHistogramBoolean("Blink.FedCm.ChooseAnAccountSelected.Desktop",
                             true);
 }
@@ -1133,4 +1145,14 @@ void FedCmAccountSelectionView::OnLensOverlayControllerDestroyed() {
 
 void FedCmAccountSelectionView::SetIsLensOverlayShowingForTesting(bool value) {
   is_lens_overlay_showing_ = value;
+}
+
+void FedCmAccountSelectionView::ShowMultiAccountPicker(
+    const std::vector<IdentityProviderDisplayData>& idp_data_list,
+    bool show_back_button,
+    bool is_choose_an_account) {
+  state_ = State::MULTI_ACCOUNT_PICKER;
+  last_multi_account_is_choose_an_account_ = is_choose_an_account;
+  account_selection_view_->ShowMultiAccountPicker(
+      idp_display_data_list_, show_back_button, is_choose_an_account);
 }

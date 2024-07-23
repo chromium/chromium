@@ -55,7 +55,7 @@ class ScrollJankUkmReporterTest : public testing::Test {
     base::SimpleTestTickClock tick_clock;
     tick_clock.SetNowTicks(base::TimeTicks(first_input_ts));
     auto event = ScrollUpdateEventMetrics::CreateForTesting(
-        ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kWheel,
+        ui::EventType::kGestureScrollUpdate, ui::ScrollInputType::kWheel,
         /*is_inertial=*/false,
         ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
         /*delta=*/10.0f, first_input_ts, base::TimeTicks(), &tick_clock,
@@ -70,7 +70,7 @@ class ScrollJankUkmReporterTest : public testing::Test {
     base::SimpleTestTickClock tick_clock;
     tick_clock.SetNowTicks(first_input_ts);
     auto event = ScrollUpdateEventMetrics::CreateForTesting(
-        ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kWheel,
+        ui::EventType::kGestureScrollUpdate, ui::ScrollInputType::kWheel,
         /*is_inertial=*/false,
         ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
         /*delta=*/10.0f, first_input_ts, base::TimeTicks(), &tick_clock,

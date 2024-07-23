@@ -116,7 +116,7 @@ class Handler : public content::WebUIMessageHandler, public ui::EventHandler {
     constexpr int kMask = kFlags | ui::EF_COMMAND_DOWN | ui::EF_ALTGR_DOWN |
                           ui::EF_ALT_DOWN | ui::EF_IS_REPEAT;
 
-    if (event->type() != ui::ET_KEY_PRESSED ||
+    if (event->type() != ui::EventType::kKeyPressed ||
         event->key_code() != ui::VKEY_G || (event->flags() & kMask) != kFlags) {
       return;
     }

@@ -8,6 +8,17 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/layout_manager_base.h"
 
+enum class PinnedToolbarActionFlexPriority {
+  // Pinned toolbar action that should be visible in the layout.
+  kHigh = 0,
+  // Pinned toolbar action that should have the highest priority if there is
+  // extra space in the layout.
+  kMedium = 1,
+  // Pinned toolbar action that has the lowest priority of being included if
+  // there is extra space in the layout.
+  kLow = 2,
+};
+
 class PinnedToolbarActionsContainerLayout : public views::LayoutManagerBase {
  public:
   PinnedToolbarActionsContainerLayout() = default;

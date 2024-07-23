@@ -8,6 +8,7 @@
 #include "base/time/time_delta_from_string.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
 #include "tracking_protection_prefs.h"
 #include "tracking_protection_reminder_service.h"
 
@@ -22,6 +23,38 @@ bool IsReminderEnabled() {
 
 bool ShouldReminderBeSilent() {
   return privacy_sandbox::kTrackingProtectionIsSilentReminder.Get();
+}
+
+const std::string GetNoticeName(
+    TrackingProtectionOnboarding::SurfaceType surface_type) {
+  switch (surface_type) {
+    case TrackingProtectionOnboarding::SurfaceType::kBrApp:
+      return ShouldReminderBeSilent() ? kTrackingProtectionSilentReminderClank
+                                      : kTrackingProtectionReminderClank;
+    case TrackingProtectionOnboarding::SurfaceType::kDesktop:
+      return ShouldReminderBeSilent()
+                 ? kTrackingProtectionSilentReminderDesktopIPH
+                 : kTrackingProtectionReminderDesktopIPH;
+    case TrackingProtectionOnboarding::SurfaceType::kAGACCT:
+      NOTREACHED_NORETURN();
+  }
+}
+
+void RecordNoticeHistogramsOnStartup(
+    PrefService* pref_service,
+    const PrivacySandboxNoticeStorage& notice_storage) {
+  // TODO(crbug.com/333406690): After migration, move this portion to the
+  // chrome/browser/privacy_sandbox/privacy_sandbox_notice_service.h
+  // constructor and emit ALL startup histograms instead of just TP related
+  // histograms.
+  notice_storage.RecordHistogramsOnStartup(
+      pref_service, kTrackingProtectionSilentReminderClank);
+  notice_storage.RecordHistogramsOnStartup(pref_service,
+                                           kTrackingProtectionReminderClank);
+  notice_storage.RecordHistogramsOnStartup(
+      pref_service, kTrackingProtectionSilentReminderDesktopIPH);
+  notice_storage.RecordHistogramsOnStartup(
+      pref_service, kTrackingProtectionReminderDesktopIPH);
 }
 
 void SetReminderStatus(
@@ -66,9 +99,9 @@ void MaybeUpdateReminderStatus(PrefService* pref_service,
 
   if (!IsReminderEnabled()) {
     // Mark profiles that have had the reminder feature disabled and will not
-    // experience any reminder logic. We will need to track this group to ensure
-    // they do not receive a reminder in the future if feature parameters
-    // change.
+    // experience any reminder logic. We will need to track this group to
+    // ensure they do not receive a reminder in the future if feature
+    // parameters change.
     SetReminderStatus(pref_service,
                       tracking_protection::TrackingProtectionReminderStatus::
                           kFeatureDisabledSkipped);
@@ -76,8 +109,8 @@ void MaybeUpdateReminderStatus(PrefService* pref_service,
   }
 
   if (was_silently_onboarded && !ShouldReminderBeSilent()) {
-    // We shouldn't show a reminder for silent onboardings unless it's a silent
-    // reminder.
+    // We shouldn't show a reminder for silent onboardings unless it's a
+    // silent reminder.
     // TODO(crbug.com/332764120): Emit a event to track this case.
     SetReminderStatus(
         pref_service,
@@ -106,6 +139,8 @@ TrackingProtectionReminderService::TrackingProtectionReminderService(
       base::BindRepeating(
           &TrackingProtectionReminderService::OnReminderStatusChanged,
           base::Unretained(this)));
+  notice_storage_ = std::make_unique<PrivacySandboxNoticeStorage>();
+  RecordNoticeHistogramsOnStartup(pref_service_, *notice_storage_.get());
 }
 
 TrackingProtectionReminderService::~TrackingProtectionReminderService() =
@@ -120,8 +155,9 @@ ReminderType TrackingProtectionReminderService::GetReminderType() {
   auto onboarded_timestamp = MaybeGetOnboardedTimestamp(onboarding_service_);
   if (!onboarded_timestamp.has_value()) {
     // This condition should only fail if the profile has not been onboarded.
-    // TODO(crbug.com/332764120): Emit a metric detailing that we tried checking
-    // if we should show a reminder for a profile that was not onboarded.
+    // TODO(crbug.com/332764120): Emit a metric detailing that we tried
+    // checking if we should show a reminder for a profile that was not
+    // onboarded.
     return ReminderType::kNone;
   }
 
@@ -134,16 +170,16 @@ ReminderType TrackingProtectionReminderService::GetReminderType() {
                                   : ReminderType::kActive;
 }
 
-void TrackingProtectionReminderService::OnReminderExperienced() {
-  if (GetReminderStatus() !=
+void TrackingProtectionReminderService::OnReminderExperienced(
+    TrackingProtectionOnboarding::SurfaceType surface_type) {
+  notice_storage_->SetNoticeShown(pref_service_, GetNoticeName(surface_type),
+                                  base::Time::Now());
+  if (GetReminderStatus() ==
       tracking_protection::TrackingProtectionReminderStatus::kPendingReminder) {
-    return;
+    SetReminderStatus(pref_service_,
+                      tracking_protection::TrackingProtectionReminderStatus::
+                          kExperiencedReminder);
   }
-  // TODO(crbug.com/349122141): Record the timestamp when this function is
-  // called to be passed as PSD with the HaTS survey.
-  SetReminderStatus(pref_service_,
-                    tracking_protection::TrackingProtectionReminderStatus::
-                        kExperiencedReminder);
 }
 
 bool TrackingProtectionReminderService::IsPendingReminder() {
@@ -155,6 +191,22 @@ bool TrackingProtectionReminderService::IsPendingReminder() {
 tracking_protection::TrackingProtectionReminderStatus
 TrackingProtectionReminderService::GetReminderStatus() {
   return GetReminderStatusInternal(pref_service_);
+}
+
+void TrackingProtectionReminderService::OnReminderActionTaken(
+    NoticeActionTaken action_taken,
+    base::Time action_taken_time,
+    TrackingProtectionOnboarding::SurfaceType surface_type) {
+  notice_storage_->SetNoticeActionTaken(pref_service_,
+                                        GetNoticeName(surface_type),
+                                        action_taken, action_taken_time);
+}
+
+std::optional<PrivacySandboxNoticeData>
+TrackingProtectionReminderService::GetReminderNoticeData(
+    TrackingProtectionOnboarding::SurfaceType surface_type) {
+  return notice_storage_->ReadNoticeData(pref_service_,
+                                         GetNoticeName(surface_type));
 }
 
 void TrackingProtectionReminderService::Shutdown() {

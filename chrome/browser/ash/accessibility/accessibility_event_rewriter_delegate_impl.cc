@@ -96,10 +96,10 @@ void AccessibilityEventRewriterDelegateImpl::DispatchMouseEvent(
                         event->source_device_id() == ui::ED_UNKNOWN_DEVICE;
 
   switch (event->type()) {
-    case ui::ET_MOUSE_MOVED:
+    case ui::EventType::kMouseMoved:
       event_type = ax::mojom::Event::kMouseMoved;
       break;
-    case ui::ET_MOUSE_DRAGGED:
+    case ui::EventType::kMouseDragged:
       event_type = ax::mojom::Event::kMouseDragged;
       break;
     default:

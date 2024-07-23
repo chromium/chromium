@@ -8,10 +8,8 @@
 #include <string>
 
 #include "ui/gfx/range/range.h"
-namespace ash::input_method {
 
-size_t NonWhitespaceAndSymbolsLength(const std::u16string& text,
-                                     gfx::Range selection_range);
+namespace ash::input_method {
 
 std::string GetSystemLocale();
 

@@ -56,8 +56,9 @@ using CustomizableButton = ash::mojom::CustomizableButton;
 std::optional<CustomizableButton> GetMouseButtonFromNativeEvent(
     const ui::PlatformEvent& platform_event) {
   auto event = ui::EventFromNative(platform_event);
-  if (!event->IsMouseEvent() || (event->type() != ui::ET_MOUSE_RELEASED &&
-                                 event->type() != ui::ET_MOUSE_PRESSED)) {
+  if (!event->IsMouseEvent() ||
+      (event->type() != ui::EventType::kMouseReleased &&
+       event->type() != ui::EventType::kMousePressed)) {
     return std::nullopt;
   }
 
@@ -404,12 +405,12 @@ void Seat::OnWindowFocused(aura::Window* gained_focus,
 
 void Seat::WillProcessEvent(const ui::PlatformEvent& event) {
   switch (ui::EventTypeFromNative(event)) {
-    case ui::ET_KEY_PRESSED:
-    case ui::ET_KEY_RELEASED:
+    case ui::EventType::kKeyPressed:
+    case ui::EventType::kKeyReleased:
       physical_code_for_currently_processing_event_ = ui::CodeFromNative(event);
       break;
-    case ui::ET_MOUSE_PRESSED:
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMousePressed:
+    case ui::EventType::kMouseReleased:
       if (auto button = GetMouseButtonFromNativeEvent(event); button) {
         physical_code_for_currently_processing_event_ = *button;
       }
@@ -421,12 +422,12 @@ void Seat::WillProcessEvent(const ui::PlatformEvent& event) {
 
 void Seat::DidProcessEvent(const ui::PlatformEvent& event) {
   switch (ui::EventTypeFromNative(event)) {
-    case ui::ET_KEY_PRESSED:
-    case ui::ET_MOUSE_PRESSED:
+    case ui::EventType::kKeyPressed:
+    case ui::EventType::kMousePressed:
       physical_code_for_currently_processing_event_ = ui::DomCode::NONE;
       break;
-    case ui::ET_KEY_RELEASED:
-    case ui::ET_MOUSE_RELEASED: {
+    case ui::EventType::kKeyReleased:
+    case ui::EventType::kMouseReleased: {
       // Remove this from the pressed key map because when IME is active we can
       // end up getting the DidProcessEvent call before we get the OnKeyEvent
       // callback and then the key will end up being stuck pressed.
@@ -450,7 +451,7 @@ void Seat::OnKeyEvent(ui::KeyEvent* event) {
 
   if (!IsPhysicalCodeEmpty(physical_code_for_currently_processing_event_)) {
     switch (event->type()) {
-      case ui::ET_KEY_PRESSED: {
+      case ui::EventType::kKeyPressed: {
         auto& key_state_set =
             pressed_keys_[physical_code_for_currently_processing_event_];
         // Do not insert the additional events unless the event is a customized
@@ -462,7 +463,7 @@ void Seat::OnKeyEvent(ui::KeyEvent* event) {
         key_state_set.emplace(event->code(), /*consumed_by_ime=*/false,
                               event->key_code());
       } break;
-      case ui::ET_KEY_RELEASED:
+      case ui::EventType::kKeyReleased:
         pressed_keys_.erase(physical_code_for_currently_processing_event_);
         break;
       default:

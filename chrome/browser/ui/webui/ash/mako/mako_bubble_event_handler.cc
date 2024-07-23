@@ -137,8 +137,8 @@ class StateProcessFunction {
 
   State operator()(const InitialState& s) {
     // Re-computes cursor type when touch point moves.
-    if (event_->type() == ui::ET_TOUCH_MOVED ||
-        event_->type() == ui::ET_MOUSE_MOVED) {
+    if (event_->type() == ui::EventType::kTouchMoved ||
+        event_->type() == ui::EventType::kMouseMoved) {
       if (delegate_->IsResizingEnabled()) {
         ResizingDirection direction = ComputeResizingDirection(
             /*bounds=*/GetBoundsInScreen(),
@@ -150,8 +150,8 @@ class StateProcessFunction {
       return InitialState{};
     }
 
-    if (event_->type() == ui::ET_TOUCH_PRESSED ||
-        event_->type() == ui::ET_MOUSE_PRESSED) {
+    if (event_->type() == ui::EventType::kTouchPressed ||
+        event_->type() == ui::EventType::kMousePressed) {
       if (delegate_->IsResizingEnabled()) {
         ResizingDirection direction = ComputeResizingDirection(
             /*bounds=*/GetBoundsInScreen(),
@@ -185,8 +185,8 @@ class StateProcessFunction {
 
   State operator()(const DraggingState& s) {
     // Keeps dragging.
-    if (event_->type() == ui::ET_MOUSE_DRAGGED ||
-        event_->type() == ui::ET_TOUCH_MOVED) {
+    if (event_->type() == ui::EventType::kMouseDragged ||
+        event_->type() == ui::EventType::kTouchMoved) {
       gfx::Rect new_bounds = s.original_bounds_in_screen +
                              GetBoundsInScreen().OffsetFromOrigin() +
                              GetPointerPos() - s.original_pointer_pos;
@@ -208,8 +208,8 @@ class StateProcessFunction {
 
   State operator()(const ResizingState& s) {
     // Keeps resizing.
-    if (event_->type() == ui::ET_MOUSE_DRAGGED ||
-        event_->type() == ui::ET_TOUCH_MOVED) {
+    if (event_->type() == ui::EventType::kMouseDragged ||
+        event_->type() == ui::EventType::kTouchMoved) {
       gfx::Vector2d resizing_unit =
           MapResizingDirectionToVector(s.resizing_direction);
       gfx::Vector2d pointer_delta = GetBoundsInScreen().OffsetFromOrigin() +

@@ -53,13 +53,13 @@ bool ReadGestureData(ui::mojom::EventDataView* event,
   ui::GestureEventDetails details(ConvertTo<ui::EventType>(event->action()));
   details.set_device_type(gesture_data->device_type);
   switch (details.type()) {
-    case ui::ET_GESTURE_PINCH_UPDATE:
+    case ui::EventType::kGesturePinchUpdate:
       if (!gesture_data->details->is_pinch()) {
         return false;
       }
       details.set_scale(gesture_data->details->get_pinch()->scale);
       break;
-    case ui::ET_GESTURE_SWIPE:
+    case ui::EventType::kGestureSwipe:
       if (!gesture_data->details->is_swipe()) {
         return false;
       }
@@ -133,53 +133,53 @@ static_assert(ui::mojom::kEventFlagForwardMouseButton ==
 ui::mojom::EventType TypeConverter<ui::mojom::EventType,
                                    ui::EventType>::Convert(ui::EventType type) {
   switch (type) {
-    case ui::ET_UNKNOWN:
+    case ui::EventType::kUnknown:
       return ui::mojom::EventType::UNKNOWN;
-    case ui::ET_KEY_PRESSED:
+    case ui::EventType::kKeyPressed:
       return ui::mojom::EventType::KEY_PRESSED;
-    case ui::ET_KEY_RELEASED:
+    case ui::EventType::kKeyReleased:
       return ui::mojom::EventType::KEY_RELEASED;
-    case ui::ET_GESTURE_TAP:
+    case ui::EventType::kGestureTap:
       return ui::mojom::EventType::GESTURE_TAP;
-    case ui::ET_GESTURE_SWIPE:
+    case ui::EventType::kGestureSwipe:
       return ui::mojom::EventType::GESTURE_SWIPE;
-    case ui::ET_GESTURE_PINCH_BEGIN:
+    case ui::EventType::kGesturePinchBegin:
       return ui::mojom::EventType::GESTURE_PINCH_BEGIN;
-    case ui::ET_GESTURE_PINCH_END:
+    case ui::EventType::kGesturePinchEnd:
       return ui::mojom::EventType::GESTURE_PINCH_END;
-    case ui::ET_GESTURE_PINCH_UPDATE:
+    case ui::EventType::kGesturePinchUpdate:
       return ui::mojom::EventType::GESTURE_PINCH_UPDATE;
-    case ui::ET_SCROLL:
+    case ui::EventType::kScroll:
       return ui::mojom::EventType::SCROLL;
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kScrollFlingStart:
       return ui::mojom::EventType::SCROLL_FLING_START;
-    case ui::ET_SCROLL_FLING_CANCEL:
+    case ui::EventType::kScrollFlingCancel:
       return ui::mojom::EventType::SCROLL_FLING_CANCEL;
-    case ui::ET_CANCEL_MODE:
+    case ui::EventType::kCancelMode:
       return ui::mojom::EventType::CANCEL_MODE;
-    case ui::ET_MOUSE_PRESSED:
+    case ui::EventType::kMousePressed:
       return ui::mojom::EventType::MOUSE_PRESSED_EVENT;
-    case ui::ET_MOUSE_DRAGGED:
+    case ui::EventType::kMouseDragged:
       return ui::mojom::EventType::MOUSE_DRAGGED_EVENT;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       return ui::mojom::EventType::MOUSE_RELEASED_EVENT;
-    case ui::ET_MOUSE_MOVED:
+    case ui::EventType::kMouseMoved:
       return ui::mojom::EventType::MOUSE_MOVED_EVENT;
-    case ui::ET_MOUSE_ENTERED:
+    case ui::EventType::kMouseEntered:
       return ui::mojom::EventType::MOUSE_ENTERED_EVENT;
-    case ui::ET_MOUSE_EXITED:
+    case ui::EventType::kMouseExited:
       return ui::mojom::EventType::MOUSE_EXITED_EVENT;
-    case ui::ET_MOUSEWHEEL:
+    case ui::EventType::kMousewheel:
       return ui::mojom::EventType::MOUSE_WHEEL_EVENT;
-    case ui::ET_MOUSE_CAPTURE_CHANGED:
+    case ui::EventType::kMouseCaptureChanged:
       return ui::mojom::EventType::MOUSE_CAPTURE_CHANGED_EVENT;
-    case ui::ET_TOUCH_RELEASED:
+    case ui::EventType::kTouchReleased:
       return ui::mojom::EventType::TOUCH_RELEASED;
-    case ui::ET_TOUCH_PRESSED:
+    case ui::EventType::kTouchPressed:
       return ui::mojom::EventType::TOUCH_PRESSED;
-    case ui::ET_TOUCH_MOVED:
+    case ui::EventType::kTouchMoved:
       return ui::mojom::EventType::TOUCH_MOVED;
-    case ui::ET_TOUCH_CANCELLED:
+    case ui::EventType::kTouchCancelled:
       return ui::mojom::EventType::TOUCH_CANCELLED;
     default:
       NOTREACHED_IN_MIGRATION()
@@ -195,55 +195,55 @@ ui::EventType TypeConverter<ui::EventType, ui::mojom::EventType>::Convert(
     ui::mojom::EventType type) {
   switch (type) {
     case ui::mojom::EventType::UNKNOWN:
-      return ui::ET_UNKNOWN;
+      return ui::EventType::kUnknown;
     case ui::mojom::EventType::KEY_PRESSED:
-      return ui::ET_KEY_PRESSED;
+      return ui::EventType::kKeyPressed;
     case ui::mojom::EventType::KEY_RELEASED:
-      return ui::ET_KEY_RELEASED;
+      return ui::EventType::kKeyReleased;
     case ui::mojom::EventType::GESTURE_TAP:
-      return ui::ET_GESTURE_TAP;
+      return ui::EventType::kGestureTap;
     case ui::mojom::EventType::GESTURE_SWIPE:
-      return ui::ET_GESTURE_SWIPE;
+      return ui::EventType::kGestureSwipe;
     case ui::mojom::EventType::GESTURE_PINCH_BEGIN:
-      return ui::ET_GESTURE_PINCH_BEGIN;
+      return ui::EventType::kGesturePinchBegin;
     case ui::mojom::EventType::GESTURE_PINCH_END:
-      return ui::ET_GESTURE_PINCH_END;
+      return ui::EventType::kGesturePinchEnd;
     case ui::mojom::EventType::GESTURE_PINCH_UPDATE:
-      return ui::ET_GESTURE_PINCH_UPDATE;
+      return ui::EventType::kGesturePinchUpdate;
     case ui::mojom::EventType::SCROLL:
-      return ui::ET_SCROLL;
+      return ui::EventType::kScroll;
     case ui::mojom::EventType::SCROLL_FLING_START:
-      return ui::ET_SCROLL_FLING_START;
+      return ui::EventType::kScrollFlingStart;
     case ui::mojom::EventType::SCROLL_FLING_CANCEL:
-      return ui::ET_SCROLL_FLING_CANCEL;
+      return ui::EventType::kScrollFlingCancel;
     case ui::mojom::EventType::MOUSE_PRESSED_EVENT:
-      return ui::ET_MOUSE_PRESSED;
+      return ui::EventType::kMousePressed;
     case ui::mojom::EventType::MOUSE_DRAGGED_EVENT:
-      return ui::ET_MOUSE_DRAGGED;
+      return ui::EventType::kMouseDragged;
     case ui::mojom::EventType::MOUSE_RELEASED_EVENT:
-      return ui::ET_MOUSE_RELEASED;
+      return ui::EventType::kMouseReleased;
     case ui::mojom::EventType::MOUSE_MOVED_EVENT:
-      return ui::ET_MOUSE_MOVED;
+      return ui::EventType::kMouseMoved;
     case ui::mojom::EventType::MOUSE_ENTERED_EVENT:
-      return ui::ET_MOUSE_ENTERED;
+      return ui::EventType::kMouseEntered;
     case ui::mojom::EventType::MOUSE_EXITED_EVENT:
-      return ui::ET_MOUSE_EXITED;
+      return ui::EventType::kMouseExited;
     case ui::mojom::EventType::MOUSE_WHEEL_EVENT:
-      return ui::ET_MOUSEWHEEL;
+      return ui::EventType::kMousewheel;
     case ui::mojom::EventType::MOUSE_CAPTURE_CHANGED_EVENT:
-      return ui::ET_MOUSE_CAPTURE_CHANGED;
+      return ui::EventType::kMouseCaptureChanged;
     case ui::mojom::EventType::TOUCH_RELEASED:
-      return ui::ET_TOUCH_RELEASED;
+      return ui::EventType::kTouchReleased;
     case ui::mojom::EventType::TOUCH_PRESSED:
-      return ui::ET_TOUCH_PRESSED;
+      return ui::EventType::kTouchPressed;
     case ui::mojom::EventType::TOUCH_MOVED:
-      return ui::ET_TOUCH_MOVED;
+      return ui::EventType::kTouchMoved;
     case ui::mojom::EventType::TOUCH_CANCELLED:
-      return ui::ET_TOUCH_CANCELLED;
+      return ui::EventType::kTouchCancelled;
     default:
       NOTREACHED_IN_MIGRATION();
   }
-  return ui::ET_UNKNOWN;
+  return ui::EventType::kUnknown;
 }
 
 // static
@@ -321,11 +321,11 @@ StructTraits<ui::mojom::EventDataView, EventUniquePtr>::gesture_data(
   gesture_data->location = CreateLocationData(gesture_event);
   gesture_data->device_type = gesture_event->details().device_type();
   switch (event->type()) {
-    case ui::ET_GESTURE_PINCH_UPDATE:
+    case ui::EventType::kGesturePinchUpdate:
       gesture_data->details = ui::mojom::GestureDataDetails::NewPinch(
           ui::mojom::GesturePinchData::New(gesture_event->details().scale()));
       break;
-    case ui::ET_GESTURE_SWIPE:
+    case ui::EventType::kGestureSwipe:
       gesture_data->details = ui::mojom::GestureDataDetails::NewSwipe(
           ui::mojom::GestureSwipeData::New(
               gesture_event->details().swipe_left(),
@@ -419,8 +419,8 @@ bool StructTraits<ui::mojom::EventDataView, EventUniquePtr>::Read(
           ui::KeycodeConverter::UsbKeycodeToDomCode(key_data->dom_code);
       const ui::EventType event_type =
           (event.action() == ui::mojom::EventType::KEY_PRESSED)
-              ? ui::ET_KEY_PRESSED
-              : ui::ET_KEY_RELEASED;
+              ? ui::EventType::kKeyPressed
+              : ui::EventType::kKeyReleased;
       *out = std::make_unique<ui::KeyEvent>(event_type, key_code, dom_code,
                                             event.flags(), *dom_key, time_stamp,
                                             key_data->is_char);

@@ -99,11 +99,12 @@ class PermissionRequestManagerTest : public content::RenderViewHostTestHarness {
 
   void OpenHelpCenterLink() {
 #if !BUILDFLAG(IS_ANDROID)
-    const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                               ui::EventTimeForNow(), 0, 0);
+    const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                               gfx::Point(), ui::EventTimeForNow(), 0, 0);
 #else  // BUILDFLAG(IS_ANDROID)
     const ui::TouchEvent event(
-        ui::ET_TOUCH_MOVED, gfx::PointF(), gfx::PointF(), ui::EventTimeForNow(),
+        ui::EventType::kTouchMoved, gfx::PointF(), gfx::PointF(),
+        ui::EventTimeForNow(),
         ui::PointerDetails(ui::EventPointerType::kTouch, 1));
 #endif
     manager_->OpenHelpCenterLink(event);

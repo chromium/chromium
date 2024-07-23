@@ -64,9 +64,7 @@ CredentialLeakDialogView::CredentialLeakDialogView(
     //
     // Note that when this lambda gets bound it closes over &controller_, not
     // controller_ itself!
-    auto* raw_controller = controller->get();
-    *controller = nullptr;
-    (raw_controller->*(fn))();
+    (controller->ExtractAsDangling()->*(fn))();
   };
 
   SetAcceptCallback(

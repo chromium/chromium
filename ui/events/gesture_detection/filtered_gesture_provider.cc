@@ -101,8 +101,9 @@ const ui::MotionEvent* FilteredGestureProvider::GetCurrentDownEvent() const {
 
 void FilteredGestureProvider::OnGestureEvent(const GestureEventData& event) {
   if (handling_event_) {
-    if (event.details.type() == ui::ET_GESTURE_SCROLL_BEGIN)
+    if (event.details.type() == ui::EventType::kGestureScrollBegin) {
       any_touch_moved_beyond_slop_region_ = true;
+    }
 
     pending_gesture_packet_.Push(event);
     return;

@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_P(ArcAppDeferredShelfWithParamsBrowserTest,
   if (is_pinned()) {
     EXPECT_EQ(
         ash::SHELF_ACTION_NEW_WINDOW_CREATED,
-        SelectShelfItem(shelf_id, ui::ET_MOUSE_PRESSED,
+        SelectShelfItem(shelf_id, ui::EventType::kMousePressed,
                         display::kInvalidDisplayId, ash::LAUNCH_FROM_SHELF));
   } else {
     arc::LaunchApp(profile(), app_id, ui::EF_LEFT_MOUSE_BUTTON,

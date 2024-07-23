@@ -84,7 +84,7 @@ class MouseCursorOverlayController::Observer final
   }
 
   gfx::Point CoordinatesForMouseEvent(const ui::Event& event) const {
-    if (!IsWindowActive() || event.type() == ui::ET_MOUSE_EXITED) {
+    if (!IsWindowActive() || event.type() == ui::EventType::kMouseExited) {
       return kOutsideSurface;
     }
     gfx::PointF location = AsLocationInWindow(event);
@@ -106,11 +106,11 @@ class MouseCursorOverlayController::Observer final
   // ui::EventHandler overrides.
   void OnEvent(ui::Event* event) final {
     switch (event->type()) {
-      case ui::ET_MOUSE_DRAGGED:
-      case ui::ET_MOUSE_MOVED:
-      case ui::ET_MOUSE_ENTERED:
-      case ui::ET_MOUSE_EXITED:
-      case ui::ET_TOUCH_MOVED:
+      case ui::EventType::kMouseDragged:
+      case ui::EventType::kMouseMoved:
+      case ui::EventType::kMouseEntered:
+      case ui::EventType::kMouseExited:
+      case ui::EventType::kTouchMoved:
         if (IsWindowActive()) {
           controller_->OnMouseMoved(AsLocationInWindow(*event));
         }
@@ -119,11 +119,11 @@ class MouseCursorOverlayController::Observer final
               CoordinatesForMouseEvent(*event));
         }
         break;
-      case ui::ET_MOUSE_PRESSED:
-      case ui::ET_MOUSE_RELEASED:
-      case ui::ET_MOUSEWHEEL:
-      case ui::ET_TOUCH_PRESSED:
-      case ui::ET_TOUCH_RELEASED: {
+      case ui::EventType::kMousePressed:
+      case ui::EventType::kMouseReleased:
+      case ui::EventType::kMousewheel:
+      case ui::EventType::kTouchPressed:
+      case ui::EventType::kTouchReleased: {
         controller_->OnMouseClicked(AsLocationInWindow(*event));
         break;
       }

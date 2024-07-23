@@ -800,7 +800,7 @@ WIN_10_LOW_END = PerfPlatform(
     'SSD, 4GB RAM.',
     _WIN_10_LOW_END_BENCHMARK_CONFIGS,
     # TODO(b/278947510): Increase the count when m.2 disks stop failing.
-    48,
+    24,  # (b/354044494) reduce for os/gpu update.
     'win',
     crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 WIN_10_LOW_END_PGO = PerfPlatform(

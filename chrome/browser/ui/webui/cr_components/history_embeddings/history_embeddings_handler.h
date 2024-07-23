@@ -39,8 +39,9 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
   ~HistoryEmbeddingsHandler() override;
 
   // history_embeddings::mojom::PageHandler:
-  void Search(history_embeddings::mojom::SearchQueryPtr query,
-              SearchCallback callback) override;
+  void SetPage(mojo::PendingRemote<history_embeddings::mojom::Page>
+                   pending_page) override;
+  void Search(history_embeddings::mojom::SearchQueryPtr query) override;
   void RecordSearchResultsMetrics(bool non_empty_results,
                                   bool user_clicked_results) override;
   void SetUserFeedback(
@@ -50,11 +51,11 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
                       uint32_t num_chars_for_query) override;
 
   // Callback for querying `HistoryEmbeddingsService::Search()`.
-  void OnReceivedSearchResult(SearchCallback callback,
-                              history_embeddings::SearchResult result);
+  void OnReceivedSearchResult(history_embeddings::SearchResult result);
 
  private:
   mojo::Receiver<history_embeddings::mojom::PageHandler> page_handler_;
+  mojo::Remote<history_embeddings::mojom::Page> page_;
 
   // The profile is used to get the HistoryEmbeddingsService to fulfill
   // search requests.

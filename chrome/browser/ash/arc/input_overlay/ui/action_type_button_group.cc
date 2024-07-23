@@ -42,7 +42,7 @@ ActionTypeButtonGroup::~ActionTypeButtonGroup() = default;
 
 bool ActionTypeButtonGroup::HandleArrowKeyPressed(ActionTypeButton* button,
                                                   const ui::KeyEvent& event) {
-  DCHECK(event.type() == ui::ET_KEY_PRESSED);
+  DCHECK(event.type() == ui::EventType::kKeyPressed);
 
   const size_t selected_index = std::distance(
       buttons_.begin(), std::find(buttons_.begin(), buttons_.end(), button));

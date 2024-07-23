@@ -378,6 +378,7 @@ TEST_F(NetworkStateNotifierTest,
 
 TEST_F(NetworkStateNotifierTest,
        CellularInvalidApnConnectionFailureApnRevampDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(features::kApnRevamp);
   Init();
   TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
       std::make_unique<SystemNotificationHelper>());

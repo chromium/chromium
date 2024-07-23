@@ -6,7 +6,10 @@
 
 #include <stddef.h>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -55,7 +58,7 @@ CardUnmaskPromptControllerImpl::CardUnmaskPromptControllerImpl(
     const CreditCard& card,
     const CardUnmaskPromptOptions& card_unmask_prompt_options,
     base::WeakPtr<CardUnmaskDelegate> delegate)
-    : pref_service_(pref_service),
+    : pref_service_(CHECK_DEREF(pref_service)),
       card_(card),
       card_unmask_prompt_options_(card_unmask_prompt_options),
       delegate_(delegate) {}

@@ -58,7 +58,7 @@ void SlideOutController::OnGestureEvent(ui::GestureEvent* event) {
       has_swipe_control_ ? swipe_control_width_ + kSwipeCloseMargin
                          : width * 0.5;
 
-  if (event->type() == ui::ET_SCROLL_FLING_START) {
+  if (event->type() == ui::EventType::kScrollFlingStart) {
     // The threshold for the fling velocity is computed empirically.
     // The unit is in pixels/second.
     const float kFlingThresholdForClose = 800.f;
@@ -76,7 +76,7 @@ void SlideOutController::OnGestureEvent(ui::GestureEvent* event) {
   if (!event->IsScrollGestureEvent())
     return;
 
-  if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN) {
+  if (event->type() == ui::EventType::kGestureScrollBegin) {
     switch (control_open_state_) {
       case SwipeControlOpenState::kClosed:
         gesture_amount_ = 0.f;
@@ -91,7 +91,7 @@ void SlideOutController::OnGestureEvent(ui::GestureEvent* event) {
         NOTREACHED_NORETURN();
     }
     delegate_->OnSlideStarted();
-  } else if (event->type() == ui::ET_GESTURE_SCROLL_UPDATE) {
+  } else if (event->type() == ui::EventType::kGestureScrollUpdate) {
     // The scroll-update events include the incremental scroll amount.
     gesture_amount_ += event->details().scroll_x();
 
@@ -124,7 +124,7 @@ void SlideOutController::OnGestureEvent(ui::GestureEvent* event) {
     transform.Translate(scroll_amount, 0.0);
     layer->SetTransform(transform);
     delegate_->OnSlideChanged(true);
-  } else if (event->type() == ui::ET_GESTURE_SCROLL_END) {
+  } else if (event->type() == ui::EventType::kGestureScrollEnd) {
     float scrolled_ratio = fabsf(gesture_amount_) / width;
     if (mode_ == SlideMode::kFull &&
         scrolled_ratio >= scroll_amount_for_closing_notification / width) {
@@ -151,13 +151,13 @@ void SlideOutController::OnScrollEvent(ui::ScrollEvent* event) {
     return;
   }
 
-  if (event->type() == ui::EventType::ET_SCROLL_FLING_CANCEL) {
+  if (event->type() == ui::EventType::kScrollFlingCancel) {
     gesture_amount_ = 0;
-  } else if (event->type() == ui::EventType::ET_SCROLL) {
+  } else if (event->type() == ui::EventType::kScroll) {
     if (event->finger_count() == 2) {
       gesture_amount_ += event->x_offset();
     }
-  } else if (event->type() == ui::EventType::ET_SCROLL_FLING_START) {
+  } else if (event->type() == ui::EventType::kScrollFlingStart) {
     auto* layer = delegate_->GetSlideOutLayer();
     int width = layer->bounds().width();
     if (abs(gesture_amount_) > width) {

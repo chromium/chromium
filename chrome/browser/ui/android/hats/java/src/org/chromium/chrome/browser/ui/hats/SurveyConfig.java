@@ -103,6 +103,33 @@ public class SurveyConfig {
         return getConfigWithSuppliedTriggerIdIfPresent(config, suppliedTriggerId);
     }
 
+    /** Return the dump of input Survey config for debugging purposes. */
+    public static String toString(SurveyConfig config) {
+        if (config == null) return "";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Trigger=")
+                .append(config.mTrigger)
+                .append(" TriggerId=")
+                .append(config.mTriggerId)
+                .append(" Probability=")
+                .append(config.mProbability)
+                .append(" UserPrompted=")
+                .append(config.mUserPrompted);
+
+        sb.append(" PsdBitFields=");
+        for (String field : config.mPsdBitDataFields) {
+            sb.append(field).append(",");
+        }
+
+        sb.append(" PsdStringFields=");
+        for (String field : config.mPsdStringDataFields) {
+            sb.append(field).append(",");
+        }
+
+        return sb.toString();
+    }
+
     static void setSurveyConfigForTesting(SurveyConfig config) {
         sConfigForTesting = config;
         ResettersForTesting.register(() -> sConfigForTesting = null);

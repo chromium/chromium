@@ -190,7 +190,7 @@ TEST_F(ViewTargeterTest, ViewTargeterForScrollEvents) {
 
   // The event falls within the bounds of |child| and |content| but not
   // |grandchild|, so |child| should be the initial target for the event.
-  ui::ScrollEvent scroll(ui::ET_SCROLL, gfx::Point(60, 60),
+  ui::ScrollEvent scroll(ui::EventType::kScroll, gfx::Point(60, 60),
                          ui::EventTimeForNow(), 0, 0, 3, 0, 3, 2);
   ui::EventTarget* current_target =
       targeter->FindTargetForEvent(root_view, &scroll);
@@ -209,7 +209,7 @@ TEST_F(ViewTargeterTest, ViewTargeterForScrollEvents) {
   // |child|, and |grandchild|. But since |content| is the contents view,
   // and contents views are resized to fill the entire area of the root
   // view, the event's initial target should still be |content|.
-  scroll = ui::ScrollEvent(ui::ET_SCROLL, gfx::Point(150, 150),
+  scroll = ui::ScrollEvent(ui::EventType::kScroll, gfx::Point(150, 150),
                            ui::EventTimeForNow(), 0, 0, 3, 0, 3, 2);
   current_target = targeter->FindTargetForEvent(root_view, &scroll);
   EXPECT_EQ(content, static_cast<View*>(current_target));
@@ -247,13 +247,13 @@ TEST_F(ViewTargeterTest, ViewTargeterForGestureEvents) {
 
   // Define some gesture events for testing.
   gfx::RectF bounding_box(gfx::PointF(46.f, 46.f), gfx::SizeF(8.f, 8.f));
-  ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+  ui::GestureEventDetails details(ui::EventType::kGestureTap);
   details.set_bounding_box(bounding_box);
   ui::GestureEvent tap = CreateTestGestureEvent(details);
-  details = ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN);
+  details = ui::GestureEventDetails(ui::EventType::kGestureScrollBegin);
   details.set_bounding_box(bounding_box);
   ui::GestureEvent scroll_begin = CreateTestGestureEvent(details);
-  details = ui::GestureEventDetails(ui::ET_GESTURE_END);
+  details = ui::GestureEventDetails(ui::EventType::kGestureEnd);
   details.set_bounding_box(bounding_box);
   ui::GestureEvent end = CreateTestGestureEvent(details);
 
@@ -305,13 +305,13 @@ TEST_F(ViewTargeterTest, ViewTargeterForGestureEvents) {
   // again (calls to FindTargetForEvent() and FindNextBestTarget()
   // mutate the location of the gesture events to be in the coordinate
   // space of the returned view).
-  details = ui::GestureEventDetails(ui::ET_GESTURE_TAP);
+  details = ui::GestureEventDetails(ui::EventType::kGestureTap);
   details.set_bounding_box(bounding_box);
   tap = CreateTestGestureEvent(details);
-  details = ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN);
+  details = ui::GestureEventDetails(ui::EventType::kGestureScrollBegin);
   details.set_bounding_box(bounding_box);
   scroll_begin = CreateTestGestureEvent(details);
-  details = ui::GestureEventDetails(ui::ET_GESTURE_END);
+  details = ui::GestureEventDetails(ui::EventType::kGestureEnd);
   details.set_bounding_box(bounding_box);
   end = CreateTestGestureEvent(details);
 
@@ -351,7 +351,7 @@ TEST_F(ViewTargeterTest, TargetContentsAndRootView) {
   // A gesture event located entirely within the contents view should
   // target the contents view.
   gfx::RectF bounding_box(gfx::PointF(96.f, 96.f), gfx::SizeF(8.f, 8.f));
-  ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+  ui::GestureEventDetails details(ui::EventType::kGestureTap);
   details.set_bounding_box(bounding_box);
   ui::GestureEvent tap = CreateTestGestureEvent(details);
 
@@ -439,7 +439,7 @@ TEST_F(ViewTargeterTest, GestureEventCoordinateConversion) {
   // in root view coordinates with width and height of 4.
   gfx::RectF bounding_box(gfx::PointF(58.f, 58.f), gfx::SizeF(4.f, 4.f));
   gfx::PointF center_point(bounding_box.CenterPoint());
-  ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+  ui::GestureEventDetails details(ui::EventType::kGestureTap);
   details.set_bounding_box(bounding_box);
   ui::GestureEvent tap = CreateTestGestureEvent(details);
 
@@ -646,7 +646,7 @@ TEST_F(ViewTargeterTest, FavorChildContainingHitBounds) {
   ui::EventTargeter* targeter = root_view->targeter();
 
   gfx::RectF bounding_box(gfx::PointF(4.f, 4.f), gfx::SizeF(42.f, 42.f));
-  ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+  ui::GestureEventDetails details(ui::EventType::kGestureTap);
   details.set_bounding_box(bounding_box);
   ui::GestureEvent tap = CreateTestGestureEvent(details);
 

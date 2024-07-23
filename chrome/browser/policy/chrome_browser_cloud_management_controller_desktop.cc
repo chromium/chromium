@@ -25,6 +25,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/client_data_delegate_desktop.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
+#include "chrome/browser/policy/cloud/fm_registration_token_uploader.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -194,6 +195,7 @@ void ChromeBrowserCloudManagementControllerDesktop::ShutDown() {
 
   policy_invalidator_.reset();
   commands_invalidator_.reset();
+  fm_registration_token_uploader_.reset();
   std::visit([](auto&& inv) { inv.reset(); },
              invalidation_service_or_listener_);
   device_instance_id_driver_.reset();
@@ -306,31 +308,38 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
           invalidation::InvalidationListener::kProjectNumberEnterprise,
           kInvalidationListenerLogPrefix);
 
+  auto* core = g_browser_process->browser_policy_connector()
+                   ->machine_level_user_cloud_policy_manager()
+                   ->core();
+
   policy_invalidator_ = std::make_unique<CloudPolicyInvalidator>(
-      PolicyInvalidationScope::kCBCM,
-      g_browser_process->browser_policy_connector()
-          ->machine_level_user_cloud_policy_manager()
-          ->core(),
+      PolicyInvalidationScope::kCBCM, core,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::DefaultClock::GetInstance(),
       0 /* highest_handled_invalidation_version */);
   policy_invalidator_->Initialize(invalidation::UniquePointerVariantToPointer(
       invalidation_service_or_listener_));
 
-  g_browser_process->browser_policy_connector()
-      ->machine_level_user_cloud_policy_manager()
-      ->core()
-      ->StartRemoteCommandsService(
-          std::make_unique<enterprise_commands::CBCMRemoteCommandsFactory>(),
-          PolicyInvalidationScope::kCBCM);
+  core->StartRemoteCommandsService(
+      std::make_unique<enterprise_commands::CBCMRemoteCommandsFactory>(),
+      PolicyInvalidationScope::kCBCM);
 
   commands_invalidator_ = std::make_unique<RemoteCommandsInvalidatorImpl>(
-      g_browser_process->browser_policy_connector()
-          ->machine_level_user_cloud_policy_manager()
-          ->core(),
-      base::DefaultClock::GetInstance(), PolicyInvalidationScope::kCBCM);
+      core, base::DefaultClock::GetInstance(), PolicyInvalidationScope::kCBCM);
   commands_invalidator_->Initialize(invalidation::UniquePointerVariantToPointer(
       invalidation_service_or_listener_));
+
+  if (std::holds_alternative<
+          std::unique_ptr<invalidation::InvalidationListener>>(
+          invalidation_service_or_listener_)) {
+    fm_registration_token_uploader_ =
+        std::make_unique<FmRegistrationTokenUploader>(
+            PolicyInvalidationScope::kCBCM,
+            std::get<std::unique_ptr<invalidation::InvalidationListener>>(
+                invalidation_service_or_listener_)
+                .get(),
+            core);
+  }
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

@@ -32,3 +32,10 @@
 -org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_copy
 -org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_cut
 -org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_paste
+
+# crbug.com/354765949
+-org.chromium.content.browser.ChildProcessLauncherHelperTest.testWarmUp
+-org.chromium.content.browser.ChildProcessLauncherHelperTest.testWarmUpPrivilegedProcess
+-org.chromium.content.browser.ChildProcessLauncherHelperTest.testWarmUpProcessCrashAfterUse
+-org.chromium.content.browser.ChildProcessLauncherHelperTest.testWarmUpProcessCrashBeforeUse
+-org.chromium.content.browser.ChildProcessLauncherHelperTest.testWarmUpProcessCrashBeforeUse

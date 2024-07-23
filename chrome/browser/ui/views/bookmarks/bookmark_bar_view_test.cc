@@ -216,7 +216,7 @@ class TabKeyWaiter : public ui::EventHandler {
  private:
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override {
-    if (event->type() == ui::ET_KEY_RELEASED &&
+    if (event->type() == ui::EventType::kKeyReleased &&
         event->key_code() == ui::VKEY_TAB) {
       received_tab_ = true;
       if (!quit_closure_.is_null()) {

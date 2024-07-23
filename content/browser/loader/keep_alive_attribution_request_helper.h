@@ -15,7 +15,6 @@
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/common/content_export.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -44,7 +43,6 @@ class CONTENT_EXPORT KeepAliveAttributionRequestHelper {
       const GURL& request_url,
       const std::optional<base::UnguessableToken>& attribution_src_token,
       const std::optional<std::string>& devtools_request_id,
-      network::AttributionReportingRuntimeFeatures,
       const AttributionSuitableContext&);
 
   ~KeepAliveAttributionRequestHelper();
@@ -62,17 +60,13 @@ class CONTENT_EXPORT KeepAliveAttributionRequestHelper {
  private:
   friend class KeepAliveAttributionRequestHelperTestPeer;
 
-  KeepAliveAttributionRequestHelper(
-      BackgroundRegistrationsId,
-      AttributionDataHostManager*,
-      const GURL& reporting_url,
-      network::AttributionReportingRuntimeFeatures runtime_features);
+  KeepAliveAttributionRequestHelper(BackgroundRegistrationsId,
+                                    AttributionDataHostManager*,
+                                    const GURL& reporting_url);
 
   BackgroundRegistrationsId id_;
 
   base::WeakPtr<AttributionDataHostManager> attribution_data_host_manager_;
-
-  network::AttributionReportingRuntimeFeatures runtime_features_;
 
   // Reporting url of the ongoing request, it is updated on redirection. The url
   // might be suitable or not, if it is not, when receiving a response, it will

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/birch/birch_item.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
@@ -205,9 +204,7 @@ std::unique_ptr<views::Widget> BirchBarView::CreateBirchBarWidget(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.accept_events = true;
-  params.activatable = features::IsOverviewNewFocusEnabled()
-                           ? views::Widget::InitParams::Activatable::kYes
-                           : views::Widget::InitParams::Activatable::kNo;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.context = root_window;
   params.name = "BirchBarWidget";

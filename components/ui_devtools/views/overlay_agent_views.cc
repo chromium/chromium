@@ -506,7 +506,7 @@ void OverlayAgentViews::OnMouseEvent(ui::MouseEvent* event) {
 
   // Show parent of the pinned element with id |pinned_id_| when mouse scrolls
   // up. If parent exists, highlight and re-pin parent element.
-  if (event->type() == ui::ET_MOUSEWHEEL && pinned_id_) {
+  if (event->type() == ui::EventType::kMousewheel && pinned_id_) {
     const ui::MouseWheelEvent* mouse_event =
         static_cast<ui::MouseWheelEvent*>(event);
     DCHECK(mouse_event);
@@ -539,7 +539,7 @@ void OverlayAgentViews::OnMouseEvent(ui::MouseEvent* event) {
   }
 
   // Pin the hover element on click.
-  if (event->type() == ui::ET_MOUSE_PRESSED) {
+  if (event->type() == ui::EventType::kMousePressed) {
     if (active_window)
       event->SetHandled();
     SetPinnedNodeId(element_id);

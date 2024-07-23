@@ -128,7 +128,8 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
 
   std::unique_ptr<cc::ScrollUpdateEventMetrics> metrics =
       cc::ScrollUpdateEventMetrics::Create(
-          ui::ET_GESTURE_SCROLL_UPDATE, gesture_event.GetScrollInputType(),
+          ui::EventType::kGestureScrollUpdate,
+          gesture_event.GetScrollInputType(),
           /*is_inertial=*/false,
           cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
           /*delta=*/gesture_event.data.scroll_update.delta_y,

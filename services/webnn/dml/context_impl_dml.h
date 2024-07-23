@@ -27,7 +27,6 @@ class ContextImplDml final : public WebNNContextImpl {
  public:
   ContextImplDml(scoped_refptr<Adapter> adapter,
                  mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                 mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
                  WebNNContextProviderImpl* context_provider,
                  mojom::CreateContextOptionsPtr options,
                  std::unique_ptr<CommandRecorder> command_recorder,

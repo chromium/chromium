@@ -56,7 +56,7 @@ class TestMenuButton : public MenuButton {
   void Reset() {
     clicked_ = false;
     last_state_ = Button::STATE_NORMAL;
-    last_event_type_ = ui::ET_UNKNOWN;
+    last_event_type_ = ui::kUnknown;
   }
 
  private:
@@ -68,7 +68,7 @@ class TestMenuButton : public MenuButton {
 
   bool clicked_ = false;
   Button::ButtonState last_state_ = Button::STATE_NORMAL;
-  ui::EventType last_event_type_ = ui::ET_UNKNOWN;
+  ui::EventType last_event_type_ = ui::kUnknown;
 };
 
 class MenuButtonTest : public ViewsTestBase {
@@ -250,10 +250,10 @@ void TestDragDropClient::OnMouseEvent(ui::MouseEvent* event) {
   if (!IsDragDropInProgress())
     return;
   switch (event->type()) {
-    case ui::ET_MOUSE_DRAGGED:
+    case ui::EventType::kMouseDragged:
       event->StopPropagation();
       break;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       drag_in_progress_ = false;
       event->StopPropagation();
       break;
@@ -279,14 +279,15 @@ TEST_F(MenuButtonTest, ActivateOnKeyPress) {
   ConfigureMenuButton(std::make_unique<TestMenuButton>());
 
   EXPECT_FALSE(button()->clicked());
-  button()->OnKeyPressed(ui::KeyEvent(
-      ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_SPACE, ui::DomCode::SPACE, 0));
+  button()->OnKeyPressed(ui::KeyEvent(ui::EventType::kKeyPressed,
+                                      ui::KeyboardCode::VKEY_SPACE,
+                                      ui::DomCode::SPACE, 0));
   EXPECT_TRUE(button()->clicked());
 
   button()->Reset();
   EXPECT_FALSE(button()->clicked());
 
-  button()->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED,
+  button()->OnKeyPressed(ui::KeyEvent(ui::EventType::kKeyPressed,
                                       ui::KeyboardCode::VKEY_RETURN,
                                       ui::DomCode::ENTER, 0));
   EXPECT_EQ(PlatformStyle::kReturnClicksFocusedControl, button()->clicked());
@@ -320,7 +321,7 @@ TEST_F(MenuButtonTest, MAYBE_InkDropCenterSetFromClickWithPressedLock) {
   ConfigureMenuButton(std::make_unique<TestMenuButton>());
 
   gfx::Point click_point(11, 7);
-  ui::MouseEvent click_event(ui::EventType::ET_MOUSE_PRESSED, click_point,
+  ui::MouseEvent click_event(ui::EventType::kMousePressed, click_point,
                              click_point, base::TimeTicks(), 0, 0);
   MenuButtonController::PressedLock pressed_lock(button()->button_controller(),
                                                  false, &click_event);
@@ -677,8 +678,9 @@ TEST_F(MenuButtonTest, DestroyButtonInGesture) {
           &test_menu_button));
   ConfigureMenuButton(std::move(test_menu_button));
 
-  ui::GestureEvent gesture_event(0, 0, 0, base::TimeTicks::Now(),
-                                 ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+  ui::GestureEvent gesture_event(
+      0, 0, 0, base::TimeTicks::Now(),
+      ui::GestureEventDetails(ui::EventType::kGestureTap));
   button()->OnGestureEvent(&gesture_event);
 }
 

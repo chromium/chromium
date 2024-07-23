@@ -435,6 +435,7 @@ public abstract class ChromeFeatureList {
     public static final String REPLACE_PROFILE_IS_CHILD_WITH_ACCOUNT_CAPABILITIES_ON_ANDROID =
             "ReplaceProfileIsChildWithAccountCapabilitiesOnAndroid";
     public static final String SAFETY_HUB = "SafetyHub";
+    public static final String SAFETY_HUB_MAGIC_STACK = "SafetyHubMagicStack";
     public static final String SAFE_BROWSING_DELAYED_WARNINGS = "SafeBrowsingDelayedWarnings";
     public static final String SAFE_BROWSING_CALL_NEW_GMS_API_ON_STARTUP =
             "SafeBrowsingCallNewGmsApiOnStartup";
@@ -636,7 +637,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(GCM_NATIVE_BACKGROUND_TASK, false);
     public static final CachedFlag sIncognitoReauthenticationForAndroid =
             newCachedFlag(INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
-    public static final CachedFlag sLogoPolish = newCachedFlag(LOGO_POLISH, false);
+    public static final CachedFlag sLogoPolish = newCachedFlag(LOGO_POLISH, true);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
     public static final CachedFlag sMostVisitedTilesSelectExistingTab =
             newCachedFlag(MOST_VISITED_TILES_SELECT_EXISTING_TAB, false);
@@ -663,14 +664,14 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sSafeBrowsingCallNewGmsApiOnStartup =
             newCachedFlag(SAFE_BROWSING_CALL_NEW_GMS_API_ON_STARTUP, false);
     public static final CachedFlag sSafetyHub = newCachedFlag(SAFETY_HUB, false);
+    public static final CachedFlag sSafetyHubMagicStack =
+            newCachedFlag(SAFETY_HUB_MAGIC_STACK, false);
     public static final CachedFlag sSearchEngineChoice = newCachedFlag(SEARCH_ENGINE_CHOICE, false);
     public static final CachedFlag sSearchInCCT = newCachedFlag(SEARCH_IN_CCT, false);
     public static final CachedFlag sSmallerTabStripTitleLimit =
             newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, true);
     public static final CachedFlag sStartSurfaceReturnTime =
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
-    public static final CachedFlag sStopAppIndexingReport =
-            newCachedFlag(STOP_APP_INDEXING_REPORT, true);
     public static final CachedFlag sSurfacePolish = newCachedFlag(SURFACE_POLISH, true);
     public static final CachedFlag sSurfacePolishForToolbarKillSwitch =
             newCachedFlag(SURFACE_POLISH_FOR_TOOLBAR_KILL_SWITCH, true);
@@ -784,11 +785,11 @@ public abstract class ChromeFeatureList {
                     sRedirectExplicitCTAIntentsToExistingActivity,
                     sSafeBrowsingCallNewGmsApiOnStartup,
                     sSafetyHub,
+                    sSafetyHubMagicStack,
                     sSearchEngineChoice,
                     sSearchInCCT,
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
-                    sStopAppIndexingReport,
                     sSurfacePolish,
                     sSurfacePolishForToolbarKillSwitch,
                     sTabDragDropAsWindowAndroid,

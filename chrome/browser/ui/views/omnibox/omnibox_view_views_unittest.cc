@@ -484,19 +484,19 @@ class OmniboxViewViewsTestIsPopupWindowMode : public OmniboxViewViewsTest {
 // Checks that a single change of the text in the omnibox invokes
 // only one call to OmniboxViewViews::UpdatePopup().
 TEST_F(OmniboxViewViewsTest, UpdatePopupCall) {
-  ui::KeyEvent char_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, 0,
-                          ui::DomKey::FromCharacter('a'),
+  ui::KeyEvent char_event(ui::EventType::kKeyPressed, ui::VKEY_A,
+                          ui::DomCode::US_A, 0, ui::DomKey::FromCharacter('a'),
                           ui::EventTimeForNow());
   omnibox_textfield()->InsertChar(char_event);
   omnibox_view()->CheckUpdatePopupCallInfo(1, u"a", Range(1));
 
   char_event =
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::DomCode::US_B, 0,
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_B, ui::DomCode::US_B, 0,
                    ui::DomKey::FromCharacter('b'), ui::EventTimeForNow());
   omnibox_textfield()->InsertChar(char_event);
   omnibox_view()->CheckUpdatePopupCallInfo(2, u"ab", Range(2));
 
-  ui::KeyEvent pressed(ui::ET_KEY_PRESSED, ui::VKEY_BACK, 0);
+  ui::KeyEvent pressed(ui::EventType::kKeyPressed, ui::VKEY_BACK, 0);
   omnibox_textfield()->OnKeyEvent(&pressed);
   omnibox_view()->CheckUpdatePopupCallInfo(3, u"a", Range(1));
 }
@@ -505,8 +505,8 @@ TEST_F(OmniboxViewViewsTest, UpdatePopupCall) {
 // character in NTP 'Search box'. Test for crbug.com/698172.
 TEST_F(OmniboxViewViewsTest, EditTextfield) {
   omnibox_textfield()->SetCursorEnabled(false);
-  ui::KeyEvent char_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, 0,
-                          ui::DomKey::FromCharacter('a'),
+  ui::KeyEvent char_event(ui::EventType::kKeyPressed, ui::VKEY_A,
+                          ui::DomCode::US_A, 0, ui::DomKey::FromCharacter('a'),
                           ui::EventTimeForNow());
   omnibox_textfield()->InsertChar(char_event);
   EXPECT_TRUE(IsCursorEnabled());
@@ -521,7 +521,7 @@ TEST_F(OmniboxViewViewsTest, ScheduledTextEditCommand) {
   EXPECT_EQ(ui::TextEditCommand::MOVE_UP,
             GetTextfieldTestApi().scheduled_text_edit_command());
 
-  ui::KeyEvent up_pressed(ui::ET_KEY_PRESSED, ui::VKEY_UP, 0);
+  ui::KeyEvent up_pressed(ui::EventType::kKeyPressed, ui::VKEY_UP, 0);
   omnibox_textfield()->OnKeyEvent(&up_pressed);
   EXPECT_EQ(ui::TextEditCommand::INVALID_COMMAND,
             GetTextfieldTestApi().scheduled_text_edit_command());
@@ -534,7 +534,7 @@ TEST_F(OmniboxViewViewsTest, SelectWithShift_863543) {
   const std::u16string text = u"http://www.example.com/?query=1";
   omnibox_view()->SetWindowTextAndCaretPos(text, 23U, false, false);
 
-  ui::KeyEvent shift_up_pressed(ui::ET_KEY_PRESSED, ui::VKEY_UP,
+  ui::KeyEvent shift_up_pressed(ui::EventType::kKeyPressed, ui::VKEY_UP,
                                 ui::EF_SHIFT_DOWN);
   omnibox_textfield()->OnKeyEvent(&shift_up_pressed);
 
@@ -546,7 +546,7 @@ TEST_F(OmniboxViewViewsTest, SelectWithShift_863543) {
 
   omnibox_view()->SetWindowTextAndCaretPos(text, 18U, false, false);
 
-  ui::KeyEvent shift_down_pressed(ui::ET_KEY_PRESSED, ui::VKEY_DOWN,
+  ui::KeyEvent shift_down_pressed(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
                                   ui::EF_SHIFT_DOWN);
   omnibox_textfield()->OnKeyEvent(&shift_down_pressed);
 
@@ -720,7 +720,7 @@ TEST_F(OmniboxViewViewsTest, RevertOnEscape) {
   EXPECT_TRUE(omnibox_view()->model()->user_input_in_progress());
 
   // Expect that on Escape, the text is reverted to the permanent URL.
-  ui::KeyEvent escape(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, 0);
+  ui::KeyEvent escape(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE, 0);
   omnibox_textfield()->OnKeyEvent(&escape);
 
   EXPECT_EQ(u"https://permanent-text.com/", omnibox_view()->GetText());
@@ -728,13 +728,13 @@ TEST_F(OmniboxViewViewsTest, RevertOnEscape) {
 }
 
 TEST_F(OmniboxViewViewsTest, ShiftEscapeDoesNotSkipDefaultProcessing) {
-  ui::KeyEvent shiftEscape(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE,
+  ui::KeyEvent shiftEscape(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE,
                            ui::EF_SHIFT_DOWN);
   EXPECT_EQ(omnibox_view()->SkipDefaultKeyEventProcessing(shiftEscape), false);
 }
 
 TEST_F(OmniboxViewViewsTest, EscapeSkipsDefaultProcessing) {
-  ui::KeyEvent escape(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, 0);
+  ui::KeyEvent escape(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE, 0);
   EXPECT_EQ(omnibox_view()->SkipDefaultKeyEventProcessing(escape), true);
 }
 
@@ -748,7 +748,7 @@ TEST_F(OmniboxViewViewsTest, BackspaceExitsKeywordMode) {
   ASSERT_FALSE(omnibox_view()->model()->keyword().empty());
 
   // First backspace should clear the user text but not exit keyword mode.
-  ui::KeyEvent backspace(ui::ET_KEY_PRESSED, ui::VKEY_BACK, 0);
+  ui::KeyEvent backspace(ui::EventType::kKeyPressed, ui::VKEY_BACK, 0);
   omnibox_textfield()->OnKeyEvent(&backspace);
   EXPECT_TRUE(omnibox_view()->GetText().empty());
   EXPECT_FALSE(omnibox_view()->model()->keyword().empty());
@@ -882,9 +882,9 @@ TEST_F(OmniboxViewViewsTest, SelectAllOnReactivateTabAfterDeleteAll) {
 
 TEST_F(OmniboxViewViewsTest, SelectAllDuringMouseDown) {
   omnibox_textfield()->OnMousePressed(
-      CreateMouseEvent(ui::ET_MOUSE_PRESSED, {0, 0}));
+      CreateMouseEvent(ui::EventType::kMousePressed, {0, 0}));
   omnibox_view()->SetUserText(u"abc");
-  ui::KeyEvent event_a(ui::ET_KEY_PRESSED, ui::VKEY_A, 0);
+  ui::KeyEvent event_a(ui::EventType::kKeyPressed, ui::VKEY_A, 0);
   EXPECT_FALSE(omnibox_view()->IsSelectAll());
   omnibox_textfield_view()->OnKeyPressed(event_a);
   // Normally SelectAll happens after OnMouseRelease. Verifying this happens
@@ -1197,11 +1197,11 @@ class OmniboxViewViewsSteadyStateElisionsTest : public OmniboxViewViewsTest {
                              int click_count,
                              int event_flags = ui::EF_LEFT_MOUSE_BUTTON) {
     auto mouse_pressed =
-        CreateMouseEvent(ui::ET_MOUSE_PRESSED, point, event_flags);
+        CreateMouseEvent(ui::EventType::kMousePressed, point, event_flags);
     mouse_pressed.SetClickCount(click_count);
     omnibox_textfield()->OnMousePressed(mouse_pressed);
     auto mouse_released =
-        CreateMouseEvent(ui::ET_MOUSE_RELEASED, point, event_flags);
+        CreateMouseEvent(ui::EventType::kMouseReleased, point, event_flags);
     mouse_released.SetClickCount(click_count);
     omnibox_textfield()->OnMouseReleased(mouse_released);
   }
@@ -1222,7 +1222,7 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, UnelideOnArrowKey) {
 
   // Right key should unelide and move the cursor to the end.
   omnibox_textfield_view()->OnKeyPressed(
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RIGHT, 0));
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RIGHT, 0));
   ExpectFullUrlDisplayed();
   size_t start, end;
   omnibox_view()->GetSelectionBounds(&start, &end);
@@ -1236,7 +1236,7 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, UnelideOnArrowKey) {
   // Left key should unelide and move the cursor to the beginning of the elided
   // part.
   omnibox_textfield_view()->OnKeyPressed(
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_LEFT, 0));
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_LEFT, 0));
   ExpectFullUrlDisplayed();
   omnibox_view()->GetSelectionBounds(&start, &end);
   EXPECT_EQ(12U, start);
@@ -1249,7 +1249,7 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, UnelideOnHomeKey) {
   // Home key should unelide and move the cursor to the beginning of the full
   // unelided URL.
   omnibox_textfield_view()->OnKeyPressed(
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_HOME, 0));
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_HOME, 0));
   ExpectFullUrlDisplayed();
   size_t start, end;
   omnibox_view()->GetSelectionBounds(&start, &end);
@@ -1270,7 +1270,7 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest,
 
   // End key should unelide and move the cursor to the end of the full URL.
   omnibox_textfield_view()->OnKeyPressed(
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_END, 0));
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_END, 0));
 
   EXPECT_EQ(u"https://foobar", omnibox_view()->GetText());
   EXPECT_FALSE(omnibox_view()->model()->user_input_in_progress());
@@ -1282,12 +1282,13 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest,
 }
 
 TEST_F(OmniboxViewViewsSteadyStateElisionsTest, GestureTaps) {
-  ui::GestureEvent tap_down(0, 0, 0, ui::EventTimeForNow(),
-                            ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
+  ui::GestureEvent tap_down(
+      0, 0, 0, ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::EventType::kGestureTapDown));
   omnibox_textfield()->OnGestureEvent(&tap_down);
 
   // Select all on first tap.
-  ui::GestureEventDetails tap_details(ui::ET_GESTURE_TAP);
+  ui::GestureEventDetails tap_details(ui::EventType::kGestureTap);
   tap_details.set_tap_count(1);
   ui::GestureEvent tap(0, 0, 0, ui::EventTimeForNow(), tap_details);
   omnibox_textfield()->OnGestureEvent(&tap);
@@ -1313,15 +1314,15 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, FirstMouseClickFocusesOnly) {
 TEST_F(OmniboxViewViewsSteadyStateElisionsTest, NegligibleDragKeepsElisions) {
   gfx::Point click_point = GetPointInTextAtXOffset(2 * kCharacterWidth);
   omnibox_textfield()->OnMousePressed(
-      CreateMouseEvent(ui::ET_MOUSE_PRESSED, click_point));
+      CreateMouseEvent(ui::EventType::kMousePressed, click_point));
 
   // Offset the drag and release point by an insignificant 2 px.
   gfx::Point drag_point = click_point;
   drag_point.Offset(2, 0);
   omnibox_textfield()->OnMouseDragged(
-      CreateMouseEvent(ui::ET_MOUSE_DRAGGED, drag_point));
+      CreateMouseEvent(ui::EventType::kMouseDragged, drag_point));
   omnibox_textfield()->OnMouseReleased(
-      CreateMouseEvent(ui::ET_MOUSE_RELEASED, drag_point));
+      CreateMouseEvent(ui::EventType::kMouseReleased, drag_point));
 
   // Expect that after a negligible drag and release, everything is selected.
   EXPECT_TRUE(IsElidedUrlDisplayed());
@@ -1337,11 +1338,13 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, CaretPlacementByMouse) {
   clock()->Advance(base::Seconds(5));
 
   // Second click should unelide only on mouse release.
-  omnibox_textfield()->OnMousePressed(CreateMouseEvent(
-      ui::ET_MOUSE_PRESSED, GetPointInTextAtXOffset(2 * kCharacterWidth)));
+  omnibox_textfield()->OnMousePressed(
+      CreateMouseEvent(ui::EventType::kMousePressed,
+                       GetPointInTextAtXOffset(2 * kCharacterWidth)));
   EXPECT_TRUE(IsElidedUrlDisplayed());
-  omnibox_textfield()->OnMouseReleased(CreateMouseEvent(
-      ui::ET_MOUSE_RELEASED, GetPointInTextAtXOffset(2 * kCharacterWidth)));
+  omnibox_textfield()->OnMouseReleased(
+      CreateMouseEvent(ui::EventType::kMouseReleased,
+                       GetPointInTextAtXOffset(2 * kCharacterWidth)));
   ExpectFullUrlDisplayed();
 
   // Verify the cursor position is https://www.ex|ample.com. It should be
@@ -1358,8 +1361,9 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, MouseDoubleClick) {
 
   // Second click without advancing the clock should be a double-click, which
   // should do a single word selection and unelide the text on mousedown.
-  omnibox_textfield()->OnMousePressed(CreateMouseEvent(
-      ui::ET_MOUSE_PRESSED, GetPointInTextAtXOffset(4 * kCharacterWidth)));
+  omnibox_textfield()->OnMousePressed(
+      CreateMouseEvent(ui::EventType::kMousePressed,
+                       GetPointInTextAtXOffset(4 * kCharacterWidth)));
   ExpectFullUrlDisplayed();
 
   // Verify that the selection is https://www.|example|.com, since the
@@ -1436,13 +1440,15 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, MouseTripleClick) {
 }
 
 TEST_F(OmniboxViewViewsSteadyStateElisionsTest, MouseClickDrag) {
-  omnibox_textfield()->OnMousePressed(CreateMouseEvent(
-      ui::ET_MOUSE_PRESSED, GetPointInTextAtXOffset(2 * kCharacterWidth)));
+  omnibox_textfield()->OnMousePressed(
+      CreateMouseEvent(ui::EventType::kMousePressed,
+                       GetPointInTextAtXOffset(2 * kCharacterWidth)));
   EXPECT_TRUE(IsElidedUrlDisplayed());
 
   // Expect that during the drag, the URL is still elided.
-  omnibox_textfield()->OnMouseDragged(CreateMouseEvent(
-      ui::ET_MOUSE_DRAGGED, GetPointInTextAtXOffset(4 * kCharacterWidth)));
+  omnibox_textfield()->OnMouseDragged(
+      CreateMouseEvent(ui::EventType::kMouseDragged,
+                       GetPointInTextAtXOffset(4 * kCharacterWidth)));
   EXPECT_TRUE(IsElidedUrlDisplayed());
 
   // Expect that ex|am|ple.com is the drag selected portion while dragging.
@@ -1451,8 +1457,9 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, MouseClickDrag) {
   EXPECT_EQ(2U, start);
   EXPECT_EQ(4U, end);
 
-  omnibox_textfield()->OnMouseReleased(CreateMouseEvent(
-      ui::ET_MOUSE_RELEASED, GetPointInTextAtXOffset(4 * kCharacterWidth)));
+  omnibox_textfield()->OnMouseReleased(
+      CreateMouseEvent(ui::EventType::kMouseReleased,
+                       GetPointInTextAtXOffset(4 * kCharacterWidth)));
   ExpectFullUrlDisplayed();
 
   // Expect that https://www.ex|am|ple.com is the selected portion after the
@@ -1465,12 +1472,15 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, MouseClickDrag) {
 TEST_F(OmniboxViewViewsSteadyStateElisionsTest,
        MouseClickDragToBeginningSelectingText) {
   // Backwards drag-select this portion of the elided URL: |exam|ple.com
-  omnibox_textfield()->OnMousePressed(CreateMouseEvent(
-      ui::ET_MOUSE_PRESSED, GetPointInTextAtXOffset(4 * kCharacterWidth)));
-  omnibox_textfield()->OnMouseDragged(CreateMouseEvent(
-      ui::ET_MOUSE_DRAGGED, GetPointInTextAtXOffset(0 * kCharacterWidth)));
-  omnibox_textfield()->OnMouseReleased(CreateMouseEvent(
-      ui::ET_MOUSE_RELEASED, GetPointInTextAtXOffset(0 * kCharacterWidth)));
+  omnibox_textfield()->OnMousePressed(
+      CreateMouseEvent(ui::EventType::kMousePressed,
+                       GetPointInTextAtXOffset(4 * kCharacterWidth)));
+  omnibox_textfield()->OnMouseDragged(
+      CreateMouseEvent(ui::EventType::kMouseDragged,
+                       GetPointInTextAtXOffset(0 * kCharacterWidth)));
+  omnibox_textfield()->OnMouseReleased(
+      CreateMouseEvent(ui::EventType::kMouseReleased,
+                       GetPointInTextAtXOffset(0 * kCharacterWidth)));
   ExpectFullUrlDisplayed();
 
   // Since the selection did not look like a URL, expect the following selected
@@ -1485,12 +1495,15 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest,
 TEST_F(OmniboxViewViewsSteadyStateElisionsTest,
        MouseClickDragToBeginningSelectingURL) {
   // Backwards drag-select this portion of the elided URL: |example.co|m
-  omnibox_textfield()->OnMousePressed(CreateMouseEvent(
-      ui::ET_MOUSE_PRESSED, GetPointInTextAtXOffset(10 * kCharacterWidth)));
-  omnibox_textfield()->OnMouseDragged(CreateMouseEvent(
-      ui::ET_MOUSE_DRAGGED, GetPointInTextAtXOffset(0 * kCharacterWidth)));
-  omnibox_textfield()->OnMouseReleased(CreateMouseEvent(
-      ui::ET_MOUSE_RELEASED, GetPointInTextAtXOffset(0 * kCharacterWidth)));
+  omnibox_textfield()->OnMousePressed(
+      CreateMouseEvent(ui::EventType::kMousePressed,
+                       GetPointInTextAtXOffset(10 * kCharacterWidth)));
+  omnibox_textfield()->OnMouseDragged(
+      CreateMouseEvent(ui::EventType::kMouseDragged,
+                       GetPointInTextAtXOffset(0 * kCharacterWidth)));
+  omnibox_textfield()->OnMouseReleased(
+      CreateMouseEvent(ui::EventType::kMouseReleased,
+                       GetPointInTextAtXOffset(0 * kCharacterWidth)));
   ExpectFullUrlDisplayed();
 
   // Since the selection does look like a URL, expect the following selected
@@ -1506,8 +1519,9 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, MouseDoubleClickDrag) {
   // Expect that after a double-click after the third character of the elided
   // text, the text is unelided, and https://www.|example|.com is selected.
   SendMouseClick(4 * kCharacterWidth);
-  omnibox_textfield()->OnMousePressed(CreateMouseEvent(
-      ui::ET_MOUSE_PRESSED, GetPointInTextAtXOffset(4 * kCharacterWidth)));
+  omnibox_textfield()->OnMousePressed(
+      CreateMouseEvent(ui::EventType::kMousePressed,
+                       GetPointInTextAtXOffset(4 * kCharacterWidth)));
   ExpectFullUrlDisplayed();
   size_t start, end;
   omnibox_view()->GetSelectionBounds(&start, &end);
@@ -1520,7 +1534,7 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, MouseDoubleClickDrag) {
   gfx::Point drag_point = GetPointInTextAtXOffset(4 * kCharacterWidth);
   drag_point.Offset(1, 1);  // Offset test point one pixel in each dimension.
   omnibox_textfield()->OnMouseDragged(
-      CreateMouseEvent(ui::ET_MOUSE_DRAGGED, drag_point));
+      CreateMouseEvent(ui::EventType::kMouseDragged, drag_point));
   omnibox_view()->GetSelectionBounds(&start, &end);
   EXPECT_EQ(12U, start);
   EXPECT_EQ(19U, end);
@@ -1530,16 +1544,18 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, MouseDoubleClickDrag) {
   // domain, so the new selection will be |https://www.example|.com. The
   // expected selection is backwards, since we are dragging the mouse from the
   // domain to the scheme.
-  omnibox_textfield()->OnMouseDragged(CreateMouseEvent(
-      ui::ET_MOUSE_DRAGGED, GetPointInTextAtXOffset(2 * kCharacterWidth)));
+  omnibox_textfield()->OnMouseDragged(
+      CreateMouseEvent(ui::EventType::kMouseDragged,
+                       GetPointInTextAtXOffset(2 * kCharacterWidth)));
   ExpectFullUrlDisplayed();
   omnibox_view()->GetSelectionBounds(&start, &end);
   EXPECT_EQ(19U, start);
   EXPECT_EQ(0U, end);
 
   // Expect the selection to stay the same after mouse-release.
-  omnibox_textfield()->OnMouseReleased(CreateMouseEvent(
-      ui::ET_MOUSE_RELEASED, GetPointInTextAtXOffset(2 * kCharacterWidth)));
+  omnibox_textfield()->OnMouseReleased(
+      CreateMouseEvent(ui::EventType::kMouseReleased,
+                       GetPointInTextAtXOffset(2 * kCharacterWidth)));
   ExpectFullUrlDisplayed();
   omnibox_view()->GetSelectionBounds(&start, &end);
   EXPECT_EQ(19U, start);
@@ -1563,8 +1579,8 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, DontReelideOnBlurIfEdited) {
   ExpectFullUrlDisplayed();
 
   // Since the domain word is selected, pressing 'a' should replace the domain.
-  ui::KeyEvent char_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, 0,
-                          ui::DomKey::FromCharacter('a'),
+  ui::KeyEvent char_event(ui::EventType::kKeyPressed, ui::VKEY_A,
+                          ui::DomCode::US_A, 0, ui::DomKey::FromCharacter('a'),
                           ui::EventTimeForNow());
   omnibox_textfield()->InsertChar(char_event);
   EXPECT_EQ(u"https://www.a.com/", omnibox_view()->GetText());

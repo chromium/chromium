@@ -3634,11 +3634,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-notifier-collision",
-    "owners": ["leandre@chromium.org"],
-    "expiry_milestone": 124
-  },
-  {
     "name": "enable-oauth-ipp",
     "owners": [ "pawliczek@chromium.org", "project-bolton@google.com" ],
     "expiry_milestone": 133
@@ -5845,14 +5840,6 @@
     "name": "mac-syscall-sandbox",
     "owners": [ "rsesek@google.com" ],
     "expiry_milestone": 88
-  },
-  {
-    "name": "magic-boost",
-    "owners": [
-      "thanhdng@chromium.org",
-      "chrome-knowledge-eng@google.com"
-    ],
-    "expiry_milestone": 135
   },
   {
     "name": "mahi",
@@ -8175,6 +8162,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "show-cast-permission-rejected-error",
+    "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "show-featured-enterprise-site-search",
     "owners": [ "ftirelo@chromium.org", "pastarmovj@chromium.org" ],
     "expiry_milestone": 130
@@ -8346,11 +8338,6 @@
     "name": "start-surface",
     "owners": [ "gogerald@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 94
-  },
-  {
-    "name": "stop-app-indexing-report",
-    "owners": [ "gangwu@chromium.org", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 150
   },
   {
     "name": "storage-access-headers",
@@ -9008,6 +8995,11 @@
     "name": "use-multi-plane-format-for-software-video",
     "owners": [ "hitawala@chromium.org", "vasilyt@chromium.org" ],
     "expiry_milestone": 130
+  },
+  {
+    "name": "use-network-framework-for-cast-discovery",
+    "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "use-out-of-process-video-decoding",

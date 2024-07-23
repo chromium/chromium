@@ -29,7 +29,7 @@
 
 namespace ash {
 namespace {
-ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED,
+ui::MouseEvent pressed_event(ui::EventType::kMousePressed,
                              gfx::Point(),
                              gfx::Point(),
                              ui::EventTimeForNow(),

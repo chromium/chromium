@@ -119,26 +119,26 @@ void ButtonController::OnGestureEvent(ui::GestureEvent* event) {
   if (button_->GetState() == Button::STATE_DISABLED)
     return;
 
-  if (event->type() == ui::ET_GESTURE_TAP &&
+  if (event->type() == ui::EventType::kGestureTap &&
       button_controller_delegate_->IsTriggerableEvent(*event)) {
-    // A GESTURE_END event is issued immediately after ET_GESTURE_TAP and will
-    // set the state to STATE_NORMAL beginning the fade out animation.
+    // A GESTURE_END event is issued immediately after EventType::kGestureTap
+    // and will set the state to STATE_NORMAL beginning the fade out animation.
     button_->SetState(Button::STATE_HOVERED);
     button_controller_delegate_->NotifyClick(*event);
     event->SetHandled();
-  } else if (event->type() == ui::ET_GESTURE_TAP_DOWN &&
+  } else if (event->type() == ui::EventType::kGestureTapDown &&
              button_controller_delegate_->ShouldEnterPushedState(*event)) {
     button_->SetState(Button::STATE_PRESSED);
     button_controller_delegate_->RequestFocusFromEvent();
     event->SetHandled();
-  } else if (event->type() == ui::ET_GESTURE_TAP_CANCEL ||
-             event->type() == ui::ET_GESTURE_END) {
+  } else if (event->type() == ui::EventType::kGestureTapCancel ||
+             event->type() == ui::EventType::kGestureEnd) {
     button_->SetState(Button::STATE_NORMAL);
   }
 }
 
 void ButtonController::NotifyClick() {
-  ui::KeyEvent fake_event(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
+  ui::KeyEvent fake_event(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
                           ui::EF_IS_SYNTHESIZED);
   button_controller_delegate_->NotifyClick(fake_event);
 }
@@ -146,8 +146,8 @@ void ButtonController::NotifyClick() {
 void ButtonController::UpdateAccessibleNodeData(ui::AXNodeData* node_data) {}
 
 bool ButtonController::IsTriggerableEvent(const ui::Event& event) {
-  return event.type() == ui::ET_GESTURE_TAP_DOWN ||
-         event.type() == ui::ET_GESTURE_TAP ||
+  return event.type() == ui::EventType::kGestureTapDown ||
+         event.type() == ui::EventType::kGestureTap ||
          (event.IsMouseEvent() &&
           (button_->GetTriggerableEventFlags() & event.flags()) != 0);
 }

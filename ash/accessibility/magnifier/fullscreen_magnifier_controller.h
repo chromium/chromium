@@ -292,10 +292,10 @@ class ASH_EXPORT FullscreenMagnifierController
   // Number of touch points on the screen.
   int32_t touch_points_ = 0;
 
-  // Map for holding ET_TOUCH_PRESS events. Those events are used to dispatch
-  // ET_TOUCH_CANCELLED events. Events will be removed from this map when press
-  // events are cancelled, i.e. size of this map can be different from number of
-  // touches on the screen. Key is pointer id.
+  // Map for holding EventType::kTouchPress events. Those events are used to
+  // dispatch EventType::kTouchCancelled events. Events will be removed from
+  // this map when press events are cancelled, i.e. size of this map can be
+  // different from number of touches on the screen. Key is pointer id.
   std::map<int32_t, std::unique_ptr<ui::TouchEvent>> press_event_map_;
 
   std::unique_ptr<GestureProviderClient> gesture_provider_client_;

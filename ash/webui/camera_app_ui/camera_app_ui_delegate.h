@@ -29,7 +29,6 @@ class MediaDeviceSaltService;
 }  // namespace media_device_salt
 
 namespace ash {
-class HoldingSpaceClient;
 
 class ProgressivePdf {
  public:
@@ -95,8 +94,6 @@ class CameraAppUIDelegate {
   };
 
   virtual ~CameraAppUIDelegate() = default;
-
-  virtual HoldingSpaceClient* GetHoldingSpaceClient() = 0;
 
   // Sets Downloads folder as launch directory by File Handling API so that we
   // can get the handle on the app side.

@@ -227,7 +227,9 @@ source_set("app_service") {
       "//chrome/browser:browser_process",
       "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/apps/app_service/promise_apps/proto",
+      "//chrome/browser/ash/android_sms",
       "//chrome/browser/ash/app_list",
+      "//chrome/browser/ash/app_list/app_service",
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/app_list/internal_app",
       "//chrome/browser/ash/app_list/search",
@@ -278,6 +280,9 @@ source_set("app_service") {
       "//chrome/browser/resources",
       "//chrome/browser/ui/ash/calendar",
       "//chrome/browser/ui/ash/multi_user",
+      "//chrome/browser/ui/ash/shelf",
+      "//chrome/browser/ui/ash/shelf/app_service",
+      "//chrome/browser/ui/ash/system_web_apps",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/login/login_state",
       "//chromeos/components/kiosk:kiosk",
@@ -300,12 +305,14 @@ source_set("app_service") {
 
     # TODO(crbug.com/40251079): Remove circular dependencies.
     allow_circular_includes_from += [
+      "//chrome/browser/ash/android_sms",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/app_list/internal_app",
       "//chrome/browser/ash/app_list/search",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/borealis",
+      "//chrome/browser/ash/app_list/app_service",
       "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/apps",
       "//chrome/browser/ash/arc",
@@ -336,6 +343,9 @@ source_set("app_service") {
       "//chrome/browser/ash/system_web_apps/apps/camera_app",
       "//chrome/browser/ash/system_web_apps/apps/media_app",
       "//chrome/browser/ui/ash/calendar",
+      "//chrome/browser/ui/ash/shelf",
+      "//chrome/browser/ui/ash/shelf/app_service",
+      "//chrome/browser/ui/ash/system_web_apps",
     ]
   }
 

@@ -149,7 +149,7 @@ void UnifiedSliderView::OnEvent(ui::Event* event) {
   // Only handles press event to avoid handling the event again when the key is
   // released.
   if (key_code == ui::VKEY_RETURN &&
-      key_event->type() == ui::EventType::ET_KEY_PRESSED) {
+      key_event->type() == ui::EventType::kKeyPressed) {
     slider_button_->NotifyClick(*event);
     return;
   }

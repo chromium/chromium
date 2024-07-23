@@ -103,17 +103,14 @@ ScriptResource* ScriptResource::Fetch(
     v8_compile_hints::V8CrowdsourcedCompileHintsProducer*
         v8_compile_hints_producer,
     v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
-        v8_compile_hints_consumer,
-    bool v8_compile_hints_magic_comment_runtime_enabled) {
+        v8_compile_hints_consumer) {
   DCHECK(IsRequestContextSupported(
       params.GetResourceRequest().GetRequestContext()));
   auto* resource = To<ScriptResource>(fetcher->RequestResource(
       params,
       ScriptResourceFactory(isolate, streaming_allowed,
                             v8_compile_hints_producer,
-                            v8_compile_hints_consumer,
-                            v8_compile_hints_magic_comment_runtime_enabled,
-                            params.GetScriptType()),
+                            v8_compile_hints_consumer, params.GetScriptType()),
       client));
   return resource;
 }
@@ -131,8 +128,7 @@ ScriptResource* ScriptResource::CreateForTest(
   return MakeGarbageCollected<ScriptResource>(
       request, options, decoder_options, isolate, kNoStreaming,
       /*v8_compile_hints_producer=*/nullptr,
-      /*v8_compile_hints_consumer=*/nullptr,
-      /*v8_compile_hints_magic_comment_runtime_enabled=*/false, script_type);
+      /*v8_compile_hints_consumer=*/nullptr, script_type);
 }
 
 ScriptResource::ScriptResource(
@@ -145,7 +141,6 @@ ScriptResource::ScriptResource(
         v8_compile_hints_producer,
     v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
         v8_compile_hints_consumer,
-    bool v8_compile_hints_magic_comment_runtime_enabled,
     mojom::blink::ScriptType initial_request_script_type)
     : TextResource(resource_request,
                    ResourceType::kScript,
@@ -159,9 +154,7 @@ ScriptResource::ScriptResource(
       stream_text_decoder_(
           std::make_unique<TextResourceDecoder>(decoder_options)),
       v8_compile_hints_producer_(v8_compile_hints_producer),
-      v8_compile_hints_consumer_(v8_compile_hints_consumer),
-      v8_compile_hints_magic_comment_runtime_enabled_(
-          v8_compile_hints_magic_comment_runtime_enabled) {
+      v8_compile_hints_consumer_(v8_compile_hints_consumer) {
   static bool script_streaming_enabled =
       base::FeatureList::IsEnabled(features::kScriptStreaming);
   // TODO(leszeks): This could be static to avoid the cost of feature flag

@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BROWSER_CONTROLS_STATE_PROVIDER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FETCH_VIEW_BY_INDEX_CALLBACK;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.GET_VISIBLE_RANGE_CALLBACK;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_SCROLLING_SUPPLIER_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.MODE;
 
 import android.app.Activity;
@@ -19,6 +22,8 @@ import android.view.ViewGroup;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Function;
+import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.Callback;
@@ -29,6 +34,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.data_sharing.ui.invitation_dialog.DataSharingInvitationDialogCoordinator;
@@ -121,11 +127,15 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final ModalDialogManager mModalDialogManager;
     private final Runnable mOnDestroyed;
     private final TabListOnScrollListener mTabListOnScrollListener = new TabListOnScrollListener();
+    private final OneshotSupplierImpl<ObservableSupplier<Boolean>> mIsScrollingSupplier =
+            new OneshotSupplierImpl<>();
 
     /** Lazily initialized when shown. */
     private @Nullable TabGridDialogCoordinator mTabGridDialogCoordinator;
 
     private @Nullable DataSharingInvitationDialogCoordinator mDataSharingDialogCoordinator;
+    private @Nullable Function<Integer, View> mFetchViewByIndex;
+    private @Nullable Supplier<Pair<Integer, Integer>> mGetVisibleIndex;
 
     /**
      * @param activity The {@link Activity} that hosts the pane.
@@ -186,7 +196,13 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                     new PropertyModel.Builder(ALL_KEYS)
                             .with(BROWSER_CONTROLS_STATE_PROVIDER, browserControlsStateProvider)
                             .with(MODE, mode)
+                            .with(FETCH_VIEW_BY_INDEX_CALLBACK, (f) -> mFetchViewByIndex = f)
+                            .with(GET_VISIBLE_RANGE_CALLBACK, (f) -> mGetVisibleIndex = f)
+                            .with(
+                                    IS_SCROLLING_SUPPLIER_CALLBACK,
+                                    (f) -> mIsScrollingSupplier.set(f))
                             .build();
+
             mContainerViewModel = containerViewModel;
             Profile profile = mProfileProviderSupplier.get().getOriginalProfile();
             TabGroupModelFilter filter = (TabGroupModelFilter) tabModelFilterSupplier.get();
@@ -461,6 +477,21 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         mMediator.openTabGroupDialog(tabId);
     }
 
+    /** Returns the range (inclusive) of visible view indexes. */
+    public @Nullable Pair<Integer, Integer> getVisibleRange() {
+        return mGetVisibleIndex == null ? null : mGetVisibleIndex.get();
+    }
+
+    /** Returns the root view at a given index. */
+    public @Nullable View getViewByIndex(int viewIndex) {
+        return mFetchViewByIndex == null ? null : mFetchViewByIndex.apply(viewIndex);
+    }
+
+    /** Returns a nested supplier for the scrolling state of the view. */
+    public OneshotSupplier<ObservableSupplier<Boolean>> getIsScrollingSupplier() {
+        return mIsScrollingSupplier;
+    }
+
     @Override
     public @BackPressResult int handleBackPress() {
         return mMediator.handleBackPress();
@@ -548,6 +579,11 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     void showCloseAllTabsAnimation(Runnable onAnimationEnd) {
         mTabListCoordinator.showCloseAllTabsAnimation(onAnimationEnd);
+    }
+
+    /** Returns the filter index of a tab from its view index. */
+    public int countOfTabCardsOrInvalid(int viewIndex) {
+        return mTabListCoordinator.indexOfTabCardsOrInvalid(viewIndex);
     }
 
     private int getNthTabIndexInModel(int filterIndex) {

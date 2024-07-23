@@ -30,8 +30,11 @@ constexpr base::TimeDelta kKeyFetchTimeout = base::Seconds(3);
 
 constexpr char kKeyFetchServerUrl[] =
     "https://safebrowsingohttpgateway.googleapis.com/v1/ohttp/hpkekeyconfig";
-// Key older than 7 days is considered expired and should be refetched.
-constexpr base::TimeDelta kKeyExpirationDuration = base::Days(7);
+// Key older than 3 days is considered expired and should be refetched.
+constexpr base::TimeDelta kKeyExpirationDuration = base::Days(3);
+// For slower rotated keys (the old mechanism), key older than 7 days is
+// considered expired and should be refetched.
+constexpr base::TimeDelta kSlowerKeyExpirationDuration = base::Days(7);
 
 // Async fetch will kick in if the key is close to the expiration threshold.
 constexpr base::TimeDelta kKeyCloseToExpirationThreshold = base::Days(1);
@@ -330,7 +333,12 @@ void OhttpKeyService::OnURLLoaderComplete(
   bool is_key_fetch_successful =
       response_body && net_error == net::OK && response_code == net::HTTP_OK;
   if (is_key_fetch_successful) {
-    ohttp_key_ = {*response_body, base::Time::Now() + kKeyExpirationDuration};
+    ohttp_key_ = {*response_body,
+                  base::Time::Now() +
+                      (base::FeatureList::IsEnabled(
+                           kHashPrefixRealTimeLookupsFasterOhttpKeyRotation)
+                           ? kKeyExpirationDuration
+                           : kSlowerKeyExpirationDuration)};
     StoreKeyToPref();
     has_received_lookup_response_from_current_key_ = false;
     backoff_operator_->ReportSuccess();

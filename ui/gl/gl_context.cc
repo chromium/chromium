@@ -145,6 +145,10 @@ bool GLContext::MakeCurrentDefault() {
   return MakeCurrent(default_surface());
 }
 
+base::WeakPtr<GLContext> GLContext::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void GLContext::AddObserver(GLContextObserver* observer) {
   observer_list_.AddObserver(observer);
 }

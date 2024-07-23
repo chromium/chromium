@@ -69,6 +69,10 @@ constexpr char kServerError[] = "server_error";
 //   background contrasts sufficiently with dialog background.
 // - If `brand_text_color` is not provided, computes the text color such that it
 //   contrasts sufficiently with `brand_background_color`.
+// - If `extra_accessible_text` is passed, appends this to the button's
+// accessible name. This is useful when the user logs in via a popup window and
+// cannot easily navigate the rest of the text in the dialog to confirm which is
+// the account being used to login via FedCM.
 class ContinueButton : public views::MdTextButton {
   METADATA_HEADER(ContinueButton, views::MdTextButton)
 
@@ -76,7 +80,8 @@ class ContinueButton : public views::MdTextButton {
   ContinueButton(views::MdTextButton::PressedCallback callback,
                  const std::u16string& text,
                  AccountSelectionBubbleView* bubble_view,
-                 const content::IdentityProviderMetadata& idp_metadata)
+                 const content::IdentityProviderMetadata& idp_metadata,
+                 std::optional<std::u16string> extra_accessible_text)
       : views::MdTextButton(std::move(callback), text),
         bubble_view_(bubble_view),
         brand_background_color_(idp_metadata.brand_background_color),
@@ -84,6 +89,9 @@ class ContinueButton : public views::MdTextButton {
     SetCornerRadius(kButtonRadius);
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
     SetStyle(ui::ButtonStyle::kProminent);
+    if (extra_accessible_text.has_value()) {
+      GetViewAccessibility().SetName(text + u", " + *extra_accessible_text);
+    }
   }
 
   ContinueButton(const ContinueButton&) = delete;
@@ -294,6 +302,7 @@ void AccountSelectionBubbleView::InitDialogWidget() {
   }
 
   dialog_widget_ = widget->GetWeakPtr();
+  occlusion_observation_.Observe(widget);
 }
 
 void AccountSelectionBubbleView::ShowMultiAccountPicker(
@@ -419,7 +428,8 @@ void AccountSelectionBubbleView::ShowFailureDialog(
       base::BindRepeating(&AccountSelectionViewBase::Observer::OnLoginToIdP,
                           base::Unretained(observer_), idp_metadata.config_url,
                           idp_metadata.idp_login_url),
-      l10n_util::GetStringUTF16(IDS_SIGNIN_CONTINUE), this, idp_metadata);
+      l10n_util::GetStringUTF16(IDS_SIGNIN_CONTINUE), this, idp_metadata,
+      /*extra_accessible_text=*/std::nullopt);
   row->AddChildView(std::move(button));
   AddChildView(std::move(row));
 
@@ -718,7 +728,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
           std::cref(idp_display_data)),
       l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONTINUE,
                                  base::UTF8ToUTF16(display_name)),
-      this, idp_metadata);
+      this, idp_metadata, base::UTF8ToUTF16(account.email));
   continue_button_ = row->AddChildView(std::move(button));
 
   // Do not add disclosure text if this is a sign in or if we were requested
@@ -1020,6 +1030,7 @@ void AccountSelectionBubbleView::UpdateHeader(
   if (title.compare(title_) != 0) {
     title_ = title;
     title_label_->SetText(title_);
+    SetAccessibleTitle(title_);
     // The title label is not destroyed, so announce it manually.
     webid::SendAccessibilityEvent(GetWidget(), title_);
   }

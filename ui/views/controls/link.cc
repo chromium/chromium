@@ -142,9 +142,9 @@ void Link::OnGestureEvent(ui::GestureEvent* event) {
   if (!GetEnabled())
     return;
 
-  if (event->type() == ui::ET_GESTURE_TAP_DOWN) {
+  if (event->type() == ui::EventType::kGestureTapDown) {
     SetPressed(true);
-  } else if (event->type() == ui::ET_GESTURE_TAP) {
+  } else if (event->type() == ui::EventType::kGestureTap) {
     OnClick(*event);
   } else {
     SetPressed(false);

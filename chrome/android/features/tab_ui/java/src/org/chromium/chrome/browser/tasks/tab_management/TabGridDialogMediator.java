@@ -457,6 +457,11 @@ public class TabGridDialogMediator
 
     void hideDialog(boolean showAnimation) {
         if (!mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE)) {
+            if (!showAnimation) {
+                // Forcibly finish any pending animations.
+                mModel.set(TabGridDialogProperties.FORCE_ANIMATION_TO_FINISH, true);
+                mModel.set(TabGridDialogProperties.FORCE_ANIMATION_TO_FINISH, false);
+            }
             return;
         }
 

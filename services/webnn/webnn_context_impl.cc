@@ -21,7 +21,6 @@ namespace webnn {
 
 WebNNContextImpl::WebNNContextImpl(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
-    mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
     WebNNContextProviderImpl* context_provider,
     ContextProperties properties,
     mojom::CreateContextOptionsPtr options,
@@ -29,7 +28,6 @@ WebNNContextImpl::WebNNContextImpl(
     // TODO(crbug.com/345352987): pass token by value to WebNNObjectImpl.
     : WebNNObjectImpl(std::move(context_handle)),
       receiver_(this, std::move(receiver)),
-      client_remote_(std::move(client_remote)),
       context_provider_(context_provider),
       properties_(IntersectWithBaseProperties(std::move(properties))),
       options_(std::move(options)) {
@@ -123,8 +121,8 @@ void WebNNContextImpl::DidCreateWebNNGraphImpl(
   graph_impls_.Add(*std::move(result), std::move(receiver));
 }
 
-void WebNNContextImpl::OnLost(const std::string& message) {
-  client_remote_->OnLost(message);
+void WebNNContextImpl::OnLost(std::string_view message) {
+  receiver_.ResetWithReason(/*custom_reason=*/0, message);
   context_provider_->OnConnectionError(this);
 }
 

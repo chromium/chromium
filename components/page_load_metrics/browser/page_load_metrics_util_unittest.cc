@@ -84,6 +84,25 @@ TEST_F(PageLoadMetricsUtilTest, GetGoogleHostnamePrefix) {
   }
 }
 
+TEST_F(PageLoadMetricsUtilTest, HasGoogleSearchQuery) {
+  struct {
+    bool expected_result;
+    const char* url;
+  } test_cases[] = {
+      {true, "https://www.google.com/search#q=test"},
+      {true, "https://www.google.com/search?q=test"},
+      {true, "https://www.google.com#q=test"},
+      {true, "https://www.google.com?q=test"},
+      {false, "https://www.google.com/search"},
+      {false, "https://www.google.com/"},
+  };
+  for (const auto& test : test_cases) {
+    EXPECT_EQ(test.expected_result,
+              page_load_metrics::HasGoogleSearchQuery(GURL(test.url)))
+        << "for URL: " << test.url;
+  }
+}
+
 TEST_F(PageLoadMetricsUtilTest, IsGoogleSearchHostname) {
   struct {
     bool expected_result;
@@ -135,6 +154,38 @@ TEST_F(PageLoadMetricsUtilTest, IsGoogleSearchResultUrl) {
   for (const auto& test : test_cases) {
     EXPECT_EQ(test.expected_result,
               page_load_metrics::IsGoogleSearchResultUrl(GURL(test.url)))
+        << "for URL: " << test.url;
+  }
+}
+
+TEST_F(PageLoadMetricsUtilTest, IsGoogleSearchHomepageUrl) {
+  struct {
+    bool expected_result;
+    const char* url;
+  } test_cases[] = {
+      {false, "https://www.google.com/search#q=test"},
+      {false, "https://www.google.com/search?q=test"},
+      {false, "https://www.google.com/custom?q=test"},
+      {true, "https://www.google.com/search"},
+      {true, "https://www.google.com/custom"},
+      {true, "https://www.google.com/#q=test"},
+      {true, "https://www.google.com/webhp#q=test"},
+      {true, "https://www.google.com/webhp?q=test"},
+      {true, "https://www.google.com/webhp?a=b&q=test"},
+      {true, "https://www.google.com/webhp?a=b&q=test&c=d"},
+      {true, "https://www.google.com/webhp#a=b&q=test&c=d"},
+      {true, "https://www.google.com/webhp?#a=b&q=test&c=d"},
+      {true, "https://www.google.com/"},
+      {false, "https://www.google.com/about/"},
+      {false, "https://other.google.com/"},
+      {false, "https://other.google.com/webhp?q=test"},
+      {false, "http://www.example.com/"},
+      {false, "https://www.example.com/webhp?q=test"},
+      {false, "https://google.com/#q=test"},
+  };
+  for (const auto& test : test_cases) {
+    EXPECT_EQ(test.expected_result,
+              page_load_metrics::IsGoogleSearchHomepageUrl(GURL(test.url)))
         << "for URL: " << test.url;
   }
 }

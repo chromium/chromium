@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/notifications/scheduler/internal/impression_history_tracker.h"
+
 #include <memory>
 #include <utility>
 #include <vector>
@@ -11,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/notifications/scheduler/internal/impression_history_tracker.h"
 #include "chrome/browser/notifications/scheduler/test/fake_clock.h"
 #include "chrome/browser/notifications/scheduler/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -168,7 +169,7 @@ class ImpressionHistoryTrackerTest : public ::testing::Test {
     DCHECK_EQ(expected_client_states.size(), client_states.size());
     for (const auto& expected : expected_client_states) {
       auto output_it = client_states.find(expected.first);
-      DCHECK(output_it != client_states.end());
+      CHECK(output_it != client_states.end());
       EXPECT_EQ(*expected.second, *output_it->second)
           << "Unmatch client states: \n"
           << "Expected: \n"

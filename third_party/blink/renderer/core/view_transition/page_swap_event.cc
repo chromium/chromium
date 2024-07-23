@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/view_transition/page_swap_event.h"
 
 #include "third_party/blink/public/common/page_state/page_state.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_page_swap_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
@@ -88,6 +89,13 @@ PageSwapEvent::PageSwapEvent(
         entry, from, TypeToString(page_swap_event_params->navigation_type));
   }
 }
+
+PageSwapEvent::PageSwapEvent(const AtomicString& type,
+                             const PageSwapEventInit* initializer)
+    : Event(type, initializer),
+      activation_(initializer ? initializer->activation() : nullptr),
+      dom_view_transition_(initializer ? initializer->viewTransition()
+                                       : nullptr) {}
 
 PageSwapEvent::~PageSwapEvent() = default;
 

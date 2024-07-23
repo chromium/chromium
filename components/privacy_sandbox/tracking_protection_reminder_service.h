@@ -11,6 +11,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "tracking_protection_prefs.h"
 
@@ -52,8 +53,19 @@ class TrackingProtectionReminderService
   // Returns the reminder status for the user.
   tracking_protection::TrackingProtectionReminderStatus GetReminderStatus();
 
-  // Called after a reminder was experienced
-  void OnReminderExperienced();
+  // Called after a reminder was experienced.
+  void OnReminderExperienced(
+      TrackingProtectionOnboarding::SurfaceType surface_type);
+
+  // Called when a reminder was shown and an action was taken.
+  void OnReminderActionTaken(
+      privacy_sandbox::NoticeActionTaken action_taken,
+      base::Time action_taken_time,
+      TrackingProtectionOnboarding::SurfaceType surface_type);
+
+  // Returns notice data for the reminder.
+  std::optional<PrivacySandboxNoticeData> GetReminderNoticeData(
+      TrackingProtectionOnboarding::SurfaceType surface_type);
 
   // KeyedService:
   void Shutdown() override;
@@ -74,6 +86,7 @@ class TrackingProtectionReminderService
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<TrackingProtectionOnboarding> onboarding_service_;
+  std::unique_ptr<PrivacySandboxNoticeStorage> notice_storage_;
   base::ScopedObservation<TrackingProtectionOnboarding,
                           TrackingProtectionOnboarding::Observer>
       onboarding_observation_{this};

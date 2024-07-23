@@ -23,22 +23,19 @@ std::unique_ptr<JSONArray> DisplayItemList::DisplayItemsAsJSON(
     const PaintArtifact& paint_artifact,
     wtf_size_t first_item_index,
     const DisplayItemRange& display_items,
-    JsonFlags flags) {
+    JsonOption option) {
   auto json_array = std::make_unique<JSONArray>();
   wtf_size_t i = first_item_index;
-  DCHECK(!(flags & kCompact) || !(flags & kShowPaintRecords))
-      << "kCompact and kShowPaintRecords are exclusive";
   for (auto& item : display_items) {
-    if (flags & kCompact) {
+    if (option == kCompact) {
       json_array->PushString(String::Format(
           "%u: %s", i, item.IdAsString(paint_artifact).Utf8().c_str()));
     } else {
       auto json = std::make_unique<JSONObject>();
       json->SetInteger("index", i);
-      item.PropertiesAsJSON(*json, paint_artifact,
-                            flags & kClientKnownToBeAlive);
+      item.PropertiesAsJSON(*json, paint_artifact);
 
-      if (flags & kShowPaintRecords) {
+      if (option == kShowPaintRecords) {
         if (const auto* drawing_item = DynamicTo<DrawingDisplayItem>(item)) {
           json->SetArray("record",
                          RecordAsJSON(drawing_item->GetPaintRecord()));

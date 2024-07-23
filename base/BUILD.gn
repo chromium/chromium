@@ -3624,6 +3624,12 @@ test("base_unittests") {
     data_deps += [ "//clank/build/bot/filters:base_unittests_filters" ]
   }
 
+  # Since cpu_unittest depends on __ARM_FEATURE_MEMORY_TAGGING, needs to
+  # enable clang's MTE feature.
+  configs += [
+    "//base/allocator/partition_allocator/src/partition_alloc:memory_tagging",
+  ]
+
   if (build_rust_base_conversions) {
     deps += [ "//build/rust:cxx_cppdeps" ]
   }

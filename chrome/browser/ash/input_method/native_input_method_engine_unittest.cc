@@ -432,13 +432,7 @@ TEST_F(NativeInputMethodEngineTest,
 TEST_F(NativeInputMethodEngineTest, TogglesImeServiceWhenAutocorrectChanges) {
   TestingProfile testing_profile;
   SetEmptyPrefs(testing_profile);
-
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAutocorrectByDefault,
-                             features::kAssistMultiWord});
-
+  EnableDefaultFeatureListWithMultiwordDisabled();
   testing::StrictMock<MockInputMethod> mock_input_method;
   InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
@@ -950,16 +944,18 @@ TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
 
   // Quote ("VKEY_OEM_7") + A is a dead key combination.
   engine.ProcessKeyEvent(
-      {ui::ET_KEY_PRESSED, ui::VKEY_OEM_7, ui::DomCode::QUOTE, ui::EF_NONE,
-       ui::DomKey::DeadKeyFromCombiningCharacter(u'\u0301'), base::TimeTicks()},
+      {ui::EventType::kKeyPressed, ui::VKEY_OEM_7, ui::DomCode::QUOTE,
+       ui::EF_NONE, ui::DomKey::DeadKeyFromCombiningCharacter(u'\u0301'),
+       base::TimeTicks()},
       base::DoNothing());
   engine.ProcessKeyEvent(
-      {ui::ET_KEY_RELEASED, ui::VKEY_OEM_7, ui::DomCode::QUOTE, ui::EF_NONE,
-       ui::DomKey::DeadKeyFromCombiningCharacter(u'\u0301'), base::TimeTicks()},
+      {ui::EventType::kKeyReleased, ui::VKEY_OEM_7, ui::DomCode::QUOTE,
+       ui::EF_NONE, ui::DomKey::DeadKeyFromCombiningCharacter(u'\u0301'),
+       base::TimeTicks()},
       base::DoNothing());
-  engine.ProcessKeyEvent({ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE},
+  engine.ProcessKeyEvent({ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE},
                          base::DoNothing());
-  engine.ProcessKeyEvent({ui::ET_KEY_RELEASED, ui::VKEY_A, ui::EF_NONE},
+  engine.ProcessKeyEvent({ui::EventType::kKeyReleased, ui::VKEY_A, ui::EF_NONE},
                          base::DoNothing());
   engine.FlushForTesting();
 
@@ -1013,17 +1009,19 @@ TEST_F(NativeInputMethodEngineTest, ProcessesNamedKeysCorrectly) {
 
   // Enter and Backspace are named keys with Unicode representation.
   engine.ProcessKeyEvent(
-      {ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::DomCode::ENTER, ui::EF_NONE,
-       ui::DomKey::ENTER, base::TimeTicks()},
+      {ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::DomCode::ENTER,
+       ui::EF_NONE, ui::DomKey::ENTER, base::TimeTicks()},
       base::DoNothing());
-  engine.ProcessKeyEvent({ui::ET_KEY_RELEASED, ui::VKEY_RETURN, ui::EF_NONE},
-                         base::DoNothing());
   engine.ProcessKeyEvent(
-      {ui::ET_KEY_PRESSED, ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_NONE,
-       ui::DomKey::BACKSPACE, base::TimeTicks()},
+      {ui::EventType::kKeyReleased, ui::VKEY_RETURN, ui::EF_NONE},
       base::DoNothing());
-  engine.ProcessKeyEvent({ui::ET_KEY_RELEASED, ui::VKEY_BACK, ui::EF_NONE},
-                         base::DoNothing());
+  engine.ProcessKeyEvent(
+      {ui::EventType::kKeyPressed, ui::VKEY_BACK, ui::DomCode::BACKSPACE,
+       ui::EF_NONE, ui::DomKey::BACKSPACE, base::TimeTicks()},
+      base::DoNothing());
+  engine.ProcessKeyEvent(
+      {ui::EventType::kKeyReleased, ui::VKEY_BACK, ui::EF_NONE},
+      base::DoNothing());
   engine.FlushForTesting();
 
   InputMethodManager::Shutdown();
@@ -1061,11 +1059,13 @@ TEST_F(NativeInputMethodEngineTest, DoesNotSendUnhandledNamedKeys) {
   engine.Focus(TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
 
   // Help is a named DOM key, but is not used by IMEs.
-  engine.ProcessKeyEvent({ui::ET_KEY_PRESSED, ui::VKEY_HELP, ui::DomCode::HELP,
-                          ui::EF_NONE, ui::DomKey::HELP, base::TimeTicks()},
-                         base::DoNothing());
-  engine.ProcessKeyEvent({ui::ET_KEY_RELEASED, ui::VKEY_HELP, ui::EF_NONE},
-                         base::DoNothing());
+  engine.ProcessKeyEvent(
+      {ui::EventType::kKeyPressed, ui::VKEY_HELP, ui::DomCode::HELP,
+       ui::EF_NONE, ui::DomKey::HELP, base::TimeTicks()},
+      base::DoNothing());
+  engine.ProcessKeyEvent(
+      {ui::EventType::kKeyReleased, ui::VKEY_HELP, ui::EF_NONE},
+      base::DoNothing());
   engine.FlushForTesting();
 
   InputMethodManager::Shutdown();

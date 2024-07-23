@@ -32,7 +32,6 @@
 #include "content/test/test_web_contents.h"
 #include "net/http/http_response_headers.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -133,7 +132,6 @@ class KeepAliveAttributionRequestHelperTest : public RenderViewHostTestHarness {
     auto helper = KeepAliveAttributionRequestHelper::CreateIfNeeded(
         eligibility, reporting_url, attribution_src_token,
         "devtools-request-id",
-        {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
         *AttributionSuitableContext::Create(
             test_web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
 
@@ -285,9 +283,8 @@ TEST_F(KeepAliveAttributionRequestHelperTest, Cleanup) {
                      kRegisterSourceJson);
 
   const auto attempt_to_register_data = [&]() -> bool {
-    return host->NotifyBackgroundRegistrationData(
-        background_id, &(*headers), reporting_url,
-        {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+    return host->NotifyBackgroundRegistrationData(background_id, &(*headers),
+                                                  reporting_url);
   };
 
   // Call twice to show that we can call multiple times to register multiple
@@ -416,7 +413,7 @@ TEST_F(KeepAliveAttributionRequestHelperTest, HelperNotNeeded) {
     auto helper = KeepAliveAttributionRequestHelper::CreateIfNeeded(
         AttributionReportingEligibility::kEmpty, reporting_url,
         /*attribution_src_token=*/std::nullopt, "devtools-request-id",
-        network::AttributionReportingRuntimeFeatures(), context.value());
+        context.value());
     EXPECT_EQ(helper, nullptr);
   }
 
@@ -433,7 +430,7 @@ TEST_F(KeepAliveAttributionRequestHelperTest, HelperNotNeeded) {
     auto helper = KeepAliveAttributionRequestHelper::CreateIfNeeded(
         AttributionReportingEligibility::kEventSourceOrTrigger, reporting_url,
         /*attribution_src_token=*/std::nullopt, "devtools-request-id",
-        network::AttributionReportingRuntimeFeatures(), context.value());
+        context.value());
     EXPECT_EQ(helper, nullptr);
   }
 }

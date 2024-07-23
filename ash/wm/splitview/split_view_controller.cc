@@ -1276,7 +1276,7 @@ void SplitViewController::OnOverviewModeEnding(
     return;
   }
 
-  for (const auto& overview_item : current_grid->window_list()) {
+  for (const auto& overview_item : current_grid->item_list()) {
     for (aura::Window* window : overview_item->GetWindows()) {
       CHECK(window);
 

@@ -2,76 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/cpu.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent.h"
 #include "chrome/browser/ash/power/ml/user_activity_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/smart_dim_component_installer.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/component_updater/component_updater_service.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/aura/env.h"
-#include "ui/aura/env_observer.h"
-#include "ui/aura/window_observer.h"
 
 namespace ash {
-namespace {
-
-// Waits for a Lacros window to open and become visible.
-class LacrosWindowWaiter : public aura::EnvObserver,
-                           public aura::WindowObserver {
- public:
-  LacrosWindowWaiter() { aura::Env::GetInstance()->AddObserver(this); }
-
-  ~LacrosWindowWaiter() override {
-    aura::Env::GetInstance()->RemoveObserver(this);
-    if (lacros_window_) {
-      lacros_window_->RemoveObserver(this);
-      lacros_window_ = nullptr;
-    }
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  // aura::EnvObserver:
-  void OnWindowInitialized(aura::Window* window) override {
-    if (crosapi::browser_util::IsLacrosWindow(window)) {
-      lacros_window_ = window;
-      // Observe for the window becoming visible.
-      lacros_window_->AddObserver(this);
-    }
-  }
-
-  // aura::WindowObserver:
-  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
-    if (window == lacros_window_ && visible) {
-      run_loop_.Quit();
-    }
-  }
-
-  void OnWindowDestroying(aura::Window* window) override {
-    CHECK_EQ(window, lacros_window_);
-    lacros_window_->RemoveObserver(this);
-    lacros_window_ = nullptr;
-  }
-
-  raw_ptr<aura::Window> lacros_window_ = nullptr;
-  base::RunLoop run_loop_;
-};
-
-}  // namespace
 
 class SmartDimIntegrationTest : public AshIntegrationTest {
  public:
@@ -175,75 +122,6 @@ IN_PROC_BROWSER_TEST_F(SmartDimComponentIntegrationTest, SmartDim) {
 
   // Bucket 0 is success. This is emitted after the ML Service replies
   // to chrome.
-  histograms.ExpectBucketCount("PowerML.SmartDimModel.Result", 0, 1);
-}
-
-class SmartDimLacrosIntegrationTest : public SmartDimIntegrationTest {
- public:
-  SmartDimLacrosIntegrationTest() {
-    feature_list_.InitAndEnableFeature(
-        ash::standalone_browser::features::kLacrosOnly);
-  }
-
-  // AshIntegrationTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SmartDimIntegrationTest::SetUpCommandLine(command_line);
-    SetUpCommandLineForLacros(command_line);
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    SetUpLacrosBrowserManager();
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// TODO(b/341659658): Fails to initialize Lacros window.
-IN_PROC_BROWSER_TEST_F(SmartDimLacrosIntegrationTest, DISABLED_SmartDim) {
-  // Lacros fails to start up correctly on VM tryservers like
-  // chromeos-amd64-generic (Lacros restarts in a loop). b/303359438
-  if (base::CPU().is_running_in_vm()) {
-    GTEST_SKIP();
-  }
-
-  ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
-
-  // The test opens a Lacros window, so ensure the Wayland server is running and
-  // crosapi is ready.
-  WaitForAshFullyStarted();
-  ASSERT_TRUE(crosapi::CrosapiManager::Get());
-  ASSERT_TRUE(crosapi::CrosapiManager::Get()->crosapi_ash());
-
-  // Request a Lacros window to open and wait for it to become visible.
-  LacrosWindowWaiter window_waiter;
-  crosapi::BrowserManager::Get()->NewWindow(
-      /*incognito=*/false, /*should_trigger_session_restore=*/false);
-  window_waiter.Wait();
-  ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
-
-  // Speculative fix for test flake. Sometimes WebPageInfoSource returns 0
-  // because Lacros does not provide info about the current page. Give Lacros
-  // time to stabilize. See b/332806059
-  base::RunLoop loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, loop.QuitClosure(), base::Milliseconds(500));
-  loop.Run();
-
-  base::HistogramTester histograms;
-
-  // Request a screen dimming decision and wait for the ML service to return an
-  // answer.
-  base::RunLoop run_loop;
-  power::ml::UserActivityController::Get()->ShouldDeferScreenDim(
-      base::BindLambdaForTesting([&](bool defer) { run_loop.Quit(); }));
-  run_loop.Run();
-
-  // WorkerType 0 is built-in worker.
-  histograms.ExpectBucketCount("PowerML.SmartDimComponent.WorkerType", 0, 1);
-  // Bucket 1 is Lacros.
-  histograms.ExpectBucketCount("PowerML.SmartDimFeature.WebPageInfoSource", 1,
-                               1);
-  // Bucket 0 is success.
   histograms.ExpectBucketCount("PowerML.SmartDimModel.Result", 0, 1);
 }
 

@@ -120,8 +120,8 @@ GpuMojoMediaClientTraits::GpuMojoMediaClientTraits(
 
 std::unique_ptr<GpuMojoMediaClient> GpuMojoMediaClient::Create(
     GpuMojoMediaClientTraits& traits) {
-  DCHECK(traits.gpu_task_runner->BelongsToCurrentThread());
-  DCHECK(traits.media_gpu_channel_manager);
+  DCHECK(!traits.gpu_task_runner ||
+         traits.gpu_task_runner->BelongsToCurrentThread());
 
   auto client = CreateGpuMediaService(traits);
   DCHECK(client);

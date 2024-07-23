@@ -93,6 +93,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "chromeos-betty-chrome-dchecks",
+)
+
+chrome_internal_verifier(
     builder = "chromeos-betty-cfi-thin-lto-chrome",
 )
 
@@ -142,6 +146,10 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "chromeos-reven-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-ava-nelson",
 )
 
 chrome_internal_verifier(

@@ -214,7 +214,7 @@ class TestWaylandWindowDelegate : public PlatformWindowDelegate {
 class WaylandWindowTest : public WaylandTest {
  public:
   WaylandWindowTest()
-      : test_mouse_event_(ET_MOUSE_PRESSED,
+      : test_mouse_event_(EventType::kMousePressed,
                           gfx::Point(10, 15),
                           gfx::Point(10, 15),
                           ui::EventTimeStampFromSeconds(123456),
@@ -362,8 +362,8 @@ class WaylandWindowTest : public WaylandTest {
     }
 
     PointerDetails pointer_details(EventPointerType::kTouch, 1);
-    TouchEvent test_touch_event(ET_TOUCH_PRESSED, {1, 1}, base::TimeTicks(),
-                                pointer_details);
+    TouchEvent test_touch_event(EventType::kTouchPressed, {1, 1},
+                                base::TimeTicks(), pointer_details);
     if (touch_focused_window) {
       Event::DispatcherApi(&test_touch_event).set_target(touch_focused_window);
     }
@@ -392,7 +392,7 @@ class WaylandWindowTest : public WaylandTest {
       EXPECT_FALSE(keyboard_focused_window);
     }
 
-    KeyEvent test_key_event(ET_KEY_PRESSED, VKEY_0, 0);
+    KeyEvent test_key_event(EventType::kKeyPressed, VKEY_0, 0);
     if (keyboard_focused_window) {
       Event::DispatcherApi(&test_key_event).set_target(keyboard_focused_window);
     }
@@ -1920,22 +1920,22 @@ TEST_P(WaylandWindowTest, DispatchEventResult) {
   auto window = WaylandWindow::Create(&window_delegate, connection_.get(),
                                       std::move(properties));
 
-  KeyEvent event_1(ET_KEY_PRESSED, VKEY_0, 0);
+  KeyEvent event_1(EventType::kKeyPressed, VKEY_0, 0);
   window_delegate.SetDispatchEventCallback(
       base::BindOnce([](Event* event) { event->SetSkipped(); }));
   EXPECT_EQ(window->DispatchEvent(&event_1), POST_DISPATCH_PERFORM_DEFAULT);
 
-  KeyEvent event_2(ET_KEY_PRESSED, VKEY_0, 0);
+  KeyEvent event_2(EventType::kKeyPressed, VKEY_0, 0);
   window_delegate.SetDispatchEventCallback(
       base::BindOnce([](Event* event) { event->StopPropagation(); }));
   EXPECT_EQ(window->DispatchEvent(&event_2), POST_DISPATCH_STOP_PROPAGATION);
 
-  KeyEvent event_3(ET_KEY_PRESSED, VKEY_0, 0);
+  KeyEvent event_3(EventType::kKeyPressed, VKEY_0, 0);
   window_delegate.SetDispatchEventCallback(
       base::BindOnce([](Event* event) { event->SetHandled(); }));
   EXPECT_EQ(window->DispatchEvent(&event_3), POST_DISPATCH_STOP_PROPAGATION);
 
-  KeyEvent event_4(ET_KEY_PRESSED, VKEY_0, 0);
+  KeyEvent event_4(EventType::kKeyPressed, VKEY_0, 0);
   window_delegate.SetDispatchEventCallback(base::BindOnce([](Event* event) {
     // Do nothing.
   }));
@@ -2374,8 +2374,8 @@ TEST_P(WaylandWindowTest, ConvertEventToTarget) {
   // coordinate system of the menu.  Its coordinates must be equal to:
   //     -(offset of the menu).
   constexpr gfx::PointF kParentPoint{0, 0};
-  ui::MouseEvent event(ui::EventType::ET_MOUSE_MOVED, kParentPoint,
-                       kParentPoint, {}, ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent event(ui::EventType::kMouseMoved, kParentPoint, kParentPoint,
+                       {}, ui::EF_NONE, ui::EF_NONE);
 
   ui::Event::DispatcherApi dispatcher_api(&event);
   dispatcher_api.set_target(window_.get());
@@ -4876,7 +4876,7 @@ class BlockableWaylandToplevelWindow : public WaylandToplevelWindow {
   // WaylandToplevelWindow overrides:
   uint32_t DispatchEvent(const PlatformEvent& platform_event) override {
     ui::Event* event(platform_event);
-    if (event->type() == ET_TOUCH_RELEASED && !blocked_) {
+    if (event->type() == EventType::kTouchReleased && !blocked_) {
       base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
       blocked_ = true;
 
@@ -4988,7 +4988,7 @@ TEST_P(WaylandWindowTest, ChangeFocusDuringDispatch) {
   EXPECT_CALL(other_delegate, DispatchEvent(_)).Times(1);
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly([&](Event* event) {
     count++;
-    if (event->type() == ui::ET_MOUSE_PRESSED) {
+    if (event->type() == ui::EventType::kMousePressed) {
       PostToServerAndWait(
           [id = surface_id_,
            other_id = other_window->root_surface()->get_surface_id()](

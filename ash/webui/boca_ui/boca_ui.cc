@@ -5,6 +5,7 @@
 #include "ash/webui/boca_ui/boca_ui.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/boca_ui/boca_app_page_handler.h"
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/grit/ash_boca_ui_resources.h"
@@ -15,6 +16,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 #include "ui/webui/webui_allowlist.h"
 
@@ -78,6 +80,25 @@ BocaUI::BocaUI(content::WebUI* web_ui) : UntrustedWebUIController(web_ui) {
 }
 
 BocaUI::~BocaUI() = default;
+
+void BocaUI::BindInterface(
+    mojo::PendingReceiver<boca::mojom::BocaPageHandlerFactory> factory) {
+  receiver_.reset();
+  receiver_.Bind(std::move(factory));
+}
+
+void BocaUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
+}
+
+void BocaUI::Create(
+    mojo::PendingReceiver<boca::mojom::PageHandler> page_handler,
+    mojo::PendingRemote<boca::mojom::Page> page) {
+  page_handler_impl_ = std::make_unique<BocaAppHandler>(
+      this, std::move(page_handler), std::move(page));
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BocaUI)
 

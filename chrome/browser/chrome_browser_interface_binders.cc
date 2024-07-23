@@ -256,6 +256,8 @@
 #include "ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom.h"
 #include "ash/webui/annotator/mojom/untrusted_annotator.mojom.h"
 #include "ash/webui/annotator/untrusted_annotator_ui.h"
+#include "ash/webui/boca_ui/boca_ui.h"
+#include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/camera_app_ui/camera_app_helper.mojom.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/color_internals/color_internals_ui.h"
@@ -1882,8 +1884,13 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // --- Section 2: chrome-untrusted:// WebUIs:
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsBocaEnabled()) {
+    registry.ForWebUI<ash::BocaUI>()
+        .Add<ash::boca::mojom::BocaPageHandlerFactory>()
+        .Add<color_change_listener::mojom::PageHandler>();
+  }
+
   if (chromeos::features::IsOrcaEnabled()) {
     registry.ForWebUI<ash::MakoUntrustedUI>()
         .Add<ash::orca::mojom::EditorClient>();

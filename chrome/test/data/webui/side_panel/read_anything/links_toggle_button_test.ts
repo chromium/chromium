@@ -38,16 +38,11 @@ suite('LinksToggle', () => {
         '#' + LINK_TOGGLE_BUTTON_ID)!;
   });
 
-  suite('by default', () => {
-    test('links are on', () => {
-      assertEquals(LINKS_ENABLED_ICON, menuButton.ironIcon);
-      assertTrue(chrome.readingMode.linksEnabled);
-      assertStringContains('disable links', menuButton.title.toLowerCase());
-    });
-
-    test('button is enabled', () => {
-      assertFalse(menuButton.disabled);
-    });
+  test('by default links are on and button is enabled', () => {
+    assertEquals(LINKS_ENABLED_ICON, menuButton.ironIcon);
+    assertTrue(chrome.readingMode.linksEnabled);
+    assertStringContains('disable links', menuButton.title.toLowerCase());
+    assertFalse(menuButton.disabled);
   });
 
   suite('on first click', () => {

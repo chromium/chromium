@@ -42,8 +42,10 @@ class EditLabelTest : public OverlayViewTestBase {
   }
 
   void TapKeyboardKeyOnEditLabel(EditLabel* label, ui::KeyboardCode code) {
-    label->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, code, ui::EF_NONE));
-    label->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, code, ui::EF_NONE));
+    label->OnKeyPressed(
+        ui::KeyEvent(ui::EventType::kKeyPressed, code, ui::EF_NONE));
+    label->OnKeyReleased(
+        ui::KeyEvent(ui::EventType::kKeyReleased, code, ui::EF_NONE));
   }
 
   void FocusOnLabel(EditLabel* label) {

@@ -14,6 +14,7 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/mock_account_checker.h"
@@ -26,6 +27,7 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
@@ -95,13 +97,17 @@ class MockDelegate : public ShoppingServiceHandler::Delegate {
   MOCK_METHOD(void, ShowInsightsSidePanelUI, (), (override));
   MOCK_METHOD(void, OpenUrlInNewTab, (const GURL& url), (override));
   MOCK_METHOD(void, SwitchToOrOpenTab, (const GURL& url), (override));
-  MOCK_METHOD(void, ShowFeedback, (), (override));
+  MOCK_METHOD(void, ShowFeedbackForPriceInsights, (), (override));
   MOCK_METHOD(const bookmarks::BookmarkNode*,
               GetOrAddBookmarkForCurrentUrl,
               (),
               (override));
   MOCK_METHOD(void, ShowBookmarkEditorForCurrentUrl, (), (override));
   MOCK_METHOD(ukm::SourceId, GetCurrentTabUkmSourceId, (), (override));
+  MOCK_METHOD(void,
+              ShowFeedbackForProductSpecifications,
+              (const std::string& log_id),
+              (override));
 
   void SetCurrentTabUrl(const GURL& url) {
     ON_CALL(*this, GetCurrentTabUrl)
@@ -155,7 +161,7 @@ MATCHER_P(MojoBookmarkInfoWithClusterId, expected_id, "") {
 
 class ShoppingServiceHandlerTest : public testing::Test {
  public:
-  ShoppingServiceHandlerTest() {
+  ShoppingServiceHandlerTest() : logs_uploader_(&local_state_) {
     features_.InitAndEnableFeature(kShoppingList);
   }
 
@@ -185,16 +191,18 @@ class ShoppingServiceHandlerTest : public testing::Test {
         mojo::PendingReceiver<
             shopping_service::mojom::ShoppingServiceHandler>(),
         bookmark_model_.get(), shopping_service_.get(), pref_service_.get(),
-        &tracker_, std::move(delegate));
+        &tracker_, std::move(delegate), &logs_uploader_);
   }
 
   MockPage page_;
+  TestingPrefServiceSimple local_state_;
   std::unique_ptr<MockProductSpecificationsService> product_spec_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<MockAccountChecker> account_checker_;
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<commerce::ShoppingServiceHandler> handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  optimization_guide::TestModelQualityLogsUploaderService logs_uploader_;
   raw_ptr<MockDelegate> delegate_;
   feature_engagement::test::MockTracker tracker_;
   base::test::TaskEnvironment task_environment_;
@@ -640,10 +648,38 @@ TEST_F(ShoppingServiceHandlerTest, TestSwitchToOrOpenTab) {
   handler_->SwitchToOrOpenTab(url);
 }
 
-TEST_F(ShoppingServiceHandlerTest, TestShowFeedback) {
-  EXPECT_CALL(*delegate_, ShowFeedback).Times(1);
+TEST_F(ShoppingServiceHandlerTest, TestShowFeedbackForPriceInsights) {
+  EXPECT_CALL(*delegate_, ShowFeedbackForPriceInsights).Times(1);
 
-  handler_->ShowFeedback();
+  handler_->ShowFeedbackForPriceInsights();
+}
+
+TEST_F(ShoppingServiceHandlerTest,
+       SetProductSpecificationsUserFeedback_NonNegative) {
+  EXPECT_CALL(*delegate_, ShowFeedbackForProductSpecifications).Times(0);
+
+  handler_->GetProductSpecificationsForUrls({GURL("http://example.com")},
+                                            base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  CHECK(handler_->current_log_quality_entry_for_testing());
+  handler_->SetProductSpecificationsUserFeedback(
+      shopping_service::mojom::UserFeedback::kThumbsUp);
+  handler_->SetProductSpecificationsUserFeedback(
+      shopping_service::mojom::UserFeedback::kUnspecified);
+}
+
+TEST_F(ShoppingServiceHandlerTest,
+       SetProductSpecificationsUserFeedback_Negative) {
+  EXPECT_CALL(*delegate_, ShowFeedbackForProductSpecifications).Times(1);
+
+  handler_->GetProductSpecificationsForUrls({GURL("http://example.com")},
+                                            base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  CHECK(handler_->current_log_quality_entry_for_testing());
+  handler_->SetProductSpecificationsUserFeedback(
+      shopping_service::mojom::UserFeedback::kThumbsDown);
 }
 
 TEST_F(ShoppingServiceHandlerTest, TestIsShoppingListEligible) {
@@ -798,12 +834,22 @@ TEST_F(ShoppingServiceHandlerTest, TestGetProductSpecifications) {
   shopping_service_->SetResponseForGetProductSpecificationsForUrls(
       std::move(specs));
 
+  ASSERT_EQ(nullptr, handler_->current_log_quality_entry_for_testing());
   base::RunLoop run_loop;
   handler_->GetProductSpecificationsForUrls(
       {GURL("http://example.com")},
       base::BindOnce(
-          [](base::RunLoop* run_loop,
+          [](base::RunLoop* run_loop, ShoppingServiceHandler* handler,
              shopping_service::mojom::ProductSpecificationsPtr specs_ptr) {
+            // Check log quality entry is created and has correct execution_id.
+            CHECK(handler->current_log_quality_entry_for_testing());
+            std::string log_id =
+                handler->current_log_quality_entry_for_testing()
+                    ->log_ai_data_request()
+                    ->model_execution_info()
+                    .execution_id();
+            ASSERT_EQ(0u, log_id.find(kProductSpecificationsLoggingPrefix));
+
             ASSERT_EQ("color", specs_ptr->product_dimension_map[1]);
 
             ASSERT_EQ(12345u, specs_ptr->products[0]->product_cluster_id);
@@ -818,10 +864,34 @@ TEST_F(ShoppingServiceHandlerTest, TestGetProductSpecifications) {
 
             run_loop->Quit();
           },
-          &run_loop));
+          &run_loop, handler_.get()));
   run_loop.Run();
 
   handler_->ShowBookmarkEditorForCurrentUrl();
+}
+
+TEST_F(ShoppingServiceHandlerTest,
+       TestLogEntryReplacesForGetProductSpecifications) {
+  ASSERT_EQ(nullptr, handler_->current_log_quality_entry_for_testing());
+
+  handler_->GetProductSpecificationsForUrls({GURL("http://example.com")},
+                                            base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  auto* entry_one = handler_->current_log_quality_entry_for_testing();
+  CHECK(entry_one);
+  std::string log_id_one =
+      entry_one->log_ai_data_request()->model_execution_info().execution_id();
+
+  handler_->GetProductSpecificationsForUrls({GURL("http://example.com")},
+                                            base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  auto* entry_two = handler_->current_log_quality_entry_for_testing();
+  CHECK(entry_two);
+  ASSERT_NE(
+      log_id_one,
+      entry_two->log_ai_data_request()->model_execution_info().execution_id());
 }
 
 TEST_F(ShoppingServiceHandlerTest, TestBookmarkNodeMoved) {
@@ -993,7 +1063,7 @@ class ShoppingServiceHandlerFeatureDisableTest : public testing::Test {
         mojo::PendingReceiver<
             shopping_service::mojom::ShoppingServiceHandler>(),
         bookmark_model_.get(), shopping_service_.get(), pref_service_.get(),
-        &tracker_, nullptr);
+        &tracker_, nullptr, nullptr);
   }
 
   MockPage page_;

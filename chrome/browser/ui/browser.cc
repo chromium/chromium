@@ -1293,9 +1293,9 @@ void Browser::OpenFile() {
   ui::SelectFileDialog::FileTypeInfo file_types;
   file_types.allowed_paths =
       ui::SelectFileDialog::FileTypeInfo::ANY_PATH_OR_URL;
-  select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(), directory,
-      &file_types, 0, base::FilePath::StringType(), parent_window, nullptr);
+  select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE,
+                                  std::u16string(), directory, &file_types, 0,
+                                  base::FilePath::StringType(), parent_window);
 }
 
 void Browser::UpdateDownloadShelfVisibility(bool visible) {
@@ -1984,16 +1984,17 @@ void Browser::UpdateTargetURL(WebContents* source, const GURL& url) {
 
 void Browser::ContentsMouseEvent(WebContents* source, const ui::Event& event) {
   const ui::EventType type = event.type();
-  const bool exited = type == ui::ET_MOUSE_EXITED;
+  const bool exited = type == ui::EventType::kMouseExited;
   // Disregard synthesized events, and mouse enter and exit, which may occur
   // without explicit user input events during window state changes.
-  if (type != ui::ET_MOUSE_ENTERED && !exited && !event.IsSynthesized()) {
+  if (type != ui::EventType::kMouseEntered && !exited &&
+      !event.IsSynthesized()) {
     exclusive_access_manager_->OnUserInput();
   }
 
   // Mouse motion events update the status bubble, if it exists.
   if (GetStatusBubble() && source == tab_strip_model_->GetActiveWebContents() &&
-      (type == ui::ET_MOUSE_MOVED || exited)) {
+      (type == ui::EventType::kMouseMoved || exited)) {
     GetStatusBubble()->MouseMoved(exited);
     if (exited) {
       GetStatusBubble()->SetURL(GURL());

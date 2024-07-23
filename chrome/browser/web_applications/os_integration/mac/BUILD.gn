@@ -25,9 +25,13 @@ executable("web_app_shortcut_copier") {
   ldflags = []
   if (is_component_build) {
     ldflags += [
-      # The helper is in Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions/X/Helpers
+      # When run within Chromium, the helper is in Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions/X/Helpers
       # so set rpath up to the base.
       "-Wl,-rpath,@executable_path/../../../../../../..",
+
+      # When run from test executables, Chromium.framework is in root of the
+      # build directory so the rpath needs to look up fewer levels to find it.
+      "-Wl,-rpath,@executable_path/../../../..",
     ]
   } else {
     ldflags += [

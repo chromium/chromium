@@ -54,7 +54,9 @@ void PageFormAnalyserLogger::Flush() {
           // Filter out password inputs with values from being logged, as their
           // values are also logged.
           const bool should_obfuscate =
-              input_element && input_element.IsPasswordFieldForAutofill() &&
+              input_element &&
+              input_element.FormControlTypeForAutofill() ==
+                  blink::mojom::FormControlType::kInputPassword &&
               !input_element.Value().IsEmpty();
 
           if (!should_obfuscate) {

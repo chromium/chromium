@@ -922,6 +922,7 @@ TEST_F(HttpStreamPoolJobTest, ReachedPoolLimit) {
   }
 
   ASSERT_FALSE(pool().ReachedMaxStreamLimit());
+  ASSERT_FALSE(pool().IsPoolStalled());
   ASSERT_TRUE(group_a.ReachedMaxStreamLimit());
   ASSERT_EQ(pool().TotalActiveStreamCount(), kMaxPerGroup);
   ASSERT_EQ(group_a.ActiveStreamSocketCount(), kMaxPerGroup);
@@ -943,9 +944,11 @@ TEST_F(HttpStreamPoolJobTest, ReachedPoolLimit) {
 
   ASSERT_TRUE(request1->completed());
 
-  // The pool and group A reached limits, group B doesn't.
+  // The pool reached the limit, but it doesn't have any blocked request. Group
+  // A reached the group limit. Group B doesn't reach the group limit.
   Group& group_b = pool().GetOrCreateGroupForTesting(key_b);
   ASSERT_TRUE(pool().ReachedMaxStreamLimit());
+  ASSERT_FALSE(pool().IsPoolStalled());
   ASSERT_TRUE(group_a.ReachedMaxStreamLimit());
   ASSERT_FALSE(group_b.ReachedMaxStreamLimit());
 
@@ -960,6 +963,8 @@ TEST_F(HttpStreamPoolJobTest, ReachedPoolLimit) {
   RunUntilIdle();
   Job* job_b = group_b.GetJobForTesting();
   ASSERT_FALSE(request2->completed());
+  ASSERT_TRUE(pool().ReachedMaxStreamLimit());
+  ASSERT_TRUE(pool().IsPoolStalled());
   ASSERT_EQ(job_b->InFlightAttemptCount(), 0u);
   ASSERT_EQ(job_b->PendingRequestCount(), 1u);
 
@@ -972,6 +977,8 @@ TEST_F(HttpStreamPoolJobTest, ReachedPoolLimit) {
 
   ASSERT_TRUE(request2->completed());
   ASSERT_EQ(job_b->PendingRequestCount(), 0u);
+  ASSERT_TRUE(pool().ReachedMaxStreamLimit());
+  ASSERT_FALSE(pool().IsPoolStalled());
 }
 
 TEST_F(HttpStreamPoolJobTest, ReachedPoolLimitHighPriorityGroupFirst) {

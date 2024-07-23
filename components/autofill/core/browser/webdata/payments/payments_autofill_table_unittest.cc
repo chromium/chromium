@@ -43,6 +43,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1795,6 +1796,137 @@ TEST_F(PaymentsAutofillTableTest, GetCreditCardBenefitsForInstrumentId) {
           input_benefits[0]),
       output_benefits));
   EXPECT_THAT(output_benefits, testing::ElementsAre(input_benefits[0]));
+}
+
+TEST_F(PaymentsAutofillTableTest,
+       PaymentInstrument_StoresPaymentInstrumentWithBankAccount) {
+  // Add a bank account payment instrument to the table.
+  sync_pb::PaymentInstrument payment_instrument =
+      test::CreatePaymentInstrumentWithBankAccount(1234);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments{
+      payment_instrument};
+  table_->SetPaymentInstruments(payment_instruments);
+
+  // Retrieve the payment instruments.
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_from_table;
+  table_->GetPaymentInstruments(payment_instruments_from_table);
+
+  // Check that the payment instruments are equal.
+  EXPECT_EQ(payment_instruments_from_table.size(), 1u);
+  EXPECT_EQ(payment_instrument.instrument_id(),
+            payment_instruments_from_table[0].instrument_id());
+  auto table_bank_account = payment_instruments_from_table[0].bank_account();
+  EXPECT_EQ(payment_instrument.bank_account().bank_name(),
+            table_bank_account.bank_name());
+  EXPECT_EQ(payment_instrument.bank_account().account_number_suffix(),
+            table_bank_account.account_number_suffix());
+  EXPECT_EQ(payment_instrument.bank_account().account_type(),
+            table_bank_account.account_type());
+}
+
+TEST_F(PaymentsAutofillTableTest,
+       PaymentInstrument_StoresPaymentInstrumentWithIban) {
+  // Add an IBAN payment instrument to the table.
+  sync_pb::PaymentInstrument payment_instrument =
+      test::CreatePaymentInstrumentWithIban(1234);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments{
+      payment_instrument};
+  table_->SetPaymentInstruments(payment_instruments);
+
+  // Retrieve the payment instruments.
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_from_table;
+  table_->GetPaymentInstruments(payment_instruments_from_table);
+
+  // Check that the payment instruments are equal.
+  EXPECT_EQ(payment_instruments_from_table.size(), 1u);
+  EXPECT_EQ(payment_instrument.instrument_id(),
+            payment_instruments_from_table[0].instrument_id());
+  auto table_iban = payment_instruments_from_table[0].iban();
+  EXPECT_EQ(payment_instrument.iban().instrument_id(),
+            table_iban.instrument_id());
+  EXPECT_EQ(payment_instrument.iban().prefix(), table_iban.prefix());
+  EXPECT_EQ(payment_instrument.iban().suffix(), table_iban.suffix());
+  EXPECT_EQ(payment_instrument.iban().length(), table_iban.length());
+  EXPECT_EQ(payment_instrument.iban().nickname(), table_iban.nickname());
+}
+
+TEST_F(PaymentsAutofillTableTest,
+       PaymentInstrument_StoresMultiplePaymentInstruments) {
+  // Add multiple payment instruments with details to the table.
+  sync_pb::PaymentInstrument bank_account_payment_instrument =
+      test::CreatePaymentInstrumentWithBankAccount(1234);
+  sync_pb::PaymentInstrument iban_payment_instrument =
+      test::CreatePaymentInstrumentWithIban(5678);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments{
+      bank_account_payment_instrument, iban_payment_instrument};
+  table_->SetPaymentInstruments(payment_instruments);
+
+  // Retrieve the payment instruments.
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_from_table;
+  table_->GetPaymentInstruments(payment_instruments_from_table);
+
+  // Check that both payment instruments exist in the table.
+  EXPECT_EQ(payment_instruments_from_table.size(), 2u);
+  EXPECT_TRUE(std::ranges::any_of(
+      payment_instruments_from_table,
+      [&bank_account_payment_instrument](sync_pb::PaymentInstrument& p) {
+        return p.instrument_id() ==
+               bank_account_payment_instrument.instrument_id();
+      }));
+  EXPECT_TRUE(std::ranges::any_of(
+      payment_instruments_from_table,
+      [&iban_payment_instrument](sync_pb::PaymentInstrument& p) {
+        return p.instrument_id() == iban_payment_instrument.instrument_id();
+      }));
+}
+
+TEST_F(PaymentsAutofillTableTest,
+       PaymentInstrument_DoesNotStorePaymentInstrumentWithoutDetails) {
+  // Add a payment instrument without details to the table.
+  sync_pb::PaymentInstrument payment_instrument;
+  payment_instrument.set_instrument_id(1234);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments{
+      payment_instrument};
+  table_->SetPaymentInstruments(payment_instruments);
+
+  // Attempt to retrieve the payment instruments.
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_from_table;
+  table_->GetPaymentInstruments(payment_instruments_from_table);
+
+  // Check that no payment instruments were retrieved.
+  EXPECT_TRUE(payment_instruments_from_table.empty());
+}
+
+TEST_F(PaymentsAutofillTableTest,
+       PaymentInstrument_SetPaymentInstrumentsOverwritesExistingValues) {
+  // Add the first payment instrument to the table.
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithBankAccount(1234);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments{
+      payment_instrument_1};
+  table_->SetPaymentInstruments(payment_instruments);
+  // Overwrite the existing payment instrument with a new instrument.
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithBankAccount(5678);
+  payment_instruments[0] = payment_instrument_2;
+  table_->SetPaymentInstruments(payment_instruments);
+
+  // Retrieve the payment instruments.
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_from_table;
+  table_->GetPaymentInstruments(payment_instruments_from_table);
+
+  // Check that the first payment instrument does not exist.
+  EXPECT_FALSE(std::ranges::any_of(
+      payment_instruments_from_table,
+      [&payment_instrument_1](sync_pb::PaymentInstrument& p) {
+        return p.instrument_id() == payment_instrument_1.instrument_id();
+      }));
+  // Check that the second payment instruments exists.
+  EXPECT_TRUE(std::ranges::any_of(
+      payment_instruments_from_table,
+      [&payment_instrument_2](sync_pb::PaymentInstrument& p) {
+        return p.instrument_id() == payment_instrument_2.instrument_id();
+      }));
 }
 
 }  // namespace

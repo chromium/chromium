@@ -101,20 +101,20 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
   }
 
   void ClickMouseOnActionView(ToolbarActionView* action_view) {
-    ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                               base::TimeTicks(), ui::EF_NONE, 0);
+    ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
+                               gfx::Point(), base::TimeTicks(), ui::EF_NONE, 0);
     action_view->OnMousePressed(mouse_event);
   }
 
   void MouseExitsFromExtensionsContainer() {
-    ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(), gfx::Point(),
-                               base::TimeTicks(), ui::EF_NONE, 0);
+    ui::MouseEvent mouse_event(ui::EventType::kMouseExited, gfx::Point(),
+                               gfx::Point(), base::TimeTicks(), ui::EF_NONE, 0);
     GetExtensionsToolbarContainer()->OnMouseExited(mouse_event);
   }
 
   void MouseMovesInExtensionsContainer() {
-    ui::MouseEvent mouse_event(ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(),
-                               base::TimeTicks(), ui::EF_NONE, 0);
+    ui::MouseEvent mouse_event(ui::EventType::kMouseMoved, gfx::Point(),
+                               gfx::Point(), base::TimeTicks(), ui::EF_NONE, 0);
     GetExtensionsToolbarContainer()->OnMouseMoved(mouse_event);
   }
 

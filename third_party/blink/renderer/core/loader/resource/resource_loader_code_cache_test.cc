@@ -90,11 +90,9 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
         kNoCompileHintsProducer = nullptr;
     constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
         kNoCompileHintsConsumer = nullptr;
-    constexpr bool kNoV8CompileHintsMagicCommentRuntimeEnabledFeature = false;
     resource_ = ScriptResource::Fetch(
         params, fetcher, nullptr, isolate, ScriptResource::kNoStreaming,
-        kNoCompileHintsProducer, kNoCompileHintsConsumer,
-        kNoV8CompileHintsMagicCommentRuntimeEnabledFeature);
+        kNoCompileHintsProducer, kNoCompileHintsConsumer);
     loader_ = resource_->Loader();
 
     response_ = ResourceResponse(url);

@@ -329,38 +329,6 @@ TEST_F(AttributionSrcLoaderTest, RegisterTrigger) {
   }
 }
 
-TEST_F(AttributionSrcLoaderTest, RegisterTriggerOsHeadersIgnored) {
-  KURL test_url = ToKURL("https://example1.com/foo.html");
-
-  ResourceRequest request = GetAttributionRequest(test_url);
-  request.SetAttributionReportingEligibility(
-      AttributionReportingEligibility::kEventSourceOrTrigger);
-  ResourceResponse response(test_url);
-  response.SetHttpStatusCode(200);
-  response.SetHttpHeaderField(
-      http_names::kAttributionReportingRegisterTrigger,
-      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
-
-  // These should be ignored because the relevant feature is disabled by
-  // default.
-  response.SetHttpHeaderField(http_names::kAttributionReportingRegisterOSSource,
-                              AtomicString(R"("https://r.test/x")"));
-  response.SetHttpHeaderField(
-      http_names::kAttributionReportingRegisterOSTrigger,
-      AtomicString(R"("https://r.test/y")"));
-
-  MockAttributionHost host(
-      GetFrame().GetRemoteNavigationAssociatedInterfaces());
-  attribution_src_loader_->MaybeRegisterAttributionHeaders(request, response);
-  host.WaitUntilBoundAndFlush();
-
-  auto* mock_data_host = host.mock_data_host();
-  ASSERT_TRUE(mock_data_host);
-
-  mock_data_host->Flush();
-  EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
-}
-
 TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestsIgnored) {
   KURL test_url = ToKURL("https://example1.com/foo.html");
   ResourceRequest request(test_url);
@@ -586,7 +554,10 @@ TEST_F(AttributionSrcLoaderTest, HeadersSize_RecordsMetrics) {
 class AttributionSrcLoaderCrossAppWebRuntimeDisabledTest
     : public AttributionSrcLoaderTest {
  public:
-  AttributionSrcLoaderCrossAppWebRuntimeDisabledTest() = default;
+  AttributionSrcLoaderCrossAppWebRuntimeDisabledTest() {
+    WebRuntimeFeatures::EnableFeatureFromString(
+        /*name=*/"AttributionReportingCrossAppWeb", /*enable=*/false);
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{

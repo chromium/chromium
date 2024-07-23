@@ -622,9 +622,8 @@ void ToolbarController::ShowStatusIndicator() {
     // Layout of the status indicator.
     PinnedToolbarButtonStatusIndicator* status_indicator =
         PinnedToolbarButtonStatusIndicator::Install(menu_item->icon_view());
-    status_indicator->SetColor(
-        menu_item->icon_view()->GetColorProvider()->GetColor(
-            kColorToolbarActionItemEngaged));
+    status_indicator->SetColorId(kColorToolbarActionItemEngaged,
+                                 kColorToolbarButtonIconInactive);
 
     gfx::Rect status_rect = kStatusRect;
     const gfx::Rect image_container_bounds =

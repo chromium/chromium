@@ -66,7 +66,8 @@ FieldRendererId FindConfirmationPasswordFieldId(
   ++iter;
   for (; iter != control_elements.end(); ++iter) {
     const WebInputElement input_element = iter->DynamicTo<WebInputElement>();
-    if (input_element && input_element.IsPasswordFieldForAutofill()) {
+    if (input_element && input_element.FormControlTypeForAutofill() ==
+                             blink::mojom::FormControlType::kInputPassword) {
       return form_util::GetFieldRendererId(input_element);
     }
   }
@@ -438,10 +439,12 @@ void PasswordGenerationAgent::TriggeredGeneratePassword(
     // If the field is not |type=password|, the list of suggestions
     // should not be populated with passwords to avoid filling them in a
     // clear-text field.
-    // |IsPasswordFieldForAutofill()| is deliberately not used.
+    // `FormControlTypeForAutofill()` is deliberately not used.
+    using enum blink::mojom::FormControlType;
     bool is_generation_element_password_type =
         current_generation_item_->generation_element_
-            .IsPasswordField();  // nocheck
+            .FormControlType()  // nocheck
+        == kInputPassword;
     password_generation::PasswordGenerationUIData password_generation_ui_data(
         gfx::RectF(render_frame()->ConvertViewportToWindow(
             current_generation_item_->generation_element_.BoundsInWidget())),
@@ -469,7 +472,8 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
       password_agent_->focused_element().DynamicTo<WebInputElement>();
   if (!last_focused_password_element ||
       last_focused_password_element.IsReadOnly() ||
-      !last_focused_password_element.IsPasswordFieldForAutofill()) {
+      last_focused_password_element.FormControlTypeForAutofill() !=
+          blink::mojom::FormControlType::kInputPassword) {
     return false;
   }
 
@@ -671,10 +675,12 @@ void PasswordGenerationAgent::AutomaticGenerationAvailable() {
   // If the field is not |type=password|, the list of suggestions
   // should not be populated with passwordS to avoid filling them in a
   // clear-text field.
-  // |IsPasswordFieldForAutofill()| is deliberately not used.
+  // `FormControlTypeForAutofill()` is deliberately not used.
+  using enum blink::mojom::FormControlType;
   bool is_generation_element_password_type =
       current_generation_item_->generation_element_
-          .IsPasswordField();  // nocheck
+          .FormControlType()  // nocheck
+      == kInputPassword;
   password_generation::PasswordGenerationUIData password_generation_ui_data(
       gfx::RectF(render_frame()->ConvertViewportToWindow(
           current_generation_item_->generation_element_.BoundsInWidget())),

@@ -51,7 +51,9 @@ namespace blink {
 void ScrollbarTheme::Paint(const Scrollbar& scrollbar,
                            GraphicsContext& graphics_context,
                            const gfx::Vector2d& paint_offset) {
-  PaintTrackButtonsTickmarks(graphics_context, scrollbar, paint_offset);
+  gfx::Rect rect = scrollbar.FrameRect();
+  rect.Offset(paint_offset);
+  PaintTrackButtonsTickmarks(graphics_context, scrollbar, rect);
 
   if (HasThumb(scrollbar)) {
     gfx::Rect thumb_rect = ThumbRect(scrollbar);
@@ -309,17 +311,17 @@ ScrollbarTheme& ScrollbarTheme::GetTheme() {
 
 void ScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,
                                           const Scrollbar& scrollbar,
-                                          const gfx::Vector2d& offset) {
+                                          const gfx::Rect& rect) {
   // CustomScrollbarTheme must override this method.
   DCHECK(!scrollbar.IsCustomScrollbar());
+  CHECK_EQ(rect.size(), scrollbar.FrameRect().size());
+  gfx::Vector2d offset = rect.origin() - scrollbar.Location();
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(
           context, scrollbar, DisplayItem::kScrollbarTrackAndButtons))
     return;
-  gfx::Rect visual_rect = scrollbar.FrameRect();
-  visual_rect.Offset(offset);
   DrawingRecorder recorder(context, scrollbar,
-                           DisplayItem::kScrollbarTrackAndButtons, visual_rect);
+                           DisplayItem::kScrollbarTrackAndButtons, rect);
 
   if (HasButtons(scrollbar)) {
     gfx::Rect back_button_rect = BackButtonRect(scrollbar);
@@ -338,11 +340,11 @@ void ScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,
 
 void ScrollbarTheme::PaintTrackButtonsTickmarks(GraphicsContext& context,
                                                 const Scrollbar& scrollbar,
-                                                const gfx::Vector2d& offset) {
-  PaintTrackAndButtons(context, scrollbar, offset);
+                                                const gfx::Rect& rect) {
+  PaintTrackAndButtons(context, scrollbar, rect);
   if (scrollbar.HasTickmarks()) {
     gfx::Rect track_rect = TrackRect(scrollbar);
-    track_rect.Offset(offset);
+    track_rect.Offset(rect.origin() - scrollbar.Location());
     PaintTickmarks(context, scrollbar, track_rect);
   }
 }

@@ -163,9 +163,9 @@ bool DesktopMediaSourceView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void DesktopMediaSourceView::OnGestureEvent(ui::GestureEvent* event) {
-  // Detect tap gesture using ET_GESTURE_TAP_DOWN so the view also gets focused
-  // on the long tap (when the tap gesture starts).
-  if (event->type() == ui::ET_GESTURE_TAP_DOWN) {
+  // Detect tap gesture using EventType::kGestureTapDown so the view also gets
+  // focused on the long tap (when the tap gesture starts).
+  if (event->type() == ui::EventType::kGestureTapDown) {
     RequestFocus();
     event->SetHandled();
   }

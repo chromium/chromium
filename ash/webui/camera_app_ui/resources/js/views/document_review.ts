@@ -29,7 +29,6 @@ import {
 import {
   BigBuffer,
   PdfBuilderRemote,
-  ToteMetricFormat,
 } from '../mojo/type.js';
 import * as nav from '../nav.js';
 import {PerfLogger} from '../perf.js';
@@ -318,12 +317,10 @@ export class DocumentReview extends View {
     const blobs = this.pages.map((page) => page.croppedBlob);
     const name = (new Filenamer()).newDocumentName(mimeType);
     if (mimeType === MimeType.JPEG) {
-      await this.resultSaver.savePhoto(
-          blobs[0], ToteMetricFormat.kScanJpg, name, null);
+      await this.resultSaver.savePhoto(blobs[0], name, null);
     } else {
       const blob = await this.pdfBuilder.save();
-      await this.resultSaver.savePhoto(
-          blob, ToteMetricFormat.kScanPdf, name, null);
+      await this.resultSaver.savePhoto(blob, name, null);
     }
     this.lastFileProcessingTime = performance.now() - startTime;
   }

@@ -530,13 +530,6 @@ struct URLRequest {
   AttributionReportingEligibility attribution_reporting_eligibility =
     AttributionReportingEligibility.kUnset;
 
-  // Indicates whether Attribution Reporting API related runtime features are
-  // enabled.
-  //
-  // TODO(crbug.com/40267414): Get rid of this with proper OT
-  // infrastructure support in the network service.
-  AttributionReportingRuntimeFeatures attribution_reporting_runtime_features;
-
   // When applicable, indicates the token of an Attribution Reporting API
   // eligible navigation request to which the current request is associated.
   mojo_base.mojom.UnguessableToken? attribution_reporting_src_token;

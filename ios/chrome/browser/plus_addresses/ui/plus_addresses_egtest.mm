@@ -5,6 +5,7 @@
 #import "base/strings/escape.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_test_utils.h"
@@ -84,7 +85,8 @@ void ExpectModalTimeSample(
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
   if ([self isRunningTest:@selector(testConfirmPlusAddressUsingBottomSheet)] ||
-      [self isRunningTest:@selector(testRefresh)]) {
+      [self isRunningTest:@selector(testRefresh)] ||
+      [self isRunningTest:@selector(testCreatePlusAddressIPH)]) {
     [self relaunchAppAndSetConfiguration];
   }
 
@@ -119,6 +121,11 @@ void ExpectModalTimeSample(
   if ([self isRunningTest:@selector(testRefresh)]) {
     config.features_enabled_and_params.push_back(
         {plus_addresses::features::kPlusAddressRefresh, {}});
+  }
+
+  if ([self isRunningTest:@selector(testCreatePlusAddressIPH)]) {
+    config.iph_feature_enabled =
+        feature_engagement::kIPHPlusAddressCreateSuggestionFeature.name;
   }
 
   // Relaunch the app to take the configuration into account.
@@ -380,6 +387,18 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
   // Click the cancel button, dismissing the bottom sheet.
   [[EarlGrey selectElementWithMatcher:cancelButton] performAction:grey_tap()];
+}
+
+// A test to check the plus address create suggestion IPH feature.
+- (void)testCreatePlusAddressIPH {
+  // Tap an element that is eligible for plus_address autofilling.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
+  id<GREYMatcher> iph_chip = grey_text(
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_IOS));
+
+  // Ensure the plus_address suggestion IPH appears.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:iph_chip];
 }
 
 @end

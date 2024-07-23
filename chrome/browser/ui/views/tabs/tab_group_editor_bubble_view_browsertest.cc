@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
           TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP));
   EXPECT_NE(nullptr, new_tab_button);
 
-  ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, gfx::PointF(),
+  ui::MouseEvent released_event(ui::EventType::kMouseReleased, gfx::PointF(),
                                 gfx::PointF(), base::TimeTicks(), 0, 0);
   views::test::ButtonTestApi(new_tab_button).NotifyClick(released_event);
 
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest, Ungroup) {
           TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_UNGROUP));
   EXPECT_NE(nullptr, ungroup_button);
 
-  ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, gfx::PointF(),
+  ui::MouseEvent released_event(ui::EventType::kMouseReleased, gfx::PointF(),
                                 gfx::PointF(), base::TimeTicks(), 0, 0);
   views::test::ButtonTestApi(ungroup_button).NotifyClick(released_event);
 
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
           TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP));
   EXPECT_NE(nullptr, close_group_button);
 
-  ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, gfx::PointF(),
+  ui::MouseEvent released_event(ui::EventType::kMouseReleased, gfx::PointF(),
                                 gfx::PointF(), base::TimeTicks(), 0, 0);
   views::test::ButtonTestApi(close_group_button).NotifyClick(released_event);
 
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
               TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW));
   EXPECT_NE(nullptr, move_group_button);
 
-  ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, gfx::PointF(),
+  ui::MouseEvent released_event(ui::EventType::kMouseReleased, gfx::PointF(),
                                 gfx::PointF(), base::TimeTicks(), 0, 0);
   ui_test_utils::BrowserChangeObserver new_browser_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(
         views::Button::AsButton(editor_bubble->GetContentsView()->GetViewByID(
             TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_UNGROUP));
     ASSERT_NE(nullptr, ungroup_button);
-    ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, gfx::PointF(),
+    ui::MouseEvent released_event(ui::EventType::kMouseReleased, gfx::PointF(),
                                   gfx::PointF(), base::TimeTicks(), 0, 0);
     views::test::ButtonTestApi(ungroup_button).NotifyClick(released_event);
   }

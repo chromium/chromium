@@ -19,7 +19,7 @@ class TestEvent : public Event {
   explicit TestEvent(EventType type)
       : Event(type, base::TimeTicks(), EF_NONE) {}
 
-  TestEvent() : TestEvent(ET_UNKNOWN) {}
+  TestEvent() : TestEvent(EventType::kUnknown) {}
 
   ~TestEvent() override = default;
 

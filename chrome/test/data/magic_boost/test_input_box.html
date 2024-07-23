@@ -1,0 +1,12 @@
+<body>
+    <form>
+        <input type="text" value="Some test text for testing the orca feature" id="INPUT_VIEW">
+    </form>
+    <script type='text/javascript'>
+        function getTextfieldBound() {
+            const rect = document.getElementById('INPUT_VIEW').
+                getBoundingClientRect();
+            return [rect.left, rect.top, rect.right, rect.bottom];
+        }
+    </script>
+</body>

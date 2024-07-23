@@ -57,7 +57,7 @@ class TestEventRewriterContinuation
 class TestKeyObserver : public PrerewrittenEventForwarder::Observer {
  public:
   TestKeyObserver()
-      : key_event_(ui::ET_UNKNOWN, ui::VKEY_UNKNOWN, ui::EF_NONE) {}
+      : key_event_(ui::EventType::kUnknown, ui::VKEY_UNKNOWN, ui::EF_NONE) {}
 
   void OnPrerewriteKeyInputEvent(const ui::KeyEvent& key_event) override {
     key_event_ = key_event;
@@ -115,7 +115,7 @@ TEST_F(PrerewrittenEventForwarderTest, InitializationTest) {
 
 TEST_F(PrerewrittenEventForwarderTest, RawKeyEventObserverCalled) {
   TestEventRewriterContinuation continuation;
-  const ui::KeyEvent expected_key_event(ui::ET_KEY_PRESSED, ui::VKEY_A,
+  const ui::KeyEvent expected_key_event(ui::EventType::kKeyPressed, ui::VKEY_A,
                                         /*flags=*/0);
   rewriter_->RewriteEvent(expected_key_event,
                           continuation.weak_ptr_factory_.GetWeakPtr());
@@ -125,8 +125,8 @@ TEST_F(PrerewrittenEventForwarderTest, RawKeyEventObserverCalled) {
 
   continuation.Reset();
 
-  const ui::KeyEvent expected_key_event_2(ui::ET_KEY_RELEASED, ui::VKEY_B,
-                                          ui::EF_COMMAND_DOWN);
+  const ui::KeyEvent expected_key_event_2(ui::EventType::kKeyReleased,
+                                          ui::VKEY_B, ui::EF_COMMAND_DOWN);
   rewriter_->RewriteEvent(expected_key_event_2,
                           continuation.weak_ptr_factory_.GetWeakPtr());
   EXPECT_FALSE(continuation.discarded());
@@ -136,14 +136,14 @@ TEST_F(PrerewrittenEventForwarderTest, RawKeyEventObserverCalled) {
 
 TEST_F(PrerewrittenEventForwarderTest, IgnoreRepeatKeyEvents) {
   TestEventRewriterContinuation continuation;
-  const ui::KeyEvent expected_key_event(ui::ET_KEY_PRESSED, ui::VKEY_A,
+  const ui::KeyEvent expected_key_event(ui::EventType::kKeyPressed, ui::VKEY_A,
                                         ui::EF_IS_REPEAT);
   rewriter_->RewriteEvent(expected_key_event,
                           continuation.weak_ptr_factory_.GetWeakPtr());
   EXPECT_FALSE(continuation.discarded());
   // Expect the event to not have been fired and therefore the last observed
   // key event is empty.
-  const ui::KeyEvent empty_key_event(ui::ET_UNKNOWN, ui::VKEY_UNKNOWN,
+  const ui::KeyEvent empty_key_event(ui::EventType::kUnknown, ui::VKEY_UNKNOWN,
                                      ui::EF_NONE);
   EXPECT_TRUE(
       AreKeyEventsEqual(empty_key_event, observer_->last_observed_key_event()));

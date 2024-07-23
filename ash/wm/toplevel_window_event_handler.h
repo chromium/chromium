@@ -210,9 +210,9 @@ class ASH_EXPORT ToplevelWindowEventHandler
 
   // True if the bounds need to be reinitialized in the next gesture update.
   // This is necessary because during the transition from pinch gesture to
-  // drag gesture the ET_GESTURE_SCROLL_BEGIN event is never called, and
+  // drag gesture the EventType::kGestureScrollBegin event is never called, and
   // therefore `window_resizer_` must be initiated with the next
-  // ET_GESTURE_SCROLL_UPDATE event.
+  // EventType::kGestureScrollUpdate event.
   bool requires_reinitialization_ = false;
 
   raw_ptr<aura::Window> gesture_target_ = nullptr;

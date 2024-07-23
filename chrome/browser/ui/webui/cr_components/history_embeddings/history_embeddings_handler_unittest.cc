@@ -33,6 +33,28 @@
 #include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+namespace {
+
+class MockPage : public history_embeddings::mojom::Page {
+ public:
+  MockPage() = default;
+  ~MockPage() override = default;
+
+  mojo::PendingRemote<history_embeddings::mojom::Page> BindAndGetRemote() {
+    DCHECK(!receiver_.is_bound());
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+  mojo::Receiver<history_embeddings::mojom::Page> receiver_{this};
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+  MOCK_METHOD(void,
+              SearchResultChanged,
+              (history_embeddings::mojom::SearchResultPtr));
+};
+
+}  // namespace
+
 std::unique_ptr<KeyedService> BuildTestHistoryEmbeddingsService(
     content::BrowserContext* browser_context) {
   auto* profile = Profile::FromBrowserContext(browser_context);
@@ -114,6 +136,7 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
     handler_ = std::make_unique<HistoryEmbeddingsHandler>(
         mojo::PendingReceiver<history_embeddings::mojom::PageHandler>(),
         profile_->GetWeakPtr(), web_ui());
+    handler_->SetPage(page_.BindAndGetRemote());
   }
 
   void TearDown() override {
@@ -138,6 +161,7 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<content::WebContents> web_contents_;
   content::TestWebUI web_ui_;
   std::unique_ptr<HistoryEmbeddingsHandler> handler_;
+  testing::NiceMock<MockPage> page_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -145,7 +169,9 @@ TEST_F(HistoryEmbeddingsHandlerTest, Searches) {
   auto query = history_embeddings::mojom::SearchQuery::New();
   query->query = "search query for empty result";
   base::test::TestFuture<history_embeddings::mojom::SearchResultPtr> future;
-  handler_->Search(std::move(query), future.GetCallback());
+  EXPECT_CALL(page_, SearchResultChanged)
+      .WillOnce(base::test::InvokeFuture(future));
+  handler_->Search(std::move(query));
   auto result = future.Take();
   ASSERT_EQ(result->items.size(), 0u);
 }
@@ -158,23 +184,27 @@ TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
   scored_url_row.row.set_last_visit(base::Time::Now() - base::Hours(1));
   history_embeddings::SearchResult embeddings_result;
   embeddings_result.scored_url_rows = {scored_url_row};
+  embeddings_result.query = "search query";
+  embeddings_result.answer = "the answer";
 
-  auto query = history_embeddings::mojom::SearchQuery::New();
-  query->query = "search query";
   base::test::TestFuture<history_embeddings::mojom::SearchResultPtr> future;
-  handler_->OnReceivedSearchResult(future.GetCallback(), embeddings_result);
+  EXPECT_CALL(page_, SearchResultChanged)
+      .WillOnce(base::test::InvokeFuture(future));
+  handler_->OnReceivedSearchResult(embeddings_result);
 
-  auto mojo_results = future.Take();
-  ASSERT_EQ(mojo_results->items.size(), 1u);
-  EXPECT_EQ(mojo_results->items[0]->title, "my title");
-  EXPECT_EQ(mojo_results->items[0]->url.spec(), "https://google.com/");
-  EXPECT_EQ(mojo_results->items[0]->relative_time,
+  auto mojo_result = future.Take();
+  EXPECT_EQ(mojo_result->query, "search query");
+  EXPECT_EQ(mojo_result->answer, "the answer");
+  ASSERT_EQ(mojo_result->items.size(), 1u);
+  EXPECT_EQ(mojo_result->items[0]->title, "my title");
+  EXPECT_EQ(mojo_result->items[0]->url.spec(), "https://google.com/");
+  EXPECT_EQ(mojo_result->items[0]->relative_time,
             base::UTF16ToUTF8(ui::TimeFormat::Simple(
                 ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
                 base::Time::Now() - scored_url_row.row.last_visit())));
-  EXPECT_EQ(mojo_results->items[0]->last_url_visit_timestamp,
+  EXPECT_EQ(mojo_result->items[0]->last_url_visit_timestamp,
             scored_url_row.row.last_visit().InMillisecondsFSinceUnixEpoch());
-  EXPECT_EQ(mojo_results->items[0]->url_for_display, "google.com");
+  EXPECT_EQ(mojo_result->items[0]->url_for_display, "google.com");
 }
 
 TEST_F(HistoryEmbeddingsHandlerTest, RecordsMetrics) {

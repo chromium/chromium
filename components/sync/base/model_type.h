@@ -171,7 +171,6 @@ enum ModelType {
   // Settings for PLUS_ADDRESS forwarded from the user's account. Since the
   // settings originate from the user's account, this is not reusing any of the
   // standard syncable prefs.
-  // Read-only on the client.
   PLUS_ADDRESS_SETTING,
 
   LAST_USER_MODEL_TYPE = PLUS_ADDRESS_SETTING,

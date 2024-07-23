@@ -18,6 +18,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -134,15 +135,11 @@
       assertWithMatcher:grey_notNil()];
 }
 
-// Deletes a custom search engine by entering edit mode.
-- (void)testDeleteCustomSearchEngineEdit {
+// Deletes a non-selected search engine by entering edit mode.
+- (void)testDeleteNotSelectedSearchEngineEdit {
   [self enterSettingsWithCustomSearchEngine];
 
-  id<GREYMatcher> editButton = grey_allOf(
-      chrome_test_util::ButtonWithAccessibilityLabelId(
-          IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
-      grey_not(chrome_test_util::TabGridEditButton()),
-      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
+  id<GREYMatcher> editButton = [[self class] editButtonMatcherWithEnabled:YES];
   [[EarlGrey selectElementWithMatcher:editButton] performAction:grey_tap()];
 
   id<GREYMatcher> searchEngineCellMatcher = [SearchEngineChoiceEarlGreyUI
@@ -169,6 +166,36 @@
                                         TemplateURLPrepopulateData::google];
   [SearchEngineChoiceEarlGreyUI
       verifyDefaultSearchEngineSetting:googleSearchEngineName];
+}
+
+// Tests that the edit button is disabled when a custom search engine is
+// elected. And tests that the edit button stays disabled after restarting
+// Chrome.
+- (void)testEditButtonDisabledWhenCustomSearchEngineSelected {
+  // Add and select a custom search engine.
+  [self enterSettingsWithCustomSearchEngine];
+  // Verify the edit button is disabled.
+  id<GREYMatcher> searchEngineCellMatcher = [SearchEngineChoiceEarlGreyUI
+      settingsSearchEngineMatcherWithName:kCustomSearchEngineName];
+  [[SearchEngineChoiceEarlGreyUI
+      interactionForSettingsSearchEngineWithName:kCustomSearchEngineName]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:searchEngineCellMatcher]
+      performAction:grey_tap()];
+  id<GREYMatcher> editButton = [[self class] editButtonMatcherWithEnabled:NO];
+  [[EarlGrey selectElementWithMatcher:editButton]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Restart Chrome.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  // Open the search engine settings.
+  [SearchEngineChoiceEarlGreyUI openSearchEngineSettings];
+  // Verify the edit button is still disabled.
+  // Since it is a new instance of Chrome, we need to recreate the matcher.
+  editButton = [[self class] editButtonMatcherWithEnabled:NO];
+  [[EarlGrey selectElementWithMatcher:editButton]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 #pragma mark - SearchEngineSettingsTestCaseBase

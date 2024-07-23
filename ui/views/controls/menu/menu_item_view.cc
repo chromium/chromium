@@ -220,7 +220,7 @@ bool MenuItemView::HandleAccessibleAction(const ui::AXActionData& action_data) {
       // Widget::SetCapture() to the MenuController rather than to
       // MenuItemView, so there is no effect. VKEY_RETURN provides a better UX
       // anyway, since it will move focus to a submenu.
-      ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
+      ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
                          ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
                          ui::EventTimeForNow());
       GetMenuController()->SetSelection(this,

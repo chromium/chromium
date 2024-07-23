@@ -15,10 +15,22 @@ TabListModel::TabListModel(
 
 TabListModel::~TabListModel() = default;
 
+void TabListModel::AddObserver(Observer* observer) {
+  tab_list_model_observers_.AddObserver(observer);
+}
+
+void TabListModel::RemoveObserver(Observer* observer) {
+  tab_list_model_observers_.RemoveObserver(observer);
+}
+
 void TabListModel::RemovePageContext(resource_attribution::PageContext tab) {
   auto it = std::find(page_contexts_.begin(), page_contexts_.end(), tab);
   if (it != page_contexts_.end()) {
     page_contexts_.erase(it);
+
+    for (auto& observer : tab_list_model_observers_) {
+      observer.OnTabCountChanged(page_contexts_.size());
+    }
   }
 }
 

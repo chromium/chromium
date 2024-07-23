@@ -118,21 +118,17 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
 
 class CardUnmaskPromptControllerImplGenericTest : public testing::Test {
  public:
-  CardUnmaskPromptControllerImplGenericTest() = default;
+  CardUnmaskPromptControllerImplGenericTest() {
+#if BUILDFLAG(IS_ANDROID)
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
+#endif
+  }
 
   CardUnmaskPromptControllerImplGenericTest(
       const CardUnmaskPromptControllerImplGenericTest&) = delete;
   CardUnmaskPromptControllerImplGenericTest& operator=(
       const CardUnmaskPromptControllerImplGenericTest&) = delete;
-
-  void SetUp() override {
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-#if BUILDFLAG(IS_ANDROID)
-    pref_service_->registry()->RegisterBooleanPref(
-        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
-#endif
-    delegate_ = std::make_unique<TestCardUnmaskDelegate>();
-  }
 
   // Shows the Card Unmask Prompt. `challenge_option` being present denotes that
   // we are in the virtual card use-case.
@@ -147,8 +143,8 @@ class CardUnmaskPromptControllerImplGenericTest : public testing::Test {
             challenge_option,
             payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill);
     controller_ = std::make_unique<TestCardUnmaskPromptController>(
-        pref_service_.get(), card_, card_unmask_prompt_options,
-        delegate_->GetWeakPtr());
+        &pref_service_, card_, card_unmask_prompt_options,
+        delegate_.GetWeakPtr());
     controller_->ShowPrompt(base::BindOnce(
         &CardUnmaskPromptControllerImplGenericTest::CreateCardUnmaskPromptView,
         base::Unretained(this)));
@@ -174,11 +170,11 @@ class CardUnmaskPromptControllerImplGenericTest : public testing::Test {
  protected:
   void SetCreditCardForTesting(CreditCard card) { card_ = card; }
 
+  TestingPrefServiceSimple pref_service_;
   CreditCard card_ = test::GetMaskedServerCard();
+  TestCardUnmaskDelegate delegate_;
   std::unique_ptr<TestCardUnmaskPromptView> test_unmask_prompt_view_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<TestCardUnmaskPromptController> controller_;
-  std::unique_ptr<TestCardUnmaskDelegate> delegate_;
 
  private:
   CardUnmaskPromptView* CreateCardUnmaskPromptView() {
@@ -192,30 +188,30 @@ class CardUnmaskPromptControllerImplGenericTest : public testing::Test {
 TEST_F(CardUnmaskPromptControllerImplGenericTest,
        FidoAuthOfferCheckboxStatePersistent) {
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/true);
-  EXPECT_TRUE(pref_service_->GetBoolean(
+  EXPECT_TRUE(pref_service_.GetBoolean(
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState));
 
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/false);
-  EXPECT_FALSE(pref_service_->GetBoolean(
+  EXPECT_FALSE(pref_service_.GetBoolean(
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState));
 }
 
 TEST_F(CardUnmaskPromptControllerImplGenericTest,
        FidoAuthOfferCheckboxStateUnchangedWhenInvisible) {
-  pref_service_->SetBoolean(
-      prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
+  pref_service_.SetBoolean(prefs::kAutofillCreditCardFidoAuthOfferCheckboxState,
+                           true);
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/false,
                                 /*should_unmask_virtual_card=*/false,
                                 /*was_checkbox_visible=*/false);
-  EXPECT_TRUE(pref_service_->GetBoolean(
+  EXPECT_TRUE(pref_service_.GetBoolean(
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState));
 
-  pref_service_->SetBoolean(
-      prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, false);
+  pref_service_.SetBoolean(prefs::kAutofillCreditCardFidoAuthOfferCheckboxState,
+                           false);
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/true,
                                 /*should_unmask_virtual_card=*/false,
                                 /*was_checkbox_visible=*/false);
-  EXPECT_FALSE(pref_service_->GetBoolean(
+  EXPECT_FALSE(pref_service_.GetBoolean(
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState));
 }
 
@@ -223,7 +219,7 @@ TEST_F(CardUnmaskPromptControllerImplGenericTest,
        PopulateCheckboxToUserProvidedUnmaskDetails) {
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/true);
 
-  EXPECT_TRUE(delegate_->details().enable_fido_auth);
+  EXPECT_TRUE(delegate_.details().enable_fido_auth);
 }
 #endif
 
@@ -833,7 +829,7 @@ TEST_P(CvcInputValidationTest, CvcInputValidation) {
       ASCIIToUTF16(cvc_case.input), u"1", u"2050",
       /*enable_fido_auth=*/false, /*was_checkbox_visible=*/true);
   EXPECT_EQ(ASCIIToUTF16(cvc_case.canonicalized_input),
-            delegate_->details().cvc);
+            delegate_.details().cvc);
 }
 
 INSTANTIATE_TEST_SUITE_P(CardUnmaskPromptControllerImplGenericTest,
@@ -869,7 +865,7 @@ TEST_P(CvcInputAmexValidationTest, CvcInputValidation) {
       ASCIIToUTF16(cvc_case_amex.input), std::u16string(), std::u16string(),
       /*enable_fido_auth=*/false, /*was_checkbox_visible=*/true);
   EXPECT_EQ(ASCIIToUTF16(cvc_case_amex.canonicalized_input),
-            delegate_->details().cvc);
+            delegate_.details().cvc);
 }
 
 INSTANTIATE_TEST_SUITE_P(CardUnmaskPromptControllerImplGenericTest,

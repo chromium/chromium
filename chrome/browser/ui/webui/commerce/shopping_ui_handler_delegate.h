@@ -42,7 +42,9 @@ class ShoppingUiHandlerDelegate : public ShoppingServiceHandler::Delegate {
 
   void ShowBookmarkEditorForCurrentUrl() override;
 
-  void ShowFeedback() override;
+  void ShowFeedbackForPriceInsights() override;
+
+  void ShowFeedbackForProductSpecifications(const std::string& log_id) override;
 
   // Get the main frame source id from the page load.
   ukm::SourceId GetCurrentTabUkmSourceId() override;

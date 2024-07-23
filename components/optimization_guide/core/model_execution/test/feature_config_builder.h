@@ -54,6 +54,26 @@ proto::RedactRules SimpleRedactRule(
 // Outputs to a ComposeResponse::output field.
 proto::OnDeviceModelExecutionFeatureConfig SimpleComposeConfig();
 
+// Returns a validation config that passes with the default model settings.
+inline proto::OnDeviceModelValidationConfig WillPassValidationConfig() {
+  proto::OnDeviceModelValidationConfig validation_config;
+  auto* prompt = validation_config.add_validation_prompts();
+  // This prompt passes because by default the model will echo the input.
+  prompt->set_prompt("hElLo");
+  prompt->set_expected_output("HeLlO");
+  return validation_config;
+}
+
+// Returns a validation config that fails with the default model settings.
+inline proto::OnDeviceModelValidationConfig WillFailValidationConfig() {
+  proto::OnDeviceModelValidationConfig validation_config;
+  auto* prompt = validation_config.add_validation_prompts();
+  // This prompt fails because by default the model will echo the input.
+  prompt->set_prompt("hello");
+  prompt->set_expected_output("goodbye");
+  return validation_config;
+}
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_TEST_FEATURE_CONFIG_BUILDER_H_

@@ -108,7 +108,13 @@ TEST_F(ZWPTextInputWrapperV3Test, HideInputPanel) {
   wrapper_->HideInputPanel();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, SetContentType) {
+// TODO(crbug.com/354751917): Re-enable this test
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_SetContentType DISABLED_SetContentType
+#else
+#define MAYBE_SetContentType SetContentType
+#endif
+TEST_F(ZWPTextInputWrapperV3Test, MAYBE_SetContentType) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     InSequence s;
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
@@ -185,7 +191,13 @@ TEST_F(ZWPTextInputWrapperV3Test, SetCursorRect) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsSentOnDone) {
+// TODO(crbug.com/354751917): Re-enable this test
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_PendingRequestsSentOnDone DISABLED_PendingRequestsSentOnDone
+#else
+#define MAYBE_PendingRequestsSentOnDone PendingRequestsSentOnDone
+#endif
+TEST_F(ZWPTextInputWrapperV3Test, MAYBE_PendingRequestsSentOnDone) {
   constexpr gfx::Rect kRect(50, 20, 1, 1);
 
   // Trigger 2 commits by calling activate.
@@ -239,7 +251,14 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsSentOnDone) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnEnable) {
+// TODO(crbug.com/354751917): Re-enable this test
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_PendingRequestsClearedOnEnable \
+  DISABLED_PendingRequestsClearedOnEnable
+#else
+#define MAYBE_PendingRequestsClearedOnEnable PendingRequestsClearedOnEnable
+#endif
+TEST_F(ZWPTextInputWrapperV3Test, MAYBE_PendingRequestsClearedOnEnable) {
   constexpr gfx::Rect kRect(50, 20, 1, 1);
 
   // Trigger 1 commit by calling activate.
@@ -287,7 +306,14 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnEnable) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnDisable) {
+// TODO(crbug.com/354751917): Re-enable this test
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_PendingRequestsClearedOnDisable \
+  DISABLED_PendingRequestsClearedOnDisable
+#else
+#define MAYBE_PendingRequestsClearedOnDisable PendingRequestsClearedOnDisable
+#endif
+TEST_F(ZWPTextInputWrapperV3Test, MAYBE_PendingRequestsClearedOnDisable) {
   constexpr gfx::Rect kRect(50, 20, 1, 1);
 
   // Trigger 1 commit by calling activate.
@@ -335,7 +361,14 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnDisable) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnReset) {
+// TODO(crbug.com/354751917): Re-enable this test
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_PendingRequestsClearedOnReset \
+  DISABLED_PendingRequestsClearedOnReset
+#else
+#define MAYBE_PendingRequestsClearedOnReset PendingRequestsClearedOnReset
+#endif
+TEST_F(ZWPTextInputWrapperV3Test, MAYBE_PendingRequestsClearedOnReset) {
   constexpr gfx::Rect kRect(50, 20, 1, 1);
 
   // Trigger 1 commit by calling activate

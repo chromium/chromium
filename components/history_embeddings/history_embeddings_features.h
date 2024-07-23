@@ -60,8 +60,12 @@ extern const base::FeatureParam<bool> kUseMlAnswerer;
 // Specifies whether to use the ML Embedder to embed passages and queries.
 extern const base::FeatureParam<bool> kUseMlEmbedder;
 
-// Whether history embedding results should be shown in the omnibox outside of
-// the '@history' scope.
+// Whether history embedding results should be shown in the omnibox when in the
+// '@history' scope.
+extern const base::FeatureParam<bool> kOmniboxScoped;
+
+// Whether history embedding results should be shown in the omnibox when not in
+// the '@history' scope. If true, behaves as if `kOmniboxScoped` is also true.
 extern const base::FeatureParam<bool> kOmniboxUnscoped;
 
 // The maximum number of embeddings to submit to the primary (ML) embedder

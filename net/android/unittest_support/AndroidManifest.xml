@@ -33,6 +33,7 @@ found in the LICENSE file.
          https://developer.android.com/training/data-storage/compatibility. -->
     <application android:label="NativeTests"
             android:requestLegacyExternalStorage="true"
+            android:memtagMode="sync"
             android:name="org.chromium.native_test.NativeTestApplication">
         <activity android:name=".NativeUnitTestActivity"
                 android:label="NativeTest"

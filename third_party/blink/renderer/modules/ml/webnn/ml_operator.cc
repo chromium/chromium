@@ -284,6 +284,19 @@ void MLOperator::Connect(HeapVector<Member<const MLOperand>> inputs,
   is_connected_ = true;
 }
 
+MLArgMinMaxOperator::MLArgMinMaxOperator(
+    MLGraphBuilder* builder,
+    OperationSubKind sub_kind,
+    const uint32_t axis,
+    const bindings::DictionaryBase* options)
+    : MLOperator(builder,
+                 webnn::mojom::blink::Operation::Tag::kArgMinMax,
+                 sub_kind,
+                 options),
+      axis_(axis) {}
+
+MLArgMinMaxOperator::~MLArgMinMaxOperator() = default;
+
 MLConcatOperator::MLConcatOperator(MLGraphBuilder* builder, const uint32_t axis)
     : MLOperator(builder, webnn::mojom::blink::Operation::Tag::kConcat),
       axis_(axis) {}

@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_chromeos_version_info.h"
@@ -58,25 +59,27 @@ void LoadStatistics(StatisticsProviderImpl* provider, bool load_oem_manifest) {
   loading_loop.Run();
 }
 
-std::vector<std::string> GenerateFakeVpdCommand(
-    const std::string& fake_prog_name,
-    const std::map<std::string, std::string>& contents) {
-  // Generate a bash case block, with an entry for each key/value pair.
-  std::string command_string = "case $1 in ";
+// Exit codes for the dump_filtered_vpd utility.
+enum DumpVpdExitCode {
+  kValid = 0,
+  kRoInvalid = 1,
+  kRwInvalid = 2,
+  kBothInvalid = kRoInvalid | kRwInvalid,
+};
+
+base::CommandLine GenerateFakeVpdCommand(
+    const std::map<std::string, std::string>& contents,
+    int exit_status = 0) {
+  std::string shell_arg = kEchoCmd;
+  shell_arg += " '";
   for (const auto& [key, value] : contents) {
-    command_string += key + ") echo -n '" + value + "' ;; ";
+    shell_arg +=
+        base::StringPrintf(kMachineInfoFormat, key.c_str(), value.c_str());
   }
 
-  // Default: exit with an error (i.e., missing key).
-  command_string += "*) exit 1;; ";
+  shell_arg += "'; exit " + base::NumberToString(exit_status);
 
-  command_string += "esac";
-
-  return {
-      "/bin/bash", "-c", command_string,
-      fake_prog_name,  // program name ($0)
-                       // Additional arg (key name) becomes an argument ($1).
-  };
+  return base::CommandLine({"/bin/sh", "-c", shell_arg});
 }
 
 class SourcesBuilder {
@@ -92,13 +95,8 @@ class SourcesBuilder {
     return *this;
   }
 
-  SourcesBuilder& set_vpd_ro_tool(const std::vector<std::string>& tool_cmd) {
-    sources_.vpd_ro_tool = tool_cmd;
-    return *this;
-  }
-
-  SourcesBuilder& set_vpd_rw_tool(const std::vector<std::string>& tool_cmd) {
-    sources_.vpd_rw_tool = tool_cmd;
+  SourcesBuilder& set_vpd_tool(const base::CommandLine& tool_cmd) {
+    sources_.vpd_tool = tool_cmd;
     return *this;
   }
 
@@ -122,12 +120,8 @@ class SourcesBuilder {
       sources_.crossystem_tool = base::CommandLine(base::FilePath(kEchoCmd));
     }
 
-    if (sources_.vpd_ro_tool.empty()) {
-      sources_.vpd_ro_tool = {kFalseCmd};
-    }
-
-    if (sources_.vpd_rw_tool.empty()) {
-      sources_.vpd_rw_tool = {kFalseCmd};
+    if (sources_.vpd_tool.GetProgram().empty()) {
+      sources_.vpd_tool = base::CommandLine(base::FilePath(kFalseCmd));
     }
 
     if (sources_.machine_info_filepath.empty()) {
@@ -393,23 +387,13 @@ TEST_F(StatisticsProviderImplTest, LoadsVpdStatistics) {
   ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
 
   // Setup provider's sources.
-  const auto fake_vpd_ro_command = GenerateFakeVpdCommand(
-      "fake_vpd_ro_command", {
-                                 {"region", "nz"},
-                                 {"unlisted_key", "fake value"},
-                             });
-
-  const auto fake_vpd_rw_command = GenerateFakeVpdCommand(
-      "fake_vpd_rw_command", {
-                                 {"ActivateDate", "2000-11"},
-                                 {"unlisted_rw_key", "fake rw value"},
-                             });
+  const auto fake_vpd_command = GenerateFakeVpdCommand({
+      {"region", "nz"},
+      {"ActivateDate", "2000-11"},
+  });
 
   StatisticsProviderImpl::StatisticsSources testing_sources =
-      SourcesBuilder(temp_dir())
-          .set_vpd_ro_tool(fake_vpd_ro_command)
-          .set_vpd_rw_tool(fake_vpd_rw_command)
-          .Build();
+      SourcesBuilder(temp_dir()).set_vpd_tool(fake_vpd_command).Build();
 
   // Load statistics.
   auto provider = StatisticsProviderImpl::CreateProviderForTesting(
@@ -419,9 +403,6 @@ TEST_F(StatisticsProviderImplTest, LoadsVpdStatistics) {
   // Check statistics.
   EXPECT_EQ(provider->GetMachineStatistic("region"), "nz");
   EXPECT_EQ(provider->GetMachineStatistic("ActivateDate"), "2000-11");
-  // Non-allowlisted keys don't show up.
-  EXPECT_FALSE(provider->GetMachineStatistic("unlisted_key"));
-  EXPECT_FALSE(provider->GetMachineStatistic("unlisted_rw_key"));
 
   // Check VPD status.
   EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kValid);
@@ -435,16 +416,11 @@ TEST_F(StatisticsProviderImplTest, RecordsErrorIfVpdFileIsMissing) {
   ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
 
   // Setup provider's sources.
-  const auto fake_vpd_ro_command =
-      GenerateFakeVpdCommand("fake_vpd_ro_command", {});
-  const auto fake_vpd_rw_command =
-      GenerateFakeVpdCommand("fake_vpd_rw_command", {});
+  const auto fake_vpd_command =
+      GenerateFakeVpdCommand({}, /*exit_status=*/DumpVpdExitCode::kBothInvalid);
 
   StatisticsProviderImpl::StatisticsSources testing_sources =
-      SourcesBuilder(temp_dir())
-          .set_vpd_ro_tool(fake_vpd_ro_command)
-          .set_vpd_rw_tool(fake_vpd_rw_command)
-          .Build();
+      SourcesBuilder(temp_dir()).set_vpd_tool(fake_vpd_command).Build();
 
   // Load statistics.
   auto provider = StatisticsProviderImpl::CreateProviderForTesting(
@@ -464,8 +440,6 @@ TEST_F(StatisticsProviderImplTest, GeneratesStubVpdIfNotRunningChromeOS) {
 
   const StatisticsProviderImpl::StatisticsSources testing_sources =
       SourcesBuilder(temp_dir())
-          .set_vpd_ro_tool({"/bin/false"})
-          .set_vpd_rw_tool({"/bin/false"})
           .Build();
 
   // Load statistics.
@@ -478,8 +452,7 @@ TEST_F(StatisticsProviderImplTest, GeneratesStubVpdIfNotRunningChromeOS) {
       provider->GetMachineStatistic(kActivateDateKey);
   EXPECT_TRUE(initial_activate_date);
 
-  // Expect invalid VPD status because VPD status file does not contain status
-  // keys.
+  // Expect invalid VPD status because we're not ChromeOS.
   EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kInvalid);
 
   // Current provider is going to be destroyed, copy its activate date.
@@ -494,30 +467,23 @@ TEST_F(StatisticsProviderImplTest, GeneratesStubVpdIfNotRunningChromeOS) {
   EXPECT_EQ(provider->GetMachineStatistic(kActivateDateKey),
             initial_activate_date_string);
 
-  // Expect invalid VPD status because VPD status file does not contain status
-  // keys.
+  // Still expect invalid VPD status.
   EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kInvalid);
 }
 
-// Test that the provider returns correct VPD status with empty RO VPD.
+// Test that the provider returns correct VPD status with missing RO VPD.
 TEST_F(StatisticsProviderImplTest, ReturnsInvalidRoVpdStatus) {
   base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
                                                             base::Time());
   ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
 
   // Setup provider's sources.
-  const std::vector<std::string> fake_vpd_ro_command({"/bin/false"});
-  const auto fake_vpd_rw_command = GenerateFakeVpdCommand(
-      "fake_vpd_rw_command", {
-                                 {"ActivateDate", "2000-11"},
-                                 {"unlisted_rw_key", "fake rw value"},
-                             });
+  const auto fake_vpd_command =
+      GenerateFakeVpdCommand({{"ActivateDate", "2000-11"}},
+                             /*exit_status=*/DumpVpdExitCode::kRoInvalid);
 
   StatisticsProviderImpl::StatisticsSources testing_sources =
-      SourcesBuilder(temp_dir())
-          .set_vpd_ro_tool(fake_vpd_ro_command)
-          .set_vpd_rw_tool(fake_vpd_rw_command)
-          .Build();
+      SourcesBuilder(temp_dir()).set_vpd_tool(fake_vpd_command).Build();
 
   // Load statistics.
   auto provider = StatisticsProviderImpl::CreateProviderForTesting(
@@ -535,25 +501,19 @@ TEST_F(StatisticsProviderImplTest, ReturnsInvalidRoVpdStatus) {
             StatisticsProvider::VpdStatus::kRoInvalid);
 }
 
-// Test that the provider returns correct VPD status with empty RW VPD.
+// Test that the provider returns correct VPD status with missing RW VPD.
 TEST_F(StatisticsProviderImplTest, ReturnsInvalidRwVpd) {
   base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
                                                             base::Time());
   ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
 
   // Setup provider's sources.
-  const auto fake_vpd_ro_command = GenerateFakeVpdCommand(
-      "fake_vpd_ro_command", {
-                                 {"region", "nz"},
-                                 {"unlisted_key", "fake value"},
-                             });
-  const std::vector<std::string> fake_vpd_rw_command({"/bin/false"});
+  const auto fake_vpd_command =
+      GenerateFakeVpdCommand({{"region", "nz"}},
+                             /*exit_status=*/DumpVpdExitCode::kRwInvalid);
 
   StatisticsProviderImpl::StatisticsSources testing_sources =
-      SourcesBuilder(temp_dir())
-          .set_vpd_ro_tool(fake_vpd_ro_command)
-          .set_vpd_rw_tool(fake_vpd_rw_command)
-          .Build();
+      SourcesBuilder(temp_dir()).set_vpd_tool(fake_vpd_command).Build();
 
   // Load statistics.
   auto provider = StatisticsProviderImpl::CreateProviderForTesting(
@@ -569,54 +529,6 @@ TEST_F(StatisticsProviderImplTest, ReturnsInvalidRwVpd) {
   // Check VPD status.
   EXPECT_EQ(provider->GetVpdStatus(),
             StatisticsProvider::VpdStatus::kRwInvalid);
-}
-
-// Test that RO-designated VPD keys can't pollute RW, and vice versa.
-TEST_F(StatisticsProviderImplTest, StrictVpdRegions) {
-  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
-                                                            base::Time());
-  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
-
-  // Setup provider's sources.
-  const auto fake_vpd_ro_command = GenerateFakeVpdCommand(
-      "fake_vpd_ro_command", {
-                                 {"region", "nz"},
-                                 {"block_devmode", "does_not_belong_in_ro"},
-                                 {"unlisted_key", "fake value"},
-                             });
-  const auto fake_vpd_rw_command = GenerateFakeVpdCommand(
-      "fake_vpd_rw_command", {
-                                 {"ActivateDate", "2000-11"},
-                                 {"customization_id", "does_not_belong_in_rw"},
-                                 {"unlisted_rw_key", "fake rw value"},
-                             });
-
-  StatisticsProviderImpl::StatisticsSources testing_sources =
-      SourcesBuilder(temp_dir())
-          .set_vpd_ro_tool(fake_vpd_ro_command)
-          .set_vpd_rw_tool(fake_vpd_rw_command)
-          .Build();
-
-  // Load statistics.
-  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
-      std::move(testing_sources));
-
-  EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kUnknown);
-
-  base::RunLoop loading_loop;
-  provider->ScheduleOnMachineStatisticsLoaded(loading_loop.QuitClosure());
-  provider->StartLoadingMachineStatistics(/*load_oem_manifest=*/false);
-  loading_loop.Run();
-
-  // Check VPD status.
-  EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kValid);
-
-  // Keys in the correct RO/RW region.
-  EXPECT_EQ(provider->GetMachineStatistic(kRegionKey), "nz");
-  EXPECT_EQ(provider->GetMachineStatistic(kActivateDateKey), "2000-11");
-  // Misplaced keys.
-  EXPECT_FALSE(provider->GetMachineStatistic(kBlockDevModeKey));
-  EXPECT_FALSE(provider->GetMachineStatistic(kCustomizationIdKey));
 }
 
 // Test that the provider loads correct statistics OEM file if they

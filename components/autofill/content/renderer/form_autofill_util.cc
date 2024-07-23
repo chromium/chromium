@@ -274,9 +274,12 @@ bool IsMonthInput(const WebInputElement& element) {
 }
 
 bool IsCheckableElement(const WebFormControlElement& element) {
-  WebInputElement input_element = element.DynamicTo<WebInputElement>();
-  return input_element &&
-         (input_element.IsCheckbox() || input_element.IsRadioButton());
+  using enum blink::mojom::FormControlType;
+  // We intentionally use `FormControlType()` instead of
+  // `FormControlTypeForAutofill()` because the existing callers do not care if
+  // the field has ever been a password field before.
+  return element && (element.FormControlType() == kInputCheckbox ||  // nocheck
+                     element.FormControlType() == kInputRadio);      // nocheck
 }
 
 bool IsCheckableElement(const WebElement& element) {
@@ -2489,7 +2492,7 @@ FindFormAndFieldForFormControlElement(
     SCOPED_CRASH_KEYS_FOR_FORM("owng", form_element);
 #undef FORM_CRASH_KEYS
     // clang-format on
-    NOTREACHED(base::NotFatalUntil::M129);
+    NOTREACHED(base::NotFatalUntil::M130);
   }
   return std::nullopt;
 }

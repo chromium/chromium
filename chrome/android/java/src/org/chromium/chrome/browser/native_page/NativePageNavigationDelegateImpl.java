@@ -107,7 +107,10 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
                         TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
                         mTab,
                         /* incognito= */ false);
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled() && willMergingCreateNewGroup) {
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
+                && willMergingCreateNewGroup
+                && !TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
+                        /* shouldShow= */ false)) {
             mTabGroupCreationDialogManager.showDialog(mTab.getRootId(), filter);
         }
         return newTab;

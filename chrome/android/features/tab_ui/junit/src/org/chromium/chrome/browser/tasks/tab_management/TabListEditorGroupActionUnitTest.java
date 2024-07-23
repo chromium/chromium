@@ -146,7 +146,10 @@ public class TabListEditorGroupActionUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID
+    })
     public void testSingleTabToGroup() {
         configure(false);
         List<Integer> tabIds = new ArrayList<>();
@@ -179,7 +182,10 @@ public class TabListEditorGroupActionUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID
+    })
     public void testGroupActionWithTabs_WillMergingCreateNewGroup() throws Exception {
         configure(false);
         List<Integer> tabIds = new ArrayList<>();

@@ -73,21 +73,21 @@ bool HelpBubbleEventRelay::OnEvent(const ui::LocatedEvent& event,
 
   switch (event.type()) {
     // Pass mouse events on to the button as normal.
-    case ui::ET_MOUSE_PRESSED:
+    case ui::EventType::kMousePressed:
       if (target_button) {
         auto* const mouse_event = event.AsMouseEvent();
         target_button->OnMousePressed(ui::MouseEvent(
-            ui::ET_MOUSE_PRESSED, gfx::PointF(target_point),
+            ui::EventType::kMousePressed, gfx::PointF(target_point),
             gfx::PointF(screen_coords), mouse_event->time_stamp(),
             mouse_event->flags(), mouse_event->changed_button_flags()));
         sent_click_ = true;
       }
       break;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       if (target_button) {
         auto* const mouse_event = event.AsMouseEvent();
         target_button->OnMouseReleased(ui::MouseEvent(
-            ui::ET_MOUSE_RELEASED, gfx::PointF(target_point),
+            ui::EventType::kMouseReleased, gfx::PointF(target_point),
             gfx::PointF(screen_coords), mouse_event->time_stamp(),
             mouse_event->flags(), mouse_event->changed_button_flags()));
       }
@@ -96,22 +96,22 @@ bool HelpBubbleEventRelay::OnEvent(const ui::LocatedEvent& event,
     // Touch events are not processed directly by Views; they are typically
     // converted to something else. So, convert them to mouse clicks for the
     // purpose of pressing buttons.
-    case ui::ET_TOUCH_PRESSED:
+    case ui::EventType::kTouchPressed:
       if (target_button) {
         auto* const touch_event = event.AsTouchEvent();
         target_button->OnMousePressed(ui::MouseEvent(
-            ui::ET_MOUSE_PRESSED, gfx::PointF(target_point),
+            ui::EventType::kMousePressed, gfx::PointF(target_point),
             gfx::PointF(screen_coords), touch_event->time_stamp(),
             touch_event->flags() | ui::EF_LEFT_MOUSE_BUTTON | ui::EF_FROM_TOUCH,
             ui::EF_LEFT_MOUSE_BUTTON));
         sent_click_ = true;
       }
       break;
-    case ui::ET_TOUCH_RELEASED:
+    case ui::EventType::kTouchReleased:
       if (target_button) {
         auto* const touch_event = event.AsTouchEvent();
         target_button->OnMouseReleased(ui::MouseEvent(
-            ui::ET_MOUSE_RELEASED, gfx::PointF(target_point),
+            ui::EventType::kMouseReleased, gfx::PointF(target_point),
             gfx::PointF(screen_coords), touch_event->time_stamp(),
             touch_event->flags() | ui::EF_LEFT_MOUSE_BUTTON | ui::EF_FROM_TOUCH,
             ui::EF_LEFT_MOUSE_BUTTON));
@@ -119,7 +119,7 @@ bool HelpBubbleEventRelay::OnEvent(const ui::LocatedEvent& event,
       break;
 
     // If a gesture is received, forward it as-is.
-    case ui::ET_GESTURE_TAP:
+    case ui::EventType::kGestureTap:
       if (target_button) {
         auto* const gesture = event.AsGestureEvent();
         ui::GestureEvent tap(gesture->x(), gesture->y(), gesture->flags(),
@@ -132,7 +132,7 @@ bool HelpBubbleEventRelay::OnEvent(const ui::LocatedEvent& event,
 
     // Mouse moves could be routed through the inkdrop controller but it's
     // easier to just set hovered state directly.
-    case ui::ET_MOUSE_MOVED:
+    case ui::EventType::kMouseMoved:
       if (target_button != hovered_button_) {
         if (hovered_button_) {
           views::InkDrop* const ink_drop =
@@ -154,7 +154,7 @@ bool HelpBubbleEventRelay::OnEvent(const ui::LocatedEvent& event,
 
     // For cases where the help bubble overlaps the target area, the mouse
     // exiting should result in un-hovering the current button.
-    case ui::ET_MOUSE_EXITED:
+    case ui::EventType::kMouseExited:
       if (ShouldUnHoverOnMouseExit() && hovered_button_) {
         if (views::InkDrop* const ink_drop =
                 views::InkDrop::Get(hovered_button_)->GetInkDrop()) {

@@ -80,7 +80,7 @@ TEST_F(ChapterItemViewTest, Labels) {
 TEST_F(ChapterItemViewTest, ClickOnView) {
   EXPECT_CALL(*this, OnChapterPressed(kChapterStartTime)).Times(1);
   views::test::ButtonTestApi(view()).NotifyClick(
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                      ui::EventTimeForNow(), 0, 0));
   testing::Mock::VerifyAndClearExpectations(this);
 }

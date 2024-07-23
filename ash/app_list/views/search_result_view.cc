@@ -1530,7 +1530,7 @@ void SearchResultView::OnThemeChanged() {
 
 void SearchResultView::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_LONG_PRESS:
+    case ui::EventType::kGestureLongPress:
       if (actions_view()->IsValidActionIndex(SearchResultActionType::kRemove)) {
         ScrollRectToVisible(GetLocalBounds());
         SetSelected(true, std::nullopt);

@@ -412,7 +412,7 @@ class RenderViewImplTest : public RenderViewTest {
                         std::u16string* output) {
     int flags = ConvertMockKeyboardModifier(modifiers);
 
-    ui::KeyEvent keydown_event(ui::ET_KEY_PRESSED,
+    ui::KeyEvent keydown_event(ui::EventType::kKeyPressed,
                                static_cast<ui::KeyboardCode>(key_code), flags);
     input::NativeWebKeyboardEvent keydown_web_event(keydown_event);
     SendNativeKeyEvent(keydown_web_event);
@@ -423,7 +423,7 @@ class RenderViewImplTest : public RenderViewTest {
     input::NativeWebKeyboardEvent char_web_event(char_event);
     SendNativeKeyEvent(char_web_event);
 
-    ui::KeyEvent keyup_event(ui::ET_KEY_RELEASED,
+    ui::KeyEvent keyup_event(ui::EventType::kKeyReleased,
                              static_cast<ui::KeyboardCode>(key_code), flags);
     input::NativeWebKeyboardEvent keyup_web_event(keyup_event);
     SendNativeKeyEvent(keyup_web_event);

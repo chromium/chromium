@@ -8,7 +8,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 
 namespace content {
 
@@ -17,9 +16,7 @@ CreateJavaAdditionalNavigationParams(
     JNIEnv* env,
     base::UnguessableToken initiator_frame_token,
     int initiator_process_id,
-    std::optional<base::UnguessableToken> attribution_src_token,
-    std::optional<network::AttributionReportingRuntimeFeatures>
-        runtime_features);
+    std::optional<base::UnguessableToken> attribution_src_token);
 
 }  // namespace content
 

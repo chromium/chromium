@@ -55,7 +55,6 @@
 #include "net/log/net_log_with_source.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/quic/quic_http_utils.h"
-#include "net/socket/client_socket_handle.h"
 #include "net/socket/socket.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/spdy/alps_decoder.h"
@@ -869,19 +868,19 @@ SpdySession::~SpdySession() {
 }
 
 void SpdySession::InitializeWithSocketHandle(
-    std::unique_ptr<ClientSocketHandle> client_socket_handle,
+    std::unique_ptr<StreamSocketHandle> stream_socket_handle,
     SpdySessionPool* pool) {
-  DCHECK(!client_socket_handle_);
+  DCHECK(!stream_socket_handle_);
   DCHECK(!owned_stream_socket_);
   DCHECK(!socket_);
 
   // TODO(akalin): Check connection->is_initialized() instead. This
   // requires re-working CreateFakeSpdySession(), though.
-  DCHECK(client_socket_handle->socket());
+  DCHECK(stream_socket_handle->socket());
 
-  client_socket_handle_ = std::move(client_socket_handle);
-  socket_ = client_socket_handle_->socket();
-  client_socket_handle_->AddHigherLayeredPool(this);
+  stream_socket_handle_ = std::move(stream_socket_handle);
+  socket_ = stream_socket_handle_->socket();
+  stream_socket_handle_->AddHigherLayeredPool(this);
 
   InitializeInternal(pool);
 }
@@ -890,7 +889,7 @@ void SpdySession::InitializeWithSocket(
     std::unique_ptr<StreamSocket> stream_socket,
     const LoadTimingInfo::ConnectTiming& connect_timing,
     SpdySessionPool* pool) {
-  DCHECK(!client_socket_handle_);
+  DCHECK(!stream_socket_handle_);
   DCHECK(!owned_stream_socket_);
   DCHECK(!socket_);
 
@@ -1420,15 +1419,15 @@ bool SpdySession::IsReused() const {
   // connected socket, since canceling the H2 session request would have
   // destroyed the socket.
   return owned_stream_socket_ ||
-         client_socket_handle_->reuse_type() ==
+         stream_socket_handle_->reuse_type() ==
              StreamSocketHandle::SocketReuseType::kUnusedIdle;
 }
 
 bool SpdySession::GetLoadTimingInfo(spdy::SpdyStreamId stream_id,
                                     LoadTimingInfo* load_timing_info) const {
-  if (client_socket_handle_) {
+  if (stream_socket_handle_) {
     DCHECK(!connect_timing_);
-    return client_socket_handle_->GetLoadTimingInfo(stream_id != kFirstStreamId,
+    return stream_socket_handle_->GetLoadTimingInfo(stream_id != kFirstStreamId,
                                                     load_timing_info);
   }
 
@@ -1740,7 +1739,7 @@ void SpdySession::CloseActiveStreamIterator(ActiveStreamMap::iterator it,
     // If the socket belongs to a socket pool, and there are no active streams,
     // and the socket pool is stalled, then close the session to free up a
     // socket slot.
-    if (client_socket_handle_ && client_socket_handle_->IsPoolStalled()) {
+    if (stream_socket_handle_ && stream_socket_handle_->IsPoolStalled()) {
       DoDrainSession(ERR_CONNECTION_CLOSED, "Closing idle connection.");
     } else {
       MaybeFinishGoingAway();

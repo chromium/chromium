@@ -38,7 +38,6 @@ import {
 } from '../models/video_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
-import {ToteMetricFormat} from '../mojo/type.js';
 import * as nav from '../nav.js';
 import {PerfLogger} from '../perf.js';
 import * as sound from '../sound.js';
@@ -480,8 +479,7 @@ export class Camera extends View implements CameraViewUI {
     });
     try {
       const name = (new Filenamer(timestamp)).newImageName();
-      await this.resultSaver.savePhoto(
-          blob, ToteMetricFormat.kPhoto, name, metadata);
+      await this.resultSaver.savePhoto(blob, name, metadata);
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
       throw e;
@@ -532,8 +530,7 @@ export class Camera extends View implements CameraViewUI {
 
       try {
         const name = (new Filenamer(timestamp)).newImageName();
-        await this.resultSaver.savePhoto(
-            blob, ToteMetricFormat.kPhoto, name, metadata);
+        await this.resultSaver.savePhoto(blob, name, metadata);
       } catch (e) {
         toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
         throw e;
@@ -577,8 +574,7 @@ export class Camera extends View implements CameraViewUI {
 
         filenamer = filenamer ?? new Filenamer(timestamp);
         const name = filenamer.newBurstName(false);
-        await this.resultSaver.savePhoto(
-            blob, ToteMetricFormat.kPhoto, name, metadata);
+        await this.resultSaver.savePhoto(blob, name, metadata);
       } catch (e) {
         toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
         throw e;
@@ -597,8 +593,7 @@ export class Camera extends View implements CameraViewUI {
 
         filenamer = filenamer ?? new Filenamer(portraitTimestamp);
         const name = filenamer.newBurstName(true);
-        await this.resultSaver.savePhoto(
-            portraitBlob, ToteMetricFormat.kPhoto, name, portraitMetadata);
+        await this.resultSaver.savePhoto(portraitBlob, name, portraitMetadata);
       } catch (e) {
         // We tolerate the error when no face is detected for the scene.
         toast.show(I18nString.ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED);

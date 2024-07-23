@@ -153,8 +153,8 @@ class WindowEventObserver : public ui::EventObserver {
       : pip_browser_frame_view_(pip_browser_frame_view) {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this, pip_browser_frame_view_->GetWidget()->GetNativeWindow(),
-        {ui::ET_MOUSE_MOVED, ui::ET_MOUSE_EXITED, ui::ET_KEY_PRESSED,
-         ui::ET_KEY_RELEASED});
+        {ui::EventType::kMouseMoved, ui::EventType::kMouseExited,
+         ui::EventType::kKeyPressed, ui::EventType::kKeyReleased});
   }
 
   WindowEventObserver(const WindowEventObserver&) = delete;

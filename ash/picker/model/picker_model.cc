@@ -8,6 +8,7 @@
 #include "ash/picker/model/picker_mode_type.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "base/check_deref.h"
+#include "chromeos/components/editor_menu/public/cpp/editor_helpers.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/text_input_client.h"
@@ -123,8 +124,11 @@ PickerModeType PickerModel::GetMode() const {
     return PickerModeType::kPassword;
   }
 
-  return selection_range_.is_empty() ? PickerModeType::kNoSelection
-                                     : PickerModeType::kHasSelection;
+  return chromeos::editor_helpers::NonWhitespaceAndSymbolsLength(
+             selected_text_, gfx::Range(0, selection_range_.end() -
+                                               selection_range_.start())) == 0
+             ? PickerModeType::kNoSelection
+             : PickerModeType::kHasSelection;
 }
 
 bool PickerModel::IsGifsEnabled(PrefService* prefs) const {

@@ -117,7 +117,7 @@ BASE_FEATURE(kAnnotatorMode,
              "AnnotatorMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kApnRevamp, "ApnRevamp", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kApnRevamp, "ApnRevamp", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Adds Borealis support to Almanac app install URIs.
 BASE_FEATURE(kAppInstallServiceUriBorealis,
@@ -220,7 +220,7 @@ BASE_FEATURE(kAutocorrectToggle,
 // Enables using a toggle for enabling autocorrect on ChromeOS.
 BASE_FEATURE(kAutocorrectByDefault,
              "AutocorrectByDefault",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAutocorrectUseReplaceSurroundingText,
              "AutocorrectUseReplaceSurroundingText",
@@ -1566,16 +1566,6 @@ BASE_FEATURE(kHideShelfControlsInTabletMode,
 BASE_FEATURE(kHindiInscriptLayout,
              "HindiInscriptLayout",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables Camera app integration with holding space.
-BASE_FEATURE(kHoldingSpaceCameraAppIntegration,
-             "HoldingSpaceCameraAppIntegration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables Photoshop Web integration with holding space.
-BASE_FEATURE(kHoldingSpacePhotoshopWebIntegration,
-             "HoldingSpacePhotoshopWeb",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables holding space icon to be permanently displayed with extended file
 // expiration to increase predictability of the feature.
@@ -3995,14 +3985,6 @@ bool IsHibernateEnabled() {
 
 bool IsHideShelfControlsInTabletModeEnabled() {
   return base::FeatureList::IsEnabled(kHideShelfControlsInTabletMode);
-}
-
-bool IsHoldingSpaceCameraAppIntegrationEnabled() {
-  return base::FeatureList::IsEnabled(kHoldingSpaceCameraAppIntegration);
-}
-
-bool IsHoldingSpacePhotoshopWebIntegrationEnabled() {
-  return base::FeatureList::IsEnabled(kHoldingSpacePhotoshopWebIntegration);
 }
 
 bool IsHoldingSpacePredictabilityEnabled() {

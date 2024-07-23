@@ -23,8 +23,7 @@ class WebContents;
 void ShowCertSelectFileDialog(ui::SelectFileDialog* select_file_dialog,
                               ui::SelectFileDialog::Type type,
                               const base::FilePath& suggested_path,
-                              gfx::NativeWindow parent,
-                              void* params);
+                              gfx::NativeWindow parent);
 
 // Show a dialog to save the first certificate or the whole chain.
 void ShowCertExportDialog(content::WebContents* web_contents,

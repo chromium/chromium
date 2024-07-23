@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_ui_model.h"
@@ -259,7 +260,7 @@ void DownloadShelfView::AutoClose() {
 void DownloadShelfView::RemoveDownloadView(View* view) {
   DCHECK(view);
   const auto i = base::ranges::find(download_views_, view);
-  DCHECK(i != download_views_.end());
+  CHECK(i != download_views_.end(), base::NotFatalUntil::M130);
   download_views_.erase(i);
   RemoveChildViewT(view);
   if (download_views_.empty())

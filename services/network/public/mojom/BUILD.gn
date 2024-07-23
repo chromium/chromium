@@ -417,32 +417,6 @@ mojom("mojom_attribution") {
   generate_legacy_js_bindings = true
 
   sources = [ "attribution.mojom" ]
-
-  public_deps = [ "//mojo/public/mojom/base" ]
-
-  if (!is_ios) {
-    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
-    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
-    export_header_blink = "third_party/blink/public/platform/web_common.h"
-  }
-
-  shared_typemaps = [
-    {
-      types = [
-        {
-          mojom = "network.mojom.AttributionReportingRuntimeFeatures"
-          cpp = "::network::AttributionReportingRuntimeFeatures"
-          copyable_pass_by_value = true
-        },
-      ]
-      traits_headers =
-          [ "//services/network/public/cpp/attribution_mojom_traits.h" ]
-      traits_deps = [ "//services/network/public/cpp:attribution_traits" ]
-    },
-  ]
-
-  cpp_typemaps = shared_typemaps
-  blink_cpp_typemaps = shared_typemaps
 }
 
 # These .mojom files are put in their own target to avoid a circular dependency,

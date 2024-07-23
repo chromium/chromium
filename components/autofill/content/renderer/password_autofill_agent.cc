@@ -95,6 +95,8 @@ using password_manager::util::IsRendererRecognizedCredentialForm;
 
 namespace autofill {
 
+namespace {
+
 using form_util::ExtractOption;
 using form_util::GetFieldRendererId;
 using form_util::GetFormByRendererId;
@@ -106,7 +108,7 @@ using form_util::IsWebElementFocusableForAutofill;
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
 
-namespace {
+constexpr auto kInputPassword = blink::mojom::FormControlType::kInputPassword;
 
 // The size above which we stop triggering autocomplete.
 const size_t kMaximumTextSizeForAutocomplete = 1000;
@@ -376,7 +378,8 @@ WebInputElement FindUsernameElementPrecedingPasswordElement(
   for (auto begin = elements.begin(); iter != begin;) {
     --iter;
     const WebInputElement input = iter->DynamicTo<WebInputElement>();
-    if (input && input.IsTextField() && !input.IsPasswordFieldForAutofill() &&
+    if (input && input.IsTextField() &&
+        input.FormControlTypeForAutofill() != kInputPassword &&
         IsElementEditable(input) && IsWebElementFocusableForAutofill(input)) {
       return input;
     }
@@ -800,7 +803,7 @@ bool PasswordAutofillAgent::TextDidChangeInTextField(
 
 void PasswordAutofillAgent::NotifyPasswordManagerAboutFieldModification(
     const WebInputElement& element) {
-  if (element.IsPasswordFieldForAutofill()) {
+  if (element.FormControlTypeForAutofill() == kInputPassword) {
     auto iter = password_to_username_.find(FieldRef(element));
     if (iter != password_to_username_.end()) {
       if (WebInputElement username_input =
@@ -880,7 +883,7 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
   ClearPreviewedForm();
 
   password_info->password_was_edited_last = false;
-  if (element.IsPasswordFieldForAutofill()) {
+  if (element.FormControlTypeForAutofill() == kInputPassword) {
     CHECK(password_element);
     password_info->password_field_suggestion_was_accepted = true;
     password_info->password_field = FieldRef(password_element);
@@ -892,9 +895,11 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
     password_generation_agent_->OnFieldAutofilled(password_element);
   }
 
-  if (IsUsernameAmendable(username_element,
-                          element.IsPasswordFieldForAutofill()) &&
-      !(username.empty() && element.IsPasswordFieldForAutofill()) &&
+  if (IsUsernameAmendable(
+          username_element,
+          element.FormControlTypeForAutofill() == kInputPassword) &&
+      !(username.empty() &&
+        element.FormControlTypeForAutofill() == kInputPassword) &&
       username_element.Value().Utf16() != username) {
     DoFillField(username_element, username);
   }
@@ -932,7 +937,7 @@ void PasswordAutofillAgent::FillIntoFocusedField(
   if (!is_password) {
     DoFillField(focused_input_element, credential);
   }
-  if (!focused_input_element.IsPasswordFieldForAutofill()) {
+  if (focused_input_element.FormControlTypeForAutofill() != kInputPassword) {
     return;
   }
   FillPasswordFieldAndSave(focused_input_element, credential);
@@ -945,8 +950,9 @@ void PasswordAutofillAgent::PreviewField(FieldRendererId field_id,
   if (!input || !IsElementEditable(input)) {
     return;
   }
-  DoPreviewField(input, value,
-                 /*is_password=*/input.IsPasswordFieldForAutofill());
+  DoPreviewField(
+      input, value,
+      /*is_password=*/input.FormControlTypeForAutofill() == kInputPassword);
 }
 
 void PasswordAutofillAgent::FillField(FieldRendererId field_id,
@@ -986,7 +992,7 @@ void PasswordAutofillAgent::DoFillField(WebInputElement input,
 void PasswordAutofillAgent::FillPasswordFieldAndSave(
     WebInputElement password_input,
     const std::u16string& credential) {
-  CHECK(password_input.IsPasswordFieldForAutofill());
+  CHECK(password_input.FormControlTypeForAutofill() == kInputPassword);
   DoFillField(password_input, credential);
   InformBrowserAboutUserInput(
       form_util::GetFormElementForPasswordInput(password_input),
@@ -1012,8 +1018,9 @@ void PasswordAutofillAgent::PreviewSuggestion(
     return;
   }
 
-  if (IsUsernameAmendable(username_element,
-                          element.IsPasswordFieldForAutofill())) {
+  if (IsUsernameAmendable(
+          username_element,
+          element.FormControlTypeForAutofill() == kInputPassword)) {
     if (username_query_prefix_.empty())
       username_query_prefix_ = username_element.Value().Utf16();
 
@@ -1054,7 +1061,7 @@ bool PasswordAutofillAgent::FindPasswordInfoForElement(
   if (!element) {
     return false;
   }
-  if (!element.IsPasswordFieldForAutofill()) {
+  if (element.FormControlTypeForAutofill() != kInputPassword) {
     *username_element = element;
   } else {
     *password_element = element;
@@ -1150,8 +1157,9 @@ void PasswordAutofillAgent::MaybeCheckSafeBrowsingReputation(
   // Note: A site may use a Password field to collect a CVV or a Credit Card
   // number, but showing a slightly misleading warning here is better than
   // showing no warning at all.
-  if (!element.IsPasswordFieldForAutofill())
+  if (element.FormControlTypeForAutofill() != kInputPassword) {
     return;
+  }
   if (checked_safe_browsing_reputation_)
     return;
 
@@ -1195,7 +1203,8 @@ bool PasswordAutofillAgent::TryToShowKeyboardReplacingSurface(
   }
 
   bool has_amendable_username_element = IsUsernameAmendable(
-      username_element, input_element.IsPasswordFieldForAutofill());
+      username_element,
+      input_element.FormControlTypeForAutofill() == kInputPassword);
   bool has_editable_password_element =
       password_element && IsElementEditable(password_element);
   CHECK(has_amendable_username_element || has_editable_password_element);
@@ -1443,7 +1452,8 @@ bool PasswordAutofillAgent::IsPrerendering() const {
 
 bool PasswordAutofillAgent::IsUsernameInputField(
     const WebInputElement& input_element) const {
-  return input_element && !input_element.IsPasswordFieldForAutofill() &&
+  return input_element &&
+         input_element.FormControlTypeForAutofill() != kInputPassword &&
          base::Contains(web_input_to_password_info_, FieldRef(input_element));
 }
 
@@ -1728,7 +1738,7 @@ bool PasswordAutofillAgent::ShowSuggestionsForDomain(
 
   // If a username element is focused, show suggestions unless all possible
   // usernames are filtered.
-  if (!element.IsPasswordFieldForAutofill()) {
+  if (element.FormControlTypeForAutofill() != kInputPassword) {
     std::u16string username_prefix;
     if (!ShouldShowFullSuggestionListForPasswordManager(trigger_source,
                                                         element) &&
@@ -2196,8 +2206,8 @@ void PasswordAutofillAgent::StoreDataForFillOnAccountSelect(
     web_input_to_password_info_[FieldRef(main_element)] = password_info;
     last_supplied_password_info_iter_ =
         web_input_to_password_info_.find(FieldRef(main_element));
-    if (!main_element.IsPasswordFieldForAutofill() && password_element &&
-        username_element) {
+    if (main_element.FormControlTypeForAutofill() != kInputPassword &&
+        password_element && username_element) {
       password_to_username_[FieldRef(password_element)] =
           FieldRef(username_element);
     }

@@ -14,7 +14,9 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/predictors/loading_test_util.h"
+#include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/proxy_lookup_client_impl.h"
 #include "chrome/browser/predictors/resolve_host_client_impl.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
@@ -266,6 +268,34 @@ TEST_F(PreconnectManagerTest, TestStartOneUrlPreconnect) {
   preconnect_manager_->Start(
       main_frame_url,
       {PreconnectRequest(origin_to_preconnect, 1, network_anonymization_key)});
+  EXPECT_CALL(*mock_network_context_,
+              PreconnectSockets(1, origin_to_preconnect.GetURL(),
+                                network::mojom::CredentialsMode::kInclude,
+                                network_anonymization_key));
+  EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url));
+  mock_network_context_->CompleteHostLookup(origin_to_preconnect.host(),
+                                            network_anonymization_key, net::OK);
+}
+
+TEST_F(PreconnectManagerTest, TestLimitPreconnectCount) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kLoadingPredictorLimitPreconnectSocketCount);
+
+  GURL main_frame_url("http://google.com");
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkAnonymizationKey(main_frame_url);
+  url::Origin origin_to_preconnect =
+      url::Origin::Create(GURL("http://cdn.google.com"));
+
+  EXPECT_CALL(
+      *mock_delegate_,
+      PreconnectInitiated(main_frame_url, origin_to_preconnect.GetURL()));
+  EXPECT_CALL(*mock_network_context_,
+              ResolveHostProxy(origin_to_preconnect.host()));
+  preconnect_manager_->Start(
+      main_frame_url,
+      {PreconnectRequest(origin_to_preconnect, 2, network_anonymization_key)});
   EXPECT_CALL(*mock_network_context_,
               PreconnectSockets(1, origin_to_preconnect.GetURL(),
                                 network::mojom::CredentialsMode::kInclude,

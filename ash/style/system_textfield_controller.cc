@@ -23,7 +23,7 @@ bool SystemTextfieldController::HandleKeyEvent(views::Textfield* sender,
                                                const ui::KeyEvent& key_event) {
   DCHECK_EQ(textfield_, sender);
 
-  if (key_event.type() != ui::ET_KEY_PRESSED) {
+  if (key_event.type() != ui::EventType::kKeyPressed) {
     return false;
   }
 
@@ -70,7 +70,7 @@ bool SystemTextfieldController::HandleMouseEvent(
   }
 
   switch (mouse_event.type()) {
-    case ui::ET_MOUSE_PRESSED:
+    case ui::EventType::kMousePressed:
       // When the mouse is pressed and the textfield is not active, activate
       // the textfield but defer selecting all text until the mouse is
       // released.
@@ -79,7 +79,7 @@ bool SystemTextfieldController::HandleMouseEvent(
         textfield_->SetActive(true);
       }
       break;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       // When selecting all text was deferred, do it if there is no selection.
       if (defer_select_all_) {
         defer_select_all_ = false;
@@ -106,7 +106,7 @@ bool SystemTextfieldController::HandleGestureEvent(
   }
 
   // Select all text after tapping once.
-  if (gesture_event.type() == ui::ET_GESTURE_TAP &&
+  if (gesture_event.type() == ui::EventType::kGestureTap &&
       gesture_event.details().tap_count() == 1 && !textfield_->HasSelection()) {
     textfield_->SelectAll(false);
   }

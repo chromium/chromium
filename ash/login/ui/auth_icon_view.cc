@@ -308,8 +308,8 @@ gfx::Size AuthIconView::CalculatePreferredSize(
 }
 
 void AuthIconView::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() != ui::ET_GESTURE_TAP &&
-      event->type() != ui::ET_GESTURE_TAP_DOWN) {
+  if (event->type() != ui::EventType::kGestureTap &&
+      event->type() != ui::EventType::kGestureTapDown) {
     return;
   }
 

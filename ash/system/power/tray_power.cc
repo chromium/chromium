@@ -100,9 +100,6 @@ void PowerTrayView::HandleLocaleChange() {
 }
 
 void PowerTrayView::UpdateLabelOrImageViewColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
   cros_tokens::CrosSysColorIds icon_fg_token = cros_tokens::kCrosSysOnSurface;
@@ -160,25 +157,6 @@ void PowerTrayView::UpdateImage(bool icon_color_changed) {
     return;
   info_ = info;
 
-  if (!chromeos::features::IsJellyEnabled()) {
-    // Note: The icon color changes when the UI is in OOBE mode.
-    const SkColor icon_fg_color =
-        GetColorProvider()->GetColor(kColorAshIconColorPrimary);
-    std::optional<SkColor> badge_color;
-
-    if (features::IsBatterySaverAvailable() &&
-        PowerStatus::Get()->IsBatterySaverActive()) {
-      badge_color = cros_styles::DarkModeEnabled() ? gfx::kGoogleYellow700
-                                                   : gfx::kGoogleYellow800;
-    }
-
-    info = PowerStatus::Get()->GenerateBatteryImageInfo(icon_fg_color,
-                                                        badge_color);
-    info_ = info;
-    image_view()->SetImage(PowerStatus::GetBatteryImage(
-        info, kUnifiedTrayBatteryIconSize, GetColorProvider()));
-    return;
-  }
   UpdateLabelOrImageViewColor(is_active());
 }
 

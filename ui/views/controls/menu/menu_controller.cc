@@ -592,7 +592,7 @@ void MenuController::Run(Widget* parent,
     View* root_view = parent->GetRootView();
     if (root_view) {
       event = static_cast<internal::RootView*>(root_view)->current_event();
-      if (event && event->type() == ui::ET_MOUSE_PRESSED) {
+      if (event && event->type() == ui::EventType::kMousePressed) {
         menu_start_mouse_press_loc_ = View::ConvertPointToScreen(
             static_cast<View*>(event->target()),
             static_cast<const ui::MouseEvent*>(event)->location());
@@ -1011,8 +1011,9 @@ void MenuController::OnGestureEvent(SubmenuView* source,
     owner()->OnGestureEvent(event);
 #endif  // defined(USE_AURA)
     // Reset |send_gesture_events_to_owner_| when the first gesture ends.
-    if (event->type() == ui::ET_GESTURE_END)
+    if (event->type() == ui::EventType::kGestureEnd) {
       send_gesture_events_to_owner_ = false;
+    }
     return;
   }
 
@@ -1027,10 +1028,10 @@ void MenuController::OnGestureEvent(SubmenuView* source,
   }
 
   MenuPart part = GetMenuPart(source, event->location());
-  if (event->type() == ui::ET_GESTURE_TAP_DOWN) {
+  if (event->type() == ui::EventType::kGestureTapDown) {
     SetSelectionOnPointerDown(source, event);
     event->StopPropagation();
-  } else if (event->type() == ui::ET_GESTURE_LONG_PRESS) {
+  } else if (event->type() == ui::EventType::kGestureLongPress) {
     if (part.type == MenuPartType::kMenuItem && part.menu) {
       if (ShowContextMenu(part.menu,
                           ConvertToScreen(*source, event->location()),
@@ -1038,7 +1039,7 @@ void MenuController::OnGestureEvent(SubmenuView* source,
         event->StopPropagation();
       }
     }
-  } else if (event->type() == ui::ET_GESTURE_TAP) {
+  } else if (event->type() == ui::EventType::kGestureTap) {
     if (!part.is_scroll() && part.menu &&
         !(part.should_submenu_show && part.menu->HasSubmenu())) {
       const int command = part.menu->GetCommand();
@@ -1058,7 +1059,7 @@ void MenuController::OnGestureEvent(SubmenuView* source,
                    SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
       event->StopPropagation();
     }
-  } else if (event->type() == ui::ET_GESTURE_TAP_CANCEL && part.menu &&
+  } else if (event->type() == ui::EventType::kGestureTapCancel && part.menu &&
              part.type == MenuPartType::kMenuItem) {
     // Move the selection to the parent menu so that the selection in the
     // current menu is unset. Make sure the submenu remains open by sending the
@@ -1081,7 +1082,7 @@ void MenuController::OnTouchEvent(SubmenuView* source, ui::TouchEvent* event) {
   if (owner_ && send_gesture_events_to_owner())
     return;
 
-  if (event->type() == ui::ET_TOUCH_PRESSED) {
+  if (event->type() == ui::EventType::kTouchPressed) {
     MenuPart part = GetMenuPart(source, event->location());
     if (part.type == MenuPartType::kNone) {
       if (MaybeForwardToAnnotation(source, *event)) {
@@ -1330,7 +1331,7 @@ ui::PostDispatchAction MenuController::OnWillDispatchKeyEvent(
   }
 
   base::WeakPtr<MenuController> this_ref = AsWeakPtr();
-  if (event->type() == ui::ET_KEY_PRESSED) {
+  if (event->type() == ui::EventType::kKeyPressed) {
     bool key_handled = false;
 #if BUILDFLAG(IS_MAC)
     // Special handling for Option-Up and Option-Down, which should behave like
@@ -1653,7 +1654,7 @@ void MenuController::StartDrag(SubmenuView* source,
 }
 
 bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
-  DCHECK_EQ(event.type(), ui::ET_KEY_PRESSED);
+  DCHECK_EQ(event.type(), ui::EventType::kKeyPressed);
 
   // Do not process while performing drag-and-drop.
   if (for_drop_)
@@ -3178,13 +3179,13 @@ void MenuController::UpdateActiveMouseView(SubmenuView* event_source,
     if (active_mouse_view) {
       gfx::Point target_point(target_menu_loc);
       View::ConvertPointToTarget(target_menu, active_mouse_view, &target_point);
-      ui::MouseEvent mouse_entered_event(ui::ET_MOUSE_ENTERED, target_point,
-                                         target_point, ui::EventTimeForNow(), 0,
-                                         0);
+      ui::MouseEvent mouse_entered_event(ui::EventType::kMouseEntered,
+                                         target_point, target_point,
+                                         ui::EventTimeForNow(), 0, 0);
       active_mouse_view->OnMouseEntered(mouse_entered_event);
 
       ui::MouseEvent mouse_pressed_event(
-          ui::ET_MOUSE_PRESSED, target_point, target_point,
+          ui::EventType::kMousePressed, target_point, target_point,
           ui::EventTimeForNow(), event.flags(), event.changed_button_flags());
       active_mouse_view->OnMousePressed(mouse_pressed_event);
     }
@@ -3194,8 +3195,8 @@ void MenuController::UpdateActiveMouseView(SubmenuView* event_source,
     gfx::Point target_point(target_menu_loc);
     View::ConvertPointToTarget(target_menu, active_mouse_view, &target_point);
     ui::MouseEvent mouse_dragged_event(
-        ui::ET_MOUSE_DRAGGED, target_point, target_point, ui::EventTimeForNow(),
-        event.flags(), event.changed_button_flags());
+        ui::EventType::kMouseDragged, target_point, target_point,
+        ui::EventTimeForNow(), event.flags(), event.changed_button_flags());
     active_mouse_view->OnMouseDragged(mouse_dragged_event);
   }
 }
@@ -3208,8 +3209,8 @@ void MenuController::SendMouseReleaseToActiveView(SubmenuView* event_source,
 
   const gfx::Point target_loc = View::ConvertPointFromScreen(
       active_mouse_view, ConvertToScreen(*event_source, event.location()));
-  ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, target_loc, target_loc,
-                               ui::EventTimeForNow(), event.flags(),
+  ui::MouseEvent release_event(ui::EventType::kMouseReleased, target_loc,
+                               target_loc, ui::EventTimeForNow(), event.flags(),
                                event.changed_button_flags());
   // Reset the active mouse view before sending mouse released. That way if it
   // calls back to us, we aren't in a weird state.

@@ -75,9 +75,9 @@ TEST_F(KeyEventResultReceiverTest, EventConsumedByIME) {
   std::optional<bool> result;
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
-  ui::KeyEvent event{ui::ET_KEY_PRESSED,  ui::VKEY_PROCESSKEY,
-                     ui::DomCode::NONE,   ui::EF_IS_SYNTHESIZED,
-                     ui::DomKey::PROCESS, ui::EventTimeForNow()};
+  ui::KeyEvent event{ui::EventType::kKeyPressed, ui::VKEY_PROCESSKEY,
+                     ui::DomCode::NONE,          ui::EF_IS_SYNTHESIZED,
+                     ui::DomKey::PROCESS,        ui::EventTimeForNow()};
 
   receiver()->SetCallback(std::move(callback), &event);
   EXPECT_FALSE(result.has_value());
@@ -90,9 +90,9 @@ TEST_F(KeyEventResultReceiverTest, EventConsumedByIME) {
 
 TEST_F(KeyEventResultReceiverTest, EventNotCharacter) {
   std::optional<bool> result;
-  ui::KeyEvent event{ui::ET_KEY_PRESSED,      ui::VKEY_LEFT,
-                     ui::DomCode::ARROW_LEFT, ui::EF_NONE,
-                     ui::DomKey::ARROW_LEFT,  ui::EventTimeForNow()};
+  ui::KeyEvent event{ui::EventType::kKeyPressed, ui::VKEY_LEFT,
+                     ui::DomCode::ARROW_LEFT,    ui::EF_NONE,
+                     ui::DomKey::ARROW_LEFT,     ui::EventTimeForNow()};
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
 
@@ -111,9 +111,9 @@ TEST_F(KeyEventResultReceiverTest, UnmodifiedEnterAndBackspace) {
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
 
-  ui::KeyEvent event{ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
-                     ui::DomCode::ENTER, ui::EF_NONE,
-                     ui::DomKey::ENTER,  ui::EventTimeForNow()};
+  ui::KeyEvent event{ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                     ui::DomCode::ENTER,         ui::EF_NONE,
+                     ui::DomKey::ENTER,          ui::EventTimeForNow()};
 
   receiver()->SetCallback(std::move(callback), &event);
   EXPECT_FALSE(result.has_value());
@@ -126,9 +126,9 @@ TEST_F(KeyEventResultReceiverTest, UnmodifiedEnterAndBackspace) {
 
   result.reset();
 
-  ui::KeyEvent event2{ui::ET_KEY_PRESSED,     ui::VKEY_BACK,
-                      ui::DomCode::BACKSPACE, ui::EF_NONE,
-                      ui::DomKey::BACKSPACE,  ui::EventTimeForNow()};
+  ui::KeyEvent event2{ui::EventType::kKeyPressed, ui::VKEY_BACK,
+                      ui::DomCode::BACKSPACE,     ui::EF_NONE,
+                      ui::DomKey::BACKSPACE,      ui::EventTimeForNow()};
   auto callback2 =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
   receiver()->SetCallback(std::move(callback2), &event2);

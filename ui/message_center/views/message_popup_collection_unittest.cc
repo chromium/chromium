@@ -177,12 +177,12 @@ class MockMessagePopupView : public MessagePopupView {
 
   void SetHovered(bool is_hovered) {
     if (is_hovered) {
-      ui::MouseEvent enter_event(ui::ET_MOUSE_ENTERED, gfx::Point(),
+      ui::MouseEvent enter_event(ui::EventType::kMouseEntered, gfx::Point(),
                                  gfx::Point(), ui::EventTimeForNow(), 0, 0);
       OnMouseEntered(enter_event);
     } else {
-      ui::MouseEvent exit_event(ui::ET_MOUSE_EXITED, gfx::Point(), gfx::Point(),
-                                ui::EventTimeForNow(), 0, 0);
+      ui::MouseEvent exit_event(ui::EventType::kMouseExited, gfx::Point(),
+                                gfx::Point(), ui::EventTimeForNow(), 0, 0);
       OnMouseExited(exit_event);
     }
   }

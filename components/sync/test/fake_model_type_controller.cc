@@ -11,11 +11,10 @@
 
 namespace syncer {
 
-FakeModelTypeController::FakeModelTypeController(ModelType type)
-    : FakeModelTypeController(type, /*enable_transport_mode=*/false) {}
-
-FakeModelTypeController::FakeModelTypeController(ModelType type,
-                                                 bool enable_transport_mode)
+FakeModelTypeController::FakeModelTypeController(
+    ModelType type,
+    bool enable_transport_mode,
+    std::unique_ptr<ModelTypeLocalDataBatchUploader> uploader)
     : ModelTypeController(
           type,
           /*delegate_for_full_sync_mode=*/
@@ -23,7 +22,8 @@ FakeModelTypeController::FakeModelTypeController(ModelType type,
           /*delegate_for_transport_mode=*/
           enable_transport_mode
               ? std::make_unique<FakeModelTypeControllerDelegate>(type)
-              : nullptr) {}
+              : nullptr,
+          std::move(uploader)) {}
 
 FakeModelTypeController::~FakeModelTypeController() = default;
 
@@ -37,11 +37,6 @@ FakeModelTypeControllerDelegate* FakeModelTypeController::model(
       GetDelegateForTesting(sync_mode));
 }
 
-void FakeModelTypeController::SetLocalDataBatchUploader(
-    std::unique_ptr<ModelTypeLocalDataBatchUploader> uploader) {
-  uploader_ = std::move(uploader);
-}
-
 ModelTypeController::PreconditionState
 FakeModelTypeController::GetPreconditionState() const {
   return precondition_state_;
@@ -50,11 +45,6 @@ FakeModelTypeController::GetPreconditionState() const {
 std::unique_ptr<DataTypeActivationResponse> FakeModelTypeController::Connect() {
   ++activate_call_count_;
   return ModelTypeController::Connect();
-}
-
-ModelTypeLocalDataBatchUploader*
-FakeModelTypeController::GetModelTypeLocalDataBatchUploader() {
-  return uploader_.get();
 }
 
 }  // namespace syncer

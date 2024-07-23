@@ -638,7 +638,7 @@ TEST_F(ClientSessionTest, LocalInputTest) {
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   // The OS echoes the injected event back.
   client_session_->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
-                                       ui::ET_MOUSE_MOVED);
+                                       ui::EventType::kMouseMoved);
 #endif  // !BUILDFLAG(IS_WIN)
 
   // This one should get throught as well.
@@ -646,7 +646,7 @@ TEST_F(ClientSessionTest, LocalInputTest) {
 
   // Now this is a genuine local event.
   client_session_->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
-                                       ui::ET_MOUSE_MOVED);
+                                       ui::EventType::kMouseMoved);
 
   // This one should be blocked because of the previous local input event.
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(300, 301));
@@ -670,7 +670,7 @@ TEST_F(ClientSessionTest, DisconnectOnLocalInputTest) {
   SetupSingleDisplay();
 
   client_session_->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
-                                       ui::ET_MOUSE_MOVED);
+                                       ui::EventType::kMouseMoved);
   EXPECT_FALSE(connection_->is_connected());
 }
 

@@ -57,14 +57,14 @@ class WhatsNewRegistryTest : public testing::Test {
         {kTestModuleDisabled});
 
     whats_new_registry_ = std::make_unique<WhatsNewRegistry>();
-    whats_new_registry_->RegisterModule(WhatsNewModule(
-        &kTestModuleEnabled, "", "", BrowserCommand::kNoOpCommand));
-    whats_new_registry_->RegisterModule(WhatsNewModule(
-        &kTestModuleDisabled, "", "", BrowserCommand::kMinValue));
     whats_new_registry_->RegisterModule(
-        WhatsNewModule(&kTestModuleEnabledByDefault, "", ""));
+        WhatsNewModule(&kTestModuleEnabled, "", BrowserCommand::kNoOpCommand));
     whats_new_registry_->RegisterModule(
-        WhatsNewModule(&kTestModuleDisabledByDefault, "", ""));
+        WhatsNewModule(&kTestModuleDisabled, "", BrowserCommand::kMinValue));
+    whats_new_registry_->RegisterModule(
+        WhatsNewModule(&kTestModuleEnabledByDefault, ""));
+    whats_new_registry_->RegisterModule(
+        WhatsNewModule(&kTestModuleDisabledByDefault, ""));
   }
 
   void TearDown() override {

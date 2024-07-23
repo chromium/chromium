@@ -491,16 +491,16 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDevtoolsBrowserTest,
   // Send down and enter to select next item and cause change listener to fire.
   // The event listener causes devtools to break (and enter a nested event
   // loop).
-  ui::KeyEvent press_down(ui::ET_KEY_PRESSED, ui::VKEY_DOWN,
+  ui::KeyEvent press_down(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
                           ui::DomCode::ARROW_DOWN, ui::EF_NONE,
                           ui::DomKey::ARROW_DOWN, ui::EventTimeForNow());
-  ui::KeyEvent release_down(ui::ET_KEY_RELEASED, ui::VKEY_DOWN,
+  ui::KeyEvent release_down(ui::EventType::kKeyReleased, ui::VKEY_DOWN,
                             ui::DomCode::ARROW_DOWN, ui::EF_NONE,
                             ui::DomKey::ARROW_DOWN, ui::EventTimeForNow());
-  ui::KeyEvent press_enter(ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
+  ui::KeyEvent press_enter(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
                            ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
                            ui::EventTimeForNow());
-  ui::KeyEvent release_enter(ui::ET_KEY_RELEASED, ui::VKEY_RETURN,
+  ui::KeyEvent release_enter(ui::EventType::kKeyReleased, ui::VKEY_RETURN,
                              ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
                              ui::EventTimeForNow());
   auto* host_view_aura = static_cast<content::RenderWidgetHostViewAura*>(

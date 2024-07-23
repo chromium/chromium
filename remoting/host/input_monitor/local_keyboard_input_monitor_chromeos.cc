@@ -116,7 +116,7 @@ void LocalKeyboardInputMonitorChromeos::Core::DidProcessEvent(
   }
 
   ui::EventType type = ui::EventTypeFromNative(event);
-  if (type == ui::ET_KEY_PRESSED) {
+  if (type == ui::EventType::kKeyPressed) {
     ui::DomCode dom_code = ui::CodeFromNative(event);
     uint32_t usb_keycode = ui::KeycodeConverter::DomCodeToUsbKeycode(dom_code);
     caller_task_runner_->PostTask(

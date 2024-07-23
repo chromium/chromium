@@ -74,6 +74,9 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     return TotalActiveStreamCount() >= max_stream_sockets_per_pool();
   }
 
+  // Return true if there is a request blocked on this pool.
+  bool IsPoolStalled();
+
   // NetworkChangeNotifier::IPAddressObserver methods:
   void OnIPAddressChanged() override;
 

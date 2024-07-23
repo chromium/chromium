@@ -193,7 +193,8 @@ class WebState : public base::SupportsUserData {
   // has been fully launched.
   static std::unique_ptr<WebState> CreateWithStorageSession(
       const CreateParams& params,
-      CRWSessionStorage* session_storage);
+      CRWSessionStorage* session_storage,
+      NativeSessionFetcher session_fetcher);
 
   // Creates a new WebState from a serialized representation of the session.
   // The callbacks are used to load the complete serialized data from disk

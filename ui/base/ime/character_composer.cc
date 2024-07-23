@@ -114,8 +114,10 @@ void CharacterComposer::Reset() {
 }
 
 bool CharacterComposer::FilterKeyPress(const ui::KeyEvent& event) {
-  if (event.type() != ET_KEY_PRESSED && event.type() != ET_KEY_RELEASED)
+  if (event.type() != EventType::kKeyPressed &&
+      event.type() != EventType::kKeyReleased) {
     return false;
+  }
 
   // We don't care about modifier key presses.
   if (KeycodeConverter::IsDomKeyForModifier(event.GetDomKey()))

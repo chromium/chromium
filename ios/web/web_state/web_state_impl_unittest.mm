@@ -813,7 +813,8 @@ TEST_F(WebStateImplTest, UncommittedRestoreSession) {
   session_storage.itemStorages = @[ item_storage ];
 
   WebStateImpl web_state =
-      WebStateImpl(WebState::CreateParams(GetBrowserState()), session_storage);
+      WebStateImpl(WebState::CreateParams(GetBrowserState()), session_storage,
+                   base::ReturnValueOnce<NSData*>(nil));
 
   // After restoring `web_state` change the uncommitted state's user data.
   web::SerializableUserDataManager* user_data_manager =
@@ -838,7 +839,8 @@ TEST_F(WebStateImplTest, UncommittedRestoreSession) {
   EXPECT_EQ(url, web_state.GetVisibleURL());
 
   WebStateImpl restored_web_state(WebState::CreateParams(GetBrowserState()),
-                                  extracted_session_storage);
+                                  extracted_session_storage,
+                                  base::ReturnValueOnce<NSData*>(nil));
   web::SerializableUserDataManager* restored_user_data_manager =
       web::SerializableUserDataManager::FromWebState(&restored_web_state);
   NSNumber* user_data_value = base::apple::ObjCCast<NSNumber>(

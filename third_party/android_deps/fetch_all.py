@@ -584,12 +584,17 @@ def main():
 
         logging.info('# Reformat %s.',
                      os.path.join(args.android_deps_dir, _BUILD_GN))
-        gn_args = [
-            os.path.relpath(_GN_PATH, _CHROMIUM_SRC), 'format',
-            os.path.join(os.path.relpath(build_android_deps_dir, _CHROMIUM_SRC),
-                         _BUILD_GN)
-        ]
-        RunCommand(gn_args, print_stdout=debug, cwd=_CHROMIUM_SRC)
+        gn_path = os.path.relpath(_GN_PATH, _CHROMIUM_SRC)
+        gn_input = os.path.join(
+            os.path.relpath(build_android_deps_dir, _CHROMIUM_SRC), _BUILD_GN)
+        gn_args = [gn_path, 'format', gn_input]
+        try:
+            RunCommand(gn_args, print_stdout=debug, cwd=_CHROMIUM_SRC)
+        except Exception:
+            if os.path.exists(gn_input):
+                shutil.copyfile(gn_input, '/tmp/gn-format-input')
+                logging.warning('Saved GN input to /tmp/gn-format-input')
+            raise
 
         build_libs_dir = os.path.join(build_android_deps_dir, _LIBS_DIR)
         if args.override_artifact:

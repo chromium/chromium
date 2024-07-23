@@ -114,7 +114,7 @@ class IntentChipButtonBrowserTest : public web_app::WebAppNavigationBrowserTest,
         nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
 
     views::test::ButtonTestApi test_api(GetIntentChip());
-    ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+    ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                      ui::EventTimeForNow(), 0, 0);
     test_api.NotifyClick(e);
 

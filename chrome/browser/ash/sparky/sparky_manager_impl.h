@@ -73,8 +73,7 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
       MahiAnswerQuestionCallback callback,
       crosapi::mojom::MahiPageContentPtr mahi_content_ptr);
 
-  void OnSparkyProviderQAResponse(const std::u16string& question,
-                                  MahiAnswerQuestionCallback callback,
+  void OnSparkyProviderQAResponse(MahiAnswerQuestionCallback callback,
                                   manta::MantaStatus status,
                                   manta::DialogTurn* latest_turn);
 

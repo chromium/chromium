@@ -394,7 +394,7 @@ void OverviewSession::Shutdown() {
               : nullptr,
           OverviewTransition::kExit, /*target_bounds=*/{});
     }
-    for (const auto& overview_item : overview_grid->window_list()) {
+    for (const auto& overview_item : overview_grid->item_list()) {
       overview_item->RestoreWindow(/*reset_transform=*/true,
                                    /*animate=*/!was_saved_desk_library_showing);
     }
@@ -875,8 +875,8 @@ void OverviewSession::SetWindowListNotAnimatedWhenExiting(
 
 void OverviewSession::UpdateRoundedCornersAndShadow() {
   for (auto& grid : grid_list_)
-    for (auto& window : grid->window_list()) {
-      window->UpdateRoundedCornersAndShadow();
+    for (auto& item : grid->item_list()) {
+      item->UpdateRoundedCornersAndShadow();
     }
 }
 
@@ -1181,7 +1181,7 @@ bool OverviewSession::HandleContinuousScrollIntoOverview(float y_offset) {
   // If a scroll has ended, reset the opacity of minimized windows before
   // animating all windows into their final positions.
   for (std::unique_ptr<OverviewGrid>& overview_grid : grid_list_) {
-    for (const auto& window_item : overview_grid->window_list()) {
+    for (const auto& window_item : overview_grid->item_list()) {
       window_item->item_widget()->GetLayer()->SetOpacity(1.f);
       window_item->UpdateRoundedCornersAndShadow();
     }
@@ -1322,8 +1322,9 @@ void OverviewSession::UpdateAccessibilityFocus() {
     if (grid->IsShowingSavedDeskLibrary()) {
       a11y_widgets.push_back(grid->saved_desk_library_widget());
     } else {
-      for (const auto& item : grid->window_list())
+      for (const auto& item : grid->item_list()) {
         a11y_widgets.push_back(item->item_widget());
+      }
     }
 
     // UI elements in split view overview will be traversed right after the
@@ -1382,7 +1383,7 @@ void OverviewSession::UpdateFrameThrottling() {
         windows_to_throttle.push_back(grid->dragged_window());
       }
 
-      for (auto& item : grid->window_list()) {
+      for (auto& item : grid->item_list()) {
         for (aura::Window* window : item->GetWindows()) {
           windows_to_throttle.push_back(window);
         }
@@ -1507,7 +1508,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   // focus enabled, a Tab will blur the textfield which will commit the name
   // changes.
   const ui::KeyboardCode key_code = event->key_code();
-  const bool is_key_press = event->type() == ui::ET_KEY_PRESSED;
+  const bool is_key_press = event->type() == ui::EventType::kKeyPressed;
   if (!features::IsOverviewNewFocusEnabled()) {
     const bool should_commit_name_changes =
         is_key_press && key_code == ui::VKEY_TAB;
@@ -1817,7 +1818,7 @@ bool OverviewSession::ProcessForScrolling(const ui::KeyEvent& event) {
   // The scrollable overview grid only works for tablet mode, so using the
   // primary display works.
   auto* grid = GetGridWithRootWindow(Shell::GetPrimaryRootWindow());
-  const bool press = (event.type() == ui::ET_KEY_PRESSED);
+  const bool press = (event.type() == ui::EventType::kKeyPressed);
 
   if (!press) {
     if (is_keyboard_scrolling_grid_) {

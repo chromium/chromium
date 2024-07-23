@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -171,12 +172,12 @@ PrintBackendServiceManager::RegisterPrintDocumentClient(
   return *RegisterClient(ClientType::kPrintDocument, printer_name);
 }
 
-PrintBackendServiceManager::ClientId
+std::optional<PrintBackendServiceManager::ClientId>
 PrintBackendServiceManager::RegisterPrintDocumentClientReusingClientRemote(
     ClientId id) {
-  DCHECK(query_with_ui_clients_.contains(id));
-  return *RegisterClient(ClientType::kPrintDocument,
-                         query_with_ui_clients_[id]);
+  const auto iter = query_with_ui_clients_.find(id);
+  CHECK(iter != query_with_ui_clients_.end());
+  return RegisterClient(ClientType::kPrintDocument, iter->second);
 }
 
 void PrintBackendServiceManager::UnregisterClient(ClientId id) {
@@ -606,6 +607,10 @@ void PrintBackendServiceManager::
 void PrintBackendServiceManager::SetServiceForTesting(
     mojo::Remote<mojom::PrintBackendService>* remote) {
   sandboxed_service_remote_for_test_ = remote;
+  if (!sandboxed_service_remote_for_test_) {
+    return;
+  }
+
   // Safe to use base::Unretained(this) since `this` is a global singleton
   // which never goes away.
   sandboxed_service_remote_for_test_->set_disconnect_handler(base::BindOnce(
@@ -617,6 +622,10 @@ void PrintBackendServiceManager::SetServiceForTesting(
 void PrintBackendServiceManager::SetServiceForFallbackTesting(
     mojo::Remote<mojom::PrintBackendService>* remote) {
   unsandboxed_service_remote_for_test_ = remote;
+  if (!unsandboxed_service_remote_for_test_) {
+    return;
+  }
+
   // Safe to use base::Unretained(this) since `this` is a global singleton
   // which never goes away.
   unsandboxed_service_remote_for_test_->set_disconnect_handler(base::BindOnce(
@@ -741,7 +750,13 @@ PrintBackendServiceManager::RegisterClient(
   } else {
     // Service not already available, so launch it now so that it will be
     // ready by the time the client gets to point of invoking a Mojo call.
-    DCHECK(absl::holds_alternative<std::string>(destination));
+    if (absl::holds_alternative<RemoteId>(destination)) {
+      // When the destination is to reuse an existing remote, and that remote
+      // is gone, then any expected context in that remote is also gone.  Such
+      // a loss of context should be treated as a failure for the user's request
+      // to print the document, so return nullopt for the client ID.
+      return std::nullopt;
+    }
     bool should_sandbox = ShouldServiceBeSandboxed(
         /*printer_name=*/absl::get<std::string>(destination), client_type);
     GetService(remote_id, client_type, should_sandbox);
@@ -1338,12 +1353,12 @@ void PrintBackendServiceManager::ServiceCallbackDone(
     const base::UnguessableToken& saved_callback_id,
     X... data) {
   auto found_callback_map = saved_callbacks.find(remote_id);
-  DCHECK(found_callback_map != saved_callbacks.end());
+  CHECK(found_callback_map != saved_callbacks.end(), base::NotFatalUntil::M130);
 
   SavedCallbacks<T...>& callback_map = found_callback_map->second;
 
   auto callback_entry = callback_map.find(saved_callback_id);
-  DCHECK(callback_entry != callback_map.end());
+  CHECK(callback_entry != callback_map.end(), base::NotFatalUntil::M130);
   auto callback = std::move(callback_entry->second);
   callback_map.erase(callback_entry);
 

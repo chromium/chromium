@@ -13,6 +13,12 @@
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
+#include "chrome/browser/web_applications/proto/proto_helpers.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "components/prefs/pref_service.h"
@@ -64,47 +70,38 @@ bool IsEqualToKioskOrigin(const url::Origin& origin) {
 #endif
 }
 
-bool IsForceInstalledIsolatedWebApp(const PrefService* prefs,
-                                    const url::Origin& origin) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (origin.scheme() != chrome::kIsolatedAppScheme) {
+Profile* GetProfile(content::RenderFrameHost& host) {
+  return Profile::FromBrowserContext(host.GetBrowserContext());
+}
+
+// Check whether an app with the target origin is in the WebAppRegistrar.
+bool IsForceInstalledOrigin(content::RenderFrameHost& host,
+                            const url::Origin& origin) {
+  web_app::WebAppProvider* web_app_provider =
+      web_app::WebAppProvider::GetForWebApps(GetProfile(host));
+
+  if (!web_app_provider) {
     return false;
   }
 
-  const base::Value::List& iwa_list =
-      prefs->GetList(prefs::kIsolatedWebAppInstallForceList);
+  // In this case we will not modify any data so it is safe to access
+  // registrar without lock
+  const web_app::WebAppRegistrar& registrar =
+      web_app_provider->registrar_unsafe();
 
-  return base::Contains(iwa_list, origin.host(), [](const auto& entry) {
-    return CHECK_DEREF(
-        entry.GetDict().FindString(web_app::kPolicyWebBundleIdKey));
-  });
-#else
-  return false;
-#endif
-}
+  const auto app_id = registrar.FindBestAppWithUrlInScope(
+      origin.GetURL(),
+      {
+          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+          web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+      },
+      {.include_extended_scope = true});
 
-bool IsForceInstalledWebApp(const PrefService* prefs,
-                            const url::Origin& origin) {
-  const base::Value::List& web_app_list =
-      prefs->GetList(prefs::kWebAppInstallForceList);
+  if (!app_id.has_value()) {
+    return false;
+  }
 
-  return base::Contains(web_app_list, origin, [](const auto& entry) {
-    std::string entry_url =
-        CHECK_DEREF(entry.GetDict().FindString(web_app::kUrlKey));
-    return url::Origin::Create(GURL(entry_url));
-  });
-}
-
-// Check whether the target origin is included in the WebAppInstallForceList or
-// IsolatedWebAppInstallForceList policy.
-bool IsForceInstalledOrigin(const PrefService* prefs,
-                            const url::Origin& origin) {
-  return IsForceInstalledIsolatedWebApp(prefs, origin) ||
-         IsForceInstalledWebApp(prefs, origin);
-}
-
-const Profile* GetProfile(content::RenderFrameHost& host) {
-  return Profile::FromBrowserContext(host.GetBrowserContext());
+  return registrar.IsInstalledByPolicy(app_id.value());
 }
 
 const PrefService* GetPrefs(content::RenderFrameHost& host) {
@@ -140,8 +137,7 @@ bool IsTrustedContext(content::RenderFrameHost& host,
 
     return IsEqualToKioskOrigin(origin);
   }
-
-  return IsForceInstalledOrigin(GetPrefs(host), origin);
+  return IsForceInstalledOrigin(host, origin);
 }
 
 }  // namespace
@@ -172,6 +168,9 @@ DeviceServiceImpl::DeviceServiceImpl(
       base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
                           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  auto& provider =
+      CHECK_DEREF(web_app::WebAppProvider::GetForWebApps(GetProfile(host)));
+  install_manager_observation_.Observe(&provider.install_manager());
 }
 
 DeviceServiceImpl::~DeviceServiceImpl() = default;
@@ -215,6 +214,20 @@ void DeviceServiceImpl::CreateForTest(
 // static
 void DeviceServiceImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kDeviceAttributesAllowedForOrigins);
+}
+
+void DeviceServiceImpl::OnWebAppSourceRemoved(const webapps::AppId& app_id) {
+  OnDisposingIfNeeded();
+}
+
+void DeviceServiceImpl::OnWebAppUninstalled(
+    const webapps::AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source) {
+  OnDisposingIfNeeded();
+}
+
+void DeviceServiceImpl::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 void DeviceServiceImpl::OnDisposingIfNeeded() {

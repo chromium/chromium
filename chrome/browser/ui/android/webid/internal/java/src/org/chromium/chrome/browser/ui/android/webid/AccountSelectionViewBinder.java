@@ -24,7 +24,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.StringRes;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import com.google.android.material.color.MaterialColors;
 
@@ -712,6 +711,11 @@ class AccountSelectionViewBinder {
             // RP icon is not shown in widget mode.
             if (model.get(HeaderProperties.RP_MODE) == RpMode.WIDGET) return;
 
+            // Reuse the same icons from previous dialog if button mode verify sheet.
+            if (model.get(HeaderProperties.TYPE) == HeaderProperties.HeaderType.VERIFY
+                    || model.get(HeaderProperties.TYPE)
+                            == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN) return;
+
             Bitmap brandIcon = model.get(HeaderProperties.RP_BRAND_ICON);
             ImageView headerIconView = (ImageView) view.findViewById(R.id.header_rp_icon);
             ImageView arrowRangeIcon = (ImageView) view.findViewById(R.id.arrow_range_icon);
@@ -724,21 +728,11 @@ class AccountSelectionViewBinder {
                         createBitmapWithMaskableIconSafeZone(resources, brandIcon, iconSize);
                 headerIconView.setImageDrawable(croppedBrandIcon);
             }
-            ColorStateList tint =
-                    brandIcon == null
-                            ? AppCompatResources.getColorStateList(
-                                    view.getContext(), R.color.baseline_neutral_variant_50)
-                            : null;
-            headerIconView.setImageTintList(tint);
-            arrowRangeIcon.setImageTintList(tint);
             boolean isRpIconVisible =
-                    (model.get(HeaderProperties.IDP_BRAND_ICON) != null)
-                            && (model.get(HeaderProperties.TYPE)
-                                            == HeaderProperties.HeaderType.REQUEST_PERMISSION
-                                    || model.get(HeaderProperties.TYPE)
-                                            == HeaderProperties.HeaderType.VERIFY
-                                    || model.get(HeaderProperties.TYPE)
-                                            == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN);
+                    brandIcon != null
+                            && model.get(HeaderProperties.IDP_BRAND_ICON) != null
+                            && model.get(HeaderProperties.TYPE)
+                                    == HeaderProperties.HeaderType.REQUEST_PERMISSION;
             headerIconView.setVisibility(isRpIconVisible ? View.VISIBLE : View.GONE);
             arrowRangeIcon.setVisibility(isRpIconVisible ? View.VISIBLE : View.GONE);
         } else if (key == HeaderProperties.CLOSE_ON_CLICK_LISTENER) {

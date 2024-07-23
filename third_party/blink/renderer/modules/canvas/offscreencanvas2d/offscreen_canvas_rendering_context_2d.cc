@@ -127,16 +127,6 @@ void OffscreenCanvasRenderingContext2D::Trace(Visitor* visitor) const {
   BaseRenderingContext2D::Trace(visitor);
 }
 
-void OffscreenCanvasRenderingContext2D::FlushRecording(FlushReason reason) {
-  CanvasResourceProvider* provider = GetCanvasResourceProvider();
-  if (UNLIKELY(provider == nullptr) ||
-      !provider->Recorder().HasReleasableDrawOps()) {
-    return;
-  }
-
-  provider->FlushCanvas(reason);
-}
-
 void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
   TRACE_EVENT0("blink", "OffscreenCanvasRenderingContext2D::FinalizeFrame");
 
@@ -144,7 +134,9 @@ void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
   // because it will be too late during the paint invalidation phase.
   if (!GetOrCreateCanvasResourceProvider())
     return;
-  FlushRecording(reason);
+  if (Host()) {
+    Host()->FlushRecording(reason);
+  }
 }
 
 // BaseRenderingContext2D implementation

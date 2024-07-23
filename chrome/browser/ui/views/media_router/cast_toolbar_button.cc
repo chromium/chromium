@@ -156,11 +156,11 @@ void CastToolbarButton::OnMouseReleased(const ui::MouseEvent& event) {
 
 void CastToolbarButton::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP_DOWN:
+    case ui::EventType::kGestureTapDown:
       GetActionController()->KeepIconShownOnPressed();
       break;
-    case ui::ET_GESTURE_END:
-    case ui::ET_GESTURE_TAP_CANCEL:
+    case ui::EventType::kGestureEnd:
+    case ui::EventType::kGestureTapCancel:
       GetActionController()->MaybeHideIconOnReleased();
       break;
     default:

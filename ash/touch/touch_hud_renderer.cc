@@ -152,7 +152,7 @@ void TouchHudRenderer::Clear() {
 void TouchHudRenderer::HandleTouchEvent(const ui::TouchEvent& event) {
   int id = event.pointer_details().id;
   auto iter = points_.find(id);
-  if (event.type() == ui::ET_TOUCH_PRESSED) {
+  if (event.type() == ui::EventType::kTouchPressed) {
     if (iter != points_.end()) {
       TouchPointView* view = iter->second;
       view->parent()->RemoveChildViewT(view);
@@ -170,8 +170,8 @@ void TouchHudRenderer::HandleTouchEvent(const ui::TouchEvent& event) {
   if (iter == points_.end())
     return;
 
-  if (event.type() == ui::ET_TOUCH_RELEASED ||
-      event.type() == ui::ET_TOUCH_CANCELLED) {
+  if (event.type() == ui::EventType::kTouchReleased ||
+      event.type() == ui::EventType::kTouchCancelled) {
     TouchPointView* view = iter->second;
     view->FadeOut(view->parent()->RemoveChildViewT(view));
     points_.erase(iter);
