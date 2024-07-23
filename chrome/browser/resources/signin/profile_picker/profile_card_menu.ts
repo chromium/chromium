@@ -7,7 +7,6 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/icons_lit.html.js';
-import './profile_picker_shared.css.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -29,6 +28,7 @@ import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_b
 import {ManageProfilesBrowserProxyImpl} from './manage_profiles_browser_proxy.js';
 import {getCss} from './profile_card_menu.css.js';
 import {getHtml} from './profile_card_menu.html.js';
+import {createDummyProfileState} from './profile_picker_util.js';
 
 export interface Statistics {
   BrowsingHistory: number;
@@ -104,19 +104,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     };
   }
 
-  profileState: ProfileState = {
-    profilePath: '',
-    localProfileName: '',
-    isSyncing: false,
-    needsSignin: false,
-    gaiaName: '',
-    userName: '',
-    avatarBadge: '',
-    avatarIcon: '',
-    // <if expr="chromeos_lacros">
-    isPrimaryLacrosProfile: false,
-    // </if>
-  };
+  profileState: ProfileState = createDummyProfileState();
   private statistics_: Statistics = {
     BrowsingHistory: 0,
     Passwords: 0,
