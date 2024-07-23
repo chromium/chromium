@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -87,6 +88,15 @@ VideoPixelFormat PixelFormatToVideoPixelFormat(OSType pixel_format) {
       return PIXEL_FORMAT_UNKNOWN;
   }
 }
+
+// If enabled, adds SHARED_IMAGE_USAGE_WEBGPU_READ as a usage when creating
+// SharedImages for a WebGpu-compatible IOSurface. Intended as a killswitch
+// to guard against performance regressions.
+// TODO: crbug.com/349290188 - Clean up if no performance regressions are
+// observed.
+BASE_FEATURE(kVideoToolboxFrameConverterSpecifyWebGpuUsage,
+             "VideoToolboxFrameConverterSpecifyWebGpuUsage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -218,9 +228,19 @@ void VideoToolboxFrameConverter::Convert(
   auto shared_image_interface = sis_->shared_image_interface();
   CHECK(shared_image_interface);
 
+  // Extract IOSurface webgpu compatible attribute before image is moved.
+  const bool is_webgpu_compatible =
+      IOSurfaceIsWebGPUCompatible(CVPixelBufferGetIOSurface(image.get()));
+  gpu::SharedImageUsageSet shared_image_usage = kSharedImageUsage;
+  if (is_webgpu_compatible &&
+      base::FeatureList::IsEnabled(
+          kVideoToolboxFrameConverterSpecifyWebGpuUsage)) {
+    shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
+  }
+
   auto shared_image = shared_image_interface->CreateSharedImage(
       {*format, coded_size, metadata->color_space, kTopLeft_GrSurfaceOrigin,
-       kOpaque_SkAlphaType, kSharedImageUsage, kSharedImageDebugLabel},
+       kOpaque_SkAlphaType, shared_image_usage, kSharedImageDebugLabel},
       std::move(handle));
   if (!shared_image) {
     MEDIA_LOG(ERROR, media_log_.get()) << "Failed to create shared image";
@@ -228,9 +248,6 @@ void VideoToolboxFrameConverter::Convert(
     return;
   }
 
-  // Extract IOSurface webgpu compatible attribute before image is moved.
-  const bool is_webgpu_compatible =
-      IOSurfaceIsWebGPUCompatible(CVPixelBufferGetIOSurface(image.get()));
 
   GLenum target = texture_rectangle_ ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
 
