@@ -10,6 +10,8 @@
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "chromeos/ash/components/dbus/hermes/fake_hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -21,8 +23,15 @@
 namespace ash {
 
 namespace {
+
 const char* kCellularDevicePath = "/device/cellular1";
+
 const char* kDefaultCountry = "US";
+const char* kDefaultOperatorName = "Network Operator";
+const char* kDefaultOperatorCode = "123456";
+const char* kDefaultOperatorCountry = "US";
+const char* kDefaultOperatorUuid = "12345678-1234-1234-1234-123456789012";
+
 }  // namespace
 
 FakeHermesProfileClient::Properties::Properties(
@@ -112,12 +121,16 @@ void FakeHermesProfileClient::EnableCarrierProfile(
 
   // Update cellular device properties to match this profile.
   UpdateCellularDevice(properties);
+
   // Update all cellular services to set their connection state and connectable
   // properties. The newly enabled profile will have connectable set to true
   // if |enable_profile_behavior_| indicates that it should be.
   bool connectable =
       enable_profile_behavior_ != EnableProfileBehavior::kNotConnectable;
   UpdateCellularServices(properties->iccid().value(), connectable);
+
+  // Make sure the SIM slot info is updated to reflect this change.
+  HermesEuiccClient::Get()->GetTestInterface()->UpdateShillDeviceSimSlotInfo();
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -145,6 +158,9 @@ void FakeHermesProfileClient::DisableCarrierProfile(
 
   // The newly disabled profile should have connectable set to false.
   UpdateCellularServices(properties->iccid().value(), /*connectable=*/false);
+
+  // Make sure the SIM slot info is updated to reflect this change.
+  HermesEuiccClient::Get()->GetTestInterface()->UpdateShillDeviceSimSlotInfo();
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -244,6 +260,24 @@ void FakeHermesProfileClient::UpdateCellularServices(const std::string& iccid,
     service_test->SetServiceProperty(service_path.GetString(),
                                      shill::kStateProperty,
                                      base::Value(service_state));
+
+    if (!is_current_service) {
+      ShillServiceClient::Get()->ClearProperty(
+          dbus::ObjectPath(service_path.GetString()),
+          shill::kServingOperatorProperty, base::DoNothing(),
+          base::DoNothing());
+      continue;
+    }
+
+    // Set the operator information for the active eSIM profile.
+    service_test->SetServiceProperty(
+        service_path.GetString(), shill::kServingOperatorProperty,
+        base::Value(
+            base::Value::Dict()
+                .Set(shill::kOperatorNameKey, kDefaultOperatorName)
+                .Set(shill::kOperatorCodeKey, kDefaultOperatorCode)
+                .Set(shill::kOperatorCountryKey, kDefaultOperatorCountry)
+                .Set(shill::kOperatorUuidKey, kDefaultOperatorUuid)));
   }
 }
 

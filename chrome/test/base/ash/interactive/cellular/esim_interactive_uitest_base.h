@@ -10,22 +10,17 @@
 
 namespace ash {
 
-// Base test of the eSIM interactive UI tests. `SetUpOnMainThread` will add
-// an EUICC with a carrier profile and connect to the eSIM service.
+// Base test class for eSIM interactive UI tests. `SetUpOnMainThread` will set
+// up the context, install system apps, clear existing eUICCs, and add an eUICC.
 class EsimInteractiveUiTestBase : public InteractiveAshTest {
  protected:
   // InteractiveAshTest:
   void SetUpOnMainThread() override;
 
-  // Disconnect the active esim service.
-  void DisconnectEsimService();
-
-  const SimInfo& esim_info() { return esim_info_; }
   const EuiccInfo& euicc_info() { return euicc_info_; }
 
  private:
-  const EuiccInfo euicc_info_ = EuiccInfo{/*id=*/0};
-  const SimInfo esim_info_ = SimInfo{/*id=*/0};
+  const EuiccInfo euicc_info_{/*id=*/0};
 };
 
 }  // namespace ash

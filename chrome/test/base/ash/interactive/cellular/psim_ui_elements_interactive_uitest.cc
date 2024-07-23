@@ -29,24 +29,25 @@ class PsimUiElementsUiTest : public InteractiveAshTest {
     // Ensure the OS Settings app is installed.
     InstallSystemApps();
 
+    psim_info_ = std::make_unique<SimInfo>(/*id=*/0);
     helper_ = std::make_unique<NetworkStateTestHelper>(
         /*use_default_devices_and_services=*/false);
     helper_->device_test()->AddDevice(euicc_info_.path(), shill::kTypeCellular,
-                                      psim_info_.name());
+                                      psim_info_->name());
 
     helper_->service_test()->AddService(
-        psim_info_.service_path(), psim_info_.guid(), psim_info_.name(),
+        psim_info_->service_path(), psim_info_->guid(), psim_info_->name(),
         shill::kTypeCellular, shill::kStateOnline,
         /*visible=*/true);
   }
 
   void TearDownOnMainThread() override { helper_.reset(); }
 
-  const SimInfo& psim_info() { return psim_info_; }
+  const SimInfo& psim_info() const { return *psim_info_; }
 
  private:
   const EuiccInfo euicc_info_{/*id=*/0};
-  const SimInfo psim_info_{/*id=*/0};
+  std::unique_ptr<SimInfo> psim_info_;
   std::unique_ptr<NetworkStateTestHelper> helper_;
 };
 

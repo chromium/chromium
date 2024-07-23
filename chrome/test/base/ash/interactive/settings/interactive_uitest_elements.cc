@@ -28,6 +28,10 @@ WebContentsInteractionTestUtil::DeepQuery SettingsSubpageTitle() {
   return InternetPage() + "os-settings-subpage" + "h1#subpageTitle";
 }
 
+WebContentsInteractionTestUtil::DeepQuery SettingsSubpageNetworkState() {
+  return InternetDetailsSubpage() + "div#networkState";
+}
+
 namespace cellular {
 
 WebContentsInteractionTestUtil::DeepQuery ApnDialog() {
@@ -164,6 +168,11 @@ CellularDetailsSubpageAutoConnectToggle() {
 WebContentsInteractionTestUtil::DeepQuery
 CellularDetailsAllowDataRoamingToggle() {
   return InternetDetailsSubpage() + "cellular-roaming-toggle-button";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularDetailsNetworkOperator() {
+  return InternetDetailsSubpage() + "network-property-list-mojo#infoFields" +
+         "div#cellular\\.servingOperator\\.name";
 }
 
 WebContentsInteractionTestUtil::DeepQuery CellularDetailsAdvancedSection() {

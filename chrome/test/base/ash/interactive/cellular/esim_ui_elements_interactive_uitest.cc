@@ -5,68 +5,33 @@
 #include <string>
 
 #include "chrome/test/base/ash/interactive/cellular/cellular_util.h"
-#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/cellular/esim_interactive_uitest_base.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
-#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
-#include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
-#include "dbus/object_path.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 namespace {
 
-class EsimUiElementsUiTest : public InteractiveAshTest {
+class EsimUiElementsInteractiveUiTest : public EsimInteractiveUiTestBase {
  protected:
   // InteractiveAshTest:
   void SetUpOnMainThread() override {
-    InteractiveAshTest::SetUpOnMainThread();
+    EsimInteractiveUiTestBase::SetUpOnMainThread();
 
-    // Set up context for element tracking for InteractiveBrowserTest.
-    SetupContextWidget();
-
-    // Ensure the OS Settings app is installed.
-    InstallSystemApps();
-
-    auto* hermes_manager_client =
-        HermesManagerClient::Get()->GetTestInterface();
-    ASSERT_TRUE(hermes_manager_client);
-
-    hermes_manager_client->ClearEuiccs();
-
-    hermes_manager_client->AddEuicc(dbus::ObjectPath(euicc_info_.path()),
-                                    euicc_info_.eid(),
-                                    /*is_active=*/true,
-                                    /*physical_slot=*/0);
-
-    auto* hermes_euicc_client = HermesEuiccClient::Get()->GetTestInterface();
-    ASSERT_TRUE(hermes_euicc_client);
-
-    hermes_euicc_client->AddCarrierProfile(
-        dbus::ObjectPath(esim_info_.profile_path()),
-        dbus::ObjectPath(euicc_info_.path()), esim_info_.iccid(),
-        esim_info_.name(), esim_info_.nickname(), esim_info_.service_provider(),
-        hermes_euicc_client->GenerateFakeActivationCode(),
-        /*network_service_path=*/esim_info_.service_path(),
-        /*state=*/hermes::profile::State::kActive,
-        /*profile_class=*/hermes::profile::ProfileClass::kOperational,
-        /*add_carrier_profile_behavior=*/
-        HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
-            kAddProfileWithService);
-
-    ShillServiceClient::Get()->Connect(
-        dbus::ObjectPath(esim_info_.service_path()), base::DoNothing(),
-        base::DoNothing());
+    esim_info_ = std::make_unique<SimInfo>(/*id=*/0);
+    ConfigureEsimProfile(euicc_info(), *esim_info_, /*connected=*/true);
   }
 
-  const SimInfo& esim_info() { return esim_info_; }
+  const SimInfo& esim_info() const { return *esim_info_; }
 
  private:
-  const EuiccInfo euicc_info_{/*id=*/0};
-  const SimInfo esim_info_{/*id=*/0};
+  std::unique_ptr<SimInfo> esim_info_;
 };
 
-IN_PROC_BROWSER_TEST_F(EsimUiElementsUiTest, OsSettingsDetailsPage) {
+IN_PROC_BROWSER_TEST_F(EsimUiElementsInteractiveUiTest, OsSettingsDetailsPage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
 
   ui::ElementContext context =
@@ -76,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(EsimUiElementsUiTest, OsSettingsDetailsPage) {
   RunTestSequenceInContext(
       context,
 
-      Log("Navigating to the details page for the eSIM network"),
+      Log("Navigating to the details page for the connected eSIM network"),
 
       NavigateToInternetDetailsPage(kOSSettingsId,
                                     NetworkTypePattern::Cellular(),
@@ -86,6 +51,14 @@ IN_PROC_BROWSER_TEST_F(EsimUiElementsUiTest, OsSettingsDetailsPage) {
           kOSSettingsId, settings::cellular::CellularDetailsSubpageTitle(),
           /*text=*/esim_info().nickname()),
 
+      Log("Checking for the expected UI elements"),
+
+      WaitForElementTextContains(
+          kOSSettingsId, settings::SettingsSubpageNetworkState(),
+          /*text=*/l10n_util::GetStringUTF8(IDS_ONC_CONNECTED).c_str()),
+      WaitForElementExists(
+          kOSSettingsId,
+          ash::settings::cellular::CellularDetailsNetworkOperator()),
       WaitForElementExists(
           kOSSettingsId,
           ash::settings::cellular::CellularDetailsSubpageAutoConnectToggle()),
@@ -101,6 +74,31 @@ IN_PROC_BROWSER_TEST_F(EsimUiElementsUiTest, OsSettingsDetailsPage) {
       WaitForElementExists(
           kOSSettingsId,
           ash::settings::cellular::CellularDetailsProxySection()),
+
+      Log("Disconnecting the eSIM network"),
+
+      Do([this]() { esim_info().Disconnect(); }),
+
+      Log("Checking that the UI shows the network is disconnected"),
+
+      WaitForElementTextContains(
+          kOSSettingsId, settings::SettingsSubpageNetworkState(),
+          /*text=*/l10n_util::GetStringUTF8(IDS_ONC_NOT_CONNECTED).c_str()),
+
+      Log("Disabling the eSIM network"),
+
+      Do([this]() {
+        auto* hermes_profile_client = HermesProfileClient::Get();
+        CHECK(hermes_profile_client);
+        hermes_profile_client->DisableCarrierProfile(
+            dbus::ObjectPath(esim_info().profile_path()), base::DoNothing());
+      }),
+
+      Log("Checking that the network operator is not shown"),
+
+      WaitForElementDoesNotExist(
+          kOSSettingsId,
+          ash::settings::cellular::CellularDetailsNetworkOperator()),
 
       Log("Test complete"));
 }

@@ -10,7 +10,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/cellular/cellular_util.h"
 #include "chrome/test/base/ash/interactive/cellular/esim_interactive_uitest_base.h"
-#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/network/shill_device_power_state_observer.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -28,7 +27,21 @@
 namespace ash {
 namespace {
 
-using EsimInteractiveUiTest = EsimInteractiveUiTestBase;
+class EsimInteractiveUiTest : public EsimInteractiveUiTestBase {
+ protected:
+  // InteractiveAshTest:
+  void SetUpOnMainThread() override {
+    EsimInteractiveUiTestBase::SetUpOnMainThread();
+
+    esim_info_ = std::make_unique<SimInfo>(/*id=*/0);
+    ConfigureEsimProfile(euicc_info(), *esim_info_, /*connected=*/true);
+  }
+
+  const SimInfo& esim_info() const { return *esim_info_; }
+
+ private:
+  std::unique_ptr<SimInfo> esim_info_;
+};
 
 IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest,
                        OpenAddEsimDialogFromQuickSettings) {

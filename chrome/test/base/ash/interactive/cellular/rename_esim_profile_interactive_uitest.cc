@@ -7,7 +7,6 @@
 #include "chrome/test/base/ash/interactive/cellular/cellular_util.h"
 #include "chrome/test/base/ash/interactive/cellular/esim_interactive_uitest_base.h"
 #include "chrome/test/base/ash/interactive/cellular/esim_name_observer.h"
-#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 #include "ui/base/interaction/element_identifier.h"
 
@@ -16,7 +15,21 @@ namespace {
 
 const char kNewProfileNickname[] = "awesomeName";
 
-using RenameEsimProfileInteractiveUiTest = EsimInteractiveUiTestBase;
+class RenameEsimProfileInteractiveUiTest : public EsimInteractiveUiTestBase {
+ protected:
+  // InteractiveAshTest:
+  void SetUpOnMainThread() override {
+    EsimInteractiveUiTestBase::SetUpOnMainThread();
+
+    esim_info_ = std::make_unique<SimInfo>(/*id=*/0);
+    ConfigureEsimProfile(euicc_info(), *esim_info_, /*connected=*/true);
+  }
+
+  const SimInfo& esim_info() const { return *esim_info_; }
+
+ private:
+  std::unique_ptr<SimInfo> esim_info_;
+};
 
 // Reanable when flaky test is fixed. See b/350066292.
 IN_PROC_BROWSER_TEST_F(RenameEsimProfileInteractiveUiTest, RenameEsimProfile) {
