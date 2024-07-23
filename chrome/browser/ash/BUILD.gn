@@ -892,6 +892,7 @@ static_library("ash") {
     "//ash/webui/vc_background_ui/resources:resources",
     "//build:branding_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
+    "//build/config/cuttlefish:buildflags",
     "//cc/base",
     "//cc/paint",
     "//chrome/app:branded_strings",

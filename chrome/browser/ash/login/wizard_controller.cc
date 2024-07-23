@@ -3054,11 +3054,18 @@ void WizardController::UpdateOobeConfiguration() {
       configuration::ConfigurationHandlerSide::HANDLER_CPP);
   auto* requisition_value = wizard_context_->configuration.FindString(
       configuration::kDeviceRequisition);
+
   if (requisition_value) {
     VLOG(1) << "Using Device Requisition from configuration"
             << *requisition_value;
     policy::EnrollmentRequisitionManager::SetDeviceRequisition(
         *requisition_value);
+  } else if (policy::EnrollmentRequisitionManager::IsCuttlefishDevice()) {
+    VLOG(1) << "Using default Device Requisition value for Cuttlefish build "
+               "configuration"
+            << policy::EnrollmentRequisitionManager::kCuttlefishRequisition;
+    policy::EnrollmentRequisitionManager::SetDeviceRequisition(
+        policy::EnrollmentRequisitionManager::kCuttlefishRequisition);
   } else if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     VLOG(1) << "Using default Device Requisition value for CFM build "
                "configuration"
