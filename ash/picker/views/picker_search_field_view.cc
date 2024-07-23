@@ -171,6 +171,7 @@ const std::u16string& PickerSearchFieldView::GetPlaceholderText() const {
 void PickerSearchFieldView::SetPlaceholderText(
     const std::u16string& new_placeholder_text) {
   textfield_->SetPlaceholderText(new_placeholder_text);
+  textfield_->GetViewAccessibility().SetName(new_placeholder_text);
 }
 
 void PickerSearchFieldView::SetTextfieldActiveDescendant(views::View* view) {
