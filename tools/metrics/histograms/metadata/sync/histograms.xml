@@ -1630,9 +1630,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncToSigninMigration.ReadingListMigrationStep"
-    enum="SyncToSigninMigrationReadingListStep" expires_after="2025-01-05">
+    enum="SyncToSigninMigrationReadingListStep" expires_after="2025-01-31">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
+  <owner>victorvianna@google.com</owner>
   <summary>
     Within the wider Sync-to-Signin migration, this records various steps in the
     ReadingList-specific migration. The migration is requested by the central
@@ -1644,9 +1645,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncToSigninMigrationDecision"
-    enum="SyncToSigninMigrationDecisionOverall" expires_after="2025-01-05">
+    enum="SyncToSigninMigrationDecisionOverall" expires_after="2025-01-31">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
+  <owner>victorvianna@google.com</owner>
   <summary>
     The outcome of the decision whether the Sync-to-Signin migration should run
     or not (and why). Recorded on profile creation/startup, only on iOS. Note
@@ -1658,9 +1660,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Sync.SyncToSigninMigrationDecision{SyncToSigninMigrationMode}{SyncModelTypeForSyncToSigninMigration}"
-    enum="SyncToSigninMigrationDataTypeDecision" expires_after="2025-01-05">
+    enum="SyncToSigninMigrationDataTypeDecision" expires_after="2025-01-31">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
+  <owner>victorvianna@google.com</owner>
   <summary>
     The outcome of the decision whether the Sync-to-Signin migration should run
     or not (and why) for {SyncModelTypeForSyncToSigninMigration}. Recorded on
@@ -1673,9 +1676,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncToSigninMigrationOutcome" enum="BooleanSuccess"
-    expires_after="2025-01-05">
+    expires_after="2025-01-31">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
+  <owner>victorvianna@google.com</owner>
   <summary>
     The outcome of the overall Sync-to-Signin migration, recorded when the
     migration finishes. Note that the total count of this histogram can be
@@ -1686,9 +1690,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncToSigninMigrationOutcome.BookmarksFileMove"
-    enum="PlatformFileError" expires_after="2024-09-01">
+    enum="PlatformFileError" expires_after="2025-01-31">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
+  <owner>victorvianna@google.com</owner>
   <summary>
     The outcome of moving the bookmarks JSON file from the local to the account
     location, during the Sync-to-Signin migration. Recorded only if the overall
@@ -1698,9 +1703,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncToSigninMigrationOutcome.PasswordsFileMove"
-    enum="PlatformFileError" expires_after="2025-01-05">
+    enum="PlatformFileError" expires_after="2025-01-31">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
+  <owner>victorvianna@google.com</owner>
   <summary>
     The outcome of moving the passwords DB file from the local to the account
     location, during the Sync-to-Signin migration. Recorded only if the overall
@@ -1710,9 +1716,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncToSigninMigrationTime" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-01-31">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
+  <owner>victorvianna@google.com</owner>
   <summary>
     The time taken for the Sync-to-Signin migration. Recorded on profile
     creation/startup, only if the migration actually ran. Note that the total
