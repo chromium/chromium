@@ -218,6 +218,8 @@ class ReadAloudAppModel {
       bool is_docs,
       const std::set<ui::AXNodeID>* current_nodes);
 
+  ui::AXNodePosition::AXPositionInstance GetNextSentencePosition() const;
+
   // Helper for GetNextNodes.
   // Returns true if the node at the current AXPosition has no more text
   // remaining.
@@ -281,6 +283,8 @@ class ReadAloudAppModel {
   // Previously processed granularities on the current page.
   std::vector<a11y::ReadAloudCurrentGranularity>
       processed_granularities_on_current_page_;
+
+  const ui::AXMovementOptions sentence_movement_options_;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ALOUD_APP_MODEL_H_

@@ -7,7 +7,10 @@
 #include "base/values.h"
 #include "chrome/renderer/accessibility/read_anything_node_utils.h"
 
-ReadAloudAppModel::ReadAloudAppModel() {
+ReadAloudAppModel::ReadAloudAppModel()
+    : sentence_movement_options_(ui::AXMovementOptions(
+          ui::AXBoundaryBehavior::kCrossBoundary,
+          ui::AXBoundaryDetection::kDontCheckInitialPosition)) {
   for (const auto& [metric, count] : metric_to_count_map_) {
     metric_to_single_sample_[metric] =
         base::SingleSampleMetricsFactory::Get()->CreateCustomCountsMetric(
@@ -366,13 +369,7 @@ ReadAloudAppModel::GetNextValidPositionFromCurrentPosition(
   ui::AXNodePosition::AXPositionInstance new_position =
       ui::AXNodePosition::CreateNullPosition();
 
-  ui::AXMovementOptions movement_options(
-      ui::AXBoundaryBehavior::kCrossBoundary,
-      ui::AXBoundaryDetection::kDontCheckInitialPosition);
-
-  new_position = ax_position_->CreatePositionAtTextBoundary(
-      ax::mojom::TextBoundary::kSentenceStart,
-      ax::mojom::MoveDirection::kForward, movement_options);
+  new_position = GetNextSentencePosition();
 
   if (new_position->IsNullPosition() || new_position->AtEndOfAXTree() ||
       !new_position->GetAnchor()) {
@@ -382,7 +379,8 @@ ReadAloudAppModel::GetNextValidPositionFromCurrentPosition(
   while (!IsValidAXPosition(new_position, current_granularity, is_pdf, is_docs,
                             current_nodes)) {
     ui::AXNodePosition::AXPositionInstance possible_new_position =
-        new_position->CreateNextSentenceStartPosition(movement_options);
+        new_position->CreateNextSentenceStartPosition(
+            sentence_movement_options_);
     bool use_paragraph = false;
 
     // If the new position and the previous position are the same, try moving
@@ -392,8 +390,8 @@ ReadAloudAppModel::GetNextValidPositionFromCurrentPosition(
     // position.
     if (ArePositionsEqual(possible_new_position, new_position)) {
       use_paragraph = true;
-      possible_new_position =
-          new_position->CreateNextParagraphStartPosition(movement_options);
+      possible_new_position = new_position->CreateNextParagraphStartPosition(
+          sentence_movement_options_);
 
       // If after switching to use the paragraph position, the position is
       // in a null position, go ahead and return the null position so
@@ -426,13 +424,21 @@ ReadAloudAppModel::GetNextValidPositionFromCurrentPosition(
       return new_position;
     }
 
-    new_position =
-        use_paragraph
-            ? new_position->CreateNextParagraphStartPosition(movement_options)
-            : new_position->CreateNextSentenceStartPosition(movement_options);
+    new_position = use_paragraph
+                       ? new_position->CreateNextParagraphStartPosition(
+                             sentence_movement_options_)
+                       : new_position->CreateNextSentenceStartPosition(
+                             sentence_movement_options_);
   }
 
   return new_position;
+}
+
+ui::AXNodePosition::AXPositionInstance
+ReadAloudAppModel::GetNextSentencePosition() const {
+  return ax_position_->CreatePositionAtTextBoundary(
+      ax::mojom::TextBoundary::kSentenceStart,
+      ax::mojom::MoveDirection::kForward, sentence_movement_options_);
 }
 
 int ReadAloudAppModel::GetCurrentTextStartIndex(const ui::AXNodeID& node_id) {
