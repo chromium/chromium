@@ -50,6 +50,18 @@
         'os_type': 'chromeos',
         'cros_board': 'betty',
       },
+      'chromeos-betty-chrome-dchecks': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_vmlab_tests',
+        },
+        'os_type': 'chromeos',
+        'cros_board': 'betty',
+        'cros_dut_pool': 'vmlab',
+        'run_cft': True,
+      },
       'chromeos-betty-chrome-tests': {
         'test_suites': {
           'skylab_tests': 'chromeos_vmlab_tests',
@@ -6676,18 +6688,6 @@
     'name': 'internal.chromeos.fyi',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
-      'chromeos-betty-chrome-dchecks-fyi': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'test_suites': {
-          'skylab_tests': 'chromeos_vmlab_tests',
-        },
-        'os_type': 'chromeos',
-        'cros_board': 'betty',
-        'cros_dut_pool': 'vmlab',
-        'run_cft': True,
-      },
       'chromeos-betty-pi-arc-chrome-accessibility-fyi': {
         'additional_compile_targets': [
           'chromiumos_preflight',
