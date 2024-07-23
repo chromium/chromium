@@ -104,7 +104,7 @@ code. Some code is used on Android.
                   in the .h file and does not necessarily introduce a dependency
                   on //chrome, since the returned service can be defined in
                   //components.
-    * `GlobalDesktopFeatures` (member of `BrowserProcess`)
+    * `GlobalFeatures` (member of `BrowserProcess`)
     * The core controller should not be a `NoDestructor` singleton.
 * Global functions should not access non-global state.
     * Pure functions do not access global state and are allowed. e.g. `base::UTF8ToWide()`

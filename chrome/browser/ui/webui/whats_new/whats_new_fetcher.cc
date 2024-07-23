@@ -14,7 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_desktop_features.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -48,8 +48,7 @@ GURL GetV2ServerURL() {
 }
 
 GURL GetV2ServerURLForRender() {
-  auto* registry =
-      g_browser_process->GetDesktopFeatures()->whats_new_registry();
+  auto* registry = g_browser_process->GetFeatures()->whats_new_registry();
   CHECK(registry);
 
   GURL url = GetV2ServerURL();

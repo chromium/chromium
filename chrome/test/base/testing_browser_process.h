@@ -166,7 +166,6 @@ class TestingBrowserProcess : public BrowserProcess {
   SerialPolicyAllowedPorts* serial_policy_allowed_ports() override;
   HidSystemTrayIcon* hid_system_tray_icon() override;
   UsbSystemTrayIcon* usb_system_tray_icon() override;
-  GlobalDesktopFeatures* GetDesktopFeatures() override;
 #endif
   os_crypt_async::OSCryptAsync* os_crypt_async() override;
   void set_additional_os_crypt_async_provider_for_test(
@@ -174,6 +173,7 @@ class TestingBrowserProcess : public BrowserProcess {
       std::unique_ptr<os_crypt_async::KeyProvider> provider) override;
 
   BuildState* GetBuildState() override;
+  GlobalFeatures* GetFeatures() override;
 
   // Set the local state for tests. Consumer is responsible for cleaning it up
   // afterwards (using ScopedTestingLocalState, for example).
@@ -283,11 +283,11 @@ class TestingBrowserProcess : public BrowserProcess {
   std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon_;
   std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon_;
   BuildState build_state_;
-  std::unique_ptr<GlobalDesktopFeatures> desktop_features_;
 #endif
 
   std::unique_ptr<StatusTray> status_tray_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+  std::unique_ptr<GlobalFeatures> features_;
 };
 
 // RAII (resource acquisition is initialization) for TestingBrowserProcess.

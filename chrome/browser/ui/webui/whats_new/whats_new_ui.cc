@@ -8,7 +8,7 @@
 #include "base/version.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_desktop_features.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
@@ -118,8 +118,7 @@ void WhatsNewUI::CreateBrowserCommandHandler(
   std::vector<browser_command::mojom::Command> supported_commands = {};
 
   if (user_education::features::IsWhatsNewV2()) {
-    auto* registry =
-        g_browser_process->GetDesktopFeatures()->whats_new_registry();
+    auto* registry = g_browser_process->GetFeatures()->whats_new_registry();
     CHECK(registry);
     supported_commands = registry->GetActiveCommands();
   }

@@ -16,7 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/download/download_request_limiter.h"
-#include "chrome/browser/global_desktop_features.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
@@ -202,8 +202,6 @@ void TestingBrowserProcess::Init() {
   hid_system_tray_icon_ = std::make_unique<HidStatusIcon>();
   usb_system_tray_icon_ = std::make_unique<UsbStatusIcon>();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  desktop_features_ = GlobalDesktopFeatures::CreateGlobalDesktopFeatures();
-  desktop_features_->Init();
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
@@ -536,10 +534,6 @@ HidSystemTrayIcon* TestingBrowserProcess::hid_system_tray_icon() {
 UsbSystemTrayIcon* TestingBrowserProcess::usb_system_tray_icon() {
   return usb_system_tray_icon_.get();
 }
-
-GlobalDesktopFeatures* TestingBrowserProcess::GetDesktopFeatures() {
-  return desktop_features_.get();
-}
 #endif
 
 os_crypt_async::OSCryptAsync* TestingBrowserProcess::os_crypt_async() {
@@ -559,6 +553,10 @@ BuildState* TestingBrowserProcess::GetBuildState() {
 #else
   return nullptr;
 #endif
+}
+
+GlobalFeatures* TestingBrowserProcess::GetFeatures() {
+  return features_.get();
 }
 
 resource_coordinator::TabManager* TestingBrowserProcess::GetTabManager() {

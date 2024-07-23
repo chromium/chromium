@@ -51,7 +51,7 @@
 #include "chrome/browser/devtools/remote_debugging_server.h"
 #include "chrome/browser/download/download_request_limiter.h"
 #include "chrome/browser/download/download_status_updater.h"
-#include "chrome/browser/global_desktop_features.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/gpu/gpu_mode_manager.h"
 #include "chrome/browser/icon_manager.h"
@@ -404,10 +404,10 @@ void BrowserProcessImpl::Init() {
   hid_system_tray_icon_ = std::make_unique<HidStatusIcon>();
   usb_system_tray_icon_ = std::make_unique<UsbStatusIcon>();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-        //
-  desktop_features_ = GlobalDesktopFeatures::CreateGlobalDesktopFeatures();
-  desktop_features_->Init();
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  features_ = GlobalFeatures::CreateGlobalFeatures();
+  features_->Init();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1049,10 +1049,6 @@ UsbSystemTrayIcon* BrowserProcessImpl::usb_system_tray_icon() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return usb_system_tray_icon_.get();
 }
-
-GlobalDesktopFeatures* BrowserProcessImpl::GetDesktopFeatures() {
-  return desktop_features_.get();
-}
 #endif
 
 os_crypt_async::OSCryptAsync* BrowserProcessImpl::os_crypt_async() {
@@ -1101,6 +1097,10 @@ void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingEnabled,
                                 GoogleUpdateSettings::GetCollectStatsConsent());
   registry->RegisterBooleanPref(prefs::kDevToolsRemoteDebuggingAllowed, true);
+}
+
+GlobalFeatures* BrowserProcessImpl::GetFeatures() {
+  return features_.get();
 }
 
 DownloadRequestLimiter* BrowserProcessImpl::download_request_limiter() {

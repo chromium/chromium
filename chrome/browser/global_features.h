@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLOBAL_DESKTOP_FEATURES_H_
-#define CHROME_BROWSER_GLOBAL_DESKTOP_FEATURES_H_
+#ifndef CHROME_BROWSER_GLOBAL_FEATURES_H_
+#define CHROME_BROWSER_GLOBAL_FEATURES_H_
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
@@ -17,19 +17,18 @@ class WhatsNewRegistry;
 // This class owns the core controllers for features that are globally
 // scoped on desktop. It can be subclassed by tests to perform
 // dependency injection.
-class GlobalDesktopFeatures {
+class GlobalFeatures {
  public:
-  static std::unique_ptr<GlobalDesktopFeatures> CreateGlobalDesktopFeatures();
-  virtual ~GlobalDesktopFeatures();
+  static std::unique_ptr<GlobalFeatures> CreateGlobalFeatures();
+  virtual ~GlobalFeatures();
 
-  GlobalDesktopFeatures(const GlobalDesktopFeatures&) = delete;
-  GlobalDesktopFeatures& operator=(const GlobalDesktopFeatures&) = delete;
+  GlobalFeatures(const GlobalFeatures&) = delete;
+  GlobalFeatures& operator=(const GlobalFeatures&) = delete;
 
-  // Call this method to stub out GlobalDesktopFeatures for tests.
-  using GlobalDesktopFeaturesFactory =
-      base::RepeatingCallback<std::unique_ptr<GlobalDesktopFeatures>()>;
-  static void ReplaceGlobalDesktopFeaturesForTesting(
-      GlobalDesktopFeaturesFactory factory);
+  // Call this method to stub out GlobalFeatures for tests.
+  using GlobalFeaturesFactory =
+      base::RepeatingCallback<std::unique_ptr<GlobalFeatures>()>;
+  static void ReplaceGlobalFeaturesForTesting(GlobalFeaturesFactory factory);
 
   // Called exactly once to initialize features.
   void Init();
@@ -44,7 +43,7 @@ class GlobalDesktopFeatures {
 #endif
 
  protected:
-  GlobalDesktopFeatures();
+  GlobalFeatures();
 
   // Override these methods to stub out individual feature controllers for
   // testing. e.g.
@@ -63,4 +62,4 @@ class GlobalDesktopFeatures {
 #endif
 };
 
-#endif  // CHROME_BROWSER_GLOBAL_DESKTOP_FEATURES_H_
+#endif  // CHROME_BROWSER_GLOBAL_FEATURES_H_
