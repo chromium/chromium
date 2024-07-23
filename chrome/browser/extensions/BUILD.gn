@@ -1126,6 +1126,7 @@ source_set("extensions") {
     }
     deps += [
       "//chrome/browser/chromeos/app_mode",
+      "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/chromeos/drivefs:native_message_host_origins",
       "//chrome/browser/chromeos/extensions:constants",
       "//chrome/browser/chromeos/extensions/smart_card_provider_private:smart_card_provider_private",
@@ -1146,7 +1147,10 @@ source_set("extensions") {
       "//remoting/host/it2me:chrome_os_host",
     ]
 
-    allow_circular_includes_from += [ "//chrome/browser/chromeos/app_mode" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/chromeos/app_mode",
+      "//chrome/browser/chromeos/drivefs",
+    ]
   } else {
     sources += [
       "api/enterprise_reporting_private/chrome_desktop_report_request_helper.cc",
