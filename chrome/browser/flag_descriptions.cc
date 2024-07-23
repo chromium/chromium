@@ -7392,11 +7392,6 @@ const char kPhoneHubCallNotificationName[] =
 const char kPhoneHubCallNotificationDescription[] =
     "Enables the incoming/ongoing call feature in Phone Hub.";
 
-const char kPhoneHubOnboardingNotifierRevampName[] =
-    "Phone Hub onboarding notifier revamp";
-const char kPhoneHubOnboardingNotifierRevampDescription[] =
-    "Enables the revamp for Phone Hub onboarding notifier when eligible.";
-
 const char kPreferDcheckName[] = "Prefer DCHECK-enabled build";
 const char kPreferDcheckDescription[] =
     "Use a DCHECK-enabled build when available.";

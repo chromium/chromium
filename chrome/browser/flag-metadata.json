@@ -7143,16 +7143,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "phone-hub-onboarding-notifier-revemp",
-    "owners": [
-      "jennserrano@google.com",
-      "jonmann@chromium.org",
-      "pushi@google.com",
-      "chromeos-cross-device-eng@google.com"
-    ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "platform-keys-aes-encryption",
     "owners": [
       "fsandrade@chromium.org",
