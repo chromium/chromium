@@ -15,6 +15,7 @@ android_library("java") {
     "//base:base_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/native_page:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
