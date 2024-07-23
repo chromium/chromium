@@ -15,7 +15,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_test_utils.h"
+#include "components/optimization_guide/core/model_execution/test/fake_on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"

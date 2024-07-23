@@ -27,7 +27,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_test_utils.h"
+#include "components/optimization_guide/core/model_execution/test/fake_on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
 #include "components/optimization_guide/core/model_execution/test/response_holder.h"
