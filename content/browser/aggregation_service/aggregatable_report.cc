@@ -27,7 +27,6 @@
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -465,7 +464,7 @@ void ConvertSharedInfoToProto(const AggregatableReportSharedInfo& shared_info,
       break;
   }
 
-  CHECK(shared_info.additional_fields.empty(), base::NotFatalUntil::M128);
+  CHECK(shared_info.additional_fields.empty());
 
   out->set_api_version(shared_info.api_version);
   out->set_api_identifier(shared_info.api_identifier);
@@ -612,15 +611,15 @@ AggregatableReportSharedInfo AggregatableReportSharedInfo::Clone() const {
 std::string AggregatableReportSharedInfo::SerializeAsJson() const {
   base::Value::Dict value;
 
-  CHECK(report_id.is_valid(), base::NotFatalUntil::M128);
+  CHECK(report_id.is_valid());
   value.Set("report_id", report_id.AsLowercaseString());
 
   value.Set("reporting_origin", reporting_origin.Serialize());
 
   // Encoded as the number of seconds since the Unix epoch, ignoring leap
   // seconds and rounded down.
-  CHECK(!scheduled_report_time.is_null(), base::NotFatalUntil::M128);
-  CHECK(!scheduled_report_time.is_inf(), base::NotFatalUntil::M128);
+  CHECK(!scheduled_report_time.is_null());
+  CHECK(!scheduled_report_time.is_inf());
   value.Set("scheduled_report_time",
             base::NumberToString(
                 scheduled_report_time.InMillisecondsSinceUnixEpoch() /
@@ -635,17 +634,15 @@ std::string AggregatableReportSharedInfo::SerializeAsJson() const {
     value.Set("debug_mode", "enabled");
   }
 
-  CHECK(base::ranges::none_of(
-            additional_fields,
-            [&value](const auto& e) { return value.contains(e.first); }),
-        base::NotFatalUntil::M128)
-      << "Additional fields in shared_info cannot duplicate existing fields";
+  CHECK(base::ranges::none_of(additional_fields, [&value](const auto& e) {
+    return value.contains(e.first);
+  })) << "Additional fields in shared_info cannot duplicate existing fields";
 
   value.Merge(additional_fields.Clone());
 
   std::string serialized_value;
   bool succeeded = base::JSONWriter::Write(value, &serialized_value);
-  CHECK(succeeded, base::NotFatalUntil::M128);
+  CHECK(succeeded);
 
   return serialized_value;
 }
@@ -891,14 +888,12 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
     const AggregatableReportRequest& report_request,
     std::vector<PublicKey> public_keys) const {
   const size_t num_processing_urls = public_keys.size();
-  CHECK_EQ(num_processing_urls, report_request.processing_urls().size(),
-           base::NotFatalUntil::M128);
+  CHECK_EQ(num_processing_urls, report_request.processing_urls().size());
 
   // The urls must be sorted so we can ensure the ordering (and assignment of
   // DpfKey parties for the `kExperimentalPoplar` aggregation mode) is
   // deterministic.
-  CHECK(base::ranges::is_sorted(report_request.processing_urls()),
-        base::NotFatalUntil::M128);
+  CHECK(base::ranges::is_sorted(report_request.processing_urls()));
 
   std::vector<std::vector<uint8_t>> unencrypted_payloads;
 
@@ -940,8 +935,7 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
       base::as_bytes(base::make_span(authenticated_info_str));
 
   std::vector<AggregatableReport::AggregationServicePayload> encrypted_payloads;
-  CHECK_EQ(unencrypted_payloads.size(), num_processing_urls,
-           base::NotFatalUntil::M128);
+  CHECK_EQ(unencrypted_payloads.size(), num_processing_urls);
   for (size_t i = 0; i < num_processing_urls; ++i) {
     std::vector<uint8_t> encrypted_payload =
         g_disable_encryption_for_testing_tool_
@@ -1053,8 +1047,7 @@ std::vector<uint8_t> EncryptAggregatableReportPayloadWithHpke(
   std::vector<uint8_t> payload(EVP_HPKE_MAX_ENC_LENGTH);
   size_t encapsulated_shared_secret_len;
 
-  CHECK_EQ(public_key.size(), PublicKey::kKeyByteLength,
-           base::NotFatalUntil::M128);
+  CHECK_EQ(public_key.size(), PublicKey::kKeyByteLength);
 
   if (!EVP_HPKE_CTX_setup_sender(
           /*ctx=*/sender_context.get(),

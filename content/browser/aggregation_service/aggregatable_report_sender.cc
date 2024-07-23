@@ -17,7 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -80,7 +79,7 @@ void RecordHistograms(std::optional<DelayType> delay_type,
 AggregatableReportSender::AggregatableReportSender(
     StoragePartition* storage_partition)
     : storage_partition_(storage_partition) {
-  CHECK(storage_partition_, base::NotFatalUntil::M128);
+  CHECK(storage_partition_);
 }
 
 AggregatableReportSender::AggregatableReportSender(
@@ -88,7 +87,7 @@ AggregatableReportSender::AggregatableReportSender(
     bool enable_debug_logging)
     : url_loader_factory_(std::move(url_loader_factory)),
       enable_debug_logging_(enable_debug_logging) {
-  CHECK(url_loader_factory_, base::NotFatalUntil::M128);
+  CHECK(url_loader_factory_);
 }
 
 AggregatableReportSender::~AggregatableReportSender() = default;
@@ -106,7 +105,7 @@ void AggregatableReportSender::SendReport(const GURL& url,
                                           const base::Value& contents,
                                           std::optional<DelayType> delay_type,
                                           ReportSentCallback callback) {
-  CHECK(storage_partition_ || url_loader_factory_, base::NotFatalUntil::M128);
+  CHECK(storage_partition_ || url_loader_factory_);
 
   // The browser process URLLoaderFactory is not created by default, so don't
   // create it until it is directly needed.
@@ -164,7 +163,7 @@ void AggregatableReportSender::SendReport(const GURL& url,
 
   // TODO(crbug.com/40195940): Check for required fields of contents.
   bool succeeded = base::JSONWriter::Write(contents, &contents_json);
-  CHECK(succeeded, base::NotFatalUntil::M128);
+  CHECK(succeeded);
   simple_url_loader_ptr->AttachStringForUpload(contents_json,
                                                "application/json");
 
