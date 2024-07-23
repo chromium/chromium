@@ -39,9 +39,7 @@ PersonalizationAppThemeProviderImpl::PersonalizationAppThemeProviderImpl(
     content::WebUI* web_ui)
     : profile_(Profile::FromWebUI(web_ui)) {
   pref_change_registrar_.Init(profile_->GetPrefs());
-  if (chromeos::features::IsJellyEnabled()) {
-    color_palette_controller_ = Shell::Get()->color_palette_controller();
-  }
+  color_palette_controller_ = Shell::Get()->color_palette_controller();
 }
 
 PersonalizationAppThemeProviderImpl::~PersonalizationAppThemeProviderImpl() =
@@ -100,29 +98,26 @@ void PersonalizationAppThemeProviderImpl::SetThemeObserver(
     timezone_settings_observer_.Observe(tz_settings);
   }
 
-  if (chromeos::features::IsJellyEnabled()) {
-    OnStaticColorChanged();
-    OnColorSchemeChanged();
-    if (!pref_change_registrar_.IsObserved(
-            ash::prefs::kDynamicColorColorScheme)) {
-      pref_change_registrar_.Add(
-          ash::prefs::kDynamicColorColorScheme,
-          base::BindRepeating(
-              &PersonalizationAppThemeProviderImpl::OnColorSchemeChanged,
-              base::Unretained(this)));
-    }
-    if (!pref_change_registrar_.IsObserved(
-            ash::prefs::kDynamicColorSeedColor)) {
-      pref_change_registrar_.Add(
-          ash::prefs::kDynamicColorSeedColor,
-          base::BindRepeating(
-              &PersonalizationAppThemeProviderImpl::OnStaticColorChanged,
-              base::Unretained(this)));
-    }
-    ui::ColorProviderSourceObserver::Observe(
-        ash::ColorUtil::GetColorProviderSourceForWindow(
-            ash::Shell::GetPrimaryRootWindow()));
+  OnStaticColorChanged();
+  OnColorSchemeChanged();
+  if (!pref_change_registrar_.IsObserved(
+          ash::prefs::kDynamicColorColorScheme)) {
+    pref_change_registrar_.Add(
+        ash::prefs::kDynamicColorColorScheme,
+        base::BindRepeating(
+            &PersonalizationAppThemeProviderImpl::OnColorSchemeChanged,
+            base::Unretained(this)));
   }
+  if (!pref_change_registrar_.IsObserved(ash::prefs::kDynamicColorSeedColor)) {
+    pref_change_registrar_.Add(
+        ash::prefs::kDynamicColorSeedColor,
+        base::BindRepeating(
+            &PersonalizationAppThemeProviderImpl::OnStaticColorChanged,
+            base::Unretained(this)));
+  }
+  ui::ColorProviderSourceObserver::Observe(
+      ash::ColorUtil::GetColorProviderSourceForWindow(
+          ash::Shell::GetPrimaryRootWindow()));
 }
 
 void PersonalizationAppThemeProviderImpl::SetColorModePref(
@@ -233,43 +228,23 @@ void PersonalizationAppThemeProviderImpl::NotifyGeolocationPermissionChanged() {
 
 void PersonalizationAppThemeProviderImpl::GetColorScheme(
     GetColorSchemeCallback callback) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    theme_receiver_.ReportBadMessage(
-        "Cannot call GetColorScheme without Jelly enabled.");
-    return;
-  }
   std::move(callback).Run(
       color_palette_controller_->GetColorScheme(GetAccountId(profile_)));
 }
 
 void PersonalizationAppThemeProviderImpl::SetColorScheme(
     ash::style::mojom::ColorScheme color_scheme) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    theme_receiver_.ReportBadMessage(
-        "Cannot call SetColorScheme without Jelly enabled.");
-    return;
-  }
   color_palette_controller_->SetColorScheme(
       color_scheme, GetAccountId(profile_), base::DoNothing());
 }
 
 void PersonalizationAppThemeProviderImpl::GetStaticColor(
     GetStaticColorCallback callback) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    theme_receiver_.ReportBadMessage(
-        "Cannot call GetStaticColor without Jelly enabled.");
-    return;
-  }
   std::move(callback).Run(
       color_palette_controller_->GetStaticColor(GetAccountId(profile_)));
 }
 
 void PersonalizationAppThemeProviderImpl::SetStaticColor(SkColor static_color) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    theme_receiver_.ReportBadMessage(
-        "Cannot call SetStaticColor without Jelly enabled.");
-    return;
-  }
   AccountId account_id = GetAccountId(profile_);
   color_palette_controller_->SetStaticColor(static_color, account_id,
                                             base::DoNothing());
