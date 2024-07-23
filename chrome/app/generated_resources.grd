@@ -16648,6 +16648,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
 
       <!-- Web-modal dialog shown during Digital Credential request -->
+      <message name="IDS_WEB_DIGITAL_CREDENTIALS_BLUETOOTH_POWER_ON_MANUAL_TITLE" translateable="false">
+        Bluetooth is disabled
+      </message>
+
+      <message name="IDS_WEB_DIGITAL_CREDENTIALS_BLUETOOTH_POWER_ON_MANUAL_DESCRIPTION" translateable="false">
+        Check your device settings and turn it on to continue
+      </message>
+
+      <message name="IDS_WEB_DIGITAL_CREDENTIALS_BLUETOOTH_POWER_ON_MANUAL_NEXT" translateable="false">
+        Try again
+      </message>
+
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE" translateable="false">
         Retrieve credentials from phone or tablet.
       </message>
