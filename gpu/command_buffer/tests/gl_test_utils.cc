@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
@@ -306,16 +307,15 @@ bool GLTestHelper::SaveBackbufferAsBMP(
   glPixelStorei(GL_PACK_ALIGNMENT, 1);
   int num_pixels = width * height;
   int size = num_pixels * 4;
-  std::unique_ptr<uint8_t[]> data(new uint8_t[size]);
-  uint8_t* pixels = data.get();
-  glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+  auto data = base::HeapArray<uint8_t>::WithSize(size);
+  glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data.data());
 
   // RGBA to BGRA
   for (int ii = 0; ii < num_pixels; ++ii) {
     int offset = ii * 4;
-    uint8_t t = pixels[offset + 0];
-    pixels[offset + 0] = pixels[offset + 2];
-    pixels[offset + 2] = t;
+    uint8_t t = data[offset + 0];
+    data[offset + 0] = data[offset + 2];
+    data[offset + 2] = t;
   }
 
   BitmapHeaderFile bhf;
@@ -340,7 +340,7 @@ bool GLTestHelper::SaveBackbufferAsBMP(
 
   fwrite(&bhf, sizeof(bhf), 1, fp);
   fwrite(&bih, sizeof(bih), 1, fp);
-  fwrite(pixels, size, 1, fp);
+  fwrite(data.data(), size, 1, fp);
   fclose(fp);
   return true;
 }
