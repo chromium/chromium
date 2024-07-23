@@ -20,6 +20,10 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
   ReadAnythingMochaBrowserTest() {
     set_test_loader_host(chrome::kChromeUIUntrustedReadAnythingSidePanelHost);
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingReadAloud,
+         features::kReadAloudLanguagePackDownloading},
+        {});
   }
 
   void RunSidePanelTest(const std::string& file, const std::string& trigger) {
@@ -34,6 +38,9 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
     ASSERT_TRUE(RunTestOnWebContents(web_contents, file, trigger, true));
     side_panel_ui->Close();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 using ReadAnythingMochaTest = ReadAnythingMochaBrowserTest;
