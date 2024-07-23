@@ -22011,6 +22011,10 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "IPH_TabGroupSyncOnStrip",
+                        "IPH_TabGroupsRemoteGroup",
+                        "IPH_TabGroupsSurface",
+                        "IPH_TabGroupsSurfaceOnHide",
                         "TabGroupPaneAndroid",
                         "TabGroupSyncAndroid",
                         "TabStripGroupCollapseAndroid"
