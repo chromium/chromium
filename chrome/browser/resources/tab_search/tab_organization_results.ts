@@ -109,8 +109,9 @@ export class TabOrganizationResultsElement extends CrLitElement {
     scrollable.classList.toggle('is-scrolled', scrollable.scrollTop > 0);
     scrollable.classList.toggle(
         'scrolled-to-bottom',
-        scrollable.scrollTop + scrollable.clientHeight >=
-            scrollable.scrollHeight);
+        scrollable.clientHeight === 0 ||
+            scrollable.scrollTop + scrollable.clientHeight >=
+                scrollable.scrollHeight);
   }
 
   protected missingActiveTab_(): boolean {
