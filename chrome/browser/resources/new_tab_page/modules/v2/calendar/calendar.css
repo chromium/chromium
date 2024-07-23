@@ -50,7 +50,7 @@ ntp-calendar-event:first-of-type,
   color: var(--color-new-tab-page-link);
   display: block;
   font-size: var(--ntp-module-text-size);
-  font-weight: 500;
+  font-weight: var(--ntp-module-see-more-font-weight);
   line-height: var(--ntp-module-line-height);
   overflow: hidden;
   padding: 4px 16px;
