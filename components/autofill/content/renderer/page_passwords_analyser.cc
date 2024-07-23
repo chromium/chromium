@@ -19,7 +19,6 @@
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/page_form_analyser_logger.h"
 #include "components/autofill/content/renderer/password_form_conversion_utils.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_element_collection.h"
@@ -199,11 +198,7 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
   std::set<WebFormControlElement> inputs_with_forms;
   std::map<std::string, std::vector<WebNode>> nodes_for_id;
 
-  for (const WebFormElement& form :
-       base::FeatureList::IsEnabled(
-           blink::features::kAutofillIncludeFormElementsInShadowDom)
-           ? document.GetTopLevelForms()
-           : document.Forms()) {
+  for (const WebFormElement& form : document.GetTopLevelForms()) {
     form_input_collections.push_back(FormInputCollection{form});
     // Collect all the inputs in the form.
     for (const WebFormControlElement& input : form.GetFormControlElements()) {

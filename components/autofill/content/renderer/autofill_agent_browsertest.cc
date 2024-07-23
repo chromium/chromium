@@ -324,14 +324,7 @@ TEST_F(AutofillAgentTestWithFeatures, TriggerFormExtractionWithResponse) {
   task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle / 2);
 }
 
-class AutofillAgentShadowDomTest : public AutofillAgentTestWithFeatures {
- public:
-  AutofillAgentShadowDomTest() = default;
-
- private:
-  base::test::ScopedFeatureList scoped_features_{
-      blink::features::kAutofillIncludeFormElementsInShadowDom};
-};
+using AutofillAgentShadowDomTest = AutofillAgentTestWithFeatures;
 
 // Tests that unassociated form control elements in a Shadow DOM tree that do
 // not have a form ancestor are extracted correctly.

@@ -950,9 +950,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.ALLOW_JAVA_SCRIPT_TO_RESET_AUTOFILL_STATE,
                 "When enabled, Autofill will reset the autofill state of fields modified by JS"),
-        Flag.baseFeature(
-                BlinkFeatures.AUTOFILL_INCLUDE_FORM_ELEMENTS_IN_SHADOW_DOM,
-                "Extract form elements from shadow DOM"),
         Flag.baseFeature("ShadowDomSupport", "Improve shadow DOM support in password manager"),
         Flag.baseFeature("StandardCompliantNonSpecialSchemeURLParsing"),
         Flag.baseFeature(

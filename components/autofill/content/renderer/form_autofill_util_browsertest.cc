@@ -27,7 +27,6 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -2161,9 +2160,6 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDom) {
 // Also tests that GetFormControlElements(f) == {t | GetOwningForm(t) == f} for
 // every form f that owns some t.
 TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDomWithExplicitAssociation) {
-  base::test::ScopedFeatureList feature_list{
-      blink::features::kAutofillIncludeFormElementsInShadowDom};
-
   LoadHTML(R"(
     <html>
       <body>
@@ -2255,9 +2251,6 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithoutFormInShadowDom) {
 // Also tests that GetFormControlElements(f) == {t | GetOwningForm(t) == f} for
 // every form f that owns some t.
 TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithFormInShadowDom) {
-  base::test::ScopedFeatureList feature_list{
-      blink::features::kAutofillIncludeFormElementsInShadowDom};
-
   LoadHTML(R"(
     <html>
       <body>
@@ -2306,9 +2299,6 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithFormInShadowDom) {
 // every form f that owns some t.
 TEST_F(FormAutofillUtilsTest,
        GetOwningFormInShadowDomWithFormInShadowDomWithMultipleLevels) {
-  base::test::ScopedFeatureList feature_list{
-      blink::features::kAutofillIncludeFormElementsInShadowDom};
-
   LoadHTML(R"(
     <html>
       <body>
@@ -2359,9 +2349,6 @@ TEST_F(FormAutofillUtilsTest,
 // every form f that owns some t.
 TEST_F(FormAutofillUtilsTest,
        GetOwningFormInShadowDomWithFormInShadowDomAndExplicitAssociation) {
-  base::test::ScopedFeatureList feature_list{
-      blink::features::kAutofillIncludeFormElementsInShadowDom};
-
   LoadHTML(R"(
     <html>
       <body>

@@ -17,8 +17,7 @@
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/switches.h"
 
-namespace blink {
-namespace features {
+namespace blink::features {
 
 // -----------------------------------------------------------------------------
 // Feature definitions and associated constants (feature params, et cetera)
@@ -160,15 +159,6 @@ BASE_FEATURE(kAudioWorkletThreadRealtimePeriodMac,
 // instances.
 BASE_FEATURE(kAudioWorkletThreadPool,
              "AudioWorkletThreadPool",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, Autofill extracts all top level shadow DOM form elements of a
-// document. Additionally, the shadow-tree-including form control elements of a
-// form `f` include all descendants that are form controls - even those whose
-// closest shadow-tree-including form ancestor is a different form `f2` (which
-// itself is a descendant of `f`).
-BASE_FEATURE(kAutofillIncludeFormElementsInShadowDom,
-             "AutofillIncludeFormElementsInShadowDom",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If disabled (default for many years), autofilling triggers KeyDown and
@@ -2685,5 +2675,4 @@ BASE_FEATURE(kOptimizeLoadingDataUrls,
              "OptimizeLoadingDataUrls",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-}  // namespace features
-}  // namespace blink
+}  // namespace blink::features

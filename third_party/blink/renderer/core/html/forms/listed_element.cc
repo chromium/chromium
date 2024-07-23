@@ -57,17 +57,10 @@ namespace {
 
 void InvalidateShadowIncludingAncestorForms(ContainerNode& insertion_point) {
   // Let any forms in the shadow including ancestors know that this
-  // ListedElement has changed. If `kAutofillIncludeFormElementsInShadowDom` is
-  // disabled, forms inside the same `TreeScope` do not need to be included
-  // because their listed elements track their association elsewhere.
-  // If `kAutofillIncludeFormElementsInShadowDom` is enabled, we also cache
-  // listed elements inside (descendant) nested forms in and therefore need to
-  // invalidate the caches also inside the same `TreeScope`.
-  ContainerNode* starting_node =
-      base::FeatureList::IsEnabled(
-          features::kAutofillIncludeFormElementsInShadowDom)
-          ? insertion_point.ParentOrShadowHostNode()
-          : insertion_point.OwnerShadowHost();
+  // ListedElement has changed. We also cache listed elements inside
+  // (descendant) nested forms and therefore need to invalidate the caches also
+  // inside the same `TreeScope`.
+  ContainerNode* starting_node = insertion_point.ParentOrShadowHostNode();
   for (ContainerNode* parent = starting_node; parent;
        parent = parent->ParentOrShadowHostNode()) {
     if (HTMLFormElement* form = DynamicTo<HTMLFormElement>(parent)) {

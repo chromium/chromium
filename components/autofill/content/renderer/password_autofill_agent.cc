@@ -349,12 +349,8 @@ bool HasPasswordField(const WebLocalFrame& frame) {
   };
 
   WebDocument doc = frame.GetDocument();
-  return base::ranges::any_of(
-             base::FeatureList::IsEnabled(
-                 blink::features::kAutofillIncludeFormElementsInShadowDom)
-                 ? doc.GetTopLevelForms()
-                 : doc.Forms(),
-             ContainsPasswordField, &WebFormElement::GetFormControlElements) ||
+  return base::ranges::any_of(doc.GetTopLevelForms(), ContainsPasswordField,
+                              &WebFormElement::GetFormControlElements) ||
          ContainsPasswordField(doc.UnassociatedFormControls());
 }
 
@@ -1326,11 +1322,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
     return;
   }
 
-  WebVector<WebFormElement> forms =
-      base::FeatureList::IsEnabled(
-          blink::features::kAutofillIncludeFormElementsInShadowDom)
-          ? doc.GetTopLevelForms()
-          : doc.Forms();
+  WebVector<WebFormElement> forms = doc.GetTopLevelForms();
 
   if (IsShowAutofillSignaturesEnabled())
     AnnotateFormsAndFieldsWithSignatures(forms);

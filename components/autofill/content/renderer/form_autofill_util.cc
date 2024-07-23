@@ -47,7 +47,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/renderer/render_frame.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -2337,50 +2336,26 @@ std::vector<WebFormControlElement> GetOwnedAutofillableFormControls(
 
 WebFormElement GetOwningForm(const WebFormControlElement& form_control) {
   CHECK(form_control);
-  // When `kAutofillIncludeFormElementsInShadowDom` is enabled, the owning form
-  // is the furthest ancestor form element, if there is one.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAutofillIncludeFormElementsInShadowDom)) {
-    WebFormElement owner;
-    // Look for ancestors of the associated form of `form_control` inside the
-    // same tree.
-    for (WebNode same_dom_ancestor = form_control.Form();  // nocheck
-         same_dom_ancestor;
-         same_dom_ancestor = same_dom_ancestor.ParentNode()) {
-      if (auto form = same_dom_ancestor.DynamicTo<WebFormElement>()) {
-        owner = form;
-      }
+  // The owning form is the furthest ancestor form element, if there is one.
+  WebFormElement owner;
+  // Look for ancestors of the associated form of `form_control` inside the
+  // same tree.
+  for (WebNode same_dom_ancestor = form_control.Form();  // nocheck
+       same_dom_ancestor; same_dom_ancestor = same_dom_ancestor.ParentNode()) {
+    if (auto form = same_dom_ancestor.DynamicTo<WebFormElement>()) {
+      owner = form;
     }
-
-    // If `form_control` is inside Shadow DOM, also consider ancestors of
-    // `form_control`.
-    for (WebNode ancestor = form_control.OwnerShadowHost(); ancestor;
-         ancestor = ancestor.ParentOrShadowHostNode()) {
-      if (auto form = ancestor.DynamicTo<WebFormElement>()) {
-        owner = form;
-      }
-    }
-    return owner;
   }
 
-  if (WebFormElement form = form_control.Form()) {
-    return form;
-  }
-  // If we are in a shadow DOM, then look to see if the host(s) are inside a
-  // form element we can use.
-  size_t levels_up = kMaxShadowLevelsUp;
-  for (WebElement host = form_control.OwnerShadowHost(); host && levels_up > 0;
-       host = host.OwnerShadowHost(), --levels_up) {
-    for (WebNode parent = host; parent; parent = parent.ParentNode()) {
-      if (parent.IsElementNode()) {
-        WebElement parentElement = parent.To<WebElement>();
-        if (HasTagName<kForm>(parentElement)) {
-          return parentElement.To<WebFormElement>();
-        }
-      }
+  // If `form_control` is inside Shadow DOM, also consider ancestors of
+  // `form_control`.
+  for (WebNode ancestor = form_control.OwnerShadowHost(); ancestor;
+       ancestor = ancestor.ParentOrShadowHostNode()) {
+    if (auto form = ancestor.DynamicTo<WebFormElement>()) {
+      owner = form;
     }
   }
-  return WebFormElement();
+  return owner;
 }
 
 std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
@@ -2775,11 +2750,7 @@ void TraverseDomForFourDigitCombinations(
   // elements nearby in search of four digit combinations.
   std::vector<WebFormControlElement> form_control_elements;
 
-  for (const WebFormElement& form :
-       base::FeatureList::IsEnabled(
-           blink::features::kAutofillIncludeFormElementsInShadowDom)
-           ? document.GetTopLevelForms()
-           : document.Forms()) {
+  for (const WebFormElement& form : document.GetTopLevelForms()) {
     base::ranges::move(GetOwnedFormControls(document, form),
                        std::back_inserter(form_control_elements));
   }

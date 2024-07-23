@@ -18,7 +18,6 @@
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
@@ -120,10 +119,7 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     return r;
   }
   for (const blink::WebFormElement& form_element :
-       base::FeatureList::IsEnabled(
-           blink::features::kAutofillIncludeFormElementsInShadowDom)
-           ? document.GetTopLevelForms()
-           : document.Forms()) {
+       document.GetTopLevelForms()) {
     if (std::optional<FormData> form = form_util::ExtractFormData(
             document, form_element, field_data_manager,
             agent_->GetCallTimerState(kUpdateFormCache))) {
