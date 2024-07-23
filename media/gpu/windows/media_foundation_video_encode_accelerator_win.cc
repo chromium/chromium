@@ -411,7 +411,7 @@ std::vector<IMFActivate*> EnumerateHardwareEncodersLegacy(VideoCodec codec) {
       continue;
     }
 
-    if (desc.VendorId == 0x1414) {
+    if (desc.VendorId == 0x1414 && desc.DeviceId == 0x8c) {
       // Skip MS software adapters.
       --num_adapters;
     } else {
