@@ -249,10 +249,12 @@ bool IsFamilyLinkAllowed() {
 GaiaCookieRetriever::GaiaCookieRetriever(
     std::string signin_partition_name,
     login::SigninPartitionManager* signin_partition_manager,
-    OnCookieTimeoutCallback on_cookie_timeout_callback)
+    OnCookieTimeoutCallback on_cookie_timeout_callback,
+    bool allow_empty_auth_code_for_testing)
     : signin_partition_name_(signin_partition_name),
       signin_partition_manager_(signin_partition_manager),
-      on_cookie_timeout_callback_(std::move(on_cookie_timeout_callback)) {}
+      on_cookie_timeout_callback_(std::move(on_cookie_timeout_callback)),
+      allow_empty_auth_code_for_testing_(allow_empty_auth_code_for_testing) {}
 
 GaiaCookieRetriever::~GaiaCookieRetriever() = default;
 
@@ -319,8 +321,12 @@ void GaiaCookieRetriever::OnGetCookieListResponse(
       cookie_data.rapt = cookie.Value();
   }
 
-  if (cookie_data.auth_code.empty()) {
+  if (cookie_data.auth_code.empty() && !allow_empty_auth_code_for_testing_) {
     // Will try again from onCookieChange.
+
+    // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's
+    // preserved in the logs.
+    LOG(WARNING) << "OAuth cookie empty, still waiting";
     return;
   }
 
