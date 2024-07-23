@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
@@ -171,7 +172,7 @@ AXMediaAppUntrustedHandlerTest::CreateFakePageMetadata(
   std::vector<PageMetadataPtr> fake_page_metadata;
   for (uint64_t i = 0; i < num_pages; ++i) {
     PageMetadataPtr page = ash::media_app_ui::mojom::PageMetadata::New();
-    page->id = std::format("Page{}", kTestPageIds[i]);
+    page->id = base::StringPrintf("Page%c", kTestPageIds[i]);
     page->rect =
         gfx::RectF(/*x=*/0.0f, /*y=*/kTestPageGap * i + kTestPageHeight * i,
                    kTestPageWidth, kTestPageHeight);
@@ -1301,12 +1302,12 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollToMakeVisible) {
   constexpr float kViewportHeight = 4.0f;
   std::vector<PageMetadataPtr> fake_metadata;
   PageMetadataPtr fake_page1 = ash::media_app_ui::mojom::PageMetadata::New();
-  fake_page1->id = std::format("Page{}", kTestPageIds[0]);
+  fake_page1->id = base::StringPrintf("Page%c", kTestPageIds[0]);
   fake_page1->rect = gfx::RectF(/*x=*/kPageX,
                                 /*y=*/kPageY, kTestPageWidth, kTestPageHeight);
   fake_metadata.push_back(std::move(fake_page1));
   PageMetadataPtr fake_page2 = ash::media_app_ui::mojom::PageMetadata::New();
-  fake_page2->id = std::format("Page{}", kTestPageIds[1]);
+  fake_page2->id = base::StringPrintf("Page%c", kTestPageIds[1]);
   fake_page2->rect =
       gfx::RectF(/*x=*/kPageX + 20.0f,
                  /*y=*/kPageY + 20.0f, kTestPageWidth, kTestPageHeight);

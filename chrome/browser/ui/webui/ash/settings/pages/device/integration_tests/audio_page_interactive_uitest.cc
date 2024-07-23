@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gtest_tags.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -185,31 +186,32 @@ class AudioSettingsInteractiveUiTest : public InteractiveAshTest {
     DCHECK(audio_handler());
     const uint64_t primary_node = audio_handler()->GetPrimaryActiveInputNode();
 
-    return Steps(
-        If([primary_node, device_id]() { return primary_node != device_id; },
-           Steps(Log(std::format(
-                     "Waiting for primary input device to match node ID: {0}",
-                     device_id)),
-                 WaitForState(kActiveInputNodeState, device_id))));
+    return Steps(If(
+        [primary_node, device_id]() { return primary_node != device_id; },
+        Steps(Log(base::StringPrintf(
+                  "Waiting for primary input device to match node ID: %" PRIu64,
+                  device_id)),
+              WaitForState(kActiveInputNodeState, device_id))));
   }
 
   auto MaybeWaitForOutputDevice(const uint64_t device_id) {
     DCHECK(audio_handler());
     const uint64_t primary_node = audio_handler()->GetPrimaryActiveOutputNode();
 
-    return Steps(
-        If([primary_node, device_id]() { return primary_node != device_id; },
-           Steps(Log(std::format(
-                     "Waiting for primary output device to match node ID: {0}",
-                     device_id)),
-                 WaitForState(kActiveOutputNodeState, device_id))));
+    return Steps(If(
+        [primary_node, device_id]() { return primary_node != device_id; },
+        Steps(
+            Log(base::StringPrintf(
+                "Waiting for primary output device to match node ID: %" PRIu64,
+                device_id)),
+            WaitForState(kActiveOutputNodeState, device_id))));
   }
 
   // Wait for an element described by `selector` to exists. Valid selector
   // restrictions come from `CreateAudioPageDeepQueryForSelector`.
   auto WaitForAudioElementExists(const std::string& selector) {
     return Steps(
-        Log(std::format("Wait for {0}", selector)),
+        Log(base::StringPrintf("Wait for %s", selector.c_str())),
         WaitForElementExists(kOsSettingsElementId,
                              CreateAudioPageDeepQueryForSelector(selector)));
   }

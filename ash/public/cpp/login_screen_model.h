@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_LOGIN_SCREEN_MODEL_H_
 
 #include <string>
+#include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/time/time.h"

@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -199,13 +200,14 @@ class DeviceSettingsInteractiveUiTest : public InteractiveAshTest {
   auto LaunchSettingsApp(const ui::ElementIdentifier& element_id,
                          const std::string& subpage) {
     return Steps(
-        Log(std::format("Open OS Settings to {0}", subpage)),
+        Log(base::StringPrintf("Open OS Settings to %s", subpage.c_str())),
         InstrumentNextTab(element_id, AnyBrowser()), Do([&]() {
           chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
               GetActiveUserProfile(), subpage);
         }),
         WaitForShow(element_id),
-        Log(std::format("Waiting for OS Settings {0} page to load", subpage)),
+        Log(base::StringPrintf("Waiting for OS Settings %s page to load",
+                               subpage.c_str())),
 
         Log("Waiting for OS settings audio settings page to load"),
         WaitForWebContentsReady(element_id, chrome::GetOSSettingsUrl(subpage)));
