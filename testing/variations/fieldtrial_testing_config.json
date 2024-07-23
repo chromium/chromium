@@ -14575,6 +14575,79 @@
             ]
         }
     ],
+    "OmniboxMlUrlPiecewiseMappedScoringIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_AdjustedBy0",
+                    "params": {
+                        "MlUrlPiecewiseMappedSearchBlending": "true",
+                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,590;0.006,790;0.082,1290;0.443,1360;0.464,1400;0.987,1425;1,1530",
+                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1340",
+                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
+                        "MlUrlScoringShortcutDocumentSignals": "true",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlPiecewiseMappedSearchBlending",
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_DemotedBy50",
+                    "params": {
+                        "MlUrlPiecewiseMappedSearchBlending": "true",
+                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,590;0.006,740;0.082,1240;0.443,1310;0.464,1350;0.987,1375;1,1530",
+                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1290",
+                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
+                        "MlUrlScoringShortcutDocumentSignals": "true",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlPiecewiseMappedSearchBlending",
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_PromotedBy100",
+                    "params": {
+                        "MlUrlPiecewiseMappedSearchBlending": "true",
+                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,590;0.006,890;0.082,1390;0.443,1460;0.464,1500;0.987,1525;1,1530",
+                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1440",
+                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
+                        "MlUrlScoringShortcutDocumentSignals": "true",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlPiecewiseMappedSearchBlending",
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_PromotedBy50",
+                    "params": {
+                        "MlUrlPiecewiseMappedSearchBlending": "true",
+                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,590;0.006,840;0.082,1340;0.443,1410;0.464,1450;0.987,1475;1,1530",
+                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1390",
+                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
+                        "MlUrlScoringShortcutDocumentSignals": "true",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlPiecewiseMappedSearchBlending",
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxOnClobberFocusTypeOnContent": [
         {
             "platforms": [
