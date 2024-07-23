@@ -440,8 +440,8 @@ ServiceWorkerRouterEvaluatorErrorEnums BaseCondition::Set(
 bool BaseCondition::Match(
     const network::ResourceRequest& request,
     std::optional<blink::EmbeddedWorkerStatus> running_status) const {
-  return MatchUrlPatternConditions(request) &&
-         MatchNonUrlPatternConditions(request, running_status);
+  return MatchNonUrlPatternConditions(request, running_status) &&
+         MatchUrlPatternConditions(request);
 }
 
 bool BaseCondition::MatchUrlPatternConditions(
