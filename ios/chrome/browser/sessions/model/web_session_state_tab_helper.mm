@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web/model/session_state/web_session_state_tab_helper.h"
+#import "ios/chrome/browser/sessions/model/web_session_state_tab_helper.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
@@ -18,8 +18,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/web/model/session_state/web_session_state_cache.h"
-#import "ios/chrome/browser/web/model/session_state/web_session_state_cache_factory.h"
+#import "ios/chrome/browser/sessions/model/web_session_state_cache.h"
+#import "ios/chrome/browser/sessions/model/web_session_state_cache_factory.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"

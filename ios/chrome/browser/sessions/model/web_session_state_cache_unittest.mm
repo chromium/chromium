@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web/model/session_state/web_session_state_cache.h"
+#import "ios/chrome/browser/sessions/model/web_session_state_cache.h"
 
 #import <Foundation/Foundation.h>
 

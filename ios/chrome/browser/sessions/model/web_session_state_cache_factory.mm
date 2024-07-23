@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web/model/session_state/web_session_state_cache_factory.h"
+#import "ios/chrome/browser/sessions/model/web_session_state_cache_factory.h"
 
 #import "base/functional/bind.h"
 #import "base/logging.h"
@@ -14,8 +14,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/web/model/session_state/web_session_state_cache.h"
-#import "ios/chrome/browser/web/model/session_state/web_session_state_cache_web_state_list_observer.h"
+#import "ios/chrome/browser/sessions/model/web_session_state_cache.h"
+#import "ios/chrome/browser/sessions/model/web_session_state_cache_web_state_list_observer.h"
 
 namespace {
 // C++ wrapper around WebSessionStateCache, owning the WebSessionStateCache and

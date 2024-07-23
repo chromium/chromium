@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEB_MODEL_SESSION_STATE_WEB_SESSION_STATE_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_WEB_MODEL_SESSION_STATE_WEB_SESSION_STATE_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_SESSIONS_MODEL_WEB_SESSION_STATE_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_SESSIONS_MODEL_WEB_SESSION_STATE_TAB_HELPER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -89,4 +89,4 @@ class WebSessionStateTabHelper
   base::WeakPtrFactory<WebSessionStateTabHelper> weak_ptr_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_WEB_MODEL_SESSION_STATE_WEB_SESSION_STATE_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_SESSIONS_MODEL_WEB_SESSION_STATE_TAB_HELPER_H_

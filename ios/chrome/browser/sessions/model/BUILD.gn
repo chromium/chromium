@@ -54,11 +54,11 @@ source_set("restoration_agent") {
     ":serialisation",
     ":session_constants",
     ":session_service",
+    ":session_state",
     "//components/previous_session_info",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/web/model/session_state",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/navigation",
@@ -234,10 +234,10 @@ source_set("legacy_session_restoration_service") {
     ":restoration_observer",
     ":session_restoration_service",
     ":session_service",
+    ":session_state",
     "//base",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/web/model/session_state",
     "//ios/web/public",
     "//ios/web/public/session",
     "//ios/web/public/session/proto",
@@ -256,6 +256,7 @@ source_set("session_restoration_service_factory") {
     ":session_migration",
     ":session_restoration_service_impl",
     ":session_service",
+    ":session_state",
     "//base",
     "//components/keyed_service/ios",
     "//components/pref_registry",
@@ -263,15 +264,11 @@ source_set("session_restoration_service_factory") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/web/model/session_state",
   ]
 }
 
 source_set("session_constants") {
-  visibility = [
-    ":*",
-    "//ios/chrome/browser/web/model/session_state:*",
-  ]
+  visibility = [ ":*" ]
   sources = [
     "session_constants.h",
     "session_constants.mm",
@@ -349,6 +346,37 @@ source_set("fake") {
   ]
 }
 
+source_set("session_state") {
+  sources = [
+    "web_session_state_cache.h",
+    "web_session_state_cache.mm",
+    "web_session_state_cache_factory.h",
+    "web_session_state_cache_factory.mm",
+    "web_session_state_cache_web_state_list_observer.h",
+    "web_session_state_cache_web_state_list_observer.mm",
+    "web_session_state_tab_helper.h",
+    "web_session_state_tab_helper.mm",
+  ]
+
+  deps = [
+    ":session_constants",
+    "//build:branding_buildflags",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/strings",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/navigation:wk_navigation_util",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/session",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ui/base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -367,6 +395,8 @@ source_set("unit_tests") {
     "session_service_ios_unittest.mm",
     "session_window_ios_unittest.mm",
     "tab_group_util_unittest.mm",
+    "web_session_state_cache_unittest.mm",
+    "web_session_state_tab_helper_unittest.mm",
     "web_state_list_serialization_unittest.mm",
   ]
   deps = [
@@ -386,6 +416,7 @@ source_set("unit_tests") {
     ":session_restoration_service_factory",
     ":session_restoration_service_impl",
     ":session_service",
+    ":session_state",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -405,9 +436,9 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/web/model:web_internal",
-    "//ios/chrome/browser/web/model/session_state",
     "//ios/chrome/test:test_support",
     "//ios/web/common:user_agent",
+    "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public/navigation",
     "//ios/web/public/session",
     "//ios/web/public/session/proto",
@@ -418,6 +449,7 @@ source_set("unit_tests") {
     "//ios/web/public/ui",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//url:url",
   ]
   frameworks = [ "Foundation.framework" ]
 }
