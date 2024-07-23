@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ash/input_method/assistive_prefs.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/browser/ash/input_method/japanese/japanese_settings.h"
@@ -195,8 +196,9 @@ mojom::LatinSettingsPtr CreateLatinSettings(
       autocorrect_pref == AutocorrectPreference::kEnabled;
   settings->predictive_writing =
       base::FeatureList::IsEnabled(features::kAssistMultiWord) &&
-      prefs.GetBoolean(prefs::kAssistPredictiveWritingEnabled) &&
-      IsUsEnglishEngine(engine_id);
+      IsUsEnglishEngine(engine_id) &&
+      IsPredictiveWritingPrefEnabled(prefs, engine_id);
+
   return settings;
 }
 

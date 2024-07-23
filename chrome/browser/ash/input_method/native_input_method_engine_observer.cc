@@ -139,7 +139,7 @@ bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
 
 bool IsPredictiveWritingEnabled(PrefService* pref_service,
                                 const std::string& engine_id) {
-  return (IsPredictiveWritingPrefEnabled(pref_service, engine_id) &&
+  return (IsPredictiveWritingPrefEnabled(*pref_service, engine_id) &&
           IsUsEnglishEngine(engine_id));
 }
 

@@ -50,20 +50,21 @@ TEST(CreateSettingsFromPrefsTest, CreateLatinSettingsDefault) {
   ASSERT_TRUE(settings->is_latin_settings());
   const auto& latin_settings = *settings->get_latin_settings();
   EXPECT_FALSE(latin_settings.autocorrect);
-  EXPECT_FALSE(latin_settings.predictive_writing);
+  EXPECT_TRUE(latin_settings.predictive_writing);
 }
 
-TEST(CreateSettingsFromPrefsTest, CreateLatinSettings) {
+TEST(CreateSettingsFromPrefsTest, CreateLatinSettingsWithMultiwordEnabled) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kAssistMultiWord}, {});
   TestingPrefServiceSimple prefs;
   base::Value::Dict dict;
   dict.SetByDottedPath(base::StrCat({kUsEnglishEngineId,
                                      ".physicalKeyboardAutoCorrectionLevel"}),
                        1);
+  dict.SetByDottedPath(
+      base::StrCat(
+          {kUsEnglishEngineId, ".physicalKeyboardEnablePredictiveWriting"}),
+      base::Value(true));
   RegisterTestingPrefs(prefs, dict);
-  prefs.registry()->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled,
-                                        true);
 
   const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId);
 
@@ -73,15 +74,33 @@ TEST(CreateSettingsFromPrefsTest, CreateLatinSettings) {
   EXPECT_TRUE(latin_settings.predictive_writing);
 }
 
+TEST(CreateSettingsFromPrefsTest, CreateLatinSettingsWithMultiwordDisabled) {
+  base::test::ScopedFeatureList features;
+  TestingPrefServiceSimple prefs;
+  base::Value::Dict dict;
+  dict.SetByDottedPath(base::StrCat({kUsEnglishEngineId,
+                                     ".physicalKeyboardAutoCorrectionLevel"}),
+                       1);
+  dict.SetByDottedPath(
+      base::StrCat(
+          {kUsEnglishEngineId, ".physicalKeyboardEnablePredictiveWriting"}),
+      base::Value(false));
+  RegisterTestingPrefs(prefs, dict);
+
+  const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId);
+
+  ASSERT_TRUE(settings->is_latin_settings());
+  const auto& latin_settings = *settings->get_latin_settings();
+  EXPECT_TRUE(latin_settings.autocorrect);
+  EXPECT_FALSE(latin_settings.predictive_writing);
+}
+
 TEST(CreateSettingsFromPrefsTest,
      PredictiveWritingEnabledWhenMultiWordAllowedAndEnabled) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kAssistMultiWord}, {});
   TestingPrefServiceSimple prefs;
   base::Value::Dict dict;
   RegisterTestingPrefs(prefs, dict);
-  prefs.registry()->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled,
-                                        true);
 
   const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId);
 
@@ -97,8 +116,6 @@ TEST(CreateSettingsFromPrefsTest,
   TestingPrefServiceSimple prefs;
   base::Value::Dict dict;
   RegisterTestingPrefs(prefs, dict);
-  prefs.registry()->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled,
-                                        true);
 
   const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId);
 
