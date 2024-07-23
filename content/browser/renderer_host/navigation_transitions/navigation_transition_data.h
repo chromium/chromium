@@ -52,9 +52,11 @@ class NavigationTransitionData {
     // Screenshot is not captured for embedded pages.
     kCacheMissEmbeddedPages = 8,
 
-    // TODO(crbug.com/40268228): Add a value for "Cache-Control: no-store".
+    // Screenshot is not captured since the page has opted-out of BFCache.
+    // Cache-Control: no-store
+    kCacheMissCCNS = 9,
 
-    kMaxValue = kCacheMissEmbeddedPages
+    kMaxValue = kCacheMissCCNS
   };
 
   NavigationTransitionData() = default;
