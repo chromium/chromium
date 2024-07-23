@@ -17,8 +17,10 @@ namespace syncer {
 // typical asynchronous data type.
 class FakeModelTypeController : public ModelTypeController {
  public:
-  explicit FakeModelTypeController(ModelType type);
-  FakeModelTypeController(ModelType type, bool enable_transport_mode);
+  explicit FakeModelTypeController(
+      ModelType type,
+      bool enable_transport_mode = false,
+      std::unique_ptr<ModelTypeLocalDataBatchUploader> uploader = nullptr);
   ~FakeModelTypeController() override;
 
   void SetPreconditionState(PreconditionState state);
@@ -29,20 +31,13 @@ class FakeModelTypeController : public ModelTypeController {
 
   int activate_call_count() const { return activate_call_count_; }
 
-  void SetLocalDataBatchUploader(
-      std::unique_ptr<ModelTypeLocalDataBatchUploader> uploader);
-
   // ModelTypeController overrides.
   PreconditionState GetPreconditionState() const override;
   std::unique_ptr<DataTypeActivationResponse> Connect() override;
-  ModelTypeLocalDataBatchUploader* GetModelTypeLocalDataBatchUploader()
-      override;
 
  private:
   PreconditionState precondition_state_ = PreconditionState::kPreconditionsMet;
   int activate_call_count_ = 0;
-
-  std::unique_ptr<ModelTypeLocalDataBatchUploader> uploader_;
 };
 
 }  // namespace syncer
