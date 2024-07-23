@@ -43,3 +43,22 @@ source_set("browser_tests") {
     "//ui/views",
   ]
 }
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "app_list_interactive_uitest.cc" ]
+
+    deps = [
+      "//ash",
+      "//base/test:test_support",
+      "//chrome/test/base/ash/interactive:test_support",
+      "//ui/base",
+      "//ui/base:test_support",
+      "//ui/gfx",
+    ]
+  }
+}

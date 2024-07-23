@@ -575,6 +575,7 @@ if (is_chromeos_device) {
       "//ui/events:test_support",
 
       # Gather tests from subdirectories.
+      "//chrome/browser/ui/ash/app_list:interactive_ui_tests",
       "//chrome/browser/ui/ash/desks:interactive_ui_tests",
       "//chrome/browser/ui/ash/picker:interactive_ui_tests",
       "//chrome/browser/ui/ash/user_education/welcome_tour:interactive_ui_tests",
