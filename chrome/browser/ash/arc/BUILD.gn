@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
@@ -218,4 +219,23 @@ group("browser_tests") {
     "//chrome/browser/ash/arc/user_session:browser_tests",
     "//chrome/browser/ash/arc/vmm:browser_tests",
   ]
+}
+
+if (is_chromeos_device && is_chrome_branded) {
+  source_set("integration_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "arc_integration_test.cc" ]
+
+    deps = [
+      ":arc",
+      "//chrome/browser/ash/login/test:test_support",
+      "//chrome/test:ash_integration_test_support",
+      "//chrome/test:test_support",
+      "//chromeos/ui/base",
+      "//ui/aura",
+    ]
+  }
 }

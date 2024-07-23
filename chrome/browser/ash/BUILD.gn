@@ -2638,10 +2638,6 @@ if (is_chromeos_device) {
       "web_handwriting_integration_test.cc",
     ]
 
-    if (is_chrome_branded) {
-      sources += [ "arc/arc_integration_test.cc" ]
-    }
-
     deps = [
       "//chrome/browser/ash:test_support",
       "//chrome/test:ash_integration_test_support",
@@ -2660,6 +2656,10 @@ if (is_chromeos_device) {
       "//chrome/browser/ash/scanning:integration_tests",
       "//chrome/browser/ash/system_web_apps:integration_tests",
     ]
+
+    if (is_chrome_branded) {
+      deps += [ "//chrome/browser/ash/arc:integration_tests" ]
+    }
   }
 } else {
   group("interactive_ui_tests") {
