@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
+import org.chromium.chrome.browser.gesturenav.RtlGestureNavIphController;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.hub.HubManager;
@@ -145,6 +146,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerFactory;
 import org.chromium.ui.InsetObserver;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -167,6 +169,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private ReadAloudIPHController mReadAloudIPHController;
     private ReadLaterIPHController mReadLaterIPHController;
     private DesktopSiteSettingsIPHController mDesktopSiteSettingsIPHController;
+    private RtlGestureNavIphController mRtlGestureNavIphController;
     private WebFeedFollowIntroController mWebFeedFollowIntroController;
     private UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
@@ -478,6 +481,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mDesktopSiteSettingsIPHController != null) {
             mDesktopSiteSettingsIPHController.destroy();
             mDesktopSiteSettingsIPHController = null;
+        }
+
+        if (mRtlGestureNavIphController != null) {
+            mRtlGestureNavIphController.destroy();
+            mRtlGestureNavIphController = null;
         }
 
         if (mCoordinator != null && mDragDropTouchObserver != null) {
@@ -996,6 +1004,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mAddToHomescreenMostVisitedTileObserver =
                 new AddToHomescreenMostVisitedTileClickObserver(
                         mActivityTabProvider, mAddToHomescreenIPHController);
+        if (!didTriggerPromo
+                && mWindowAndroid.getWindow() != null
+                && UiUtils.isGestureNavigationMode(mWindowAndroid.getWindow())) {
+            mRtlGestureNavIphController = new RtlGestureNavIphController(mActivityTabProvider);
+        }
 
         Tab tab = mActivityTabProvider.get();
 
