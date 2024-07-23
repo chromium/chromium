@@ -3704,7 +3704,7 @@ if (!is_robolectric && enable_java_templates) {
         }
         enable_proguard_checks = false
         if (defined(invoker.final_apk_path)) {
-          _final_apk_path = invoker.final_apk_path
+          _final_apk_path = final_apk_path
         } else {
           _final_apk_path = "$root_build_dir/apks/${invoker.apk_name}.apk"
         }
@@ -3817,9 +3817,10 @@ if (!is_robolectric && enable_java_templates) {
       }
     }
 
-    android_test_apk(target_name) {
+    android_apk(target_name) {
       data_deps = []
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      testonly = true
       create_apk_script = false
 
       # TODO(crbug.com/40702672): Figure out why angle tests fail to launch
@@ -3827,6 +3828,9 @@ if (!is_robolectric && enable_java_templates) {
       if (!defined(invoker.target_sdk_version) && _use_native_activity) {
         target_sdk_version = 24
       }
+
+      assert(!defined(invoker.proguard_enabled) || !invoker.proguard_enabled ||
+             invoker.proguard_configs != [])
 
       if (!defined(apk_name)) {
         apk_name = get_label_info(invoker.shared_library, "name")
