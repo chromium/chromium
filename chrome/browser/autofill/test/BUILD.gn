@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("test_java") {
   testonly = true
@@ -37,17 +36,14 @@ android_library("test_support_java") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.autofill"
 
-  srcjar_deps = [ ":jni_headers" ]
   sources = [ "android/java/src/org/chromium/chrome/browser/autofill/AutofillTestHelper.java" ]
 
   deps = [
-    ":jni_headers",
     "//base:tasks_java",
     "//chrome/browser/profiles/android:java",
     "//content/public/android:content_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/hamcrest:hamcrest_java",
-    "//third_party/jni_zero:jni_zero_java",
     "//url:gurl_java",
   ]
 
@@ -57,21 +53,4 @@ android_library("test_support_java") {
     "//components/autofill/android:main_autofill_java",
     "//content/public/test/android:content_java_test_support",
   ]
-}
-
-generate_jni("jni_headers") {
-  testonly = true
-  sources = [ "android/java/src/org/chromium/chrome/browser/autofill/AutofillTestHelper.java" ]
-}
-
-if (is_android) {
-  source_set("test_support") {
-    testonly = true
-    sources = [ "android/autofill_test_helper.cc" ]
-    deps = [
-      ":jni_headers",
-      "//base",
-      "//chrome/browser/ui",
-    ]
-  }
 }
