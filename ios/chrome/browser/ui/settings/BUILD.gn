@@ -478,6 +478,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/search_engine_choice:earl_grey_ui_test_util",
     "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/browser/ui/settings:settings_root_constants",
     "//ios/chrome/browser/ui/settings/elements:constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style:constants",
