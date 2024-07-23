@@ -170,6 +170,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/handlers:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/shelf",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chrome/test:test_support",

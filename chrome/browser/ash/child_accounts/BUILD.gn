@@ -262,7 +262,7 @@ if (is_chromeos_device) {
       "//chrome/browser/ash/child_accounts/time_limits",
       "//chrome/browser/ash/child_accounts/time_limits:test_support",
       "//chrome/browser/ash/login/test:test_support",
-      "//chrome/browser/ui",
+      "//chrome/browser/ui/ash/shelf",
       "//chrome/test:test_support",
       "//chrome/test/base/ash/interactive:test_support",
       "//ui/aura",

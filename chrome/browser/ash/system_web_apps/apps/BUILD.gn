@@ -307,6 +307,7 @@ if (is_chromeos_device) {
       "//base",
       "//chrome/browser",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/ash/shelf",
       "//chrome/test:ash_integration_test_support",
       "//testing/gmock",
       "//testing/gtest",

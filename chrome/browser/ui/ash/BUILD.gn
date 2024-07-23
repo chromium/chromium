@@ -209,6 +209,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/picker",
     "//chrome/browser/ui/ash/projector",
     "//chrome/browser/ui/ash/sharesheet",
+    "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
     "//chrome/browser/ui/quick_answers",
@@ -300,6 +301,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/network",
     "//chrome/browser/ui/ash/sharesheet",
     "//chrome/browser/ui/ash/picker",
+    "//chrome/browser/ui/ash/shelf",
   ]
 }
 
@@ -339,4 +341,12 @@ static_library("test_support") {
     "//testing/gtest",
     "//ui/events:test_support",
   ]
+}
+
+if (is_chromeos_device) {
+  group("integration_tests") {
+    testonly = true
+
+    deps = [ "//chrome/browser/ui/ash/shelf:integration_tests" ]
+  }
 }

@@ -1262,7 +1262,6 @@ if (is_chromeos && is_chromeos_device) {
       # in the `crosier_metadata` build rule above.
       sources += [
         "../browser/ui/ash/quick_settings_integration_test.cc",
-        "../browser/ui/ash/shelf/shelf_integration_test.cc",
         "../browser/ui/webui/ash/settings/pages/printing/integration_tests/printer_settings_integration_test.cc",
         "base/chromeos/crosier/helper/test_sudo_helper_client_test.cc",
         "base/chromeos/crosier/upstart_test.cc",
@@ -1283,6 +1282,7 @@ if (is_chromeos && is_chromeos_device) {
         "//chrome/browser/ash:test_support",
         "//chrome/browser/ash/file_manager",
         "//chrome/browser/ui/ash",
+        "//chrome/browser/ui/ash:integration_tests",
         "//chrome/test/base/chromeos/crosier:proto",
         "//chrome/test/base/chromeos/crosier/helper:common",
         "//chromeos/ash/components/dbus/printscanmgr:printscanmgr",
@@ -4697,13 +4697,6 @@ if (!is_android) {
         "../browser/ui/ash/shelf/app_service/app_service_promise_app_shelf_context_menu_browsertest.cc",
         "../browser/ui/ash/shelf/app_service/app_service_shelf_context_menu_browsertest.cc",
         "../browser/ui/ash/shelf/app_service/web_app_shelf_browsertest.cc",
-        "../browser/ui/ash/shelf/app_shortcut_shelf_item_controller_browsertest.cc",
-        "../browser/ui/ash/shelf/arc_app_shelf_browsertest.cc",
-        "../browser/ui/ash/shelf/browser_app_shelf_controller_browsertest.cc",
-        "../browser/ui/ash/shelf/browser_shortcut_shelf_item_controller_browsertest.cc",
-        "../browser/ui/ash/shelf/chrome_shelf_controller_browsertest.cc",
-        "../browser/ui/ash/shelf/extension_shelf_context_menu_browsertest.cc",
-        "../browser/ui/ash/shelf/standalone_window_migration_nudge_browsertest.cc",
         "../browser/ui/ash/shelf_browsertest.cc",
         "../browser/ui/ash/snap_group_browsertest.cc",
         "../browser/ui/ash/system_tray_client_impl_browsertest.cc",
@@ -4982,6 +4975,8 @@ if (!is_android) {
         "//chrome/browser/ui/ash/multi_user",
         "//chrome/browser/ui/ash/multi_user:test_support",
         "//chrome/browser/ui/ash/network",
+        "//chrome/browser/ui/ash/shelf",
+        "//chrome/browser/ui/ash/shelf:test_support",
         "//chrome/browser/ui/ash/system_web_apps",
         "//chrome/browser/ui/chromeos/read_write_cards",
         "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
@@ -5164,6 +5159,7 @@ if (!is_android) {
         "//chrome/browser/ui/ash/picker:browser_tests",
         "//chrome/browser/ui/ash/projector:browser_tests",
         "//chrome/browser/ui/ash/sharesheet:browser_tests",
+        "//chrome/browser/ui/ash/shelf:browser_tests",
       ]
     }
     if (safe_browsing_mode == 1) {
@@ -8590,11 +8586,6 @@ test("unit_tests") {
       "../browser/ui/ash/media_client_impl_unittest.cc",
       "../browser/ui/ash/multitask_menu_nudge_unittest.cc",
       "../browser/ui/ash/session_controller_client_impl_unittest.cc",
-      "../browser/ui/ash/shelf/arc_app_shelf_id_unittest.cc",
-      "../browser/ui/ash/shelf/chrome_shelf_controller_unittest.cc",
-      "../browser/ui/ash/shelf/chrome_shelf_prefs_unittest.cc",
-      "../browser/ui/ash/shelf/isolated_web_app_installer_shelf_item_controller_unittest.cc",
-      "../browser/ui/ash/shelf/shelf_context_menu_unittest.cc",
       "../browser/ui/ash/system_tray_client_impl_unittest.cc",
       "../browser/ui/ash/user_education/chrome_user_education_delegate_unittest.cc",
       "../browser/ui/ash/wallpaper_controller_client_impl_unittest.cc",
@@ -8756,6 +8747,7 @@ test("unit_tests") {
       "//chrome/browser/ui/ash/holding_space",
       "//chrome/browser/ui/ash/holding_space:test_support",
       "//chrome/browser/ui/ash/multi_user",
+      "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/chromeos/magic_boost",
       "//chrome/browser/ui/chromeos/magic_boost:magic_boost_constants",
       "//chrome/browser/ui/chromeos/magic_boost:test_support",
@@ -8888,6 +8880,7 @@ test("unit_tests") {
       "//chrome/browser/ui/ash/picker:unit_tests",
       "//chrome/browser/ui/ash/projector:unit_tests",
       "//chrome/browser/ui/ash/sharesheet:unit_tests",
+      "//chrome/browser/ui/ash/shelf:unit_tests",
     ]
 
     data_deps += [ "//testing/buildbot/filters:chromeos_filters" ]

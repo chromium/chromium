@@ -53,6 +53,7 @@ source_set("browser_tests") {
     "//ash/components/arc:arc_test_support",
     "//base",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/shelf",
     "//chrome/test:test_support",
     "//components/arc:arc_test_support",
     "//components/session_manager/core",
