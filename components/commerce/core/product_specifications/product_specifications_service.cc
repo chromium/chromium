@@ -355,6 +355,10 @@ ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
     if (!top_level_specific) {
       return std::nullopt;
     }
+    std::optional<ProductSpecificationsSet> previous_set = GetSetByUuid(uuid);
+    if (!previous_set.has_value()) {
+      return std::nullopt;
+    }
     std::vector<sync_pb::ProductComparisonSpecifics> specifics_to_remove =
         GetItemSpecifics(uuid.AsLowercaseString(), bridge_->entries());
 
@@ -362,10 +366,12 @@ ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
     bridge_->DeleteSpecifics(specifics_to_remove);
     bridge_->AddSpecifics(
         CreateItemLevelSpecifics(uuid.AsLowercaseString(), urls, now));
-    return ProductSpecificationsSet(
+    ProductSpecificationsSet updated_set(
         uuid.AsLowercaseString(),
         top_level_specific->creation_time_unix_epoch_millis(),
-        now.InMillisecondsSinceUnixEpoch(), urls, top_level_specific->name());
+        now.InMillisecondsSinceUnixEpoch(), urls, previous_set->name());
+    NotifyProductSpecificationsUpdate(previous_set.value(), updated_set);
+    return updated_set;
   } else {
     auto entry = bridge_->entries().find(uuid.AsLowercaseString());
 
@@ -407,6 +413,10 @@ ProductSpecificationsService::SetName(const base::Uuid& uuid,
         bridge_->entries().end()) {
       return std::nullopt;
     }
+    std::optional<ProductSpecificationsSet> previous_set = GetSetByUuid(uuid);
+    if (!previous_set.has_value()) {
+      return std::nullopt;
+    }
     sync_pb::ProductComparisonSpecifics top_level_specific =
         *GetTopLevelSpecific(uuid.AsLowercaseString(), bridge_->entries());
     top_level_specific.set_name(name);
@@ -420,10 +430,12 @@ ProductSpecificationsService::SetName(const base::Uuid& uuid,
          GetItemSpecifics(uuid.AsLowercaseString(), bridge_->entries())) {
       urls.emplace_back(specifics.product_comparison_item().url());
     }
-    return ProductSpecificationsSet(
+    ProductSpecificationsSet updated_set(
         uuid.AsLowercaseString(),
         top_level_specific.creation_time_unix_epoch_millis(),
         now.InMillisecondsSinceUnixEpoch(), urls, name);
+    NotifyProductSpecificationsUpdate(previous_set.value(), updated_set);
+    return updated_set;
   } else {
     auto entry = bridge_->entries().find(uuid.AsLowercaseString());
 
