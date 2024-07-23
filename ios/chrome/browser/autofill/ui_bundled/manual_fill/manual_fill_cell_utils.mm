@@ -83,9 +83,17 @@ void AppendEqualBaselinesConstraints(
     if (view == leadingView) {
       continue;
     }
-    [constraints
-        addObject:[view.lastBaselineAnchor
-                      constraintEqualToAnchor:leadingView.lastBaselineAnchor]];
+
+    if (IsKeyboardAccessoryUpgradeEnabled()) {
+      [constraints
+          addObject:[view.centerYAnchor
+                        constraintEqualToAnchor:leadingView.centerYAnchor]];
+    } else {
+      [constraints
+          addObject:[view.lastBaselineAnchor
+                        constraintEqualToAnchor:leadingView
+                                                    .lastBaselineAnchor]];
+    }
   }
 }
 
@@ -273,14 +281,27 @@ void AppendHorizontalConstraintsForViews(
   for (UIView* view in views) {
     CGFloat spacing =
         is_first_view ? margin : GetHorizontalSpacingBetweenChips();
-    [constraints
-        addObject:[view.leadingAnchor constraintEqualToAnchor:previous_anchor
-                                                     constant:spacing]];
-    [view setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+
+    NSLayoutConstraint* constraint =
+        [view.leadingAnchor constraintEqualToAnchor:previous_anchor
+                                           constant:spacing];
+
+    if (!is_first_view && IsKeyboardAccessoryUpgradeEnabled()) {
+      // Set the in-between view constraints to a low priority so that the views
+      // can be easily reorganized when the width of the `layout_guide` changes.
+      constraint.priority = UILayoutPriorityDefaultLow;
+    }
+    [constraints addObject:constraint];
+
+    if (!IsKeyboardAccessoryUpgradeEnabled()) {
+      [view
+          setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                           forAxis:
                                               UILayoutConstraintAxisHorizontal];
-    [view setContentHuggingPriority:UILayoutPriorityDefaultHigh
-                            forAxis:UILayoutConstraintAxisHorizontal];
+      [view setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                              forAxis:UILayoutConstraintAxisHorizontal];
+    }
+
     previous_anchor = view.trailingAnchor;
     is_first_view = NO;
   }
@@ -312,13 +333,15 @@ void AppendHorizontalConstraintsForViews(
         addObject:[last_view.trailingAnchor
                       constraintEqualToAnchor:layout_guide.trailingAnchor
                                      constant:-margin]];
-    // Give all remaining space to the last button, minus margin, as per UX.
-    [last_view
-        setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
-                                        forAxis:
-                                            UILayoutConstraintAxisHorizontal];
-    [last_view setContentHuggingPriority:UILayoutPriorityDefaultLow
-                                 forAxis:UILayoutConstraintAxisHorizontal];
+    if (!IsKeyboardAccessoryUpgradeEnabled()) {
+      // Give all remaining space to the last button, minus margin, as per UX.
+      [last_view
+          setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+                                          forAxis:
+                                              UILayoutConstraintAxisHorizontal];
+      [last_view setContentHuggingPriority:UILayoutPriorityDefaultLow
+                                   forAxis:UILayoutConstraintAxisHorizontal];
+    }
   }
 
   if (options & AppendConstraintsHorizontalSyncBaselines) {

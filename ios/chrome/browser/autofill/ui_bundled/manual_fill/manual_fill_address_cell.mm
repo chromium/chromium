@@ -144,14 +144,17 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 @implementation ManualFillAddressCell {
   // If `YES`, autofill button is shown for the cell.
   BOOL _showAutofillFormButton;
+
+  // Current width of the cell's layout guide. Used to know whenever it changes
+  // and when the views need to be re-arranged.
+  CGFloat _layoutGuideWidth;
 }
 
 #pragma mark - Public
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  [NSLayoutConstraint deactivateConstraints:self.dynamicConstraints];
-  [self.dynamicConstraints removeAllObjects];
+  [self resetDynamicContraints];
 
   self.addressLabel.text = @"";
   [self.firstNameButton setTitle:@"" forState:UIControlStateNormal];
@@ -196,6 +199,21 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
   [self populateViewsWithAddress:address];
   [self arrangeViewsWithAddress:address];
+}
+
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  CGFloat width = self.layoutGuide.layoutFrame.size.width;
+  if (self.contentView.subviews.count == 0 || width == _layoutGuideWidth) {
+    return;
+  }
+
+  // Re-arrange the views when the width of the layout guide's frame changed to
+  // make sure that the usage of the horizontal space is optimized.
+  _layoutGuideWidth = width;
+  [self resetDynamicContraints];
+  [self.contentView invalidateIntrinsicContentSize];
+  [self arrangeViewsWithAddress:self.address];
 }
 
 #pragma mark - Private
@@ -631,6 +649,12 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   AppendVerticalConstraintsSpacingForViews(self.dynamicConstraints,
                                            verticalLeadViews, self.layoutGuide);
   [NSLayoutConstraint activateConstraints:self.dynamicConstraints];
+}
+
+// Deactivates and removes the dynamic constraints.
+- (void)resetDynamicContraints {
+  [NSLayoutConstraint deactivateConstraints:self.dynamicConstraints];
+  [self.dynamicConstraints removeAllObjects];
 }
 
 - (void)userDidTapAddressInfo:(UIButton*)sender {
