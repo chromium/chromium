@@ -10713,10 +10713,9 @@ TEST_P(DeskBarTest, BottomLockedShelf) {
 // Tests that we can undo close-all solely via keyboard navigation (tabbing to
 // the undo toast and pressing enter).
 TEST_P(DeskBarTest, CanUndoDeskClosureThroughKeyboardNavigation) {
-  // TODO(http://b/325335020): Support tabbing to the undo toast. We may want
-  // this applied for non chromevox as well.
-  if (use_overview_new_focus_) {
-    return;
+  if (!use_overview_new_focus_) {
+    GTEST_SKIP() << "Overview old focus is being deprecated. See "
+                    "http://b/325335020 for more details.";
   }
 
   // Scenarios in which we can try to undo desk closure. If the active desk is
@@ -10782,11 +10781,7 @@ TEST_P(DeskBarTest, CanUndoDeskClosureThroughKeyboardNavigation) {
       waiter.Wait();
     } else {
       ASSERT_EQ(DeskBarViewBase::Type::kOverview, bar_type_);
-      ASSERT_EQ(mini_views[0]->desk_preview(), Shell::Get()
-                                                   ->overview_controller()
-                                                   ->overview_session()
-                                                   ->focus_cycler_old()
-                                                   ->focused_view());
+      ASSERT_TRUE(mini_views[0]->desk_preview()->HasFocus());
 
       PressAndReleaseKey(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
     }

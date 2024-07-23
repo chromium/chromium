@@ -178,30 +178,6 @@ bool ToastManagerImpl::RequestFocusOnActiveToastDismissButton(
   return false;
 }
 
-bool ToastManagerImpl::MaybeToggleA11yHighlightOnActiveToastDismissButton(
-    std::string_view id) {
-  DCHECK(IsToastShown(id));
-  for (auto& [_, overlay] : root_window_to_overlay_) {
-    if (overlay && overlay->MaybeToggleA11yHighlightOnDismissButton()) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-bool ToastManagerImpl::MaybeActivateHighlightedDismissButtonOnActiveToast(
-    std::string_view id) {
-  DCHECK(IsToastShown(id));
-  for (auto& [_, overlay] : root_window_to_overlay_) {
-    if (overlay && overlay->MaybeActivateHighlightedDismissButton()) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 bool ToastManagerImpl::IsToastShown(std::string_view id) const {
   return HasActiveToasts() && current_toast_data_ &&
          current_toast_data_->id == id;

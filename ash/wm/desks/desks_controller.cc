@@ -1511,29 +1511,6 @@ bool DesksController::RequestFocusOnUndoDeskRemovalToast() {
       temporary_removed_desk_->toast_id());
 }
 
-bool DesksController::MaybeToggleA11yHighlightOnUndoDeskRemovalToast() {
-  if (!Shell::Get()->accessibility_controller()->spoken_feedback().enabled() ||
-      !temporary_removed_desk_ ||
-      !ToastManager::Get()->IsToastShown(temporary_removed_desk_->toast_id())) {
-    return false;
-  }
-
-  return ToastManager::Get()
-      ->MaybeToggleA11yHighlightOnActiveToastDismissButton(
-          temporary_removed_desk_->toast_id());
-}
-
-bool DesksController::MaybeActivateDeskRemovalUndoButtonOnHighlightedToast() {
-  if (!temporary_removed_desk_ ||
-      !ToastManager::Get()->IsToastShown(temporary_removed_desk_->toast_id())) {
-    return false;
-  }
-
-  return ToastManager::Get()
-      ->MaybeActivateHighlightedDismissButtonOnActiveToast(
-          temporary_removed_desk_->toast_id());
-}
-
 bool DesksController::CanEnterOverview() const {
   // Prevent entering overview if a desk animation is underway and we didn't
   // start the animation in overview. The overview animation would be completely

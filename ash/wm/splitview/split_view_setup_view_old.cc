@@ -64,9 +64,9 @@ class SplitViewSetupViewOldToast : public SystemToastView,
 
   void MaybeSwapFocusedView(bool right) override {}
 
-  void OnFocusableViewFocused() override { ToggleButtonA11yFocus(); }
+  void OnFocusableViewFocused() override {}
 
-  void OnFocusableViewBlurred() override { ToggleButtonA11yFocus(); }
+  void OnFocusableViewBlurred() override {}
 };
 
 BEGIN_METADATA(SplitViewSetupViewOldToast)

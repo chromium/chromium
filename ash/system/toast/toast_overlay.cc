@@ -162,7 +162,7 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
           &ToastOverlay::OnButtonClicked,
           // Unretained is safe because `this` owns `overlay_view_`.
           base::Unretained(this)),
-      toast_data.leading_icon, /*use_custom_focus=*/!toast_data.activatable);
+      toast_data.leading_icon);
 
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
@@ -257,18 +257,11 @@ bool ToastOverlay::RequestFocusOnActiveToastDismissButton() {
   return overlay_view_->dismiss_button()->HasFocus();
 }
 
-bool ToastOverlay::MaybeToggleA11yHighlightOnDismissButton() {
-  overlay_view_->ToggleButtonA11yFocus();
-  return overlay_view_->is_dismiss_button_highlighted();
-}
-
-bool ToastOverlay::MaybeActivateHighlightedDismissButton() {
-  if (!overlay_view_->is_dismiss_button_highlighted()) {
-    return false;
+bool ToastOverlay::IsDismissButtonFocused() const {
+  if (auto* dismiss_button = overlay_view_->dismiss_button()) {
+    return dismiss_button->HasFocus();
   }
-
-  OnButtonClicked();
-  return true;
+  return false;
 }
 
 void ToastOverlay::OnSliderBubbleHeightChanged() {
@@ -276,16 +269,6 @@ void ToastOverlay::OnSliderBubbleHeightChanged() {
   if (features::AreSideAlignedToastsEnabled()) {
     UpdateOverlayBounds();
   }
-}
-
-bool ToastOverlay::IsDismissButtonFocused() const {
-  if (overlay_view_->is_dismiss_button_highlighted()) {
-    return true;
-  }
-  if (auto* dismiss_button = overlay_view_->dismiss_button()) {
-    return dismiss_button->HasFocus();
-  }
-  return false;
 }
 
 gfx::Rect ToastOverlay::CalculateOverlayBounds() {

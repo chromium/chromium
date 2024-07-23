@@ -100,7 +100,7 @@ SplitViewSetupView::SplitViewSetupView(base::RepeatingClosure skip_callback,
       /*dismiss_text=*/
       l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST_SKIP),
       /*dismiss_callback=*/std::move(skip_callback),
-      /*leading_icon=*/&gfx::kNoneIcon, /*use_custom_focus=*/false));
+      /*leading_icon=*/&gfx::kNoneIcon));
   auto* dismiss_button = toast->dismiss_button();
   dismiss_button->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST_DISMISS_WINDOW_SUGGESTIONS));

@@ -86,20 +86,12 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // successful.
   bool RequestFocusOnActiveToastDismissButton();
 
-  // Returns true if the toast has a button and it can be highlighted for
-  // accessibility, false otherwise.
-  bool MaybeToggleA11yHighlightOnDismissButton();
-
-  // Activates the dismiss button in `overlay_view_` if it is highlighted.
-  // Returns false if `is_dismiss_button_highlighted_` is false.
-  bool MaybeActivateHighlightedDismissButton();
-
-  // UnifiedSystemTray::Observer:
-  void OnSliderBubbleHeightChanged() override;
-
   // Returns if the dismiss button is focused in the toast. If the toast does
   // not have a dismiss button, it returns false.
   bool IsDismissButtonFocused() const;
+
+  // UnifiedSystemTray::Observer:
+  void OnSliderBubbleHeightChanged() override;
 
  private:
   friend class ToastManagerImplTest;
