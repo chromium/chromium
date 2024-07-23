@@ -1966,6 +1966,109 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, OverlaySourceCrop) {
   }
 }
 
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, ColorEncodingAndRange) {
+  // These values are chosen arbitrarily % avoiding 0 in order to test that the
+  // classes under test don't assume that a value of 0 is special,
+  constexpr uint64_t kColorEncodingBT601 = 2u;
+  constexpr uint64_t kColorEncodingBT709 = 3u;
+  constexpr uint64_t kColorRangeLimited = 4u;
+  constexpr uint64_t kColorRangeFull = 5u;
+
+  fake_drm_->ResetStateWithDefaultObjects(
+      /*crtc_count=*/1, /*planes_per_crtc=*/1, /*movable_planes=*/0,
+      /*plane_supported_formats=*/{DRM_FORMAT_NV12});
+
+  fake_drm_->SetPossibleValuesForEnumProperty(
+      /*property_id=*/kColorEncodingPropId, /*values=*/{
+          {kColorEncodingBT601, "ITU-R BT.601 YCbCr"},
+          {kColorEncodingBT709, "ITU-R BT.709 YCbCr"},
+      });
+  fake_drm_->AddProperty(
+      /*object_id=*/fake_drm_->plane_property(0).id,
+      {.id = kColorEncodingPropId, .value = kColorEncodingBT601});
+
+  fake_drm_->SetPossibleValuesForEnumProperty(
+      /*property_id=*/kColorRangePropId, /*values=*/{
+          {kColorRangeLimited, "YCbCr limited range"},
+          {kColorRangeFull, "YCbCr full range"},
+      });
+  fake_drm_->AddProperty(/*object_id=*/fake_drm_->plane_property(0).id,
+                         {.id = kColorRangePropId, .value = kColorRangeFull});
+
+  fake_drm_->InitializeState(use_atomic_);
+
+  // TODO: bug 233667677 - Notice that the `expected_color_range` is always
+  // limited regardless of the `color_space`. That's because we're currently not
+  // confident about having widespread support for full range, so the
+  // HardwareDisplayPlaneAtomic should always set the range to limited.
+  // Eventually, we'll probably want to plumb the right range.
+  struct TestCase {
+    gfx::ColorSpace color_space;
+    uint64_t expected_color_encoding;
+    uint64_t expected_color_range;
+  };
+  std::vector<TestCase> test_cases = {
+      {
+          .color_space = gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                                         gfx::ColorSpace::TransferID::BT709,
+                                         gfx::ColorSpace::MatrixID::BT709,
+                                         gfx::ColorSpace::RangeID::LIMITED),
+          .expected_color_encoding = kColorEncodingBT709,
+          .expected_color_range = kColorRangeLimited,
+      },
+      {
+          .color_space = gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                                         gfx::ColorSpace::TransferID::BT709,
+                                         gfx::ColorSpace::MatrixID::BT709,
+                                         gfx::ColorSpace::RangeID::FULL),
+          .expected_color_encoding = kColorEncodingBT709,
+          .expected_color_range = kColorRangeLimited,
+      },
+      {
+          .color_space = gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTE170M,
+                                         gfx::ColorSpace::TransferID::SMPTE170M,
+                                         gfx::ColorSpace::MatrixID::SMPTE170M,
+                                         gfx::ColorSpace::RangeID::LIMITED),
+          .expected_color_encoding = kColorEncodingBT601,
+          .expected_color_range = kColorRangeLimited,
+      },
+      {
+          .color_space = gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTE170M,
+                                         gfx::ColorSpace::TransferID::SMPTE170M,
+                                         gfx::ColorSpace::MatrixID::SMPTE170M,
+                                         gfx::ColorSpace::RangeID::FULL),
+          .expected_color_encoding = kColorEncodingBT601,
+          .expected_color_range = kColorRangeLimited,
+      },
+  };
+
+  for (const auto& test_case : test_cases) {
+    DrmOverlayPlaneList assigns;
+    std::unique_ptr<GbmBuffer> buffer = fake_drm_->gbm_device()->CreateBuffer(
+        DRM_FORMAT_NV12, kDefaultBufferSize, GBM_BO_USE_SCANOUT);
+    scoped_refptr<DrmFramebuffer> framebuffer_original =
+        DrmFramebuffer::AddFramebuffer(fake_drm_, buffer.get(),
+                                       kDefaultBufferSize, {}, true);
+    assigns.push_back(DrmOverlayPlane::TestPlane(framebuffer_original));
+    assigns.back().color_space = test_case.color_space;
+
+    fake_drm_->plane_manager()->BeginFrame(&state_);
+    EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
+        &state_, assigns, fake_drm_->crtc_property(0).id));
+
+    scoped_refptr<PageFlipRequest> page_flip_request =
+        base::MakeRefCounted<PageFlipRequest>(base::TimeDelta());
+    gfx::GpuFenceHandle release_fence;
+    EXPECT_TRUE(fake_drm_->plane_manager()->Commit(&state_, page_flip_request,
+                                                   &release_fence));
+
+    EXPECT_EQ(test_case.expected_color_encoding,
+              GetPlanePropertyValue(kPlaneOffset, "COLOR_ENCODING"));
+    EXPECT_EQ(test_case.expected_color_range,
+              GetPlanePropertyValue(kPlaneOffset, "COLOR_RANGE"));
+  }
+}
+
 class HardwareDisplayPlaneAtomicMock : public HardwareDisplayPlaneAtomic {
  public:
   HardwareDisplayPlaneAtomicMock() : HardwareDisplayPlaneAtomic(1) {}
