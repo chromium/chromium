@@ -25,13 +25,14 @@ using ::testing::IsEmpty;
 namespace base::android {
 namespace {
 
-jlongArray GenerateJavaLongArray(JNIEnv* env,
-                                 const int64_t long_array[],
-                                 const size_t array_length) {
-  ScopedJavaLocalRef<jlongArray> java_long_array =
-      ToJavaLongArray(env, long_array, array_length);
-
+jlongArray GenerateJavaLongArray(JNIEnv* env, span<const int64_t> longs) {
+  ScopedJavaLocalRef<jlongArray> java_long_array = ToJavaLongArray(env, longs);
   return java_long_array.Release();
+}
+
+jintArray GenerateJavaIntArray(JNIEnv* env, span<const int> ints) {
+  ScopedJavaLocalRef<jintArray> java_int_array = ToJavaIntArray(env, ints);
+  return java_int_array.Release();
 }
 
 // Durations are received in nanoseconds, but are recorded to UMA in
@@ -46,24 +47,13 @@ const int64_t kDurations[] = {
     1'000'000,   // 1ms
     20'000'000,  // 20ms
 };
-const size_t kDurationsLen = std::size(kDurations);
-
-jintArray GenerateJavaIntArray(JNIEnv* env,
-                               const int int_array[],
-                               const size_t array_length) {
-  ScopedJavaLocalRef<jintArray> java_int_array =
-      ToJavaIntArray(env, int_array, array_length);
-
-  return java_int_array.Release();
-}
 
 const int kMissedVsyncs[] = {
     0, 0, 2, 0, 1, 0, 0, 0,
 };
-const size_t kMissedVsyncsLen = kDurationsLen;
 
-static_assert(kDurationsLen == kMissedVsyncsLen);
-const size_t kNumFrames = kDurationsLen;
+static_assert(std::size(kDurations) == std::size(kMissedVsyncs));
+const size_t kNumFrames = std::size(kDurations);
 
 struct ScrollTestCase {
   JankScenario scenario;
@@ -78,11 +68,9 @@ TEST(JankMetricUMARecorder, TestUMARecording) {
 
   JNIEnv* env = AttachCurrentThread();
 
-  jlongArray java_durations =
-      GenerateJavaLongArray(env, kDurations, kDurationsLen);
+  jlongArray java_durations = GenerateJavaLongArray(env, kDurations);
 
-  jintArray java_missed_vsyncs =
-      GenerateJavaIntArray(env, kMissedVsyncs, kMissedVsyncsLen);
+  jintArray java_missed_vsyncs = GenerateJavaIntArray(env, kMissedVsyncs);
 
   const int kMinScenario = static_cast<int>(JankScenario::PERIODIC_REPORTING);
   const int kMaxScenario = static_cast<int>(JankScenario::MAX_VALUE);
@@ -143,10 +131,8 @@ TEST(JankMetricUMARecorder, TestUMARecording) {
 TEST(JankMetricUMARecorder, TestWebviewScrollingScenario) {
   JNIEnv* env = AttachCurrentThread();
 
-  jlongArray java_durations =
-      GenerateJavaLongArray(env, kDurations, kDurationsLen);
-  jintArray java_missed_vsyncs =
-      GenerateJavaIntArray(env, kMissedVsyncs, kMissedVsyncsLen);
+  jlongArray java_durations = GenerateJavaLongArray(env, kDurations);
+  jintArray java_missed_vsyncs = GenerateJavaIntArray(env, kMissedVsyncs);
 
   const int scenario = static_cast<int>(JankScenario::WEBVIEW_SCROLLING);
   HistogramTester histogram_tester;
@@ -170,10 +156,8 @@ TEST(JankMetricUMARecorder, TestWebviewScrollingScenario) {
 TEST(JankMetricUMARecorder, TestCombinedWebviewScrollingScenario) {
   JNIEnv* env = AttachCurrentThread();
 
-  jlongArray java_durations =
-      GenerateJavaLongArray(env, kDurations, kDurationsLen);
-  jintArray java_missed_vsyncs =
-      GenerateJavaIntArray(env, kMissedVsyncs, kMissedVsyncsLen);
+  jlongArray java_durations = GenerateJavaLongArray(env, kDurations);
+  jintArray java_missed_vsyncs = GenerateJavaIntArray(env, kMissedVsyncs);
 
   const int scenario =
       static_cast<int>(JankScenario::COMBINED_WEBVIEW_SCROLLING);
@@ -239,10 +223,8 @@ TEST_P(JankMetricUMARecorderPerScrollTests, EmitsPerScrollHistograms) {
     missed_vsyncs.push_back(0);
   }
 
-  jlongArray java_durations =
-      GenerateJavaLongArray(env, durations.data(), durations.size());
-  jintArray java_missed_vsyncs =
-      GenerateJavaIntArray(env, missed_vsyncs.data(), missed_vsyncs.size());
+  jlongArray java_durations = GenerateJavaLongArray(env, durations);
+  jintArray java_missed_vsyncs = GenerateJavaIntArray(env, missed_vsyncs);
 
   RecordJankMetrics(
       env, base::android::JavaParamRef<jlongArray>(env, java_durations),
