@@ -14589,6 +14589,7 @@
                         "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1340",
                         "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
                         "MlUrlScoringShortcutDocumentSignals": "true",
+                        "MlUrlSearchBlending_MappedSearchBlending": "false",
                         "enable_scoring_signals_annotators_for_ml_scoring": "true"
                     },
                     "enable_features": [
@@ -14605,6 +14606,7 @@
                         "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1290",
                         "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
                         "MlUrlScoringShortcutDocumentSignals": "true",
+                        "MlUrlSearchBlending_MappedSearchBlending": "false",
                         "enable_scoring_signals_annotators_for_ml_scoring": "true"
                     },
                     "enable_features": [
@@ -14621,6 +14623,7 @@
                         "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1440",
                         "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
                         "MlUrlScoringShortcutDocumentSignals": "true",
+                        "MlUrlSearchBlending_MappedSearchBlending": "false",
                         "enable_scoring_signals_annotators_for_ml_scoring": "true"
                     },
                     "enable_features": [
@@ -14637,6 +14640,7 @@
                         "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1390",
                         "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
                         "MlUrlScoringShortcutDocumentSignals": "true",
+                        "MlUrlSearchBlending_MappedSearchBlending": "false",
                         "enable_scoring_signals_annotators_for_ml_scoring": "true"
                     },
                     "enable_features": [
