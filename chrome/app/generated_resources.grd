@@ -9365,7 +9365,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Listen to the text with natural voice
       </message>
       <message name="IDS_READING_MODE_PLAY_SPEECH" desc="Accessible name for button that plays speech in Read Aloud.">
-        Play keyboard shortcut k
+        Play / pause, keyboard shortcut k
       </message>
       <message name="IDS_READING_MODE_PAUSE_SPEECH" desc="Accessibile name for button that pauses speech in Read Aloud.">
         Pause keyboard shortcut k

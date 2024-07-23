@@ -61,7 +61,8 @@ suite('PlayPause', () => {
     assertEquals('read-anything-20:pause', playPauseButton.ironIcon);
     assertStringContains('pause (k)', playPauseButton.title.toLowerCase());
     assertStringContains(
-        'play keyboard shortcut k', playPauseButton.ariaLabel!.toLowerCase());
+        'play / pause, keyboard shortcut k',
+        playPauseButton.ariaLabel!.toLowerCase());
 
     // Test that granularity menu buttons show
     assertTrue(isVisible(granularityContainer));
@@ -74,7 +75,8 @@ suite('PlayPause', () => {
     assertEquals('read-anything-20:play', playPauseButton.ironIcon);
     assertStringContains('play (k)', playPauseButton.title.toLowerCase());
     assertStringContains(
-        'play keyboard shortcut k', playPauseButton.ariaLabel!.toLowerCase());
+        'play / pause, keyboard shortcut k',
+        playPauseButton.ariaLabel!.toLowerCase());
 
     // Test that granularity menu buttons hidden
     assertFalse(isVisible(granularityContainer));
