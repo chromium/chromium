@@ -6325,10 +6325,11 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledEarlyDiscard_20240605",
+                    "name": "EnabledEarlyDiscard_20240722",
                     "params": {
                         "CompleteStallMs": "700",
-                        "PartialStallMs": "20"
+                        "PartialStallMs": "20",
+                        "VmmmsReclaimProportion": "50"
                     },
                     "enable_features": [
                         "CrOSLateBootDiscardStaleAtModeratePressure",
@@ -6340,7 +6341,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledAvailableAdjustmentPsi_20240605",
+                    "name": "EnabledAvailableAdjustmentPsi_20240722",
                     "enable_features": [
                         "CrOSLateBootPsiAdjustAvailable"
                     ],
@@ -6351,7 +6352,22 @@
                     ]
                 },
                 {
-                    "name": "EnabledAvailableAdjustmentPsiFull_20240605",
+                    "name": "EnabledAvailableAdjustmentPsiTopThreshold80_20240722",
+                    "params": {
+                        "PsiTopThreshold": "80.0",
+                        "PsiUseFull": "false"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootPsiAdjustAvailable"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootDiscardStaleAtModeratePressure",
+                        "CrOSLateBootOverrideLmkdPsiDefaults",
+                        "CrOSLockMainProgramText"
+                    ]
+                },
+                {
+                    "name": "EnabledAvailableAdjustmentPsiFull_20240722",
                     "params": {
                         "PsiTopThreshold": "20.0",
                         "PsiUseFull": "true"
@@ -6366,10 +6382,11 @@
                     ]
                 },
                 {
-                    "name": "EnabledAvailableAdjustmentPsiWithEarlyDiscard_20240605",
+                    "name": "EnabledAvailableAdjustmentPsiWithEarlyDiscard_20240722",
                     "params": {
                         "CompleteStallMs": "700",
-                        "PartialStallMs": "20"
+                        "PartialStallMs": "20",
+                        "VmmmsReclaimProportion": "50"
                     },
                     "enable_features": [
                         "CrOSLateBootDiscardStaleAtModeratePressure",
@@ -6381,7 +6398,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledMlockChrome_20240605",
+                    "name": "EnabledMlockChrome_20240722",
                     "enable_features": [
                         "CrOSLockMainProgramText"
                     ],
@@ -6392,7 +6409,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledMlockChromeWithAvailableAdjustmentPsi_20240605",
+                    "name": "EnabledMlockChromeWithAvailableAdjustmentPsi_20240722",
                     "enable_features": [
                         "CrOSLateBootPsiAdjustAvailable",
                         "CrOSLockMainProgramText"
@@ -6400,6 +6417,20 @@
                     "disable_features": [
                         "CrOSLateBootDiscardStaleAtModeratePressure",
                         "CrOSLateBootOverrideLmkdPsiDefaults"
+                    ]
+                },
+                {
+                    "name": "EnabledAvailableAdjustmentPsiWithEarlyDiscardAndMlockChrome_20240722",
+                    "params": {
+                        "CompleteStallMs": "700",
+                        "PartialStallMs": "20",
+                        "VmmmsReclaimProportion": "50"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootDiscardStaleAtModeratePressure",
+                        "CrOSLateBootOverrideLmkdPsiDefaults",
+                        "CrOSLateBootPsiAdjustAvailable",
+                        "CrOSLockMainProgramText"
                     ]
                 }
             ]
