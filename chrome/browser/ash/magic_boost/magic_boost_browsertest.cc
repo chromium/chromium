@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_opt_in_card.h"
+#include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -194,6 +195,14 @@ class MagicBoostBrowserTest
         magic_boost::ViewId::DisclaimerViewDeclineButton);
   }
 
+  // Showing "chrome-untrusted://mako/" help me write bubble.
+  bool IsShowingMakoBubble() const {
+    return ash::input_method::EditorMediatorFactory::GetForProfile(
+               browser()->profile())
+        ->mako_bubble_coordinator_for_testing()
+        .IsShowingUI();
+  }
+
   bool ShouldIncludeOrca() const {
     // See `GetConsentStatusFromInteger` method in `editor_consent_enums.cc`,
     // `kInvalid` is treated as `kUnset`.
@@ -206,6 +215,15 @@ class MagicBoostBrowserTest
 
   bool ShouldOptInHmr() const {
     return GetInitHmrConsentStatus() == chromeos::HMRConsentStatus::kUnset;
+  }
+
+  bool ShouldShowEditorMenu() const {
+    // In production, when the editor is not soft/hard blocked, it checks the
+    // Orca consent status to find the current editor mode. It will get
+    // `kRewrite` when the selected length is greater than 0, and get `kWrite`
+    // when the selected length is 0.
+    return GetEditorMode() == input_method::EditorMode::kRewrite ||
+           GetEditorMode() == input_method::EditorMode::kWrite;
   }
 
   input_method::EditorMode GetEditorMode() const {
@@ -339,6 +357,9 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromReadOnlyContent) {
               base::to_underlying(GetInitEditorConsentStatus()));
   }
 
+  // Not showing the Editor Menu when opt in from read only content.
+  EXPECT_FALSE(IsShowingMakoBubble());
+
   // Right click on the web content again.
   NavigateAndRightClickReadOnlyWeb();
 
@@ -404,6 +425,9 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
     EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
               base::to_underlying(GetInitEditorConsentStatus()));
   }
+
+  // Not showing the Editor Menu when opt in from read only content.
+  EXPECT_FALSE(IsShowingMakoBubble());
 
   // Right click on the web content again.
   NavigateAndRightClickReadOnlyWeb();
@@ -478,6 +502,9 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
     EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
               base::to_underlying(GetInitEditorConsentStatus()));
   }
+
+  // Not showing the Editor Menu when opt in from read only content.
+  EXPECT_FALSE(IsShowingMakoBubble());
 
   // Right click on the web content again.
   NavigateAndRightClickReadOnlyWeb();
@@ -566,6 +593,13 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromInputFieldWeb) {
   EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
             base::to_underlying(input_method::ConsentStatus::kApproved));
 
+  // Shows the Editor Menu if the editor mode is not (soft/hard) blocked.
+  if (ShouldShowEditorMenu()) {
+    EXPECT_TRUE(IsShowingMakoBubble());
+  } else {
+    EXPECT_FALSE(IsShowingMakoBubble());
+  }
+
   // Right click on the input again.
   NavigateAndRightClickInputTextWeb();
 
@@ -629,6 +663,9 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
   EXPECT_FALSE(prefs->GetBoolean(prefs::kOrcaEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
             base::to_underlying(input_method::ConsentStatus::kDeclined));
+
+  // Not showing the Editor Menu after declined.
+  EXPECT_FALSE(IsShowingMakoBubble());
 
   // Right click on the input again.
   NavigateAndRightClickInputTextWeb();
@@ -700,6 +737,9 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
   EXPECT_FALSE(prefs->GetBoolean(prefs::kOrcaEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
             base::to_underlying(input_method::ConsentStatus::kDeclined));
+
+  // Not showing the Editor Menu after declined.
+  EXPECT_FALSE(IsShowingMakoBubble());
 
   // Right click on the input again.
   NavigateAndRightClickInputTextWeb();
