@@ -115,6 +115,13 @@ base::flat_set<UserVisibleFeatureKey> GetAllowedFeaturesForUnsignedUser() {
   return allowed_features;
 }
 
+bool ShouldEnableFeatureWhenMainToggleOn(UserVisibleFeatureKey feature) {
+  const auto* visibility_feature =
+      GetFeatureToUseToCheckSettingsVisibility(feature);
+  return (GetFieldTrialParamByFeatureAsBool(
+      *visibility_feature, "enable_feature_when_main_toggle_on", true));
+}
+
 // LINT.IfChange(IsOnDeviceModelEnabled)
 //
 // On-device supported features should return true.
