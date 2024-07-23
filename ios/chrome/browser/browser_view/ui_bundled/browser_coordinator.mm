@@ -2230,6 +2230,12 @@ enum class ToolbarKind {
     return;
   }
 
+  // Close the keyboard before opening the sheet.
+  UIView* view = activeWebState->GetView();
+  if (view) {
+    [view endEditing:YES];
+  }
+
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(activeWebState);
   contextualPanelTabHelper->OpenContextualPanel();
