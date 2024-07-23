@@ -232,7 +232,7 @@ bool IsAccessibilityOverscrollSettingFeatureEnabled() {
 
 BASE_FEATURE(kAccessibilitySelectToSpeakShortcut,
              "AccessibilitySelectToSpeakShortcut",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilitySelectToSpeakShortcutEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilitySelectToSpeakShortcut);

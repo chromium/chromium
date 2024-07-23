@@ -361,8 +361,10 @@ TEST_F(SelectToSpeakEventHandlerTest, SearchPlusSIsCaptured) {
   generator_->ReleaseKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
   ASSERT_FALSE(event_capturer_.LastKeyEvent());
 
-  // S alone is not captured
-  generator_->PressKey(ui::VKEY_S, ui::EF_COMMAND_DOWN);
+  // S alone is not captured.
+  generator_->PressKey(ui::VKEY_S, ui::EF_NONE);
+  ASSERT_TRUE(controller_->GetSelectToSpeakEventHandlerForTesting()
+                  ->IsKeyDownForTesting(ui::VKEY_S));
   ASSERT_TRUE(event_capturer_.LastKeyEvent());
   ASSERT_FALSE(event_capturer_.LastKeyEvent()->handled());
 }
@@ -392,16 +394,20 @@ TEST_F(SelectToSpeakEventHandlerTest, SearchPlusSIgnoresMouse) {
 TEST_F(SelectToSpeakEventHandlerTest, SearchPlusMouseIgnoresS) {
   generator_->PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
 
-  // Press the mouse
+  // Press the mouse.
   event_capturer_.ClearEvents();
   generator_->PressLeftButton();
   EXPECT_FALSE(event_capturer_.LastMouseEvent());
 
   // S key events are passed through like normal.
-  generator_->PressKey(ui::VKEY_S, ui::EF_COMMAND_DOWN);
+  generator_->PressKey(ui::VKEY_S, ui::EF_NONE);
+  ASSERT_TRUE(controller_->GetSelectToSpeakEventHandlerForTesting()
+                  ->IsKeyDownForTesting(ui::VKEY_S));
   EXPECT_TRUE(event_capturer_.LastKeyEvent());
   event_capturer_.ClearEvents();
-  generator_->ReleaseKey(ui::VKEY_S, ui::EF_COMMAND_DOWN);
+  generator_->ReleaseKey(ui::VKEY_S, ui::EF_NONE);
+  ASSERT_FALSE(controller_->GetSelectToSpeakEventHandlerForTesting()
+                   ->IsKeyDownForTesting(ui::VKEY_S));
   EXPECT_TRUE(event_capturer_.LastKeyEvent());
 
   generator_->ReleaseLeftButton();

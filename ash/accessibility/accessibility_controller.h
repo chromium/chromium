@@ -659,6 +659,10 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
 
   bool VerifyFeaturesDataForTesting();
 
+  SelectToSpeakEventHandler* GetSelectToSpeakEventHandlerForTesting() const {
+    return select_to_speak_event_handler_.get();
+  }
+
  private:
   // Populate |features_| with the feature of the correct type.
   void CreateAccessibilityFeatures();
