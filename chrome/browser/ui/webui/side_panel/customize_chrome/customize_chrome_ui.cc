@@ -18,8 +18,8 @@
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar_handler.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_string_map.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -79,6 +80,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
   if (wallpaper_search_enabled) {
     wallpaper_search_background_manager_ =
         std::make_unique<WallpaperSearchBackgroundManager>(profile_);
+    wallpaper_search_string_map_ = WallpaperSearchStringMap::Create();
   }
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile_, chrome::kChromeUICustomizeChromeSidePanelHost);
@@ -431,9 +433,11 @@ void CustomizeChromeUI::CreateWallpaperSearchHandler(
     return;
   }
   CHECK(wallpaper_search_background_manager_);
+  CHECK(wallpaper_search_string_map_);
   wallpaper_search_handler_ = std::make_unique<WallpaperSearchHandler>(
       std::move(handler), std::move(client), profile_, image_decoder_.get(),
-      wallpaper_search_background_manager_.get(), id_);
+      wallpaper_search_background_manager_.get(), id_,
+      wallpaper_search_string_map_.get());
 }
 
 void CustomizeChromeUI::CreateCustomizeToolbarHandler(

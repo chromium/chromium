@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_string_map.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -115,6 +116,20 @@ class MockWallpaperSearchBackgroundManager
   MOCK_METHOD1(IsCurrentBackground, bool(const base::Token& id));
 };
 
+class MockWallpaperSearchStringMap : public WallpaperSearchStringMap {
+ public:
+  MOCK_CONST_METHOD1(FindCategory,
+                     std::optional<std::string>(std::string_view key));
+  MOCK_CONST_METHOD1(FindDescriptorA,
+                     std::optional<std::string>(std::string_view key));
+  MOCK_CONST_METHOD1(FindDescriptorB,
+                     std::optional<std::string>(std::string_view key));
+  MOCK_CONST_METHOD1(FindDescriptorC,
+                     std::optional<std::string>(std::string_view key));
+  MOCK_CONST_METHOD1(FindInspirationDescription,
+                     std::optional<std::string>(std::string_view key));
+};
+
 std::unique_ptr<TestingProfile> MakeTestingProfile(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     TestingPrefServiceSimple* local_state) {
@@ -196,13 +211,49 @@ class WallpaperSearchHandlerTest : public testing::Test {
     test_url_loader_factory_.AddResponse(kInspirationsLoadURL, std::string(),
                                          net::HTTP_NOT_FOUND);
   }
+  void MockTranslations(
+      const std::vector<std::pair<std::string_view, std::string>>& categories,
+      const std::vector<std::pair<std::string_view, std::string>>&
+          descriptor_as,
+      const std::vector<std::pair<std::string_view, std::string>>&
+          descriptor_bs,
+      const std::vector<std::pair<std::string_view, std::string>>&
+          descriptor_cs,
+      const std::vector<std::pair<std::string_view, std::string>>&
+          inspiration_descriptions = {}) {
+    for (const auto& category : categories) {
+      ON_CALL(mock_wallpaper_search_string_map(), FindCategory(category.first))
+          .WillByDefault(Return(category.second));
+    }
+    for (const auto& descriptor_a : descriptor_as) {
+      ON_CALL(mock_wallpaper_search_string_map(),
+              FindDescriptorA(descriptor_a.first))
+          .WillByDefault(Return(descriptor_a.second));
+    }
+    for (const auto& descriptor_b : descriptor_bs) {
+      ON_CALL(mock_wallpaper_search_string_map(),
+              FindDescriptorB(descriptor_b.first))
+          .WillByDefault(Return(descriptor_b.second));
+    }
+    for (const auto& descriptor_c : descriptor_cs) {
+      ON_CALL(mock_wallpaper_search_string_map(),
+              FindDescriptorC(descriptor_c.first))
+          .WillByDefault(Return(descriptor_c.second));
+    }
+    for (const auto& description : inspiration_descriptions) {
+      ON_CALL(mock_wallpaper_search_string_map(),
+              FindInspirationDescription(description.first))
+          .WillByDefault(Return(description.second));
+    }
+  }
 
   std::unique_ptr<WallpaperSearchHandler> MakeHandler(int64_t session_id) {
     auto handler = std::make_unique<WallpaperSearchHandler>(
         mojo::PendingReceiver<
             side_panel::customize_chrome::mojom::WallpaperSearchHandler>(),
         mock_client_.BindAndGetRemote(), profile_.get(), &mock_image_decoder_,
-        &mock_wallpaper_search_background_manager_, session_id);
+        &mock_wallpaper_search_background_manager_, session_id,
+        &mock_wallpaper_search_string_map_);
     mock_client_.FlushForTesting();
     return handler;
   }
@@ -237,6 +288,9 @@ class WallpaperSearchHandlerTest : public testing::Test {
   }
   MockHatsService& mock_hats_service() { return *mock_hats_service_; }
   signin::IdentityManager& identity_manager() { return *identity_manager_; }
+  MockWallpaperSearchStringMap& mock_wallpaper_search_string_map() {
+    return mock_wallpaper_search_string_map_;
+  }
 
  private:
   // NOTE: The initialization order of these members matters.
@@ -257,6 +311,8 @@ class WallpaperSearchHandlerTest : public testing::Test {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   raw_ptr<MockHatsService> mock_hats_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
+  testing::NiceMock<MockWallpaperSearchStringMap>
+      mock_wallpaper_search_string_map_;
 };
 
 TEST_F(WallpaperSearchHandlerTest, GetHistory) {
@@ -350,6 +406,13 @@ TEST_F(WallpaperSearchHandlerTest,
           ],
           "descriptor_c":["foo","bar","baz"]
         })");
+  MockTranslations(
+      /*categories=*/{{"foo", "foo label"}, {"qux", "qux label"}},
+      /*descriptor_as=*/
+      {{"bar", "bar label"}, {"baz", "baz label"}, {"foobar", "foobar label"}},
+      /*descriptor_bs=*/{{"foo", "foo label"}},
+      /*descriptor_cs=*/
+      {{"foo", "foo label"}, {"bar", "bar label"}, {"baz", "baz label"}});
   auto handler = MakeHandler(/*session_id=*/123);
 
   ASSERT_FALSE(descriptors);
@@ -361,33 +424,33 @@ TEST_F(WallpaperSearchHandlerTest,
   const auto& groups = descriptors->groups;
   EXPECT_EQ(2u, groups.size());
   const auto& foo_descriptor = groups[0];
-  EXPECT_EQ(foo_descriptor->category, "foo");
+  EXPECT_EQ(foo_descriptor->category, "foo label");
   EXPECT_EQ(2u, foo_descriptor->descriptor_as.size());
   EXPECT_EQ("bar", foo_descriptor->descriptor_as[0]->key);
-  EXPECT_EQ("bar", foo_descriptor->descriptor_as[0]->label);
+  EXPECT_EQ("bar label", foo_descriptor->descriptor_as[0]->label);
   EXPECT_EQ("baz", foo_descriptor->descriptor_as[1]->key);
-  EXPECT_EQ("baz", foo_descriptor->descriptor_as[1]->label);
+  EXPECT_EQ("baz label", foo_descriptor->descriptor_as[1]->label);
   const auto& qux_descriptor = groups[1];
-  EXPECT_EQ(qux_descriptor->category, "qux");
+  EXPECT_EQ(qux_descriptor->category, "qux label");
   EXPECT_EQ(1u, qux_descriptor->descriptor_as.size());
   EXPECT_EQ("foobar", qux_descriptor->descriptor_as[0]->key);
-  EXPECT_EQ("foobar", qux_descriptor->descriptor_as[0]->label);
+  EXPECT_EQ("foobar label", qux_descriptor->descriptor_as[0]->label);
 
   const auto& descriptor_b = descriptors->descriptor_b;
   EXPECT_EQ(1u, descriptor_b.size());
   EXPECT_EQ("foo", descriptor_b[0]->key);
-  EXPECT_EQ("foo", descriptor_b[0]->label);
+  EXPECT_EQ("foo label", descriptor_b[0]->label);
   EXPECT_EQ(base::StrCat({kGstaticBaseURL, "bar.png"}),
             descriptor_b[0]->image_path);
 
   const auto& descriptor_c = descriptors->descriptor_c;
   EXPECT_EQ(3u, descriptor_c.size());
   EXPECT_EQ("foo", descriptor_c[0]->key);
-  EXPECT_EQ("foo", descriptor_c[0]->label);
+  EXPECT_EQ("foo label", descriptor_c[0]->label);
   EXPECT_EQ("bar", descriptor_c[1]->key);
-  EXPECT_EQ("bar", descriptor_c[1]->label);
+  EXPECT_EQ("bar label", descriptor_c[1]->label);
   EXPECT_EQ("baz", descriptor_c[2]->key);
-  EXPECT_EQ("baz", descriptor_c[2]->label);
+  EXPECT_EQ("baz label", descriptor_c[2]->label);
 }
 
 TEST_F(WallpaperSearchHandlerTest,
@@ -421,6 +484,11 @@ TEST_F(WallpaperSearchHandlerTest,
           ],
           "descriptor_c":["foo"]
         })");
+  MockTranslations(
+      /*categories=*/{{"foo", "foo label"}},
+      /*descriptor_as=*/{{"bar", "bar label"}},
+      /*descriptor_bs=*/{{"foo", "foo label"}},
+      /*descriptor_cs=*/{{"foo", "foo label"}});
   auto handler = MakeHandler(/*session_id=*/123);
 
   handler->GetDescriptors(callback.Get());
@@ -432,20 +500,20 @@ TEST_F(WallpaperSearchHandlerTest,
   const auto& groups = descriptors_2->groups;
   EXPECT_EQ(1u, groups.size());
   const auto& foo_descriptor = groups[0];
-  EXPECT_EQ(foo_descriptor->category, "foo");
+  EXPECT_EQ(foo_descriptor->category, "foo label");
   EXPECT_EQ(1u, foo_descriptor->descriptor_as.size());
   EXPECT_EQ("bar", foo_descriptor->descriptor_as[0]->key);
-  EXPECT_EQ("bar", foo_descriptor->descriptor_as[0]->label);
+  EXPECT_EQ("bar label", foo_descriptor->descriptor_as[0]->label);
   const auto& descriptor_b = descriptors_2->descriptor_b;
   EXPECT_EQ(1u, descriptor_b.size());
   EXPECT_EQ("foo", descriptor_b[0]->key);
-  EXPECT_EQ("foo", descriptor_b[0]->label);
+  EXPECT_EQ("foo label", descriptor_b[0]->label);
   EXPECT_EQ(base::StrCat({kGstaticBaseURL, "bar.png"}),
             descriptor_b[0]->image_path);
   const auto& descriptor_c = descriptors_2->descriptor_c;
   EXPECT_EQ(1u, descriptor_c.size());
   EXPECT_EQ("foo", descriptor_c[0]->key);
-  EXPECT_EQ("foo", descriptor_c[0]->label);
+  EXPECT_EQ("foo label", descriptor_c[0]->label);
 }
 
 TEST_F(WallpaperSearchHandlerTest,
@@ -464,6 +532,11 @@ TEST_F(WallpaperSearchHandlerTest,
         {"descriptor_a":[
           {"category":"foo"}
       ]})");
+  MockTranslations(
+      /*categories=*/{{"foo", "foo label"}},
+      /*descriptor_as=*/{},
+      /*descriptor_bs=*/{},
+      /*descriptor_cs=*/{});
   ASSERT_FALSE(descriptors);
   auto handler = MakeHandler(/*session_id=*/123);
 
@@ -489,6 +562,12 @@ TEST_F(WallpaperSearchHandlerTest, GetDescriptors_Failure_NoValidDescriptors) {
           {"category":"foo","labels":["bar","baz"]},
           {"category":"qux","labels":["foobar"]}
       ]})");
+  MockTranslations(
+      /*categories=*/{{"foo", "foo label"}, {"qux", "qux label"}},
+      /*descriptor_as=*/
+      {{"bar", "bar label"}, {"baz", "baz label"}, {"foobar", "foobar label"}},
+      /*descriptor_bs=*/{},
+      /*descriptor_cs=*/{});
   ASSERT_FALSE(descriptors);
   auto handler = MakeHandler(/*session_id=*/123);
 
@@ -496,6 +575,61 @@ TEST_F(WallpaperSearchHandlerTest, GetDescriptors_Failure_NoValidDescriptors) {
   task_environment().RunUntilIdle();
 
   EXPECT_FALSE(descriptors);
+}
+
+TEST_F(WallpaperSearchHandlerTest, GetDescriptors_Success_MissingTranslations) {
+  side_panel::customize_chrome::mojom::DescriptorsPtr descriptors;
+  base::MockCallback<WallpaperSearchHandler::GetDescriptorsCallback> callback;
+  EXPECT_CALL(callback, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&descriptors](side_panel::customize_chrome::mojom::DescriptorsPtr
+                             descriptors_ptr_arg) {
+            descriptors = std::move(descriptors_ptr_arg);
+          }));
+  SetUpDescriptorsResponseWithData(
+      R"()]}'
+        {
+          "descriptor_a":[
+            {"category":"foo","labels":["bar","baz"]},
+            {"category":"qux","labels":["foobar"]}
+          ],
+          "descriptor_b":[
+            {"label":"foo","image":"bar.png"}
+          ],
+          "descriptor_c":["foo","bar","baz"]
+        })");
+  // Not mocking a translation for descriptor B. Hence, the missing translation.
+  MockTranslations(
+      /*categories=*/{{"foo", "foo label"}},
+      /*descriptor_as=*/{{"bar", "bar label"}},
+      /*descriptor_bs=*/{},
+      /*descriptor_cs=*/{{"foo", "foo label"}, {"bar", "bar label"}});
+  auto handler = MakeHandler(/*session_id=*/123);
+
+  ASSERT_FALSE(descriptors);
+  handler->GetDescriptors(callback.Get());
+  task_environment().RunUntilIdle();
+
+  ASSERT_TRUE(descriptors);
+
+  const auto& groups = descriptors->groups;
+  ASSERT_EQ(1u, groups.size());
+  const auto& foo_descriptor = groups[0];
+  EXPECT_EQ(foo_descriptor->category, "foo label");
+  ASSERT_EQ(1u, foo_descriptor->descriptor_as.size());
+  EXPECT_EQ("bar", foo_descriptor->descriptor_as[0]->key);
+  EXPECT_EQ("bar label", foo_descriptor->descriptor_as[0]->label);
+
+  const auto& descriptor_b = descriptors->descriptor_b;
+  EXPECT_EQ(0u, descriptor_b.size());
+
+  const auto& descriptor_c = descriptors->descriptor_c;
+  ASSERT_EQ(2u, descriptor_c.size());
+  EXPECT_EQ("foo", descriptor_c[0]->key);
+  EXPECT_EQ("foo label", descriptor_c[0]->label);
+  EXPECT_EQ("bar", descriptor_c[1]->key);
+  EXPECT_EQ("bar label", descriptor_c[1]->label);
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetDescriptors_Failure_DataIsUnreachable) {
@@ -1512,13 +1646,13 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
             "images": [
                 {
                     "id": "00000000000000000000000000000000",
-                    "description": "Description foo",
+                    "description": "Description foo ignore",
                     "background_image": "foo_1.png",
                     "thumbnail_image": "foo_2.png"
                 },
                 {
                     "id": "10000000000000000000000000000000",
-                    "description": "Description bar",
+                    "description": "Description bar ignore",
                     "background_image": "bar_1.png",
                     "thumbnail_image": "bar_2.png"
                 }
@@ -1529,13 +1663,22 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
             "images": [
                 {
                     "id": "20000000000000000000000000000000",
-                    "description": "Description baz",
+                    "description": "Description baz ignore",
                     "background_image": "baz_1.png",
                     "thumbnail_image": "baz_2.png"
                 }
             ]
         }]
       )");
+  MockTranslations(
+      /*categories=*/{},
+      /*descriptor_as=*/{{"foobar", "foobar label"}, {"baz", "baz label"}},
+      /*descriptor_bs=*/{},
+      /*descriptor_cs=*/{},
+      /*inspiration_descriptions=*/
+      {{"00000000000000000000000000000000", "Description foo"},
+       {"10000000000000000000000000000000", "Description bar"},
+       {"20000000000000000000000000000000", "Description baz"}});
 
   auto handler = MakeHandler(/*session_id=*/123);
   handler->GetInspirations(callback.Get());
@@ -1544,7 +1687,7 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
   EXPECT_EQ(2u, inspiration_groups.size());
   const auto& inspiration_group_a = inspiration_groups[0];
   EXPECT_EQ("foobar", inspiration_group_a->descriptors->subject->key);
-  EXPECT_EQ("foobar", inspiration_group_a->descriptors->subject->label);
+  EXPECT_EQ("foobar label", inspiration_group_a->descriptors->subject->label);
   const auto& inspiration_a = inspiration_group_a->inspirations;
   EXPECT_EQ(2u, inspiration_a.size());
   const auto& foo_inspiration = inspiration_a[0];
@@ -1567,7 +1710,7 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
       base::Token::FromString("10000000000000000000000000000000").value());
   const auto& inspiration_group_b = inspiration_groups[1];
   EXPECT_EQ("baz", inspiration_group_b->descriptors->subject->key);
-  EXPECT_EQ("baz", inspiration_group_b->descriptors->subject->label);
+  EXPECT_EQ("baz label", inspiration_group_b->descriptors->subject->label);
   const auto& inspiration_b = inspiration_group_b->inspirations;
   EXPECT_EQ(1u, inspiration_b.size());
   const auto& baz_inspiration = inspiration_b[0];
@@ -1607,13 +1750,20 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success_Descriptors) {
             "images": [
                 {
                     "id": "00000000000000000000000000000000",
-                    "description": "test inspiration",
+                    "description": "test inspiration ignore",
                     "background_image": "foo_1.png",
                     "thumbnail_image": "foo_2.png"
                 }
             ]
         }
       ])");
+  MockTranslations(
+      /*categories=*/{},
+      /*descriptor_as=*/{{"foo", "foo label"}},
+      /*descriptor_bs=*/{{"bar", "bar label"}},
+      /*descriptor_cs=*/{{"baz", "baz label"}},
+      /*inspiration_descriptions=*/
+      {{"00000000000000000000000000000000", "test inspiration"}});
 
   auto handler = MakeHandler(/*session_id=*/123);
   handler->GetInspirations(callback.Get());
@@ -1622,11 +1772,11 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success_Descriptors) {
   EXPECT_EQ(1u, inspiration_groups.size());
   const auto& inspiration_descriptors = inspiration_groups[0]->descriptors;
   EXPECT_EQ("foo", inspiration_descriptors->subject->key);
-  EXPECT_EQ("foo", inspiration_descriptors->subject->label);
+  EXPECT_EQ("foo label", inspiration_descriptors->subject->label);
   EXPECT_EQ("bar", inspiration_descriptors->style->key);
-  EXPECT_EQ("bar", inspiration_descriptors->style->label);
+  EXPECT_EQ("bar label", inspiration_descriptors->style->label);
   EXPECT_EQ("baz", inspiration_descriptors->mood->key);
-  EXPECT_EQ("baz", inspiration_descriptors->mood->label);
+  EXPECT_EQ("baz label", inspiration_descriptors->mood->label);
   EXPECT_EQ(side_panel::customize_chrome::mojom::DescriptorDValue::NewName(
                 side_panel::customize_chrome::mojom::DescriptorDName::kYellow),
             inspiration_descriptors->color);
@@ -1647,7 +1797,7 @@ TEST_F(WallpaperSearchHandlerTest,
             inspiration_groups = std::move(inspiration_groups_ptr_arg.value());
           }));
   // First group has one valid inspiration. Second group has no "descriptor_a".
-  // Third group has no images.
+  // Third group has no images. Fourth group has no translation.
   SetUpInspirationsResponseWithData(
       R"()]}'[
         {
@@ -1655,12 +1805,12 @@ TEST_F(WallpaperSearchHandlerTest,
             "images": [
             {
                 "id": "00000000000000000000000000000000",
-                "description": "test inspiration 1",
+                "description": "test inspiration 1 ignore",
                 "background_image": "foo_1.png",
                 "thumbnail_image": "foo_2.png"
             },
             {
-                "description": "test inspiration 2",
+                "description": "test inspiration 2 ignore",
                 "background_image": "bar_1.png",
                 "thumbnail_image": "bar_2.png"
             },
@@ -1671,12 +1821,12 @@ TEST_F(WallpaperSearchHandlerTest,
             },
             {
                 "id": "30000000000000000000000000000000",
-                "description": "test inspiration 4",
+                "description": "test inspiration 4 ignore",
                 "thumbnail_image": "qux_2.png"
             },
             {
                 "id": "40000000000000000000000000000000",
-                "description": "test inspiration 5",
+                "description": "test inspiration 5 ignore",
                 "background_image": "qux_1.png"
             }
             ]
@@ -1691,7 +1841,7 @@ TEST_F(WallpaperSearchHandlerTest,
             },
             "images": [
             {
-                "description": "test inspiration 6",
+                "description": "test inspiration 6 ignore",
                 "background_image": "foo_1.png",
                 "thumbnail_image": "foo_2.png"
             }
@@ -1699,8 +1849,32 @@ TEST_F(WallpaperSearchHandlerTest,
         },
         {
             "descriptor_a": "qux"
+        },
+        {
+            "id": "11000000000000000000000000000000",
+            "descriptor_a": "foobar",
+            "descriptor_b": "bar",
+            "descriptor_c": "baz",
+            "descriptor_d": {
+            "hex": "#f9cc18",
+            "name": "Yellow"
+            },
+            "images": [
+            {
+                "description": "test inspiration 7 ignore",
+                "background_image": "foo_1.png",
+                "thumbnail_image": "foo_2.png"
+            }
+            ]
         }
     ])");
+  MockTranslations(
+      /*categories=*/{},
+      /*descriptor_as=*/{{"foo", "foo label"}, {"qux", "qux label"}},
+      /*descriptor_bs=*/{{"bar", "bar label"}},
+      /*descriptor_cs=*/{{"baz", "baz label"}},
+      /*inspiration_descriptions=*/
+      {{"00000000000000000000000000000000", "test inspiration 1"}});
 
   auto handler = MakeHandler(/*session_id=*/123);
   handler->GetInspirations(callback.Get());
@@ -1710,7 +1884,7 @@ TEST_F(WallpaperSearchHandlerTest,
   EXPECT_EQ(1u, inspiration_groups.size());
   const auto& inspiration_group_a = inspiration_groups[0];
   EXPECT_EQ("foo", inspiration_group_a->descriptors->subject->key);
-  EXPECT_EQ("foo", inspiration_group_a->descriptors->subject->label);
+  EXPECT_EQ("foo label", inspiration_group_a->descriptors->subject->label);
   const auto& inspiration_a = inspiration_group_a->inspirations;
   EXPECT_EQ(1u, inspiration_a.size());
   EXPECT_EQ(inspiration_a[0]->description, "test inspiration 1");

@@ -31,6 +31,7 @@
 
 class Profile;
 class WallpaperSearchBackgroundManager;
+class WallpaperSearchStringMap;
 
 namespace data_decoder {
 class DataDecoder;
@@ -69,7 +70,8 @@ class WallpaperSearchHandler
       Profile* profile,
       image_fetcher::ImageDecoder* image_decoder,
       WallpaperSearchBackgroundManager* wallpaper_search_background_manager,
-      int64_t session_id);
+      int64_t session_id,
+      WallpaperSearchStringMap* string_map);
 
   WallpaperSearchHandler(const WallpaperSearchHandler&) = delete;
   WallpaperSearchHandler& operator=(const WallpaperSearchHandler&) = delete;
@@ -181,6 +183,7 @@ class WallpaperSearchHandler
                  SkBitmap>>
       wallpaper_search_results_;
   const int64_t session_id_;
+  const raw_ref<const WallpaperSearchStringMap> string_map_;
 #if BUILDFLAG(IS_CHROMEOS)
   bool skip_show_feedback_page_for_testing_ = false;
 #endif  // BUILDFLAG(IS_CHROMEOS)

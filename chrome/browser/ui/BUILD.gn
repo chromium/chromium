@@ -1903,6 +1903,8 @@ static_library("ui") {
       "webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar_handler.h",
       "webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.cc",
       "webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.h",
+      "webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_string_map.cc",
+      "webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_string_map.h",
       "webui/side_panel/history_clusters/history_clusters_side_panel_ui.cc",
       "webui/side_panel/history_clusters/history_clusters_side_panel_ui.h",
       "webui/side_panel/read_anything/read_anything_prefs.cc",
