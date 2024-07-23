@@ -145,6 +145,11 @@ extern const char kAutofillStickyInfobarName[];
 extern const char kAutofillStickyInfobarDescription[];
 
 // Title and description for the flag that sets a client-side timeout on
+// UnmaskCardRequests to Google Payments servers.
+extern const char kAutofillUnmaskCardRequestTimeoutName[];
+extern const char kAutofillUnmaskCardRequestTimeoutDescription[];
+
+// Title and description for the flag that sets a client-side timeout on
 // UploadCardRequests to Google Payments servers.
 extern const char kAutofillUploadCardRequestTimeoutName[];
 extern const char kAutofillUploadCardRequestTimeoutDescription[];

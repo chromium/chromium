@@ -218,6 +218,11 @@ BASE_FEATURE(kAutofillSkipAndroidBottomSheetForIban,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// When enabled, adds a timeout on the network request for Unmask requests.
+BASE_FEATURE(kAutofillUnmaskCardRequestTimeout,
+             "AutofillUnmaskCardRequestTimeout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, adds a timeout on the network request for UploadCard requests.
 BASE_FEATURE(kAutofillUploadCardRequestTimeout,
              "AutofillUploadCardRequestTimeout",
