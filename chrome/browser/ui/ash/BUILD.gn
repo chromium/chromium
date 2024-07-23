@@ -319,6 +319,8 @@ static_library("test_support") {
   sources = [
     "ash_test_util.cc",
     "ash_test_util.h",
+    "clipboard_history_test_util.cc",
+    "clipboard_history_test_util.h",
     "mock_activation_change_observer.cc",
     "mock_activation_change_observer.h",
     "test_login_screen.cc",
@@ -351,17 +353,228 @@ static_library("test_support") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "accelerator_metadata_unittest.cc",
+    "app_access_notifier_unittest.cc",
+    "app_icon_color_cache_unittest.cc",
+    "arc_vm_data_migration_confirmation_dialog_unittest.cc",
+    "clipboard_history_url_title_fetcher_impl_unittest.cc",
+    "ime_controller_client_impl_unittest.cc",
+    "in_session_auth_dialog_client_unittest.cc",
+    "media_client_impl_unittest.cc",
+    "multitask_menu_nudge_unittest.cc",
+    "session_controller_client_impl_unittest.cc",
+    "system_tray_client_impl_unittest.cc",
+    "wallpaper_controller_client_impl_unittest.cc",
+    "window_pin_util_ash_unittest.cc",
+  ]
+
+  deps = [
+    ":ash",
+    ":test_support",
+    "//ash:test_support",
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/crosapi:test_support",
+    "//chrome/browser/ash/extensions",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/wallpaper_handlers",
+    "//chrome/browser/ash/wallpaper_handlers:test_support",
+    "//chrome/browser/policy:onc",
+    "//chrome/browser/ui/ash/assistant",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/login/session",
+    "//chromeos/ash/components/standalone_browser",
+    "//chromeos/ui/frame",
+    "//components/account_id",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//components/value_store:test_support",
+    "//content/test:test_support",
+    "//net",
+    "//net:test_support",
+    "//testing/gtest",
+
+    # Gather unit tests from subdirectories.
+    "//chrome/browser/ui/ash/accessibility:unit_tests",
+    "//chrome/browser/ui/ash/ambient:unit_tests",
+    "//chrome/browser/ui/ash/annotator:unit_tests",
+    "//chrome/browser/ui/ash/api/tasks:unit_tests",
+    "//chrome/browser/ui/ash/assistant:unit_tests",
+    "//chrome/browser/ui/ash/birch:unit_tests",
+    "//chrome/browser/ui/ash/calendar:unit_tests",
+    "//chrome/browser/ui/ash/desks:unit_tests",
+    "//chrome/browser/ui/ash/device_scheduled_reboot:unit_tests",
+    "//chrome/browser/ui/ash/glanceables:unit_tests",
+    "//chrome/browser/ui/ash/global_media_controls:unit_tests",
+    "//chrome/browser/ui/ash/holding_space:unit_tests",
+    "//chrome/browser/ui/ash/keyboard:unit_tests",
+    "//chrome/browser/ui/ash/multi_user:unit_tests",
+    "//chrome/browser/ui/ash/network:unit_tests",
+    "//chrome/browser/ui/ash/picker:unit_tests",
+    "//chrome/browser/ui/ash/projector:unit_tests",
+    "//chrome/browser/ui/ash/sharesheet:unit_tests",
+    "//chrome/browser/ui/ash/shelf:unit_tests",
+    "//chrome/browser/ui/ash/user_education:unit_tests",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "accelerator_commands_browsertest.cc",
+    "arc_open_url_delegate_impl_browsertest.cc",
+    "ash_web_view_impl_browsertest.cc",
+    "back_gesture_browsertest.cc",
+    "chrome_new_window_client_browsertest.cc",
+    "clipboard_history_browsertest.cc",
+    "event_latency_metrics_browsertest.cc",
+    "feature_discovery_duration_reporter_browsertest.cc",
+    "float_controller_browsertest.cc",
+    "google_one_offer_iph_tab_helper_browsertest.cc",
+    "screen_orientation_delegate_chromeos_browsertest.cc",
+    "shelf_browsertest.cc",
+    "snap_group_browsertest.cc",
+    "system_tray_client_impl_browsertest.cc",
+    "system_tray_tray_cast_browsertest_media_router_chromeos.cc",
+    "thumbnail_loader_browsertest.cc",
+    "volume_controller_browsertest.cc",
+  ]
+
+  deps = [
+    ":ash",
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/lock",
+    "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/ash/login/session:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/scalable_iph:test_support",
+    "//chrome/browser/ash/wallpaper_handlers:test_support",
+    "//chrome/browser/chromeos/arc",
+    "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash:test_support",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
+    "//chromeos/ash/components/settings",
+    "//components/account_id",
+    "//components/feature_engagement/test:test_support",
+    "//components/media_router/browser",
+    "//components/media_router/browser:test_support",
+    "//components/media_router/common",
+    "//components/media_router/common:test_support",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/user_manager",
+    "//components/value_store:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//services/audio/public/cpp",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/events:test_support",
+
+    # Gather browser tests from subdirectories.
+    "//chrome/browser/ui/ash/ambient:browser_tests",
+    "//chrome/browser/ui/ash/annotator:browser_tests",
+    "//chrome/browser/ui/ash/app_list:browser_tests",
+    "//chrome/browser/ui/ash/birch:browser_tests",
+    "//chrome/browser/ui/ash/capture_mode:browser_tests",
+    "//chrome/browser/ui/ash/desks:browser_tests",
+    "//chrome/browser/ui/ash/device_scheduled_reboot:browser_tests",
+    "//chrome/browser/ui/ash/download_status:browser_tests",
+    "//chrome/browser/ui/ash/focus_mode:browser_tests",
+    "//chrome/browser/ui/ash/glanceables:browser_tests",
+    "//chrome/browser/ui/ash/global_media_controls:browser_tests",
+    "//chrome/browser/ui/ash/holding_space:browser_tests",
+    "//chrome/browser/ui/ash/keyboard:browser_tests",
+    "//chrome/browser/ui/ash/network:browser_tests",
+    "//chrome/browser/ui/ash/picker:browser_tests",
+    "//chrome/browser/ui/ash/projector:browser_tests",
+    "//chrome/browser/ui/ash/sharesheet:browser_tests",
+    "//chrome/browser/ui/ash/shelf:browser_tests",
+    "//chrome/browser/ui/ash/shelf/app_service:browser_tests",
+    "//chrome/browser/ui/ash/user_education:browser_tests",
+    "//chrome/browser/ui/ash/user_education/views:browser_tests",
+  ]
+}
+
 if (is_chromeos_device) {
-  group("integration_tests") {
+  source_set("integration_tests") {
     testonly = true
 
-    deps = [ "//chrome/browser/ui/ash/shelf:integration_tests" ]
-  }
-} else {
-  group("interactive_ui_tests") {
-    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "quick_settings_integration_test.cc" ]
 
     deps = [
+      ":ash",
+      "//ash",
+      "//ash/constants",
+      "//base/test:test_support",
+      "//chrome/browser/ash/crosapi",
+      "//chrome/common",
+      "//chrome/test:ash_integration_test_support",
+      "//chromeos/ash/components/standalone_browser",
+      "//testing/gtest",
+      "//ui/base:test_support",
+
+      # Gather tests from subdirectories.
+      "//chrome/browser/ui/ash/shelf:integration_tests",
+    ]
+  }
+} else {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "clipboard_history_interactive_uitest.cc" ]
+
+    deps = [
+      ":ash",
+      "//ash",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/ash:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//ui/events:test_support",
+
+      # Gather tests from subdirectories.
       "//chrome/browser/ui/ash/desks:interactive_ui_tests",
       "//chrome/browser/ui/ash/picker:interactive_ui_tests",
       "//chrome/browser/ui/ash/user_education/welcome_tour:interactive_ui_tests",
