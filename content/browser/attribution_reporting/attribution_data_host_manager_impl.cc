@@ -71,7 +71,6 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
@@ -757,19 +756,13 @@ struct AttributionDataHostManagerImpl::RegistrationDataHeaders {
   bool cross_app_web_enabled = false;
 
   static RegistrationDataHeaders Get(const net::HttpResponseHeaders* headers,
-                                     bool cross_app_web_runtime_enabled,
                                      const Registrations& registrations,
                                      const GURL& reporting_url) {
     if (!headers) {
       return RegistrationDataHeaders();
     }
 
-    // Note that it's important that the browser process check both the
-    // base::Feature (which is set from the browser, so trustworthy) and the
-    // runtime feature (which can be spoofed in a compromised renderer, so is
-    // best-effort).
     const bool cross_app_web_enabled =
-        cross_app_web_runtime_enabled &&
         base::FeatureList::IsEnabled(
             network::features::kAttributionReportingCrossAppWeb);
 
@@ -1463,8 +1456,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
 bool AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
     const blink::AttributionSrcToken& attribution_src_token,
     const net::HttpResponseHeaders* headers,
-    GURL reporting_url,
-    network::AttributionReportingRuntimeFeatures runtime_features) {
+    GURL reporting_url) {
   auto reporting_origin = SuitableOrigin::Create(reporting_url);
   CHECK(reporting_origin);
 
@@ -1479,8 +1471,6 @@ bool AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
 
   auto header = RegistrationDataHeaders::Get(
       headers,
-      runtime_features.Has(
-          network::AttributionReportingRuntimeFeature::kCrossAppWeb),
       *it, reporting_url);
 
   if (!header) {
@@ -1670,8 +1660,7 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
 bool AttributionDataHostManagerImpl::NotifyBackgroundRegistrationData(
     BackgroundRegistrationsId id,
     const net::HttpResponseHeaders* headers,
-    GURL reporting_url,
-    network::AttributionReportingRuntimeFeatures runtime_features) {
+    GURL reporting_url) {
   CHECK(BackgroundRegistrationsEnabled());
 
   auto it = registrations_.find(id);
@@ -1696,8 +1685,6 @@ bool AttributionDataHostManagerImpl::NotifyBackgroundRegistrationData(
 
   auto header = RegistrationDataHeaders::Get(
       headers,
-      runtime_features.Has(
-          network::AttributionReportingRuntimeFeature::kCrossAppWeb),
       *it, reporting_url);
 
   if (!header) {
@@ -1906,7 +1893,6 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconStarted(
 
 void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
     BeaconId beacon_id,
-    network::AttributionReportingRuntimeFeatures runtime_features,
     GURL reporting_url,
     const net::HttpResponseHeaders* headers,
     bool is_final_response) {
@@ -1932,8 +1918,6 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
 
   auto header = RegistrationDataHeaders::Get(
       headers,
-      runtime_features.Has(
-          network::AttributionReportingRuntimeFeature::kCrossAppWeb),
       *it, reporting_url);
 
   if (!header) {

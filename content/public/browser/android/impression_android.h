@@ -10,7 +10,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
@@ -19,8 +18,7 @@ CONTENT_EXPORT base::android::ScopedJavaLocalRef<jobject> CreateJavaImpression(
     JNIEnv* env,
     base::UnguessableToken attribution_src_token,
     base::UnguessableToken initiator_frame_token,
-    int initiator_process_id,
-    const network::AttributionReportingRuntimeFeatures& features);
+    int initiator_process_id);
 
 }  // namespace content
 

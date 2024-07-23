@@ -114,7 +114,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -2468,8 +2467,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::LegacyTechEventCodeLocationPtr code_location) override;
   void SendPrivateAggregationRequestsForFencedFrameEvent(
       const std::string& event_type) override;
-  void SetAttributionReportingRuntimeFeatures(
-      network::AttributionReportingRuntimeFeatures features) override;
   void CreateFencedFrame(
       mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
           pending_receiver,

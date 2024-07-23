@@ -23,7 +23,6 @@
 #include "net/base/request_priority.h"
 #include "net/storage_access_api/status.h"
 #include "net/url_request/referrer_policy.h"
-#include "services/network/public/cpp/attribution_mojom_traits.h"
 #include "services/network/public/cpp/cookie_manager_shared_mojom_traits.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/network_isolation_key_mojom_traits.h"
@@ -389,11 +388,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static network::mojom::AttributionReportingEligibility
   attribution_reporting_eligibility(const network::ResourceRequest& request) {
     return request.attribution_reporting_eligibility;
-  }
-  static const network::AttributionReportingRuntimeFeatures&
-  attribution_reporting_runtime_features(
-      const network::ResourceRequest& request) {
-    return request.attribution_reporting_runtime_features;
   }
   static const std::optional<base::UnguessableToken>&
   attribution_reporting_src_token(const network::ResourceRequest& request) {

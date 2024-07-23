@@ -14,7 +14,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "components/attribution_reporting/features.h"
-#include "content/browser/fenced_frame/fenced_document_data.h"
 #include "content/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -22,7 +21,6 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -90,14 +88,6 @@ class CrossAppWebAttributionBrowserTest
 
   void TearDownOnMainThread() override { url_loader_interceptor_.reset(); }
 
-  // Helper function that returns whether the ARA cross app web feature is set
-  // on the browser-side.
-  bool CheckBrowserSideCrossAppWebRuntimeFeature() {
-    RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
-    return FencedDocumentData::GetForCurrentDocument(rfh)->features().Has(
-        network::AttributionReportingRuntimeFeature::kCrossAppWeb);
-  }
-
  protected:
   std::optional<network::mojom::AttributionReportingEligibility>
       last_request_attribution_reporting_eligibility_;
@@ -142,8 +132,6 @@ IN_PROC_BROWSER_TEST_P(CrossAppWebAttributionBrowserTest, NoOT) {
             EvalJs(shell(),
                    "document.featurePolicy.features().includes('"
                    "attribution-reporting')"));
-
-  EXPECT_EQ(expected_enabled, CheckBrowserSideCrossAppWebRuntimeFeature());
 
   last_request_attribution_reporting_eligibility_.reset();
 

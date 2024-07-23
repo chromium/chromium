@@ -19,7 +19,6 @@
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
@@ -69,8 +68,7 @@ class MockAttributionDataHostManager final : public AttributionDataHostManager {
               NotifyNavigationRegistrationData,
               (const blink::AttributionSrcToken& attribution_src_token,
                const net::HttpResponseHeaders* headers,
-               GURL reporting_url,
-               network::AttributionReportingRuntimeFeatures),
+               GURL reporting_url),
               (override));
 
   MOCK_METHOD(void,
@@ -91,8 +89,7 @@ class MockAttributionDataHostManager final : public AttributionDataHostManager {
               NotifyBackgroundRegistrationData,
               (BackgroundRegistrationsId id,
                const net::HttpResponseHeaders* headers,
-               GURL reporting_url,
-               network::AttributionReportingRuntimeFeatures),
+               GURL reporting_url),
               (override));
 
   MOCK_METHOD(void,
@@ -111,7 +108,6 @@ class MockAttributionDataHostManager final : public AttributionDataHostManager {
   MOCK_METHOD(void,
               NotifyFencedFrameReportingBeaconData,
               (BeaconId beacon_id,
-               network::AttributionReportingRuntimeFeatures,
                GURL reporting_url,
                const net::HttpResponseHeaders* headers,
                bool is_final_response),

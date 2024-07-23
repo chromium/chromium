@@ -174,7 +174,6 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
                   resource_request.url,
                   resource_request.attribution_reporting_src_token,
                   resource_request.devtools_request_id,
-                  resource_request.attribution_reporting_runtime_features,
                   context->attribution_context.value())
             : nullptr);
     // Adds a new loader receiver to the set held by `this`, binding the pending

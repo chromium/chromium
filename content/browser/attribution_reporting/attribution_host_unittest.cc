@@ -248,15 +248,15 @@ TEST_F(AttributionHostTest, ValidSourceRegistrations_ForwardedToManager) {
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                redirect_headers.get(),
-                                               /*reporting_url=*/b_url, _));
+                                               /*reporting_url=*/b_url));
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                redirect_headers.get(),
-                                               /*reporting_url=*/c_url, _));
+                                               /*reporting_url=*/c_url));
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                headers.get(),
-                                               /*reporting_url=*/d_url, _));
+                                               /*reporting_url=*/d_url));
   EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationRegistrationCompleted(
                                              impression.attribution_src_token));
 
@@ -307,11 +307,11 @@ TEST_F(AttributionHostTest,
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                redirect_headers.get(),
-                                               /*reporting_url=*/b_url, _));
+                                               /*reporting_url=*/b_url));
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                redirect_headers.get(),
-                                               /*reporting_url=*/c_url, _));
+                                               /*reporting_url=*/c_url));
   // Expect no call for origin d as the reporting origin is not suitable.
 
   // Expect that `NotifyNavigationRegistrationCompleted` gets called even if the
@@ -382,9 +382,9 @@ TEST_F(AttributionHostTest,
        AttributionSrcNavigationCommitsToErrorPage_Notified) {
   blink::Impression impression;
 
-  EXPECT_CALL(*mock_data_host_manager(),
-              NotifyNavigationRegistrationData(impression.attribution_src_token,
-                                               _, _, _));
+  EXPECT_CALL(
+      *mock_data_host_manager(),
+      NotifyNavigationRegistrationData(impression.attribution_src_token, _, _));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
@@ -399,9 +399,9 @@ TEST_F(AttributionHostTest,
 TEST_F(AttributionHostTest, AttributionSrcNavigationAborts_Notified) {
   blink::Impression impression;
 
-  EXPECT_CALL(*mock_data_host_manager(),
-              NotifyNavigationRegistrationData(impression.attribution_src_token,
-                                               _, _, _));
+  EXPECT_CALL(
+      *mock_data_host_manager(),
+      NotifyNavigationRegistrationData(impression.attribution_src_token, _, _));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
@@ -889,12 +889,12 @@ TEST_F(AttributionHostTest, InsecureTaintTracking) {
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                redirect_headers.get(),
-                                               /*reporting_url=*/b_url, _))
+                                               /*reporting_url=*/b_url))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                headers.get(),
-                                               /*reporting_url=*/d_url, _))
+                                               /*reporting_url=*/d_url))
       .WillOnce(Return(true));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));

@@ -73,7 +73,6 @@
 #include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -689,8 +688,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                        kRegisterSourceJson);
     EXPECT_CALL(mock_manager_, HandleSource).Times(1);
     EXPECT_TRUE(data_host_manager_.NotifyNavigationRegistrationData(
-        attribution_src_token, headers.get(), reporting_url,
-        network::AttributionReportingRuntimeFeatures()));
+        attribution_src_token, headers.get(), reporting_url));
     task_environment_.FastForwardBy(base::TimeDelta());
   }
 
@@ -704,8 +702,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     headers->SetHeader(kAttributionReportingRegisterSourceHeader,
                        kRegisterSourceJson);
     EXPECT_FALSE(data_host_manager_.NotifyNavigationRegistrationData(
-        attribution_src_token, headers.get(), reporting_url,
-        network::AttributionReportingRuntimeFeatures()));
+        attribution_src_token, headers.get(), reporting_url));
     // kRegistrationMissingUponReceivingData = 1
     histograms.ExpectBucketCount(kNavigationUnexpectedRegistrationHistogram,
                                  /*sample=*/1, /*expected_count=*/1);
@@ -1118,8 +1115,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   headers->SetHeader(kAttributionReportingRegisterSourceHeader,
                      kRegisterSourceJson);
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures());
+      attribution_src_token, headers.get(), reporting_url);
 
   // 3 - The background attribution request completes
   source_data_host_remote.reset();
@@ -1378,49 +1374,12 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       attribution_src_token, kNavigationId, kDevtoolsRequestId);
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporter_url,
-      network::AttributionReportingRuntimeFeatures());
+      attribution_src_token, headers.get(), reporter_url);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, /*headers=*/nullptr, reporter_url,
-      network::AttributionReportingRuntimeFeatures());
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
-       CrossAppWebRuntimeDisabled_OsSourceNotRegistered) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      network::features::kAttributionReportingCrossAppWeb);
-
-  AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state_setting(
-      AttributionOsLevelManager::ApiState::kEnabled);
-
-  const GURL reporter_url("https://report.test");
-  const auto source_site = *SuitableOrigin::Deserialize("https://source.test");
-
-  EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(0);
-
-  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
-  headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
-                     R"("https://r.test/x")");
-
-  const blink::AttributionSrcToken attribution_src_token;
-  data_host_manager_.NotifyNavigationRegistrationStarted(
-      AttributionSuitableContext::CreateForTesting(
-          source_site,
-          /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
-  EXPECT_FALSE(data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporter_url,
-      // The cross to web runtime feature defaults to false.
-      network::AttributionReportingRuntimeFeatures()));
-
-  data_host_manager_.NotifyNavigationRegistrationCompleted(
-      attribution_src_token);
-  // Wait for parsing to finish.
-  task_environment_.FastForwardBy(base::TimeDelta());
+      attribution_src_token, /*headers=*/nullptr, reporter_url);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -1451,8 +1410,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*attribution_data_host_manager=*/nullptr),
       attribution_src_token, kNavigationId, kDevtoolsRequestId);
   EXPECT_TRUE(data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporter_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb}));
+      attribution_src_token, headers.get(), reporter_url));
 
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token);
@@ -1494,8 +1452,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource) {
   headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                      R"("https://r.test/x", "https://r.test/y")");
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporter_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+      attribution_src_token, headers.get(), reporter_url);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token);
 
@@ -1530,8 +1487,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       attribution_src_token, kNavigationId, kDevtoolsRequestId);
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporter_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+      attribution_src_token, headers.get(), reporter_url);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 }
@@ -1561,8 +1517,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       attribution_src_token, kNavigationId, kDevtoolsRequestId);
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporter_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+      attribution_src_token, headers.get(), reporter_url);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 }
@@ -1618,8 +1573,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   headers_2->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        R"("https://r.test/x")");
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers_2.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+      attribution_src_token, headers_2.get(), reporting_url);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token);
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1695,8 +1649,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   headers_1->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        R"("https://r.test/x")");
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      reporting_url, headers_1.get(),
+      kBeaconId, reporting_url, headers_1.get(),
       /*is_final_response=*/false);
   task_environment_.FastForwardBy(base::TimeDelta());
   checkpoint.Call(0);
@@ -1706,8 +1659,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   headers_2->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        R"("https://r.test/x")");
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      reporting_url, headers_2.get(),
+      kBeaconId, reporting_url, headers_2.get(),
       /*is_final_response=*/false);
   task_environment_.FastForwardBy(base::TimeDelta());
   checkpoint.Call(1);
@@ -1717,8 +1669,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   headers_3->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        R"("https://r.test/x")");
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      reporting_url, headers_3.get(),
+      kBeaconId, reporting_url, headers_3.get(),
       /*is_final_response=*/true);
   task_environment_.FastForwardBy(base::TimeDelta());
 
@@ -1782,8 +1733,7 @@ TEST_F(
   headers_1->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        R"("https://r.test/x")");
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      reporting_url, headers_1.get(),
+      kBeaconId, reporting_url, headers_1.get(),
       /*is_final_response=*/false);
   task_environment_.FastForwardBy(base::TimeDelta());
   checkpoint.Call(0);
@@ -1793,8 +1743,7 @@ TEST_F(
   headers_2->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        R"("https://r.test/x")");
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      reporting_url, headers_2.get(),
+      kBeaconId, reporting_url, headers_2.get(),
       /*is_final_response=*/false);
   task_environment_.FastForwardBy(base::TimeDelta());
   checkpoint.Call(1);
@@ -1817,8 +1766,7 @@ TEST_F(
   headers_3->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        R"("https://r.test/x")");
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      reporting_url, headers_3.get(),
+      kBeaconId, reporting_url, headers_3.get(),
       /*is_final_response=*/true);
   task_environment_.FastForwardBy(base::TimeDelta());
   histograms.ExpectBucketCount(
@@ -1844,8 +1792,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           kLastNavigationId),
       attribution_src_token, kNavigationId, kDevtoolsRequestId);
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporter_url,
-      network::AttributionReportingRuntimeFeatures());
+      attribution_src_token, headers.get(), reporter_url);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token);
 
@@ -1884,8 +1831,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectSource_InOrder) {
         R"json({"source_event_id":"2","destination":"https://dest.test"})json");
 
     data_host_manager_.NotifyNavigationRegistrationData(
-        attribution_src_token, headers.get(), reporter_url,
-        network::AttributionReportingRuntimeFeatures());
+        attribution_src_token, headers.get(), reporter_url);
   }
 
   {
@@ -1895,8 +1841,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectSource_InOrder) {
         R"json({"source_event_id":"1","destination":"https://dest.test"})json");
 
     data_host_manager_.NotifyNavigationRegistrationData(
-        attribution_src_token, headers.get(), reporter_url,
-        network::AttributionReportingRuntimeFeatures());
+        attribution_src_token, headers.get(), reporter_url);
   }
 
   // Wait for parsing to finish.
@@ -1925,14 +1870,12 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, kNavigationId, kDevtoolsRequestId);
 
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporter_url,
-      network::AttributionReportingRuntimeFeatures());
+      attribution_src_token, headers.get(), reporter_url);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporter_url,
-      network::AttributionReportingRuntimeFeatures());
+      attribution_src_token, headers.get(), reporter_url);
 
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1960,16 +1903,14 @@ TEST_F(AttributionDataHostManagerImplTest,
   headers->SetHeader(kAttributionReportingRegisterSourceHeader,
                      "!!!invalid json");
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporter_url,
-      network::AttributionReportingRuntimeFeatures());
+      attribution_src_token, headers.get(), reporter_url);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
   headers->SetHeader(kAttributionReportingRegisterSourceHeader,
                      kRegisterSourceJson);
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporter_url,
-      network::AttributionReportingRuntimeFeatures());
+      attribution_src_token, headers.get(), reporter_url);
 
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -2007,8 +1948,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   headers->SetHeader(kAttributionReportingRegisterSourceHeader,
                      kRegisterSourceJson);
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporter_url,
-      network::AttributionReportingRuntimeFeatures());
+      attribution_src_token, headers.get(), reporter_url);
 
   mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -2021,8 +1961,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   trigger_data_host_remote->TriggerDataAvailable(
       reporter, TriggerRegistration(), kViaServiceWorker);
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, /*headers=*/nullptr, reporter_url,
-      network::AttributionReportingRuntimeFeatures());
+      attribution_src_token, /*headers=*/nullptr, reporter_url);
   // We complete the foreground navigation immediately to avoid trigger being
   // delayed due to waiting on foreground registrations.
   data_host_manager_.NotifyNavigationRegistrationCompleted(
@@ -2064,11 +2003,9 @@ TEST_F(AttributionDataHostManagerImplTest,
           kLastNavigationId),
       attribution_src_token, kNavigationId, kDevtoolsRequestId);
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporter_url,
-      network::AttributionReportingRuntimeFeatures());
+      attribution_src_token, headers.get(), reporter_url);
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporter_url,
-      network::AttributionReportingRuntimeFeatures());
+      attribution_src_token, headers.get(), reporter_url);
 
   // Wait for parsing.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -2154,8 +2091,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, /*headers=*/nullptr, reporting_url,
-      network::AttributionReportingRuntimeFeatures());
+      attribution_src_token, /*headers=*/nullptr, reporting_url);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token);
 
@@ -2461,8 +2397,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, kNavigationId, kDevtoolsRequestId);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(),
-      /*reporting_url=*/GURL("https://report.test"),
-      network::AttributionReportingRuntimeFeatures());
+      /*reporting_url=*/GURL("https://report.test"));
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 }
@@ -2487,8 +2422,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationBeaconSource_Registered) {
                      kRegisterSourceJson);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, network::AttributionReportingRuntimeFeatures(), reporting_url,
-      headers.get(),
+      kBeaconId, reporting_url, headers.get(),
       /*is_final_response=*/true);
 
   // Wait for parsing to finish.
@@ -2530,8 +2464,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       /*navigation_id=*/std::nullopt, kDevtoolsRequestId);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      reporting_url, headers.get(),
+      kBeaconId, reporting_url, headers.get(),
       /*is_final_response=*/true);
 
   // Wait for parsing to finish.
@@ -2557,8 +2490,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                      "!!!invalid json");
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, network::AttributionReportingRuntimeFeatures(), reporting_url,
-      headers.get(),
+      kBeaconId, reporting_url, headers.get(),
       /*is_final_response=*/true);
 
   // Wait for parsing to finish.
@@ -2584,7 +2516,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                      kRegisterSourceJson);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      kBeaconId,
       /*reporting_url=*/GURL("http://insecure.test"), headers.get(),
       /*is_final_response=*/true);
 
@@ -2641,7 +2573,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   task_environment_.FastForwardBy(base::Seconds(2));
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      /*beacon_id=*/kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      /*beacon_id=*/kBeaconId,
       /*reporting_url=*/GURL("https://report.test"),
       /*headers=*/nullptr,
       /*is_final_response=*/true);
@@ -2707,7 +2639,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   checkpoint.Call(1);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      /*beacon_id=*/kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      /*beacon_id=*/kBeaconId,
       /*reporting_url=*/GURL("https://report.test"),
       /*headers=*/nullptr,
       /*is_final_response=*/true);
@@ -2716,12 +2648,12 @@ TEST_F(AttributionDataHostManagerImplTest,
   checkpoint.Call(2);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      /*beacon_id=*/BeaconId(2), network::AttributionReportingRuntimeFeatures(),
+      /*beacon_id=*/BeaconId(2),
       /*reporting_url=*/GURL("https://report.test"),
       /*headers=*/nullptr,
       /*is_final_response=*/true);
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      /*beacon_id=*/BeaconId(3), network::AttributionReportingRuntimeFeatures(),
+      /*beacon_id=*/BeaconId(3),
       /*reporting_url=*/GURL("https://report.test"),
       /*headers=*/nullptr,
       /*is_final_response=*/true);
@@ -2783,8 +2715,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   headers->SetHeader(kAttributionReportingRegisterSourceHeader,
                      kRegisterSourceJson);
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures());
+      attribution_src_token, headers.get(), reporting_url);
 
   // 3 - Sources can be registered via a Fenced Frame beacon
   data_host_manager_.NotifyFencedFrameReportingBeaconStarted(
@@ -2806,7 +2737,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // 6 - Beacon registrations complete, the trigger can now be registered.
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, network::AttributionReportingRuntimeFeatures(), reporting_url,
+      kBeaconId, reporting_url,
       /*headers=*/nullptr,
       /*is_final_response=*/true);
   task_environment_.RunUntilIdle();
@@ -2864,14 +2795,14 @@ TEST_F(AttributionDataHostManagerImplTest,
   checkpoint.Call(1);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      /*beacon_id=*/kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      /*beacon_id=*/kBeaconId,
       /*reporting_url=*/GURL("https://report.test"),
       /*headers=*/nullptr,
       /*is_final_response=*/true);
   task_environment_.FastForwardBy(base::TimeDelta());
   // BeaconId(2) never gets called
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      /*beacon_id=*/BeaconId(3), network::AttributionReportingRuntimeFeatures(),
+      /*beacon_id=*/BeaconId(3),
       /*reporting_url=*/GURL("https://report.test"),
       /*headers=*/nullptr,
       /*is_final_response=*/true);
@@ -2920,13 +2851,11 @@ TEST_F(AttributionDataHostManagerImplTest,
                      kRegisterSourceJson);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, network::AttributionReportingRuntimeFeatures(), reporting_url,
-      headers.get(),
+      kBeaconId, reporting_url, headers.get(),
       /*is_final_response=*/false);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, network::AttributionReportingRuntimeFeatures(), reporting_url,
-      headers.get(),
+      kBeaconId, reporting_url, headers.get(),
       /*is_final_response=*/true);
 
   // Wait for parsing.
@@ -2967,7 +2896,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       kNavigationId, kDevtoolsRequestId);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      kBeaconId,
       /*reporting_url=*/GURL(), /*headers=*/nullptr,
       /*is_final_response=*/true);
 
@@ -3005,7 +2934,7 @@ TEST_F(AttributionDataHostManagerImplTest, EventBeaconSource_DataReceived) {
                      kRegisterSourceJson);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, network::AttributionReportingRuntimeFeatures(),
+      kBeaconId,
       /*reporting_url=*/GURL("https://report.test"), headers.get(),
       /*is_final_response=*/true);
 
@@ -3141,8 +3070,7 @@ TEST_F(AttributionDataHostManagerImplTest, WebDisabled_SourceNotRegistered) {
                        kRegisterSourceJson);
 
     data_host_manager_.NotifyNavigationRegistrationData(
-        attribution_src_token, headers.get(), reporter_url,
-        network::AttributionReportingRuntimeFeatures());
+        attribution_src_token, headers.get(), reporter_url);
 
     data_host_manager_.NotifyNavigationRegistrationCompleted(
         attribution_src_token);
@@ -3177,8 +3105,7 @@ TEST_F(AttributionDataHostManagerImplTest, HeadersSize_SourceMetricsRecorded) {
                      kRegisterSourceJson);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, network::AttributionReportingRuntimeFeatures(), reporting_url,
-      headers.get(),
+      kBeaconId, reporting_url, headers.get(),
       /*is_final_response=*/true);
   histograms.ExpectUniqueSample("Conversions.HeadersSize.RegisterSource",
                                 strlen(kRegisterSourceJson), 1);
@@ -3199,8 +3126,7 @@ TEST_F(AttributionDataHostManagerImplTest, HeadersSize_SourceMetricsRecorded) {
       /*navigation_id=*/std::nullopt, kDevtoolsRequestId);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-      reporting_url, headers.get(),
+      kBeaconId, reporting_url, headers.get(),
       /*is_final_response=*/true);
   histograms.ExpectUniqueSample("Conversions.HeadersSize.RegisterOsSource",
                                 os_registration.length(), 1);
@@ -3299,8 +3225,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   headers_1->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        R"("https://r.test/x")");
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      first_background_id, headers_1.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb}));
+      first_background_id, headers_1.get(), reporting_url));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(first_background_id);
   task_environment_.FastForwardBy(base::TimeDelta());
   checkpoint.Call(0);
@@ -3318,8 +3243,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   headers_2->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        R"("https://r.test/x")");
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers_2.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+      attribution_src_token, headers_2.get(), reporting_url);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token);
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -3339,8 +3263,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   headers_3->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        R"("https://r.test/x")");
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      second_background_id, headers_3.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb}));
+      second_background_id, headers_3.get(), reporting_url));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(
       second_background_id);
 
@@ -3388,8 +3311,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
     headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        base::JoinString(urls, ", "));
     EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-        id, headers.get(), reporting_url,
-        {network::AttributionReportingRuntimeFeature::kCrossAppWeb}));
+        id, headers.get(), reporting_url));
     data_host_manager_.NotifyBackgroundRegistrationCompleted(id);
     task_environment_.FastForwardBy(base::TimeDelta());
   };
@@ -3440,8 +3362,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   headers_2->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        R"("https://r.test/x")");
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers_2.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+      attribution_src_token, headers_2.get(), reporting_url);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token);
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -3504,8 +3425,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
     headers->SetHeader(kAttributionReportingRegisterTriggerHeader,
                        kRegisterTriggerJson);
     data_host_manager_.NotifyBackgroundRegistrationData(
-        kBackgroundId, headers.get(), reporting_url,
-        network::AttributionReportingRuntimeFeatures());
+        kBackgroundId, headers.get(), reporting_url);
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
     task_environment_.FastForwardBy(base::TimeDelta());
@@ -3530,8 +3450,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
     headers->SetHeader(kAttributionReportingRegisterOsTriggerHeader,
                        os_header_value);
     data_host_manager_.NotifyBackgroundRegistrationData(
-        kBackgroundId, headers.get(), reporting_url,
-        {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+        kBackgroundId, headers.get(), reporting_url);
 
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
@@ -3614,8 +3533,7 @@ TEST_F(
   triggerHeaders->SetHeader(kAttributionReportingRegisterTriggerHeader,
                             kRegisterTriggerJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      trigger_background_id, triggerHeaders.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures()));
+      trigger_background_id, triggerHeaders.get(), reporting_url));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(
       trigger_background_id);
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -3624,11 +3542,9 @@ TEST_F(
   headers->SetHeader(kAttributionReportingRegisterSourceHeader,
                      kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      kBackgroundId, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures()));
+      kBackgroundId, headers.get(), reporting_url));
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      second_background_id, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures()));
+      second_background_id, headers.get(), reporting_url));
   task_environment_.FastForwardBy(base::TimeDelta());
 
   // Both the foreground & background registrations needs to be done for
@@ -3695,8 +3611,7 @@ TEST_F(
   triggerHeaders->SetHeader(kAttributionReportingRegisterTriggerHeader,
                             kRegisterTriggerJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      trigger_background_id, triggerHeaders.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures()));
+      trigger_background_id, triggerHeaders.get(), reporting_url));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(
       trigger_background_id);
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -3719,8 +3634,7 @@ TEST_F(
   headers->SetHeader(kAttributionReportingRegisterSourceHeader,
                      kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      kBackgroundId, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures()));
+      kBackgroundId, headers.get(), reporting_url));
   // The background source registration must be completed for the trigger to
   // be processed.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -3777,8 +3691,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
   headers->SetHeader(kAttributionReportingRegisterSourceHeader,
                      kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      kBackgroundId, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures()));
+      kBackgroundId, headers.get(), reporting_url));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
   task_environment_.FastForwardBy(base::TimeDelta());
 
@@ -3812,8 +3725,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
   headers_1->SetHeader(kAttributionReportingRegisterSourceHeader,
                        kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      first_background_id, headers_1.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures()));
+      first_background_id, headers_1.get(), reporting_url));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(first_background_id);
   task_environment_.FastForwardBy(base::TimeDelta());
 
@@ -3836,8 +3748,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
   headers_2->SetHeader(kAttributionReportingRegisterSourceHeader,
                        kRegisterSourceJson);
   EXPECT_FALSE(data_host_manager_.NotifyBackgroundRegistrationData(
-      second_background_id, headers_2.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures()));
+      second_background_id, headers_2.get(), reporting_url));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(
       second_background_id);
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -3878,8 +3789,7 @@ TEST_F(
   headers_1->SetHeader(kAttributionReportingRegisterSourceHeader,
                        kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      first_background_id, headers_1.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures()));
+      first_background_id, headers_1.get(), reporting_url));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(first_background_id);
   task_environment_.FastForwardBy(base::TimeDelta());
 
@@ -3910,8 +3820,7 @@ TEST_F(
   headers_2->SetHeader(kAttributionReportingRegisterSourceHeader,
                        kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      second_background_id, headers_2.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures()));
+      second_background_id, headers_2.get(), reporting_url));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(
       second_background_id);
 
@@ -3970,16 +3879,14 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
   headers->SetHeader(kAttributionReportingRegisterSourceHeader,
                      kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      first_background_id, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures()));
+      first_background_id, headers.get(), reporting_url));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(first_background_id);
 
   auto headers_2 = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers_2->SetHeader(kAttributionReportingRegisterSourceHeader,
                        kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      second_background_id, headers_2.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures()));
+      second_background_id, headers_2.get(), reporting_url));
 
   data_host_manager_.NotifyBackgroundRegistrationCompleted(
       second_background_id);
@@ -4024,14 +3931,12 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
     headers->SetHeader(kAttributionReportingRegisterSourceHeader,
                        kRegisterSourceJson);
     EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-        kBackgroundId, headers.get(), reporting_url,
-        network::AttributionReportingRuntimeFeatures()));
+        kBackgroundId, headers.get(), reporting_url));
     auto headers_2 = base::MakeRefCounted<net::HttpResponseHeaders>("");
     headers_2->SetHeader(kAttributionReportingRegisterSourceHeader,
                          kRegisterSourceJson);
     EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-        kBackgroundId, headers_2.get(), reporting_url2,
-        network::AttributionReportingRuntimeFeatures()));
+        kBackgroundId, headers_2.get(), reporting_url2));
 
     if (navigation_eventually_starts) {
       data_host_manager_.NotifyNavigationRegistrationStarted(
@@ -4048,8 +3953,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
     headers_3->SetHeader(kAttributionReportingRegisterSourceHeader,
                          kRegisterSourceJson);
     EXPECT_EQ(data_host_manager_.NotifyBackgroundRegistrationData(
-                  kBackgroundId, headers_3.get(), reporting_url,
-                  network::AttributionReportingRuntimeFeatures()),
+                  kBackgroundId, headers_3.get(), reporting_url),
               navigation_eventually_starts ? true : false);
 
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
@@ -4087,9 +3991,6 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
       context_origin,
       /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId);
 
-  const auto enabled_features = {
-      network::AttributionReportingRuntimeFeature::kCrossAppWeb};
-
   EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(1);
   EXPECT_CALL(mock_manager_, HandleSource).Times(1);
 
@@ -4102,12 +4003,12 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   headers_1->SetHeader(kAttributionReportingRegisterSourceHeader,
                        kRegisterSourceJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      kBackgroundId, headers_1.get(), reporting_url, enabled_features));
+      kBackgroundId, headers_1.get(), reporting_url));
   auto headers_2 = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers_2->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        R"("https://r.test/x")");
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      kBackgroundId, headers_2.get(), reporting_url, enabled_features));
+      kBackgroundId, headers_2.get(), reporting_url));
 
   // The navigation now start and complete.
   data_host_manager_.NotifyNavigationRegistrationStarted(
@@ -4148,8 +4049,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                      R"("https://r.test/x")");
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      kBackgroundId, headers.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb}));
+      kBackgroundId, headers.get(), reporting_url));
 
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
@@ -4183,8 +4083,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                      R"("https://r.test/x")");
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      kBackgroundId, headers.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb}));
+      kBackgroundId, headers.get(), reporting_url));
 
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
@@ -4242,8 +4141,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
   headers->SetHeader(kAttributionReportingRegisterSourceHeader,
                      kRegisterSourceJson);
   data_host_manager_.NotifyBackgroundRegistrationData(
-      kBackgroundId, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures());
+      kBackgroundId, headers.get(), reporting_url);
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -4274,8 +4172,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
   headers->SetHeader(kAttributionReportingRegisterTriggerHeader,
                      kRegisterTriggerJson);
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      kBackgroundId, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures()));
+      kBackgroundId, headers.get(), reporting_url));
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -4312,8 +4209,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
     EXPECT_EQ(
         data_host_manager_.NotifyBackgroundRegistrationData(
             kBackgroundId, headers.get(),
-            suitable ? suitable_reporting_url : non_suitable_reporting_url,
-            network::AttributionReportingRuntimeFeatures()),
+            suitable ? suitable_reporting_url : non_suitable_reporting_url),
         suitable);
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
@@ -4348,8 +4244,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   headers->SetHeader(kAttributionReportingRegisterOsTriggerHeader,
                      R"("https://r.test/x")");
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      kBackgroundId, headers.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb}));
+      kBackgroundId, headers.get(), reporting_url));
 
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
@@ -4382,8 +4277,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   headers->SetHeader(kAttributionReportingRegisterOsTriggerHeader,
                      R"("https://r.test/x")");
   EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
-      kBackgroundId, headers.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb}));
+      kBackgroundId, headers.get(), reporting_url));
 
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
@@ -4416,8 +4310,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
     auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
     headers->SetHeader(kAttributionReportingRegisterTriggerHeader, "");
     data_host_manager_.NotifyBackgroundRegistrationData(
-        kBackgroundId, headers.get(), reporting_url,
-        network::AttributionReportingRuntimeFeatures());
+        kBackgroundId, headers.get(), reporting_url);
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
     task_environment_.FastForwardBy(base::TimeDelta());
@@ -4529,11 +4422,9 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
       for (const auto& header : test_case.headers) {
         headers->SetHeader(header.first, header.second);
       }
-      EXPECT_EQ(
-          data_host_manager_.NotifyBackgroundRegistrationData(
-              kBackgroundId, headers.get(), reporting_url,
-              {network::AttributionReportingRuntimeFeature::kCrossAppWeb}),
-          test_case.expect_registration)
+      EXPECT_EQ(data_host_manager_.NotifyBackgroundRegistrationData(
+                    kBackgroundId, headers.get(), reporting_url),
+                test_case.expect_registration)
           << test_case.description;
       data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
@@ -4727,8 +4618,7 @@ TEST_P(AttributionDataHostManagerImplPreferredPlatformEnabledTest,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       attribution_src_token, kNavigationId, kDevtoolsRequestId);
   data_host_manager_.NotifyNavigationRegistrationData(
-      attribution_src_token, headers.get(), reporter_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+      attribution_src_token, headers.get(), reporter_url);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token);
 
@@ -4771,7 +4661,7 @@ TEST_P(AttributionDataHostManagerImplPreferredPlatformEnabledTest,
       kNavigationId, kDevtoolsRequestId);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId, {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
+      kBeaconId,
       /*reporting_url=*/GURL("https://report.test"), headers.get(),
       /*is_final_response=*/true);
 
@@ -4829,8 +4719,7 @@ TEST_P(
       /*attribution_src_token=*/std::nullopt, kDevtoolsRequestId);
 
   data_host_manager_.NotifyBackgroundRegistrationData(
-      kBackgroundId, headers.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+      kBackgroundId, headers.get(), reporting_url);
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -4876,8 +4765,7 @@ TEST_P(
       /*attribution_src_token=*/std::nullopt, kDevtoolsRequestId);
 
   data_host_manager_.NotifyBackgroundRegistrationData(
-      kBackgroundId, headers.get(), reporting_url,
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+      kBackgroundId, headers.get(), reporting_url);
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -4940,9 +4828,7 @@ TEST_F(AttributionDataHostManagerImplTest,
             kLastNavigationId),
         attribution_src_token, kNavigationId, kDevtoolsRequestId);
     data_host_manager_.NotifyNavigationRegistrationData(
-        attribution_src_token, headers.get(), reporting_url,
-        // The cross to web runtime feature defaults to false.
-        network::AttributionReportingRuntimeFeatures());
+        attribution_src_token, headers.get(), reporting_url);
     data_host_manager_.NotifyNavigationRegistrationCompleted(
         attribution_src_token);
     // Wait for parsing to finish.
@@ -4989,8 +4875,7 @@ TEST_F(AttributionDataHostManagerImplTest,
             kLastNavigationId),
         attribution_src_token, kNavigationId, kDevtoolsRequestId);
     data_host_manager_.NotifyNavigationRegistrationData(
-        attribution_src_token, headers.get(), reporting_url,
-        {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+        attribution_src_token, headers.get(), reporting_url);
     data_host_manager_.NotifyNavigationRegistrationCompleted(
         attribution_src_token);
     // Wait for parsing to finish.
@@ -5100,8 +4985,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
                          R"(report-header-errors)");
     }
     data_host_manager_.NotifyBackgroundRegistrationData(
-        kBackgroundId, headers.get(), reporting_url,
-        network::AttributionReportingRuntimeFeatures());
+        kBackgroundId, headers.get(), reporting_url);
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
     // Wait for parsing to finish.
     task_environment_.FastForwardBy(base::TimeDelta());
@@ -5141,8 +5025,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
                          R"(report-header-errors)");
     }
     data_host_manager_.NotifyBackgroundRegistrationData(
-        kBackgroundId, headers.get(), reporting_url,
-        {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+        kBackgroundId, headers.get(), reporting_url);
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
     // Wait for parsing to finish.
     task_environment_.FastForwardBy(base::TimeDelta());
@@ -5193,8 +5076,7 @@ TEST_F(AttributionDataHostManagerImplTest, RegistrationInfoErrorMetric) {
             kLastNavigationId),
         attribution_src_token, kNavigationId, kDevtoolsRequestId);
     data_host_manager_.NotifyNavigationRegistrationData(
-        attribution_src_token, headers.get(), reporting_url,
-        {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+        attribution_src_token, headers.get(), reporting_url);
     data_host_manager_.NotifyNavigationRegistrationCompleted(
         attribution_src_token);
     // Wait for parsing to finish.

@@ -35,10 +35,8 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
       (params.title_text.empty() ? params.alt_text : params.title_text);
 
   std::optional<base::UnguessableToken> attribution_src_token;
-  std::optional<network::AttributionReportingRuntimeFeatures> runtime_features;
   if (initiator_frame_token && params.impression) {
     attribution_src_token = params.impression->attribution_src_token.value();
-    runtime_features = params.impression->runtime_features;
   }
 
   base::android::ScopedJavaLocalRef<jobject> additional_navigation_params;
@@ -46,7 +44,7 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
     additional_navigation_params =
         content::CreateJavaAdditionalNavigationParams(
             env, initiator_frame_token.value(), initiator_process_id,
-            attribution_src_token, runtime_features);
+            attribution_src_token);
   }
 
   return base::android::ScopedJavaGlobalRef<jobject>(

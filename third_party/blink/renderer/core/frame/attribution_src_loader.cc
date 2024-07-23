@@ -37,7 +37,6 @@
 #include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
@@ -469,9 +468,7 @@ std::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
   // TODO(crbug.com/1434306): Extract URL-invariant checks to avoid redundant
   // operations and DevTools issues.
 
-  const Impression impression{
-      .runtime_features = GetRuntimeFeatures(),
-  };
+  const Impression impression;
 
   if (CreateAndSendRequests(std::move(attribution_src_urls),
                             impression.attribution_src_token,
@@ -712,17 +709,6 @@ network::mojom::AttributionSupport AttributionSrcLoader::GetSupport() const {
   auto* page = local_frame_->GetPage();
   CHECK(page);
   return page->GetAttributionSupport();
-}
-
-network::AttributionReportingRuntimeFeatures
-AttributionSrcLoader::GetRuntimeFeatures() const {
-  network::AttributionReportingRuntimeFeatures runtime_features;
-  if (RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
-          local_frame_->DomWindow())) {
-    runtime_features.Put(
-        network::AttributionReportingRuntimeFeature::kCrossAppWeb);
-  }
-  return runtime_features;
 }
 
 bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(

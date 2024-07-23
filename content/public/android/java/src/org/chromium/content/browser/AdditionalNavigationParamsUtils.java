@@ -23,13 +23,9 @@ public class AdditionalNavigationParamsUtils {
             @JniType("base::UnguessableToken") UnguessableToken initiatorFrameToken,
             int initiatorProcessId,
             @Nullable @JniType("std::optional<base::UnguessableToken>")
-                    UnguessableToken attributionSrcToken,
-            long attributionRuntimeFeatures) {
+                    UnguessableToken attributionSrcToken) {
         return new AdditionalNavigationParams(
-                initiatorFrameToken,
-                initiatorProcessId,
-                attributionSrcToken,
-                attributionRuntimeFeatures);
+                initiatorFrameToken, initiatorProcessId, attributionSrcToken);
     }
 
     @CalledByNative
@@ -47,10 +43,5 @@ public class AdditionalNavigationParamsUtils {
     private static @JniType("std::optional<base::UnguessableToken>") UnguessableToken
             getAttributionSrcToken(AdditionalNavigationParams params) {
         return params.getAttributionSrcToken();
-    }
-
-    @CalledByNative
-    private static long getAttributionRuntimeFeatures(AdditionalNavigationParams params) {
-        return params.getAttributionRuntimeFeatures();
     }
 }

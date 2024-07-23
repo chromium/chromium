@@ -92,7 +92,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/parsed_headers.h"
@@ -345,11 +344,6 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
       request_info.begin_params->impression.has_value()
           ? network::mojom::AttributionReportingEligibility::kNavigationSource
           : network::mojom::AttributionReportingEligibility::kUnset;
-
-  if (request_info.begin_params->impression.has_value()) {
-    new_request->attribution_reporting_runtime_features =
-        request_info.begin_params->impression->runtime_features;
-  }
 
   new_request->shared_storage_writable_eligible =
       request_info.shared_storage_writable_eligible;

@@ -298,9 +298,6 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
           GetAttributionSrcTokenFromJavaAdditionalNavigationParams(
               env, j_additional_navigation_params)
               .value();
-      impression.runtime_features =
-          GetAttributionRuntimeFeaturesFromJavaAdditionalNavigationParams(
-              env, j_additional_navigation_params);
       params.impression = impression;
     }
   }

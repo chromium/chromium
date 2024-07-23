@@ -346,30 +346,6 @@ component("document_isolation_policy") {
   defines = [ "IS_NETWORK_CPP_DOCUMENT_ISOLATION_IMPL" ]
 }
 
-# This source_set is own its own to avoid a circular dependency as its needed by
-# :attribution_traits.
-source_set("attribution") {
-  sources = [ "attribution_reporting_runtime_features.h" ]
-  deps = [ "//base" ]
-}
-
-# This component is separate from
-# //services/network/public/mojom:url_loader_base to use the same typemap for
-# both Blink and non-Blink bindings.
-component("attribution_traits") {
-  sources = [
-    "attribution_mojom_traits.cc",
-    "attribution_mojom_traits.h",
-  ]
-  deps = [
-    ":attribution",
-    "//base",
-    "//services/network/public/mojom:mojom_attribution_shared",
-  ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  defines = [ "IS_NETWORK_CPP_ATTRIBUTION_MOJOM_TRAITS_IMPL" ]
-}
-
 # This component is separate from cpp_base as it is a dependency of
 # //services/network/public/mojom:cookies_mojom.
 component("schemeful_site_mojom_support") {
@@ -476,8 +452,6 @@ component("cpp_base") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
-    ":attribution",
-    ":attribution_traits",
     ":cookies_mojom_support",
     ":crash_keys",
     ":cross_origin_embedder_policy",
@@ -547,7 +521,6 @@ source_set("test_support") {
   sources = [ "is_potentially_trustworthy_unittest.h" ]
 
   public_deps = [
-    ":attribution",
     ":cpp",
     "//base",
     "//base/test:test_support",
