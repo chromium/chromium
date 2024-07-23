@@ -34,6 +34,7 @@ using ::testing::StrictMock;
 
 namespace media {
 namespace {
+constexpr std::string kEmptyData = "";
 constexpr std::string kInvalidData = "ThisIsInvalidData";
 constexpr uint8_t kEncodedData[] = {1, 2, 3};
 
@@ -309,6 +310,33 @@ TEST_F(VaapiVideoDecoderTest, DecodeFails) {
   Decode(buffer, AcceleratedVideoDecoder::DecodeResult::kDecodeError,
          DecoderStatus::Codes::kFailed);
   testing::Mock::VerifyAndClearExpectations(mock_accelerated_video_decoder_);
+}
+
+// Verifies that kConfigChange event can be triggered correctly.
+TEST_F(VaapiVideoDecoderTest, ConfigChange) {
+  InitializeVaapiVideoDecoder(DecoderStatus::Codes::kOk);
+  EXPECT_FALSE(vaapi_decoder()->NeedsTranscryption());
+  auto buffer = CreateDecoderBuffer(base::as_byte_span(kEmptyData));
+  Decode(buffer, AcceleratedVideoDecoder::DecodeResult::kRanOutOfStreamData,
+         DecoderStatus::Codes::kOk);
+  buffer = CreateDecoderBuffer(kEncodedData);
+  EXPECT_CALL(client_, PrepareChangeResolution());
+  Decode(buffer, AcceleratedVideoDecoder::DecodeResult::kConfigChange,
+         DecoderStatus::Codes::kAborted);
+  testing::Mock::VerifyAndClearExpectations(mock_accelerated_video_decoder_);
+}
+
+// Verifies the Reset sequence.
+TEST_F(VaapiVideoDecoderTest, Reset) {
+  InitializeVaapiVideoDecoder(DecoderStatus::Codes::kOk);
+  EXPECT_FALSE(vaapi_decoder()->NeedsTranscryption());
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_accelerated_video_decoder_, Reset());
+  EXPECT_CALL(*this, OnResetDone())
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  vaapi_decoder()->Reset(base::BindOnce(&VaapiVideoDecoderTest::OnResetDone,
+                                        base::Unretained(this)));
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace media
