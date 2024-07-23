@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos_ash)
@@ -219,4 +220,17 @@ source_set("unit_tests") {
       "//printing/backend",
     ]
   }
+}
+
+fuzzer_test("zeroconf_printer_detector_fuzzer") {
+  sources = [ "zeroconf_printer_detector_fuzzer.cc" ]
+  deps = [
+    ":ash",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/printing",
+    "//components/exo/wayland:test_controller_stub",
+    "//components/exo/wayland:ui_controls_protocol_stub",
+  ]
 }
