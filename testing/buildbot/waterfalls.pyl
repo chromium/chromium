@@ -1205,6 +1205,9 @@
           'linux-jammy',
           'x86-64',
         ],
+        'args': [
+            '--emulator-debug-tags=all',
+        ],
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'android_15_emulator_gtests',
