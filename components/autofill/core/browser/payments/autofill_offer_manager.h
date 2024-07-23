@@ -42,23 +42,6 @@ class ShoppingServiceDelegate {
       commerce::DiscountInfoCallback callback) = 0;
 };
 
-// A delegate class to expose relevant CouponService functionalities.
-class CouponServiceDelegate {
- public:
-  // Get FreeListing coupons for the given URL. Will return an empty
-  // list if there is no coupon data associated with this URL.
-  virtual std::vector<AutofillOfferData*> GetFreeListingCouponsForUrl(
-      const GURL& url) = 0;
-
-  // Check if CouponService has eligible coupons for
-  // |last_committed_primary_main_frame_url|.
-  virtual bool IsUrlEligible(
-      const GURL& last_committed_primary_main_frame_url) = 0;
-
- protected:
-  virtual ~CouponServiceDelegate() = default;
-};
-
 // Manages all Autofill related offers. One per browser context. Owned and
 // created by the AutofillOfferManagerFactory.
 class AutofillOfferManager : public KeyedService,
@@ -73,7 +56,6 @@ class AutofillOfferManager : public KeyedService,
 
   AutofillOfferManager(
       PersonalDataManager* personal_data,
-      CouponServiceDelegate* coupon_service_delegate,
       std::unique_ptr<ShoppingServiceDelegate> shopping_service_delegate);
   ~AutofillOfferManager() override;
   AutofillOfferManager(const AutofillOfferManager&) = delete;
@@ -121,7 +103,6 @@ class AutofillOfferManager : public KeyedService,
                                      const commerce::DiscountsMap& discounts);
 
   raw_ptr<PersonalDataManager> personal_data_;
-  raw_ptr<CouponServiceDelegate> coupon_service_delegate_;
   std::unique_ptr<ShoppingServiceDelegate> shopping_service_delegate_;
 
   // This set includes all the eligible domains where offers are applicable.

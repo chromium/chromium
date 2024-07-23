@@ -112,7 +112,6 @@ class OfferNotificationBubbleViewsInteractiveUiTest
         ShowBubbleForCardLinkedOfferAndVerify();
         break;
       case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
-        ShowBubbleForFreeListingCouponOfferAndVerify();
         break;
       case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
         ShowBubbleForGPayPromoCodeOfferAndVerify();
@@ -126,19 +125,6 @@ class OfferNotificationBubbleViewsInteractiveUiTest
     NavigateTo(GURL(chrome::kChromeUINewTabPageURL));
     // Set the initial origin that the bubble will be displayed on.
     SetUpCardLinkedOfferDataWithDomains(
-        {GetUrl("www.merchantsite1.test", "/"),
-         GetUrl("www.merchantsite2.test", "/")});
-    ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    NavigateToAndWaitForForm(GetUrl("www.merchantsite1.test", "/first"));
-    ASSERT_TRUE(WaitForObservedEvent());
-    EXPECT_TRUE(IsIconVisible());
-    EXPECT_TRUE(GetOfferNotificationBubbleViews());
-  }
-
-  void ShowBubbleForFreeListingCouponOfferAndVerify() {
-    NavigateTo(GURL(chrome::kChromeUINewTabPageURL));
-    // Set the initial origin that the bubble will be displayed on.
-    SetUpFreeListingCouponOfferDataWithDomains(
         {GetUrl("www.merchantsite1.test", "/"),
          GetUrl("www.merchantsite2.test", "/")});
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
@@ -348,6 +334,12 @@ IN_PROC_BROWSER_TEST_P(
 // is not, since we have shown the offer bubble in the tab of merchant site 1.
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        CrossTabTracking) {
+  // TODO(b/351935350): Remove this check.
+  // Applies to all offers other than free listing coupons offers.
+  if (test_offer_type_ ==
+      AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
+    return;
+  }
   SetUpOfferDataWithDomains(test_offer_type_,
                             {GetUrl("www.merchantsite1.test", "/"),
                              GetUrl("www.merchantsite2.test", "/")});
@@ -436,6 +428,12 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        Logging_Shown) {
+  // TODO(b/351935350): Remove this check.
+  // Applies to all offers other than free listing coupons offers.
+  if (test_offer_type_ ==
+      AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
+    return;
+  }
   base::HistogramTester histogram_tester;
   ShowBubbleForOfferAndVerify();
 
@@ -492,6 +490,13 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        Logging_Closed) {
+  // TODO(b/351935350): Remove this check.
+  // Applies to all offers other than free listing coupons offers.
+  if (test_offer_type_ ==
+      AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
+    return;
+  }
+
   base::HistogramTester histogram_tester;
   ShowBubbleForOfferAndVerify();
 
@@ -521,6 +526,13 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        Logging_NotInteracted) {
+  // TODO(b/351935350): Remove this check.
+  // Applies to all offers other than free listing coupons offers.
+  if (test_offer_type_ ==
+      AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
+    return;
+  }
+
   base::HistogramTester histogram_tester;
   ShowBubbleForOfferAndVerify();
 
@@ -546,6 +558,12 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 #endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        MAYBE_Logging_LostFocus) {
+  // TODO(b/351935350): Remove this check.
+  // Applies to all offers other than free listing coupons offers.
+  if (test_offer_type_ ==
+      AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
+    return;
+  }
   base::HistogramTester histogram_tester;
   ShowBubbleForOfferAndVerify();
 
@@ -571,81 +589,6 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       autofill_metrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS,
       1);
-}
-
-IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       TooltipAndAccessibleName) {
-  // Applies to free listing coupons offers only, as other offers do not have a
-  // clickable promo code copy button.
-  if (test_offer_type_ !=
-      AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
-    return;
-  }
-
-  ShowBubbleForOfferAndVerify();
-  ASSERT_TRUE(GetOfferNotificationBubbleViews());
-  ASSERT_TRUE(IsIconVisible());
-
-  std::u16string normal_button_tooltip = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PROMO_CODE_OFFER_BUTTON_TOOLTIP_NORMAL);
-  std::u16string clicked_button_tooltip = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PROMO_CODE_OFFER_BUTTON_TOOLTIP_CLICKED);
-  views::LabelButton* copy_promo_code_button;
-
-  copy_promo_code_button =
-      GetOfferNotificationBubbleViews()
-          ->promo_code_label_view_->GetCopyButtonForTesting();
-
-  EXPECT_EQ(normal_button_tooltip, copy_promo_code_button->GetTooltipText());
-  EXPECT_EQ(copy_promo_code_button->GetText() + u" " + normal_button_tooltip,
-            copy_promo_code_button->GetViewAccessibility().GetCachedName());
-
-  GetOfferNotificationBubbleViews()->OnPromoCodeButtonClicked();
-
-  EXPECT_EQ(clicked_button_tooltip, copy_promo_code_button->GetTooltipText());
-  EXPECT_EQ(copy_promo_code_button->GetText() + u" " + clicked_button_tooltip,
-            copy_promo_code_button->GetViewAccessibility().GetCachedName());
-}
-
-IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       CopyPromoCode) {
-  // Applies to free listing coupons offers only, as other offers do not have a
-  // clickable promo code copy button.
-  if (test_offer_type_ !=
-      AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
-    return;
-  }
-
-  ShowBubbleForOfferAndVerify();
-  ASSERT_TRUE(GetOfferNotificationBubbleViews());
-  ASSERT_TRUE(IsIconVisible());
-
-  // Simulate clicking on the copy promo code button.
-  base::HistogramTester histogram_tester;
-  GetOfferNotificationBubbleViews()->OnPromoCodeButtonClicked();
-
-  // Clipboard should have the promo code text, which should be the same as what
-  // is on the promo code button, and it should have logged the click.
-  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  std::u16string clipboard_text;
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
-                      &clipboard_text);
-  std::u16string test_promo_code =
-      base::ASCIIToUTF16(GetDefaultTestPromoCode());
-  EXPECT_EQ(clipboard_text, test_promo_code);
-
-  views::LabelButton* copy_promo_code_button;
-
-    copy_promo_code_button =
-        GetOfferNotificationBubbleViews()
-            ->promo_code_label_view_->GetCopyButtonForTesting();
-    EXPECT_EQ(copy_promo_code_button->GetText(),
-              l10n_util::GetStringUTF16(IDS_DISCOUNT_CODE_COPY_BUTTON_TEXT));
-
-    histogram_tester.ExpectBucketCount(
-        "Autofill.OfferNotificationBubblePromoCodeButtonClicked." +
-            GetSubhistogramNameForOfferType(),
-        true, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,

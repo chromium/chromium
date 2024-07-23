@@ -36,10 +36,8 @@ AutofillOfferData ToAutofillOfferData(
 
 AutofillOfferManager::AutofillOfferManager(
     PersonalDataManager* personal_data,
-    CouponServiceDelegate* coupon_service_delegate,
     std::unique_ptr<ShoppingServiceDelegate> shopping_service_delegate)
     : personal_data_(personal_data),
-      coupon_service_delegate_(coupon_service_delegate),
       shopping_service_delegate_(std::move(shopping_service_delegate)) {
   payments_data_manager_observation.Observe(
       &personal_data_->payments_data_manager());
@@ -100,10 +98,6 @@ AutofillOfferManager::GetCardLinkedOffersMap(
 
 bool AutofillOfferManager::IsUrlEligible(
     const GURL& last_committed_primary_main_frame_url) {
-  if (coupon_service_delegate_ && coupon_service_delegate_->IsUrlEligible(
-                                      last_committed_primary_main_frame_url)) {
-    return true;
-  }
   return base::Contains(
       eligible_merchant_domains_,
       last_committed_primary_main_frame_url.DeprecatedGetOriginAsURL());
@@ -111,18 +105,6 @@ bool AutofillOfferManager::IsUrlEligible(
 
 AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
     const GURL& last_committed_primary_main_frame_url) {
-  if (coupon_service_delegate_) {
-    for (AutofillOfferData* offer :
-         coupon_service_delegate_->GetFreeListingCouponsForUrl(
-             last_committed_primary_main_frame_url)) {
-      if (offer->IsActiveAndEligibleForOrigin(
-              last_committed_primary_main_frame_url
-                  .DeprecatedGetOriginAsURL())) {
-        return offer;
-      }
-    }
-  }
-
   for (AutofillOfferData* offer :
        personal_data_->payments_data_manager().GetAutofillOffers()) {
     if (offer->IsActiveAndEligibleForOrigin(

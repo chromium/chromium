@@ -180,7 +180,7 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
     autofill_client_.set_autofill_offer_manager(
         std::make_unique<AutofillOfferManager>(
             autofill_client_.GetPersonalDataManager(),
-            /*coupon_service_delegate=*/nullptr, /*shopping_service=*/nullptr));
+            /*shopping_service=*/nullptr));
   }
 
   void TearDown() override {

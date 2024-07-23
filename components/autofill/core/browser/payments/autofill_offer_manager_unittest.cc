@@ -66,8 +66,7 @@ class AutofillOfferManagerTest : public testing::Test {
         std::make_unique<MockShoppingServiceDelegate>();
     mock_shopping_service_delegate_ = mock_shopping_service_delegate.get();
     autofill_offer_manager_ = std::make_unique<AutofillOfferManager>(
-        &personal_data_manager_, &coupon_service_delegate_,
-        std::move(mock_shopping_service_delegate));
+        &personal_data_manager_, std::move(mock_shopping_service_delegate));
   }
 
   CreditCard CreateCreditCard(std::string guid,
@@ -128,13 +127,6 @@ class AutofillOfferManagerTest : public testing::Test {
   }
 
  protected:
-  class MockCouponServiceDelegate : public CouponServiceDelegate {
-   public:
-    MOCK_METHOD1(GetFreeListingCouponsForUrl,
-                 std::vector<AutofillOfferData*>(const GURL& url));
-    MOCK_METHOD1(IsUrlEligible, bool(const GURL& url));
-  };
-
   class MockShoppingServiceDelegate : public ShoppingServiceDelegate {
    public:
     MOCK_METHOD0(IsDiscountEligibleToShowOnNavigation, bool());
@@ -150,7 +142,6 @@ class AutofillOfferManagerTest : public testing::Test {
   TestPersonalDataManager personal_data_manager_;
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  MockCouponServiceDelegate coupon_service_delegate_;
   raw_ptr<MockShoppingServiceDelegate> mock_shopping_service_delegate_;
 };
 
@@ -191,8 +182,7 @@ TEST_F(AutofillOfferManagerTest, GetCardLinkedOffersMap_WrongUrl) {
 }
 
 // Verify the card linked offer map returned contains only card linked offers,
-// and no other types of offer (i.e. promo code offer or free listing coupon
-// offer).
+// and no other types of offer (i.e. promo code offer).
 TEST_F(AutofillOfferManagerTest, GetCardLinkedOffersMap_OnlyCardLinkedOffers) {
   CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
   CreditCard card2 = CreateCreditCard(kTestGuid, "4111111111111111", 101);
@@ -243,19 +233,6 @@ TEST_F(AutofillOfferManagerTest, IsUrlEligible) {
       autofill_offer_manager_->IsUrlEligible(GURL("http://maps.google.com")));
 }
 
-// Verify that URLs with coupon offers available are marked as eligible.
-TEST_F(AutofillOfferManagerTest, IsUrlEligible_FromCouponDelegate) {
-  // Mock that CouponService has |example_url| as an eligible URL.
-  const GURL example_url("http://www.example.com");
-
-  EXPECT_FALSE(autofill_offer_manager_->IsUrlEligible(example_url));
-
-  EXPECT_CALL(coupon_service_delegate_, IsUrlEligible(example_url))
-      .Times(1)
-      .WillOnce(::testing::Return(true));
-  EXPECT_TRUE(autofill_offer_manager_->IsUrlEligible(example_url));
-}
-
 // Verify no offer is returned given a mismatch URL.
 TEST_F(AutofillOfferManagerTest, GetOfferForUrl_ReturnNothingWhenFindNoMatch) {
   CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
@@ -290,34 +267,6 @@ TEST_F(AutofillOfferManagerTest,
 
   AutofillOfferData* result =
       autofill_offer_manager_->GetOfferForUrl(GURL("http://www.example.com"));
-  EXPECT_EQ(offer2, *result);
-}
-
-// Verify the correct promo code offer is returned given an eligible URL.
-TEST_F(AutofillOfferManagerTest, GetOfferForUrl_ReturnOfferFromCouponDelegate) {
-  const GURL example_url("http://www.example.com");
-  // Add card-linked offer to PersonalDataManager.
-  CreditCard card = CreateCreditCard(kTestGuid, kTestNumber, 100);
-  AutofillOfferData offer1 = CreateCreditCardOfferForCard(
-      card, "5%", /*expired=*/false,
-      /*merchant_origins=*/
-      {example_url, GURL("http://www.example2.com")});
-  personal_data_manager_.test_payments_data_manager().AddAutofillOfferData(
-      offer1);
-
-  // Add promo code offer to FreeListingCouponService.
-  AutofillOfferData offer2 = CreatePromoCodeOffer(
-      /*merchant_origins=*/{example_url, GURL("http://www.example2.com")});
-  std::vector<AutofillOfferData*> data;
-  data.emplace_back(&offer2);
-  EXPECT_CALL(coupon_service_delegate_,
-              GetFreeListingCouponsForUrl(example_url))
-      .Times(1)
-      .WillOnce(::testing::Return(data));
-
-  // Free-listing coupon should take precedence over card-linked offer.
-  AutofillOfferData* result =
-      autofill_offer_manager_->GetOfferForUrl(example_url);
   EXPECT_EQ(offer2, *result);
 }
 
