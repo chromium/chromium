@@ -387,6 +387,7 @@ class XRSession final : public EventTarget,
 
   using XRVisibilityState = device::mojom::blink::XRVisibilityState;
 
+  void UpdateInlineView();
   void UpdateCanvasDimensions(Element*);
   void ApplyPendingRenderState();
 

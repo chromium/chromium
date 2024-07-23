@@ -617,33 +617,7 @@ void XRSession::UpdateViews(Vector<device::mojom::blink::XRViewPtr> views) {
       render_state_->baseLayer()->OnResize();
     }
   } else {  // Inline
-    if (canvas_was_resized_) {
-      views_.clear();
-      canvas_was_resized_ = false;
-    }
-    if (views_.empty()) {
-      views_.emplace_back(MakeGarbageCollected<XRViewData>(
-          device::mojom::blink::XREye::kNone,
-          gfx::Rect(0, 0, output_width_, output_height_)));
-    }
-
-    float aspect = 1.0f;
-    if (output_width_ && output_height_) {
-      aspect = static_cast<float>(output_width_) /
-               static_cast<float>(output_height_);
-    }
-
-    // In non-immersive mode, if there is no explicit projection matrix
-    // provided, the projection matrix must be aligned with the
-    // output canvas dimensions.
-    std::optional<double> inline_vertical_fov =
-        render_state_->inlineVerticalFieldOfView();
-
-    // inlineVerticalFieldOfView should only be null in immersive mode.
-    DCHECK(inline_vertical_fov.has_value());
-    views_[kMonoView]->UpdateProjectionMatrixFromAspect(
-        inline_vertical_fov.value(), aspect, render_state_->depthNear(),
-        render_state_->depthFar());
+    UpdateInlineView();
   }
 }
 
@@ -2099,6 +2073,36 @@ XRFrame* XRSession::CreatePresentationFrame(bool is_animation_frame) {
   return presentation_frame;
 }
 
+void XRSession::UpdateInlineView() {
+  if (canvas_was_resized_) {
+    views_.clear();
+    canvas_was_resized_ = false;
+  }
+  if (views_.empty()) {
+    views_.emplace_back(MakeGarbageCollected<XRViewData>(
+        device::mojom::blink::XREye::kNone,
+        gfx::Rect(0, 0, output_width_, output_height_)));
+  }
+
+  float aspect = 1.0f;
+  if (output_width_ && output_height_) {
+    aspect =
+        static_cast<float>(output_width_) / static_cast<float>(output_height_);
+  }
+
+  // In non-immersive mode, if there is no explicit projection matrix
+  // provided, the projection matrix must be aligned with the
+  // output canvas dimensions.
+  std::optional<double> inline_vertical_fov =
+      render_state_->inlineVerticalFieldOfView();
+
+  // inlineVerticalFieldOfView should only be null in immersive mode.
+  DCHECK(inline_vertical_fov.has_value());
+  views_[kMonoView]->UpdateProjectionMatrixFromAspect(
+      inline_vertical_fov.value(), aspect, render_state_->depthNear(),
+      render_state_->depthFar());
+}
+
 // Called when the canvas element for this session's output context is resized.
 void XRSession::UpdateCanvasDimensions(Element* element) {
   DCHECK(element);
@@ -2117,6 +2121,7 @@ void XRSession::UpdateCanvasDimensions(Element* element) {
   }
 
   canvas_was_resized_ = true;
+  UpdateInlineView();
 }
 
 void XRSession::OnInputStateChangeInternal(
