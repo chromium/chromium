@@ -40,7 +40,8 @@ PRIMITIVE_ARRAY_CONVERSIONS(uint8_t, jbyte, Byte)
 PRIMITIVE_ARRAY_CONVERSIONS(float, jfloat, Float)
 PRIMITIVE_ARRAY_CONVERSIONS(double, jdouble, Double)
 
-// Specialization for bool, which is a bitmask under-the-hood.
+// Specialization for bool, because vector<bool> is a bitmask under-the-hood,
+// not an actual vector of bool values, and thus can't be directly copied.
 template <>
 std::vector<bool> FromJniArray<std::vector<bool>>(
     JNIEnv* env,
@@ -48,8 +49,8 @@ std::vector<bool> FromJniArray<std::vector<bool>>(
   jbooleanArray j_array = static_cast<jbooleanArray>(j_object.obj());
   jsize array_jsize = env->GetArrayLength(j_array);
   size_t array_size = static_cast<size_t>(array_jsize);
-  jboolean arr[array_size];
-  env->GetBooleanArrayRegion(j_array, 0, array_jsize, arr);
+  auto arr = std::make_unique<jboolean[]>(array_size);
+  env->GetBooleanArrayRegion(j_array, 0, array_jsize, arr.get());
 
   std::vector<bool> ret;
   ret.resize(array_size);
@@ -66,14 +67,14 @@ ScopedJavaLocalRef<jarray> ToJniArray<std::vector<bool>>(
   jsize array_jsize = static_cast<jsize>(vec.size());
   size_t array_size = static_cast<size_t>(array_jsize);
 
-  jboolean arr[array_size];
+  auto arr = std::make_unique<jboolean[]>(array_size);
   for (size_t i = 0; i < array_size; ++i) {
     arr[i] = vec[i];
   }
 
   jbooleanArray j_array = env->NewBooleanArray(array_jsize);
   CheckException(env);
-  env->SetBooleanArrayRegion(j_array, 0, array_jsize, arr);
+  env->SetBooleanArrayRegion(j_array, 0, array_jsize, arr.get());
   return ScopedJavaLocalRef<jarray>(env, j_array);
 }
 }  // namespace jni_zero
