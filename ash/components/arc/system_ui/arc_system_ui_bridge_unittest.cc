@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -152,8 +151,6 @@ TEST_F(ArcSystemUIBridgeTest, OnColorModeChanged) {
 }
 
 TEST_F(ArcSystemUIBridgeTest, OnConnectionReady) {
-  base::test::ScopedFeatureList features(chromeos::features::kJelly);
-
   EXPECT_FALSE(system_ui_instance_.dark_theme_status());
   ash::ColorPaletteSeed seed;
   seed.color_mode = ui::ColorProviderKey::ColorMode::kDark;
@@ -170,19 +167,6 @@ TEST_F(ArcSystemUIBridgeTest, OnConnectionReady) {
   EXPECT_EQ(mojom::ThemeStyleType::VIBRANT, system_ui_instance_.theme_style());
 }
 
-TEST_F(ArcSystemUIBridgeTest, JellyDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(chromeos::features::kJelly);
-
-  ash::ColorPaletteSeed seed;
-  seed.seed_color = SK_ColorGREEN;
-  seed.scheme = ash::style::mojom::ColorScheme::kVibrant;
-  bridge_->OnColorPaletteChanging(seed);
-  EXPECT_EQ(gfx::kGoogleBlue400, system_ui_instance_.source_color());
-  EXPECT_EQ(mojom::ThemeStyleType::TONAL_SPOT,
-            system_ui_instance_.theme_style());
-}
-
 TEST_F(ArcSystemUIBridgeTest, SendOverlayColor) {
   // Verify that the test data is not the default
   ASSERT_NE((uint32_t)50, system_ui_instance_.source_color());
@@ -196,8 +180,6 @@ TEST_F(ArcSystemUIBridgeTest, SendOverlayColor) {
 }
 
 TEST_F(ArcSystemUIBridgeTest, OnConnectionReady_NeutralToSpritzConversion) {
-  base::test::ScopedFeatureList features(chromeos::features::kJelly);
-
   EXPECT_FALSE(system_ui_instance_.dark_theme_status());
   ash::ColorPaletteSeed seed;
   seed.color_mode = ui::ColorProviderKey::ColorMode::kLight;
