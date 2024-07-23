@@ -77,20 +77,20 @@ ScopedJavaLocalRef<jbooleanArray> ToJavaBooleanArray(JNIEnv* env,
 }
 
 ScopedJavaLocalRef<jintArray> ToJavaIntArray(JNIEnv* env,
-                                             const int* ints,
+                                             const int32_t* ints,
                                              size_t len) {
   // SAFETY: The caller must provide a valid pointer and length.
   return ToJavaIntArray(env, UNSAFE_BUFFERS(base::span(ints, len)));
 }
 
 ScopedJavaLocalRef<jintArray> ToJavaIntArray(JNIEnv* env,
-                                             base::span<const int> ints) {
+                                             base::span<const int32_t> ints) {
   jintArray int_array = env->NewIntArray(checked_cast<jsize>(ints.size()));
   CheckException(env);
   DCHECK(int_array);
 
-  static_assert(sizeof(jint) == sizeof(int));
-  static_assert(alignof(jint) <= alignof(int));
+  static_assert(sizeof(jint) == sizeof(int32_t));
+  static_assert(alignof(jint) <= alignof(int32_t));
   env->SetIntArrayRegion(int_array, jsize{0}, checked_cast<jsize>(ints.size()),
                          reinterpret_cast<const jint*>(ints.data()));
   CheckException(env);

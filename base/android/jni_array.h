@@ -66,14 +66,15 @@ UNSAFE_BUFFER_USAGE BASE_EXPORT ScopedJavaLocalRef<jbooleanArray>
 ToJavaBooleanArray(JNIEnv* env, const bool* bools, size_t len);
 
 // Returns a new Java int array converted from the given int array.
-BASE_EXPORT ScopedJavaLocalRef<jintArray> ToJavaIntArray(JNIEnv* env,
-                                                         span<const int> ints);
+BASE_EXPORT ScopedJavaLocalRef<jintArray> ToJavaIntArray(
+    JNIEnv* env,
+    span<const int32_t> ints);
 
 // Returns a new Java int array converted from the given int array.
 //
 // TODO(crbug.com/40284755): Remove this overload, use spans.
 BASE_EXPORT ScopedJavaLocalRef<jintArray> ToJavaIntArray(JNIEnv* env,
-                                                         const int* ints,
+                                                         const int32_t* ints,
                                                          size_t len);
 
 // Returns a new Java long array converted from the given int64_t array.
