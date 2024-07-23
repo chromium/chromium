@@ -62,6 +62,7 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
+#include "chrome/browser/policy/cloud/fm_registration_token_uploader.h"
 #include "chrome/browser/policy/device_management_service_configuration.h"
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
 #include "chrome/common/chrome_features.h"
@@ -261,6 +262,11 @@ void BrowserPolicyConnectorAsh::Init(
                      commands_invalidator->Initialize(listener);
                      device_remote_commands_invalidator_ =
                          std::move(commands_invalidator);
+
+                     device_fm_registration_token_uploader_ =
+                         std::make_unique<FmRegistrationTokenUploader>(
+                             PolicyInvalidationScope::kDevice, listener,
+                             device_cloud_policy_manager_->core());
                    }},
                invalidation::UniquePointerVariantToPointer(
                    invalidation_service_provider_or_listener_));
@@ -422,10 +428,13 @@ void BrowserPolicyConnectorAsh::Shutdown() {
              invalidation::UniquePointerVariantToPointer(
                  device_remote_commands_invalidator_));
 
+  device_fm_registration_token_uploader_.reset();
+
   // `InvalidationListener` must be destroyed after its dependants
   // (`device_cert_provisioning_scheduler_`,
   // `device_local_account_policy_service_`, `device_cloud_policy_invalidator_`,
-  // and `device_remote_commands_invalidator_`) but before it's dependencies
+  // `device_remote_commands_invalidator_`, and
+  // `device_fm_registration_token_uploader_`) but before it's dependencies
   // (`GCMDriver`).
   if (std::holds_alternative<
           std::unique_ptr<invalidation::InvalidationListener>>(

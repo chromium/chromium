@@ -52,6 +52,7 @@ class DeviceNetworkConfigurationUpdaterAsh;
 class DeviceScheduledRebootHandler;
 class DeviceScheduledUpdateChecker;
 class DeviceWiFiAllowedHandler;
+class FmRegistrationTokenUploader;
 class MinimumVersionPolicyHandler;
 class MinimumVersionPolicyHandlerDelegateImpl;
 class ProxyPolicyProvider;
@@ -264,6 +265,8 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
                std::unique_ptr<RemoteCommandsInvalidator>>
       device_remote_commands_invalidator_ =
           std::unique_ptr<AffiliatedRemoteCommandsInvalidator>{nullptr};
+  std::unique_ptr<FmRegistrationTokenUploader>
+      device_fm_registration_token_uploader_;
 
   std::unique_ptr<BluetoothPolicyHandler> bluetooth_policy_handler_;
   std::unique_ptr<DeviceNamePolicyHandler> device_name_policy_handler_;
