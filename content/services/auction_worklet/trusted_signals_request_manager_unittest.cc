@@ -220,7 +220,7 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
               v8_helper_.get(), context, trusted_bidding_signals_keys);
 
           if (v8_helper_->ExtractJson(context, value, &result) !=
-              AuctionV8Helper::ExtractJsonResult::kSuccess) {
+              AuctionV8Helper::Result::kSuccess) {
             result = "JSON extraction failed.";
           }
           run_loop.Quit();
@@ -252,7 +252,7 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
               v8_helper_.get(), context, render_url, ad_component_render_urls);
 
           if (v8_helper_->ExtractJson(context, value, &result) !=
-              AuctionV8Helper::ExtractJsonResult::kSuccess) {
+              AuctionV8Helper::Result::kSuccess) {
             result = "JSON extraction failed.";
           }
           run_loop.Quit();

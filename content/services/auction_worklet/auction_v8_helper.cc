@@ -455,7 +455,7 @@ bool AuctionV8Helper::InsertJsonValue(v8::Local<v8::Context> context,
 }
 
 // Attempts to convert |value| to JSON and write it to |out|.
-AuctionV8Helper::ExtractJsonResult AuctionV8Helper::ExtractJson(
+AuctionV8Helper::Result AuctionV8Helper::ExtractJson(
     v8::Local<v8::Context> context,
     v8::Local<v8::Value> value,
     std::string* out) {
@@ -463,21 +463,21 @@ AuctionV8Helper::ExtractJsonResult AuctionV8Helper::ExtractJson(
   v8::TryCatch try_catch(isolate());
   v8::MaybeLocal<v8::String> maybe_json = v8::JSON::Stringify(context, value);
   if (try_catch.HasTerminated()) {
-    return ExtractJsonResult::kTimeout;
+    return Result::kTimeout;
   }
   v8::Local<v8::String> json;
   if (!maybe_json.ToLocal(&json))
-    return ExtractJsonResult::kFailure;
+    return Result::kFailure;
   bool success = gin::ConvertFromV8(isolate(), json, out);
   if (!success)
-    return ExtractJsonResult::kFailure;
+    return Result::kFailure;
   // Stringify can return the string "undefined" for certain inputs, which is
   // not actually JSON. Treat those as failures.
   if (*out == "undefined") {
     out->clear();
-    return ExtractJsonResult::kFailure;
+    return Result::kFailure;
   }
-  return ExtractJsonResult::kSuccess;
+  return Result::kSuccess;
 }
 
 AuctionV8Helper::SerializedValue AuctionV8Helper::Serialize(
@@ -598,11 +598,12 @@ AuctionV8Helper::TimeLimit* AuctionV8Helper::GetTimeLimit() {
   return timeout_helper_;
 }
 
-bool AuctionV8Helper::RunScript(v8::Local<v8::Context> context,
-                                v8::Local<v8::UnboundScript> script,
-                                const DebugId* debug_id,
-                                TimeLimit* script_timeout,
-                                std::vector<std::string>& error_out) {
+AuctionV8Helper::Result AuctionV8Helper::RunScript(
+    v8::Local<v8::Context> context,
+    v8::Local<v8::UnboundScript> script,
+    const DebugId* debug_id,
+    TimeLimit* script_timeout,
+    std::vector<std::string>& error_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(isolate(), context->GetIsolate());
 
@@ -625,32 +626,34 @@ bool AuctionV8Helper::RunScript(v8::Local<v8::Context> context,
   if (try_catch.HasTerminated()) {
     error_out.push_back(
         base::StrCat({script_name, " top-level execution timed out."}));
-    return false;
+    return Result::kTimeout;
   }
 
   if (try_catch.HasCaught()) {
     error_out.push_back(FormatExceptionMessage(context, try_catch.Message()));
-    return false;
+    return Result::kFailure;
   }
 
   if (result.IsEmpty()) {
-    return false;
+    return Result::kFailure;
   }
 
-  return true;
+  return Result::kSuccess;
 }
 
-v8::MaybeLocal<v8::Value> AuctionV8Helper::CallFunction(
+AuctionV8Helper::Result AuctionV8Helper::CallFunction(
     v8::Local<v8::Context> context,
     const DebugId* debug_id,
     const std::string& script_name,
     std::string_view function_name,
     base::span<v8::Local<v8::Value>> args,
     TimeLimit* script_timeout,
+    v8::MaybeLocal<v8::Value>& value_out,
     std::vector<std::string>& error_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(isolate(), context->GetIsolate());
 
+  value_out = v8::MaybeLocal<v8::Value>();
   DebugContextScope maybe_debug(inspector(), context, debug_id, script_name);
 
   v8::TryCatch try_catch(isolate());
@@ -659,20 +662,20 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::CallFunction(
 
   v8::Local<v8::String> v8_function_name;
   if (!CreateUtf8String(function_name).ToLocal(&v8_function_name)) {
-    return v8::MaybeLocal<v8::Value>();
+    return Result::kFailure;
   }
 
   v8::Local<v8::Value> function;
   if (!context->Global()->Get(context, v8_function_name).ToLocal(&function)) {
     error_out.push_back(base::StrCat(
         {script_name, " function `", function_name, "` not found."}));
-    return v8::MaybeLocal<v8::Value>();
+    return Result::kFailure;
   }
 
   if (!function->IsFunction()) {
     error_out.push_back(base::StrCat(
         {script_name, " `", function_name, "` is not a function."}));
-    return v8::MaybeLocal<v8::Value>();
+    return Result::kFailure;
   }
 
   v8::Function* func_ptr = v8::Function::Cast(*function);
@@ -695,13 +698,14 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::CallFunction(
   if (try_catch.HasTerminated()) {
     error_out.push_back(base::StrCat(
         {script_name, " execution of `", function_name, "` timed out."}));
-    return v8::MaybeLocal<v8::Value>();
+    return Result::kTimeout;
   }
   if (try_catch.HasCaught()) {
     error_out.push_back(FormatExceptionMessage(context, try_catch.Message()));
-    return v8::MaybeLocal<v8::Value>();
+    return Result::kFailure;
   }
-  return func_result;
+  value_out = func_result;
+  return value_out.IsEmpty() ? Result::kFailure : Result::kSuccess;
 }
 
 void AuctionV8Helper::AbortDebuggerPauses(int context_group_id) {

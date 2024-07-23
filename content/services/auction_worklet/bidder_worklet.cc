@@ -1039,8 +1039,9 @@ void BidderWorklet::V8State::ReportWin(
       v8_helper_->CreateTimeLimit(
           /*script_timeout=*/browser_signal_reporting_timeout);
   bool script_failed =
-      !v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
-                             total_timeout.get(), errors_out);
+      v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
+                            total_timeout.get(),
+                            errors_out) != AuctionV8Helper::Result::kSuccess;
   if (script_failed) {
     TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_win", trace_id);
     PostReportWinCallbackToUserThread(
@@ -1064,14 +1065,15 @@ void BidderWorklet::V8State::ReportWin(
             : nullptr,
         permissions_policy_state_->shared_storage_allowed);
   }
+
+  v8::MaybeLocal<v8::Value> maybe_report_result_ret;
   script_failed =
-      v8_helper_
-          ->CallFunction(
-              context, debug_id_.get(),
-              v8_helper_->FormatScriptName(unbound_worklet_script),
-              is_for_additional_bid ? "reportAdditionalBidWin" : "reportWin",
-              args, total_timeout.get(), errors_out)
-          .IsEmpty();
+      v8_helper_->CallFunction(
+          context, debug_id_.get(),
+          v8_helper_->FormatScriptName(unbound_worklet_script),
+          is_for_additional_bid ? "reportAdditionalBidWin" : "reportWin", args,
+          total_timeout.get(), maybe_report_result_ret,
+          errors_out) != AuctionV8Helper::Result::kSuccess;
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_win", trace_id);
   base::TimeDelta elapsed = elapsed_timer.Elapsed();
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ReportWinTime", elapsed);
@@ -1655,13 +1657,14 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   v8::Local<v8::Value> generate_bid_result;
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "generate_bid", trace_id);
+  v8::MaybeLocal<v8::Value> maybe_generate_bid_result;
   bool got_return_value =
-      v8_helper_
-          ->CallFunction(
-              context, debug_id_.get(),
-              v8_helper_->FormatScriptName(worklet_script_.Get(isolate)),
-              "generateBid", args, total_timeout.get(), errors_out)
-          .ToLocal(&generate_bid_result);
+      v8_helper_->CallFunction(
+          context, debug_id_.get(),
+          v8_helper_->FormatScriptName(worklet_script_.Get(isolate)),
+          "generateBid", args, total_timeout.get(), maybe_generate_bid_result,
+          errors_out) == AuctionV8Helper::Result::kSuccess &&
+      maybe_generate_bid_result.ToLocal(&generate_bid_result);
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "generate_bid", trace_id);
 
   base::TimeDelta time_duration = base::TimeTicks::Now() - start;
@@ -1758,7 +1761,8 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "biddingScript", trace_id);
   bool success =
       v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
-                            &total_timeout, errors_out);
+                            &total_timeout,
+                            errors_out) == AuctionV8Helper::Result::kSuccess;
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "biddingScript", trace_id);
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.BidScriptTime",
                           base::TimeTicks::Now() - start);

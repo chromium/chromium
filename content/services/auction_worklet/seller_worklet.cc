@@ -1033,7 +1033,8 @@ void SellerWorklet::V8State::ScoreAd(
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "sellerScript", trace_id);
     bool success =
         v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
-                              total_timeout.get(), errors_out);
+                              total_timeout.get(),
+                              errors_out) == AuctionV8Helper::Result::kSuccess;
     TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "sellerScript", trace_id);
     if (!success) {
       PostScoreAdCallbackToUserThreadOnError(
@@ -1060,12 +1061,14 @@ void SellerWorklet::V8State::ScoreAd(
   }
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "score_ad", trace_id);
+  v8::MaybeLocal<v8::Value> maybe_score_ad_result;
   bool success =
-      v8_helper_
-          ->CallFunction(context, debug_id_.get(),
-                         v8_helper_->FormatScriptName(unbound_worklet_script),
-                         "scoreAd", args, total_timeout.get(), errors_out)
-          .ToLocal(&score_ad_result);
+      v8_helper_->CallFunction(
+          context, debug_id_.get(),
+          v8_helper_->FormatScriptName(unbound_worklet_script), "scoreAd", args,
+          total_timeout.get(), maybe_score_ad_result,
+          errors_out) == AuctionV8Helper::Result::kSuccess &&
+      maybe_score_ad_result.ToLocal(&score_ad_result);
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score_ad", trace_id);
   base::TimeDelta elapsed = elapsed_timer.Elapsed();
@@ -1242,7 +1245,7 @@ void SellerWorklet::V8State::ScoreAd(
       if (!result_idl.ad.has_value() ||
           v8_helper_->ExtractJson(context, *result_idl.ad,
                                   &component_auction_modified_bid_params->ad) !=
-              AuctionV8Helper::ExtractJsonResult::kSuccess) {
+              AuctionV8Helper::Result::kSuccess) {
         component_auction_modified_bid_params->ad = "null";
       }
 
@@ -1559,7 +1562,8 @@ void SellerWorklet::V8State::ReportResult(
               .reporting_timeout);
   bool success =
       v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
-                            total_timeout.get(), errors_out);
+                            total_timeout.get(),
+                            errors_out) == AuctionV8Helper::Result::kSuccess;
 
   if (!success) {
     TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_result", trace_id);
@@ -1583,12 +1587,14 @@ void SellerWorklet::V8State::ReportResult(
         permissions_policy_state_->shared_storage_allowed);
   }
 
+  v8::MaybeLocal<v8::Value> maybe_signals_for_winner_value;
   success =
-      v8_helper_
-          ->CallFunction(context, debug_id_.get(),
-                         v8_helper_->FormatScriptName(unbound_worklet_script),
-                         "reportResult", args, total_timeout.get(), errors_out)
-          .ToLocal(&signals_for_winner_value);
+      v8_helper_->CallFunction(
+          context, debug_id_.get(),
+          v8_helper_->FormatScriptName(unbound_worklet_script), "reportResult",
+          args, total_timeout.get(), maybe_signals_for_winner_value,
+          errors_out) == AuctionV8Helper::Result::kSuccess &&
+      maybe_signals_for_winner_value.ToLocal(&signals_for_winner_value);
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_result", trace_id);
   base::TimeDelta elapsed = elapsed_timer.Elapsed();
@@ -1613,7 +1619,7 @@ void SellerWorklet::V8State::ReportResult(
   std::string signals_for_winner;
   if (v8_helper_->ExtractJson(context, signals_for_winner_value,
                               &signals_for_winner) !=
-      AuctionV8Helper::ExtractJsonResult::kSuccess) {
+      AuctionV8Helper::Result::kSuccess) {
     signals_for_winner = "null";
   }
 

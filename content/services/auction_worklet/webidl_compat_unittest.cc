@@ -57,7 +57,7 @@ class WebIDLCompatTest : public testing::Test {
   // Compiles and runs script, returning error vector.
   std::vector<std::string> RunScript(v8::Local<v8::Context> context,
                                      const std::string& script_source,
-                                     bool expect_success) {
+                                     AuctionV8Helper::Result expect_result) {
     std::optional<std::string> error;
     v8::MaybeLocal<v8::UnboundScript> maybe_script =
         v8_helper_->Compile(script_source, GURL("https://example.org"),
@@ -66,7 +66,7 @@ class WebIDLCompatTest : public testing::Test {
     v8::Local<v8::UnboundScript> script = maybe_script.ToLocalChecked();
 
     std::vector<std::string> errors;
-    EXPECT_EQ(expect_success,
+    EXPECT_EQ(expect_result,
               v8_helper_->RunScript(context, script, /*debug_id=*/nullptr,
                                     time_limit_.get(), errors));
     return errors;
@@ -76,12 +76,14 @@ class WebIDLCompatTest : public testing::Test {
   v8::Local<v8::Value> MakeValueFromScript(v8::Local<v8::Context> context,
                                            const std::string& script_source) {
     std::vector<std::string> errors =
-        RunScript(context, script_source, /*expect_success=*/true);
+        RunScript(context, script_source,
+                  /*expect_result=*/AuctionV8Helper::Result::kSuccess);
     EXPECT_THAT(errors, ElementsAre());
 
-    v8::MaybeLocal<v8::Value> maybe_result = v8_helper_->CallFunction(
-        context, /*debug_id=*/nullptr, "some script", "make", /*args=*/{},
-        time_limit_.get(), errors);
+    v8::MaybeLocal<v8::Value> maybe_result;
+    v8_helper_->CallFunction(context, /*debug_id=*/nullptr, "some script",
+                             "make", /*args=*/{}, time_limit_.get(),
+                             maybe_result, errors);
     v8::Local<v8::Value> result;
     if (!maybe_result.ToLocal(&result)) {
       result = v8::Undefined(v8_helper_->isolate());
@@ -1039,8 +1041,8 @@ TEST_F(WebIDLCompatTest, PropagateErrorsToV8Timeout) {
     } catch(e) {}
   )";
 
-  std::vector<std::string> errors =
-      RunScript(context, kScript, /*expect_success=*/false);
+  std::vector<std::string> errors = RunScript(
+      context, kScript, /*expect_result=*/AuctionV8Helper::Result::kTimeout);
   EXPECT_THAT(
       errors,
       ElementsAre("https://example.org/ top-level execution timed out."));
@@ -2360,8 +2362,8 @@ TEST_F(WebIDLCompatTest, ArgsConverter) {
   const char kTest[] = R"(
     binding();
   )";
-  std::vector<std::string> errors =
-      RunScript(context, kTest, /*expect_success=*/false);
+  std::vector<std::string> errors = RunScript(
+      context, kTest, /*expect_result=*/AuctionV8Helper::Result::kFailure);
   EXPECT_THAT(errors,
               ElementsAre("https://example.org/:2 Uncaught TypeError: "
                           "binding(): at least 2 argument(s) are required."));
@@ -2374,8 +2376,8 @@ TEST_F(WebIDLCompatTest, ArgsConverter2) {
   const char kTest[] = R"(
     binding("hi");
   )";
-  std::vector<std::string> errors =
-      RunScript(context, kTest, /*expect_success=*/false);
+  std::vector<std::string> errors = RunScript(
+      context, kTest, /*expect_result=*/AuctionV8Helper::Result::kFailure);
   EXPECT_THAT(errors,
               ElementsAre("https://example.org/:2 Uncaught TypeError: "
                           "binding(): at least 2 argument(s) are required."));
@@ -2391,8 +2393,8 @@ TEST_F(WebIDLCompatTest, ArgsConverter3) {
     }
     binding(notS, 0/0);
   )";
-  std::vector<std::string> errors =
-      RunScript(context, kTest, /*expect_success=*/false);
+  std::vector<std::string> errors = RunScript(
+      context, kTest, /*expect_result=*/AuctionV8Helper::Result::kFailure);
   EXPECT_THAT(errors, ElementsAre("https://example.org/:5 Uncaught TypeError: "
                                   "Cannot convert object to primitive value."));
 }
@@ -2404,8 +2406,8 @@ TEST_F(WebIDLCompatTest, ArgsConverter4) {
   const char kTest[] = R"(
       binding("hi", 0/0);
   )";
-  std::vector<std::string> errors =
-      RunScript(context, kTest, /*expect_success=*/false);
+  std::vector<std::string> errors = RunScript(
+      context, kTest, /*expect_result=*/AuctionV8Helper::Result::kFailure);
   EXPECT_THAT(
       errors,
       ElementsAre(
@@ -2421,8 +2423,8 @@ TEST_F(WebIDLCompatTest, ArgsConverter5) {
   const char kTest[] = R"(
       binding("hi", 10);
   )";
-  std::vector<std::string> errors =
-      RunScript(context, kTest, /*expect_success=*/true);
+  std::vector<std::string> errors = RunScript(
+      context, kTest, /*expect_result=*/AuctionV8Helper::Result::kSuccess);
   EXPECT_THAT(errors, ElementsAre());
   EXPECT_EQ(arg0_, "hi");
   EXPECT_EQ(arg1_, 10.0);
@@ -2436,8 +2438,8 @@ TEST_F(WebIDLCompatTest, ArgsConverter6) {
   const char kTest[] = R"(
       binding(23, "12");
   )";
-  std::vector<std::string> errors =
-      RunScript(context, kTest, /*expect_success=*/true);
+  std::vector<std::string> errors = RunScript(
+      context, kTest, /*expect_result=*/AuctionV8Helper::Result::kSuccess);
   EXPECT_THAT(errors, ElementsAre());
   EXPECT_EQ(arg0_, "23");
   EXPECT_EQ(arg1_, 12.0);

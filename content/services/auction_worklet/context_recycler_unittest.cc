@@ -114,15 +114,18 @@ class ContextRecyclerTest : public testing::Test {
     if (!maybe_arg.IsEmpty()) {
       args.push_back(maybe_arg);
     }
-    if (!helper_->RunScript(scope.GetContext(), script,
-                            /*debug_id=*/nullptr, time_limit_.get(),
-                            error_msgs)) {
+    if (helper_->RunScript(scope.GetContext(), script,
+                           /*debug_id=*/nullptr, time_limit_.get(),
+                           error_msgs) != AuctionV8Helper::Result::kSuccess) {
       return {};
     }
-    return helper_->CallFunction(
-        scope.GetContext(),
-        /*debug_id=*/nullptr, helper_->FormatScriptName(script), function_name,
-        args, time_limit_.get(), error_msgs);
+
+    v8::MaybeLocal<v8::Value> result;
+    helper_->CallFunction(scope.GetContext(),
+                          /*debug_id=*/nullptr,
+                          helper_->FormatScriptName(script), function_name,
+                          args, time_limit_.get(), result, error_msgs);
+    return result;
   }
 
   // Runs a function with a list of arguments.
@@ -131,15 +134,17 @@ class ContextRecyclerTest : public testing::Test {
                                 const std::string& function_name,
                                 std::vector<std::string>& error_msgs,
                                 v8::LocalVector<v8::Value> args) {
-    if (!helper_->RunScript(scope.GetContext(), script,
-                            /*debug_id=*/nullptr, time_limit_.get(),
-                            error_msgs)) {
+    if (helper_->RunScript(scope.GetContext(), script,
+                           /*debug_id=*/nullptr, time_limit_.get(),
+                           error_msgs) != AuctionV8Helper::Result::kSuccess) {
       return {};
     }
-    return helper_->CallFunction(
-        scope.GetContext(),
-        /*debug_id=*/nullptr, helper_->FormatScriptName(script), function_name,
-        args, time_limit_.get(), error_msgs);
+    v8::MaybeLocal<v8::Value> result;
+    helper_->CallFunction(scope.GetContext(),
+                          /*debug_id=*/nullptr,
+                          helper_->FormatScriptName(script), function_name,
+                          args, time_limit_.get(), result, error_msgs);
+    return result;
   }
 
   std::string RunExpectString(
