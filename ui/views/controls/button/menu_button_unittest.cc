@@ -56,7 +56,7 @@ class TestMenuButton : public MenuButton {
   void Reset() {
     clicked_ = false;
     last_state_ = Button::STATE_NORMAL;
-    last_event_type_ = ui::kUnknown;
+    last_event_type_ = ui::EventType::kUnknown;
   }
 
  private:
@@ -68,7 +68,7 @@ class TestMenuButton : public MenuButton {
 
   bool clicked_ = false;
   Button::ButtonState last_state_ = Button::STATE_NORMAL;
-  ui::EventType last_event_type_ = ui::kUnknown;
+  ui::EventType last_event_type_ = ui::EventType::kUnknown;
 };
 
 class MenuButtonTest : public ViewsTestBase {

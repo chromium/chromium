@@ -50,6 +50,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/scoped_target_handler.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/native_theme/native_theme.h"
@@ -235,11 +236,11 @@ class TestView : public View {
     }
   }
 
-  // Reset all test state
+  // Reset all test state.
   void Reset() {
     did_change_bounds_ = false;
     did_layout_ = false;
-    last_mouse_event_type_ = 0;
+    last_mouse_event_type_ = ui::EventType::kUnknown;
     location_.SetPoint(0, 0);
     received_mouse_enter_ = false;
     received_mouse_exit_ = false;
@@ -278,17 +279,17 @@ class TestView : public View {
   void OnAccessibilityEvent(ax::mojom::Event event_type) override;
 
   // OnBoundsChanged.
-  bool did_change_bounds_;
+  bool did_change_bounds_ = false;
   gfx::Rect new_bounds_;
 
   // Layout.
   bool did_layout_ = false;
 
   // MouseEvent.
-  int last_mouse_event_type_;
+  ui::EventType last_mouse_event_type_ = ui::EventType::kUnknown;
   gfx::Point location_;
-  bool received_mouse_enter_;
-  bool received_mouse_exit_;
+  bool received_mouse_enter_ = false;
+  bool received_mouse_exit_ = false;
   bool delete_on_pressed_ = false;
 
   // Painting.
@@ -1082,7 +1083,7 @@ TEST_F(ViewTest, MouseEvent) {
   EXPECT_EQ(v2->location_.x(), 10);
   EXPECT_EQ(v2->location_.y(), 20);
   // Make sure v1 did not receive the event
-  EXPECT_EQ(v1->last_mouse_event_type_, 0);
+  EXPECT_EQ(v1->last_mouse_event_type_, ui::EventType::kUnknown);
 
   // Drag event out of bounds. Should still go to v2
   v1->Reset();
@@ -1095,7 +1096,7 @@ TEST_F(ViewTest, MouseEvent) {
   EXPECT_EQ(v2->location_.x(), -50);
   EXPECT_EQ(v2->location_.y(), -60);
   // Make sure v1 did not receive the event
-  EXPECT_EQ(v1->last_mouse_event_type_, 0);
+  EXPECT_EQ(v1->last_mouse_event_type_, ui::EventType::kUnknown);
 
   // Releasted event out of bounds. Should still go to v2
   v1->Reset();
@@ -1107,7 +1108,7 @@ TEST_F(ViewTest, MouseEvent) {
   EXPECT_EQ(v2->location_.x(), -100);
   EXPECT_EQ(v2->location_.y(), -100);
   // Make sure v1 did not receive the event
-  EXPECT_EQ(v1->last_mouse_event_type_, 0);
+  EXPECT_EQ(v1->last_mouse_event_type_, ui::EventType::kUnknown);
 }
 
 // Confirm that a view can be deleted as part of processing a mouse press.
@@ -2543,7 +2544,7 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
                        ui::EventTimeForNow(), 0, 0);
   root_view->OnMouseMoved(move1);
   EXPECT_TRUE(v111->received_mouse_enter_);
-  EXPECT_FALSE(v11->last_mouse_event_type_);
+  EXPECT_EQ(v11->last_mouse_event_type_, ui::EventType::kUnknown);
   EXPECT_TRUE(v1->received_mouse_enter_);
 
   v111->Reset();
@@ -2556,7 +2557,7 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
   root_view->OnMouseMoved(move2);
   EXPECT_TRUE(v111->received_mouse_exit_);
   EXPECT_TRUE(v121->received_mouse_enter_);
-  EXPECT_FALSE(v1->last_mouse_event_type_);
+  EXPECT_EQ(v1->last_mouse_event_type_, ui::EventType::kUnknown);
 
   v111->Reset();
   v121->Reset();
@@ -2568,7 +2569,7 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
   root_view->OnMouseMoved(move3);
   EXPECT_TRUE(v121->received_mouse_exit_);
   EXPECT_TRUE(v11->received_mouse_enter_);
-  EXPECT_FALSE(v1->last_mouse_event_type_);
+  EXPECT_EQ(v1->last_mouse_event_type_, ui::EventType::kUnknown);
 
   v121->Reset();
   v11->Reset();
@@ -2579,7 +2580,7 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
                        ui::EventTimeForNow(), 0, 0);
   root_view->OnMouseMoved(move4);
   EXPECT_TRUE(v21->received_mouse_enter_);
-  EXPECT_FALSE(v2->last_mouse_event_type_);
+  EXPECT_EQ(v2->last_mouse_event_type_, ui::EventType::kUnknown);
   EXPECT_TRUE(v11->received_mouse_exit_);
   EXPECT_TRUE(v1->received_mouse_exit_);
 
@@ -2604,7 +2605,7 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
                         ui::EventTimeForNow(), 0, 0);
   root_view->OnMouseMoved(mouse6);
   EXPECT_TRUE(v11->received_mouse_enter_);
-  EXPECT_FALSE(v1->last_mouse_event_type_);
+  EXPECT_EQ(v1->last_mouse_event_type_, ui::EventType::kUnknown);
 
   v11->Reset();
   v1->Reset();
@@ -3269,7 +3270,7 @@ TEST_F(ViewTest, TransformEvent) {
                          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                          ui::EF_LEFT_MOUSE_BUTTON);
   root->OnMousePressed(pressed);
-  EXPECT_EQ(0, v1->last_mouse_event_type_);
+  EXPECT_EQ(v1->last_mouse_event_type_, ui::EventType::kUnknown);
   EXPECT_EQ(ui::EventType::kMousePressed, v2->last_mouse_event_type_);
   EXPECT_EQ(190, v2->location_.x());
   EXPECT_EQ(10, v2->location_.y());
@@ -3294,7 +3295,7 @@ TEST_F(ViewTest, TransformEvent) {
                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                     ui::EF_LEFT_MOUSE_BUTTON);
   root->OnMousePressed(p2);
-  EXPECT_EQ(0, v1->last_mouse_event_type_);
+  EXPECT_EQ(v1->last_mouse_event_type_, ui::EventType::kUnknown);
   EXPECT_EQ(ui::EventType::kMousePressed, v2->last_mouse_event_type_);
   EXPECT_EQ(10, v2->location_.x());
   EXPECT_EQ(20, v2->location_.y());
@@ -5992,7 +5993,7 @@ TEST_F(ViewTest, ScopedTargetHandlerReceivesEvents) {
     EXPECT_EQ(&scoped_target_handler,
               v->SetTargetHandler(&scoped_target_handler));
 
-    EXPECT_EQ(ui::kUnknown, v->last_mouse_event_type_);
+    EXPECT_EQ(v->last_mouse_event_type_, ui::EventType::kUnknown);
     gfx::Point p(10, 120);
     ui::MouseEvent pressed(ui::EventType::kMousePressed, p, p,
                            ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,

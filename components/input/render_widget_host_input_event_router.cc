@@ -675,8 +675,8 @@ void RenderWidgetHostInputEventRouter::DispatchMouseEvent(
 
   if (target) {
     ui::EventType type = mouse_event.GetTypeAsUiEventType();
-    bool hovering = (type ^ ui::EventType::kMouseDragged) &&
-                    (type ^ ui::EventType::kMousePressed);
+    bool hovering = (type != ui::EventType::kMouseDragged) &&
+                    (type != ui::EventType::kMousePressed);
     ForwardDelegatedInkPoint(target, root_view, mouse_event, mouse_event,
                              hovering);
   }

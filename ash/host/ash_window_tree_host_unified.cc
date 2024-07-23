@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/host/ash_window_tree_host_unified.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <tuple>
@@ -13,8 +12,10 @@
 #include "ash/host/root_window_transformer.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_targeter.h"
@@ -44,7 +45,8 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
     if (root == src_root_ && !event->target()) {
       return root;
     } else {
-      NOTREACHED_IN_MIGRATION() << "event type:" << event->type();
+      NOTREACHED_IN_MIGRATION()
+          << "event type:" << base::to_underlying(event->type());
       return aura::WindowTargeter::FindTargetForEvent(root, event);
     }
   }

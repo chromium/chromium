@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/test/motion_event_test_utils.h"
@@ -58,7 +59,7 @@ class TouchDispositionGestureFilterTest
   }
 
  protected:
-  typedef std::vector<EventType> GestureList;
+  using GestureList = std::vector<EventType>;
 
   ::testing::AssertionResult GesturesMatch(const GestureList& expected,
                                            const GestureList& actual) {
@@ -71,10 +72,9 @@ class TouchDispositionGestureFilterTest
     for (size_t i = 0; i < expected.size(); ++i) {
       if (expected[i] != actual[i]) {
         return ::testing::AssertionFailure()
-            << "actual[" << i << "] ("
-            << actual[i]
-            << ") != expected[" << i << "] ("
-            << expected[i] << ")";
+               << "actual[" << i << "] (" << base::to_underlying(actual[i])
+               << ") != expected[" << i << "] ("
+               << base::to_underlying(expected[i]) << ")";
       }
     }
 

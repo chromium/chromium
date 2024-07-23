@@ -31,6 +31,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
@@ -362,7 +363,8 @@ bool BackGestureEventHandler::MaybeHandleBackGesture(
                             back_gesture_affordance_ != nullptr);
       SCOPED_CRASH_KEY_BOOL("286590216", "going_back_started_1",
                             going_back_started_);
-      SCOPED_CRASH_KEY_NUMBER("286590216", "event.type", event->type());
+      SCOPED_CRASH_KEY_NUMBER("286590216", "event.type",
+                              base::to_underlying(event->type()));
       if (back_gesture_affordance_->IsActivated() ||
           (event->type() == ui::EventType::kScrollFlingStart &&
            event->details().velocity_x() >= kFlingVelocityForGoingBack)) {

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/events/gesture_detection/gesture_event_data_packet.h"
+
 #include <stddef.h>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/gesture_detection/gesture_event_data_packet.h"
 #include "ui/events/test/motion_event_test_utils.h"
 
 using ui::test::MockMotionEvent;
@@ -73,12 +74,12 @@ TEST_F(GestureEventDataPacketTest, Basic) {
   EXPECT_EQ(0U, packet.gesture_count());
   EXPECT_EQ(gfx::PointF(kTouchX, kTouchY), packet.touch_location());
 
-  for (size_t i = EventType::kGestureTypeStart; i < EventType::kGestureTypeEnd;
-       ++i) {
+  for (size_t i = static_cast<size_t>(EventType::kGestureTypeStart);
+       i < static_cast<size_t>(EventType::kGestureTypeEnd); ++i) {
     const EventType type = static_cast<EventType>(i);
     GestureEventData gesture = CreateGesture(type);
     packet.Push(gesture);
-    const size_t index = (i - EventType::kGestureTypeStart);
+    const size_t index = i - static_cast<int>(EventType::kGestureTypeStart);
     ASSERT_EQ(index + 1U, packet.gesture_count());
     EXPECT_TRUE(GestureEqualsExceptForTouchId(gesture, packet.gesture(index)));
     EXPECT_EQ(packet.unique_touch_event_id(),

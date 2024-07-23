@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -33,7 +34,7 @@ namespace ui {
 
 namespace {
 
-int g_custom_event_types = EventType::kLast;
+int g_custom_event_types = base::to_underlying(EventType::kLast);
 
 #define UMA_HISTOGRAM_EVENT_LATENCY_TIMES(name, sample)           \
   UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
