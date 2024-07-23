@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.safety_hub;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -20,6 +22,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -29,9 +32,13 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
+import org.chromium.chrome.browser.preferences.PrefChangeRegistrar.PrefObserver;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for the Safety Hub Magic Stack mediator. */
@@ -43,9 +50,11 @@ public class SafetyHubMagicStackMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private MagicStackBridge mMagicStackBridge;
+    @Mock private PrefService mPrefService;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private SettingsLauncher mSettingsLauncher;
+    @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
     @Mock private View mView;
 
     private Context mContext;
@@ -59,11 +68,13 @@ public class SafetyHubMagicStackMediatorTest {
         mMediator =
                 new SafetyHubMagicStackMediator(
                         mContext,
+                        mPrefService,
                         mModel,
                         mMagicStackBridge,
                         mTabModelSelector,
                         mModuleDelegate,
-                        mSettingsLauncher);
+                        mSettingsLauncher,
+                        mPrefChangeRegistrar);
 
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
     }
@@ -130,6 +141,63 @@ public class SafetyHubMagicStackMediatorTest {
                 mContext.getResources()
                         .getString(R.string.safety_hub_magic_stack_notifications_title),
                 DESCRIPTION);
+    }
+
+    @Test
+    public void testDismissSafeBrowsing() {
+        MagicStackEntry entry =
+                MagicStackEntry.create(DESCRIPTION, MagicStackEntry.ModuleType.SAFE_BROWSING);
+        doReturn(entry).when(mMagicStackBridge).getModuleToShow();
+        mMediator.showModule();
+
+        // Capture the callback
+        ArgumentCaptor<PrefObserver> captor = ArgumentCaptor.forClass(PrefObserver.class);
+        verify(mPrefChangeRegistrar).addObserver(eq(Pref.SAFE_BROWSING_ENABLED), captor.capture());
+        PrefObserver observer = captor.getValue();
+
+        // Test that the module is not dismissed when Safe Browsing is disabled.
+        doReturn(false).when(mPrefService).getBoolean(Pref.SAFE_BROWSING_ENABLED);
+        observer.onPreferenceChange();
+        verify(mModuleDelegate, times(0)).removeModule(ModuleType.SAFETY_HUB);
+        verify(mMagicStackBridge, times(0)).dismissSafeBrowsingModule();
+
+        // Dismiss the module when Safe Browsing is enabled.
+        doReturn(true).when(mPrefService).getBoolean(Pref.SAFE_BROWSING_ENABLED);
+        observer.onPreferenceChange();
+        verify(mModuleDelegate, times(1)).removeModule(ModuleType.SAFETY_HUB);
+        verify(mMagicStackBridge, times(1)).dismissSafeBrowsingModule();
+
+        // Ensure that dismissal is idempotent.
+        observer.onPreferenceChange();
+        verify(mModuleDelegate, times(1)).removeModule(eq(ModuleType.SAFETY_HUB));
+        verify(mMagicStackBridge, times(1)).dismissSafeBrowsingModule();
+
+        // Ensure that the module cannot be shown anymore.
+        mMediator.showModule();
+        verify(mModuleDelegate, times(1)).onDataReady(eq(ModuleType.SAFETY_HUB), any());
+    }
+
+    @Test
+    public void testDismissSafeState() {
+        MagicStackEntry entry =
+                MagicStackEntry.create(DESCRIPTION, MagicStackEntry.ModuleType.REVOKED_PERMISSIONS);
+        doReturn(entry).when(mMagicStackBridge).getModuleToShow();
+        mMediator.showModule();
+
+        // Verify that the pref change registrar is not used.
+        verify(mPrefChangeRegistrar, times(0)).addObserver(any(), any());
+
+        // Dismiss the module with the dismiss callback.
+        mMediator.activeModuleDismissed();
+        verify(mModuleDelegate, times(1)).removeModule(ModuleType.SAFETY_HUB);
+
+        // Verify that dismissal is idempotent.
+        mMediator.activeModuleDismissed();
+        verify(mModuleDelegate, times(1)).removeModule(ModuleType.SAFETY_HUB);
+
+        // Ensure that the module cannot be shown anymore.
+        mMediator.showModule();
+        verify(mModuleDelegate, times(1)).onDataReady(eq(ModuleType.SAFETY_HUB), any());
     }
 
     private void testSafeStateDisplayed(String title, @Nullable String summary) {

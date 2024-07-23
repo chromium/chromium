@@ -8,9 +8,11 @@ import android.content.Context;
 
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
+import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinator for the Safety Hub Magic Stack module. */
@@ -27,11 +29,13 @@ class SafetyHubMagicStackCoordinator implements ModuleProvider {
         mMediator =
                 new SafetyHubMagicStackMediator(
                         context,
+                        UserPrefs.get(profile),
                         model,
                         MagicStackBridge.getForProfile(profile),
                         tabModelSelector,
                         moduleDelegate,
-                        settingsLauncher);
+                        settingsLauncher,
+                        new PrefChangeRegistrar());
     }
 
     @Override
