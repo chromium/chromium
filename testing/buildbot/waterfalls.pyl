@@ -2320,6 +2320,20 @@
         },
         'os_type': 'android',
       },
+      'android-cronet-code-coverage-java': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          '14-x64-emulator',
+          'emulator-8-cores',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'cronet_gtests',
+        },
+        'os_type': 'android',
+      },
       'android-cronet-code-coverage-native': {
         'mixins': [
           'has_native_resultdb_integration',

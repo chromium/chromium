@@ -198,6 +198,7 @@
   "chromium.coverage": {
     "android-code-coverage": "ci/android-code-coverage/gn-args.json",
     "android-code-coverage-native": "ci/android-code-coverage-native/gn-args.json",
+    "android-cronet-code-coverage-java": "ci/android-cronet-code-coverage-java/gn-args.json",
     "android-cronet-code-coverage-native": "ci/android-cronet-code-coverage-native/gn-args.json",
     "android-webview-code-coverage": "ci/android-webview-code-coverage/gn-args.json",
     "android-webview-code-coverage-native": "ci/android-webview-code-coverage-native/gn-args.json",
