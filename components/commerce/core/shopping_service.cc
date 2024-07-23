@@ -205,11 +205,9 @@ ShoppingService::ShoppingService(
   if (opt_guide_) {
     std::vector<optimization_guide::proto::OptimizationType> types;
 
-    // Don't register for info unless we're allowed to by an experiment.
-    if (IsProductInfoApiEnabled() || IsPDPMetricsRecordingEnabled()) {
       types.push_back(
           optimization_guide::proto::OptimizationType::PRICE_TRACKING);
-    }
+
     if (IsMerchantViewerEnabled()) {
       types.push_back(optimization_guide::proto::OptimizationType::
                           MERCHANT_TRUST_SIGNALS_V2);
@@ -238,7 +236,7 @@ ShoppingService::ShoppingService(
   }
 
   if (identity_manager && account_checker_) {
-    if (IsProductInfoApiEnabled() && subscription_proto_db) {
+    if (subscription_proto_db) {
       subscriptions_manager_ = std::make_unique<SubscriptionsManager>(
           identity_manager, url_loader_factory, subscription_proto_db,
           account_checker_.get());
@@ -255,7 +253,7 @@ ShoppingService::ShoppingService(
         std::make_unique<ShoppingBookmarkModelObserver>(
             bookmark_model, this, subscriptions_manager_.get());
 
-    if (power_bookmark_service_ && IsProductInfoApiEnabled()) {
+    if (power_bookmark_service_) {
       shopping_power_bookmark_data_provider_ =
           std::make_unique<ShoppingPowerBookmarkDataProvider>(
               power_bookmark_service_, this);
@@ -328,13 +326,12 @@ void ShoppingService::HandleDidNavigatePrimaryMainFrameForProductInfo(
     WebWrapper* web) {
   // We need optimization guide and one of the features that depend on the
   // price tracking signal to be enabled to do any of this.
-  if (!opt_guide_ ||
-      (!IsProductInfoApiEnabled() && !IsPDPMetricsRecordingEnabled())) {
+  if (!opt_guide_) {
     return;
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (IsProductInfoApiEnabled()) {
+
     commerce_info_cache_.AddRef(web->GetLastCommittedURL());
 
     CommerceInfoCache::CacheEntry* entry =
@@ -344,7 +341,6 @@ void ShoppingService::HandleDidNavigatePrimaryMainFrameForProductInfo(
     // When info is loaded as the result of a navigation, there's no reason to
     // require it be loaded on-demand.
     entry->run_product_info_on_demand = false;
-  }
 
   opt_guide_->CanApplyOptimization(
       web->GetLastCommittedURL(),
@@ -385,10 +381,6 @@ void ShoppingService::DidStopLoading(WebWrapper* web) {
 
 void ShoppingService::ScheduleProductInfoLocalExtraction(WebWrapper* web) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!IsProductInfoApiEnabled()) {
-    return;
-  }
 
   // If we weren't provided a web wrapper or the page hasn't finished loading
   // for the navigation, do nothing. This will be called when the page has a
@@ -473,10 +465,6 @@ void ShoppingService::TryRunningLocalExtractionForProductInfo(
   CommerceInfoCache::CacheEntry* entry =
       commerce_info_cache_.GetEntryForUrl(web->GetLastCommittedURL());
   if (!entry || !entry->needs_local_extraction_run) {
-    return;
-  }
-
-  if (!IsProductInfoApiEnabled()) {
     return;
   }
 
@@ -630,8 +618,10 @@ void ShoppingService::PDPMetricsCallback(
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata,
     const GURL& url) {
-  if (!IsPDPMetricsRecordingEnabled())
+  if (!IsRegionLockedFeatureEnabled(kShoppingPDPMetrics,
+                                    kShoppingPDPMetricsRegionLaunched)) {
     return;
+  }
 
   metrics::RecordPDPMetrics(decision, metadata, pref_service_,
                             is_off_the_record, IsShoppingListEligible(), url);
@@ -645,7 +635,7 @@ void ShoppingService::PDPMetricsCallback(
 
 void ShoppingService::GetProductInfoForUrl(const GURL& url,
                                            ProductInfoCallback callback) {
-  if (!opt_guide_ || !IsProductInfoApiEnabled()) {
+  if (!opt_guide_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), url, std::nullopt));
     return;
@@ -832,20 +822,6 @@ bool ShoppingService::IsRegionLockedFeatureEnabled(
   return commerce::IsRegionLockedFeatureEnabled(
       feature, region_specific_feature, country_on_startup_,
       locale_on_startup_);
-}
-
-bool ShoppingService::IsProductInfoApiEnabled() {
-  return IsRegionLockedFeatureEnabled(kShoppingList,
-                                      kShoppingListRegionLaunched) ||
-         (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule) &&
-          IsEnabledForCountryAndLocale(ntp_features::kNtpChromeCartModule,
-                                       country_on_startup_,
-                                       locale_on_startup_));
-}
-
-bool ShoppingService::IsPDPMetricsRecordingEnabled() {
-  return IsRegionLockedFeatureEnabled(kShoppingPDPMetrics,
-                                      kShoppingPDPMetricsRegionLaunched);
 }
 
 bool ShoppingService::IsMerchantViewerEnabled() {

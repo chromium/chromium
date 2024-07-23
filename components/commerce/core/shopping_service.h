@@ -492,14 +492,6 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       const GURL& url,
       std::optional<bool> is_shopping_page);
 
-  // Whether APIs like |GetProductInfoForURL| are enabled and allowed to be
-  // used.
-  bool IsProductInfoApiEnabled();
-
-  // Whether the PDP (product details page) state of a page is allowed to be
-  // recorded.
-  bool IsPDPMetricsRecordingEnabled();
-
   // A callback for recording metrics after page navigation and having
   // determined the page is shopping related.
   void PDPMetricsCallback(
