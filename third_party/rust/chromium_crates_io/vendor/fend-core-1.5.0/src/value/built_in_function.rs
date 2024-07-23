@@ -40,6 +40,7 @@ pub(crate) enum BuiltInFunction {
 	Floor,
 	Ceil,
 	Round,
+	Fibonacci,
 }
 
 impl BuiltInFunction {
@@ -106,6 +107,7 @@ impl BuiltInFunction {
 			Self::Floor => "floor",
 			Self::Ceil => "ceil",
 			Self::Round => "round",
+			Self::Fibonacci => "fibonacci",
 		}
 	}
 
@@ -134,6 +136,7 @@ impl BuiltInFunction {
 			"conjugate" => Self::Conjugate,
 			"real" => Self::Real,
 			"imag" => Self::Imag,
+			"fibonacci" => Self::Fibonacci,
 			_ => return Err(FendError::DeserializationError),
 		})
 	}

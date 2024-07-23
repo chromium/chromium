@@ -391,6 +391,23 @@ impl BigUint {
 		Ok(res)
 	}
 
+	pub(crate) fn fibonacci<I: Interrupt>(mut n: usize, int: &I) -> FResult<Self> {
+		if n == 0 {
+			return Ok(0.into());
+		}
+		if n == 1 {
+			return Ok(1.into());
+		}
+		let mut a: Self = 0.into();
+		let mut b: Self = 1.into();
+		while n > 1 {
+			test_int(int)?;
+			(b, a) = (a.add(&b), b);
+			n -= 1;
+		}
+		Ok(b)
+	}
+
 	pub(crate) fn mul<I: Interrupt>(mut self, other: &Self, int: &I) -> FResult<Self> {
 		if let (Small(a), Small(b)) = (&self, &other) {
 			if let Some(res) = a.checked_mul(*b) {

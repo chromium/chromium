@@ -26,6 +26,9 @@ use unit_exponent::UnitExponent;
 
 use self::named_unit::compare_hashmaps;
 
+use super::bigrat::BigRat;
+use super::biguint::BigUint;
+use super::real::Real;
 use super::Exact;
 
 #[derive(Clone)]
@@ -590,6 +593,21 @@ impl Value {
 		})
 	}
 
+	pub(crate) fn fibonacci<I: Interrupt>(self, int: &I) -> FResult<Self> {
+		Ok(Self {
+			unit: Unit::unitless(),
+			exact: self.exact,
+			base: self.base,
+			format: self.format,
+			simplifiable: self.simplifiable,
+			value: Complex::from(Real::from(BigRat::from(BigUint::fibonacci(
+				self.try_as_usize(int)?,
+				int,
+			)?)))
+			.into(),
+		})
+	}
+
 	pub(crate) fn real(self) -> FResult<Self> {
 		Ok(Self {
 			value: Complex::from(self.value.one_point()?.real()).into(),
@@ -792,8 +810,9 @@ impl Value {
 
 		// remove alias units and combine identical or compatible units
 		// by summing their exponents and potentially adjusting the value
+		// percentages should be merged to be handled below
 		'outer: for comp in self.unit.components {
-			if comp.is_alias() {
+			if comp.is_alias() && !comp.is_percentage_unit() {
 				// remove alias units
 				let adjusted_res = Exact {
 					value: res_value,
@@ -808,7 +827,10 @@ impl Value {
 				continue;
 			}
 			for res_comp in &mut res_components {
-				if comp.unit.has_no_base_units() && !comp.unit.compare(&res_comp.unit, int)? {
+				if comp.unit.has_no_base_units()
+					&& !(comp.is_percentage_unit() && res_comp.is_percentage_unit())
+					&& !comp.unit.compare(&res_comp.unit, int)?
+				{
 					continue;
 				}
 				let conversion = Unit::compute_scale_factor(
@@ -876,6 +898,45 @@ impl Value {
 			}
 			res_components = res_components2;
 		}
+
+		// percentages are now merged into a single component,
+		// and all other units have been simplified
+		if let Some(percents_i) = res_components
+			.iter()
+			.position(unit_exponent::UnitExponent::is_percentage_unit)
+		{
+			// adjust the exponent in the percentages to either
+			// 1 (keeping it), if its exponent is a positive integer
+			// and there are no other units (like `80kg * 5%`), or
+			// 0 (removing it) otherwise
+			let scale = match res_components[..] {
+				[UnitExponent {
+					ref unit,
+					ref mut exponent,
+				}] if exponent.imag().is_zero()
+					&& matches!(exponent.real().try_as_usize(int), Ok(1..)) =>
+				{
+					let new_exponent = Complex::from(1);
+					let old_exponent = std::mem::replace(exponent, new_exponent.clone());
+					let scale_exponent = Exact::new(old_exponent, true)
+						.add(Exact::new(-new_exponent, true), int)?
+						.value;
+
+					unit.scale.clone().pow(scale_exponent, int)?
+				}
+				_ => {
+					let UnitExponent { unit, exponent } = res_components.remove(percents_i);
+
+					unit.scale.pow(exponent, int)?
+				}
+			};
+
+			Exact {
+				value: res_value,
+				exact: res_exact,
+			} = Exact::new(res_value, res_exact).mul(&scale.apply(Dist::from), int)?;
+		}
+
 		let result = Self {
 			value: res_value,
 			unit: Unit {

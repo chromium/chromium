@@ -358,6 +358,7 @@ impl Value {
 			BuiltInFunction::Floor => arg.expect_num()?.floor(int)?,
 			BuiltInFunction::Ceil => arg.expect_num()?.ceil(int)?,
 			BuiltInFunction::Round => arg.expect_num()?.round(int)?,
+			BuiltInFunction::Fibonacci => arg.expect_num()?.fibonacci(int)?,
 		})))
 	}
 

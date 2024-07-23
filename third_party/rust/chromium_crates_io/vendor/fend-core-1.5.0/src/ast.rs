@@ -679,6 +679,50 @@ pub(crate) fn resolve_identifier<I: Interrupt>(
 	context: &mut crate::Context,
 	int: &I,
 ) -> FResult<Value> {
+	let cloned_scope = scope.clone();
+	if let Some(ref scope) = cloned_scope {
+		if let Some(val) = scope.get(ident, attrs, context, int)? {
+			return Ok(val);
+		}
+	}
+	if let Some(val) = context.variables.get(ident.as_str()) {
+		return Ok(val.clone());
+	}
+
+	let builtin_result = resolve_builtin_identifier(ident, cloned_scope, attrs, context, int);
+	if !matches!(builtin_result, Err(FendError::IdentifierNotFound(_))) {
+		return builtin_result;
+	}
+	let unit_result = crate::units::query_unit(ident.as_str(), attrs, context, int);
+	if !matches!(unit_result, Err(FendError::IdentifierNotFound(_))) {
+		return unit_result;
+	}
+
+	if !ident
+		.as_str()
+		.bytes()
+		.all(|b| b.is_ascii_digit() || b.is_ascii_uppercase())
+	{
+		return unit_result;
+	}
+	let lowercase_builtin_result = resolve_builtin_identifier(
+		&ident.as_str().to_ascii_lowercase().into(),
+		scope,
+		attrs,
+		context,
+		int,
+	);
+	// "Unknown identifier" errors should use the uppercase ident.
+	lowercase_builtin_result.or(unit_result)
+}
+
+fn resolve_builtin_identifier<I: Interrupt>(
+	ident: &Ident,
+	scope: Option<Arc<Scope>>,
+	attrs: Attrs,
+	context: &mut crate::Context,
+	int: &I,
+) -> FResult<Value> {
 	macro_rules! eval_box {
 		($input:expr) => {
 			Box::new(evaluate_to_value(
@@ -689,14 +733,6 @@ pub(crate) fn resolve_identifier<I: Interrupt>(
 				int,
 			)?)
 		};
-	}
-	if let Some(scope) = scope.clone() {
-		if let Some(val) = scope.get(ident, attrs, context, int)? {
-			return Ok(val);
-		}
-	}
-	if let Some(val) = context.variables.get(ident.as_str()) {
-		return Ok(val.clone());
 	}
 	Ok(match ident.as_str() {
 		"pi" | "\u{3c0}" => Value::Num(Box::new(Number::pi())),
@@ -742,6 +778,7 @@ pub(crate) fn resolve_identifier<I: Interrupt>(
 		"log2" => Value::BuiltInFunction(BuiltInFunction::Log2),
 		"log" | "log10" => Value::BuiltInFunction(BuiltInFunction::Log10),
 		"not" => Value::BuiltInFunction(BuiltInFunction::Not),
+		"fib" | "fibonacci" => Value::BuiltInFunction(BuiltInFunction::Fibonacci),
 		"exp" => evaluate_to_value("x: e^x", scope, attrs, context, int)?,
 		"approx." | "approximately" => Value::BuiltInFunction(BuiltInFunction::Approximately),
 		"auto" => Value::Format(FormattingStyle::Auto),
@@ -773,7 +810,7 @@ pub(crate) fn resolve_identifier<I: Interrupt>(
 		"tomorrow" => Value::Date(crate::date::Date::today(context)?.next()),
 		"yesterday" => Value::Date(crate::date::Date::today(context)?.prev()),
 		"trans" => Value::String(Cow::Borrowed("🏳️‍⚧️")),
-		_ => return crate::units::query_unit(ident.as_str(), attrs, context, int),
+		_ => return Err(FendError::IdentifierNotFound(ident.clone())),
 	})
 }
 

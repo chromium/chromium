@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "fend-core"
-version = "1.4.9"
+version = "1.5.0"
 description = "Arbitrary-precision unit-aware calculator"
 homepage = "https://github.com/printfn/fend"
 readme = "README.md"
