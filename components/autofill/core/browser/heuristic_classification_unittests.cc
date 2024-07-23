@@ -6,7 +6,7 @@
 // form structures that were recorded as JSON files. These tests currently don't
 // produce 100% fidelity compared to real browsing. E.g. we don't support
 // invisible fields, yet. Still, they are helpful for tuning heuristics and
-// retionalization against a corpus of observed forms.
+// rationalization against a corpus of observed forms.
 //
 // Test files are located components/test/data/autofill/heuristics-json/
 // and describe the status quo. Not necessarily the correct, expected behavior.
