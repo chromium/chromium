@@ -61,6 +61,7 @@ class WebStateListMetricsBrowserAgent
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
                              const WebStateListStatus& status) override;
+  void BatchOperationEnded(WebStateList* web_state_list) override;
 
   // Updates tab count crash keys metrics.
   void UpdateCrashkeysTabCount();
