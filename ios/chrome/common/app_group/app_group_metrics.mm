@@ -28,6 +28,12 @@ NSString* const kCredentialExtensionCopyURLCount =
 NSString* const kCredentialExtensionCopyUsernameCount =
     @"CredentialExtensionCopyUsernameCount";
 
+NSString* const kCredentialExtensionCopyUserDisplayNameCount =
+    @"CredentialExtensionCopyUserDisplayNameCount";
+
+NSString* const kCredentialExtensionCopyCreationDateCount =
+    @"CredentialExtensionCopyCreationDateCount";
+
 NSString* const kCredentialExtensionCopyPasswordCount =
     @"CredentialExtensionCopyPasswordCount";
 
@@ -40,8 +46,14 @@ NSString* const kCredentialExtensionSearchCount =
 NSString* const kCredentialExtensionPasswordUseCount =
     @"CredentialExtensionPasswordUseCount";
 
+NSString* const kCredentialExtensionPasskeyUseCount =
+    @"CredentialExtensionPasskeyUseCount";
+
 NSString* const kCredentialExtensionQuickPasswordUseCount =
     @"CredentialExtensionQuickPasswordUseCount";
+
+NSString* const kCredentialExtensionQuickPasskeyUseCount =
+    @"CredentialExtensionQuickPasskeyUseCount";
 
 NSString* const kCredentialExtensionFetchPasswordFailureCount =
     @"CredentialExtensionFetchPasswordFailureCount";

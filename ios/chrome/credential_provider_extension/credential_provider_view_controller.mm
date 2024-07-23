@@ -300,7 +300,7 @@ UIColor* BackgroundColor() {
     id<Credential> credential =
         [self.credentialStore credentialWithRecordIdentifier:identifier];
     if (credential) {
-      // TODO(crbug.com/330355124): Add UMA metric.
+      UpdateUMACountForKey(app_group::kCredentialExtensionQuickPasskeyUseCount);
       ASPasskeyCredentialRequest* passkeyCredentialRequest =
           base::apple::ObjCCastStrict<ASPasskeyCredentialRequest>(
               credentialRequest);
