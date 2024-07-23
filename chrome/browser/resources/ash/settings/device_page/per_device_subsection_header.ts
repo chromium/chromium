@@ -13,9 +13,11 @@
 
 import './input_device_settings_shared.css.js';
 import '../icons.html.js';
+import '../os_settings_icons.html.js';
 import '../settings_shared.css.js';
 import 'chrome://resources/ash/common/bluetooth/bluetooth_battery_icon_percentage.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {BatteryType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -27,6 +29,13 @@ import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_prov
 import {BatteryInfo, InputDeviceSettingsProviderInterface} from './input_device_settings_types.js';
 import {createBluetoothDeviceProperties} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_subsection_header.html.js';
+
+// Defines the possible states for a device's display.
+enum DeviceDisplayState {
+  FETCHING_IMAGE = 0,
+  IMAGE_AVAILABLE = 1,
+  IMAGE_UNAVAILABLE = 2,
+}
 
 export class PerDeviceSubsectionHeaderElement extends PolymerElement {
   static get is() {
@@ -68,15 +77,26 @@ export class PerDeviceSubsectionHeaderElement extends PolymerElement {
       name: {
         type: String,
       },
+
+      icon: {
+        type: String,
+      },
+
+      deviceDisplayState: {
+        type: Number,
+        value: DeviceDisplayState.FETCHING_IMAGE,
+      },
     };
   }
 
   isWelcomeExperienceEnabled: boolean;
   deviceImageDataUrl: string|null = null;
   deviceKey: string;
+  deviceDisplayState: DeviceDisplayState;
   name: string;
   bluetoothDevice: BluetoothDeviceProperties|null;
   batteryInfo: BatteryInfo|null;
+  icon: string;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
 
@@ -105,11 +125,23 @@ export class PerDeviceSubsectionHeaderElement extends PolymerElement {
 
   async handleDeviceKeyChange(): Promise<void> {
     if (this.isWelcomeExperienceEnabled) {
+      this.deviceDisplayState = DeviceDisplayState.FETCHING_IMAGE;
       this.deviceImageDataUrl =
           (await this.inputDeviceSettingsProvider.getDeviceIconImage(
                this.deviceKey))
               ?.dataUrl;
+      this.deviceDisplayState = this.deviceImageDataUrl ?
+          DeviceDisplayState.IMAGE_AVAILABLE :
+          DeviceDisplayState.IMAGE_UNAVAILABLE;
     }
+  }
+
+  shouldShowPlaceholder(): boolean {
+    return this.deviceDisplayState === DeviceDisplayState.FETCHING_IMAGE;
+  }
+
+  shouldShowDeviceIcon(): boolean {
+    return this.deviceDisplayState === DeviceDisplayState.IMAGE_UNAVAILABLE;
   }
 }
 

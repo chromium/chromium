@@ -451,7 +451,8 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, TrackpointEnabled) {
       "settings-device-page",
       "settings-per-device-pointing-stick",
       "settings-per-device-pointing-stick-subsection",
-      "h2#pointingStickName",
+      "per-device-subsection-header",
+      "h2#deviceName",
   };
   SetPointingStickDevices({kSamplePointingStickInternal});
   RunTestSequence(

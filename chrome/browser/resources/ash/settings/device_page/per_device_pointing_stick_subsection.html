@@ -4,9 +4,12 @@
   }
 </style>
 <div id="pointingStick">
-  <h2 class="subsection-header" id="pointingStickName">
-    [[getPointingStickName(pointingStick.name)]]
-  </h2>
+  <per-device-subsection-header
+      id="subsectionHeader"
+      device-key="[[pointingStick.deviceKey]]"
+      name="[[getPointingStickName(pointingStick.name)]]"
+      icon="os-settings:device-pointing-stick">
+  </per-device-subsection-header>
   <div class="subsection">
     <div class="settings-box">
       <div class="start settings-box-text"
