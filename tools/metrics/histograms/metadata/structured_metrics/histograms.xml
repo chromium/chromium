@@ -209,7 +209,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.UploadSize" units="bytes"
-    expires_after="2024-11-17">
+    expires_after="2025-01-19">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
