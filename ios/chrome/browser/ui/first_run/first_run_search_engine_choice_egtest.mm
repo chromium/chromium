@@ -225,10 +225,9 @@
                    scrollViewIdentifier:kSearchEngineChoiceScrollViewIdentifier]
       performAction:grey_tap()];
   // Verify the Learn More view was presented.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kSearchEngineChoiceLearnMoreAccessibilityIdentifier)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(
+                          kSearchEngineChoiceLearnMoreAccessibilityIdentifier)];
   GREYAssertNil([MetricsAppInterface expectTotalCount:2
                                          forHistogram:eventHistogram],
                 @"Failed to record event histogram");
