@@ -99,6 +99,7 @@ android_library("java") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.safety_hub"
   sources = [
+    "junit/src/org/chromium/chrome/browser/safety_hub/MagicStackBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchServiceTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchTaskTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackMediatorTest.java",

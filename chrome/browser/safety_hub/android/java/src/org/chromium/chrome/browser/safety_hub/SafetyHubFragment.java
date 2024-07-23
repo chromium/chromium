@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
@@ -117,6 +118,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
         updateAllModules();
         setHasOptionsMenu(true);
+
+        // Notify the magic stack to dismiss the active module.
+        if (ChromeFeatureList.sSafetyHubMagicStack.isEnabled()) {
+            MagicStackBridge.getForProfile(getProfile()).dismissActiveModule();
+        }
     }
 
     private void setUpBrowserStateModule() {
