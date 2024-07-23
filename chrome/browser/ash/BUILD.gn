@@ -2630,7 +2630,6 @@ if (is_chromeos_device) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     sources = [
-      "child_accounts/web_approvals_integration_test.cc",
       "external_metrics_integration_test.cc",
       "featured_integration_test.cc",
       "ml_integration_test.cc",
@@ -2655,6 +2654,7 @@ if (is_chromeos_device) {
       "//chrome/browser/ash/accessibility:integration_tests",
       "//chrome/browser/ash/assistant:integration_tests",
       "//chrome/browser/ash/bluetooth:integration_tests",
+      "//chrome/browser/ash/child_accounts:integration_tests",
       "//chrome/browser/ash/login:integration_tests",
       "//chrome/browser/ash/power/ml/smart_dim:integration_tests",
       "//chrome/browser/ash/scanning:integration_tests",
