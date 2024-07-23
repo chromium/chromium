@@ -360,6 +360,17 @@ class GSL_POINTER span {
     requires(internal::CompatibleRange<T, R> && (X == N || X == dynamic_extent))
   // NOLINTNEXTLINE(google-explicit-constructor)
   explicit(X == dynamic_extent) constexpr span(R&& range) noexcept
+      // SAFETY: The std::ranges::begin() and std::ranges:end() functions always
+      // give a valid iterator pair.
+      : UNSAFE_BUFFERS(
+            span(std::ranges::begin(range), std::ranges::end(range))) {}
+
+  template <typename R, size_t X = internal::ExtentV<R>>
+    requires(internal::LegacyCompatibleRange<T, R> &&
+             (X == N || X == dynamic_extent) &&
+             !internal::CompatibleRange<T, R>)
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  explicit(X == dynamic_extent) constexpr span(R&& range) noexcept
       // SAFETY: The std::ranges::size() function gives the number of elements
       // pointed to by the std::ranges::data() function, which meets the
       // requirement of span.
