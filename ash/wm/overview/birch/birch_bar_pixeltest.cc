@@ -182,7 +182,8 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.name;
     });
 
-TEST_P(BirchBarPixelTest, VerifyBirchChips) {
+// TODO(crbug.com/354748639): This test is flaky.
+TEST_P(BirchBarPixelTest, DISABLED_VerifyBirchChips) {
   EnterOverview();
 
   OverviewGridTestApi overview_test_api(Shell::GetPrimaryRootWindow());
