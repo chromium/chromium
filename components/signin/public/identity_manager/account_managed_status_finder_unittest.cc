@@ -35,16 +35,13 @@ TEST(AccountManagedStatusFinderStaticTest, IsEnterpriseUserBasedOnEmail) {
   };
 
   for (const char* username : kNonEnterpriseUsers) {
-    EXPECT_EQ(
-        AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(username),
-        AccountManagedStatusFinder::EmailEnterpriseStatus::kKnownNonEnterprise)
-        << "IsEnterpriseUserBasedOnEmail returned kUnknown for " << username;
+    EXPECT_FALSE(
+        AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(username))
+        << username;
   }
   for (const char* username : kEnterpriseUsers) {
-    EXPECT_EQ(
-        AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(username),
-        AccountManagedStatusFinder::EmailEnterpriseStatus::kUnknown)
-        << "IsEnterpriseUserBasedOnEmail returned kKnownNonEnterprise for "
+    EXPECT_TRUE(
+        AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(username))
         << username;
   }
 }

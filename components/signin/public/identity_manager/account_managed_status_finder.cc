@@ -17,7 +17,7 @@ const char* g_non_managed_domain_for_testing = nullptr;
 }  // namespace
 
 // static
-bool AccountManagedStatusFinder::IsKnownConsumerDomain(
+bool AccountManagedStatusFinder::MayBeEnterpriseDomain(
     const std::string& email_domain) {
   // List of consumer-only domains from the server side logic. See
   // `KNOWN_INVALID_DOMAINS` from GetAgencySignupStateProducerModule.java.
@@ -443,15 +443,14 @@ bool AccountManagedStatusFinder::IsKnownConsumerDomain(
 
   if (g_non_managed_domain_for_testing &&
       email_domain == g_non_managed_domain_for_testing) {
-    return true;
+    return false;
   }
 
-  return kKnownConsumerDomains.contains(email_domain);
+  return !kKnownConsumerDomains.contains(email_domain);
 }
 
 // static
-AccountManagedStatusFinder::EmailEnterpriseStatus
-AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+bool AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
     const std::string& email) {
   size_t email_separator_pos = email.find('@');
   if (email.empty() || email_separator_pos == std::string::npos ||
@@ -459,11 +458,9 @@ AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
     // An empty email means no logged-in user, or incognito user in case of
     // ChromiumOS. Also, some tests use nonsense email addresses (e.g. "test");
     // these should be treated as non-enterprise too.
-    return EmailEnterpriseStatus::kKnownNonEnterprise;
+    return false;
   }
-  return IsKnownConsumerDomain(gaia::ExtractDomainName(email))
-             ? EmailEnterpriseStatus::kKnownNonEnterprise
-             : EmailEnterpriseStatus::kUnknown;
+  return MayBeEnterpriseDomain(gaia::ExtractDomainName(email));
 }
 
 // static
@@ -563,8 +560,7 @@ AccountManagedStatusFinder::DetermineOutcome() {
     return Outcome::kError;
   }
 
-  if (IsEnterpriseUserBasedOnEmail(account_.email) ==
-      EmailEnterpriseStatus::kKnownNonEnterprise) {
+  if (!MayBeEnterpriseUserBasedOnEmail(account_.email)) {
     return Outcome::kNonEnterprise;
   }
 

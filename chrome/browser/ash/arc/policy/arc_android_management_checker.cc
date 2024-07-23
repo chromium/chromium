@@ -47,10 +47,8 @@ void ArcAndroidManagementChecker::StartCheck(CheckCallback callback) {
   // No need to check Android Management if the user is a Chrome OS managed
   // user, or belongs to a well-known non-enterprise domain.
   if (policy_util::IsAccountManaged(profile_) ||
-      (signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-           profile_->GetProfileUserName()) ==
-       signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
-           kKnownNonEnterprise)) {
+      !signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+          profile_->GetProfileUserName())) {
     std::move(callback).Run(CheckResult::ALLOWED);
     return;
   }

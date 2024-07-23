@@ -130,9 +130,8 @@ void UserCloudSigninRestrictionPolicyFetcher::GetSecondaryGoogleAccountUsage(
   CHECK(callback);
   CHECK(!callback_) << "A request is already in progress";
   callback_ = std::move(callback);
-  if (signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-          email_) == signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
-                         kKnownNonEnterprise) {
+  if (!signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+          email_)) {
     // Non Enterprise accounts do not have restrictions.
     FinalizeResult(Status::kUnsupportedAccountTypeError,
                    /*policy=*/std::nullopt);

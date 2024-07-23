@@ -258,10 +258,9 @@ IN_PROC_BROWSER_TEST_F(UserCloudPolicyManagerExistingConsumerUserTest,
   // leak of verification keys/signatures.
   signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
       "example.com");
-  ASSERT_EQ(signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-                logged_in_user_mixin_->GetAccountId().GetUserEmail()),
-            signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
-                kKnownNonEnterprise);
+  ASSERT_FALSE(
+      signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+          logged_in_user_mixin_->GetAccountId().GetUserEmail()));
 
   user_manager::KnownUser known_user(g_browser_process->local_state());
   // If a user signs in with a known non-enterprise account there should be no

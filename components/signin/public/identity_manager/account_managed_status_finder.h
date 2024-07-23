@@ -19,23 +19,16 @@ namespace signin {
 // account.
 class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
  public:
-  // Whether an email belongs to an enterprise domain.
-  enum class EmailEnterpriseStatus {
-    // It's unknown whether an email belongs to an enterprise domain.
-    kUnknown,
-    // Email belongs to a well-known non-enterprise domain.
-    kKnownNonEnterprise,
-  };
+  // Returns whether the given domain *may* be an enterprise (aka managed)
+  // domain, i.e. definitely not a consumer domain. Domains such as gmail.com
+  // and hotmail.com (and many others) are known to not be managed, even without
+  // the more sophisticated checks implemented by this class.
+  static bool MayBeEnterpriseDomain(const std::string& email_domain);
 
-  // Returns whether the given domain is known to be a consumer (i.e.
-  // non-enterprise) domain. Domains such as gmail.com and googlemail.com (and
-  // many others) are known to not be managed.
-  static bool IsKnownConsumerDomain(const std::string& email_domain);
-
-  // Returns whether the given account is known to be non-enterprise, i.e. it
-  // has a domain for which `IsKnownConsumerDomain` is true.
-  static EmailEnterpriseStatus IsEnterpriseUserBasedOnEmail(
-      const std::string& email);
+  // Returns whether the given email address *may* belong to an enterprise
+  // domain; equivalent to extracting the domain and then checking
+  // `MayBeEnterpriseDomain()`.
+  static bool MayBeEnterpriseUserBasedOnEmail(const std::string& email);
 
   // Allows to register a domain that is recognized as non-enterprise for tests.
   // Note that `domain` needs to live until this method is invoked with nullptr.

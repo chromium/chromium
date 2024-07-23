@@ -139,11 +139,10 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
   raw_ptr<content::BrowsingDataRemover> remover_;
 };
 
-// Returns whether the user is a managed user or not.
+// Returns whether the user *may* be a managed user.
 bool ShouldLoadPolicyForUser(const std::string& username) {
-  return signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-             username) ==
-         signin::AccountManagedStatusFinder::EmailEnterpriseStatus::kUnknown;
+  return signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+      username);
 }
 
 }  // namespace

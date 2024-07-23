@@ -223,10 +223,8 @@ profile_metrics::UnconsentedPrimaryAccountType GetUnconsentedPrimaryAccountType(
   // TODO(crbug.com/40121889): Replace this check by
   // !entry->GetHostedDomain().has_value() in M84 (once the attributes storage
   // gets reasonably well populated).
-  if (signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-          base::UTF16ToUTF8(entry->GetUserName())) ==
-      signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
-          kKnownNonEnterprise) {
+  if (!signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+          base::UTF16ToUTF8(entry->GetUserName()))) {
     return profile_metrics::UnconsentedPrimaryAccountType::kConsumer;
   }
   // TODO(crbug.com/40121889): Figure out how to distinguish EDU accounts from

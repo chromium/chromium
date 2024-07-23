@@ -98,8 +98,8 @@ std::optional<std::string> GetUserPolicyDomain(web::WebUIIOS* web_ui) {
     return std::nullopt;
   }
 
-  if (AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(user_email) ==
-      AccountManagedStatusFinder::EmailEnterpriseStatus::kKnownNonEnterprise) {
+  if (!AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+          user_email)) {
     return std::nullopt;
   }
 
