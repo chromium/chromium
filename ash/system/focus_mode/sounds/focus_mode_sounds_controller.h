@@ -145,6 +145,15 @@ class ASH_EXPORT FocusModeSoundsController
   // premium status.
   void SetYouTubeMusicFailureCallback(base::RepeatingClosure callback);
 
+  void set_soundscape_playlists_for_testing(
+      std::vector<std::unique_ptr<Playlist>> soundscape_playlists) {
+    soundscape_playlists_.swap(soundscape_playlists);
+  }
+  void set_youtube_music_playlists_for_testing(
+      std::vector<std::unique_ptr<Playlist>> youtube_music_playlists) {
+    youtube_music_playlists_.swap(youtube_music_playlists);
+  }
+
  private:
   bool IsPlaylistAllowed(
       const focus_mode_util::SelectedPlaylist& playlist) const;

@@ -3841,6 +3841,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.FocusMode.PlaylistChosen" enum="FocusModePlaylistChosen"
+    expires_after="2025-07-01">
+  <owner>hongyulong@chromium.org</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <owner>nupurjain@google.com</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>Records the playlist which starts playing during a session.</summary>
+</histogram>
+
 <histogram name="Ash.FocusMode.PlaylistsDuringSession" units="count"
     expires_after="2025-07-01">
   <owner>nupurjain@google.com</owner>
