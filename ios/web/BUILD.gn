@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//ios/build/config.gni")
+import("//ios/web/javascript_flags.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 import("//testing/test.gni")
@@ -56,6 +58,10 @@ source_set("web") {
     "//services/network:network_service",
   ]
 
+  if (ios_enable_javascript_flags) {
+    deps += [ ":flags" ]
+  }
+
   sources = [
     "browser_state.mm",
     "browser_state_utils.mm",
@@ -91,6 +97,20 @@ source_set("core") {
     "history_state_util.cc",
     "history_state_util.h",
   ]
+}
+
+buildflag_header("features") {
+  header = "javascript_flags.h"
+  flags = [ "ENABLE_IOS_JAVASCRIPT_FLAGS=$ios_enable_javascript_flags" ]
+}
+
+if (ios_enable_javascript_flags) {
+  source_set("flags") {
+    sources = [
+      "switches.cc",
+      "switches.h",
+    ]
+  }
 }
 
 source_set("eg_app_support+eg2") {
