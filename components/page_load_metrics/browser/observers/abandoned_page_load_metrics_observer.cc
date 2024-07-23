@@ -96,6 +96,8 @@ const char kMilestoneDidCommit[] = "DidCommit";
 const char kMilestoneParseStart[] = "ParseStart";
 const char kFirstContentfulPaint[] = "FirstContentfulPaint";
 const char kDOMContentLoaded[] = "DOMContentLoaded";
+const char kLoadEventStarted[] = "LoadStarted";
+const char kLargestContentfulPaint[] = "LargestContentfulPaint";
 
 const char kRendererProcessCreatedBeforeNavHistogramName[] =
     "RendererProcessCreatedBeforeNav";
@@ -170,6 +172,10 @@ std::string AbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
       return internal::kFirstContentfulPaint;
     case NavigationMilestone::kDOMContentLoaded:
       return internal::kDOMContentLoaded;
+    case NavigationMilestone::kLoadEventStarted:
+      return internal::kLoadEventStarted;
+    case NavigationMilestone::kLargestContentfulPaint:
+      return internal::kLargestContentfulPaint;
   }
 }
 
@@ -539,6 +545,34 @@ void AbandonedPageLoadMetricsObserver::OnDomContentLoadedEventStart(
       timing.document_timing->dom_content_loaded_event_start.value());
 }
 
+void AbandonedPageLoadMetricsObserver::OnLoadEventStart(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  LogLoadingMilestone(NavigationMilestone::kLoadEventStarted,
+                      timing.document_timing->load_event_start.value());
+}
+
+void AbandonedPageLoadMetricsObserver::OnComplete(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  FinalizeLCP();
+}
+
+void AbandonedPageLoadMetricsObserver::FinalizeLCP() {
+  const page_load_metrics::ContentfulPaintTimingInfo& largest_contentful_paint =
+      GetDelegate()
+          .GetLargestContentfulPaintHandler()
+          .MergeMainFrameAndSubframes();
+  if (largest_contentful_paint.ContainsValidTime() &&
+      WasStartedInForegroundOptionalEventInForeground(
+          largest_contentful_paint.Time(), GetDelegate())) {
+    // LCP (PageLoad.PaintTiming.NavigationToLargestContentfulPaint2) is
+    // recorded only when WasStartedInForegroundOptionalEventInForeground() is
+    // true. The LCP milestone recorded here should be consistent with the
+    // regular LCP condition. Otherwise it will be less reliable.
+    LogLoadingMilestone(NavigationMilestone::kLargestContentfulPaint,
+                        largest_contentful_paint.Time().value());
+  }
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 AbandonedPageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
@@ -560,6 +594,10 @@ AbandonedPageLoadMetricsObserver::OnFencedFramesStart(
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 AbandonedPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (GetDelegate().DidCommit()) {
+    FinalizeLCP();
+  }
+
   if (first_backgrounded_timestamp_.is_null()) {
     first_backgrounded_timestamp_ = base::TimeTicks::Now();
 

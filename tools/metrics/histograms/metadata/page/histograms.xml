@@ -77,7 +77,9 @@ chromium-metrics-reviews@google.com.
   <variant name="FirstRedirectedRequestStart"/>
   <variant name="FirstRedirectResponseLoaderCallback"/>
   <variant name="FirstRedirectResponseStart"/>
+  <variant name="LargestContentfulPaint"/>
   <variant name="LoaderStart"/>
+  <variant name="LoadEventStarted"/>
   <variant name="NonRedirectedRequestStart"/>
   <variant name="NonRedirectResponseLoaderCallback"/>
   <variant name="NonRedirectResponseStart"/>
