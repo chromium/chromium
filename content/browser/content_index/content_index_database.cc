@@ -613,12 +613,13 @@ void ContentIndexDatabase::BlockOrigin(const url::Origin& origin) {
 
 void ContentIndexDatabase::UnblockOrigin(const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(blocked_origins_.count(origin));
   auto it = blocked_origins_.find(origin);
-  if (it->second == 1)
+  CHECK(it != blocked_origins_.end());
+  if (it->second == 1) {
     blocked_origins_.erase(it);
-  else
+  } else {
     it->second--;
+  }
 }
 
 void ContentIndexDatabase::Shutdown() {
