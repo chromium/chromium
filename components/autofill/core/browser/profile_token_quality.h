@@ -167,10 +167,6 @@ class ProfileTokenQuality {
   // setting `other` to the profile before modifications took place.
   void ResetObservationsForDifferingTokens(const AutofillProfile& other);
 
-  void disable_randomization_for_testing() {
-    diable_randomization_for_testing_ = true;
-  }
-
  private:
   friend class ProfileTokenQualityTestApi;
   // To send/receive observations to/from Sync, the entire `Observation`s need

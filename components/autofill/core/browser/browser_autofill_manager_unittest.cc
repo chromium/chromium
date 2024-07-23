@@ -66,6 +66,7 @@
 #include "components/autofill/core/browser/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
+#include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -7962,7 +7963,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
   AutofillProfile profile = test::GetFullProfile();
   // This is needed to not get an update prompt that would compromise the test.
   profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  profile.token_quality().disable_randomization_for_testing();
+  test_api(profile.token_quality()).disable_randomization();
   personal_data().address_data_manager().AddProfile(profile);
   const AutofillProfile* pdm_profile =
       personal_data().address_data_manager().GetProfileByGUID(profile.guid());

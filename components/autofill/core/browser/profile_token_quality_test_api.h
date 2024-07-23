@@ -28,6 +28,10 @@ class ProfileTokenQualityTestApi {
 
   std::vector<FormSignatureHash> GetHashesForStoredType(FieldType type) const;
 
+  void disable_randomization() {
+    quality_->diable_randomization_for_testing_ = true;
+  }
+
  private:
   raw_ref<ProfileTokenQuality> quality_;
 };
