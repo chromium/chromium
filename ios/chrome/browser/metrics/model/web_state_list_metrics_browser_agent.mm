@@ -105,6 +105,9 @@ void WebStateListMetricsBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateListStatus& status) {
+  if (web_state_list->IsBatchInProgress()) {
+    return;
+  }
   if (metric_collection_paused_) {
     return;
   }
@@ -132,6 +135,14 @@ void WebStateListMetricsBrowserAgent::WebStateListDidChange(
     case WebStateListChange::Type::kGroupDelete:
       break;
   }
+}
+
+void WebStateListMetricsBrowserAgent::BatchOperationEnded(
+    WebStateList* web_state_list) {
+  if (metric_collection_paused_) {
+    return;
+  }
+  UpdateCrashkeysTabCount();
 }
 
 #pragma mark - WebStateObserver
