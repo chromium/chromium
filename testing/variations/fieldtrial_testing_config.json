@@ -3518,22 +3518,6 @@
             ]
         }
     ],
-    "COMInitForUtilWin": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UtilWinProcessUsesUIPump",
-                        "UtilityWithUIPumpInitializesCOM"
-                    ]
-                }
-            ]
-        }
-    ],
     "CPSS-V2-Android": [
         {
             "platforms": [
@@ -5473,6 +5457,22 @@
                         "OptimizationGuidePushNotifications",
                         "ReadLater",
                         "ShoppingList"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ComInitForUtilWin": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UtilWinProcessUsesUiPump",
+                        "UtilityWithUiPumpInitializesCom"
                     ]
                 }
             ]
