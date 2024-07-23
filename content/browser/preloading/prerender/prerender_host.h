@@ -328,8 +328,6 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     return attributes_.initiator_devtools_navigation_token;
   }
 
-  const GURL& prerendering_url() const { return attributes_.prerendering_url; }
-
   bool IsBrowserInitiated() { return attributes_.IsBrowserInitiated(); }
 
   int frame_tree_node_id() const { return frame_tree_node_id_; }
@@ -345,10 +343,6 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   int initiator_ukm_id() const { return attributes_.initiator_ukm_id; }
 
   bool is_ready_for_activation() const { return is_ready_for_activation_; }
-
-  const std::optional<PrerenderFinalStatus>& final_status() const {
-    return final_status_;
-  }
 
   PreloadingTriggerType trigger_type() const {
     return attributes_.trigger_type;
