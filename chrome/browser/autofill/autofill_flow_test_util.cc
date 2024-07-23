@@ -15,6 +15,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/autofill/autofill_uitest.h"
 #include "chrome/browser/translate/translate_test_utils.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller_impl_test_api.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
@@ -300,7 +302,8 @@ struct AutofillSuggestionParams {
           ChromeAutofillClient::FromWebContentsForTesting(
               test->GetWebContents())
               ->suggestion_controller_for_testing()) {
-    controller->DisableThresholdForTesting(true);
+    test_api(static_cast<AutofillPopupControllerImpl&>(*controller))
+        .DisableThreshold(true);
   }
 
   constexpr auto kSuggestionsHidden = ObservedUiEvents::kSuggestionsHidden;

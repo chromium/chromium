@@ -247,20 +247,6 @@ static_library("test_support") {
     "base/web_feature_histogram_tester.h",
   ]
 
-  if (!is_android) {
-    sources += [
-      "../browser/preloading/preview/preview_test_util.cc",
-      "../browser/preloading/preview/preview_test_util.h",
-      "../browser/sync_file_system/mock_local_change_processor.cc",
-      "../browser/sync_file_system/mock_local_change_processor.h",
-      "../browser/sync_file_system/mock_remote_file_sync_service.cc",
-      "../browser/sync_file_system/mock_remote_file_sync_service.h",
-      "../browser/ui/autofill/mock_autofill_popup_controller.cc",
-      "../browser/ui/autofill/mock_autofill_popup_controller.h",
-    ]
-    deps += [ "//chrome/browser/themes" ]
-  }
-
   if (is_chromeos && is_chromeos_device) {
     sources += [
       "base/chromeos/crosier/chromeos_integration_test_mixin.cc",
@@ -604,6 +590,7 @@ static_library("test_support") {
     ]
 
     sources += [
+      "../browser/ui/autofill/autofill_keyboard_accessory_controller_impl_test_api.h",
       "../browser/webapps/installable/ml_promotion_browsertest_base.cc",
       "../browser/webapps/installable/ml_promotion_browsertest_base.h",
     ]
@@ -642,6 +629,7 @@ static_library("test_support") {
 
     deps += [
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/themes",
       "//components/constrained_window",
       "//components/performance_manager",
       "//components/performance_manager/test_support:test_support_common",
@@ -671,13 +659,22 @@ static_library("test_support") {
       "../browser/performance_manager/test_support/site_data_utils.h",
       "../browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.cc",
       "../browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h",
+      "../browser/preloading/preview/preview_test_util.cc",
+      "../browser/preloading/preview/preview_test_util.h",
       "../browser/renderer_context_menu/mock_render_view_context_menu.cc",
       "../browser/renderer_context_menu/mock_render_view_context_menu.h",
       "../browser/renderer_context_menu/render_view_context_menu_test_util.cc",
       "../browser/renderer_context_menu/render_view_context_menu_test_util.h",
       "../browser/signin/signin_browser_test_base.h",
+      "../browser/sync_file_system/mock_local_change_processor.cc",
+      "../browser/sync_file_system/mock_local_change_processor.h",
+      "../browser/sync_file_system/mock_remote_file_sync_service.cc",
+      "../browser/sync_file_system/mock_remote_file_sync_service.h",
       "../browser/themes/test/theme_service_changed_waiter.cc",
       "../browser/themes/test/theme_service_changed_waiter.h",
+      "../browser/ui/autofill/autofill_popup_controller_impl_test_api.h",
+      "../browser/ui/autofill/mock_autofill_popup_controller.cc",
+      "../browser/ui/autofill/mock_autofill_popup_controller.h",
       "../browser/ui/performance_controls/test_support/battery_saver_browser_test_mixin.h",
       "../browser/ui/performance_controls/test_support/memory_metrics_refresh_waiter.cc",
       "../browser/ui/performance_controls/test_support/memory_metrics_refresh_waiter.h",

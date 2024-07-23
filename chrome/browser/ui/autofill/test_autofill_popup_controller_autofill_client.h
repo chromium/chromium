@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller_impl_test_api.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_view.h"
@@ -48,7 +49,7 @@ class TestAutofillPopupControllerAutofillClient
           (new Controller(manager.external_delegate().GetWeakPtrForTest(),
                           &GetWebContents(), gfx::RectF()))
               ->GetWeakPtr();
-      cast_popup_controller().SetViewForTesting(popup_view_->GetWeakPtr());
+      test_api(cast_popup_controller()).SetView(popup_view_->GetWeakPtr());
       manager_of_last_controller_ = manager.GetWeakPtr();
       ON_CALL(cast_popup_controller(), Hide)
           .WillByDefault(

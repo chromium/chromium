@@ -100,12 +100,7 @@ class MockAutofillPopupController : public AutofillPopupController {
                AutofillSuggestionTriggerSource,
                AutoselectFirstSuggestion),
               (override));
-  MOCK_METHOD(void, DisableThresholdForTesting, (bool), (override));
   MOCK_METHOD(void, SetKeepPopupOpenForTesting, (bool), (override));
-  MOCK_METHOD(void,
-              SetViewForTesting,
-              (base::WeakPtr<AutofillPopupView>),
-              (override));
   MOCK_METHOD(void,
               UpdateDataListValues,
               (base::span<const SelectOption>),
