@@ -56,6 +56,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
+#include "net/base/network_change_notifier.h"
 #include "net/base/url_search_params.h"
 #include "net/base/url_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -1869,7 +1870,12 @@ void LensOverlayController::ShowPreselectionBubble() {
   if (!preselection_widget_) {
     preselection_widget_ = views::BubbleDialogDelegateView::CreateBubble(
         std::make_unique<lens::LensPreselectionBubble>(
-            tab_->GetBrowserWindowInterface()->TopContainer()));
+            tab_->GetBrowserWindowInterface()->TopContainer(),
+            net::NetworkChangeNotifier::IsOffline(),
+            base::BindRepeating(&LensOverlayController::CloseUIAsync,
+                                weak_factory_.GetWeakPtr(),
+                                lens::LensOverlayDismissalSource::
+                                    kPreselectionToastExitButton)));
     preselection_widget_->SetNativeWindowProperty(
         views::kWidgetIdentifierKey,
         const_cast<void*>(kLensOverlayPreselectionWidgetIdentifier));

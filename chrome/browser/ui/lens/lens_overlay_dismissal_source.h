@@ -66,7 +66,10 @@ enum class LensOverlayDismissalSource {
   // The user started finding text on the page underneath.
   kFindInPageInvoked = 15,
 
-  kMaxValue = kFindInPageInvoked
+  // The user clicked exit on the preselection toast.
+  kPreselectionToastExitButton = 16,
+
+  kMaxValue = kPreselectionToastExitButton
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayDismissalSource)
 
