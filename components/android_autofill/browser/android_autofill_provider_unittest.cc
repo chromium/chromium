@@ -760,12 +760,8 @@ TEST_F(AndroidAutofillProviderTest,
     GTEST_SKIP();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kAndroidAutofillPrefillRequestsForLoginForms,
-       features::kAndroidAutofillUsePwmPredictionsForOverrides},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAndroidAutofillPrefillRequestsForLoginForms};
 
   FormData form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
@@ -794,12 +790,8 @@ TEST_F(AndroidAutofillProviderTest,
     GTEST_SKIP();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kAndroidAutofillPrefillRequestsForLoginForms,
-       features::kAndroidAutofillUsePwmPredictionsForOverrides},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAndroidAutofillPrefillRequestsForLoginForms};
 
   FormData form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
@@ -999,32 +991,17 @@ TEST_F(AndroidAutofillProviderWithCredManTest,
 }
 
 class AndroidAutofillProviderPrefillRequestTest
-    : public AndroidAutofillProviderTest,
-      public ::testing::WithParamInterface<bool> {
+    : public AndroidAutofillProviderTest {
  public:
-  AndroidAutofillProviderPrefillRequestTest() {
-    if (GetParam()) {
-      param_feature_list_.InitAndEnableFeature(
-          features::kAndroidAutofillUsePwmPredictionsForOverrides);
-    } else {
-      param_feature_list_.InitAndDisableFeature(
-          features::kAndroidAutofillUsePwmPredictionsForOverrides);
-    }
-  }
-
-  static std::string GetTextSuffix(
-      const ::testing::TestParamInfo<bool>& param_info) {
-    return param_info.param ? "WithPwmOverrides" : "WithoutPwmOverrides";
-  }
+  AndroidAutofillProviderPrefillRequestTest() = default;
 
  private:
   base::test::ScopedFeatureList prefill_request_feature_list_{
       features::kAndroidAutofillPrefillRequestsForLoginForms};
-  base::test::ScopedFeatureList param_feature_list_;
 };
 
 // Tests that we can send another prefill request after navigation.
-TEST_P(AndroidAutofillProviderPrefillRequestTest,
+TEST_F(AndroidAutofillProviderPrefillRequestTest,
        MultiplePrefillRequestsOnNavigation) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SdkVersion::SDK_VERSION_U) {
@@ -1053,7 +1030,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
 
 // Tests that a metric is emitted if prefill requests are supported and there
 // was not enough time to send a prefill request.
-TEST_P(AndroidAutofillProviderPrefillRequestTest,
+TEST_F(AndroidAutofillProviderPrefillRequestTest,
        OnAskForValuesToFillRecordsPrefillRequestStateUmaMetric) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SdkVersion::SDK_VERSION_U) {
@@ -1073,7 +1050,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
 
 // Tests that no prefill requests are sent on Android versions prior to U even
 // if all other requirements are satisfied.
-TEST_P(AndroidAutofillProviderPrefillRequestTest,
+TEST_F(AndroidAutofillProviderPrefillRequestTest,
        NoPrefillRequestOnVersionsPriorToU) {
   // This test only makes sense on Android versions smaller than U.
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
@@ -1094,7 +1071,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
 
 // Tests that a prefill request is sent if all requirements for it are
 // satisfied.
-TEST_P(AndroidAutofillProviderPrefillRequestTest, SendPrefillRequest) {
+TEST_F(AndroidAutofillProviderPrefillRequestTest, SendPrefillRequest) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SdkVersion::SDK_VERSION_U) {
     GTEST_SKIP();
@@ -1113,7 +1090,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest, SendPrefillRequest) {
 
 // Tests that no prefill request is sent if there is already an ongoing Autofill
 // session.
-TEST_P(AndroidAutofillProviderPrefillRequestTest,
+TEST_F(AndroidAutofillProviderPrefillRequestTest,
        NoPrefillRequestIfOngoingSession) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SdkVersion::SDK_VERSION_U) {
@@ -1145,7 +1122,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
 
 // Tests that no prefill request is sent if there has already been another
 // prefill request.
-TEST_P(AndroidAutofillProviderPrefillRequestTest, NoSecondPrefillRequest) {
+TEST_F(AndroidAutofillProviderPrefillRequestTest, NoSecondPrefillRequest) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SdkVersion::SDK_VERSION_U) {
     GTEST_SKIP();
@@ -1185,7 +1162,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest, NoSecondPrefillRequest) {
 
 // Tests that the session id used in a prefill request is also used for starting
 // the Autofill session for that form.
-TEST_P(AndroidAutofillProviderPrefillRequestTest,
+TEST_F(AndroidAutofillProviderPrefillRequestTest,
        SessionIdIsReusedForCachedForms) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SdkVersion::SDK_VERSION_U) {
@@ -1216,7 +1193,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
 
 // Tests that the session id used in a prefill request is not reused when
 // starting a session on a form with the same id, but changed field content.
-TEST_P(AndroidAutofillProviderPrefillRequestTest,
+TEST_F(AndroidAutofillProviderPrefillRequestTest,
        SessionIdIsNotReusedForCachedFormsIfContentHasChanged) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SdkVersion::SDK_VERSION_U) {
@@ -1260,7 +1237,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
 // Tests that the session id used in a prefill request is only used once to
 // start an Autofill session. If the user then focuses on a different form
 // before returning to the (formerly) cached form, a new session is started.
-TEST_P(AndroidAutofillProviderPrefillRequestTest,
+TEST_F(AndroidAutofillProviderPrefillRequestTest,
        SessionIdIsNotReusedMultipleAutofillSessions) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SdkVersion::SDK_VERSION_U) {
@@ -1322,7 +1299,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
 }
 
 // Tests that the prefill request can be sent for Change Password form.
-TEST_P(AndroidAutofillProviderPrefillRequestTest,
+TEST_F(AndroidAutofillProviderPrefillRequestTest,
        PrefillRequestSentForChangePasswordForm) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SdkVersion::SDK_VERSION_U) {
@@ -1343,7 +1320,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
 }
 
 // Tests that metrics are emitted when the bottom sheet is shown.
-TEST_P(AndroidAutofillProviderPrefillRequestTest,
+TEST_F(AndroidAutofillProviderPrefillRequestTest,
        PrefillRequestStateEmittedOnShowingBottomSheet) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SdkVersion::SDK_VERSION_U) {
@@ -1375,7 +1352,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
 
 // Tests that the correct metrics are emitted when the bottom sheet is not shown
 // and no view structure was provided to the Android framework.
-TEST_P(AndroidAutofillProviderPrefillRequestTest,
+TEST_F(AndroidAutofillProviderPrefillRequestTest,
        PrefillRequestStateEmittedOnNotShowingBottomSheetWithoutViewStructure) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SdkVersion::SDK_VERSION_U) {
@@ -1405,7 +1382,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
 
 // Tests that the correct metrics are emitted when the bottom sheet is not shown
 // and a view structure was provided to the Android framework.
-TEST_P(AndroidAutofillProviderPrefillRequestTest,
+TEST_F(AndroidAutofillProviderPrefillRequestTest,
        PrefillRequestStateEmittedOnNotShowingBottomSheetWithViewStructure) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SdkVersion::SDK_VERSION_U) {
@@ -1428,12 +1405,6 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
       AndroidAutofillProvider::kPrefillRequestStateUma,
       PrefillRequestState::kRequestSentStructureProvidedBottomSheetNotShown, 1);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    AndroidAutofillProviderPrefillRequestTest,
-    ::testing::Bool(),
-    AndroidAutofillProviderPrefillRequestTest::GetTextSuffix);
 
 class AndroidAutofillProviderTestHidingLogic
     : public AndroidAutofillProviderTest {
