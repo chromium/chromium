@@ -54,37 +54,29 @@ suite('PlayPause', () => {
     assertTrue(clickEmitted);
   });
 
-  suite('when playing', () => {
-    setup(() => {
-      toolbar.isSpeechActive = true;
-    });
+  test('when playing', () => {
+    toolbar.isSpeechActive = true;
 
-    test('button indicates speech is playing', () => {
-      assertEquals('read-anything-20:pause', playPauseButton.ironIcon);
-      assertStringContains('pause (k)', playPauseButton.title.toLowerCase());
-      assertStringContains(
-          'play keyboard shortcut k', playPauseButton.ariaLabel!.toLowerCase());
-    });
+    // Test that button indicates speech is playing
+    assertEquals('read-anything-20:pause', playPauseButton.ironIcon);
+    assertStringContains('pause (k)', playPauseButton.title.toLowerCase());
+    assertStringContains(
+        'play keyboard shortcut k', playPauseButton.ariaLabel!.toLowerCase());
 
-    test('granularity menu buttons show', () => {
-      assertTrue(isVisible(granularityContainer));
-    });
+    // Test that granularity menu buttons show
+    assertTrue(isVisible(granularityContainer));
   });
 
-  suite('when paused', () => {
-    setup(() => {
-      toolbar.isSpeechActive = false;
-    });
+  test('when paused', () => {
+    toolbar.isSpeechActive = false;
 
-    test('button indicates speech is paused', () => {
-      assertEquals('read-anything-20:play', playPauseButton.ironIcon);
-      assertStringContains('play (k)', playPauseButton.title.toLowerCase());
-      assertStringContains(
-          'play keyboard shortcut k', playPauseButton.ariaLabel!.toLowerCase());
-    });
+    // Test that button indicates speech is paused
+    assertEquals('read-anything-20:play', playPauseButton.ironIcon);
+    assertStringContains('play (k)', playPauseButton.title.toLowerCase());
+    assertStringContains(
+        'play keyboard shortcut k', playPauseButton.ariaLabel!.toLowerCase());
 
-    test('granularity menu buttons hidden', () => {
-      assertFalse(isVisible(granularityContainer));
-    });
+    // Test that granularity menu buttons hidden
+    assertFalse(isVisible(granularityContainer));
   });
 });

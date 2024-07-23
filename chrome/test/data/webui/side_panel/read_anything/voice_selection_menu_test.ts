@@ -188,18 +188,16 @@ suite('VoiceSelectionMenu', () => {
       assertEquals('test voice 2', italianVoice.textContent!.trim());
     });
 
-    suite('with some disabled languages', () => {
-      test('it only shows enabled languages', () => {
-        setAvailableVoices(['it-it']);
+    test('it only shows enabled languages with some disabled languages', () => {
+      setAvailableVoices(['it-it']);
 
-        const menu = voiceSelectionMenu!.$.voiceSelectionMenu.get();
-        const groupTitles =
-            menu.querySelectorAll<HTMLElement>('.lang-group-title');
-        assertEquals(1, groupTitles.length);
+      const menu = voiceSelectionMenu!.$.voiceSelectionMenu.get();
+      const groupTitles =
+          menu.querySelectorAll<HTMLElement>('.lang-group-title');
+      assertEquals(1, groupTitles.length);
 
-        const italianVoice = groupTitles.item(0)!.nextElementSibling!;
-        assertEquals('test voice 2', italianVoice.textContent!.trim());
-      });
+      const italianVoice = groupTitles.item(0)!.nextElementSibling!;
+      assertEquals('test voice 2', italianVoice.textContent!.trim());
     });
 
     suite('with Natural voices also available', () => {
@@ -234,77 +232,62 @@ suite('VoiceSelectionMenu', () => {
       });
     });
 
-    suite('with display names for locales', () => {
-      let groupTitles: NodeListOf<HTMLElement>;
+    test('with display names for locales', () => {
+      voiceSelectionMenu.localeToDisplayName = {
+        'en-us': 'English (United States)',
+      };
+      flush();
+      const groupTitles =
+          voiceSelectionMenu!.$.voiceSelectionMenu.get()
+              .querySelectorAll<HTMLElement>('.lang-group-title');
 
-      setup(() => {
-        voiceSelectionMenu.localeToDisplayName = {
-          'en-us': 'English (United States)',
-        };
-        flush();
-        groupTitles = voiceSelectionMenu!.$.voiceSelectionMenu.get()
-                          .querySelectorAll<HTMLElement>('.lang-group-title');
-      });
-
-      test('it displays the display name', () => {
-        assertEquals(
-            groupTitles.item(0)!.textContent!.trim(),
-            'English (United States)');
-      });
-
-      test('it defaults to the locale when there is no display name', () => {
-        assertEquals('it-it', groupTitles.item(1)!.textContent!.trim());
-      });
+      assertEquals(
+          'English (United States)', groupTitles.item(0)!.textContent!.trim());
+      assertEquals('it-it', groupTitles.item(1)!.textContent!.trim());
     });
 
-    suite('when voices have duplicate names', () => {
-      setup(() => {
-        availableVoices = [
-          createSpeechSynthesisVoice({name: 'English', lang: 'en-US'}),
-          createSpeechSynthesisVoice({name: 'English', lang: 'en-US'}),
-          createSpeechSynthesisVoice({name: 'English', lang: 'en-UK'}),
-        ];
-        setAvailableVoices();
-      });
+    test(
+        'when voices have duplicate names languages are grouped correctly',
+        () => {
+          availableVoices = [
+            createSpeechSynthesisVoice({name: 'English', lang: 'en-US'}),
+            createSpeechSynthesisVoice({name: 'English', lang: 'en-US'}),
+            createSpeechSynthesisVoice({name: 'English', lang: 'en-UK'}),
+          ];
+          setAvailableVoices();
 
-      test('it groups the duplicate languages correctly', () => {
-        const menu = voiceSelectionMenu!.$.voiceSelectionMenu.get();
-        const groupTitles =
-            menu.querySelectorAll<HTMLElement>('.lang-group-title');
-        const voiceNames = menu.querySelectorAll<HTMLElement>('.voice-name');
+          const menu = voiceSelectionMenu!.$.voiceSelectionMenu.get();
+          const groupTitles =
+              menu.querySelectorAll<HTMLElement>('.lang-group-title');
+          const voiceNames = menu.querySelectorAll<HTMLElement>('.voice-name');
 
-        assertEquals(2, groupTitles.length);
-        assertEquals('en-us', groupTitles.item(0)!.textContent!.trim());
-        assertEquals('en-uk', groupTitles.item(1)!.textContent!.trim());
-        assertEquals(3, voiceNames.length);
-        assertEquals('English', voiceNames.item(0)!.textContent!.trim());
-        assertEquals('English', voiceNames.item(1)!.textContent!.trim());
-        assertEquals('English', voiceNames.item(2)!.textContent!.trim());
-      });
-    });
+          assertEquals(2, groupTitles.length);
+          assertEquals('en-us', groupTitles.item(0)!.textContent!.trim());
+          assertEquals('en-uk', groupTitles.item(1)!.textContent!.trim());
+          assertEquals(3, voiceNames.length);
+          assertEquals('English', voiceNames.item(0)!.textContent!.trim());
+          assertEquals('English', voiceNames.item(1)!.textContent!.trim());
+          assertEquals('English', voiceNames.item(2)!.textContent!.trim());
+        });
 
-    suite('when preview button is clicked', () => {
+    test('when preview button is clicked it emits play preview event', () => {
       let clickEmitted: boolean;
 
-      setup(() => {
-        clickEmitted = false;
-        document.addEventListener(
-            ToolbarEvent.PLAY_PREVIEW, () => clickEmitted = true);
+      clickEmitted = false;
+      document.addEventListener(
+          ToolbarEvent.PLAY_PREVIEW, () => clickEmitted = true);
 
-        // Display dropdown menu
-        voiceSelectionMenu!.onVoiceSelectionMenuClick(myClickEvent);
-        flush();
-      });
+      // Display dropdown menu
+      voiceSelectionMenu!.onVoiceSelectionMenuClick(myClickEvent);
+      flush();
+      const previewButton =
+          getDropdownItemForVoice(availableVoices[0]!)
+              .querySelector<CrIconButtonElement>('#preview-icon')!;
 
-      test('it emits play preview event', () => {
-        const previewButton =
-            getDropdownItemForVoice(availableVoices[0]!)
-                .querySelector<CrIconButtonElement>('#preview-icon')!;
+      previewButton!.click();
+      flush();
 
-        previewButton!.click();
-        flush();
-        assertTrue(clickEmitted);
-      });
+      assertTrue(clickEmitted);
     });
 
     suite('when preview starts playing', () => {
@@ -341,38 +324,38 @@ suite('VoiceSelectionMenu', () => {
             playIconVoice0.ariaLabel!.toLowerCase(), 'preview voice for');
       });
 
-      suite('when preview finishes playing', () => {
-        setup(() => {
-          voiceSelectionMenu.previewVoicePlaying = null;
-          flush();
-        });
+      test(
+          'when preview finishes playing it flips the button back to play icon',
+          () => {
+            voiceSelectionMenu.previewVoicePlaying = null;
+            flush();
 
-        test('it flips the preview button back to play icon', () => {
-          stubAnimationFrame();
-          const playIconVoice0 =
-              getDropdownItemForVoice(availableVoices[0]!)
-                  .querySelector<CrIconButtonElement>('#preview-icon')!;
-          const playIconOfPreviewVoice =
-              getDropdownItemForVoice(availableVoices[1]!)
-                  .querySelector<CrIconButtonElement>('#preview-icon')!;
+            stubAnimationFrame();
+            const playIconVoice0 =
+                getDropdownItemForVoice(availableVoices[0]!)
+                    .querySelector<CrIconButtonElement>('#preview-icon')!;
+            const playIconOfPreviewVoice =
+                getDropdownItemForVoice(availableVoices[1]!)
+                    .querySelector<CrIconButtonElement>('#preview-icon')!;
 
-          // All icons should be play icons because no preview is
-          // playing
-          assertTrue(isPositionedOnPage(playIconOfPreviewVoice));
-          assertTrue(isPositionedOnPage(playIconVoice0));
-          assertEquals(
-              'read-anything-20:play-circle', playIconOfPreviewVoice.ironIcon);
-          assertEquals('read-anything-20:play-circle', playIconVoice0.ironIcon);
-          assertStringContains(
-              playIconOfPreviewVoice.title.toLowerCase(), 'play');
-          assertStringContains(playIconVoice0.title.toLowerCase(), 'play');
-          assertStringContains(
-              playIconOfPreviewVoice.ariaLabel!.toLowerCase(),
-              'preview voice for');
-          assertStringContains(
-              playIconVoice0.ariaLabel!.toLowerCase(), 'preview voice for');
-        });
-      });
+            // All icons should be play icons because no preview is
+            // playing
+            assertTrue(isPositionedOnPage(playIconOfPreviewVoice));
+            assertTrue(isPositionedOnPage(playIconVoice0));
+            assertEquals(
+                'read-anything-20:play-circle',
+                playIconOfPreviewVoice.ironIcon);
+            assertEquals(
+                'read-anything-20:play-circle', playIconVoice0.ironIcon);
+            assertStringContains(
+                playIconOfPreviewVoice.title.toLowerCase(), 'play');
+            assertStringContains(playIconVoice0.title.toLowerCase(), 'play');
+            assertStringContains(
+                playIconOfPreviewVoice.ariaLabel!.toLowerCase(),
+                'preview voice for');
+            assertStringContains(
+                playIconVoice0.ariaLabel!.toLowerCase(), 'preview voice for');
+          });
     });
   });
 

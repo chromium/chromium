@@ -40,15 +40,13 @@ suite('RateSelection', () => {
     });
   });
 
-  suite('by default', () => {
-    test('uses 1x', () => {
-      assertEquals('voice-rate:1', rateButton.ironIcon);
-      assertEquals(1, chrome.readingMode.speechRate);
-    });
+  test('by default', () => {
+    // Uses 1x
+    assertEquals('voice-rate:1', rateButton.ironIcon);
+    assertEquals(1, chrome.readingMode.speechRate);
 
-    test('menu is not open', () => {
-      assertFalse(toolbar.$.rateMenu.get().open);
-    });
+    // Menu is not open
+    assertFalse(toolbar.$.rateMenu.get().open);
   });
 
   test('menu button opens menu', () => {
@@ -67,11 +65,9 @@ suite('RateSelection', () => {
       options = getItemsInMenu(toolbar.$.rateMenu);
     });
 
-    test('has multiple options', () => {
+    test('displays options in increasing order with multiple options', () => {
       assertGT(options.length, 0);
-    });
 
-    test('displays options in increasing order', () => {
       let previousRate = -1;
       options.forEach((option) => {
         option.click();
@@ -93,7 +89,7 @@ suite('RateSelection', () => {
       assertEquals(rateValue, chrome.readingMode.speechRate);
       assertTrue(rateEmitted);
 
-      // updates icon on toolbar'
+      // updates icon on toolbar
       assertEquals('voice-rate:' + rateValue, rateButton.ironIcon);
 
       // closes menu

@@ -147,25 +147,19 @@ suite('LanguageMenu', () => {
           assertEquals('', getLanguageSearchField().value);
         });
 
-    suite('when availableVoices updates', () => {
-      setup(() => {
-        availableVoices = [
-          createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'}),
-          createSpeechSynthesisVoice({name: 'test voice 2', lang: 'en-UK'}),
-        ];
-        setAvailableVoices();
-      });
+    test('when availableVoices updates menu displays the new languages', () => {
+      availableVoices = [
+        createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'}),
+        createSpeechSynthesisVoice({name: 'test voice 2', lang: 'en-UK'}),
+      ];
+      setAvailableVoices();
 
-      test('it updates and displays the new languages', () => {
-        assertTrue(isPositionedOnPage(languageMenu));
-        assertEquals(2, getLanguageLineItems().length);
-        assertLanguageLineWithTextAndSwitch(
-            'en-uk', getLanguageLineItems()[0]!);
-        assertLanguageLineWithTextAndSwitch(
-            'en-us', getLanguageLineItems()[1]!);
-        assertEquals('', getLanguageSearchField().value);
-        assertEquals(true, getNoResultsFoundMessage()!.hidden);
-      });
+      assertTrue(isPositionedOnPage(languageMenu));
+      assertEquals(2, getLanguageLineItems().length);
+      assertLanguageLineWithTextAndSwitch('en-uk', getLanguageLineItems()[0]!);
+      assertLanguageLineWithTextAndSwitch('en-us', getLanguageLineItems()[1]!);
+      assertEquals('', getLanguageSearchField().value);
+      assertEquals(true, getNoResultsFoundMessage()!.hidden);
     });
 
     suite('with display names for locales', () => {
