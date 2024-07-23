@@ -3,9 +3,6 @@
     <!-- Experimental enterprise plus_addresses feature strings -->
     <!-- Fallback strings -->
     <!-- TODO(b/326392415): Make all strings translatable. -->
-    <message name="IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU" desc="Label for the context menu entry that serves as a fallback to trigger plus address suggestions on a field." translateable="false">
-      Lorem Ipsum
-    </message>
     <message name="IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID" desc="The text of the link in the address sheet that opens the plus address creation bottom sheet." translateable="false">
       Create new plus addresses placeholder
     </message>
@@ -91,12 +88,6 @@
     <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_LINK_TEXT" desc="The text of the link shown on the Plus Address modal." translateable="false">
       Settings
     </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_START" desc="The start of the plus address description that has a placeholder for a link." translateable="false">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua <ph name="LINK">$1</ph>. Ut enim ad minim veniam...
-    </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_END" desc="The end of the plus address description that has a placeholder for the primary email address." translateable="false">
-      Lorem <ph name="REGULAR_ADDRESS">$1</ph>.
-    </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_ERROR_REPORT_LINK_TEXT" desc="The text of the link shown on the Plus Address error message." translateable="false">
       error-link
     </message>
@@ -168,6 +159,11 @@
     </message>
     <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_SCREENREADER_IOS" is_accessibility_with_no_ui="true" desc="Screenreader text shown in the IPH bubble for educating the user on creating plus addresses in iOS." translateable="false">
       Placeholder Plus Address Create Suggestion IPH Screenreader String
+    </message>
+
+    <!-- Manual fallback strings -->
+    <message name="IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU" desc="Label for the context menu entry that serves as a fallback to trigger plus address suggestions on a field." translateable="false">
+      Lorem Ipsum
     </message>
 
     <!-- All plus addresses bottom sheet strings -->
