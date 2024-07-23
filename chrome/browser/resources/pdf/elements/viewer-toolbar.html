@@ -250,6 +250,15 @@
           aria-label="$i18n{tooltipAnnotate}"
           disabled="[[!annotationsAvailable]]"
           title="$i18n{tooltipAnnotate}"></cr-icon-button>
+      <span class="vertical-separator"></span>
+      <cr-icon-button id="undo" disabled="[[!canUndoAnnotation_]]"
+          iron-icon="pdf:undo" on-click="onUndoClick_"
+          aria-label="$i18n{annotationUndo}"
+          title="$i18n{annotationUndo}"></cr-icon-button>
+      <cr-icon-button id="redo" disabled="[[!canRedoAnnotation_]]"
+          iron-icon="pdf:redo" on-click="onRedoClick_"
+          aria-label="$i18n{annotationRedo}"
+          title="$i18n{annotationRedo}"></cr-icon-button>
     </template>
 </if>
   </div>
