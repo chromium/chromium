@@ -1236,7 +1236,8 @@ void DesktopWindowTreeHostWin::SetBoundsInDIP(const gfx::Rect& bounds) {
   // details.
   aura::Window* root = nullptr;
   const gfx::Rect bounds_in_pixels =
-      display::Screen::GetScreen()->DIPToScreenRectInWindow(root, bounds);
+      display::Screen::GetScreen()->DIPToScreenRectInWindow(
+          root, AdjustedContentBounds(bounds));
   AsWindowTreeHost()->SetBoundsInPixels(bounds_in_pixels);
 }
 
@@ -1296,6 +1297,27 @@ void DesktopWindowTreeHostWin::CheckForMonitorChange() {
     return;
   last_monitor_from_window_ = monitor_from_window;
   OnHostDisplayChanged();
+}
+
+gfx::Rect DesktopWindowTreeHostWin::AdjustedContentBounds(
+    const gfx::Rect& bounds) {
+  gfx::Size minimum_size;
+  gfx::Size maximum_size;
+  GetMinMaxSize(&minimum_size, &maximum_size);
+
+  gfx::Size bounds_size = bounds.size();
+
+  if (!maximum_size.IsEmpty()) {
+    bounds_size.SetToMin(maximum_size);
+  }
+
+  if (!minimum_size.IsEmpty()) {
+    bounds_size.SetToMax(minimum_size);
+  }
+
+  gfx::Rect adjusted_bounds = bounds;
+  adjusted_bounds.set_size(bounds_size);
+  return adjusted_bounds;
 }
 
 aura::Window* DesktopWindowTreeHostWin::content_window() {

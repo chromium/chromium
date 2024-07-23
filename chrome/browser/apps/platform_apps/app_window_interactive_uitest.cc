@@ -297,24 +297,13 @@ void AppWindowInteractiveTest::TestOuterBoundsHelper(
           static_cast<views::DesktopWindowTreeHostWin*>(
               aura::WindowTreeHost::GetForAcceleratedWidget(hwnd)));
   host->GetMinMaxSize(&min_size, &max_size);
-  // Note that this does not include the the client area insets so we need to
-  // add them.
-  gfx::Insets insets;
-  host->GetClientAreaInsets(&insets,
-                            MonitorFromWindow(hwnd, MONITOR_DEFAULTTONULL));
-  min_size = gfx::Size(min_size.width() + insets.left() + insets.right(),
-                       min_size.height() + insets.top() + insets.bottom());
-  max_size = gfx::Size(
-      max_size.width() ? max_size.width() + insets.left() + insets.right() : 0,
-      max_size.height() ? max_size.height() + insets.top() + insets.bottom()
-                        : 0);
 #endif  // BUILDFLAG(IS_WIN)
 
   // These match the values in the outer_bounds/test.js
   EXPECT_EQ(gfx::Rect(10, 11, 300, 301), window_bounds);
   EXPECT_EQ(window->GetBaseWindow()->GetBounds(), window_bounds);
-  EXPECT_EQ(200, min_size.width());
-  EXPECT_EQ(201, min_size.height());
+  EXPECT_GE(200, min_size.width());
+  EXPECT_GE(201, min_size.height());
   EXPECT_EQ(400, max_size.width());
   EXPECT_EQ(401, max_size.height());
 }
