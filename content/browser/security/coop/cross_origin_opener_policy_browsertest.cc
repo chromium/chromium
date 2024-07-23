@@ -3726,8 +3726,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     SiteInstanceImpl* iframe_si = iframe_rfh->GetSiteInstance();
     EXPECT_TRUE(iframe_si->IsCrossOriginIsolated());
     EXPECT_TRUE(iframe_si->IsRelatedSiteInstance(main_si));
-    if (base::FeatureList::IsEnabled(
-            features::kOriginKeyedProcessesByDefault)) {
+    if (SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
       // In this case, the main frame and the child frame have different
       // origins, so when OriginKeyedProcessesByDefault is enabled they will
       // be placed into different processes.
