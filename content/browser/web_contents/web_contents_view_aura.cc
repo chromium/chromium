@@ -1167,8 +1167,6 @@ void WebContentsViewAura::StartDragging(
                                ConvertFromDragOperationsMask(operations),
                                event_info.source);
   }
-  // This should still be alive after the nested run loop above ends.
-  CHECK(weak_this);
 
   // Bail out immediately if the contents view window is gone. Note that it is
   // not safe to access any class members in this case since |this| may already
@@ -1179,6 +1177,9 @@ void WebContentsViewAura::StartDragging(
     // renderer is going away.
     return;
   }
+
+  // |this| should still be alive at this point.
+  CHECK(weak_this, base::NotFatalUntil::M130);
 
   // If drag is still in progress that means we haven't received drop targeting
   // callback yet. So we have to make sure to delay calling EndDrag until drop
