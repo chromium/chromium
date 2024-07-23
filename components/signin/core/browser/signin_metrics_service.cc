@@ -113,7 +113,9 @@ void MaybeRecordWebSigninToChromeSigninTimes(
 SigninMetricsService::SigninMetricsService(
     signin::IdentityManager& identity_manager,
     PrefService& pref_service)
-    : identity_manager_(identity_manager), pref_service_(pref_service) {
+    : identity_manager_(identity_manager),
+      pref_service_(pref_service),
+      management_type_recorder_(identity_manager) {
   identity_manager_scoped_observation_.Observe(&identity_manager_.get());
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

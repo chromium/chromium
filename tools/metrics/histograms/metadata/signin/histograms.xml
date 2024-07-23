@@ -278,6 +278,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountManagementType"
+    enum="AccountManagedStatusFinderOutcome" expires_after="2025-01-20">
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records, for each account in the IdentityManager at profile startup, the
+    &quot;type&quot; of account, i.e. whether it's a consumer or enterprise/EDU
+    account. If the check doesn't finish before shutdown, nothing may be
+    recorded.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AccountPref.RemovedCount{SigninState}" units="accounts"
     expires_after="2024-09-28">
   <owner>droger@chromium.org</owner>
