@@ -348,18 +348,13 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
       // as these reports are generated only via the source site's context.
       // The fake destinations are not relevant to the context that
       // actually created the report.
-      AttributionReport fake_attribution_report(
-          AttributionInfo(trigger_time,
-                          /*debug_key=*/std::nullopt,
-                          /*context_origin=*/common_info.source_origin()),
-          AttributionReport::Id(-1), report_time,
-          /*initial_report_time=*/report_time, delegate_->NewReportID(),
-          /*failed_send_attempts=*/0,
-          AttributionReport::EventLevelData(fake_report.trigger_data,
-                                            /*priority=*/0, *stored_source),
-          stored_source->common_info().reporting_origin());
-      if (!storage_.StoreAttributionReport(fake_attribution_report,
-                                           &*stored_source)) {
+      if (!storage_.StoreAttributionReport(
+              stored_source->source_id(), trigger_time, report_time,
+              /*external_report_id=*/delegate_->NewReportID(),
+              /*trigger_debug_key=*/std::nullopt,
+              /*context_origin=*/common_info.source_origin(),
+              common_info.reporting_origin(), fake_report.trigger_data,
+              /*priority=*/0)) {
         return make_result(StoreSourceResult::InternalError());
       }
 

@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
@@ -16,12 +17,15 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
 namespace attribution_reporting {
+class AggregatableTriggerConfig;
 class AggregationKeys;
 class EventReportWindows;
 class FilterData;
 class MaxEventLevelReports;
+class SuitableOrigin;
 class TriggerSpecs;
 }  // namespace attribution_reporting
 
@@ -79,13 +83,20 @@ std::string SerializeAggregationKeys(
 std::optional<attribution_reporting::AggregationKeys>
 DeserializeAggregationKeys(sql::Statement&, int col);
 
-std::string SerializeReportMetadata(const AttributionReport::EventLevelData&);
+std::string SerializeEventLevelReportMetadata(uint32_t trigger_data,
+                                              int64_t priority);
 
-std::string SerializeReportMetadata(
-    const AttributionReport::AggregatableAttributionData&);
+std::string SerializeAggregatableReportMetadata(
+    const std::optional<attribution_reporting::SuitableOrigin>&
+        aggregation_coordinator_origin,
+    const attribution_reporting::AggregatableTriggerConfig&,
+    const std::vector<blink::mojom::AggregatableReportHistogramContribution>&);
 
-std::string SerializeReportMetadata(
-    const AttributionReport::NullAggregatableData&);
+std::string SerializeNullAggregatableReportMetadata(
+    const std::optional<attribution_reporting::SuitableOrigin>&
+        aggregation_coordinator_origin,
+    const attribution_reporting::AggregatableTriggerConfig&,
+    base::Time fake_source_time);
 
 std::optional<int64_t> DeserializeEventLevelPriority(base::span<const uint8_t>);
 

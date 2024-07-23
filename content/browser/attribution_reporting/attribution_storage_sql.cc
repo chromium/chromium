@@ -1337,8 +1337,9 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
     std::optional<AttributionReport>& dropped_report,
     std::optional<int>& max_event_level_reports_per_destination,
     std::optional<int64_t>& rate_limits_max_attributions) {
-  DCHECK(absl::holds_alternative<AttributionReport::EventLevelData>(
-      report.data()));
+  const auto* event_level_data =
+      absl::get_if<AttributionReport::EventLevelData>(&report.data());
+  DCHECK(event_level_data);
 
   if (source.active_state() ==
       StoredSource::ActiveState::kReachedEventLevelAttributionLimit) {
@@ -1424,9 +1425,18 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
       source.attribution_logic() == StoredSource::AttributionLogic::kTruthfully;
 
   if (create_report) {
-    if (!StoreAttributionReport(report, &source)) {
+    std::optional<AttributionReport::Id> report_id = StoreAttributionReport(
+        source.source_id(), report.attribution_info().time,
+        report.initial_report_time(), report.external_report_id(),
+        report.attribution_info().debug_key,
+        report.attribution_info().context_origin, report.reporting_origin(),
+        event_level_data->trigger_data, event_level_data->priority);
+
+    if (!report_id.has_value()) {
       return EventLevelResult::kInternalError;
     }
+
+    report.set_id(*report_id);
   }
 
   // If a dedup key is present, store it. We do this regardless of whether
@@ -2898,9 +2908,37 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
   return AggregatableResult::kSuccess;
 }
 
-bool AttributionStorageSql::StoreAttributionReport(AttributionReport& report,
-                                                   const StoredSource* source) {
+std::optional<AttributionReport::Id>
+AttributionStorageSql::StoreAttributionReport(
+    StoredSource::Id source_id,
+    base::Time trigger_time,
+    base::Time initial_report_time,
+    const base::Uuid& external_report_id,
+    std::optional<uint64_t> trigger_debug_key,
+    const SuitableOrigin& context_origin,
+    const SuitableOrigin& reporting_origin,
+    uint32_t trigger_data,
+    int64_t priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return StoreAttributionReport(
+      *source_id, trigger_time, initial_report_time, external_report_id,
+      trigger_debug_key, context_origin, reporting_origin,
+      AttributionReport::Type::kEventLevel,
+      SerializeEventLevelReportMetadata(trigger_data, priority));
+}
+
+std::optional<AttributionReport::Id>
+AttributionStorageSql::StoreAttributionReport(
+    int64_t source_id,
+    base::Time trigger_time,
+    base::Time initial_report_time,
+    const base::Uuid& external_report_id,
+    std::optional<uint64_t> trigger_debug_key,
+    const SuitableOrigin& context_origin,
+    const SuitableOrigin& reporting_origin,
+    AttributionReport::Type report_type,
+    const std::string& serialized_metadata) {
   static constexpr char kStoreReportSql[] =
       "INSERT INTO reports"
       "(source_id,trigger_time,report_time,initial_report_time,"
@@ -2910,37 +2948,26 @@ bool AttributionStorageSql::StoreAttributionReport(AttributionReport& report,
   sql::Statement store_report_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kStoreReportSql));
 
-  const AttributionInfo& attribution_info = report.attribution_info();
-
   // Per https://www.sqlite.org/autoinc.html, if no negative ROWID values are
   // inserted explicitly, then automatically generated ROWID values will always
   // be greater than zero. Therefore it's fine to use -1 as sentinel value for a
   // null source.
-  store_report_statement.BindInt64(
-      0, source ? *source->source_id() : kUnsetRecordId);
-  store_report_statement.BindTime(1, attribution_info.time);
-  store_report_statement.BindTime(2, report.report_time());
-  store_report_statement.BindTime(3, report.initial_report_time());
-  store_report_statement.BindString(
-      4, report.external_report_id().AsLowercaseString());
-  BindUint64OrNull(store_report_statement, 5, attribution_info.debug_key);
-  store_report_statement.BindString(
-      6, attribution_info.context_origin.Serialize());
-  store_report_statement.BindString(7, report.reporting_origin().Serialize());
-  store_report_statement.BindInt(8,
-                                 SerializeReportType(report.GetReportType()));
+  store_report_statement.BindInt64(0, source_id);
+  store_report_statement.BindTime(1, trigger_time);
+  store_report_statement.BindTime(2, initial_report_time);
+  store_report_statement.BindTime(3, initial_report_time);
+  store_report_statement.BindString(4, external_report_id.AsLowercaseString());
+  BindUint64OrNull(store_report_statement, 5, trigger_debug_key);
+  store_report_statement.BindString(6, context_origin.Serialize());
+  store_report_statement.BindString(7, reporting_origin.Serialize());
+  store_report_statement.BindInt(8, SerializeReportType(report_type));
+  store_report_statement.BindBlob(9, serialized_metadata);
 
-  std::string metadata = absl::visit(
-      [](const auto& data) { return SerializeReportMetadata(data); },
-      report.data());
-
-  store_report_statement.BindBlob(9, metadata);
   if (!store_report_statement.Run()) {
-    return false;
+    return std::nullopt;
   }
 
-  report.set_id(AttributionReport::Id(db_.GetLastInsertRowId()));
-  return true;
+  return AttributionReport::Id(db_.GetLastInsertRowId());
 }
 
 AggregatableResult
@@ -3023,9 +3050,25 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
     DCHECK(data);
     attributed_source_time = data->source_time;
 
-    if (!StoreAttributionReport(*new_aggregatable_report, source)) {
+    DCHECK(source);
+
+    std::optional<AttributionReport::Id> report_id = StoreAttributionReport(
+        *source->source_id(), attribution_info.time,
+        new_aggregatable_report->initial_report_time(),
+        new_aggregatable_report->external_report_id(),
+        attribution_info.debug_key, attribution_info.context_origin,
+        new_aggregatable_report->reporting_origin(),
+        AttributionReport::Type::kAggregatableAttribution,
+        SerializeAggregatableReportMetadata(
+            data->common_data.aggregation_coordinator_origin,
+            data->common_data.aggregatable_trigger_config,
+            data->contributions));
+
+    if (!report_id.has_value()) {
       return false;
     }
+
+    new_aggregatable_report->set_id(*report_id);
   }
 
   if (HasAggregatableData(trigger.registration())) {
@@ -3048,17 +3091,17 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
       min_null_aggregatable_report_time = AttributionReport::MinReportTime(
           min_null_aggregatable_report_time, report_time);
 
-      AttributionReport report(
-          attribution_info, AttributionReport::Id(kUnsetRecordId), report_time,
-          /*initial_report_time=*/report_time, delegate_->NewReportID(),
-          /*failed_send_attempts=*/0,
-          AttributionReport::NullAggregatableData(
-              AttributionReport::CommonAggregatableData(
+      if (!StoreAttributionReport(
+              /*source_id=*/kUnsetRecordId,
+              /*trigger_time=*/attribution_info.time, report_time,
+              /*external_report_id=*/delegate_->NewReportID(),
+              /*trigger_debug_key=*/std::nullopt,
+              attribution_info.context_origin, trigger.reporting_origin(),
+              AttributionReport::Type::kNullAggregatable,
+              SerializeNullAggregatableReportMetadata(
                   trigger.registration().aggregation_coordinator_origin,
-                  trigger.registration().aggregatable_trigger_config),
-              null_aggregatable_report.fake_source_time),
-          trigger.reporting_origin());
-      if (!StoreAttributionReport(report, /*source=*/nullptr)) {
+                  trigger.registration().aggregatable_trigger_config,
+                  null_aggregatable_report.fake_source_time))) {
         return false;
       }
     }

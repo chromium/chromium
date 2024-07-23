@@ -29,8 +29,13 @@
 #include "sql/database.h"
 #include "sql/transaction.h"
 
+namespace attribution_reporting {
+class SuitableOrigin;
+}  // namespace attribution_reporting
+
 namespace base {
 class Time;
+class Uuid;
 }  // namespace base
 
 namespace sql {
@@ -266,8 +271,16 @@ class CONTENT_EXPORT AttributionStorageSql {
       const std::vector<StoredSource::Id>&,
       base::Time now);
 
-  [[nodiscard]] bool StoreAttributionReport(AttributionReport& report,
-                                            const StoredSource* source);
+  [[nodiscard]] std::optional<AttributionReport::Id> StoreAttributionReport(
+      StoredSource::Id,
+      base::Time trigger_time,
+      base::Time initial_report_time,
+      const base::Uuid& external_report_id,
+      std::optional<uint64_t> trigger_debug_key,
+      const attribution_reporting::SuitableOrigin& context_origin,
+      const attribution_reporting::SuitableOrigin& reporting_origin,
+      uint32_t trigger_data,
+      int64_t priority);
 
   int64_t StorageFileSizeKB();
 
@@ -465,6 +478,18 @@ class CONTENT_EXPORT AttributionStorageSql {
       int num_aggregatable_attribution_reports,
       std::optional<uint64_t> dedup_key,
       std::optional<int>& max_aggregatable_reports_per_source)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] std::optional<AttributionReport::Id> StoreAttributionReport(
+      int64_t source_id,
+      base::Time trigger_time,
+      base::Time initial_report_time,
+      const base::Uuid& external_report_id,
+      std::optional<uint64_t> trigger_debug_key,
+      const attribution_reporting::SuitableOrigin& context_origin,
+      const attribution_reporting::SuitableOrigin& reporting_origin,
+      AttributionReport::Type,
+      const std::string& serialized_metadata)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Generates null aggregatable reports for the given trigger and stores all
