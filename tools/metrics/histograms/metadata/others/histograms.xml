@@ -9745,7 +9745,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="UpgradeDetector.HoursBeforeUpgrade" units="hours"
-    expires_after="2024-09-01">
+    expires_after="2025-01-05">
   <owner>emshack@chromium.org</owner>
   <owner>pbos@chromium.org</owner>
   <summary>
