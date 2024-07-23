@@ -142,13 +142,12 @@ FieldFillingSkipReason FormFiller::GetFieldFillingSkipReason(
     const AutofillField& autofill_field,
     const AutofillField& trigger_field,
     base::flat_map<FieldType, size_t>& type_count,
-    base::optional_ref<const DenseSet<FieldTypeGroup>>
-        type_groups_originally_filled,
-    const FieldTypeSet field_types_to_fill,
-    const FillingProduct filling_product,
-    const bool skip_unrecognized_autocomplete_fields,
-    const bool is_refill,
-    const bool is_expired_credit_card) {
+    const std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
+    FieldTypeSet field_types_to_fill,
+    FillingProduct filling_product,
+    bool skip_unrecognized_autocomplete_fields,
+    bool is_refill,
+    bool is_expired_credit_card) {
   const bool is_trigger_field =
       autofill_field.global_id() == trigger_field.global_id();
 
@@ -312,8 +311,7 @@ FormFiller::GetFieldFillingSkipReasons(
     const FormStructure& form_structure,
     const AutofillField& trigger_field,
     const FieldTypeSet& field_types_to_fill,
-    base::optional_ref<const DenseSet<FieldTypeGroup>>
-        type_groups_originally_filled,
+    std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
     FillingProduct filling_product,
     bool skip_unrecognized_autocomplete_fields,
     bool is_refill,
@@ -575,8 +573,8 @@ void FormFiller::FillOrPreviewForm(
       GetFieldFillingSkipReasons(
           result_fields, *form_structure, *autofill_trigger_field,
           trigger_details.field_types_to_fill,
-          filling_context ? &filling_context->type_groups_originally_filled
-                          : nullptr,
+          filling_context ? filling_context->type_groups_originally_filled
+                          : std::optional<DenseSet<FieldTypeGroup>>(),
           filling_product,
           /*skip_unrecognized_autocomplete_fields=*/
           trigger_details.trigger_source !=
