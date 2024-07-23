@@ -13,6 +13,7 @@
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/stream_socket.h"
+#include "net/ssl/ssl_cert_request_info.h"
 
 namespace net {
 
