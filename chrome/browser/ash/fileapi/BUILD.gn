@@ -80,6 +80,7 @@ static_library("fileapi") {
     "//ash/webui/file_manager:constants",
     "//build:buildflag_header_h",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/drive",
     "//chrome/browser/ash/profiles",
     "//chrome/common:common",
     "//chrome/common/extensions/api",
