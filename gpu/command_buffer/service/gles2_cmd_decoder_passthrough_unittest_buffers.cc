@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/heap_array.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
 
@@ -675,11 +676,11 @@ TEST_F(GLES3DecoderPassthroughTest, CopyBufferSubDataValidArgs) {
   // Set up the buffer so first half is kValue0 and second half is kValue1.
   DoBindBuffer(kTarget, kClientBufferId);
   DoBufferData(kTarget, kSize, nullptr, GL_STREAM_DRAW);
-  std::unique_ptr<char[]> data(new char[kHalfSize]);
-  memset(data.get(), kValue0, kHalfSize);
-  DoBufferSubData(kTarget, 0, kHalfSize, data.get());
-  memset(data.get(), kValue1, kHalfSize);
-  DoBufferSubData(kTarget, kHalfSize, kHalfSize, data.get());
+  base::HeapArray<char> data = base::HeapArray<char>::Uninit(kHalfSize);
+  memset(data.data(), kValue0, kHalfSize);
+  DoBufferSubData(kTarget, 0, kHalfSize, data.data());
+  memset(data.data(), kValue1, kHalfSize);
+  DoBufferSubData(kTarget, kHalfSize, kHalfSize, data.data());
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 
   cmds::CopyBufferSubData cmd;
