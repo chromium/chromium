@@ -34,7 +34,7 @@ schema:
   - focus-sounds
   - disabled
   type: string
-supported_on:
-- chrome_os:129-
+future_on:
+- chrome_os
 tags: []
 type: string-enum
