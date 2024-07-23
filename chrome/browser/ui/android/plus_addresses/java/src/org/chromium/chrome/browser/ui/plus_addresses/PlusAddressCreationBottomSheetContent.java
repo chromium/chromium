@@ -30,7 +30,8 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
     private final ViewGroup mContentView;
     private final LoadingView mLoadingView;
     private final TextView mProposedPlusAddress;
-    @Nullable private final ImageView mRefreshIcon;
+    // The clickable icon used to refresh the suggested plus address.
+    private final ImageView mRefreshIcon;
     private final Button mPlusAddressConfirmButton;
     private boolean mShowingLoadingView;
     private PlusAddressCreationDelegate mDelegate;
@@ -152,9 +153,7 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
     }
 
     public void hideRefreshButton() {
-        if (mRefreshIcon != null) {
-            mRefreshIcon.setVisibility(View.GONE);
-        }
+        mRefreshIcon.setVisibility(View.GONE);
     }
 
     /** Sets the delegate listening for actions the user performs on this bottom sheet. */
