@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web/model/session_state/web_session_state_cache.h"
 #import "ios/chrome/browser/web/model/session_state/web_session_state_tab_helper.h"
+#import "ios/web/public/browser_state.h"
 
 WebSessionStateCacheWebStateListObserver::
     WebSessionStateCacheWebStateListObserver(
@@ -29,8 +30,11 @@ void WebSessionStateCacheWebStateListObserver::WebStateListWillChange(
     return;
   }
 
+  web::WebState* web_state = detach_change.detached_web_state();
   [web_session_state_cache_
-      removeSessionStateDataForWebState:detach_change.detached_web_state()];
+      removeSessionStateDataForWebStateID:web_state->GetUniqueIdentifier()
+                                incognito:web_state->GetBrowserState()
+                                              ->IsOffTheRecord()];
 }
 
 void WebSessionStateCacheWebStateListObserver::WebStateListDidChange(

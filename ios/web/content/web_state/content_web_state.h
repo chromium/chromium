@@ -54,7 +54,8 @@ class ContentWebState : public WebState,
 
   // Constructor for ContentWebState created for deserialized sessions.
   ContentWebState(const CreateParams& params,
-                  CRWSessionStorage* session_storage);
+                  CRWSessionStorage* session_storage,
+                  NativeSessionFetcher session_fetcher);
 
   // Constructor for ContentWebState created for deserialized sessions.
   ContentWebState(BrowserState* browser_state,

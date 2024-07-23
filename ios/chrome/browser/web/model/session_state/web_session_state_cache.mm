@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web/model/session_state/web_session_state_tab_helper.h"
+#import "ios/web/public/web_state_id.h"
 
 namespace {
 
@@ -37,15 +38,13 @@ namespace {
 // true.
 const int kRemoveSessionStateDataDelay = 10;
 
-// Returns the session identifier for `web_state` as a string.
-std::string SessionIdentifierForWebState(const web::WebState* web_state) {
-  DCHECK(web_state->GetUniqueIdentifier().valid());
-  DCHECK_GT(web_state->GetUniqueIdentifier().identifier(), 0);
+// Returns the session identifier for `web_state_id` as a string.
+std::string SessionIdentifierForWebStateID(web::WebStateID web_state_id) {
+  DCHECK(web_state_id.valid());
+  DCHECK_GT(web_state_id.identifier(), 0);
 
-  static_assert(sizeof(decltype(web::WebStateID().identifier())) ==
-                sizeof(int32_t));
-  const uint32_t identifier =
-      static_cast<uint32_t>(web_state->GetUniqueIdentifier().identifier());
+  static_assert(sizeof(decltype(web_state_id.identifier())) == sizeof(int32_t));
+  const uint32_t identifier = static_cast<uint32_t>(web_state_id.identifier());
 
   return base::StringPrintf("%08u", identifier);
 }
@@ -144,48 +143,25 @@ void PurgeCacheOnBackgroundSequenceExcept(
 }
 
 - (void)persistSessionStateData:(NSData*)data
-                    forWebState:(const web::WebState*)webState {
+                  forWebStateID:(web::WebStateID)webStateID {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (!data || !_taskRunner) {
     return;
   }
 
   _taskRunner->PostTask(
-      FROM_HERE, base::BindOnce(&WriteSessionData, data,
-                                _cacheDirectory.Append(
-                                    SessionIdentifierForWebState(webState))));
+      FROM_HERE,
+      base::BindOnce(
+          &WriteSessionData, data,
+          _cacheDirectory.Append(SessionIdentifierForWebStateID(webStateID))));
 }
 
-- (NSData*)sessionStateDataForWebState:(const web::WebState*)webState {
+- (NSData*)sessionStateDataForWebStateID:(web::WebStateID)webStateID {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  const base::FilePath filePath =
-      _cacheDirectory.Append(SessionIdentifierForWebState(webState));
-  NSData* data =
-      [NSData dataWithContentsOfFile:base::apple::FilePathToNSString(filePath)];
-
-  if (!data) {
-    // Until M-115, the file name was derived from GetStableIdentifier()
-    // instead of GetUniqueIndentifier(). So if the session cannot be loaded
-    // with the new path, check if it exists with the old path, and then
-    // rename the file.
-    //
-    // This code is only reachable if new serialisation code has never been
-    // enabled (because otherwise the file would have been migrated already)
-    // and thus GetStableIdentifier() is still valid and can be used to load
-    // the file.
-    const base::FilePath alternateFilePath = _cacheDirectory.Append(
-        base::SysNSStringToUTF8(webState->GetStableIdentifier()));
-
-    data = [NSData dataWithContentsOfFile:base::apple::FilePathToNSString(
-                                              alternateFilePath)];
-    if (data && _taskRunner) {
-      _taskRunner->PostTask(FROM_HERE,
-                            base::BindOnce(base::IgnoreResult(&base::Move),
-                                           alternateFilePath, filePath));
-    }
-  }
-
-  return data;
+  return [NSData dataWithContentsOfFile:base::apple::FilePathToNSString(
+                                            _cacheDirectory.Append(
+                                                SessionIdentifierForWebStateID(
+                                                    webStateID)))];
 }
 
 - (void)purgeUnassociatedDataWithCompletion:(base::OnceClosure)closure {
@@ -193,12 +169,13 @@ void PurgeCacheOnBackgroundSequenceExcept(
   [self purgeCacheExcept:[self liveSessionIDs] closure:std::move(closure)];
 }
 
-- (void)removeSessionStateDataForWebState:(const web::WebState*)webState {
+- (void)removeSessionStateDataForWebStateID:(web::WebStateID)webStateID
+                                  incognito:(BOOL)incognito {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (!_taskRunner)
     return;
 
-  if (_delayRemove && !webState->GetBrowserState()->IsOffTheRecord()) {
+  if (_delayRemove && !incognito) {
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
     [self performSelector:@selector(purgeUnassociatedData)
                withObject:nil
@@ -207,9 +184,10 @@ void PurgeCacheOnBackgroundSequenceExcept(
   }
 
   _taskRunner->PostTask(
-      FROM_HERE, base::BindOnce(base::IgnoreResult(&base::DeleteFile),
-                                _cacheDirectory.Append(
-                                    SessionIdentifierForWebState(webState))));
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&base::DeleteFile),
+          _cacheDirectory.Append(SessionIdentifierForWebStateID(webStateID))));
 }
 
 - (void)setDelayRemove:(BOOL)delayRemove {
@@ -244,17 +222,8 @@ void PurgeCacheOnBackgroundSequenceExcept(
     WebStateList* webStateList = browser->GetWebStateList();
     for (int index = 0; index < webStateList->count(); ++index) {
       web::WebState* webState = webStateList->GetWebStateAt(index);
-      liveSessionIDs.insert(SessionIdentifierForWebState(webState));
-
-      // Since until M-115, the filename was derived from GetStableIdentifier()
-      // and since the file are renamed only when loaded (which happens only
-      // for realized WebState), we have to also preserve any file named after
-      // GetStableIdentifier().
-      //
-      // The file are renamed when loaded, so eventually those paths won't
-      // correspond to existing files.
       liveSessionIDs.insert(
-          base::SysNSStringToUTF8(webState->GetStableIdentifier()));
+          SessionIdentifierForWebStateID(webState->GetUniqueIdentifier()));
     }
   }
 

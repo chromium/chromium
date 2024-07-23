@@ -332,8 +332,9 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
     DCHECK(_cachedSessionStorage);
 
     const web::WebState::CreateParams createParams(_browserState);
-    return web::WebState::CreateWithStorageSession(createParams,
-                                                   _cachedSessionStorage);
+    return web::WebState::CreateWithStorageSession(
+        createParams, _cachedSessionStorage,
+        base::ReturnValueOnce<NSData*>(nil));
   }
 
   if (!_cachedProtobufStorage) {

@@ -96,7 +96,8 @@ ContentWebState::ContentWebState(const CreateParams& params)
     : ContentWebState(params, nil) {}
 
 ContentWebState::ContentWebState(const CreateParams& params,
-                                 CRWSessionStorage* session_storage)
+                                 CRWSessionStorage* session_storage,
+                                 NativeSessionFetcher session_fetcher)
     : unique_identifier_(session_storage ? session_storage.uniqueIdentifier
                                          : WebStateID::NewUnique()) {
   content::BrowserContext* browser_context =

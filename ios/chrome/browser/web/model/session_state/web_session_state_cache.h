@@ -13,7 +13,7 @@
 
 class ChromeBrowserState;
 namespace web {
-class WebState;
+class WebStateID;
 }
 
 // A browser state keyed service, providing an on-disk cache of WKWebView
@@ -29,18 +29,18 @@ class WebState;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Persists `data` in a background thread based on `webState`'s tab id.
+// Persists `data` in a background thread based on `webStateID`.
 - (void)persistSessionStateData:(NSData*)data
-                    forWebState:(const web::WebState*)webState;
+                  forWebStateID:(web::WebStateID)webStateID;
 
-// Retrieves the persisted session state based on `webState`'s tab id.  Returns
+// Retrieves the persisted session state based on `webStateID`.  Returns
 // nil if file does not exist.
-- (NSData*)sessionStateDataForWebState:(const web::WebState*)webState;
+- (NSData*)sessionStateDataForWebStateID:(web::WebStateID)webStateID;
 
-// Deletes the persisted session state based on `webState`'s tab id in a
-// background thread.  If `_delayRemove` is set, purge is instead called on a
-// short delay.
-- (void)removeSessionStateDataForWebState:(const web::WebState*)webState;
+// Deletes the persisted session state based on `webStateID` in a background
+// thread.  If `_delayRemove` is set, purge is instead called on a short delay.
+- (void)removeSessionStateDataForWebStateID:(web::WebStateID)webStateID
+                                  incognito:(BOOL)incognito;
 
 // Removes any persisted session data for tabs that no longer exist and
 // invokes `closure` on the calling sequence when the operation completes.

@@ -21,7 +21,6 @@
 #import "ios/web/public/session/proto/metadata.pb.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
-#import "ios/web/public/web_client.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 #import "ios/web/web_state/global_web_state_event_tracker.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
@@ -66,16 +65,6 @@ void CheckForOverRealization() {
   }
 }
 
-// Returns the session data blob from the cache for `weak_web_state`.
-NSData* FetchSessionDataBlob(base::WeakPtr<WebState> weak_web_state) {
-  web::WebState* web_state = weak_web_state.get();
-  if (!web_state) {
-    return nil;
-  }
-
-  return GetWebClient()->FetchSessionFromCache(web_state);
-}
-
 // Serializes the `session_storage` to proto::WebStateStorage.
 web::proto::WebStateStorage SessionStorageToProto(
     CRWSessionStorage* session_storage) {
@@ -113,7 +102,8 @@ WebStateImpl::WebStateImpl(const CreateParams& params) {
 }
 
 WebStateImpl::WebStateImpl(const CreateParams& params,
-                           CRWSessionStorage* session_storage) {
+                           CRWSessionStorage* session_storage,
+                           NativeSessionFetcher session_fetcher) {
   AddWebStateImplMarker();
 
   // Restore the serializable user data as user code may depend on accessing
@@ -134,7 +124,7 @@ WebStateImpl::WebStateImpl(const CreateParams& params,
       this, params.browser_state, session_storage.stableIdentifier,
       session_storage.uniqueIdentifier, std::move(metadata),
       base::BindOnce(&SessionStorageToProto, session_storage),
-      base::BindOnce(&FetchSessionDataBlob, GetWeakPtr()));
+      std::move(session_fetcher));
   saved_->SetSessionStorage(session_storage);
 
   SendGlobalCreationEvent();

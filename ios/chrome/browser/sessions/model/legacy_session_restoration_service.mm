@@ -232,7 +232,8 @@ LegacySessionRestorationService::CreateUnrealizedWebState(
       web::WebState::CreateParams(browser->GetBrowserState()),
       [[CRWSessionStorage alloc] initWithProto:storage
                               uniqueIdentifier:web::WebStateID::NewUnique()
-                              stableIdentifier:[[NSUUID UUID] UUIDString]]);
+                              stableIdentifier:[[NSUUID UUID] UUIDString]],
+      base::ReturnValueOnce<NSData*>(nil));
 }
 
 void LegacySessionRestorationService::DeleteDataForDiscardedSessions(

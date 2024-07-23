@@ -80,14 +80,18 @@ TEST_F(WebSessionStateCacheTest, CacheAddAndRemove) {
   const char data_str[] = "foo";
   NSData* data = [NSData dataWithBytes:data_str length:strlen(data_str)];
   EXPECT_FALSE(StorageExists());
-  [cache persistSessionStateData:data forWebState:web_state_.get()];
+  [cache persistSessionStateData:data
+                   forWebStateID:web_state_->GetUniqueIdentifier()];
   FlushRunLoops();
   EXPECT_TRUE(StorageExists());
-  NSData* data_back = [cache sessionStateDataForWebState:web_state_.get()];
+  NSData* data_back =
+      [cache sessionStateDataForWebStateID:web_state_->GetUniqueIdentifier()];
   EXPECT_EQ(data_str,
             std::string(reinterpret_cast<const char*>(data_back.bytes),
                         data_back.length));
-  [cache removeSessionStateDataForWebState:web_state_.get()];
+  [cache removeSessionStateDataForWebStateID:web_state_->GetUniqueIdentifier()
+                                   incognito:web_state_->GetBrowserState()
+                                                 ->IsOffTheRecord()];
   FlushRunLoops();
   EXPECT_FALSE(StorageExists());
 }
@@ -98,11 +102,14 @@ TEST_F(WebSessionStateCacheTest, CacheDelayRemove) {
   const char data_str[] = "foo";
   NSData* data = [NSData dataWithBytes:data_str length:strlen(data_str)];
   EXPECT_FALSE(StorageExists());
-  [cache persistSessionStateData:data forWebState:web_state_.get()];
+  [cache persistSessionStateData:data
+                   forWebStateID:web_state_->GetUniqueIdentifier()];
   FlushRunLoops();
   EXPECT_TRUE(StorageExists());
   [cache setDelayRemove:true];
-  [cache removeSessionStateDataForWebState:web_state_.get()];
+  [cache removeSessionStateDataForWebStateID:web_state_->GetUniqueIdentifier()
+                                   incognito:web_state_->GetBrowserState()
+                                                 ->IsOffTheRecord()];
   FlushRunLoops();
   [cache setDelayRemove:false];
   EXPECT_TRUE(StorageExists());
@@ -110,34 +117,6 @@ TEST_F(WebSessionStateCacheTest, CacheDelayRemove) {
     FlushRunLoops();
     return !StorageExists();
   }));
-}
-
-// Tests that the file is correctly migrated.
-TEST_F(WebSessionStateCacheTest, MigrateSessionPreM116) {
-  WebSessionStateCache* cache = GetSessionCache();
-
-  const char data_str[] = "foo";
-  EXPECT_FALSE(StorageExists());
-  EXPECT_TRUE(base::CreateDirectory(session_cache_directory_));
-
-  NSError* error = nil;
-  NSData* data = [NSData dataWithBytes:data_str length:strlen(data_str)];
-  NSString* legacy_file_path =
-      base::apple::FilePathToNSString(session_cache_directory_.Append(
-          base::SysNSStringToUTF8(web_state_->GetStableIdentifier())));
-  NSDataWritingOptions options =
-      NSDataWritingAtomic |
-      NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication;
-  [data writeToFile:legacy_file_path options:options error:&error];
-  EXPECT_FALSE(error);
-  EXPECT_FALSE(StorageExists());
-
-  NSData* loaded_data = [cache sessionStateDataForWebState:web_state_.get()];
-  EXPECT_TRUE(loaded_data);
-  EXPECT_NSEQ(loaded_data, data);
-
-  FlushRunLoops();
-  EXPECT_TRUE(StorageExists());
 }
 
 }  // namespace

@@ -86,7 +86,8 @@ ChromeBrowserState* WebSessionStateTabHelper::GetBrowserState() {
 NSData* WebSessionStateTabHelper::FetchSessionFromCache() {
   WebSessionStateCache* cache =
       WebSessionStateCacheFactory::GetForBrowserState(GetBrowserState());
-  NSData* data = [cache sessionStateDataForWebState:web_state_];
+  NSData* data =
+      [cache sessionStateDataForWebStateID:web_state_->GetUniqueIdentifier()];
   return data.length ? data : nil;
 }
 
@@ -111,11 +112,15 @@ void WebSessionStateTabHelper::SaveSessionState() {
     // persist any `data` larger than 5MB.  If this happens, remove the now
     // stale session state data.
     if (size_kb > kMaxSessionState) {
-      [cache removeSessionStateDataForWebState:web_state_];
+      [cache
+          removeSessionStateDataForWebStateID:web_state_->GetUniqueIdentifier()
+                                    incognito:GetBrowserState()
+                                                  ->IsOffTheRecord()];
       return;
     }
 
-    [cache persistSessionStateData:data forWebState:web_state_];
+    [cache persistSessionStateData:data
+                     forWebStateID:web_state_->GetUniqueIdentifier()];
   }
 }
 
