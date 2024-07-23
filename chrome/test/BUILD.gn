@@ -11399,7 +11399,6 @@ if (!is_android && !is_chromeos_device) {
           "../browser/ui/webui/ash/settings/integration_tests/device_page/device_settings_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/privacy_hub_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/pages/device/integration_tests/audio_page_interactive_uitest.cc",
-          "../browser/ui/webui/ash/shortcut_customization/integration_tests/shortcut_customization_interactive_uitest.cc",
           "../browser/ui/webui/print_preview/print_preview_chromeos_interactive_uitest.cc",
           "//ash/drag_drop/drag_drop_interactive_uitest.cc",
         ]
@@ -11428,6 +11427,7 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ui/ash",
           "//chrome/browser/ui/ash:interactive_ui_tests",
           "//chrome/browser/ui/ash/multi_user",
+          "//chrome/browser/ui/webui/ash/shortcut_customization/integration_tests:interactive_ui_tests",
           "//chrome/test/base/ash/interactive:interactive_ui_tests",
           "//chrome/test/base/ash/interactive:test_support",
           "//chromeos/ash/components/dbus/fwupd",
