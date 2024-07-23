@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("system_web_apps") {
+static_library("system_web_apps") {
   sources = [
     "color_helpers_ui_impl.cc",
     "system_web_app_delegate_ui_impl.cc",
