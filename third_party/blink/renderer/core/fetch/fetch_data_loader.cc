@@ -428,7 +428,7 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
 
     bool AppendBytes(const char* bytes, size_t size) {
       if (blob_data_)
-        blob_data_->AppendBytes(bytes, size);
+        blob_data_->AppendBytes(base::as_bytes(base::span(bytes, size)));
       if (string_builder_) {
         string_builder_->Append(string_decoder_->Decode(bytes, size));
         if (string_decoder_->SawError())
