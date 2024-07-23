@@ -5955,6 +5955,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mojo.Channel.WriteToReadLatencyUs" units="microseconds"
+    expires_after="2024-11-03">
+  <owner>lizeb@chromium.org</owner>
+  <owner>rockot@google.com</owner>
+  <summary>
+    Measures the time taken between an IPCz message serialization until it is
+    deserialized on the other side of the Channel. This metric is downsampled to
+    reduce its cost.
+
+    This is only recorded on clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Mojo.Connector.MaxUnreadMessageQuotaUsed" units="messages"
     expires_after="2022-05-01">
   <owner>siggi@chromium.org</owner>
