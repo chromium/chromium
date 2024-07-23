@@ -952,7 +952,8 @@ DownloadTargetDeterminer::Result
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!virtual_path_.empty());
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(safe_browsing::kGooglePlayProtectPrompt)) {
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kGooglePlayProtectReducesWarnings)) {
     next_state_ = STATE_CHECK_APP_VERIFICATION;
   } else {
     next_state_ = STATE_CHECK_VISITED_REFERRER_BEFORE;
@@ -977,11 +978,11 @@ void DownloadTargetDeterminer::CheckDownloadUrlDone(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DVLOG(20) << "URL Check Result:" << danger_type;
 #if BUILDFLAG(IS_ANDROID)
-  DCHECK_EQ(
-      base::FeatureList::IsEnabled(safe_browsing::kGooglePlayProtectPrompt)
-          ? STATE_CHECK_APP_VERIFICATION
-          : STATE_CHECK_VISITED_REFERRER_BEFORE,
-      next_state_);
+  DCHECK_EQ(base::FeatureList::IsEnabled(
+                safe_browsing::kGooglePlayProtectReducesWarnings)
+                ? STATE_CHECK_APP_VERIFICATION
+                : STATE_CHECK_VISITED_REFERRER_BEFORE,
+            next_state_);
 #else
   DCHECK_EQ(STATE_CHECK_VISITED_REFERRER_BEFORE, next_state_);
 #endif
@@ -1040,7 +1041,8 @@ DownloadTargetDeterminer::Result
 
   if (danger_level_ == DownloadFileType::ALLOW_ON_USER_GESTURE) {
 #if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(safe_browsing::kGooglePlayProtectPrompt) &&
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kGooglePlayProtectReducesWarnings) &&
         is_app_verification_enabled_) {
       return CONTINUE;
     }
