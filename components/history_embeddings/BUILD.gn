@@ -42,6 +42,7 @@ static_library("history_embeddings") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt/async/browser",
     "//components/page_content_annotations/core",
+    "//components/sessions",
     "//content/public/browser",
     "//content/public/common",
     "//mojo/public/cpp/bindings",

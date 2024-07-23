@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -33,6 +34,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -193,7 +195,7 @@ std::vector<size_t> ScoredUrlRow::GetBestScoreIndices(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-SearchResult::SearchResult() = default;
+SearchResult::SearchResult() : session_id(SessionID::InvalidValue()) {}
 SearchResult::SearchResult(const SearchResult&) = default;
 SearchResult::SearchResult(SearchResult&&) = default;
 SearchResult::~SearchResult() = default;
@@ -349,6 +351,7 @@ void HistoryEmbeddingsService::Search(
     size_t count,
     SearchResultCallback callback) {
   SearchResult result;
+  result.session_id = SessionID::NewUnique();
   result.query = query;
   result.time_range_start = time_range_start;
   result.count = count;
@@ -431,6 +434,7 @@ void HistoryEmbeddingsService::SendQualityLog(
       result.time_range_start.has_value()
           ? (base::Time::Now() - result.time_range_start.value()).InDays() + 1
           : 0;
+  quality_proto->set_session_id(base::NumberToString(result.session_id.id()));
   quality_proto->set_user_feedback(user_feedback);
   quality_proto->set_embedding_model_version(
       embedder_metadata_.value().model_version);

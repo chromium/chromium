@@ -29,6 +29,7 @@
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
+#include "components/sessions/core/session_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -238,6 +239,17 @@ TEST_F(HistoryEmbeddingsServiceTest, OnHistoryDeletions) {
       /*user_initiated=*/true, base::BindLambdaForTesting([] {}), &tracker);
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   EXPECT_EQ(CountEmbeddingsRows(), 0U);
+}
+
+TEST_F(HistoryEmbeddingsServiceTest, SearchSetsValidSessionId) {
+  // Arbitrary constructed search results have no ID.
+  SearchResult invalid_result;
+  EXPECT_FALSE(invalid_result.session_id.is_valid());
+
+  // Search results created by service search have new valid ID.
+  base::test::TestFuture<SearchResult> future;
+  service_->Search("", {}, 1, future.GetRepeatingCallback());
+  EXPECT_TRUE(future.Take().session_id.is_valid());
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, SearchReportsHistograms) {
