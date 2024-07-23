@@ -6,11 +6,16 @@ const path = require('node:path');
 
 const replacements = new Map([
   // Classes/Mixins
+  ['HelpBubbleMixin', 'HelpBubbleMixinLit'],
   ['I18nMixin', 'I18nMixinLit'],
   ['PolymerElement', 'CrLitElement'],
   ['WebUiListenerMixin', 'WebUiListenerMixinLit'],
 
   // URLs
+  [
+    '//resources/cr_components/help_bubble/help_bubble_mixin.js',
+    '//resources/cr_components/help_bubble/help_bubble_mixin_lit.js',
+  ],
   [
     '//resources/cr_elements/i18n_mixin.js',
     '//resources/cr_elements/i18n_mixin_lit.js',
