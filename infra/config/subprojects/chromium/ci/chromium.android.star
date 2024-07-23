@@ -2347,6 +2347,7 @@ ci.builder(
 
 ci.builder(
     name = "android-14-arm64-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Run chromium tests on Android 14 devices.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
