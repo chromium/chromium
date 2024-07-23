@@ -72,10 +72,7 @@ void DesksAdminTemplateProvider::StartZeroState() {
 
   auto* controller = ash::SavedDeskController::Get();
 
-  ui::ColorId color_id =
-      chromeos::features::IsJellyEnabled()
-          ? cros_tokens::kCrosSysTertiary
-          : static_cast<ui::ColorId>(cros_tokens::kIconColorPrimary);
+  ui::ColorId color_id = cros_tokens::kCrosSysTertiary;
   ui::ImageModel icon = ui::ImageModel::FromVectorIcon(
       ash::kDesksTemplatesIcon, color_id, kSystemIconDimension);
 
