@@ -73,7 +73,7 @@ title: test1
 	FirstMeaningfulPaint
 	DomContentLoaded
 	NavigationStart
-title: 
+title: default
 	Timestamp
 	AudioHandlers
 	AudioWorkletProcessors

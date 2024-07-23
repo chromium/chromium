@@ -1,7 +1,7 @@
 Tests asynchronous call stacks printed in console.
 
 Set timer for test function.
-async-callstack-in-console.js:22 Console was cleared
+Console was cleared
 async-callstack-in-console.js:28 console.trace
 
 timeout1 @ async-callstack-in-console.js:28

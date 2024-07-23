@@ -7345,16 +7345,6 @@ crbug.com/324111880 fast/ruby/float-overhang-from-ruby-text.html [ Failure ]
 crbug.com/40501131 external/wpt/css/css-flexbox/flexbox-writing-mode-slr-row-mix.html [ Failure ]
 crbug.com/40501131 external/wpt/css/css-flexbox/flexbox-writing-mode-slr.html [ Failure ]
 
-# Temporarily disabled to unblock https://crrev.com/c/5701110
-crbug.com/41433391 http/tests/devtools/console/console-clear-function.js [ Failure Pass ]
-crbug.com/41433391 http/tests/devtools/console/console-command-clear.js [ Failure Pass ]
-crbug.com/41433391 http/tests/devtools/sources/debugger/async-callstack-network-initiator.js [ Failure Pass ]
-crbug.com/41433391 http/tests/devtools/sources/debugger/rethrow-error-from-bindings-crash.js [ Failure Pass ]
-crbug.com/41433391 http/tests/devtools/sources/debugger-async/async-callstack-in-console.js [ Failure Pass ]
-crbug.com/41433391 http/tests/devtools/sources/debugger-ui/script-snippet-model.js [ Failure Pass ]
-crbug.com/41433391 inspector-protocol/runtime/runtime-console-basic-functions-paused.js [ Failure Pass ]
-crbug.com/41433391 inspector-protocol/runtime/runtime-console-basic-functions.js [ Failure Pass ]
-
 crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-029.xht [ Crash Timeout ]
 crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-035.xht [ Crash Timeout ]
 
@@ -7514,10 +7504,6 @@ crbug.com/340651310 external/wpt/uievents/mouse/mouse_boundary_events_after_reap
 
 # Gardener 2024-05-15
 b/40270061 http/tests/inspector-protocol/tracing/runtime-stats.js [ Crash Failure Pass Timeout ]
-
-# Temporarily disabled to unblock https://crrev.com/c/5688760
-crbug.com/350443026 http/tests/inspector-protocol/cpu-profiler/console-profileEnd-parameterless-crash.js [ Failure Pass ]
-crbug.com/350443026 inspector-protocol/performance/perf-push-metrics.js [ Failure Pass ]
 
 #Loading bug triage 2024-05-16
 crbug.com/339833760 [ Win ] http/tests/preload/meta-viewport-link-headers-imagesrcset.html [ Failure Pass ]
