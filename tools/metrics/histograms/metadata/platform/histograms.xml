@@ -657,7 +657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FlexHwis.PermissionCheckResult"
-    enum="ChromeOSRevenHwisPermission" expires_after="2024-08-03">
+    enum="ChromeOSRevenHwisPermission" expires_after="2025-07-22">
   <owner>tinghaolin@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
