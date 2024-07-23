@@ -4563,7 +4563,7 @@
     },
     {
       name: "WebGPUHDR",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Using subgroup related features in WebGPU.
