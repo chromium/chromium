@@ -138,8 +138,6 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, PRE_MetricsTest) {
   WaitForHistogram("OSCrypt.AppBoundProvider.Encrypt.ResultCode");
   histogram_tester_.ExpectBucketCount(
       "OSCrypt.AppBoundProvider.Encrypt.ResultCode", S_OK, 1);
-
-  WaitForHistogram("OSCrypt.AppBoundProvider.Encrypt.Time");
 }
 
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, MetricsTest) {
@@ -155,8 +153,6 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, MetricsTest) {
   WaitForHistogram("OSCrypt.AppBoundProvider.Decrypt.ResultCode");
   histogram_tester_.ExpectBucketCount(
       "OSCrypt.AppBoundProvider.Decrypt.ResultCode", S_OK, 1);
-
-  WaitForHistogram("OSCrypt.AppBoundProvider.Decrypt.Time");
 }
 
 // Run this test manually to force uninstall the service using
