@@ -52,6 +52,9 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
   gfx::Rect TrackRect(const Scrollbar&) const override;
   int MinimumThumbLength(const Scrollbar&) const override;
 
+  void PaintTrackAndButtons(GraphicsContext& context,
+                            const Scrollbar&,
+                            const gfx::Rect&) override;
   void PaintTrack(GraphicsContext&,
                   const Scrollbar&,
                   const gfx::Rect&) override;
@@ -73,6 +76,13 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
 
   bool ShouldCenterOnThumb(const Scrollbar&,
                            const WebMouseEvent&) const override;
+
+  bool UsesSolidColorThumb() const override;
+  gfx::Insets SolidColorThumbInsets(const Scrollbar&) const override;
+  SkColor4f ThumbColor(const Scrollbar&) const override;
+  bool UsesNinePatchTrackAndButtonsResource() const override;
+  gfx::Rect NinePatchTrackAndButtonsAperture(const Scrollbar&) const override;
+  gfx::Size NinePatchTrackAndButtonsCanvasSize(const Scrollbar&) const override;
 
   // During a thumb drag, if the pointer moves outside a certain threshold in
   // the non-scrolling direction, the scroller is expected to "snap back" to the

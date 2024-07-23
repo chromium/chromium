@@ -312,8 +312,8 @@ void NativeThemeAura::PaintScrollbarThumb(
 
   TRACE_EVENT0("blink", "NativeThemeAura::PaintScrollbarThumb");
 
-  gfx::Rect thumb_rect(rect);
-  SkColor default_thumb_color;
+  gfx::Rect fill_rect(rect);
+  cc::PaintFlags fill_flags;
 
   if (use_overlay_scrollbars_) {
     if (state == NativeTheme::kDisabled)
@@ -322,21 +322,21 @@ void NativeThemeAura::PaintScrollbarThumb(
     const bool hovered = state != kNormal;
 
     DCHECK(color_provider);
-    default_thumb_color =
+    fill_flags.setColor(extra_params.thumb_color.value_or(
         color_provider->GetColor(hovered ? kColorOverlayScrollbarFillHovered
-                                         : kColorOverlayScrollbarFill);
+                                         : kColorOverlayScrollbarFill)));
     const SkColor stroke_color =
         color_provider->GetColor(hovered ? kColorOverlayScrollbarStrokeHovered
                                          : kColorOverlayScrollbarStroke);
 
     // In overlay mode, draw a stroke (border).
     constexpr int kStrokeWidth = kOverlayScrollbarStrokeWidth;
-    cc::PaintFlags flags;
-    flags.setColor(stroke_color);
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(kStrokeWidth);
+    cc::PaintFlags stroke_flags;
+    stroke_flags.setColor(stroke_color);
+    stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
+    stroke_flags.setStrokeWidth(kStrokeWidth);
 
-    gfx::RectF stroke_rect(thumb_rect);
+    gfx::RectF stroke_rect(fill_rect);
     gfx::InsetsF stroke_insets(kStrokeWidth / 2.f);
     // The edge to which the scrollbar is attached shouldn't have a border.
     gfx::Insets edge_adjust_insets;
@@ -345,46 +345,56 @@ void NativeThemeAura::PaintScrollbarThumb(
     else
       edge_adjust_insets.set_right(-kStrokeWidth);
     stroke_rect.Inset(stroke_insets + gfx::InsetsF(edge_adjust_insets));
-    canvas->drawRect(gfx::RectFToSkRect(stroke_rect), flags);
+    canvas->drawRect(gfx::RectFToSkRect(stroke_rect), stroke_flags);
 
     // Inset the all the edges edges so we fill-in the stroke below.
     // For left vertical scrollbar, we will horizontally flip the canvas in
     // ScrollbarThemeOverlay::paintThumb.
     gfx::Insets fill_insets(kStrokeWidth);
-    thumb_rect.Inset(fill_insets + edge_adjust_insets);
+    fill_rect.Inset(fill_insets + edge_adjust_insets);
   } else {
-    ControlColorId color_id = kScrollbarThumb;
-    switch (state) {
-      case NativeTheme::kDisabled:
-      case NativeTheme::kNormal:
-        break;
-      case NativeTheme::kHovered:
-        color_id = kScrollbarThumbHovered;
-        break;
-      case NativeTheme::kPressed:
-        color_id = kScrollbarThumbPressed;
-        break;
-      case NativeTheme::kNumStates:
-        NOTREACHED_IN_MIGRATION();
-        break;
-    }
-    // If there are no scrollbuttons then provide some padding so that the thumb
-    // doesn't touch the top of the track.
-    const int kThumbPadding = 2;
-    const int extra_padding =
-        (scrollbar_button_length() == 0) ? kThumbPadding : 0;
-    if (part == NativeTheme::kScrollbarVerticalThumb)
-      thumb_rect.Inset(gfx::Insets::VH(extra_padding, kThumbPadding));
-    else
-      thumb_rect.Inset(gfx::Insets::VH(kThumbPadding, extra_padding));
-
-    default_thumb_color =
-        GetControlColor(color_id, color_scheme, color_provider);
+    fill_rect.Inset(GetScrollbarSolidColorThumbInsets(part));
+    fill_flags.setColor(
+        GetScrollbarThumbColor(*color_provider, state, extra_params));
   }
 
-  cc::PaintFlags flags;
-  flags.setColor(extra_params.thumb_color.value_or(default_thumb_color));
-  canvas->drawIRect(gfx::RectToSkIRect(thumb_rect), flags);
+  canvas->drawIRect(gfx::RectToSkIRect(fill_rect), fill_flags);
+}
+
+gfx::Insets NativeThemeAura::GetScrollbarSolidColorThumbInsets(
+    Part part) const {
+  if (use_overlay_scrollbars_) {
+    return gfx::Insets();
+  }
+  // If there are no scroll buttons then provide some inset so that the thumb
+  // doesn't touch the top of the track.
+  static constexpr int kThumbInset = 2;
+  const int extra_inset = scrollbar_button_length() == 0 ? kThumbInset : 0;
+  if (part == NativeTheme::kScrollbarVerticalThumb) {
+    return gfx::Insets::VH(extra_inset, kThumbInset);
+  }
+  CHECK_EQ(part, NativeTheme::kScrollbarHorizontalThumb);
+  return gfx::Insets::VH(kThumbInset, extra_inset);
+}
+
+SkColor4f NativeThemeAura::GetScrollbarThumbColor(
+    const ui::ColorProvider& color_provider,
+    State state,
+    const ScrollbarThumbExtraParams& extra_params) const {
+  // Only non-overlay aura scrollbars use solid color thumb.
+  CHECK(!use_overlay_scrollbars_);
+  // TODO(crbug.com/40596569): Adjust extra param `thumb_color` based on
+  // `state`.
+  if (extra_params.thumb_color.has_value()) {
+    return SkColor4f::FromColor(extra_params.thumb_color.value());
+  }
+  ColorId color_id = kColorWebNativeControlScrollbarThumb;
+  if (state == NativeTheme::kHovered) {
+    color_id = kColorWebNativeControlScrollbarThumbHovered;
+  } else if (state == NativeTheme::kPressed) {
+    color_id = kColorWebNativeControlScrollbarThumbPressed;
+  }
+  return SkColor4f::FromColor(color_provider.GetColor(color_id));
 }
 
 void NativeThemeAura::PaintScrollbarCorner(
@@ -445,8 +455,9 @@ void NativeThemeAura::DrawPartiallyRoundRect(cc::PaintCanvas* canvas,
 }
 
 bool NativeThemeAura::SupportsNinePatch(Part part) const {
-  if (!IsOverlayScrollbarEnabled())
+  if (!use_overlay_scrollbars_) {
     return false;
+  }
 
   return part == kScrollbarHorizontalThumb || part == kScrollbarVerticalThumb;
 }

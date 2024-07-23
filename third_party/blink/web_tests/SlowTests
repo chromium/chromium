@@ -1456,9 +1456,8 @@ crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/exter
 crbug.com/328860404 virtual/disable-intersection-optimization/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-escalate-privileges.tentative.sub.window.html [ Slow ]
 crbug.com/328849073 virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-escalate-privileges.tentative.sub.window.html [ Slow ]
 
-crbug.com/350628679 external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Slow ]
-crbug.com/350628679 external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Slow ]
-crbug.com/350628679 [ Mac ] external/wpt/acid/acid2/reftest.html [ Slow ]
+crbug.com/350628679 [ Mac ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Slow ]
+crbug.com/350628679 [ Mac ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Slow ]
 
 crbug.com/328501805 external/wpt/html/semantics/interactive-elements/the-summary-element/interactive-content.html [ Slow ]
 
