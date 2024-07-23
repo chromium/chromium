@@ -154,6 +154,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
+
+  // The button for password sharing.
+  UIBarButtonItem* _shareButton;
 }
 
 // Array of credentials that are shown on the screen.
@@ -261,6 +264,10 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 - (void)editButtonPressed {
   [self setOrExtendAuthValidityTimer];
+
+  // Share button should be hidden during editing.
+  _shareButton.hidden = YES;
+
   // If there are no passwords, proceed with editing without
   // reauthentication.
   if (![self hasAtLeastOnePasswordOrPasskey]) {
@@ -911,6 +918,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
              target:self
              action:selector];
   shareButton.accessibilityIdentifier = kPasswordShareButtonID;
+  _shareButton = shareButton;
   self.navigationItem.rightBarButtonItems =
       @[ self.navigationItem.rightBarButtonItem, shareButton ];
 }
@@ -1702,6 +1710,10 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     }
   }
   [self.delegate didFinishEditingPasswordDetails];
+
+  // Share button is hidden during editing, make it visible again.
+  _shareButton.hidden = NO;
+
   [super editButtonPressed];
   [self reloadData];
 }

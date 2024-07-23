@@ -37,7 +37,9 @@
 namespace {
 
 using base::test::ios::kWaitForActionTimeout;
+using password_manager_test_utils::EditDoneButton;
 using password_manager_test_utils::kScrollAmount;
+using password_manager_test_utils::NavigationBarEditButton;
 using password_manager_test_utils::OpenPasswordManager;
 using password_manager_test_utils::PasswordDetailsShareButtonMatcher;
 using password_manager_test_utils::PasswordDetailsTableViewMatcher;
@@ -222,6 +224,27 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kEnterpriseInfoBubbleViewId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)testShareButtonVisibilityDuringPasswordEditing {
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Share button should not be visible during password details editing.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+
+  // Share button should be visible again after editing is finished.
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
