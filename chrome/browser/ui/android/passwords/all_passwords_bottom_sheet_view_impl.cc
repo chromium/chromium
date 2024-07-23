@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view_impl.h"
 
+#include <vector>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +21,7 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/features/keyboard_accessory/internal/jni/AllPasswordsBottomSheetBridge_jni.h"
+#include "chrome/android/features/keyboard_accessory/internal/jni/Credential_jni.h"
 
 using autofill::mojom::FocusedFieldType;
 using base::android::AttachCurrentThread;
@@ -50,10 +53,8 @@ void AllPasswordsBottomSheetViewImpl::Show(
 
   JNIEnv* env = AttachCurrentThread();
 
-  Java_AllPasswordsBottomSheetBridge_createCredentialArray(env, java_object,
-                                                           credentials.size());
-
-  int index = 0;
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_credentials;
+  java_credentials.reserve(credentials.size());
   for (const auto& credential : credentials) {
     auto facet = affiliations::FacetURI::FromPotentiallyInvalidSpec(
         credential->signon_realm);
@@ -64,17 +65,16 @@ void AllPasswordsBottomSheetViewImpl::Show(
           base::UTF8ToUTF16(facet.android_package_name()));
     }
 
-    Java_AllPasswordsBottomSheetBridge_insertCredential(
-        env, java_object, index++, credential->username_value,
-        credential->password_value, GetDisplayUsername(*credential),
-        credential->url.spec(), facet.IsValidAndroidFacetURI(),
-        app_display_name);
+    java_credentials.emplace_back(Java_Credential_Constructor(
+        env, credential->username_value, credential->password_value,
+        GetDisplayUsername(*credential), credential->url.spec(),
+        facet.IsValidAndroidFacetURI(), app_display_name));
   }
 
   const bool is_password_field =
       focused_field_type == FocusedFieldType::kFillablePasswordField;
-  Java_AllPasswordsBottomSheetBridge_showCredentials(env, java_object,
-                                                     is_password_field);
+  Java_AllPasswordsBottomSheetBridge_showCredentials(
+      env, java_object, java_credentials, is_password_field);
 }
 
 void AllPasswordsBottomSheetViewImpl::OnCredentialSelected(

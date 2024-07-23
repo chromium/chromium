@@ -19,6 +19,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
 
+import java.util.List;
+
 /**
  * Creates the AllPasswordsBottomSheet. AllPasswordsBottomSheet uses a bottom sheet to let the user
  * select a credential and fills it into the focused form.
@@ -80,7 +82,7 @@ class AllPasswordsBottomSheetCoordinator {
      * @param isPasswordField True if the currently focused field is a password field and false for
      *     any other field type (e.g username, ...).
      */
-    public void showCredentials(Credential[] credentials, boolean isPasswordField) {
+    public void showCredentials(List<Credential> credentials, boolean isPasswordField) {
         mMediator.showCredentials(credentials, isPasswordField);
     }
 

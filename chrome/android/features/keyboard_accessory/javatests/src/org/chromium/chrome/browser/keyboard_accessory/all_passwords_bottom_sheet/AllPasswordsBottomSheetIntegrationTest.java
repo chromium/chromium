@@ -35,6 +35,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Integration tests for the AllPasswordsBottomSheet check that the calls to the
  * AllPasswordsBottomSheet controller end up rendering a View and triggers the right native calls.
@@ -49,7 +52,7 @@ public class AllPasswordsBottomSheetIntegrationTest {
             new Credential("Bob", "*****", "Bob", "https://subdomain.example.xyz", false, "");
     private static final Credential CARL =
             new Credential("Carl", "G3h3!m", "Carl", "https://www.origin.xyz", false, "");
-    private static final Credential[] TEST_CREDENTIALS = new Credential[] {BOB, CARL, ANA};
+    private static final List<Credential> TEST_CREDENTIALS = List.of(BOB, CARL, ANA);
     private static final boolean IS_PASSWORD_FIELD = true;
 
     private AllPasswordsBottomSheetCoordinator mCoordinator;
@@ -88,7 +91,8 @@ public class AllPasswordsBottomSheetIntegrationTest {
     public void testClickingUseOtherUsernameAndPressBack() {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showCredentials(TEST_CREDENTIALS, !IS_PASSWORD_FIELD);
+                    mCoordinator.showCredentials(
+                            new ArrayList<>(TEST_CREDENTIALS), !IS_PASSWORD_FIELD);
                 });
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
 
@@ -104,7 +108,8 @@ public class AllPasswordsBottomSheetIntegrationTest {
     public void testClickingUseOtherUsernameAndSelectCredentialInUsernameField() {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showCredentials(TEST_CREDENTIALS, !IS_PASSWORD_FIELD);
+                    mCoordinator.showCredentials(
+                            new ArrayList<>(TEST_CREDENTIALS), !IS_PASSWORD_FIELD);
                 });
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
 
@@ -120,7 +125,8 @@ public class AllPasswordsBottomSheetIntegrationTest {
     public void testClickingUseOtherUsernameAndSelectCredentialInPasswordField() {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+                    mCoordinator.showCredentials(
+                            new ArrayList<>(TEST_CREDENTIALS), IS_PASSWORD_FIELD);
                 });
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
 
@@ -136,7 +142,8 @@ public class AllPasswordsBottomSheetIntegrationTest {
     public void testClickingUseOtherPasswordAndSelectCredentialInUsernameField() {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showCredentials(TEST_CREDENTIALS, !IS_PASSWORD_FIELD);
+                    mCoordinator.showCredentials(
+                            new ArrayList<>(TEST_CREDENTIALS), !IS_PASSWORD_FIELD);
                 });
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
 
@@ -151,7 +158,8 @@ public class AllPasswordsBottomSheetIntegrationTest {
     public void testClickingUseOtherPasswordAndSelectCredentialInPasswordField() {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+                    mCoordinator.showCredentials(
+                            new ArrayList<>(TEST_CREDENTIALS), IS_PASSWORD_FIELD);
                 });
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
 
