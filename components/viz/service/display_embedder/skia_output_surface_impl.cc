@@ -45,6 +45,7 @@
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/graphite_cache_controller.h"
+#include "gpu/command_buffer/service/graphite_image_provider.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
@@ -145,6 +146,23 @@ class GraphiteVizMemoryDumpProvider
           base::trace_event::MemoryAllocatorDump::kNameSize,
           base::trace_event::MemoryAllocatorDump::kUnitsBytes,
           recorder_->currentBudgetedBytes());
+
+      // The ImageProvider's bytes are not included in the recorder's budgeted
+      // bytes as they are owned by Chrome, so dump them separately.
+      const auto* image_provider =
+          static_cast<const gpu::GraphiteImageProvider*>(
+              recorder_->clientImageProvider());
+      std::string image_provider_dump_name = base::StringPrintf(
+          "skia/gpu_resources/"
+          "viz_compositor_graphite_image_provider_0x%" PRIXPTR,
+          reinterpret_cast<uintptr_t>(image_provider));
+      base::trace_event::MemoryAllocatorDump* image_provider_dump =
+          pmd->CreateAllocatorDump(image_provider_dump_name);
+      image_provider_dump->AddScalar(
+          base::trace_event::MemoryAllocatorDump::kNameSize,
+          base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+          image_provider->CurrentSizeInBytes());
+
     } else {
       skia::SkiaTraceMemoryDumpImpl trace_memory_dump(args.level_of_detail,
                                                       pmd);
