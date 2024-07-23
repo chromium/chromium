@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <optional>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -12,17 +10,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
+#include "chrome/browser/controlled_frame/controlled_frame_permission_request_test_base.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/download/public/common/download_item.h"
 #include "components/permissions/mock_chooser_controller_view.h"
@@ -33,242 +26,19 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
-#include "extensions/browser/event_router.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/common/extension_features.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
-#include "url/origin.h"
 
 using testing::Contains;
-using testing::EndsWith;
-using testing::NotNull;
 using testing::StartsWith;
 
 namespace controlled_frame {
 
-namespace {
-constexpr char kPermissionAllowedHost[] = "permission-allowed.com";
-constexpr char kPermissionDisallowedHost[] = "permission-disllowed.com";
-
-struct PermissionRequestTestCase {
-  // Javascript to invoke and verify the permission request from the embedded
-  // content.
-  std::string test_script;
-  // The name of the permission in the event.
-  std::string permission_name;
-  // Policy features the permission depends on.
-  std::set<blink::mojom::PermissionsPolicyFeature> policy_features;
-  // ContentSettingsType(s) of the embedder the permission depends on.
-  std::set<ContentSettingsType> embedder_content_settings_type;
-};
-
-enum class EmbedderPolicy {
-  kNoPolicy,
-  kNoRequestingOrigin,
-  kNoEmbedderOrigin,
-  kBothEmbedderAndRequestingOrigin
-};
-
-struct PermissionRequestTestParam {
-  std::string name;
-  bool calls_allow;
-  EmbedderPolicy embedder_policy;
-  bool has_embedder_content_setting;
-  bool expected_success;
-};
-
-const std::vector<PermissionRequestTestParam> kTestParams{
-    {.name = "Succeeds",
-     .calls_allow = true,
-     .embedder_policy = EmbedderPolicy::kBothEmbedderAndRequestingOrigin,
-     .has_embedder_content_setting = true,
-     .expected_success = true},
-    {.name = "FailsBecauseNotAllow",
-     .calls_allow = false,
-     .embedder_policy = EmbedderPolicy::kBothEmbedderAndRequestingOrigin,
-     .has_embedder_content_setting = true,
-     .expected_success = false},
-    {.name = "FailsBecauseEmbedderDoesNotHavePermissionsPolicy",
-     .calls_allow = true,
-     .embedder_policy = EmbedderPolicy::kNoPolicy,
-     .has_embedder_content_setting = true,
-     .expected_success = false},
-    {.name = "FailsBecauseEmbedderPermissionsPolicyMissingEmbedderOrigin",
-     .calls_allow = true,
-     .embedder_policy = EmbedderPolicy::kNoEmbedderOrigin,
-     .has_embedder_content_setting = true},
-    {.name = "FailsBecauseEmbedderPermissionsPolicyMissingRequestingOrigin",
-     .calls_allow = true,
-     .embedder_policy = EmbedderPolicy::kNoRequestingOrigin,
-     .has_embedder_content_setting = true,
-     .expected_success = false},
-    {.name = "FailsBecauseNoEmbedderContentSettings",
-     .calls_allow = true,
-     .embedder_policy = EmbedderPolicy::kBothEmbedderAndRequestingOrigin,
-     .has_embedder_content_setting = false,
-     .expected_success = false},
-};
-
-class PermissionRequestEventObserver
-    : public extensions::EventRouter::TestObserver {
- public:
-  void OnWillDispatchEvent(const extensions::Event& event) override {}
-  void OnDidDispatchEventToProcess(const extensions::Event& event,
-                                   int process_id) override {}
-
-  void OnNonExtensionEventDispatched(const std::string& event_name) override {
-    events_.push_back(event_name);
-  }
-
-  const std::vector<std::string>& events() const { return events_; }
-
- private:
-  std::vector<std::string> events_;
-};
-
-}  // namespace
-
-class ControlledFramePermissionRequestTest
-    : public ControlledFrameTestBase,
-      public testing::WithParamInterface<PermissionRequestTestParam> {
- protected:
-  void SetUpOnMainThread() override {
-    ControlledFrameTestBase::SetUpOnMainThread();
-    StartContentServer("web_apps/simple_isolated_app");
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ControlledFrameTestBase::SetUpCommandLine(command_line);
-    command_line->AppendArg("--use-fake-device-for-media-stream");
-  }
-
-  void SetUpPermissionRequestEventListener(
-      content::RenderFrameHost* app_frame,
-      const std::string& expected_permission_name,
-      bool allow_permission) {
-    const std::string handle_request_str = allow_permission ? "allow" : "deny";
-    EXPECT_EQ("SUCCESS",
-              content::EvalJs(app_frame, content::JsReplace(
-                                             R"(
-      (function() {
-        const frame = document.getElementsByTagName('controlledframe')[0];
-        if (!frame) {
-          return 'FAIL: Could not find a controlledframe element.';
-        }
-        frame.addEventListener('permissionrequest', (e) => {
-          if (e.permission === $1) {
-            e.request[$2]();
-          }
-        });
-        return 'SUCCESS';
-      })();
-    )",
-                                             expected_permission_name,
-                                             handle_request_str)));
-  }
-
-  void RunTestAndVerify(const PermissionRequestTestCase& test_case,
-                        const PermissionRequestTestParam& test_param,
-                        std::optional<base::OnceCallback<std::string(bool)>>
-                            get_expected_result_callback = std::nullopt) {
-    // If the permission has no dependent permissions policy feature, then skip
-    // the true negative permissions policy test cases.
-    if (test_param.embedder_policy !=
-            EmbedderPolicy::kBothEmbedderAndRequestingOrigin &&
-        test_case.policy_features.empty()) {
-      return;
-    }
-
-    // If the permission has no dependent embedder content setting, then skip
-    // the true negative embedder content settings test cases.
-    if (!test_param.has_embedder_content_setting &&
-        test_case.embedder_content_settings_type.empty()) {
-      return;
-    }
-
-    web_app::ManifestBuilder manifest_builder = web_app::ManifestBuilder();
-
-    if (test_param.embedder_policy != EmbedderPolicy::kNoPolicy) {
-      url::Origin policy_origin = embedded_https_test_server().GetOrigin(
-          test_param.embedder_policy == EmbedderPolicy::kNoRequestingOrigin
-              ? kPermissionDisallowedHost
-              : kPermissionAllowedHost);
-
-      for (auto& policy_feature : test_case.policy_features) {
-        manifest_builder.AddPermissionsPolicy(
-            policy_feature,
-            test_param.embedder_policy != EmbedderPolicy::kNoEmbedderOrigin,
-            {policy_origin});
-      }
-    }
-
-    web_app::IsolatedWebAppUrlInfo url_info =
-        CreateAndInstallEmptyApp(manifest_builder);
-    content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-
-    ASSERT_TRUE(CreateControlledFrame(
-        app_frame, embedded_https_test_server().GetURL(kPermissionAllowedHost,
-                                                       "/index.html")));
-
-    extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
-    ASSERT_TRUE(web_view_guest);
-    content::RenderFrameHost* controlled_frame =
-        web_view_guest->GetGuestMainFrame();
-
-    SetUpPermissionRequestEventListener(app_frame, test_case.permission_name,
-                                        test_param.calls_allow);
-
-    for (const auto& content_settings_type :
-         test_case.embedder_content_settings_type) {
-      HostContentSettingsMapFactory::GetForProfile(profile())
-          ->SetContentSettingDefaultScope(
-              url_info.origin().GetURL(), url_info.origin().GetURL(),
-              content_settings_type,
-              test_param.has_embedder_content_setting
-                  ? ContentSetting::CONTENT_SETTING_ALLOW
-                  : ContentSetting::CONTENT_SETTING_BLOCK);
-    }
-
-    PermissionRequestEventObserver event_observer;
-    extensions::EventRouter::Get(profile())->AddObserverForTesting(
-        &event_observer);
-
-    base::OnceCallback<std::string(bool)> callback =
-        get_expected_result_callback.has_value()
-            ? std::move(get_expected_result_callback.value())
-            : base::BindLambdaForTesting(
-                  [](bool should_success) -> std::string {
-                    return should_success ? "SUCCESS" : "FAIL";
-                  });
-
-    EXPECT_THAT(
-        content::EvalJs(controlled_frame, test_case.test_script)
-            .ExtractString(),
-        StartsWith(std::move(callback).Run(test_param.expected_success)));
-
-    // TODO(b/349841268): Make permissions policy check happen before extensions
-    // event for media permissions.
-    if (test_case.permission_name != "media") {
-      EXPECT_EQ(event_observer.events().size(),
-                test_param.embedder_policy ==
-                        EmbedderPolicy::kBothEmbedderAndRequestingOrigin
-                    ? 1ul
-                    : 0ul);
-    }
-
-    if (event_observer.events().size()) {
-      EXPECT_THAT(event_observer.events().back(),
-                  EndsWith("onPermissionRequest"));
-    }
-
-    extensions::EventRouter::Get(profile())->RemoveObserverForTesting(
-        &event_observer);
-  }
-};
+using ControlledFramePermissionRequestTest =
+    ControlledFramePermissionRequestTestBase;
 
 IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Camera) {
   PermissionRequestTestCase test_case;
@@ -470,7 +240,8 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Download) {
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/
                          ,
                          ControlledFramePermissionRequestTest,
-                         testing::ValuesIn(kTestParams),
+                         testing::ValuesIn(
+                             GetDefaultPermissionRequestTestParams()),
                          [](const testing::TestParamInfo<
                              PermissionRequestTestParam>& info) {
                            return info.param.name;
@@ -585,7 +356,8 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestWebHidTest, WebHid) {
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/
                          ,
                          ControlledFramePermissionRequestWebHidTest,
-                         testing::ValuesIn(kTestParams),
+                         testing::ValuesIn(
+                             GetDefaultPermissionRequestTestParams()),
                          [](const testing::TestParamInfo<
                              PermissionRequestTestParam>& info) {
                            return info.param.name;
