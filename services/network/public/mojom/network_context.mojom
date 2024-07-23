@@ -610,6 +610,10 @@ struct NetworkContextParams {
   // created out of this, will perform all network request using only
   // |bound_network|.
   int64 bound_network = -1;
+
+  // Stores mapping of endpoint name to endpoint url from initial reporting
+  // endpoints set by the ReportingEndpoints enterprise policy.
+  map<string, url.mojom.Url>? enterprise_reporting_endpoints;
 };
 
 struct NetworkConditions {
