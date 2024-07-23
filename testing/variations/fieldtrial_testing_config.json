@@ -16459,6 +16459,7 @@
                         "PlusAddressAffiliations",
                         "PlusAddressFallbackFromContextMenu",
                         "PlusAddressRefresh",
+                        "PlusAddressSettingsRefreshDesktop",
                         "PlusAddressesEnabled",
                         "SyncPlusAddress"
                     ]
