@@ -17,7 +17,7 @@ inline constexpr char kAllowChromeSchemeUrl[] = "allow-chrome-scheme-url";
 // drivers may be forced with --use-gl or --use-angle. Nethier approach
 // guarantees that hardware GPU support will be enabled, as this is still
 // conditional on headless having access to X display etc.
-const char kEnableGPU[] = "enable-gpu";
+inline constexpr char kEnableGPU[] = "enable-gpu";
 
 }  // namespace switches
 

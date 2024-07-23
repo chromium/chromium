@@ -282,7 +282,6 @@ component("headless_non_renderer") {
     "lib/renderer/allowlist.h",
     "lib/renderer/headless_content_renderer_client.cc",
     "lib/renderer/headless_content_renderer_client.h",
-    "lib/switches.cc",
     "lib/utility/headless_content_utility_client.cc",
     "lib/utility/headless_content_utility_client.h",
     "public/headless_browser.h",
