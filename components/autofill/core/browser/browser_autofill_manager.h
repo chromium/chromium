@@ -656,7 +656,7 @@ class BrowserAutofillManager : public AutofillManager {
   std::unique_ptr<CreditCardAccessManager> credit_card_access_manager_;
 
   // Helper class to autofill forms and fields. Do not use directly, use
-  // form_filler() instead.
+  // form_filler() instead, because tests inject test objects.
   std::unique_ptr<FormFiller> form_filler_;
 
   // Collected information about the autofill form where a credit card will be

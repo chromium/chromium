@@ -675,25 +675,16 @@ BrowserAutofillManager::~BrowserAutofillManager() {
                               has_observed_one_time_code_field_);
   }
 
-  // Process log events and record into UKM when the form is destroyed or
-  // removed.
+  // Process log events and record into UKM when the FormStructure is destroyed.
   for (const auto& [form_id, form_structure] : form_structures()) {
     ProcessFieldLogEventsInForm(*form_structure);
   }
+  FlushPendingLogQualityAndVotesUploadCallbacks();
 
   single_field_form_fill_router_->CancelPendingQueries();
 
   address_form_event_logger_->OnDestroyed();
   credit_card_form_event_logger_->OnDestroyed();
-
-  // We don't flush the `queued_vote_uploads_` here because that would trigger
-  // network requests in the AutofillCrowdsourcingManager, which are managed
-  // with by SimpleURLLoaders owned by the AutofillCrowdsourcingManager.
-  // Destroying the BrowserAutofillManager destroys the
-  // AutofillCrowdsourcingManager and its SimpleURLLoaders, which would
-  // immediately cancel the uploads. As a consequence of this, votes are lost if
-  // the user generates blur votes and closes the tab before the votes are sent
-  // (due to a navigation).
 }
 
 base::WeakPtr<AutofillManager> BrowserAutofillManager::GetWeakPtr() {
@@ -2424,17 +2415,19 @@ void BrowserAutofillManager::OnSubmissionFieldTypesDetermined(
                            submission_time, observed_submission, source_id);
 }
 
+// Some members are intentionally not recreated or reset here:
+// - `vote_upload_task_runner_`
+// - `weak_ptr_factory_` is used for vote uploading (but also in other cases)
+// TODO: crbug.com/354649269 - Several other members aren't recreated or reset
+// either, which is probably a bug.
 void BrowserAutofillManager::Reset() {
-  // Process log events and record into UKM when the form is destroyed or
-  // removed.
+  // Process log events and record into UKM when the FormStructure is destroyed.
   for (const auto& [form_id, form_structure] : form_structures()) {
     ProcessFieldLogEventsInForm(*form_structure);
   }
-
-  // Note that upload_request_ is not reset here because the prompt to
-  // save a card is shown after page navigation.
   ProcessPendingFormForUpload();
   FlushPendingLogQualityAndVotesUploadCallbacks();
+
   DCHECK(!pending_form_data_);
   // `credit_card_access_manager_` needs to be reset before resetting
   // `credit_card_form_event_logger_`, since it keeps a raw pointer to it.
