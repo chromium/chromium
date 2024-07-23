@@ -121,8 +121,8 @@ std::string GetStringNameForOptimizationTarget(
       return "TextSafety";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_ANDROID_HOME_MODULE_RANKER:
       return "SegmentationAndroidHomeModuleRanker";
-    case proto::OPTIMIZATION_TARGET_COMPOSE:
-      return "Compose";
+    case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_COMPOSE:
+      return "ModelExecutionFeatureCompose";
     case proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER:
       return "PassageEmbedder";
     case proto::OPTIMIZATION_TARGET_PHRASE_SEGMENTATION:
@@ -133,6 +133,8 @@ std::string GetStringNameForOptimizationTarget(
       return "URLVisitResumptionRanker";
     case proto::OPTIMIZATION_TARGET_CAMERA_BACKGROUND_SEGMENTATION:
       return "CameraBackgroundSegmentation";
+    case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_SEARCH:
+      return "ModelExecutionFeatureHistorySearch";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.

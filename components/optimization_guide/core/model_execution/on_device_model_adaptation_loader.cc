@@ -112,6 +112,10 @@ OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
   CHECK(features::internal::IsOnDeviceModelAdaptationEnabled(feature_));
+  if (!on_device_component_state_manager) {
+    return;
+  }
+
   component_state_manager_observation_.Observe(
       on_device_component_state_manager.get());
   if (auto* state = on_device_component_state_manager->GetState()) {

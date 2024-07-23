@@ -42,5 +42,15 @@ TEST(ModelExecutionFeature, GetAllowedFeaturesForUnsignedUser) {
   }
 }
 
+TEST(ModelExecutionFeature, GetOptimizationTargetForModelAdaptation) {
+  EXPECT_THAT(features::internal::GetOptimizationTargetForModelAdaptation(
+                  ModelBasedCapabilityKey::kHistorySearch),
+              proto::OptimizationTarget::
+                  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_SEARCH);
+  EXPECT_THAT(features::internal::GetOptimizationTargetForModelAdaptation(
+                  ModelBasedCapabilityKey::kTest),
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION);
+}
+
 }  // namespace
 }  // namespace optimization_guide
