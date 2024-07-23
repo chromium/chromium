@@ -365,7 +365,7 @@ pass it along to / include someone who can direct it more precisely.
     * Set a provisional severity of Low (S3).
     * Assign to the current [V8
       Sheriff](https://goto.google.com/current-v8-sheriff).
-    * Apply the `Security_Impact-None` hotlist (hotlistID:5433277.
+    * Apply the `Security_Impact-None` hotlist (hotlistID:5433277).
     * If possible, please also apply the `V8 Sandbox` hotlist
       (hotlistID:4802478).
 * **Skia bugs** can be assigned to hcm@chromium.org. Be careful while triaging
