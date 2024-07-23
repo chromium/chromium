@@ -7,6 +7,7 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 
@@ -110,6 +111,12 @@ proto::OnDeviceModelExecutionFeatureConfig SimpleComposeConfig() {
   auto& output_config = *config.mutable_output_config();
   output_config.set_proto_type(proto::ComposeResponse().GetTypeName());
   *output_config.mutable_proto_field() = OutputField();
+  return config;
+}
+
+proto::FeatureTextSafetyConfiguration ComposeSafetyConfig() {
+  proto::FeatureTextSafetyConfiguration config;
+  config.set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
   return config;
 }
 

@@ -54,6 +54,9 @@ proto::RedactRules SimpleRedactRule(
 // Outputs to a ComposeResponse::output field.
 proto::OnDeviceModelExecutionFeatureConfig SimpleComposeConfig();
 
+// Trivial safety config for compose with no checks.
+proto::FeatureTextSafetyConfiguration ComposeSafetyConfig();
+
 // Returns a validation config that passes with the default model settings.
 inline proto::OnDeviceModelValidationConfig WillPassValidationConfig() {
   proto::OnDeviceModelValidationConfig validation_config;
