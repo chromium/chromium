@@ -233,6 +233,27 @@ component("services") {
   }
 }
 
+source_set("test_support") {
+  visibility = [ "//media:test_support" ]
+  testonly = true
+  sources = [
+    "gpu_mojo_media_client_test_util.cc",
+    "gpu_mojo_media_client_test_util.h",
+  ]
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//media:media_config",
+  ]
+  public_deps = [
+    "//base",
+    "//gpu/config",
+  ]
+  deps = [
+    ":services",
+    "//media",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

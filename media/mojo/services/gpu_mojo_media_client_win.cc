@@ -37,7 +37,9 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
       : GpuMojoMediaClientWin(
             // Grab SharedContextState before `traits` is consumed by
             // GpuMojoMediaClient().
-            traits.media_gpu_channel_manager->GetSharedContextState(),
+            traits.media_gpu_channel_manager
+                ? traits.media_gpu_channel_manager->GetSharedContextState()
+                : nullptr,
             traits) {}
 
   ~GpuMojoMediaClientWin() final = default;

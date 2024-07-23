@@ -23,6 +23,7 @@
 #include "media/filters/file_data_source.h"
 #include "media/filters/memory_data_source.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/services/gpu_mojo_media_client_test_util.h"
 #include "media/renderers/audio_renderer_impl.h"
 #include "media/renderers/renderer_impl.h"
 #include "media/test/fake_encrypted_media.h"
@@ -138,6 +139,8 @@ PipelineIntegrationTestBase::PipelineIntegrationTestBase()
       pipeline_status_(PIPELINE_OK),
       last_video_frame_format_(PIXEL_FORMAT_UNKNOWN),
       current_duration_(kInfiniteDuration) {
+  AddSupplementalCodecsForTesting();
+
   pipeline_ = std::make_unique<PipelineImpl>(
       task_environment_.GetMainThreadTaskRunner(),
       task_environment_.GetMainThreadTaskRunner(),

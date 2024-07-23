@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/browser/gpu_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -25,6 +26,7 @@
 #include "media/base/supported_types.h"
 #include "media/base/test_data_util.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/services/gpu_mojo_media_client_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/url_util.h"
 
@@ -134,6 +136,11 @@ void MediaBrowserTest::AddTitlesToAwait(content::TitleWatcher* title_watcher) {
   title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kErrorTitle));
   title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kErrorEventTitle));
   title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kFailedTitle));
+}
+
+void MediaBrowserTest::PreRunTestOnMainThread() {
+  ContentBrowserTest::PreRunTestOnMainThread();
+  media::AddSupplementalCodecsForTesting(GetGpuPreferencesFromCommandLine());
 }
 
 // Tests playback and seeking of an audio or video file. Test starts with

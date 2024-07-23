@@ -5,9 +5,8 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
-#include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_browsertest.h"
 #include "content/public/test/browser_test.h"
@@ -16,17 +15,12 @@
 #include "content/shell/browser/shell.h"
 #include "media/base/media_switches.h"
 #include "media/base/supported_types.h"
+#include "media/base/video_codecs.h"
 #include "media/media_buildflags.h"
-#include "media/mojo/buildflags.h"
 #include "ui/display/display_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#include "media/base/win/media_foundation_package_runtime_locator.h"
 #endif
 
 namespace content {
@@ -83,60 +77,18 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_mp4) {
   //                 platform_guarantees_hevc:bool,
   //                 platform_guarantees_ac3_eac3:bool)
   ExecuteTest("testMp4Variants(false, false, false)");
-#elif BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
-    ExecuteTest("testMp4Variants(true, false, false)");
-    return;
-  }
-  ExecuteTest("testMp4Variants(true, true, false)");
-#elif BUILDFLAG(IS_MAC)
-  if (__builtin_available(macOS 11.0, *)) {
-    if (base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
-      // the Mac compiler freaks out if __builtin_available is not the _only_
-      // condition in the if statement, which is why it's written like this.
-#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-      ExecuteTest("testMp4Variants(true, true, true)");
 #else
-      ExecuteTest("testMp4Variants(true, true, false)");
-#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-      return;
-    }
-  }
-#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-  ExecuteTest("testMp4Variants(true, false, true)");
-#else
-  ExecuteTest("testMp4Variants(true, false, false)");
-#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-#elif BUILDFLAG(IS_WIN)
-#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-  bool is_platform_ac3_eac3_supported = false;
-  base::FilePath dolby_dec_mft_path =
-      base::PathService::CheckedGet(base::DIR_SYSTEM);
-  dolby_dec_mft_path = dolby_dec_mft_path.AppendASCII("DolbyDecMFT.dll");
-  bool has_legacy_dolby_ac3_eac3_mft = false;
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  has_legacy_dolby_ac3_eac3_mft = base::PathExists(dolby_dec_mft_path);
-  if (has_legacy_dolby_ac3_eac3_mft ||
-      media::FindMediaFoundationPackageDecoder(media::AudioCodec::kEAC3)) {
-    is_platform_ac3_eac3_supported = true;
-  }
-  if (is_platform_ac3_eac3_supported) {
-    ExecuteTest("testMp4Variants(true, false, true)");
-  } else {
-    ExecuteTest("testMp4Variants(true, false, false)");
-  }
-#else
-  ExecuteTest("testMp4Variants(true, false, false)");
-#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-#else
-  // Other platforms query the gpu each time to find out, so it would be
-  // unreliable on the bots to test for this.
-#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-  ExecuteTest("testMp4Variants(true, false, true)");
-#else
-  ExecuteTest("testMp4Variants(true, false, false)");
-#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-#endif
+  const bool is_hevc_supported = media::IsSupportedVideoType({
+      .codec = media::VideoCodec::kHEVC,
+      .profile = media::HEVCPROFILE_MIN,
+      .color_space = media::VideoColorSpace::REC709(),
+  });
+  const bool is_ac3_eac3_supported =
+      media::IsSupportedAudioType({media::AudioCodec::kAC3});
+  ExecuteTest(base::StringPrintf("testMp4Variants(true, %s, %s)",
+                                 is_hevc_supported ? "true" : "false",
+                                 is_ac3_eac3_supported ? "true" : "false"));
+#endif  // !BUILDFLAG(USE_PROPRIETARY_CODECS)
 }
 
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_AvcVariants) {
@@ -168,19 +120,8 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_AvcLevels) {
 
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_Mp4aVariants) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  bool is_supported = false;
-#if BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER)
-#if BUILDFLAG(IS_ANDROID)
-  is_supported = base::android::BuildInfo::GetInstance()->sdk_int() >=
-                 base::android::SDK_VERSION_P;
-#elif BUILDFLAG(IS_MAC)
-  is_supported = true;
-#elif BUILDFLAG(IS_WIN)
-  is_supported = base::win::GetVersion() >= base::win::Version::WIN11_22H2;
-#endif
-#endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER)
-
-  if (is_supported) {
+  if (media::IsSupportedAudioType(
+          {media::AudioCodec::kAAC, media::AudioCodecProfile::kXHE_AAC})) {
     ExecuteTest(
         "testMp4aVariants(true, true)");  // has_proprietary_codecs=true,
                                           // has_xhe_aac_support=true

@@ -46,6 +46,10 @@ class MediaBrowserTest : public ContentBrowserTest {
   // Adds titles that RunTest() should wait for.
   virtual void AddTitlesToAwait(content::TitleWatcher* title_watcher);
 
+ protected:
+  // BrowserTestBase implementation.
+  void PreRunTestOnMainThread() override;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
