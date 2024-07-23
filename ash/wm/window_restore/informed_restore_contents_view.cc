@@ -343,6 +343,7 @@ void InformedRestoreContentsView::CreateChildViews() {
           .AddChildren(
               // Title.
               views::Builder<views::Label>()
+                  .SetAccessibleRole(ax::mojom::Role::kHeading)
                   .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                   .SetMultiLine(true)
