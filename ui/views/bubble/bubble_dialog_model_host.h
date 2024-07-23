@@ -54,7 +54,9 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
 
   class VIEWS_EXPORT CustomView : public ui::DialogModelCustomField::Field {
    public:
-    CustomView(std::unique_ptr<View> view, FieldType field_type);
+    CustomView(std::unique_ptr<View> view,
+               FieldType field_type,
+               View* focusable_view = nullptr);
     CustomView(const CustomView&) = delete;
     CustomView& operator=(const CustomView&) = delete;
     ~CustomView() override;
@@ -63,10 +65,15 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
 
     FieldType field_type() const { return field_type_; }
 
+    View* TransferFocusableView() {
+      return std::exchange(focusable_view_, nullptr);
+    }
+
    private:
     // `view` is intended to be moved into the View hierarchy.
     std::unique_ptr<View> view_;
     const FieldType field_type_;
+    raw_ptr<View> focusable_view_;
   };
 
   // Constructs a BubbleDialogModelHost, which for most purposes is to used as a

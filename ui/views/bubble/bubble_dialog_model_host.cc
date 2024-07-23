@@ -283,8 +283,11 @@ END_METADATA
 }  // namespace
 
 BubbleDialogModelHost::CustomView::CustomView(std::unique_ptr<View> view,
-                                              FieldType field_type)
-    : view_(std::move(view)), field_type_(field_type) {}
+                                              FieldType field_type,
+                                              View* focusable_view)
+    : view_(std::move(view)),
+      field_type_(field_type),
+      focusable_view_(focusable_view) {}
 
 BubbleDialogModelHost::CustomView::~CustomView() = default;
 
@@ -355,14 +358,7 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
         AddOrUpdateTextfield(field->AsTextfield());
         break;
       case ui::DialogModelField::kCustom:
-        std::unique_ptr<View> view =
-            static_cast<BubbleDialogModelHost::CustomView*>(
-                field->AsCustomField()->field())
-                ->TransferView();
-        DCHECK(view);
-        view->SetProperty(kElementIdentifierKey, field->id());
-        DialogModelHostField info{field, view.get(), nullptr};
-        AddDialogModelHostField(std::move(view), info);
+        AddOrUpdateCustomField(field->AsCustomField());
         break;
     }
     OnFieldChanged(field);
@@ -517,6 +513,17 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
     const gfx::FontList& font_list = textfield->GetFontList();
     AddViewForLabelAndField(model_field, model_field->label(),
                             std::move(textfield), font_list);
+  }
+
+  void AddOrUpdateCustomField(ui::DialogModelCustomField* model_field) {
+    auto* custom_view =
+        static_cast<BubbleDialogModelHost::CustomView*>(model_field->field());
+    std::unique_ptr<View> view = custom_view->TransferView();
+    View* focusable_view = custom_view->TransferFocusableView();
+    DCHECK(view);
+    view->SetProperty(kElementIdentifierKey, model_field->id());
+    DialogModelHostField info{model_field, view.get(), focusable_view};
+    AddDialogModelHostField(std::move(view), info);
   }
 
   void AddOrUpdateSeparator(ui::DialogModelField* model_field) {
