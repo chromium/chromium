@@ -4,7 +4,7 @@ include_rules = [
   "+components/prefs",
   "+components/reporting/client",
   "+components/reporting/proto",
-  "+components/safe_browsing/core/common/proto",
+  "+components/safe_browsing/core/common",
   "+components/strings/grit",
   "+components/version_info",
   "+crypto/sha2.h",
