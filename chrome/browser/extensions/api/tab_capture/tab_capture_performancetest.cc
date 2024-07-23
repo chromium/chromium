@@ -185,7 +185,10 @@ class TabCapturePerformanceTest : public TabCapturePerformanceTestBase,
     trace_analyzer::TraceEventVector rate_events(events.begin() + trim_count,
                                                  events.end() - trim_count);
     trace_analyzer::RateStats stats;
-    const bool have_rate_stats = GetRateStats(rate_events, &stats, nullptr);
+    if (!GetRateStats(rate_events, &stats, nullptr)) {
+      return false;
+    }
+
     double mean_ms = stats.mean_us / 1000.0;
     double std_dev_ms = stats.standard_deviation_us / 1000.0;
     std::string mean_and_error = base::StringPrintf("%f,%f", mean_ms,
@@ -193,7 +196,7 @@ class TabCapturePerformanceTest : public TabCapturePerformanceTestBase,
     auto reporter = SetUpTabCaptureReporter(GetSuffixForTestFlags());
     reporter.AddResultMeanAndError(GetMetricFromEventName(event_name),
                                    mean_and_error);
-    return have_rate_stats;
+    return true;
   }
 
   // Analyze and print the mean and stddev of the amount of time between the
