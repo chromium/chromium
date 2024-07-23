@@ -110,45 +110,10 @@ class DIPSStorage {
   static void DeleteDatabaseFiles(base::FilePath path,
                                   base::OnceClosure on_complete);
 
-  static size_t SetPrepopulateChunkSizeForTesting(size_t size);
   void SetClockForTesting(base::Clock* clock) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     db_->SetClockForTesting(clock);
   }
-
-  // Whether the DIPS database has already been prepopulated with
-  // SiteEngagement.
-  bool IsPrepopulated() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return db_->IsPrepopulated();
-  }
-
-  // For each site in |sites|, set the interaction and storage timestamps to
-  // |time|. Note this may run asynchronously -- the DB is not guaranteed to be
-  // fully prepopulated when this method returns.
-  void Prepopulate(base::Time time,
-                   std::vector<std::string> sites,
-                   base::OnceClosure on_complete) {
-    PrepopulateChunk(
-        PrepopulateArgs{time, 0, std::move(sites), std::move(on_complete)});
-  }
-
-  // Because we keep posting tasks with Prepopulate() with mostly the same
-  // arguments (only |offset| changes), group them into a struct that can easily
-  // be posted again.
-  struct PrepopulateArgs {
-    PrepopulateArgs(base::Time time,
-                    size_t offset,
-                    std::vector<std::string> sites,
-                    base::OnceClosure on_complete);
-    PrepopulateArgs(PrepopulateArgs&&);
-    ~PrepopulateArgs();
-
-    base::Time time;
-    size_t offset;
-    std::vector<std::string> sites;
-    base::OnceClosure on_complete;
-  };
 
  protected:
   void Write(const DIPSState& state);
@@ -156,9 +121,6 @@ class DIPSStorage {
  private:
   friend class DIPSState;
   DIPSState ReadSite(std::string site);
-  // Prepopulate the DB with one chunk of |args.sites|, and schedule another
-  // task to continue if more sites remain.
-  void PrepopulateChunk(PrepopulateArgs args);
 
   std::unique_ptr<DIPSDatabase> db_ GUARDED_BY_CONTEXT(sequence_checker_);
   SEQUENCE_CHECKER(sequence_checker_);
