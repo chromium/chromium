@@ -1132,21 +1132,6 @@
             ]
         }
     ],
-    "AshUrgentDiscardingFromPerformanceManager": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240328",
-                    "enable_features": [
-                        "AshUrgentDiscardingFromPerformanceManager"
-                    ]
-                }
-            ]
-        }
-    ],
     "AssistMultiWord": [
         {
             "platforms": [

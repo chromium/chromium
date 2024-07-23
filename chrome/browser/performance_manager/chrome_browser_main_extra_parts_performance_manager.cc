@@ -138,24 +138,13 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   graph->PassToGraph(std::make_unique<
                      performance_manager::policies::OomScorePolicyChromeOS>());
   graph->PassToGraph(
       std::make_unique<
           performance_manager::policies::ReportPageProcessesPolicy>());
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::
-              kAshUrgentDiscardingFromPerformanceManager)) {
-    graph->PassToGraph(
-        std::make_unique<
-            performance_manager::policies::OomScorePolicyChromeOS>());
-    graph->PassToGraph(
-        std::make_unique<
-            performance_manager::policies::ReportPageProcessesPolicy>());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
   graph->PassToGraph(FormInteractionTabHelper::CreateGraphObserver());
@@ -164,19 +153,9 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
       std::make_unique<performance_manager::policies::PageDiscardingHelper>());
 
 #if URGENT_DISCARDING_FROM_PERFORMANCE_MANAGER()
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::
-              kAshUrgentDiscardingFromPerformanceManager)) {
-    graph->PassToGraph(
-        std::make_unique<
-            performance_manager::policies::UrgentPageDiscardingPolicy>());
-  }
-#else
   graph->PassToGraph(
       std::make_unique<
           performance_manager::policies::UrgentPageDiscardingPolicy>());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // URGENT_DISCARDING_FROM_PERFORMANCE_MANAGER()
 
   if (base::FeatureList::IsEnabled(

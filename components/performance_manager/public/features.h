@@ -27,12 +27,6 @@ BASE_DECLARE_FEATURE(kRunOnMainThreadSync);
 #define URGENT_DISCARDING_FROM_PERFORMANCE_MANAGER() true
 #endif
 
-// Enables urgent discarding of pages directly from PerformanceManager rather
-// than via TabManager on Ash Chrome.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-BASE_DECLARE_FEATURE(kAshUrgentDiscardingFromPerformanceManager);
-#endif
-
 // When enabled removes the rate limit on reporting tab processes to resourced.
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kUnthrottledTabProcessReporting);
