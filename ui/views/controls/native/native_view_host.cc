@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "build/buildflag.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -122,6 +123,7 @@ void NativeViewHost::Layout(PassKey) {
   gfx::Rect vis_bounds = GetVisibleBounds();
   bool visible = !vis_bounds.IsEmpty();
 
+#if !BUILDFLAG(IS_MAC)
   if (visible && !fast_resize_) {
     if (vis_bounds.size() != size()) {
       // Only a portion of the Widget is really visible.
@@ -135,7 +137,7 @@ void NativeViewHost::Layout(PassKey) {
       native_wrapper_->UninstallClip();
     }
   }
-
+#endif
   if (visible) {
     // Since widgets know nothing about the View hierarchy (they are direct
     // children of the Widget that hosts our View hierarchy) they need to be
