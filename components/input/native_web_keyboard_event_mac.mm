@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "components/input/web_input_event_builders_mac.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/blink/web_input_event.h"
 #include "ui/events/event.h"
 
 namespace input {
@@ -109,8 +110,9 @@ NativeWebKeyboardEvent::NativeWebKeyboardEvent(gfx::NativeEvent native_event)
       skip_if_unhandled(false) {}
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(const ui::KeyEvent& key_event)
-    : NativeWebKeyboardEvent(
-          base::apple::OwnedNSEvent(key_event.native_event())) {}
+    : WebKeyboardEvent(ui::MakeWebKeyboardEvent(key_event)),
+      os_event(base::apple::OwnedNSEvent(key_event.native_event())),
+      skip_if_unhandled(false) {}
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(
     const NativeWebKeyboardEvent& other)
