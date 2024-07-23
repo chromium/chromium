@@ -18093,6 +18093,7 @@ from previous Chrome versions.
   <int value="-1173823468" label="FullUserAgent:enabled"/>
   <int value="-1173361620" label="CCTModulePostMessage:disabled"/>
   <int value="-1173283620" label="MouseAndTrackpadDropdownMenu:disabled"/>
+  <int value="-1172961022" label="QuickDeleteAndroidSurvey:enabled"/>
   <int value="-1172572865" label="NTPShowGoogleGInOmnibox:enabled"/>
   <int value="-1172204005" label="enable-offline-auto-reload-visible-only"/>
   <int value="-1171556368" label="SyncPollImmediatelyOnEveryStartup2:disabled"/>
@@ -24819,6 +24820,7 @@ from previous Chrome versions.
   <int value="1687272287" label="HandwritingLibraryDlc:disabled"/>
   <int value="1687544136" label="AndroidManagedByMenuItem:enabled"/>
   <int value="1687768359" label="ServiceWorkerBypassFetchHandler:disabled"/>
+  <int value="1687958931" label="QuickDeleteAndroidSurvey:disabled"/>
   <int value="1687987218" label="OmniboxGroupingFramework:enabled"/>
   <int value="1688075820" label="OmniboxExperimentalKeywordMode:disabled"/>
   <int value="1689001971" label="ProjectorLocalPlayback:enabled"/>

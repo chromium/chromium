@@ -144,6 +144,14 @@ public class QuickDeleteController {
         return isQuickDeleteEnabled() && ChromeFeatureList.sQuickDeleteAndroidFollowup.isEnabled();
     }
 
+    /**
+     * @return True, if quick delete survey is enabled, false otherwise
+     */
+    public static boolean isQuickDeleteSurveyEnabled() {
+        return isQuickDeleteFollowupEnabled()
+                && ChromeFeatureList.sQuickDeleteAndroidSurvey.isEnabled();
+    }
+
     /** A method called when the user confirms or cancels the dialog. */
     private void onDialogDismissed(@DialogDismissalCause int dismissalCause) {
         switch (dismissalCause) {
@@ -216,20 +224,22 @@ public class QuickDeleteController {
         if (trackerLock == null) return;
         trackerLock.release();
 
-        assert mCurrentTabObserver == null;
-        mCurrentTabObserver =
-                new CurrentTabObserver(
-                        mTabModelSelector.getCurrentTabSupplier(),
-                        new EmptyTabObserver() {
-                            @Override
-                            public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
-                                WebContents webContents = tab.getWebContents();
-                                if (!tab.isOffTheRecord() && webContents != null) {
-                                    showSurvey(webContents);
+        if (isQuickDeleteSurveyEnabled()) {
+            assert mCurrentTabObserver == null;
+            mCurrentTabObserver =
+                    new CurrentTabObserver(
+                            mTabModelSelector.getCurrentTabSupplier(),
+                            new EmptyTabObserver() {
+                                @Override
+                                public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
+                                    WebContents webContents = tab.getWebContents();
+                                    if (!tab.isOffTheRecord() && webContents != null) {
+                                        showSurvey(webContents);
+                                    }
                                 }
-                            }
-                        },
-                        /* swapCallback= */ null);
+                            },
+                            /* swapCallback= */ null);
+        }
     }
 
     /**

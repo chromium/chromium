@@ -134,6 +134,7 @@ BASE_DECLARE_FEATURE(kPwaRestoreUiAtStartup);
 BASE_DECLARE_FEATURE(kPartnerCustomizationsUma);
 BASE_DECLARE_FEATURE(kQuickDeleteForAndroid);
 BASE_DECLARE_FEATURE(kQuickDeleteAndroidFollowup);
+BASE_DECLARE_FEATURE(kQuickDeleteAndroidSurvey);
 BASE_DECLARE_FEATURE(kReadAloud);
 BASE_DECLARE_FEATURE(kReadAloudInOverflowMenuInCCT);
 BASE_DECLARE_FEATURE(kReadAloudInMultiWindow);
@@ -197,8 +198,8 @@ constexpr base::FeatureParam<int> kAuxiliarySearchMaxTabsCountParam(
     "auxiliary_search_max_donation_tab",
     100);
 
-constexpr base::FeatureParam<std::string> kQuickDeleteAndroidFollowupTriggerId(
-    &kQuickDeleteAndroidFollowup,
+constexpr base::FeatureParam<std::string> kQuickDeleteAndroidSurveyTriggerId(
+    &kQuickDeleteAndroidSurvey,
     "trigger_id",
     /*default_value=*/"");
 

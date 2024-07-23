@@ -18197,10 +18197,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "probability": "1.0",
-                        "trigger_id": "GtpVWQGxM0tK1KeaPYj0QBUXAQ9v"
-                    },
                     "enable_features": [
                         "QuickDeleteAndroidFollowup"
                     ]

@@ -3135,6 +3135,10 @@ const char kQuickDeleteAndroidFollowupDescription[] =
     "Enables some follow up work on Clear Browsing Data for Quick Delete, "
     "including an improved post delete experience and animations.";
 
+const char kQuickDeleteAndroidSurveyName[] = "HaTS for Quick Delete on Android";
+const char kQuickDeleteAndroidSurveyDescription[] =
+    "Enables HaTS survey for Quick Delete on Android.";
+
 const char kQuickShareV2Name[] = "Quick Share v2";
 const char kQuickShareV2Description[] =
     "Enables Quick Share v2, which defaults Quick Share to 'Your Devices' "

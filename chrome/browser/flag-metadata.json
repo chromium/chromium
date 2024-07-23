@@ -7575,15 +7575,23 @@
     "name": "quick-delete-android-followup",
     "owners": [
       "zalmashni@google.com",
-      "chrome-contextual-privacy@google.com"
+      "chrome-browser-privacy-team@google.com"
     ],
     "expiry_milestone": 130
+  },
+  {
+    "name": "quick-delete-android-survey",
+    "owners": [
+      "zalmashni@google.com",
+      "chrome-browser-privacy-team@google.com"
+    ],
+    "expiry_milestone": 135
   },
   {
     "name": "quick-delete-for-android",
     "owners": [
       "zalmashni@google.com",
-      "chrome-contextual-privacy@google.com"
+      "chrome-browser-privacy-team@google.com"
     ],
     "expiry_milestone": 125
   },
