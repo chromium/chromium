@@ -276,7 +276,7 @@ std::vector<OverviewFocusableView*> OverviewFocusCyclerOld::GetTraversableViews(
         }
       }
     } else {
-      for (const auto& item : grid->window_list()) {
+      for (const auto& item : grid->item_list()) {
         for (auto* focusable_view : item->GetFocusableViews()) {
           traversable_views.push_back(focusable_view);
         }

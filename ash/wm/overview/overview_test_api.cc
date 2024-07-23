@@ -76,7 +76,7 @@ std::optional<OverviewInfo> OverviewTestApi::GetOverviewInfo() const {
   OverviewInfo info;
   for (const auto& grid :
        overview_controller->overview_session()->grid_list()) {
-    for (const auto& overview_item : grid->window_list()) {
+    for (const auto& overview_item : grid->item_list()) {
       aura::Window* const app_window = overview_item->GetWindow();
       info[app_window] = {
           app_window,

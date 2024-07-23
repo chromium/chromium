@@ -287,7 +287,7 @@ std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets(
   maybe_add_widget(overview_session_->overview_focus_widget());
 
   for (const auto& grid : overview_session_->grid_list()) {
-    for (const auto& item : grid->window_list()) {
+    for (const auto& item : grid->item_list()) {
       // There may be two widgets if the item is a snap group item.
       for (views::Widget* item_widget : item->GetFocusableWidgets()) {
         maybe_add_widget(item_widget);

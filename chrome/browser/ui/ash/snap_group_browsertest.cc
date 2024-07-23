@@ -382,6 +382,7 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest,
 
   ASSERT_EQ(2u, ash::GetPrimaryRootDesksBarView()->mini_views().size());
   ash::OverviewGrid* overview_grid = ash::GetOverviewGridForRoot(root_window);
+  EXPECT_EQ(1u, overview_grid->item_list().size());
   auto* desks_bar_view0 = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view0);
   ash::DeskMiniView* desk_mini_view0 = desks_bar_view0->mini_views()[0];
@@ -409,7 +410,6 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest,
   // Verify that the "Save to Desk" feature is not supported as both windows
   // within a Snap Group are in incognito mode.
   EXPECT_TRUE(ash::IsInOverviewSession());
-  const auto& window_list = overview_grid->window_list();
-  EXPECT_EQ(1u, window_list.size());
+  EXPECT_EQ(1u, overview_grid->item_list().size());
   EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
 }

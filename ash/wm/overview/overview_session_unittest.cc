@@ -3904,7 +3904,7 @@ TEST_P(OverviewSessionTest,
   ASSERT_EQ(2u, grids.size());
   auto* grid0 = grids[0].get();
   ASSERT_TRUE(grid0);
-  const auto& overview_items = grid0->window_list();
+  const auto& overview_items = grid0->item_list();
   ASSERT_EQ(overview_items.size(), 1u);
   EXPECT_TRUE(IsWindowInItsCorrespondingOverviewGrid(window.get()));
 
@@ -3989,7 +3989,7 @@ TEST_P(OverviewSessionTest,
   ASSERT_EQ(2u, grids.size());
   auto grid0 = grids[0].get();
   ASSERT_TRUE(grid0);
-  const auto& overview_items = grid0->window_list();
+  const auto& overview_items = grid0->item_list();
   ASSERT_EQ(overview_items.size(), 1u);
   EXPECT_TRUE(IsWindowInItsCorrespondingOverviewGrid(window.get()));
 
@@ -5291,7 +5291,7 @@ TEST_P(OverviewRasterScaleTest,
   // it is moved to the active desk1.
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  EXPECT_EQ(1u, overview_grid->window_list().size());
+  EXPECT_EQ(1u, overview_grid->item_list().size());
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
   ASSERT_EQ(3u, desks_bar_view->mini_views().size());
@@ -5307,7 +5307,7 @@ TEST_P(OverviewRasterScaleTest,
 
   // Now combine the active desk (`desk1`), and expect only `window2` to be
   // updated.
-  EXPECT_EQ(2u, overview_grid->window_list().size());
+  EXPECT_EQ(2u, overview_grid->item_list().size());
   mini_view = desks_bar_view->mini_views()[0];
   EXPECT_EQ(desk1, mini_view->desk());
   CombineDesksViaMiniView(mini_view, GetEventGenerator());
@@ -10635,16 +10635,16 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   GetOverviewSession()->Drag(item4, gfx::PointF(1200.f, 0.f));
   // On the grid where the drag starts (|grid2|), the drop target is inserted at
   // the index immediately following the dragged item (|item4|).
-  ASSERT_EQ(4u, grid2->window_list().size());
-  EXPECT_EQ(GetDropTarget(1), grid2->window_list()[2].get());
+  ASSERT_EQ(4u, grid2->item_list().size());
+  EXPECT_EQ(GetDropTarget(1), grid2->item_list()[2].get());
   // Drag over |grid1|.
   cursor_manager->SetDisplay(display_with_root1);
   GetOverviewSession()->Drag(item4, gfx::PointF(400.f, 0.f));
   // On other grids (such as |grid1|), the drop target is inserted at the
   // correct position according to MRU order (between the overview items for
   // |window3| and |window5|).
-  ASSERT_EQ(4u, grid1->window_list().size());
-  EXPECT_EQ(GetDropTarget(0), grid1->window_list()[2].get());
+  ASSERT_EQ(4u, grid1->item_list().size());
+  EXPECT_EQ(GetDropTarget(0), grid1->item_list()[2].get());
 }
 
 // Verify that the drop target in each overview grid has the correct bounds when
@@ -11740,7 +11740,7 @@ TEST_F(OverviewWallpaperTest, CenterOverviewItems) {
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  const auto& overview_items = overview_grid->window_list();
+  const auto& overview_items = overview_grid->item_list();
   ASSERT_EQ(overview_items.size(), 11u);
 
   // If the middle of the bounding box which contains the bounds of the overview
@@ -11780,7 +11780,7 @@ TEST_F(OverviewWallpaperTest, DropTargetBounds) {
   aura::Window* primary_root_window = Shell::GetPrimaryRootWindow();
   auto* overview_grid = GetOverviewGridForRoot(primary_root_window);
   ASSERT_TRUE(overview_grid);
-  const auto& item_list = overview_grid->window_list();
+  const auto& item_list = overview_grid->item_list();
   ASSERT_EQ(6u, item_list.size());
 
   for (const auto& overview_item : item_list) {

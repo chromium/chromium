@@ -1295,7 +1295,7 @@ TEST_P(DesksTest, ActivateDeskFromOverview) {
     const auto* desks_bar_view = overview_grid->desks_bar_view();
     ASSERT_TRUE(desks_bar_view);
     ASSERT_EQ(4u, desks_bar_view->mini_views().size());
-    EXPECT_EQ(2u, overview_grid->window_list().size());
+    EXPECT_EQ(2u, overview_grid->item_list().size());
 
     // Activate desk_4 (last one on the right) by clicking on its mini view.
     const Desk* desk_4 = controller->GetDeskAtIndex(3);
@@ -1324,7 +1324,7 @@ TEST_P(DesksTest, ActivateDeskFromOverview) {
     EnterOverview();
     EXPECT_TRUE(overview_controller->InOverviewSession());
     overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-    EXPECT_EQ(1u, overview_grid->window_list().size());
+    EXPECT_EQ(1u, overview_grid->item_list().size());
 
     // When exiting overview mode without changing desks, the focus should be
     // restored to the same window.
@@ -1440,7 +1440,7 @@ TEST_P(DesksTest, RemoveInactiveDeskFromOverview) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  EXPECT_EQ(1u, overview_grid->window_list().size());
+  EXPECT_EQ(1u, overview_grid->item_list().size());
 
   // Remove desk_1 using the close button on its mini view. desk_1 is currently
   // inactive. Its windows should be moved to desk_4 and added to the overview
@@ -1468,20 +1468,20 @@ TEST_P(DesksTest, RemoveInactiveDeskFromOverview) {
 
   ASSERT_EQ(3u, desks_bar_view->mini_views().size());
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  ASSERT_EQ(4u, overview_grid->window_list().size());
+  ASSERT_EQ(4u, overview_grid->item_list().size());
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win0.get()));
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win1.get()));
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win2.get()));
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win3.get()));
   // Expected order of items: win3, win0, win2, win1.
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win3.get()),
-            overview_grid->window_list()[0].get());
+            overview_grid->item_list()[0].get());
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win0.get()),
-            overview_grid->window_list()[1].get());
+            overview_grid->item_list()[1].get());
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win2.get()),
-            overview_grid->window_list()[2].get());
+            overview_grid->item_list()[2].get());
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win1.get()),
-            overview_grid->window_list()[3].get());
+            overview_grid->item_list()[3].get());
 
   // Make sure overview mode remains active.
   base::RunLoop().RunUntilIdle();
@@ -1558,7 +1558,7 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  EXPECT_EQ(2u, overview_grid->window_list().size());
+  EXPECT_EQ(2u, overview_grid->item_list().size());
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
   ASSERT_EQ(2u, desks_bar_view->mini_views().size());
@@ -1592,7 +1592,7 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
   ASSERT_EQ(1u, desks_bar_view->mini_views().size());
   EXPECT_TRUE(desk_1->is_active());
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_EQ(4u, overview_grid->window_list().size());
+  EXPECT_EQ(4u, overview_grid->item_list().size());
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win0.get()));
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win1.get()));
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win2.get()));
@@ -1607,13 +1607,13 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
                 win3.get(),
             }));
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win0.get()),
-            overview_grid->window_list()[0].get());
+            overview_grid->item_list()[0].get());
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win1.get()),
-            overview_grid->window_list()[1].get());
+            overview_grid->item_list()[1].get());
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win2.get()),
-            overview_grid->window_list()[2].get());
+            overview_grid->item_list()[2].get());
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win3.get()),
-            overview_grid->window_list()[3].get());
+            overview_grid->item_list()[3].get());
 
   // Make sure overview mode remains active.
   base::RunLoop().RunUntilIdle();

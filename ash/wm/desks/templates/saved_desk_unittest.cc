@@ -960,7 +960,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerAligned) {
 
   auto verify_save_desk_widget_bounds = [&overview_grid,
                                          save_desk_button_container]() {
-    auto& window_list = overview_grid->window_list();
+    auto& window_list = overview_grid->item_list();
     ASSERT_FALSE(window_list.empty());
     EXPECT_EQ(std::round(window_list.front()->target_bounds().x()),
               save_desk_button_container->GetBoundsInScreen().x());

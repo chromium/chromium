@@ -518,7 +518,7 @@ bool ShouldAnimateWallpaper(OverviewGrid* grid) {
 
   // If one of the windows covers the workspace, we can skip animating the
   // wallpaper.
-  for (const auto& overview_item : grid->window_list()) {
+  for (const auto& overview_item : grid->item_list()) {
     if (CanCoverAvailableWorkspace(overview_item->GetWindow())) {
       return false;
     }
@@ -1383,8 +1383,9 @@ void OverviewGrid::OnStartingAnimationComplete(bool canceled) {
 
   UpdateSaveDeskButtons();
 
-  for (auto& window : window_list())
-    window->OnStartingAnimationComplete();
+  for (auto& item : item_list()) {
+    item->OnStartingAnimationComplete();
+  }
 }
 
 void OverviewGrid::CalculateWindowListAnimationStates(
@@ -2759,9 +2760,9 @@ void OverviewGrid::OnScreenCopiedBeforeRotation() {
   rotation_pauser_ = OverviewController::Get()->PauseOcclusionTracker(
       kOcclusionUnpauseDurationForRotation);
 
-  for (auto& window : window_list()) {
-    window->UpdateRoundedCornersAndShadow();
-    window->StopWidgetAnimation();
+  for (auto& item : item_list()) {
+    item->UpdateRoundedCornersAndShadow();
+    item->StopWidgetAnimation();
   }
 }
 

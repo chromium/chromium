@@ -169,7 +169,7 @@ void RemoveAllWindowsFromOverview() {
       Shell::Get()->overview_controller()->overview_session();
   for (const auto& grid : overview_session->grid_list()) {
     while (!grid->empty()) {
-      OverviewItemBase* overview_item = grid->window_list()[0].get();
+      OverviewItemBase* overview_item = grid->item_list()[0].get();
 
       // We want to restore the window here primarily because when we are
       // undoing the removal of an active desk outside of overview, we do not

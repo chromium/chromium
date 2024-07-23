@@ -67,10 +67,10 @@ class OverviewGridTest : public AshTestBase {
     ASSERT_EQ(windows.size(), expected_end_animations.size());
 
     InitializeGrid(windows);
-    ASSERT_EQ(windows.size(), grid_->window_list().size());
+    ASSERT_EQ(windows.size(), grid_->item_list().size());
 
     // The default values are to animate.
-    for (const auto& item : grid_->window_list()) {
+    for (const auto& item : grid_->item_list()) {
       SCOPED_TRACE("Initial values");
       EXPECT_TRUE(item->should_animate_when_entering());
       EXPECT_TRUE(item->should_animate_when_exiting());
@@ -78,26 +78,25 @@ class OverviewGridTest : public AshTestBase {
 
     grid_->CalculateWindowListAnimationStates(
         /*selected_item=*/nullptr, OverviewTransition::kEnter, target_bounds);
-    for (size_t i = 0; i < grid_->window_list().size(); ++i) {
+    for (size_t i = 0; i < grid_->item_list().size(); ++i) {
       SCOPED_TRACE("Enter animation, window " + base::NumberToString(i + 1));
       EXPECT_EQ(expected_start_animations[i],
-                grid_->window_list()[i]->should_animate_when_entering());
+                grid_->item_list()[i]->should_animate_when_entering());
     }
 
-    for (size_t i = 0; i < grid_->window_list().size(); ++i) {
-      grid_->window_list()[i]->set_target_bounds_for_testing(target_bounds[i]);
+    for (size_t i = 0; i < grid_->item_list().size(); ++i) {
+      grid_->item_list()[i]->set_target_bounds_for_testing(target_bounds[i]);
     }
 
-    auto* selected_item =
-        selected_window_index
-            ? grid_->window_list()[*selected_window_index].get()
-            : nullptr;
+    auto* selected_item = selected_window_index
+                              ? grid_->item_list()[*selected_window_index].get()
+                              : nullptr;
     grid_->CalculateWindowListAnimationStates(selected_item,
                                               OverviewTransition::kExit, {});
-    for (size_t i = 0; i < grid_->window_list().size(); ++i) {
+    for (size_t i = 0; i < grid_->item_list().size(); ++i) {
       SCOPED_TRACE("Exit animation, window " + base::NumberToString(i + 1));
       EXPECT_EQ(expected_end_animations[i],
-                grid_->window_list()[i]->should_animate_when_exiting());
+                grid_->item_list()[i]->should_animate_when_exiting());
     }
   }
 
@@ -417,7 +416,7 @@ class OverviewGridForestTest : public OverviewTestBase {
     ASSERT_TRUE(grid);
 
     const std::vector<std::unique_ptr<OverviewItemBase>>& overview_items =
-        grid->window_list();
+        grid->item_list();
     if (!expected_enter_animations.empty()) {
       ASSERT_EQ(overview_items.size(), expected_enter_animations.size());
       for (size_t i = 0; i < overview_items.size(); ++i) {

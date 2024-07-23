@@ -1215,7 +1215,7 @@ aura::Window* OverviewItem::GetStackBelowTarget() const {
   // Find the last window in `overview_grid_` that comes before `window` and has
   // the same parent.
   for (const std::unique_ptr<OverviewItemBase>& overview_item :
-       overview_grid_->window_list()) {
+       overview_grid_->item_list()) {
     // `overview_item` could represent an overview group item, which would never
     // be strictly equal to this. However, the group item would contain `this`.
     // Using `Contains()` ensures `this` check works correctly for both single
