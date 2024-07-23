@@ -36,7 +36,6 @@ class TabListRowView : public views::View,
   TabListRowView& operator=(const TabListRowView&) = delete;
 
   std::u16string GetTitleTextForTesting();
-  std::u16string GetDomainTextForTesting();
   views::ImageButton* GetCloseButtonForTesting();
   views::View* GetTextContainerForTesting();
 

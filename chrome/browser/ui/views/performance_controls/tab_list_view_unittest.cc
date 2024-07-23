@@ -89,12 +89,10 @@ TEST_F(TabListViewUnitTest, PopulateTabList) {
   TabListRowView* const first_row =
       views::AsViewClass<TabListRowView>(children[0]);
   EXPECT_EQ(first_row->GetTitleTextForTesting(), u"b.com");
-  EXPECT_EQ(first_row->GetDomainTextForTesting(), u"b.com");
 
   TabListRowView* const second_row =
       views::AsViewClass<TabListRowView>(children[1]);
   EXPECT_EQ(second_row->GetTitleTextForTesting(), u"a.com");
-  EXPECT_EQ(second_row->GetDomainTextForTesting(), u"a.com");
 }
 
 TEST_F(TabListViewUnitTest, CloseButtonRemovesListItem) {
