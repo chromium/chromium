@@ -45,7 +45,6 @@ class Rect;
 
 namespace blink {
 
-class GraphicsContext;
 class LayoutObject;
 class ScrollableArea;
 class ScrollbarTheme;
@@ -118,8 +117,6 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   void SetProportion(int visible_size, int total_size);
   void SetPressedPos(int p) { pressed_pos_ = p; }
-
-  void Paint(GraphicsContext&, const gfx::Vector2d& paint_offset) const;
 
   virtual bool IsSolidColor() const;
 

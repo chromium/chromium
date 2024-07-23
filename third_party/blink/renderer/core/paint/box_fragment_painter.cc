@@ -569,7 +569,7 @@ bool BoxFragmentPainter::PaintOverflowControls(
 
   return ScrollableAreaPainter(
              *GetPhysicalFragment().Layer()->GetScrollableArea())
-      .PaintOverflowControls(paint_info, ToRoundedVector2d(paint_offset),
+      .PaintOverflowControls(paint_info, paint_offset,
                              box_fragment_.GetFragmentData());
 }
 
