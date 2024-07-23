@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <d3d11.h>
+#include <dcomp.h>
 #include <dxgi1_2.h>
 #include <wrl/client.h>
 
@@ -60,6 +61,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       gpu::SharedImageUsageSet usage,
       std::string debug_label,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+      Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture,
       scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
       const GLFormatCaps& gl_format_caps,
       GLenum texture_target,
@@ -217,6 +219,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   gpu::SharedImageUsageSet usage,
                   std::string debug_label,
                   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+                  Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture,
                   scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
                   const GLFormatCaps& gl_format_caps,
                   GLenum texture_target = GL_TEXTURE_2D,
@@ -281,6 +284,10 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   // Texture could be nullptr if an empty backing is needed for testing.
   const Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
+
+  // Set if this backing was used for |DCompTextureOverlayImageRepresentation|.
+  // Once set, this is cached and reused for future overlay representations.
+  const Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture_;
 
   // Holds DXGI shared handle and the keyed mutex if present.  Can be shared
   // between plane shared image backings of a multi-plane texture, or between

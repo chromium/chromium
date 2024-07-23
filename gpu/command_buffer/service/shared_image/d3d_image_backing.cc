@@ -86,6 +86,44 @@ bool CanUseUpdateSubresource(const std::vector<SkPixmap>& pixmaps) {
   return true;
 }
 
+// Get the availability fence for |dcomp_texture|. Returns a fence if the
+// texture is soon-to-be available, meaning that the caller must wait on the
+// fence. Returns null if it would be immediately available, meaning there is no
+// need to wait. The return value is only valid until the next DComp commit
+// call.
+//
+// |dcomp_texture| must not be "unavailable", i.e. attached to a DComp tree.
+scoped_refptr<gfx::D3DSharedFence>
+DCompTextureGetAvailabilityFenceForCurrentFrame(
+    IDCompositionTexture* dcomp_texture) {
+  Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
+  uint64_t fence_value = 0;
+  HRESULT hr = dcomp_texture->GetAvailableFence(&fence_value,
+                                                IID_PPV_ARGS(&d3d11_fence));
+  CHECK_EQ(hr, S_OK) << ", GetAvailableFence failed: "
+                     << logging::SystemErrorCodeToString(hr);
+
+  // |GetAvailableFence| will return a null fence if the texture is still
+  // attached to the DComp tree. We cannot end the read access at this point
+  // since DWM can still scanout from the texture. This is probably a bug where
+  // the output device returned an overlay access while the overlay image was
+  // still in the DComp tree.
+  //
+  // This can also trigger if we have multiple concurrent outstanding overlay
+  // read accesses, which is not currently supported.
+  CHECK(d3d11_fence) << "Overlay access is still in use by DWM.";
+
+  // If the fence is already passed the wait value, we don't need to wait on it.
+  if (d3d11_fence->GetCompletedValue() >= fence_value) {
+    return nullptr;
+  }
+
+  // Note we're passing a null device since the DWM internal device will signal
+  // this fence.
+  return gfx::D3DSharedFence::CreateFromD3D11Fence(
+      /*d3d11_signal_device=*/nullptr, std::move(d3d11_fence), fence_value);
+}
+
 }  // namespace
 
 D3DImageBacking::GLTextureHolder::GLTextureHolder(
@@ -201,7 +239,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
   DCHECK(format.is_single_plane());
   return base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "SwapChainBuffer", std::move(d3d11_texture),
+      "SwapChainBuffer", std::move(d3d11_texture), /*dcomp_texture=*/nullptr,
       /*dxgi_shared_handle_state=*/nullptr, gl_format_caps, GL_TEXTURE_2D,
       /*array_slice=*/0u, std::move(swap_chain), is_back_buffer));
 }
@@ -217,6 +255,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
     gpu::SharedImageUsageSet usage,
     std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+    Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
     const GLFormatCaps& gl_format_caps,
     GLenum texture_target,
@@ -230,8 +269,8 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
   auto backing = base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(d3d11_texture),
-      std::move(dxgi_shared_handle_state), gl_format_caps, texture_target,
-      array_slice, /*swap_chain=*/nullptr,
+      std::move(dcomp_texture), std::move(dxgi_shared_handle_state),
+      gl_format_caps, texture_target, array_slice, /*swap_chain=*/nullptr,
       /*is_back_buffer=*/false, use_update_subresource1, is_thread_safe));
   return backing;
 }
@@ -246,6 +285,7 @@ D3DImageBacking::D3DImageBacking(
     gpu::SharedImageUsageSet usage,
     std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+    Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
     const GLFormatCaps& gl_format_caps,
     GLenum texture_target,
@@ -265,6 +305,7 @@ D3DImageBacking::D3DImageBacking(
                                       format.EstimatedSizeInBytes(size),
                                       is_thread_safe),
       d3d11_texture_(std::move(d3d11_texture)),
+      dcomp_texture_(std::move(dcomp_texture)),
       dxgi_shared_handle_state_(std::move(dxgi_shared_handle_state)),
       gl_format_caps_(gl_format_caps),
       texture_target_(texture_target),
@@ -588,34 +629,35 @@ D3DImageBacking::GetPendingWaitFences(
     bool write_access) {
   // We don't need to use fences for single device scenarios (no shared handle),
   // or if we're using a keyed mutex instead.
-  if (!use_fence_synchronization()) {
-    return {};
-  }
-
-  // Lazily create and signal the D3D11 fence on the texture's original device
-  // if not present and we're using the backing on another device.
-  auto& texture_device_fence = d3d11_signaled_fence_map_[texture_d3d11_device_];
-  if (wait_d3d11_device != texture_d3d11_device_ && !texture_device_fence) {
-    texture_device_fence =
-        gfx::D3DSharedFence::CreateForD3D11(texture_d3d11_device_);
-    if (!texture_device_fence) {
-      LOG(ERROR) << "Failed to retrieve D3D11 signal fence";
-      return {};
-    }
-    // Make D3D11 device wait for |write_fences_| since we'll replace it below.
-    for (auto& fence : write_fences_) {
-      if (!fence->WaitD3D11(texture_d3d11_device_)) {
-        LOG(ERROR) << "Failed to wait for write fence";
+  if (use_fence_synchronization()) {
+    // Lazily create and signal the D3D11 fence on the texture's original device
+    // if not present and we're using the backing on another device.
+    auto& texture_device_fence =
+        d3d11_signaled_fence_map_[texture_d3d11_device_];
+    if (wait_d3d11_device != texture_d3d11_device_ && !texture_device_fence) {
+      texture_device_fence =
+          gfx::D3DSharedFence::CreateForD3D11(texture_d3d11_device_);
+      if (!texture_device_fence) {
+        LOG(ERROR) << "Failed to retrieve D3D11 signal fence";
         return {};
       }
+      // Make D3D11 device wait for |write_fences_| since we'll replace it
+      // below.
+      for (auto& fence : write_fences_) {
+        if (!fence->WaitD3D11(texture_d3d11_device_)) {
+          LOG(ERROR) << "Failed to wait for write fence";
+          return {};
+        }
+      }
+      if (!texture_device_fence->IncrementAndSignalD3D11()) {
+        LOG(ERROR) << "Failed to signal D3D11 signal fence";
+        return {};
+      }
+      // Store it in |write_fences_| so it's waited on for all subsequent
+      // access.
+      write_fences_.clear();
+      write_fences_.insert(texture_device_fence);
     }
-    if (!texture_device_fence->IncrementAndSignalD3D11()) {
-      LOG(ERROR) << "Failed to signal D3D11 signal fence";
-      return {};
-    }
-    // Store it in |write_fences_| so it's waited on for all subsequent access.
-    write_fences_.clear();
-    write_fences_.insert(texture_device_fence);
   }
 
   // TODO(crbug.com/335003893): Investigate how to avoid passing any fences back
@@ -634,6 +676,14 @@ D3DImageBacking::GetPendingWaitFences(
   if (write_access) {
     for (const auto& read_fence : read_fences_) {
         wait_fences.push_back(read_fence);
+    }
+    // The presence of a DComp texture fence is considered an outstanding read
+    // that must be waited on.
+    if (dcomp_texture_) {
+      if (auto fence = DCompTextureGetAvailabilityFenceForCurrentFrame(
+              dcomp_texture_.Get())) {
+        wait_fences.push_back(std::move(fence));
+      }
     }
   }
   return wait_fences;
@@ -907,6 +957,17 @@ void D3DImageBacking::EndAccessD3D11(
     dxgi_shared_handle_state_->ReleaseKeyedMutex(d3d11_device);
   }
 
+#if DCHECK_IS_ON()
+  if (dcomp_texture_) {
+    // Sanity check that we can get the availability fence, meaning that the
+    // texture is either immediately available or soon-to-be available. We
+    // should not cache this since the eventual wait may be one or more frames
+    // later and the fence becomes invalidated by DComp commit.
+    std::ignore =
+        DCompTextureGetAvailabilityFenceForCurrentFrame(dcomp_texture_.Get());
+  }
+#endif
+
   EndAccessCommon(signaled_fence);
 }
 
@@ -1104,6 +1165,10 @@ std::unique_ptr<OverlayImageRepresentation> D3DImageBacking::ProduceOverlay(
 
 std::optional<gl::DCLayerOverlayImage>
 D3DImageBacking::GetDCLayerOverlayImage() {
+  if (dcomp_texture_) {
+    return std::make_optional<gl::DCLayerOverlayImage>(
+        size(), dcomp_texture_, /*dcomp_surface_serial=*/0);
+  }
   if (swap_chain_) {
     return std::make_optional<gl::DCLayerOverlayImage>(size(), swap_chain_);
   }

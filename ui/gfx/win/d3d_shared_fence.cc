@@ -60,9 +60,19 @@ scoped_refptr<D3DSharedFence> D3DSharedFence::CreateForD3D11(
     return nullptr;
   }
 
+  return CreateFromD3D11Fence(std::move(d3d11_signal_device),
+                              std::move(d3d11_fence),
+                              /*fence_value=*/0);
+}
+
+// static
+scoped_refptr<D3DSharedFence> D3DSharedFence::CreateFromD3D11Fence(
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_signal_device,
+    Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence,
+    uint64_t fence_value) {
   HANDLE shared_handle = nullptr;
-  hr = d3d11_fence->CreateSharedHandle(nullptr, GENERIC_ALL, nullptr,
-                                       &shared_handle);
+  HRESULT hr = d3d11_fence->CreateSharedHandle(nullptr, GENERIC_ALL, nullptr,
+                                               &shared_handle);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Unable to create shared handle for D3D11Fence: "
                 << logging::SystemErrorCodeToString(hr);
@@ -72,6 +82,7 @@ scoped_refptr<D3DSharedFence> D3DSharedFence::CreateForD3D11(
       base::win::ScopedHandle(shared_handle), DXGIHandleToken()));
   fence->d3d11_signal_device_ = std::move(d3d11_signal_device);
   fence->d3d11_signal_fence_ = std::move(d3d11_fence);
+  fence->fence_value_ = fence_value;
   return fence;
 }
 
@@ -189,7 +200,8 @@ bool D3DSharedFence::WaitD3D11(
 }
 
 bool D3DSharedFence::IncrementAndSignalD3D11() {
-  DCHECK(d3d11_signal_device_);
+  CHECK(d3d11_signal_device_)
+      << "D3D11 fence is expected to be signaled externally";
   DCHECK(d3d11_signal_fence_);
 
   Microsoft::WRL::ComPtr<ID3D11DeviceContext4> context4 =

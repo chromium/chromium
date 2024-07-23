@@ -98,6 +98,9 @@ GL_EXPORT bool DirectCompositionMonitorHDREnabled(HWND window);
 // Returns the collected DXGI information.
 GL_EXPORT gfx::mojom::DXGIInfoPtr GetDirectCompositionHDRMonitorDXGIInfo();
 
+// Returns true if there is support for |IDCompositionTexture|.
+GL_EXPORT bool DirectCompositionTextureSupported();
+
 // Set direct composition swap chain failure so that direct composition is
 // marked as unsupported from now on.
 GL_EXPORT void SetDirectCompositionSwapChainFailed();
