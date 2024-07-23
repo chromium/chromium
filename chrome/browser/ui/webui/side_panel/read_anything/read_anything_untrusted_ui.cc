@@ -70,7 +70,6 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
        IDS_READING_MODE_SPACING_COMBOBOX_VERY_WIDE},
       {"playDescription", IDS_READING_MODE_PLAY_DESCRIPTION},
       {"playAriaLabel", IDS_READING_MODE_PLAY_SPEECH},
-      {"pauseLabel", IDS_READING_MODE_PAUSE_SPEECH},
       {"stopLabel", IDS_READING_MODE_STOP_SPEECH},
       {"playTooltip", IDS_READING_MODE_PLAY_TOOLTIP},
       {"previewTooltip", IDS_READING_MODE_PREVIEW_TOOLTIP},
