@@ -443,9 +443,10 @@ void HistoryBackend::SetOnBackendDestroyTask(
 
 void HistoryBackend::Closing() {
   TRACE_EVENT0("browser", "HistoryBackend::Closing");
-  // Any scheduled commit will have a reference to us, we must make it
-  // release that reference before we can be destroyed.
+  // The history system is shutting down. Cancel any pending/scheduled work.
   CancelScheduledCommit();
+  queued_history_db_tasks_.clear();
+  posted_history_db_task_.Cancel();
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -3298,9 +3299,13 @@ void HistoryBackend::ProcessDBTaskImpl() {
     queued_history_db_tasks_.push_back(std::move(task));
   }
 
+  // If there are more tasks queued, schedule the next one.
+  // Note: Using PostTask() ensures the history sequence gets unblocked for
+  // other work.
   if (!queued_history_db_tasks_.empty()) {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&HistoryBackend::ProcessDBTaskImpl, this));
+    posted_history_db_task_.Reset(
+        base::BindOnce(&HistoryBackend::ProcessDBTaskImpl, this));
+    task_runner_->PostTask(FROM_HERE, posted_history_db_task_.callback());
   }
 }
 
