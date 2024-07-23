@@ -35,7 +35,6 @@
 #include "content/public/browser/web_contents_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #else
@@ -236,8 +235,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   bool keep_popup_open_for_testing_ = false;
 #if BUILDFLAG(IS_ANDROID)
   SaveUpdateAddressProfileFlowManager save_update_address_profile_flow_manager_;
-  TouchToFillPaymentMethodController touch_to_fill_payment_method_controller_{
-      this};
   std::unique_ptr<FastCheckoutClient> fast_checkout_client_;
 #endif
   std::unique_ptr<AutofillFieldPromoController>
