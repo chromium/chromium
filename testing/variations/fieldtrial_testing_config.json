@@ -17244,6 +17244,21 @@
             ]
         }
     ],
+    "Printscanmgr": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AddPrinterViaPrintscanmgr"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrioritizeCompositingAfterDelay": [
         {
             "platforms": [
