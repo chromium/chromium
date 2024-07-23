@@ -13,7 +13,9 @@
 class Profile;
 
 std::unique_ptr<CertificateManagerPageHandler::CertSource>
-CreatePlatformClientCertSource();
+CreatePlatformClientCertSource(
+    mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>*
+        remote_client);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 std::unique_ptr<CertificateManagerPageHandler::CertSource>

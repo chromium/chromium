@@ -119,5 +119,6 @@ interface CertificateManagerPageHandler {
 
 // Calls from C++ -> TS (Browser -> Renderer).
 interface CertificateManagerPage {
-  // TODO(crbug.com/40928765): Currently empty, add methods as needed.
+  // Show dialog prompting user to enter a password to import a file.
+  AskForImportPassword() => (string? password);
 };

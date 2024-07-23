@@ -9,8 +9,9 @@
  */
 
 import './certificate_list_v2.js';
+import './certificate_info_dialog.js';
+import './certificate_password_dialog.js';
 import './certificate_subpage_v2.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -25,7 +26,6 @@ import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
 import '//resources/cr_elements/cr_page_host_style.css.js';
 
-import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -33,14 +33,20 @@ import {assert} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
+import {PromiseResolver} from '//resources/js/promise_resolver.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {CertificateListV2Element} from './certificate_list_v2.js';
 import {getTemplate} from './certificate_manager_v2.html.js';
 import type {CertManagementMetadata, ImportResult} from './certificate_manager_v2.mojom-webui.js';
 import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
+import type {CertificatePasswordDialogElement} from './certificate_password_dialog.js';
 import type {CertificateSubpageV2Element, SubpageCertificateList} from './certificate_subpage_v2.js';
 import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
+
+interface PasswordResult {
+  password: string|null;
+}
 
 export enum Page {
   LOCAL_CERTS = 'localcerts',
@@ -64,7 +70,6 @@ export interface CertificateManagerV2Element {
     extensionsClientCerts: CertificateListV2Element,
     // </if>
     toast: CrToastElement,
-    dialog: CrDialogElement,
     importOsCerts: CrToggleElement,
     importOsCertsManagedIcon: HTMLElement,
     viewOsImportedCerts: HTMLElement,
@@ -156,8 +161,10 @@ export class CertificateManagerV2Element extends
       numPolicyCertsString_: String,
       crsLearnMoreUrl_: String,
 
-      dialogTitle_: String,
-      dialogBody_: String,
+      showInfoDialog_: Boolean,
+      infoDialogTitle_: String,
+      infoDialogMessage_: String,
+      showPasswordDialog_: Boolean,
 
       showSearch_: {
         type: Boolean,
@@ -185,8 +192,11 @@ export class CertificateManagerV2Element extends
 
   private selectedPage_: Page = Page.LOCAL_CERTS;
   private toastMessage_: string;
-  private dialogTitle_: string;
-  private dialogBody_: string;
+  private showInfoDialog_: boolean = false;
+  private infoDialogTitle_: string;
+  private infoDialogMessage_: string;
+  private showPasswordDialog_: boolean = false;
+  private passwordEntryResolver_: PromiseResolver<PasswordResult>|null = null;
   private numPolicyCertsString_: string;
   private numSystemCertsString_: string;
   private crsLearnMoreUrl_: string = loadTimeData.getString('crsLearnMoreUrl');
@@ -207,11 +217,31 @@ export class CertificateManagerV2Element extends
   override ready() {
     super.ready();
     const proxy = CertificatesV2BrowserProxy.getInstance();
+    proxy.callbackRouter.askForImportPassword.addListener(
+        this.onAskForImportPassword_.bind(this));
     proxy.handler.getCertManagementMetadata().then(
         (results: {metadata: CertManagementMetadata}) => {
           this.certManagementMetadata_ = results.metadata;
           this.updateNumCertsStrings_();
         });
+  }
+
+  private onAskForImportPassword_(): Promise<PasswordResult> {
+    this.showPasswordDialog_ = true;
+    assert(this.passwordEntryResolver_ === null);
+    this.passwordEntryResolver_ = new PromiseResolver<PasswordResult>();
+    return this.passwordEntryResolver_.promise;
+  }
+
+  private onPasswordDialogClose_() {
+    const passwordDialog =
+        this.shadowRoot!.querySelector<CertificatePasswordDialogElement>(
+            '#passwordDialog');
+    assert(passwordDialog);
+    assert(this.passwordEntryResolver_);
+    this.passwordEntryResolver_.resolve({password: passwordDialog.value()});
+    this.passwordEntryResolver_ = null;
+    this.showPasswordDialog_ = false;
   }
 
   private updateNumCertsStrings_() {
@@ -292,18 +322,14 @@ export class CertificateManagerV2Element extends
     }
     if (result.error !== undefined) {
       // TODO(crbug.com/40928765): localize
-      this.showDialog_('import result', result.error);
+      this.infoDialogTitle_ = 'import result';
+      this.infoDialogMessage_ = result.error;
+      this.showInfoDialog_ = true;
     }
   }
 
-  private showDialog_(title: string, message: string) {
-    this.dialogTitle_ = title;
-    this.dialogBody_ = message;
-    this.$.dialog.showModal();
-  }
-
-  private onDialogClickOk_() {
-    this.$.dialog.close();
+  private onInfoDialogClose_() {
+    this.showInfoDialog_ = false;
   }
 
   private computeImportOsCertsEnabled_(): boolean {

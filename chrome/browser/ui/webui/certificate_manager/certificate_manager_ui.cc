@@ -52,6 +52,8 @@ void AddCertificateManagerStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"ok", IDS_OK},
+      {"cancel", IDS_CANCEL},
       {"opensInNewTab", IDS_SETTINGS_OPENS_IN_NEW_TAB},
       {"certificateManagerV2Title", IDS_SETTINGS_CERTIFICATE_MANAGER_V2_TITLE},
       {"certificateManagerV2ClientCerts",

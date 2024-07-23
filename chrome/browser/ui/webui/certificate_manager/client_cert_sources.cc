@@ -222,8 +222,11 @@ class ClientCertSource : public CertificateManagerPageHandler::CertSource {
 class CrosClientCertSource : public ClientCertSource,
                              public ui::SelectFileDialog::Listener {
  public:
-  explicit CrosClientCertSource(std::unique_ptr<ClientCertStoreLoader> loader)
-      : ClientCertSource(std::move(loader)) {}
+  explicit CrosClientCertSource(
+      std::unique_ptr<ClientCertStoreLoader> loader,
+      mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>*
+          remote_client)
+      : ClientCertSource(std::move(loader)), remote_client_(remote_client) {}
 
   ~CrosClientCertSource() override {
     if (select_file_dialog_) {
@@ -294,6 +297,19 @@ class CrosClientCertSource : public ClientCertSource,
       return;
     }
 
+    (*remote_client_)
+        ->AskForImportPassword(base::BindOnce(
+            &CrosClientCertSource::GotImportPassword,
+            weak_ptr_factory_.GetWeakPtr(), std::move(*file_bytes)));
+  }
+
+  void GotImportPassword(std::vector<uint8_t> file_bytes,
+                         const std::optional<std::string>& password) {
+    if (!password) {
+      std::move(import_callback_).Run(nullptr);
+      return;
+    }
+
     // TODO(crbug.com/40928765): actually do the import
     std::move(import_callback_)
         .Run(certificate_manager_v2::mojom::ImportResult::NewError(
@@ -303,6 +319,8 @@ class CrosClientCertSource : public ClientCertSource,
  private:
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   CertificateManagerPageHandler::ImportCertificateCallback import_callback_;
+  raw_ptr<mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>>
+      remote_client_;
   base::WeakPtrFactory<CrosClientCertSource> weak_ptr_factory_{this};
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -364,10 +382,12 @@ class ExtensionsClientCertSource
 }  // namespace
 
 std::unique_ptr<CertificateManagerPageHandler::CertSource>
-CreatePlatformClientCertSource() {
+CreatePlatformClientCertSource(
+    mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>*
+        remote_client) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<CrosClientCertSource>(
-      CreatePlatformClientCertLoader());
+      CreatePlatformClientCertLoader(), remote_client);
 #else
   return std::make_unique<ClientCertSource>(CreatePlatformClientCertLoader());
 #endif

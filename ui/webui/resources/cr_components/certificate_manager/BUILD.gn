@@ -59,7 +59,13 @@ build_webui("build") {
       "certificate_manager_v2.ts",
       "certificate_subpage_v2.ts",
     ]
-    non_web_component_files += [ "certificates_v2_browser_proxy.ts" ]
+    non_web_component_files += [
+      "certificates_v2_browser_proxy.ts",
+      "certificate_info_dialog.html.ts",
+      "certificate_info_dialog.ts",
+      "certificate_password_dialog.html.ts",
+      "certificate_password_dialog.ts",
+    ]
 
     mojo_files_deps = [ ":mojom_ts__generator" ]
     mojo_files = [ "$target_gen_dir/certificate_manager_v2.mojom-webui.ts" ]
@@ -81,6 +87,7 @@ build_webui("build") {
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_composite = true
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
