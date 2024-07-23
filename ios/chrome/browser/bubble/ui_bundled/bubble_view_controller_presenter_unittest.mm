@@ -188,11 +188,25 @@ TEST_F(BubbleViewControllerPresenterTest, UserEngagedYesOnDismissal) {
 // callback with a dismiss action.
 TEST_F(BubbleViewControllerPresenterTest,
        BubbleViewCloseButtonCallDismissalCallback) {
-  [bubble_view_controller_presenter_
+  BubbleViewControllerPresenter* bubble_view_controller_presenter =
+      [[BubbleViewControllerPresenter alloc]
+               initWithText:@"Text"
+                      title:@"Title"
+                      image:[[UIImage alloc] init]
+             arrowDirection:BubbleArrowDirectionUp
+                  alignment:BubbleAlignmentCenter
+                 bubbleType:BubbleViewTypeWithClose
+          dismissalCallback:^(
+              IPHDismissalReasonType reason,
+              feature_engagement::Tracker::SnoozeAction action) {
+            dismissal_callback_count_++;
+            dismissal_callback_action_ = action;
+          }];
+  [bubble_view_controller_presenter
       presentInViewController:parent_view_controller_
                   anchorPoint:anchor_point_];
   BubbleView* bubble_view = base::apple::ObjCCastStrict<BubbleView>(
-      bubble_view_controller_presenter_.bubbleViewController.view);
+      bubble_view_controller_presenter.bubbleViewController.view);
   EXPECT_TRUE(bubble_view);
   UIButton* close_button = GetCloseButtonFromBubbleView(bubble_view);
   EXPECT_TRUE(close_button);
