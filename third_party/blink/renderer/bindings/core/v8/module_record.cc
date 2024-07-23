@@ -78,15 +78,11 @@ v8::Local<v8::Module> ModuleRecord::Compile(
   }
   // TODO(chromium:1406506): Add a compile hints solution for module records.
   constexpr bool kMightGenerateCompileHints = false;
-  const bool v8_compile_hints_magic_comment_runtime_enabled =
-      RuntimeEnabledFeatures::JavaScriptCompileHintsMagicRuntimeEnabled(
-          execution_context);
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(
           v8_cache_options, params.CacheHandler(),
           params.GetSourceText().length(), params.SourceLocationType(),
-          params.BaseURL(), kMightGenerateCompileHints,
-          v8_compile_hints_magic_comment_runtime_enabled);
+          params.BaseURL(), kMightGenerateCompileHints);
 
   if (!V8ScriptRunner::CompileModule(
            isolate, params, text_position, compile_options, no_cache_reason,

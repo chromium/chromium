@@ -944,15 +944,10 @@ Resource* PreloadHelper::StartPreload(ResourceType type,
 
       params.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
       params.SetRequestDestination(network::mojom::RequestDestination::kScript);
-      const bool v8_compile_hints_magic_comment_runtime_enabled =
-          RuntimeEnabledFeatures::JavaScriptCompileHintsMagicRuntimeEnabled(
-              document.GetExecutionContext());
-
       resource = ScriptResource::Fetch(
           params, resource_fetcher, nullptr, document.GetAgent().isolate(),
           ScriptResource::kAllowStreaming, v8_compile_hints_producer,
-          v8_compile_hints_consumer,
-          v8_compile_hints_magic_comment_runtime_enabled);
+          v8_compile_hints_consumer);
       break;
     }
     case ResourceType::kCSSStyleSheet:

@@ -47,12 +47,10 @@ void WorkletModuleScriptFetcher::Fetch(
       kNoCompileHintsProducer = nullptr;
   constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
       kNoCompileHintsConsumer = nullptr;
-  constexpr bool kNoV8CompileHintsMagicCommentRuntimeEnabledFeature = false;
   ScriptResource::Fetch(fetch_params, fetch_client_settings_object_fetcher,
                         this, global_scope_->GetIsolate(),
                         ScriptResource::kNoStreaming, kNoCompileHintsProducer,
-                        kNoCompileHintsConsumer,
-                        kNoV8CompileHintsMagicCommentRuntimeEnabledFeature);
+                        kNoCompileHintsConsumer);
 }
 
 void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {
