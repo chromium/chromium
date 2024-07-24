@@ -1424,8 +1424,6 @@ source_set("browser") {
     "network_service_client.h",
     "network_service_instance_impl.cc",
     "network_service_instance_impl.h",
-    "notification_service_impl.cc",
-    "notification_service_impl.h",
     "notifications/blink_notification_service_impl.cc",
     "notifications/blink_notification_service_impl.h",
     "notifications/devtools_event_logging.cc",

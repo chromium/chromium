@@ -193,8 +193,6 @@ bool ShutdownPreThreadsStop() {
   g_browser_process->local_state()->CommitPendingWrite();
 
 #if BUILDFLAG(ENABLE_RLZ)
-  // Cleanup any statics created by RLZ. Must be done before NotificationService
-  // is destroyed.
   rlz::RLZTracker::CleanupRlz();
 #endif
 

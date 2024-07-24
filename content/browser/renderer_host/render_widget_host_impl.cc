@@ -60,7 +60,6 @@
 #include "content/browser/file_system/browser_file_system_helper.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/gpu/compositor_util.h"
-#include "content/browser/notification_service_impl.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/data_transfer_util.h"
 #include "content/browser/renderer_host/dip_util.h"
@@ -89,8 +88,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/peak_gpu_memory_tracker_factory.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_process_host_priority_client.h"
@@ -809,10 +806,6 @@ void RenderWidgetHostImpl::WasHidden() {
   // Tell the RenderProcessHost we were hidden.
   GetProcess()->UpdateClientPriority(this);
 
-  bool is_visible = false;
-  NotificationServiceImpl::current()->Notify(
-      NOTIFICATION_RENDER_WIDGET_VISIBILITY_CHANGED,
-      Source<RenderWidgetHost>(this), Details<bool>(&is_visible));
   for (auto& observer : observers_) {
     observer.RenderWidgetHostVisibilityChanged(this, false);
   }
@@ -857,10 +850,6 @@ void RenderWidgetHostImpl::WasShown(
 
   GetProcess()->UpdateClientPriority(this);
 
-  bool is_visible = true;
-  NotificationServiceImpl::current()->Notify(
-      NOTIFICATION_RENDER_WIDGET_VISIBILITY_CHANGED,
-      Source<RenderWidgetHost>(this), Details<bool>(&is_visible));
   for (auto& observer : observers_) {
     observer.RenderWidgetHostVisibilityChanged(this, true);
   }

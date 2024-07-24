@@ -294,7 +294,6 @@ void BrowserProcessImpl::Init() {
   download_status_updater_ = std::make_unique<DownloadStatusUpdater>();
 
 #if BUILDFLAG(ENABLE_PRINTING)
-  // Must be created after the NotificationService.
   print_job_manager_ = std::make_unique<printing::PrintJobManager>();
 #endif
 

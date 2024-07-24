@@ -452,9 +452,8 @@ int TestSuite::Run() {
   int result = RunAllTests();
 
 #if BUILDFLAG(IS_APPLE)
-  // This MUST happen before Shutdown() since Shutdown() tears down
-  // objects (such as NotificationService::current()) that Cocoa
-  // objects use to remove themselves as observers.
+  // This MUST happen before Shutdown() since Shutdown() tears down objects that
+  // Cocoa objects use to remove themselves as observers.
   scoped_pool.Recycle();
 #endif
 
