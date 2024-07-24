@@ -84,7 +84,7 @@ namespace device {
 namespace mojom {
 class WakeLockContext;
 }
-}
+}  // namespace device
 
 namespace net {
 struct LoadStateWithParam;
@@ -100,7 +100,7 @@ struct AXTreeUpdate;
 class AXNode;
 class ColorProvider;
 class ColorProviderSource;
-}
+}  // namespace ui
 
 namespace content {
 
@@ -142,8 +142,7 @@ class PreloadingAttempt;
 // `GetController()`, and is used to load URLs into the WebContents, navigate
 // it backwards/forwards, etc.
 // See navigation_controller.h for more details.
-class WebContents : public PageNavigator,
-                    public base::SupportsUserData {
+class WebContents : public PageNavigator, public base::SupportsUserData {
   // Do not remove this macro!
   // The macro is maintained by the memory safety team.
   ADVANCED_MEMORY_SAFETY_CHECKS();
@@ -1231,8 +1230,17 @@ class WebContents : public PageNavigator,
                             bool bypass_cache,
                             ImageDownloadCallback callback) = 0;
 
-  // Same as DownloadImage(), but uses the ImageDownloader from the specified
-  // frame instead of the main frame.
+  // Same as DownloadImage(), but uses an ax node id to retrieve the URL once
+  // the download call has reached the renderer.
+  virtual int DownloadImageFromAxNode(const ui::AXTreeID tree_id,
+                                      const ui::AXNodeID node_id,
+                                      const gfx::Size& preferred_size,
+                                      uint32_t max_bitmap_size,
+                                      bool bypass_cache,
+                                      ImageDownloadCallback callback) = 0;
+
+  // Same as DownloadImage(), but uses the ImageDownloader from the
+  // specified frame instead of the main frame.
   virtual int DownloadImageInFrame(
       const GlobalRenderFrameHostId& initiator_frame_routing_id,
       const GURL& url,

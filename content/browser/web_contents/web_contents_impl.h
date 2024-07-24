@@ -553,12 +553,19 @@ class CONTENT_EXPORT WebContentsImpl
   void DidChooseColorInColorChooser(SkColor color) override;
   void DidEndColorChooser() override;
 #endif
+  int DownloadImageFromAxNode(const ui::AXTreeID tree_id,
+                              const ui::AXNodeID node_id,
+                              const gfx::Size& preferred_size,
+                              uint32_t max_bitmap_size,
+                              bool bypass_cache,
+                              ImageDownloadCallback callback) override;
   int DownloadImage(const GURL& url,
                     bool is_favicon,
                     const gfx::Size& preferred_size,
                     uint32_t max_bitmap_size,
                     bool bypass_cache,
                     ImageDownloadCallback callback) override;
+
   int DownloadImageInFrame(
       const GlobalRenderFrameHostId& initiator_frame_routing_id,
       const GURL& url,
@@ -1751,6 +1758,8 @@ class CONTENT_EXPORT WebContentsImpl
                           const std::vector<SkBitmap>& images,
                           const std::vector<gfx::Size>& original_image_sizes);
 
+  int GetNextDownloadId();
+
   // Callback function when showing JavaScript dialogs. Takes in a routing ID
   // pair to identify the RenderFrameHost that opened the dialog, because it's
   // possible for the RenderFrameHost to be deleted by the time this is called.
@@ -2542,7 +2551,8 @@ class CONTENT_EXPORT WebContentsImpl
   // loading requests over a specific network. The network handle is set when
   // WebContents is created and will not change during the life cycle of
   // WebContents.
-  net::handles::NetworkHandle target_network_ = net::handles::kInvalidNetworkHandle;
+  net::handles::NetworkHandle target_network_ =
+      net::handles::kInvalidNetworkHandle;
 
   // Whether this contents represents a window initially opened as a new popup.
   bool is_popup_{false};
