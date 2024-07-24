@@ -836,6 +836,9 @@ extern const char kEnableGamepadMultitouchDescription[];
 extern const char kEnableGamepadTriggerRumbleName[];
 extern const char kEnableGamepadTriggerRumbleDescription[];
 
+extern const char kEnableGooglePlayProtectPromptName[];
+extern const char kEnableGooglePlayProtectPromptDescription[];
+
 extern const char kEnableIsolatedWebAppsName[];
 extern const char kEnableIsolatedWebAppsDescription[];
 

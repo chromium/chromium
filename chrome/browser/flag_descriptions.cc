@@ -1405,6 +1405,12 @@ const char
         "Updates the text and layout on both the privacy guide and the "
         "security settings page.";
 
+const char kEnableGooglePlayProtectPromptName[] =
+    "Enable Google Play Protect prompts on Android dangerous downloads";
+const char kEnableGooglePlayProtectPromptDescription[] =
+    "Users with Google Play Protect disabled will be prompted on dangerous "
+    "downloads to re-enable the feature.";
+
 const char kEnableSearchEngineChoiceName[] = "Search engine choice";
 const char kEnableSearchEngineChoiceDescription[] =
     "Enables the search engine choice screen and related features."

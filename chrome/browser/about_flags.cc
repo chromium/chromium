@@ -9078,6 +9078,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)},
 
+    {"enable-google-play-protect-prompts",
+     flag_descriptions::kEnableGooglePlayProtectPromptName,
+     flag_descriptions::kEnableGooglePlayProtectPromptDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(safe_browsing::kGooglePlayProtectPrompt)},
+
     {"enable-tailored-security-retry-for-sync-users",
      flag_descriptions::kTailoredSecurityRetryForSyncUsersName,
      flag_descriptions::kTailoredSecurityRetryForSyncUsersDescription, kOsAll,
