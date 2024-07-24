@@ -622,6 +622,15 @@ class GenXproto(FileWriter):
 
         if not t.nmemb:
             if self.is_read:
+                if (size == 'children_len' and field.parent
+                        and field.parent[1] == ('xcb', 'QueryTree')):
+                    # Hack: `children_len` is 16 bits, but windows may have
+                    # 2^16 or more children.  In this case, the server
+                    # truncates the real child count to 16 bits, but still
+                    # sends all children in the response.  To workaround this
+                    # issue, use the reply length, which is 32 bits, as the
+                    # child count.
+                    size = 'length'
                 self.write('%s.resize(%s);' % (name, size))
             else:
                 left = 'static_cast<size_t>(%s)' % size
