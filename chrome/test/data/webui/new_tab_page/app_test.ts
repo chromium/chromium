@@ -1059,6 +1059,27 @@ suite('NewTabPageAppTest', () => {
           });
     });
 
+    function assertButtonAnimated() {
+      assertNotStyle(
+          $$(app, '#wallpaperSearchButton')!, 'animation-name', 'none');
+      assertNotStyle(
+          $$(app, '#wallpaperSearchButton .customize-icon')!, 'animation-name',
+          'none');
+      assertStyle(
+          $$(app, '#wallpaperSearchButton .customize-text')!, 'animation-name',
+          'none');
+    }
+
+    function assertButtonNotAnimated() {
+      assertStyle($$(app, '#wallpaperSearchButton')!, 'animation-name', 'none');
+      assertStyle(
+          $$(app, '#wallpaperSearchButton .customize-icon')!, 'animation-name',
+          'none');
+      assertStyle(
+          $$(app, '#wallpaperSearchButton .customize-text')!, 'animation-name',
+          'none');
+    }
+
     suite('ButtonEnabled', () => {
       suiteSetup(() => {
         loadTimeData.overrideValues({
@@ -1079,15 +1100,31 @@ suite('NewTabPageAppTest', () => {
       });
 
       test('button has animation', () => {
-        assertNotStyle(
-            $$(app, '#wallpaperSearchButton')!, 'animation-name', 'none');
-        assertNotStyle(
-            $$(app, '#wallpaperSearchButton .customize-icon')!,
-            'animation-name', 'none');
-        assertStyle(
-            $$(app, '#wallpaperSearchButton .customize-text')!,
-            'animation-name', 'none');
+        assertButtonAnimated();
       });
+
+      [NtpBackgroundImageSource.kWallpaperSearch,
+       NtpBackgroundImageSource.kWallpaperSearchInspiration]
+          .forEach((imageSource) => {
+            test(
+                `having wallpaper search theme ${
+                    imageSource} disables animation`,
+                async () => {
+                  // Arrange.
+                  const theme = createTheme();
+                  theme.backgroundImage =
+                      createBackgroundImage('https://foo.com');
+                  theme.backgroundImage.imageSource = imageSource;
+                  assertButtonAnimated();
+
+                  // Act.
+                  callbackRouterRemote.setTheme(theme);
+                  await callbackRouterRemote.$.flushForTesting();
+
+                  // Assert.
+                  assertButtonNotAnimated();
+                });
+          });
 
       ([
         ['#customizeButton', NtpElement.CUSTOMIZE_BUTTON],
@@ -1288,14 +1325,7 @@ suite('NewTabPageAppTest', () => {
       });
 
       test('button has no animation if the flag is disabled', () => {
-        assertStyle(
-            $$(app, '#wallpaperSearchButton')!, 'animation-name', 'none');
-        assertStyle(
-            $$(app, '#wallpaperSearchButton .customize-icon')!,
-            'animation-name', 'none');
-        assertStyle(
-            $$(app, '#wallpaperSearchButton .customize-text')!,
-            'animation-name', 'none');
+        assertButtonNotAnimated();
       });
     });
   });

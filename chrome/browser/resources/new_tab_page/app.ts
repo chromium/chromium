@@ -704,15 +704,27 @@ export class AppElement extends AppElementBase {
 
 
   private onThemeLoaded_(theme: Theme) {
-    chrome.metricsPrivate.recordEnumerationValue(
-        'NewTabPage.BackgroundImageSource',
-        (theme.backgroundImage ? theme.backgroundImage.imageSource :
-                                 NtpBackgroundImageSource.kNoImage),
-        NtpBackgroundImageSource.MAX_VALUE + 1);
-
     chrome.metricsPrivate.recordSparseValueWithPersistentHash(
         'NewTabPage.Collections.IdOnLoad',
         theme.backgroundImageCollectionId ?? '');
+
+    if (!theme.backgroundImage || !theme.backgroundImage.imageSource) {
+      chrome.metricsPrivate.recordEnumerationValue(
+          'NewTabPage.BackgroundImageSource', NtpBackgroundImageSource.kNoImage,
+          NtpBackgroundImageSource.MAX_VALUE + 1);
+      return;
+    } else {
+      chrome.metricsPrivate.recordEnumerationValue(
+          'NewTabPage.BackgroundImageSource', theme.backgroundImage.imageSource,
+          NtpBackgroundImageSource.MAX_VALUE + 1);
+    }
+
+    if (theme.backgroundImage.imageSource ===
+            NtpBackgroundImageSource.kWallpaperSearch ||
+        theme.backgroundImage.imageSource ===
+            NtpBackgroundImageSource.kWallpaperSearchInspiration) {
+      this.wallpaperSearchButtonAnimationEnabled_ = false;
+    }
   }
 
   private onPromoAndModulesLoadedChange_() {
