@@ -975,11 +975,6 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
   EXPECT_EQ(tab_strip_model->active_index(), 0);
 
   BrowserView* view = BrowserView::GetBrowserViewForBrowser(app_browser);
-  TabStripController* controller = view->tabstrip()->controller();
-
-  // The home tab is the only tab open so it can be closed.
-  EXPECT_TRUE(
-      controller->BeforeCloseTab(0, CloseTabSource::CLOSE_TAB_FROM_MOUSE));
 
   // Open another tab.
   OpenUrlAndWait(app_browser,
@@ -987,11 +982,19 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
   EXPECT_EQ(tab_strip_model->count(), 2);
 
   // Home tab should not be closable.
-  EXPECT_FALSE(
-      controller->BeforeCloseTab(0, CloseTabSource::CLOSE_TAB_FROM_MOUSE));
+  view->tabstrip()->CloseTab(view->tabstrip()->tab_at(0),
+                             CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  EXPECT_EQ(tab_strip_model->count(), 2);
+
   // Non home tab should be closable.
-  EXPECT_TRUE(
-      controller->BeforeCloseTab(1, CloseTabSource::CLOSE_TAB_FROM_MOUSE));
+  view->tabstrip()->CloseTab(view->tabstrip()->tab_at(1),
+                             CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  EXPECT_EQ(tab_strip_model->count(), 1);
+
+  // The home tab is the only tab open so it can be closed.
+  view->tabstrip()->CloseTab(view->tabstrip()->tab_at(0),
+                             CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  EXPECT_EQ(tab_strip_model->count(), 0);
 }
 
 // Tests that the home tab is not closable unless it is the only tab left in the

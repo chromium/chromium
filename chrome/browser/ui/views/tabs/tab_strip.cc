@@ -1564,8 +1564,12 @@ void TabStrip::AddSelectionFromAnchorTo(Tab* tab) {
 void TabStrip::CloseTab(Tab* tab, CloseTabSource source) {
   const std::optional<int> index_to_close =
       tab_container_->GetModelIndexOfFirstNonClosingTab(tab);
-  if (index_to_close.has_value()) {
-    CloseTabInternal(index_to_close.value(), source);
+  auto callback =
+      base::BindOnce(&TabStrip::CloseTabInternal, base::Unretained(this),
+                     index_to_close.value(), source);
+  if (index_to_close.has_value() && IsValidModelIndex(index_to_close.value())) {
+    controller_->OnCloseTab(index_to_close.value(), source,
+                            std::move(callback));
   }
 }
 
@@ -2108,15 +2112,6 @@ const Tab* TabStrip::GetLastVisibleTab() const {
 }
 
 void TabStrip::CloseTabInternal(int model_index, CloseTabSource source) {
-  if (!IsValidModelIndex(model_index)) {
-    return;
-  }
-
-  // If we're not allowed to close this tab for whatever reason, we should not
-  // proceed.
-  if (!controller_->BeforeCloseTab(model_index, source)) {
-    return;
-  }
 
   if (!tab_container_->InTabClose() && IsAnimating()) {
     // Cancel any current animations. We do this as remove uses the current
