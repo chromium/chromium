@@ -2185,6 +2185,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasskeyRetrievalWaitDuration" units="ms"
+    expires_after="2024-12-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    The elapsed time between the PasswordManager requesting passkeys for
+    conditional UI and receiving the list of available passkeys to offer in the
+    password autofill UI.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordCheckup.Launch.Success"
     enum="BooleanSuccess" expires_after="2025-01-05">
   <owner>ioanap@chromium.org</owner>
@@ -3146,6 +3157,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PredictionWaitResult"
+    enum="PasswordFormPredictionWaitResult" expires_after="2024-12-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    The outcome of a wait for external predictions for filling a password form.
+    This is emitted whenever a wait completes, either from all the external
+    sources having provided a response or from a timeout.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PrefilledUsernameFillOutcome"
     enum="PrefilledUsernameFillOutcome" expires_after="2025-01-05">
   <owner>khamutov@google.com</owner>
@@ -3371,6 +3393,16 @@ chromium-metrics-reviews@google.com.
     Records user actions when Chrome offers to save a username on a page which
     is considered to be a username first flow. Recorded on a successful
     submission.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ServerPredictionsWaitDuration" units="ms"
+    expires_after="2024-12-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    The elapsed time between the PasswordManager requesting server-side
+    credentials and receiving a response.
   </summary>
 </histogram>
 

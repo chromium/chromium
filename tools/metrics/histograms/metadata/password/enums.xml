@@ -679,6 +679,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Username match"/>
 </enum>
 
+<enum name="PasswordFormPredictionWaitResult">
+  <int value="0" label="Predictions received before timeout"/>
+  <int value="1" label="Timed out with one closure outstanding"/>
+  <int value="2" label="Timed out with two or more closures outstanding"/>
+</enum>
+
 <enum name="PasswordFormType2">
   <int value="0" label="Undefined"/>
   <int value="1" label="Login form"/>

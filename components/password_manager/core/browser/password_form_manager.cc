@@ -853,6 +853,7 @@ PasswordFormManager::PasswordFormManager(
 }
 
 void PasswordFormManager::DelayFillForServerSidePredictions() {
+  server_side_predictions_timer_ = std::make_unique<base::ElapsedTimer>();
   async_predictions_waiter_.StartTimer();
   server_predictions_closure_ = async_predictions_waiter_.CreateClosure();
 }
@@ -1083,6 +1084,11 @@ void PasswordFormManager::ProcessServerPredictions(
   UpdatePredictionsForObservedForm(predictions);
   if (parser_.predictions()) {
     if (!server_predictions_closure_.is_null()) {
+      if (server_side_predictions_timer_) {
+        base::UmaHistogramTimes("PasswordManager.ServerPredictionsWaitDuration",
+                                server_side_predictions_timer_->Elapsed());
+        server_side_predictions_timer_.reset();
+      }
       // Signals the availability of server predictions, but there might be
       // other callbacks still outstanding.
       std::move(server_predictions_closure_).Run();
