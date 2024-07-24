@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_CONNECTORS_COMMON_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
