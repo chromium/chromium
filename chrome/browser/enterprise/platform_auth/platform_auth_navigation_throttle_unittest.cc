@@ -88,6 +88,11 @@ class PlatformAuthNavigationThrottleTest : public testing::Test {
     return std::move(owned_provider_);
   }
 
+  virtual void SetupOriginFilteringExpectations() {
+    EXPECT_CALL(*mock_provider_, SupportsOriginFiltering())
+        .WillOnce(::testing::Return(true));
+  }
+
   ::testing::StrictMock<MockPlatformAuthProvider>* mock_provider() {
     return mock_provider_;
   }
@@ -96,6 +101,7 @@ class PlatformAuthNavigationThrottleTest : public testing::Test {
   void SetUp() override {
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    SetupOriginFilteringExpectations();
   }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -118,13 +124,13 @@ TEST_F(PlatformAuthNavigationThrottleTest, ManagerDisabled) {
   content::MockNavigationHandle test_handle(GURL("https://www.example.test/"),
                                             main_frame());
   auto throttle = CreateThrottle(&test_handle);
-  EXPECT_CALL(test_handle, SetAllowCookiesFromBrowser(false)).Times(1);
+  EXPECT_CALL(test_handle, SetAllowCookiesFromBrowser(false));
   EXPECT_CALL(test_handle, SetRequestHeader(_, _)).Times(0);
 
   EXPECT_FALSE(manager().IsEnabled());
   EXPECT_EQ(manager().GetOriginsForTesting(), std::vector<url::Origin>());
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
-  EXPECT_EQ("PlatformAuthNavigationThrottle", throttle->GetNameForLogging());
+  EXPECT_STREQ("PlatformAuthNavigationThrottle", throttle->GetNameForLogging());
 }
 
 // The manager is enabled, so an origin fetch happens. No data is fetched when
@@ -142,7 +148,7 @@ TEST_F(PlatformAuthNavigationThrottleTest, EmptyOrigins) {
   content::MockNavigationHandle test_handle(GURL("https://www.example.test/"),
                                             main_frame());
   auto throttle = CreateThrottle(&test_handle);
-  EXPECT_CALL(test_handle, SetAllowCookiesFromBrowser(true)).Times(1);
+  EXPECT_CALL(test_handle, SetAllowCookiesFromBrowser(true));
   EXPECT_CALL(test_handle, SetRequestHeader(_, _)).Times(0);
 
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
@@ -165,7 +171,7 @@ TEST_F(PlatformAuthNavigationThrottleTest, EmptyData) {
 
   content::MockNavigationHandle test_handle(url, main_frame());
   auto throttle = CreateThrottle(&test_handle);
-  EXPECT_CALL(test_handle, SetAllowCookiesFromBrowser(true)).Times(1);
+  EXPECT_CALL(test_handle, SetAllowCookiesFromBrowser(true));
   EXPECT_CALL(test_handle, SetRequestHeader(_, _)).Times(0);
 
   // The provider returns an empty set of authentication headers.
@@ -217,14 +223,11 @@ TEST_F(PlatformAuthNavigationThrottleTest, DataReceived) {
 
   // Headers are added to the request whose origin matches the origin stored in
   // the manager.
-  EXPECT_CALL(test_handle, SetAllowCookiesFromBrowser(true)).Times(1);
+  EXPECT_CALL(test_handle, SetAllowCookiesFromBrowser(true));
   EXPECT_CALL(test_handle,
-              SetRequestHeader(net::HttpRequestHeaders::kCookie, kCookieValue))
-      .Times(1);
-  EXPECT_CALL(test_handle, SetRequestHeader(kHeader1Name, kHeader1Value))
-      .Times(1);
-  EXPECT_CALL(test_handle, SetRequestHeader(kHeader2Name, kHeader2Value))
-      .Times(1);
+              SetRequestHeader(net::HttpRequestHeaders::kCookie, kCookieValue));
+  EXPECT_CALL(test_handle, SetRequestHeader(kHeader1Name, kHeader1Value));
+  EXPECT_CALL(test_handle, SetRequestHeader(kHeader2Name, kHeader2Value));
 
   // The provider returns a non-empty set of authentication headers.
   EXPECT_CALL(*mock_provider(), GetData(_, _))
@@ -254,13 +257,110 @@ TEST_F(PlatformAuthNavigationThrottleTest, DataReceived) {
   // Ensure the async data fetch completes.
   task_environment_.RunUntilIdle();
 
+  ::testing::Mock::VerifyAndClearExpectations(&test_handle);
+
   // The redirect is to another origin, so cookies and headers set by the
   // throttle are removed.
   EXPECT_CALL(test_handle,
-              RemoveRequestHeader(net::HttpRequestHeaders::kCookie))
-      .Times(1);
-  EXPECT_CALL(test_handle, RemoveRequestHeader(kHeader1Name)).Times(1);
-  EXPECT_CALL(test_handle, RemoveRequestHeader(kHeader2Name)).Times(1);
+              RemoveRequestHeader(net::HttpRequestHeaders::kCookie));
+  EXPECT_CALL(test_handle, RemoveRequestHeader(kHeader1Name));
+  EXPECT_CALL(test_handle, RemoveRequestHeader(kHeader2Name));
+  auto redirect_url = GURL("https://www.redirect.test/");
+  test_handle.set_url(redirect_url);
+  EXPECT_EQ(NavigationThrottle::PROCEED,
+            throttle->WillRedirectRequest().action());
+}
+
+class PlatformAuthNavigationNoOriginFilteringThrottleTest
+    : public PlatformAuthNavigationThrottleTest {
+  void SetupOriginFilteringExpectations() override {
+    EXPECT_CALL(*mock_provider_, SupportsOriginFiltering())
+        .WillOnce(::testing::Return(false));
+  }
+};
+
+// The manager is enabled and a set of origins is returned, so the throttle
+// fetches data and attaches all received headers to the request. On redirect to
+// another origin, all previously added headers are removed from the request.
+TEST_F(PlatformAuthNavigationNoOriginFilteringThrottleTest,
+       DataReceivedOriginFiltering) {
+  const char kOldCookieValue[] = "old-cookie=old-data";
+  const char kCookieValue[] = "cookie-1=cookie-1-data; cookie-2=cookie-2-data";
+  const char kOldHeaderName[] = "old-header";
+  const char kOldHeaderValue[] = "old-header-data";
+  const char kHeader1Name[] = "header-1";
+  const char kHeader1Value[] = "header-1-data";
+  const char kHeader2Name[] = "header-2";
+  const char kHeader2Value[] = "header-2-data";
+
+  auto url = GURL("https://www.example.test/");
+  ScopedSetProviderForTesting set_provider(TakeProvider());
+  EXPECT_CALL(*mock_provider(), FetchOrigins(_)).Times(0);
+  EnableManager(manager(), true);
+  EXPECT_TRUE(manager().IsEnabled());
+
+  content::MockNavigationHandle test_handle(url, main_frame());
+  // Set some existing request headers.
+  net::HttpRequestHeaders headers;
+  headers.SetHeader(net::HttpRequestHeaders::kCookie,
+                    base::JoinString({kOldCookieValue, kCookieValue}, "; "));
+  headers.SetHeader(kOldHeaderName, kOldHeaderValue);
+  headers.SetHeader(kHeader1Name, kHeader1Value);
+  test_handle.set_request_headers(std::move(headers));
+
+  auto throttle = CreateThrottle(&test_handle);
+  throttle->set_resume_callback_for_testing(base::DoNothing());
+
+  // Headers are added to the request whose origin matches the origin stored in
+  // the manager.
+  EXPECT_CALL(test_handle, SetAllowCookiesFromBrowser(true));
+  EXPECT_CALL(test_handle,
+              SetRequestHeader(net::HttpRequestHeaders::kCookie, kCookieValue));
+  EXPECT_CALL(test_handle, SetRequestHeader(kHeader1Name, kHeader1Value));
+  EXPECT_CALL(test_handle, SetRequestHeader(kHeader2Name, kHeader2Value));
+
+  // The provider returns a non-empty set of authentication headers.
+  EXPECT_CALL(*mock_provider(), GetData(_, _))
+      .WillOnce([&kCookieValue, &kHeader1Name, &kHeader1Value, &kHeader2Name,
+                 &kHeader2Value](
+                    const GURL& url,
+                    PlatformAuthProviderManager::GetDataCallback callback) {
+        net::HttpRequestHeaders auth_headers;
+        auth_headers.SetHeader(net::HttpRequestHeaders::kCookie, kCookieValue);
+        auth_headers.SetHeader(kHeader1Name, kHeader1Value);
+        auth_headers.SetHeader(kHeader2Name, kHeader2Value);
+        base::ThreadPool::PostTask(base::BindOnce(
+            [](net::HttpRequestHeaders auth_headers,
+               PlatformAuthProviderManager::GetDataCallback callback) {
+              // Simulates a data fetch delay to cause the throttle to be
+              // deferred.
+              base::PlatformThread::Sleep(base::Milliseconds(10));
+              std::move(callback).Run(std::move(auth_headers));
+            },
+            std::move(auth_headers), std::move(callback)));
+      });
+
+  EXPECT_EQ(manager().GetOriginsForTesting(), std::vector<url::Origin>());
+  EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest().action());
+
+  // Ensure the async data fetch completes.
+  task_environment_.RunUntilIdle();
+
+  ::testing::Mock::VerifyAndClearExpectations(&test_handle);
+
+  // The redirect is to another origin, so cookies and headers set by the
+  // throttle are removed.
+  EXPECT_CALL(test_handle,
+              RemoveRequestHeader(net::HttpRequestHeaders::kCookie));
+  EXPECT_CALL(test_handle, RemoveRequestHeader(kHeader1Name));
+  EXPECT_CALL(test_handle, RemoveRequestHeader(kHeader2Name));
+
+  // The provider returns an empty set of authentication headers.
+  EXPECT_CALL(*mock_provider(), GetData(_, _))
+      .WillOnce([](const GURL& url,
+                   PlatformAuthProviderManager::GetDataCallback callback) {
+        std::move(callback).Run(net::HttpRequestHeaders());
+      });
 
   auto redirect_url = GURL("https://www.redirect.test/");
   test_handle.set_url(redirect_url);
