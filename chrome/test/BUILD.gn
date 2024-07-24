@@ -1213,6 +1213,9 @@ if (is_chromeos && is_chromeos_device) {
         # InProcessBrowserTest which requires HAS_OUT_OF_PROC_TEST_RUNNER.
         "base/chromeos/crosier/ash_integration_test.cc",
         "base/chromeos/crosier/ash_integration_test.h",
+
+        # TODO(jamescook): This test is not running. Move to
+        # chromeos_integration_tests below.
         "base/chromeos/crosier/ash_integration_test_test.cc",
         "base/chromeos/crosier/supervised_user_integration_base_test.cc",
         "base/chromeos/crosier/supervised_user_integration_base_test.h",
