@@ -1194,6 +1194,7 @@ if (is_chromeos && is_chromeos_device) {
         "../browser/ash/web_handwriting_integration_test.yaml",
         "../browser/ui/ash/quick_settings_integration_test.yaml",
         "../browser/ui/ash/shelf/shelf_integration_test.yaml",
+        "base/chromeos/crosier/ash_integration_test_test.yaml",
       ]
       outputs = [ "$root_out_dir/crosier_metadata/{{source_file_part}}" ]
     }
@@ -1213,10 +1214,6 @@ if (is_chromeos && is_chromeos_device) {
         # InProcessBrowserTest which requires HAS_OUT_OF_PROC_TEST_RUNNER.
         "base/chromeos/crosier/ash_integration_test.cc",
         "base/chromeos/crosier/ash_integration_test.h",
-
-        # TODO(jamescook): This test is not running. Move to
-        # chromeos_integration_tests below.
-        "base/chromeos/crosier/ash_integration_test_test.cc",
         "base/chromeos/crosier/supervised_user_integration_base_test.cc",
         "base/chromeos/crosier/supervised_user_integration_base_test.h",
       ]
@@ -1260,6 +1257,7 @@ if (is_chromeos && is_chromeos_device) {
       # in the `crosier_metadata` build rule above.
       sources += [
         "../browser/ui/webui/ash/settings/pages/printing/integration_tests/printer_settings_integration_test.cc",
+        "base/chromeos/crosier/ash_integration_test_test.cc",
         "base/chromeos/crosier/helper/test_sudo_helper_client_test.cc",
         "base/chromeos/crosier/upstart_test.cc",
       ]
