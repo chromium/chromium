@@ -111,6 +111,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/renderer_host/spare_render_process_host_manager.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/screen_details/screen_change_monitor.h"
@@ -7615,6 +7616,14 @@ void WebContentsImpl::OnFirstVisuallyNonEmptyPaint(PageImpl& page) {
     observers_.NotifyObservers(&WebContentsObserver::OnBackgroundColorChanged);
     last_sent_background_color_ = page.background_color();
   }
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kAndroidWarmUpSpareRendererWithTimeout) &&
+      features::kAndroidSpareRendererCreationTiming.Get() ==
+          features::kAndroidSpareRendererCreationAfterFirstPaint) {
+    WarmUpAndroidSpareRenderer();
+  }
+#endif
 }
 
 bool WebContentsImpl::IsGuest() {
@@ -8593,6 +8602,15 @@ void WebContentsImpl::DidStopLoading() {
           manager->DidStopLoading();
         }
       });
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kAndroidWarmUpSpareRendererWithTimeout) &&
+      features::kAndroidSpareRendererCreationTiming.Get() ==
+          features::kAndroidSpareRendererCreationAfterLoading) {
+    WarmUpAndroidSpareRenderer();
+  }
+#endif
 }
 
 void WebContentsImpl::DidChangeLoadProgressForPrimaryMainFrame() {
@@ -11141,6 +11159,19 @@ void WebContentsImpl::GetMediaCaptureRawDeviceIdsOpened(
   media_stream_manager->GetRawDeviceIdsOpenedForFrame(
       GetPrimaryMainFrame(), type,
       base::BindPostTaskToCurrentDefault(std::move(callback)));
+}
+
+void WebContentsImpl::WarmUpAndroidSpareRenderer() {
+  int renderer_timeout_seconds =
+      features::kAndroidSpareRendererTimeoutSeconds.Get();
+  if (renderer_timeout_seconds < 0) {
+    SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
+        GetBrowserContext());
+  } else {
+    base::TimeDelta timeout = base::Seconds(renderer_timeout_seconds);
+    SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
+        GetBrowserContext(), timeout);
+  }
 }
 
 }  // namespace content

@@ -2407,6 +2407,26 @@ class SpeculativeRenderFrameHostObserver : public content::WebContentsObserver {
   GURL url_;
 };
 
+class SpareRenderProcessObserver {
+ public:
+  SpareRenderProcessObserver();
+
+  void SpareRenderProcessHostChanged(RenderProcessHost* render_process_host);
+
+  RenderProcessHost* spare_render_process_host();
+
+  void WaitForSpareRenderProcessCreation();
+
+  ~SpareRenderProcessObserver();
+
+ private:
+  raw_ptr<RenderProcessHost> spare_render_process_host_ = nullptr;
+  base::OnceClosure quit_closure_;
+  base::CallbackListSubscription subscription_;
+
+  base::WeakPtrFactory<SpareRenderProcessObserver> weak_factory_{this};
+};
+
 [[nodiscard]] base::CallbackListSubscription
 RegisterWebContentsCreationCallback(
     base::RepeatingCallback<void(WebContents*)> callback);

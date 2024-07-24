@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/browser/render_process_host.h"
@@ -140,19 +141,22 @@ void SpareRenderProcessHostManager::WarmupSpareRenderProcessHost(
 
 void SpareRenderProcessHostManager::DeferredWarmupSpareRenderProcessHost(
     BrowserContext* browser_context,
-    base::TimeDelta delay) {
+    base::TimeDelta delay,
+    std::optional<base::TimeDelta> timeout) {
   deferred_warmup_timer_.Start(
       FROM_HERE, delay,
       base::BindOnce(
           [](SpareRenderProcessHostManager* self,
-             base::WeakPtr<BrowserContext> browser_context) {
+             base::WeakPtr<BrowserContext> browser_context,
+             std::optional<base::TimeDelta> timeout) {
             // Don't create spare process if the browser context is destroyed
             // or the shutdown has started.
             if (browser_context && !browser_context->ShutdownStarted()) {
-              self->WarmupSpareRenderProcessHost(browser_context.get());
+              self->WarmupSpareRenderProcessHost(browser_context.get(),
+                                                 timeout);
             }
           },
-          base::Unretained(this), browser_context->GetWeakPtr()));
+          base::Unretained(this), browser_context->GetWeakPtr(), timeout));
 }
 
 RenderProcessHost*
@@ -284,13 +288,28 @@ void SpareRenderProcessHostManager::PrepareForFutureRequests(
     BrowserContext* browser_context,
     std::optional<base::TimeDelta> delay) {
   if (RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes()) {
+    std::optional<base::TimeDelta> timeout = std::nullopt;
+    if (base::FeatureList::IsEnabled(
+            features::kAndroidWarmUpSpareRendererWithTimeout)) {
+      if (features::kAndroidSpareRendererCreationTiming.Get() !=
+          features::kAndroidSpareRendererCreationDelayedDuringLoading) {
+        // The creation of the spare renderer will be managed in
+        // WebContentsImpl::DidStopLoading or
+        // WebContentsImpl::OnFirstVisuallyNonEmptyPaint.
+        return;
+      }
+      if (features::kAndroidSpareRendererTimeoutSeconds.Get() > 0) {
+        timeout =
+            base::Seconds(features::kAndroidSpareRendererTimeoutSeconds.Get());
+      }
+    }
     // Always keep around a spare process for the most recently requested
     // |browser_context|.
     if (delay.has_value()) {
       delay_timer_ = std::make_unique<base::ElapsedTimer>();
-      DeferredWarmupSpareRenderProcessHost(browser_context, *delay);
+      DeferredWarmupSpareRenderProcessHost(browser_context, *delay, timeout);
     } else {
-      WarmupSpareRenderProcessHost(browser_context);
+      WarmupSpareRenderProcessHost(browser_context, timeout);
     }
   } else {
     // Discard the ignored (probably non-matching) spare so as not to waste

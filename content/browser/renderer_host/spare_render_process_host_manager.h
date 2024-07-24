@@ -118,8 +118,10 @@ class CONTENT_EXPORT SpareRenderProcessHostManager
   // Start a spare renderer at a later time if there isn't one.
   // This is to avoid resource contention between existing renderers and a
   // new spare renderer.
-  void DeferredWarmupSpareRenderProcessHost(BrowserContext* browser_context,
-                                            base::TimeDelta delay);
+  void DeferredWarmupSpareRenderProcessHost(
+      BrowserContext* browser_context,
+      base::TimeDelta delay,
+      std::optional<base::TimeDelta> timeout);
 
   void StartDestroyTimer(std::optional<base::TimeDelta> timeout);
 

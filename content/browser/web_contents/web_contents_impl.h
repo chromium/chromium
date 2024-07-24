@@ -2025,6 +2025,9 @@ class CONTENT_EXPORT WebContentsImpl
   // A scope that disallows custom cursors has expired.
   void DisallowCustomCursorScopeExpired();
 
+  // WarmUp a spare render process for future navigations.
+  void WarmUpAndroidSpareRenderer();
+
   // Describes the different types of groups we can be interested in when
   // looking for scriptable frames.
   enum class GroupType { kBrowsingContextGroup, kCoopRelatedGroup };

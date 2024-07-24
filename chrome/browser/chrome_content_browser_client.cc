@@ -5773,13 +5773,23 @@ ChromeContentBrowserClient::GetDevToolsBackgroundServiceExpirations(
 std::optional<base::TimeDelta>
 ChromeContentBrowserClient::GetSpareRendererDelayForSiteURL(
     const GURL& site_url) {
-  if (!IsTopChromeWebUIURL(site_url)) {
-    return std::nullopt;
+  if (IsTopChromeWebUIURL(site_url)) {
+    // Experiments have shown that delaying 2s brings the most significant
+    // improvements to Top Chrome WebUIs. See crbug.com/41490050.
+    return base::Seconds(2);
   }
 
-  // Experiments have shown that delaying 2s brings the most significant
-  // improvements to Top Chrome WebUIs. See crbug.com/41490050.
-  return base::Seconds(2);
+#if BUILDFLAG(IS_ANDROID)
+  // Delay the creation of the renderer on Android since the CPU tends
+  // to be busy during loading.
+  if (base::FeatureList::IsEnabled(
+          features::kAndroidWarmUpSpareRendererWithTimeout)) {
+    return base::Milliseconds(
+        features::kAndroidSpareRendererCreationDelayMs.Get());
+  }
+#endif
+
+  return std::nullopt;
 }
 
 std::unique_ptr<content::TracingDelegate>

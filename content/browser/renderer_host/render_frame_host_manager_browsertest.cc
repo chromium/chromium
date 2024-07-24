@@ -6078,8 +6078,16 @@ IN_PROC_BROWSER_TEST_P(
       static_cast<WebContentsImpl*>(shell()->web_contents());
 
   // Start off navigating to a.com and capture the process used to commit.
+  SpareRenderProcessObserver render_process_observer;
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  // The AndroidWarmUpSpareRendererWithTimeout feature will create a spare
+  // renderer after the navigation finishes or with a delay so we need to
+  // explicitly wait.
+  if (base::FeatureList::IsEnabled(
+          features::kAndroidWarmUpSpareRendererWithTimeout)) {
+    render_process_observer.WaitForSpareRenderProcessCreation();
+  }
   RenderProcessHost* start_rph =
       web_contents->GetPrimaryMainFrame()->GetProcess();
 
