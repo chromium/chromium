@@ -100,7 +100,6 @@ ash::FileMetadata GetFileMetadata(base::FilePath file_path,
   if (base::GetFileInfo(file_path, &info)) {
     metadata.file_info = info;
   }
-  metadata.file_path = file_path;
   metadata.file_name = displayable_path.BaseName();
   metadata.displayable_folder_path = displayable_path.DirName();
 

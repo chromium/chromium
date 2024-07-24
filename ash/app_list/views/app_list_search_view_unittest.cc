@@ -73,7 +73,6 @@ ash::FileMetadata MetadataLoaderForTest() {
   EXPECT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00", &last_modified));
 
   metadata.file_info.last_modified = last_modified;
-  metadata.file_path = base::FilePath("full file path");
   metadata.file_name = base::FilePath("file name");
   metadata.displayable_folder_path = base::FilePath("displayable folder");
   return metadata;
