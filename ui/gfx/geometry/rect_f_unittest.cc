@@ -111,6 +111,25 @@ TEST(RectFTest, BoundingRect) {
                   BoundingRect(PointF(-4.2f, -6.8f), PointF(-6.8f, -4.2f)));
   EXPECT_RECTF_EQ(RectF(-4.2f, -4.2f, 11.0f, 11.0f),
                   BoundingRect(PointF(-4.2f, 6.8f), PointF(6.8f, -4.2f)));
+  // If Point A and point B are far apart such that the exact result of
+  // A.x - B.x cannot be presented by float, then the width or height increases
+  // such that both A and B are included in the bounding rect.
+  RectF boundingRect1(
+      BoundingRect(PointF(20.0f, -1000000000.0f), PointF(20.0f, 10.0f)));
+  EXPECT_TRUE(boundingRect1.InclusiveContains(PointF(20.0f, -1000000000.0f)));
+  EXPECT_TRUE(boundingRect1.InclusiveContains(PointF(20.0f, 10.0f)));
+  RectF boundingRect2(
+      BoundingRect(PointF(20.0f, 20.0f), PointF(20.0f, 1000000000.0f)));
+  EXPECT_TRUE(boundingRect2.InclusiveContains(PointF(20.0f, 20.0f)));
+  EXPECT_TRUE(boundingRect2.InclusiveContains(PointF(20.0f, 1000000000.0f)));
+  RectF boundingRect3(
+      BoundingRect(PointF(-1000000000.0f, 20.0f), PointF(20.0f, 20.0f)));
+  EXPECT_TRUE(boundingRect3.InclusiveContains(PointF(-1000000000.0f, 20.0f)));
+  EXPECT_TRUE(boundingRect3.InclusiveContains(PointF(20.0f, 20.0f)));
+  RectF boundingRect4(
+      BoundingRect(PointF(20.0f, 20.0f), PointF(1000000000.0f, 20.0f)));
+  EXPECT_TRUE(boundingRect4.InclusiveContains(PointF(20.0f, 20.0f)));
+  EXPECT_TRUE(boundingRect4.InclusiveContains(PointF(1000000000.0f, 20.0f)));
 }
 
 TEST(RectFTest, Union) {

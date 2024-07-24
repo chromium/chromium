@@ -297,12 +297,34 @@ RectF SubtractRects(const RectF& a, const RectF& b) {
   return result;
 }
 
+// Construct a rectangle with top-left corner at |p1| and bottom-right corner
+// at |p2|. If the exact result of top - bottom or left - right cannot be
+// presented in float, then the height/width will be grown to the next
+// float, so that it includes both |p1| and |p2|.
 RectF BoundingRect(const PointF& p1, const PointF& p2) {
-  float rx = std::min(p1.x(), p2.x());
-  float ry = std::min(p1.y(), p2.y());
-  float rr = std::max(p1.x(), p2.x());
-  float rb = std::max(p1.y(), p2.y());
-  return RectF(rx, ry, rr - rx, rb - ry);
+  float left = std::min(p1.x(), p2.x());
+  float top = std::min(p1.y(), p2.y());
+  float right = std::max(p1.x(), p2.x());
+  float bottom = std::max(p1.y(), p2.y());
+  float width = right - left;
+  float height = bottom - top;
+
+  // If the precision is lost during the calculation, always grow to the next
+  // value to include both ends.
+  if (left + width != right) {
+    width = std::nextafter((width), std::numeric_limits<float>::infinity());
+    if (std::isinf(width)) {
+      width = std::numeric_limits<float>::max();
+    }
+  }
+  if (top + height != bottom) {
+    height = std::nextafter((height), std::numeric_limits<float>::infinity());
+    if (std::isinf(height)) {
+      height = std::numeric_limits<float>::max();
+    }
+  }
+
+  return RectF(left, top, width, height);
 }
 
 RectF MaximumCoveredRect(const RectF& a, const RectF& b) {

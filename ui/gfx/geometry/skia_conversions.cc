@@ -65,8 +65,9 @@ SkRect RectFToSkRect(const RectF& rect) {
 }
 
 RectF SkRectToRectF(const SkRect& rect) {
-  return RectF(SkScalarToFloat(rect.x()), SkScalarToFloat(rect.y()),
-               SkScalarToFloat(rect.width()), SkScalarToFloat(rect.height()));
+  return BoundingRect(
+      PointF(SkScalarToFloat(rect.left()), SkScalarToFloat(rect.top())),
+      PointF(SkScalarToFloat(rect.right()), SkScalarToFloat(rect.bottom())));
 }
 
 SkSize SizeFToSkSize(const SizeF& size) {

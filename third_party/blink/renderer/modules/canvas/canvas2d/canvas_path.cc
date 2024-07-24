@@ -756,8 +756,9 @@ ALWAYS_INLINE gfx::RectF CanvasPath::LineBuilder::BoundingRect() const {
 
 ALWAYS_INLINE gfx::RectF CanvasPath::ArcBuilder::BoundingRect() const {
   DCHECK_NE(state_, State::kEmpty);
-  return gfx::RectF(arc_.x - arc_.radius, arc_.y - arc_.radius,
-                    arc_.radius + arc_.radius, arc_.radius + arc_.radius);
+  return gfx::BoundingRect(
+      gfx::PointF(arc_.x - arc_.radius, arc_.y - arc_.radius),
+      gfx::PointF(arc_.x + arc_.radius, arc_.y + arc_.radius));
 }
 
 ALWAYS_INLINE void CanvasPath::ArcBuilder::UpdatePath(Path& path) const {
