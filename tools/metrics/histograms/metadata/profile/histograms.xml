@@ -505,17 +505,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Profile.State.Avatar" enum="ProfileAvatarState"
-    expires_after="2024-09-01">
-  <owner>droger@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    The state of profile avatars as would be displayed to the user in the
-    profile picker. Recorded on startup of Chrome and whenever Chrome is used
-    after at least 30 minutes of inactivity.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Profile.State.LastUsed" units="days"
     expires_after="2024-12-08">
   <owner>droger@chromium.org</owner>

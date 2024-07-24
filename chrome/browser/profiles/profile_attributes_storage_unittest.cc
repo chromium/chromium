@@ -1586,18 +1586,18 @@ TEST_F(ProfileAttributesStorageTest, ProfilesState_ActiveMultiProfile) {
   storage()->RecordProfilesState();
 
   // There are 5 profiles all together.
-  histogram_tester.ExpectTotalCount("Profile.State.Avatar_All", 5);
-  histogram_tester.ExpectTotalCount("Profile.State.Avatar_ActiveMultiProfile",
+  histogram_tester.ExpectTotalCount("Profile.State.LastUsed_All", 5);
+  histogram_tester.ExpectTotalCount("Profile.State.LastUsed_ActiveMultiProfile",
                                     5);
 
   // Other user segments get 0 records.
-  histogram_tester.ExpectTotalCount("Profile.State.Avatar_SingleProfile", 0);
-  histogram_tester.ExpectTotalCount("Profile.State.Avatar_LatentMultiProfile",
+  histogram_tester.ExpectTotalCount("Profile.State.LastUsed_SingleProfile", 0);
+  histogram_tester.ExpectTotalCount("Profile.State.LastUsed_LatentMultiProfile",
                                     0);
   histogram_tester.ExpectTotalCount(
-      "Profile.State.Avatar_LatentMultiProfileActive", 0);
+      "Profile.State.LastUsed_LatentMultiProfileActive", 0);
   histogram_tester.ExpectTotalCount(
-      "Profile.State.Avatar_LatentMultiProfileOthers", 0);
+      "Profile.State.LastUsed_LatentMultiProfileOthers", 0);
 }
 
 // On Android (at least on KitKat), all profiles are considered active (because
@@ -1617,17 +1617,17 @@ TEST_F(ProfileAttributesStorageTest, ProfilesState_LatentMultiProfile) {
   storage()->RecordProfilesState();
 
   // There are 5 profiles all together.
-  histogram_tester.ExpectTotalCount("Profile.State.Avatar_All", 5);
-  histogram_tester.ExpectTotalCount("Profile.State.Avatar_LatentMultiProfile",
+  histogram_tester.ExpectTotalCount("Profile.State.LastUsed_All", 5);
+  histogram_tester.ExpectTotalCount("Profile.State.LastUsed_LatentMultiProfile",
                                     5);
   histogram_tester.ExpectTotalCount(
-      "Profile.State.Avatar_LatentMultiProfileActive", 1);
+      "Profile.State.LastUsed_LatentMultiProfileActive", 1);
   histogram_tester.ExpectTotalCount(
-      "Profile.State.Avatar_LatentMultiProfileOthers", 4);
+      "Profile.State.LastUsed_LatentMultiProfileOthers", 4);
 
   // Other user segments get 0 records.
-  histogram_tester.ExpectTotalCount("Profile.State.Avatar_SingleProfile", 0);
-  histogram_tester.ExpectTotalCount("Profile.State.Avatar_ActiveMultiProfile",
+  histogram_tester.ExpectTotalCount("Profile.State.LastUsed_SingleProfile", 0);
+  histogram_tester.ExpectTotalCount("Profile.State.LastUsed_ActiveMultiProfile",
                                     0);
 }
 #endif

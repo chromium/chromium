@@ -199,21 +199,6 @@ MultiProfileUserType GetMultiProfileUserType(
   return MultiProfileUserType::kActiveMultiProfile;
 }
 
-profile_metrics::AvatarState GetAvatarState(ProfileAttributesEntry* entry) {
-  size_t index = entry->GetAvatarIconIndex();
-  bool is_modern = profiles::IsModernAvatarIconIndex(index);
-  if (entry->GetSigninState() == SigninState::kNotSignedIn) {
-    if (index == profiles::GetPlaceholderAvatarIndex())
-      return profile_metrics::AvatarState::kSignedOutDefault;
-    return is_modern ? profile_metrics::AvatarState::kSignedOutModern
-                     : profile_metrics::AvatarState::kSignedOutOld;
-  }
-  if (entry->IsUsingGAIAPicture())
-    return profile_metrics::AvatarState::kSignedInGaia;
-  return is_modern ? profile_metrics::AvatarState::kSignedInModern
-                   : profile_metrics::AvatarState::kSignedInOld;
-}
-
 profile_metrics::UnconsentedPrimaryAccountType GetUnconsentedPrimaryAccountType(
     ProfileAttributesEntry* entry) {
   if (entry->GetSigninState() == SigninState::kNotSignedIn)
@@ -234,7 +219,6 @@ profile_metrics::UnconsentedPrimaryAccountType GetUnconsentedPrimaryAccountType(
 
 void RecordProfileState(ProfileAttributesEntry* entry,
                         profile_metrics::StateSuffix suffix) {
-  profile_metrics::LogProfileAvatar(GetAvatarState(entry), suffix);
   profile_metrics::LogProfileAccountType(
       GetUnconsentedPrimaryAccountType(entry), suffix);
   profile_metrics::LogProfileSyncEnabled(

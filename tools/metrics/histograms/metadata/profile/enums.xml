@@ -282,15 +282,6 @@ chromium-metrics-reviews@google.com.
   <int value="39" label="Origami Unicorn"/>
 </enum>
 
-<enum name="ProfileAvatarState">
-  <int value="0" label="Signed In: Gaia avatar"/>
-  <int value="1" label="Signed In: Modern avatar"/>
-  <int value="2" label="Signed In: Old avatar"/>
-  <int value="3" label="Signed Out: Default avatar (Grey silhouette)"/>
-  <int value="4" label="Signed Out: Modern avatar"/>
-  <int value="5" label="Signed Out: Old avatar"/>
-</enum>
-
 <enum name="ProfileDeleteAction">
   <int value="0" label="Settings Page">
     The user confirmed deletion of a profile from the settings page. This metric
