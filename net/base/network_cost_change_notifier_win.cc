@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_thread_priority.h"
+#include "base/timer/timer.h"
 #include "base/win/com_init_util.h"
 
 using Microsoft::WRL::ComPtr;
@@ -79,11 +80,12 @@ class NetworkCostManagerEventSinkWin final
   HRESULT __stdcall CostChanged(DWORD /*cost*/,
                                 NLM_SOCKADDR* /*socket_address*/) final {
     // It is possible to get multiple notifications in a short period of time.
-    // Rather than worrying about whether this notification represents the
-    // latest, just notify the owner who can get the current value from the
-    // INetworkCostManager so we know that we're actually getting the correct
-    // value.
-    cost_changed_callback_.Run();
+    // Set a timer to delay the notification so that duplicates can be combined.
+    // The current cost will be fetched later.
+    static constexpr base::TimeDelta delay = base::Seconds(1);
+    // Cancels any previous timer.
+    timer_.Start(FROM_HERE, delay, this,
+                 &NetworkCostManagerEventSinkWin::Notify);
     return S_OK;
   }
 
@@ -141,7 +143,15 @@ class NetworkCostManagerEventSinkWin final
     return S_OK;
   }
 
+  void Notify() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    cost_changed_callback_.Run();
+  }
+
   base::RepeatingClosure cost_changed_callback_;
+
+  // Used to delay notifications so duplicates can be combined.
+  base::OneShotTimer timer_;
 
   // The following members must be accessed on the sequence from
   // `sequence_checker_`

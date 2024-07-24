@@ -296,6 +296,8 @@ TEST_F(NetworkChangeNotifierWinTest, GetCurrentCost) {
     GTEST_SKIP();
   }
 
+  // Set initial cost. This will get set immediately since the initial value
+  // of the cost is CONNECTION_COST_UNKNOWN.
   fake_network_cost_manager_environment_.SetCost(
       NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_UNMETERED);
 
@@ -305,14 +307,39 @@ TEST_F(NetworkChangeNotifierWinTest, GetCurrentCost) {
   EXPECT_EQ(GetCurrentConnectionCost(),
             NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_UNMETERED);
 
+  TestConnectionCostObserver cost_observer;
+  NetworkChangeNotifier::AddConnectionCostObserver(&cost_observer);
+
+  // When the cost changes a timer is set for 1 second to allow for multiple
+  // back-to-back notifications to be coalesced.  Loop here setting the cost
+  // and verify that we do not get updated until after 1 second.
+  constexpr base::TimeDelta kCostSetWait = base::Milliseconds(100);
+  constexpr unsigned int kCostSetLoops = 10;
+  for (unsigned int i = 0; i < kCostSetLoops; ++i) {
+    fake_network_cost_manager_environment_.SetCost(
+        NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_METERED);
+    RunUntilIdle();
+    base::PlatformThread::Sleep(kCostSetWait);
+    EXPECT_EQ(GetCurrentConnectionCost(),
+              NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_UNMETERED);
+  }
+
   fake_network_cost_manager_environment_.SetCost(
       NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_METERED);
 
-  // Wait for `NetworkCostChangeNotifierWin` to handle the cost changed event.
-  RunUntilIdle();
+  base::Time startCostChange = base::Time::Now();
 
+  cost_observer.WaitForConnectionCostChanged();
+
+  // Verify that the cost change occurred after 1 second.
+  EXPECT_TRUE(base::Time::Now() - startCostChange >= base::Seconds(1));
+
+  ASSERT_EQ(cost_observer.cost_changed_calls(), 1u);
+  EXPECT_EQ(cost_observer.last_cost_changed_input(),
+            NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_METERED);
   EXPECT_EQ(GetCurrentConnectionCost(),
             NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_METERED);
+  NetworkChangeNotifier::RemoveConnectionCostObserver(&cost_observer);
 }
 
 TEST_F(NetworkChangeNotifierWinTest, CostChangeObserver) {
