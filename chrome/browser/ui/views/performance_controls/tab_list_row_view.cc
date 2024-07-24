@@ -97,7 +97,13 @@ class TextContainer : public views::View {
                         base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr),
                     views::style::STYLE_BODY_5));
 
+#if BUILDFLAG(IS_MAC)
+    // We cannot focus on Mac dialog buttons normally so the rows should only be
+    // accessible while screen reader is active.
+    SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+#else
     SetFocusBehavior(FocusBehavior::ALWAYS);
+#endif  // BUILDFLAG(IS_MAC)
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
