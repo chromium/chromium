@@ -11,7 +11,7 @@
 namespace printing {
 
 // Margins for a page setup.
-class COMPONENT_EXPORT(PRINTING) PageMargins {
+class COMPONENT_EXPORT(PRINTING_SETTINGS) PageMargins {
  public:
   PageMargins();
   PageMargins(int header, int footer, int left, int right, int top, int bottom);
@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(PRINTING) PageMargins {
 
 // Settings that define the size and printable areas of a page. Unit is
 // unspecified.
-class COMPONENT_EXPORT(PRINTING) PageSetup {
+class COMPONENT_EXPORT(PRINTING_SETTINGS) PageSetup {
  public:
   PageSetup();
   PageSetup(const gfx::Size& physical_size,

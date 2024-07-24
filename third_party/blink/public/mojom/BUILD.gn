@@ -1084,7 +1084,7 @@ mojom("mojom_platform") {
             [ "//chrome/browser/printing/web_api/web_printing_mojom_traits.h" ]
         traits_sources =
             [ "//chrome/browser/printing/web_api/web_printing_mojom_traits.cc" ]
-        traits_public_deps = [ "//printing" ]
+        traits_public_deps = [ "//printing:settings" ]
         traits_deps = [
           "//printing/backend",
           "//printing/mojom",
