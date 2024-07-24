@@ -7606,6 +7606,9 @@ void NavigationRequest::DidCommitNavigation(
   common_params_->url = params.url;
   did_replace_entry_ = did_replace_entry;
   should_update_history_ = params.should_update_history;
+  navigation_handle_timing_.navigation_commit_received_time =
+      params.commit_navigation_start;
+  navigation_handle_timing_.navigation_did_commit_time = base::TimeTicks::Now();
   // A same document navigation with the same url, and no user-gesture is
   // typically the result of 'history.replaceState().' As the page is
   // controlling this, the user doesn't really think of this as a navigation

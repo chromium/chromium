@@ -167,7 +167,9 @@ struct DidCommitProvisionalLoadParams {
   mojo_base.mojom.TimeTicks? unload_start;
   mojo_base.mojom.TimeTicks? unload_end;
 
-  // Timestamp of when this frame committed its navigation.
+  // Timestamp of when this frame started and ended the commit for the
+  // navigation.
+  mojo_base.mojom.TimeTicks commit_navigation_start;
   mojo_base.mojom.TimeTicks? commit_navigation_end;
 };
 

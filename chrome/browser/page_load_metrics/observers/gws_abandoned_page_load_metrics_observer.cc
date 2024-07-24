@@ -21,7 +21,7 @@
 namespace internal {
 
 const char kGWSAbandonedPageLoadMetricsHistogramPrefix[] =
-    "PageLoad.Clients.GoogleSearch.Leakage.";
+    "PageLoad.Clients.GoogleSearch.Leakage2.";
 const char kSuffixWasNonSRP[] = ".WasNonSRP";
 
 const char kSuffixRTTUnknown[] = ".RTTUnkown";

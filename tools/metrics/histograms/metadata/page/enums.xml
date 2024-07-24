@@ -195,7 +195,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.IfChange(NavigationMilestoneEnum) -->
 
-<enum name="NavigationMilestoneEnum">
+<enum name="NavigationMilestoneEnum2">
   <int value="0" label="kNavigationStart"/>
   <int value="1" label="kLoaderStart"/>
   <int value="2" label="kFirstRedirectedRequestStart"/>
@@ -205,14 +205,15 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="kNonRedirectResponseStart"/>
   <int value="7" label="kNonRedirectResponseLoaderCallback"/>
   <int value="8" label="kCommitSent"/>
-  <int value="9" label="kDidCommit"/>
-  <int value="10" label="kParseStart"/>
-  <int value="11" label="kFirstContentfulPaint"/>
-  <int value="12" label="kDOMContentLoaded"/>
-  <int value="13" label="kLoadEventStarted"/>
-  <int value="14" label="kLargestContentfulPaint"/>
-  <int value="15" label="kAFTStart"/>
-  <int value="16" label="kAFTEnd"/>
+  <int value="9" label="kCommitReceived"/>
+  <int value="10" label="kDidCommit"/>
+  <int value="11" label="kParseStart"/>
+  <int value="12" label="kFirstContentfulPaint"/>
+  <int value="13" label="kDOMContentLoaded"/>
+  <int value="14" label="kLoadEventStarted"/>
+  <int value="15" label="kLargestContentfulPaint"/>
+  <int value="16" label="kAFTStart"/>
+  <int value="17" label="kAFTEnd"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:NavigationMilestone) -->

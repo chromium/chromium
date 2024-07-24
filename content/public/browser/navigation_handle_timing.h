@@ -119,6 +119,14 @@ struct CONTENT_EXPORT NavigationHandleTiming {
 
   // The time the navigation commit message was sent to a renderer process.
   base::TimeTicks navigation_commit_sent_time;
+
+  // The time the navigation commit message was received in the renderer
+  // process.
+  base::TimeTicks navigation_commit_received_time;
+
+  // The time the DidCommit navigation message was received in the browser
+  // process.
+  base::TimeTicks navigation_did_commit_time;
 };
 
 }  // namespace content

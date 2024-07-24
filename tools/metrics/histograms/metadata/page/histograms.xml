@@ -72,6 +72,7 @@ chromium-metrics-reviews@google.com.
 <variants name="NavigationMilestone">
   <variant name="AFTEnd"/>
   <variant name="AFTStart"/>
+  <variant name="CommitReceived"/>
   <variant name="CommitSent"/>
   <variant name="DidCommit"/>
   <variant name="DOMContentLoaded"/>
@@ -1838,7 +1839,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients{ObservedNavigation}.Leakage.AbandonReasonAt.{NavigationMilestone}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
+    name="PageLoad.Clients{ObservedNavigation}.Leakage2.AbandonReasonAt.{NavigationMilestone}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
     enum="NavigationAbandonReasonEnum" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -1859,8 +1860,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients{ObservedNavigation}.Leakage.LastMilestoneBeforeAbandon.{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
-    enum="NavigationMilestoneEnum" expires_after="2024-12-08">
+    name="PageLoad.Clients{ObservedNavigation}.Leakage2.LastMilestoneBeforeAbandon.{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
+    enum="NavigationMilestoneEnum2" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1879,7 +1880,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients{ObservedNavigation}.Leakage.NavigationStartToRendererProcessInit{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
+    name="PageLoad.Clients{ObservedNavigation}.Leakage2.NavigationStartToRendererProcessInit{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
     units="ms" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -1899,7 +1900,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients{ObservedNavigation}.Leakage.NavigationStartTo{NavigationMilestone}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
+    name="PageLoad.Clients{ObservedNavigation}.Leakage2.NavigationStartTo{NavigationMilestone}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
     units="ms" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -1925,7 +1926,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients{ObservedNavigation}.Leakage.NavigationStart{NonSRPSuffix}{RTTBucketSuffix}"
+    name="PageLoad.Clients{ObservedNavigation}.Leakage2.NavigationStart{NonSRPSuffix}{RTTBucketSuffix}"
     units="ms" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -1941,7 +1942,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients{ObservedNavigation}.Leakage.RendererProcessCreatedBeforeNav{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
+    name="PageLoad.Clients{ObservedNavigation}.Leakage2.RendererProcessCreatedBeforeNav{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
     enum="Boolean" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -1960,7 +1961,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients{ObservedNavigation}.Leakage.{NavigationMilestone}ToAbandon.{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
+    name="PageLoad.Clients{ObservedNavigation}.Leakage2.{NavigationMilestone}ToAbandon.{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
     units="ms" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
