@@ -38,10 +38,10 @@ Document
 ++++TreeItem Name='Cell at level 2'
 ++++++DataItem Name='Cell at level 2' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++Text Name='Cell at level 2' IsControlElement=false
-++Group
-++++Text Name='List item at level 1'
-++Group
-++++Text Name='List item at level 3'
+++ListItem Name='List item at level 1'
+++++Text Name='List item at level 1' IsControlElement=false
+++ListItem Name='List item at level 3'
+++++Text Name='List item at level 3' IsControlElement=false
 ++List
 ++++ListItem Name='List item at level 2'
 ++++++Text Name='List item at level 2' IsControlElement=false

@@ -1290,11 +1290,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Works for all nodes.
   AXObject* ParentObjectUnignored() const;
 
-  // Get or create the first ancestor that's not accessibility ignored and also
-  // does not have a role of kGenericContainer nor kNone. Works for all nodes.
-  // Used to check for required context for certain roles.
-  AXObject* ParentObjectUnignoredNonGeneric() const;
-
   // Get or create the first ancestor that's included in the accessibility tree.
   // Works for all nodes, and may return nodes that are accessibility ignored.
   AXObject* ParentObjectIncludedInTree() const;

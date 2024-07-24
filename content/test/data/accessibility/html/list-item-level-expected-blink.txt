@@ -42,9 +42,9 @@ rootWebArea
 ++++++++listItem hierarchicalLevel=1
 ++++++++++staticText name='Level 1, Item 4'
 ++++++++++++inlineTextBox name='Level 1, Item 4'
-++++++genericContainer
+++++++listItem hierarchicalLevel=1
 ++++++++staticText name='Level 1, Not within list group, Item 1'
 ++++++++++inlineTextBox name='Level 1, Not within list group, Item 1'
-++++++genericContainer
+++++++listItem hierarchicalLevel=1
 ++++++++staticText name='Level 1, Not within list group, Item 2'
 ++++++++++inlineTextBox name='Level 1, Not within list group, Item 2'

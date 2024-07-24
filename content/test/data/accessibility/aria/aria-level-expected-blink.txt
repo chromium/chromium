@@ -58,10 +58,10 @@ rootWebArea
 ++++++++++++gridCell name='Cell at level 2'
 ++++++++++++++staticText name='Cell at level 2'
 ++++++++++++++++inlineTextBox name='Cell at level 2'
-++++++genericContainer
+++++++listItem hierarchicalLevel=1
 ++++++++staticText name='List item at level 1'
 ++++++++++inlineTextBox name='List item at level 1'
-++++++genericContainer
+++++++listItem hierarchicalLevel=3
 ++++++++staticText name='List item at level 3'
 ++++++++++inlineTextBox name='List item at level 3'
 ++++++list
