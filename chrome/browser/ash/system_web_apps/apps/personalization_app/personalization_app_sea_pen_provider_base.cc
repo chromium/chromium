@@ -141,17 +141,16 @@ void PersonalizationAppSeaPenProviderBase::SelectSeaPenThumbnail(
   }
 
   // In case of CHROMEOS_WALLPAPER, we need to send a second query.
-    auto* sea_pen_fetcher = GetOrCreateSeaPenFetcher();
-    CHECK(sea_pen_fetcher);
+  auto* sea_pen_fetcher = GetOrCreateSeaPenFetcher();
+  CHECK(sea_pen_fetcher);
 
-    sea_pen_fetcher->FetchWallpaper(
-        feature_name_, query_and_thumbnail->second->second,
-        query_and_thumbnail->first,
-        base::BindOnce(
-            &PersonalizationAppSeaPenProviderBase::OnFetchWallpaperDone,
-            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-            query_and_thumbnail->first->Clone()));
-    return;
+  sea_pen_fetcher->FetchWallpaper(
+      feature_name_, query_and_thumbnail->second->second,
+      query_and_thumbnail->first,
+      base::BindOnce(
+          &PersonalizationAppSeaPenProviderBase::OnFetchWallpaperDone,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          query_and_thumbnail->first->Clone()));
 }
 
 void PersonalizationAppSeaPenProviderBase::SelectRecentSeaPenImage(
