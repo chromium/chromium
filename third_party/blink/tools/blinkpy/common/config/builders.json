@@ -94,16 +94,6 @@
         },
         "is_try_builder": true
     },
-    "mac10.15-blink-rel": {
-        "main": "tryserver.blink",
-        "port_name": "mac-mac10.15",
-        "specifiers": ["Mac10.15", "Release"],
-        "steps": {
-            "blink_web_tests": {},
-            "blink_wpt_tests": {}
-        },
-        "is_try_builder": true
-    },
     "mac11.0-blink-rel": {
         "main": "tryserver.blink",
         "port_name": "mac-mac11",

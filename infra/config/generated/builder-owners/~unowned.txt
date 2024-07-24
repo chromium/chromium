@@ -409,7 +409,6 @@ try/mac-swangle-chromium-try-x64
 try/mac-ubsan-fyi-rel
 try/mac-updater-try-builder-dbg
 try/mac-updater-try-builder-rel
-try/mac10.15-blink-rel
 try/mac11-arm64-rel
 try/mac11.0-blink-rel
 try/mac11.0.arm64-blink-rel

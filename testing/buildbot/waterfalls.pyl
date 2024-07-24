@@ -6923,22 +6923,6 @@
           'isolated_scripts': 'chromium_linux_blink_rel_isolated_scripts',
         },
       },
-      'mac10.15-blink-rel': {
-        'swarming': {
-          'dimensions': {
-            # This matches the dimensions for "Chromium Mac10.15" in
-            # chromium_fyi.py.
-            'cpu': 'x86-64',
-            'gpu': '8086:0a2e',
-            'hidpi': '0',
-            'os': 'Mac-10.15',
-          },
-          'hard_timeout': 900,
-        },
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
       'mac11.0-blink-rel': {
         'mixins': [
           'mac_11_x64',

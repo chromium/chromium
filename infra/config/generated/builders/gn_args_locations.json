@@ -524,7 +524,6 @@
   "tryserver.blink": {
     "linux-blink-rel": "try/linux-blink-rel/gn-args.json",
     "linux-wpt-chromium-rel": "try/linux-wpt-chromium-rel/gn-args.json",
-    "mac10.15-blink-rel": "try/mac10.15-blink-rel/gn-args.json",
     "mac11.0-blink-rel": "try/mac11.0-blink-rel/gn-args.json",
     "mac11.0.arm64-blink-rel": "try/mac11.0.arm64-blink-rel/gn-args.json",
     "mac12.0-blink-rel": "try/mac12.0-blink-rel/gn-args.json",

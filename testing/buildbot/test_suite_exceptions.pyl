@@ -560,12 +560,6 @@
           'shards': 12,
         },
       },
-      'mac10.15-blink-rel': {
-        'swarming': {
-          'shards': 1,
-          'hard_timeout': 2400,
-        },
-      },
       'mac11.0-blink-rel': {
         'swarming': {
           'shards': 5,
@@ -845,12 +839,6 @@
             'gpu': None,
           },
           'shards': 18,
-        },
-      },
-      'mac10.15-blink-rel': {
-        'swarming': {
-          'shards': 1,
-          'hard_timeout': 2400,
         },
       },
       'mac11.0-blink-rel': {

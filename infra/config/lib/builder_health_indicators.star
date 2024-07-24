@@ -587,7 +587,6 @@ _exempted_from_contact_builders = {
         "mac-ubsan-fyi-rel",
         "mac-updater-try-builder-dbg",
         "mac-updater-try-builder-rel",
-        "mac10.15-blink-rel",
         "mac11-arm64-rel",
         "mac11.0-blink-rel",
         "mac11.0.arm64-blink-rel",
