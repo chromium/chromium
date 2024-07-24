@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
@@ -174,8 +173,7 @@ AggregatableValues::FromJSON(base::Value* input_value) {
 }
 
 base::Value::Dict AggregatableValuesValue::ToJson() const {
-  CHECK(base::IsValueInRangeForNumericType<int>(value_),
-        base::NotFatalUntil::M128);
+  CHECK(base::IsValueInRangeForNumericType<int>(value_));
 
   base::Value::Dict dict;
 
@@ -189,7 +187,7 @@ AggregatableValues::AggregatableValues() = default;
 
 AggregatableValues::AggregatableValues(Values values, FilterPair filters)
     : values_(std::move(values)), filters_(std::move(filters)) {
-  CHECK(IsValid(values_), base::NotFatalUntil::M128);
+  CHECK(IsValid(values_));
 }
 
 AggregatableValues::~AggregatableValues() = default;
@@ -210,8 +208,7 @@ base::Value::Dict AggregatableValues::ToJson() const {
     if (FilteringIdEnabled()) {
       values_dict.Set(key, value.ToJson());
     } else {
-      CHECK(base::IsValueInRangeForNumericType<int>(value.value()),
-            base::NotFatalUntil::M128);
+      CHECK(base::IsValueInRangeForNumericType<int>(value.value()));
       values_dict.Set(key, static_cast<int>(value.value()));
     }
   }

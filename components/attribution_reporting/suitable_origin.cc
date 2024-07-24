@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/not_fatal_until.h"
 #include "components/attribution_reporting/is_origin_suitable.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "net/base/schemeful_site.h"
@@ -48,12 +47,12 @@ std::optional<SuitableOrigin> SuitableOrigin::Deserialize(
 }
 
 SuitableOrigin::SuitableOrigin(mojo::DefaultConstruct::Tag) {
-  CHECK(!IsValid(), base::NotFatalUntil::M128);
+  CHECK(!IsValid());
 }
 
 SuitableOrigin::SuitableOrigin(url::Origin origin)
     : origin_(std::move(origin)) {
-  CHECK(IsValid(), base::NotFatalUntil::M128);
+  CHECK(IsValid());
 }
 
 SuitableOrigin::~SuitableOrigin() = default;
@@ -67,7 +66,7 @@ SuitableOrigin::SuitableOrigin(SuitableOrigin&&) = default;
 SuitableOrigin& SuitableOrigin::operator=(SuitableOrigin&&) = default;
 
 std::string SuitableOrigin::Serialize() const {
-  CHECK(IsValid(), base::NotFatalUntil::M128);
+  CHECK(IsValid());
   return origin_.Serialize();
 }
 

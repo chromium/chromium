@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/overloaded.h"
-#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -112,11 +111,11 @@ DestinationSet::FromJSON(const base::Value* v) {
 
 DestinationSet::DestinationSet(Destinations destinations)
     : destinations_(std::move(destinations)) {
-  CHECK(IsValid(), base::NotFatalUntil::M128);
+  CHECK(IsValid());
 }
 
 DestinationSet::DestinationSet(mojo::DefaultConstruct::Tag) {
-  CHECK(!IsValid(), base::NotFatalUntil::M128);
+  CHECK(!IsValid());
 }
 
 DestinationSet::~DestinationSet() = default;
@@ -134,7 +133,7 @@ bool DestinationSet::IsValid() const {
 }
 
 base::Value DestinationSet::ToJson() const {
-  CHECK(IsValid(), base::NotFatalUntil::M128);
+  CHECK(IsValid());
   if (destinations_.size() == 1) {
     return base::Value(destinations_.begin()->Serialize());
   }

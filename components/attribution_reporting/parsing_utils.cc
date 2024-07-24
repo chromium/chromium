@@ -19,7 +19,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
 #include "base/functional/overloaded.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_number_conversions.h"
@@ -173,7 +172,7 @@ ParseAggregationCoordinator(const base::Value::Dict& dict) {
   }
   auto aggregation_coordinator_origin =
       SuitableOrigin::Create(*aggregation_coordinator);
-  CHECK(aggregation_coordinator_origin.has_value(), base::NotFatalUntil::M128);
+  CHECK(aggregation_coordinator_origin.has_value());
   return *std::move(aggregation_coordinator_origin);
 }
 
