@@ -732,7 +732,7 @@ scoped_refptr<AudioBus> AudioBus::GetDataResource(int resource_id,
   SegmentedBuffer::DeprecatedFlatData flat_data(
       resource.operator scoped_refptr<SharedBuffer>().get());
   scoped_refptr<AudioBus> audio_bus =
-      DecodeAudioFileData(flat_data.Data(), flat_data.size());
+      DecodeAudioFileData(flat_data.data(), flat_data.size());
 
   if (!audio_bus.get()) {
     return nullptr;

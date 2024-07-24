@@ -96,11 +96,11 @@ size_t LengthOfLineEndingAtIndex(const char* input,
 
 // Performs quoted-printable encoding characters, per RFC 2047.
 void QuotedPrintableEncode(const char* input,
-                           wtf_size_t input_length,
+                           size_t input_length,
                            bool is_header,
                            Vector<char>& out) {
   out.clear();
-  out.reserve(input_length);
+  out.reserve(base::checked_cast<wtf_size_t>(input_length));
   if (is_header)
     out.Append(kRFC2047EncodingPrefix, kRFC2047EncodingPrefixLength);
   size_t current_line_length = 0;
@@ -409,19 +409,18 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
     // FIXME: ideally we would encode the content as a stream without having to
     // fetch it all.
     const SegmentedBuffer::DeprecatedFlatData flat_data(resource.data.get());
-    const char* data = flat_data.Data();
-    wtf_size_t data_length = base::checked_cast<wtf_size_t>(flat_data.size());
+    auto data = base::span(flat_data);
+
     Vector<char> encoded_data;
     if (!strcmp(content_encoding, kQuotedPrintable)) {
-      QuotedPrintableEncode(data, data_length, false /* is_header */,
+      QuotedPrintableEncode(data.data(), data.size(), false /* is_header */,
                             encoded_data);
       output_buffer.Append(encoded_data.data(), encoded_data.size());
     } else {
       DCHECK(!strcmp(content_encoding, kBase64));
       // We are not specifying insertLFs = true below as it would cut the lines
       // with LFs and MHTML requires CRLFs.
-      Base64Encode(base::as_bytes(base::make_span(data, data_length)),
-                   encoded_data);
+      Base64Encode(base::as_bytes(data), encoded_data);
       wtf_size_t index = 0;
       wtf_size_t encoded_data_length = encoded_data.size();
       do {

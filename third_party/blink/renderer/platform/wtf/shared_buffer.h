@@ -195,7 +195,7 @@ class WTF_EXPORT SegmentedBuffer {
    public:
     explicit DeprecatedFlatData(const SegmentedBuffer*);
 
-    const char* Data() const { return data_; }
+    const char* data() const { return data_; }
     size_t size() const { return buffer_->size(); }
 
    private:

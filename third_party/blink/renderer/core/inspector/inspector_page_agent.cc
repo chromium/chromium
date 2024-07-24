@@ -323,7 +323,7 @@ static void MaybeEncodeTextContent(const String& text_content,
 
   const SegmentedBuffer::DeprecatedFlatData flat_buffer(buffer.get());
   return MaybeEncodeTextContent(
-      text_content, flat_buffer.Data(),
+      text_content, flat_buffer.data(),
       base::checked_cast<wtf_size_t>(flat_buffer.size()), result,
       base64_encoded);
 }
@@ -352,14 +352,14 @@ bool InspectorPageAgent::SegmentedBufferContent(
 
   const SegmentedBuffer::DeprecatedFlatData flat_buffer(buffer);
   if (decoder) {
-    text_content = decoder->Decode(flat_buffer.Data(), flat_buffer.size());
+    text_content = decoder->Decode(flat_buffer.data(), flat_buffer.size());
     text_content = text_content + decoder->Flush();
   } else if (encoding.IsValid()) {
     text_content = encoding.Decode(
-        flat_buffer.Data(), base::checked_cast<wtf_size_t>(flat_buffer.size()));
+        flat_buffer.data(), base::checked_cast<wtf_size_t>(flat_buffer.size()));
   }
 
-  MaybeEncodeTextContent(text_content, flat_buffer.Data(),
+  MaybeEncodeTextContent(text_content, flat_buffer.data(),
                          base::checked_cast<wtf_size_t>(flat_buffer.size()),
                          result, base64_encoded);
   return true;
@@ -381,8 +381,7 @@ bool InspectorPageAgent::CachedResourceContent(const Resource* cached_resource,
       return false;
 
     const SegmentedBuffer::DeprecatedFlatData flat_buffer(buffer.get());
-    *result = Base64Encode(base::as_bytes(
-        base::make_span(flat_buffer.Data(), flat_buffer.size())));
+    *result = Base64Encode(base::as_byte_span(flat_buffer));
     *base64_encoded = true;
     return true;
   }
