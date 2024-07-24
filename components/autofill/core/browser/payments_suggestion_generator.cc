@@ -935,7 +935,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account,
     CreditCardSuggestionSummary& summary) {
-  const bool is_triggered_field_a_credit_card_field =
+  const bool is_trigger_field_a_credit_card_field =
       GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kCreditCard;
 
   const bool allow_payment_swapping =
@@ -953,7 +953,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
       SanitizeCreditCardFieldValue(trigger_field.value()).empty() &&
           trigger_source !=
               AutofillSuggestionTriggerSource::kManualFallbackPayments,
-      /*prefix_match=*/is_triggered_field_a_credit_card_field &&
+      /*prefix_match=*/is_trigger_field_a_credit_card_field &&
           !allow_payment_swapping,
       /*include_virtual_cards=*/true);
 
@@ -968,7 +968,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
   // card field. Then, `GetSuggestionsForCreditCards()` is called with
   // `UNKOWN_TYPE` for the `trigger_field_type`. This guarantees no infinite
   // recursion occurs.
-  if (cards_to_suggest.empty() && is_triggered_field_a_credit_card_field &&
+  if (cards_to_suggest.empty() && is_trigger_field_a_credit_card_field &&
       trigger_source ==
           AutofillSuggestionTriggerSource::kManualFallbackPayments &&
       base::FeatureList::IsEnabled(
