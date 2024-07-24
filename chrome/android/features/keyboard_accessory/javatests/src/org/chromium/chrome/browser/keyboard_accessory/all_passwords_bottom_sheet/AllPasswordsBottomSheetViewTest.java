@@ -68,11 +68,32 @@ import java.util.concurrent.ExecutionException;
 @EnableFeatures(ChromeFeatureList.FILLING_PASSWORDS_FROM_ANY_ORIGIN)
 public class AllPasswordsBottomSheetViewTest {
     private static final Credential ANA =
-            new Credential("Ana", "S3cr3t", "Ana", "https://example.com", false, "");
+            new Credential(
+                    /* username= */ "ana@gmail.com",
+                    /* password= */ "S3cr3t",
+                    /* formattedUsername= */ "ana@gmail.com",
+                    /* originUrl= */ "https://example.com",
+                    /* isAndroidCredential= */ false,
+                    /* appDisplayName= */ "",
+                    /* isPlusAddressUsername= */ true);
     private static final Credential NO_ONE =
-            new Credential("", "***", "No Username", "https://m.example.xyz", false, "");
+            new Credential(
+                    /* username= */ "",
+                    /* password= */ "***",
+                    /* formattedUsername= */ "No Username",
+                    /* originUrl= */ "https://m.example.xyz",
+                    /* isAndroidCredential= */ false,
+                    /* appDisplayName= */ "",
+                    /* isPlusAddressUsername= */ false);
     private static final Credential BOB =
-            new Credential("Bob", "***", "Bob", "android://com.facebook.org", true, "facebook");
+            new Credential(
+                    /* username= */ "Bob",
+                    /* password= */ "***",
+                    /* formattedUsername= */ "Bob",
+                    /* originUrl= */ "android://com.facebook.org",
+                    /* isAndroidCredential= */ true,
+                    /* appDisplayName= */ "facebook",
+                    /* isPlusAddressUsername= */ false);
     private static final boolean IS_PASSWORD_FIELD = true;
     private static final String EXAMPLE_ORIGIN = "https://m.example.com/";
 

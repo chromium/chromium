@@ -23,6 +23,10 @@ class PasswordManagerClient;
 class PasswordManagerDriver;
 }  // namespace password_manager
 
+namespace plus_addresses {
+class PlusAddressService;
+}  // namespace plus_addresses
+
 namespace safe_browsing {
 class PasswordReuseDetectionManagerClient;
 }
@@ -97,6 +101,10 @@ class AllPasswordsBottomSheetController
   // Returns the last committed URL of the frame from |driver_|.
   const GURL& GetFrameUrl();
 
+  // Uses `PlusAddressService` as a source of truth to check if the
+  // `maybe_plus_address` is an existing plus address.
+  bool IsPlusAddress(const std::string& potential_plus_address) const;
+
  private:
   // Called when the biometric re-auth completes. |password| is the password
   // to be filled and |auth_succeded| is the authentication result.
@@ -152,6 +160,10 @@ class AllPasswordsBottomSheetController
   // Callback invoked to try to show the password migration warning. Used
   // to facilitate testing.
   ShowMigrationWarningCallback show_migration_warning_callback_;
+
+  // `PlusAddressService` is used to check which credentials have a plus address
+  // as a username.
+  raw_ptr<const plus_addresses::PlusAddressService> plus_address_service_;
 
   base::WeakPtrFactory<AllPasswordsBottomSheetController> weak_ptr_factory_{
       this};

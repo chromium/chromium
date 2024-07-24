@@ -30,6 +30,11 @@ FakePlusAddressService::FakePlusAddressService(
 
 FakePlusAddressService::~FakePlusAddressService() = default;
 
+bool FakePlusAddressService::IsPlusAddress(
+    const std::string& potential_plus_address) const {
+  return potential_plus_address == kFakePlusAddress;
+}
+
 void FakePlusAddressService::ReservePlusAddress(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed) {

@@ -169,6 +169,12 @@ class AllPasswordsBottomSheetViewBinder {
                         credential.getOriginUrl(), icon -> setIconForBitmap(iconView, icon));
             }
 
+            if (credential.isPlusAddressUsername()) {
+                usernameChip.setIcon(
+                        R.drawable.ic_plus_addresses_logo_24dp, /* tintWithTextColor= */ true);
+            } else {
+                usernameChip.setIcon(ChipView.INVALID_ICON_ID, /* tintWithTextColor= */ false);
+            }
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

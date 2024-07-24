@@ -68,7 +68,9 @@ void AllPasswordsBottomSheetViewImpl::Show(
     java_credentials.emplace_back(Java_Credential_Constructor(
         env, credential->username_value, credential->password_value,
         GetDisplayUsername(*credential), credential->url.spec(),
-        facet.IsValidAndroidFacetURI(), app_display_name));
+        facet.IsValidAndroidFacetURI(), app_display_name,
+        controller_->IsPlusAddress(
+            base::UTF16ToUTF8(credential->username_value))));
   }
 
   const bool is_password_field =
