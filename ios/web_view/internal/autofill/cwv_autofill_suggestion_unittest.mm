@@ -39,6 +39,7 @@ TEST_F(CWVAutofillSuggestionTest, Initialization) {
   EXPECT_NSEQ(formSuggestion.displayDescription, suggestion.displayDescription);
   EXPECT_NSEQ(formSuggestion.value, suggestion.value);
   EXPECT_EQ(formSuggestion, suggestion.formSuggestion);
+  EXPECT_EQ(CWVSuggestionTypeAddressEntry, suggestion.suggestionType);
   EXPECT_FALSE([suggestion isPasswordSuggestion]);
 }
 

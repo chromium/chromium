@@ -76,6 +76,7 @@ ios_web_view_public_headers = [
   "public/cwv_reuse_check_service.h",
   "public/cwv_ssl_error_handler.h",
   "public/cwv_ssl_status.h",
+  "public/cwv_suggestion_type.h",
   "public/cwv_sync_controller.h",
   "public/cwv_sync_controller_data_source.h",
   "public/cwv_sync_controller_delegate.h",
