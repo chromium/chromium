@@ -62,6 +62,7 @@ const CertificateManagerV2ElementBase = I18nMixin(PolymerElement);
 export interface CertificateManagerV2Element {
   $: {
     crsCerts: CertificateListV2Element,
+    toolbar: HTMLElement,
     platformClientCerts: CertificateListV2Element,
     // <if expr="is_win or is_macosx or is_linux">
     provisionedClientCerts: CertificateListV2Element,
@@ -278,10 +279,22 @@ export class CertificateManagerV2Element extends
     e.preventDefault();
   }
 
+  private switchToPage_(page: Page) {
+    this.selectedPage_ = page;
+    switch (this.selectedPage_) {
+      case Page.ADMIN_CERTS:
+      case Page.PLATFORM_CERTS:
+        this.$.toolbar.classList.add('toolbar-shadow');
+        break;
+      default:
+        this.$.toolbar.classList.remove('toolbar-shadow');
+    }
+  }
+
   private onMenuItemSelect_(e: CustomEvent<{item: HTMLElement}>) {
     const page = e.detail.item.getAttribute('path');
     assert(page, 'Page is not available');
-    this.selectedPage_ = page as Page;
+    this.switchToPage_(page as Page);
   }
 
   private getSelectedTopLevelPage_(): string {
@@ -296,13 +309,13 @@ export class CertificateManagerV2Element extends
 
   private onPlatformCertsLinkRowClick_(e: Event) {
     e.preventDefault();
-    this.selectedPage_ = Page.PLATFORM_CERTS;
+    this.switchToPage_(Page.PLATFORM_CERTS);
     this.$.platformCertsSection.setInitialFocus();
   }
 
   private onAdminCertsInstalledLinkRowClick_(e: Event) {
     e.preventDefault();
-    this.selectedPage_ = Page.ADMIN_CERTS;
+    this.switchToPage_(Page.ADMIN_CERTS);
     this.$.adminCertsSection.setInitialFocus();
   }
 
@@ -311,7 +324,7 @@ export class CertificateManagerV2Element extends
   // navigateBack handlers (using the naming template
   // on<OptionalContext><EventName>_).
   private onNavigateBack_() {
-    this.selectedPage_ = Page.LOCAL_CERTS;
+    this.switchToPage_(Page.LOCAL_CERTS);
     focusWithoutInk(this.$.localMenuItem);
   }
 

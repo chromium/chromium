@@ -40,6 +40,14 @@
     display: flex;
     align-items: flex-start;
     overflow: auto;
+    z-index: 1;
+  }
+
+  .toolbar-shadow {
+    box-shadow: 0 5px 6px -3px rgba(0, 0, 0, .4);
+    /* Needs to be higher than #container's z-index to appear above
+     * scrollbars. */
+    z-index: 2;
   }
 
   #adminCertsSection,
@@ -59,7 +67,8 @@
 
 </style>
 
-<cr-toolbar page-name="[[i18n('certificateManagerV2Title')]]"
+<cr-toolbar id="toolbar"
+    page-name="[[i18n('certificateManagerV2Title')]]"
     show-search="[[showSearch_]]" always-show-logo>
 </cr-toolbar>
 <div id="container">
