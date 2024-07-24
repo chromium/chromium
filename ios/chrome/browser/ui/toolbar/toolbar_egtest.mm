@@ -47,6 +47,21 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
                      base::test::ios::kWaitForUIElementTimeout, condition),
                  @"Suggestion not found.");
 }
+
+// Wait for an empty omnibox.
+void WaitForEmpyOmnibox() {
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+        assertWithMatcher:chrome_test_util::OmniboxText("")
+                    error:&error];
+    return error == nil;
+  };
+
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"Waiting for the omnibox to empty.");
+}
 }  // namespace
 
 // Toolbar integration tests for Chrome.
@@ -305,9 +320,7 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
   id<GREYMatcher> cancelButton = grey_accessibilityLabel(@"Clear Text");
 
   [[EarlGrey selectElementWithMatcher:cancelButton] performAction:grey_tap()];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText("")];
+  WaitForEmpyOmnibox();
 }
 
 // Types JavaScript into Omnibox and verify that an alert is displayed.
@@ -388,9 +401,7 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
                                             grey_sufficientlyVisible(), nil)]
         performAction:grey_tap()];
   }
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText("")];
+  WaitForEmpyOmnibox();
 }
 
 // Tests typing in the omnibox using the keyboard accessory view.
