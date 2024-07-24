@@ -35,8 +35,8 @@ namespace ranges = base::ranges;
 namespace {
 
 // This flag enables or disables considering colors for word block separations.
-// TODO(b:289881423): Update once there is better consistency in color
-// recognition or add an error tolerant comparison function.
+// TODO(crbug.com/289881423): Update once there is better consistency in color
+// or gray scale recognition or add an error tolerant comparison function.
 constexpr bool kColorSensitiveStyleBlocks = false;
 
 // A negative ID for ui::AXNodeID needs to start from -2 as using -1 for this
