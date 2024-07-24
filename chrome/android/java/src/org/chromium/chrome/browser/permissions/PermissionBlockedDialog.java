@@ -19,7 +19,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -148,7 +148,7 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
         fragmentArguments.putString(
                 SingleCategorySettings.EXTRA_CATEGORY,
                 SiteSettingsCategory.preferenceKey(preferenceKey));
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         settingsLauncher.launchSettingsActivity(
                 mContext, SingleCategorySettings.class, fragmentArguments);
     }

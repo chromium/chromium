@@ -25,7 +25,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
@@ -85,7 +85,7 @@ public class ArchivedTabsDialogCoordinator {
 
                 @Override
                 public void openArchiveSettings() {
-                    new SettingsLauncherImpl()
+                    SettingsLauncherFactory.createSettingsLauncher()
                             .launchSettingsActivity(mContext, TabArchiveSettingsFragment.class);
                     RecordUserAction.record("Tabs.OpenArchivedTabsSettingsMenuItem");
                 }
@@ -406,7 +406,7 @@ public class ArchivedTabsDialogCoordinator {
     }
 
     private void onIphReviewClicked() {
-        new SettingsLauncherImpl()
+        SettingsLauncherFactory.createSettingsLauncher()
                 .launchSettingsActivity(mContext, TabArchiveSettingsFragment.class);
         RecordUserAction.record("Tabs.ArchivedTabsDialogIphClicked");
     }

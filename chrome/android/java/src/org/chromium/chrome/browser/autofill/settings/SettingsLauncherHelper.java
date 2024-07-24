@@ -12,7 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.content_public.browser.WebContents;
 
@@ -61,7 +61,9 @@ public class SettingsLauncherHelper {
     }
 
     private static SettingsLauncher getLauncher() {
-        return sLauncherForTesting != null ? sLauncherForTesting : new SettingsLauncherImpl();
+        return sLauncherForTesting != null
+                ? sLauncherForTesting
+                : SettingsLauncherFactory.createSettingsLauncher();
     }
 
     @VisibleForTesting

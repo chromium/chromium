@@ -41,7 +41,7 @@ import org.chromium.chrome.browser.password_manager.account_storage_notice.Accou
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -206,7 +206,7 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
                                     /* isGmsCoreUpdateRequired= */ false,
                                     UserPrefs.get(profile),
                                     mActivityRule.getActivity().getWindowAndroid(),
-                                    new SettingsLauncherImpl());
+                                    SettingsLauncherFactory.createSettingsLauncher());
                     coordinator.setObserver(NATIVE_OBSERVER_PTR);
                     return coordinator;
                 });

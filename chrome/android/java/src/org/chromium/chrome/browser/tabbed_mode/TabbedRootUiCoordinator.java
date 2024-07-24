@@ -95,7 +95,7 @@ import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionOnboardingC
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
 import org.chromium.chrome.browser.readaloud.ReadAloudIPHController;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextIPHController;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoSharingControllerImpl;
@@ -727,7 +727,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mTabModelSelectorSupplier.get(),
                         mModalDialogManagerSupplier.get(),
                         new IncognitoReauthManager(mActivity, profile),
-                        new SettingsLauncherImpl(),
+                        SettingsLauncherFactory.createSettingsLauncher(),
                         mLayoutManager,
                         mHubManagerSupplier,
                         /* showRegularOverviewIntent= */ null,
@@ -860,7 +860,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             new TrackingProtectionBridge(profile),
                             mActivityTabProvider,
                             mMessageDispatcher,
-                            new SettingsLauncherImpl(),
+                            SettingsLauncherFactory.createSettingsLauncher(),
                             SurfaceType.BR_APP);
         }
 
@@ -870,7 +870,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     profile,
                     mActivityTabProvider,
                     mMessageDispatcher,
-                    new SettingsLauncherImpl());
+                    SettingsLauncherFactory.createSettingsLauncher());
             // Promo will be triggered eventually. We don't want for this promo to clash with other
             // promos in the same run.
             return true;
@@ -1021,7 +1021,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     mActivity,
                     tab != null ? tab.getProfile() : profile,
                     tab != null ? tab.getWebContents() : null,
-                    new SettingsLauncherImpl(),
+                    SettingsLauncherFactory.createSettingsLauncher(),
                     mMessageDispatcher);
         }
 

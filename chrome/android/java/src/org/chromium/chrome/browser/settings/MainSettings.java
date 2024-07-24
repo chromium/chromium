@@ -131,7 +131,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.settings);
-        mPasswordCheck = PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl());
+        mPasswordCheck =
+                PasswordCheckFactory.getOrCreate(SettingsLauncherFactory.createSettingsLauncher());
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
         if (signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false)) {
             signinManager.addSignInStateObserver(this);
@@ -410,7 +411,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
                             .isSyncDisabledByEnterprisePolicy()) {
                         SyncSettingsUtils.showSyncDisabledByAdministratorToast(context);
                     } else if (isSyncConsentAvailable) {
-                        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+                        SettingsLauncher settingsLauncher =
+                                SettingsLauncherFactory.createSettingsLauncher();
                         settingsLauncher.launchSettingsActivity(context, ManageSyncSettings.class);
                     } else {
                         // TODO(crbug.com/40067770): Remove after rolling out
@@ -455,7 +457,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
             preference.setFragment(null);
             preference.setOnPreferenceClickListener(
                     unused -> {
-                        new SettingsLauncherImpl()
+                        SettingsLauncherFactory.createSettingsLauncher()
                                 .launchSettingsActivity(
                                         getContext(),
                                         AutofillOptionsFragment.class,

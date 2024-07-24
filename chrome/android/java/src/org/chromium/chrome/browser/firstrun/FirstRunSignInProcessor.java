@@ -9,7 +9,7 @@ import android.app.Activity;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
@@ -24,7 +24,7 @@ public final class FirstRunSignInProcessor {
         final SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         if (prefs.readBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP, false)) {
             prefs.removeKey(ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP);
-            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+            SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
             settingsLauncher.launchSettingsActivity(
                     activity, ManageSyncSettings.class, ManageSyncSettings.createArguments(true));
         }

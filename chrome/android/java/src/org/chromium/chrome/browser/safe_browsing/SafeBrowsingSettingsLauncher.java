@@ -9,7 +9,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -22,7 +22,7 @@ public class SafeBrowsingSettingsLauncher {
             WindowAndroid window, @SettingsAccessPoint int accessPoint) {
         if (window == null) return;
         Context currentContext = window.getContext().get();
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         settingsLauncher.launchSettingsActivity(
                 currentContext,
                 SafeBrowsingSettingsFragment.class,

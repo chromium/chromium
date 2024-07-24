@@ -11,7 +11,7 @@ import android.content.Intent;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
@@ -64,7 +64,7 @@ public class TracingNotificationServiceImpl extends TracingNotificationService.I
      * @return the intent.
      */
     public static PendingIntent getOpenSettingsIntent(Context context) {
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(context, TracingSettings.class);
         return PendingIntent.getActivity(

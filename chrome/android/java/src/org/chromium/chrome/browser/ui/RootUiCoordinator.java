@@ -115,7 +115,7 @@ import org.chromium.chrome.browser.readaloud.ReadAloudToolbarButtonController;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsFeatureHelper;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.share.ShareButtonController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
@@ -1490,7 +1490,7 @@ public class RootUiCoordinator
             AdaptiveToolbarButtonController adaptiveToolbarButtonController =
                     new AdaptiveToolbarButtonController(
                             mActivity,
-                            new SettingsLauncherImpl(),
+                            SettingsLauncherFactory.createSettingsLauncher(),
                             mActivityLifecycleDispatcher,
                             mProfileSupplier,
                             new AdaptiveButtonActionMenuCoordinator(),
@@ -1529,7 +1529,7 @@ public class RootUiCoordinator
                     new OmniboxActionDelegateImpl(
                             mActivity,
                             mActivityTabProvider,
-                            new SettingsLauncherImpl(),
+                            SettingsLauncherFactory.createSettingsLauncher(),
                             // TODO(ender): phase out callbacks when the modules below are
                             // components.
                             // Open URL in an existing, else new regular tab.

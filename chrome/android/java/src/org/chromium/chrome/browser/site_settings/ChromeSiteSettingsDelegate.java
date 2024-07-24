@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.FaviconLoader;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
@@ -342,12 +342,12 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public void launchClearBrowsingDataDialog(Activity currentActivity) {
         if (QuickDeleteController.isQuickDeleteFollowupEnabled()) {
-            new SettingsLauncherImpl()
+            SettingsLauncherFactory.createSettingsLauncher()
                     .launchSettingsActivity(
                             currentActivity,
                             SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
         } else {
-            new SettingsLauncherImpl()
+            SettingsLauncherFactory.createSettingsLauncher()
                     .launchSettingsActivity(
                             currentActivity, SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA);
         }

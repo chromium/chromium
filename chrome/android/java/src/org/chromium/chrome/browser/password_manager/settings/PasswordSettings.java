@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -206,7 +206,8 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPasswordCheck = PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl());
+        mPasswordCheck =
+                PasswordCheckFactory.getOrCreate(SettingsLauncherFactory.createSettingsLauncher());
         computeTrustedVaultBannerState();
     }
 
@@ -540,7 +541,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
                     .getPasswordManagerHandler()
                     .showPasswordEntryEditingView(
                             getActivity(),
-                            new SettingsLauncherImpl(),
+                            SettingsLauncherFactory.createSettingsLauncher(),
                             preference.getExtras().getInt(PasswordSettings.PASSWORD_LIST_ID),
                             isBlockedCredential);
         }
@@ -626,7 +627,8 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         checkPasswords.setOnPreferenceClickListener(
                 preference -> {
                     PasswordCheck passwordCheck =
-                            PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl());
+                            PasswordCheckFactory.getOrCreate(
+                                    SettingsLauncherFactory.createSettingsLauncher());
                     passwordCheck.showUi(
                             getStyledContext(), PasswordCheckReferrer.PASSWORD_SETTINGS);
                     // Return true to notify the click was handled.

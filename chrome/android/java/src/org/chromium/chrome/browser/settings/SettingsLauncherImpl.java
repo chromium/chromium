@@ -38,7 +38,8 @@ public class SettingsLauncherImpl implements SettingsLauncher {
         return new SettingsLauncherImpl();
     }
 
-    public SettingsLauncherImpl() {}
+    /** Instantiated through SettingsLauncherFactory. */
+    SettingsLauncherImpl() {}
 
     @Override
     public void launchSettingsActivity(Context context) {

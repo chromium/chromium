@@ -63,12 +63,13 @@ public class SettingsActivityTestRule<T extends Fragment>
 
     /**
      * Launches the settings activity with the specified fragment and arguments.
+     *
      * @param fragmentArgs A bundle of additional fragment arguments.
      * @return The activity that just started.
      */
     public SettingsActivity startSettingsActivity(Bundle fragmentArgs) {
         Context context = ApplicationProvider.getApplicationContext();
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
                         context, mFragmentClass, fragmentArgs);

@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -205,7 +205,7 @@ public final class SearchEngineChoiceNotificationTest {
         // We do not use a mock for SettingsLauncher here since the test needs to
         // verify that the launcher actually starts an activity.
         SearchEngineChoiceNotification.handleSearchEngineChoice(
-                mContext, mSnackbarManager, new SettingsLauncherImpl());
+                mContext, mSnackbarManager, SettingsLauncherFactory.createSettingsLauncher());
         verify(mSnackbarManager, times(1)).showSnackbar(mSnackbarArgument.capture());
 
         mSnackbarArgument.getValue().getController().onAction(null);

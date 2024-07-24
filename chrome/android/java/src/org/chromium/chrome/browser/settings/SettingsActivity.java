@@ -142,7 +142,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private static boolean sActivityNotExportedChecked;
 
     /** An instance of settings launcher that can be injected into a fragment */
-    private SettingsLauncher mSettingsLauncher = new SettingsLauncherImpl();
+    private SettingsLauncher mSettingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
 
     private SnackbarManager mSnackbarManager;
 

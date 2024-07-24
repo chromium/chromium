@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
@@ -42,7 +42,7 @@ public class SiteSettingsTestUtils {
     public static SettingsActivity startSiteSettingsMenu(String category) {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putString(SingleCategorySettings.EXTRA_CATEGORY, category);
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
                         ApplicationProvider.getApplicationContext(),
@@ -65,7 +65,7 @@ public class SiteSettingsTestUtils {
                                     .getString(ContentSettingsResources.getTitleForCategory(type));
                         });
         fragmentArgs.putString(SingleCategorySettings.EXTRA_TITLE, title);
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
                         ApplicationProvider.getApplicationContext(),
@@ -80,7 +80,7 @@ public class SiteSettingsTestUtils {
         fragmentArgs.putSerializable(StorageAccessSubpageSettings.EXTRA_STORAGE_ACCESS_STATE, site);
         fragmentArgs.putBoolean(StorageAccessSubpageSettings.EXTRA_ALLOWED, true);
 
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
@@ -92,7 +92,7 @@ public class SiteSettingsTestUtils {
     public static SettingsActivity startSingleWebsitePreferences(Website site) {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putSerializable(SingleWebsiteSettings.EXTRA_SITE, site);
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
                         ApplicationProvider.getApplicationContext(),
@@ -105,7 +105,7 @@ public class SiteSettingsTestUtils {
     public static SettingsActivity startGroupedWebsitesPreferences(WebsiteGroup group) {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putSerializable(GroupedWebsitesSettings.EXTRA_GROUP, group);
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
                         ApplicationProvider.getApplicationContext(),
@@ -119,7 +119,7 @@ public class SiteSettingsTestUtils {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putString(
                 AllSiteSettings.EXTRA_CATEGORY, SiteSettingsCategory.preferenceKey(type));
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
                         ApplicationProvider.getApplicationContext(),
@@ -135,7 +135,7 @@ public class SiteSettingsTestUtils {
         fragmentArgs.putString(
                 AllSiteSettings.EXTRA_CATEGORY, SiteSettingsCategory.preferenceKey(type));
         fragmentArgs.putString(AllSiteSettings.EXTRA_SEARCH, rwsPage);
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
                         ApplicationProvider.getApplicationContext(),
