@@ -4139,9 +4139,10 @@ void BrowserView::OnWidgetActivationChanged(views::Widget* widget,
           RestoreFocus();
       }
 
-      BrowserList::SetLastActive(browser_.get());
+      browser_->DidBecomeActive();
     } else {
       BrowserList::NotifyBrowserNoLongerActive(browser_.get());
+      browser_->DidBecomeInactive();
     }
   }
 

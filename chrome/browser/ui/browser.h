@@ -882,6 +882,15 @@ class Browser : public TabStripModelObserver,
   BrowserWindowFeatures& GetFeatures() override;
   web_modal::WebContentsModalDialogHost*
   GetWebContentsModalDialogHostForWindow() override;
+  bool IsActive() override;
+  base::CallbackListSubscription RegisterDidBecomeActive(
+      DidBecomeActiveCallback callback) override;
+  base::CallbackListSubscription RegisterDidBecomeInactive(
+      DidBecomeInactiveCallback callback) override;
+
+  // Called by BrowserView when on active changes.
+  void DidBecomeActive();
+  void DidBecomeInactive();
 
  private:
   friend class BrowserTest;
@@ -1463,6 +1472,14 @@ class Browser : public TabStripModelObserver,
 #endif
 
   int force_show_bookmark_bar_flags_ = ForceShowBookmarkBarFlag::kNone;
+
+  using DidBecomeActiveCallbackList =
+      base::RepeatingCallbackList<void(BrowserWindowInterface*)>;
+  DidBecomeActiveCallbackList did_become_active_callback_list_;
+
+  using DidBecomeInactiveCallbackList =
+      base::RepeatingCallbackList<void(BrowserWindowInterface*)>;
+  DidBecomeInactiveCallbackList did_become_inactive_callback_list_;
 
   std::unique_ptr<BrowserWindowFeatures> features_;
 

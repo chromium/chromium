@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_
 
+#include "base/callback_list.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -66,6 +67,21 @@ class BrowserWindowInterface : public content::PageNavigator {
   // BrowserWindow.
   virtual web_modal::WebContentsModalDialogHost*
   GetWebContentsModalDialogHostForWindow() = 0;
+
+  // Whether the window is active.
+  // This definition needs to be more precise, as "active" has different
+  // semantics and nuance on each platform.
+  virtual bool IsActive() = 0;
+
+  // Register for these two callbacks to detect changes to IsActive().
+  using DidBecomeActiveCallback =
+      base::RepeatingCallback<void(BrowserWindowInterface*)>;
+  virtual base::CallbackListSubscription RegisterDidBecomeActive(
+      DidBecomeActiveCallback callback) = 0;
+  using DidBecomeInactiveCallback =
+      base::RepeatingCallback<void(BrowserWindowInterface*)>;
+  virtual base::CallbackListSubscription RegisterDidBecomeInactive(
+      DidBecomeInactiveCallback callback) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_
