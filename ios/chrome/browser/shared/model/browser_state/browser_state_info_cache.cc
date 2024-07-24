@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -28,25 +29,21 @@ const char kIsAuthErrorKey[] = "is_auth_error";
 const char kUserNameKey[] = "user_name";
 }  // namespace
 
-BrowserStateInfoCache::BrowserStateInfoCache(
-    PrefService* prefs,
-    const base::FilePath& user_data_dir)
-    : prefs_(prefs), user_data_dir_(user_data_dir) {
+BrowserStateInfoCache::BrowserStateInfoCache(PrefService* prefs)
+    : prefs_(prefs) {
   // Populate the cache
-  const base::Value::Dict& cache =
-      prefs_->GetDict(prefs::kBrowserStateInfoCache);
-  for (const auto it : cache) {
-    AddBrowserStateCacheKey(it.first);
+  for (const auto pair : prefs_->GetDict(prefs::kBrowserStateInfoCache)) {
+    sorted_keys_.push_back(pair.first);
   }
+  base::ranges::sort(sorted_keys_);
 }
 
-BrowserStateInfoCache::~BrowserStateInfoCache() {}
+BrowserStateInfoCache::~BrowserStateInfoCache() = default;
 
-void BrowserStateInfoCache::AddBrowserState(
-    const base::FilePath& browser_state_path,
-    const std::string& gaia_id,
-    const std::u16string& user_name) {
-  std::string key = CacheKeyFromBrowserStatePath(browser_state_path);
+void BrowserStateInfoCache::AddBrowserState(std::string_view name,
+                                            std::string_view gaia_id,
+                                            std::string_view user_name) {
+  CHECK_EQ(GetIndexOfBrowserStateWithName(name), std::string::npos);
   ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
   base::Value::Dict& cache = update.Get();
 
@@ -56,29 +53,24 @@ void BrowserStateInfoCache::AddBrowserState(
 
   base::Value::List last_active_browser_states =
       prefs_->GetList(prefs::kBrowserStatesLastActive).Clone();
-  last_active_browser_states.Append(browser_state_path.BaseName().value());
+  last_active_browser_states.Append(base::Value(name));
   prefs_->SetList(prefs::kBrowserStatesLastActive,
                   std::move(last_active_browser_states));
 
   base::Value::Dict info;
   info.Set(kGAIAIdKey, gaia_id);
   info.Set(kUserNameKey, user_name);
-  cache.Set(key, std::move(info));
-  AddBrowserStateCacheKey(key);
+  cache.Set(name, std::move(info));
+  sorted_keys_.insert(base::ranges::upper_bound(sorted_keys_, name),
+                      std::string(name));
 
   for (auto& observer : observer_list_) {
-    observer.OnBrowserStateAdded(browser_state_path);
+    observer.OnBrowserStateAdded(name);
   }
 }
 
-void BrowserStateInfoCache::RemoveBrowserState(
-    const base::FilePath& browser_state_path) {
-  size_t browser_state_index =
-      GetIndexOfBrowserStateWithPath(browser_state_path);
-  if (browser_state_index == std::string::npos) {
-    NOTREACHED_IN_MIGRATION();
-    return;
-  }
+void BrowserStateInfoCache::RemoveBrowserState(std::string_view name) {
+  CHECK_NE(GetIndexOfBrowserStateWithName(name), std::string::npos);
   ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
   base::Value::Dict& cache = update.Get();
 
@@ -89,18 +81,15 @@ void BrowserStateInfoCache::RemoveBrowserState(
 
   base::Value::List last_active_browser_states =
       prefs_->GetList(prefs::kBrowserStatesLastActive).Clone();
-  const base::Value browser_state_to_remove =
-      FilePathToValue(browser_state_path.BaseName());
-  last_active_browser_states.EraseValue(browser_state_to_remove);
+  last_active_browser_states.EraseValue(base::Value(name));
   prefs_->SetList(prefs::kBrowserStatesLastActive,
                   std::move(last_active_browser_states));
 
-  std::string key = CacheKeyFromBrowserStatePath(browser_state_path);
-  cache.Remove(key);
-  sorted_keys_.erase(base::ranges::find(sorted_keys_, key));
+  cache.Remove(name);
+  sorted_keys_.erase(base::ranges::find(sorted_keys_, name));
 
   for (auto& observer : observer_list_) {
-    observer.OnBrowserStateWasRemoved(browser_state_path);
+    observer.OnBrowserStateWasRemoved(name);
   }
 }
 
@@ -118,37 +107,32 @@ void BrowserStateInfoCache::RemoveObserver(
   observer_list_.RemoveObserver(observer);
 }
 
-size_t BrowserStateInfoCache::GetIndexOfBrowserStateWithPath(
-    const base::FilePath& browser_state_path) const {
-  if (browser_state_path.DirName() != user_data_dir_) {
+size_t BrowserStateInfoCache::GetIndexOfBrowserStateWithName(
+    std::string_view name) const {
+  auto iterator = base::ranges::lower_bound(sorted_keys_, name);
+  if (iterator == sorted_keys_.end() || *iterator != name) {
     return std::string::npos;
   }
-  std::string search_key = CacheKeyFromBrowserStatePath(browser_state_path);
-  for (size_t i = 0; i < sorted_keys_.size(); ++i) {
-    if (sorted_keys_[i] == search_key) {
-      return i;
-    }
-  }
-  return std::string::npos;
+  return std::distance(sorted_keys_.begin(), iterator);
 }
 
-std::u16string BrowserStateInfoCache::GetUserNameOfBrowserStateAtIndex(
+const std::string& BrowserStateInfoCache::GetNameOfBrowserStateAtIndex(
     size_t index) const {
-  const base::Value::Dict* value = GetInfoForBrowserStateAtIndex(index);
-  const std::string* user_name = value->FindString(kUserNameKey);
-  return user_name ? base::ASCIIToUTF16(*user_name) : std::u16string();
+  return sorted_keys_[index];
 }
 
-base::FilePath BrowserStateInfoCache::GetPathOfBrowserStateAtIndex(
-    size_t index) const {
-  return user_data_dir_.AppendASCII(sorted_keys_[index]);
-}
-
-std::string BrowserStateInfoCache::GetGAIAIdOfBrowserStateAtIndex(
+const std::string& BrowserStateInfoCache::GetGAIAIdOfBrowserStateAtIndex(
     size_t index) const {
   const base::Value::Dict* value = GetInfoForBrowserStateAtIndex(index);
   const std::string* gaia_id = value->FindString(kGAIAIdKey);
-  return gaia_id ? *gaia_id : std::string();
+  return gaia_id ? *gaia_id : base::EmptyString();
+}
+
+const std::string& BrowserStateInfoCache::GetUserNameOfBrowserStateAtIndex(
+    size_t index) const {
+  const base::Value::Dict* value = GetInfoForBrowserStateAtIndex(index);
+  const std::string* user_name = value->FindString(kUserNameKey);
+  return user_name ? *user_name : base::EmptyString();
 }
 
 bool BrowserStateInfoCache::BrowserStateIsAuthenticatedAtIndex(
@@ -169,8 +153,8 @@ bool BrowserStateInfoCache::BrowserStateIsAuthErrorAtIndex(size_t index) const {
 
 void BrowserStateInfoCache::SetAuthInfoOfBrowserStateAtIndex(
     size_t index,
-    const std::string& gaia_id,
-    const std::u16string& user_name) {
+    std::string_view gaia_id,
+    std::string_view user_name) {
   // If both gaia_id and username are unchanged, abort early.
   if (gaia_id == GetGAIAIdOfBrowserStateAtIndex(index) &&
       user_name == GetUserNameOfBrowserStateAtIndex(index)) {
@@ -197,6 +181,8 @@ void BrowserStateInfoCache::SetBrowserStateIsAuthErrorAtIndex(size_t index,
 // static
 void BrowserStateInfoCache::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kBrowserStateInfoCache);
+  registry->RegisterIntegerPref(prefs::kBrowserStatesNumCreated, 0);
+  registry->RegisterListPref(prefs::kBrowserStatesLastActive);
 }
 
 const base::Value::Dict* BrowserStateInfoCache::GetInfoForBrowserStateAtIndex(
@@ -211,16 +197,4 @@ void BrowserStateInfoCache::SetInfoForBrowserStateAtIndex(
     base::Value::Dict info) {
   ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
   update->Set(sorted_keys_[index], std::move(info));
-}
-
-std::string BrowserStateInfoCache::CacheKeyFromBrowserStatePath(
-    const base::FilePath& browser_state_path) const {
-  DCHECK(user_data_dir_ == browser_state_path.DirName());
-  base::FilePath base_name = browser_state_path.BaseName();
-  return base_name.MaybeAsASCII();
-}
-
-void BrowserStateInfoCache::AddBrowserStateCacheKey(const std::string& key) {
-  sorted_keys_.insert(
-      std::upper_bound(sorted_keys_.begin(), sorted_keys_.end(), key), key);
 }

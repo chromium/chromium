@@ -66,11 +66,11 @@
     prefService->SetBoolean(prefs::kPriceNotificationsHasBeenShown, true);
   }
 
-  base::FilePath path = self.browser->GetBrowserState()->GetStatePath();
   BrowserStateInfoCache* infoCache = GetApplicationContext()
                                          ->GetChromeBrowserStateManager()
                                          ->GetBrowserStateInfoCache();
-  size_t browserStateIndex = infoCache->GetIndexOfBrowserStateWithPath(path);
+  const size_t browserStateIndex = infoCache->GetIndexOfBrowserStateWithName(
+      self.browser->GetBrowserState()->GetBrowserStateName());
   NSString* gaiaID = base::SysUTF8ToNSString(
       infoCache->GetGAIAIdOfBrowserStateAtIndex(browserStateIndex));
   PushNotificationService* pushNotificationService =

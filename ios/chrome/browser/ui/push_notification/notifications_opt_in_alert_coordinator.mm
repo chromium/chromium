@@ -122,11 +122,11 @@
 
 // Enables notifications in prefs for the client with `clientID`.
 - (void)enableNotifications {
-  base::FilePath path = self.browser->GetBrowserState()->GetStatePath();
   BrowserStateInfoCache* infoCache = GetApplicationContext()
                                          ->GetChromeBrowserStateManager()
                                          ->GetBrowserStateInfoCache();
-  size_t browserStateIndex = infoCache->GetIndexOfBrowserStateWithPath(path);
+  const size_t browserStateIndex = infoCache->GetIndexOfBrowserStateWithName(
+      self.browser->GetBrowserState()->GetBrowserStateName());
   NSString* gaiaID = base::SysUTF8ToNSString(
       infoCache->GetGAIAIdOfBrowserStateAtIndex(browserStateIndex));
   std::vector<PushNotificationClientId> clientIDs = self.clientIds.value();

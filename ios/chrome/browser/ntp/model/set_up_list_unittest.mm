@@ -101,7 +101,7 @@ class SetUpListTest : public PlatformTest {
         identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
     test_manager_->GetBrowserStateInfoCache()->SetAuthInfoOfBrowserStateAtIndex(
         0, base::SysNSStringToUTF8(identity.gaiaID),
-        base::SysNSStringToUTF16(identity.userEmail));
+        base::SysNSStringToUTF8(identity.userEmail));
   }
 
   // Ensures that Chrome is considered as default browser.

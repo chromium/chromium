@@ -35,15 +35,15 @@ namespace push_notification_settings {
 class PushNotificationSettingsUtilTest : public PlatformTest {
  public:
   PushNotificationSettingsUtilTest() {
-    test_chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
-    pref_service_ = test_chrome_browser_state_.get()->GetPrefs();
-    default_browser_state_file_path_ =
-        test_chrome_browser_state_->GetStatePath();
+    auto test_chrome_browser_state = TestChromeBrowserState::Builder().Build();
+    const std::string browser_state_name =
+        test_chrome_browser_state->GetBrowserStateName();
+    pref_service_ = test_chrome_browser_state.get()->GetPrefs();
     test_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        std::move(test_chrome_browser_state_));
+        std::move(test_chrome_browser_state));
     TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
         test_manager_.get());
-    browser_state_info()->RemoveBrowserState(default_browser_state_file_path_);
+    browser_state_info()->RemoveBrowserState(browser_state_name);
     manager_ = [[PushNotificationAccountContextManager alloc]
         initWithChromeBrowserStateManager:test_manager_.get()];
     fake_id_ = [FakeSystemIdentity fakeIdentity1];
@@ -53,7 +53,7 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
         {/*disabled=*/});
     AddTestCasesToManager(manager_, browser_state_info(),
                           base::SysNSStringToUTF8(fake_id_.gaiaID),
-                          default_browser_state_file_path_);
+                          browser_state_name);
   }
   BrowserStateInfoCache* browser_state_info() const {
     return GetApplicationContext()
@@ -80,10 +80,10 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
   void AddTestCasesToManager(PushNotificationAccountContextManager* manager,
                              BrowserStateInfoCache* info_cache,
                              const std::string& gaia_id,
-                             base::FilePath path) {
+                             const std::string browser_state_name) {
     // Construct the BrowserStates with the given gaia id and add the gaia id
     // into the AccountContextManager.
-    info_cache->AddBrowserState(path, gaia_id, std::u16string());
+    info_cache->AddBrowserState(browser_state_name, gaia_id, std::string());
     [manager addAccount:gaia_id];
   }
 
@@ -92,9 +92,7 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   FakeSystemIdentity* fake_id_;
   PushNotificationAccountContextManager* manager_;
-  std::unique_ptr<ChromeBrowserState> test_chrome_browser_state_;
   std::unique_ptr<ios::ChromeBrowserStateManager> test_manager_;
-  base::FilePath default_browser_state_file_path_;
   base::test::ScopedFeatureList feature_list_;
 };
 

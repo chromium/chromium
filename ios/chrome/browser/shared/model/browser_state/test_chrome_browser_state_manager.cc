@@ -20,14 +20,12 @@ TestChromeBrowserStateManager::TestChromeBrowserStateManager(
 TestChromeBrowserStateManager::TestChromeBrowserStateManager(
     std::unique_ptr<ChromeBrowserState> browser_state,
     const base::FilePath& user_data_dir)
-    : browser_state_info_cache_(local_state_.Get(),
-                                user_data_dir.empty() && browser_state.get()
-                                    ? browser_state->GetStatePath().DirName()
-                                    : user_data_dir) {
+    : browser_state_info_cache_(local_state_.Get()) {
   if (browser_state) {
-    browser_state_info_cache_.AddBrowserState(browser_state->GetStatePath(),
-                                              /*gaia_id=*/std::string(),
-                                              /*user_name=*/std::u16string());
+    browser_state_info_cache_.AddBrowserState(
+        browser_state->GetBrowserStateName(),
+        /*gaia_id=*/std::string(),
+        /*user_name=*/std::string());
     last_used_browser_state_path_ = browser_state->GetStatePath();
     browser_states_[browser_state->GetStatePath()] = std::move(browser_state);
   }
@@ -41,7 +39,7 @@ TestChromeBrowserStateManager::GetLastUsedBrowserStateDeprecatedDoNotUse() {
 }
 
 ChromeBrowserState* TestChromeBrowserStateManager::GetBrowserStateByName(
-    const std::string& name) {
+    std::string_view name) {
   for (auto& pair : browser_states_) {
     if (pair.first.BaseName().AsUTF8Unsafe() == name) {
       return pair.second.get();
