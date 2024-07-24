@@ -72,7 +72,6 @@ import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.components.content_capture.ContentCaptureFeatures;
@@ -721,7 +720,7 @@ class WebViewChromium
             }
 
             // Needed for https://crbug.com/1417872
-            ApiHelperForO.setDefaultFocusHighlightEnabled(mWebView, false);
+            mWebView.setDefaultFocusHighlightEnabled(false);
 
             if (mAppTargetSdkVersion >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                 // If the app targets >= JB MR2 then we require that WebView is only used from a

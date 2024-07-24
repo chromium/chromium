@@ -25,7 +25,6 @@ import dalvik.system.PathClassLoader;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;
 
@@ -157,11 +156,13 @@ public class BundleUtils {
             // preloading on a background thread.
             // TODO(crbug.com/40745927): Consider moving preloading logic into //base so we can lock
             // here.
-            if (isApplicationContext(base)) {
-                context = ApiHelperForO.createContextForSplit(base, splitName);
-            } else {
-                synchronized (getSplitContextLock()) {
-                    context = ApiHelperForO.createContextForSplit(base, splitName);
+            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                if (isApplicationContext(base)) {
+                    context = base.createContextForSplit(splitName);
+                } else {
+                    synchronized (getSplitContextLock()) {
+                        context = base.createContextForSplit(splitName);
+                    }
                 }
             }
             ClassLoader parent = context.getClassLoader().getParent();

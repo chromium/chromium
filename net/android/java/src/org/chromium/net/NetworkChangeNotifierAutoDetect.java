@@ -40,7 +40,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.build.BuildConfig;
@@ -431,13 +430,12 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         }
 
         /**
-         * Registers networkCallback to receive notifications about default network.
-         * Only callable on P and newer releases.
+         * Registers networkCallback to receive notifications about default network. Only callable
+         * on P and newer releases.
          */
         @RequiresApi(Build.VERSION_CODES.P)
         void registerDefaultNetworkCallback(NetworkCallback networkCallback, Handler handler) {
-            ApiHelperForO.registerDefaultNetworkCallback(
-                    mConnectivityManager, networkCallback, handler);
+            mConnectivityManager.registerDefaultNetworkCallback(networkCallback, handler);
         }
 
         /** Unregisters networkCallback from receiving notifications. */

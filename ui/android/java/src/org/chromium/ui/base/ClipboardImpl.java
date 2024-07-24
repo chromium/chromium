@@ -39,7 +39,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.base.compat.ApiHelperForS;
 import org.chromium.base.metrics.RecordUserAction;
@@ -372,7 +371,7 @@ public class ClipboardImpl extends Clipboard
             return ImageFileProvider.ClipboardFileMetadata.INVALID_TIMESTAMP;
         }
 
-        return ApiHelperForO.getTimestamp(description);
+        return description.getTimestamp();
     }
 
     @Override
@@ -628,7 +627,7 @@ public class ClipboardImpl extends Clipboard
         ClipDescription clipDescription = mClipboardManager.getPrimaryClipDescription();
         if (clipDescription == null) return;
 
-        long timestamp = ApiHelperForO.getTimestamp(clipDescription);
+        long timestamp = clipDescription.getTimestamp();
         notifyPrimaryClipTimestampInvalidated(timestamp);
     }
 

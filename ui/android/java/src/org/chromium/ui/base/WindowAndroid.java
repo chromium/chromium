@@ -43,7 +43,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnownedUserDataHost;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.compat.ApiHelperForOMR1;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -223,7 +222,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
                 && !Build.VERSION.RELEASE.equals("8.0.0")
                 && ContextUtils.activityFromContext(context) != null) {
             Configuration configuration = context.getResources().getConfiguration();
-            boolean isScreenWideColorGamut = ApiHelperForO.isScreenWideColorGamut(configuration);
+            boolean isScreenWideColorGamut = configuration.isScreenWideColorGamut();
             display.updateIsDisplayServerWideColorGamut(isScreenWideColorGamut);
         }
 
@@ -934,7 +933,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
                 enabled
                         ? ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT
                         : ActivityInfo.COLOR_MODE_DEFAULT;
-        ApiHelperForO.setColorMode(window, colorMode);
+        window.setColorMode(colorMode);
     }
 
     private void recomputeSupportedRefreshRates() {

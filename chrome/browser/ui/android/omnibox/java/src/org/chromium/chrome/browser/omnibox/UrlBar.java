@@ -24,6 +24,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.autofill.AutofillManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.TextView;
@@ -42,7 +43,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.metrics.TimingMetric;
@@ -456,7 +456,10 @@ public class UrlBar extends AutocompleteEditText {
             // the domain changes. We restore this behavior by mimicking the relevant part of
             // TextView.notifyListeningManagersAfterTextChanged().
             // https://cs.android.com/android/platform/superproject/+/5d123b67756dffcfdebdb936ab2de2b29c799321:frameworks/base/core/java/android/widget/TextView.java;l=10618;drc=master;bpv=0
-            ApiHelperForO.notifyValueChangedForAutofill(this);
+            final AutofillManager afm = getContext().getSystemService(AutofillManager.class);
+            if (afm != null) {
+                afm.notifyValueChanged(this);
+            }
         }
 
         limitDisplayableLength();

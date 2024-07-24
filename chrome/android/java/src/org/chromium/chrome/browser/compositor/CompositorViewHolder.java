@@ -41,7 +41,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -399,7 +398,7 @@ public class CompositorViewHolder extends FrameLayout
                 TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS.getValue();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ApiHelperForO.setDefaultFocusHighlightEnabled(this, false);
+            setDefaultFocusHighlightEnabled(false);
         }
     }
 
