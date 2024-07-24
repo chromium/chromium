@@ -88,7 +88,7 @@ struct PrefetchResponseSizes {
 // This is done either in (see the indirect call sites of
 // `PrefetchStreamingURLLoader::SetResponseReader()`):
 // - `PrefetchService::StartSinglePrefetch()` [initial request] or
-// - `PrefetchService::OnGotEligibilityResultForRedirect()` [redirect].
+// - `PrefetchService::OnGotEligibilityForRedirect()` [redirect].
 // A new `PrefetchStreamingURLLoader` is also created if needed in
 // `PrefetchService::MakePrefetchRequest()`.
 class CONTENT_EXPORT PrefetchContainer {
