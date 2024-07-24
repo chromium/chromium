@@ -57,11 +57,12 @@ MultipartParser::MultipartParser(Vector<char> boundary, Client* client)
   matcher_ = DelimiterMatcher(kDashBoundaryOffset);
 }
 
-bool MultipartParser::AppendData(const char* bytes, size_t size) {
+bool MultipartParser::AppendData(base::span<const char> data) {
   DCHECK_NE(State::kFinished, state_);
   DCHECK_NE(State::kCancelled, state_);
 
-  const char* const bytes_end = bytes + size;
+  const char* bytes = data.data();
+  const char* const bytes_end = bytes + data.size();
 
   while (bytes < bytes_end) {
     switch (state_) {
@@ -127,9 +128,7 @@ bool MultipartParser::AppendData(const char* bytes, size_t size) {
             // bytes instead of being delimiter bytes. Additionally,
             // some of the matched bytes are from the previous call and
             // are therefore not in the range [octetsBegin, bytesEnd[.
-            auto matched_data = matcher_.MatchedData();
-            client_->PartDataInMultipartReceived(matched_data.data(),
-                                                 matched_data.size());
+            client_->PartDataInMultipartReceived(matcher_.MatchedData());
             if (state_ != State::kParsingPartOctets)
               break;
             octets_begin = bytes;
@@ -138,8 +137,8 @@ bool MultipartParser::AppendData(const char* bytes, size_t size) {
           ParseDataAndDelimiter(&bytes, bytes_end);
           const char* const octets_end = bytes - matcher_.NumMatchedBytes();
           if (octets_begin < octets_end) {
-            client_->PartDataInMultipartReceived(
-                octets_begin, static_cast<size_t>(octets_end - octets_begin));
+            client_->PartDataInMultipartReceived(base::span(
+                octets_begin, static_cast<size_t>(octets_end - octets_begin)));
             if (state_ != State::kParsingPartOctets)
               break;
           }
@@ -220,9 +219,7 @@ bool MultipartParser::Finish() {
         // Since the matched bytes did not form a complete delimiter,
         // the matched bytes turned out to be octet bytes instead of being
         // delimiter bytes.
-        auto matched_data = matcher_.MatchedData();
-        client_->PartDataInMultipartReceived(matched_data.data(),
-                                             matched_data.size());
+        client_->PartDataInMultipartReceived(matcher_.MatchedData());
       }
       return false;
     case State::kParsingCloseDelimiterSuffix:

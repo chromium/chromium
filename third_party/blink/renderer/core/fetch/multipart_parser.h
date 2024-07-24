@@ -37,7 +37,7 @@ class CORE_EXPORT MultipartParser final
     // The method is called whenever some data of a part is parsed which
     // can happen zero or more times per each part. It always holds that
     // |size| > 0.
-    virtual void PartDataInMultipartReceived(const char* bytes, size_t) = 0;
+    virtual void PartDataInMultipartReceived(base::span<const char> bytes) = 0;
     // The method is called whenever all data of a complete part is parsed.
     virtual void PartDataInMultipartFullyReceived() = 0;
     void Trace(Visitor* visitor) const override {}
@@ -46,7 +46,7 @@ class CORE_EXPORT MultipartParser final
   MultipartParser(Vector<char> boundary, Client*);
   MultipartParser(const MultipartParser&) = delete;
   MultipartParser& operator=(const MultipartParser&) = delete;
-  bool AppendData(const char* bytes, size_t);
+  bool AppendData(base::span<const char> bytes);
   void Cancel();
   bool Finish();
 
