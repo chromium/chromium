@@ -294,6 +294,7 @@ source_set("connections_implementation_mediums") {
     "src/connections/implementation/mediums/mediums.cc",
     "src/connections/implementation/mediums/multiplex/multiplex_frames.cc",
     "src/connections/implementation/mediums/multiplex/multiplex_output_stream.cc",
+    "src/connections/implementation/mediums/multiplex/multiplex_socket.cc",
     "src/connections/implementation/mediums/webrtc.cc",
     "src/connections/implementation/mediums/wifi_direct.cc",
     "src/connections/implementation/mediums/wifi_hotspot.cc",
@@ -317,6 +318,7 @@ source_set("connections_implementation_mediums") {
     "src/connections/implementation/mediums/mediums.h",
     "src/connections/implementation/mediums/multiplex/multiplex_frames.h",
     "src/connections/implementation/mediums/multiplex/multiplex_output_stream.h",
+    "src/connections/implementation/mediums/multiplex/multiplex_socket.h",
     "src/connections/implementation/mediums/webrtc.h",
     "src/connections/implementation/mediums/wifi_direct.h",
     "src/connections/implementation/mediums/wifi_hotspot.h",
@@ -811,6 +813,7 @@ source_set("platform_public_types") {
     ":nearby_defines",
   ]
   sources = [
+    "src/internal/platform/blocking_queue_stream.cc",
     "src/internal/platform/monitored_runnable.cc",
     "src/internal/platform/pending_job_registry.cc",
     "src/internal/platform/pipe.cc",
@@ -818,6 +821,7 @@ source_set("platform_public_types") {
   public = [
     "src/internal/platform/atomic_boolean.h",
     "src/internal/platform/atomic_reference.h",
+    "src/internal/platform/blocking_queue_stream.h",
     "src/internal/platform/borrowable.h",
     "src/internal/platform/cancelable.h",
     "src/internal/platform/cancelable_alarm.h",
