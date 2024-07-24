@@ -92,6 +92,7 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBatchMainThreadReleaseCallbacks);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kColorConversionInRenderer);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kLastVSyncArgsKillswitch);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBlitRequestsForViewTransition);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVizNullHypothesis);
 
 VIZ_COMMON_EXPORT extern const char kDraw1Point12Ms[];
 VIZ_COMMON_EXPORT extern const char kDraw2Points6Ms[];
