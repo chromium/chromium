@@ -102,7 +102,7 @@ void MediaControlTimelineElement::UpdateAria() {
 void MediaControlTimelineElement::SetPosition(double current_time,
                                               bool suppress_aria) {
   if (is_live_ && !live_anchor_time_ && current_time != 0) {
-    live_anchor_time_.emplace();
+    live_anchor_time_.emplace(LiveAnchorTime());
     live_anchor_time_->clock_time_ = base::TimeTicks::Now();
     live_anchor_time_->media_time_ = MediaElement().currentTime();
   }
