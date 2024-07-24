@@ -16,6 +16,7 @@
 #include "base/containers/queue.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
@@ -25,6 +26,7 @@
 #include "components/viz/common/performance_hint_utils.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
+#include "components/viz/service/display/overdraw_tracker.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/display_embedder/output_surface_provider.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
@@ -34,6 +36,7 @@
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/surfaces/surface.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 
 namespace viz {
 
@@ -942,6 +945,38 @@ void FrameSinkManagerImpl::StopFrameCountingForTest(
 
   std::move(callback).Run(frame_counter_->TakeData());
   frame_counter_.reset();
+}
+
+void FrameSinkManagerImpl::StartOverdrawTrackingForTest(
+    const FrameSinkId& root_frame_sink_id,
+    base::TimeDelta bucket_size) {
+  auto iter = root_sink_map_.find(root_frame_sink_id);
+  if (iter == root_sink_map_.end()) {
+    LOG(ERROR) << "No RootCompositorFrameSink for root_frame_sink_id:"
+               << root_frame_sink_id;
+    return;
+  }
+
+  const auto& [_, root_frame_sink] = *iter;
+  root_frame_sink->StartOverdrawTracking(bucket_size.InSeconds());
+}
+
+void FrameSinkManagerImpl::StopOverdrawTrackingForTest(
+    const FrameSinkId& root_frame_sink_id,
+    StopOverdrawTrackingForTestCallback callback) {
+  auto iter = root_sink_map_.find(root_frame_sink_id);
+  if (iter == root_sink_map_.end()) {
+    LOG(ERROR) << "No RootCompositorFrameSink for root_frame_sink_id:"
+               << root_frame_sink_id;
+    std::move(callback).Run(std::move(nullptr));
+    return;
+  }
+
+  const auto& [_, root_frame_sink] = *iter;
+
+  mojom::OverdrawDataPtr data = mojom::OverdrawData::New();
+  data->average_overdraws = root_frame_sink->StopOverdrawTracking();
+  std::move(callback).Run(std::move(data));
 }
 
 void FrameSinkManagerImpl::ClearUnclaimedViewTransitionResources(

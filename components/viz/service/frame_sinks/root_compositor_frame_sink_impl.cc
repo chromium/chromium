@@ -640,6 +640,16 @@ void RootCompositorFrameSinkImpl::SetHwSupportForMultipleRefreshRates(
   display_->SetHwSupportForMultipleRefreshRates(support);
 }
 
+void RootCompositorFrameSinkImpl::StartOverdrawTracking(
+    int interval_length_in_seconds) {
+  display_->StartTrackingOverdraw(interval_length_in_seconds);
+}
+
+OverdrawTracker::OverdrawTimeSeries
+RootCompositorFrameSinkImpl::StopOverdrawTracking() {
+  return display_->StopTrackingOverdraw();
+}
+
 void RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams(
     const gfx::CALayerParams& ca_layer_params) {
 #if BUILDFLAG(IS_APPLE)

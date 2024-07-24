@@ -27,6 +27,7 @@
 #include "components/viz/service/display/display_scheduler.h"
 #include "components/viz/service/display/frame_rate_decider.h"
 #include "components/viz/service/display/output_surface_client.h"
+#include "components/viz/service/display/overdraw_tracker.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/software_output_device_client.h"
 #include "components/viz/service/display/surface_aggregator.h"
@@ -223,6 +224,14 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
       AggregatedRenderPass& last_render_pass,
       const SurfaceDamageRectList* surface_damage_rect_list);
 
+  // Starts overdraw tacking for content rendered on the OutputSurface.
+  void StartTrackingOverdraw(int interval_length_in_seconds);
+
+  // Stop tracking overdraw and return the overdraw data collected during the
+  // interval between `StartTrackingOverdraw()` and `StopTrackingOverdraw()`
+  // calls.
+  OverdrawTracker::OverdrawTimeSeries StopTrackingOverdraw();
+
  protected:
   friend class DisplayTest;
   // PresentationGroupTiming stores rendering pipeline stage timings associated
@@ -323,6 +332,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   raw_ptr<SoftwareRenderer> software_renderer_ = nullptr;
   std::vector<ui::LatencyInfo> stored_latency_info_;
   std::unique_ptr<OcclusionCuller> occlusion_culler_;
+  std::unique_ptr<OverdrawTracker> overdraw_tracker_;
 
   // |pending_presentation_group_timings_| stores a
   // Display::PresentationGroupTiming for each group currently waiting for

@@ -6675,6 +6675,146 @@ void AutotestPrivateStopFrameCountingFunction::OnDataReceived(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateStartOverdrawTrackingFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateStartOverdrawTrackingFunction::
+    AutotestPrivateStartOverdrawTrackingFunction() = default;
+
+AutotestPrivateStartOverdrawTrackingFunction::
+    ~AutotestPrivateStartOverdrawTrackingFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateStartOverdrawTrackingFunction::Run() {
+  std::optional<api::autotest_private::StartOverdrawTracking::Params> params =
+      api::autotest_private::StartOverdrawTracking::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  int64_t target_display_id;
+  if (!GetDisplayIdFromOptionalArg(params->display_id, &target_display_id)) {
+    return RespondNow(
+        Error(base::StrCat({"Invalid displayId: ", *params->display_id})));
+  }
+
+  DVLOG(1) << "AutotestPrivateStopOverdrawTrackingFunction displayId:"
+           << target_display_id;
+
+  // Validate display id.
+  bool found_display = false;
+  for (aura::Window* const window : ash::Shell::GetAllRootWindows()) {
+    const int64_t display_id =
+        display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+    if (display_id == target_display_id) {
+      found_display = true;
+    }
+  }
+
+  if (!found_display) {
+    return RespondNow(Error(base::StringPrintf(
+        "Invalid displayId; no display found for the display id %" PRId64,
+        target_display_id)));
+  }
+
+  if (params->bucket_size_in_seconds <= 0) {
+    return RespondNow(
+        Error("Invalid bucketSizeInSeconds; must be greater than 0s"));
+  }
+
+  const ui::Compositor* compositor =
+      ash::Shell::GetRootWindowForDisplayId(target_display_id)
+          ->layer()
+          ->GetCompositor();
+
+  aura::Env::GetInstance()
+      ->context_factory()
+      ->GetHostFrameSinkManager()
+      ->StartOverdrawTrackingForTest(
+          compositor->frame_sink_id(),
+          base::Seconds(params->bucket_size_in_seconds));  // IN-TEST
+
+  return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateStopOverdrawTrackingFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateStopOverdrawTrackingFunction::
+    AutotestPrivateStopOverdrawTrackingFunction() = default;
+
+AutotestPrivateStopOverdrawTrackingFunction::
+    ~AutotestPrivateStopOverdrawTrackingFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateStopOverdrawTrackingFunction::Run() {
+  std::optional<api::autotest_private::StopOverdrawTracking::Params> params =
+      api::autotest_private::StopOverdrawTracking::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  int64_t target_display_id;
+  if (!GetDisplayIdFromOptionalArg(params->display_id, &target_display_id)) {
+    return RespondNow(
+        Error(base::StrCat({"Invalid displayId: ", *params->display_id})));
+  }
+
+  DVLOG(1) << "AutotestPrivateStopOverdrawTrackingFunction displayId:"
+           << target_display_id;
+
+  // Validate display id.
+  bool found_display = false;
+  for (aura::Window* const window : ash::Shell::GetAllRootWindows()) {
+    const int64_t display_id =
+        display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+    if (display_id == target_display_id) {
+      found_display = true;
+    }
+  }
+
+  if (!found_display) {
+    return RespondNow(Error(base::StringPrintf(
+        "Invalid displayId; no display found for the display id %" PRId64,
+        target_display_id)));
+  }
+
+  const ui::Compositor* compositor =
+      ash::Shell::GetRootWindowForDisplayId(target_display_id)
+          ->layer()
+          ->GetCompositor();
+
+  auto callback = base::BindOnce(
+      &AutotestPrivateStopOverdrawTrackingFunction::OnDataReceived, this);
+  aura::Env::GetInstance()
+      ->context_factory()
+      ->GetHostFrameSinkManager()
+      ->StopOverdrawTrackingForTest(compositor->frame_sink_id(),
+                                    std::move(callback));  // IN-TEST
+
+  return RespondLater();
+}
+
+void AutotestPrivateStopOverdrawTrackingFunction::OnDataReceived(
+    viz::mojom::OverdrawDataPtr data_ptr) {
+  // Data can be missing if gpu process is restarted in middle of test
+  // and test scripts still calls `stopOverdrawTracking`.
+  if (!data_ptr || data_ptr->average_overdraws.empty()) {
+    Respond(
+        Error("No overdraw data; maybe forgot to call startOverdrawTracking or "
+              "no UI changes between start and stop calls"));
+    return;
+  }
+
+  api::autotest_private::OverdrawData result;
+  result.average_overdraws.reserve(data_ptr->average_overdraws.size());
+
+  std::copy(data_ptr->average_overdraws.begin(),
+            data_ptr->average_overdraws.end(),
+            std::back_inserter(result.average_overdraws));
+
+  Respond(ArgumentList(
+      api::autotest_private::StopOverdrawTracking::Results::Create(result)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateBruschettaInstallFunction
 //////////////////////////////////////////////////////////////////////////////
 

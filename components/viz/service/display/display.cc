@@ -13,6 +13,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
@@ -760,6 +761,29 @@ void Display::MaybeLogQuadsProperties(
                           logging_timer.Elapsed().InMicroseconds());
 }
 
+void Display::StartTrackingOverdraw(int interval_length_in_seconds) {
+  CHECK(!overdraw_tracker_);
+
+  OverdrawTracker::Settings settings;
+  settings.interval_length_in_seconds = interval_length_in_seconds;
+
+  overdraw_tracker_ = std::make_unique<OverdrawTracker>(settings);
+}
+
+OverdrawTracker::OverdrawTimeSeries Display::StopTrackingOverdraw() {
+  // Returns empty time series if `overdraw_tracker_` has no value. This could
+  // happen when gpu-process is restarted in middle of test and test scripts
+  // still calls this at the end.
+  if (!overdraw_tracker_) {
+    return OverdrawTracker::OverdrawTimeSeries();
+  }
+
+  auto overdraw_data = overdraw_tracker_->TakeDataAsTimeSeries();
+  overdraw_tracker_.reset();
+
+  return overdraw_data;
+}
+
 bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   TRACE_EVENT0("viz", "Display::DrawAndSwap");
   if (debug_settings_->show_aggregated_damage !=
@@ -951,6 +975,11 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
 
     DBG_LOG("renderer.ptr", "renderer = %p%s", this,
             renderer_.get() == software_renderer_ ? " (software)" : "");
+
+    if (overdraw_tracker_) {
+      overdraw_tracker_->EstimateAndRecordOverdraw(&frame,
+                                                   base::TimeTicks::Now());
+    }
 
     draw_timer.emplace();
     overlay_processor_->SetFrameSequenceNumber(frame_sequence_number_);

@@ -27,6 +27,7 @@
 #include "components/viz/common/constants.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "components/viz/service/display/overdraw_tracker.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_impl.h"
 #include "components/viz/service/frame_sinks/frame_counter.h"
 #include "components/viz/service/frame_sinks/frame_sink_observer.h"
@@ -171,6 +172,11 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
                                  base::TimeDelta bucket_size) override;
   void StopFrameCountingForTest(
       StopFrameCountingForTestCallback callback) override;
+  void StartOverdrawTrackingForTest(const FrameSinkId& root_frame_sink_id,
+                                    base::TimeDelta bucket_size) override;
+  void StopOverdrawTrackingForTest(
+      const FrameSinkId& root_frame_sink_id,
+      StopOverdrawTrackingForTestCallback callback) override;
   void ClearUnclaimedViewTransitionResources(
       const blink::ViewTransitionToken& transition_token) override;
   void HasUnclaimedViewTransitionResourcesForTest(

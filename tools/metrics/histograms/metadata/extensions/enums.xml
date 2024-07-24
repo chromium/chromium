@@ -2752,6 +2752,8 @@ Called by update_extension_histograms.py.-->
   <int value="1893" label="PASSWORDSPRIVATE_DELETEALLPASSWORDMANAGERDATA"/>
   <int value="1894"
       label="DEVELOPERPRIVATE_DISMISSMV2DEPRECATIONNOTICEFOREXTENSION"/>
+  <int value="1895" label="AUTOTESTPRIVATE_STARTOVERDRAWTRACKING"/>
+  <int value="1896" label="AUTOTESTPRIVATE_STOPOVERDRAWTRACKING"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

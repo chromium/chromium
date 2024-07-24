@@ -512,6 +512,21 @@ void HostFrameSinkManager::StopFrameCountingForTest(
       std::move(callback));
 }
 
+void HostFrameSinkManager::StartOverdrawTrackingForTest(
+    const FrameSinkId& root_frame_sink_id,
+    base::TimeDelta bucket_size) {
+  frame_sink_manager_->StartOverdrawTrackingForTest(root_frame_sink_id,
+                                                    bucket_size);  // IN-TEST
+}
+
+void HostFrameSinkManager::StopOverdrawTrackingForTest(
+    const FrameSinkId& root_frame_sink_id,
+    mojom::FrameSinkManager::StopOverdrawTrackingForTestCallback callback) {
+  frame_sink_manager_->StopOverdrawTrackingForTest(
+      root_frame_sink_id,
+      std::move(callback));  // IN-TEST
+}
+
 void HostFrameSinkManager::ClearUnclaimedViewTransitionResources(
     const blink::ViewTransitionToken& transition_token) {
   frame_sink_manager_->ClearUnclaimedViewTransitionResources(transition_token);

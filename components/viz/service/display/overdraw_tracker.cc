@@ -41,8 +41,9 @@ void OverdrawTracker::EstimateAndRecordOverdraw(const AggregatedFrame* frame,
   Record(overdraw, timestamp);
 }
 
-std::vector<float> OverdrawTracker::TakeDataAsTimeSeries() const {
-  std::vector<float> averages;
+OverdrawTracker::OverdrawTimeSeries OverdrawTracker::TakeDataAsTimeSeries()
+    const {
+  OverdrawTimeSeries averages;
 
   // If the recorder has yet to track overdraw of a frame, return empty vector.
   if (interval_overdraw_averages_.empty()) {
