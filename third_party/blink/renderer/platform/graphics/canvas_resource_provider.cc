@@ -316,9 +316,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       return false;
 
     WillDrawInternal(true);
-    RasterInterface()->WritePixels(GetBackingMailboxForOverwrite(), x, y,
-                                   GetBackingTextureTarget(),
-                                   SkPixmap(orig_info, pixels, row_bytes));
+    RasterInterface()->WritePixels(
+        GetBackingMailboxForOverwrite(), x, y,
+        resource()->GetClientSharedImage()->GetTextureTarget(),
+        SkPixmap(orig_info, pixels, row_bytes));
 
     // If the overdraw optimization kicked in, we need to indicate that the
     // pixels do not need to be cleared, otherwise the subsequent
@@ -474,8 +475,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
           auto mailbox = resource()->GetClientSharedImage()->mailbox();
 
           raster_interface->CopySharedImage(
-              old_mailbox, mailbox, GetBackingTextureTarget(), 0, 0, 0, 0,
-              Size().width(), Size().height(), false /* unpack_flip_y */,
+              old_mailbox, mailbox,
+              resource()->GetClientSharedImage()->GetTextureTarget(), 0, 0, 0,
+              0, Size().width(), Size().height(), false /* unpack_flip_y */,
               false /* unpack_premultiply_alpha */);
         } else if (use_oop_rasterization_) {
           // If we're not copying over the previous contents, we need to ensure
