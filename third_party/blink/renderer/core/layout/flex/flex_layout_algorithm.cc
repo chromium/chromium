@@ -1667,18 +1667,17 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     if (IsBreakInside(item_break_token)) {
       offset.block_offset = BorderScrollbarPadding().block_start;
     } else if (IsBreakInside(GetBreakToken())) {
-      LayoutUnit offset_adjustment =
-          offset_in_stitched_container - line_output.item_offset_adjustment;
-
       // Convert block offsets from stitched coordinate system offsets to being
       // relative to the current fragment. Include space taken up by any cloned
-      // block-start decorations.
-      offset.block_offset +=
-          BorderScrollbarPadding().block_start - offset_adjustment;
+      // block-start decorations (i.e. exclude it from the adjustment).
+      LayoutUnit offset_adjustment = offset_in_stitched_container -
+                                     line_output.item_offset_adjustment -
+                                     BorderScrollbarPadding().block_start;
+
+      offset.block_offset -= offset_adjustment;
       if (!is_column_) {
         offset.block_offset += individual_item_adjustment;
-        row_block_offset +=
-            BorderScrollbarPadding().block_start - offset_adjustment;
+        row_block_offset -= offset_adjustment;
       }
     }
 
