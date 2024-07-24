@@ -35,9 +35,8 @@ _log = logging.getLogger(__name__)
 
 
 class MacPort(base.Port):
-    SUPPORTED_VERSIONS = ('mac10.15', 'mac11', 'mac11-arm64', 'mac12',
-                          'mac12-arm64', 'mac13', 'mac13-arm64', 'mac14',
-                          'mac14-arm64')
+    SUPPORTED_VERSIONS = ('mac11', 'mac11-arm64', 'mac12', 'mac12-arm64',
+                          'mac13', 'mac13-arm64', 'mac14', 'mac14-arm64')
     port_name = 'mac'
 
     FALLBACK_PATHS = {}
@@ -54,7 +53,6 @@ class MacPort(base.Port):
     FALLBACK_PATHS['mac11'] = ['mac-mac11'] + FALLBACK_PATHS['mac12']
     FALLBACK_PATHS['mac11-arm64'] = ['mac-mac11-arm64'
                                      ] + FALLBACK_PATHS['mac11']
-    FALLBACK_PATHS['mac10.15'] = ['mac-mac10.15'] + FALLBACK_PATHS['mac11']
 
     CONTENT_SHELL_NAME = 'Content Shell'
     CHROME_NAME = 'Chromium'
@@ -126,10 +124,6 @@ class MacPort(base.Port):
                                'MacOS',
                                self.driver_name(),
                                target=target)
-
-    def default_smoke_test_only(self):
-        # only run platform specific tests on Mac 10.15
-        return self._version == 'mac10.15'
 
     def path_to_smoke_tests_file(self):
         return self._filesystem.join(self.web_tests_dir(), 'TestLists',

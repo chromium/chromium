@@ -61,7 +61,7 @@ class FactoryTest(unittest.TestCase):
     def test_mac(self):
         self.assert_port(port_name='mac',
                          os_name='mac',
-                         os_version='mac10.15',
+                         os_version='mac14',
                          cls=mac.MacPort)
 
     def test_linux(self):
