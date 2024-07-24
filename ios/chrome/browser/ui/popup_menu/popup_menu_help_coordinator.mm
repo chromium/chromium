@@ -35,6 +35,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
 base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 }  // namespace
 
@@ -245,7 +246,6 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
           initDefaultBubbleWithText:text
                      arrowDirection:arrowDirection
                           alignment:BubbleAlignmentBottomOrTrailing
-               isLongDurationBubble:NO
                   dismissalCallback:dismissalCallback];
   std::u16string menuButtonA11yLabel = base::SysNSStringToUTF16(
       l10n_util::GetNSString(IDS_IOS_TOOLBAR_SETTINGS));
@@ -367,7 +367,6 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
           initDefaultBubbleWithText:text
                      arrowDirection:arrowDirection
                           alignment:alignment
-               isLongDurationBubble:NO
                   dismissalCallback:dismissalCallback];
   std::u16string historyButtonA11yLabel = base::SysNSStringToUTF16(
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_HISTORY));
@@ -409,8 +408,10 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
           initDefaultBubbleWithText:text
                      arrowDirection:arrowDirection
                           alignment:alignment
-               isLongDurationBubble:YES
                   dismissalCallback:dismissalCallback];
+
+  bubbleViewControllerPresenter.customBubbleVisibilityDuration =
+      kDefaultLongDurationBubbleVisibility;
 
   return bubbleViewControllerPresenter;
 }

@@ -232,7 +232,7 @@ int LargeContextualPanelEntrypointDelayInSeconds() {
 constexpr base::FeatureParam<int>
     kLargeContextualPanelEntrypointDisplayedInSeconds{
         &kContextualPanel,
-        /*name=*/"large-entrypoint-displayed-seconds", /*default_value=*/5};
+        /*name=*/"large-entrypoint-displayed-seconds", /*default_value=*/10};
 
 int LargeContextualPanelEntrypointDisplayedInSeconds() {
   return kLargeContextualPanelEntrypointDisplayedInSeconds.Get();

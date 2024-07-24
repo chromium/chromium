@@ -100,6 +100,7 @@ source_set("unit_tests") {
     ":ui_bundled",
     "//base",
     "//base:i18n",
+    "//base/test:test_support",
     "//testing/gtest",
   ]
   frameworks = [ "CoreGraphics.framework" ]

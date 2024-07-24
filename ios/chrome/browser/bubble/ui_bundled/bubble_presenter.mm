@@ -940,8 +940,10 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
           initDefaultBubbleWithText:text
                      arrowDirection:direction
                           alignment:alignment
-               isLongDurationBubble:[self isLongDurationBubble:feature]
                   dismissalCallback:dismissalCallbackWithSnoozeAction];
+
+  bubbleViewControllerPresenter.customBubbleVisibilityDuration =
+      [self bubbleVisibilityDurationForFeature:feature];
 
   return bubbleViewControllerPresenter;
 }
@@ -1031,11 +1033,16 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   self.engagementTracker->DismissedWithSnooze(feature, snoozeAction);
 }
 
-// Returns YES if the bubble for `feature` has a long duration.
-- (BOOL)isLongDurationBubble:(const base::Feature&)feature {
-  // Display follow iph bubble with long duration.
-  return feature.name ==
-         feature_engagement::kIPHFollowWhileBrowsingFeature.name;
+// Returns the custom duration of the bubble for `feature`, or 0 if there is
+// none.
+- (NSTimeInterval)bubbleVisibilityDurationForFeature:
+    (const base::Feature&)feature {
+  // Display FollowWhileBrowsing in-product help bubble with custom duration.
+  if (feature.name == feature_engagement::kIPHFollowWhileBrowsingFeature.name) {
+    return kDefaultLongDurationBubbleVisibility;
+  }
+
+  return 0;
 }
 
 // Return YES if the bubble should always be presented. Ex. if force present

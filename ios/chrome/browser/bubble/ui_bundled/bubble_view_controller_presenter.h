@@ -57,6 +57,12 @@ using CallbackWithIPHDismissalReasonType =
 // `presentInViewController`, otherwise the value will be ignored.
 @property(nonatomic, assign) BOOL ignoreWebContentAreaInteractions;
 
+// A custom bubble visibility duration. Overrides the default bubble visibility
+// duration if set. This property must be set before calling
+// `presentInViewController`, otherwise the value will be ignored. This value
+// will be ignored if set to 0 or smaller.
+@property(nonatomic, assign) NSTimeInterval customBubbleVisibilityDuration;
+
 // Initializes the presenter. `text` is the text displayed by the bubble.
 // `titleString` is the title displayed by the bubble. `image` is the image
 // displayed by the bubble. `arrowDirection` is the direction the bubble's arrow
@@ -77,13 +83,11 @@ using CallbackWithIPHDismissalReasonType =
 // Initializes the presenter with a Default BubbleViewType. `text` is the text
 // displayed by the bubble. `arrowDirection` is the direction the bubble's arrow
 // is pointing. `alignment` is the position of the arrow on the bubble.
-// `isLongDurationBubble` is YES if the bubble presenting time is longer.
 // `dismissalCallback` is a block invoked when the bubble is dismissed (manual
 // and automatic dismissal). `dismissalCallback` is optional.
 - (instancetype)initDefaultBubbleWithText:(NSString*)text
                            arrowDirection:(BubbleArrowDirection)arrowDirection
                                 alignment:(BubbleAlignment)alignment
-                     isLongDurationBubble:(BOOL)isLongDurationBubble
                         dismissalCallback:(CallbackWithIPHDismissalReasonType)
                                               dismissalCallback;
 

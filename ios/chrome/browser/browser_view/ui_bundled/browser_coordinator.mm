@@ -2216,6 +2216,8 @@ enum class ToolbarKind {
       base::SysUTF8ToNSString(config_ref.iph_text);
   _contextualPanelEntrypointHelpPresenter.ignoreWebContentAreaInteractions =
       YES;
+  _contextualPanelEntrypointHelpPresenter.customBubbleVisibilityDuration =
+      LargeContextualPanelEntrypointDisplayedInSeconds();
 
   // Early return if the bubble wouldn't fit in its parent view.
   if (![_contextualPanelEntrypointHelpPresenter
