@@ -31,11 +31,13 @@ class CookieSpecifics;
 class CrossUserSharingPublicKey;
 class DebugEventInfo;
 class DebugInfo;
+class DeviceDetails;
 class DeviceInfoSpecifics;
 class DictionarySpecifics;
 class EncryptedData;
 class EntityMetadata;
 class EntitySpecifics;
+class EwalletDetails;
 class ExtensionSettingSpecifics;
 class ExtensionSpecifics;
 class HistoryDeleteDirectiveSpecifics;
@@ -152,6 +154,8 @@ base::Value DebugEventInfoToValue(const sync_pb::DebugEventInfo& proto);
 
 base::Value DebugInfoToValue(const sync_pb::DebugInfo& proto);
 
+base::Value DeviceDetailsToValue(const sync_pb::DeviceDetails& device_details);
+
 base::Value DeviceInfoSpecificsToValue(
     const sync_pb::DeviceInfoSpecifics& device_info_specifics);
 
@@ -163,6 +167,9 @@ base::Value EncryptedDataToValue(const sync_pb::EncryptedData& encrypted_data);
 base::Value EntityMetadataToValue(const sync_pb::EntityMetadata& metadata);
 
 base::Value EntitySpecificsToValue(const sync_pb::EntitySpecifics& specifics);
+
+base::Value EwalletDetailsToValue(
+    const sync_pb::EwalletDetails& ewallet_details);
 
 base::Value ExtensionSettingSpecificsToValue(
     const sync_pb::ExtensionSettingSpecifics& extension_setting_specifics);

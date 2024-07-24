@@ -1647,12 +1647,24 @@ VISIT_PROTO_FIELDS(const sync_pb::PaymentInstrument& proto) {
   VISIT(bank_account);
   VISIT(nickname);
   VISIT(iban);
+  VISIT(ewallet_details);
+  VISIT(device_details);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::BankAccountDetails& proto) {
   VISIT(bank_name);
   VISIT(account_number_suffix);
   VISIT_ENUM(account_type);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::EwalletDetails& proto) {
+  VISIT(ewallet_name);
+  VISIT(account_display_name);
+  VISIT_REP(supported_payment_link_uris);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::DeviceDetails& proto) {
+  VISIT(is_fido_enrolled);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::CardBenefit& proto) {

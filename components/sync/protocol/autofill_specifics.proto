@@ -531,6 +531,13 @@ message PaymentInstrument {
     PIX = 1;
     // International Bank Account Numbers.
     IBAN = 2;
+    // This rail can be used for making payments to push payment targets
+    // represented as payment hyperlinks that are supported by the instrument
+    // issuer. The hyperlink will be specified in the href attribute within a
+    // <link> tag in the DOM representing the payment page.
+    // More details on payment links can be found at
+    // https://github.com/aneeshali/paymentlink/blob/main/docs/explainer.md.
+    PAYMENT_HYPERLINK = 3;
   }
   // The supported rails for which a payment can be made for the given account.
   // For example, Pix is the open-banking rail in Brazil, UPI is the
@@ -548,7 +555,10 @@ message PaymentInstrument {
   oneof instrument_details {
     BankAccountDetails bank_account = 5;
     WalletMaskedIban iban = 6;
+    EwalletDetails ewallet_details = 7;
   }
+
+  optional DeviceDetails device_details = 8;
 }
 
 // Contains information of server IBAN (International Bank Account Number).
@@ -589,6 +599,36 @@ message BankAccountDetails {
   }
   // The type of bank account.
   optional AccountType account_type = 3;
+}
+
+// Details of an eWallet account required to show it in the payment instrument
+// selector.
+message EwalletDetails {
+  // Name of the ewallet provider.
+  optional string ewallet_name = 1;
+
+  // Display name of the ewallet account.
+  optional string account_display_name = 2;
+
+  // Payment hyperlinks will be embedded in payment web pages. Chrome will match
+  // the payment link against the list of payment link URI regexes below. If
+  // there is a match, the payment flow will be initiated via the Payments
+  // Server. The regex matching approach makes it possible to launch new payment
+  // methods without requiring any client side changes. More details on payment
+  // links can be found at
+  // https://github.com/aneeshali/paymentlink/blob/main/docs/explainer.md.
+  repeated string supported_payment_link_uris = 3;
+}
+
+// This field captures all of the information related to the instrument-device
+// combo that is required for the payment flows.
+message DeviceDetails {
+  // Whether the device is enrolled in FIDO for this instrument. Depending on
+  // the FIDO state, the Chrome client will show a different UI for the
+  // user. For an unbound device, there will be some user-education content and
+  // the user will be asked to complete FIDO binding. For an already-bound
+  // device, the user will see a more simplified UI.
+  optional bool is_fido_enrolled = 1;
 }
 
 message AutofillWalletSpecifics {

@@ -130,4 +130,44 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForBankAccount(
   return wallet_specifics;
 }
 
+sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForEwalletAccount(
+    const std::string_view client_tag,
+    std::string nickname,
+    const GURL& display_icon_url,
+    std::string ewallet_name,
+    std::string account_display_name,
+    bool is_fido_enrolled) {
+  sync_pb::AutofillWalletSpecifics wallet_specifics;
+  wallet_specifics.set_type(
+      sync_pb::AutofillWalletSpecifics_WalletInfoType::
+          AutofillWalletSpecifics_WalletInfoType_PAYMENT_INSTRUMENT);
+
+  sync_pb::PaymentInstrument* payment_instrument_specifics =
+      wallet_specifics.mutable_payment_instrument();
+
+  int64_t instrument_id;
+  // The client tag is expected to of the format:
+  // 'payment_instrument:<instrument_id>', so we first find the index of ':' and
+  // then convert the succeeding characters to a number.
+  size_t index = client_tag.find(":");
+  if (index != std::string::npos &&
+      base::StringToInt64(client_tag.substr(index + 1), &instrument_id)) {
+    payment_instrument_specifics->set_instrument_id(instrument_id);
+  }
+  payment_instrument_specifics->set_nickname(nickname);
+  payment_instrument_specifics->set_display_icon_url(display_icon_url.spec());
+  payment_instrument_specifics->add_supported_rails(
+      sync_pb::PaymentInstrument_SupportedRail::
+          PaymentInstrument_SupportedRail_PAYMENT_HYPERLINK);
+  sync_pb::EwalletDetails* ewallet_details =
+      payment_instrument_specifics->mutable_ewallet_details();
+  ewallet_details->set_ewallet_name(ewallet_name);
+  ewallet_details->set_account_display_name(account_display_name);
+  ewallet_details->add_supported_payment_link_uris("fake_payment_link_regex");
+  sync_pb::DeviceDetails* device_details =
+      payment_instrument_specifics->mutable_device_details();
+  device_details->set_is_fido_enrolled(is_fido_enrolled);
+  return wallet_specifics;
+}
+
 }  // namespace autofill
