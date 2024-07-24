@@ -95,13 +95,17 @@ IN_PROC_BROWSER_TEST_F(PointerLockControllerTest,
 IN_PROC_BROWSER_TEST_F(PointerLockControllerTest,
                        PointerLockBubbleHideCallbackTimeout) {
   SetWebContentsGrantedSilentPointerLockPermission();
+  // TODO(crbug.com/40514143): Replace with TaskEnvironment using MOCK_TIME.
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
 
   pointer_lock_bubble_hide_reason_recorder_.clear();
   RequestToLockPointer(true, false);
   EXPECT_EQ(0ul, pointer_lock_bubble_hide_reason_recorder_.size());
 
+  EXPECT_TRUE(task_runner->HasPendingTask());
   // Must fast forward at least `ExclusiveAccessBubble::kShowTime`.
-  Wait(ExclusiveAccessBubble::kShowTime * 2);
+  task_runner->FastForwardBy(ExclusiveAccessBubble::kShowTime * 2);
   EXPECT_EQ(1ul, pointer_lock_bubble_hide_reason_recorder_.size());
   EXPECT_EQ(ExclusiveAccessBubbleHideReason::kTimeout,
             pointer_lock_bubble_hide_reason_recorder_[0]);
@@ -115,9 +119,13 @@ IN_PROC_BROWSER_TEST_F(PointerLockControllerTest,
 #endif
 IN_PROC_BROWSER_TEST_F(PointerLockControllerTest,
                        MAYBE_FastPointerLockUnlockRelock) {
+  // TODO(crbug.com/40514143): Replace with TaskEnvironment using MOCK_TIME.
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
+
   RequestToLockPointer(true, false);
   // Shorter than `ExclusiveAccessBubble::kShowTime`.
-  Wait(ExclusiveAccessBubble::kShowTime / 2);
+  task_runner->FastForwardBy(ExclusiveAccessBubble::kShowTime / 2);
   LostPointerLock();
   RequestToLockPointer(true, true);
 
@@ -130,9 +138,13 @@ IN_PROC_BROWSER_TEST_F(PointerLockControllerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PointerLockControllerTest, SlowPointerLockUnlockRelock) {
+  // TODO(crbug.com/40514143): Replace with TaskEnvironment using MOCK_TIME.
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
+
   RequestToLockPointer(true, false);
   // Longer than `ExclusiveAccessBubble::kShowTime`.
-  Wait(ExclusiveAccessBubble::kShowTime * 2);
+  task_runner->FastForwardBy(ExclusiveAccessBubble::kShowTime * 2);
   LostPointerLock();
   RequestToLockPointer(true, true);
 

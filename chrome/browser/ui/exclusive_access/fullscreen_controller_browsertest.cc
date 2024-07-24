@@ -227,9 +227,12 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, FastKeyboardLockUnlockRelock) {
   EnterActiveTabFullscreen();
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
+
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   // Shorter than `ExclusiveAccessBubble::kShowTime`.
-  Wait(ExclusiveAccessBubble::kShowTime / 2);
+  task_runner->FastForwardBy(ExclusiveAccessBubble::kShowTime / 2);
   CancelKeyboardLock();
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   ASSERT_TRUE(GetExclusiveAccessManager()
@@ -241,9 +244,12 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, FastKeyboardLockUnlockRelock) {
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, SlowKeyboardLockUnlockRelock) {
   EnterActiveTabFullscreen();
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
+
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   // Longer than `ExclusiveAccessBubble::kShowTime`.
-  Wait(ExclusiveAccessBubble::kShowTime * 2);
+  task_runner->FastForwardBy(ExclusiveAccessBubble::kShowTime * 2);
   CancelKeyboardLock();
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   ASSERT_TRUE(GetExclusiveAccessManager()
