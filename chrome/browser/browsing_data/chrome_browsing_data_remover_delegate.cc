@@ -184,6 +184,9 @@
 #endif  // BUILDFLAG(ENABLE_FEED_V2)
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -621,6 +624,22 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     if (bookmark_model && bookmark_model->loaded()) {
       bookmark_model->ClearLastUsedTimeInRange(delete_begin, delete_end);
     }
+
+#if !BUILDFLAG(IS_ANDROID)
+    // Clear User Education session record. Note that we can't clear a range of
+    // data as this is used for longitudinal metrics reporting, so deleting some
+    // of the data would make the telemetry invalid. Therefore, clear it all
+    // regardless of the window specified so as not to introduce faulty
+    // reporting.
+    if (auto* const user_education_service =
+            UserEducationServiceFactory::GetForBrowserContext(profile_)) {
+      // Theoretically, if the start were earlier than the earliest timestamp,
+      // clearing this data could be skipped, but that is unlikely.
+      static_cast<BrowserFeaturePromoStorageService&>(
+          user_education_service->feature_promo_storage_service())
+          .ResetRecentSessionData();
+    }
+#endif
 
     // Cleared for DATA_TYPE_HISTORY, DATA_TYPE_COOKIES and DATA_TYPE_PASSWORDS.
     browsing_data::RemoveFederatedSiteSettingsData(delete_begin_, delete_end_,
