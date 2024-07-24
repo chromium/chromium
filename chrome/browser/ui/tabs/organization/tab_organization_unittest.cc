@@ -493,6 +493,27 @@ TEST_F(TabOrganizationTest, TabOrganizationIsValidForOrganizing) {
       std::make_unique<TabData>(tab_strip_model(), tab_3);
   organization.AddTabData(std::move(tab_data_3));
   EXPECT_FALSE(organization.IsValidForOrganizing());
+
+  TabOrganization pre_existing_organization({}, {u"default_name"}, 2);
+
+  content::WebContents* grouped_tab_1 = AddTab();
+  std::unique_ptr<TabData> grouped_tab_data_1 =
+      std::make_unique<TabData>(tab_strip_model(), grouped_tab_1);
+  pre_existing_organization.AddTabData(std::move(grouped_tab_data_1));
+
+  content::WebContents* grouped_tab_2 = AddTab();
+  std::unique_ptr<TabData> grouped_tab_data_2 =
+      std::make_unique<TabData>(tab_strip_model(), grouped_tab_2);
+  pre_existing_organization.AddTabData(std::move(grouped_tab_data_2));
+  // The minimum number of tabs is met, but there are no tabs new to the group.
+  EXPECT_FALSE(pre_existing_organization.IsValidForOrganizing());
+
+  content::WebContents* grouped_tab_3 = AddTab();
+  std::unique_ptr<TabData> grouped_tab_data_3 =
+      std::make_unique<TabData>(tab_strip_model(), grouped_tab_3);
+  pre_existing_organization.AddTabData(std::move(grouped_tab_data_3));
+  // There is one tab new to the group.
+  EXPECT_TRUE(pre_existing_organization.IsValidForOrganizing());
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationNoUniqueTabDatas) {
