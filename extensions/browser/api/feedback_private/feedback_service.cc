@@ -293,10 +293,16 @@ void FeedbackService::OnLacrosHistogramsFetched(
   }
 
   auto barrier_closure =
-      base::BarrierClosure((params.send_bluetooth_logs ? 1 : 0) +
+      base::BarrierClosure((params.send_bluetooth_logs ? 2 : 0) +
                                (params.send_wifi_debug_logs ? 1 : 0),
                            base::BindOnce(&FeedbackService::OnAllLogsFetched,
                                           this, params, feedback_data));
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  const auto account_identifier =
+      cryptohome::CreateAccountIdentifierFromAccountId(
+          user ? user->GetAccountId() : EmptyAccountId());
+
   // If bluetooth logs are requested, invoke AttachBluetoothLogs to add
   // them in a separate thread to avoid blocking the UI thread.
   if (params.send_bluetooth_logs) {
@@ -304,15 +310,15 @@ void FeedbackService::OnLacrosHistogramsFetched(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&AttachBluetoothLogs, feedback_data, log_file_root_),
         barrier_closure);
+
+    binary_log_files_reader_.GetFeedbackBinaryLogs(
+        account_identifier,
+        debugd::FeedbackBinaryLogType::BLUETOOTH_FIRMWARE_DUMP,
+        base::BindOnce(&FeedbackService::OnBinaryLogFilesFetched, this, params,
+                       feedback_data, barrier_closure));
   }
 
   if (params.send_wifi_debug_logs) {
-    const user_manager::User* user =
-        user_manager::UserManager::Get()->GetActiveUser();
-    const auto account_identifier =
-        cryptohome::CreateAccountIdentifierFromAccountId(
-            user ? user->GetAccountId() : EmptyAccountId());
-
     binary_log_files_reader_.GetFeedbackBinaryLogs(
         account_identifier, debugd::FeedbackBinaryLogType::WIFI_FIRMWARE_DUMP,
         base::BindOnce(&FeedbackService::OnBinaryLogFilesFetched, this, params,
