@@ -25,14 +25,16 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
      *
      * @param onItemClicked The clicked listener callback that handles clicks on menu items.
      * @param isIncognito Whether the current tab group model filter is in an incognito state.
+     * @param shouldShowDeleteGroup Whether to show the delete group option.
      * @return A {@link View.OnClickListener} for the button that opens up the menu.
      */
     static View.OnClickListener getTabGridDialogMenuOnClickListener(
-            Callback<Integer> onItemClicked, boolean isIncognito) {
+            Callback<Integer> onItemClicked, boolean isIncognito, boolean shouldShowDeleteGroup) {
         return view -> {
             Context context = view.getContext();
             TabGridDialogMenuCoordinator menu =
-                    new TabGridDialogMenuCoordinator(context, view, onItemClicked, isIncognito);
+                    new TabGridDialogMenuCoordinator(
+                            context, view, onItemClicked, isIncognito, shouldShowDeleteGroup);
             menu.display();
         };
     }
@@ -41,39 +43,50 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
             Context context,
             View anchorView,
             Callback<Integer> onItemClicked,
-            boolean isIncognito) {
-        super(
-                context,
-                anchorView,
-                onItemClicked,
-                null,
-                null,
-                isIncognito,
-                /* shouldShowDeleteGroup= */ false);
+            boolean isIncognito,
+            boolean shouldShowDeleteGroup) {
+        super(context, anchorView, onItemClicked, null, null, isIncognito, shouldShowDeleteGroup);
     }
 
     @Override
     protected ModelList buildMenuItems(boolean isIncognito) {
         ModelList itemList = new ModelList();
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                         R.string.menu_select_tabs,
                         R.id.select_tabs,
+                        R.drawable.ic_select_check_box_24dp,
+                        R.color.default_icon_color_light_tint_list,
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         true));
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                         R.string.tab_grid_dialog_toolbar_edit_group_name,
                         R.id.edit_group_name,
+                        R.drawable.material_ic_edit_24dp,
+                        R.color.default_icon_color_light_tint_list,
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         true));
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.tab_grid_dialog_toolbar_edit_group_color,
                             R.id.edit_group_color,
+                            R.drawable.ic_colorize_24dp,
+                            R.color.default_icon_color_light_tint_list,
+                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                            isIncognito,
+                            true));
+        }
+        if (mShouldShowDeleteGroup && !isIncognito) {
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            R.string.tab_grid_dialog_toolbar_delete_group,
+                            R.id.delete_tab,
+                            R.drawable.material_ic_delete_24dp,
+                            R.color.default_icon_color_light_tint_list,
                             R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                             isIncognito,
                             true));
