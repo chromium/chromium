@@ -1927,9 +1927,6 @@ config("default_warnings") {
         # TODO(crbug.com/330524456): -Wcast-function-type is under -Wextra now.
         "-Wno-cast-function-type",
 
-        # TODO(crbug.com/40231599) Evaluate and possibly enable.
-        "-Wno-deprecated-builtins",
-
         # TODO(crbug.com/40255410) Evaluate and possibly enable.
         "-Wno-deprecated-this-capture",
 
