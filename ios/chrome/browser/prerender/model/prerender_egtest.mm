@@ -130,7 +130,7 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector
-            (testLegacyOpenTabInTabStripBeforePrerenderedTab)] ||
+            (FLAKY_testLegacyOpenTabInTabStripBeforePrerenderedTab)] ||
       [self isRunningTest:@selector(MAYBE_testMovePrerenderedTabInTabStrip)]) {
     config.features_disabled.push_back(kModernTabStrip);
     config.features_disabled.push_back(kTabGroupsIPad);
@@ -349,10 +349,11 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
       [NSString stringWithUTF8String:kPageTitle], @"New Tab");
 }
 
+// TODO(crbug.com/355143775): Remove FLAKY_ from this test.
 // Regression test for crbug.com/1482622. Tests that a pre-rendered tab doesn't
 // lead to an incorrect data source, as can be seen after opening a new tab in
 // the background before the pre-rendered tab.
-- (void)testLegacyOpenTabInTabStripBeforePrerenderedTab {
+- (void)FLAKY_testLegacyOpenTabInTabStripBeforePrerenderedTab {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPhone. The test makes use of the tab strip.");
