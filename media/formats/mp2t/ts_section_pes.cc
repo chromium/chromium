@@ -52,8 +52,7 @@ TsSectionPes::~TsSectionPes() {
 }
 
 bool TsSectionPes::Parse(bool payload_unit_start_indicator,
-                         const uint8_t* buf,
-                         int size) {
+                         base::span<const uint8_t> buf) {
   // Ignore partial PES.
   if (wait_for_pusi_ && !payload_unit_start_indicator)
     return true;
@@ -77,10 +76,8 @@ bool TsSectionPes::Parse(bool payload_unit_start_indicator,
   }
 
   // Add the data to the parser state.
-  if (size > 0) {
-    RCHECK(pes_byte_queue_.Push(base::make_span(
-        buf,
-        base::checked_cast<size_t>(size))));  // Can fail if allocation fails.
+  if (!buf.empty()) {
+    RCHECK(pes_byte_queue_.Push(buf));
   }
 
   // Try emitting the current PES packet.

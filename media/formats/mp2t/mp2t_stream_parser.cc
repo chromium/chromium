@@ -174,8 +174,7 @@ bool PidState::PushTsPacket(const TsPacket& ts_packet) {
   }
 
   bool status = section_parser_->Parse(ts_packet.payload_unit_start_indicator(),
-                                       ts_packet.payload().data(),
-                                       ts_packet.payload().size());
+                                       ts_packet.payload());
 
   // At the minimum, when parsing failed, auto reset the section parser.
   // Components that use the StreamParser can take further action if needed.

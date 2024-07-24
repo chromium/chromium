@@ -18,10 +18,8 @@ TsSectionCetsEcm::TsSectionCetsEcm(
 TsSectionCetsEcm::~TsSectionCetsEcm() {}
 
 bool TsSectionCetsEcm::Parse(bool payload_unit_start_indicator,
-                             const uint8_t* buf,
-                             int size) {
-  DCHECK(buf);
-  BitReader bit_reader(buf, size);
+                             base::span<const uint8_t> buf) {
+  BitReader bit_reader(buf.data(), buf.size());
   int num_states;
   bool next_key_id_flag;
   bool no_byte_align;

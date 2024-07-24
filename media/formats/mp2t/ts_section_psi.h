@@ -28,8 +28,7 @@ class TsSectionPsi : public TsSection {
 
   // TsSection implementation.
   bool Parse(bool payload_unit_start_indicator,
-             const uint8_t* buf,
-             int size) override;
+             base::span<const uint8_t> buf) override;
   void Flush() override;
   void Reset() override;
 
@@ -49,7 +48,7 @@ class TsSectionPsi : public TsSection {
   bool wait_for_pusi_;
 
   // Number of leading bytes to discard (pointer field).
-  int leading_bytes_to_discard_;
+  size_t leading_bytes_to_discard_;
 };
 
 }  // namespace mp2t

@@ -48,8 +48,7 @@ TsSectionPsi::~TsSectionPsi() {
 }
 
 bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
-                         const uint8_t* buf,
-                         int size) {
+                         base::span<const uint8_t> buf) {
   // Ignore partial PSI.
   if (wait_for_pusi_ && !payload_unit_start_indicator)
     return true;
@@ -60,27 +59,24 @@ bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
 
     // Update the state.
     wait_for_pusi_ = false;
-    RCHECK(size > 0);  // A payload unit must start immediately.
+    RCHECK(!buf.empty());  // A payload unit must start immediately.
     int pointer_field = buf[0];
     leading_bytes_to_discard_ = pointer_field;
-    buf++;
-    size--;
+    buf = buf.subspan(1);
   }
 
   // Discard some leading bytes if needed.
   if (leading_bytes_to_discard_ > 0) {
-    int nbytes_to_discard = std::min(leading_bytes_to_discard_, size);
-    buf += nbytes_to_discard;
-    size -= nbytes_to_discard;
+    int nbytes_to_discard = std::min(leading_bytes_to_discard_, buf.size());
     leading_bytes_to_discard_ -= nbytes_to_discard;
+    buf = buf.subspan(nbytes_to_discard);
   }
-  if (size == 0)
+  if (buf.empty()) {
     return true;
+  }
 
   // Add the data to the parser state.
-  RCHECK(psi_byte_queue_.Push(base::make_span(
-      buf,
-      base::checked_cast<size_t>(size))));  // Can fail if allocation fails.
+  RCHECK(psi_byte_queue_.Push(buf));
   int raw_psi_size;
   const uint8_t* raw_psi;
   psi_byte_queue_.Peek(&raw_psi, &raw_psi_size);
