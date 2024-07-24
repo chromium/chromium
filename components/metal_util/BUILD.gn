@@ -28,12 +28,9 @@ component("metal_util") {
 
   frameworks = [
     "IOSurface.framework",
-    "QuartzCore.framework",
-  ]
-
-  weak_frameworks = [
     "Metal.framework",
     "MetalKit.framework",
+    "QuartzCore.framework",
   ]
 
   if (is_mac) {

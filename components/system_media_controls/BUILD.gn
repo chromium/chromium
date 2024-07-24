@@ -56,8 +56,10 @@ component("system_media_controls") {
       "//components/remote_cocoa/browser",
     ]
 
-    frameworks = [ "Foundation.framework" ]
-    weak_frameworks = [ "MediaPlayer.framework" ]
+    frameworks = [
+      "Foundation.framework",
+      "MediaPlayer.framework",
+    ]
   } else {
     sources = [ "system_media_controls_stub.cc" ]
   }
