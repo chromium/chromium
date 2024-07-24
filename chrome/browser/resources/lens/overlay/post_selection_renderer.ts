@@ -354,6 +354,13 @@ export class PostSelectionRendererElement extends PolymerElement {
   }
 
   private rerender() {
+    // rerender() can be called when there is not a selection present. This
+    // should be a no-op otherwise the shimmer will be set to focus on the post
+    // selection region without a selection.
+    if (!this.hasSelection()) {
+      return;
+    }
+
     const clampedBounds = this.getClampedBounds();
     // Set the CSS properties to reflect current bounds and force rerender.
     this.style.setProperty('--selection-width', toPercent(clampedBounds.width));
