@@ -103,6 +103,7 @@ source_set("configs") {
       "//chrome/browser/ui/webui/ash/mako",
       "//chrome/browser/ui/webui/ash/scalable_iph",
       "//chrome/browser/ui/webui/ash/sys_internals",
+      "//chrome/browser/ui/webui/ash/vc_tray_tester",
       "//chromeos/ash/components/kiosk/vision/webui",
       "//components/cross_device/logging",
     ]
