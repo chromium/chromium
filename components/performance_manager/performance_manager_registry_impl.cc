@@ -182,7 +182,7 @@ void PerformanceManagerRegistryImpl::NotifyBrowserContextAdded(
 
   // Create an adapter for the service worker context.
   auto insertion_result = service_worker_context_adapters_.emplace(
-      browser_context, std::make_unique<ServiceWorkerContextAdapter>(
+      browser_context, std::make_unique<ServiceWorkerContextAdapterImpl>(
                            storage_partition->GetServiceWorkerContext()));
   DCHECK(insertion_result.second);
   ServiceWorkerContextAdapter* service_worker_context_adapter =
