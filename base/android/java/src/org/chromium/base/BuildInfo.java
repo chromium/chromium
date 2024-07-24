@@ -20,7 +20,6 @@ import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.build.BuildConfig;
 
 /**
@@ -157,12 +156,12 @@ public class BuildInfo {
     }
 
     /**
-     * Return the "long" version code of the given PackageInfo.
-     * Does the right thing for before/after Android P when this got wider.
+     * Return the "long" version code of the given PackageInfo. Does the right thing for
+     * before/after Android P when this got wider.
      */
     public static long packageVersionCode(PackageInfo pi) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            return ApiHelperForP.getLongVersionCode(pi);
+            return pi.getLongVersionCode();
         } else {
             return pi.versionCode;
         }

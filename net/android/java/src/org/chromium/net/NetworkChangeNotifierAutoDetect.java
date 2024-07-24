@@ -40,7 +40,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.build.BuildConfig;
 
@@ -712,8 +711,8 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                     subtype,
                     isMetered,
                     String.valueOf(networkToNetId(network)),
-                    ApiHelperForP.isPrivateDnsActive(mLinkProperties),
-                    ApiHelperForP.getPrivateDnsServerName(mLinkProperties));
+                    mLinkProperties.isPrivateDnsActive(),
+                    mLinkProperties.getPrivateDnsServerName());
         }
     }
 

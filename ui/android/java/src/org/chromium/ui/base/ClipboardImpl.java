@@ -39,7 +39,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.base.compat.ApiHelperForS;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
@@ -551,7 +550,7 @@ public class ClipboardImpl extends Clipboard
         }
 
         try {
-            ApiHelperForP.clearPrimaryClip(mClipboardManager);
+            mClipboardManager.clearPrimaryClip();
         } catch (Exception e) {
             // Fall back to set an empty string to the clipboard.
             setPrimaryClipNoException(ClipData.newPlainText(null, null));

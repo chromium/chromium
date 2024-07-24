@@ -21,7 +21,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
-import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.base.compat.ApiHelperForS;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.content.browser.WindowEventObserver;
@@ -240,11 +239,11 @@ public class SmartSelectionProvider {
         private TextSelection suggestSelection(int start, int end) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 TextSelection.Request.Builder builder =
-                        ApiHelperForP.newTextSelectionRequestBuilder(mText, start, end);
-                builder = ApiHelperForP.setDefaultLocales(builder, LocaleList.getAdjustedDefault());
+                        new TextSelection.Request.Builder(mText, start, end);
+                LocaleList defaultLocales = LocaleList.getAdjustedDefault();
+                builder = builder.setDefaultLocales(defaultLocales);
                 builder = ApiHelperForS.setIncludeTextClassification(builder, true);
-                return ApiHelperForP.suggestSelection(
-                        mTextClassifier, ApiHelperForP.build(builder));
+                return mTextClassifier.suggestSelection(builder.build());
             }
             return mTextClassifier.suggestSelection(
                     mText, start, end, LocaleList.getAdjustedDefault());

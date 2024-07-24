@@ -35,7 +35,6 @@ import org.jni_zero.CalledByNativeUnchecked;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.base.compat.ApiHelperForQ;
 
 import java.io.FileDescriptor;
@@ -494,8 +493,8 @@ class AndroidNetworkLibrary {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             return new DnsStatus(
                     dnsServersList,
-                    ApiHelperForP.isPrivateDnsActive(linkProperties),
-                    ApiHelperForP.getPrivateDnsServerName(linkProperties),
+                    linkProperties.isPrivateDnsActive(),
+                    linkProperties.getPrivateDnsServerName(),
                     searchDomains);
         } else {
             return new DnsStatus(dnsServersList, false, "", searchDomains);
