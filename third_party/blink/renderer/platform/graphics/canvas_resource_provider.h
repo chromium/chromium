@@ -220,6 +220,11 @@ class PLATFORM_EXPORT CanvasResourceProvider
                            int x,
                            int y);
 
+  virtual scoped_refptr<gpu::ClientSharedImage>
+  GetBackingClientSharedImageForOverwrite() {
+    NOTREACHED_IN_MIGRATION();
+    return nullptr;
+  }
   virtual gpu::Mailbox GetBackingMailboxForOverwrite() {
     NOTREACHED_IN_MIGRATION();
     return gpu::Mailbox();

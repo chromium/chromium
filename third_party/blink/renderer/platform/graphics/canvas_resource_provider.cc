@@ -283,14 +283,20 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     return shared_image_usage_flags_ &
            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
   }
-  gpu::Mailbox GetBackingMailboxForOverwrite() override {
+  scoped_refptr<gpu::ClientSharedImage>
+  GetBackingClientSharedImageForOverwrite() override {
     DCHECK(is_accelerated_);
 
     if (IsGpuContextLost())
-      return gpu::Mailbox();
+      return nullptr;
 
     WillDrawInternal(false);
-    return resource_->GetClientSharedImage()->mailbox();
+    return resource_->GetClientSharedImage();
+  }
+
+  gpu::Mailbox GetBackingMailboxForOverwrite() override {
+    auto client_si = GetBackingClientSharedImageForOverwrite();
+    return client_si ? client_si->mailbox() : gpu::Mailbox();
   }
 
   GLenum GetBackingTextureTarget() const override {
@@ -1429,14 +1435,14 @@ bool CanvasResourceProvider::OverwriteImage(
   if (!raster) {
     return false;
   }
-  gpu::Mailbox dst_mailbox = GetBackingMailboxForOverwrite();
-  if (dst_mailbox.IsZero()) {
+  auto dst_client_si = GetBackingClientSharedImageForOverwrite();
+  if (!dst_client_si) {
     return false;
   }
 
   raster->WaitSyncTokenCHROMIUM(ready_sync_token.GetConstData());
-  raster->CopySharedImage(shared_image_mailbox, dst_mailbox,
-                          GetBackingTextureTarget(), /*xoffset=*/0,
+  raster->CopySharedImage(shared_image_mailbox, dst_client_si->mailbox(),
+                          dst_client_si->GetTextureTarget(), /*xoffset=*/0,
                           /*yoffset=*/0, copy_rect.x(), copy_rect.y(),
                           copy_rect.width(), copy_rect.height(), unpack_flip_y,
                           unpack_premultiply_alpha);
