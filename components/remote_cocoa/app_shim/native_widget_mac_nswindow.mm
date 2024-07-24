@@ -219,6 +219,7 @@ void OrderChildWindow(NSWindow* child_window,
   CommandDispatcher* __strong _commandDispatcher;
   id<UserInterfaceItemCommandHandler> __strong _commandHandler;
   id<WindowTouchBarDelegate> __weak _touchBarDelegate;
+  NSData* __strong _lastSavedRestorableState;
   uint64_t _bridgedNativeWidgetId;
   // This field is not a raw_ptr<> because it requires @property rewrite.
   RAW_PTR_EXCLUSION remote_cocoa::NativeWidgetNSWindowBridge* _bridge;
@@ -654,10 +655,31 @@ void OrderChildWindow(NSWindow* child_window,
 }
 
 - (void)saveRestorableState {
-  if (!_bridge)
+  if (!_bridge) {
     return;
-  if (![self _isConsideredOpenForPersistentState])
+  }
+  if (![self _isConsideredOpenForPersistentState]) {
     return;
+  }
+
+  // Certain conditions, such as in the Speedometer 3 benchmark, can trigger a
+  // rapid succession of calls to saveRestorableState. Delay the actual save
+  // until 500ms after the last request.
+  [NSObject cancelPreviousPerformRequestsWithTarget:self
+                                           selector:@selector
+                                           (reallySaveRestorableState)
+                                             object:nil];
+  [self performSelector:@selector(reallySaveRestorableState)
+             withObject:nil
+             afterDelay:0.5];
+}
+
+- (void)reallySaveRestorableState {
+  if (!_bridge) {
+    return;
+  }
+
+  _willUpdateRestorableState = NO;
 
   // On macOS 12+, create restorable state archives with secure encoding. See
   // the article at
@@ -668,12 +690,18 @@ void OrderChildWindow(NSWindow* child_window,
   encoder.delegate = self;
   [self encodeRestorableStateWithCoder:encoder];
   [encoder finishEncoding];
-  NSData* restorableStateData = encoder.encodedData;
+  NSData* restorableState = encoder.encodedData;
 
-  auto* bytes = static_cast<uint8_t const*>(restorableStateData.bytes);
+  // Don't bother saving restorable state if it didn't actually change since
+  // the last save. This avoids an extra IPC when nothing has changed.
+  if ([restorableState isEqual:_lastSavedRestorableState]) {
+    return;
+  }
+  _lastSavedRestorableState = restorableState;
+
+  auto* bytes = static_cast<uint8_t const*>(restorableState.bytes);
   _bridge->host()->OnWindowStateRestorationDataChanged(
-      std::vector<uint8_t>(bytes, bytes + restorableStateData.length));
-  _willUpdateRestorableState = NO;
+      std::vector<uint8_t>(bytes, bytes + restorableState.length));
 }
 
 // AppKit calls -invalidateRestorableState when a property of the window which
