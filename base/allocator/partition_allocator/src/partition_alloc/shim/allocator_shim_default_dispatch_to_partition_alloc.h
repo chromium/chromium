@@ -102,16 +102,18 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
 // we're making it more resilient to ConfigurePartitions() interface changes, so
 // that we don't have to modify multiple callers. This is particularly important
 // when callers are in a different repo, like PDFium or Dawn.
-PA_ALWAYS_INLINE void ConfigurePartitionsForTesting(
-    bool enable_memory_tagging_if_available = true) {
+// -----------------------------------------------------------------------------
+// DO NOT MODIFY this signature. This is meant for partition_alloc's embedders
+// only, so that partition_alloc can evolve without breaking them.
+// Chromium/PartitionAlloc are part of the same repo, they must not depend on
+// this function. They should call ConfigurePartitions() directly.
+PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
   auto enable_brp = allocator_shim::EnableBrp(true);
 
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-  auto enable_memory_tagging =
-      allocator_shim::EnableMemoryTagging(enable_memory_tagging_if_available);
-#else
-  auto enable_memory_tagging = allocator_shim::EnableMemoryTagging(false);
-#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+  // Embedders's tests might benefit from MTE checks. However, this is costly
+  // and shouldn't be used in benchmarks.
+  auto enable_memory_tagging = allocator_shim::EnableMemoryTagging(
+      PA_BUILDFLAG(HAS_MEMORY_TAGGING) && PA_BUILDFLAG(DCHECKS_ARE_ON));
 
   // Since the only user of this function is a test function, we use
   // synchronous reporting mode, if MTE is enabled.
