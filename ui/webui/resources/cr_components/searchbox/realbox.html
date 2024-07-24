@@ -8,6 +8,7 @@
     --cr-realbox-icon-width: 26px;
     --cr-realbox-inner-icon-margin: 8px;
     --cr-realbox-voice-icon-offset: 16px;
+    --cr-realbox-voice-search-button-width: 0px;
     border-radius: var(--cr-realbox-border-radius);
     box-shadow: var(--cr-realbox-shadow);
     font-size: 16px;
@@ -46,6 +47,10 @@
 
   :host([is-dark]) {
     --cr-realbox-shadow: 0 2px 6px 0 var(--color-realbox-shadow);
+  }
+
+  :host([realbox-voice-search-enabled_]) {
+    --cr-realbox-voice-search-button-width: var(--cr-realbox-icon-width);
   }
 
   :host([realbox-lens-search-enabled_]) {
@@ -89,7 +94,9 @@
     font-size: inherit;
     height: 100%;
     outline: none;
-    padding-inline-end: calc(var(--cr-realbox-voice-icon-offset) + var(--cr-realbox-icon-width) + var(--cr-realbox-inner-icon-margin));
+    /* Always include offset and margin padding, even if the voice search button
+     * is not being shown. */
+    padding-inline-end: calc(var(--cr-realbox-voice-icon-offset) + var(--cr-realbox-voice-search-button-width) + var(--cr-realbox-inner-icon-margin));
     padding-inline-start: calc(52px + var(--cr-realbox-thumbnail-icon-offset, 0px));
     position: relative;
     width: 100%;
