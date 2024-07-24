@@ -7,6 +7,7 @@
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider+Testing.h"
@@ -26,6 +27,8 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
+#import "ios/chrome/browser/shared/public/commands/activity_service_share_url_command.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -58,6 +61,7 @@
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
@@ -344,6 +348,18 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   UIAction* copyLink =
       [actionFactory actionToCopyURL:[[CrURL alloc] initWithGURL:linkURL]];
   [linkMenuElements addObject:copyLink];
+
+  // Share Link.
+  if (base::FeatureList::IsEnabled(kShareInWebContextMenuIOS)) {
+    UIAction* shareLink = [actionFactory actionToShareWithBlock:^{
+      [weakSelf
+          shareURLFromContextMenu:linkURL
+                         URLTitle:(params.text.length != 0) ? params.text
+                                                            : params.alt_text
+                           params:params];
+    }];
+    [linkMenuElements addObject:shareLink];
+  }
 
   return linkMenuElements;
 }
@@ -680,6 +696,23 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   }
 
   return imageSearchingMenuElements;
+}
+
+// Calls the shareURLFromContextMenu with the given command.
+- (void)shareURLFromContextMenu:(const GURL&)URLToShare
+                       URLTitle:(NSString*)URLTitle
+                         params:(web::ContextMenuParams)params {
+  id<ActivityServiceCommands> handler = HandlerForProtocol(
+      _browser->GetCommandDispatcher(), ActivityServiceCommands);
+
+  CGRect sourceRect = CGRectMake(params.location.x, params.location.y, 0, 0);
+
+  ActivityServiceShareURLCommand* command =
+      [[ActivityServiceShareURLCommand alloc] initWithURL:URLToShare
+                                                    title:URLTitle
+                                               sourceView:params.view
+                                               sourceRect:sourceRect];
+  [handler shareURLFromContextMenu:command];
 }
 
 @end

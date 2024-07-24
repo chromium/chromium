@@ -467,6 +467,7 @@ chromium-metrics-reviews@google.com.
     <variant name="RecentTabsEntry" summary="Recent Tabs entry"/>
     <variant name="ShareChrome" summary="link to Chrome in the app store"/>
     <variant name="SharedHighlight" summary="highlighted fragment"/>
+    <variant name="ShareInContextMenu" summary="share in context menu"/>
     <variant name="TabGridItem" summary="tab grid item"/>
     <variant name="TabGridSelectionMode" summary="tab grid selection mode"/>
     <variant name="TabShareButton" summary="current tab"/>
