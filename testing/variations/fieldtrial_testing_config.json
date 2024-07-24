@@ -4043,6 +4043,28 @@
             ]
         }
     ],
+    "ChangeFrameRateOfLoadingTabAnimation": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWith67msFrameDelay",
+                    "params": {
+                        "loading_tab_animation_frame_delay": "67ms"
+                    },
+                    "enable_features": [
+                        "ChangeFrameRateOfLoadingTabAnimation"
+                    ]
+                }
+            ]
+        }
+    ],
     "CheckHTMLParserBudgetLessOften": [
         {
             "platforms": [
