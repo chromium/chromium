@@ -111,11 +111,8 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   private readonly availableLanguages_: LanguageDropdownItem[];
   // Use this variable instead of AVAILABLE_GOOGLE_TTS_LOCALES
   // directly to better aid in testing.
-  baseLanguages: Set<string> = AVAILABLE_GOOGLE_TTS_LOCALES;
-
-  // A non-Google language is one that's not associated with a Google voice
-  // that can be downloaded from the language pack.
-  private nonGoogleLanguages: string[] = [];
+  localesOfLangPackVoices: Set<string> =
+      this.getSupportedNaturalVoiceDownloadLocales();
 
   // The current notifications that should be used in the language menu.
   // This is cleared each time the language menu reopens. After the language
@@ -178,6 +175,14 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         'readingModeVoiceDownloadedTitle', langDisplayName);
   }
 
+  private getSupportedNaturalVoiceDownloadLocales(): Set<string> {
+    if (chrome.readingMode.isLanguagePackDownloadingEnabled &&
+        chrome.readingMode.isChromeOsAsh) {
+      return AVAILABLE_GOOGLE_TTS_LOCALES;
+    }
+    return new Set([]);
+  }
+
   // TODO(b/40927698): Investigate removing currentNotifications as a
   // dependency.
   private computeAvailableLanguages_(): LanguageDropdownItem[] {
@@ -185,43 +190,22 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       return [];
     }
 
-    // Ensure this is cleared each time we recompute available languages.
-    this.nonGoogleLanguages = [];
-
     const selectedLangLowerCase = this.selectedLang?.toLowerCase();
-    // Ensure we've added the available pack manager supported languages to
-    // the language menu first, only on ChromeOS.
-    const langsAndReadableLangs: Array<[string, string]> =
-        chrome.readingMode.isLanguagePackDownloadingEnabled &&
-            chrome.readingMode.isChromeOsAsh ?
-        Array.from(
-            this.baseLanguages, (key) => [key, this.getDisplayName(key)]) :
-        [];
 
-    // Next, add any other supported languages to the menu, if they don't
-    // already exist.
-    this.availableVoices.forEach((voice) => {
-      const lang = voice.lang;
-      if (!langsAndReadableLangs.some(
-              ([key, _]) => key === lang.toLowerCase())) {
-        langsAndReadableLangs.push([
-          lang.toLowerCase(),
-          this.getDisplayName(lang),
-        ]);
-
-        if (chrome.readingMode.isLanguagePackDownloadingEnabled) {
-          this.nonGoogleLanguages.push(lang.toLowerCase());
-        }
-      }
-    });
+    const availableLangs: string[] = [...new Set([
+      ...this.localesOfLangPackVoices,
+      ...this.availableVoices.map(({lang}) => lang.toLowerCase()),
+    ])];
 
     // Sort the list of languages alphabetically by display name.
-    langsAndReadableLangs.sort(([, firstDisplay], [, secondDisplay]) => {
-      return firstDisplay.localeCompare(secondDisplay);
+    availableLangs.sort((lang1, lang2) => {
+      return this.getDisplayName(lang1).localeCompare(
+          this.getDisplayName(lang2));
     });
 
-    return langsAndReadableLangs
-        .filter(([lang, readableLang]) => {
+    return availableLangs
+        .filter(lang => {
+          const readableLang = this.getDisplayName(lang);
           if (this.languageSearchValue_) {
             // In addition to matching the readable language, also allow
             // the search term to extend to the language code to make
@@ -235,8 +219,8 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
           }
         })
         .map(
-            ([lang, readableLang]) => ({
-              readableLanguage: readableLang,
+            lang => ({
+              readableLanguage: this.getDisplayName(lang),
               checked: this.enabledLangs && this.enabledLangs.includes(lang),
               languageCode: lang,
               notification: {
@@ -256,10 +240,14 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
             }));
   }
 
+  private hasAvailableNaturalVoices(lang: string): boolean {
+    return this.localesOfLangPackVoices.has(lang.toLowerCase());
+  }
+
   private isNotificationError(lang: string): boolean {
     // Don't show notification text for a non-Google TTS language, as we're
     // not attempting a download.
-    if (this.nonGoogleLanguages.includes(lang)) {
+    if (!this.hasAvailableNaturalVoices(lang)) {
       return false;
     }
 
@@ -288,7 +276,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   private getNotificationText(lang: string): string {
     // Don't show notification text for a non-Google TTS language, as we're
     // not attempting a download.
-    if (this.nonGoogleLanguages.includes(lang)) {
+    if (!this.hasAvailableNaturalVoices(lang)) {
       return '';
     }
 
