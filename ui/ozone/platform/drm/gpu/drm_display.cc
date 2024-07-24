@@ -141,8 +141,6 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
       connector_(info->ReleaseConnector()) {
   modes_ = GetDrmModeVector(connector_.get());
   origin_ = display_snapshot.origin();
-  is_hdr_capable_ = display_snapshot.bits_per_channel() > 8 &&
-                    display_snapshot.color_space().IsHDR();
   hdr_static_metadata_ = display_snapshot.hdr_static_metadata();
   privacy_screen_property_ =
       std::make_unique<PrivacyScreenProperty>(drm_, connector_.get());
@@ -150,14 +148,10 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
   SkColorSpacePrimaries output_primaries =
       display_snapshot.color_info().edid_primaries;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  is_hdr_capable_ =
-      is_hdr_capable_ &&
-      base::FeatureList::IsEnabled(display::features::kUseHDRTransferFunction);
-
-  if (is_hdr_capable_ &&
-      display_snapshot.color_space() == gfx::ColorSpace::CreateHDR10() &&
-      base::FeatureList::IsEnabled(
-          display::features::kEnableExternalDisplayHDR10Mode)) {
+  // Do not allow display_snapshot and connector property state to go out of
+  // sync. HDR capability is determined in
+  // gfx::DisplayUtil::GetColorSpaceFromEdid
+  if (display_snapshot.color_space() == gfx::ColorSpace::CreateHDR10()) {
     output_primaries = SkNamedPrimariesExt::kRec2020;
     SetColorspaceProperty(display_snapshot.color_space());
     SetHdrOutputMetadata(display_snapshot.color_space());
@@ -335,11 +329,9 @@ bool DrmDisplay::SetPrivacyScreen(bool enabled) {
 
 gfx::HDRStaticMetadata::Eotf DrmDisplay::GetEotf(
     const gfx::ColorSpace::TransferID transfer_id) {
-  if (!is_hdr_capable_) {
-    return gfx::HDRStaticMetadata::Eotf::kGammaSdrRange;
-  }
-
   switch (transfer_id) {
+    case gfx::ColorSpace::TransferID::SRGB:
+      return gfx::HDRStaticMetadata::Eotf::kGammaSdrRange;
     case gfx::ColorSpace::TransferID::PQ:
       return gfx::HDRStaticMetadata::Eotf::kPq;
     case gfx::ColorSpace::TransferID::HLG:
@@ -441,7 +433,7 @@ bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
       !drm_->SetProperty(connector_->connector_id,
                          hdr_output_metadata_property->prop_id,
                          hdr_output_metadata_property_blob->id())) {
-    PLOG(INFO) << "Cannot set '" << kHdrOutputMetadata << "' property.";
+    PLOG(ERROR) << "Cannot set '" << kHdrOutputMetadata << "' property.";
     return false;
   }
   return true;
@@ -460,8 +452,8 @@ bool DrmDisplay::SetColorspaceProperty(const gfx::ColorSpace color_space) {
           connector_->connector_id, color_space_property->prop_id,
           GetEnumValueForName(*drm_, color_space_property->prop_id,
                               GetNameForColorspace(color_space)))) {
-    PLOG(INFO) << "Cannot set '" << GetNameForColorspace(color_space)
-               << "' to '" << kColorSpace << "' property.";
+    PLOG(ERROR) << "Cannot set '" << GetNameForColorspace(color_space)
+                << "' to '" << kColorSpace << "' property.";
     return false;
   }
   return true;

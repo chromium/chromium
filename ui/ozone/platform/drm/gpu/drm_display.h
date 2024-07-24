@@ -99,8 +99,6 @@ class DrmDisplay {
 
   void set_crtc(uint32_t crtc_id) { crtc_ = crtc_id; }
 
-  void set_is_hdr_capable_for_testing(bool value) { is_hdr_capable_ = value; }
-
  private:
   gfx::HDRStaticMetadata::Eotf GetEotf(
       const gfx::ColorSpace::TransferID transfer_id);
@@ -113,7 +111,6 @@ class DrmDisplay {
   const ScopedDrmConnectorPtr connector_;
   std::vector<drmModeModeInfo> modes_;
   gfx::Point origin_;
-  bool is_hdr_capable_ = false;
   std::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
   std::unique_ptr<PrivacyScreenProperty> privacy_screen_property_;
 };
