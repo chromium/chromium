@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/boca/babelorca/client/token_fetcher.h"
 
 namespace signin {
@@ -36,7 +37,10 @@ class OAuthTokenFetcher : public TokenFetcher {
   void fetchToken(TokenFetchCallback callback) override;
 
  private:
+  void fetchTokenInternal(TokenFetchCallback callback, int retry_num);
+
   void OnOAuthTokenRequestCompleted(TokenFetchCallback callback,
+                                    int retry_num,
                                     GoogleServiceAuthError error,
                                     signin::AccessTokenInfo access_token_info);
 
@@ -44,6 +48,7 @@ class OAuthTokenFetcher : public TokenFetcher {
   raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  base::OneShotTimer retry_timer_;
 };
 
 }  // namespace babelorca

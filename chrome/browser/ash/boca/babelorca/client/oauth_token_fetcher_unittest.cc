@@ -26,6 +26,7 @@ constexpr char kOAuthToken[] = "test-token";
 constexpr base::Time kExpirationTime =
     base::Time::FromDeltaSinceWindowsEpoch(base::Days(50000));
 constexpr char kIdToken[] = "id-test-token";
+constexpr base::TimeDelta kRetryInitialBackoff = base::Milliseconds(500);
 
 class OAuthTokenFetcherTest : public testing::Test {
  protected:
@@ -36,7 +37,8 @@ class OAuthTokenFetcherTest : public testing::Test {
                                          signin::ConsentLevel::kSignin);
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
   AccountInfo account_info_;
 };
@@ -104,6 +106,73 @@ TEST_F(OAuthTokenFetcherTest, SuccessiveTokenFetchShouldProceed) {
 
   EXPECT_TRUE(first_fetch_future.Get().has_value());
   EXPECT_TRUE(second_fetch_future.Get().has_value());
+}
+
+TEST_F(OAuthTokenFetcherTest, RetryOnRetriableError) {
+  base::test::TestFuture<std::optional<TokenDataWrapper>> fetch_future;
+  OAuthTokenFetcher oauth_token_fetcher(identity_test_env_.identity_manager());
+
+  oauth_token_fetcher.fetchToken(fetch_future.GetCallback());
+  // Failure.
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      account_info_.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+  // First retry success.
+  task_environment_.FastForwardBy(kRetryInitialBackoff);
+  identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+          kOAuthToken, kExpirationTime, kIdToken,
+          {GaiaConstants::kTachyonOAuthScope});
+
+  EXPECT_TRUE(fetch_future.Get().has_value());
+}
+
+TEST_F(OAuthTokenFetcherTest, RespondOnLastSuccessfulRetry) {
+  base::test::TestFuture<std::optional<TokenDataWrapper>> fetch_future;
+  OAuthTokenFetcher oauth_token_fetcher(identity_test_env_.identity_manager());
+
+  oauth_token_fetcher.fetchToken(fetch_future.GetCallback());
+  // Failure.
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      account_info_.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+  task_environment_.FastForwardBy(kRetryInitialBackoff);
+  // First retry failure.
+  task_environment_.FastForwardBy(kRetryInitialBackoff);
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      account_info_.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+  // Second retry success.
+  task_environment_.FastForwardBy(kRetryInitialBackoff * 2);
+  identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+          kOAuthToken, kExpirationTime, kIdToken,
+          {GaiaConstants::kTachyonOAuthScope});
+
+  EXPECT_TRUE(fetch_future.Get().has_value());
+}
+
+TEST_F(OAuthTokenFetcherTest, RespondAfterMaxRetries) {
+  base::test::TestFuture<std::optional<TokenDataWrapper>> fetch_future;
+  OAuthTokenFetcher oauth_token_fetcher(identity_test_env_.identity_manager());
+
+  oauth_token_fetcher.fetchToken(fetch_future.GetCallback());
+  // Failure.
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      account_info_.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+  // First retry failure.
+  task_environment_.FastForwardBy(kRetryInitialBackoff);
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      account_info_.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+  // Second retry failure.
+  task_environment_.FastForwardBy(kRetryInitialBackoff * 2);
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      account_info_.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+
+  EXPECT_FALSE(fetch_future.Get().has_value());
 }
 
 }  // namespace

@@ -13,8 +13,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/boca/babelorca/client/token_data_wrapper.h"
 #include "chrome/browser/ash/boca/babelorca/client/token_fetcher.h"
 #include "components/signin/public/base/consent_level.h"
@@ -25,6 +27,15 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace babelorca {
+namespace {
+
+bool IsOAuthTokenFetchRetryableError(
+    GoogleServiceAuthError::State error_state) {
+  return error_state == GoogleServiceAuthError::CONNECTION_FAILED ||
+         error_state == GoogleServiceAuthError::SERVICE_UNAVAILABLE;
+}
+
+}  // namespace
 
 OAuthTokenFetcher::OAuthTokenFetcher(signin::IdentityManager* identity_manager)
     : identity_manager_(identity_manager) {}
@@ -41,6 +52,12 @@ void OAuthTokenFetcher::fetchToken(TokenFetchCallback callback) {
     std::move(callback).Run(std::nullopt);
     return;
   }
+  fetchTokenInternal(std::move(callback), /*retry_num=*/0);
+}
+
+void OAuthTokenFetcher::fetchTokenInternal(TokenFetchCallback callback,
+                                           int retry_num) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(identity_manager_);
   static constexpr char kOauthConsumerName[] = "babel_orca";
   access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
@@ -49,15 +66,28 @@ void OAuthTokenFetcher::fetchToken(TokenFetchCallback callback) {
       base::BindOnce(
           &OAuthTokenFetcher::OnOAuthTokenRequestCompleted,
           // base::Unretained is safe, `this` owns `access_token_fetcher_`.
-          base::Unretained(this), std::move(callback)),
-      signin::AccessTokenFetcher::Mode::kImmediate);
+          base::Unretained(this), std::move(callback), retry_num),
+      signin::AccessTokenFetcher::Mode::kWaitUntilRefreshTokenAvailable);
 }
 
 void OAuthTokenFetcher::OnOAuthTokenRequestCompleted(
     TokenFetchCallback callback,
+    int retry_num,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr int kMaxRetries = 2;
+  static constexpr base::TimeDelta kRetryInitialBackoff =
+      base::Milliseconds(500);
+  if (retry_num < kMaxRetries &&
+      IsOAuthTokenFetchRetryableError(error.state())) {
+    retry_timer_.Start(FROM_HERE, (retry_num + 1) * kRetryInitialBackoff,
+                       base::BindOnce(&OAuthTokenFetcher::fetchTokenInternal,
+                                      base::Unretained(this),
+                                      std::move(callback), retry_num + 1));
+    return;
+  }
+  // Reset `access_token_fetcher_` to allow new fetch token requests.
   access_token_fetcher_.reset();
   if (error.state() == GoogleServiceAuthError::NONE) {
     std::move(callback).Run(TokenDataWrapper(
