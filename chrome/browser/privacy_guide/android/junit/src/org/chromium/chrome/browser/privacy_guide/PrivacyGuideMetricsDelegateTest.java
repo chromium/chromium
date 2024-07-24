@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
@@ -20,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -130,60 +128,44 @@ public class PrivacyGuideMetricsDelegateTest {
         mockMSBBState(false, false);
         // TODO(b/354677306): Replace all calls to
         // `RecordHistogram.getHistogramValueCountForTesting` (Deprecated) with HistogramWatchers.
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF));
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.MSBB);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF));
+        watcher.assertExpected();
     }
 
     @Test
     @SmallTest
     public void testMSBB_offToOnSettingsStatesHistogram() {
         mockMSBBState(false, true);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_ON));
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_ON);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.MSBB);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_ON));
+        watcher.assertExpected();
     }
 
     @Test
     @SmallTest
     public void testMSBB_onToOffSettingsStatesHistogram() {
         mockMSBBState(true, false);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_OFF));
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_OFF);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.MSBB);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_OFF));
+        watcher.assertExpected();
     }
 
     @Test
     @SmallTest
     public void testMSBB_onToOnSettingsStatesHistogram() {
         mockMSBBState(true, true);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_ON));
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_ON);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.MSBB);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_ON));
+        watcher.assertExpected();
     }
 
     @Test
@@ -198,83 +180,59 @@ public class PrivacyGuideMetricsDelegateTest {
     @SmallTest
     public void testMSBB_nextNavigationHistogram() {
         mockMSBBState(false, false);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.MSBB_NEXT_BUTTON));
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.MSBB_NEXT_BUTTON);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.MSBB);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.MSBB_NEXT_BUTTON));
+        watcher.assertExpected();
     }
 
     @Test
     @SmallTest
     public void testHistorySync_offToOffSettingsStatesHistogram() {
         mockHistorySyncState(false, false);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF));
+                        PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF));
+        watcher.assertExpected();
     }
 
     @Test
     @SmallTest
     public void testHistorySync_offToOnSettingsStatesHistogram() {
         mockHistorySyncState(false, true);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON));
+                        PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON));
+        watcher.assertExpected();
     }
 
     @Test
     @SmallTest
     public void testHistorySync_onToOffSettingsStatesHistogram() {
         mockHistorySyncState(true, false);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF));
+                        PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF));
+        watcher.assertExpected();
     }
 
     @Test
     @SmallTest
     public void testHistorySync_onToOnSettingsStatesHistogram() {
         mockHistorySyncState(true, true);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON));
+                        PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON));
+        watcher.assertExpected();
     }
 
     @Test
@@ -290,17 +248,12 @@ public class PrivacyGuideMetricsDelegateTest {
     @SmallTest
     public void testHistorySync_nextNavigationHistogram() {
         mockHistorySyncState(false, false);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         NEXT_NAVIGATION_HISTOGRAM,
-                        PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON));
+                        PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        NEXT_NAVIGATION_HISTOGRAM,
-                        PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON));
+        watcher.assertExpected();
     }
 
     @Test
@@ -308,17 +261,12 @@ public class PrivacyGuideMetricsDelegateTest {
     public void testSafeBrowsing_enhanceToEnhanceSettingsStatesHistogram() {
         mockSafeBrowsingState(
                 SafeBrowsingState.ENHANCED_PROTECTION, SafeBrowsingState.ENHANCED_PROTECTION);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_ENHANCED));
+                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_ENHANCED);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_ENHANCED));
+        watcher.assertExpected();
     }
 
     @Test
@@ -326,17 +274,12 @@ public class PrivacyGuideMetricsDelegateTest {
     public void testSafeBrowsing_enhanceToStandardSettingsStatesHistogram() {
         mockSafeBrowsingState(
                 SafeBrowsingState.ENHANCED_PROTECTION, SafeBrowsingState.STANDARD_PROTECTION);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD));
+                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD));
+        watcher.assertExpected();
     }
 
     @Test
@@ -344,17 +287,12 @@ public class PrivacyGuideMetricsDelegateTest {
     public void testSafeBrowsing_standardToEnhanceSettingsStatesHistogram() {
         mockSafeBrowsingState(
                 SafeBrowsingState.ENHANCED_PROTECTION, SafeBrowsingState.STANDARD_PROTECTION);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD));
+                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD));
+        watcher.assertExpected();
     }
 
     @Test
@@ -362,17 +300,12 @@ public class PrivacyGuideMetricsDelegateTest {
     public void testSafeBrowsing_standardToStandardSettingsStatesHistogram() {
         mockSafeBrowsingState(
                 SafeBrowsingState.STANDARD_PROTECTION, SafeBrowsingState.STANDARD_PROTECTION);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_STANDARD));
+                        PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_STANDARD);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_STANDARD));
+        watcher.assertExpected();
     }
 
     @Test
@@ -390,17 +323,12 @@ public class PrivacyGuideMetricsDelegateTest {
     public void testSafeBrowsing_nextNavigationHistogram() {
         mockSafeBrowsingState(
                 SafeBrowsingState.STANDARD_PROTECTION, SafeBrowsingState.STANDARD_PROTECTION);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         NEXT_NAVIGATION_HISTOGRAM,
-                        PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON));
+                        PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        NEXT_NAVIGATION_HISTOGRAM,
-                        PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON));
+        watcher.assertExpected();
     }
 
     @Test
@@ -408,17 +336,12 @@ public class PrivacyGuideMetricsDelegateTest {
     public void testCookies_block3PIncognitoTo3PIncognitoSettingsStatesHistogram() {
         mockCookieControlsMode(
                 CookieControlsMode.INCOGNITO_ONLY, CookieControlsMode.INCOGNITO_ONLY);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P_INCOGNITO));
+                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P_INCOGNITO);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P_INCOGNITO));
+        watcher.assertExpected();
     }
 
     @Test
@@ -426,17 +349,12 @@ public class PrivacyGuideMetricsDelegateTest {
     public void testCookies_block3PIncognitoTo3PSettingsStatesHistogram() {
         mockCookieControlsMode(
                 CookieControlsMode.INCOGNITO_ONLY, CookieControlsMode.BLOCK_THIRD_PARTY);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P));
+                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P));
+        watcher.assertExpected();
     }
 
     @Test
@@ -444,17 +362,12 @@ public class PrivacyGuideMetricsDelegateTest {
     public void testCookies_block3PTo3PIncognitoSettingsStatesHistogram() {
         mockCookieControlsMode(
                 CookieControlsMode.BLOCK_THIRD_PARTY, CookieControlsMode.INCOGNITO_ONLY);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.BLOCK3P_TO3P_INCOGNITO));
+                        PrivacyGuideSettingsStates.BLOCK3P_TO3P_INCOGNITO);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.BLOCK3P_TO3P_INCOGNITO));
+        watcher.assertExpected();
     }
 
     @Test
@@ -462,15 +375,11 @@ public class PrivacyGuideMetricsDelegateTest {
     public void testCookies_block3PTo3PSettingsStatesHistogram() {
         mockCookieControlsMode(
                 CookieControlsMode.BLOCK_THIRD_PARTY, CookieControlsMode.BLOCK_THIRD_PARTY);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.BLOCK3P_TO3P));
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.BLOCK3P_TO3P);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.BLOCK3P_TO3P));
+        watcher.assertExpected();
     }
 
     @Test
@@ -487,15 +396,11 @@ public class PrivacyGuideMetricsDelegateTest {
     public void testCookies_nextNavigationHistogram() {
         mockCookieControlsMode(
                 CookieControlsMode.INCOGNITO_ONLY, CookieControlsMode.INCOGNITO_ONLY);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.COOKIES_NEXT_BUTTON));
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.COOKIES_NEXT_BUTTON);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.COOKIES_NEXT_BUTTON));
+        watcher.assertExpected();
     }
 
     @Test
@@ -503,17 +408,12 @@ public class PrivacyGuideMetricsDelegateTest {
     @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
     public void testSearchSuggestions_offToOffSettingsStatesHistogram() {
         mockSearchSuggestionsState(false, false);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_OFF_TO_OFF));
+                        PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_OFF_TO_OFF);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_OFF_TO_OFF));
+        watcher.assertExpected();
     }
 
     @Test
@@ -521,17 +421,12 @@ public class PrivacyGuideMetricsDelegateTest {
     @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
     public void testSearchSuggestions_offToOnSettingsStatesHistogram() {
         mockSearchSuggestionsState(false, true);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_OFF_TO_ON));
+                        PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_OFF_TO_ON);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_OFF_TO_ON));
+        watcher.assertExpected();
     }
 
     @Test
@@ -539,17 +434,12 @@ public class PrivacyGuideMetricsDelegateTest {
     @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
     public void testSearchSuggestions_onToOffSettingsStatesHistogram() {
         mockSearchSuggestionsState(true, false);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_ON_TO_OFF));
+                        PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_ON_TO_OFF);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_ON_TO_OFF));
+        watcher.assertExpected();
     }
 
     @Test
@@ -557,17 +447,12 @@ public class PrivacyGuideMetricsDelegateTest {
     @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
     public void testSearchSuggestions_onToOnSettingsStatesHistogram() {
         mockSearchSuggestionsState(true, true);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_ON_TO_ON));
+                        PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_ON_TO_ON);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_ON_TO_ON));
+        watcher.assertExpected();
     }
 
     @Test
@@ -587,17 +472,12 @@ public class PrivacyGuideMetricsDelegateTest {
     @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
     public void testSearchSuggestions_nextNavigationHistogram() {
         mockSearchSuggestionsState(false, false);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
                         NEXT_NAVIGATION_HISTOGRAM,
-                        PrivacyGuideInteractions.SEARCH_SUGGESTIONS_NEXT_BUTTON));
+                        PrivacyGuideInteractions.SEARCH_SUGGESTIONS_NEXT_BUTTON);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        NEXT_NAVIGATION_HISTOGRAM,
-                        PrivacyGuideInteractions.SEARCH_SUGGESTIONS_NEXT_BUTTON));
+        watcher.assertExpected();
     }
 
     @Test
@@ -610,15 +490,11 @@ public class PrivacyGuideMetricsDelegateTest {
     @Test
     @SmallTest
     public void testWelcome_nextNavigationHistogram() {
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.WELCOME_NEXT_BUTTON));
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.WELCOME_NEXT_BUTTON);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.WELCOME);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.WELCOME_NEXT_BUTTON));
+        watcher.assertExpected();
     }
 
     @Test
