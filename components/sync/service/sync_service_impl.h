@@ -46,10 +46,6 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-class SyncServiceAndroidBridge;
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace network {
 class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
@@ -61,6 +57,10 @@ class BackendMigrator;
 class SyncAuthManager;
 class SyncFeatureStatusForMigrationsRecorder;
 class SyncPrefsPolicyHandler;
+
+#if BUILDFLAG(IS_ANDROID)
+class SyncServiceAndroidBridge;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Look at the SyncService interface for information on how to use this class.
 // You should not need to know about SyncServiceImpl directly.

@@ -102,11 +102,11 @@ std::u16string JNI_LocalDataDescription_GetDomainsDisplayText(
     int item_count,
     std::vector<std::string>& domains,
     int domain_count) {
-  syncer::LocalDataDescription description;
+  LocalDataDescription description;
   description.item_count = item_count;
   description.domains = std::move(domains);
   description.domain_count = domain_count;
-  return syncer::GetDomainsDisplayText(std::move(description));
+  return GetDomainsDisplayText(std::move(description));
 }
 #endif
 
