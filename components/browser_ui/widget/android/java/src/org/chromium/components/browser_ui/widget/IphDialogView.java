@@ -40,6 +40,7 @@ public class IphDialogView extends LinearLayout {
     private final int mDialogTextTopMarginLandscape;
     private final Context mContext;
     private View mRootView;
+    private long mIntervalMs = 1500; // Delay before repeating the animation.
     private ImageView mIphImageView;
     private Drawable mIphDrawable;
     private Animatable mIphAnimation;
@@ -74,7 +75,7 @@ public class IphDialogView extends LinearLayout {
                     @Override
                     public void onAnimationEnd(Drawable drawable) {
                         Handler handler = new Handler();
-                        handler.postDelayed(mIphAnimation::start, 1500);
+                        handler.postDelayed(mIphAnimation::start, mIntervalMs);
                     }
                 };
     }
@@ -154,5 +155,14 @@ public class IphDialogView extends LinearLayout {
         // The IPH view height should be at most (root view height - 2 * top margin).
         int dialogHeight = Math.min(mDialogHeight, mParentViewHeight - 2 * mDialogTopMargin);
         setMinimumHeight(dialogHeight);
+    }
+
+    /**
+     * Set the interval between repeating animations.
+     *
+     * @param intervalMs Interval in milliseconds.
+     */
+    public void setIntervalMs(long intervalMs) {
+        mIntervalMs = intervalMs;
     }
 }
