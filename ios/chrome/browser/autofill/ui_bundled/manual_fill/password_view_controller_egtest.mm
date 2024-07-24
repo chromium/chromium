@@ -185,8 +185,8 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
   [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
 
   // Verify that the whole navigation stack is gone.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsNavigationBar()]
-      assertWithMatcher:grey_nil()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::SettingsNavigationBar()];
 }
 
 // Checks that the password manual filling option is as expected and visible.
@@ -213,8 +213,8 @@ void CheckKeyboardIsUpAndNotCovered() {
                    @"Keyboard should be shown");
   }
 
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
-      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
+                      ManualFallbackPasswordTableViewMatcher()];
 }
 
 }  // namespace
@@ -556,9 +556,8 @@ void CheckKeyboardIsUpAndNotCovered() {
       selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
-      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
+                      ManualFallbackOtherPasswordsDismissMatcher()];
 
   // Open it again to make sure the old coordinator was properly cleaned up.
   [self openOtherPasswords];
@@ -624,12 +623,11 @@ void CheckKeyboardIsUpAndNotCovered() {
   [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
 
   // Verify that the whole navigation stack is gone.
-  [[EarlGrey selectElementWithMatcher:password_manager_test_utils::
-                                          ReauthenticationController()]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
-      assertWithMatcher:grey_nil()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:password_manager_test_utils::
+                                                 ReauthenticationController()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      ManualFallbackOtherPasswordsDismissMatcher()];
 
   // The keyboard should be visible.
   CheckKeyboardIsUpAndNotCovered();
