@@ -35,6 +35,18 @@ enum class BirchItemType {
   kMaxValue = kLostMedia,
 };
 
+// These values are used to determine which secondary icon to load for the items
+// that contain secondary icons.
+enum class SecondaryIconType {
+  kTabFromComputer,           // Type that links to landscape icon.
+  kTabFromPhone,              // Type that links to portrait icon.
+  kLostMediaAudio,            // Type that links to audio icon.
+  kLostMediaVideo,            // Type that links to media icon.
+  kLostMediaVideoConference,  // Type that links to video conference icon.
+  kUnknown,  // An unknwon type where we will not load a secondary icon.
+  kMaxValue = kUnknown,
+};
+
 // The base item which is stored by the birch model.
 class ASH_EXPORT BirchItem {
  public:
@@ -398,6 +410,7 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
                      const std::u16string& media_title,
                      bool is_video_conference_tab,
                      const ui::ImageModel& backup_icon,
+                     const SecondaryIconType& secondary_icon_type,
                      base::RepeatingClosure activation_callback);
   BirchLostMediaItem(BirchLostMediaItem&&);
   BirchLostMediaItem(const BirchLostMediaItem&);
@@ -415,6 +428,9 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
   const GURL& source_url() const { return source_url_; }
   const std::u16string& media_title() const { return media_title_; }
   bool is_video_conference_tab() const { return is_video_conference_tab_; }
+  const SecondaryIconType& secondary_icon_type() const {
+    return secondary_icon_type_;
+  }
 
  private:
   static std::u16string GetSubtitle(bool is_video_conference_tab);
@@ -423,6 +439,7 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
   std::u16string media_title_;
   bool is_video_conference_tab_;
   ui::ImageModel backup_icon_;
+  SecondaryIconType secondary_icon_type_;
   base::RepeatingClosure activation_callback_;
 };
 

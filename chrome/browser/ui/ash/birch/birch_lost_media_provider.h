@@ -98,6 +98,9 @@ class ASH_EXPORT BirchLostMediaProvider
   // complete GURL source on birch item creation.
   std::u16string source_url_;
 
+  // The type of the secondary icon. Default to kUnknown type.
+  SecondaryIconType secondary_icon_type_ = SecondaryIconType::kUnknown;
+
   // `VideoConferenceTrayController` used to get active video conference
   // session.
   raw_ptr<VideoConferenceTrayController> video_conference_controller_;

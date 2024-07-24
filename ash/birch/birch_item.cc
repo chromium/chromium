@@ -172,6 +172,23 @@ PrefService* GetPrefService() {
   return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
 }
 
+std::string SecondaryIconTypeToString(SecondaryIconType type) {
+  switch (type) {
+    case SecondaryIconType::kTabFromComputer:
+      return "kTabFromComputer";
+    case SecondaryIconType::kTabFromPhone:
+      return "kTabFromPhone";
+    case SecondaryIconType::kLostMediaAudio:
+      return "kLostMediaAudio";
+    case SecondaryIconType::kLostMediaVideo:
+      return "kLostMediaVideo";
+    case SecondaryIconType::kLostMediaVideoConference:
+      return "kLostMediaVideoConference";
+    case SecondaryIconType::kUnknown:
+      return "kUnknown";
+  }
+}
+
 }  // namespace
 
 int BirchItem::action_count_ = 0;
@@ -866,12 +883,14 @@ BirchLostMediaItem::BirchLostMediaItem(
     const std::u16string& media_title,
     bool is_video_conference_tab,
     const ui::ImageModel& backup_icon,
+    const SecondaryIconType& secondary_icon_type,
     base::RepeatingClosure activation_callback)
     : BirchItem(media_title, GetSubtitle(is_video_conference_tab)),
       source_url_(source_url),
       media_title_(media_title),
       is_video_conference_tab_(is_video_conference_tab),
       backup_icon_(backup_icon),
+      secondary_icon_type_(secondary_icon_type),
       activation_callback_(std::move(activation_callback)) {}
 
 BirchLostMediaItem::BirchLostMediaItem(BirchLostMediaItem&&) = default;
@@ -894,7 +913,9 @@ std::string BirchLostMediaItem::ToString() const {
   std::stringstream ss;
   ss << "Lost Media item: {ranking: " << ranking()
      << ", Source Url: " << source_url_ << ", Media Title: " << media_title_
-     << ", Is Video Conference Tab: " << is_video_conference_tab_ << "}";
+     << ", Is Video Conference Tab: " << is_video_conference_tab_
+     << ", Secondary Icon Type: "
+     << SecondaryIconTypeToString(secondary_icon_type_) << "}";
   return ss.str();
 }
 

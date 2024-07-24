@@ -462,7 +462,29 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     GetLostMediaProvider()->MediaSessionMetadataChanged(metadata);
   }
 
-  void ClearMediaApps() { vc_controller_->ClearMediaApps(); }
+  void SimulateMediaSessionInfoChanged(SecondaryIconType type) {
+    media_session::mojom::MediaSessionInfoPtr info(
+        media_session::mojom::MediaSessionInfo::New());
+    info->audio_video_states =
+        std::vector<media_session::mojom::MediaAudioVideoState>();
+    media_session::mojom::MediaAudioVideoState state;
+    switch (type) {
+      case SecondaryIconType::kLostMediaAudio:
+        state = media_session::mojom::MediaAudioVideoState::kAudioOnly;
+        break;
+      case SecondaryIconType::kLostMediaVideo:
+        state = media_session::mojom::MediaAudioVideoState::kVideoOnly;
+        break;
+      case SecondaryIconType::kLostMediaVideoConference:
+      case SecondaryIconType::kTabFromComputer:
+      case SecondaryIconType::kTabFromPhone:
+      case SecondaryIconType::kUnknown:
+        state = media_session::mojom::MediaAudioVideoState::kDeprecatedUnknown;
+        break;
+    }
+    info->audio_video_states->emplace_back(state);
+    GetLostMediaProvider()->MediaSessionInfoChanged(std::move(info));
+  }
 
   void AddMediaApp() {
     vc_controller_->AddMediaApp(
@@ -473,6 +495,8 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
             /*is_capturing_screen=*/false, /*title=*/u"Google Meet",
             /*url=*/GURL("https://meet.google.com/0")));
   }
+
+  void ClearMediaApps() { vc_controller_->ClearMediaApps(); }
 
   void ClearReleaseNotesSurfacesTimesLeftToShowPref() {
     GetProfile()->GetPrefs()->ClearPref(
@@ -825,7 +849,7 @@ TEST_F(BirchKeyedServiceTest, SelfShareProvider) {
   EXPECT_EQ(model->GetSelfShareItemsForTest().size(), 0u);
 }
 
-TEST_F(BirchKeyedServiceTest, LostMediaProvider) {
+TEST_F(BirchKeyedServiceTest, LostMediaProvider_AudioItem) {
   BirchModel* model = Shell::Get()->birch_model();
   BirchDataProvider* lost_media_provider =
       birch_keyed_service()->GetLostMediaProvider();
@@ -834,6 +858,7 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider) {
   EXPECT_EQ(model->GetLostMediaItemsForTest().size(), 0u);
 
   SimulateMediaMetadataInit();
+  SimulateMediaSessionInfoChanged(SecondaryIconType::kLostMediaAudio);
   lost_media_provider->RequestBirchDataFetch();
   model->SetCalendarItems(std::vector<BirchCalendarItem>());
   model->SetRecentTabItems(std::vector<BirchTabItem>());
@@ -847,6 +872,8 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider) {
             GURL("https://www.testtube.com-1"));
   EXPECT_EQ(lost_media_items[0].title(), u"title-1");
   EXPECT_EQ(lost_media_items[0].is_video_conference_tab(), false);
+  EXPECT_EQ(lost_media_items[0].secondary_icon_type(),
+            SecondaryIconType::kLostMediaAudio);
 
   // Media item should still show after activation.
   lost_media_items[0].PerformAction();
@@ -857,6 +884,8 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider) {
             GURL("https://www.testtube.com-1"));
   EXPECT_EQ(lost_media_items[0].title(), u"title-1");
   EXPECT_EQ(lost_media_items[0].is_video_conference_tab(), false);
+  EXPECT_EQ(lost_media_items[0].secondary_icon_type(),
+            SecondaryIconType::kLostMediaAudio);
 
   // There should be no items if metadata does not have a valid `source_url`
   // or `title`.
@@ -864,6 +893,61 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider) {
   lost_media_provider->RequestBirchDataFetch();
   lost_media_items = model->GetLostMediaItemsForTest();
   ASSERT_EQ(lost_media_items.size(), 0u);
+}
+
+TEST_F(BirchKeyedServiceTest, LostMediaProvider_VideoItem) {
+  BirchModel* model = Shell::Get()->birch_model();
+  BirchDataProvider* lost_media_provider =
+      birch_keyed_service()->GetLostMediaProvider();
+  ClearMediaApps();
+
+  EXPECT_EQ(model->GetLostMediaItemsForTest().size(), 0u);
+
+  SimulateMediaMetadataInit();
+  SimulateMediaSessionInfoChanged(SecondaryIconType::kLostMediaVideo);
+  lost_media_provider->RequestBirchDataFetch();
+  model->SetCalendarItems(std::vector<BirchCalendarItem>());
+  model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetFileSuggestItems(std::vector<BirchFileItem>());
+  model->SetReleaseNotesItems(std::vector<BirchReleaseNotesItem>());
+  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
+
+  auto& lost_media_items = model->GetLostMediaItemsForTest();
+  EXPECT_EQ(lost_media_items.size(), 1u);
+  EXPECT_EQ(lost_media_items[0].source_url(),
+            GURL("https://www.testtube.com-1"));
+  EXPECT_EQ(lost_media_items[0].title(), u"title-1");
+  EXPECT_EQ(lost_media_items[0].is_video_conference_tab(), false);
+  EXPECT_EQ(lost_media_items[0].secondary_icon_type(),
+            SecondaryIconType::kLostMediaVideo);
+
+  // Media item should still show after activation.
+  lost_media_items[0].PerformAction();
+  lost_media_items = model->GetLostMediaItemsForTest();
+  lost_media_provider->RequestBirchDataFetch();
+  EXPECT_EQ(lost_media_items.size(), 1u);
+  EXPECT_EQ(lost_media_items[0].source_url(),
+            GURL("https://www.testtube.com-1"));
+  EXPECT_EQ(lost_media_items[0].title(), u"title-1");
+  EXPECT_EQ(lost_media_items[0].is_video_conference_tab(), false);
+  EXPECT_EQ(lost_media_items[0].secondary_icon_type(),
+            SecondaryIconType::kLostMediaVideo);
+
+  // There should be no items if metadata does not have a valid `source_url`
+  // or `title`.
+  SimulateMediaMetadataEnd();
+  lost_media_provider->RequestBirchDataFetch();
+  lost_media_items = model->GetLostMediaItemsForTest();
+  ASSERT_EQ(lost_media_items.size(), 0u);
+}
+
+TEST_F(BirchKeyedServiceTest, LostMediaProvider_VideoConferenceItem) {
+  BirchModel* model = Shell::Get()->birch_model();
+  BirchDataProvider* lost_media_provider =
+      birch_keyed_service()->GetLostMediaProvider();
+  ClearMediaApps();
+
+  EXPECT_EQ(model->GetLostMediaItemsForTest().size(), 0u);
 
   // There should be one video conference item if there is both vc and
   // media items available.
@@ -876,12 +960,14 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider) {
   model->SetReleaseNotesItems(std::vector<BirchReleaseNotesItem>());
   model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
 
-  lost_media_items = model->GetLostMediaItemsForTest();
+  auto& lost_media_items = model->GetLostMediaItemsForTest();
   ASSERT_EQ(lost_media_items.size(), 1u);
   EXPECT_EQ(lost_media_items[0].source_url(),
             GURL("https://meet.google.com/0"));
   EXPECT_EQ(lost_media_items[0].title(), u"Google Meet");
   EXPECT_EQ(lost_media_items[0].is_video_conference_tab(), true);
+  EXPECT_EQ(lost_media_items[0].secondary_icon_type(),
+            SecondaryIconType::kLostMediaVideoConference);
 
   // VC item still should show after activation.
   lost_media_items[0].PerformAction();
@@ -897,6 +983,8 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider) {
             GURL("https://meet.google.com/0"));
   EXPECT_EQ(lost_media_items[0].title(), u"Google Meet");
   EXPECT_EQ(lost_media_items[0].is_video_conference_tab(), true);
+  EXPECT_EQ(lost_media_items[0].secondary_icon_type(),
+            SecondaryIconType::kLostMediaVideoConference);
 }
 
 TEST_F(BirchKeyedServiceTest, NoTabSuggestionsWithDisabledChromeSyncPref) {

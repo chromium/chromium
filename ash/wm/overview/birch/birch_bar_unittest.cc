@@ -446,11 +446,13 @@ class BirchBarTest : public AshTestBase {
   void SetLostMediaItems(size_t num) {
     std::vector<BirchLostMediaItem> item_list;
     for (size_t i = 0; i < num; i++) {
-      item_list.emplace_back(/*source_url=*/GURL("https://www.source.com/"),
-                             /*media_title=*/u"media title",
-                             /*is_video_conference_tab=*/false,
-                             /*backup_icon=*/ui::ImageModel(),
-                             /*activation_callback=*/base::DoNothing());
+      item_list.emplace_back(
+          /*source_url=*/GURL("https://www.source.com/"),
+          /*media_title=*/u"media title",
+          /*is_video_conference_tab=*/false,
+          /*backup_icon=*/ui::ImageModel(),
+          /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideo,
+          /*activation_callback=*/base::DoNothing());
       item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetLostMediaItems(item_list);

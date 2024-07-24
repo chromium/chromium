@@ -62,6 +62,33 @@ void BirchLostMediaProvider::MediaSessionMetadataChanged(
   }
 }
 
+void BirchLostMediaProvider::MediaSessionInfoChanged(
+    media_session::mojom::MediaSessionInfoPtr session_info) {
+  media_session::mojom::MediaSessionInfoPtr media_session_info =
+      std::move(session_info);
+
+  if (!media_session_info) {
+    secondary_icon_type_ = SecondaryIconType::kUnknown;
+    return;
+  }
+
+  if (media_session_info->audio_video_states.has_value() &&
+      !media_session_info->audio_video_states->empty()) {
+    auto& first_state = media_session_info->audio_video_states->at(0);
+    switch (first_state) {
+      case media_session::mojom::MediaAudioVideoState::kAudioOnly:
+        secondary_icon_type_ = SecondaryIconType::kLostMediaAudio;
+        return;
+      case media_session::mojom::MediaAudioVideoState::kAudioVideo:
+      case media_session::mojom::MediaAudioVideoState::kVideoOnly:
+        secondary_icon_type_ = SecondaryIconType::kLostMediaVideo;
+        return;
+      default:
+        secondary_icon_type_ = SecondaryIconType::kUnknown;
+    }
+  }
+}
+
 void BirchLostMediaProvider::RequestBirchDataFetch() {
   if (video_conference_controller_) {
     video_conference_controller_->GetMediaApps(base::BindOnce(
@@ -91,6 +118,7 @@ void BirchLostMediaProvider::OnVideoConferencingDataAvailable(
         /*media_title=*/apps[0]->title,
         /*is_video_conference_tab=*/true,
         /*backup_icon=*/backup_icon,
+        /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideoConference,
         /*activation_callback=*/
         base::BindRepeating(&BirchLostMediaProvider::OnItemPressed,
                             weak_factory_.GetWeakPtr(), apps[0]->id));
@@ -123,6 +151,7 @@ void BirchLostMediaProvider::SetMediaAppsFromMediaController() {
       /*media_title=*/media_title_,
       /*is_video_conference_tab=*/false,
       /*backup_icon=*/backup_icon,
+      /*secondary_icon_type=*/secondary_icon_type_,
       /*activation_callback=*/
       base::BindRepeating(&BirchLostMediaProvider::OnItemPressed,
                           weak_factory_.GetWeakPtr(), std::nullopt));
@@ -142,9 +171,6 @@ void BirchLostMediaProvider::OnItemPressed(
 
 void BirchLostMediaProvider::MediaSessionActionsChanged(
     const std::vector<media_session::mojom::MediaSessionAction>& actions) {}
-
-void BirchLostMediaProvider::MediaSessionInfoChanged(
-    media_session::mojom::MediaSessionInfoPtr session_info) {}
 
 void BirchLostMediaProvider::MediaSessionChanged(
     const std::optional<base::UnguessableToken>& request_id) {}

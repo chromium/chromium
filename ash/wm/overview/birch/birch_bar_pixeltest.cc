@@ -110,12 +110,14 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
           /*media_title=*/u"lost media",
           /*is_video_conference_tab=*/true,
           /*backup_icon=*/kTestIcon,
+          /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideoConference,
           /*activation_callback=*/base::DoNothing()));
       items.push_back(std::make_unique<BirchLostMediaItem>(
           /*source_url=*/kTestURL,
           /*media_title=*/u"lost media",
           /*is_video_conference_tab=*/false,
-          /**backup_icon=*/kTestIcon,
+          /*backup_icon=*/kTestIcon,
+          /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideo,
           /*activation_callback=*/base::DoNothing()));
       break;
     case BirchItemType::kTest:

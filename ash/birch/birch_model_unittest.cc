@@ -500,9 +500,9 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
       u"note", u"explore", GURL("https://www.example.com/"), base::Time());
   model->SetReleaseNotesItems(release_notes_item_list);
   std::vector<BirchLostMediaItem> lost_media_item_list;
-  lost_media_item_list.emplace_back(GURL("https://www.source.com/"),
-                                    u"media title", false, ui::ImageModel(),
-                                    base::DoNothing());
+  lost_media_item_list.emplace_back(
+      GURL("https://www.source.com/"), u"media title", false, ui::ImageModel(),
+      SecondaryIconType::kLostMediaVideo, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
 
   ASSERT_TRUE(model->IsDataFresh());
@@ -572,9 +572,9 @@ TEST_F(BirchModelTest, GetAllItemsDoesNotReturnItemsWithDisabledPrefs) {
       u"note", u"explore", GURL("https://www.example.com/"), base::Time());
   model->SetReleaseNotesItems(release_notes_item_list);
   std::vector<BirchLostMediaItem> lost_media_item_list;
-  lost_media_item_list.emplace_back(GURL("https://www.source.com/"),
-                                    u"media title", false, ui::ImageModel(),
-                                    base::DoNothing());
+  lost_media_item_list.emplace_back(
+      GURL("https://www.source.com/"), u"media title", false, ui::ImageModel(),
+      SecondaryIconType::kLostMediaVideo, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
 
   // The model returns no items.
@@ -1073,9 +1073,9 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
       u"note", u"explore", GURL("https://www.example.com/"), base::Time());
   model->SetReleaseNotesItems(release_notes_item_list);
   std::vector<BirchLostMediaItem> lost_media_item_list;
-  lost_media_item_list.emplace_back(GURL("https://www.source.com/"),
-                                    u"media title", false, ui::ImageModel(),
-                                    base::DoNothing());
+  lost_media_item_list.emplace_back(
+      GURL("https://www.source.com/"), u"media title", false, ui::ImageModel(),
+      SecondaryIconType::kLostMediaVideo, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
 
   EXPECT_TRUE(model->IsDataFresh());
