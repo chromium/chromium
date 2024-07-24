@@ -9,6 +9,7 @@
 
 #import <set>
 
+class Browser;
 class TabGroup;
 @class TabSwitcherItem;
 namespace web {
@@ -34,6 +35,13 @@ class WebStateID;
 // Shares `tabSwitcherItem`.
 - (void)shareItem:(TabSwitcherItem*)tabSwitcherItem
        originView:(UIView*)originView;
+
+// Shows an alert for moving `tabID` out of its `group`, with its
+// `originBrowser` and `originIndex`.
+- (void)showTabGroupDeletionAlertForTab:(web::WebStateID)tabID
+                          originBrowser:(Browser*)browser
+                            originIndex:(int)index
+                            originGroup:(const TabGroup*)group;
 
 @end
 

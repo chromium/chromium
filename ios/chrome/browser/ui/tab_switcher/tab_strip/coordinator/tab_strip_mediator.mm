@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
@@ -224,6 +225,36 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
   _tabStripHandler = nil;
   _browserList = nullptr;
+}
+
+- (void)cancelMoveForTab:(web::WebStateID)tabID
+           originBrowser:(Browser*)originBrowser
+             originIndex:(int)originIndex
+              visualData:(const tab_groups::TabGroupVisualData&)visualData {
+  BrowserAndIndex browserAndIndex = FindBrowserAndIndex(
+      tabID, _browserList->BrowsersOfType(BrowserList::BrowserType::kRegular));
+  if (!browserAndIndex.browser || !originBrowser) {
+    return;
+  }
+
+  if (originBrowser == browserAndIndex.browser &&
+      originIndex > browserAndIndex.tab_index) {
+    originIndex++;
+  }
+  const WebStateList::InsertionParams insertionParams =
+      WebStateList::InsertionParams::AtIndex(originIndex);
+  MoveTabToBrowser(tabID, originBrowser, insertionParams);
+
+  // Move to the new group
+  BrowserAndIndex browserAndIndexAfterMove = FindBrowserAndIndex(
+      tabID, _browserList->BrowsersOfType(BrowserList::BrowserType::kRegular));
+  if (!browserAndIndexAfterMove.browser) {
+    return;
+  }
+
+  browserAndIndexAfterMove.browser->GetWebStateList()->CreateGroup(
+      {browserAndIndexAfterMove.tab_index}, visualData,
+      tab_groups::TabGroupId::GenerateNew());
 }
 
 #pragma mark - Public properties
@@ -859,6 +890,24 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // asynchronous drops.
   if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
+    if (IsTabGroupSyncEnabled()) {
+      BrowserAndIndex browserAndIndex = FindBrowserAndIndex(
+          tabInfo.tabID,
+          _browserList->BrowsersOfType(BrowserList::BrowserType::kRegular));
+      if (browserAndIndex.browser) {
+        const TabGroup* group =
+            browserAndIndex.browser->GetWebStateList()->GetGroupOfWebStateAt(
+                browserAndIndex.tab_index);
+        if (group && group->range().count() == 1) {
+          // Trying to move the last tab of group.
+          [_tabStripHandler
+              showTabGroupDeletionAlertForTab:tabInfo.tabID
+                                originBrowser:browserAndIndex.browser
+                                  originIndex:browserAndIndex.tab_index
+                                  originGroup:group];
+        }
+      }
+    }
     if (fromSameCollection) {
       base::UmaHistogramEnumeration(kUmaTabStripViewDragOrigin,
                                     DragItemOrigin::kSameCollection);

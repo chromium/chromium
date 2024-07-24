@@ -81,6 +81,12 @@ const char kDraggedUrl[] = "https://dragged_url.com";
        originView:(UIView*)originView {
 }
 
+- (void)showTabGroupDeletionAlertForTab:(web::WebStateID)tabID
+                          originBrowser:(Browser*)browser
+                            originIndex:(int)index
+                            originGroup:(const TabGroup*)group {
+}
+
 @end
 
 // Fake consumer to get the passed value in tests.

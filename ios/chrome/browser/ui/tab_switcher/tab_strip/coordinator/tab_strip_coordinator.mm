@@ -5,13 +5,20 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
 
 #import "base/check_op.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
@@ -20,6 +27,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/context_menu/tab_strip_context_menu_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state_id.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 @interface TabStripCoordinator () <CreateOrEditTabGroupCoordinatorDelegate,
                                    TabStripCommands>
@@ -36,6 +46,7 @@
 @implementation TabStripCoordinator {
   SharingCoordinator* _sharingCoordinator;
   CreateTabGroupCoordinator* _createTabGroupCoordinator;
+  AlertCoordinator* _alertCoordinator;
 }
 
 @synthesize baseViewController = _baseViewController;
@@ -148,6 +159,70 @@
   [_sharingCoordinator start];
 }
 
+- (void)showTabGroupDeletionAlertForTab:(web::WebStateID)tabID
+                          originBrowser:(Browser*)browser
+                            originIndex:(int)index
+                            originGroup:(const TabGroup*)group {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  if (browserState->IsOffTheRecord()) {
+    return;
+  }
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  id<SystemIdentity> identity =
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+
+  base::WeakPtr<Browser> weakBrowser = browser->AsWeakPtr();
+  __weak __typeof(self) weakSelf = self;
+  tab_groups::TabGroupVisualData visualDataCopy = group->visual_data();
+
+  NSString* title = l10n_util::GetNSString(
+      IDS_IOS_TAB_GROUP_CONFIRMATION_LAST_TAB_MOVE_TITLE);
+  NSString* message;
+  if (identity) {
+    message = l10n_util::GetNSStringF(
+        IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_MESSAGE_WITH_EMAIL,
+        base::SysNSStringToUTF16(identity.userEmail));
+  } else {
+    message = l10n_util::GetNSString(
+        IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_MESSAGE_WITHOUT_EMAIL);
+  }
+  _alertCoordinator = [[AlertCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                           title:title
+                         message:message];
+  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(
+                                          IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)
+                               action:^(void) {
+                                 [weakSelf dimissAlertCoordinator];
+                               }
+                                style:UIAlertActionStyleDestructive];
+  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                               action:^(void) {
+                                 if (!weakBrowser) {
+                                   return;
+                                 }
+                                 [weakSelf cancelMoveForTab:tabID
+                                              originBrowser:weakBrowser.get()
+                                                originIndex:index
+                                                 visualData:visualDataCopy];
+                                 [weakSelf dimissAlertCoordinator];
+                               }
+                                style:UIAlertActionStyleCancel];
+  [_alertCoordinator start];
+}
+
+- (void)cancelMoveForTab:(web::WebStateID)tabID
+           originBrowser:(Browser*)originBrowser
+             originIndex:(int)originIndex
+              visualData:(const tab_groups::TabGroupVisualData&)visualData {
+  [_mediator cancelMoveForTab:tabID
+                originBrowser:originBrowser
+                  originIndex:originIndex
+                   visualData:visualData];
+}
+
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate
 
 - (void)createOrEditTabGroupCoordinatorDidDismiss:
@@ -170,6 +245,14 @@
 
 - (void)hideTabStrip:(BOOL)hidden {
   self.tabStripViewController.view.hidden = hidden;
+}
+
+#pragma mark - Private
+
+// Dismisses the alert coordinator.
+- (void)dimissAlertCoordinator {
+  [_alertCoordinator stop];
+  _alertCoordinator = nil;
 }
 
 @end

@@ -18,6 +18,14 @@ class BrowserList;
 class ChromeBrowserState;
 class WebStateList;
 
+namespace tab_groups {
+class TabGroupVisualData;
+}
+
+namespace web {
+class WebStateID;
+}
+
 // This mediator used to manage model interaction for its consumer.
 @interface TabStripMediator
     : NSObject <TabCollectionDragDropHandler, TabStripMutator>
@@ -45,6 +53,13 @@ class WebStateList;
 // It is an error for the receiver to dealloc without this having been called
 // first.
 - (void)disconnect;
+
+// Cancels the move the `tabID` by moving it back to its `originBrowser` and
+// `originIndex` and creates a new group based on `visualData`.
+- (void)cancelMoveForTab:(web::WebStateID)tabID
+           originBrowser:(Browser*)originBrowser
+             originIndex:(int)originIndex
+              visualData:(const tab_groups::TabGroupVisualData&)visualData;
 
 @end
 

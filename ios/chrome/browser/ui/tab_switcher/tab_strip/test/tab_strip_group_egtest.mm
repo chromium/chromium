@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift_constants_for_objective_c.h"
@@ -72,6 +73,14 @@ void SetTabGroupCreationName(NSString* group_name) {
   [[EarlGrey selectElementWithMatcher:CreateTabGroupTextFieldMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:group_name flags:0];
+}
+
+// Identifer for cell at given `index` in the tab grid.
+NSString* IdentifierForRegularCellAtIndex(unsigned int index) {
+  return [NSString stringWithFormat:@"%@%u",
+                                    TabStripCollectionViewConstants
+                                        .tabStripTabCellPrefixIdentifier,
+                                    index];
 }
 
 // Returns a matcher for a tab strip tab cell with `title` as title.
@@ -172,6 +181,36 @@ void AddTabToNewGroup(id<GREYMatcher> tab_cell_matcher,
                       grey_accessibilityID(kCreateTabGroupViewIdentifier)];
 }
 
+// Finds the element with the given `identifier` of given `type`.
+XCUIElement* GetElementMatchingIdentifier(XCUIApplication* app,
+                                          NSString* identifier,
+                                          XCUIElementType type) {
+  XCUIElementQuery* query = [[app.windows.firstMatch
+      descendantsMatchingType:type] matchingIdentifier:identifier];
+  return [query elementBoundByIndex:0];
+}
+
+// Drags and drops the cell with the given `src_cell_identifier` to the
+// `dst_cell_identifier` position.
+void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
+                                           NSString* dst_cell_identifier) {
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  XCUIElement* src_element = GetElementMatchingIdentifier(
+      app, src_cell_identifier, XCUIElementTypeCell);
+  XCUICoordinate* start_point =
+      [src_element coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
+
+  XCUIElement* dst_element = GetElementMatchingIdentifier(
+      app, dst_cell_identifier, XCUIElementTypeCell);
+  XCUICoordinate* end_point =
+      [dst_element coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
+
+  [start_point pressForDuration:1.5
+           thenDragToCoordinate:end_point
+                   withVelocity:XCUIGestureVelocityDefault
+            thenHoldForDuration:1.0];
+}
+
 }  // namespace
 
 // Tests for the tab strip shown on iPad.
@@ -185,6 +224,7 @@ void AddTabToNewGroup(id<GREYMatcher> tab_cell_matcher,
   config.features_enabled.push_back(kTabGroupsInGrid);
   config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kModernTabStrip);
+  config.features_enabled.push_back(kTabGroupSync);
   return config;
 }
 
@@ -629,6 +669,74 @@ void AddTabToNewGroup(id<GREYMatcher> tab_cell_matcher,
                                                  kGroupTitle1)];
   [[EarlGrey selectElementWithMatcher:TabStripTabCellMatcher(aboutTabTitle)]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests dragging the last tab out of a group then accepting to delete the
+// group.
+- (void)testDragLastTabOutOfGroupDelete {
+  if ([ChromeEarlGrey isCompactWidth]) {
+    EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
+  }
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GURL("chrome://about")];
+
+  AddTabToNewGroup(TabStripTabCellMatcher(@"About Version"), kGroupTitle1);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabStripGroupCellMatcher(
+                                                          kGroupTitle1)];
+
+  // Tab0: New Tab
+  // Group 1
+  // Tab2 in group 1: About Version
+  // Tab3, currently active: Chrome URLs
+
+  // Move Tab2 to Tab3.
+  DragDropTabStripTabCellInTabStripView(IdentifierForRegularCellAtIndex(2),
+                                        IdentifierForRegularCellAtIndex(3));
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle1)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests dragging the last tab out of a group then cancelling it.
+- (void)testDragLastTabOutOfGroupCancel {
+  if ([ChromeEarlGrey isCompactWidth]) {
+    EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
+  }
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GURL("chrome://about")];
+
+  AddTabToNewGroup(TabStripTabCellMatcher(@"About Version"), kGroupTitle1);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabStripGroupCellMatcher(
+                                                          kGroupTitle1)];
+
+  // Tab0: New Tab
+  // Group 1
+  // Tab2 in group 1: About Version
+  // Tab3, currently active: Chrome URLs
+
+  // Move Tab2 to Tab3.
+  DragDropTabStripTabCellInTabStripView(IdentifierForRegularCellAtIndex(2),
+                                        IdentifierForRegularCellAtIndex(3));
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_CANCEL)] performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabStripGroupCellMatcher(
+                                                          kGroupTitle1)];
 }
 
 @end
