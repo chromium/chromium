@@ -37,7 +37,6 @@ bool IsPasscodeSettingsAvailable() {
   // Use both kill switch and auth on entry feature flag to control the
   // dispalying of the action.
   return password_manager::features::IsPasscodeSettingsEnabled() &&
-         password_manager::features::IsAuthOnEntryV2Enabled() &&
          ios::provider::SupportsPasscodeSettings();
 }
 
@@ -101,9 +100,7 @@ bool IsPasscodeSettingsAvailable() {
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  if (password_manager::features::IsAuthOnEntryV2Enabled()) {
-    [self.browser->GetSceneState() addObserver:self];
-  }
+  [self.browser->GetSceneState() addObserver:self];
 
   if (_authOnStart) {
     [self pushReauthenticationViewControllerWithRequestAuth:YES];
