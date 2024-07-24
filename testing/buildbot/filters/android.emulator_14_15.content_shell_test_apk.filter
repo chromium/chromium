@@ -12,6 +12,8 @@
 -org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarPlainTextCut
 -org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarTextAreaCopy
 -org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarTextAreaCut
+-org.chromium.content.browser.ContentTextSelectionTest.testCorrectPasteMenuItemsAddedWhenThereIsNoSelection
+-org.chromium.content.browser.ContentTextSelectionTest.testCorrectSelectionMenuItemsAddedForInputSelection
 
 # crbug.com/343821701
 -org.chromium.content.browser.input.ImeTest.testImeCopy
@@ -38,4 +40,4 @@
 -org.chromium.content.browser.ChildProcessLauncherHelperTest.testWarmUpPrivilegedProcess
 -org.chromium.content.browser.ChildProcessLauncherHelperTest.testWarmUpProcessCrashAfterUse
 -org.chromium.content.browser.ChildProcessLauncherHelperTest.testWarmUpProcessCrashBeforeUse
--org.chromium.content.browser.ChildProcessLauncherHelperTest.testWarmUpProcessCrashBeforeUse
+-org.chromium.content.browser.ChildProcessLauncherHelperTest.testLauncherCleanup
