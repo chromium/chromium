@@ -417,7 +417,7 @@ void RenderInputRouter::OnGestureEventAck(
   }
 
   if (view_input_) {
-    view_input_->GestureEventAck(event.event, ack_result);
+    view_input_->GestureEventAck(event.event, ack_source, ack_result);
   }
 }
 

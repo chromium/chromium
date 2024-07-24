@@ -190,6 +190,7 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput :
 
   virtual void GestureEventAck(
       const blink::WebGestureEvent& event,
+      blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) = 0;
   virtual void WheelEventAck(
       const blink::WebMouseWheelEvent& event,

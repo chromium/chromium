@@ -263,6 +263,7 @@ bool CrossProcessFrameConnector::TransformPointToCoordSpaceForView(
 
 void CrossProcessFrameConnector::ForwardAckedTouchpadZoomEvent(
     const blink::WebGestureEvent& event,
+    blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   auto* root_view = GetRootRenderWidgetHostView();
   if (!root_view)
@@ -272,7 +273,7 @@ void CrossProcessFrameConnector::ForwardAckedTouchpadZoomEvent(
   const gfx::PointF root_point =
       view_->TransformPointToRootCoordSpaceF(event.PositionInWidget());
   root_event.SetPositionInWidget(root_point);
-  root_view->GestureEventAck(root_event, ack_result);
+  root_view->GestureEventAck(root_event, ack_source, ack_result);
 }
 
 bool CrossProcessFrameConnector::BubbleScrollEvent(

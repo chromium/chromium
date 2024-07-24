@@ -1136,6 +1136,7 @@ void RenderWidgetHostViewAura::DidOverscroll(
 
 void RenderWidgetHostViewAura::GestureEventAck(
     const blink::WebGestureEvent& event,
+    blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   TRACE_EVENT1("input", "RenderWidgetHostViewAura::GestureEventAck", "type",
                blink::WebInputEvent::GetName(event.GetType()));
