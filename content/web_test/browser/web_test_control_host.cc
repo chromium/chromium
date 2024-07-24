@@ -8,9 +8,6 @@
 #endif
 
 #include "content/web_test/browser/web_test_control_host.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 #include <string.h>
@@ -28,11 +25,14 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -91,6 +91,7 @@
 #include "content/web_test/browser/web_test_devtools_bindings.h"
 #include "content/web_test/browser/web_test_first_device_bluetooth_chooser.h"
 #include "content/web_test/browser/web_test_permission_manager.h"
+#include "content/web_test/browser/web_test_pressure_manager.h"
 #include "content/web_test/common/web_test_constants.h"
 #include "content/web_test/common/web_test_string_util.h"
 #include "content/web_test/common/web_test_switches.h"
@@ -755,6 +756,23 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
   ShellBrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();
   browser_context->ResetFederatedPermissionContext();
+
+  // Delete any ScopedVirtualPressureSourceForDevTools and
+  // WebTestPressureManager instances created by WebTestContentBrowserClient.
+  // At this point all other windows have been closed and their WebContents
+  // have been destroyed, so we only need to worry about |main_window_|.
+  //
+  // Note that if other windows were using WebTestPressureManager there might
+  // be a race condition between ScopedVirtualPressureSourceForDevTools and
+  // WebContentsPressureManagerProxy because both the latter and
+  // WebTestPressureManager inherit from WebContentsUserData so their
+  // destruction order can vary. This is not a problem though -- in the worst
+  // case, some virtual pressure sources will remain valid but unused in
+  // //services during content_shell's lifetime.
+  if (main_window_) {
+    main_window_->web_contents()->RemoveUserData(
+        WebTestPressureManager::UserDataKey());
+  }
 
   // Delete all cookies, Attribution Reporting data and Aggregation service data
   {

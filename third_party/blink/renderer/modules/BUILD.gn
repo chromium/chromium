@@ -222,6 +222,8 @@ source_set("modules_testing") {
   sources = [
     "accessibility/testing/internals_accessibility.cc",
     "accessibility/testing/internals_accessibility.h",
+    "compute_pressure/testing/internals_compute_pressure.cc",
+    "compute_pressure/testing/internals_compute_pressure.h",
     "credentialmanagement/testing/internals_fed_cm.cc",
     "credentialmanagement/testing/internals_fed_cm.h",
     "device_posture/testing/internals_device_posture.cc",

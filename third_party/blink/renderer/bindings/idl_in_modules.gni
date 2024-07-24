@@ -1368,6 +1368,8 @@ if (!target_os_is_android) {
 # These IDL definitions are used only for testing.
 static_idl_files_in_modules_for_testing = [
   "//third_party/blink/renderer/modules/accessibility/testing/internals_accessibility.idl",
+  "//third_party/blink/renderer/modules/compute_pressure/testing/create_virtual_pressure_source_options.idl",
+  "//third_party/blink/renderer/modules/compute_pressure/testing/internals_compute_pressure.idl",
   "//third_party/blink/renderer/modules/credentialmanagement/testing/internals_fed_cm.idl",
   "//third_party/blink/renderer/modules/device_posture/testing/internals_device_posture.idl",
   "//third_party/blink/renderer/modules/fuzzing/internals_fuzzing.idl",
