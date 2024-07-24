@@ -2843,6 +2843,10 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          CookieSettingsTopLevelTpcdTrialTest,
                          testing::Bool());
 
+// The TOP_LEVEL_TPCD_ORIGIN_TRIAL content setting type is not registered on
+// iOS.
+
+#if !BUILDFLAG(IS_IOS)
 class CookieSettingsTopLevelTpcdOriginTrialTest
     : public CookieSettingsTestBase,
       public testing::
@@ -3282,5 +3286,7 @@ TEST_P(CookieSettingsTopLevelTpcdOriginTrialTest,
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          CookieSettingsTopLevelTpcdOriginTrialTest,
                          testing::Bool());
+#endif  // !BUILDFLAG(IS_IOS)
+
 }  // namespace
 }  // namespace network
