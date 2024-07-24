@@ -441,6 +441,26 @@ void HistoryMenuBridge::CreateMenu() {
       profile_->IsOffTheRecord()) {
     return;
   }
+
+  // Under the right conditions, such as the Speedometer 3 benchmark,
+  // OnHistoryChanged() calls CreateMenu() many times in rapid succession. With
+  // this timer, FinishCreateMenu() will execute once 750ms have elapsed
+  // without a new CreateMenu() call. 750ms is long enough to coalesce the bulk
+  // of the successive CreateMenu() requests, but not too long from a user's
+  // perspective.
+  finish_create_menu_timer_.Stop();
+  finish_create_menu_timer_.Start(
+      FROM_HERE, base::Milliseconds(750),
+      base::BindOnce(&HistoryMenuBridge::FinishCreateMenu,
+                     base::Unretained(this)));
+}
+
+void HistoryMenuBridge::FinishCreateMenu() {
+  // If the user opens the menu right before we try to update it, defer the
+  // update until later (SetIsMenuOpen() will call CreateMenu() as needed).
+  if (is_menu_open_) {
+    return;
+  }
   create_in_progress_ = true;
   need_recreate_ = false;
 
@@ -470,15 +490,18 @@ void HistoryMenuBridge::OnVisitedHistoryResults(history::QueryResults results) {
   // 3. HistoryService is destroyed
   // 4. The posted reply to us arrives
   // To guard against that, check for history_service_ here.
-  if (!history_service_)
+  if (!history_service_) {
     return;
+  }
 
   NSMenu* menu = HistoryMenu();
   ClearMenuSection(menu, kVisited);
   NSInteger top_item = [menu indexOfItemWithTag:kVisitedTitle] + 1;
 
   size_t count = results.size();
-  for (size_t i = 0; i < count; ++i) {
+  // Loop through all the items. Early out if the menu changes while we're
+  // rebuilding it.
+  for (size_t i = 0; i < count && !need_recreate_; ++i) {
     const history::URLResult& result = results[i];
 
     auto item = std::make_unique<HistoryItem>();
@@ -493,10 +516,11 @@ void HistoryMenuBridge::OnVisitedHistoryResults(history::QueryResults results) {
   }
 
   // We are already invalid by the time we finished, darn.
-  if (need_recreate_)
+  if (need_recreate_) {
     CreateMenu();
-  else
+  } else {
     history_service_keep_alive_.reset();
+  }
 
   create_in_progress_ = false;
 }
@@ -634,4 +658,5 @@ void HistoryMenuBridge::OnProfileWillBeDestroyed() {
   history_service_ = nullptr;
   tab_restore_service_observation_.Reset();
   tab_restore_service_ = nullptr;
+  finish_create_menu_timer_.Stop();
 }
