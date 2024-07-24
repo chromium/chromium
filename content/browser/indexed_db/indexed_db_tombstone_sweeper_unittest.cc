@@ -202,9 +202,9 @@ class IndexedDBTombstoneSweeperTest : public testing::Test {
   std::unique_ptr<TransactionalLevelDBDatabase> in_memory_db_;
   leveldb::MockLevelDB mock_db_;
 
-  std::unique_ptr<IndexedDBTombstoneSweeper> sweeper_;
-
   std::vector<IndexedDBDatabaseMetadata> metadata_;
+
+  std::unique_ptr<IndexedDBTombstoneSweeper> sweeper_;
 
  private:
   base::test::TaskEnvironment task_environment_;
