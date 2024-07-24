@@ -22,12 +22,14 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/browser/webui/policy_data_utils.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
@@ -416,6 +418,10 @@ std::u16string GetManagementBubbleTitle(Profile* profile) {
 }
 #endif
 
+bool AreProfileAndBrowserManagedBySameEntity(Profile* profile) {
+  return GetManagementStringType(profile) == BROWSER_PROFILE_SAME_MANAGED_BY;
+}
+
 std::optional<std::string> GetDeviceManagerIdentity() {
   if (g_device_manager_for_testing) {
     return g_device_manager_for_testing;
@@ -430,6 +436,14 @@ std::optional<std::string> GetDeviceManagerIdentity() {
       g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetEnterpriseDomainManager();
 #else
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  std::string custom_management_label =
+      g_browser_process->local_state()->GetString(
+          prefs::kEnterpriseCustomLabel);
+  if (!custom_management_label.empty()) {
+    return custom_management_label;
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // The device is managed as
   // `policy::ManagementServiceFactory::GetForPlatform()->IsManaged()` returned
   // true. `policy::GetManagedBy` might return `std::nullopt` if
@@ -453,6 +467,14 @@ std::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
            ->HasManagementAuthority(
                policy::EnterpriseManagementAuthority::CLOUD))
     return std::nullopt;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  std::string custom_management_label =
+      profile->GetPrefs()->GetString(prefs::kEnterpriseCustomLabel);
+  if (!custom_management_label.empty()) {
+    return custom_management_label;
+  }
+#endif
 
   const std::optional<std::string> managed_by =
       policy::GetManagedBy(profile->GetCloudPolicyManager());

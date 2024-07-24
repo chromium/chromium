@@ -16,6 +16,7 @@ example_value: Chromium
 features:
   dynamic_refresh: true
   per_profile: true
+  user_only: true
 future_on:
 - chrome.*
 owners:

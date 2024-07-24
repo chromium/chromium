@@ -93,6 +93,10 @@ std::u16string GetManagementPageSubtitle(Profile* profile);
 std::u16string GetManagementBubbleTitle(Profile* profile);
 #endif
 
+// Returns trus if the profile and browser are managed and both entities are
+// known and different.
+bool AreProfileAndBrowserManagedBySameEntity(Profile* profile);
+
 // Returns nullopt if the device is not managed, the UTF8-encoded string
 // representation of the manager identity if available and an empty string if
 // the device is managed but the manager is not known or if the policy store

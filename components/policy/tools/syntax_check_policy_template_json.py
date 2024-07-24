@@ -1195,10 +1195,6 @@ class PolicyTemplateChecker(object):
             '"cloud_only" and "platfrom_only" are true at the same time.',
             policy, 'features')
 
-      if user_only and not cloud_only:
-        self._PolicyError('"user_only" is used by non cloud only policy.',
-                          policy, 'features')
-
       if user_only and not features.get('per_profile', False):
         self._PolicyError('"user_only" is used by non per_profile policy.',
                           policy, 'features')

@@ -33,6 +33,40 @@
             "default_value": ""
           }
         }
+      },
+      {
+        "policies": {
+          "EnterpriseLogoUrl": "http://www.example.com"
+        },
+        "policies_settings": {
+          "EnterpriseLogoUrl": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_logo.url": {
+            "location": "local_state",
+            "value": "http://www.example.com"
+          }
+        }
+      },
+      {
+        "policies": {
+          "EnterpriseLogoUrl": "http://www.example.com"
+        },
+        "policies_settings": {
+          "EnterpriseLogoUrl": {
+            "scope": "user",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_logo.url": {
+            "location": "user_profile",
+            "value": "http://www.example.com"
+          }
+        }
       }
     ]
   }
