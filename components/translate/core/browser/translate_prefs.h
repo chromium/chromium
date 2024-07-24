@@ -256,15 +256,7 @@ class TranslatePrefs {
   // Removes the translate synonym of source_language from the always
   // translate dict.
   void RemoveLanguagePairFromAlwaysTranslateList(
-      std::string_view source_language,
-      std::string_view target_language);
-
-  // Sets the always translate state for a language.
-  // The always translate language list is actually a dict mapping
-  // source_language -> target_language.  We use the current target language
-  // when adding |language| to the dict.
-  void SetLanguageAlwaysTranslateState(std::string_view source_language,
-                                       bool always_translate);
+      std::string_view source_language);
 
   // Gets the languages that are set to always translate formatted as Chrome
   // language codes.

@@ -197,8 +197,7 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
   switch (policy.type) {
     case CWVTranslationPolicyAsk: {
       _translatePrefs->UnblockLanguage(languageCode);
-      _translatePrefs->RemoveLanguagePairFromAlwaysTranslateList(languageCode,
-                                                                 std::string());
+      _translatePrefs->RemoveLanguagePairFromAlwaysTranslateList(languageCode);
       break;
     }
     case CWVTranslationPolicyNever: {
