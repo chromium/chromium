@@ -4,29 +4,35 @@
 
 #include "chrome/browser/chromeos/echo/echo_util.h"
 
-#include "base/strings/string_util.h"
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/task/bind_post_task.h"
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/check_is_test.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/echo_private_ash.h"
+#include "chromeos/ash/components/report/utils/time_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/echo_private.mojom.h"
+#include "chromeos/crosapi/mojom/echo_private.mojom.h"  // nogncheck
 #include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos::echo_util {
 namespace {
 
-// Performs an explicit conversion from `str` to `base::ok(str)`.
-base::ok<std::string> ToExpected(const std::string& str) {
-  return base::ok(str);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Parse the given timestamp from Lacros.
+std::optional<base::Time> ParseTime(const std::string& str) {
+  base::Time result;
+  if (!base::Time::FromUTCString(str.c_str(), &result)) {
+    return std::nullopt;
+  }
+  return {result};
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 
@@ -34,16 +40,7 @@ void GetOobeTimestamp(GetOobeTimestampCallback callback) {
   // NOTE: Ensure that `callback` will run asynchronously.
   callback = base::BindPostTaskToCurrentDefault(std::move(callback));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (crosapi::CrosapiManager::IsInitialized()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->echo_private_ash()
-        ->GetOobeTimestamp(
-            base::BindOnce(&ToExpected).Then(std::move(callback)));
-  } else {
-    CHECK_IS_TEST();
-    std::move(callback).Run(base::ok(std::string()));
-  }
+  std::move(callback).Run(ash::report::utils::GetFirstActiveWeek());
 #else  // BUILDFLAG(IS_CHROMEOS_ASH)
   auto* lacros_service = chromeos::LacrosService::Get();
   if (lacros_service->IsAvailable<crosapi::mojom::EchoPrivate>() &&
@@ -51,9 +48,9 @@ void GetOobeTimestamp(GetOobeTimestampCallback callback) {
           lacros_service->GetInterfaceVersion<crosapi::mojom::EchoPrivate>()) >=
           crosapi::mojom::EchoPrivate::kGetOobeTimestampMinVersion) {
     lacros_service->GetRemote<crosapi::mojom::EchoPrivate>()->GetOobeTimestamp(
-        base::BindOnce(&ToExpected).Then(std::move(callback)));
+        base::BindOnce(&ParseTime).Then(std::move(callback)));
   } else {
-    std::move(callback).Run(base::unexpected("EchoPrivate unavailable."));
+    std::move(callback).Run(std::nullopt);
   }
 #endif
 }

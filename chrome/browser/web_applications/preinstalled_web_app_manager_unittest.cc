@@ -51,6 +51,8 @@
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #endif
@@ -98,6 +100,10 @@ class PreinstalledWebAppManagerTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<ash::FakeChromeUserManager>());
+    // Mocking the StatisticsProvider for testing.
+    ash::system::StatisticsProvider::SetTestProvider(&statistics_provider);
+    statistics_provider.SetMachineStatistic(ash::system::kActivateDateKey,
+                                            "2023-18");
 #endif
   }
 
@@ -107,6 +113,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     provider_ = nullptr;
     profile_.reset();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    ash::system::StatisticsProvider::SetTestProvider(nullptr);
     user_manager_enabler_.reset();
 #endif
     testing::Test::TearDown();
@@ -264,6 +271,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
 
   // To support primary/non-primary users.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  ash::system::FakeStatisticsProvider statistics_provider;
 
   base::test::ScopedCommandLine command_line_;
 #endif

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
@@ -27,11 +28,11 @@ struct DeviceInfo {
   ~DeviceInfo();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // The OOBE timestamp corresponding to the time of device registration. If
-  // present, the timestamp is a "y-M-d" formatted GMT date string. If absent,
-  // the timestamp is unavailable. This is known to occur during first boot due
-  // to a race condition between device registration and preinstallation.
-  std::optional<std::string> oobe_timestamp;
+  // The OOBE timestamp corresponding to the time of device registration.
+  // If absent, the timestamp is unavailable. This is known to occur during
+  // first boot due to a race condition between device registration and
+  // preinstallation.
+  std::optional<base::Time> oobe_timestamp;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
