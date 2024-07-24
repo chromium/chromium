@@ -16,22 +16,23 @@ namespace syncer {
 namespace {
 
 struct ModelTypeInfo {
-  const ModelType model_type;
+  const ModelType model_type = UNSPECIFIED;
   // Used to identify the model type in the SyncModelType histogram_suffix in
   // histograms.xml. Must always be kept in sync.
-  const char* const histogram_suffix;
+  const char* const histogram_suffix = nullptr;
   // Root tag for Model Type
   // This should be the same as the model type but all lowercase.
-  const char* const lowercase_root_tag;
+  const char* const lowercase_root_tag = nullptr;
   // String value for Model Type
   // This should be the same as the model type but space separated and the
   // first letter of every word capitalized.
-  const char* const model_type_debug_string;
+  const char* const model_type_debug_string = nullptr;
   // Field number of the model type specifics in EntitySpecifics.
-  const int specifics_field_number;
+  const int specifics_field_number = -1;
   // Model type value from SyncModelTypes enum in enums.xml. Must always be in
   // sync with the enum.
-  const ModelTypeForHistograms model_type_histogram_val;
+  const ModelTypeForHistograms model_type_histogram_val =
+      ModelTypeForHistograms::kUnspecified;
 };
 
 // Below struct entries are in the same order as their definition in the
