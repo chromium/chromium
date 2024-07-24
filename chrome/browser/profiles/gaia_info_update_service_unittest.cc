@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -31,6 +32,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -73,6 +75,10 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
             /*test_url_loader_factory=*/nullptr,
             /*pref_service=*/nullptr,
             /*test_signin_client=*/nullptr) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        switches::kExplicitBrowserSigninUIOnDesktop,
+        {{"clear_account_prefs_when_clearing_cookies", "true"}});
+
     SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
   }
 
@@ -144,6 +150,7 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<GAIAInfoUpdateService> service_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {

@@ -106,6 +106,8 @@ BASE_DECLARE_FEATURE(kExplicitBrowserSigninUIOnDesktop);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<bool>
     kInterceptBubblesDismissibleByAvatarButton;
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<bool> kClearAccountPrefsWhenClearingCookies;
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsExplicitBrowserSigninUIOnDesktopEnabled();
