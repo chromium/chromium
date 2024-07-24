@@ -217,12 +217,12 @@ class PdfInkModule {
   // Return values have the same semantics as OnMouse()* above.
   bool StartStroke(const gfx::PointF& position);
   bool ContinueStroke(const gfx::PointF& position);
-  bool FinishStroke();
+  bool FinishStroke(const gfx::PointF& position);
 
   // Return values have the same semantics as OnMouse*() above.
   bool StartEraseStroke(const gfx::PointF& position);
   bool ContinueEraseStroke(const gfx::PointF& position);
-  bool FinishEraseStroke();
+  bool FinishEraseStroke(const gfx::PointF& position);
 
   // Shared code for the Erase methods above. Returns if stroke(s) got erased or
   // not.

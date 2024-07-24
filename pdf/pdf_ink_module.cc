@@ -270,7 +270,9 @@ bool PdfInkModule::OnMouseUp(const blink::WebMouseEvent& event) {
     return false;
   }
 
-  return is_drawing_stroke() ? FinishStroke() : FinishEraseStroke();
+  gfx::PointF position = event.PositionInWidget();
+  return is_drawing_stroke() ? FinishStroke(position)
+                             : FinishEraseStroke(position);
 }
 
 bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
@@ -352,21 +354,28 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position) {
   gfx::PointF page_position =
       ConvertEventPositionToCanonicalPosition(position, state.page_index);
 
+  const bool is_start_of_new_segment = state.inputs.back().empty();
+  CHECK_NE(is_start_of_new_segment,
+           state.input_last_event_position.has_value());
+  if (!is_start_of_new_segment &&
+      position == state.input_last_event_position.value()) {
+    // Since the position did not change, do nothing.
+    return true;
+  }
+
   base::TimeDelta time_diff = base::Time::Now() - state.start_time.value();
   state.inputs.back().push_back({
       .position = InkPoint{page_position.x(), page_position.y()},
       .elapsed_time_seconds = static_cast<float>(time_diff.InSecondsF()),
   });
 
-  if (state.inputs.back().size() == 1u) {
-    // This is the start of a new segment, so only invalidate around this point.
-    CHECK(!state.input_last_event_position.has_value());
+  if (is_start_of_new_segment) {
+    // Only invalidate around the single point in the new segment.
     client_->Invalidate(state.brush->GetInvalidateArea(position, position));
   } else {
     // Invalidate area covering a straight line between this position and the
     // previous one.  Update last location to support invalidating from here to
     // the next position.
-    CHECK(state.input_last_event_position.has_value());
     client_->Invalidate(state.brush->GetInvalidateArea(
         position, state.input_last_event_position.value()));
   }
@@ -378,16 +387,15 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position) {
   return true;
 }
 
-bool PdfInkModule::FinishStroke() {
-  CHECK(is_drawing_stroke());
-  DrawingStrokeState& state = drawing_stroke_state();
-  if (!state.start_time.has_value()) {
-    // Ignore when not drawing.
+bool PdfInkModule::FinishStroke(const gfx::PointF& position) {
+  // Process `position` as though it was the last point of movement first,
+  // before moving on to various bookkeeping tasks.
+  if (!ContinueStroke(position)) {
     return false;
   }
 
-  // TODO(crbug.com/335524380): Add this method's caller's `event` to `inputs`
-  // before creating `in_progress_stroke_segments`?
+  CHECK(is_drawing_stroke());
+  DrawingStrokeState& state = drawing_stroke_state();
   auto in_progress_stroke_segments = CreateInProgressStrokeSegmentsFromInputs();
   if (!in_progress_stroke_segments.empty()) {
     CHECK_GE(state.page_index, 0);
@@ -453,16 +461,18 @@ bool PdfInkModule::ContinueEraseStroke(const gfx::PointF& position) {
   return true;
 }
 
-bool PdfInkModule::FinishEraseStroke() {
-  CHECK(is_erasing_stroke());
-  EraserState& state = erasing_stroke_state();
-  if (!state.erasing) {
+bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position) {
+  // Process `position` as though it was the last point of movement first,
+  // before moving on to various bookkeeping tasks.
+  if (!ContinueEraseStroke(position)) {
     return false;
   }
 
   bool undo_redo_success = undo_redo_model_.FinishErase();
   CHECK(undo_redo_success);
 
+  CHECK(is_erasing_stroke());
+  EraserState& state = erasing_stroke_state();
   if (state.did_erase_strokes) {
     client_->StrokeFinished();
   }
