@@ -93,7 +93,7 @@ inline bool WritingDirectionMode::IsFlippedY() const {
     DCHECK(!IsFlippedBlocks());
     return false;
   }
-  return IsRtl();
+  return IsRtl() ^ (writing_mode_ == WritingMode::kSidewaysLr);
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,

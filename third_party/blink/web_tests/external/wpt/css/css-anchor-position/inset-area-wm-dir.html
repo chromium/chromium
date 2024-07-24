@@ -119,6 +119,48 @@
   test_inset_area(writing_direction, "x-start y-start", bottom_right);
   test_inset_area(writing_direction, "x-self-start y-self-start", top_left);
 
+  // containing-block: sideways-lr / ltr
+  // self: horizontal-tb / ltr
+  container.style.writingMode = "sideways-lr";
+  container.style.direction = "ltr";
+  writing_direction = `containing-block: ${container.style.writingMode} / ${container.style.direction}`;
+  test_inset_area(writing_direction, "start start", bottom_left);
+  test_inset_area(writing_direction, "self-start self-start", top_left);
+  test_inset_area(writing_direction, "x-start y-start", bottom_left);
+  test_inset_area(writing_direction, "x-self-start y-self-start", top_left);
+  test_inset_area(writing_direction, "inline-start block-end", bottom_right);
+  test_inset_area(writing_direction, "self-inline-start self-block-end", bottom_left);
+
+  // containing-block: sideways-lr / rtl
+  // self: horizontal-tb / ltr
+  container.style.writingMode = "sideways-lr";
+  container.style.direction = "rtl";
+  writing_direction = `containing-block: ${container.style.writingMode} / ${container.style.direction}`;
+  test_inset_area(writing_direction, "start start", top_left);
+  test_inset_area(writing_direction, "self-start self-start", top_left);
+  test_inset_area(writing_direction, "x-start y-start", top_left);
+  test_inset_area(writing_direction, "x-self-start y-self-start", top_left);
+
+  // containing-block: sideways-rl / ltr
+  // self: horizontal-tb / ltr
+  container.style.writingMode = "sideways-rl";
+  container.style.direction = "ltr";
+  writing_direction = `containing-block: ${container.style.writingMode} / ${container.style.direction}`;
+  test_inset_area(writing_direction, "start start", top_right);
+  test_inset_area(writing_direction, "self-start self-start", top_left);
+  test_inset_area(writing_direction, "x-start y-start", top_right);
+  test_inset_area(writing_direction, "x-self-start y-self-start", top_left);
+
+  // containing-block: sideways-rl / rtl
+  // self: horizontal-tb / ltr
+  container.style.writingMode = "sideways-rl";
+  container.style.direction = "rtl";
+  writing_direction = `containing-block: ${container.style.writingMode} / ${container.style.direction}`;
+  test_inset_area(writing_direction, "start start", bottom_right);
+  test_inset_area(writing_direction, "self-start self-start", top_left);
+  test_inset_area(writing_direction, "x-start y-start", bottom_right);
+  test_inset_area(writing_direction, "x-self-start y-self-start", top_left);
+
   // Writing-mode and direction on self
   container.style.writingMode = "horizontal-tb";
   container.style.direction = "ltr";
@@ -173,4 +215,43 @@
   test_inset_area(writing_direction, "x-start y-start", top_left);
   test_inset_area(writing_direction, "x-self-start y-self-start", bottom_right);
 
+  // containing-block: horizontal-tb / ltr
+  // self: sideways-lr / ltr
+  anchored.style.writingMode = "sideways-lr";
+  anchored.style.direction = "ltr";
+  writing_direction = `self: ${anchored.style.writingMode} / ${anchored.style.direction}`;
+  test_inset_area(writing_direction, "start start", top_left);
+  test_inset_area(writing_direction, "self-start self-start", bottom_left);
+  test_inset_area(writing_direction, "x-start y-start", top_left);
+  test_inset_area(writing_direction, "x-self-start y-self-start", bottom_left);
+
+  // containing-block: horizontal-tb / ltr
+  // self: sideways-lr / rtl
+  anchored.style.writingMode = "sideways-lr";
+  anchored.style.direction = "rtl";
+  writing_direction = `self: ${anchored.style.writingMode} / ${anchored.style.direction}`;
+  test_inset_area(writing_direction, "start start", top_left);
+  test_inset_area(writing_direction, "self-start self-start", top_left);
+  test_inset_area(writing_direction, "x-start y-start", top_left);
+  test_inset_area(writing_direction, "x-self-start y-self-start", top_left);
+
+  // containing-block: horizontal-tb / ltr
+  // self: sideways-rl / ltr
+  anchored.style.writingMode = "sideways-rl";
+  anchored.style.direction = "ltr";
+  writing_direction = `self: ${anchored.style.writingMode} / ${anchored.style.direction}`;
+  test_inset_area(writing_direction, "start start", top_left);
+  test_inset_area(writing_direction, "self-start self-start", top_right);
+  test_inset_area(writing_direction, "x-start y-start", top_left);
+  test_inset_area(writing_direction, "x-self-start y-self-start", top_right);
+
+  // containing-block: horizontal-tb / ltr
+  // self: sideways-rl / rtl
+  anchored.style.writingMode = "sideways-rl";
+  anchored.style.direction = "rtl";
+  writing_direction = `self: ${anchored.style.writingMode} / ${anchored.style.direction}`;
+  test_inset_area(writing_direction, "start start", top_left);
+  test_inset_area(writing_direction, "self-start self-start", bottom_right);
+  test_inset_area(writing_direction, "x-start y-start", top_left);
+  test_inset_area(writing_direction, "x-self-start y-self-start", bottom_right);
 </script>
