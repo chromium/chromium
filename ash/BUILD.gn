@@ -1040,6 +1040,8 @@ component("ash") {
     "picker/picker_asset_fetcher_impl_delegate.h",
     "picker/picker_clipboard_history_provider.cc",
     "picker/picker_clipboard_history_provider.h",
+    "picker/picker_clipboard_insertion.cc",
+    "picker/picker_clipboard_insertion.h",
     "picker/picker_controller.cc",
     "picker/picker_controller.h",
     "picker/picker_copy_media.cc",
