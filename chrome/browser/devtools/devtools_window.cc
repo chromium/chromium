@@ -81,6 +81,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/common/constants.h"
 #include "net/cert/x509_certificate.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -1975,6 +1976,12 @@ void DevToolsWindow::MaybeShowSharedProcessInfobar() {
 
   if (!base::FeatureList::IsEnabled(
           ::features::kDevToolsSharedProcessInfobar)) {
+    return;
+  }
+
+  content::SiteInstance* site_instance =
+      inspected_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
+  if (site_instance->GetSiteURL().SchemeIs(extensions::kExtensionScheme)) {
     return;
   }
 
