@@ -125,27 +125,12 @@ const CGFloat kSymbolSize = 20;
   SettingsImageDetailTextItem* detailItem =
       [[SettingsImageDetailTextItem alloc] initWithType:type];
   detailItem.detailText = l10n_util::GetNSString(detailText);
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
-    detailItem.alignImageWithFirstLineOfText = YES;
-  }
+  detailItem.alignImageWithFirstLineOfText = YES;
   detailItem.image = image;
   detailItem.imageViewTintColor = [UIColor colorNamed:kGrey600Color];
   detailItem.accessibilityIdentifier = accessibilityIdentifier;
 
   return detailItem;
-}
-
-// Decides on the string ouput based off of if
-// kFriendlierSafeBrowsingSettingsEnhancedProtection is enabled.
-- (NSInteger)chooseLegacyString:(NSInteger)legacyString
-                orUpdatedString:(NSInteger)updatedString {
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
-    return updatedString;
-  }
-
-  return legacyString;
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -165,8 +150,6 @@ const CGFloat kSymbolSize = 20;
 - (void)loadModel {
   [super loadModel];
   TableViewModel* model = self.tableViewModel;
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
     [model addSectionWithIdentifier:SectionIdentifierWhenOn];
     [model setHeader:[self showFirstHeader]
         forSectionWithIdentifier:SectionIdentifierWhenOn];
@@ -185,16 +168,6 @@ const CGFloat kSymbolSize = 20;
 
     [model setFooter:self.safeBrowsingEnhancedProtectionFooterItem
         forSectionWithIdentifier:SectionIdentifierThingsToConsider];
-
-  } else {
-    [model addSectionWithIdentifier:
-               SectionIdentifierSafeBrowsingEnhancedProtection];
-    for (TableViewItem* item in self.firstSectionItems) {
-      [model addItem:item
-          toSectionWithIdentifier:
-              SectionIdentifierSafeBrowsingEnhancedProtection];
-    }
-  }
 }
 
 #pragma mark - UIViewController
@@ -279,10 +252,8 @@ const CGFloat kSymbolSize = 20;
     UIImage* gIcon = DefaultSymbolWithPointSize(kInfoCircleSymbol, kSymbolSize);
 #endif
 
-    NSInteger gIconDetailText = [self
-        chooseLegacyString:IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_TWO
-           orUpdatedString:
-               IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_G_ICON_DESCRIPTION];
+    NSInteger gIconDetailText =
+        IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_G_ICON_DESCRIPTION;
     SettingsImageDetailTextItem* gIconItem =
         [self detailItemWithType:ItemTypeGIcon
                          detailText:gIconDetailText
@@ -298,19 +269,14 @@ const CGFloat kSymbolSize = 20;
                           image:globeIcon
         accessibilityIdentifier:kSafeBrowsingEnhancedProtectionGlobeCellId];
 
-    NSInteger keyIconDetailText = [self
-        chooseLegacyString:IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_FOUR
-           orUpdatedString:
-               IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_KEY_ICON_DESCRIPTION];
+    NSInteger keyIconDetailText =
+        IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_KEY_ICON_DESCRIPTION;
     UIImage* keyIcon = CustomSymbolWithPointSize(kPasswordSymbol, kSymbolSize);
     SettingsImageDetailTextItem* keyIconItem =
         [self detailItemWithType:ItemTypeKeyIcon
                          detailText:keyIconDetailText
                               image:keyIcon
             accessibilityIdentifier:kSafeBrowsingEnhancedProtectionKeyCellId];
-
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
       UIImage* dataIcon =
           DefaultSymbolWithPointSize(kChartBarXAxisSymbol, kSymbolSize);
       SettingsImageDetailTextItem* dataIconItem = [self
@@ -335,32 +301,6 @@ const CGFloat kSymbolSize = 20;
       [items addObject:gIconItem];
       [items addObject:globeIconItem];
       [items addObject:keyIconItem];
-
-    } else {
-      UIImage* shieldIcon =
-          CustomSymbolWithPointSize(kPrivacySymbol, kSymbolSize);
-      SettingsImageDetailTextItem* shieldIconItem = [self
-               detailItemWithType:ItemTypeShieldIcon
-                       detailText:
-                           IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_ONE
-                            image:shieldIcon
-          accessibilityIdentifier:kSafeBrowsingEnhancedProtectionShieldCellId];
-
-      UIImage* metricIcon =
-          DefaultSymbolWithPointSize(kCheckmarkCircleSymbol, kSymbolSize);
-      SettingsImageDetailTextItem* metricIconItem = [self
-               detailItemWithType:ItemTypeMetricIcon
-                       detailText:
-                           IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_FIVE
-                            image:metricIcon
-          accessibilityIdentifier:kSafeBrowsingEnhancedProtectionMetricCellId];
-
-      [items addObject:shieldIconItem];
-      [items addObject:gIconItem];
-      [items addObject:globeIconItem];
-      [items addObject:keyIconItem];
-      [items addObject:metricIconItem];
-    }
 
     _firstSectionItems = items;
   }

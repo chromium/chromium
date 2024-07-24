@@ -50,14 +50,8 @@
 
 - (void)start {
   SafeBrowsingEnhancedProtectionViewController* viewController = nil;
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
     viewController = [[SafeBrowsingEnhancedProtectionViewController alloc]
         initWithStyle:UITableViewStyleGrouped];
-  } else {
-    viewController = [[SafeBrowsingEnhancedProtectionViewController alloc]
-        initWithStyle:ChromeTableViewStyle()];
-  }
   self.viewController = viewController;
 
   viewController.presentationDelegate = self;

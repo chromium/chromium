@@ -222,15 +222,6 @@ const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
   [super loadModel];
   TableViewModel* model = self.tableViewModel;
 
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)) {
-    [model addSectionWithIdentifier:SectionIdentifierHeaderShield];
-    [model addSectionWithIdentifier:SectionIdentifierHeaderMetric];
-    [model setHeader:self.shieldIconHeader
-        forSectionWithIdentifier:SectionIdentifierHeaderShield];
-    [model setHeader:self.metricIconHeader
-        forSectionWithIdentifier:SectionIdentifierHeaderMetric];
-  }
   [model
       addSectionWithIdentifier:SectionIdentifierSafeBrowsingStandardProtection];
   for (TableViewItem* item in self.safeBrowsingStandardProtectionItems) {
