@@ -75,6 +75,7 @@
 #import "ios/chrome/browser/download/ui_bundled/pass_kit_coordinator.h"
 #import "ios/chrome/browser/download/ui_bundled/safari_download_coordinator.h"
 #import "ios/chrome/browser/download/ui_bundled/vcard_coordinator.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_coordinator.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
@@ -598,6 +599,7 @@ enum class ToolbarKind {
   std::unique_ptr<WebUsageEnablerBrowserAgentObserverBridge>
       _webUsageEnablerObserver;
   ContextualSheetCoordinator* _contextualSheetCoordinator;
+  DriveFilePickerCoordinator* _driveFilePickerCoordinator;
 
   // The coordinator for the new Delete Browsing Data screen, also called Quick
   // Delete.
@@ -1555,6 +1557,8 @@ enum class ToolbarKind {
 
   [_quickDeleteCoordinator stop];
   _quickDeleteCoordinator = nil;
+
+  [self hideDriveFilePicker];
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -2302,6 +2306,12 @@ enum class ToolbarKind {
 #pragma mark - DriveFilePickerCommands
 
 - (void)showDriveFilePicker {
+  if (!base::FeatureList::IsEnabled(kIOSChooseFromDrive)) {
+    return;
+  }
+  // If there is a coordinator, stop it before showing it again.
+  [self hideDriveFilePicker];
+  // Return early if the current WebState is not choosing files.
   web::WebState* activeWebState = self.activeWebState;
   if (!activeWebState || activeWebState->IsBeingDestroyed()) {
     // If there is no active WebState or it is being destroyed, do nothing.
@@ -2312,12 +2322,17 @@ enum class ToolbarKind {
   if (!tab_helper->IsChoosingFiles()) {
     return;
   }
-  // TODO(crbug.com/344812548): Show the Drive file picker.
-  tab_helper->StopChoosingFiles();
+  // Start the coordinator.
+  _driveFilePickerCoordinator = [[DriveFilePickerCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                        webState:activeWebState];
+  [_driveFilePickerCoordinator start];
 }
 
 - (void)hideDriveFilePicker {
-  // TODO(crbug.com/344812548): Hide the Drive file picker.
+  [_driveFilePickerCoordinator stop];
+  _driveFilePickerCoordinator = nil;
 }
 
 #pragma mark - FeedCommands
