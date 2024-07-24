@@ -216,6 +216,7 @@
 
   if (preferenceName == browsing_data::prefs::kDeleteTimePeriod ||
       preferenceName == browsing_data::prefs::kDeleteBrowsingHistory ||
+      preferenceName == browsing_data::prefs::kCloseTabs ||
       preferenceName == browsing_data::prefs::kDeleteCookies ||
       preferenceName == browsing_data::prefs::kDeleteCache ||
       preferenceName == browsing_data::prefs::kDeletePasswords ||
@@ -504,6 +505,8 @@
       browsing_data::prefs::kDeleteTimePeriod, &_prefChangeRegistrar);
   _prefObserverBridge->ObserveChangesForPreference(
       browsing_data::prefs::kDeleteBrowsingHistory, &_prefChangeRegistrar);
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kCloseTabs, &_prefChangeRegistrar);
   _prefObserverBridge->ObserveChangesForPreference(
       browsing_data::prefs::kDeleteCookies, &_prefChangeRegistrar);
   _prefObserverBridge->ObserveChangesForPreference(
