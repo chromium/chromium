@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SpannableAutocompleteEditTextModelUnitTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
-    private @Mock SpannableAutocompleteEditTextModel.AutocompleteInputConnection mConnection;
+    private @Mock AutocompleteInputConnection mConnection;
     private @Mock AutocompleteEditTextModelBase.Delegate mDelegate;
     private SpannableAutocompleteEditTextModel mModel;
     private AutocompleteState mCurrentState;

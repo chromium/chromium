@@ -12,6 +12,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteEditText.java",
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteEditTextModelBase.java",
+    "java/src/org/chromium/chrome/browser/omnibox/AutocompleteInputConnection.java",
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteState.java",
     "java/src/org/chromium/chrome/browser/omnibox/BackKeyBehaviorDelegate.java",
     "java/src/org/chromium/chrome/browser/omnibox/ChromeAutocompleteProviderClient.java",
