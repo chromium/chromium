@@ -35,11 +35,13 @@ WebAppInternalsUI::WebAppInternalsUI(content::WebUI* web_ui)
       base::make_span(kWebAppInternalsResources, kWebAppInternalsResourcesSize),
       IDR_WEB_APP_INTERNALS_WEB_APP_INTERNALS_HTML);
   internals->UseStringsJs();
-  internals->AddBoolean(
-      "experimentalAreIwasEnabled",
-      content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile));
-  internals->AddBoolean("experimentalIsIwaDevModeEnabled",
+  internals->AddBoolean("isIwaDevModeEnabled",
                         web_app::IsIwaDevModeEnabled(profile));
+#if BUILDFLAG(IS_CHROMEOS)
+  internals->AddBoolean("isIwaPolicyInstallEnabled", true);
+#else
+  internals->AddBoolean("isIwaPolicyInstallEnabled", false);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   internals->AddBoolean(

@@ -16,29 +16,31 @@
 
   <hr>
 
-  <div id="iwa-div" style="display: none;">
+  <div id="iwa-container" style="display: none;">
     <h2>Isolated Web Apps</h2>
-    <div id="iwa-install-div" style="display: none;">
+    <div id="iwa-updates-container" style="display: none;">
+      <button id="iwa-updates-search-button">
+        Discover updates of policy-installed IWAs now
+      </button>
+      <div id="iwa-updates-message"></div>
+    </div>
+    <div id="iwa-dev-container" style="display: none;">
+      <h3>Developer Mode</h3>
       <p>Install IWA via Dev Mode Proxy:
-        <input type="url" id="iwa-install-url" size="30" required
+        <input type="url" id="iwa-dev-install-proxy-url" size="30" required
             placeholder="http://localhost:8000/">
-        <button id="iwa-install-button" type="submit">Install</button>
+        <button id="iwa-dev-install-proxy-button" type="submit">Install</button>
       </p>
       <p>
         Install IWA from Signed Web Bundle:
-        <button id="iwa-select-bundle" type="submit">Select file...</button>
+        <button id="iwa-dev-install-bundle-selector" type="submit">
+          Select file...
+        </button>
       </p>
-      <div id="iwa-install-message-div"></div>
-    </div>
-    <h3>IWA Updates</h3>
-    <button id="iwa-search-for-updates">
-      Discover updates of policy-installed IWAs now
-    </button>
-    <div id="iwa-update-discovery-message-div"></div>
-    <div id="iwa-dev-mode-updates" style="display: none;"></div>
-      <h4>Dev Mode App Updates</h4>
-      <ul id="iwa-dev-mode-app-list">
-      </ul>
+      <div id="iwa-dev-install-message"></div>
+      <h4>Installed Dev Mode IWAs</h4>
+      <ul id="iwa-dev-updates-app-list"></ul>
+      <div id="iwa-dev-updates-message"></div>
     </div>
     <hr>
   </div>
