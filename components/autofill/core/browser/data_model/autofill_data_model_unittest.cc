@@ -6,46 +6,15 @@
 
 #include <stddef.h>
 
-#include "base/compiler_specific.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/test_autofill_data_model.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_clock.h"
-#include "components/autofill/core/common/autofill_constants.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
 namespace {
-
-const base::Time kArbitraryTime = base::Time::FromSecondsSinceUnixEpoch(25);
-
-}  // namespace
-
-TEST(AutofillDataModelTest, GetMetadata) {
-  TestAutofillDataModel model;
-  model.set_use_count(10);
-  model.set_use_date(kArbitraryTime);
-
-  AutofillMetadata metadata = model.GetMetadata();
-  EXPECT_EQ(model.use_count(), metadata.use_count);
-  EXPECT_EQ(model.use_date(), metadata.use_date);
-}
-
-TEST(AutofillDataModelTest, SetMetadata) {
-  AutofillMetadata metadata;
-  metadata.use_count = 10;
-  metadata.use_date = kArbitraryTime;
-
-  TestAutofillDataModel model;
-  EXPECT_TRUE(model.SetMetadata(metadata));
-  EXPECT_EQ(metadata.use_count, model.use_count());
-  EXPECT_EQ(metadata.use_date, model.use_date());
-}
 
 enum Expectation { GREATER, LESS };
 struct AutofillDataModelRankingTestCase {
@@ -96,5 +65,7 @@ INSTANTIATE_TEST_SUITE_P(
         // a while (model_a).
         AutofillDataModelRankingTestCase{300, now - base::Days(15), 10,
                                          now - base::Days(1), LESS}));
+
+}  // namespace
 
 }  // namespace autofill

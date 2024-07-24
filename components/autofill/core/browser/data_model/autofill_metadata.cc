@@ -6,10 +6,14 @@
 
 #include <ostream>
 
+#include "components/autofill/core/browser/data_model/autofill_data_model.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 
 namespace autofill {
+
+AutofillMetadata::AutofillMetadata(const AutofillDataModel& model)
+    : use_count(model.use_count()), use_date(model.use_date()) {}
 
 bool AutofillMetadata::IsDeletable() const {
   return IsAutofillEntryWithUseDateDeletable(use_date);

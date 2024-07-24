@@ -170,9 +170,10 @@ class CreditCard : public AutofillDataModel {
   void SetNetworkForMaskedCard(std::string_view network);
 
   // AutofillDataModel:
-  AutofillMetadata GetMetadata() const override;
   double GetRankingScore(base::Time current_time) const override;
-  bool SetMetadata(const AutofillMetadata& metadata) override;
+
+  AutofillMetadata GetMetadata() const;
+  bool SetMetadata(const AutofillMetadata& metadata);
 
   // Returns whether the card is deletable: if it is expired and has not been
   // used for longer than `kDisusedDataModelDeletionTimeDelta`.

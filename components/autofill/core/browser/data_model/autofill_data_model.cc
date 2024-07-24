@@ -6,7 +6,6 @@
 
 #include <math.h>
 
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill {
@@ -45,19 +44,6 @@ bool AutofillDataModel::HasGreaterRankingThan(
     return score > other_score;
 
   return use_date_ > other->use_date_;
-}
-
-AutofillMetadata AutofillDataModel::GetMetadata() const {
-  AutofillMetadata metadata;
-  metadata.use_count = use_count_;
-  metadata.use_date = use_date_;
-  return metadata;
-}
-
-bool AutofillDataModel::SetMetadata(const AutofillMetadata& metadata) {
-  use_count_ = metadata.use_count;
-  use_date_ = metadata.use_date;
-  return true;
 }
 
 }  // namespace autofill

@@ -16,6 +16,8 @@
 
 namespace autofill {
 
+struct AutofillMetadata;
+
 // A form group that stores IBAN information.
 class Iban : public AutofillDataModel {
  public:
@@ -168,9 +170,8 @@ class Iban : public AutofillDataModel {
 
   static size_t GetLengthOfIbanCountry(IbanSupportedCountry supported_country);
 
-  // AutofillDataModel:
-  AutofillMetadata GetMetadata() const override;
-  bool SetMetadata(const AutofillMetadata& metadata) override;
+  AutofillMetadata GetMetadata() const;
+  bool SetMetadata(const AutofillMetadata& metadata);
 
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
