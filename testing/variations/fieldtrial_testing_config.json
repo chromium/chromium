@@ -14014,6 +14014,32 @@
             ]
         }
     ],
+    "NetworkQualityEstimatorParameterTuning": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Experiment",
+                    "params": {
+                        "HalfLifeSeconds": "15",
+                        "RecentEndToEndThresholdInSeconds": "60",
+                        "RecentHTTPThresholdInSeconds": "60",
+                        "RecentTransportThresholdInSeconds": "60"
+                    },
+                    "enable_features": [
+                        "NetworkQualityEstimator"
+                    ]
+                }
+            ]
+        }
+    ],
     "NetworkServiceSandboxLinuxAndChromeOS": [
         {
             "platforms": [
