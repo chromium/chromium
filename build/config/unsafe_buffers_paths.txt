@@ -144,6 +144,7 @@
 +third_party/blink/
 -tools/
 -ui/
++ui/gfx/
 +ui/views/
 +ui/ozone/platform/wayland
 -url/third_party
