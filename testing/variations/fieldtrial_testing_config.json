@@ -10935,8 +10935,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240627",
+                    "name": "Enabled_20240723",
                     "params": {
+                        "gpu-process-params": "{\"is-supported\":true,\"sampling-rate-bytes\":5000000}",
                         "utility-prob-pct": "50",
                         "utility-process-params": "{\"is-supported\":true,\"sampling-rate-bytes\":1000000}"
                     },
