@@ -256,6 +256,53 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse_FallbackToOnDemand) {
   GetCache().RemoveRef(GURL(kProductUrl));
 }
 
+// Test multiple on demand calls to get product info.
+TEST_P(ShoppingServiceTest, TestProductInfoResponse_MultipleOnDemandRequests) {
+  test_features_.InitWithFeatures(
+      {commerce::kShoppingList, commerce::kCommerceAllowServerImages}, {});
+  OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
+      kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
+      kCurrencyCode, kGpcTitle);
+  opt_guide_->AddOnDemandShoppingResponse(
+      GURL(kProductUrl), OptimizationGuideDecision::kTrue, meta);
+  GetCache().AddRef(GURL(kProductUrl));
+
+  base::RunLoop run_loop_after_cache;
+  ProductInfo info[2];
+  shopping_service_->GetProductInfoForUrl(
+      GURL(kProductUrl), base::BindOnce(
+                             [](ProductInfo* result, const GURL& url,
+                                const std::optional<const ProductInfo>& info) {
+                               ASSERT_EQ(kProductUrl, url.spec());
+                               *result = info.value();
+                             },
+                             &info[0]));
+
+  shopping_service_->GetProductInfoForUrl(
+      GURL(kProductUrl), base::BindOnce(
+                             [](ProductInfo* result, const GURL& url,
+                                const std::optional<const ProductInfo>& info) {
+                               ASSERT_EQ(kProductUrl, url.spec());
+                               *result = info.value();
+                             },
+                             &info[1])
+                             .Then(run_loop_after_cache.QuitClosure()));
+  run_loop_after_cache.Run();
+
+  for (int i = 0; i < 2; ++i) {
+    ASSERT_EQ(kTitle, info[i].title);
+    ASSERT_EQ(kGpcTitle, info[i].product_cluster_title);
+    ASSERT_EQ(kImageUrl, info[i].image_url);
+    ASSERT_EQ(kOfferId, info[i].offer_id);
+    ASSERT_EQ(kClusterId, info[i].product_cluster_id);
+    ASSERT_EQ(kCountryCode, info[i].country_code);
+
+    ASSERT_EQ(kCurrencyCode, info[i].currency_code);
+    ASSERT_EQ(kPrice, info[i].amount_micros);
+  }
+
+  GetCache().RemoveRef(GURL(kProductUrl));
+}
 // Test that the product info api fails gracefully (callback run with nullopt)
 // if it is disabled.
 TEST_P(ShoppingServiceTest, TestProductInfoResponse_ApiDisabled) {

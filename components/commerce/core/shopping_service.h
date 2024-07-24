@@ -620,6 +620,9 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   virtual const std::vector<ProductSpecificationsSet>
   GetAllProductSpecificationSets();
 
+  void OnGetOnDemandProductInfo(const GURL& url,
+                                const std::optional<const ProductInfo>& info);
+
   // The two-letter country code as detected on startup.
   std::string country_on_startup_;
 
@@ -696,6 +699,11 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // the commerce info cache up to date.
   std::unique_ptr<ProductSpecificationsSet::Observer>
       prod_spec_url_ref_observer_;
+
+  // Map between URL and a list of callbacks that are waiting for product info.
+  // This is used to avoid repeated calls to get product info for the same URL.
+  std::map<GURL, std::vector<ProductInfoCallback>>
+      on_demand_product_info_callbacks_;
 
   // Ensure certain functions are being executed on the same thread.
   SEQUENCE_CHECKER(sequence_checker_);
