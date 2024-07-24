@@ -547,6 +547,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="IOS.ContextualPanel.{ContextualPanelItemType}.ModelResponseTime"
+    units="ms" expires_after="2025-06-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The response time for the given Info Block's model request. Fired every time
+    the request completes (with or without data). If the Contextual Panel
+    cancels the request, no metric is fired.
+  </summary>
+  <token key="ContextualPanelItemType" variants="ContextualPanelItemType"/>
+</histogram>
+
 <histogram name="IOS.CredentialExtension.CopyPasswordCount" units="count"
     expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>

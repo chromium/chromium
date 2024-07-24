@@ -70,7 +70,8 @@ class ContextualPanelTabHelperTest : public PlatformTest {
     return ContextualPanelTabHelper::FromWebState(&web_state_);
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   base::RunLoop run_loop_;
   web::FakeWebState web_state_;
@@ -115,4 +116,8 @@ TEST_F(ContextualPanelTabHelperTest,
   tester.ExpectBucketCount(
       "IOS.ContextualPanel.Model.Relevance.SamplePanelItem",
       ModelRelevanceType::High, 1);
+
+  tester.ExpectUniqueTimeSample(
+      "IOS.ContextualPanel.SamplePanelItem.ModelResponseTime", base::Seconds(0),
+      1);
 }
