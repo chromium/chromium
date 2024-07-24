@@ -24578,6 +24578,28 @@
             ]
         }
     ],
+    "VisitedURLRankingService": [
+        {
+            "platforms": [
+                "android",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "VisitedURLRankingService",
+                    "params": {
+                        "VisitedURLRankingFetchDurationInHoursParam": "168"
+                    },
+                    "enable_features": [
+                        "VisitedURLRankingService"
+                    ]
+                }
+            ]
+        }
+    ],
     "Vulkan": [
         {
             "platforms": [
