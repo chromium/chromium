@@ -69,18 +69,20 @@ class ReadAnythingAppModel {
     // is added.
   };
 
-  bool requires_distillation() { return requires_distillation_; }
+  bool requires_distillation() const { return requires_distillation_; }
   void set_requires_distillation(bool value) { requires_distillation_ = value; }
-  bool requires_post_process_selection() {
+  bool requires_post_process_selection() const {
     return requires_post_process_selection_;
   }
   void set_requires_post_process_selection(bool value) {
     requires_post_process_selection_ = value;
   }
-  bool reset_draw_timer() { return reset_draw_timer_; }
+  bool reset_draw_timer() const { return reset_draw_timer_; }
   void set_reset_draw_timer(bool value) { reset_draw_timer_ = value; }
 
-  const ui::AXNodeID& last_expanded_node_id() { return last_expanded_node_id_; }
+  const ui::AXNodeID& last_expanded_node_id() const {
+    return last_expanded_node_id_;
+  }
 
   void set_last_expanded_node_id(const ui::AXNodeID& node_id) {
     last_expanded_node_id_ = node_id;
@@ -90,16 +92,16 @@ class ReadAnythingAppModel {
     set_last_expanded_node_id(ui::kInvalidAXNodeID);
   }
 
-  bool redraw_required() { return redraw_required_; }
+  bool redraw_required() const { return redraw_required_; }
   void reset_redraw_required() { redraw_required_ = false; }
 
-  const ui::AXNodeID& image_to_update_node_id() {
+  const ui::AXNodeID& image_to_update_node_id() const {
     return image_to_update_node_id_;
   }
   void reset_image_to_update_node_id() {
     image_to_update_node_id_ = ui::kInvalidAXNodeID;
   }
-  bool selection_from_action() { return selection_from_action_; }
+  bool selection_from_action() const { return selection_from_action_; }
   void set_selection_from_action(bool value) { selection_from_action_ = value; }
 
   const std::string& base_language_code() const { return base_language_code_; }
@@ -130,25 +132,23 @@ class ReadAnythingAppModel {
     return display_node_ids_.empty() && selection_node_ids_.empty();
   }
 
-  bool screen_ai_service_ready_for_data_collection() {
+  bool screen_ai_service_ready_for_data_collection() const {
     return screen_ai_service_ready_for_data_collection_;
   }
   void set_screen_ai_service_ready_for_data_collection(bool value) {
     screen_ai_service_ready_for_data_collection_ = value;
   }
-  bool page_finished_loading_for_data_collection() {
+  bool page_finished_loading_for_data_collection() const {
     return page_finished_loading_for_data_collection_;
   }
   void set_page_finished_loading_for_data_collection(bool value) {
     page_finished_loading_for_data_collection_ = value;
   }
-  bool page_finished_loading() {
-    return page_finished_loading_;
-  }
+  bool page_finished_loading() const { return page_finished_loading_; }
   void set_page_finished_loading(bool value) {
     page_finished_loading_ = value;
   }
-  bool requires_tree_lang() { return requires_tree_lang_; }
+  bool requires_tree_lang() const { return requires_tree_lang_; }
   void set_requires_tree_lang(bool value) { requires_tree_lang_ = value; }
 
   const std::vector<ui::AXNodeID>& content_node_ids() const {
