@@ -151,7 +151,7 @@ void CryptohomePinEngine::OnGetAuthFactorsConfiguration(
   const cryptohome::AuthFactor* pin_factor =
       config.FindFactorByType(cryptohome::AuthFactorType::kPin);
 
-  if (!pin_factor || pin_factor->GetPinStatus().auth_locked) {
+  if (!pin_factor || pin_factor->GetPinStatus().IsLockedFactor()) {
     std::move(callback).Run(false, std::move(user_context));
     return;
   }

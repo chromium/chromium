@@ -9,6 +9,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
@@ -22,8 +23,7 @@ namespace {
 class AuthFactorConversionsTest : public testing::Test {
  protected:
   AuthFactorConversionsTest()
-      : task_environment_(
-            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
@@ -181,6 +181,68 @@ TEST_F(AuthFactorConversionsTest, MetadataConversion) {
     EXPECT_EQ(
         deserialized_recovery.GetCryptohomeRecoveryMetadata().mediator_pub_key,
         recovery.GetCryptohomeRecoveryMetadata().mediator_pub_key);
+  }
+}
+
+// Makes sure that various status bits are handled correctly.
+TEST_F(AuthFactorConversionsTest, PinFactorStatusConversion) {
+  constexpr char kHashInfoSalt[] = "fake_salt";
+  const base::TimeDelta in_a_while = base::Seconds(10);
+
+  // PinFactor with no StatusInfo field.
+  user_data_auth::AuthFactorWithStatus factor_with_status;
+  auto* factor_proto = factor_with_status.mutable_auth_factor();
+  factor_proto->set_type(user_data_auth::AUTH_FACTOR_TYPE_PIN);
+  factor_proto->set_label("pin");
+  factor_proto->mutable_common_metadata();
+  factor_proto->mutable_pin_metadata()->mutable_hash_info()->set_algorithm(
+      KnowledgeFactorHashAlgorithm::HASH_TYPE_PBKDF2_AES256_1234);
+  factor_proto->mutable_pin_metadata()->mutable_hash_info()->set_salt(
+      kHashInfoSalt);
+  factor_proto->mutable_pin_metadata()
+      ->mutable_hash_info()
+      ->set_should_generate_key_store(true);
+
+  // By default, PinFactor is available.
+  {
+    AuthFactor parsed =
+        DeserializeAuthFactor(factor_with_status,
+                              /*fallback_type=*/AuthFactorType::kPin);
+    EXPECT_FALSE(parsed.GetPinStatus().IsLockedFactor());
+    EXPECT_EQ(base::Time::Now(), parsed.GetPinStatus().AvailableAt());
+  }
+
+  // PinFactor indefinitely locked.
+  {
+    factor_with_status.clear_status_info();
+    factor_with_status.mutable_auth_factor()
+        ->mutable_pin_metadata()
+        ->set_auth_locked(true);
+    auto* status_info = factor_with_status.mutable_status_info();
+    status_info->set_time_available_in(std::numeric_limits<uint64_t>::max());
+
+    AuthFactor parsed =
+        DeserializeAuthFactor(factor_with_status,
+                              /*fallback_type=*/AuthFactorType::kPin);
+    EXPECT_TRUE(parsed.GetPinStatus().IsLockedFactor());
+    EXPECT_EQ(base::Time::Max(), parsed.GetPinStatus().AvailableAt());
+  }
+
+  // PinFactor temporary locked with a timeout.
+  {
+    factor_with_status.clear_status_info();
+    factor_with_status.mutable_auth_factor()
+        ->mutable_pin_metadata()
+        ->set_auth_locked(true);
+    auto* status_info = factor_with_status.mutable_status_info();
+    status_info->set_time_available_in(in_a_while.InMilliseconds());
+
+    AuthFactor parsed =
+        DeserializeAuthFactor(factor_with_status,
+                              /*fallback_type=*/AuthFactorType::kPin);
+    EXPECT_TRUE(parsed.GetPinStatus().IsLockedFactor());
+    EXPECT_EQ(base::Time::Now() + in_a_while,
+              parsed.GetPinStatus().AvailableAt());
   }
 }
 

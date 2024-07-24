@@ -361,6 +361,8 @@ void BuildAuthFactorWithStatus(
     if (auth_factor->pin_metadata().auth_locked()) {
       factor_with_status->mutable_status_info()->set_time_available_in(
           std::numeric_limits<uint64_t>::max());
+      factor_with_status->mutable_status_info()->set_time_expiring_in(
+          std::numeric_limits<uint64_t>::max());
     }
   }
 }
