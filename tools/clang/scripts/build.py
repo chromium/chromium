@@ -715,7 +715,7 @@ def main():
 
   # TODO(crbug.com/355031922): Remove in next Clang roll.
   if args.llvm_force_head_revision:
-    global REKEASE_VERSION
+    global RELEASE_VERSION
     RELEASE_VERSION = '20'
 
   if (args.pgo or args.thinlto) and not args.bootstrap:
