@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_COMMERCE_PRICE_CARD_PRICE_CARD_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_UI_COMMERCE_PRICE_CARD_PRICE_CARD_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_COMMERCE_UI_BUNDLED_PRICE_CARD_PRICE_CARD_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_COMMERCE_UI_BUNDLED_PRICE_CARD_PRICE_CARD_MEDIATOR_H_
 
-#import "ios/chrome/browser/ui/commerce/price_card/price_card_view.h"
+#import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_view.h"
 
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/ui/commerce/price_card/price_card_data_source.h"
+#import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_data_source.h"
 
 namespace web {
 class WebState;
@@ -27,4 +27,4 @@ web::WebState* GetWebState(WebStateList* webStateList, NSString* tab_id);
 - (void)logMetrics:(PriceDropLogId)priceDropLogId;
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_COMMERCE_PRICE_CARD_PRICE_CARD_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_COMMERCE_UI_BUNDLED_PRICE_CARD_PRICE_CARD_MEDIATOR_H_

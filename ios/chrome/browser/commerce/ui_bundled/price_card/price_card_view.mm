@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/commerce/price_card/price_card_view.h"
+#import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_view.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/commerce/price_card/price_card_constants.h"
-#import "ios/chrome/browser/ui/commerce/price_card/resources/semantic_color_names.h"
+#import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_constants.h"
+#import "ios/chrome/browser/commerce/ui_bundled/price_card/resources/semantic_color_names.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"

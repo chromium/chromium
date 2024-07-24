@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_COMMERCE_PRICE_CARD_PRICE_CARD_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_UI_COMMERCE_PRICE_CARD_PRICE_CARD_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_COMMERCE_UI_BUNDLED_PRICE_CARD_PRICE_CARD_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_COMMERCE_UI_BUNDLED_PRICE_CARD_PRICE_CARD_CONSTANTS_H_
 
 #import <UIKit/UIKit.h>
 
@@ -14,4 +14,4 @@ extern const CGFloat kPriceCardTrailingIndent;
 extern const CGFloat kPriceCardBottomIndent;
 extern const CGFloat kPriceCardPricePreviousPriceSpacing;
 
-#endif  // IOS_CHROME_BROWSER_UI_COMMERCE_PRICE_CARD_PRICE_CARD_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_COMMERCE_UI_BUNDLED_PRICE_CARD_PRICE_CARD_CONSTANTS_H_

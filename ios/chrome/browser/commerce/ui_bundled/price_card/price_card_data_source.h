@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_COMMERCE_PRICE_CARD_PRICE_CARD_DATA_SOURCE_H_
-#define IOS_CHROME_BROWSER_UI_COMMERCE_PRICE_CARD_PRICE_CARD_DATA_SOURCE_H_
+#ifndef IOS_CHROME_BROWSER_COMMERCE_UI_BUNDLED_PRICE_CARD_PRICE_CARD_DATA_SOURCE_H_
+#define IOS_CHROME_BROWSER_COMMERCE_UI_BUNDLED_PRICE_CARD_PRICE_CARD_DATA_SOURCE_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/commerce/price_card/price_card_item.h"
+#import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_item.h"
 
 namespace web {
 class WebStateID;
@@ -21,4 +21,4 @@ class WebStateID;
                     completion:(void (^)(PriceCardItem*))completion;
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_COMMERCE_PRICE_CARD_PRICE_CARD_DATA_SOURCE_H_
+#endif  // IOS_CHROME_BROWSER_COMMERCE_UI_BUNDLED_PRICE_CARD_PRICE_CARD_DATA_SOURCE_H_
