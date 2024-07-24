@@ -48,7 +48,7 @@ BASE_FEATURE(kPrefetchStateContaminationMitigation,
 
 const base::FeatureParam<bool>
     kPrefetchStateContaminationSwapsBrowsingContextGroup{
-        &kPrefetchStateContaminationMitigation, "swaps_bcg", false};
+        &kPrefetchStateContaminationMitigation, "swaps_bcg", true};
 
 BASE_FEATURE(kPrefetchProxy, "PrefetchProxy", base::FEATURE_ENABLED_BY_DEFAULT);
 
