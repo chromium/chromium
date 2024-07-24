@@ -40,7 +40,6 @@ interface LanguageDropdownItem {
   notification: Notification;
   // Whether this toggle should be disabled
   disabled: boolean;
-  callback: () => void;
 }
 
 function isDownloading(voiceStatus: VoiceClientSideStatusCode) {
@@ -158,7 +157,14 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   }
 
   private onToggleChange_(event: DomRepeatEvent<LanguageDropdownItem>) {
-    event.model.item.callback();
+    const index = event.model.index!;
+    const language = this.availableLanguages_[index].languageCode;
+
+    this.dispatchEvent(new CustomEvent(ToolbarEvent.LANGUAGE_TOGGLE, {
+      bubbles: true,
+      composed: true,
+      detail: {language},
+    }));
   }
 
   private getDisplayName(lang: string) {
@@ -229,14 +235,6 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
               },
               disabled: this.enabledLangs && this.enabledLangs.includes(lang) &&
                   (lang.toLowerCase() === selectedLangLowerCase),
-              callback: () => this.dispatchEvent(
-                  new CustomEvent(ToolbarEvent.LANGUAGE_TOGGLE, {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                      language: lang,
-                    },
-                  })),
             }));
   }
 
