@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_PASSWORD_LOCAL_DATA_BATCH_UPLOADER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_PASSWORD_LOCAL_DATA_BATCH_UPLOADER_H_
 
-#include <list>
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
@@ -34,6 +33,11 @@ class PasswordLocalDataBatchUploader
       base::OnceCallback<void(syncer::LocalDataDescription)> callback) override;
   void TriggerLocalDataMigration() override;
 
+  // Test-only APIs.
+  bool trigger_local_data_migration_ongoing_for_test() const {
+    return trigger_local_data_migration_ongoing_;
+  }
+
  private:
   class PasswordFetchRequest;
 
@@ -42,18 +46,16 @@ class PasswordLocalDataBatchUploader
   void OnGotLocalPasswordsForDescription(
       base::OnceCallback<void(syncer::LocalDataDescription)>
           description_callback,
-      PasswordFetchRequest* request);
+      std::unique_ptr<PasswordFetchRequest> request);
 
   void OnGotAllPasswordsForMigration(
-      PasswordFetchRequest* profile_store_request,
-      PasswordFetchRequest* account_store_request);
+      std::unique_ptr<PasswordFetchRequest> profile_store_request,
+      std::unique_ptr<PasswordFetchRequest> account_store_request);
 
   const scoped_refptr<PasswordStoreInterface> profile_store_;
   const scoped_refptr<PasswordStoreInterface> account_store_;
 
-  // Ongoing reads from one of the PasswordStores, either for
-  // GetLocalDataDescription(), or TriggerLocalDataMigration().
-  std::list<std::unique_ptr<PasswordFetchRequest>> ongoing_requests_;
+  bool trigger_local_data_migration_ongoing_ = false;
 };
 
 }  // namespace password_manager

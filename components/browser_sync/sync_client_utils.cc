@@ -281,6 +281,8 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
 
   ~LocalDataMigrationRequest() override = default;
 
+  const syncer::ModelTypeSet& types() const { return types_; }
+
   // This runs the query for the requested data types.
   void Run() {
     for (syncer::ModelType type : types_) {
@@ -288,15 +290,6 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
                                     syncer::ModelTypeHistogramValue(type));
     }
 
-    if (types_.Has(syncer::PASSWORDS)) {
-      CHECK(helper_->profile_password_store_);
-      CHECK(helper_->account_password_store_);
-      // Fetch the local and the account passwords.
-      helper_->profile_password_store_->GetAutofillableLogins(
-          weak_ptr_factory_.GetWeakPtr());
-      helper_->account_password_store_->GetAutofillableLogins(
-          weak_ptr_factory_.GetWeakPtr());
-    }
     if (types_.Has(syncer::BOOKMARKS)) {
       CHECK(helper_->local_bookmark_model_view_);
       CHECK(helper_->account_bookmark_model_view_);
@@ -313,10 +306,28 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
         helper_->local_bookmark_model_view_->RemoveAllSyncableNodes();
       }
     }
+
     if (types_.Has(syncer::READING_LIST)) {
       CHECK(helper_->dual_reading_list_model_);
       helper_->dual_reading_list_model_->MarkAllForUploadToSyncServerIfNeeded();
     }
+
+    if (!types_.Has(syncer::PASSWORDS)) {
+      // All above are synchronous, so if PASSWORDS isn't requested, the
+      // operation completes immediately.
+      helper_->OnRequestComplete(this);
+      // Note that at this point `this` is destroyed, as the function above
+      // causes LocalDataMigrationHelper to delete the request.
+      return;
+    }
+
+    CHECK(helper_->profile_password_store_);
+    CHECK(helper_->account_password_store_);
+    // Fetch the local and the account passwords.
+    helper_->profile_password_store_->GetAutofillableLogins(
+        weak_ptr_factory_.GetWeakPtr());
+    helper_->account_password_store_->GetAutofillableLogins(
+        weak_ptr_factory_.GetWeakPtr());
   }
 
   // PasswordStoreConsumer implementation.
@@ -327,6 +338,7 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
     // overridden.
     NOTIMPLEMENTED();
   }
+
   void OnGetPasswordStoreResultsFrom(
       password_manager::PasswordStoreInterface* store,
       std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
@@ -394,11 +406,15 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
     // Log number of passwords moved to account.
     base::UmaHistogramCounts1M("Sync.PasswordsBatchUpload.Count",
                                moved_passwords_counter);
+
+    helper_->OnRequestComplete(this);
+    // Note that at this point `this` is destroyed, as the function above causes
+    // LocalDataMigrationHelper to delete the request.
   }
 
  private:
   raw_ptr<LocalDataMigrationHelper> helper_;
-  syncer::ModelTypeSet types_;
+  const syncer::ModelTypeSet types_;
 
   std::optional<std::vector<std::unique_ptr<password_manager::PasswordForm>>>
       profile_passwords_;
@@ -444,6 +460,15 @@ void LocalDataMigrationHelper::Run(syncer::ModelTypeSet types) {
   LocalDataMigrationRequest& request = *request_ptr;
   request_list_.push_back(std::move(request_ptr));
   request.Run();
+}
+
+syncer::ModelTypeSet LocalDataMigrationHelper::GetTypesWithOngoingMigrations()
+    const {
+  syncer::ModelTypeSet types;
+  for (const auto& request : request_list_) {
+    types.PutAll(request->types());
+  }
+  return types;
 }
 
 void LocalDataMigrationHelper::OnRequestComplete(

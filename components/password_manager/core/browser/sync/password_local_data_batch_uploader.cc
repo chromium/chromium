@@ -11,7 +11,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
-#include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -94,13 +93,12 @@ void PasswordLocalDataBatchUploader::GetLocalDataDescription(
 
   auto request = std::make_unique<PasswordFetchRequest>();
   PasswordFetchRequest* request_ptr = request.get();
-  ongoing_requests_.push_back(std::move(request));
   // Unretained() is safe, `this` outlives the `request`.
   request_ptr->Run(
       profile_store_.get(),
       base::BindOnce(
           &PasswordLocalDataBatchUploader::OnGotLocalPasswordsForDescription,
-          base::Unretained(this), std::move(callback), request_ptr));
+          base::Unretained(this), std::move(callback), std::move(request)));
 }
 
 void PasswordLocalDataBatchUploader::TriggerLocalDataMigration() {
@@ -112,38 +110,36 @@ void PasswordLocalDataBatchUploader::TriggerLocalDataMigration() {
   auto account_store_request = std::make_unique<PasswordFetchRequest>();
   PasswordFetchRequest* profile_store_request_ptr = profile_store_request.get();
   PasswordFetchRequest* account_store_request_ptr = account_store_request.get();
-  ongoing_requests_.push_back(std::move(profile_store_request));
-  ongoing_requests_.push_back(std::move(account_store_request));
+  // Unretained() is safe, `this` outlives the requests.
   auto barrier_closure = base::BarrierClosure(
       2, base::BindOnce(
              &PasswordLocalDataBatchUploader::OnGotAllPasswordsForMigration,
-             base::Unretained(this), profile_store_request_ptr,
-             account_store_request_ptr));
-  // Unretained() is safe, `this` outlives the requests.
+             base::Unretained(this), std::move(profile_store_request),
+             std::move(account_store_request)));
+  trigger_local_data_migration_ongoing_ = true;
   profile_store_request_ptr->Run(profile_store_.get(), barrier_closure);
   account_store_request_ptr->Run(account_store_.get(), barrier_closure);
 }
 
 void PasswordLocalDataBatchUploader::OnGotLocalPasswordsForDescription(
     base::OnceCallback<void(syncer::LocalDataDescription)> description_callback,
-    PasswordFetchRequest* request) {
+    std::unique_ptr<PasswordFetchRequest> request) {
   std::vector<GURL> urls;
   std::ranges::transform(request->TakeResults(), std::back_inserter(urls),
                          &PasswordForm::url);
-  ongoing_requests_.remove_if(base::MatchesUniquePtr(request));
   std::move(description_callback)
       .Run(syncer::LocalDataDescription(std::move(urls)));
 }
 
 void PasswordLocalDataBatchUploader::OnGotAllPasswordsForMigration(
-    PasswordFetchRequest* profile_store_request,
-    PasswordFetchRequest* account_store_request) {
+    std::unique_ptr<PasswordFetchRequest> profile_store_request,
+    std::unique_ptr<PasswordFetchRequest> account_store_request) {
+  trigger_local_data_migration_ongoing_ = false;
+
   std::vector<std::unique_ptr<PasswordForm>> local_passwords =
       profile_store_request->TakeResults();
-  ongoing_requests_.remove_if(base::MatchesUniquePtr(profile_store_request));
   std::vector<std::unique_ptr<PasswordForm>> account_passwords =
       account_store_request->TakeResults();
-  ongoing_requests_.remove_if(base::MatchesUniquePtr(account_store_request));
 
   auto comparator = [](const std::unique_ptr<PasswordForm>& lhs,
                        const std::unique_ptr<PasswordForm>& rhs) {
@@ -176,8 +172,16 @@ void PasswordLocalDataBatchUploader::OnGotAllPasswordsForMigration(
 }
 
 bool PasswordLocalDataBatchUploader::CanUpload() const {
+  // Note that if `trigger_local_data_migration_ongoing_` is true the function
+  // returns false. This is because migrations include all local data, and
+  // therefore upon completion it is extremely likely that there is no local
+  // data left. Without this special-casing, a call to
+  // `GetLocalDataDescription` closely following `TriggerLocalDataMigration`
+  // could incorrectly report that local data exists, simply because the
+  // migration hasn't completed just yet.
   return profile_store_ && account_store_ &&
-         account_store_->IsAbleToSavePasswords();
+         account_store_->IsAbleToSavePasswords() &&
+         !trigger_local_data_migration_ongoing_;
 }
 
 }  // namespace password_manager

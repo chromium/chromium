@@ -97,6 +97,13 @@ class LocalDataMigrationHelper {
   // part of the regular commit process, and is NOT part of this method.
   void Run(syncer::ModelTypeSet types);
 
+  // Returns the set of types that are in the middle of an ongoing
+  // asynchronous migration, previously triggered via Run(). Normally,
+  // migrations are very fast as it is purely a local move between local
+  // storage and account storage (which completes ahead of the data actually
+  // being uploaded to sync servers).
+  syncer::ModelTypeSet GetTypesWithOngoingMigrations() const;
+
  private:
   class LocalDataMigrationRequest;
 
