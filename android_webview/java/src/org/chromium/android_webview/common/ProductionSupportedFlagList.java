@@ -548,6 +548,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_IMAGE_DRAG,
                 "If enabled, images can be dragged out from Webview"),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_DRAG_DROP_FILES,
+                "If enabled, files can be dropped into WebView"),
+        Flag.baseFeature(
                 BlinkFeatures.WEB_RTC_COMBINED_NETWORK_AND_WORKER_THREAD,
                 "Combines WebRTC's worker thread and network thread onto a single thread."),
         Flag.baseFeature(
