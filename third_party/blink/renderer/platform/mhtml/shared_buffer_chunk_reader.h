@@ -42,14 +42,11 @@ class SharedBufferChunkReader final {
 
  public:
   SharedBufferChunkReader(scoped_refptr<const SharedBuffer>,
-                          const Vector<char>& separator);
-  SharedBufferChunkReader(scoped_refptr<const SharedBuffer>,
-                          const char* separator);
+                          std::string_view separator);
   SharedBufferChunkReader(const SharedBufferChunkReader&) = delete;
   SharedBufferChunkReader& operator=(const SharedBufferChunkReader&) = delete;
 
-  void SetSeparator(const Vector<char>&);
-  void SetSeparator(const char*);
+  void SetSeparator(std::string_view separator);
 
   // Returns false when the end of the buffer was reached.
   bool NextChunk(Vector<char>& data, bool include_separator = false);
@@ -62,13 +59,12 @@ class SharedBufferChunkReader final {
   // the buffer position.
   // Returns the number of bytes read. That number might be less than the
   // specified size if the end of the buffer was reached.
-  uint32_t Peek(Vector<char>&, uint32_t);
+  size_t Peek(Vector<char>&, size_t);
 
  private:
   scoped_refptr<const SharedBuffer> buffer_;
   size_t buffer_position_;
-  const char* segment_;
-  uint32_t segment_length_;
+  base::span<const char> segment_;
   uint32_t segment_index_;
   bool reached_end_of_file_;
   Vector<char> separator_;

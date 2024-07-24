@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/mhtml/mhtml_parser.h"
 
 #include <stddef.h>
@@ -57,21 +52,20 @@ namespace blink {
 
 namespace {
 
-void QuotedPrintableDecode(const char* data,
-                           size_t data_length,
-                           Vector<char>& out) {
+void QuotedPrintableDecode(base::span<const char> data, Vector<char>& out) {
   out.clear();
-  if (!data_length)
+  if (data.empty()) {
     return;
+  }
 
-  for (size_t i = 0; i < data_length; ++i) {
+  for (size_t i = 0; i < data.size(); ++i) {
     char current_character = data[i];
     if (current_character != '=') {
       out.push_back(current_character);
       continue;
     }
     // We are dealing with a '=xx' sequence.
-    if (data_length - i < 3) {
+    if (data.size() - i < 3) {
       // Unfinished = sequence, append as is.
       out.push_back(current_character);
       continue;
@@ -374,7 +368,7 @@ ArchiveResource* MHTMLParser::ParseNextPart(
     // read the part content till reaching the boundary without CRLF. So the
     // part content may contain CRLF at the end, which will be stripped off
     // later.
-    line_reader_.SetSeparator(end_of_part_boundary.Utf8().c_str());
+    line_reader_.SetSeparator(end_of_part_boundary.Utf8());
     if (!line_reader_.NextChunk(content)) {
       DVLOG(1) << "Binary contents requires end of part";
       return nullptr;
@@ -446,7 +440,7 @@ ArchiveResource* MHTMLParser::ParseNextPart(
       }
       break;
     case MIMEHeader::Encoding::kQuotedPrintable:
-      QuotedPrintableDecode(content.data(), content.size(), data);
+      QuotedPrintableDecode(content, data);
       break;
     case MIMEHeader::Encoding::kEightBit:
     case MIMEHeader::Encoding::kSevenBit:
