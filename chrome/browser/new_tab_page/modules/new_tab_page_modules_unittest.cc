@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
+
 #include <algorithm>
 #include <string>
 #include <utility>
@@ -11,7 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
-#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
+#include "chrome/browser/new_tab_page/modules/test_support.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -19,25 +21,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ntp {
-
-const std::vector<base::test::FeatureRef>& kAllModuleFeatures = {
-    ntp_features::kNtpCalendarModule,
-    ntp_features::kNtpDriveModule,
-    ntp_features::kNtpFeedModule,
-    ntp_features::kNtpOutlookCalendarModule,
-};
-
-std::vector<base::test::FeatureRef> ComputeDisabledFeaturesList(
-    const std::vector<base::test::FeatureRef>& features,
-    const std::vector<base::test::FeatureRef>& enabled_features) {
-  std::vector<base::test::FeatureRef> disabled_features;
-  std::copy_if(features.begin(), features.end(),
-               std::back_inserter(disabled_features),
-               [&enabled_features](base::test::FeatureRef feature_to_copy) {
-                 return !base::Contains(enabled_features, feature_to_copy);
-               });
-  return disabled_features;
-}
 
 TEST(NewTabPageModulesTest, MakeModuleIdNames_SingleModuleEnabled) {
   const std::vector<base::test::FeatureRef>& some_module_features = {
