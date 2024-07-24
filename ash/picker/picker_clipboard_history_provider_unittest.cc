@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/picker/picker_clipboard_provider.h"
+#include "ash/picker/picker_clipboard_history_provider.h"
 
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
@@ -25,9 +25,9 @@ using ::testing::IsEmpty;
 using ::testing::Property;
 using ::testing::VariantWith;
 
-class PickerClipboardProviderTest : public views::ViewsTestBase {};
+class PickerClipboardHistoryProviderTest : public views::ViewsTestBase {};
 
-TEST_F(PickerClipboardProviderTest, FetchesTextResult) {
+TEST_F(PickerClipboardHistoryProviderTest, FetchesTextResult) {
   base::UnguessableToken expected_item_id;
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
@@ -43,7 +43,7 @@ TEST_F(PickerClipboardProviderTest, FetchesTextResult) {
           });
 
   base::SimpleTestClock clock;
-  PickerClipboardProvider provider(&clock);
+  PickerClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
   base::test::TestFuture<std::vector<PickerSearchResult>> future;
@@ -58,7 +58,7 @@ TEST_F(PickerClipboardProviderTest, FetchesTextResult) {
                       u"xyz", std::nullopt, true)))));
 }
 
-TEST_F(PickerClipboardProviderTest, FetchesImageResult) {
+TEST_F(PickerClipboardHistoryProviderTest, FetchesImageResult) {
   base::UnguessableToken expected_item_id;
   ui::ImageModel expected_display_image =
       ui::ImageModel::FromImage(gfx::test::CreateImage(16, 16));
@@ -77,7 +77,7 @@ TEST_F(PickerClipboardProviderTest, FetchesImageResult) {
           });
 
   base::SimpleTestClock clock;
-  PickerClipboardProvider provider(&clock);
+  PickerClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
   base::test::TestFuture<std::vector<PickerSearchResult>> future;
@@ -92,7 +92,7 @@ TEST_F(PickerClipboardProviderTest, FetchesImageResult) {
                       _, expected_display_image, true)))));
 }
 
-TEST_F(PickerClipboardProviderTest, SetsIsRecentFieldFalse) {
+TEST_F(PickerClipboardHistoryProviderTest, SetsIsRecentFieldFalse) {
   base::UnguessableToken expected_item_id;
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
@@ -108,7 +108,7 @@ TEST_F(PickerClipboardProviderTest, SetsIsRecentFieldFalse) {
           });
 
   base::SimpleTestClock clock;
-  PickerClipboardProvider provider(&clock);
+  PickerClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
   clock.Advance(base::Hours(1));
 
@@ -124,7 +124,7 @@ TEST_F(PickerClipboardProviderTest, SetsIsRecentFieldFalse) {
                       u"xyz", std::nullopt, false)))));
 }
 
-TEST_F(PickerClipboardProviderTest, FiletersResultByQuery) {
+TEST_F(PickerClipboardHistoryProviderTest, FiletersResultByQuery) {
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
       .WillOnce(
@@ -140,7 +140,7 @@ TEST_F(PickerClipboardProviderTest, FiletersResultByQuery) {
           });
 
   base::SimpleTestClock clock;
-  PickerClipboardProvider provider(&clock);
+  PickerClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
   base::test::TestFuture<std::vector<PickerSearchResult>> future;

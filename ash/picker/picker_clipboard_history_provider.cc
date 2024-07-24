@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/picker/picker_clipboard_provider.h"
+#include "ash/picker/picker_clipboard_history_provider.h"
 
 #include <string>
 #include <string_view>
@@ -46,26 +46,28 @@ bool MatchQuery(const ClipboardHistoryItem& item, std::u16string_view query) {
   return base::i18n::ToLower(item.display_text())
              .find(base::i18n::ToLower(query)) != std::u16string::npos;
 }
-}
+}  // namespace
 
-PickerClipboardProvider::PickerClipboardProvider(base::Clock* clock)
+PickerClipboardHistoryProvider::PickerClipboardHistoryProvider(
+    base::Clock* clock)
     : clock_(clock) {}
 
-PickerClipboardProvider::~PickerClipboardProvider() = default;
+PickerClipboardHistoryProvider::~PickerClipboardHistoryProvider() = default;
 
-void PickerClipboardProvider::FetchResults(OnFetchResultsCallback callback,
-                                           std::u16string_view query) {
+void PickerClipboardHistoryProvider::FetchResults(
+    OnFetchResultsCallback callback,
+    std::u16string_view query) {
   ash::ClipboardHistoryController* clipboard_history_controller =
       ash::ClipboardHistoryController::Get();
   if (clipboard_history_controller) {
     clipboard_history_controller->GetHistoryValues(
-        base::BindOnce(&PickerClipboardProvider::OnFetchHistory,
+        base::BindOnce(&PickerClipboardHistoryProvider::OnFetchHistory,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::u16string(query)));
   }
 }
 
-void PickerClipboardProvider::OnFetchHistory(
+void PickerClipboardHistoryProvider::OnFetchHistory(
     OnFetchResultsCallback callback,
     std::u16string query,
     std::vector<ClipboardHistoryItem> items) {

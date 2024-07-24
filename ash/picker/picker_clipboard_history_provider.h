@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PICKER_PICKER_CLIPBOARD_PROVIDER_H_
-#define ASH_PICKER_PICKER_CLIPBOARD_PROVIDER_H_
+#ifndef ASH_PICKER_PICKER_CLIPBOARD_HISTORY_PROVIDER_H_
+#define ASH_PICKER_PICKER_CLIPBOARD_HISTORY_PROVIDER_H_
 
 #include <memory>
 #include <string>
@@ -21,17 +21,19 @@ class ClipboardHistoryItem;
 class PickerSearchResult;
 
 // A provider to fetch clipboard history.
-class ASH_EXPORT PickerClipboardProvider {
+class ASH_EXPORT PickerClipboardHistoryProvider {
  public:
   using OnFetchResultsCallback =
       base::OnceCallback<void(std::vector<PickerSearchResult>)>;
 
-  explicit PickerClipboardProvider(
+  explicit PickerClipboardHistoryProvider(
       base::Clock* clock = base::DefaultClock::GetInstance());
 
-  PickerClipboardProvider(const PickerClipboardProvider&) = delete;
-  PickerClipboardProvider& operator=(const PickerClipboardProvider&) = delete;
-  ~PickerClipboardProvider();
+  PickerClipboardHistoryProvider(const PickerClipboardHistoryProvider&) =
+      delete;
+  PickerClipboardHistoryProvider& operator=(
+      const PickerClipboardHistoryProvider&) = delete;
+  ~PickerClipboardHistoryProvider();
 
   // Fetches clipboard items which were copied within `recency` time duration.
   void FetchResults(OnFetchResultsCallback callback,
@@ -43,9 +45,9 @@ class ASH_EXPORT PickerClipboardProvider {
                       std::vector<ClipboardHistoryItem> items);
 
   raw_ptr<base::Clock> clock_;
-  base::WeakPtrFactory<PickerClipboardProvider> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PickerClipboardHistoryProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_PICKER_PICKER_CLIPBOARD_PROVIDER_H_
+#endif  // ASH_PICKER_PICKER_CLIPBOARD_HISTORY_PROVIDER_H_
