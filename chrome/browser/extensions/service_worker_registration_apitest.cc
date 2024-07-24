@@ -2,18 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <string>
+
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/script_executor.h"
@@ -27,12 +37,16 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace extensions {
 
 using service_worker_test_utils::TestServiceWorkerTaskQueueObserver;
 
 namespace {
+
+constexpr char kNTPTestExtensionId[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
 
 enum class BackgroundType {
   kPersistentPage,
@@ -50,6 +64,10 @@ void CheckBooleanHistogramCounts(const char* histogram_name,
   histogram_tester.ExpectBucketCount(histogram_name,
                                      /*sample=*/false,
                                      /*expected_count=*/false_count);
+}
+
+GURL new_tab_url() {
+  return GURL("chrome://newtab");
 }
 
 }  // namespace
@@ -659,6 +677,260 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
   // Visit the page a fourth time. Now, the new service worker file should
   // be used, since the extension was reloaded from disk.
   EXPECT_EQ("storage changed version 2: count 4", open_tab_and_get_result());
+}
+
+class ServiceWorkerExtensionUpdateOnBrowserRestartRegistrationApiTest
+    : public ServiceWorkerRegistrationApiTest {
+ protected:
+  void SetUp() override {
+    // Usually browser test loads about:blank in the default tab for the window,
+    // but we want to ensure chrome://newtab is loaded instead. This ensures
+    // that chrome://newtab is loaded as soon as possible which is important to
+    // confirm the update works as expected.
+    set_open_about_blank_on_browser_launch(false);
+
+    // Create the observer now because the browser will be started after we call
+    // `ServiceWorkerRegistrationApiTest::SetUp()`.
+    browser_start_new_tab_observer_ =
+        std::make_unique<ui_test_utils::UrlLoadObserver>(new_tab_url());
+
+    ServiceWorkerRegistrationApiTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    ServiceWorkerRegistrationApiTest::SetUpOnMainThread();
+
+    {
+      SCOPED_TRACE(
+          "waiting for the initial new tab to open after browser start");
+      browser_start_new_tab_observer_->Wait();
+    }
+  }
+
+  void CreatedBrowserMainParts(content::BrowserMainParts* main_parts) override {
+    // These are meant to be used in `NTPUpdateAcrossBrowserRestart` (after
+    // PRE_NTPUpdateAcrossBrowserRestart finishes). But we need them to be
+    // created before the browser starts in the test so we define them here.
+    v2_install_listener_ =
+        std::make_unique<ExtensionTestMessageListener>("v2 installed");
+    v2_update_histogram_tester_ = std::make_unique<base::HistogramTester>();
+    ServiceWorkerRegistrationApiTest::CreatedBrowserMainParts(main_parts);
+  }
+
+  void TearDownOnMainThread() override {
+    ServiceWorkerRegistrationApiTest::TearDownOnMainThread();
+
+    // Prevent dangling pointer on test teardown.
+    browser_start_new_tab_observer_.reset();
+  }
+
+  // Ensure any new tab that is opened defaults goes to chrome://newtab.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ServiceWorkerRegistrationApiTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kHomePage,
+                                    chrome::kChromeUINewTabURL);
+  }
+
+  // Get the NTP javascript's version.
+  content::EvalJsResult GetVersionOfNTPScript() {
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           "self.currentVersion;");
+  }
+
+  // Request the version of the background context script from the perspective
+  // of the NTP js.
+  content::EvalJsResult GetBackgroundContextVersionFromNTPPage() {
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           "getCurrentVersionOfBackgroundContext();");
+  }
+
+  // Observes that chrome://newtab loads on test start.
+  std::unique_ptr<ui_test_utils::UrlLoadObserver>
+      browser_start_new_tab_observer_;
+
+  std::unique_ptr<ExtensionTestMessageListener> v2_install_listener_;
+  std::unique_ptr<base::HistogramTester> v2_update_histogram_tester_;
+};
+
+// Tests that updating an extension that overrides the NTP updates successfully
+// across browser restart when the updated is delayed until shutdown. This PRE_
+// test installs v1, updates to v2, but v2 does not install since v1 is not
+// idle. At the end of the test the browser shuts down with the v2 update as a
+// delayed install.
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerExtensionUpdateOnBrowserRestartRegistrationApiTest,
+    PRE_NTPUpdateAcrossBrowserRestart) {
+  // Browser should have started and opened a new tab to chrome://newtab.
+
+  // Install v1 of the extension and verify its background context is running
+  // the v1 version.
+  base::FilePath crx_v1_path = PackExtension(test_data_dir_.AppendASCII(
+      "service_worker/registration/ntp_extension/extension_version_1"));
+  const Extension* extension_v1 = nullptr;
+  {
+    ExtensionTestMessageListener v1_install_listener_("v1 installed");
+    extension_v1 = InstallExtension(crx_v1_path, /*expected_change=*/1);
+    SCOPED_TRACE("waiting for version 1 of the extension to install");
+    ASSERT_TRUE(v1_install_listener_.WaitUntilSatisfied());
+    ASSERT_EQ("1", extension_v1->version().GetString());
+  }
+  ASSERT_TRUE(extension_v1);
+  ASSERT_EQ(kNTPTestExtensionId, extension_v1->id());
+  EXPECT_TRUE(HasActiveServiceWorker(extension_v1->id()));
+  ASSERT_EQ(base::Value(1),
+            GetVersionFlagFromBackgroundContext(extension_v1->id()));
+
+  // Navigate current tab to new tab to engage v1 of the NTP extension to stay
+  // non-idle.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_tab_url()));
+
+  // Verify v1 of extension is responding to messages in the tab.
+  std::u16string first_new_tab_title;
+  ui_test_utils::GetCurrentTabTitle(browser(), &first_new_tab_title);
+  ASSERT_EQ(u"Custom NTP test v1", first_new_tab_title);
+
+  ASSERT_EQ(base::Value(1), GetVersionOfNTPScript());
+  {
+    SCOPED_TRACE("waiting for v1 of background context to respond to NTP");
+    ASSERT_EQ(base::Value(1), GetBackgroundContextVersionFromNTPPage());
+  }
+
+  // v1 of extension is still installed because extension is not idle.
+  ASSERT_TRUE(HasActiveServiceWorker(extension_v1->id()));
+  ASSERT_EQ(base::Value(1),
+            GetVersionFlagFromBackgroundContext(extension_v1->id()));
+
+  // Attempt install of v2 of the extension.
+  base::FilePath crx_v2_path = PackExtension(test_data_dir_.AppendASCII(
+      "service_worker/registration/ntp_extension/extension_version_2"));
+  const Extension* extension_update = nullptr;
+  {
+    SCOPED_TRACE("waiting for update of v2 of extension");
+    extension_update =
+        UpdateExtensionWaitForIdle(kNTPTestExtensionId, crx_v2_path,
+                                   /*expected_change=*/0);
+  }
+  ExtensionService* service = extension_service();
+  ASSERT_TRUE(service);
+  ASSERT_EQ(1u, service->delayed_installs()->size());
+  // v2 won't install though since v1 isn't idle (NTP page is still open) yet so
+  // we're given the original `extension_v1` object.
+  ASSERT_TRUE(extension_update);
+  ASSERT_EQ(extension_update, extension_v1);
+  // Confirm v1 background context is still installed because extension is not
+  // idle.
+  ASSERT_TRUE(HasActiveServiceWorker(extension_v1->id()));
+  ASSERT_EQ(base::Value(1),
+            GetVersionFlagFromBackgroundContext(extension_v1->id()));
+
+  // Confirm the existing NTP we opened is still responding as v1 of the
+  // extension.
+  std::u16string second_new_tab_title;
+  ui_test_utils::GetCurrentTabTitle(browser(), &second_new_tab_title);
+  ASSERT_EQ(u"Custom NTP test v1", second_new_tab_title);
+  ASSERT_EQ(base::Value(1), GetVersionOfNTPScript());
+  {
+    SCOPED_TRACE("waiting for v1 of background context to respond to NTP");
+    ASSERT_EQ(base::Value(1), GetBackgroundContextVersionFromNTPPage());
+  }
+
+  // Navigate again to new tab so we can confirm v1 is still running and v2
+  // hasn't taken over future new tabs.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_tab_url()));
+  std::u16string third_new_tab_title;
+  ui_test_utils::GetCurrentTabTitle(browser(), &third_new_tab_title);
+  ASSERT_EQ(u"Custom NTP test v1", third_new_tab_title);
+  ASSERT_EQ(base::Value(1), GetVersionOfNTPScript());
+  {
+    SCOPED_TRACE("waiting for v1 of background context to respond to NTP");
+    ASSERT_EQ(base::Value(1), GetBackgroundContextVersionFromNTPPage());
+  }
+
+  // Shut down the browser (test ending causes browser to shut down).
+}
+
+// TODO(https://crbug.com/330066242): Flakes on chromeOS.
+// ui_test_utils::NavigateToURL() causes: [focus_controller.cc(277)] Check
+// failed: rules_->CanFocusWindow(window, nullptr).
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_NTPUpdateAcrossBrowserRestart \
+  DISABLED_NTPUpdateAcrossBrowserRestart
+#else
+#define MAYBE_NTPUpdateAcrossBrowserRestart NTPUpdateAcrossBrowserRestart
+#endif
+
+// Continues the PRE_ test by testing that upon browser start v2 of the
+// extension is installed.
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerExtensionUpdateOnBrowserRestartRegistrationApiTest,
+    MAYBE_NTPUpdateAcrossBrowserRestart) {
+  // Browser should have started and opened a new tab to chrome://newtab.
+
+  {
+    SCOPED_TRACE(
+        "waiting for install of extension to v2 after browser restart");
+    // Verify new extension background context is now active installed.
+    EXPECT_TRUE(v2_install_listener_->WaitUntilSatisfied());
+  }
+
+  // Confirm that v2 of extension is now installed.
+  const Extension* extension_v2 =
+      ExtensionRegistry::Get(profile())->GetExtensionById(
+          kNTPTestExtensionId, ExtensionRegistry::ENABLED);
+  ASSERT_TRUE(extension_v2);
+  ASSERT_EQ("2", extension_v2->version().GetString());
+  EXPECT_EQ(base::Value(2),
+            GetVersionFlagFromBackgroundContext(extension_v2->id()));
+
+  // Verify that v2 of extension is responding to NTP requests.
+  std::u16string browser_start_new_tab_title;
+  ui_test_utils::GetCurrentTabTitle(browser(), &browser_start_new_tab_title);
+  ASSERT_EQ(u"Custom NTP test v2", browser_start_new_tab_title);
+  EXPECT_EQ(base::Value(2), GetVersionOfNTPScript());
+  {
+    SCOPED_TRACE("waiting for v2 of background context to respond to NTP");
+    ASSERT_EQ(base::Value(2), GetBackgroundContextVersionFromNTPPage());
+  }
+
+  // Navigate to new tab page so we can confirm v2 is still running and v1
+  // hasn't taken over future new tabs loads.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_tab_url()));
+  std::u16string new_tab_title;
+  ui_test_utils::GetCurrentTabTitle(browser(), &new_tab_title);
+  ASSERT_EQ(u"Custom NTP test v2", new_tab_title);
+  ASSERT_EQ(base::Value(2), GetVersionOfNTPScript());
+  {
+    SCOPED_TRACE("waiting for v2 of background context to respond to NTP");
+    ASSERT_EQ(base::Value(2), GetBackgroundContextVersionFromNTPPage());
+  }
+
+  // TODO(crbug.com/353738494): Let's make it so that vN of extension is not
+  // redundantly installed on start when delayed install of vN+1 is ready.
+
+  // v1 worker is unregistered twice because on browser start v1 of extension is
+  // installed first, then delayed installs are installed. This causes us to
+  // deactivate v1 of the extension since it has a worker task queue (which
+  // unregisters v1 of the worker), then we unregister again because v1 of the
+  // extension is loaded.
+  CheckBooleanHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState",
+      /*true_count=*/2, /*false_count=*/0, *v2_update_histogram_tester_);
+  CheckBooleanHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
+      "DeactivateExtension",
+      /*true_count=*/1, /*false_count=*/0, *v2_update_histogram_tester_);
+  CheckBooleanHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
+      "AddExtension",
+      /*true_count=*/1, /*false_count=*/0, *v2_update_histogram_tester_);
+
+  // Then v2 extension worker is registered.
+  CheckBooleanHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerRegistrationState",
+      /*true_count=*/1, /*false_count=*/0, *v2_update_histogram_tester_);
+  v2_update_histogram_tester_->ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.Registration_FailStatus",
+      /*expected_count=*/0);
 }
 
 // Registration and unregistration metrics tests.
