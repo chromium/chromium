@@ -26,10 +26,6 @@ class PrefService;
 
 @property(nonatomic, weak) id<QuickDeleteConsumer> consumer;
 
-// Local dispatcher for presentation commands of quick delete.
-@property(nonatomic, weak) id<QuickDeletePresentationCommands>
-    presentationHandler;
-
 - (instancetype)initWithPrefs:(PrefService*)prefs
     browsingDataCounterWrapperProducer:
         (BrowsingDataCounterWrapperProducer*)counterWrapperProducer

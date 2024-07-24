@@ -28,6 +28,10 @@
 
 namespace {
 
+// Delay to observe when dismissing the UI after showing the confirmation
+// indicator that the deletion has concluded.
+constexpr NSTimeInterval kDismissDelay = 1;
+
 // Trash icon view size.
 constexpr CGFloat kTrashIconContainerViewSize = 64;
 
@@ -124,6 +128,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   buttonConfiguration.background.backgroundColor =
       [UIColor colorNamed:kRedColor];
   self.primaryActionButton.configuration = buttonConfiguration;
+  self.confirmationCheckmarkColor = [UIColor colorNamed:kRed600Color];
+  self.confirmationButtonColor = [UIColor colorNamed:kRed100Color];
 
   // Assign the table view's anchors now that it is in the same hierarchy as the
   // top view and that the content has been loaded.
@@ -162,8 +168,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)confirmationAlertSecondaryAction {
-  CHECK(self.presentationHandler);
-  [self.presentationHandler dismissQuickDelete];
+  [self dismissQuickDelete];
 }
 
 #pragma mark - UITableViewDelegate
@@ -291,7 +296,29 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // TODO(crbug.com/341107834): Refactor summary using this type selection.
 }
 
+- (void)deletionInProgress {
+  self.view.userInteractionEnabled = NO;
+  self.isLoading = YES;
+  self.isConfirmed = NO;
+}
+
+- (void)deletionFinished {
+  self.isLoading = NO;
+  self.isConfirmed = YES;
+
+  // Add an artificial delay for dimissing the UI, so the user is able to see
+  // the confirmation state.
+  [self performSelector:@selector(dismissQuickDelete)
+             withObject:nil
+             afterDelay:kDismissDelay];
+}
+
 #pragma mark - Private
+
+// Triggers the dismission of the Quick Delete UI.
+- (void)dismissQuickDelete {
+  [self.presentationHandler dismissQuickDelete];
+}
 
 // Updates the bottom sheet height by also updating the table view height. The
 // table view might have a different height after the browsing data summary is

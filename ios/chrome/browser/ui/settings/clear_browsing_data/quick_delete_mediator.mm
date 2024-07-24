@@ -134,6 +134,8 @@
 }
 
 - (void)triggerDeletion {
+  [_consumer deletionInProgress];
+
   BrowsingDataRemoveMask removeMask = BrowsingDataRemoveMask::REMOVE_NOTHING;
 
   if (_prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistory)) {
@@ -172,7 +174,7 @@
   __weak QuickDeleteMediator* weakSelf = self;
   void (^removeBrowsingDidFinishCompletionBlock)(void) = ^void() {
     // TODO(crbug.com/347919133): Trigger post-delete experience.
-    [weakSelf.presentationHandler dismissQuickDelete];
+    [weakSelf.consumer deletionFinished];
   };
 
   browsing_data::TimePeriod timePeriod = static_cast<browsing_data::TimePeriod>(
