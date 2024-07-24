@@ -2,20 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/url_loader_factory_getter.h"
+#include "content/browser/loader/reconnectable_url_loader_factory.h"
 
-#include <memory>
-#include <utility>
-
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/mojom/network_service.mojom.h"
 
 namespace content {
 

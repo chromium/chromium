@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_URL_LOADER_FACTORY_GETTER_H_
-#define CONTENT_BROWSER_URL_LOADER_FACTORY_GETTER_H_
+#ifndef CONTENT_BROWSER_LOADER_RECONNECTABLE_URL_LOADER_FACTORY_H_
+#define CONTENT_BROWSER_LOADER_RECONNECTABLE_URL_LOADER_FACTORY_H_
 
-#include <memory>
-
-#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -206,4 +202,4 @@ class CONTENT_EXPORT ReconnectableURLLoaderFactoryForIOThreadWrapper final {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_URL_LOADER_FACTORY_GETTER_H_
+#endif  // CONTENT_BROWSER_LOADER_RECONNECTABLE_URL_LOADER_FACTORY_H_

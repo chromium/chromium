@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_STORAGE_PARTITION_IMPL_H_
 
 #include <stdint.h>
-
 #include <map>
 #include <memory>
 #include <set>
