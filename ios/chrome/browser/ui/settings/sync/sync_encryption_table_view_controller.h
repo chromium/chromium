@@ -5,12 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_SYNC_SYNC_ENCRYPTION_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_SYNC_SYNC_ENCRYPTION_TABLE_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
 class Browser;
 
 // Controller to allow user to specify encryption passphrase for Sync.
-@interface SyncEncryptionTableViewController : SettingsRootTableViewController
+@interface SyncEncryptionTableViewController
+    : SettingsRootTableViewController <SettingsControllerProtocol>
 
 // Designated initializer. `browserState` must not be nil.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;

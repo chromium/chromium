@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
+#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_table_view_controller.h"
@@ -63,7 +64,9 @@
   // The coordinator for the action sheet to sign out.
   SignoutActionSheetCoordinator* _signoutActionSheetCoordinator;
   raw_ptr<syncer::SyncService> _syncService;
-
+  SyncEncryptionTableViewController* _syncEncryptionTableViewController;
+  SyncEncryptionPassphraseTableViewController*
+      _syncEncryptionPassphraseTableViewController;
   // ApplicationCommands handler.
   id<ApplicationCommands> _applicationHandler;
 }
@@ -134,6 +137,10 @@
   _viewController.dataSource = nil;
   _viewController.delegate = nil;
   _viewController.mutator = nil;
+  [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
+  _syncEncryptionPassphraseTableViewController = nil;
+  [_syncEncryptionTableViewController settingsWillBeDismissed];
+  _syncEncryptionTableViewController = nil;
   _viewController = nil;
   [_mediator disconnect];
   _mediator.consumer = nil;
@@ -325,29 +332,33 @@
 
 - (void)openPassphraseDialogWithModalPresentation:(BOOL)presentModally {
   if (presentModally) {
-    SyncEncryptionPassphraseTableViewController* controllerToPresent =
+    _syncEncryptionPassphraseTableViewController =
         [[SyncEncryptionPassphraseTableViewController alloc]
             initWithBrowser:self.browser];
-    controllerToPresent.presentModally = YES;
+    _syncEncryptionPassphraseTableViewController.presentModally = YES;
     UINavigationController* navigationController =
         [[UINavigationController alloc]
-            initWithRootViewController:controllerToPresent];
+            initWithRootViewController:
+                _syncEncryptionPassphraseTableViewController];
     navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-    [self configureHandlersForRootViewController:controllerToPresent];
+    [self configureHandlersForRootViewController:
+              _syncEncryptionPassphraseTableViewController];
     [_navigationController presentViewController:navigationController
                                         animated:YES
                                       completion:nil];
     return;
   }
-  UIViewController<SettingsRootViewControlling>* controllerToPush;
   // If there was a sync error, prompt the user to enter the passphrase.
   // Otherwise, show the full encryption options.
+  UIViewController<SettingsRootViewControlling>* controllerToPush;
   if (_syncService->GetUserSettings()->IsPassphraseRequired()) {
-    controllerToPush = [[SyncEncryptionPassphraseTableViewController alloc]
-        initWithBrowser:self.browser];
+    controllerToPush = _syncEncryptionPassphraseTableViewController =
+        [[SyncEncryptionPassphraseTableViewController alloc]
+            initWithBrowser:self.browser];
   } else {
-    controllerToPush = [[SyncEncryptionTableViewController alloc]
-        initWithBrowser:self.browser];
+    controllerToPush = _syncEncryptionTableViewController =
+        [[SyncEncryptionTableViewController alloc]
+            initWithBrowser:self.browser];
   }
 
   [self configureHandlersForRootViewController:controllerToPush];
