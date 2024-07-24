@@ -707,7 +707,7 @@
       // to do that for the target according to the new spec:
       // https://w3c.github.io/selection-api/#scheduling-selectionhange-event
       name: "CoalesceSelectionchangeEvent",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CoepReflection",
