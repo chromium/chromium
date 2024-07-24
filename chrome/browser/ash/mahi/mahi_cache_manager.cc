@@ -93,6 +93,13 @@ void MahiCacheManager::ClearCache() {
   page_cache_.clear();
 }
 
+void MahiCacheManager::DeleteCacheForUrl(const std::string& url) {
+  const auto it = page_cache_.find(GURL(url).GetWithoutRef());
+  if (it != page_cache_.end()) {
+    page_cache_.erase(it);
+  }
+}
+
 void MahiCacheManager::OnTimerFired() {
   for (auto iter = page_cache_.begin(); iter != page_cache_.end();
        /* no increment */) {
