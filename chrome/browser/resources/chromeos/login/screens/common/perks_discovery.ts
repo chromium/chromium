@@ -228,6 +228,15 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
     });
   }
 
+  private onBackClicked(): void {
+    assert(this.currentPerk > 0);
+    this.currentPerk--;
+  }
+
+  private canGoBack(currentStep: number): boolean {
+    return currentStep > 0;
+  }
+
   private onNotInterestedClicked(): void {}
 
   private onInterestedClicked(): void {}
