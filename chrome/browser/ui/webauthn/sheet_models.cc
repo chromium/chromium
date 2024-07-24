@@ -1665,6 +1665,12 @@ gfx::Image AuthenticatorGpmPinSheetModelBase::GetGpmAccountImage() const {
       profiles::SHAPE_CIRCLE);
 }
 
+std::u16string AuthenticatorGpmPinSheetModelBase::GetAccessibleDescription()
+    const {
+  std::u16string error = GetError();
+  return error.empty() ? GetHint() : error;
+}
+
 bool AuthenticatorGpmPinSheetModelBase::ui_disabled() const {
   return dialog_model()->ui_disabled_;
 }
@@ -1746,7 +1752,7 @@ AuthenticatorGpmPinSheetModel::AuthenticatorGpmPinSheetModel(
 AuthenticatorGpmPinSheetModel::~AuthenticatorGpmPinSheetModel() = default;
 
 void AuthenticatorGpmPinSheetModel::PinCharTyped(bool is_digit) {
-  if (show_digit_hint_ != is_digit) {
+  if (mode_ != Mode::kPinCreate || show_digit_hint_ != is_digit) {
     return;
   }
 
@@ -1859,7 +1865,7 @@ std::u16string AuthenticatorGpmArbitraryPinSheetModel::GetAcceptButtonLabel()
 }
 
 std::u16string AuthenticatorGpmArbitraryPinSheetModel::GetHint() const {
-  return mode_ == Mode::kPinCreate && pin_.length() < kGpmArbitraryPinMinLength
+  return mode_ == Mode::kPinCreate
              ? l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_PIN_LENGTH_HINT)
              : std::u16string();
 }
