@@ -177,6 +177,9 @@ interface CustomizeChromePageHandler {
 
   // Triggers a call to |CustomizeChromePage.AttachedTabStateUpdated()|.
   UpdateAttachedTabState();
+
+  // Triggers a call to |CustomizeChromePage.NtpManagedByNameUpdated()|.
+  UpdateNtpManagedByName();
 };
 
 // WebUI-side handler for requests from the browser.
@@ -194,4 +197,7 @@ interface CustomizeChromePage {
   ScrollToSection(CustomizeChromeSection section);
   // Sets Information about the tab that is attached to the CustomizeChromePage.
   AttachedTabStateUpdated(bool is_source_tab_first_party_ntp);
+  // Sets the name of the system that manages the new tab page if there is one.
+  // If not, empty string should be provided.
+  NtpManagedByNameUpdated(string ntp_managed_by_name);
 };
