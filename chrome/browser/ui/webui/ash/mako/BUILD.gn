@@ -1,0 +1,89 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("mako") {
+  sources = [
+    "mako_bubble_coordinator.cc",
+    "mako_bubble_coordinator.h",
+    "mako_bubble_event_handler.cc",
+    "mako_bubble_event_handler.h",
+    "mako_consent_view.cc",
+    "mako_consent_view.h",
+    "mako_rewrite_view.cc",
+    "mako_rewrite_view.h",
+    "mako_ui.cc",
+    "mako_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/views/bubble",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//chromeos/ash/services/orca/public/mojom",
+    "//skia:skia_core_public_headers",
+    "//third_party/abseil-cpp:absl",
+    "//ui/base/cursor",
+    "//ui/base/metadata",
+    "//ui/events",
+    "//ui/gfx/geometry",
+    "//ui/views",
+    "//ui/views/controls/webview",
+    "//ui/webui",
+    "//ui/webui/resources/cr_components/color_change_listener:mojom",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/mako:resources",
+    "//chrome/browser/ui/webui",
+    "//chrome/common:mojo_bindings",
+    "//chromeos/constants",
+    "//components/input",
+    "//content/public/browser",
+    "//content/public/common",
+    "//net",
+    "//third_party/blink/public/common:headers",
+    "//third_party/blink/public/mojom:mojom_core",
+    "//ui/aura",
+    "//ui/base/ime/ash",
+    "//ui/display",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/input_method" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "mako_bubble_event_handler_unittest.cc",
+    "mako_rewrite_view_unittest.cc",
+  ]
+
+  deps = [
+    ":mako",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//skia:skia_core_public_headers",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/display",
+    "//ui/events",
+    "//ui/events/types:headers",
+    "//ui/gfx/geometry",
+  ]
+}
