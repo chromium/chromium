@@ -363,9 +363,7 @@ ProcessExitResult InstallerMain(HMODULE module) {
 
   if (!::IsUserAnAdmin() && IsSystemInstall(scope)) {
     ProcessExitResult run_elevated_result = HandleRunElevated(command_line);
-    if ((run_elevated_result.exit_code !=
-             RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS &&
-         run_elevated_result.exit_code != UNEXPECTED_ELEVATION_LOOP_SILENT) ||
+    if (run_elevated_result.exit_code == SUCCESS_EXIT_CODE ||
         !IsPrefersForCommandLine(command_line)) {
       return run_elevated_result;
     }
