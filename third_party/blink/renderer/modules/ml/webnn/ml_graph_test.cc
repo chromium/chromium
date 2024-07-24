@@ -574,15 +574,18 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          webnn::SupportedDataTypes::All(),
          /*arg_min_max_output=*/
          webnn::SupportedDataTypes::All(),
-         /*concat_input=*/webnn::SupportedDataTypes::All(),
+         /*concat_inputs=*/
+         webnn::SupportedDataTypes::All(),
+         /*elu_input=*/webnn::SupportedDataTypes::All(),
          /*gather_input=*/webnn::SupportedDataTypes::All(),
          /*gather_indices=*/
          webnn::SupportedDataTypes::All(),
+         /*gelu_input=*/webnn::SupportedDataTypes::All(),
+         /*leaky_relu_input=*/webnn::SupportedDataTypes::All(),
+         /*relu_input=*/webnn::SupportedDataTypes::All(),
          /*where_condition=*/
          webnn::SupportedDataTypes::All(),
-         /*where_true_value=*/
-         webnn::SupportedDataTypes::All(),
-         /*where_false_value=*/
+         /*where_value=*/
          webnn::SupportedDataTypes::All()});
     auto success = blink_mojom::CreateContextSuccess::New(
         std::move(blink_remote), std::move(context_properties),

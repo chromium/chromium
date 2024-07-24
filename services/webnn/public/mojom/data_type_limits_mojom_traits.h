@@ -34,6 +34,10 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.concat_inputs;
   }
+  static webnn::SupportedDataTypes elu_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.elu_input;
+  }
   static webnn::SupportedDataTypes gather_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gather_input;
@@ -42,17 +46,25 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gather_indices;
   }
+  static webnn::SupportedDataTypes gelu_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.gelu_input;
+  }
+  static webnn::SupportedDataTypes leaky_relu_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.leaky_relu_input;
+  }
+  static webnn::SupportedDataTypes relu_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.relu_input;
+  }
   static webnn::SupportedDataTypes where_condition(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.where_condition;
   }
-  static webnn::SupportedDataTypes where_true_value(
+  static webnn::SupportedDataTypes where_value(
       const webnn::DataTypeLimits& data_type_limits) {
-    return data_type_limits.where_true_value;
-  }
-  static webnn::SupportedDataTypes where_false_value(
-      const webnn::DataTypeLimits& data_type_limits) {
-    return data_type_limits.where_false_value;
+    return data_type_limits.where_value;
   }
 
   static bool Read(webnn::mojom::DataTypeLimitsDataView data,
@@ -61,11 +73,14 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadArgMinMaxInput(&out->arg_min_max_input) &&
            data.ReadArgMinMaxOutput(&out->arg_min_max_output) &&
            data.ReadConcatInputs(&out->concat_inputs) &&
+           data.ReadEluInput(&out->elu_input) &&
            data.ReadGatherInput(&out->gather_input) &&
            data.ReadGatherIndices(&out->gather_indices) &&
+           data.ReadGeluInput(&out->gelu_input) &&
+           data.ReadLeakyReluInput(&out->leaky_relu_input) &&
+           data.ReadReluInput(&out->relu_input) &&
            data.ReadWhereCondition(&out->where_condition) &&
-           data.ReadWhereTrueValue(&out->where_true_value) &&
-           data.ReadWhereFalseValue(&out->where_false_value);
+           data.ReadWhereValue(&out->where_value);
   }
 };
 

@@ -2030,19 +2030,19 @@ base::expected<OperandDescriptor, std::string> ValidateWhereAndInferOutput(
   }
 
   static constexpr char kTrueValueParam[] = "trueValue";
-  if (!context_properties.data_type_limits.where_true_value.Has(
+  if (!context_properties.data_type_limits.where_value.Has(
           true_value.data_type())) {
     return base::unexpected(NotSupportedArgumentTypeError(
         kTrueValueParam, true_value.data_type(),
-        context_properties.data_type_limits.where_true_value));
+        context_properties.data_type_limits.where_value));
   }
 
   static constexpr char kFalseValueParam[] = "falseValue";
-  if (!context_properties.data_type_limits.where_false_value.Has(
+  if (!context_properties.data_type_limits.where_value.Has(
           false_value.data_type())) {
     return base::unexpected(NotSupportedArgumentTypeError(
         kFalseValueParam, false_value.data_type(),
-        context_properties.data_type_limits.where_false_value));
+        context_properties.data_type_limits.where_value));
   }
 
   if (true_value.data_type() != false_value.data_type()) {

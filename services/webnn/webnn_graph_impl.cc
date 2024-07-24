@@ -837,11 +837,13 @@ bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateElu(const IdToOperandMap& id_to_operand_map,
+bool ValidateElu(const ContextProperties& context_properties,
+                 const IdToOperandMap& id_to_operand_map,
                  const mojom::Elu& elu,
                  base::flat_set<uint64_t>& processed_operands) {
   if (!ValidateUnaryOperation(id_to_operand_map, elu,
-                              DataTypeConstraint::kFloat, processed_operands)) {
+                              context_properties.data_type_limits.elu_input,
+                              processed_operands)) {
     return false;
   }
   if (!ValidateEluAttributes(elu)) {
@@ -1202,11 +1204,14 @@ bool ValidateLayerNormalization(
   return true;
 }
 
-bool ValidateLeakyRelu(const IdToOperandMap& id_to_operand_map,
+bool ValidateLeakyRelu(const ContextProperties& context_properties,
+                       const IdToOperandMap& id_to_operand_map,
                        const mojom::LeakyRelu& leaky_relu,
                        base::flat_set<uint64_t>& processed_operands) {
-  if (!ValidateUnaryOperation(id_to_operand_map, leaky_relu,
-                              DataTypeConstraint::kFloat, processed_operands)) {
+  if (!ValidateUnaryOperation(
+          id_to_operand_map, leaky_relu,
+          context_properties.data_type_limits.leaky_relu_input,
+          processed_operands)) {
     return false;
   }
   if (!ValidateLeakyReluAttributes(leaky_relu)) {
@@ -1910,8 +1915,8 @@ bool ValidateOperation(const ContextProperties& context_properties,
                                        *operation.get_element_wise_binary(),
                                        processed_operands);
     case mojom::Operation::Tag::kElu:
-      return ValidateElu(id_to_operand_map, *operation.get_elu(),
-                         processed_operands);
+      return ValidateElu(context_properties, id_to_operand_map,
+                         *operation.get_elu(), processed_operands);
     case mojom::Operation::Tag::kElementWiseUnary:
       return ValidateElementWiseUnary(id_to_operand_map,
                                       *operation.get_element_wise_unary(),
@@ -1923,9 +1928,9 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateGather(context_properties, id_to_operand_map,
                             *operation.get_gather(), processed_operands);
     case mojom::Operation::Tag::kGelu:
-      return ValidateUnaryOperation(id_to_operand_map, *operation.get_gelu(),
-                                    DataTypeConstraint::kFloat,
-                                    processed_operands);
+      return ValidateUnaryOperation(
+          id_to_operand_map, *operation.get_gelu(),
+          context_properties.data_type_limits.gelu_input, processed_operands);
     case mojom::Operation::Tag::kGemm:
       return ValidateGemm(id_to_operand_map, *operation.get_gemm(),
                           processed_operands);
@@ -1951,8 +1956,8 @@ bool ValidateOperation(const ContextProperties& context_properties,
           id_to_operand_map, *operation.get_instance_normalization(),
           processed_operands);
     case mojom::Operation::Tag::kLeakyRelu:
-      return ValidateLeakyRelu(id_to_operand_map, *operation.get_leaky_relu(),
-                               processed_operands);
+      return ValidateLeakyRelu(context_properties, id_to_operand_map,
+                               *operation.get_leaky_relu(), processed_operands);
     case mojom::Operation::Tag::kLinear:
       return ValidateLinear(id_to_operand_map, *operation.get_linear(),
                             processed_operands);
@@ -1984,9 +1989,9 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateReshape(id_to_operand_map, *operation.get_reshape(),
                              processed_operands);
     case mojom::Operation::Tag::kRelu:
-      return ValidateUnaryOperation(id_to_operand_map, *operation.get_relu(),
-                                    DataTypeConstraint::kFloat16To32Int8To32,
-                                    processed_operands);
+      return ValidateUnaryOperation(
+          id_to_operand_map, *operation.get_relu(),
+          context_properties.data_type_limits.relu_input, processed_operands);
     case mojom::Operation::Tag::kSlice:
       return ValidateSlice(id_to_operand_map, *operation.get_slice(),
                            processed_operands);

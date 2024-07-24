@@ -6,8 +6,7 @@
 
 validateInputFromAnotherBuilder('leakyRelu');
 
-validateUnaryOperation(
-    'leakyRelu', floatingPointTypes, /*alsoBuildActivation=*/ true);
+validateSingleInputOperation('leakyRelu', /*alsoBuildActivation=*/ true);
 
 promise_test(async t => {
   const options = {alpha: 0.02};

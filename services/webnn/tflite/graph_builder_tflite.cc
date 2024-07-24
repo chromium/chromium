@@ -272,8 +272,11 @@ GraphBuilderTflite::CreateAndBuild(const mojom::GraphInfo& graph_info) {
 // static
 ContextProperties GraphBuilderTflite::GetContextProperties() {
   // TODO: crbug.com/345271830 - specify data types for all parameters.
+  static constexpr SupportedDataTypes kFloat32{OperandDataType::kFloat32};
   static constexpr SupportedDataTypes kArgMinMaxOutputSupportedDataTypes{
       OperandDataType::kInt32, OperandDataType::kInt64};
+  static constexpr SupportedDataTypes kEluSupportedDataTypes{
+      OperandDataType::kFloat32, OperandDataType::kInt8};
   return ContextProperties(InputOperandLayout::kNhwc,
                            {/*input=*/SupportedDataTypes::All(),
                             /*constant=*/SupportedDataTypes::All(),
@@ -281,11 +284,14 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
                             /*arg_min_max_output=*/
                             kArgMinMaxOutputSupportedDataTypes,
                             /*concat_inputs=*/SupportedDataTypes::All(),
+                            /*elu_input=*/kEluSupportedDataTypes,
                             /*gather_input=*/SupportedDataTypes::All(),
                             /*gather_indices=*/SupportedDataTypes::All(),
+                            /*gelu_input=*/kFloat32,
+                            /*leaky_relu_input=*/kFloat32,
+                            /*relu_input=*/kFloat32,
                             /*where_condition=*/{OperandDataType::kUint8},
-                            /*where_input=*/SupportedDataTypes::All(),
-                            /*where_other=*/SupportedDataTypes::All()});
+                            /*where_value=*/SupportedDataTypes::All()});
 }
 
 GraphBuilderTflite::GraphBuilderTflite(const mojom::GraphInfo& graph_info)
@@ -1466,11 +1472,8 @@ auto GraphBuilderTflite::SerializeGelu(const mojom::Gelu& gelu)
     -> base::expected<OperatorOffset, std::string> {
   // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
   // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
-  const mojom::Operand& input_operand = GetOperand(gelu.input_operand_id);
-  if (input_operand.descriptor.data_type() == OperandDataType::kFloat16) {
-    return base::unexpected("The 16-bit float data type isn't supported.");
-  }
-  CHECK_EQ(input_operand.descriptor.data_type(), OperandDataType::kFloat32);
+  CHECK_EQ(GetOperand(gelu.input_operand_id).descriptor.data_type(),
+           OperandDataType::kFloat32);
 
   return SerializeUnaryOperation(
       ::tflite::BuiltinOperator_GELU,
@@ -2548,11 +2551,11 @@ auto GraphBuilderTflite::SerializeReduceSumSquare(const mojom::Reduce& reduce,
 
 auto GraphBuilderTflite::SerializeRelu(const mojom::Relu& relu)
     -> OperatorOffset {
-  const OperandDataType input_data_type =
-      GetOperand(relu.input_operand_id).descriptor.data_type();
-  CHECK(kFloatDataTypes.contains(input_data_type) ||
-        input_data_type == OperandDataType::kInt32 ||
-        input_data_type == OperandDataType::kInt8);
+  // TODO(crbug.com/354625677): Support 32-bit signed integer with
+  // TFL::MaximumOp
+  // https://www.tensorflow.org/mlir/tfl_ops#tflmaximum_tflmaximumop.
+  CHECK_EQ(GetOperand(relu.input_operand_id).descriptor.data_type(),
+           OperandDataType::kFloat32);
 
   return SerializeUnaryOperation(
       ::tflite::BuiltinOperator::BuiltinOperator_RELU,

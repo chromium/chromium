@@ -18,11 +18,14 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes arg_min_max_input,
                  SupportedDataTypes arg_min_max_output,
                  SupportedDataTypes concat_inputs,
+                 SupportedDataTypes elu_input,
                  SupportedDataTypes gather_input,
                  SupportedDataTypes gather_indices,
+                 SupportedDataTypes gelu_input,
+                 SupportedDataTypes leaky_relu_input,
+                 SupportedDataTypes relu_input,
                  SupportedDataTypes where_condition,
-                 SupportedDataTypes where_true_value,
-                 SupportedDataTypes where_false_value);
+                 SupportedDataTypes where_value);
 
   // Copyable and movable.
   DataTypeLimits(const DataTypeLimits&);
@@ -39,24 +42,31 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes arg_min_max_input;
   SupportedDataTypes arg_min_max_output;
   SupportedDataTypes concat_inputs;
+  SupportedDataTypes elu_input;
   SupportedDataTypes gather_input;
   SupportedDataTypes gather_indices;
+  SupportedDataTypes gelu_input;
+  SupportedDataTypes leaky_relu_input;
+  SupportedDataTypes relu_input;
   SupportedDataTypes where_condition;
-  SupportedDataTypes where_true_value;
-  SupportedDataTypes where_false_value;
+  SupportedDataTypes where_value;
 };
 
+// clang-format off
 inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
-  return lhs.input == rhs.input && lhs.constant == rhs.constant &&
+  return lhs.input == rhs.input &&
+         lhs.constant == rhs.constant &&
          lhs.arg_min_max_input == rhs.arg_min_max_input &&
          lhs.arg_min_max_output == rhs.arg_min_max_output &&
          lhs.concat_inputs == rhs.concat_inputs &&
-         lhs.gather_input == rhs.gather_input &&
-         lhs.gather_indices == rhs.gather_indices &&
+         lhs.elu_input == rhs.elu_input &&
+         lhs.gelu_input == rhs.gelu_input &&
+         lhs.leaky_relu_input == rhs.leaky_relu_input &&
+         lhs.relu_input == rhs.relu_input &&
          lhs.where_condition == rhs.where_condition &&
-         lhs.where_true_value == rhs.where_true_value &&
-         lhs.where_false_value == rhs.where_false_value;
+         lhs.where_value == rhs.where_value;
 }
+// clang-format on
 
 }  // namespace webnn
 

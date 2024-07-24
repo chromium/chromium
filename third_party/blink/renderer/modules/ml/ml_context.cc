@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_unary_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_where_support_limits.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
@@ -200,6 +201,13 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       properties_.data_type_limits.concat_inputs));
   op_support_limits->setConcat(concat);
 
+  MLUnarySupportLimits* elu = MLUnarySupportLimits::Create();
+  elu->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.elu_input));
+  elu->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.elu_input));
+  op_support_limits->setElu(elu);
+
   MLGatherSupportLimits* gather = MLGatherSupportLimits::Create();
   gather->setInput(SupportedDataTypesToSupportLimits(
       properties_.data_type_limits.gather_input));
@@ -207,13 +215,34 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       properties_.data_type_limits.gather_indices));
   op_support_limits->setGather(gather);
 
+  MLUnarySupportLimits* gelu = MLUnarySupportLimits::Create();
+  gelu->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gelu_input));
+  gelu->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gelu_input));
+  op_support_limits->setGelu(gelu);
+
+  MLUnarySupportLimits* leaky_relu = MLUnarySupportLimits::Create();
+  leaky_relu->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.leaky_relu_input));
+  leaky_relu->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.leaky_relu_input));
+  op_support_limits->setLeakyRelu(leaky_relu);
+
+  MLUnarySupportLimits* relu = MLUnarySupportLimits::Create();
+  relu->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.relu_input));
+  relu->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.relu_input));
+  op_support_limits->setRelu(relu);
+
   MLWhereSupportLimits* where = MLWhereSupportLimits::Create();
   where->setCondition(SupportedDataTypesToSupportLimits(
       properties_.data_type_limits.where_condition));
   where->setTrueValue(SupportedDataTypesToSupportLimits(
-      properties_.data_type_limits.where_true_value));
+      properties_.data_type_limits.where_value));
   where->setFalseValue(SupportedDataTypesToSupportLimits(
-      properties_.data_type_limits.where_false_value));
+      properties_.data_type_limits.where_value));
   op_support_limits->setWhere(where);
 
   return op_support_limits;

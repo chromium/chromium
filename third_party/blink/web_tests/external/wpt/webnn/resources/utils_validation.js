@@ -390,6 +390,8 @@ function validateOptionsAxes(operationName) {
   }
 }
 
+// TODO: remove this method once all the data type limits of the unary
+// operations are specified in context.OpSupportLimits().
 /**
  * Validate a unary operation
  * @param {String} operationName - An operation name
@@ -440,6 +442,54 @@ function validateUnaryOperation(
     promise_test(async t => {
       builder[operationName]();
     }, `[${operationName}] Test building an activation`);
+  }
+}
+
+/**
+ * Validate a single input operation
+ * @param {String} operationName - An operation name
+ * @param {Boolean} alsoBuildActivation - If test building this operation as an
+ *     activation
+ */
+function validateSingleInputOperation(
+    operationName, alsoBuildActivation = false) {
+  promise_test(async t => {
+    const supportedDataTypes =
+        context.opSupportLimits()[operationName].input.dataTypes;
+    for (let dataType of supportedDataTypes) {
+      for (let dimensions of allWebNNDimensionsArray) {
+        const input = builder.input(`input`, {dataType, dimensions});
+        const output = builder[operationName](input);
+        assert_equals(output.dataType(), dataType);
+        assert_array_equals(output.shape(), dimensions);
+      }
+    }
+  }, `[${operationName}] Test building the operator with supported data type.`);
+
+  promise_test(async t => {
+    const unsupportedDataTypes =
+        new Set(allWebNNOperandDataTypes)
+            .difference(new Set(
+                context.opSupportLimits()[operationName].input.dataTypes));
+    for (let dataType of unsupportedDataTypes) {
+      if (!context.opSupportLimits().input.dataTypes.includes(dataType)) {
+        assert_throws_js(
+            TypeError,
+            () => builder.input(
+                `inputA${++inputAIndex}`, {dataType, dimensions1D}));
+        continue;
+      }
+      for (let dimensions of allWebNNDimensionsArray) {
+        const input = builder.input(`input`, {dataType, dimensions});
+        assert_throws_js(TypeError, () => builder[operationName](input));
+      }
+    }
+  }, `[${operationName}] Throw if the data type is not supported for the operator.`);
+
+  if (alsoBuildActivation) {
+    promise_test(async t => {
+      builder[operationName]();
+    }, `[${operationName}] Test building an activation.`);
   }
 }
 

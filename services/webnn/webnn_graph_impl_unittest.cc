@@ -52,11 +52,14 @@ ContextProperties GetContextPropertiesForTesting() {
                          /*arg_min_max_output=*/
                          {OperandDataType::kInt32, OperandDataType::kInt64},
                          /*concat_inputs=*/SupportedDataTypes::All(),
+                         /*elu_input=*/SupportedDataTypes::All(),
                          /*gather_input=*/SupportedDataTypes::All(),
                          /*gather_indices=*/SupportedDataTypes::All(),
+                         /*gelu_input=*/SupportedDataTypes::All(),
+                         /*leaky_relu_input=*/SupportedDataTypes::All(),
+                         /*relu_input=*/SupportedDataTypes::All(),
                          /*where_condition=*/SupportedDataTypes::All(),
-                         /*where_true_value=*/SupportedDataTypes::All(),
-                         /*where_false_value=*/SupportedDataTypes::All()}));
+                         /*where_value=*/SupportedDataTypes::All()}));
 }
 
 // A fake WebNNGraph Mojo interface implementation that binds a pipe for
@@ -2133,8 +2136,8 @@ TEST_F(WebNNGraphImplTest, EluTest) {
   }
   {
     // Test the invalid graph when the alpha is NAN.
-    EluTester{.input = {.type = OperandDataType::kInt32, .dimensions = {2}},
-              .output = {.type = OperandDataType::kInt32, .dimensions = {2}},
+    EluTester{.input = {.type = OperandDataType::kFloat32, .dimensions = {2}},
+              .output = {.type = OperandDataType::kFloat32, .dimensions = {2}},
               .alpha = NAN,
               .expected = false}
         .Test();
@@ -5161,10 +5164,11 @@ TEST_F(WebNNGraphImplTest, ReluTest) {
   }
   {
     // Test relu operator for 4-D tensor with int32 input.
-    ReluTester{
-        .input = {.type = OperandDataType::kInt32, .dimensions = {1, 5, 3, 7}},
-        .output = {.type = OperandDataType::kInt32, .dimensions = {1, 5, 3, 7}},
-        .expected = true}
+    ReluTester{.input = {.type = OperandDataType::kFloat32,
+                         .dimensions = {1, 5, 3, 7}},
+               .output = {.type = OperandDataType::kFloat32,
+                          .dimensions = {1, 5, 3, 7}},
+               .expected = true}
         .Test();
   }
   {

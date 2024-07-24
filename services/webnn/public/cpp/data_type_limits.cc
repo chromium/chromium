@@ -13,21 +13,27 @@ DataTypeLimits::DataTypeLimits(SupportedDataTypes input,
                                SupportedDataTypes arg_min_max_input,
                                SupportedDataTypes arg_min_max_output,
                                SupportedDataTypes concat_inputs,
+                               SupportedDataTypes elu_input,
                                SupportedDataTypes gather_input,
                                SupportedDataTypes gather_indices,
+                               SupportedDataTypes gelu_input,
+                               SupportedDataTypes leaky_relu_input,
+                               SupportedDataTypes relu_input,
                                SupportedDataTypes where_condition,
-                               SupportedDataTypes where_true_value,
-                               SupportedDataTypes where_false_value)
+                               SupportedDataTypes where_value)
     : input(input),
       constant(constant),
       arg_min_max_input(arg_min_max_input),
       arg_min_max_output(arg_min_max_output),
       concat_inputs(concat_inputs),
+      elu_input(elu_input),
       gather_input(gather_input),
       gather_indices(gather_indices),
+      gelu_input(gelu_input),
+      leaky_relu_input(leaky_relu_input),
+      relu_input(relu_input),
       where_condition(where_condition),
-      where_true_value(where_true_value),
-      where_false_value(where_false_value) {}
+      where_value(where_value) {}
 
 DataTypeLimits::DataTypeLimits(const DataTypeLimits&) = default;
 DataTypeLimits& DataTypeLimits::operator=(const DataTypeLimits&) = default;

@@ -41,6 +41,11 @@ dictionary MLGatherSupportLimits {
   MLSupportLimits indices;
 };
 
+dictionary MLUnarySupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits output;
+};
+
 dictionary MLWhereSupportLimits {
   MLSupportLimits condition;
   MLSupportLimits trueValue;
@@ -55,7 +60,11 @@ dictionary MLOpSupportLimits {
   MLArgMinMaxSupportLimits argMin;
   MLArgMinMaxSupportLimits argMax;
   MLConcatSupportLimits concat;
+  MLUnarySupportLimits elu;
   MLGatherSupportLimits gather;
+  MLUnarySupportLimits gelu;
+  MLUnarySupportLimits leakyRelu;
+  MLUnarySupportLimits relu;
   MLWhereSupportLimits where;
 };
 

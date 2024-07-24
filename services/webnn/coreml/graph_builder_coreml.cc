@@ -619,6 +619,8 @@ GraphBuilderCoreml::CreateAndBuild(const mojom::GraphInfo& graph_info,
 
 // static
 ContextProperties GraphBuilderCoreml::GetContextProperties() {
+  static constexpr SupportedDataTypes kFloats{OperandDataType::kFloat16,
+                                              OperandDataType::kFloat32};
   static constexpr SupportedDataTypes kFloatsAndInt32{OperandDataType::kFloat16,
                                                       OperandDataType::kFloat32,
                                                       OperandDataType::kInt32};
@@ -644,15 +646,18 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*arg_min_max_output=*/
        kArgMinMaxOutputSupportedDataTypes,
        /*concat_inputs=*/kFloatsAndInt32,
+       /*elu_input=*/kFloats,
        /*gather_input=*/kGatherInputSupportedDataTypes,
        /*gather_indices=*/
        kGatherIndicesSupportedDataTypes,
+       /*gelu_input=*/kFloats,
+       /*leaky_relu_input=*/kFloats,
+       /*relu_input=*/kFloats,
        /*where_condition=*/{OperandDataType::kUint8},
        // Note that BOOL is also supported by CoreML, but WebNN does not have a
        // corresponding BOOL type. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.transpose
-       /*where_true_value=*/kFloatsAndInt32,
-       /*where_false_value=*/kFloatsAndInt32});
+       /*where_value=*/kFloatsAndInt32});
 }
 
 GraphBuilderCoreml::GraphBuilderCoreml(const mojom::GraphInfo& graph_info,
@@ -812,6 +817,10 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         break;
       }
       case mojom::Operation::Tag::kRelu: {
+        CHECK(context_properties_.data_type_limits.relu_input.Has(
+            MILDataTypeToOperandType(
+                GetOperandInfo(operation->get_relu()->input_operand_id)
+                    .mil_data_type)));
         RETURN_IF_ERROR(
             AddUnaryOperation(SupportedDataType::kFloats, kOpReluTypeName,
                               *operation->get_relu(), block, operand_op_name));
@@ -1727,6 +1736,10 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
 base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForElu(
     const mojom::Elu& operation,
     CoreML::Specification::MILSpec::Block& block) {
+  CHECK(context_properties_.data_type_limits.elu_input.Has(
+      MILDataTypeToOperandType(
+          GetOperandInfo(operation.input_operand_id).mil_data_type)));
+
   ASSIGN_OR_RETURN(
       CoreML::Specification::MILSpec::Operation * op,
       CreateUnaryOperation(SupportedDataType::kFloats, kOpEluTypeName,
@@ -2033,6 +2046,10 @@ base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForLeakyRelu(
     const mojom::LeakyRelu& operation,
     CoreML::Specification::MILSpec::Block& block) {
+  CHECK(context_properties_.data_type_limits.leaky_relu_input.Has(
+      MILDataTypeToOperandType(
+          GetOperandInfo(operation.input_operand_id).mil_data_type)));
+
   ASSIGN_OR_RETURN(CoreML::Specification::MILSpec::Operation * op,
                    CreateUnaryOperation(
                        SupportedDataType::kFloats, kOpLeakyReluTypeName,
@@ -2611,9 +2628,9 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForWhere(
       GetOperandInfo(operation.false_value_operand_id);
   const OperandInfo& condition_operand_info =
       GetOperandInfo(operation.condition_operand_id);
-  CHECK(context_properties_.data_type_limits.where_true_value.Has(
+  CHECK(context_properties_.data_type_limits.where_value.Has(
       MILDataTypeToOperandType(true_operand_info.mil_data_type)));
-  CHECK(context_properties_.data_type_limits.where_false_value.Has(
+  CHECK(context_properties_.data_type_limits.where_value.Has(
       MILDataTypeToOperandType(false_operand_info.mil_data_type)));
   CHECK(context_properties_.data_type_limits.where_condition.Has(
       MILDataTypeToOperandType(condition_operand_info.mil_data_type)));

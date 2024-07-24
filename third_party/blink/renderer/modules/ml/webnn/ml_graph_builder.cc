@@ -578,9 +578,8 @@ MLOperand* BuildUnaryOperator(
   // The output tensor of unary operator has the same data type and dimensions
   // as its input tensor.
   if (!data_type_constraint.Has(input->DataType())) {
-    exception_state.ThrowTypeError(String::Format(
-        "The input data type must be one of the %s types.",
-        webnn::DataTypeConstraintToString(data_type_constraint).c_str()));
+    exception_state.ThrowTypeError(String(NotSupportedInputArgumentTypeError(
+        input->DataType(), data_type_constraint)));
     return nullptr;
   }
 
@@ -1200,16 +1199,13 @@ MLOperand* MLGraphBuilder::elu(const MLOperand* input,
         "The value of alpha must be greater than 0.");
     return nullptr;
   }
-  // The current spec doesn't specify the operand data type constraints of elu.
-  // An issue has been filed to track it:
-  // https://github.com/webmachinelearning/webnn/issues/283.
-  //
+
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-elu, the output tensor of
   // elu has the same data type and dimensions as its input.
-  return BuildUnaryOperator(this, exception_state,
-                            webnn::mojom::blink::Operation::Tag::kElu,
-                            webnn::DataTypeConstraint::kFloat, input, options);
+  return BuildUnaryOperator(
+      this, exception_state, webnn::mojom::blink::Operation::Tag::kElu,
+      ml_context_->GetProperties().data_type_limits.elu_input, input, options);
 }
 
 MLActivation* MLGraphBuilder::elu(const MLEluOptions* options,
@@ -1285,9 +1281,9 @@ MLOperand* MLGraphBuilder::gelu(const MLOperand* input,
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gelu, the output tensor of
   // gelu has the same data type and dimensions as its input. And the input data
   // type must be one of the floating point types.
-  return BuildUnaryOperator(this, exception_state,
-                            webnn::mojom::blink::Operation::Tag::kGelu,
-                            webnn::DataTypeConstraint::kFloat, input);
+  return BuildUnaryOperator(
+      this, exception_state, webnn::mojom::blink::Operation::Tag::kGelu,
+      ml_context_->GetProperties().data_type_limits.gelu_input, input);
 }
 
 MLActivation* MLGraphBuilder::gelu(ExceptionState& exception_state) {
@@ -1530,16 +1526,13 @@ MLOperand* MLGraphBuilder::leakyRelu(const MLOperand* input,
                                      ExceptionState& exception_state) {
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
-  // The current spec doesn't specify the operand data type constraints of
-  // leakyRelu. An issue has been filed to track it:
-  // https://github.com/webmachinelearning/webnn/issues/283.
-  //
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-leakyrelu, the output
   // tensor of leaky relu has the same type and dimensions as its input.
-  return BuildUnaryOperator(this, exception_state,
-                            webnn::mojom::blink::Operation::Tag::kLeakyRelu,
-                            webnn::DataTypeConstraint::kFloat, input, options);
+  return BuildUnaryOperator(
+      this, exception_state, webnn::mojom::blink::Operation::Tag::kLeakyRelu,
+      ml_context_->GetProperties().data_type_limits.leaky_relu_input, input,
+      options);
 }
 
 MLActivation* MLGraphBuilder::leakyRelu(const MLLeakyReluOptions* options,
@@ -1830,7 +1823,7 @@ MLOperand* MLGraphBuilder::relu(const MLOperand* input,
   // relu has the same data type and dimensions as its input.
   return BuildUnaryOperator(
       this, exception_state, webnn::mojom::blink::Operation::Tag::kRelu,
-      webnn::DataTypeConstraint::kFloat16To32Int8To32, input);
+      ml_context_->GetProperties().data_type_limits.relu_input, input);
 }
 
 MLActivation* MLGraphBuilder::relu(ExceptionState& exception_state) {
