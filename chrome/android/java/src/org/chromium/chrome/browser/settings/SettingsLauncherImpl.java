@@ -21,8 +21,10 @@ import org.chromium.chrome.browser.autofill.settings.FinancialAccountsManagement
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentAdvanced;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
+import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -59,7 +61,9 @@ public class SettingsLauncherImpl implements SettingsLauncher {
                                 /* isFetcherSuppliedFromOutside= */ false);
                 break;
             case SettingsFragment.SAFETY_CHECK:
-                fragmentArgs = SafetyCheckSettingsFragment.createBundle(true);
+                if (!ChromeFeatureList.sSafetyHub.isEnabled()) {
+                    fragmentArgs = SafetyCheckSettingsFragment.createBundle(true);
+                }
                 break;
             case SettingsFragment.MAIN:
             case SettingsFragment.PAYMENT_METHODS:
@@ -133,7 +137,11 @@ public class SettingsLauncherImpl implements SettingsLauncher {
             case SettingsFragment.PAYMENT_METHODS:
                 return AutofillPaymentMethodsFragment.class;
             case SettingsFragment.SAFETY_CHECK:
-                return SafetyCheckSettingsFragment.class;
+                if (ChromeFeatureList.sSafetyHub.isEnabled()) {
+                    return SafetyHubFragment.class;
+                } else {
+                    return SafetyCheckSettingsFragment.class;
+                }
             case SettingsFragment.SITE:
                 return SiteSettings.class;
             case SettingsFragment.ACCESSIBILITY:

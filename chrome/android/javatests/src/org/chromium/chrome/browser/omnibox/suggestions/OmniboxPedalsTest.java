@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
+import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
@@ -264,6 +265,7 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testRunChromeSafetyCheck() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.RUN_CHROME_SAFETY_CHECK));
 
@@ -280,6 +282,21 @@ public class OmniboxPedalsTest {
                         /* executed= */ true);
         // Make sure the safety check was ran.
         safetyCheckHistogramWatcher.pollInstrumentationThreadUntilSatisfied();
+        verifyNoMoreInteractions(mOmniboxActionJni);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.SAFETY_HUB)
+    public void testOpenChromeSafetyHub() throws InterruptedException {
+        setSuggestions(createPedalSuggestion(OmniboxPedalId.RUN_CHROME_SAFETY_CHECK));
+
+        clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), SafetyHubFragment.class);
+        verify(mOmniboxActionJni, times(1))
+                .recordActionShown(
+                        OmniboxPedalId.RUN_CHROME_SAFETY_CHECK,
+                        /* position= */ 0,
+                        /* executed= */ true);
         verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
