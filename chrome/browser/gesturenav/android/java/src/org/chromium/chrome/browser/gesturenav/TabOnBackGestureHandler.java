@@ -57,6 +57,11 @@ public class TabOnBackGestureHandler implements UserData {
         TabOnBackGestureHandlerJni.get().onBackInvoked(mNativePtr);
     }
 
+    public static boolean shouldAnimateNavigationTransition(
+            boolean forward, @BackGestureEventSwipeEdge int edge) {
+        return TabOnBackGestureHandlerJni.get().shouldAnimateNavigationTransition(forward, edge);
+    }
+
     @Override
     public void destroy() {
         TabOnBackGestureHandlerJni.get().destroy(mNativePtr);
@@ -80,6 +85,8 @@ public class TabOnBackGestureHandler implements UserData {
         void onBackCancelled(long nativeTabOnBackGestureHandler);
 
         void onBackInvoked(long nativeTabOnBackGestureHandler);
+
+        boolean shouldAnimateNavigationTransition(boolean forward, int edge);
 
         void destroy(long nativeTabOnBackGestureHandler);
     }

@@ -81,6 +81,12 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManager {
 
   // Get current stage of the back forward transition.
   virtual AnimationStage GetCurrentAnimationStage() = 0;
+
+  // Returns true if a gesture navigation from the screen edge `edge`, towards
+  // the session history direction `navigation_direction` should be animated.
+  static bool ShouldAnimateNavigationTransition(
+      NavigationDirection navigation_direction,
+      ui::BackGestureEventSwipeEdge edge);
 };
 
 }  // namespace content
