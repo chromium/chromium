@@ -237,12 +237,7 @@ template("clang_lib") {
 
 # Adds a dependency on the Clang runtime library clang_rt.builtins.
 clang_lib("compiler_builtins") {
-  if (!toolchain_has_rust) {
-    # Since there's no Rust in the toolchain, there's no concern that we'll use
-    # the Rust stdlib's intrinsics here.
-    #
-    # Don't define libname which makes this target do nothing.
-  } else if (is_mac) {
+  if (is_mac) {
     libname = "osx"
   } else if (is_ios) {
     if (target_environment == "simulator") {
