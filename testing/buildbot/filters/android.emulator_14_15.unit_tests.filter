@@ -6,7 +6,3 @@
 -ChromeBrowsingDataRemoverDelegateOriginTrialsTest.*
 -ChromeBrowsingDataRemoverDelegateTest.AllTypesAreGettingDeleted
 -ChromeBrowsingDataRemoverDelegateTest.RemovePersistentIsolatedOrigins
-
-# crbug.com/346331137
--ChromePasswordManagerClientAndroidTest.FocusedInputChangedNoFrameFillableField
--ChromePasswordManagerClientAndroidTest.FocusedInputChangedNoFrameNoField
