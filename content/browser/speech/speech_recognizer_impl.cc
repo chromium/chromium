@@ -193,10 +193,8 @@ SpeechRecognizerImpl::SpeechRecognizerImpl(
       audio_system_(audio_system),
       recognition_engine_(std::move(engine)),
       endpointer_(kAudioSampleRate),
-      is_dispatching_event_(false),
       provisional_results_(provisional_results),
-      end_of_utterance_(false),
-      state_(STATE_IDLE) {
+      end_of_utterance_(false) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(recognition_engine_ != nullptr);
   DCHECK(audio_system_ != nullptr);
@@ -288,14 +286,14 @@ void SpeechRecognizerImpl::Capture(const AudioBus* data,
                                    bool key_pressed) {
   // Convert audio from native format to fixed format used by WebSpeech.
   FSMEventArgs event_args(EVENT_AUDIO_DATA);
-  event_args.audio_data = audio_converter_->Convert(data);
+  event_args.audio_chunk = audio_converter_->Convert(data);
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
                                 weak_ptr_factory_.GetWeakPtr(), event_args));
   // See http://crbug.com/506051 regarding why one extra convert call can
   // sometimes be required. It should be a rare case.
   if (!audio_converter_->data_was_converted()) {
-    event_args.audio_data = audio_converter_->Convert(data);
+    event_args.audio_chunk = audio_converter_->Convert(data);
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
                                   weak_ptr_factory_.GetWeakPtr(), event_args));
@@ -337,6 +335,14 @@ void SpeechRecognizerImpl::OnSpeechRecognitionEngineError(
                                 weak_ptr_factory_.GetWeakPtr(), event_args));
 }
 
+void SpeechRecognizerImpl::OnDeviceInfo(
+    const std::optional<media::AudioParameters>& params) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  device_params_ = params.value_or(AudioParameters());
+  DVLOG(1) << "Device parameters: " << device_params_.AsHumanReadableString();
+  DispatchEvent(FSMEventArgs(EVENT_START));
+}
+
 // -----------------------  Core FSM implementation ---------------------------
 // TODO(primiano): After the changes in the media package (r129173), this class
 // slightly violates the SpeechRecognitionEventListener interface contract. In
@@ -346,6 +352,15 @@ void SpeechRecognizerImpl::OnSpeechRecognitionEngineError(
 // represent a problem for the browser itself, since refcounting protects us
 // against such race conditions. However, we should fix this in the next CLs.
 
+// ----------- Contract for all the FSM evolution functions below -------------
+//  - Are guaranteed to be executed in the IO thread;
+//  - Are guaranteed to be not reentrant (themselves and each other);
+//  - event_args members are guaranteed to be stable during the call;
+//  - The class won't be freed in the meanwhile due to callbacks;
+
+// TODO(primiano): the audio pipeline is currently serial. However, the
+// clipper->endpointer->vumeter chain and the sr_engine could be parallelized.
+// We should profile the execution to see if it would be worth or not.
 void SpeechRecognizerImpl::DispatchEvent(const FSMEventArgs& event_args) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_LE(event_args.event, EVENT_MAX_VALUE);
@@ -360,8 +375,8 @@ void SpeechRecognizerImpl::DispatchEvent(const FSMEventArgs& event_args) {
   scoped_refptr<SpeechRecognizerImpl> me(this);
 
   if (event_args.event == EVENT_AUDIO_DATA) {
-    DCHECK(event_args.audio_data.get() != nullptr);
-    ProcessAudioPipeline(*event_args.audio_data.get());
+    DCHECK(event_args.audio_chunk.get() != nullptr);
+    ProcessAudioPipeline(event_args);
   }
 
   // The audio pipeline must be processed before the event dispatch, otherwise
@@ -370,161 +385,10 @@ void SpeechRecognizerImpl::DispatchEvent(const FSMEventArgs& event_args) {
   is_dispatching_event_ = false;
 }
 
-SpeechRecognizerImpl::FSMState
-SpeechRecognizerImpl::ExecuteTransitionAndGetNextState(
+void SpeechRecognizerImpl::ProcessAudioPipeline(
     const FSMEventArgs& event_args) {
-  const FSMEvent event = event_args.event;
-  switch (state_) {
-    case STATE_IDLE:
-      switch (event) {
-        // TODO(primiano): restore UNREACHABLE_CONDITION on EVENT_ABORT and
-        // EVENT_STOP_CAPTURE below once speech input extensions are fixed.
-        case EVENT_ABORT:
-          return AbortSilently(event_args);
-        case EVENT_PREPARE:
-          return PrepareRecognition(event_args);
-        case EVENT_START:
-          return NotFeasible(event_args);
-        case EVENT_STOP_CAPTURE:
-          return AbortSilently(event_args);
-        case EVENT_AUDIO_DATA:     // Corner cases related to queued messages
-        case EVENT_ENGINE_RESULT:  // being lately dispatched.
-        case EVENT_ENGINE_ERROR:
-        case EVENT_AUDIO_ERROR:
-          return DoNothing(event_args);
-      }
-      break;
-    case STATE_PREPARING:
-      switch (event) {
-        case EVENT_ABORT:
-          return AbortSilently(event_args);
-        case EVENT_PREPARE:
-          return NotFeasible(event_args);
-        case EVENT_START:
-          return StartRecording(event_args);
-        case EVENT_STOP_CAPTURE:
-          return AbortSilently(event_args);
-        case EVENT_AUDIO_DATA:     // Corner cases related to queued messages
-        case EVENT_ENGINE_RESULT:  // being lately dispatched.
-        case EVENT_ENGINE_ERROR:
-        case EVENT_AUDIO_ERROR:
-          return DoNothing(event_args);
-      }
-      break;
-    case STATE_STARTING:
-      switch (event) {
-        case EVENT_ABORT:
-          return AbortWithError(event_args);
-        case EVENT_PREPARE:
-          return NotFeasible(event_args);
-        case EVENT_START:
-          return NotFeasible(event_args);
-        case EVENT_STOP_CAPTURE:
-          return AbortSilently(event_args);
-        case EVENT_AUDIO_DATA:
-          return StartRecognitionEngine(event_args);
-        case EVENT_ENGINE_RESULT:
-          return NotFeasible(event_args);
-        case EVENT_ENGINE_ERROR:
-        case EVENT_AUDIO_ERROR:
-          return AbortWithError(event_args);
-      }
-      break;
-    case STATE_ESTIMATING_ENVIRONMENT:
-      switch (event) {
-        case EVENT_ABORT:
-          return AbortWithError(event_args);
-        case EVENT_PREPARE:
-          return NotFeasible(event_args);
-        case EVENT_START:
-          return NotFeasible(event_args);
-        case EVENT_STOP_CAPTURE:
-          return StopCaptureAndWaitForResult(event_args);
-        case EVENT_AUDIO_DATA:
-          return WaitEnvironmentEstimationCompletion(event_args);
-        case EVENT_ENGINE_RESULT:
-          return ProcessIntermediateResult(event_args);
-        case EVENT_ENGINE_ERROR:
-        case EVENT_AUDIO_ERROR:
-          return AbortWithError(event_args);
-      }
-      break;
-    case STATE_WAITING_FOR_SPEECH:
-      switch (event) {
-        case EVENT_ABORT:
-          return AbortWithError(event_args);
-        case EVENT_PREPARE:
-          return NotFeasible(event_args);
-        case EVENT_START:
-          return NotFeasible(event_args);
-        case EVENT_STOP_CAPTURE:
-          return StopCaptureAndWaitForResult(event_args);
-        case EVENT_AUDIO_DATA:
-          return DetectUserSpeechOrTimeout(event_args);
-        case EVENT_ENGINE_RESULT:
-          return ProcessIntermediateResult(event_args);
-        case EVENT_ENGINE_ERROR:
-        case EVENT_AUDIO_ERROR:
-          return AbortWithError(event_args);
-      }
-      break;
-    case STATE_RECOGNIZING:
-      switch (event) {
-        case EVENT_ABORT:
-          return AbortWithError(event_args);
-        case EVENT_PREPARE:
-          return NotFeasible(event_args);
-        case EVENT_START:
-          return NotFeasible(event_args);
-        case EVENT_STOP_CAPTURE:
-          return StopCaptureAndWaitForResult(event_args);
-        case EVENT_AUDIO_DATA:
-          return DetectEndOfSpeech(event_args);
-        case EVENT_ENGINE_RESULT:
-          return ProcessIntermediateResult(event_args);
-        case EVENT_ENGINE_ERROR:
-        case EVENT_AUDIO_ERROR:
-          return AbortWithError(event_args);
-      }
-      break;
-    case STATE_WAITING_FINAL_RESULT:
-      switch (event) {
-        case EVENT_ABORT:
-          return AbortWithError(event_args);
-        case EVENT_PREPARE:
-          return NotFeasible(event_args);
-        case EVENT_START:
-          return NotFeasible(event_args);
-        case EVENT_STOP_CAPTURE:
-        case EVENT_AUDIO_DATA:
-          return DoNothing(event_args);
-        case EVENT_ENGINE_RESULT:
-          return ProcessFinalResult(event_args);
-        case EVENT_ENGINE_ERROR:
-        case EVENT_AUDIO_ERROR:
-          return AbortWithError(event_args);
-      }
-      break;
-
-    // TODO(primiano): remove this state when speech input extensions support
-    // will be removed and STATE_IDLE.EVENT_ABORT,EVENT_STOP_CAPTURE will be
-    // reset to NotFeasible (see TODO above).
-    case STATE_ENDED:
-      return DoNothing(event_args);
-  }
-  return NotFeasible(event_args);
-}
-
-// ----------- Contract for all the FSM evolution functions below -------------
-//  - Are guaranteed to be executed in the IO thread;
-//  - Are guaranteed to be not reentrant (themselves and each other);
-//  - event_args members are guaranteed to be stable during the call;
-//  - The class won't be freed in the meanwhile due to callbacks;
-
-// TODO(primiano): the audio pipeline is currently serial. However, the
-// clipper->endpointer->vumeter chain and the sr_engine could be parallelized.
-// We should profile the execution to see if it would be worth or not.
-void SpeechRecognizerImpl::ProcessAudioPipeline(const AudioChunk& raw_audio) {
+  DCHECK(event_args.audio_chunk.get() != nullptr);
+  const AudioChunk& raw_audio = *event_args.audio_chunk.get();
   const bool route_to_endpointer = state_ >= STATE_ESTIMATING_ENVIRONMENT &&
                                    state_ <= STATE_RECOGNIZING;
   const bool route_to_sr_engine = route_to_endpointer;
@@ -546,14 +410,6 @@ void SpeechRecognizerImpl::ProcessAudioPipeline(const AudioChunk& raw_audio) {
     DCHECK(recognition_engine_.get() != nullptr);
     recognition_engine_->TakeAudioChunk(raw_audio);
   }
-}
-
-void SpeechRecognizerImpl::OnDeviceInfo(
-    const std::optional<media::AudioParameters>& params) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  device_params_ = params.value_or(AudioParameters());
-  DVLOG(1) << "Device parameters: " << device_params_.AsHumanReadableString();
-  DispatchEvent(FSMEventArgs(EVENT_START));
 }
 
 SpeechRecognizerImpl::FSMState SpeechRecognizerImpl::PrepareRecognition(
@@ -663,7 +519,7 @@ SpeechRecognizerImpl::StartRecognitionEngine(const FSMEventArgs& event_args) {
   // This is a little hack, since TakeAudioChunk() is already called by
   // ProcessAudioPipeline(). It is the best tradeoff, unless we allow dropping
   // the first audio chunk captured after opening the audio device.
-  recognition_engine_->TakeAudioChunk(*(event_args.audio_data.get()));
+  recognition_engine_->TakeAudioChunk(*(event_args.audio_chunk.get()));
   return STATE_ESTIMATING_ENVIRONMENT;
 }
 
@@ -907,20 +763,5 @@ media::AudioCapturerSource* SpeechRecognizerImpl::GetAudioCapturerSource() {
   return audio_capturer_source_for_tests_ ? audio_capturer_source_for_tests_
                                           : audio_capturer_source_.get();
 }
-
-SpeechRecognizerImpl::FSMEventArgs::FSMEventArgs(FSMEvent event_value)
-    : event(event_value),
-      audio_data(nullptr),
-      engine_error(media::mojom::SpeechRecognitionErrorCode::kNone,
-                   media::mojom::SpeechAudioErrorDetails::kNone) {}
-
-SpeechRecognizerImpl::FSMEventArgs::FSMEventArgs(const FSMEventArgs& other)
-    : event(other.event),
-      audio_data(other.audio_data),
-      engine_error(other.engine_error) {
-  engine_results = mojo::Clone(other.engine_results);
-}
-
-SpeechRecognizerImpl::FSMEventArgs::~FSMEventArgs() {}
 
 }  // namespace content

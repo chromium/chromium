@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/speech/endpointer/endpointer.h"
+#include "components/speech/speech_recognizer_fsm.h"
 #include "content/browser/speech/speech_recognition_engine.h"
 #include "content/browser/speech/speech_recognizer.h"
 #include "content/common/content_export.h"
@@ -33,7 +34,8 @@ class SpeechRecognitionEventListener;
 class CONTENT_EXPORT SpeechRecognizerImpl
     : public SpeechRecognizer,
       public media::AudioCapturerSource::CaptureCallback,
-      public SpeechRecognitionEngine::Delegate {
+      public SpeechRecognitionEngine::Delegate,
+      public speech::SpeechRecognizerFsm {
  public:
   static constexpr int kAudioSampleRate = 16000;
   static constexpr media::ChannelLayout kChannelLayout =
@@ -68,71 +70,30 @@ class CONTENT_EXPORT SpeechRecognizerImpl
  private:
   friend class SpeechRecognizerTest;
 
-  enum FSMState {
-    STATE_IDLE = 0,
-    STATE_PREPARING,
-    STATE_STARTING,
-    STATE_ESTIMATING_ENVIRONMENT,
-    STATE_WAITING_FOR_SPEECH,
-    STATE_RECOGNIZING,
-    STATE_WAITING_FINAL_RESULT,
-    STATE_ENDED,
-    STATE_MAX_VALUE = STATE_ENDED
-  };
-
-  enum FSMEvent {
-    EVENT_ABORT = 0,
-    EVENT_PREPARE,
-    EVENT_START,
-    EVENT_STOP_CAPTURE,
-    EVENT_AUDIO_DATA,
-    EVENT_ENGINE_RESULT,
-    EVENT_ENGINE_ERROR,
-    EVENT_AUDIO_ERROR,
-    EVENT_MAX_VALUE = EVENT_AUDIO_ERROR
-  };
-
-  struct FSMEventArgs {
-    explicit FSMEventArgs(FSMEvent event_value);
-    FSMEventArgs(const FSMEventArgs& other);
-    ~FSMEventArgs();
-
-    FSMEvent event;
-    scoped_refptr<AudioChunk> audio_data;
-    std::vector<media::mojom::WebSpeechRecognitionResultPtr> engine_results;
-    media::mojom::SpeechRecognitionError engine_error;
-  };
-
   ~SpeechRecognizerImpl() override;
-
-  // Entry point for pushing any new external event into the recognizer FSM.
-  void DispatchEvent(const FSMEventArgs& event_args);
-
-  // Defines the behavior of the recognizer FSM, selecting the appropriate
-  // transition according to the current state and event.
-  FSMState ExecuteTransitionAndGetNextState(const FSMEventArgs& args);
-
-  // Process a new audio chunk in the audio pipeline (endpointer, vumeter, etc).
-  void ProcessAudioPipeline(const AudioChunk& raw_audio);
 
   // Callback from AudioSystem.
   void OnDeviceInfo(const std::optional<media::AudioParameters>& params);
 
-  // The methods below handle transitions of the recognizer FSM.
-  FSMState PrepareRecognition(const FSMEventArgs&);
-  FSMState StartRecording(const FSMEventArgs& event_args);
-  FSMState StartRecognitionEngine(const FSMEventArgs& event_args);
-  FSMState WaitEnvironmentEstimationCompletion(const FSMEventArgs& event_args);
-  FSMState DetectUserSpeechOrTimeout(const FSMEventArgs& event_args);
-  FSMState StopCaptureAndWaitForResult(const FSMEventArgs& event_args);
-  FSMState ProcessIntermediateResult(const FSMEventArgs& event_args);
-  FSMState ProcessFinalResult(const FSMEventArgs& event_args);
-  FSMState AbortSilently(const FSMEventArgs& event_args);
-  FSMState AbortWithError(const FSMEventArgs& event_args);
-  FSMState Abort(const media::mojom::SpeechRecognitionError& error);
-  FSMState DetectEndOfSpeech(const FSMEventArgs& event_args);
-  FSMState DoNothing(const FSMEventArgs& event_args) const;
-  FSMState NotFeasible(const FSMEventArgs& event_args);
+  // speech::SpeechRecognizerFsm implementation.
+  // Process a new audio chunk in the audio pipeline (endpointer, vumeter, etc).
+  void DispatchEvent(const FSMEventArgs& event_args) override;
+  void ProcessAudioPipeline(const FSMEventArgs& event_args) override;
+  FSMState PrepareRecognition(const FSMEventArgs&) override;
+  FSMState StartRecording(const FSMEventArgs& event_args) override;
+  FSMState StartRecognitionEngine(const FSMEventArgs& event_args) override;
+  FSMState WaitEnvironmentEstimationCompletion(
+      const FSMEventArgs& event_args) override;
+  FSMState DetectUserSpeechOrTimeout(const FSMEventArgs& event_args) override;
+  FSMState StopCaptureAndWaitForResult(const FSMEventArgs& event_args) override;
+  FSMState ProcessIntermediateResult(const FSMEventArgs& event_args) override;
+  FSMState ProcessFinalResult(const FSMEventArgs& event_args) override;
+  FSMState AbortSilently(const FSMEventArgs& event_args) override;
+  FSMState AbortWithError(const FSMEventArgs& event_args) override;
+  FSMState Abort(const media::mojom::SpeechRecognitionError& error) override;
+  FSMState DetectEndOfSpeech(const FSMEventArgs& event_args) override;
+  FSMState DoNothing(const FSMEventArgs& event_args) const override;
+  FSMState NotFeasible(const FSMEventArgs& event_args) override;
 
   // Returns the time span of captured audio samples since the start of capture.
   int GetElapsedTimeMs() const;
@@ -176,10 +137,8 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   scoped_refptr<media::AudioCapturerSource> audio_capturer_source_;
   int num_samples_recorded_;
   float audio_level_;
-  bool is_dispatching_event_;
   bool provisional_results_;
   bool end_of_utterance_;
-  FSMState state_;
   std::string device_id_;
   media::AudioParameters device_params_;
 
