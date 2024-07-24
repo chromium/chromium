@@ -217,8 +217,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   void beginPath();
 
-  void fill(const String& winding = "nonzero");
-  void fill(Path2D*, const String& winding = "nonzero");
+  void fill();
+  void fill(const String& winding);
+  void fill(Path2D*);
+  void fill(Path2D*, const String& winding);
   void stroke();
   void stroke(Path2D*);
   void clip(const String& winding = "nonzero");
@@ -685,6 +687,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
       CanvasRenderingContext::kNotLostContext};
 
  private:
+  void FillImpl(SkPathFillType winding_rule);
+  void FillPathImpl(Path2D* dom_path, SkPathFillType winding_rule);
+
   void DrawTextInternal(const String& text,
                         double x,
                         double y,

@@ -1613,8 +1613,15 @@ static SkPathFillType ParseWinding(const String& winding_rule_string) {
   return SkPathFillType::kEvenOdd;
 }
 
-void BaseRenderingContext2D::fill(const String& winding_rule_string) {
-  const SkPathFillType winding_rule = ParseWinding(winding_rule_string);
+void BaseRenderingContext2D::fill() {
+  FillImpl(SkPathFillType::kWinding);
+}
+
+void BaseRenderingContext2D::fill(const String& winding) {
+  FillImpl(ParseWinding(winding));
+}
+
+void BaseRenderingContext2D::FillImpl(SkPathFillType winding_rule) {
   if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kFill, winding_rule);
   }
@@ -1622,9 +1629,16 @@ void BaseRenderingContext2D::fill(const String& winding_rule_string) {
                    winding_rule, UsePaintCache::kDisabled);
 }
 
-void BaseRenderingContext2D::fill(Path2D* dom_path,
-                                  const String& winding_rule_string) {
-  const SkPathFillType winding_rule = ParseWinding(winding_rule_string);
+void BaseRenderingContext2D::fill(Path2D* dom_path) {
+  FillPathImpl(dom_path, SkPathFillType::kWinding);
+}
+
+void BaseRenderingContext2D::fill(Path2D* dom_path, const String& winding) {
+  FillPathImpl(dom_path, ParseWinding(winding));
+}
+
+void BaseRenderingContext2D::FillPathImpl(Path2D* dom_path,
+                                          SkPathFillType winding_rule) {
   if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kFill__Path, dom_path->GetIdentifiableToken(), winding_rule);
