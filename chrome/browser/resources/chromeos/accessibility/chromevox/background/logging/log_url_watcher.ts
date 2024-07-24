@@ -13,13 +13,15 @@ import {ChromeVoxPrefs} from '../prefs.js';
 
 import {LogStore} from './log_store.js';
 
-/** @implements {ChromeVoxRangeObserver} */
-export class LogUrlWatcher {
-  static init() {
-    ChromeVoxPrefs.instance.enableOrDisableLogUrlWatcher_();
+export class LogUrlWatcher implements ChromeVoxRangeObserver {
+  static instance: LogUrlWatcher | null;
+
+  static init(): void {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    ChromeVoxPrefs.instance!.enableOrDisableLogUrlWatcher();
   }
 
-  static create() {
+  static create(): void {
     if (LogUrlWatcher.instance) {
       return;
     }
@@ -29,7 +31,7 @@ export class LogUrlWatcher {
     LogUrlWatcher.instance.onCurrentRangeChanged(ChromeVoxRange.current);
   }
 
-  static destroy() {
+  static destroy(): void {
     if (!LogUrlWatcher.instance) {
       return;
     }
@@ -37,21 +39,17 @@ export class LogUrlWatcher {
     LogUrlWatcher.instance = null;
   }
 
-  /**
-   * @param {?CursorRange} range The new range.
-   * @param {boolean=} opt_fromEditing
-   * @override
-   */
-  onCurrentRangeChanged(range, opt_fromEditing) {
+  /** ChromeVoxRangeObserver implementation. */
+  onCurrentRangeChanged(range: CursorRange | null, _fromEditing?: boolean)
+    : void {
     if (range && range.start && range.start.node && range.start.node.root) {
-      LogStore.shouldSkipOutput =
-          range.start.node.root.docUrl.indexOf(
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      LogStore.instance.shouldSkipOutput =
+          range.start.node.root.docUrl!.indexOf(
               chrome.extension.getURL('chromevox/log_page/log.html')) === 0;
     } else {
-      LogStore.shouldSkipOutput = false;
+      LogStore.instance.shouldSkipOutput = false;
     }
   }
 }
 
-/** @type {LogUrlWatcher} */
-LogUrlWatcher.instance;
