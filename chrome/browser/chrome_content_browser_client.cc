@@ -1686,7 +1686,8 @@ void ChromeContentBrowserClient::MaybeProxyNetworkBoundRequest(
     content::BrowserContext* browser_context,
     net::handles::NetworkHandle bound_network,
     network::URLLoaderFactoryBuilder& factory_builder,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
+    network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+    const net::IsolationInfo& isolation_info) {
   if (bound_network == net::handles::kInvalidNetworkHandle) {
     return;
   }
@@ -1743,6 +1744,7 @@ void ChromeContentBrowserClient::MaybeProxyNetworkBoundRequest(
       network::mojom::URLLoaderFactoryParams::New();
   params->process_id = network::mojom::kBrowserProcessId;
   params->is_trusted = true;
+  params->isolation_info = isolation_info;
   // Disable CORS wrapping, this is already handled by the caller.
   params->disable_web_security = true;
   network_bound_network_context_->CreateURLLoaderFactory(
@@ -6616,7 +6618,8 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
   // packets over the network (to effectively target `bound_network`).
   MaybeProxyNetworkBoundRequest(browser_context,
                                 GetBoundNetworkFromRenderFrameHost(frame),
-                                factory_builder, factory_override);
+                                factory_builder, factory_override,
+                                isolation_info);
 }
 
 std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
