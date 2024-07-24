@@ -131,6 +131,40 @@ std::vector<std::string> GetDOHExcludedDomains() {
   return domains;
 }
 
+class SecureDnsManagerObserver : public SecureDnsManager::Observer {
+ public:
+  explicit SecureDnsManagerObserver(
+      raw_ptr<SecureDnsManager> secure_dns_manager)
+      : secure_dns_manager_(secure_dns_manager) {
+    secure_dns_manager_->AddObserver(this);
+  }
+
+  SecureDnsManagerObserver(const SecureDnsManagerObserver&) = delete;
+  SecureDnsManagerObserver& operator=(const SecureDnsManagerObserver&) = delete;
+  ~SecureDnsManagerObserver() override {
+    if (secure_dns_manager_) {
+      secure_dns_manager_->RemoveObserver(this);
+    }
+  }
+  std::string doh_mode() const { return doh_mode_; }
+  std::string doh_template_uri() const { return doh_template_uri_; }
+
+ private:
+  void OnTemplateUrisChanged(const std::string& template_uris) override {
+    doh_template_uri_ = template_uris;
+  }
+  void OnModeChanged(const std::string& mode) override { doh_mode_ = mode; }
+
+  void OnSecureDnsManagerShutdown() override {
+    secure_dns_manager_->RemoveObserver(this);
+    secure_dns_manager_ = nullptr;
+  }
+
+  raw_ptr<SecureDnsManager> secure_dns_manager_;
+  std::string doh_mode_;
+  std::string doh_template_uri_;
+};
+
 class SecureDnsManagerTest : public testing::Test {
  public:
   SecureDnsManagerTest() = default;
@@ -156,6 +190,9 @@ class SecureDnsManagerTest : public testing::Test {
                                                local_state_.registry());
     network_handler_test_helper_.InitializePrefs(&local_state_, &local_state_);
     network_handler_test_helper_.AddDefaultProfiles();
+    secure_dns_manager_ = std::make_unique<SecureDnsManager>(local_state());
+    secure_dns_manager_observer_ =
+        std::make_unique<SecureDnsManagerObserver>(secure_dns_manager_.get());
   }
 
   void TearDown() override { NetworkHandler::Get()->ShutdownPrefServices(); }
@@ -170,25 +207,32 @@ class SecureDnsManagerTest : public testing::Test {
 
   PrefService* local_state() { return &local_state_; }
   PrefService* profile_prefs() { return &profile_prefs_; }
+  SecureDnsManager* secure_dns_manager() { return secure_dns_manager_.get(); }
+  SecureDnsManagerObserver* secure_dns_manager_observer() {
+    return secure_dns_manager_observer_.get();
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   NetworkHandlerTestHelper network_handler_test_helper_;
   TestingPrefServiceSimple local_state_;
   TestingPrefServiceSimple profile_prefs_;
+  std::unique_ptr<SecureDnsManager> secure_dns_manager_;
+  std::unique_ptr<SecureDnsManagerObserver> secure_dns_manager_observer_;
 };
 
 TEST_F(SecureDnsManagerTest, SetModeOff) {
   local_state()->Set(::prefs::kDnsOverHttpsMode,
                      base::Value(SecureDnsConfig::kModeOff));
 
-  auto secure_dns_manager = std::make_unique<SecureDnsManager>(local_state());
   auto providers = GetDOHProviders();
 
   EXPECT_TRUE(providers.empty());
   EXPECT_EQ(local_state()->GetString(
                 ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             "");
+  EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), "");
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(), "");
 }
 
 TEST_F(SecureDnsManagerTest, SetModeOffIgnoresTemplates) {
@@ -196,13 +240,14 @@ TEST_F(SecureDnsManagerTest, SetModeOffIgnoresTemplates) {
                      base::Value(SecureDnsConfig::kModeOff));
   local_state()->Set(::prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
 
-  auto secure_dns_manager = std::make_unique<SecureDnsManager>(local_state());
   auto providers = GetDOHProviders();
 
   EXPECT_TRUE(providers.empty());
   EXPECT_EQ(local_state()->GetString(
                 ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             "");
+  EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), "");
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(), "");
 }
 
 TEST_F(SecureDnsManagerTest, SetModeSecure) {
@@ -210,7 +255,6 @@ TEST_F(SecureDnsManagerTest, SetModeSecure) {
                      base::Value(SecureDnsConfig::kModeSecure));
   local_state()->Set(::prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
 
-  auto secure_dns_manager = std::make_unique<SecureDnsManager>(local_state());
   auto providers = GetDOHProviders();
 
   const auto it = providers.find(kGoogleDns);
@@ -218,6 +262,10 @@ TEST_F(SecureDnsManagerTest, SetModeSecure) {
   EXPECT_EQ(it->first, kGoogleDns);
   EXPECT_TRUE(it->second.empty());
   EXPECT_EQ(providers.size(), 1u);
+
+  EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), kGoogleDns);
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
+            SecureDnsConfig::kModeSecure);
 }
 
 TEST_F(SecureDnsManagerTest, SetModeSecureMultipleTemplates) {
@@ -226,7 +274,6 @@ TEST_F(SecureDnsManagerTest, SetModeSecureMultipleTemplates) {
   local_state()->Set(::prefs::kDnsOverHttpsTemplates,
                      base::Value(kMultipleTemplates));
 
-  auto secure_dns_manager = std::make_unique<SecureDnsManager>(local_state());
   auto providers = GetDOHProviders();
 
   EXPECT_TRUE(providers.find(kGoogleDns) != providers.end());
@@ -235,6 +282,11 @@ TEST_F(SecureDnsManagerTest, SetModeSecureMultipleTemplates) {
   EXPECT_EQ(local_state()->GetString(
                 ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             kMultipleTemplates);
+
+  EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(),
+            kMultipleTemplates);
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
+            SecureDnsConfig::kModeSecure);
 }
 
 TEST_F(SecureDnsManagerTest, SetModeSecureWithFallback) {
@@ -242,7 +294,6 @@ TEST_F(SecureDnsManagerTest, SetModeSecureWithFallback) {
                      base::Value(SecureDnsConfig::kModeAutomatic));
   local_state()->Set(::prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
 
-  auto secure_dns_manager = std::make_unique<SecureDnsManager>(local_state());
   auto providers = GetDOHProviders();
 
   const auto it = providers.find(kGoogleDns);
@@ -258,7 +309,6 @@ TEST_F(SecureDnsManagerTest, SetModeSecureWithFallbackMultipleTemplates) {
   local_state()->Set(::prefs::kDnsOverHttpsTemplates,
                      base::Value(kMultipleTemplates));
 
-  auto secure_dns_manager = std::make_unique<SecureDnsManager>(local_state());
   auto providers = GetDOHProviders();
 
   EXPECT_TRUE(providers.find(kGoogleDns) != providers.end());
@@ -267,6 +317,11 @@ TEST_F(SecureDnsManagerTest, SetModeSecureWithFallbackMultipleTemplates) {
   EXPECT_EQ(local_state()->GetString(
                 ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             kMultipleTemplates);
+
+  EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(),
+            kMultipleTemplates);
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
+            SecureDnsConfig::kModeAutomatic);
 }
 
 TEST_F(SecureDnsManagerTest, SetModeAutomaticWithTemplates) {
@@ -275,7 +330,6 @@ TEST_F(SecureDnsManagerTest, SetModeAutomaticWithTemplates) {
   local_state()->Set(::prefs::kDnsOverHttpsTemplates,
                      base::Value(kMultipleTemplates));
 
-  auto secure_dns_manager = std::make_unique<SecureDnsManager>(local_state());
   auto providers = GetDOHProviders();
 
   auto it = providers.find(kGoogleDns);
@@ -305,8 +359,7 @@ TEST_F(SecureDnsManagerTest, DoHTemplatesUriResolverCalled) {
       .Times(prefUpdatesCallCount)
       .WillRepeatedly(Return(effectiveTemplate));
 
-  auto secure_dns_manager = std::make_unique<SecureDnsManager>(local_state());
-  secure_dns_manager->SetDoHTemplatesUriResolverForTesting(
+  secure_dns_manager()->SetDoHTemplatesUriResolverForTesting(
       std::move(template_uri_resolver));
 
   local_state()->Set(::prefs::kDnsOverHttpsMode,
@@ -324,6 +377,11 @@ TEST_F(SecureDnsManagerTest, DoHTemplatesUriResolverCalled) {
   EXPECT_EQ(local_state()->GetString(
                 ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             effectiveTemplate);
+
+  EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(),
+            effectiveTemplate);
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
+            SecureDnsConfig::kModeAutomatic);
 }
 
 TEST_F(SecureDnsManagerTest, NetworkMetadataStoreHasDohWithIdentifiersActive) {
@@ -339,7 +397,6 @@ TEST_F(SecureDnsManagerTest, NetworkMetadataStoreHasDohWithIdentifiersActive) {
       AccountId::FromUserEmailGaiaId("test-user@testdomain.com", "1234567890"));
   fake_user_manager->AddUser(account_id);
 
-  auto secure_dns_manager = std::make_unique<SecureDnsManager>(local_state());
   local_state()->Set(::prefs::kDnsOverHttpsMode,
                      base::Value(SecureDnsConfig::kModeAutomatic));
   local_state()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
@@ -381,7 +438,6 @@ TEST_F(SecureDnsManagerTest, kDnsOverHttpsEffectiveTemplatesChromeOS) {
       "https://dns.google.alternativeuri/"
       "B07D2C5D119EB1881671C3B8D84CBE4FE3595C0C9ECBBF7670B18DDFDA072F66/{?dns}";
 
-  auto secure_dns_manager = std::make_unique<SecureDnsManager>(local_state());
   local_state()->Set(::prefs::kDnsOverHttpsMode,
                      base::Value(SecureDnsConfig::kModeAutomatic));
   local_state()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
@@ -397,6 +453,11 @@ TEST_F(SecureDnsManagerTest, kDnsOverHttpsEffectiveTemplatesChromeOS) {
                 ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             kEffectiveUriTemplateWithIdentifiers);
 
+  EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(),
+            kEffectiveUriTemplateWithIdentifiers);
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
+            SecureDnsConfig::kModeAutomatic);
+
   local_state()->ClearPref(::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
 
   providers = GetDOHProviders();
@@ -407,6 +468,10 @@ TEST_F(SecureDnsManagerTest, kDnsOverHttpsEffectiveTemplatesChromeOS) {
   EXPECT_EQ(local_state()->GetString(
                 ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             kGoogleDns);
+
+  EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), kGoogleDns);
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
+            SecureDnsConfig::kModeAutomatic);
 }
 
 TEST_F(SecureDnsManagerTest, DefaultNetworkObservedForIpAddressPlaceholder) {
@@ -430,8 +495,7 @@ TEST_F(SecureDnsManagerTest, DefaultNetworkObservedForIpAddressPlaceholder) {
   EXPECT_CALL(*template_uri_resolver, GetDohWithIdentifiersActive())
       .WillRepeatedly(testing::Return(true));
 
-  auto secure_dns_manager = std::make_unique<SecureDnsManager>(local_state());
-  secure_dns_manager->SetDoHTemplatesUriResolverForTesting(
+  secure_dns_manager()->SetDoHTemplatesUriResolverForTesting(
       std::move(template_uri_resolver));
 
   EXPECT_EQ(actual_uri_template_update_count,
@@ -470,7 +534,6 @@ TEST_F(SecureDnsManagerTest, DefaultNetworkObservedForIpAddressPlaceholder) {
 TEST_F(SecureDnsManagerTest, DefaultTemplateUrisForwardedToShill) {
   local_state()->Set(::prefs::kDnsOverHttpsMode,
                      base::Value(SecureDnsConfig::kModeAutomatic));
-  auto secure_dns_manager = std::make_unique<SecureDnsManager>(local_state());
   auto providers = GetDOHProviders();
   // The content of the provider list depends on the current country.
   EXPECT_FALSE(providers.empty());
@@ -501,9 +564,13 @@ TEST_F(SecureDnsManagerTest, NoDuplicateShillPropertyUpdateRequests) {
   EXPECT_CALL(observer,
               OnPropertyChanged(shill::kDOHExcludedDomainsProperty, testing::_))
       .Times(1);
+
+  // The two calls are generated:
+  // 1. at startup, with an empty value
+  // 2. after the template URI resolver is configured
   EXPECT_CALL(observer, OnPropertyChanged(shill::kDNSProxyDOHProvidersProperty,
                                           testing::_))
-      .Times(1);
+      .Times(2);
 
   ash::ShillManagerClient* shill_manager_client =
       ash::ShillManagerClient::Get();
@@ -523,8 +590,7 @@ TEST_F(SecureDnsManagerTest, NoDuplicateShillPropertyUpdateRequests) {
   EXPECT_CALL(*template_uri_resolver, GetEffectiveTemplates())
       .WillRepeatedly(testing::Return(kEffectiveTemplateUri));
 
-  auto secure_dns_manager = std::make_unique<SecureDnsManager>(local_state());
-  secure_dns_manager->SetDoHTemplatesUriResolverForTesting(
+  secure_dns_manager()->SetDoHTemplatesUriResolverForTesting(
       std::move(template_uri_resolver));
 
   EXPECT_EQ(actual_uri_template_update_count, 0);
@@ -549,7 +615,6 @@ TEST_F(SecureDnsManagerTest, SetDOHIncludedDomains) {
   }
   local_state()->Set(prefs::kDnsOverHttpsIncludedDomains, pref_value);
 
-  auto secure_dns_manager = std::make_unique<SecureDnsManager>(local_state());
   EXPECT_EQ(domains, GetDOHIncludedDomains());
 }
 
@@ -561,7 +626,6 @@ TEST_F(SecureDnsManagerTest, SetDOHExcludedDomains) {
   }
   local_state()->Set(prefs::kDnsOverHttpsExcludedDomains, pref_value);
 
-  auto secure_dns_manager = std::make_unique<SecureDnsManager>(local_state());
   EXPECT_EQ(domains, GetDOHExcludedDomains());
 }
 

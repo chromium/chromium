@@ -70,6 +70,10 @@ void SecureDnsManager::MonitorPolicyPrefs() {
 }
 
 SecureDnsManager::~SecureDnsManager() {
+  for (auto& observer : observers_) {
+    observer.OnSecureDnsManagerShutdown();
+  }
+
   // `local_state_` outlives the SecureDnsManager instance. The value of
   // `::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS` should not outlive the
   // current instance of SecureDnsManager.
@@ -105,8 +109,9 @@ void SecureDnsManager::LoadProviders() {
   }
 }
 
-base::Value::Dict SecureDnsManager::GetProviders(const std::string& mode,
-                                                 const std::string& templates) {
+base::Value::Dict SecureDnsManager::GetProviders(
+    const std::string& mode,
+    const std::string& templates) const {
   base::Value::Dict doh_providers;
 
   if (mode == SecureDnsConfig::kModeOff) {
@@ -141,6 +146,14 @@ base::Value::Dict SecureDnsManager::GetProviders(const std::string& mode,
     doh_providers.Set(provider.first.server_template(), provider.second);
   }
   return doh_providers;
+}
+
+void SecureDnsManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void SecureDnsManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void SecureDnsManager::DefaultNetworkChanged(const NetworkState* network) {
@@ -218,11 +231,24 @@ void SecureDnsManager::OnDoHExcludedDomainsPrefChanged() {
   // DoH config is set.
 }
 
-void SecureDnsManager::UpdateTemplateUri() {
-  doh_templates_uri_resolver_->Update(local_state_);
+void SecureDnsManager::BroadcastUpdates(bool template_uris_changed,
+                                        bool mode_changed) const {
+  bool force_update =
+      local_state_->FindPreference(::prefs::kDnsOverHttpsMode)->IsManaged() !=
+      cached_is_config_managed_;
+  if (!force_update && !template_uris_changed && !mode_changed) {
+    // The secure DNS configuration has not changed
+    return;
+  }
 
-  const std::string effective_uri_templates =
-      doh_templates_uri_resolver_->GetEffectiveTemplates();
+  for (auto& observer : observers_) {
+    if (template_uris_changed || force_update) {
+      observer.OnTemplateUrisChanged(cached_template_uris_);
+    }
+    if (mode_changed || force_update) {
+      observer.OnModeChanged(cached_mode_);
+    }
+  }
 
   // Set the DoH URI template pref which is synced with Lacros and the
   // NetworkService.
@@ -230,23 +256,34 @@ void SecureDnsManager::UpdateTemplateUri() {
   // local_state pref on Chrome OS has downsides. Replace this pref with an
   // in-memory mechanism to sync effective DoH prefs.
   local_state_->SetString(::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
-                          effective_uri_templates);
+                          cached_template_uris_);
 
   // Set the DoH URI template shill property which is synced with platform
   // daemons (shill, dns-proxy etc).
-  base::Value::Dict doh_providers = GetProviders(
-      local_state_registrar_.prefs()->GetString(::prefs::kDnsOverHttpsMode),
-      effective_uri_templates);
-
-  if (cached_doh_providers_ == doh_providers) {
-    return;
-  }
-
-  cached_doh_providers_ = doh_providers.Clone();
 
   NetworkHandler::Get()->network_configuration_handler()->SetManagerProperty(
       shill::kDNSProxyDOHProvidersProperty,
-      base::Value(std::move(doh_providers)));
+      base::Value(GetProviders(cached_mode_, cached_template_uris_)));
+}
+
+void SecureDnsManager::UpdateTemplateUri() {
+  doh_templates_uri_resolver_->Update(local_state_);
+
+  const std::string new_templates =
+      doh_templates_uri_resolver_->GetEffectiveTemplates();
+  const std::string new_mode =
+      local_state_->GetString(::prefs::kDnsOverHttpsMode);
+
+  bool template_uris_changed = new_templates != cached_template_uris_;
+  bool mode_changed = new_mode != cached_mode_;
+
+  cached_template_uris_ = new_templates;
+  cached_mode_ = new_mode;
+
+  BroadcastUpdates(template_uris_changed, mode_changed);
+
+  cached_is_config_managed_ =
+      local_state_->FindPreference(::prefs::kDnsOverHttpsMode)->IsManaged();
 
   NetworkHandler::Get()
       ->network_metadata_store()

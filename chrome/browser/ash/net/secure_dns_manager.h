@@ -10,6 +10,8 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -25,6 +27,24 @@ namespace ash {
 // by downstream services.
 class SecureDnsManager : public NetworkStateHandlerObserver {
  public:
+  // Observes changes in the DNS-over-HTTPS configuration.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the effective DNS-over-HTTPS template URIs change.
+    virtual void OnTemplateUrisChanged(const std::string& template_uris) = 0;
+
+    // Called when the DNS-over-HTTPS mode changes.
+    virtual void OnModeChanged(const std::string& mode) = 0;
+
+    // Called before the SecureDnsManager is destroyed.
+    virtual void OnSecureDnsManagerShutdown() = 0;
+
+    ~Observer() override = default;
+  };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   explicit SecureDnsManager(PrefService* local_state);
   SecureDnsManager(const SecureDnsManager&) = delete;
   SecureDnsManager& operator=(const SecureDnsManager&) = delete;
@@ -45,7 +65,7 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
   // Computes a collection of secure DNS providers to use based on the |mode|
   // and |templates| prefs applied to |local_doh_providers_|.
   base::Value::Dict GetProviders(const std::string& mode,
-                                 const std::string& templates);
+                                 const std::string& templates) const;
 
   // Starts tracking secure DNS enterprise policy changes. The policy values are
   // mapped by the policy service to the local state pref service.
@@ -65,6 +85,11 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
   void ToggleNetworkMonitoring();
   void UpdateTemplateUri();
 
+  // If either the template URIs or the mode have been modified,
+  // inform all registered observers in the 'observers_' list and
+  // also notify Lacros and the shill service about the new values.
+  void BroadcastUpdates(bool template_uris_changed, bool mode_changed) const;
+
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
@@ -80,7 +105,11 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
   std::unique_ptr<dns_over_https::TemplatesUriResolver>
       doh_templates_uri_resolver_;
 
-  base::Value::Dict cached_doh_providers_;
+  std::string cached_template_uris_;
+  std::string cached_mode_;
+  bool cached_is_config_managed_ = false;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash
