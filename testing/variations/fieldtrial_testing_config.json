@@ -7114,6 +7114,32 @@
             ]
         }
     ],
+    "DefaultBrowserPromptRefreshMacLaunch": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "V2Enabled3V2_20240723",
+                    "params": {
+                        "group_name": "enabled-v2-arm-3",
+                        "max_prompt_count": "5",
+                        "reprompt_duration": "21d",
+                        "reprompt_duration_multiplier": "1",
+                        "show_app_menu_chip": "false",
+                        "show_app_menu_item": "true",
+                        "show_info_bar": "true",
+                        "updated_info_bar_copy": "false"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserPromptRefresh",
+                        "DefaultBrowserPromptRefreshTrial"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultGpuDiskCacheSize": [
         {
             "platforms": [
