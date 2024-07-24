@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
@@ -308,7 +309,8 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
 
         auto available_session_it = LookupAvailableSessionByKey(alias_key);
         // It shouldn't be in the aliases table if it doesn't exist!
-        DCHECK(available_session_it != available_sessions_.end());
+        CHECK(available_session_it != available_sessions_.end(),
+              base::NotFatalUntil::M130);
 
         SpdySessionKey::CompareForAliasingResult compare_result =
             alias_key.CompareForAliasing(key);
@@ -585,7 +587,7 @@ void SpdySessionPool::RemoveRequestForSpdySession(SpdySessionRequest* request) {
   DCHECK_EQ(this, request->spdy_session_pool());
 
   auto iter = spdy_session_request_map_.find(request->key());
-  DCHECK(iter != spdy_session_request_map_.end());
+  CHECK(iter != spdy_session_request_map_.end(), base::NotFatalUntil::M130);
 
   // Resume all pending requests if it is the blocking request, which is either
   // being canceled, or has completed.
