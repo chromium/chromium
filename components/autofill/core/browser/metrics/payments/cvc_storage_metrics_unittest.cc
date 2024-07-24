@@ -137,7 +137,9 @@ TEST_F(CvcStorageMetricsTest, LogFilledMetrics) {
           card().instrument_id()),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
-      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
+      .OnCreditCardFetched(form(), form().fields().front(),
+                           AutofillTriggerSource::kPopup,
+                           CreditCardFetchResult::kSuccess, &card());
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -154,7 +156,9 @@ TEST_F(CvcStorageMetricsTest, LogFilledMetrics) {
           card().instrument_id()),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
-      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
+      .OnCreditCardFetched(form(), form().fields().front(),
+                           AutofillTriggerSource::kPopup,
+                           CreditCardFetchResult::kSuccess, &card());
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
       BucketsInclude(
@@ -182,7 +186,9 @@ TEST_F(CvcStorageMetricsTest, LogSubmitMetrics) {
           card().instrument_id()),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
-      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
+      .OnCreditCardFetched(form(), form().fields().front(),
+                           AutofillTriggerSource::kPopup,
+                           CreditCardFetchResult::kSuccess, &card());
   SubmitForm(form());
 
   EXPECT_THAT(

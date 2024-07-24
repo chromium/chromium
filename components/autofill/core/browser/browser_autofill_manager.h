@@ -393,8 +393,12 @@ class BrowserAutofillManager : public AutofillManager {
   // When `AuthenticateThenFillCreditCardForm()` fetches a credit card, this
   // gets called once the fetching has finished. If successful, the
   // `credit_card` is filled.
-  void OnCreditCardFetched(CreditCardFetchResult result,
-                           const CreditCard* credit_card);
+  void OnCreditCardFetched(
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillTriggerSource fetched_credit_card_trigger_source,
+      CreditCardFetchResult result,
+      const CreditCard* credit_card);
 
   // Updates event loggers with information about data stored for Autofill.
   void UpdateLoggersReadinessData();
@@ -659,10 +663,6 @@ class BrowserAutofillManager : public AutofillManager {
   // form_filler() instead, because tests inject test objects.
   std::unique_ptr<FormFiller> form_filler_;
 
-  // Collected information about the autofill form where a credit card will be
-  // filled.
-  FormData credit_card_form_;
-  FormFieldData credit_card_field_;
   CreditCard credit_card_;
   std::u16string last_unlocked_credit_card_cvc_;
 
@@ -696,9 +696,6 @@ class BrowserAutofillManager : public AutofillManager {
 
   // When the form was submitted.
   base::TimeTicks form_submitted_timestamp_;
-
-  // The source that triggered unlocking a server card with the CVC.
-  std::optional<AutofillTriggerSource> fetched_credit_card_trigger_source_;
 
   // Contains a list of four digit combinations that were found in the webpage
   // DOM. Populated after a standalone cvc field is processed on a form. Used to

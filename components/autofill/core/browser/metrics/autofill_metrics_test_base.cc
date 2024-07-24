@@ -202,6 +202,9 @@ void AutofillMetricsBaseTest::OnDidGetRealPanWithNonHttpOkResponse() {
 }
 
 void AutofillMetricsBaseTest::OnCreditCardFetchingSuccessful(
+    const FormData& form,
+    const FormFieldData& field,
+    AutofillTriggerSource trigger_source,
     const std::u16string& real_pan,
     bool is_virtual_card) {
   credit_card_.set_record_type(is_virtual_card
@@ -209,12 +212,17 @@ void AutofillMetricsBaseTest::OnCreditCardFetchingSuccessful(
                                    : CreditCard::RecordType::kMaskedServerCard);
   credit_card_.SetNumber(real_pan);
   test_api(autofill_manager())
-      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &credit_card_);
+      .OnCreditCardFetched(form, field, trigger_source,
+                           CreditCardFetchResult::kSuccess, &credit_card_);
 }
 
-void AutofillMetricsBaseTest::OnCreditCardFetchingFailed() {
+void AutofillMetricsBaseTest::OnCreditCardFetchingFailed(
+    const FormData& form,
+    const FormFieldData& field,
+    AutofillTriggerSource trigger_source) {
   test_api(autofill_manager())
-      .OnCreditCardFetched(CreditCardFetchResult::kPermanentError, nullptr);
+      .OnCreditCardFetched(form, field, trigger_source,
+                           CreditCardFetchResult::kPermanentError, nullptr);
 }
 
 void AutofillMetricsBaseTest::RecreateCreditCards(

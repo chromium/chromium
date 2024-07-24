@@ -1700,17 +1700,11 @@ void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
   credit_card_form_event_logger_->LogDeprecatedCreditCardSelectedMetric(
       credit_card_, *form_structure, signin_state_for_metrics_);
 
-  credit_card_form_ = form;
-  credit_card_field_ = field;
-
-  // CreditCardAccessManager::FetchCreditCard() will trigger
-  // OnCreditCardFetched() in this class after successfully fetching the
-  // card.
-  fetched_credit_card_trigger_source_ = trigger_details.trigger_source;
   GetCreditCardAccessManager().FetchCreditCard(
       &credit_card_,
       base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), form, field,
+                     trigger_details.trigger_source));
 }
 
 void BrowserAutofillManager::FillOrPreviewProfileForm(
@@ -2195,6 +2189,9 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
 }
 
 void BrowserAutofillManager::OnCreditCardFetched(
+    const FormData& form,
+    const FormFieldData& field,
+    AutofillTriggerSource fetched_credit_card_trigger_source,
     CreditCardFetchResult result,
     const CreditCard* credit_card) {
   if (result != CreditCardFetchResult::kSuccess) {
@@ -2208,16 +2205,14 @@ void BrowserAutofillManager::OnCreditCardFetched(
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(credit_card_form_, credit_card_field_,
-                             &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
     return;
   }
 
   FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, credit_card_form_, credit_card_field_,
-      *credit_card, credit_card->cvc(),
-      {.trigger_source = fetched_credit_card_trigger_source_.value_or(
-           AutofillTriggerSource::kCreditCardCvcPopup)});
+      mojom::ActionPersistence::kFill, form, field, *credit_card,
+      credit_card->cvc(),
+      {.trigger_source = fetched_credit_card_trigger_source});
 }
 
 void BrowserAutofillManager::OnDidEndTextFieldEditingImpl() {
@@ -2460,11 +2455,8 @@ void BrowserAutofillManager::ResetImpl() {
   has_logged_autofill_enabled_ = false;
   user_did_type_ = false;
   credit_card_ = CreditCard();
-  credit_card_form_ = FormData();
-  credit_card_field_ = FormFieldData();
   last_unlocked_credit_card_cvc_.clear();
   initial_interaction_timestamp_ = base::TimeTicks();
-  fetched_credit_card_trigger_source_ = std::nullopt;
   if (touch_to_fill_delegate_) {
     touch_to_fill_delegate_->Reset();
   }

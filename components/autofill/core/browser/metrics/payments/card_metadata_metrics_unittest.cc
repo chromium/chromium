@@ -334,7 +334,9 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
-      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
+      .OnCreditCardFetched(form(), form().fields().back(),
+                           AutofillTriggerSource::kPopup,
+                           CreditCardFetchResult::kSuccess, &card());
 
   // Verify that:
   // 1. if the card suggestion filled had metadata,
@@ -380,7 +382,9 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
 
   // Fill the suggestion again.
   test_api(autofill_manager())
-      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
+      .OnCreditCardFetched(form(), form().fields().back(),
+                           AutofillTriggerSource::kPopup,
+                           CreditCardFetchResult::kSuccess, &card());
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -420,7 +424,9 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
-      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
+      .OnCreditCardFetched(form(), form().fields().back(),
+                           AutofillTriggerSource::kPopup,
+                           CreditCardFetchResult::kSuccess, &card());
   SubmitForm(form());
 
   // Verify that:
@@ -651,7 +657,10 @@ class CardBenefitFormEventMetricsTest
   void ShowSuggestionsThenSelectAndFillCard(const CreditCard* card) {
     ShowSuggestionsAndSelectCard(card);
     test_api(autofill_manager())
-        .OnCreditCardFetched(/*result=*/CreditCardFetchResult::kSuccess, card);
+        .OnCreditCardFetched(form(),
+                             form().fields()[credit_card_number_field_index()],
+                             AutofillTriggerSource::kPopup,
+                             /*result=*/CreditCardFetchResult::kSuccess, card);
   }
 
   const CreditCard* GetCreditCard() {

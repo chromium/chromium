@@ -69,9 +69,13 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     manager_->credit_card_access_manager_ = std::move(manager);
   }
 
-  void OnCreditCardFetched(CreditCardFetchResult result,
+  void OnCreditCardFetched(const FormData& form,
+                           const FormFieldData& field,
+                           AutofillTriggerSource trigger_source,
+                           CreditCardFetchResult result,
                            const CreditCard* credit_card = nullptr) {
-    manager_->OnCreditCardFetched(result, credit_card);
+    manager_->OnCreditCardFetched(form, field, trigger_source, result,
+                                  credit_card);
   }
 
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
