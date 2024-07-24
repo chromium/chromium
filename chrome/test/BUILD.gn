@@ -1306,6 +1306,11 @@ if (is_android) {
         "${target_gen_dir}/android_browsertests_manifest/AndroidManifest.xml"
     android_manifest_dep = ":android_browsertests_manifest"
 
+    if (!is_java_debug) {
+      proguard_enabled = true
+      proguard_configs = [ "//chrome/android/proguard/main.flags" ]
+    }
+
     deps = [
       ":android_browsertests_assets",
       ":android_browsertests_java",
@@ -1338,6 +1343,7 @@ if (is_android) {
       "//chrome/browser/ui/android/hats/test:test_support",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/webaudio:browser_tests",
+      "//chrome/test/android:live_signin_test_util_public_impl_java",
       "//components/autofill/content/renderer:test_support",
       "//components/blocked_content",
       "//components/browser_ui/widget/android:java",
@@ -1528,8 +1534,10 @@ if (is_android) {
     # apk.
     if (enable_arm_cfi_table) {
       sources += [ "../common/profiler/thread_profiler_browsertest.cc" ]
+
+      # Cannot depend on the stack_unwinder/internal:java since it uses a custom
+      # GEN_JNI class via @NativeMethods("stack_unwinder").
       deps += [
-        "//chrome/android/modules/stack_unwinder/internal:java",
         "//chrome/android/modules/stack_unwinder/internal:stack_unwinder_for_testing",
       ]
       configs -= [ "//build/config/compiler:default_symbols" ]
