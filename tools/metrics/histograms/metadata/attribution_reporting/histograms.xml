@@ -482,7 +482,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.DebugReport.HttpResponseOrNetErrorCodeAggregatable"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-05-10">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-12-10">
   <owner>anthonygarant@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -532,7 +532,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.DebugReport.ReportStatusAggregatable"
-    enum="ConversionReportStatus" expires_after="2024-05-10">
+    enum="ConversionReportStatus" expires_after="2024-12-10">
   <owner>anthonygarant@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
