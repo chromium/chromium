@@ -156,7 +156,7 @@ public class ToolbarPhoneTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mToolbar.draWithoutBackground(mCanvas);
+                    mToolbar.drawWithoutBackground(mCanvas);
                     verify(mMenuButtonCoordinator)
                             .drawTabSwitcherAnimationOverlay(
                                     mToolbarButtonsContainer, mCanvas, 255);
@@ -361,7 +361,7 @@ public class ToolbarPhoneTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Draw the toolbar.
-                    mToolbar.draWithoutBackground(mCanvas);
+                    mToolbar.drawWithoutBackground(mCanvas);
                     // Optional button shouldn't be drawn because its width is zero.
                     verify(mOptionalButtonCoordinator, never()).getViewForDrawing();
                 });
@@ -409,7 +409,7 @@ public class ToolbarPhoneTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Draw the toolbar.
-                    mToolbar.draWithoutBackground(mCanvas);
+                    mToolbar.drawWithoutBackground(mCanvas);
                     // Optional button shouldn't be drawn because its visibility is gone.
                     verify(mOptionalButtonCoordinator, never()).getViewForDrawing();
                 });
@@ -456,7 +456,7 @@ public class ToolbarPhoneTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Draw the toolbar.
-                    mToolbar.draWithoutBackground(mCanvas);
+                    mToolbar.drawWithoutBackground(mCanvas);
                     // Optional button should be drawn.
                     verify(mOptionalButtonCoordinator, atLeastOnce()).getViewForDrawing();
                 });

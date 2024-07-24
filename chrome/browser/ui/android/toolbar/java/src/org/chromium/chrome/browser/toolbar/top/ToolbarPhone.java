@@ -880,7 +880,7 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         if (mTextureCaptureMode) {
-            draWithoutBackground(canvas);
+            drawWithoutBackground(canvas);
         } else {
             super.dispatchDraw(canvas);
         }
@@ -1411,30 +1411,21 @@ public class ToolbarPhone extends ToolbarLayout
 
     /** Draws all the browsing mode views at full alpha, but without a background. */
     @VisibleForTesting
-    void draWithoutBackground(Canvas canvas) {
+    void drawWithoutBackground(Canvas canvas) {
         if (!isNativeLibraryReady()) return;
 
-        float floatAlpha = 1.0f;
         int rgbAlpha = 255;
         canvas.save();
         canvas.clipRect(mBackgroundOverlayBounds);
 
-        float previousAlpha;
         if (mHomeButton.getVisibility() != View.GONE) {
-            previousAlpha = mHomeButton.getAlpha();
-            mHomeButton.setAlpha(previousAlpha * floatAlpha);
             drawChild(canvas, mHomeButton, SystemClock.uptimeMillis());
-            mHomeButton.setAlpha(previousAlpha);
         }
 
         // Draw the location/URL bar.
-        previousAlpha = mLocationBar.getPhoneCoordinator().getAlpha();
-        mLocationBar.getPhoneCoordinator().setAlpha(previousAlpha * floatAlpha);
-        // If the location bar is now fully transparent, do not bother drawing it.
         if (mLocationBar.getPhoneCoordinator().getAlpha() != 0 && isLocationBarCurrentlyShown()) {
             drawLocationBar(canvas, SystemClock.uptimeMillis());
         }
-        mLocationBar.getPhoneCoordinator().setAlpha(previousAlpha);
 
         // Translate to draw end toolbar buttons.
         ViewUtils.translateCanvasToView(this, mToolbarButtonsContainer, canvas);
