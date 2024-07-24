@@ -76,17 +76,8 @@ source_set("generic_sensor") {
 
   if (is_mac) {
     sources += [
-      "platform_sensor_accelerometer_mac.cc",
-      "platform_sensor_accelerometer_mac.h",
-      "platform_sensor_ambient_light_mac.cc",
-      "platform_sensor_ambient_light_mac.h",
       "platform_sensor_provider_mac.cc",
       "platform_sensor_provider_mac.h",
-    ]
-    deps += [ "//third_party/sudden_motion_sensor" ]
-    frameworks = [
-      "CoreFoundation.framework",
-      "IOKit.framework",
     ]
   }
 
