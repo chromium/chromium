@@ -16406,27 +16406,6 @@
             ]
         }
     ],
-    "PerformanceControlsRound2Improvements": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240516",
-                    "enable_features": [
-                        "DiscardRingImprovements",
-                        "IPH_DiscardRing",
-                        "MemorySaverModeAggressiveness"
-                    ]
-                }
-            ]
-        }
-    ],
     "PerformanceInterventionMetricsStudy": [
         {
             "platforms": [
