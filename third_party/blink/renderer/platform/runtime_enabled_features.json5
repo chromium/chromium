@@ -4221,7 +4221,7 @@
     // bypass the USB blocklist.
     {
       name: "UnrestrictedUsb",
-      status: "experimental",
+      status: "stable",
       depends_on: ["WebUSB"],
     },
     {
