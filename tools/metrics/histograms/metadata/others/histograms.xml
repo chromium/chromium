@@ -7690,7 +7690,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="RenderTextHarfBuzz.GetFallbackFontsTime" units="ms"
     expires_after="2025-01-05">
-  <owner>ccameron@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
     Time retrieve the fallback fonts on the system used for
@@ -7700,8 +7700,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RenderTextHarfBuzz.GetFallbackFontTime" units="ms"
-    expires_after="2024-12-24">
-  <owner>ccameron@chromium.org</owner>
+    expires_after="2025-01-05">
+  <owner>dayeung@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
     Time retrieve the preferred fallback font on the system used for
@@ -7710,9 +7710,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="RenderTextHarfBuzz.MissingGlyphCount" units="count"
+    expires_after="2025-01-05">
+  <owner>dayeung@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>Count of missing glyphs at the end of text shaping.</summary>
+</histogram>
+
 <histogram name="RenderTextHarfBuzz.ShapeRunsFallback" enum="ShapeRunFallback"
     expires_after="2025-01-05">
-  <owner>ccameron@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
     This metric records the fallback font mechanism required to complete the
@@ -7722,7 +7729,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="RenderTextHarfBuzz.ShapeRunsWithFallbackFontsTime" units="ms"
     expires_after="2025-01-05">
-  <owner>ccameron@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
     Time to perform RenderTextHarfBuzz::ShapeRuns with retrieved the fallback

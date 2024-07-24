@@ -28,6 +28,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_record.h"
@@ -7100,6 +7101,33 @@ TEST_F(RenderTextTest, HarfBuzz_EmptyRun) {
   run.GetClusterAt(4, &chars, &glyphs);
   EXPECT_EQ(Range(3, 8), chars);
   EXPECT_EQ(Range(), glyphs);
+}
+
+TEST_F(RenderTextTest, HarfBuzz_HistogramMissingGlyphsNone) {
+  base::HistogramTester histograms;
+  internal::TextRunHarfBuzz run((Font()));
+  RenderTextHarfBuzz* render_text = GetRenderText();
+  render_text->SetText(u"abcdefgh");
+  const internal::TextRunList* run_list = GetHarfBuzzRunList();
+  ASSERT_EQ(1U, run_list->size());
+
+  // Since there are no missing glyphs, we should have 1 bucket with 0 sum.
+  histograms.ExpectTotalCount("RenderTextHarfBuzz.MissingGlyphCount", 1);
+  EXPECT_EQ(histograms.GetTotalSum("RenderTextHarfBuzz.MissingGlyphCount"), 0);
+}
+
+TEST_F(RenderTextTest, HarfBuzz_HistogramMissingGlyphsCount) {
+  base::HistogramTester histograms;
+  internal::TextRunHarfBuzz run((Font()));
+  RenderTextHarfBuzz* render_text = GetRenderText();
+  render_text->SetText(u"a\nb");
+  render_text->SetMultiline(true);
+  const internal::TextRunList* run_list = GetHarfBuzzRunList();
+  ASSERT_EQ(3U, run_list->size());
+
+  // Newlines should always be considered a missing glyph in multiline text.
+  histograms.ExpectTotalCount("RenderTextHarfBuzz.MissingGlyphCount", 1);
+  EXPECT_EQ(histograms.GetTotalSum("RenderTextHarfBuzz.MissingGlyphCount"), 1);
 }
 
 // Ensure the line breaker doesn't compute the word's width bigger than the

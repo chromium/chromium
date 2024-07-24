@@ -1928,6 +1928,9 @@ void RenderTextHarfBuzz::ItemizeAndShapeText(const std::u16string& text,
 
   run_list->InitIndexMap();
   run_list->ComputePrecedingRunWidths();
+
+  UMA_HISTOGRAM_COUNTS_1000("RenderTextHarfBuzz.MissingGlyphCount",
+                            run_list->MissingGlyphCount());
 }
 
 void RenderTextHarfBuzz::ItemizeTextToRuns(
