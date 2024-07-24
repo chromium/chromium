@@ -295,7 +295,7 @@ class AutofillManager
                                 const FieldGlobalId& field_id);
   void OnSelectOrSelectListFieldOptionsDidChange(const FormData& form);
   void OnFocusOnFormField(const FormData& form, const FieldGlobalId& field_id);
-  void OnFocusOnNonFormField(bool had_interacted_form);
+  void OnFocusOnNonFormField();
   virtual void OnAskForValuesToFill(
       const FormData& form,
       const FieldGlobalId& field_id,
@@ -411,7 +411,7 @@ class AutofillManager
       const FormData& form) = 0;
   virtual void OnFocusOnFormFieldImpl(const FormData& form,
                                       const FieldGlobalId& field_id) = 0;
-  virtual void OnFocusOnNonFormFieldImpl(bool had_interacted_form) = 0;
+  virtual void OnFocusOnNonFormFieldImpl() = 0;
   virtual void OnAskForValuesToFillImpl(
       const FormData& form,
       const FieldGlobalId& field_id,

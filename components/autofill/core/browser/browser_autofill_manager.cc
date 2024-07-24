@@ -1831,16 +1831,8 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
                                   /*is_refill=*/false);
 }
 
-void BrowserAutofillManager::OnFocusOnNonFormFieldImpl(
-    bool had_interacted_form) {
+void BrowserAutofillManager::OnFocusOnNonFormFieldImpl() {
   // TODO(crbug.com/349982907): This function is not called on iOS.
-
-  // For historical reasons, Chrome takes action on this message only if focus
-  // was previously on a form with which the user had interacted.
-  // TODO(crbug.com/40726656): Remove need for this short-circuit.
-  if (!had_interacted_form) {
-    return;
-  }
 
   ProcessPendingFormForUpload();
 

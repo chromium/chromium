@@ -53,8 +53,7 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
                                const FormData& form,
                                bool known_success,
                                mojom::SubmissionSource source) = 0;
-  virtual void OnFocusOnNonFormField(AndroidAutofillManager* manager,
-                                     bool had_interacted_form) = 0;
+  virtual void OnFocusOnNonFormField(AndroidAutofillManager* manager) = 0;
   virtual void OnFocusOnFormField(AndroidAutofillManager* manager,
                                   const FormData& form,
                                   const FormFieldData& field) = 0;

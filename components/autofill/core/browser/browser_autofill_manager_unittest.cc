@@ -3044,29 +3044,6 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 }
 
-// Tests that BrowserAutofillManager ignores loss of focus events sent from the
-// renderer if the renderer did not have a previously-interacted form.
-// TODO(crbug.com/40726656): Remove this test when workaround is no longer
-// needed.
-TEST_F(BrowserAutofillManagerTest,
-       ShouldIgnoreLossOfFocusWithNoPreviouslyInteractedForm) {
-  FormData form = CreateTestAddressFormData();
-
-  browser_autofill_manager_->UpdatePendingForm(form);
-  ASSERT_TRUE(test_api(*browser_autofill_manager_)
-                  .pending_form_data()
-                  ->SameFormAs(form));
-
-  // Receiving a notification that focus is no longer on the form *without* the
-  // renderer having a previously-interacted form should not result in
-  // any changes to the pending form.
-  browser_autofill_manager_->OnFocusOnNonFormField(
-      /*had_interacted_form=*/false);
-  EXPECT_TRUE(test_api(*browser_autofill_manager_)
-                  .pending_form_data()
-                  ->SameFormAs(form));
-}
-
 TEST_F(BrowserAutofillManagerTest,
        ShouldNotShowCreditCardsSuggestionsIfCreditCardAutofillDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -5510,7 +5487,7 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndUnfocus_Upload) {
       form, form.fields().front().global_id(), base::TimeTicks::Now());
 
   // Simulate lost of focus on the form.
-  browser_autofill_manager_->OnFocusOnNonFormField(true);
+  browser_autofill_manager_->OnFocusOnNonFormField();
 }
 
 // Test that navigating with a filled form sends an upload with types matching
@@ -5609,7 +5586,7 @@ TEST_F(BrowserAutofillManagerTest, OnDidFillAutofillFormDataAndUnfocus_Upload) {
                                                        base::TimeTicks::Now());
 
   // Simulate lost of focus on the form.
-  browser_autofill_manager_->OnFocusOnNonFormField(true);
+  browser_autofill_manager_->OnFocusOnNonFormField();
 }
 
 // Test that suggestions are returned for credit card fields with an
@@ -7804,7 +7781,7 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
 
   // 2. Simulate removing focus from the form, which triggers a blur vote.
   FormSignature first_form_signature = CalculateFormSignature(form_);
-  browser_autofill_manager_->OnFocusOnNonFormField(true);
+  browser_autofill_manager_->OnFocusOnNonFormField();
 
   // 3. Simulate typing into second field
   test_api(form_).field(1).set_value(u"Presley");
@@ -7826,7 +7803,7 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
                                        FieldType::NAME_LAST_SECOND})),
               ObservedSubmissionIs(false))),
           _, _));
-  browser_autofill_manager_->OnFocusOnNonFormField(true);
+  browser_autofill_manager_->OnFocusOnNonFormField();
 
   // 5. Grow the form by one field, which changes the form signature.
   test_api(form_).Append(CreateTestFormField(
@@ -7868,7 +7845,7 @@ TEST_F(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
                                 FieldAutofillTypeIs({FieldType::EMPTY_TYPE})),
                       ObservedSubmissionIs(false))),
                   _, _));
-  browser_autofill_manager_->OnFocusOnNonFormField(true);
+  browser_autofill_manager_->OnFocusOnNonFormField();
 
   // Simulate a navigation. This is when the vote is sent.
   test_api(*browser_autofill_manager_).Reset();
@@ -7881,7 +7858,7 @@ TEST_F(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
 
   // Simulate removing focus from form, which enqueues a blur vote. The blur
   // vote will be ignored and only the submission will be sent.
-  browser_autofill_manager_->OnFocusOnNonFormField(true);
+  browser_autofill_manager_->OnFocusOnNonFormField();
   EXPECT_CALL(*crowdsourcing_manager(),
               StartUploadRequest(
                   FirstElementIs(AllOf(

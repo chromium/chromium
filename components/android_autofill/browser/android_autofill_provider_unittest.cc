@@ -398,8 +398,7 @@ TEST_F(AndroidAutofillProviderTest, OnFocusChangeInsideCurrentAutofillForm) {
 
   android_autofill_manager().SimulateOnFocusOnFormField(form, form.fields()[1]);
   check.Call(1);
-  android_autofill_manager().OnFocusOnNonFormFieldImpl(
-      /*had_interacted_form=*/true);
+  android_autofill_manager().OnFocusOnNonFormFieldImpl();
   check.Call(2);
 }
 

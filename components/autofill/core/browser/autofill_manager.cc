@@ -488,8 +488,8 @@ void AutofillManager::OnFocusOnFormField(const FormData& form,
                                         form.global_id(), field_id)));
 }
 
-void AutofillManager::OnFocusOnNonFormField(bool had_interacted_form) {
-  OnFocusOnNonFormFieldImpl(had_interacted_form);
+void AutofillManager::OnFocusOnNonFormField() {
+  OnFocusOnNonFormFieldImpl();
 }
 
 void AutofillManager::OnDidEndTextFieldEditing() {

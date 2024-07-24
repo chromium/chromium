@@ -213,9 +213,7 @@ class AutofillDriverRouter {
       const FieldGlobalId& field_id,
       RoutedCallback<> focus_no_longer_on_form);
   // This event is broadcast to all drivers.
-  void FocusOnNonFormField(RoutedCallback<bool> callback,
-                           AutofillDriver& source,
-                           bool had_interacted_form);
+  void FocusOnNonFormField(RoutedCallback<> callback, AutofillDriver& source);
   // This event is broadcast to all drivers.
   void HidePopup(RoutedCallback<> callback, AutofillDriver& source);
   void JavaScriptChangedAutofilledValue(RoutedCallback<const FormData&,

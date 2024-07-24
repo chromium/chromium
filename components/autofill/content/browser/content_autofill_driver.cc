@@ -553,15 +553,15 @@ void ContentAutofillDriver::HidePopup() {
                  &AutofillManager::OnHidePopup);
 }
 
-void ContentAutofillDriver::FocusOnNonFormField(bool had_interacted_form) {
+void ContentAutofillDriver::FocusOnNonFormField() {
   RouteToManager(*this, router(), &AutofillDriverRouter::FocusOnNonFormField,
-                 &AutofillManager::OnFocusOnNonFormField, had_interacted_form);
+                 &AutofillManager::OnFocusOnNonFormField);
 }
 
 void ContentAutofillDriver::FocusOnFormField(const FormData& form,
                                              FieldRendererId field_id) {
   auto focus_no_longer_on_form = [](autofill::AutofillDriver& target) {
-    target.GetAutofillManager().OnFocusOnNonFormField(true);
+    target.GetAutofillManager().OnFocusOnNonFormField();
   };
   RouteToManager(
       *this, router(), &AutofillDriverRouter::FocusOnFormField,

@@ -1195,10 +1195,6 @@ class AutofillAgentTestFocus : public AutofillAgentTest {
     ASSERT_TRUE(e) << "Field " << id << " doesn't exist";
     FocusedElementChanged(e);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      autofill::features::kAutofillNewFocusEvents};
 };
 
 // Tests that when the focus moves from field to field, FocusedElementChanged()

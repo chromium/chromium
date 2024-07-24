@@ -454,8 +454,7 @@ void AndroidAutofillProvider::OnFormSubmitted(AndroidAutofillManager* manager,
 }
 
 void AndroidAutofillProvider::OnFocusOnNonFormField(
-    AndroidAutofillManager* manager,
-    bool had_interacted_form) {
+    AndroidAutofillManager* manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!IsLinkedManager(manager)) {
     return;
