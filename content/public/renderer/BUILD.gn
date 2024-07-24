@@ -11,7 +11,10 @@ group("renderer") {
   if (is_component_build) {
     public_deps = [ "//content" ]
   } else {
-    public_deps = [ ":renderer_sources" ]
+    public_deps = [
+      ":render_frame_media_playback_options",
+      ":renderer_sources",
+    ]
   }
 }
 
@@ -31,7 +34,6 @@ target(link_target_type, "renderer_sources") {
     "content_renderer_client.h",
     "render_accessibility.h",
     "render_frame.h",
-    "render_frame_media_playback_options.h",
     "render_frame_observer.cc",
     "render_frame_observer.h",
     "render_frame_observer_tracker.h",
@@ -55,7 +57,6 @@ target(link_target_type, "renderer_sources") {
   ]
 
   deps = [
-    "//build:android_buildflags",
     "//content/public/child:child_sources",
     "//content/public/common:common_sources",
     "//content/renderer",
@@ -106,4 +107,23 @@ target(link_target_type, "renderer_sources") {
       "key_system_support.h",
     ]
   }
+}
+
+source_set("render_frame_media_playback_options") {
+  # External code should depend on via ":renderer" above.
+  visibility = [ "//content/*" ]
+
+  sources = [
+    "render_frame_media_playback_options.cc",
+    "render_frame_media_playback_options.h",
+  ]
+
+  configs += [ "//content:content_implementation" ]
+
+  public_deps = [
+    "//content:export",
+    "//content/public/common:renderer_type",
+  ]
+
+  deps = [ "//build:android_buildflags" ]
 }

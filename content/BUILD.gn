@@ -66,6 +66,7 @@ content_shared_components = [
   "//content/public/child:child_sources",
   "//content/public/common:common_sources",
   "//content/public/gpu:gpu_sources",
+  "//content/public/renderer:render_frame_media_playback_options",
   "//content/public/renderer:renderer_sources",
   "//content/public/utility:utility_sources",
 ]
