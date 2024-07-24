@@ -134,6 +134,9 @@ size_t EstimateBlinkInterestGroupSize(
   }
   size += sizeof(group.trusted_bidding_signals_slot_size_mode);
   size += sizeof(group.max_trusted_bidding_signals_url_length);
+  if (group.trusted_bidding_signals_coordinator) {
+    size += group.trusted_bidding_signals_coordinator->ToString().length();
+  }
   size += group.user_bidding_signals.length();
 
   if (group.ads) {
@@ -309,6 +312,16 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
         String::Number(group.max_trusted_bidding_signals_url_length);
     error = "maxTrustedBiddingSignalsURLLength is negative.";
     return false;
+  }
+
+  if (group.trusted_bidding_signals_coordinator) {
+    if (group.trusted_bidding_signals_coordinator->Protocol() !=
+        url::kHttpsScheme) {
+      error_field_name = "trustedBiddingSignalsCoordinator";
+      error_field_value = group.trusted_bidding_signals_coordinator->ToString();
+      error = "trustedBiddingSignalsCoordinator origin must be HTTPS.";
+      return false;
+    }
   }
 
   if (group.ads) {

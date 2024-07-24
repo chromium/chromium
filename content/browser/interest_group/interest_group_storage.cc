@@ -94,6 +94,7 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 25 - 2024/04 - crrev.com/c/5497898
 // Version 26 - 2024/05 - crrev.com/c/5555460
 // Version 27 - 2024/05 - crrev.com/c/5521957
+// Version 28 - 2024/06 - crrev.com/c/5647523
 //
 // Version 1 adds a table for interest groups.
 // Version 2 adds a column for rate limiting interest group updates.
@@ -130,11 +131,12 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 25 uses hashed k-anon keys instead of the unhashed versions.
 // Version 26 runs a VACUUM command.
 // Version 27 stores k-anon values and update times in interest group table.
-const int kCurrentVersionNumber = 27;
+// Version 28 adds trusted bidding signals coordinator.
+const int kCurrentVersionNumber = 28;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 27;
+const int kCompatibleVersionNumber = 28;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -778,7 +780,7 @@ bool MaybeCreateKAnonEntryForV17DatabaseUpgrade(
 
 // Initializes the tables, returning true on success.
 // The tables cannot exist when calling this function.
-bool CreateV27Schema(sql::Database& db) {
+bool CreateV28Schema(sql::Database& db) {
   DCHECK(!db.DoesTableExist("interest_groups"));
   static const char kInterestGroupTableSql[] =
       // clang-format off
@@ -809,6 +811,7 @@ bool CreateV27Schema(sql::Database& db) {
         "trusted_bidding_signals_keys TEXT NOT NULL,"
         "trusted_bidding_signals_slot_size_mode INTEGER NOT NULL,"
         "max_trusted_bidding_signals_url_length INTEGER NOT NULL,"
+        "trusted_bidding_signals_coordinator TEXT,"
         "user_bidding_signals TEXT,"
         "ads_pb BLOB NOT NULL,"
         "ad_components_pb BLOB NOT NULL,"
@@ -947,6 +950,114 @@ bool CreateV27Schema(sql::Database& db) {
 bool VacuumDB(sql::Database& db) {
   static const char kVacuum[] = "VACUUM";
   return db.Execute(kVacuum);
+}
+
+bool UpgradeV27SchemaToV28(sql::Database& db, sql::MetaTable& meta_table) {
+  // Make a table with new columns `trusted_bidding_signals_protocol_version`
+  // and `trusted_bidding_signals_coordinator.`
+  static const char kInterestGroupTableSql[] =
+      // clang-format off
+    "CREATE TABLE new_interest_groups("
+    "expiration INTEGER NOT NULL,"
+    "last_updated INTEGER NOT NULL,"
+    "next_update_after INTEGER NOT NULL,"
+    "owner TEXT NOT NULL,"
+    "joining_origin TEXT NOT NULL,"
+    "exact_join_time INTEGER NOT NULL,"
+    "name TEXT NOT NULL,"
+    "priority DOUBLE NOT NULL,"
+    "enable_bidding_signals_prioritization INTEGER NOT NULL,"
+    "priority_vector TEXT NOT NULL,"
+    "priority_signals_overrides TEXT NOT NULL,"
+    "seller_capabilities TEXT NOT NULL,"
+    "all_sellers_capabilities INTEGER NOT NULL,"
+    "execution_mode INTEGER NOT NULL,"
+    "joining_url TEXT NOT NULL,"
+    "bidding_url TEXT NOT NULL,"
+    "bidding_wasm_helper_url TEXT NOT NULL,"
+    "update_url TEXT NOT NULL,"
+    "trusted_bidding_signals_url TEXT NOT NULL,"
+    "trusted_bidding_signals_keys TEXT NOT NULL,"
+    "trusted_bidding_signals_slot_size_mode INTEGER NOT NULL,"
+    "max_trusted_bidding_signals_url_length INTEGER NOT NULL,"
+    "trusted_bidding_signals_coordinator TEXT,"
+    "user_bidding_signals TEXT,"
+    "ads_pb BLOB NOT NULL,"
+    "ad_components_pb BLOB NOT NULL,"
+    "ad_sizes TEXT NOT NULL,"
+    "size_groups TEXT NOT NULL,"
+    "auction_server_request_flags INTEGER NOT NULL,"
+    "additional_bid_key BLOB NOT NULL,"
+    "aggregation_coordinator_origin TEXT,"
+    "storage_size INTEGER NOT NULL,"
+    "last_k_anon_updated_time INTEGER NOT NULL, "
+    "kanon_keys BLOB NOT NULL,"
+    "PRIMARY KEY(owner,name))";
+
+  // clang-format on
+  if (!db.Execute(kInterestGroupTableSql)) {
+    return false;
+  }
+
+  static const char kCopyInterestGroupTableSql[] =
+      // clang-format off
+      "INSERT INTO new_interest_groups "
+      "SELECT expiration,"
+      "last_updated,"
+      "next_update_after,"
+      "owner,"
+      "joining_origin,"
+      "exact_join_time,"
+      "name,"
+      "priority,"
+      "enable_bidding_signals_prioritization,"
+      "priority_vector,"
+      "priority_signals_overrides,"
+      "seller_capabilities,"
+      "all_sellers_capabilities,"
+      "execution_mode,"
+      "joining_url,"
+      "bidding_url,"
+      "bidding_wasm_helper_url,"
+      "update_url,"
+      "trusted_bidding_signals_url,"
+      "trusted_bidding_signals_keys,"
+      "trusted_bidding_signals_slot_size_mode,"
+      "max_trusted_bidding_signals_url_length,"
+      "NULL," // trusted_bidding_signals_coordinator
+      "user_bidding_signals,"
+      "ads_pb,"
+      "ad_components_pb,"
+      "ad_sizes,"
+      "size_groups,"
+      "auction_server_request_flags,"
+      "additional_bid_key,"
+      "aggregation_coordinator_origin,"
+      "storage_size,"
+      "last_k_anon_updated_time,"
+      "kanon_keys "
+      "FROM interest_groups";
+  // clang-format on
+
+  if (!db.Execute(kCopyInterestGroupTableSql)) {
+    return false;
+  }
+
+  static const char kDropInterestGroupTableSql[] = "DROP TABLE interest_groups";
+  if (!db.Execute(kDropInterestGroupTableSql)) {
+    return false;
+  }
+
+  static const char kRenameInterestGroupTableSql[] =
+      // clang-format off
+    "ALTER TABLE new_interest_groups "
+    "RENAME TO interest_groups";
+  // clang-format on
+  if (!db.Execute(kRenameInterestGroupTableSql)) {
+    return false;
+  }
+
+  return CreateInterestGroupIndices(db);
 }
 
 bool UpgradeV26SchemaToV27(sql::Database& db, sql::MetaTable& meta_table) {
@@ -2630,6 +2741,7 @@ std::optional<std::vector<std::string>> DoClearOriginJoinedInterestGroups(
   "trusted_bidding_signals_keys,"           \
   "trusted_bidding_signals_slot_size_mode," \
   "max_trusted_bidding_signals_url_length," \
+  "trusted_bidding_signals_coordinator,"    \
   "user_bidding_signals," /* opaque data */ \
   "ads_pb,"                                 \
   "ad_components_pb,"                       \
@@ -2680,27 +2792,31 @@ void PopulateInterestGroupFromQueryResult(sql::Statement& load,
   group.interest_group.max_trusted_bidding_signals_url_length =
       load.ColumnInt(17);
   if (load.GetColumnType(18) != sql::ColumnType::kNull) {
-    group.interest_group.user_bidding_signals = load.ColumnString(18);
+    group.interest_group.trusted_bidding_signals_coordinator =
+        DeserializeOrigin(load.ColumnString(18));
+  }
+  if (load.GetColumnType(19) != sql::ColumnType::kNull) {
+    group.interest_group.user_bidding_signals = load.ColumnString(19);
   }
   group.interest_group.ads =
-      DeserializeInterestGroupAdVectorProto(passkey, load.ColumnString(19));
-  group.interest_group.ad_components =
       DeserializeInterestGroupAdVectorProto(passkey, load.ColumnString(20));
+  group.interest_group.ad_components =
+      DeserializeInterestGroupAdVectorProto(passkey, load.ColumnString(21));
   group.interest_group.ad_sizes =
-      DeserializeStringSizeMap(load.ColumnString(21));
+      DeserializeStringSizeMap(load.ColumnString(22));
   group.interest_group.size_groups =
-      DeserializeStringStringVectorMap(load.ColumnString(22));
+      DeserializeStringStringVectorMap(load.ColumnString(23));
   group.interest_group.auction_server_request_flags =
-      DeserializeAuctionServerRequestFlags(load.ColumnInt64(23));
+      DeserializeAuctionServerRequestFlags(load.ColumnInt64(24));
   group.interest_group.additional_bid_key =
-      DeserializeAdditionalBidKey(load.ColumnBlob(24));
-  if (load.GetColumnType(25) != sql::ColumnType::kNull) {
+      DeserializeAdditionalBidKey(load.ColumnBlob(25));
+  if (load.GetColumnType(26) != sql::ColumnType::kNull) {
     group.interest_group.aggregation_coordinator_origin =
-        DeserializeOrigin(load.ColumnString(25));
+        DeserializeOrigin(load.ColumnString(26));
   }
-  group.last_k_anon_updated = load.ColumnTime(26);
+  group.last_k_anon_updated = load.ColumnTime(27);
   KAnonKeyProtos keys_proto;
-  keys_proto.ParseFromString(load.ColumnString(27));
+  keys_proto.ParseFromString(load.ColumnString(28));
   group.hashed_kanon_keys =
       std::vector(keys_proto.keys().begin(), keys_proto.keys().end());
 }
@@ -2877,6 +2993,7 @@ std::optional<InterestGroupKanonUpdateParameter> DoJoinInterestGroup(
           "trusted_bidding_signals_keys,"
           "trusted_bidding_signals_slot_size_mode,"
           "max_trusted_bidding_signals_url_length,"
+          "trusted_bidding_signals_coordinator,"
           "user_bidding_signals,"  // opaque data
           "ads_pb,"
           "ad_components_pb,"
@@ -2889,7 +3006,7 @@ std::optional<InterestGroupKanonUpdateParameter> DoJoinInterestGroup(
           "last_k_anon_updated_time,"
           "kanon_keys) "
         "VALUES("
-          "?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+          "?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
         ));
 
   // clang-format on
@@ -2920,28 +3037,34 @@ std::optional<InterestGroupKanonUpdateParameter> DoJoinInterestGroup(
   join_group.BindInt(
       20, static_cast<int>(data.trusted_bidding_signals_slot_size_mode));
   join_group.BindInt(21, data.max_trusted_bidding_signals_url_length);
-  if (data.user_bidding_signals) {
-    join_group.BindString(22, data.user_bidding_signals.value());
+  if (data.trusted_bidding_signals_coordinator) {
+    join_group.BindString(22,
+                          Serialize(*data.trusted_bidding_signals_coordinator));
   } else {
     join_group.BindNull(22);
   }
-  join_group.BindBlob(23, Serialize(data.ads));
-  join_group.BindBlob(24, Serialize(data.ad_components));
-  join_group.BindString(25, Serialize(data.ad_sizes));
-  join_group.BindString(26, Serialize(data.size_groups));
-  join_group.BindInt64(27, Serialize(data.auction_server_request_flags));
-  join_group.BindBlob(28, Serialize(data.additional_bid_key));
-  if (data.aggregation_coordinator_origin) {
-    join_group.BindString(29, Serialize(*data.aggregation_coordinator_origin));
+  if (data.user_bidding_signals) {
+    join_group.BindString(23, data.user_bidding_signals.value());
   } else {
-    join_group.BindNull(29);
+    join_group.BindNull(23);
   }
-  join_group.BindInt64(30, data.EstimateSize());
-  join_group.BindTime(31, last_k_anon_updated);
+  join_group.BindBlob(24, Serialize(data.ads));
+  join_group.BindBlob(25, Serialize(data.ad_components));
+  join_group.BindString(26, Serialize(data.ad_sizes));
+  join_group.BindString(27, Serialize(data.size_groups));
+  join_group.BindInt64(28, Serialize(data.auction_server_request_flags));
+  join_group.BindBlob(29, Serialize(data.additional_bid_key));
+  if (data.aggregation_coordinator_origin) {
+    join_group.BindString(30, Serialize(*data.aggregation_coordinator_origin));
+  } else {
+    join_group.BindNull(30);
+  }
+  join_group.BindInt64(31, data.EstimateSize());
+  join_group.BindTime(32, last_k_anon_updated);
   KAnonKeyProtos key_proto;
   *key_proto.mutable_keys() = {positive_kanon_keys.begin(),
                                positive_kanon_keys.end()};
-  join_group.BindBlob(32, key_proto.SerializeAsString());
+  join_group.BindBlob(33, key_proto.SerializeAsString());
 
   if (!join_group.Run()) {
     return std::nullopt;
@@ -3002,6 +3125,7 @@ bool DoStoreInterestGroupUpdate(
             "trusted_bidding_signals_keys=?,"
             "trusted_bidding_signals_slot_size_mode=?,"
             "max_trusted_bidding_signals_url_length=?,"
+            "trusted_bidding_signals_coordinator=?,"
             "user_bidding_signals=?,"
             "ads_pb=?,"
             "ad_components_pb=?,"
@@ -3038,32 +3162,38 @@ bool DoStoreInterestGroupUpdate(
   store_group.BindInt(
       14, static_cast<int>(group.trusted_bidding_signals_slot_size_mode));
   store_group.BindInt(15, group.max_trusted_bidding_signals_url_length);
-  if (group.user_bidding_signals) {
-    store_group.BindString(16, group.user_bidding_signals.value());
+  if (group.trusted_bidding_signals_coordinator) {
+    store_group.BindString(
+        16, Serialize(*group.trusted_bidding_signals_coordinator));
   } else {
     store_group.BindNull(16);
   }
-  store_group.BindBlob(17, Serialize(group.ads));
-  store_group.BindBlob(18, Serialize(group.ad_components));
-  store_group.BindString(19, Serialize(group.ad_sizes));
-  store_group.BindString(20, Serialize(group.size_groups));
-  store_group.BindInt64(21, Serialize(group.auction_server_request_flags));
-  store_group.BindBlob(22, Serialize(group.additional_bid_key));
+  if (group.user_bidding_signals) {
+    store_group.BindString(17, group.user_bidding_signals.value());
+  } else {
+    store_group.BindNull(17);
+  }
+  store_group.BindBlob(18, Serialize(group.ads));
+  store_group.BindBlob(19, Serialize(group.ad_components));
+  store_group.BindString(20, Serialize(group.ad_sizes));
+  store_group.BindString(21, Serialize(group.size_groups));
+  store_group.BindInt64(22, Serialize(group.auction_server_request_flags));
+  store_group.BindBlob(23, Serialize(group.additional_bid_key));
   if (group.aggregation_coordinator_origin) {
-    store_group.BindString(23,
+    store_group.BindString(24,
                            Serialize(*group.aggregation_coordinator_origin));
   } else {
-    store_group.BindNull(23);
+    store_group.BindNull(24);
   }
-  store_group.BindInt64(24, group.EstimateSize());
+  store_group.BindInt64(25, group.EstimateSize());
 
   KAnonKeyProtos key_proto;
   *key_proto.mutable_keys() = {positive_kanon_keys.begin(),
                                positive_kanon_keys.end()};
-  store_group.BindBlob(25, key_proto.SerializeAsString());
+  store_group.BindBlob(26, key_proto.SerializeAsString());
 
-  store_group.BindString(26, Serialize(group.owner));
-  store_group.BindString(27, group.name);
+  store_group.BindString(27, Serialize(group.owner));
+  store_group.BindString(28, group.name);
 
   return store_group.Run();
 }
@@ -3153,7 +3283,11 @@ std::optional<InterestGroupKanonUpdateParameter> DoUpdateInterestGroup(
   }
   if (update.max_trusted_bidding_signals_url_length) {
     updated_group.max_trusted_bidding_signals_url_length =
-        std::move(update.max_trusted_bidding_signals_url_length.value());
+        *update.max_trusted_bidding_signals_url_length;
+  }
+  if (update.trusted_bidding_signals_coordinator.has_value()) {
+    updated_group.trusted_bidding_signals_coordinator =
+        std::move(update.trusted_bidding_signals_coordinator.value());
   }
   if (update.user_bidding_signals) {
     updated_group.user_bidding_signals = std::move(update.user_bidding_signals);
@@ -3989,7 +4123,7 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
     load.BindTime(1, now);
 
     while (load.Step()) {
-      std::string name = load.ColumnString(28);
+      std::string name = load.ColumnString(29);
       StorageInterestGroup& db_interest_group = interest_group_by_name[name];
       db_interest_group.bidding_browser_signals =
           auction_worklet::mojom::BiddingBrowserSignals::New();
@@ -4774,7 +4908,7 @@ bool InterestGroupStorage::InitializeSchema() {
   }
 
   if (new_db) {
-    return CreateV27Schema(*db_);
+    return CreateV28Schema(*db_);
   }
 
   const int db_version = meta_table.GetVersionNumber();
@@ -4901,6 +5035,12 @@ bool InterestGroupStorage::InitializeSchema() {
       case 26:
         vacuum_db_post_upgrade = true;
         if (!UpgradeV26SchemaToV27(*db_, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 27:
+        vacuum_db_post_upgrade = true;
+        if (!UpgradeV27SchemaToV28(*db_, meta_table)) {
           return false;
         }
         if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {

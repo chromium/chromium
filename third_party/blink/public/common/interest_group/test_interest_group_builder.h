@@ -61,6 +61,8 @@ class TestInterestGroupBuilder {
           trusted_bidding_signals_slot_size_mode);
   TestInterestGroupBuilder& SetMaxTrustedBiddingSignalsURLLength(
       int32_t max_trusted_bidding_signals_url_length);
+  TestInterestGroupBuilder& SetTrustedBiddingSignalsCoordinator(
+      std::optional<url::Origin> trusted_bidding_signals_coordinator);
   TestInterestGroupBuilder& SetUserBiddingSignals(
       std::optional<std::string> user_bidding_signals);
   TestInterestGroupBuilder& SetAds(

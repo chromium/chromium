@@ -51,6 +51,7 @@
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -372,6 +373,52 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
   interest_group_update.max_trusted_bidding_signals_url_length =
       max_trusted_bidding_signals_url_length;
+  return true;
+}
+
+// Copies the trustedBiddingSignalsCoordinator JSON field into
+// `trusted_bidding_signals_coordinator`.
+[[nodiscard]] bool TryToCopyTrustedBiddingSignalsCoordinator(
+    const base::Value::Dict& dict,
+    InterestGroupUpdate& interest_group_update) {
+  const base::Value* maybe_trusted_bidding_signals_coordinator =
+      dict.Find("trustedBiddingSignalsCoordinator");
+
+  // No `trustedBiddingSignalsCoordinator` field in the update JSON.
+  if (!maybe_trusted_bidding_signals_coordinator) {
+    return true;
+  }
+
+  // `trustedBiddingSignalsCoordinator` field is `null` in the update JSON.
+  if (maybe_trusted_bidding_signals_coordinator->is_none()) {
+    interest_group_update.trusted_bidding_signals_coordinator.emplace(
+        std::nullopt);
+    return true;
+  }
+
+  // If `trusted_bidding_signals_coordinator` is present and not null, it must
+  // be a valid URL origin string.
+  if (!maybe_trusted_bidding_signals_coordinator->is_string()) {
+    return false;
+  }
+
+  GURL trusted_bidding_signals_coordinator_url =
+      GURL(maybe_trusted_bidding_signals_coordinator->GetString());
+
+  if (!trusted_bidding_signals_coordinator_url.is_valid()) {
+    return false;
+  }
+
+  url::Origin trusted_bidding_signals_coordinator_url_origin =
+      url::Origin::Create(trusted_bidding_signals_coordinator_url);
+
+  if (trusted_bidding_signals_coordinator_url_origin.scheme() !=
+      url::kHttpsScheme) {
+    return false;
+  }
+
+  interest_group_update.trusted_bidding_signals_coordinator =
+      std::move(trusted_bidding_signals_coordinator_url_origin);
   return true;
 }
 
@@ -706,6 +753,10 @@ std::optional<InterestGroupUpdate> ParseUpdateJson(
     return std::nullopt;
   }
   if (!TryToCopyTrustedBiddingSignalsKeys(*dict, interest_group_update)) {
+    return std::nullopt;
+  }
+  if (!TryToCopyTrustedBiddingSignalsCoordinator(*dict,
+                                                 interest_group_update)) {
     return std::nullopt;
   }
   if (!TryToCopyUserBiddingSignals(*dict, interest_group_update)) {

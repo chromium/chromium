@@ -34,7 +34,6 @@
 #include "sql/meta_table.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
@@ -155,6 +154,8 @@ class InterestGroupStorageTest : public testing::Test {
                 blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
                     kAllSlotsRequestedSizes)
             .SetMaxTrustedBiddingSignalsURLLength(8000)
+            .SetTrustedBiddingSignalsCoordinator(
+                url::Origin::Create(GURL("https://coordinator.test/")))
             .SetUserBiddingSignals("foo")
             .SetAds(std::vector<InterestGroup::Ad>{
                 blink::InterestGroup::Ad(
@@ -2308,6 +2309,9 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                   Field("max_trusted_bidding_signals_url_length",
                         &InterestGroup::max_trusted_bidding_signals_url_length,
                         0),
+                  Field("trusted_bidding_signals_coordinator",
+                        &InterestGroup::trusted_bidding_signals_coordinator,
+                        std::nullopt),
                   Field("user_bidding_signals",
                         &InterestGroup::user_bidding_signals, std::nullopt),
                   Field("ads", &InterestGroup::ads,
@@ -2392,6 +2396,9 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                   Field("max_trusted_bidding_signals_url_length",
                         &InterestGroup::max_trusted_bidding_signals_url_length,
                         0),
+                  Field("trusted_bidding_signals_coordinator",
+                        &InterestGroup::trusted_bidding_signals_coordinator,
+                        std::nullopt),
                   Field("user_bidding_signals",
                         &InterestGroup::user_bidding_signals,
                         "[[\"1\",\"2\"]]"),
@@ -2477,6 +2484,9 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                   Field("max_trusted_bidding_signals_url_length",
                         &InterestGroup::max_trusted_bidding_signals_url_length,
                         0),
+                  Field("trusted_bidding_signals_coordinator",
+                        &InterestGroup::trusted_bidding_signals_coordinator,
+                        std::nullopt),
                   Field("user_bidding_signals",
                         &InterestGroup::user_bidding_signals,
                         "[[\"1\",\"3\"]]"),
@@ -2562,6 +2572,9 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                   Field("max_trusted_bidding_signals_url_length",
                         &InterestGroup::max_trusted_bidding_signals_url_length,
                         0),
+                  Field("trusted_bidding_signals_coordinator",
+                        &InterestGroup::trusted_bidding_signals_coordinator,
+                        std::nullopt),
                   Field("user_bidding_signals",
                         &InterestGroup::user_bidding_signals,
                         "[[\"3\",\"2\"]]"),

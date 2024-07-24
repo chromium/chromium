@@ -803,6 +803,34 @@ bool CopyMaxTrustedBiddingSignalsURLLengthFromIdlToMojo(
   return true;
 }
 
+// TODO(crbug.com/352420077):
+// 1. Add an allow list for `trustedBiddingSignalsCoordinator`, and return an
+// error or warning if the given coordinator is not in the list.
+// 2. Test input with invalid https origin in web platform tests.
+bool CopyTrustedBiddingSignalsCoordinatorFromIdlToMojo(
+    ExceptionState& exception_state,
+    const AuctionAdInterestGroup& input,
+    mojom::blink::InterestGroup& output) {
+  if (!input.hasTrustedBiddingSignalsCoordinator()) {
+    return true;
+  }
+
+  scoped_refptr<const SecurityOrigin> trustedBiddingSignalsCoordinator =
+      ParseOrigin(input.trustedBiddingSignalsCoordinator());
+  if (!trustedBiddingSignalsCoordinator) {
+    exception_state.ThrowTypeError(String::Format(
+        "trustedBiddingSignalsCoordinator '%s' for AuctionAdInterestGroup with "
+        "name '%s' must be a valid https origin.",
+        input.trustedBiddingSignalsCoordinator().Utf8().c_str(),
+        input.name().Utf8().c_str()));
+    return false;
+  }
+
+  output.trusted_bidding_signals_coordinator =
+      std::move(trustedBiddingSignalsCoordinator);
+  return true;
+}
+
 bool CopyUserBiddingSignalsFromIdlToMojo(const ScriptState& script_state,
                                          ExceptionState& exception_state,
                                          const AuctionAdInterestGroup& input,
@@ -3339,6 +3367,8 @@ ScriptPromise<IDLUndefined> NavigatorAuction::joinAdInterestGroup(
                                                           *mojo_group) ||
       !CopyMaxTrustedBiddingSignalsURLLengthFromIdlToMojo(
           exception_state, *group, *mojo_group) ||
+      !CopyTrustedBiddingSignalsCoordinatorFromIdlToMojo(exception_state,
+                                                         *group, *mojo_group) ||
       !CopyUserBiddingSignalsFromIdlToMojo(*script_state, exception_state,
                                            *group, *mojo_group) ||
       !CopyAdsFromIdlToMojo(*context, *script_state, exception_state, *group,
