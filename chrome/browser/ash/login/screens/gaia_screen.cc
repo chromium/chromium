@@ -81,8 +81,6 @@ std::string GaiaScreen::GetResultString(Result result) {
       return "Cancel";
     case Result::ENTERPRISE_ENROLL:
       return "EnterpriseEnroll";
-    case Result::START_CONSUMER_KIOSK:
-      return "StartConsumerKiosk";
     case Result::ENTER_QUICK_START:
       return "EnterQuickStart";
     case Result::QUICK_START_ONGOING:
@@ -278,10 +276,6 @@ void GaiaScreen::OnUserAction(const base::Value::List& args) {
 bool GaiaScreen::HandleAccelerator(LoginAcceleratorAction action) {
   if (action == LoginAcceleratorAction::kStartEnrollment) {
     exit_callback_.Run(Result::ENTERPRISE_ENROLL);
-    return true;
-  }
-  if (action == LoginAcceleratorAction::kEnableConsumerKiosk) {
-    exit_callback_.Run(Result::START_CONSUMER_KIOSK);
     return true;
   }
 

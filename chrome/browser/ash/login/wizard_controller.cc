@@ -1486,9 +1486,6 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
     case GaiaScreen::Result::ENTERPRISE_ENROLL:
       ShowEnrollmentScreenIfEligible();
       break;
-    case GaiaScreen::Result::START_CONSUMER_KIOSK:
-      // TODO(crbug.com/256596599) Remove.
-      break;
     case GaiaScreen::Result::ENTER_QUICK_START:
       [[fallthrough]];
     case GaiaScreen::Result::QUICK_START_ONGOING:
