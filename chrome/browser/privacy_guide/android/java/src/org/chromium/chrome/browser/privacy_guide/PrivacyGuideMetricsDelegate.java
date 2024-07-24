@@ -264,6 +264,37 @@ class PrivacyGuideMetricsDelegate {
                 PrivacyGuideInteractions.MAX_VALUE);
     }
 
+    /** A method to record metrics on the next click of {@link AdTopicsFragment} */
+    private void recordMetricsOnNextForAdTopicsCard() {
+        assert mInitialAdTopicsState != null : "Initial state of Ad Topics not set.";
+
+        boolean currentValue = PrivacyGuideUtils.isAdTopicsEnabled(mProfile);
+        @PrivacyGuideSettingsStates int stateChange;
+
+        if (mInitialAdTopicsState && currentValue) {
+            stateChange = PrivacyGuideSettingsStates.AD_TOPICS_ON_TO_ON;
+        } else if (mInitialAdTopicsState && !currentValue) {
+            stateChange = PrivacyGuideSettingsStates.AD_TOPICS_ON_TO_OFF;
+        } else if (!mInitialAdTopicsState && currentValue) {
+            stateChange = PrivacyGuideSettingsStates.AD_TOPICS_OFF_TO_ON;
+        } else {
+            stateChange = PrivacyGuideSettingsStates.AD_TOPICS_OFF_TO_OFF;
+        }
+
+        // Record histogram comparing |mInitialAdTopicsState| and |currentValue|
+        RecordHistogram.recordEnumeratedHistogram(
+                "Settings.PrivacyGuide.SettingsStates",
+                stateChange,
+                PrivacyGuideSettingsStates.MAX_VALUE);
+        // Record user action for clicking the next button on the AdTopics card
+        RecordUserAction.record("Settings.PrivacyGuide.NextClickAdTopics");
+        // Record histogram for clicking the next button on the AdTopics card
+        RecordHistogram.recordEnumeratedHistogram(
+                "Settings.PrivacyGuide.NextNavigation",
+                PrivacyGuideInteractions.AD_TOPICS_NEXT_BUTTON,
+                PrivacyGuideInteractions.MAX_VALUE);
+    }
+
     /**
      * A method to set the initial state of a card {@link PrivacyGuideFragment.FragmentType} in
      * Privacy Guide.
@@ -362,7 +393,7 @@ class PrivacyGuideMetricsDelegate {
                 }
             case PrivacyGuideFragment.FragmentType.AD_TOPICS:
                 {
-                    // TODO(b/353975503): Record metrics for Ad Topics API.
+                    recordMetricsOnNextForAdTopicsCard();
                     break;
                 }
             default:
@@ -467,7 +498,7 @@ class PrivacyGuideMetricsDelegate {
     }
 
     /**
-     * A method to record metrics on MSBB toggle change of the Privacy Guide's {@link
+     * A method to record metrics on Search Suggestions toggle change of the Privacy Guide's {@link
      * SearchSuggestionsFragment}.
      */
     static void recordMetricsOnSearchSuggestionsChange(boolean isSearchSuggestionsOn) {
@@ -475,6 +506,18 @@ class PrivacyGuideMetricsDelegate {
             RecordUserAction.record("Settings.PrivacyGuide.ChangeSearchSuggestionsOn");
         } else {
             RecordUserAction.record("Settings.PrivacyGuide.ChangeSearchSuggestionsOff");
+        }
+    }
+
+    /**
+     * A method to record metrics on Ad Topics toggle change of the Privacy Guide's {@link
+     * AdTopicsFragment}.
+     */
+    static void recordMetricsOnAdTopicsChange(boolean isAdTopicsOn) {
+        if (isAdTopicsOn) {
+            RecordUserAction.record("Settings.PrivacyGuide.ChangeAdTopicsOn");
+        } else {
+            RecordUserAction.record("Settings.PrivacyGuide.ChangeAdTopicsOff");
         }
     }
 
@@ -519,7 +562,7 @@ class PrivacyGuideMetricsDelegate {
                 }
             case PrivacyGuideFragment.FragmentType.AD_TOPICS:
                 {
-                    // TODO(b/353975503): Record metrics for Ad Topics API.
+                    RecordUserAction.record("Settings.PrivacyGuide.BackClickAdTopics");
                     break;
                 }
             case PrivacyGuideFragment.FragmentType.DONE:

@@ -28,7 +28,7 @@ public class AdTopicsFragment extends PrivacyGuideBasePage {
 
         adTopicsSwitch.setOnCheckedChangeListener(
                 (button, isChecked) -> {
-                    // TODO(b/353975503): Record metrics for onAdTopicsChange
+                    PrivacyGuideMetricsDelegate.recordMetricsOnAdTopicsChange(isChecked);
                     UserPrefs.get(getProfile())
                             .setBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED, isChecked);
                 });

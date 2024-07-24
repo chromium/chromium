@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -113,6 +114,11 @@ public class PrivacyGuideMetricsDelegateTest {
                 .thenReturn(initialSearchSuggestionsState, finalSearchSuggestionsState);
     }
 
+    private void mockAdTopicsState(boolean initialAdTopicsState, boolean finalAdTopicsState) {
+        when(mPrefServiceMock.getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED))
+                .thenReturn(initialAdTopicsState, finalAdTopicsState);
+    }
+
     private void triggerMetricsOnNext(@PrivacyGuideFragment.FragmentType int fragmentType) {
         mPrivacyGuideMetricsDelegate.setInitialStateForCard(fragmentType);
         mPrivacyGuideMetricsDelegate.recordMetricsOnNextForCard(fragmentType);
@@ -122,6 +128,8 @@ public class PrivacyGuideMetricsDelegateTest {
     @SmallTest
     public void testMSBB_offToOffSettingsStatesHistogram() {
         mockMSBBState(false, false);
+        // TODO(b/354677306): Replace all calls to
+        // `RecordHistogram.getHistogramValueCountForTesting` (Deprecated) with HistogramWatchers.
         assertEquals(
                 0,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -776,5 +784,89 @@ public class PrivacyGuideMetricsDelegateTest {
     public void testWelcome_backClickUserAction() {
         PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
                 PrivacyGuideFragment.FragmentType.WELCOME);
+    }
+
+    @Test
+    @SmallTest
+    public void testAdTopics_offToOffSettingsStatesHistogram() {
+        mockAdTopicsState(false, false);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.AD_TOPICS_OFF_TO_OFF);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.AD_TOPICS);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testAdTopics_offToOnSettingsStatesHistogram() {
+        mockAdTopicsState(false, true);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.AD_TOPICS_OFF_TO_ON);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.AD_TOPICS);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testAdTopics_onToOffSettingsStatesHistogram() {
+        mockAdTopicsState(true, false);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.AD_TOPICS_ON_TO_OFF);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.AD_TOPICS);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testAdTopics_onToOnSettingsStatesHistogram() {
+        mockAdTopicsState(true, true);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.AD_TOPICS_ON_TO_ON);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.AD_TOPICS);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testAdTopics_nextNavigationHistogram() {
+        mockAdTopicsState(false, false);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.AD_TOPICS_NEXT_BUTTON);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.AD_TOPICS);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testAdTopics_changeAdTopicsOnUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnAdTopicsChange(true);
+        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeAdTopicsOn"));
+    }
+
+    @Test
+    @SmallTest
+    public void testAdTopics_changeAdTopicsOffUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnAdTopicsChange(false);
+        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeAdTopicsOff"));
+    }
+
+    @Test
+    @SmallTest
+    public void testAdTopics_nextClickUserAction() {
+        mockAdTopicsState(false, false);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.AD_TOPICS);
+        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.NextClickAdTopics"));
+    }
+
+    @Test
+    public void testAdTopics_backClickUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
+                PrivacyGuideFragment.FragmentType.AD_TOPICS);
+        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickAdTopics"));
     }
 }

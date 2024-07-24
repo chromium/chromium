@@ -80,6 +80,7 @@ class StepDisplayHandlerImpl implements StepDisplayHandler {
 
     @Override
     public boolean shouldDisplayAdTopics() {
+        // TODO(b/354728287): Country based filtering
         return ChromeFeatureList.isEnabled(
                 ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS);
     }
