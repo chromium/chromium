@@ -4032,11 +4032,6 @@
       status: "stable",
     },
     {
-      // crbug.com/331729346
-      name: "TextAlignLastJustifyNewLine",
-      status: "stable",
-    },
-    {
       // This is a kill switch for the fix to crbug.com/333940413. It landed
       // in M126, and can be removed if all is well by M128.
       name: "TextAreaChildrenChangedStillValidates",
