@@ -378,4 +378,12 @@ BASE_FEATURE(kBrowserDynamicCodeDisabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
+#if !BUILDFLAG(IS_ANDROID)
+// This flag controls whether to perform Pak integrity check on startup to
+// report statistics for on-disk corruption.
+BASE_FEATURE(kReportPakFileIntegrity,
+             "ReportPakFileIntegrity",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace features

@@ -1412,7 +1412,9 @@ void ChromeBrowserMainParts::PreBrowserStart() {
   // other services to start up before we start adjusting the oom priority.
   g_browser_process->GetTabManager()->Start();
 
-  CheckPakFileIntegrity();
+  if (base::FeatureList::IsEnabled(features::kReportPakFileIntegrity)) {
+    CheckPakFileIntegrity();
+  }
 #endif
 
   // The RulesetService will make the filtering rules available to renderers

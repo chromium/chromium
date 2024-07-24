@@ -133,6 +133,8 @@ BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);
 #if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kBrowserDynamicCodeDisabled);
 #endif
+
+BASE_DECLARE_FEATURE(kReportPakFileIntegrity);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_
