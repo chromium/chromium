@@ -1192,6 +1192,11 @@ void LensOverlayController::ShowOverlay() {
   tab_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
       tab_->GetContents(), this);
 
+  // Grab the tab contents web view and disable mouse and keyboard inputs to it.
+  auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
+  CHECK(contents_web_view);
+  contents_web_view->SetEnabled(false);
+
   // If the view already exists, we just need to reshow it.
   if (overlay_view_) {
     CHECK(overlay_web_view_);
@@ -1207,10 +1212,6 @@ void LensOverlayController::ShowOverlay() {
 
   // Create the view that will house our UI.
   std::unique_ptr<views::View> host_view = CreateViewForOverlay();
-
-  // Grab the tab contents web view.
-  auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
-  CHECK(contents_web_view);
 
   // Ensure our view starts with the correct bounds.
   host_view->SetBoundsRect(contents_web_view->GetLocalBounds());
@@ -1235,6 +1236,10 @@ void LensOverlayController::BackgroundUI() {
   overlay_view_->SetVisible(false);
   HidePreselectionBubble();
   tab_contents_observer_.reset();
+  // Re-enable mouse and keyboard events to the tab contents web view.
+  auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
+  CHECK(contents_web_view);
+  contents_web_view->SetEnabled(true);
   state_ = State::kBackground;
 
   // TODO(b/335516480): Schedule the UI to be suspended.
@@ -1291,6 +1296,11 @@ void LensOverlayController::CloseUIPart2(
   side_panel_state_observer_.Reset();
   side_panel_coordinator_ = nullptr;
 
+  // Re-enable mouse and keyboard events to the tab contents web view.
+  auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
+  CHECK(contents_web_view);
+  contents_web_view->SetEnabled(true);
+
   if (overlay_web_view_) {
     // Remove render frame observer.
     overlay_web_view_->GetWebContents()
@@ -1300,9 +1310,6 @@ void LensOverlayController::CloseUIPart2(
   }
 
   if (overlay_view_) {
-    auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
-    CHECK(contents_web_view);
-
     // Remove and delete the overlay view and web view. Not doing so will result
     // in dangling pointers when the browser closes. Note the trailing `T` on
     // the method name -- this removes `overlay_view_` and returns a unique_ptr
