@@ -83,14 +83,14 @@ class PersistentMemoryAllocatorTest : public testing::Test {
 
   PersistentMemoryAllocatorTest() {
     kAllocAlignment = GetAllocAlignment();
-    mem_segment_.reset(new char[TEST_MEMORY_SIZE]);
+    mem_segment_ = base::HeapArray<char>::Uninit(TEST_MEMORY_SIZE);
   }
 
   void SetUp() override {
     allocator_.reset();
-    ::memset(mem_segment_.get(), 0, TEST_MEMORY_SIZE);
+    ::memset(mem_segment_.data(), 0, TEST_MEMORY_SIZE);
     allocator_ = std::make_unique<PersistentMemoryAllocator>(
-        mem_segment_.get(), TEST_MEMORY_SIZE, TEST_MEMORY_PAGE, TEST_ID,
+        mem_segment_.data(), TEST_MEMORY_SIZE, TEST_MEMORY_PAGE, TEST_ID,
         TEST_NAME, PersistentMemoryAllocator::kReadWrite);
   }
 
@@ -113,7 +113,7 @@ class PersistentMemoryAllocatorTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<char[]> mem_segment_;
+  base::HeapArray<char> mem_segment_;
   std::unique_ptr<PersistentMemoryAllocator> allocator_;
 };
 
@@ -239,7 +239,7 @@ TEST_F(PersistentMemoryAllocatorTest, AllocateAndIterate) {
 
   // Create second allocator (read/write) using the same memory segment.
   std::unique_ptr<PersistentMemoryAllocator> allocator2(
-      new PersistentMemoryAllocator(mem_segment_.get(), TEST_MEMORY_SIZE,
+      new PersistentMemoryAllocator(mem_segment_.data(), TEST_MEMORY_SIZE,
                                     TEST_MEMORY_PAGE, 0, "",
                                     PersistentMemoryAllocator::kReadWrite));
   EXPECT_EQ(TEST_ID, allocator2->Id());
@@ -255,7 +255,7 @@ TEST_F(PersistentMemoryAllocatorTest, AllocateAndIterate) {
 
   // Create a third allocator (read-only) using the same memory segment.
   std::unique_ptr<const PersistentMemoryAllocator> allocator3(
-      new PersistentMemoryAllocator(mem_segment_.get(), TEST_MEMORY_SIZE,
+      new PersistentMemoryAllocator(mem_segment_.data(), TEST_MEMORY_SIZE,
                                     TEST_MEMORY_PAGE, 0, "",
                                     PersistentMemoryAllocator::kReadOnly));
   EXPECT_EQ(TEST_ID, allocator3->Id());
@@ -352,7 +352,7 @@ class AllocatorThread : public SimpleThread {
 // Test parallel allocation/iteration and ensure consistency across all
 // instances.
 TEST_F(PersistentMemoryAllocatorTest, ParallelismTest) {
-  void* memory = mem_segment_.get();
+  void* memory = mem_segment_.data();
   AllocatorThread t1("t1", memory, TEST_MEMORY_SIZE, TEST_MEMORY_PAGE);
   AllocatorThread t2("t2", memory, TEST_MEMORY_SIZE, TEST_MEMORY_PAGE);
   AllocatorThread t3("t3", memory, TEST_MEMORY_SIZE, TEST_MEMORY_PAGE);
@@ -619,7 +619,7 @@ TEST_F(PersistentMemoryAllocatorTest, DelayedAllocationTest) {
 #define MAYBE_CorruptionTest CorruptionTest
 #endif
 TEST_F(PersistentMemoryAllocatorTest, MAYBE_CorruptionTest) {
-  char* memory = mem_segment_.get();
+  char* memory = mem_segment_.data();
   AllocatorThread t1("t1", memory, TEST_MEMORY_SIZE, TEST_MEMORY_PAGE);
   AllocatorThread t2("t2", memory, TEST_MEMORY_SIZE, TEST_MEMORY_PAGE);
   AllocatorThread t3("t3", memory, TEST_MEMORY_SIZE, TEST_MEMORY_PAGE);
@@ -665,7 +665,7 @@ TEST_F(PersistentMemoryAllocatorTest, MaliciousTest) {
   // Create loop in iterable list and ensure it doesn't hang. The return value
   // from CountIterables() in these cases is unpredictable. If there is a
   // failure, the call will hang and the test killed for taking too long.
-  uint32_t* header4 = (uint32_t*)(mem_segment_.get() + block4);
+  uint32_t* header4 = (uint32_t*)(mem_segment_.data() + block4);
   EXPECT_EQ(block5, header4[3]);
   header4[3] = block4;
   CountIterables();  // loop: 1-2-3-4-4
