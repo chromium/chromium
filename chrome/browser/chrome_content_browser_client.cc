@@ -1742,6 +1742,7 @@ void ChromeContentBrowserClient::MaybeProxyNetworkBoundRequest(
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
   params->process_id = network::mojom::kBrowserProcessId;
+  params->is_trusted = true;
   // Disable CORS wrapping, this is already handled by the caller.
   params->disable_web_security = true;
   network_bound_network_context_->CreateURLLoaderFactory(
