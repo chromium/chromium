@@ -3060,21 +3060,6 @@
             ]
         }
     ],
-    "BackgroundCrxDownloaderMac": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "BackgroundCrxDownloaderMac"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackgroundResourceFetch": [
         {
             "platforms": [
@@ -8339,21 +8324,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DropUnrecognizedTemplateUrlParameters"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DynamicCrxDownloaderPriority": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DynamicCrxDownloaderPriority"
                     ]
                 }
             ]

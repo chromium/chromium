@@ -20,9 +20,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "components/update_client/background_downloader_win.h"
 #elif BUILDFLAG(IS_MAC)
-#include "base/feature_list.h"
 #include "components/update_client/background_downloader_mac.h"
-#include "components/update_client/features.h"
 #endif
 
 namespace update_client {

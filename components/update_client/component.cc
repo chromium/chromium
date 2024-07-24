@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -30,7 +29,6 @@
 #include "components/update_client/action_runner.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_downloader_factory.h"
-#include "components/update_client/features.h"
 #include "components/update_client/network.h"
 #include "components/update_client/patcher.h"
 #include "components/update_client/persisted_data.h"
@@ -112,6 +110,11 @@
 
 namespace update_client {
 namespace {
+
+#if BUILDFLAG(IS_MAC)
+// The minimum size of a download to attempt it at background priority.
+constexpr int64_t kBackgroundDownloadSizeThreshold = 10000000; /*10 MB*/
+#endif
 
 using InstallOnBlockingTaskRunnerCompleteCallback = base::OnceCallback<void(
     ErrorCategory error_category,
@@ -632,13 +635,10 @@ void Component::NotifyWait() {
 
 bool Component::CanDoBackgroundDownload(int64_t size) const {
   // Foreground component updates are always downloaded in foreground.
-  bool enabled =
-      !is_foreground() &&
-      update_context_->config->EnabledBackgroundDownloader();
+  bool enabled = !is_foreground() &&
+                 update_context_->config->EnabledBackgroundDownloader();
 #if BUILDFLAG(IS_MAC)
-  enabled &=
-      base::FeatureList::IsEnabled(features::kDynamicCrxDownloaderPriority) &&
-      size > features::kDynamicCrxDownloaderPrioritySizeThreshold.Get();
+  enabled &= size > kBackgroundDownloadSizeThreshold;
 #endif
   return enabled;
 }

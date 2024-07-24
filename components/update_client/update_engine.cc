@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -27,7 +26,6 @@
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_update_item.h"
-#include "components/update_client/features.h"
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_parser.h"
 #include "components/update_client/update_checker.h"
