@@ -22,6 +22,7 @@
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -32,6 +33,9 @@
 #include "url/url_constants.h"
 
 namespace tab_groups {
+
+using testing::IsEmpty;
+using testing::Not;
 
 // Serves to test the functions in SavedTabGroupModelObserver.
 class SavedTabGroupModelObserverTest
@@ -345,6 +349,18 @@ TEST_P(SavedTabGroupModelTest, UpdateElement) {
                                            &change_color_visual_data);
   EXPECT_EQ(group->title(), original_title);
   EXPECT_EQ(group->color(), random_color);
+}
+
+TEST_P(SavedTabGroupModelTest, MakeTabGroupShared) {
+  const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
+  saved_tab_group_model_->OnGroupOpenedInTabStrip(
+      id_1_, test::GenerateRandomTabGroupID());
+  ASSERT_FALSE(group->is_shared_tab_group());
+
+  saved_tab_group_model_->MakeTabGroupShared(group->local_group_id().value(),
+                                             "collaboration");
+
+  EXPECT_TRUE(group->is_shared_tab_group());
 }
 
 // Tests that the correct tabs are added to the correct position in group 1.
@@ -1055,6 +1071,20 @@ TEST_P(SavedTabGroupModelObserverTest, UpdatedElement) {
                                  received_group.saved_tabs());
   EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.saved_guid()),
             retrieved_index_);
+}
+
+TEST_P(SavedTabGroupModelObserverTest, MakeTabGroupShared) {
+  SavedTabGroup group = test::CreateTestSavedTabGroup();
+  group.SetLocalGroupId(test::GenerateRandomTabGroupID());
+  saved_tab_group_model_->Add(group);
+  ClearSignals();
+
+  saved_tab_group_model_->MakeTabGroupShared(group.local_group_id().value(),
+                                             "collaboration");
+
+  ASSERT_THAT(retrieved_group_, Not(IsEmpty()));
+  EXPECT_EQ(retrieved_group_.back().saved_guid(), group.saved_guid());
+  EXPECT_EQ(retrieved_group_.back().collaboration_id(), "collaboration");
 }
 
 // Tests that SavedTabGroupModelObserver::AddedFromSync passes the correct

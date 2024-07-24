@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/observer_list_types.h"
@@ -110,9 +111,18 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual void MoveTab(const LocalTabGroupID& group_id,
                        const LocalTabID& tab_id,
                        int new_group_index) = 0;
+
   // For metrics only.
   virtual void OnTabSelected(const LocalTabGroupID& group_id,
                              const LocalTabID& tab_id) = 0;
+
+  // Mutator methods for shared tab groups.
+  // Converts the saved tab group to shared tab group and associates it with the
+  // given `collaboration_id` (this is the same as data_sharing::GroupId). The
+  // tab group must not be shared.
+  // TODO(crbug.com/351022699): consider using data_sharing::GroupId.
+  virtual void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
+                                  std::string_view collaboration_id) = 0;
 
   // Accessor methods.
   virtual std::vector<SavedTabGroup> GetAllGroups() = 0;

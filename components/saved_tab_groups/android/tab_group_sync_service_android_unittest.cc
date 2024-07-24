@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/saved_tab_groups/android/tab_group_sync_conversions_bridge.h"
@@ -194,6 +196,18 @@ TEST_F(TabGroupSyncServiceAndroidTest, UpdateVisualData) {
   EXPECT_CALL(tab_group_sync_service_,
               UpdateVisualData(Eq(test_tab_group_id_), _));
   Java_TabGroupSyncServiceAndroidUnitTest_testUpdateVisualData(env, j_test_);
+}
+
+TEST_F(TabGroupSyncServiceAndroidTest, MakeTabGroupShared) {
+  JNIEnv* env = AttachCurrentThread();
+  const std::string collaboration_id = "collaboration";
+
+  EXPECT_CALL(tab_group_sync_service_,
+              MakeTabGroupShared(Eq(test_tab_group_id_), Eq(collaboration_id)));
+  ScopedJavaLocalRef<jstring> j_collaboration_id =
+      base::android::ConvertUTF8ToJavaString(env, collaboration_id);
+  Java_TabGroupSyncServiceAndroidUnitTest_testMakeTabGroupShared(
+      env, j_test_, j_collaboration_id);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, AddTab) {

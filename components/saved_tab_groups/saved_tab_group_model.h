@@ -80,6 +80,11 @@ class SavedTabGroupModel {
   void UpdateVisualData(const LocalTabGroupID local_group_id,
                         const tab_groups::TabGroupVisualData* visual_data);
 
+  // Make the tab group shared and associate it with the `collaboration_id`. The
+  // tab group must exist and must not be shared.
+  void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
+                          std::string collaboration_id);
+
   // Pin SavedTabGroup if it's unpinned. Unpin SavedTabGroup if it's pinned.
   void TogglePinState(base::Uuid id);
 

@@ -22,6 +22,7 @@
 #include "components/saved_tab_groups/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/sync_data.h"
@@ -61,6 +62,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void UpdateVisualData(
       const LocalTabGroupID local_group_id,
       const tab_groups::TabGroupVisualData* visual_data) override;
+
   void AddTab(const LocalTabGroupID& group_id,
               const LocalTabID& tab_id,
               const std::u16string& title,
@@ -78,6 +80,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
                int new_group_index) override;
   void OnTabSelected(const LocalTabGroupID& group_id,
                      const LocalTabID& tab_id) override;
+
+  void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
+                          std::string_view collaboration_id) override;
 
   std::vector<SavedTabGroup> GetAllGroups() override;
   std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) override;
