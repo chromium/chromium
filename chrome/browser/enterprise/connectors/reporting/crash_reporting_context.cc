@@ -10,6 +10,7 @@
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/enterprise/connectors/connectors_prefs.h"

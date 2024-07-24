@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_service_settings.h"
-#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/reporting/reporting_service_settings.h"
@@ -123,13 +122,6 @@ class ConnectorsManager {
       const TabStripSelectionChange& selection) override;
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-  // Validates which settings should be applied to an analysis connector event
-  // against connector policies. Cache the policy value the first time this is
-  // called for every different connector.
-  std::optional<AnalysisSettings> GetAnalysisSettingsFromConnectorPolicy(
-      const GURL& url,
-      AnalysisConnector connector);
-
   // Read and cache the policy corresponding to |connector|.
   void CacheAnalysisConnectorPolicy(AnalysisConnector connector) const;
   void CacheReportingConnectorPolicy(ReportingConnector connector);
@@ -153,12 +145,6 @@ class ConnectorsManager {
   void StartObservingPrefs(PrefService* pref_service);
   void StartObservingPref(AnalysisConnector connector);
   void StartObservingPref(ReportingConnector connector);
-
-  // Validates which settings should be applied to an analysis connector event
-  // against connector policies. Cache the policy value the first time this is
-  // called for every different connector.
-  std::optional<ReportingSettings> GetReportingSettingsFromConnectorPolicy(
-      ReportingConnector connector);
 
   PrefService* prefs() { return pref_change_registrar_.prefs(); }
 

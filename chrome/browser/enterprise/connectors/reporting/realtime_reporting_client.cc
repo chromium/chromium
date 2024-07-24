@@ -176,17 +176,6 @@ RealtimeReportingClient::~RealtimeReportingClient() {
 }
 
 // static
-std::string RealtimeReportingClient::GetBaseName(const std::string& filename) {
-  base::FilePath::StringType os_filename;
-#if BUILDFLAG(IS_WIN)
-  os_filename = base::UTF8ToWide(filename);
-#else
-  os_filename = filename;
-#endif
-  return base::FilePath(os_filename).BaseName().AsUTF8Unsafe();
-}
-
-// static
 bool RealtimeReportingClient::ShouldInitRealtimeReportingClient() {
   if (IsManagedGuestSession() &&
       !base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
