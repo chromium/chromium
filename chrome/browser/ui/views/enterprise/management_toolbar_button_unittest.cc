@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/profiles/management_toolbar_button.h"
+#include "chrome/browser/ui/views/enterprise/management_toolbar_button.h"
 
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/ui/ui_features.h"

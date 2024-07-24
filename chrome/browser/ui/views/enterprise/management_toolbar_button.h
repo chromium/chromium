@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_MANAGEMENT_TOOLBAR_BUTTON_H_
-#define CHROME_BROWSER_UI_VIEWS_PROFILES_MANAGEMENT_TOOLBAR_BUTTON_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_ENTERPRISE_MANAGEMENT_TOOLBAR_BUTTON_H_
+#define CHROME_BROWSER_UI_VIEWS_ENTERPRISE_MANAGEMENT_TOOLBAR_BUTTON_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -58,4 +58,4 @@ class ManagementToolbarButton : public ToolbarButton {
   base::WeakPtrFactory<ManagementToolbarButton> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_MANAGEMENT_TOOLBAR_BUTTON_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_ENTERPRISE_MANAGEMENT_TOOLBAR_BUTTON_H_
