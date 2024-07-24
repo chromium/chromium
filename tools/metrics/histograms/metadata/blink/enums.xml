@@ -274,6 +274,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="FailedOrigin"/>
 </enum>
 
+<enum name="FedCmDialogType">
+  <int value="0" label="None"/>
+  <int value="1" label="SelectAccount"/>
+  <int value="2" label="AutoReauth"/>
+  <int value="3" label="ConfirmIdpLogin"/>
+  <int value="4" label="Error"/>
+  <int value="5" label="LoginToIdpPopup"/>
+  <int value="6" label="ContinueOnPopup"/>
+  <int value="7" label="ErrorUrlPopup"/>
+</enum>
+
 <enum name="FedCmIdpSigninMatchStatus">
   <int value="0"
       label="Match. Browser has signed-in IDP status, accounts endpoint

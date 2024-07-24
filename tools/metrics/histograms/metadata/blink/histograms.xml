@@ -1687,6 +1687,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Popup.DialogType" enum="FedCmDialogType"
+    expires_after="2025-02-12">
+  <owner>cbiesinger@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the dialog type whenever we open a popup/custom tab. Recorded once
+    per popup/custom tab opened. Values 0-4 of the enum will not be recorded for
+    this histogram.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.PreventSilentAccessFrameType"
     enum="FedCmRequesterFrameType" expires_after="2025-02-12">
   <owner>npm@chromium.org</owner>
