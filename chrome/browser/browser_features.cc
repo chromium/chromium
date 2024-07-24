@@ -381,9 +381,15 @@ BASE_FEATURE(kBrowserDynamicCodeDisabled,
 #if !BUILDFLAG(IS_ANDROID)
 // This flag controls whether to perform Pak integrity check on startup to
 // report statistics for on-disk corruption.
+// Disabled on ChromeOS, as dm-verity enforces integrity and the check would
+// be redundant.
 BASE_FEATURE(kReportPakFileIntegrity,
              "ReportPakFileIntegrity",
+#if !BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features

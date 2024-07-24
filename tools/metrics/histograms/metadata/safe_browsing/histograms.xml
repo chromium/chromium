@@ -2078,7 +2078,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Reports whether the {PakFile} file's SHA-256 hash matches the digest
     produced at build-time. This detects on-disk corruption of the .pak file.
-    Recorded at startup on ChromeOS, Linux, Mac, and Windows.
+    Recorded at startup on Linux, Mac, and Windows.
   </summary>
   <token key="PakFile">
     <variant name="Chrome100" summary="chrome_100_percent.pak"/>
