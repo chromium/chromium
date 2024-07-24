@@ -139,7 +139,15 @@ sk_sp<const SkPicture> PictureLayer::GetPicture() const {
   SkCanvas* canvas =
       recorder.beginRecording(bounds().width(), bounds().height());
   canvas->clear(SK_ColorTRANSPARENT);
-  display_list->Raster(canvas);
+  ScrollOffsetMap raster_inducing_scroll_offsets;
+  const ScrollTree& scroll_tree =
+      layer_tree_host()->property_trees()->scroll_tree();
+  for (auto [element_id, _] : display_list->raster_inducing_scrolls()) {
+    raster_inducing_scroll_offsets[element_id] =
+        scroll_tree.current_scroll_offset(element_id);
+  }
+  display_list->Raster(canvas, /*image_provider=*/nullptr,
+                       &raster_inducing_scroll_offsets);
   return recorder.finishRecordingAsPicture();
 }
 
