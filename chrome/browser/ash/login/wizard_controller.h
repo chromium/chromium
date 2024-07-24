@@ -49,7 +49,6 @@
 #include "chrome/browser/ash/login/screens/guest_tos_screen.h"
 #include "chrome/browser/ash/login/screens/hardware_data_collection_screen.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
-#include "chrome/browser/ash/login/screens/kiosk_autolaunch_screen.h"
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
 #include "chrome/browser/ash/login/screens/marketing_opt_in_screen.h"
 #include "chrome/browser/ash/login/screens/multidevice_setup_screen.h"
@@ -303,10 +302,8 @@ class WizardController : public OobeUI::Observer {
   void ShowDemoModeSetupScreen();
   void ShowDemoModePreferencesScreen();
   void ShowResetScreen();
-  void ShowKioskAutolaunchScreen();
   void ShowEnableAdbSideloadingScreen();
   void ShowEnableDebuggingScreen();
-  void ShowKioskEnableScreen();
   void ShowTermsOfServiceScreen();
   void ShowSyncConsentScreen();
   void ShowFingerprintSetupScreen();
@@ -391,8 +388,6 @@ class WizardController : public OobeUI::Observer {
   void OnEnrollmentDone();
   void OnEnableAdbSideloadingScreenExit();
   void OnEnableDebuggingScreenExit();
-  void OnKioskEnableScreenExit();
-  void OnKioskAutolaunchScreenExit(KioskAutolaunchScreen::Result result);
   void OnDemoPreferencesScreenExit(DemoPreferencesScreen::Result result);
   void OnDemoSetupScreenExit(DemoSetupScreen::Result result);
   void OnUserCreationScreenExit(UserCreationScreen::Result result);

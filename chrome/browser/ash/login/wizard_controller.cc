@@ -84,8 +84,6 @@
 #include "chrome/browser/ash/login/screens/hardware_data_collection_screen.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "chrome/browser/ash/login/screens/install_attributes_error_screen.h"
-#include "chrome/browser/ash/login/screens/kiosk_autolaunch_screen.h"
-#include "chrome/browser/ash/login/screens/kiosk_enable_screen.h"
 #include "chrome/browser/ash/login/screens/lacros_data_backward_migration_screen.h"
 #include "chrome/browser/ash/login/screens/lacros_data_migration_screen.h"
 #include "chrome/browser/ash/login/screens/local_state_error_screen.h"
@@ -188,8 +186,6 @@
 #include "chrome/browser/ui/webui/ash/login/hardware_data_collection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/install_attributes_error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/kiosk_autolaunch_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/kiosk_enable_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
@@ -240,6 +236,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -323,8 +320,6 @@ const StaticOobeScreenId kResumablePostLoginScreens[] = {
 const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
     EnableAdbSideloadingScreenView::kScreenId,
     EnableDebuggingScreenView::kScreenId,
-    KioskAutolaunchScreenView::kScreenId,
-    KioskEnableScreenView::kScreenId,
     ManagementTransitionScreenView::kScreenId,
     TpmErrorView::kScreenId,
     InstallAttributesErrorView::kScreenId,
@@ -680,14 +675,6 @@ WizardController::CreateScreens() {
   append(std::make_unique<EnableDebuggingScreen>(
       oobe_ui->GetView<EnableDebuggingScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnEnableDebuggingScreenExit,
-                          weak_factory_.GetWeakPtr())));
-  append(std::make_unique<KioskEnableScreen>(
-      oobe_ui->GetView<KioskEnableScreenHandler>()->AsWeakPtr(),
-      base::BindRepeating(&WizardController::OnKioskEnableScreenExit,
-                          weak_factory_.GetWeakPtr())));
-  append(std::make_unique<KioskAutolaunchScreen>(
-      oobe_ui->GetView<KioskAutolaunchScreenHandler>()->AsWeakPtr(),
-      base::BindRepeating(&WizardController::OnKioskAutolaunchScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<LocaleSwitchScreen>(
       oobe_ui->GetView<LocaleSwitchScreenHandler>()->AsWeakPtr(),
@@ -1133,14 +1120,6 @@ void WizardController::ShowDrivePinningScreen() {
 
 void WizardController::ShowResetScreen() {
   SetCurrentScreen(GetScreen(ResetView::kScreenId));
-}
-
-void WizardController::ShowKioskEnableScreen() {
-  SetCurrentScreen(GetScreen(KioskEnableScreenView::kScreenId));
-}
-
-void WizardController::ShowKioskAutolaunchScreen() {
-  SetCurrentScreen(GetScreen(KioskAutolaunchScreenView::kScreenId));
 }
 
 void WizardController::ShowEnableAdbSideloadingScreen() {
@@ -2284,32 +2263,6 @@ void WizardController::OnEnableDebuggingScreenExit() {
   OnDeviceModificationCanceled();
 }
 
-void WizardController::OnKioskEnableScreenExit() {
-  OnScreenExit(KioskEnableScreenView::kScreenId, kDefaultExitReason);
-
-  ShowLoginScreen();
-}
-
-void WizardController::OnKioskAutolaunchScreenExit(
-    KioskAutolaunchScreen::Result result) {
-  OnScreenExit(KioskAutolaunchScreenView::kScreenId,
-               KioskAutolaunchScreen::GetResultString(result));
-
-  switch (result) {
-    case KioskAutolaunchScreen::Result::COMPLETED: {
-      auto app = KioskController::Get().GetAutoLaunchApp();
-      // TODO(b/304452967): Monitor crashes and upgrade to regular CHECKs.
-      DUMP_WILL_BE_CHECK(app.has_value());
-      DUMP_WILL_BE_CHECK_EQ(app->id().type, KioskAppType::kChromeApp);
-      AutoLaunchKioskApp(app.value());
-      break;
-    }
-    case KioskAutolaunchScreen::Result::CANCELED:
-      ShowLoginScreen();
-      break;
-  }
-}
-
 void WizardController::OnDemoPreferencesScreenExit(
     DemoPreferencesScreen::Result result) {
   OnScreenExit(DemoPreferencesScreenView::kScreenId,
@@ -3120,10 +3073,6 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     InitiateOOBEUpdate();
   } else if (screen_id == ResetView::kScreenId) {
     ShowResetScreen();
-  } else if (screen_id == KioskEnableScreenView::kScreenId) {
-    ShowKioskEnableScreen();
-  } else if (screen_id == KioskAutolaunchScreenView::kScreenId) {
-    ShowKioskAutolaunchScreen();
   } else if (screen_id == EnableAdbSideloadingScreenView::kScreenId) {
     ShowEnableAdbSideloadingScreen();
   } else if (screen_id == EnableDebuggingScreenView::kScreenId) {
