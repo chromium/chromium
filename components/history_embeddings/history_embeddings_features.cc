@@ -119,6 +119,11 @@ const base::FeatureParam<bool> kUseUrlFilter(&kHistoryEmbeddings,
                                              "UseUrlFilter",
                                              false);
 
+const base::FeatureParam<base::TimeDelta> kEmbeddingsServiceTimeout(
+    &kHistoryEmbeddings,
+    "EmbeddingsServiceTimeout",
+    base::Seconds(60));
+
 bool IsHistoryEmbeddingsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)
   return chromeos::features::IsFeatureManagementHistoryEmbeddingEnabled() &&
