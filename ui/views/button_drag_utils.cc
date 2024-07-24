@@ -37,21 +37,19 @@ static constexpr int kLinkDragImageMaxWidth = 150;
 
 class ScopedWidget {
  public:
-  explicit ScopedWidget(views::Widget* widget) : widget_(widget) {}
+  explicit ScopedWidget(std::unique_ptr<views::Widget> widget)
+      : widget_(std::move(widget)) {}
 
   ScopedWidget(const ScopedWidget&) = delete;
   ScopedWidget& operator=(const ScopedWidget&) = delete;
 
-  ~ScopedWidget() {
-    if (widget_)
-      widget_.ExtractAsDangling()->CloseNow();
-  }
+  ~ScopedWidget() = default;
 
-  views::Widget* operator->() const { return widget_; }
-  views::Widget* get() const { return widget_; }
+  views::Widget* operator->() const { return widget_.get(); }
+  views::Widget* get() const { return widget_.get(); }
 
  private:
-  raw_ptr<views::Widget> widget_;
+  std::unique_ptr<views::Widget> widget_;
 };
 
 void SetURLAndDragImage(const GURL& url,
@@ -71,9 +69,9 @@ void SetDragImage(const GURL& url,
                   const gfx::Point* press_pt,
                   ui::OSExchangeData* data) {
   // Create a widget to render the drag image for us.
-  ScopedWidget drag_widget(new views::Widget());
+  ScopedWidget drag_widget(std::make_unique<views::Widget>());
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_DRAG);
   params.accept_events = false;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;

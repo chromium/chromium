@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -39,7 +38,7 @@ class BaseControlTestWidget : public ViewsTestBase {
   Widget* widget() { return widget_.get(); }
 
  private:
-  UniqueWidgetPtr widget_;
+  std::unique_ptr<Widget> widget_;
 
 #if BUILDFLAG(IS_MAC)
   // Need a test screen to work with the event generator to correctly track
