@@ -298,21 +298,30 @@ void ChromeAccountManagerService::RemoveObserver(Observer* observer) {
 }
 
 void ChromeAccountManagerService::OnIdentityListChanged(bool notify_user) {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnIdentityListChanged(notify_user);
+  }
 }
 
 void ChromeAccountManagerService::OnIdentityUpdated(
     id<SystemIdentity> identity) {
-  for (auto& observer : observer_list_)
+  if (!this->IsValidIdentity(identity)) {
+    return;
+  }
+  for (auto& observer : observer_list_) {
     observer.OnIdentityUpdated(identity);
+  }
 }
 
 void ChromeAccountManagerService::OnIdentityAccessTokenRefreshFailed(
     id<SystemIdentity> identity,
     id<RefreshAccessTokenError> error) {
-  for (auto& observer : observer_list_)
+  if (!this->IsValidIdentity(identity)) {
+    return;
+  }
+  for (auto& observer : observer_list_) {
     observer.OnAccessTokenRefreshFailed(identity, error);
+  }
 }
 
 void ChromeAccountManagerService::UpdateRestriction() {
