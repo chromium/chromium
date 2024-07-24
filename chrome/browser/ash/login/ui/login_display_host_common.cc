@@ -22,7 +22,6 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
-#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_launch_state.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
@@ -385,13 +384,6 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
           : extensions::mojom::FeatureSessionType::kKiosk);
 
   KioskController::Get().StartSession(kiosk_app_id, is_auto_launch, this);
-}
-
-void LoginDisplayHostCommon::AttemptShowEnableConsumerKioskScreen() {
-  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
-      KioskChromeAppManager::IsConsumerKioskEnabled()) {
-    ShowEnableConsumerKioskScreen();
-  }
 }
 
 void LoginDisplayHostCommon::CompleteLogin(const UserContext& user_context) {

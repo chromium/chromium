@@ -1063,11 +1063,6 @@ void LoginDisplayHostWebUI::HandleDisplayCaptivePortal() {
 
 void LoginDisplayHostWebUI::OnCancelPasswordChangedFlow() {}
 
-void LoginDisplayHostWebUI::ShowEnableConsumerKioskScreen() {
-  // TODO(crbug.com/256596599) Remove.
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 void LoginDisplayHostWebUI::UpdateAddUserButtonStatus() {
   NOTREACHED_IN_MIGRATION();
 }

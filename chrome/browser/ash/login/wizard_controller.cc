@@ -1508,7 +1508,7 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
       ShowEnrollmentScreenIfEligible();
       break;
     case GaiaScreen::Result::START_CONSUMER_KIOSK:
-      LoginDisplayHost::default_host()->AttemptShowEnableConsumerKioskScreen();
+      // TODO(crbug.com/256596599) Remove.
       break;
     case GaiaScreen::Result::ENTER_QUICK_START:
       [[fallthrough]];

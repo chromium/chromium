@@ -91,7 +91,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void UpdateAddUserButtonStatus() override;
   void RequestSystemInfoUpdate() override;
   void OnCancelPasswordChangedFlow() override;
-  void ShowEnableConsumerKioskScreen() override;
   bool HasUserPods() override;
   void UseAlternativeAuthentication(std::unique_ptr<UserContext> user_context,
                                     bool online_password_mismatch) override;

@@ -60,7 +60,6 @@
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/remote_activity_notification_screen_handler.h"
@@ -312,10 +311,6 @@ void LoginDisplayHostMojo::SetUsers(const user_manager::UserList& users) {
     StartWizard(EnableDebuggingScreenView::kScreenId);
   } else if (local_state->GetBoolean(::prefs::kEnableAdbSideloadingRequested)) {
     StartWizard(EnableAdbSideloadingScreenView::kScreenId);
-  } else if (!KioskChromeAppManager::Get()->GetAutoLaunchApp().empty() &&
-             KioskChromeAppManager::Get()->IsAutoLaunchRequested()) {
-    VLOG(0) << "Showing auto-launch warning";
-    StartWizard(KioskAutolaunchScreenView::kScreenId);
   }
 }
 
@@ -695,10 +690,6 @@ bool LoginDisplayHostMojo::IsWizardControllerCreated() const {
 
 void LoginDisplayHostMojo::OnCancelPasswordChangedFlow() {
   HideOobeDialog();
-}
-
-void LoginDisplayHostMojo::ShowEnableConsumerKioskScreen() {
-  NOTREACHED_IN_MIGRATION();
 }
 
 bool LoginDisplayHostMojo::GetKeyboardRemappedPrefValue(

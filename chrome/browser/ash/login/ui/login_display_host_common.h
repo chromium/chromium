@@ -52,7 +52,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void StartUserAdding(base::OnceClosure completion_callback) final;
   void StartSignInScreen() final;
   void StartKiosk(const KioskAppId& kiosk_app_id, bool is_auto_launch) final;
-  void AttemptShowEnableConsumerKioskScreen() final;
   void CompleteLogin(const UserContext& user_context) final;
   void OnGaiaScreenReady() final;
   void SetDisplayEmail(const std::string& email) final;
@@ -102,7 +101,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   virtual void OnStartUserAdding() = 0;
   virtual void OnFinalize() = 0;
   virtual void OnCancelPasswordChangedFlow() = 0;
-  virtual void ShowEnableConsumerKioskScreen() = 0;
 
   // This function needed to isolate error messages on the Views and WebUI side.
   virtual bool IsOobeUIDialogVisible() const = 0;
