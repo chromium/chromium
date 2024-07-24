@@ -641,6 +641,7 @@ tflite_static_library("mediapipe_tasks") {
     "//build/config/compiler:no_chromium_code",
     ":mediapipe_flags",
     ":mediapipe_config",
+    ":mediapipe_internal_config",
   ]
 
   conditional_deps = [
