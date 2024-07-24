@@ -117,6 +117,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // values as part of the creation of this view; not to provide property-
   // change updates. This function will only modify properties for which a value
   // has been explicitly set.
+  // TODO(crbug.com/325137417): Remove this function, no real benefit is added
+  // anymore now that all event firing is blocked during
+  // construction/initialization.
   void SetProperties(
       std::optional<ax::mojom::Role> role = std::nullopt,
       std::optional<std::u16string> name = std::nullopt,
@@ -379,6 +382,12 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // current view.
   void UpdateFocusableStateRecursive();
 
+  // This updates some shared state for the view and all its descendants.
+  void UpdateStatesForViewAndDescendants();
+
+  // This should only ever be called on the RootView.
+  void SetRootViewIsReadyToNotifyEvents();
+
   // Updates the invisible state of the `data_` object. The view is considered
   // invisible if it is not visible and its role is not kAlert.
   void UpdateInvisibleState();
@@ -485,7 +494,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   bool ignore_missing_widget_for_testing_ = false;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ViewTest, PauseAccessibilityEvents);
+  FRIEND_TEST_ALL_PREFIXES(ViewTest, ViewAccessibilityReadyToNotifyEvents);
   FRIEND_TEST_ALL_PREFIXES(ViewTest,
                            WidgetObserverViewWidgetClosedViewReparented);
 
@@ -510,6 +519,16 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // `should_be_ignored_`, or if it has been pruned (`pruned_`), or if its role
   // is 'kNone'.
   void UpdateIgnoredState();
+
+  // We don't want to fire accessibility events when the view is being
+  // initialized and any setters are called from their respective constructors.
+  // We only want to fire events of any subtree of views when that subtree of
+  // views is connected to a RootView. This way we ensure that we don't fire
+  // events for views that are not connected to a valid tree. See
+  // `SetRootViewIsReadyToNotifyEvents`.
+  void UpdateReadyToNotifyEvents();
+
+  void SetReadyToNotifyEvents();
 
   void SetWidgetClosedRecursive(Widget* widget, bool value);
 
@@ -568,7 +587,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   // Prevents accessibility events from being fired during initialization of
   // the owning View.
-  bool pause_accessibility_events_ = false;
+  // True once a View is connected to a RootView.
+  bool ready_to_notify_events_ = false;
 
   bool is_widget_closed_ = false;
 

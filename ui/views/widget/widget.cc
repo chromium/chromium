@@ -460,6 +460,10 @@ void Widget::Init(InitParams params) {
     owned_native_widget_ = base::WrapUnique(native_widget_raw_ptr);
   }
   root_view_.reset(CreateRootView());
+  // Once the root view is added to the widget, it should be marked as ready to
+  // send accessible event notifications. From that point on, any view that is
+  // connected to the RootView will be able to send accessible events.
+  root_view_->GetViewAccessibility().SetRootViewIsReadyToNotifyEvents();
   // We need to add the RootView's ViewAccessibility as an observer of the
   // widget, so that when the widget is closed, the accessible data is set
   // accordingly.
