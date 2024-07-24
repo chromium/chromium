@@ -47,9 +47,9 @@ constexpr std::array<MetadataWriter::UMAFeature, 6> kShareUMAFeatures = {
 
 constexpr std::array<const char*, kLabelInputSize>
     kContextualPageActionModelLabels = {
+        kContextualPageActionModelLabelPriceInsights,
         kContextualPageActionModelLabelPriceTracking,
-        kContextualPageActionModelLabelReaderMode,
-        kContextualPageActionModelLabelPriceInsights};
+        kContextualPageActionModelLabelReaderMode};
 
 }  // namespace
 
@@ -65,6 +65,15 @@ ContextualPageActionsModel::GetModelConfig() {
       /*signal_storage_length=*/kOneDayInSeconds,
       /*min_signal_collection_length=*/kOneDayInSeconds,
       /*result_time_to_live=*/kOneDayInSeconds);
+
+  // Add price insights custom input.
+  proto::CustomInput* price_insights_input =
+      writer.AddCustomInput(MetadataWriter::CustomInput{
+          .tensor_length = 1,
+          .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
+          .name = "price_insights_input"});
+  (*price_insights_input->mutable_additional_args())["name"] =
+      kContextualPageActionModelInputPriceInsights;
 
   // Add price tracking custom input.
   proto::CustomInput* price_tracking_input =
@@ -83,15 +92,6 @@ ContextualPageActionsModel::GetModelConfig() {
           .name = "reader_mode_input"});
   (*reader_mode_input->mutable_additional_args())["name"] =
       kContextualPageActionModelInputReaderMode;
-
-  // Add price insights custom input.
-  proto::CustomInput* price_insights_input =
-      writer.AddCustomInput(MetadataWriter::CustomInput{
-          .tensor_length = 1,
-          .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
-          .name = "price_insights_input"});
-  (*price_insights_input->mutable_additional_args())["name"] =
-      kContextualPageActionModelInputPriceInsights;
 
   if (base::FeatureList::IsEnabled(features::kContextualPageActionShareModel)) {
     // Add share related input features.
@@ -136,15 +136,15 @@ void ContextualPageActionsModel::ExecuteModelWithInput(
   }
 
   // TODO(haileywang): Use input[2] to input[7] to show share button.
-  bool can_track_price = inputs[0];
-  bool has_reader_mode = inputs[1];
-  bool has_price_insights = inputs[2];
+  bool has_price_insights = inputs[0];
+  bool can_track_price = inputs[1];
+  bool has_reader_mode = inputs[2];
 
   // Create response.
   ModelProvider::Response response(kLabelInputSize, 0);
-  response[0] = can_track_price;
-  response[1] = has_reader_mode;
-  response[2] = has_price_insights;
+  response[0] = has_price_insights;
+  response[1] = can_track_price;
+  response[2] = has_reader_mode;
   // TODO(crbug.com/40249852): Set a classifier threshold.
 
   // TODO(shaktisahu): This class needs some rethinking to correctly associate

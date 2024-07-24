@@ -504,13 +504,13 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestContextualPageActionsShare) {
 
   auto input_context = base::MakeRefCounted<InputContext>();
   input_context->metadata_args.emplace(
-      segmentation_platform::kContextualPageActionModelInputPriceTracking,
+      segmentation_platform::kContextualPageActionModelInputPriceInsights,
       segmentation_platform::processing::ProcessedValue::FromFloat(1));
   input_context->metadata_args.emplace(
-      segmentation_platform::kContextualPageActionModelInputReaderMode,
+      segmentation_platform::kContextualPageActionModelInputPriceTracking,
       segmentation_platform::processing::ProcessedValue::FromFloat(0));
   input_context->metadata_args.emplace(
-      segmentation_platform::kContextualPageActionModelInputPriceInsights,
+      segmentation_platform::kContextualPageActionModelInputReaderMode,
       segmentation_platform::processing::ProcessedValue::FromFloat(0));
 
   ExpectGetClassificationResult(
@@ -518,7 +518,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestContextualPageActionsShare) {
       /*expected_status=*/PredictionStatus::kSucceeded,
       /*expected_labels=*/
       std::vector<std::string>(1,
-                               kContextualPageActionModelLabelPriceTracking));
+                               kContextualPageActionModelLabelPriceInsights));
   clock()->Advance(base::Seconds(
       ContextualPageActionsModel::kShareOutputCollectionDelayInSec));
 
