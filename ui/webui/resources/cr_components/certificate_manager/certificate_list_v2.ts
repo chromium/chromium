@@ -55,6 +55,7 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
       // True if the export button should be hidden.
       // Export button may also be hidden if there are no certs in the list.
       hideExport: Boolean,
+      inSubpage: Boolean,
       expanded_: Boolean,
       certificates_: Array,
       hasCerts_: {
@@ -68,6 +69,7 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
   headerText: string;
   showImport: boolean = false;
   hideExport: boolean = false;
+  inSubpage: boolean = false;
   private expanded_: boolean = true;
   private certificates_: SummaryCertInfo[] = [];
   private hasCerts_: boolean;
@@ -79,6 +81,10 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
         .then((results: {certs: SummaryCertInfo[]}) => {
           this.certificates_ = results.certs;
         });
+
+    if (!this.inSubpage) {
+      this.$.certs.classList.add('card');
+    }
   }
 
   private onExportCertsClick_(e: Event) {
