@@ -1989,8 +1989,10 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (IsA<HTMLAnchorElement>(GetNode()) || IsA<SVGAElement>(GetNode())) {
     // Assume that an anchor element is a Role::kLink if it has an href or a
     // click event listener.
-    if (GetNode()->IsLink() || IsClickable())
+    if (GetNode()->IsLink() ||
+        GetNode()->HasAnyEventListeners(event_util::MouseButtonEventTypes())) {
       return ax::mojom::blink::Role::kLink;
+    }
 
     // According to the SVG-AAM, a non-link 'a' element should be exposed like
     // a 'g' if it does not descend from a 'text' element and like a 'tspan'
