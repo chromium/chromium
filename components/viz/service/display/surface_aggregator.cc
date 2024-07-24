@@ -1678,7 +1678,7 @@ void SurfaceAggregator::SetRenderPassDamageRect(
             root_clip_in_render_pass_space == copy_pass->output_rect;
 
         UMA_HISTOGRAM_ENUMERATION(
-            " Compositing.SurfaceAggregator.RenderPassDamageType",
+            "Compositing.SurfaceAggregator.RenderPassDamageType",
             is_output_rect ? RenderPassDamage::kOutputRect
                            : RenderPassDamage::kRootClipped);
 
@@ -1702,7 +1702,7 @@ void SurfaceAggregator::SetRenderPassDamageRect(
     }
   } else if (metrics_subsampler_.ShouldSample(0.001)) {
     UMA_HISTOGRAM_ENUMERATION(
-        " Compositing.SurfaceAggregator.RenderPassDamageType",
+        "Compositing.SurfaceAggregator.RenderPassDamageType",
         RenderPassDamage::kForceFullOutputRect);
   }
 }
