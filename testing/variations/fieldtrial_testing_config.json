@@ -13829,10 +13829,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240703",
+                    "name": "Enabled_20240723",
                     "params": {
                         "intersection_observer_delay": "1000ms",
-                        "max_intersection_observations": "120",
+                        "max_intersection_observations": "60",
                         "random_anchor_sampling_period": "1"
                     },
                     "enable_features": [
