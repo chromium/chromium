@@ -321,20 +321,42 @@ suite('SelectionOverlay', function() {
             0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
       });
 
-  test('verify that detected text context menu works', async () => {
-    await addWords();
+  test(
+      'verify that select text in detected text context menu works',
+      async () => {
+        await addWords();
 
-    await simulateDrag(selectionOverlayElement, {x: 51, y: 10}, {x: 80, y: 40});
-    selectionOverlayElement.handleSelectTextForTesting();
+        await simulateDrag(
+            selectionOverlayElement, {x: 51, y: 10}, {x: 80, y: 40});
+        selectionOverlayElement.handleSelectTextForTesting();
 
-    const textQuery =
-        await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
-    assertDeepEquals('there test', textQuery);
-    assertEquals(
-        1, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
-    assertFalse(
-        selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
-  });
+        const textQuery = await testBrowserProxy.handler.whenCalled(
+            'issueTextSelectionRequest');
+        assertDeepEquals('there test', textQuery);
+        assertEquals(
+            1, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+        assertFalse(
+            selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
+      });
+
+  test(
+      'verify that translate in detected text context menu works', async () => {
+        await addWords();
+
+        await simulateDrag(
+            selectionOverlayElement, {x: 51, y: 10}, {x: 80, y: 40});
+        selectionOverlayElement.handleTranslateDetectedTextForTesting();
+
+        const textQuery = await testBrowserProxy.handler.whenCalled(
+            'issueTranslateSelectionRequest');
+        assertDeepEquals('there test', textQuery);
+        assertEquals(
+            1, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+        assertFalse(
+            selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
+        assertFalse(
+            selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
+      });
   // </if>
 
   test('verify that region search triggers post selection', async () => {
