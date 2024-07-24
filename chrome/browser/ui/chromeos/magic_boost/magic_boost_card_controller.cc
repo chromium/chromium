@@ -89,11 +89,7 @@ void MagicBoostCardController::ShowOptInUi(
   CHECK(!opt_in_widget_);
 
   // If the disclaimer view is showing, close it.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  remote_->CloseDisclaimerUi();
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  GetMagicBoostControllerAsh().CloseDisclaimerUi();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  CloseDisclaimerUi();
 
   opt_in_widget_ = MagicBoostOptInCard::CreateWidget(
       /*controller=*/this, anchor_view_bounds);
@@ -108,13 +104,19 @@ void MagicBoostCardController::CloseOptInUi() {
 }
 
 void MagicBoostCardController::ShowDisclaimerUi(int64_t display_id) {
-  // TODO(b/319735347): Add integration tests to make sure that this function
-  // always goes through the crosapi.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   remote_->ShowDisclaimerUi(display_id, transition_action_, opt_in_features_);
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
   GetMagicBoostControllerAsh().ShowDisclaimerUi(display_id, transition_action_,
                                                 opt_in_features_);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+
+void MagicBoostCardController::CloseDisclaimerUi() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  remote_->CloseDisclaimerUi();
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+  GetMagicBoostControllerAsh().CloseDisclaimerUi();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

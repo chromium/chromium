@@ -99,6 +99,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/mahi:test_util",
     "//chrome/browser/ui/chromeos/magic_boost:magic_boost",
     "//chrome/browser/ui/chromeos/magic_boost:magic_boost_constants",
+    "//chrome/browser/ui/views/mahi:mahi",
     "//chrome/browser/ui/webui/ash/mako",
     "//chrome/test:test_support",
     "//chromeos/components/magic_boost/public/cpp:cpp",

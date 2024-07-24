@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_opt_in_card.h"
+#include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -37,9 +38,12 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget_utils.h"
 
 namespace ash {
 
@@ -100,17 +104,22 @@ class MagicBoostBrowserTest
 
   // Navigates to the read only content test website and right click on it.
   void NavigateAndRightClickReadOnlyWeb() {
+    NavigateToReadOnlyWeb();
+
+    event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
+                                      ->GetViewBounds()
+                                      .CenterPoint());
+    event_generator().ClickRightButton();
+  }
+
+  // Navigates to the read only content test website.
+  void NavigateToReadOnlyWeb() {
     // Waits until the page is ready.
     content::RenderFrameHost* render_frame_host = ui_test_utils::NavigateToURL(
         browser(), https_server_.GetURL("/mahi/test_article.html"));
     ASSERT_TRUE(render_frame_host);
     content::MainThreadFrameObserver(render_frame_host->GetRenderWidgetHost())
         .Wait();
-
-    event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
-                                      ->GetViewBounds()
-                                      .CenterPoint());
-    event_generator().ClickRightButton();
   }
 
   // Navigates to the input view test website, selects the input text and right
@@ -748,6 +757,120 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
   EXPECT_FALSE(FindWidgetWithName(
       chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
   EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+}
+
+IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, ShowDisclaimerViewOnMultiScreen) {
+  // Cache the init hmr status, which will be used to reset the status for
+  // testing showing the disclaimer view on different screens. Without resetting
+  // the status, it will not show the disclaimer view again and show the mahi
+  // menu instead.
+  auto init_hmr_status = GetInitHmrConsentStatus();
+
+  // Creates 3 displays.
+  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+      .UpdateDisplay("1000x700,1100x800,1200x700");
+  auto root_windows = ash::Shell::GetAllRootWindows();
+  ASSERT_EQ(3u, root_windows.size());
+  ASSERT_EQ(ash::Shell::GetPrimaryRootWindow(), root_windows[0]);
+
+  // Can not find any widget.
+  EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+  EXPECT_FALSE(FindWidgetWithName(
+      chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+
+  display::Displays displays =
+      Shell::Get()->display_manager()->active_display_list();
+
+  // Sets the second display to be the window screen. Right click on the web
+  // content to show the opt in card.
+  browser()->window()->SetBounds(displays[1].work_area());
+  event_generator().SetTargetWindow(root_windows[1]);
+  NavigateToReadOnlyWeb();
+  event_generator().MoveMouseTo(displays[1].work_area().CenterPoint());
+  event_generator().ClickRightButton();
+
+  // Not showing the opt in flow if should not opt in hmr.
+  if (!ShouldOptInHmr()) {
+    EXPECT_FALSE(FindWidgetWithName(
+        chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+    EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+    return;
+  }
+
+  // Finds the opt in card and still cannot find the disclaimer view.
+  views::Widget* opt_in_card_widget = GetOptInCardWidget();
+  EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+  ASSERT_TRUE(opt_in_card_widget);
+
+  // Left click on the accept button in the opt in card.
+  LeftClickOnView(GetOptInCardAcceptButton());
+
+  // Closes the opt in card and shows the disclaimer view on the second screen.
+  WaitUntilViewClosed(opt_in_card_widget);
+  EXPECT_TRUE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+  EXPECT_FALSE(FindWidgetWithName(
+      chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+  ASSERT_EQ(root_windows[1], views::GetRootWindow(GetDisclaimerViewWidget()));
+
+  // Resets the Hmr consent status to continue testing showing disclaimer view
+  // on the first screen.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kHMRConsentStatus, base::to_underlying(init_hmr_status));
+  browser()->window()->SetBounds(displays[0].work_area());
+  event_generator().SetTargetWindow(root_windows[0]);
+  NavigateToReadOnlyWeb();
+  event_generator().MoveMouseTo(displays[0].work_area().CenterPoint());
+  event_generator().ClickRightButton();
+
+  // Left click on the accept button in the opt in card.
+  ASSERT_TRUE(GetOptInCardWidget());
+  LeftClickOnView(GetOptInCardAcceptButton());
+
+  // Closes the opt in card and shows the disclaimer view on the first screen.
+  WaitUntilViewClosed(GetOptInCardWidget());
+  EXPECT_TRUE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+  EXPECT_FALSE(FindWidgetWithName(
+      chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+  ASSERT_EQ(root_windows[0], views::GetRootWindow(GetDisclaimerViewWidget()));
+
+  // Resets the Hmr consent status to continue testing showing disclaimer view
+  // on the third screen.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kHMRConsentStatus, base::to_underlying(init_hmr_status));
+  browser()->window()->SetBounds(displays[2].work_area());
+  event_generator().SetTargetWindow(root_windows[2]);
+  NavigateToReadOnlyWeb();
+  event_generator().MoveMouseTo(displays[2].work_area().CenterPoint());
+  event_generator().ClickRightButton();
+
+  // Left click on the accept button in the opt in card.
+  ASSERT_TRUE(GetOptInCardWidget());
+  LeftClickOnView(GetOptInCardAcceptButton());
+
+  // Closes the opt in card and shows the disclaimer view on the third screen.
+  WaitUntilViewClosed(GetOptInCardWidget());
+  EXPECT_TRUE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+  EXPECT_FALSE(FindWidgetWithName(
+      chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+  ASSERT_EQ(root_windows[2], views::GetRootWindow(GetDisclaimerViewWidget()));
+
+  // Without resetting the hmr consent status, it should show mahi menu and
+  // close the dicaimer view after right clicking on the read only web content
+  // again on the first screen.
+  browser()->window()->SetBounds(displays[0].work_area());
+  event_generator().SetTargetWindow(root_windows[0]);
+  NavigateToReadOnlyWeb();
+  event_generator().MoveMouseTo(displays[0].work_area().CenterPoint());
+  event_generator().ClickRightButton();
+
+  // Finds the mahi menu. Can not find the opt in card or disclaimer view any
+  // more.
+  views::Widget* mahi_widget = FindWidgetWithNameAndWaitIfNeeded(
+      chromeos::mahi::MahiMenuView::GetWidgetName());
+  ASSERT_TRUE(mahi_widget);
+  EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+  EXPECT_FALSE(FindWidgetWithName(
+      chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
 }
 
 // MahiUiWithOptInViewBrowserTest ----------------------------------------------
