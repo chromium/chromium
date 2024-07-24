@@ -24,14 +24,6 @@ static_library("app_service") {
     "app_service_promise_app_item.h",
     "app_service_promise_app_model_builder.cc",
     "app_service_promise_app_model_builder.h",
-    "app_service_shortcut_context_menu.cc",
-    "app_service_shortcut_context_menu.h",
-    "app_service_shortcut_icon_loader.cc",
-    "app_service_shortcut_icon_loader.h",
-    "app_service_shortcut_item.cc",
-    "app_service_shortcut_item.h",
-    "app_service_shortcut_model_builder.cc",
-    "app_service_shortcut_model_builder.h",
   ]
 
   deps = [
@@ -77,7 +69,6 @@ source_set("unit_tests") {
   sources = [
     "app_service_app_model_builder_unittest.cc",
     "app_service_promise_app_model_builder_unittest.cc",
-    "app_service_shortcut_model_builder_unittest.cc",
   ]
 
   deps = [

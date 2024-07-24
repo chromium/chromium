@@ -48,7 +48,6 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_icon_loader.h"
-#include "chrome/browser/ash/app_list/app_service/app_service_shortcut_icon_loader.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -68,7 +67,6 @@
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_service/shelf_app_service_app_updater.h"
 #include "chrome/browser/ui/ash/shelf/app_service/shelf_app_service_promise_app_updater.h"
-#include "chrome/browser/ui/ash/shelf/app_service/shelf_app_service_shortcut_updater.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
@@ -1659,11 +1657,6 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
       app_updaters_for_profile.emplace_back(
           std::make_unique<ShelfPromiseAppUpdater>(this, profile));
     }
-
-    if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
-      app_updaters_for_profile.emplace_back(
-          std::make_unique<ShelfAppServiceShortcutUpdater>(this, profile));
-    }
   }
 
   if (!base::Contains(app_icon_loaders_, profile)) {
@@ -1677,15 +1670,6 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
       app_icon_loaders_[profile].emplace_back(
           std::make_unique<AppServicePromiseAppIconLoader>(
               profile, extension_misc::EXTENSION_ICON_MEDIUM, this));
-    }
-
-    if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
-      app_icon_loaders_for_profile.emplace_back(
-          std::make_unique<AppServiceShortcutIconLoader>(
-              profile, extension_misc::EXTENSION_ICON_MEDIUM,
-              // TODO(crbug.com/40281395): Update the size after the effects
-              // visual done.
-              extension_misc::EXTENSION_ICON_SMALLISH, this));
     }
 
     // Some special extensions open new windows, and on Chrome OS, those windows

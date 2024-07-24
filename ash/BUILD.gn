@@ -4670,7 +4670,6 @@ test("ash_pixeltests") {
     "ambient/ui/ambient_slideshow_pixeltest.cc",
     "app_list/views/app_list_item_view_pixeltest.cc",
     "app_list/views/app_list_view_pixeltest.cc",
-    "app_list/views/search_result_view_pixeltest.cc",
     "auth/views/auth_container_view_pixeltest.cc",
     "auth/views/auth_header_view_pixeltest.cc",
     "auth/views/auth_input_row_view_pixeltest.cc",
