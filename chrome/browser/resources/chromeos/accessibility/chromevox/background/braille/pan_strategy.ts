@@ -10,88 +10,76 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {CURSOR_DOTS} from './cursor_dots.js';
 
+interface CursorPosition {
+  start: number;
+  end: number;
+}
+
+interface DisplaySize {
+  rows: number;
+  columns: number;
+}
+
+interface Offsets {
+  brailleOffset: number;
+  textOffset: number;
+}
+
+interface Range {
+  firstRow: number;
+  lastRow: number;
+}
+
 export class PanStrategy {
-  constructor() {
-    /** @private {{rows: number, columns: number}} */
-    this.displaySize_ = {rows: 1, columns: 40};
-
-    /**
-     * Start and end are both inclusive.
-     * @private {!PanStrategy.Range}
-     */
-    this.viewPort_ = {firstRow: 0, lastRow: 0};
-
-    /**
-     * The ArrayBuffer holding the braille cells after it's been processed to
-     * wrap words that are cut off by the column boundaries.
-     * @private {!ArrayBuffer}
-     */
-    this.wrappedBuffer_ = new ArrayBuffer(0);
-
-    /**
-     * The original text that corresponds with the braille buffers. There is
-     * only one textBuffer that correlates with both fixed and wrapped buffers.
-     * @private {string}
-     */
-    this.textBuffer_ = '';
-
-    /**
-     * The ArrayBuffer holding the original braille cells, without being
-     * processed to wrap words.
-     * @private {!ArrayBuffer}
-     */
-    this.fixedBuffer_ = new ArrayBuffer(0);
-
-    /**
-     * The updated mapping from braille cells to text characters for the wrapped
-     * buffer.
-     * @private {Array<number>}
-     */
-    this.wrappedBrailleToText_ = [];
-
-    /**
-     * The original mapping from braille cells to text characters.
-     * @private {Array<number>}
-     */
-    this.fixedBrailleToText_ = [];
-
-    /**
-     * Indicates whether the pan strategy is wrapped or fixed. It is wrapped
-     * when true.
-     * @private {boolean}
-     */
-    this.panStrategyWrapped_ = false;
-
-    /** @private {{start: (number), end: (number)}} */
-    this.cursor_ = {start: -1, end: -1};
-
-    /** @private {{start: (number), end: (number)}} */
-    this.wrappedCursor_ = {start: -1, end: -1};
-  }
+  private displaySize_: DisplaySize = {rows: 1, columns: 40};
+  /** Start and end are both inclusive. */
+  private viewPort_: Range = {firstRow: 0, lastRow: 0};
+  /**
+   * The ArrayBuffer holding the braille cells after it's been processed to
+   * wrap words that are cut off by the column boundaries.
+   */
+  private wrappedBuffer_ = new ArrayBuffer(0);
+  /**
+   * The original text that corresponds with the braille buffers. There is
+   * only one textBuffer that correlates with both fixed and wrapped buffers.
+   */
+  private textBuffer_ = '';
+  /**
+   * The ArrayBuffer holding the original braille cells, without being
+   * processed to wrap words.
+   */
+  private fixedBuffer_ = new ArrayBuffer(0);
+  /**
+   * The updated mapping from braille cells to text characters for the wrapped
+   * buffer.
+   */
+  private wrappedBrailleToText_: number[] = [];
+  /** The original mapping from braille cells to text characters. */
+  private fixedBrailleToText_: number[] = [];
+  /**
+   * Indicates whether the pan strategy is wrapped or fixed. It is wrapped
+   * when true.
+   */
+  private panStrategyWrapped_ = false;
+  private cursor_: CursorPosition = {start: -1, end: -1};
+  private wrappedCursor_: CursorPosition = {start: -1, end: -1};
 
   /**
    * Gets the current viewport which is never larger than the current
    * display size and whose end points are always within the limits of
    * the current content.
-   * @return {!PanStrategy.Range}
    */
-  get viewPort() {
+  get viewPort(): Range {
     return this.viewPort_;
   }
 
-  /**
-   * Gets the current displaySize.
-   * @return {{rows: number, columns: number}}
-   */
-  get displaySize() {
+  /** Gets the current displaySize. */
+  get displaySize(): DisplaySize {
     return this.displaySize_;
   }
 
-  /**
-   * @return {{brailleOffset: number, textOffset: number}} The offset of
-   * braille and text indices of the current slice.
-   */
-  get offsetsForSlices() {
+  /** @return The offset of braille and text indices of the current slice. */
+  get offsetsForSlices(): Offsets {
     return {
       brailleOffset: this.viewPort_.firstRow * this.displaySize_.columns,
       textOffset: this.brailleToText
@@ -99,22 +87,22 @@ export class PanStrategy {
     };
   }
 
-  /** @return {number} The number of lines in the fixedBuffer. */
-  get fixedLineCount() {
+  /** @return The number of lines in the fixedBuffer. */
+  get fixedLineCount(): number {
     return Math.ceil(this.fixedBuffer_.byteLength / this.displaySize_.columns);
   }
 
-  /** @return {number} The number of lines in the wrappedBuffer. */
-  get wrappedLineCount() {
+  /** @return The number of lines in the wrappedBuffer. */
+  get wrappedLineCount(): number {
     return Math.ceil(
         this.wrappedBuffer_.byteLength / this.displaySize_.columns);
   }
 
   /**
-   * @return {Array<number>} The map of Braille cells to the first index of the
-   *    corresponding text character.
+   * @return The map of Braille cells to the first index of the corresponding
+   *     text character.
    */
-  get brailleToText() {
+  get brailleToText(): number[] {
     if (this.panStrategyWrapped_) {
       return this.wrappedBrailleToText_;
     } else {
@@ -123,12 +111,10 @@ export class PanStrategy {
   }
 
   /**
-   * @param {boolean=} opt_showCursor Defaults to true.
-   * @return {ArrayBuffer} Buffer of the slice of braille cells within the
-   *    bounds of the viewport.
+   * @return Buffer of the slice of braille cells within the bounds of the
+   * viewport.
    */
-  getCurrentBrailleViewportContents(opt_showCursor) {
-    opt_showCursor = opt_showCursor === undefined ? true : opt_showCursor;
+  getCurrentBrailleViewportContents(showCursor: boolean = true): ArrayBuffer {
     const buf =
         this.panStrategyWrapped_ ? this.wrappedBuffer_ : this.fixedBuffer_;
 
@@ -147,7 +133,7 @@ export class PanStrategy {
       const dataView = new DataView(buf);
       while (startIndex < endIndex) {
         let value = dataView.getUint8(startIndex);
-        if (opt_showCursor) {
+        if (showCursor) {
           value |= CURSOR_DOTS;
         } else {
           value &= ~CURSOR_DOTS;
@@ -163,10 +149,10 @@ export class PanStrategy {
   }
 
   /**
-   * @return {string} String of the slice of text letters corresponding with
-   *    the current braille slice.
+   * @return String of the slice of text letters corresponding with the current
+   * braille slice.
    */
-  getCurrentTextViewportContents() {
+  getCurrentTextViewportContents(): string {
     const brailleToText = this.brailleToText;
     // Index of last braille character in slice.
     let index = (this.viewPort_.lastRow + 1) * this.displaySize_.columns - 1;
@@ -185,19 +171,18 @@ export class PanStrategy {
   }
 
   /** Sets the current pan strategy and resets the viewport. */
-  setPanStrategy(wordWrap) {
+  setPanStrategy(wordWrap: boolean): void {
     this.panStrategyWrapped_ = wordWrap;
     this.panToPosition_(0);
   }
 
   /**
    * Sets the display size.  This call may update the viewport.
-   * @param {number} rowCount the new row size, or {@code 0} if no display is
-   *     present.
-   * @param {number} columnCount the new column size, or {@code 0}
-   *    if no display is present.
+   * @param rowCount the new row size, or 0 if no display is present.
+   * @param columnCount the new column size, or 0 if no display is
+   * present.
    */
-  setDisplaySize(rowCount, columnCount) {
+  setDisplaySize(rowCount: number, columnCount: number): void {
     this.displaySize_ = {rows: rowCount, columns: columnCount};
     this.setContent(
         this.textBuffer_, this.fixedBuffer_, this.fixedBrailleToText_, 0);
@@ -206,15 +191,16 @@ export class PanStrategy {
   /**
    * Sets the internal data structures that hold the fixed and wrapped buffers
    * and maps.
-   * @param {string} textBuffer Text of the shown braille.
-   * @param {!ArrayBuffer} translatedContent The new braille content.
-   * @param {Array<number>} fixedBrailleToText Map of Braille cells to the
-   *     first index of corresponding text letter.
-   * @param {number} targetPosition Target position.  The viewport is changed
-   *     to overlap this position.
+   * @param textBuffer Text of the shown braille.
+   * @param translatedContent The new braille content.
+   * @param fixedBrailleToText Map of Braille cells to the first index of
+   *     corresponding text letter.
+   * @param targetPosition Target position.  The viewport is changed to overlap
+   *     this position.
    */
   setContent(
-      textBuffer, translatedContent, fixedBrailleToText, targetPosition) {
+      textBuffer: string, translatedContent: ArrayBuffer,
+      fixedBrailleToText: number[], targetPosition: number): void {
     this.viewPort_.firstRow = 0;
     this.viewPort_.lastRow = this.displaySize_.rows - 1;
     this.fixedBrailleToText_ = fixedBrailleToText;
@@ -241,7 +227,7 @@ export class PanStrategy {
       }
 
       // Iterate in two-byte groupings.
-      const horizontalSpacedBraille = [];
+      const horizontalSpacedBraille: number[] = [];
       for (let index = 0; index < translatedContent.byteLength; index += 2) {
         const first = view[index];
         const second = view[index + 1];
@@ -260,7 +246,7 @@ export class PanStrategy {
       }
 
       // Now, space the lines vertically by inserting two blank dot rows.
-      let spacedBraille = [];
+      let spacedBraille: number[] = [];
 
       // Iterate by two cell rows at once.
       for (let row = 0; row < this.displaySize_.rows; row += 2) {
@@ -275,7 +261,7 @@ export class PanStrategy {
         // row spacing below. The upper cell row can be pushed below; store the
         // lower cell row for after.
         const nextRow = row + 1;
-        const lowerRow = [];
+        const lowerRow: number[] = [];
         for (let index = 0; index < this.displaySize_.columns; index++) {
           const rowIndex = nextRow * this.displaySize_.columns + index;
           const value = horizontalSpacedBraille[rowIndex];
@@ -314,7 +300,7 @@ export class PanStrategy {
       new Uint8Array(this.fixedBuffer_).set(brailleUint8Array);
     }
 
-    const wrappedBrailleArray = [];
+    const wrappedBrailleArray: number[] = [];
 
     let lastBreak = 0;
     let cellsPadded = 0;
@@ -379,30 +365,20 @@ export class PanStrategy {
     this.panToPosition_(targetPosition);
   }
 
-  /**
-   * Sets a braille cursor.
-   * @param {number} startIndex
-   * @param {number} endIndex
-   */
-  setCursor(startIndex, endIndex) {
+  setCursor(startIndex: number, endIndex: number): void {
     this.cursor_ = {start: startIndex, end: endIndex};
   }
 
-  /**
-   * Gets the current cursor.
-   * @return {{start: (number), end: (number)}}
-   */
-  getCursor() {
+  getCursor(): CursorPosition {
     return this.cursor_;
   }
 
   /**
    * Refreshes the wrapped cursor given a mapping from an unwrapped index to a
    * wrapped index.
-   * @param {number} unwrappedIndex
-   * @param {number} wrappedIndex
    */
-  maybeSetWrappedCursor_(unwrappedIndex, wrappedIndex) {
+  private maybeSetWrappedCursor_(unwrappedIndex: number, wrappedIndex: number):
+      void {
     // We only care about the bounds of the index start/end.
     if (this.cursor_.start !== unwrappedIndex &&
         this.cursor_.end !== unwrappedIndex) {
@@ -418,9 +394,9 @@ export class PanStrategy {
   /**
    * If possible, changes the viewport to a part of the line that follows
    * the current viewport.
-   * @return {boolean} {@code true} if the viewport was changed.
+   * @return true if the viewport was changed.
    */
-  next() {
+  next(): boolean {
     const contentLength =
         this.panStrategyWrapped_ ? this.wrappedLineCount : this.fixedLineCount;
     const newStart = this.viewPort_.lastRow + 1;
@@ -440,9 +416,9 @@ export class PanStrategy {
   /**
    * If possible, changes the viewport to a part of the line that precedes
    * the current viewport.
-   * @return {boolean} {@code true} if the viewport was changed.
+   * @return true if the viewport was changed.
    */
-  previous() {
+  previous(): boolean {
     const contentLength =
         this.panStrategyWrapped_ ? this.wrappedLineCount : this.fixedLineCount;
     if (this.viewPort_.firstRow > 0) {
@@ -466,9 +442,9 @@ export class PanStrategy {
   /**
    * Moves the viewport so that it overlaps a target position without taking
    * the current viewport position into consideration.
-   * @param {number} position Target position.
+   * @param position Target position.
    */
-  panToPosition_(position) {
+  private panToPosition_(position: number): void {
     if (this.displaySize_.rows * this.displaySize_.columns > 0) {
       this.viewPort_ = {firstRow: -1, lastRow: -1};
       while (this.next() &&
@@ -481,12 +457,5 @@ export class PanStrategy {
     }
   }
 }
-
-/**
- * A range used to represent the viewport with inclusive start and xclusive
- * end position.
- * @typedef {{firstRow: number, lastRow: number}}
- */
-PanStrategy.Range;
 
 TestImportManager.exportForTesting(PanStrategy);
