@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.isNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -28,6 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PARITY_ANDROID;
+import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.content.Intent;
 import android.os.Build.VERSION_CODES;
@@ -43,7 +45,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -79,6 +80,7 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
@@ -94,6 +96,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
@@ -140,16 +143,16 @@ public class SelectableTabListEditorTest {
                     .build();
 
     @Mock private Callback<RecyclerViewPosition> mSetRecyclerViewPosition;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private ActionConfirmationManager mActionConfirmationManager;
 
     private TabListEditorTestingRobot mRobot = new TabListEditorTestingRobot();
 
     private TabModelSelector mTabModelSelector;
-    private TabListEditorCoordinator.TabListEditorController
-            mTabListEditorController;
+    private TabListEditorCoordinator.TabListEditorController mTabListEditorController;
     private TabListEditorLayout mTabListEditorLayout;
     private TabListEditorCoordinator mTabListEditorCoordinator;
     private WeakReference<TabListEditorLayout> mRef;
-
     private ViewGroup mParentView;
     private SnackbarManager mSnackbarManager;
     private BookmarkModel mBookmarkModel;
@@ -204,7 +207,8 @@ public class SelectableTabListEditorTest {
                                     mSnackbarManager,
                                     /* bottomSheetController= */ null,
                                     TabProperties.TabActionState.SELECTABLE,
-                                    /* gridCardOnClickListenerProvider= */ null);
+                                    /* gridCardOnClickListenerProvider= */ null,
+                                    mModalDialogManager);
 
                     mTabListEditorController = mTabListEditorCoordinator.getController();
                     mTabListEditorLayout =
@@ -212,6 +216,15 @@ public class SelectableTabListEditorTest {
                     mRef = new WeakReference<>(mTabListEditorLayout);
                     mBookmarkModel = cta.getBookmarkModelForTesting();
                 });
+
+        // The inner most callback may check pref service in C++, needs to be on the UI thread.
+        Callback<Callback<Integer>> immediateContinue =
+                (Callback<Integer> callback) ->
+                        ThreadUtils.runOnUiThreadBlocking(
+                                () -> callback.onResult(ConfirmationResult.IMMEDIATE_CONTINUE));
+        doCallback(1, immediateContinue)
+                .when(mActionConfirmationManager)
+                .processCloseTabAttempt(any(), any());
     }
 
     @After
@@ -280,7 +293,7 @@ public class SelectableTabListEditorTest {
     }
 
     private void prepareBlankTabGroup(int num, boolean isIncognito) {
-        ArrayList<String> urls = new ArrayList<String>(Collections.nCopies(num, "about:blank"));
+        ArrayList<String> urls = new ArrayList<>(Collections.nCopies(num, "about:blank"));
 
         prepareTabGroupWithUrls(urls, isIncognito);
     }
@@ -335,7 +348,8 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule.getActivity(),
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
-                                    IconPosition.START));
+                                    IconPosition.START,
+                                    mActionConfirmationManager));
                     showSelectionEditor(tabs, actions);
                 });
 
@@ -525,7 +539,8 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule.getActivity(),
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
-                                    IconPosition.START));
+                                    IconPosition.START,
+                                    mActionConfirmationManager));
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
@@ -580,7 +595,8 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule.getActivity(),
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
-                                    IconPosition.START));
+                                    IconPosition.START,
+                                    mActionConfirmationManager));
                     showSelectionEditor(tabs, actions);
                 });
 
@@ -612,7 +628,8 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule.getActivity(),
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
-                                    IconPosition.START));
+                                    IconPosition.START,
+                                    mActionConfirmationManager));
 
                     showSelectionEditor(tabs, actions);
                 });
@@ -783,7 +800,8 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule.getActivity(),
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
-                                    IconPosition.START));
+                                    IconPosition.START,
+                                    mActionConfirmationManager));
 
                     showSelectionEditor(tabs, actions);
                 });
@@ -804,7 +822,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
-    public void testToolbarMenuItem_ShareActionView() throws IOException {
+    public void testToolbarMenuItem_ShareActionView() {
         Intents.init();
         prepareBlankTab(1, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -866,7 +884,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
-    public void testToolbarMenuItem_ShareActionTabsOnly() throws IOException {
+    public void testToolbarMenuItem_ShareActionTabsOnly() {
         prepareBlankTab(3, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
@@ -904,8 +922,8 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
-    public void testToolbarMenuItem_ShareActionGroupsOnly() throws IOException {
-        ArrayList<String> urls = new ArrayList<String>();
+    public void testToolbarMenuItem_ShareActionGroupsOnly() {
+        ArrayList<String> urls = new ArrayList<>();
         urls.add(sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL));
         urls.add(sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTP_CANONICAL_URL));
         urls.add(sActivityTestRule.getTestServer().getURL(PAGE_WITH_NO_CANONICAL_URL));
@@ -952,7 +970,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
-    public void testToolbarMenuItem_ShareActionTabsWithGroups() throws IOException {
+    public void testToolbarMenuItem_ShareActionTabsWithGroups() {
         prepareBlankTab(2, false);
 
         final String httpsCanonicalUrl =
@@ -961,7 +979,7 @@ public class SelectableTabListEditorTest {
 
         prepareBlankTabGroup(2, false);
 
-        ArrayList<String> urls = new ArrayList<String>();
+        ArrayList<String> urls = new ArrayList<>();
         urls.add(sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTP_CANONICAL_URL));
         urls.add(sActivityTestRule.getTestServer().getURL(PAGE_WITH_NO_CANONICAL_URL));
         prepareTabGroupWithUrls(urls, false);
@@ -1008,7 +1026,7 @@ public class SelectableTabListEditorTest {
 
     @Test
     @MediumTest
-    public void testToolbarMenuItem_ShareActionAllFilterableTabs() throws Exception {
+    public void testToolbarMenuItem_ShareActionAllFilterableTabs() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
@@ -1035,7 +1053,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R, message = "crbug.com/1511804")
-    public void testToolbarMenuItem_BookmarkActionSingleTab() throws Exception {
+    public void testToolbarMenuItem_BookmarkActionSingleTab() {
         prepareBlankTab(1, false);
 
         final String httpsCanonicalUrl =
@@ -1064,14 +1082,14 @@ public class SelectableTabListEditorTest {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertTrue(
+                    assertTrue(
                             mBookmarkModel.doesBookmarkExist(
                                     mBookmarkModel.getUserBookmarkIdForTab(tabs.get(0))));
 
                     Snackbar currentSnackbar = mSnackbarManager.getCurrentSnackbarForTesting();
-                    Assert.assertEquals(
+                    assertEquals(
                             Snackbar.UMA_BOOKMARK_ADDED, currentSnackbar.getIdentifierForTesting());
-                    Assert.assertEquals(
+                    assertEquals(
                             "Bookmarked to Mobile bookmarks", currentSnackbar.getTextForTesting());
                     currentSnackbar.getController().onAction(null);
                 });
@@ -1083,7 +1101,7 @@ public class SelectableTabListEditorTest {
 
     @Test
     @MediumTest
-    public void testToolbarMenuItem_BookmarkActionGroupsOnly() throws Exception {
+    public void testToolbarMenuItem_BookmarkActionGroupsOnly() {
         prepareBlankTabGroup(2, false);
         List<Tab> tabs = getTabsInCurrentTabModelFilter();
 
@@ -1108,21 +1126,21 @@ public class SelectableTabListEditorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (Tab tab : tabs) {
-                        Assert.assertTrue(
+                        assertTrue(
                                 mBookmarkModel.doesBookmarkExist(
                                         mBookmarkModel.getUserBookmarkIdForTab(tab)));
                     }
                     Snackbar currentSnackbar = mSnackbarManager.getCurrentSnackbarForTesting();
-                    Assert.assertEquals(
+                    assertEquals(
                             Snackbar.UMA_BOOKMARK_ADDED, currentSnackbar.getIdentifierForTesting());
-                    Assert.assertEquals("Bookmarked", currentSnackbar.getTextForTesting());
+                    assertEquals("Bookmarked", currentSnackbar.getTextForTesting());
                 });
 
         mRobot.resultRobot.verifyTabListEditorIsVisible();
         ThreadUtils.runOnUiThreadBlocking(() -> mTabListEditorController.handleBackPressed());
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         Snackbar currentSnackbar = mSnackbarManager.getCurrentSnackbarForTesting();
-        Assert.assertEquals("Bookmarked", currentSnackbar.getTextForTesting());
+        assertEquals("Bookmarked", currentSnackbar.getTextForTesting());
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mSnackbarManager.dismissSnackbars(
@@ -1131,12 +1149,12 @@ public class SelectableTabListEditorTest {
 
     @Test
     @MediumTest
-    public void testToolbarMenuItem_BookmarkActionTabsWithGroups() throws Exception {
+    public void testToolbarMenuItem_BookmarkActionTabsWithGroups() {
         final String httpsCanonicalUrl =
                 sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
         sActivityTestRule.loadUrl(httpsCanonicalUrl);
 
-        ArrayList<String> urls = new ArrayList<String>();
+        ArrayList<String> urls = new ArrayList<>();
         urls.add(sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTP_CANONICAL_URL));
         urls.add(sActivityTestRule.getTestServer().getURL(PAGE_WITH_NO_CANONICAL_URL));
 
@@ -1175,9 +1193,9 @@ public class SelectableTabListEditorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Snackbar currentSnackbar = mSnackbarManager.getCurrentSnackbarForTesting();
-                    Assert.assertEquals(
+                    assertEquals(
                             Snackbar.UMA_BOOKMARK_ADDED, currentSnackbar.getIdentifierForTesting());
-                    Assert.assertEquals("Bookmarked", currentSnackbar.getTextForTesting());
+                    assertEquals("Bookmarked", currentSnackbar.getTextForTesting());
                     currentSnackbar.getController().onAction(null);
                 });
 
@@ -1252,7 +1270,8 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule.getActivity(),
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
-                                    IconPosition.START));
+                                    IconPosition.START,
+                                    mActionConfirmationManager));
                     mTabListEditorController.show(
                             tabs, preSelectedTabCount, /* recyclerViewPosition= */ null);
                     mTabListEditorController.configureToolbarWithMenuItems(actions);
@@ -1292,7 +1311,8 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule.getActivity(),
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
-                                    IconPosition.START));
+                                    IconPosition.START,
+                                    mActionConfirmationManager));
 
                     mTabListEditorController.show(
                             tabs, preSelectedTabCount, /* recyclerViewPosition= */ null);
@@ -1617,7 +1637,7 @@ public class SelectableTabListEditorTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
-    public void testListViewV2Shows() throws IOException {
+    public void testListViewV2Shows() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
@@ -1659,7 +1679,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
-    public void testListView_select() throws IOException {
+    public void testListView_select() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
@@ -1743,7 +1763,8 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule.getActivity(),
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
-                                    IconPosition.START));
+                                    IconPosition.START,
+                                    mActionConfirmationManager));
 
                     showSelectionEditor(tabs, actions);
                 });
@@ -1765,7 +1786,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    public void testToolbarActionViewAndMenuItemContentDescription() throws Exception {
+    public void testToolbarActionViewAndMenuItemContentDescription() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
@@ -1777,7 +1798,8 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule.getActivity(),
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
-                                    IconPosition.START));
+                                    IconPosition.START,
+                                    mActionConfirmationManager));
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),

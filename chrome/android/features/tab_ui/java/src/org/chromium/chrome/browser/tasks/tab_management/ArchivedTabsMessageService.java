@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -107,6 +108,7 @@ public class ArchivedTabsMessageService extends MessageService
     private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull TabCreator mRegularTabCreator;
     private final @NonNull BackPressManager mBackPressManager;
+    private final @NonNull ModalDialogManager mModalDialogManager;
 
     private TabArchiveSettings mTabArchiveSettings;
     private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
@@ -125,7 +127,8 @@ public class ArchivedTabsMessageService extends MessageService
             @NonNull ViewGroup rootView,
             @NonNull SnackbarManager snackbarManager,
             @NonNull TabCreator regularTabCreator,
-            @NonNull BackPressManager backPressManager) {
+            @NonNull BackPressManager backPressManager,
+            @NonNull ModalDialogManager modalDialogManager) {
         super(MessageType.ARCHIVED_TABS_MESSAGE);
 
         mContext = context;
@@ -137,6 +140,7 @@ public class ArchivedTabsMessageService extends MessageService
         mSnackbarManager = snackbarManager;
         mRegularTabCreator = regularTabCreator;
         mBackPressManager = backPressManager;
+        mModalDialogManager = modalDialogManager;
 
         if (mArchivedTabModelOrchestrator.isTabModelInitialized()) {
             mArchivedTabModelOrchestratorObserver.onTabModelCreated(
@@ -241,7 +245,8 @@ public class ArchivedTabsMessageService extends MessageService
                         mSnackbarManager,
                         mRegularTabCreator,
                         mBackPressManager,
-                        mTabArchiveSettings);
+                        mTabArchiveSettings,
+                        mModalDialogManager);
     }
 
     private void updateModelProperties() {

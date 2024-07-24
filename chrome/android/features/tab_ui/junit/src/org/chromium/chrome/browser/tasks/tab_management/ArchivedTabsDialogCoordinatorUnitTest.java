@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Tests for {@link TabListMediator}. */
 @Batch(Batch.UNIT_TESTS)
@@ -75,6 +76,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private BackPressManager mBackPressManager;
     @Mock private OnTabSelectingListener mOnTabSelectingListener;
     @Mock private TabArchiveSettings mTabArchiveSettings;
+    @Mock private ModalDialogManager mModalDialogManager;
 
     private Context mContext;
     private ArchivedTabsDialogCoordinator mCoordinator;
@@ -99,7 +101,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                         mSnackbarManager,
                         mRegularTabCreator,
                         mBackPressManager,
-                        mTabArchiveSettings);
+                        mTabArchiveSettings,
+                        mModalDialogManager);
         mCoordinator.setTabListEditorCoordinatorForTesting(mTabListEditorCoordinator);
     }
 

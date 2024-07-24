@@ -228,7 +228,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                 scrimCoordinator,
                                                 getTabGroupTitleEditor(),
                                                 /* rootView= */ coordinatorView,
-                                                actionConfirmationManager);
+                                                actionConfirmationManager,
+                                                mModalDialogManager);
                                 return mTabGridDialogCoordinator.getDialogController();
                             });
 

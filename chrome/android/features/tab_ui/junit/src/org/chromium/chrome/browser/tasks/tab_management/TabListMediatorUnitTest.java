@@ -131,6 +131,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
@@ -293,6 +294,7 @@ public class TabListMediatorUnitTest {
     @Captor ArgumentCaptor<Callback<TabFavicon>> mCallbackCaptor;
     @Captor ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
     @Captor ArgumentCaptor<ComponentCallbacks> mComponentCallbacksCaptor;
+    @Captor ArgumentCaptor<Callback<Integer>> mConfirmationResultCallbackCaptor;
 
     @Captor
     ArgumentCaptor<TemplateUrlService.TemplateUrlServiceObserver> mTemplateUrlServiceObserver;
@@ -871,12 +873,78 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void sendsCloseSignalCorrectly() {
+    public void sendsCloseSignalCorrectly_ImmediateContinue() {
+        mMediator.setActionOnAllRelatedTabsForTesting(false);
         mModel.get(1)
                 .model
                 .get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
                 .run(mItemView2, mModel.get(1).model.get(TabProperties.TAB_ID));
 
+        verify(mActionConfirmationManager)
+                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
+        mConfirmationResultCallbackCaptor
+                .getValue()
+                .onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
+
+        verify(mTabModel).closeTab(eq(mTab2), eq(null), eq(false), eq(true));
+    }
+
+    @Test
+    public void sendsCloseSignalCorrectly_ConfirmationPositive() {
+        mMediator.setActionOnAllRelatedTabsForTesting(false);
+        mModel.get(1)
+                .model
+                .get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
+                .run(mItemView2, mModel.get(1).model.get(TabProperties.TAB_ID));
+
+        verify(mActionConfirmationManager)
+                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
+        mConfirmationResultCallbackCaptor
+                .getValue()
+                .onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
+
+        verify(mTabModel).closeTab(eq(mTab2), eq(null), eq(false), eq(false));
+    }
+
+    @Test
+    public void sendsCloseSignalCorrectly_ConfirmationNegative() {
+        mMediator.setActionOnAllRelatedTabsForTesting(false);
+        mModel.get(1)
+                .model
+                .get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
+                .run(mItemView2, mModel.get(1).model.get(TabProperties.TAB_ID));
+
+        verify(mActionConfirmationManager)
+                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
+        mConfirmationResultCallbackCaptor
+                .getValue()
+                .onResult(ConfirmationResult.CONFIRMATION_NEGATIVE);
+
+        verify(mTabModel, never()).closeTab(any(), any(), anyBoolean(), anyBoolean());
+    }
+
+    @Test
+    public void sendsCloseSignalCorrectly_ActionOnAllRelatedTabs() {
+        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        mModel.get(1)
+                .model
+                .get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
+                .run(mItemView2, mModel.get(1).model.get(TabProperties.TAB_ID));
+
+        verify(mActionConfirmationManager, never()).processCloseTabAttempt(any(), any());
+        verify(mTabModel).closeTab(eq(mTab2), eq(null), eq(false), eq(true));
+    }
+
+    @Test
+    public void sendsCloseSignalCorrectly_Incognito() {
+        mMediator.setActionOnAllRelatedTabsForTesting(false);
+        when(mTabGroupModelFilter.isIncognito()).thenReturn(true);
+        mModel.get(1)
+                .model
+                .get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
+                .run(mItemView2, mModel.get(1).model.get(TabProperties.TAB_ID));
+
+        verify(mActionConfirmationManager, never()).processCloseTabAttempt(any(), any());
         verify(mTabModel).closeTab(eq(mTab2), eq(null), eq(false), eq(true));
     }
 

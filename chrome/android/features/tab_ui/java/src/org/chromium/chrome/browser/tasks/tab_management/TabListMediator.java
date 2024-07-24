@@ -113,6 +113,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -369,7 +370,7 @@ class TabListMediator {
     private final TabGroupColorFaviconProvider mTabGroupColorFaviconProvider;
     private final TabListGroupMenuCoordinator.OnItemClickedCallback mOnMenuItemClickedCallback =
             this::onMenuItemClicked;
-    private final ActionConfirmationManager mActionConfirmationManager;
+    private @NonNull final ActionConfirmationManager mActionConfirmationManager;
     private final Runnable mOnTabGroupCreation;
 
     private @Nullable Profile mProfile;
@@ -1159,21 +1160,55 @@ class TabListMediator {
                         Tab closingTab = tabModel.getTabById(tabId);
                         if (closingTab == null) return;
 
+                        if (mActionsOnAllRelatedTabs || filter.isIncognito()) {
+                            doCloseTab(tabId, closingTab, filter, /* canUndo= */ true);
+                            return;
+                        }
+
+                        Callback<Integer> onResult =
+                                (@ConfirmationResult Integer result) -> {
+                                    if (result == ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                                        // If this is being invoked because of a swipe, the view
+                                        // element has been removed. We need to bring that back.
+                                        // This is done by just triggering a model update for that
+                                        // index.
+                                        int lastIndex = mModel.size() - 1;
+                                        if (lastIndex >= 0) {
+                                            mModel.update(lastIndex, mModel.get(lastIndex));
+                                        }
+                                    } else {
+                                        doCloseTab(
+                                                tabId,
+                                                closingTab,
+                                                filter,
+                                                result == ConfirmationResult.IMMEDIATE_CONTINUE);
+                                    }
+                                };
+
+                        mActionConfirmationManager.processCloseTabAttempt(
+                                Collections.singletonList(closingTab.getId()), onResult);
+                    }
+
+                    private void doCloseTab(
+                            int tabId,
+                            Tab closingTab,
+                            TabGroupModelFilter filter,
+                            boolean canUndo) {
                         RecordUserAction.record("MobileTabClosed." + mComponentName);
 
                         if (mActionsOnAllRelatedTabs && filter.isTabInTabGroup(closingTab)) {
                             List<Tab> related = getRelatedTabsForId(tabId);
                             onGroupClosedFrom(tabId);
-                            filter.closeMultipleTabs(
-                                    related, /* canUndo= */ true, /* hideTabGroups= */ true);
-                            return;
+                            filter.closeMultipleTabs(related, canUndo, /* hideTabGroups= */ true);
+                        } else {
+                            TabModel tabModel = filter.getTabModel();
+                            onTabClosedFrom(tabId, mComponentName);
+
+                            Tab currentTab = TabModelUtils.getCurrentTab(tabModel);
+                            Tab nextTab = currentTab == closingTab ? getNextTab(tabId) : null;
+
+                            tabModel.closeTab(closingTab, nextTab, /* uponExit= */ false, canUndo);
                         }
-                        onTabClosedFrom(tabId, mComponentName);
-
-                        Tab currentTab = TabModelUtils.getCurrentTab(tabModel);
-                        Tab nextTab = currentTab == closingTab ? getNextTab(tabId) : null;
-
-                        tabModel.closeTab(closingTab, nextTab, false, true);
                     }
 
                     private Tab getNextTab(int closingTabId) {

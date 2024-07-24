@@ -40421,6 +40421,60 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroupConfirmation.CloseTab.Abort">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user aborts a full tab group removal in the confirmation
+    dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.CloseTab.Proceed">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user proceeds with a full tab group removal in the
+    confirmation dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.CloseTab.StopShowing">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user requests to stop seeing a confirmation dialog when
+    removing a full tab group.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.CloseTabFullGroup.Abort">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user aborts a full tab group closure in the confirmation
+    dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.CloseTabFullGroup.Proceed">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user proceeds with a full tab group closure in the
+    confirmation dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.CloseTabFullGroup.StopShowing">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user requests to stop seeing a confirmation dialog when
+    closing a full tab group.
+  </description>
+</action>
+
 <action name="TabGroupConfirmation.DeleteGroup.Abort">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>

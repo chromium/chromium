@@ -119,6 +119,7 @@ public class TabListCoordinator
      * @param context The context to use for accessing {@link android.content.res.Resources}.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
      *     controls.
+     * @param modalDialogManager Used for managing the modal dialogs.
      * @param tabModelFilterSupplier The supplier for the current tab model filter.
      * @param thumbnailProvider Provider to provide screenshot related details.
      * @param actionOnRelatedTabs Whether tab-related actions should be operated on all related
@@ -145,6 +146,7 @@ public class TabListCoordinator
             @TabListMode int mode,
             Context context,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull ModalDialogManager modalDialogManager,
             @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
             boolean actionOnRelatedTabs,
@@ -163,7 +165,7 @@ public class TabListCoordinator
                 mode,
                 context,
                 browserControlsStateProvider,
-                /* modalDialogManager= */ null,
+                modalDialogManager,
                 tabModelFilterSupplier,
                 thumbnailProvider,
                 actionOnRelatedTabs,
@@ -188,7 +190,7 @@ public class TabListCoordinator
             @TabListMode int mode,
             Context context,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @Nullable ModalDialogManager modalDialogManager,
+            @NonNull ModalDialogManager modalDialogManager,
             @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
             boolean actionOnRelatedTabs,
