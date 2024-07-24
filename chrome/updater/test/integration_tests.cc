@@ -3821,7 +3821,11 @@ class IntegrationTestUserInSystem : public IntegrationTest {
 
  protected:
   void SetUp() override {
-    if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
+    // The test can't run on Windows with UAC on because installing per-user
+    // applications by code running at high integrity levels, such as the
+    // integration test driver is not supported.
+    if (!IsSystemInstall(GetUpdaterScopeForTesting()) ||
+        WrongUser(UpdaterScope::kUser)) {
       GTEST_SKIP();
     }
 
