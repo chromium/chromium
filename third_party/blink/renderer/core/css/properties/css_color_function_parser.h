@@ -47,8 +47,8 @@ class CORE_EXPORT ColorFunctionParser {
   bool MakePerColorSpaceAdjustments();
 
   Color::ColorSpace color_space_ = Color::ColorSpace::kNone;
-  std::optional<double> channels_[3];
-  ChannelType channel_types_[3];
+  std::array<std::optional<double>, 3> channels_;
+  std::array<ChannelType, 3> channel_types_;
   std::optional<double> alpha_ = 1.0;
 
   // Metadata about the current function being parsed. Set by
