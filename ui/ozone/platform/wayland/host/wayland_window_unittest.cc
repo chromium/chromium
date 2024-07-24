@@ -4545,11 +4545,11 @@ class WaylandSubsurfaceTest : public WaylandWindowTest {
 TEST_P(WaylandSubsurfaceTest, OneWaylandSubsurfaceInteger) {
   ASSERT_FALSE(connection_->surface_augmenter());
 
-  constexpr gfx::RectF test_data[2][2] = {
-      {gfx::RectF({15.12, 15.912}, {10.351, 10.742}),
-       gfx::RectF({16, 16}, {11, 11})},
-      {gfx::RectF({7.041, 8.583}, {13.452, 20.231}),
-       gfx::RectF({7.041, 8.583}, {13.452, 20.231})}};
+  constexpr std::array<std::array<gfx::RectF, 2>, 2> test_data = {
+      {{gfx::RectF({15.12, 15.912}, {10.351, 10.742}),
+        gfx::RectF({16, 16}, {11, 11})},
+       {gfx::RectF({7.041, 8.583}, {13.452, 20.231}),
+        gfx::RectF({7.041, 8.583}, {13.452, 20.231})}}};
 
   for (const auto& item : test_data) {
     OneWaylandSubsurfaceTestHelper(item[0] /* subsurface_bounds */,
@@ -4564,9 +4564,9 @@ TEST_P(WaylandSubsurfaceTest, OneWaylandSubsurfaceInteger) {
 TEST_P(WaylandSubsurfaceTest, OneWaylandSubsurfaceNonInteger) {
   ASSERT_FALSE(connection_->surface_augmenter());
 
-  constexpr gfx::RectF test_data[2][2] = {
-      {gfx::RectF({15, 15}, {10, 10}), gfx::RectF({15, 15}, {10, 10})},
-      {gfx::RectF({7, 8}, {16, 18}), gfx::RectF({7, 8}, {16, 18})}};
+  constexpr std::array<std::array<gfx::RectF, 2>, 2> test_data = {
+      {{gfx::RectF({15, 15}, {10, 10}), gfx::RectF({15, 15}, {10, 10})},
+       {gfx::RectF({7, 8}, {16, 18}), gfx::RectF({7, 8}, {16, 18})}}};
 
   for (const auto& item : test_data) {
     OneWaylandSubsurfaceTestHelper(item[0] /* subsurface_bounds */,

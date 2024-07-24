@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/353039516): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/wayland/gpu/wayland_canvas_surface.h"
 
 #include <memory>
@@ -116,6 +121,7 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
     DCHECK_NE(this, buffer);
     const size_t stride = CalculateStride(sk_surface_->width());
     for (SkRegion::Iterator i(dirty_region_); !i.done(); i.next()) {
+      // SAFETY: TODO(crbug.com/353039516): fix unsafe pointer arithmetic.
       uint8_t* dst_ptr =
           static_cast<uint8_t*>(shm_mapping_.memory()) +
           i.rect().x() * SkColorTypeBytesPerPixel(kN32_SkColorType) +

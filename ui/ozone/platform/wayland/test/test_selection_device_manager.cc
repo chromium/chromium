@@ -29,10 +29,11 @@ std::vector<uint8_t> ReadDataOnWorkerThread(base::ScopedFD fd) {
   constexpr size_t kChunkSize = 1024;
   std::vector<uint8_t> bytes;
   while (true) {
-    uint8_t chunk[kChunkSize];
-    ssize_t bytes_read = HANDLE_EINTR(read(fd.get(), chunk, kChunkSize));
+    std::array<uint8_t, kChunkSize> chunk;
+    ssize_t bytes_read =
+        HANDLE_EINTR(read(fd.get(), chunk.data(), chunk.size()));
     if (bytes_read > 0) {
-      bytes.insert(bytes.end(), chunk, chunk + bytes_read);
+      bytes.insert(bytes.end(), chunk.begin(), chunk.begin() + bytes_read);
       continue;
     }
     if (bytes_read < 0) {

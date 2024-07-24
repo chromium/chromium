@@ -145,6 +145,7 @@
 -tools/
 -ui/
 +ui/views/
++ui/ozone/platform/wayland
 -url/third_party
 -v8/
 

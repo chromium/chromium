@@ -82,8 +82,8 @@ void WaylandDrm::CreateBuffer(const base::ScopedFD& fd,
   // If the |planes_count| less than the maximum sizes of these arrays and the
   // number of offsets and strides that |wl_drm| can receive, just initialize
   // them to 0, which is totally ok.
-  uint32_t stride[3] = {0};
-  uint32_t offset[3] = {0};
+  std::array<uint32_t, 3> stride = {0};
+  std::array<uint32_t, 3> offset = {0};
   for (size_t i = 0; i < planes_count; i++) {
     stride[i] = strides[i];
     offset[i] = offset[i];

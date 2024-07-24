@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/353039516): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 
 #include <sys/socket.h>
@@ -29,6 +34,7 @@ namespace {
 
 void handle_client_destroyed(struct wl_listener* listener, void* data) {
   TestServerListener* destroy_listener =
+      // SAFETY: TODO(crbug.com/353039516): fix unsafe pointer arithmetic.
       wl_container_of(listener, /*sample=*/destroy_listener,
                       /*member=*/listener);
   DCHECK(destroy_listener);

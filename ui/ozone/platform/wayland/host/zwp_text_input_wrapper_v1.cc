@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/353039516): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v1.h"
 
 #include <sys/mman.h>
@@ -626,6 +631,8 @@ void ZWPTextInputWrapperV1::OnInsertImageWithLargeURL(
     base::StrAppend(&src, {";charset=", charset});
   }
   base::StrAppend(&src, {";base64,"});
+  // SAFETY: TODO(crbug.com/353039516): fix unsafe buffer manipulation in span
+  // creation.
   base::Base64EncodeAppend(
       base::make_span((const unsigned char*)(raw_data.data()), raw_data.size()),
       &src);

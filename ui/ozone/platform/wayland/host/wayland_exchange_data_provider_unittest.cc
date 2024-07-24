@@ -23,15 +23,14 @@ namespace {
 
 template <typename StringType>
 PlatformClipboard::Data ToClipboardData(const StringType& data_string) {
-  auto* begin = reinterpret_cast<typename std::vector<uint8_t>::const_pointer>(
-      data_string.data());
-  std::vector<uint8_t> result(
-      begin,
-      begin + (data_string.size() * sizeof(typename StringType::value_type)));
+  base::span<const typename StringType::value_type> data_span(data_string);
+  std::vector<uint8_t> result(data_span.size() *
+                              sizeof(typename StringType::value_type));
+  std::memcpy(result.data(), data_span.data(), result.size());
+
   return static_cast<scoped_refptr<base::RefCountedBytes>>(
       base::RefCountedBytes::TakeVector(&result));
 }
-
 }  // namespace
 
 // Regression test for https://crbug.com/1284996.

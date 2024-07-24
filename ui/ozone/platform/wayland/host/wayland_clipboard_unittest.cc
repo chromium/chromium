@@ -233,9 +233,9 @@ class WaylandClipboardTest : public WaylandClipboardTestBase {
 
   // Fill the clipboard backing store with sample data.
   void OfferData(ClipboardBuffer buffer,
-                 const char* data,
+                 std::string_view data,
                  const std::string& mime_type) {
-    std::vector<uint8_t> data_vector(data, data + std::strlen(data));
+    std::vector<uint8_t> data_vector(data.begin(), data.end());
     offered_data_[mime_type] = base::RefCountedBytes::TakeVector(&data_vector);
 
     base::MockCallback<PlatformClipboard::OfferDataClosure> offer_callback;
