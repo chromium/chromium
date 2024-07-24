@@ -318,6 +318,7 @@ static_library("core") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
     "//services/on_device_model/public/mojom",
+    "//third_party/tflite:buildflags",
     "//url:url",
   ]
 
@@ -549,6 +550,7 @@ source_set("unit_tests") {
     "//services/on_device_model/public/cpp/test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/tflite:buildflags",
     "//third_party/zlib/google:zip",
     "//ui/base",
     "//url:url",

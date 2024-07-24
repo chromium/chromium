@@ -2178,6 +2178,7 @@ if (!is_android) {
       "//third_party/libwebp",
       "//third_party/openscreen/src/cast/streaming:common",
       "//third_party/protobuf:py_proto_runtime",
+      "//third_party/tflite:buildflags",
       "//third_party/webrtc_overrides:webrtc_component",
       "//third_party/widevine/cdm:buildflags",
       "//third_party/widevine/cdm:headers",
