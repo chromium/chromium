@@ -737,13 +737,6 @@
       <message name="IDS_IOS_BRING_ANDROID_TABS_REVIEW_TABLE_TITLE" desc="Title of the table that shows a list of recently active tabs from Android for the Android switcher to review and open. [iOS only]">
         Tabs from Android
       </message>
-      <message name="IDS_IOS_BULK_UPLOAD_BOOKMARK_SUBTITLE" desc="The text appears as a note in a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome. This line give the number of sites with local bookmarks and two examples of such sites.">
-        {count, plural,
-          =1 {{website_1}}
-          =2 {{website_1}, {website_2}}
-          =3 {{website_1}, {website_2}, and 1 more}
-          other {{website_1}, {website_2}, and {more_count} more}}
-      </message>
       <message name="IDS_IOS_BULK_UPLOAD_BOOKMARK_TITLE" desc="The text appears as a note in a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome. This switch label explains how many  bookmarks are saved locally.">
         {count, plural,
           =1 {{count} bookmark}
@@ -775,13 +768,6 @@
         {count, plural,
           =1 {{count} password}
           other {{count} passwords}}
-      </message>
-      <message name="IDS_IOS_BULK_UPLOAD_READING_LIST_SUBTITLE" desc="The text appears as a note in a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome. This line give the number of sites with local reading list pages and two examples of such sites.">
-        {count, plural,
-          =1 {{website_1}}
-          =2 {{website_1}, {website_2}}
-          =3 {{website_1}, {website_2}, and 1 more}
-          other {{website_1}, {website_2}, and {more_count} more}}
       </message>
       <message name="IDS_IOS_BULK_UPLOAD_READING_LIST_TITLE" desc="The text appears as a note in a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome. This switch label explains how many local reading list pages are saved locally.">
         {count, plural,

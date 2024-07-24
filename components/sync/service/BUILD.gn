@@ -113,6 +113,7 @@ static_library("service") {
     "//components/version_info:generate_version_info",
     "//crypto",
     "//services/network/public/cpp",
+    "//ui/base",
   ]
 
   if (is_android) {

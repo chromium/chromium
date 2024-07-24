@@ -32,7 +32,6 @@ struct BulkUploadModelItem {
   syncer::ModelType model_type;
   BulkUploadType bulk_upload_type;
   int title_string_id;
-  int subtitle_string_id;
   NSString* const view_accessibility_id;
 };
 
@@ -45,21 +44,18 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
            syncer::BOOKMARKS,
            BulkUploadType::kBookmark,
            IDS_IOS_BULK_UPLOAD_BOOKMARK_TITLE,
-           IDS_IOS_BULK_UPLOAD_BOOKMARK_SUBTITLE,
            kBulkUploadTableViewBookmarksItemAccessibilityIdentifer,
        },
        {
            syncer::PASSWORDS,
            BulkUploadType::kPassword,
            IDS_IOS_BULK_UPLOAD_PASSWORD_TITLE,
-           IDS_IOS_BULK_UPLOAD_BOOKMARK_SUBTITLE,
            kBulkUploadTableViewPasswordsItemAccessibilityIdentifer,
        },
        {
            syncer::READING_LIST,
            BulkUploadType::kReadinglist,
            IDS_IOS_BULK_UPLOAD_READING_LIST_TITLE,
-           IDS_IOS_BULK_UPLOAD_READING_LIST_SUBTITLE,
            kBulkUploadTableViewReadingListItemAccessibilityIdentifer,
        }},
   };
@@ -189,22 +185,8 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
   syncer::LocalDataDescription description = _map[modelItem.model_type];
   CHECK_GT(description.domains.size(), 0ul)
       << "model type: " << static_cast<int>(modelItem.model_type);
-  NSString* subtitle;
-  if (description.domains.size() == 1) {
-    subtitle = base::SysUTF16ToNSString(
-        base::i18n::MessageFormatter::FormatWithNamedArgs(
-            l10n_util::GetStringUTF16(modelItem.subtitle_string_id), "count",
-            static_cast<int>(description.domain_count), "website_1",
-            description.domains[0], "more_count",
-            static_cast<int>(description.domain_count - 1)));
-  } else {
-    subtitle = base::SysUTF16ToNSString(
-        base::i18n::MessageFormatter::FormatWithNamedArgs(
-            l10n_util::GetStringUTF16(modelItem.subtitle_string_id), "count",
-            static_cast<int>(description.domain_count), "website_1",
-            description.domains[0], "website_2", description.domains[1],
-            "more_count", static_cast<int>(description.domain_count - 2)));
-  }
+  NSString* subtitle =
+      base::SysUTF16ToNSString(syncer::GetDomainsDisplayText(description));
   BulkUploadViewItem* bulkUploadViewItem = [[BulkUploadViewItem alloc] init];
   bulkUploadViewItem.type = modelItem.bulk_upload_type;
   bulkUploadViewItem.title =

@@ -53,6 +53,10 @@ struct LocalDataDescription {
                          const LocalDataDescription&) = default;
 };
 
+// Returns a string that summarizes the domain content of `description`, meant
+// to be consumed by the UI. Must not be called if the `description.domains` is
+// empty.
+std::u16string GetDomainsDisplayText(const LocalDataDescription& description);
 
 // gmock printer helper.
 void PrintTo(const LocalDataDescription& local_data_description,
