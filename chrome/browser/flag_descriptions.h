@@ -2584,6 +2584,12 @@ extern const char kDrawNativeEdgeToEdgeDescription[];
 extern const char kDrawWebEdgeToEdgeName[];
 extern const char kDrawWebEdgeToEdgeDescription[];
 
+extern const char kDynamicSafeAreaInsetsName[];
+extern const char kDynamicSafeAreaInsetsDescription[];
+
+extern const char kDynamicSafeAreaInsetsOnScrollName[];
+extern const char kDynamicSafeAreaInsetsOnScrollDescription[];
+
 extern const char kEdgeToEdgeBottomChinName[];
 extern const char kEdgeToEdgeBottomChinDescription[];
 

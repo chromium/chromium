@@ -4401,6 +4401,17 @@ const char kEdgeToEdgeBottomChinDescription[] =
     "Enables the scrollable bottom chin for an intermediate Edge-to-Edge "
     "experience.";
 
+const char kDynamicSafeAreaInsetsName[] = "DynamicSafeAreaInsets";
+const char kDynamicSafeAreaInsetsDescription[] =
+    "Dynamically change the safe area insets based on the bottom browser "
+    "controls visibility.";
+
+const char kDynamicSafeAreaInsetsOnScrollName[] =
+    "DynamicSafeAreaInsetsOnScroll";
+const char kDynamicSafeAreaInsetsOnScrollDescription[] =
+    "Dynamically change the safe area insets as browser controls scrolls. "
+    "Requires DynamicSafeAreaInsets to also be enabled.";
+
 const char kEducationalTipModuleName[] = "Educational Tip Module";
 const char kEducationalTipModuleDescription[] =
     "Show educational tip module on magic stack in clank";

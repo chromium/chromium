@@ -16432,6 +16432,7 @@ from previous Chrome versions.
   <int value="-1886760950" label="ImprovedScreenCaptureSettings:enabled"/>
   <int value="-1886713568"
       label="AutofillGetPaymentsIdentityFromSync:disabled"/>
+  <int value="-1885663926" label="DynamicSafeAreaInsets:disabled"/>
   <int value="-1885548175" label="OmniboxFuzzyUrlSuggestions:enabled"/>
   <int value="-1885188914" label="OmniboxAsyncViewInflation:disabled"/>
   <int value="-1885074774" label="ShelfScrollable:enabled"/>
@@ -17670,6 +17671,7 @@ from previous Chrome versions.
   <int value="-1355267677"
       label="ArcTrackpadScrollTouchscreenEmulation:enabled"/>
   <int value="-1354983077" label="CameraAppAutoQRDetection:disabled"/>
+  <int value="-1354845182" label="DynamicSafeAreaInsetsOnScroll:enabled"/>
   <int value="-1353926640" label="GMSCoreEmoji:disabled"/>
   <int value="-1353897328" label="FileTransferEnterpriseConnectorUI:disabled"/>
   <int value="-1353865639" label="InteractiveWindowCycleList:disabled"/>
@@ -20794,6 +20796,7 @@ from previous Chrome versions.
   <int value="-30997499" label="ForceReSyncDrive:disabled"/>
   <int value="-30966385" label="enable-hardware-overlays"/>
   <int value="-30208692" label="webview-enable-modern-cookie-same-site"/>
+  <int value="-29920412" label="DynamicSafeAreaInsetsOnScroll:disabled"/>
   <int value="-29877377" label="TabHoverCardImages:disabled"/>
   <int value="-29847483" label="MemoryAblation:enabled"/>
   <int value="-29507521" label="ContextualNudges:disabled"/>
@@ -22527,6 +22530,7 @@ from previous Chrome versions.
   <int value="705946076"
       label="ContextMenuPerformanceInfoAndRemoteHintFetching:disabled"/>
   <int value="706280254" label="StoragePressureEvent:enabled"/>
+  <int value="707463326" label="DynamicSafeAreaInsets:enabled"/>
   <int value="708015891"
       label="AutofillUpdateChromeSettingsLinkToGPayWeb:enabled"/>
   <int value="708185835" label="WebViewThrottleBackgroundBeginFrame:enabled"/>
