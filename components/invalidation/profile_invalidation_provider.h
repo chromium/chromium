@@ -9,6 +9,7 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <variant>
 
 #include "base/compiler_specific.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
