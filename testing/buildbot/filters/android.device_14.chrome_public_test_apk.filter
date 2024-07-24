@@ -3,3 +3,36 @@
 
 # crbug.com/354279630
 -org.chromium.components.paintpreview.player.PaintPreviewPlayerTest.overscrollRefreshTest
+
+# crbug.com/350394860
+-org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddCustomTopMenuItemHasNoEffect_ForIncognitoCCT__EphemeralTab
+-org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddCustomTopMenuItemHasNoEffect_ForIncognitoCCT__IncognitoTab
+-org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddRemoteViewsHasNoEffect__EphemeralTab
+-org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddRemoteViewsHasNoEffect__IncognitoTab
+-org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithCustomCloseButtonAndMaxTopActionItems__HTTP
+-org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithCustomCloseButtonAndMaxTopActionItems__HTTPS
+-org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithDefaultCloseButtonAndMaxTopActionItems__HTTP
+-org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithDefaultCloseButtonAndMaxTopActionItems__HTTPS
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testActionButtonBadRatio
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testBottomBar
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testRecordRetainableSession_WithoutWarmupAndSession
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testRemoteViews
+-org.chromium.chrome.browser.customtabs.CustomTabPrivacySandboxDialogTest.adsNoticeCCT_AppIDNullShowDialog
+
+
+# crbug.com/350395970
+-org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNewTabForUnknownApp
+-org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNewTabWithNewTabExtra
+-org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNoNewTabForSameApp
+-org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNoNewTabForSameAppOnStart
+
+# crbug.com/355057773
+-org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.*
+
+# crbug.com/355058571
+-org.chromium.chrome.browser.ntp.RecentlyClosedBridgeTest.testOpenRecentlyClosedTab_FromGroupClosure_InCurrentTab
+-org.chromium.chrome.browser.ntp.RecentlyClosedBridgeTest.testOpenRecentlyClosedTab_InCurrentTab
+
+# crbug.com/355058925
+-org.chromium.chrome.browser.InputHintCheckerTest.testInitFailureRecordsHistogram
+-org.chromium.chrome.browser.InputHintCheckerTest.testInitFailureReturnsFalse
