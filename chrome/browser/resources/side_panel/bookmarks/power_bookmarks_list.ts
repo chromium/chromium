@@ -465,6 +465,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     return this.availableProductInfos_;
   }
 
+  getSelectedBookmarks(): {[key: string]: boolean} {
+    return this.selectedBookmarks_;
+  }
+
   getProductImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode): string {
     const bookmarkProductInfo = this.availableProductInfos_.get(bookmark.id);
     if (bookmarkProductInfo) {
@@ -828,9 +832,8 @@ export class PowerBookmarksListElement extends PolymerElement {
         sortType.sortOrder;
   }
 
-  private bookmarkIsSelected_(bookmark: chrome.bookmarks.BookmarkTreeNode):
-      boolean {
-    return this.get(`selectedBookmarks_.${bookmark.id.toString()}`);
+  private isCheckboxChecked_(bookmark: chrome.bookmarks.BookmarkTreeNode) {
+    return !!this.bookmarksService_?.bookmarkIsSelected(bookmark);
   }
 
   /**
@@ -881,7 +884,8 @@ export class PowerBookmarksListElement extends PolymerElement {
           {bookmark: chrome.bookmarks.BookmarkTreeNode, checked: boolean}>) {
     event.preventDefault();
     event.stopPropagation();
-    const isSelected = this.bookmarkIsSelected_(event.detail.bookmark);
+    const isSelected =
+        !!this.bookmarksService_?.bookmarkIsSelected(event.detail.bookmark);
     if (event.detail.checked && !isSelected) {
       this.set(
           `selectedBookmarks_.${event.detail.bookmark.id.toString()}`, true);

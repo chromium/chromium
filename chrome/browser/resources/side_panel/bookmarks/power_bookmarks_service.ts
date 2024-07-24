@@ -40,6 +40,7 @@ interface PowerBookmarksDelegate {
   onBookmarkRemoved(bookmark: chrome.bookmarks.BookmarkTreeNode): void;
   getTrackedProductInfos(): {[key: string]: BookmarkProductInfo};
   getAvailableProductInfos(): Map<string, BookmarkProductInfo>;
+  getSelectedBookmarks(): {[key: string]: boolean};
   getProductImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode): string;
 }
 
@@ -370,6 +371,12 @@ export class PowerBookmarksService {
       BookmarkProductInfo|undefined {
     const availableProductInfos = this.delegate_.getAvailableProductInfos();
     return availableProductInfos.get(bookmark.id);
+  }
+
+  bookmarkIsSelected(bookmark: chrome.bookmarks.BookmarkTreeNode): boolean {
+    const selectedBookmarks = this.delegate_.getSelectedBookmarks();
+    return Object.entries(selectedBookmarks)
+               .find(([key, _val]) => key === bookmark.id)?.[1] ?? false;
   }
 
 
