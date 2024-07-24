@@ -762,8 +762,7 @@ WaylandDataDragController::GetAndValidateSerialForDrag(DragEventSource source) {
   switch (source) {
     case DragEventSource::kMouse:
       serial_type = wl::SerialType::kMousePress;
-      should_drag =
-          pointer_delegate_->IsPointerButtonPressed(EF_LEFT_MOUSE_BUTTON);
+      should_drag = pointer_delegate_->IsPointerButtonPressed(EF_MOUSE_BUTTON);
       break;
     case DragEventSource::kTouch:
       serial_type = wl::SerialType::kTouchPress;
