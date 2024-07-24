@@ -109,8 +109,11 @@ std::u16string GetTitle(bool has_suggestions, const url::Origin& origin) {
 
 password_manager::PasswordManagerDriver* GetPasswordManagerDriver(
     content::WebContents* web_contents) {
-  return password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
-      web_contents->GetFocusedFrame());
+  if (content::RenderFrameHost* rfh = web_contents->GetFocusedFrame()) {
+    return password_manager::ContentPasswordManagerDriver::
+        GetForRenderFrameHost(rfh);
+  }
+  return nullptr;  // No driver without focused frame!
 }
 
 ShouldShowAction ShouldShowCredManReentryAction(
