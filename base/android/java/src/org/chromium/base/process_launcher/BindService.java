@@ -16,7 +16,6 @@ import android.os.UserHandle;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.compat.ApiHelperForQ;
 import org.chromium.build.BuildConfig;
 
 import java.lang.reflect.Method;
@@ -42,8 +41,7 @@ final class BindService {
             Executor executor,
             String instanceName) {
         if (supportVariableConnections() && instanceName != null) {
-            return ApiHelperForQ.bindIsolatedService(
-                    context, intent, flags, instanceName, executor, connection);
+            return context.bindIsolatedService(intent, flags, instanceName, executor, connection);
         }
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N) {

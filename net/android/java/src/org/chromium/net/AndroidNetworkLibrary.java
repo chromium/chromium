@@ -35,7 +35,6 @@ import org.jni_zero.CalledByNativeUnchecked;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.compat.ApiHelperForQ;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -235,8 +234,7 @@ class AndroidNetworkLibrary {
                     if (networkCapabilities != null
                             && networkCapabilities.hasTransport(
                                     NetworkCapabilities.TRANSPORT_WIFI)) {
-                        TransportInfo transportInfo =
-                                ApiHelperForQ.getTransportInfo(networkCapabilities);
+                        TransportInfo transportInfo = networkCapabilities.getTransportInfo();
                         if (transportInfo != null && transportInfo instanceof WifiInfo) {
                             return (WifiInfo) transportInfo;
                         }

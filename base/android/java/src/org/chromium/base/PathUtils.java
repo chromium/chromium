@@ -18,7 +18,6 @@ import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.compat.ApiHelperForQ;
 import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.base.task.AsyncTask;
 
@@ -298,17 +297,17 @@ public abstract class PathUtils {
     }
 
     /**
-     * @return The download directory for secondary storage on Q+, returned by
-     * {@link MediaStore#getExternalVolumeNames(Context)}. Notices on Android R, apps can no longer
-     * expose app's private directory for secondary storage. Apps should put files to
-     * /storage/$volume_id/Download/ directory instead.
+     * @return The download directory for secondary storage on Q+, returned by {@link
+     *     MediaStore#getExternalVolumeNames(Context)}. Notices on Android R, apps can no longer
+     *     expose app's private directory for secondary storage. Apps should put files to
+     *     /storage/$volume_id/Download/ directory instead.
      */
     @RequiresApi(Build.VERSION_CODES.R)
     @CalledByNative
     public static @NonNull String[] getExternalDownloadVolumesNames() {
         ArrayList<File> files = new ArrayList<>();
         Set<String> volumes =
-                ApiHelperForQ.getExternalVolumeNames(ContextUtils.getApplicationContext());
+                MediaStore.getExternalVolumeNames(ContextUtils.getApplicationContext());
         for (String vol : volumes) {
             if (!TextUtils.isEmpty(vol) && !vol.contains(MediaStore.VOLUME_EXTERNAL_PRIMARY)) {
                 StorageManager manager =

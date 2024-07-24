@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.geo;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -36,7 +37,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.compat.ApiHelperForQ;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
@@ -88,8 +89,7 @@ class PlatformNetworksManager {
                         connectivityManager.getNetworkCapabilities(network);
                 if (networkCapabilities != null
                         && networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                    TransportInfo transportInfo =
-                            ApiHelperForQ.getTransportInfo(networkCapabilities);
+                    TransportInfo transportInfo = networkCapabilities.getTransportInfo();
                     if (transportInfo != null && transportInfo instanceof WifiInfo) {
                         return (WifiInfo) transportInfo;
                     }
@@ -395,7 +395,15 @@ class PlatformNetworksManager {
             TelephonyManager telephonyManager, Callback<List<CellInfo>> callback) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             try {
-                ApiHelperForQ.requestCellInfoUpdate(telephonyManager, callback);
+                telephonyManager.requestCellInfoUpdate(
+                        AsyncTask.THREAD_POOL_EXECUTOR,
+                        new TelephonyManager.CellInfoCallback() {
+                            @Override
+                            @SuppressLint("Override")
+                            public void onCellInfo(List<CellInfo> cellInfos) {
+                                callback.onResult(cellInfos);
+                            }
+                        });
             } catch (IllegalStateException e) {
                 // TelephonyManager#requestCellInfoUpdate() throws IllegalStateException when
                 // Telephony is unavailable. It doesn't make sense to pass the call to the

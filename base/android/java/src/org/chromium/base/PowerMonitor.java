@@ -16,7 +16,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.compat.ApiHelperForQ;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
@@ -168,7 +167,7 @@ public class PowerMonitor {
                         ContextUtils.getApplicationContext()
                                 .getSystemService(Context.POWER_SERVICE);
         if (powerManager == null) return -1;
-        return ApiHelperForQ.getCurrentThermalStatus(powerManager);
+        return powerManager.getCurrentThermalStatus();
     }
 
     @NativeMethods
