@@ -130,6 +130,7 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   void BlockModifiersOnDevices(std::vector<int> device_ids) override;
   bool AreInputDevicesEnabled() const override;
   std::unique_ptr<ScopedDisableInputDevices> DisableInputDevices() override;
+  void DisableKeyboardImposterCheck() override;
 
   // Notifies the controller to delete any data for the given `device_id`.
   void OnInputDeviceRemoved(int device_id);

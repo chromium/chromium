@@ -209,6 +209,13 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   DisableInputDevices() = 0;
 
   virtual bool AreInputDevicesEnabled() const = 0;
+
+  // Disable imposter check when a keyboard is connected to the device. When a
+  // new keyboard is connected to the device it is checked for being an
+  // imposter which which triggers the device to use a virtual keyboard when
+  // input is required until a physical key is pressed on the physical keyboard
+  // connected.
+  virtual void DisableKeyboardImposterCheck() = 0;
 };
 
 // Create an input controller that does nothing.

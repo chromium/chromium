@@ -232,6 +232,8 @@ HapticsTrackingTestInputController::DisableInputDevices() {
   return nullptr;
 }
 
+void HapticsTrackingTestInputController::DisableKeyboardImposterCheck() {}
+
 bool HapticsTrackingTestInputController::AreInputDevicesEnabled() const {
   return true;
 }
