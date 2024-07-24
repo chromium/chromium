@@ -162,6 +162,7 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
       // margins to 0.
       item_view->set_vertical_margin(0);
       item_view->SetHighlightWhenSelectedWithChildViews(true);
+      item_view->GetViewAccessibility().SetName(label);
 
       // Creates a checkbox. The argument `button_width` is the minimum width of
       // the checkbox button. Since we are not going to limit the minimum size,

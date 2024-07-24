@@ -1321,6 +1321,34 @@ TEST_F(BirchBarMenuTest, HideSuggestionTypes) {
   }
 }
 
+// Tests that the checkboxes in the context menu have the correct accessible
+// name. Regression test for http://b/354925434.
+TEST_F(BirchBarMenuTest, CheckboxAccessibleName) {
+  EnterOverview();
+
+  auto* root_window_controller = Shell::GetPrimaryRootWindowController();
+  // Right click on the wallpaper of the first display to show the context menu.
+  RightClickOn(root_window_controller->wallpaper_widget_controller()
+                   ->GetWidget()
+                   ->GetContentsView());
+
+  auto* model_adapter =
+      root_window_controller->menu_model_adapter_for_testing();
+  ASSERT_TRUE(model_adapter->IsShowingMenu());
+
+  // Ensure that the second item is a checkbox.
+  views::MenuItemView* item_view =
+      model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(1);
+  ASSERT_TRUE(views::IsViewClass<Checkbox>(item_view->children()[0]));
+
+  // `views::MenuItemView` calculates its accessible name by calling
+  // `GetAccessibleNodeData()`. Test that it returns the correct string.
+  ui::AXNodeData node_data;
+  item_view->GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(u"Weather",
+            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+}
+
 // The parameter structure for birch bar responsive layout tests.
 struct LayoutTestParams {
   gfx::Size display_size;
