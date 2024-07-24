@@ -5607,7 +5607,8 @@
                         "EnsureExistingRendererAlive",
                         "LazyBindJsInjection",
                         "SkipUnnecessaryThreadHopsForParseHeaders",
-                        "WebViewOptimizeXrwNavigationFlow"
+                        "WebViewOptimizeXrwNavigationFlow",
+                        "WebViewPreloadClasses"
                     ]
                 }
             ]
@@ -25757,21 +25758,6 @@
                     },
                     "enable_features": [
                         "MaskedDomainList"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebViewPreloadClasses": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebViewPreloadClasses"
                     ]
                 }
             ]
