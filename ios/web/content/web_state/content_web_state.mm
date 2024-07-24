@@ -93,7 +93,7 @@ CRWSessionStorage* CreateSessionStorage(
 }  // namespace
 
 ContentWebState::ContentWebState(const CreateParams& params)
-    : ContentWebState(params, nil) {}
+    : ContentWebState(params, nil, base::ReturnValueOnce<NSData*>(nil)) {}
 
 ContentWebState::ContentWebState(const CreateParams& params,
                                  CRWSessionStorage* session_storage,
@@ -161,7 +161,8 @@ ContentWebState::ContentWebState(BrowserState* browser_state,
     : ContentWebState(CreateParams(browser_state),
                       CreateSessionStorage(unique_identifier,
                                            std::move(metadata),
-                                           std::move(storage_loader))) {}
+                                           std::move(storage_loader)),
+                      base::ReturnValueOnce<NSData*>(nil)) {}
 
 ContentWebState::~ContentWebState() {
   WebContentsObserver::Observe(nullptr);
@@ -209,7 +210,8 @@ std::unique_ptr<WebState> ContentWebState::Clone() const {
   CRWSessionStorage* session_storage = BuildSessionStorage();
   session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
   session_storage.uniqueIdentifier = WebStateID::NewUnique();
-  auto clone = std::make_unique<ContentWebState>(params, session_storage);
+  auto clone = std::make_unique<ContentWebState>(
+      params, session_storage, base::ReturnValueOnce<NSData*>(nil));
   IgnoreOverRealizationCheck();
   clone->ForceRealized();
   return clone;

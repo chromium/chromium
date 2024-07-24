@@ -289,9 +289,8 @@ class UserSelectionScreen::DircryptoMigrationChecker {
     // If the user may be enterprise-managed, don't display the banner, because
     // migration may be blocked by user policy (and user policy is not available
     // at this time yet).
-    if (signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-            account_id.GetUserEmail()) ==
-        signin::AccountManagedStatusFinder::EmailEnterpriseStatus::kUnknown) {
+    if (signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+            account_id.GetUserEmail())) {
       UpdateUI(account_id, false);
       return;
     }

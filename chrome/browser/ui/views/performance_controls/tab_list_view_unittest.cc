@@ -89,12 +89,10 @@ TEST_F(TabListViewUnitTest, PopulateTabList) {
   TabListRowView* const first_row =
       views::AsViewClass<TabListRowView>(children[0]);
   EXPECT_EQ(first_row->GetTitleTextForTesting(), u"b.com");
-  EXPECT_EQ(first_row->GetDomainTextForTesting(), u"b.com");
 
   TabListRowView* const second_row =
       views::AsViewClass<TabListRowView>(children[1]);
   EXPECT_EQ(second_row->GetTitleTextForTesting(), u"a.com");
-  EXPECT_EQ(second_row->GetDomainTextForTesting(), u"a.com");
 }
 
 TEST_F(TabListViewUnitTest, CloseButtonRemovesListItem) {
@@ -163,7 +161,7 @@ TEST_F(TabListViewUnitTest, CloseButtonShowsAndHidesUpdate) {
   EXPECT_FALSE(close_button->GetVisible());
   EXPECT_TRUE(second_close_button->GetVisible());
 
-  ui::MouseEvent e(ui::kMousePressed, gfx::Point(), gfx::Point(),
+  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(second_close_button);
   test_api.NotifyClick(e);
@@ -222,7 +220,7 @@ TEST_F(TabListViewUnitTest, CloseButtonShowsAndHidesWithFocus) {
   // Remove the second row from the suggested tab list. The close button for the
   // first row should be hidden at this point because there is only one row left
   // in the list and a single item in the list is not removable.
-  ui::MouseEvent e(ui::kMousePressed, gfx::Point(), gfx::Point(),
+  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(second_close_button);
   test_api.NotifyClick(e);

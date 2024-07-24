@@ -3995,7 +3995,8 @@ class BackgroundForegroundProcessLimitBackForwardCacheBrowserTest
                     bool backgrounded) {
     EXPECT_FALSE(rfh.IsDestroyed());
     EXPECT_EQ(cached, rfh->IsInBackForwardCache());
-    EXPECT_EQ(backgrounded, rfh->GetProcess()->IsProcessBackgrounded());
+    EXPECT_EQ(backgrounded, rfh->GetProcess()->GetPriority() ==
+                                base::Process::Priority::kBestEffort);
   }
   // The number of pages the BackForwardCache can hold per tab.
   const size_t kBackForwardCacheSize = 4;
@@ -4017,7 +4018,8 @@ IN_PROC_BROWSER_TEST_F(
         "a.com", base::StringPrintf("/title1.html?i=%zu", i)));
     ASSERT_TRUE(NavigateToURL(shell(), url));
     rfhs.emplace_back(current_frame_host());
-    EXPECT_FALSE(rfhs.back()->GetProcess()->IsProcessBackgrounded());
+    EXPECT_NE(rfhs.back()->GetProcess()->GetPriority(),
+              base::Process::Priority::kBestEffort);
 
     for (size_t j = 0; j <= i; ++j) {
       SCOPED_TRACE(j);
@@ -4069,7 +4071,8 @@ IN_PROC_BROWSER_TEST_F(
                                             "/title1.html"));
     ASSERT_TRUE(NavigateToURL(shell(), url));
     rfhs.emplace_back(current_frame_host());
-    EXPECT_FALSE(rfhs.back()->GetProcess()->IsProcessBackgrounded());
+    EXPECT_NE(rfhs.back()->GetProcess()->GetPriority(),
+              base::Process::Priority::kBestEffort);
 
     for (size_t j = 0; j <= i; ++j) {
       SCOPED_TRACE(j);
@@ -4134,7 +4137,8 @@ IN_PROC_BROWSER_TEST_F(
                                             "/title1.html"));
     ASSERT_TRUE(NavigateToURL(shell(), url));
     rfhs.emplace_back(current_frame_host());
-    EXPECT_FALSE(rfhs.back()->GetProcess()->IsProcessBackgrounded());
+    EXPECT_NE(rfhs.back()->GetProcess()->GetPriority(),
+              base::Process::Priority::kBestEffort);
   }
   // Check that a0-2 are cached and backgrounded.
   for (size_t i = 0; i < kBackForwardCacheSize - 1; ++i) {
@@ -4150,7 +4154,8 @@ IN_PROC_BROWSER_TEST_F(
   // Assert that we really have set up the situation we want where the processes
   // are shared and in the foreground.
   RenderFrameHostImpl* rfh = current_frame_host();
-  ASSERT_FALSE(rfh->GetProcess()->IsProcessBackgrounded());
+  ASSERT_NE(rfh->GetProcess()->GetPriority(),
+            base::Process::Priority::kBestEffort);
 
   rfhs[1]->GetProcess()->OnMediaStreamAdded();
   rfhs[2]->GetProcess()->OnMediaStreamAdded();

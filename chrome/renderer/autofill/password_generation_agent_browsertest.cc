@@ -120,7 +120,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
   void HidePopup() override {}
 
-  void FocusOnNonFormField(bool had_interacted_form) override {}
+  void FocusOnNonFormField() override {}
 
   void FocusOnFormField(const FormData& form,
                         FieldRendererId field_id) override {}

@@ -750,6 +750,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.LegacyEventReportWindow" enum="Boolean"
+    expires_after="2025-05-30">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether a source registration contains a legacy event_report_window
+    field, regardless of whether that field or any other field has an error. See
+    https://wicg.github.io/attribution-reporting-api/#source-registration-json-key-event_report_window.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.NavigationDataHostStatus3"
     enum="ConversionNavigationDataHostStatus" expires_after="2024-12-08">
   <owner>linnan@chromium.org</owner>

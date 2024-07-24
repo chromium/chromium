@@ -140,6 +140,12 @@ class GraphBuilderTflite final {
                                           int32_t rhs_tensor_index,
                                           int32_t output_tensor_index);
 
+  // This function is called by `SerializeMatmul` to serialize WebNN
+  // matmul operator or used to emulate WebNN operations.
+  OperatorOffset SerializeMatmulOperation(int32_t a_tensor_index,
+                                          int32_t b_tensor_index,
+                                          int32_t output_tensor_index);
+
   // A helper function is used to emulate batch, layer or instance
   // normalization.
   OperatorOffset SerializeNormalizationOperation(
@@ -180,6 +186,14 @@ class GraphBuilderTflite final {
                                            int32_t output_tensor_index,
                                            base::span<const int32_t> new_shape);
 
+  // This function is called by `SerializeSlice` to serialize WebNN
+  // slice operator or used to emulate WebNN operations.
+  base::expected<OperatorOffset, std::string> SerializeSliceOperation(
+      int32_t input_tensor_index,
+      int32_t output_tensor_index,
+      base::span<const int32_t> slice_starts,
+      base::span<const int32_t> slice_sizes);
+
   // This function is called by `SerializeLinear` to serialize WebNN linear or
   // used to emulate WebNN operation that isn't supported in TFLite schema.
   OperatorOffset SerializeLinearOperation(
@@ -212,6 +226,29 @@ class GraphBuilderTflite final {
                                    int32_t input_tensor_index,
                                    base::span<const uint32_t> permutation);
 
+  // Serialize a sub graph (input * weight + bias) for gru cell.
+  int32_t SerializeSubGraphMatmulAdd(base::span<const int32_t> input_dimensions,
+                                     ::tflite::TensorType input_tensor_type,
+                                     int32_t input_tensor_index,
+                                     int32_t weight_tensor_index,
+                                     std::optional<int32_t> bias_tensor_index);
+
+  // Serialize a sub graph (slice appending transpose operation) for gru cell.
+  base::expected<int32_t, std::string> SerializeSubGraphSliceTranspose(
+      ::tflite::TensorType input_tensor_type,
+      int32_t input_tensor_index,
+      base::span<const int32_t> slice_starts,
+      base::span<const int32_t> slice_sizes);
+
+  enum class GruGateType { kUpdate, kReset, kNew };
+
+  // A helper function for serializing update, reset and new gate, the argument
+  // `reset_gate_tensor_index` only be used for new gate.
+  base::expected<int32_t, std::string> SerializeGruGate(
+      const mojom::GruCell& gru_cell,
+      GruGateType type,
+      std::optional<int32_t> reset_gate_tensor_index = std::nullopt);
+
   // Serialize functions for members of the mojom::Operation union. Keep these
   // functions in the same order as in webnn_graph.mojom.
   base::expected<OperatorOffset, std::string> SerializeArgMinMax(
@@ -235,6 +272,8 @@ class GraphBuilderTflite final {
       const mojom::Gelu& gelu);
   base::expected<OperatorOffset, std::string> SerializeGemm(
       const mojom::Gemm& gemm);
+  base::expected<OperatorOffset, std::string> SerializeGruCell(
+      const mojom::GruCell& gru_cell);
   OperatorOffset SerializeHardSigmoid(const mojom::HardSigmoid& hard_sigmoid);
   OperatorOffset SerializeHardSwish(const mojom::HardSwish& hard_swish);
   base::expected<OperatorOffset, std::string> SerializeInstanceNormalization(

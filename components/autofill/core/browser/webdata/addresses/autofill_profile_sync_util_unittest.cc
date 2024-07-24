@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -1062,7 +1063,7 @@ TEST_P(AutofillProfileSyncUtilTest, CreateAutofillProfileFromSpecifics) {
 
   std::unique_ptr<AutofillProfile> converted_profile =
       CreateAutofillProfileFromSpecifics(specifics);
-  EXPECT_TRUE(profile.EqualsIncludingUsageStatsForTesting(*converted_profile));
+  EXPECT_TRUE(test_api(profile).EqualsIncludingUsageStats(*converted_profile));
 }
 
 // Test that fields not set for the input are also not set on the output.

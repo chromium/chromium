@@ -18,6 +18,9 @@ WebContentsInteractionTestUtil::DeepQuery NetworkMoreDetailsMenuButton();
 // The title of a settings subpage.
 WebContentsInteractionTestUtil::DeepQuery SettingsSubpageTitle();
 
+// The network state shown on a settings subpage.
+WebContentsInteractionTestUtil::DeepQuery SettingsSubpageNetworkState();
+
 namespace cellular {
 
 // The "add eSIM" button on the cellular page.
@@ -124,13 +127,17 @@ CellularDetailsSubpageAutoConnectToggle();
 WebContentsInteractionTestUtil::DeepQuery
 CellularDetailsAllowDataRoamingToggle();
 
-// The advanced setion row in cellular network details subpage.
+// The network operator property in the cellular network details subpage. The
+// celluler network must be active for this to be shown.
+WebContentsInteractionTestUtil::DeepQuery CellularDetailsNetworkOperator();
+
+// The advanced section row in cellular network details subpage.
 WebContentsInteractionTestUtil::DeepQuery CellularDetailsAdvancedSection();
 
-// The configurable setion row in cellular network details subpage.
+// The configurable section row in cellular network details subpage.
 WebContentsInteractionTestUtil::DeepQuery CellularDetailsConfigurableSection();
 
-// The proxy setion row in cellular network details subpage.
+// The proxy section row in cellular network details subpage.
 WebContentsInteractionTestUtil::DeepQuery CellularDetailsProxySection();
 
 // The cellular networks subpage menu rename button.

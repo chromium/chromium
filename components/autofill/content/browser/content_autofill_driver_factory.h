@@ -47,6 +47,7 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
     // Called right after the driver has been created.
     // At the time of this event, the `driver` object is already fully alive and
     // `factory.DriverForFrame(driver.render_frame_host()) == &driver` holds.
+    // The driver's manager is still in its `kInactive` state at the time.
     virtual void OnContentAutofillDriverCreated(
         ContentAutofillDriverFactory& factory,
         ContentAutofillDriver& driver) {}
@@ -75,6 +76,10 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
 
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void RenderFrameHostStateChanged(
+      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost::LifecycleState old_state,
+      content::RenderFrameHost::LifecycleState new_state) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 

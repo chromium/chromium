@@ -141,10 +141,6 @@ void HandleToggleDarkMode() {
 }
 
 void HandleToggleDynamicColor() {
-  if (!chromeos::features::IsJellyEnabled()) {
-    // Only toggle colors when Dynamic Colors are enabled.
-    return;
-  }
   static int index = 0;
   SkColor color;
   switch (++index % 2) {

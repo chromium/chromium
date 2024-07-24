@@ -57,6 +57,7 @@ import type {PowerBookmarksLabelsElement} from './power_bookmarks_labels.js';
 import {getTemplate} from './power_bookmarks_list.html.js';
 import type {Label} from './power_bookmarks_service.js';
 import {editingDisabledByPolicy, PowerBookmarksService} from './power_bookmarks_service.js';
+import {getFolderLabel} from './power_bookmarks_utils.js';
 
 const ADD_FOLDER_ACTION_UMA = 'Bookmarks.FolderAddedFromSidePanel';
 const ADD_URL_ACTION_UMA = 'Bookmarks.AddedFromSidePanel';
@@ -464,6 +465,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     return this.availableProductInfos_;
   }
 
+  getSelectedBookmarks(): {[key: string]: boolean} {
+    return this.selectedBookmarks_;
+  }
+
   getProductImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode): string {
     const bookmarkProductInfo = this.availableProductInfos_.get(bookmark.id);
     if (bookmarkProductInfo) {
@@ -602,7 +607,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     const parentFolder = this.bookmarksService_.findBookmarkWithId(
         activeFolder ? activeFolder.parentId : undefined);
     return loadTimeData.getStringF(
-        'backButtonLabel', this.getFolderLabel_(parentFolder));
+        'backButtonLabel', getFolderLabel(parentFolder));
   }
 
   private getBookmarksListRole_(): string {
@@ -630,7 +635,7 @@ export class PowerBookmarksListElement extends PolymerElement {
       if (urlString && this.searchQuery_ && bookmark.parentId) {
         const parentFolder =
             this.bookmarksService_.findBookmarkWithId(bookmark.parentId);
-        const folderLabel = this.getFolderLabel_(parentFolder);
+        const folderLabel = getFolderLabel(parentFolder);
         return loadTimeData.getStringF(
             'urlFolderDescription', urlString, folderLabel);
       }
@@ -715,17 +720,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private getActiveFolderLabel_(): string {
-    return this.getFolderLabel_(this.getActiveFolder_());
-  }
-
-  private getFolderLabel_(folder: chrome.bookmarks.BookmarkTreeNode|
-                          undefined): string {
-    if (folder && folder.id !== loadTimeData.getString('otherBookmarksId') &&
-        folder.id !== loadTimeData.getString('mobileBookmarksId')) {
-      return folder!.title;
-    } else {
-      return loadTimeData.getString('allBookmarks');
-    }
+    return getFolderLabel(this.getActiveFolder_());
   }
 
   private getSortLabel_(): string {
@@ -837,9 +832,8 @@ export class PowerBookmarksListElement extends PolymerElement {
         sortType.sortOrder;
   }
 
-  private bookmarkIsSelected_(bookmark: chrome.bookmarks.BookmarkTreeNode):
-      boolean {
-    return this.get(`selectedBookmarks_.${bookmark.id.toString()}`);
+  private isCheckboxChecked_(bookmark: chrome.bookmarks.BookmarkTreeNode) {
+    return !!this.bookmarksService_?.bookmarkIsSelected(bookmark);
   }
 
   /**
@@ -890,7 +884,8 @@ export class PowerBookmarksListElement extends PolymerElement {
           {bookmark: chrome.bookmarks.BookmarkTreeNode, checked: boolean}>) {
     event.preventDefault();
     event.stopPropagation();
-    const isSelected = this.bookmarkIsSelected_(event.detail.bookmark);
+    const isSelected =
+        !!this.bookmarksService_?.bookmarkIsSelected(event.detail.bookmark);
     if (event.detail.checked && !isSelected) {
       this.set(
           `selectedBookmarks_.${event.detail.bookmark.id.toString()}`, true);

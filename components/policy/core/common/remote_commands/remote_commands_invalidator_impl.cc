@@ -55,7 +55,7 @@ RemoteCommandsInvalidatorImpl::RemoteCommandsInvalidatorImpl(
     CloudPolicyCore* core,
     const base::Clock* clock,
     PolicyInvalidationScope scope)
-    : RemoteCommandsInvalidator(ComposeOwnerName(scope)),
+    : RemoteCommandsInvalidator(ComposeOwnerName(scope), scope),
       core_(core),
       clock_(clock),
       scope_(scope) {

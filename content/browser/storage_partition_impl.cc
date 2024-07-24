@@ -78,6 +78,7 @@
 #include "content/browser/indexed_db/indexed_db_control_wrapper.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/loader/keep_alive_url_loader_service.h"
+#include "content/browser/loader/reconnectable_url_loader_factory.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/locks/lock_manager.h"
@@ -1377,9 +1378,10 @@ void StoragePartitionImpl::Initialize(
   bluetooth_allowed_devices_map_ =
       std::make_unique<BluetoothAllowedDevicesMap>();
 
-  // Must be initialized before the `url_loader_factory_getter_`.
-  // Cookie deprecation traffic labels should not be sent for off-the-record
-  // profiles, unless the "enable_otr_profiles" feature parameter is true.
+  // Must be initialized before the
+  // `shared_url_loader_factory_for_browser_process_`. Cookie deprecation
+  // traffic labels should not be sent for off-the-record profiles, unless the
+  // "enable_otr_profiles" feature parameter is true.
   if (base::FeatureList::IsEnabled(
           features::kCookieDeprecationFacilitatedTesting) &&
       (!is_in_memory() ||
@@ -1388,16 +1390,12 @@ void StoragePartitionImpl::Initialize(
         std::make_unique<CookieDeprecationLabelManagerImpl>(browser_context_);
   }
 
-  shared_url_loader_factory_for_browser_process_ = base::MakeRefCounted<
-      ReconnectableURLLoaderFactory>(base::BindRepeating(
+  shared_url_loader_factory_for_browser_process_ = std::make_unique<
+      ReconnectableURLLoaderFactoryForIOThreadWrapper>(base::BindRepeating(
       &StoragePartitionImpl::CreateURLLoaderFactoryForBrowserProcessInternal,
       GetWeakPtr()));
-
-  url_loader_factory_getter_ = base::MakeRefCounted<
-      ReconnectableURLLoaderFactoryForIOThread>(base::BindRepeating(
-      &StoragePartitionImpl::CreateURLLoaderFactoryForBrowserProcessInternal,
-      GetWeakPtr()));
-  url_loader_factory_getter_->Initialize();
+  shared_url_loader_factory_for_browser_process_->factory_for_io_thread()
+      ->Initialize();
 
   service_worker_context_->Init(path, quota_manager_proxy.get(),
                                 browser_context_->GetSpecialStoragePolicy(),
@@ -1581,13 +1579,14 @@ StoragePartitionImpl::GetCertVerifierServiceUpdater() {
 scoped_refptr<network::SharedURLLoaderFactory>
 StoragePartitionImpl::GetURLLoaderFactoryForBrowserProcess() {
   CHECK(shared_url_loader_factory_for_browser_process_);
-  return shared_url_loader_factory_for_browser_process_;
+  return shared_url_loader_factory_for_browser_process_->factory();
 }
 
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 StoragePartitionImpl::GetURLLoaderFactoryForBrowserProcessIOThread() {
-  DCHECK(initialized_);
-  return url_loader_factory_getter_->CloneForIOThread();
+  CHECK(shared_url_loader_factory_for_browser_process_);
+  return shared_url_loader_factory_for_browser_process_->factory_for_io_thread()
+      ->CloneForIOThread();
 }
 
 network::mojom::CookieManager*
@@ -3082,8 +3081,9 @@ void StoragePartitionImpl::Flush() {
 void StoragePartitionImpl::ResetURLLoaderFactories() {
   CHECK(initialized_);
   GetNetworkContext()->ResetURLLoaderFactories();
-  shared_url_loader_factory_for_browser_process_->Reset();
-  url_loader_factory_getter_->Initialize();
+  shared_url_loader_factory_for_browser_process_->factory()->Reset();
+  shared_url_loader_factory_for_browser_process_->factory_for_io_thread()
+      ->Reset();
 }
 
 void StoragePartitionImpl::ClearBluetoothAllowedDevicesMapForTesting() {
@@ -3103,7 +3103,8 @@ void StoragePartitionImpl::FlushNetworkInterfaceForTesting() {
   CHECK(initialized_);
   DCHECK(network_context_owner_->network_context);
   network_context_owner_->network_context.FlushForTesting();  // IN-TEST
-  shared_url_loader_factory_for_browser_process_->FlushForTesting();  // IN-TEST
+  shared_url_loader_factory_for_browser_process_->factory()
+      ->FlushForTesting();  // IN-TEST
   if (cookie_manager_for_browser_process_) {
     cookie_manager_for_browser_process_.FlushForTesting();  // IN-TEST
   }
@@ -3111,8 +3112,9 @@ void StoragePartitionImpl::FlushNetworkInterfaceForTesting() {
 
 void StoragePartitionImpl::FlushNetworkInterfaceOnIOThreadForTesting() {
   CHECK(initialized_);
-  CHECK(url_loader_factory_getter_);
-  url_loader_factory_getter_->FlushForTesting();  // IN-TEST
+  CHECK(shared_url_loader_factory_for_browser_process_);
+  shared_url_loader_factory_for_browser_process_->factory_for_io_thread()
+      ->FlushForTesting();  // IN-TEST
 }
 
 void StoragePartitionImpl::FlushCertVerifierInterfaceForTesting() {

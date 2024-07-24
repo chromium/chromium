@@ -312,9 +312,8 @@ std::optional<bool> EnterpriseSeparationMaybeRequired(
   }
 
   // No enterprise separation required for consumer accounts.
-  if (signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(email) ==
-      signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
-          kKnownNonEnterprise) {
+  if (!signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+          email)) {
     return false;
   }
 

@@ -756,15 +756,12 @@ void PreinstalledWebAppManager::Load(ConsumeInstallOptions callback) {
 // TODO(http://b/333583704): Revert CL which added this method after migration.
 void PreinstalledWebAppManager::LoadDeviceInfo(ConsumeDeviceInfo callback) {
 #if BUILDFLAG(IS_CHROMEOS)
+  // This needs to be consistent with echo_private_api to avoid inconsistency
+  // between promo offering and eligibility.
   chromeos::echo_util::GetOobeTimestamp(base::BindOnce(
-      [](ConsumeDeviceInfo callback,
-         base::expected<std::string, std::string> oobe_timestamp_or_error) {
+      [](ConsumeDeviceInfo callback, std::optional<base::Time> oobe_timestamp) {
         DeviceInfo device_info;
-        if (oobe_timestamp_or_error.has_value() &&
-            oobe_timestamp_or_error.value().length()) {
-          device_info.oobe_timestamp =
-              std::move(oobe_timestamp_or_error.value());
-        }
+        device_info.oobe_timestamp = std::move(oobe_timestamp);
         std::move(callback).Run(std::move(device_info));
       },
       std::move(callback)));

@@ -7,6 +7,7 @@
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
@@ -81,9 +82,7 @@ void AutofillMetricsBaseTest::SetUpHelper() {
           std::make_unique<TestCreditCardSaveManager>(autofill_client_.get()),
           /*iban_save_manager=*/nullptr, "en-US"));
   autofill_client_->set_autofill_offer_manager(
-      std::make_unique<AutofillOfferManager>(
-          &personal_data(), /*coupon_service_delegate=*/nullptr,
-          /*shopping_service=*/nullptr));
+      std::make_unique<AutofillOfferManager>(&personal_data()));
 
   auto browser_autofill_manager =
       std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());
@@ -116,7 +115,7 @@ void AutofillMetricsBaseTest::TearDownHelper() {
 }
 
 void AutofillMetricsBaseTest::PurgeUKM() {
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
   test_ukm_recorder().Purge();
   autofill_client_->InitializeUKMSources();
 }
@@ -203,6 +202,9 @@ void AutofillMetricsBaseTest::OnDidGetRealPanWithNonHttpOkResponse() {
 }
 
 void AutofillMetricsBaseTest::OnCreditCardFetchingSuccessful(
+    const FormData& form,
+    const FormFieldData& field,
+    AutofillTriggerSource trigger_source,
     const std::u16string& real_pan,
     bool is_virtual_card) {
   credit_card_.set_record_type(is_virtual_card
@@ -210,12 +212,17 @@ void AutofillMetricsBaseTest::OnCreditCardFetchingSuccessful(
                                    : CreditCard::RecordType::kMaskedServerCard);
   credit_card_.SetNumber(real_pan);
   test_api(autofill_manager())
-      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &credit_card_);
+      .OnCreditCardFetched(form, field, trigger_source,
+                           CreditCardFetchResult::kSuccess, &credit_card_);
 }
 
-void AutofillMetricsBaseTest::OnCreditCardFetchingFailed() {
+void AutofillMetricsBaseTest::OnCreditCardFetchingFailed(
+    const FormData& form,
+    const FormFieldData& field,
+    AutofillTriggerSource trigger_source) {
   test_api(autofill_manager())
-      .OnCreditCardFetched(CreditCardFetchResult::kPermanentError, nullptr);
+      .OnCreditCardFetched(form, field, trigger_source,
+                           CreditCardFetchResult::kPermanentError, nullptr);
 }
 
 void AutofillMetricsBaseTest::RecreateCreditCards(

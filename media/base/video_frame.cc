@@ -1441,18 +1441,18 @@ gfx::ColorSpace VideoFrame::CompatRGBColorSpace() const {
 }
 
 bool VideoFrame::RequiresExternalSampler() const {
-  const bool is_multiplanar_pixel_format = format() == PIXEL_FORMAT_NV12 ||
-                                           format() == PIXEL_FORMAT_YV12 ||
-                                           format() == PIXEL_FORMAT_P010LE;
+  const bool is_multiplanar_pixel_format =
+      format() == PIXEL_FORMAT_NV12 || format() == PIXEL_FORMAT_NV12A ||
+      format() == PIXEL_FORMAT_YV12 || format() == PIXEL_FORMAT_P010LE;
 
   // With SharedImageFormats NumTextures() is always 1. Use
   // SharedImageFormatType to check for NumTextures for legacy formats and
   // kSharedImageFormatExternalSampler for SharedImageFormats. Note that
   // kSharedImageFormatExternalSampler is set only for multiplanar formats.
   const bool requires_external_sampler =
-      shared_image_format_type() ==
-          SharedImageFormatType::kSharedImageFormatExternalSampler ||
-      (is_multiplanar_pixel_format &&
+      is_multiplanar_pixel_format &&
+      ((shared_image_format_type() ==
+        SharedImageFormatType::kSharedImageFormatExternalSampler) ||
        (NumTextures() == 1 &&
         shared_image_format_type() == SharedImageFormatType::kLegacy));
 

@@ -547,9 +547,8 @@ void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
     // for cloud policies because local policies are instantly available. See
     // http://crbug.com/812546
     bool may_have_cloud_policies =
-        signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-            account_info_.email) == signin::AccountManagedStatusFinder::
-                                        EmailEnterpriseStatus::kUnknown ||
+        signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+            account_info_.email) ||
         policy::ManagementServiceFactory::GetForProfile(profile_)
             ->HasManagementAuthority(
                 policy::EnterpriseManagementAuthority::CLOUD) ||
@@ -642,9 +641,8 @@ void TurnSyncOnHelper::ShowSyncConfirmationUI() {
   const bool is_managed_account =
       account_info_.IsValid()
           ? account_info_.IsManaged()
-          : signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-                account_info_.email) == signin::AccountManagedStatusFinder::
-                                            EmailEnterpriseStatus::kUnknown;
+          : signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+                account_info_.email);
   delegate_->ShowSyncDisabledConfirmation(
       is_managed_account,
       base::BindOnce(&TurnSyncOnHelper::FinishSyncSetupAndDelete,

@@ -1535,38 +1535,6 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
   EXPECT_EQ(user_actions_stats.GetActionCount("PageInfo.Cookies.Blocked"), 1);
 }
 
-// Checks that tracking protection exceptions are properly created and removed
-// when flipping the third party cookies toggle.
-IN_PROC_BROWSER_TEST_P(
-    PageInfoBubbleViewBrowserTestCookiesSubpage,
-    ToggleForBlockingThirdPartyCookiesUpdatesTrackingProtectionException) {
-  GURL url_example = GURL("http://example/other/stuff.htm");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
-
-  SetCookieControlsMode(content_settings::CookieControlsMode::kBlockThirdParty);
-
-  OpenPageInfoAndGoToCookiesSubpage(/*fps_owner =*/{});
-
-  auto* third_party_cookies_toggle = static_cast<views::ToggleButton*>(GetView(
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE));
-  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
-
-  PerformMouseClickOnView(third_party_cookies_toggle);
-  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsTrue());
-  content_settings::SettingInfo info;
-  EXPECT_EQ(
-      host_content_settings_map()->GetContentSetting(
-          GURL(), url_example, ContentSettingsType::TRACKING_PROTECTION, &info),
-      CONTENT_SETTING_ALLOW);
-
-  PerformMouseClickOnView(third_party_cookies_toggle);
-  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
-  EXPECT_EQ(
-      host_content_settings_map()->GetContentSetting(
-          GURL(), url_example, ContentSettingsType::TRACKING_PROTECTION, &info),
-      CONTENT_SETTING_BLOCK);
-}
-
 // Checks if there is a correct number of buttons in cookies subpage when fps
 // are allowed and based on third party cookies state (dependent on 3PCD) and
 // click on link in description of cookies subapge.
@@ -1604,3 +1572,59 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 
   EXPECT_EQ(new_tab_observer.GetWebContents()->GetVisibleURL(), url);
 }
+
+class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
+    : public PageInfoBubbleViewBrowserTestCookiesSubpage {
+ public:
+  PageInfoBubbleViewBrowserTestTrackingProtectionSubpage() {
+    std::vector<base::test::FeatureRef>
+        enabled_features =
+            {privacy_sandbox::kTrackingProtectionContentSettingFor3pcb},
+        disabled_features = {};
+    if (GetParam()) {
+      enabled_features.push_back(
+          content_settings::features::kTrackingProtection3pcd);
+    } else {
+      disabled_features.push_back(
+          content_settings::features::kTrackingProtection3pcd);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    PageInfoBubbleViewBrowserTestTrackingProtectionSubpage,
+    ToggleForBlockingThirdPartyCookiesUpdatesTrackingProtectionException) {
+  GURL url_example = GURL("http://example/other/stuff.htm");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
+
+  SetCookieControlsMode(content_settings::CookieControlsMode::kBlockThirdParty);
+
+  OpenPageInfoAndGoToCookiesSubpage(/*fps_owner =*/{});
+
+  auto* third_party_cookies_toggle = static_cast<views::ToggleButton*>(GetView(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE));
+  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
+
+  PerformMouseClickOnView(third_party_cookies_toggle);
+  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsTrue());
+  content_settings::SettingInfo info;
+  EXPECT_EQ(
+      host_content_settings_map()->GetContentSetting(
+          GURL(), url_example, ContentSettingsType::TRACKING_PROTECTION, &info),
+      CONTENT_SETTING_ALLOW);
+
+  PerformMouseClickOnView(third_party_cookies_toggle);
+  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
+  EXPECT_EQ(
+      host_content_settings_map()->GetContentSetting(
+          GURL(), url_example, ContentSettingsType::TRACKING_PROTECTION, &info),
+      CONTENT_SETTING_BLOCK);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageInfoBubbleViewBrowserTestTrackingProtectionSubpage,
+                         testing::Bool());

@@ -153,7 +153,7 @@ FindBarHost::FindBarHost(BrowserView* browser_view)
   // Initialize the host.
   host_ = std::make_unique<ThemeCopyingWidget>(browser_view_->GetWidget());
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_CONTROL);
   params.delegate = this;
   params.name = "FindBarHost";

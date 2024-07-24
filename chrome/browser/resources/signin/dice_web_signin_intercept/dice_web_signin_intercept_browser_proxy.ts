@@ -38,6 +38,7 @@ export interface ChromeSigninInterceptionParameters {
   givenName: string;
   email: string;
   pictureUrl: string;
+  managedUserBadge: string;
 }
 
 export interface DiceWebSigninInterceptBrowserProxy {

@@ -48,20 +48,6 @@
 
 namespace blink {
 
-void ScrollbarTheme::Paint(const Scrollbar& scrollbar,
-                           GraphicsContext& graphics_context,
-                           const gfx::Vector2d& paint_offset) {
-  gfx::Rect rect = scrollbar.FrameRect();
-  rect.Offset(paint_offset);
-  PaintTrackButtonsTickmarks(graphics_context, scrollbar, rect);
-
-  if (HasThumb(scrollbar)) {
-    gfx::Rect thumb_rect = ThumbRect(scrollbar);
-    thumb_rect.Offset(paint_offset);
-    PaintThumbWithOpacity(graphics_context, scrollbar, thumb_rect);
-  }
-}
-
 ScrollbarPart ScrollbarTheme::HitTestRootFramePosition(
     const Scrollbar& scrollbar,
     const gfx::Point& position_in_root_frame) const {
@@ -202,7 +188,7 @@ int ScrollbarTheme::ThumbPosition(const Scrollbar& scrollbar,
   if (scrollbar.Enabled()) {
     float size = scrollbar.TotalSize() - scrollbar.VisibleSize();
     // Avoid doing a floating point divide by zero and return 1 when
-    // usedTotalSize == visibleSize.
+    // TotalSize == VisibleSize.
     if (!size)
       return 0;
     float pos = std::max(0.0f, scroll_position) *

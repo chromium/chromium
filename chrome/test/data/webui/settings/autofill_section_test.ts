@@ -12,8 +12,11 @@ import {AutofillManagerImpl, CountryDetailManagerImpl} from 'chrome://settings/l
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
+import type {CrLinkRowElement} from 'chrome://settings/settings.js';
+import {OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import {eventToPromise, whenAttributeIs, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {AutofillManagerExpectations, createAddressEntry, createEmptyAddressEntry, STUB_USER_ACCOUNT_INFO, TestAutofillManager} from './autofill_fake_data.js';
 import {createAutofillSection, initiateRemoving, initiateEditing, CountryDetailManagerTestImpl, createAddressDialog, createRemoveAddressDialog, expectEvent, openAddressDialog, deleteAddress, getAddressFieldValue} from './autofill_section_test_utils.js';
@@ -1220,4 +1223,66 @@ suite('AutofillSectionAddressLocaleTests', function() {
           });
     });
   });
+});
+
+suite('PlusAddressesTest', function() {
+  const fakeUrl = 'https://foo.bar';
+  let openWindowProxy: TestOpenWindowProxy;
+
+  setup(function() {
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+    loadTimeData.overrideValues({
+      // Required to show the plus address management entry.
+      plusAddressManagementUrl: fakeUrl,
+      // Required to show the plus address management entry in the Autofill
+      // section - currently dependent on a field trial config.
+      // TODO: crbug.com/328083944 - Remove.
+      plusAddressSettingInAddressSection: true,
+    });
+  });
+
+  test('verifyPlusAddressManagementEntryExistence', async function() {
+    const autofillSection = await createAutofillSection([], {});
+
+    const plusAddressButton =
+        autofillSection.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#plusAddressSettingsButton');
+    assertTrue(!!plusAddressButton);
+
+    autofillSection.remove();
+  });
+
+  test(
+      'verifyPlusAddressManagementEntryExistenceWithoutManagementUrl',
+      async function() {
+        loadTimeData.overrideValues({
+          plusAddressManagementUrl: '',
+        });
+        const autofillSection = await createAutofillSection([], {});
+
+        const plusAddressButton =
+            autofillSection.shadowRoot!.querySelector<CrLinkRowElement>(
+                '#plusAddressSettingsButton');
+        assertFalse(!!plusAddressButton);
+
+        autofillSection.remove();
+      });
+
+  test(
+      'verifyClickingPlusAddressManagementEntryOpensWebsite', async function() {
+        const autofillSection = await createAutofillSection([], {});
+
+        const plusAddressButton =
+            autofillSection.shadowRoot!.querySelector<CrLinkRowElement>(
+                '#plusAddressSettingsButton');
+        assertTrue(!!plusAddressButton);
+        // Validate that, when present, the button results in opening the URL
+        // passed in via the `loadTimeData` override.
+        plusAddressButton.click();
+        const url = await openWindowProxy.whenCalled('openUrl');
+        assertEquals(url, fakeUrl);
+
+        autofillSection.remove();
+      });
 });

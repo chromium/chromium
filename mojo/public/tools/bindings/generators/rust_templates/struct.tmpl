@@ -50,17 +50,20 @@ impl {{name}}_Data {
         for (version, size) in Self::KNOWN_VERSION_SIZES.iter().copied() {
             if data._header.version == version  {
                 if data._header.size != size {
-                    return Err(bindings::ValidationError::UnexpectedStructHeader);
+                    return Err(bindings::ValidationError::new(
+                        bindings::ValidationErrorKind::UnexpectedStructHeader));
                 }
                 break;
             }
 
             if data._header.version > version && data._header.size < size {
-                return Err(bindings::ValidationError::UnexpectedStructHeader);
+                return Err(bindings::ValidationError::new(
+                    bindings::ValidationErrorKind::UnexpectedStructHeader));
             }
 
             if data._header.version < version && data._header.size > size {
-                return Err(bindings::ValidationError::UnexpectedStructHeader);
+                return Err(bindings::ValidationError::new(
+                    bindings::ValidationErrorKind::UnexpectedStructHeader));
             } else if data._header.version < version {
                 break;
             }
@@ -102,7 +105,8 @@ impl {{name}}_Data {
 {#-     Skip field: it was already processed above. -#}
 {%-   elif kind|is_pointer_kind and not kind|is_nullable_kind -%}
         if data.r#{{packed_field.field.name}}.offset == 0 {
-            return Err(bindings::ValidationError::UnexpectedNullPointer);
+            return Err(bindings::ValidationError::new(
+                bindings::ValidationErrorKind::UnexpectedNullPointer));
         }
 
         {{validate_child(packed_field.field.name, packed_field.field.kind)}}

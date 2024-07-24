@@ -50,6 +50,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/scoped_target_handler.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/native_theme/native_theme.h"
@@ -235,11 +236,11 @@ class TestView : public View {
     }
   }
 
-  // Reset all test state
+  // Reset all test state.
   void Reset() {
     did_change_bounds_ = false;
     did_layout_ = false;
-    last_mouse_event_type_ = 0;
+    last_mouse_event_type_ = ui::EventType::kUnknown;
     location_.SetPoint(0, 0);
     received_mouse_enter_ = false;
     received_mouse_exit_ = false;
@@ -278,17 +279,17 @@ class TestView : public View {
   void OnAccessibilityEvent(ax::mojom::Event event_type) override;
 
   // OnBoundsChanged.
-  bool did_change_bounds_;
+  bool did_change_bounds_ = false;
   gfx::Rect new_bounds_;
 
   // Layout.
   bool did_layout_ = false;
 
   // MouseEvent.
-  int last_mouse_event_type_;
+  ui::EventType last_mouse_event_type_ = ui::EventType::kUnknown;
   gfx::Point location_;
-  bool received_mouse_enter_;
-  bool received_mouse_exit_;
+  bool received_mouse_enter_ = false;
+  bool received_mouse_exit_ = false;
   bool delete_on_pressed_ = false;
 
   // Painting.
@@ -514,49 +515,85 @@ TEST_F(ViewTest, CannotLayoutSuperclassOutsideLayout) {
 // Accessibility Property Setters
 ////////////////////////////////////////////////////////////////////////////////
 
-TEST_F(ViewTest, PauseAccessibilityEvents) {
+TEST_F(ViewTest, ViewAccessibilityReadyToNotifyEvents) {
   TestView v;
   v.GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
-  EXPECT_EQ(v.GetViewAccessibility().pause_accessibility_events_, false);
+  EXPECT_EQ(v.GetViewAccessibility().ready_to_notify_events_, false);
 
-  // Setting the accessible name when `pause_accessibility_events_` is false
-  // should result in an event being fired.
+  // Setting the accessible name when `ready_to_notify_events_` is false
+  // shouldn't result in no event being fired.
   v.last_a11y_event_ = ax::mojom::Event::kNone;
   v.SetAccessibleName(u"Name");
-  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
-  EXPECT_EQ(v.GetViewAccessibility().pause_accessibility_events_, false);
-
-  // Setting the accessible name when `pause_accessibility_events_` is true
-  // should result in no event being fired.
-  v.last_a11y_event_ = ax::mojom::Event::kNone;
-  v.GetViewAccessibility().pause_accessibility_events_ = true;
-  v.SetAccessibleName(u"New Name");
   EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kNone);
-  EXPECT_EQ(v.GetViewAccessibility().pause_accessibility_events_, true);
+  EXPECT_EQ(v.GetViewAccessibility().ready_to_notify_events_, false);
 
-  // A11yTestView views are constructed using
-  // `ViewAccessibility::SetProperties`. By default,
-  // `pause_accessibility_events_` is false. It is temporarily set to true and
-  // then reset at the end of initialization.
-  A11yTestView ax_v(ax::mojom::Role::kButton, u"Name", u"Description");
-  EXPECT_EQ(ax_v.last_a11y_event_, ax::mojom::Event::kNone);
-  EXPECT_EQ(ax_v.GetViewAccessibility().pause_accessibility_events_, false);
+  // Setting the accessible name when `ready_to_notify_events_` is true
+  // should result in an event being fired.
+  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  v.GetViewAccessibility().ready_to_notify_events_ = true;
+  v.SetAccessibleName(u"New Name");
+  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
+  EXPECT_EQ(v.GetViewAccessibility().ready_to_notify_events_, true);
+}
+
+TEST_F(ViewTest, ReadyToSendAccessibilityEvents) {
+  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  auto view1 = std::make_unique<TestView>();
+  view1->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
+  view1->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+
+  auto view2 = std::make_unique<TestView>();
+  view2->SetBoundsRect(gfx::Rect(100, 100, 100, 100));
+  view2->GetViewAccessibility().SetRole(ax::mojom::Role::kLink);
+
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
+
+  // The root should always be connected to the widget and so is always ready to
+  // send events.
+  root->GetViewAccessibility().SetName(u"Root",
+                                       ax::mojom::NameFrom::kAttribute);
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, root), 1);
+
+  // No events should be sent if the view is not connected to a RootView.
+  auto* added_view_2 = view1->AddChildView(std::move(view2));
+  added_view_2->GetViewAccessibility().SetName(u"Child",
+                                               ax::mojom::NameFrom::kAttribute);
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, added_view_2),
+            0);
+
+  // Events should be sent if the view is connected to a RootView.
+  auto* added_view_1 = root->AddChildView(std::move(view1));
+  added_view_1->GetViewAccessibility().SetName(u"Descendant_1",
+                                               ax::mojom::NameFrom::kAttribute);
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, added_view_1),
+            1);
+  added_view_2->GetViewAccessibility().SetName(u"Descendant_2",
+                                               ax::mojom::NameFrom::kAttribute);
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, added_view_2),
+            1);
 }
 
 TEST_F(ViewTest, SetAccessibilityPropertiesRoleNameDescription) {
   views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
-  A11yTestView v(ax::mojom::Role::kButton, u"Name", u"Description");
+  auto v = std::make_unique<A11yTestView>(ax::mojom::Role::kButton, u"Name",
+                                          u"Description");
   ui::AXNodeData data = ui::AXNodeData();
-  v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedRole(), ax::mojom::Role::kButton);
+  v->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(v->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kButton);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"Name");
+  EXPECT_EQ(v->GetViewAccessibility().GetCachedName(), u"Name");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Name");
   EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
                 data.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)),
             ax::mojom::NameFrom::kAttribute);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedDescription(), u"Description");
+  EXPECT_EQ(v->GetViewAccessibility().GetCachedDescription(), u"Description");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
             u"Description");
   EXPECT_EQ(static_cast<ax::mojom::DescriptionFrom>(data.GetIntAttribute(
@@ -564,32 +601,44 @@ TEST_F(ViewTest, SetAccessibilityPropertiesRoleNameDescription) {
             ax::mojom::DescriptionFrom::kAriaDescription);
 
   // There should not be any accessibility events fired when properties are
-  // set within `ViewAccessibility::SetProperties`. For the above properties,
-  // the only event type is `kTextChanged`.
-  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, &v), 0);
+  // set within `ViewAccessibility::SetProperties` since this will be done in
+  // constructors before the view is added to the tree. For the above
+  // properties, the only event type is `kTextChanged`.
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, v.get()), 0);
 
-  // Setting the accessible name after initialization should result in an event
-  // being fired.
-  v.SetAccessibleName(u"New Name");
-  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, &v), 1);
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
+
+  auto* added_view = root->AddChildView(std::move(v));
+
+  // Setting the accessible name after being added to the tree should result in
+  // an event being fired.
+  added_view->GetViewAccessibility().SetName(u"New Name");
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, added_view), 1);
 }
 
 TEST_F(ViewTest, SetAccessibilityPropertiesRoleNameDescriptionDetailed) {
   views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
-  A11yTestView v(ax::mojom::Role::kButton, u"Name", u"Description",
-                 /*role_description*/ u"", ax::mojom::NameFrom::kContents,
-                 ax::mojom::DescriptionFrom::kTitle);
+  auto v = std::make_unique<A11yTestView>(
+      ax::mojom::Role::kButton, u"Name", u"Description",
+      /*role_description*/ u"", ax::mojom::NameFrom::kContents,
+      ax::mojom::DescriptionFrom::kTitle);
   ui::AXNodeData data = ui::AXNodeData();
-  v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedRole(), ax::mojom::Role::kButton);
+  v->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(v->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kButton);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"Name");
+  EXPECT_EQ(v->GetViewAccessibility().GetCachedName(), u"Name");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Name");
   EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
                 data.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)),
             ax::mojom::NameFrom::kContents);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedDescription(), u"Description");
+  EXPECT_EQ(v->GetViewAccessibility().GetCachedDescription(), u"Description");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
             u"Description");
   EXPECT_EQ(static_cast<ax::mojom::DescriptionFrom>(data.GetIntAttribute(
@@ -597,43 +646,62 @@ TEST_F(ViewTest, SetAccessibilityPropertiesRoleNameDescriptionDetailed) {
             ax::mojom::DescriptionFrom::kTitle);
 
   // There should not be any accessibility events fired when properties are
-  // set within `ViewAccessibility::SetProperties`. For the above properties,
-  // the only event type is `kTextChanged`.
-  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, &v), 0);
+  // set within `ViewAccessibility::SetProperties` before the view is added to
+  // the tree. For the above properties, the only event type is `kTextChanged`.
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, v.get()), 0);
+
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
+
+  auto* added_view = root->AddChildView(std::move(v));
 
   // Setting the accessible name after initialization should result in an event
   // being fired.
-  v.SetAccessibleName(u"New Name");
-  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, &v), 1);
+  added_view->GetViewAccessibility().SetName(u"New Name");
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, added_view), 1);
 }
 
 TEST_F(ViewTest, SetAccessibilityPropertiesRoleRolenameNameDescription) {
   views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
-  A11yTestView v(ax::mojom::Role::kButton, u"Name", u"Description",
-                 u"Super Button");
+  auto v = std::make_unique<A11yTestView>(ax::mojom::Role::kButton, u"Name",
+                                          u"Description", u"Super Button");
   ui::AXNodeData data = ui::AXNodeData();
-  v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedRole(), ax::mojom::Role::kButton);
+  v->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(v->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kButton);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
   EXPECT_EQ(
       data.GetString16Attribute(ax::mojom::StringAttribute::kRoleDescription),
       u"Super Button");
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"Name");
+  EXPECT_EQ(v->GetViewAccessibility().GetCachedName(), u"Name");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Name");
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedDescription(), u"Description");
+  EXPECT_EQ(v->GetViewAccessibility().GetCachedDescription(), u"Description");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
             u"Description");
 
   // There should not be any accessibility events fired when properties are
-  // set within `ViewAccessibility::SetProperties`. For the above properties,
-  // the only event type is `kTextChanged`.
-  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, &v), 0);
+  // set within `ViewAccessibility::SetProperties` before the view is added to
+  // the tree. For the above properties, the only event type is `kTextChanged`.
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, v.get()), 0);
+
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
+
+  auto* added_view = root->AddChildView(std::move(v));
 
   // Setting the accessible name after initialization should result in an event
   // being fired.
-  v.SetAccessibleName(u"New Name");
-  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, &v), 1);
+  added_view->GetViewAccessibility().SetName(u"New Name");
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, added_view), 1);
 }
 
 TEST_F(ViewTest, SetAccessibilityPropertiesRoleAndRoleDescription) {
@@ -682,43 +750,62 @@ TEST_F(ViewTest, SetAccessibleRole) {
 }
 
 TEST_F(ViewTest, SetAccessibleNameToStringWithRoleAlreadySet) {
-  TestView v;
-  v.GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  auto v = std::make_unique<TestView>();
+  v->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
+
+  auto* added_view = root->AddChildView(std::move(v));
 
   ui::AXNodeData data = ui::AXNodeData();
-  v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"");
+  added_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(added_view->GetViewAccessibility().GetCachedName(), u"");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
 
-  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  added_view->last_a11y_event_ = ax::mojom::Event::kNone;
   data = ui::AXNodeData();
 
-  v.SetAccessibleName(u"Name");
-  v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"Name");
+  added_view->GetViewAccessibility().SetName(u"Name");
+  added_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(added_view->GetViewAccessibility().GetCachedName(), u"Name");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Name");
-  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
+  EXPECT_EQ(added_view->last_a11y_event_, ax::mojom::Event::kTextChanged);
 }
 
 TEST_F(ViewTest, AdjustAccessibleNameStringWithRoleAlreadySet) {
-  A11yTestView v(ax::mojom::Role::kButton);
-  v.SetAccessibleNamePrefix(u"Prefix: ");
+  auto v = std::make_unique<A11yTestView>(ax::mojom::Role::kButton);
+  v->SetAccessibleNamePrefix(u"Prefix: ");
+
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
+
+  auto* added_view = root->AddChildView(std::move(v));
 
   ui::AXNodeData data;
-  v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"");
+  added_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(added_view->GetViewAccessibility().GetCachedName(), u"");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
 
-  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  added_view->last_a11y_event_ = ax::mojom::Event::kNone;
   data = ui::AXNodeData();
 
-  v.SetAccessibleName(u"Name");
-  v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"Prefix: Name");
+  added_view->GetViewAccessibility().SetName(u"Name");
+  added_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(added_view->GetViewAccessibility().GetCachedName(),
+            u"Prefix: Name");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Prefix: Name");
-  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
+  EXPECT_EQ(added_view->last_a11y_event_, ax::mojom::Event::kTextChanged);
 }
 
 TEST_F(ViewTest, SetAccessibleNameToLabelWithRoleAlreadySet) {
@@ -726,12 +813,21 @@ TEST_F(ViewTest, SetAccessibleNameToLabelWithRoleAlreadySet) {
   label.GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
   label.SetAccessibleName(u"Label's Name");
 
-  TestView v;
-  v.GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  auto v = std::make_unique<TestView>();
+  v->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
+
+  auto* added_view = root->AddChildView(std::move(v));
 
   ui::AXNodeData data = ui::AXNodeData();
-  v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"");
+  added_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(added_view->GetViewAccessibility().GetCachedName(), u"");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
   EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
                 data.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)),
@@ -739,12 +835,13 @@ TEST_F(ViewTest, SetAccessibleNameToLabelWithRoleAlreadySet) {
   EXPECT_FALSE(
       data.HasIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds));
 
-  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  added_view->last_a11y_event_ = ax::mojom::Event::kNone;
   data = ui::AXNodeData();
 
-  v.SetAccessibleName(&label);
-  v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"Label's Name");
+  added_view->GetViewAccessibility().SetName(label);
+  added_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(added_view->GetViewAccessibility().GetCachedName(),
+            u"Label's Name");
   EXPECT_TRUE(
       data.HasIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds));
   EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
@@ -752,30 +849,39 @@ TEST_F(ViewTest, SetAccessibleNameToLabelWithRoleAlreadySet) {
             ax::mojom::NameFrom::kRelatedElement);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Label's Name");
-  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
+  EXPECT_EQ(added_view->last_a11y_event_, ax::mojom::Event::kTextChanged);
 }
 
 TEST_F(ViewTest, AdjustAccessibleNameFrom) {
-  A11yTestView v(ax::mojom::Role::kTextField);
-  v.SetAccessibleNameFrom(ax::mojom::NameFrom::kPlaceholder);
+  auto v = std::make_unique<A11yTestView>(ax::mojom::Role::kTextField);
+  v->SetAccessibleNameFrom(ax::mojom::NameFrom::kPlaceholder);
+
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
+
+  auto* added_view = root->AddChildView(std::move(v));
 
   ui::AXNodeData data = ui::AXNodeData();
-  v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"");
+  added_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(added_view->GetViewAccessibility().GetCachedName(), u"");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
 
-  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  added_view->last_a11y_event_ = ax::mojom::Event::kNone;
   data = ui::AXNodeData();
 
-  v.SetAccessibleName(u"Name");
-  v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"Name");
+  added_view->GetViewAccessibility().SetName(u"Name");
+  added_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(added_view->GetViewAccessibility().GetCachedName(), u"Name");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Name");
   EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
                 data.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)),
             ax::mojom::NameFrom::kPlaceholder);
-  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
+  EXPECT_EQ(added_view->last_a11y_event_, ax::mojom::Event::kTextChanged);
 }
 
 TEST_F(ViewTest, AdjustAccessibleNameFromLabelWithRoleAlreadySet) {
@@ -783,12 +889,21 @@ TEST_F(ViewTest, AdjustAccessibleNameFromLabelWithRoleAlreadySet) {
   label.GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
   label.SetAccessibleName(u"Label's Name");
 
-  A11yTestView v(ax::mojom::Role::kButton);
-  v.SetAccessibleNamePrefix(u"Prefix: ");
+  auto v = std::make_unique<A11yTestView>(ax::mojom::Role::kButton);
+  v->SetAccessibleNamePrefix(u"Prefix: ");
+
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
+
+  auto* added_view = root->AddChildView(std::move(v));
 
   ui::AXNodeData data = ui::AXNodeData();
-  v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"");
+  added_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(added_view->GetViewAccessibility().GetCachedName(), u"");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
   EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
                 data.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)),
@@ -796,12 +911,13 @@ TEST_F(ViewTest, AdjustAccessibleNameFromLabelWithRoleAlreadySet) {
   EXPECT_FALSE(
       data.HasIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds));
 
-  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  added_view->last_a11y_event_ = ax::mojom::Event::kNone;
   data = ui::AXNodeData();
 
-  v.SetAccessibleName(&label);
-  v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"Prefix: Label's Name");
+  added_view->SetAccessibleName(&label);
+  added_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(added_view->GetViewAccessibility().GetCachedName(),
+            u"Prefix: Label's Name");
   EXPECT_TRUE(
       data.HasIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds));
   EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
@@ -809,7 +925,7 @@ TEST_F(ViewTest, AdjustAccessibleNameFromLabelWithRoleAlreadySet) {
             ax::mojom::NameFrom::kRelatedElement);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Prefix: Label's Name");
-  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
+  EXPECT_EQ(added_view->last_a11y_event_, ax::mojom::Event::kTextChanged);
 }
 
 TEST_F(ViewTest, SetAccessibleNameExplicitlyEmpty) {
@@ -982,24 +1098,34 @@ TEST_F(ViewTest, SetIsLeafUnpruneSubtreeWithLeafView) {
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F(ViewTest, OnBoundsChangedFiresA11yEvent) {
-  TestView v;
+  auto view = std::make_unique<TestView>();
+
+  // No events will be sent if the view is not connected to a RootView.
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
+
+  auto* v = root->AddChildView(std::move(view));
 
   // Should change when scaled or moved.
   gfx::Rect initial(0, 0, 200, 200);
   gfx::Rect scaled(0, 0, 250, 250);
   gfx::Rect moved(100, 100, 250, 250);
 
-  v.last_a11y_event_ = ax::mojom::Event::kNone;
-  v.SetBoundsRect(initial);
-  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kLocationChanged);
+  v->last_a11y_event_ = ax::mojom::Event::kNone;
+  v->SetBoundsRect(initial);
+  EXPECT_EQ(v->last_a11y_event_, ax::mojom::Event::kLocationChanged);
 
-  v.last_a11y_event_ = ax::mojom::Event::kNone;
-  v.SetBoundsRect(scaled);
-  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kLocationChanged);
+  v->last_a11y_event_ = ax::mojom::Event::kNone;
+  v->SetBoundsRect(scaled);
+  EXPECT_EQ(v->last_a11y_event_, ax::mojom::Event::kLocationChanged);
 
-  v.last_a11y_event_ = ax::mojom::Event::kNone;
-  v.SetBoundsRect(moved);
-  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kLocationChanged);
+  v->last_a11y_event_ = ax::mojom::Event::kNone;
+  v->SetBoundsRect(moved);
+  EXPECT_EQ(v->last_a11y_event_, ax::mojom::Event::kLocationChanged);
 }
 
 TEST_F(ViewTest, OnBoundsChanged) {
@@ -1018,19 +1144,30 @@ TEST_F(ViewTest, OnBoundsChanged) {
 }
 
 TEST_F(ViewTest, TransformFiresA11yEvent) {
-  TestView v;
-  v.SetPaintToLayer();
+  auto view = std::make_unique<TestView>();
+
+  // No events will be sent if the view is not connected to a RootView.
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
+
+  auto* v = root->AddChildView(std::move(view));
+
+  v->SetPaintToLayer();
 
   gfx::Rect bounds(0, 0, 200, 200);
-  v.last_a11y_event_ = ax::mojom::Event::kNone;
-  v.SetBoundsRect(bounds);
-  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kLocationChanged);
+  v->last_a11y_event_ = ax::mojom::Event::kNone;
+  v->SetBoundsRect(bounds);
+  EXPECT_EQ(v->last_a11y_event_, ax::mojom::Event::kLocationChanged);
 
   gfx::Transform transform;
   transform.Translate(gfx::Vector2dF(10, 10));
-  v.last_a11y_event_ = ax::mojom::Event::kNone;
-  v.layer()->SetTransform(transform);
-  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kLocationChanged);
+  v->last_a11y_event_ = ax::mojom::Event::kNone;
+  v->layer()->SetTransform(transform);
+  EXPECT_EQ(v->last_a11y_event_, ax::mojom::Event::kLocationChanged);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1038,15 +1175,25 @@ TEST_F(ViewTest, TransformFiresA11yEvent) {
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F(ViewTest, OnStateChangedFiresA11yEvent) {
-  TestView v;
+  auto view = std::make_unique<TestView>();
 
-  v.last_a11y_event_ = ax::mojom::Event::kNone;
-  v.SetEnabled(false);
-  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kStateChanged);
+  // No events will be sent if the view is not connected to a RootView.
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
 
-  v.last_a11y_event_ = ax::mojom::Event::kNone;
-  v.SetEnabled(true);
-  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kStateChanged);
+  auto* v = root->AddChildView(std::move(view));
+
+  v->last_a11y_event_ = ax::mojom::Event::kNone;
+  v->SetEnabled(false);
+  EXPECT_EQ(v->last_a11y_event_, ax::mojom::Event::kStateChanged);
+
+  v->last_a11y_event_ = ax::mojom::Event::kNone;
+  v->SetEnabled(true);
+  EXPECT_EQ(v->last_a11y_event_, ax::mojom::Event::kStateChanged);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1082,7 +1229,7 @@ TEST_F(ViewTest, MouseEvent) {
   EXPECT_EQ(v2->location_.x(), 10);
   EXPECT_EQ(v2->location_.y(), 20);
   // Make sure v1 did not receive the event
-  EXPECT_EQ(v1->last_mouse_event_type_, 0);
+  EXPECT_EQ(v1->last_mouse_event_type_, ui::EventType::kUnknown);
 
   // Drag event out of bounds. Should still go to v2
   v1->Reset();
@@ -1095,7 +1242,7 @@ TEST_F(ViewTest, MouseEvent) {
   EXPECT_EQ(v2->location_.x(), -50);
   EXPECT_EQ(v2->location_.y(), -60);
   // Make sure v1 did not receive the event
-  EXPECT_EQ(v1->last_mouse_event_type_, 0);
+  EXPECT_EQ(v1->last_mouse_event_type_, ui::EventType::kUnknown);
 
   // Releasted event out of bounds. Should still go to v2
   v1->Reset();
@@ -1107,7 +1254,7 @@ TEST_F(ViewTest, MouseEvent) {
   EXPECT_EQ(v2->location_.x(), -100);
   EXPECT_EQ(v2->location_.y(), -100);
   // Make sure v1 did not receive the event
-  EXPECT_EQ(v1->last_mouse_event_type_, 0);
+  EXPECT_EQ(v1->last_mouse_event_type_, ui::EventType::kUnknown);
 }
 
 // Confirm that a view can be deleted as part of processing a mouse press.
@@ -2543,7 +2690,7 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
                        ui::EventTimeForNow(), 0, 0);
   root_view->OnMouseMoved(move1);
   EXPECT_TRUE(v111->received_mouse_enter_);
-  EXPECT_FALSE(v11->last_mouse_event_type_);
+  EXPECT_EQ(v11->last_mouse_event_type_, ui::EventType::kUnknown);
   EXPECT_TRUE(v1->received_mouse_enter_);
 
   v111->Reset();
@@ -2556,7 +2703,7 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
   root_view->OnMouseMoved(move2);
   EXPECT_TRUE(v111->received_mouse_exit_);
   EXPECT_TRUE(v121->received_mouse_enter_);
-  EXPECT_FALSE(v1->last_mouse_event_type_);
+  EXPECT_EQ(v1->last_mouse_event_type_, ui::EventType::kUnknown);
 
   v111->Reset();
   v121->Reset();
@@ -2568,7 +2715,7 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
   root_view->OnMouseMoved(move3);
   EXPECT_TRUE(v121->received_mouse_exit_);
   EXPECT_TRUE(v11->received_mouse_enter_);
-  EXPECT_FALSE(v1->last_mouse_event_type_);
+  EXPECT_EQ(v1->last_mouse_event_type_, ui::EventType::kUnknown);
 
   v121->Reset();
   v11->Reset();
@@ -2579,7 +2726,7 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
                        ui::EventTimeForNow(), 0, 0);
   root_view->OnMouseMoved(move4);
   EXPECT_TRUE(v21->received_mouse_enter_);
-  EXPECT_FALSE(v2->last_mouse_event_type_);
+  EXPECT_EQ(v2->last_mouse_event_type_, ui::EventType::kUnknown);
   EXPECT_TRUE(v11->received_mouse_exit_);
   EXPECT_TRUE(v1->received_mouse_exit_);
 
@@ -2604,7 +2751,7 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
                         ui::EventTimeForNow(), 0, 0);
   root_view->OnMouseMoved(mouse6);
   EXPECT_TRUE(v11->received_mouse_enter_);
-  EXPECT_FALSE(v1->last_mouse_event_type_);
+  EXPECT_EQ(v1->last_mouse_event_type_, ui::EventType::kUnknown);
 
   v11->Reset();
   v1->Reset();
@@ -3269,7 +3416,7 @@ TEST_F(ViewTest, TransformEvent) {
                          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                          ui::EF_LEFT_MOUSE_BUTTON);
   root->OnMousePressed(pressed);
-  EXPECT_EQ(0, v1->last_mouse_event_type_);
+  EXPECT_EQ(v1->last_mouse_event_type_, ui::EventType::kUnknown);
   EXPECT_EQ(ui::EventType::kMousePressed, v2->last_mouse_event_type_);
   EXPECT_EQ(190, v2->location_.x());
   EXPECT_EQ(10, v2->location_.y());
@@ -3294,7 +3441,7 @@ TEST_F(ViewTest, TransformEvent) {
                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                     ui::EF_LEFT_MOUSE_BUTTON);
   root->OnMousePressed(p2);
-  EXPECT_EQ(0, v1->last_mouse_event_type_);
+  EXPECT_EQ(v1->last_mouse_event_type_, ui::EventType::kUnknown);
   EXPECT_EQ(ui::EventType::kMousePressed, v2->last_mouse_event_type_);
   EXPECT_EQ(10, v2->location_.x());
   EXPECT_EQ(20, v2->location_.y());
@@ -5992,7 +6139,7 @@ TEST_F(ViewTest, ScopedTargetHandlerReceivesEvents) {
     EXPECT_EQ(&scoped_target_handler,
               v->SetTargetHandler(&scoped_target_handler));
 
-    EXPECT_EQ(ui::kUnknown, v->last_mouse_event_type_);
+    EXPECT_EQ(v->last_mouse_event_type_, ui::EventType::kUnknown);
     gfx::Point p(10, 120);
     ui::MouseEvent pressed(ui::EventType::kMousePressed, p, p,
                            ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,

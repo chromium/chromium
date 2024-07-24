@@ -53,7 +53,6 @@ import java.util.Set;
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored"})
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
-    ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS,
     ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
     ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
 })
@@ -177,28 +176,6 @@ public class TabGroupVisualDataManagerUnitTest {
         // Verify that the title and color were not deleted.
         verify(mTabGroupModelFilter, never()).deleteTabGroupTitle(TAB1_ID);
         verify(mTabGroupModelFilter, never()).deleteTabGroupColor(TAB1_ID);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
-    public void onFinishingMultipleTabClosure_DeleteStoredTitle_GroupSize1NotSupported() {
-        // Assume that CUSTOMIZED_TITLE1 and COLOR1_ID are associated with the tab group.
-        // Mock that tab1 and tab2 are in the same group and group root id is TAB1_ID.
-        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(tabs, TAB1_ID, GROUP_1_ID);
-
-        // Mock that tab2 is closed and the group becomes a single tab.
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(TAB1_ID)).thenReturn(1);
-        doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB1_ID, TAB3_ID, TAB4_ID)))
-                .when(mTabGroupModelFilter)
-                .getLazyAllRootIdsInComprehensiveModel(any());
-        mTabModelObserverCaptor
-                .getValue()
-                .onFinishingMultipleTabClosure(List.of(mTab2), /* canRestore= */ true);
-
-        // Verify that the title and color were deleted.
-        verify(mTabGroupModelFilter).deleteTabGroupTitle(TAB1_ID);
-        verify(mTabGroupModelFilter).deleteTabGroupColor(TAB1_ID);
     }
 
     @Test
@@ -336,25 +313,6 @@ public class TabGroupVisualDataManagerUnitTest {
         createTabGroup(group2, TAB3_ID, GROUP_2_ID);
         mTabGroupModelFilterObserverCaptor.getValue().willMergeTabToGroup(mTab1, TAB3_ID);
         verify(mTabGroupModelFilter, never()).deleteTabGroupCollapsed(TAB3_ID);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
-    public void tabMoveOutOfGroup_DeleteStoredTitle_GroupSize1NotSupported() {
-        when(mTabGroupModelFilter.getTabGroupTitle(TAB1_ID)).thenReturn(CUSTOMIZED_TITLE1);
-        when(mTabGroupModelFilter.getTabGroupColor(TAB1_ID)).thenReturn(COLOR1_ID);
-
-        // Mock that tab1 and tab2 are in the same group and group root id is TAB1_ID.
-        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(tabs, TAB1_ID, GROUP_1_ID);
-
-        // Mock that we are going to ungroup tab1, and the group becomes a single tab after ungroup.
-        mTabGroupModelFilterObserverCaptor.getValue().willMoveTabOutOfGroup(mTab1, TAB2_ID);
-
-        // Verify that the title and color were deleted.
-        verify(mTabGroupModelFilter).deleteTabGroupTitle(TAB1_ID);
-        verify(mTabGroupModelFilter).deleteTabGroupColor(TAB1_ID);
-        verify(mTabGroupModelFilter).deleteTabGroupCollapsed(TAB1_ID);
     }
 
     @Test

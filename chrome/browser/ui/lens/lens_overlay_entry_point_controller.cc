@@ -4,34 +4,82 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 
+#include "base/system/sys_info.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_permission_utils.h"
 
 namespace lens {
 
 LensOverlayEntryPointController::LensOverlayEntryPointController(
     Browser* browser)
-    : browser_(browser) {
+    : browser_(browser) {}
+
+void LensOverlayEntryPointController::Initialize() {
   // Observe changes to fullscreen state.
   fullscreen_observation_.Observe(
-      browser->exclusive_access_manager()->fullscreen_controller());
+      browser_->exclusive_access_manager()->fullscreen_controller());
 
   // Observe changes to user's DSE.
   if (auto* const template_url_service =
-          TemplateURLServiceFactory::GetForProfile(browser->profile())) {
+          TemplateURLServiceFactory::GetForProfile(browser_->profile())) {
     template_url_service_observation_.Observe(template_url_service);
   }
+
+  // Update all entry points.
+  UpdateEntryPointsState(/*hide_if_needed=*/true);
 }
 
 LensOverlayEntryPointController::~LensOverlayEntryPointController() {
   // Don't leave the reference pointer dangling.
   browser_ = nullptr;
+}
+
+bool LensOverlayEntryPointController::IsEnabled() {
+  // This class is initialized if and only if it is observing.
+  if (!fullscreen_observation_.IsObserving()) {
+    return false;
+  }
+
+  // Feature is disabled via finch.
+  if (!lens::features::IsLensOverlayEnabled()) {
+    return false;
+  }
+
+  // Disable in fullscreen without top-chrome.
+  if (!lens::features::GetLensOverlayEnableInFullscreen() &&
+      browser_->exclusive_access_manager()->context()->IsFullscreen() &&
+      !browser_->IsTabStripVisible()) {
+    return false;
+  }
+
+  // Lens Overlay is disabled via enterprise policy.
+  lens::prefs::LensOverlaySettingsPolicyValue policy_value =
+      static_cast<lens::prefs::LensOverlaySettingsPolicyValue>(
+          browser_->profile()->GetPrefs()->GetInteger(
+              lens::prefs::kLensOverlaySettings));
+  if (policy_value == lens::prefs::LensOverlaySettingsPolicyValue::kDisabled) {
+    return false;
+  }
+
+  // Lens Overlay is only enabled if the user's default search engine is Google.
+  if (lens::features::IsLensOverlayGoogleDseRequired() &&
+      !search::DefaultSearchProviderIsGoogle(browser_->profile())) {
+    return false;
+  }
+
+  // Finally, only enable the overlay if user meets our minimum RAM requirement.
+  static int phys_mem_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
+  return phys_mem_mb > lens::features::GetLensOverlayMinRamMb();
 }
 
 void LensOverlayEntryPointController::OnFullscreenStateChanged() {
@@ -54,7 +102,7 @@ void LensOverlayEntryPointController::OnTemplateURLServiceShuttingDown() {
 
 void LensOverlayEntryPointController::UpdateEntryPointsState(
     bool hide_if_needed) {
-  const bool enabled = LensOverlayController::IsEnabled(browser_);
+  const bool enabled = IsEnabled();
 
   // Update the 3 dot menu entry point.
   browser_->command_controller()->UpdateCommandEnabled(

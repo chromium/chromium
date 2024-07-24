@@ -80,8 +80,8 @@ class EncodedPoolOffset {
     uintptr_t address = SlotStartPtr2Addr(ptr);
     PoolInfo pool_info = PartitionAddressSpace::GetPoolInfo(address);
     // Save a MTE tag as well as an offset.
-    uintptr_t tagged_offset = address & (kPtrTagMask | ~pool_info.base_mask);
-    PA_DCHECK(tagged_offset == (pool_info.offset | (address & kPtrTagMask)));
+    uintptr_t tagged_offset =
+        reinterpret_cast<uintptr_t>(ptr) & (kPtrTagMask | ~pool_info.base_mask);
     return Transform(tagged_offset);
   }
 

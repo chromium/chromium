@@ -1686,7 +1686,8 @@ void ChromeContentBrowserClient::MaybeProxyNetworkBoundRequest(
     content::BrowserContext* browser_context,
     net::handles::NetworkHandle bound_network,
     network::URLLoaderFactoryBuilder& factory_builder,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
+    network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+    const net::IsolationInfo& isolation_info) {
   if (bound_network == net::handles::kInvalidNetworkHandle) {
     return;
   }
@@ -1742,6 +1743,8 @@ void ChromeContentBrowserClient::MaybeProxyNetworkBoundRequest(
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
   params->process_id = network::mojom::kBrowserProcessId;
+  params->is_trusted = true;
+  params->isolation_info = isolation_info;
   // Disable CORS wrapping, this is already handled by the caller.
   params->disable_web_security = true;
   network_bound_network_context_->CreateURLLoaderFactory(
@@ -5772,13 +5775,23 @@ ChromeContentBrowserClient::GetDevToolsBackgroundServiceExpirations(
 std::optional<base::TimeDelta>
 ChromeContentBrowserClient::GetSpareRendererDelayForSiteURL(
     const GURL& site_url) {
-  if (!IsTopChromeWebUIURL(site_url)) {
-    return std::nullopt;
+  if (IsTopChromeWebUIURL(site_url)) {
+    // Experiments have shown that delaying 2s brings the most significant
+    // improvements to Top Chrome WebUIs. See crbug.com/41490050.
+    return base::Seconds(2);
   }
 
-  // Experiments have shown that delaying 2s brings the most significant
-  // improvements to Top Chrome WebUIs. See crbug.com/41490050.
-  return base::Seconds(2);
+#if BUILDFLAG(IS_ANDROID)
+  // Delay the creation of the renderer on Android since the CPU tends
+  // to be busy during loading.
+  if (base::FeatureList::IsEnabled(
+          features::kAndroidWarmUpSpareRendererWithTimeout)) {
+    return base::Milliseconds(
+        features::kAndroidSpareRendererCreationDelayMs.Get());
+  }
+#endif
+
+  return std::nullopt;
 }
 
 std::unique_ptr<content::TracingDelegate>
@@ -6605,7 +6618,8 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
   // packets over the network (to effectively target `bound_network`).
   MaybeProxyNetworkBoundRequest(browser_context,
                                 GetBoundNetworkFromRenderFrameHost(frame),
-                                factory_builder, factory_override);
+                                factory_builder, factory_override,
+                                isolation_info);
 }
 
 std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>

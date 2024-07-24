@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/blob/blob_bytes_provider.h"
 
 #include <memory>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -81,19 +77,18 @@ TEST_F(BlobBytesProviderTest, Consolidation) {
   auto data = CreateProvider();
   DCHECK_CALLED_ON_VALID_SEQUENCE(data->sequence_checker_);
 
-  data->AppendData(base::make_span("abc", 3u));
-  data->AppendData(base::make_span("def", 3u));
-  data->AppendData(base::make_span("ps1", 3u));
-  data->AppendData(base::make_span("ps2", 3u));
+  data->AppendData(base::span_from_cstring("abc"));
+  data->AppendData(base::span_from_cstring("def"));
+  data->AppendData(base::span_from_cstring("ps1"));
+  data->AppendData(base::span_from_cstring("ps2"));
 
   EXPECT_EQ(1u, data->data_.size());
   EXPECT_EQ(12u, data->data_[0]->size());
   EXPECT_EQ(0, memcmp(data->data_[0]->data(), "abcdefps1ps2", 12));
 
-  auto large_data = std::make_unique<char[]>(
+  auto large_data = base::HeapArray<char>::WithSize(
       BlobBytesProvider::kMaxConsolidatedItemSizeInBytes);
-  data->AppendData(base::make_span(
-      large_data.get(), BlobBytesProvider::kMaxConsolidatedItemSizeInBytes));
+  data->AppendData(large_data);
 
   EXPECT_EQ(2u, data->data_.size());
   EXPECT_EQ(12u, data->data_[0]->size());
@@ -143,9 +138,10 @@ class RequestAsFile : public BlobBytesProviderTest,
     test_provider_->AppendData(test_data2_);
     test_provider_->AppendData(test_data3_);
 
-    sliced_data_.AppendRange(
-        combined_bytes_.begin() + GetParam().offset,
-        combined_bytes_.begin() + GetParam().offset + GetParam().size);
+    auto combined_bytes_span =
+        base::span(combined_bytes_).subspan(GetParam().offset, GetParam().size);
+    sliced_data_.AppendRange(combined_bytes_span.begin(),
+                             combined_bytes_span.end());
   }
 
   base::File DoRequestAsFile(uint64_t source_offset,
@@ -229,7 +225,7 @@ TEST_P(RequestAsFile, OffsetInNonEmptyFile) {
                   expected_data.size()));
   }
 
-  base::ranges::copy(sliced_data_, expected_data.begin() + file_offset);
+  base::span(expected_data).subspan(file_offset).copy_prefix_from(sliced_data_);
 
   test_provider_->RequestAsFile(
       test.offset, test.size,
@@ -284,7 +280,9 @@ TEST_F(BlobBytesProviderTest, RequestAsFile_MultipleChunks) {
         base::BindOnce([](std::optional<base::Time> last_modified) {
           EXPECT_TRUE(last_modified);
         }));
-    expected_data.insert(0, combined_bytes_.data() + i, 16);
+    auto combined_bytes_chunk = base::span(combined_bytes_).subspan(i, 16);
+    expected_data.insert(0, combined_bytes_chunk.data(),
+                         combined_bytes_chunk.size());
   }
 
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |

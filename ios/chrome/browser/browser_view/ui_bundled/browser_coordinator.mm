@@ -123,6 +123,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
+#import "ios/chrome/browser/shared/public/commands/activity_service_share_url_command.h"
 #import "ios/chrome/browser/shared/public/commands/add_contacts_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
@@ -1731,7 +1732,23 @@ enum class ToolbarKind {
   [self.sharingCoordinator start];
 }
 
-#pragma mark - AutofillCommands
+- (void)shareURLFromContextMenu:(ActivityServiceShareURLCommand*)command {
+  SharingParams* params = [[SharingParams alloc]
+      initWithURL:command.URL
+            title:command.title
+         scenario:SharingScenario::ShareInWebContextMenu];
+
+  self.sharingCoordinator =
+      [[SharingCoordinator alloc] initWithBaseViewController:self.viewController
+                                                     browser:self.browser
+                                                      params:params
+                                                  originView:command.sourceView
+                                                  originRect:command.sourceRect
+                                                      anchor:nil];
+  [self.sharingCoordinator start];
+}
+
+#pragma mark - AutofillBottomSheetCommands
 
 - (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params {
   if (self.passwordSuggestionBottomSheetCoordinator) {
@@ -2228,6 +2245,12 @@ enum class ToolbarKind {
   web::WebState* activeWebState = self.activeWebState;
   if (!activeWebState) {
     return;
+  }
+
+  // Close the keyboard before opening the sheet.
+  UIView* view = activeWebState->GetView();
+  if (view) {
+    [view endEditing:YES];
   }
 
   ContextualPanelTabHelper* contextualPanelTabHelper =

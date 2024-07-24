@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/synchronization/waitable_event.h"
@@ -45,6 +46,7 @@
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/graphite_cache_controller.h"
+#include "gpu/command_buffer/service/graphite_image_provider.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
@@ -90,25 +92,31 @@ namespace viz {
 
 namespace {
 
-// Records Viz Graphite memory dumps via a global object that registers and
-// unregisters itself as a memory dump provider as appropriate based on
-// SkiaOutputSurfaceImpl instances beginning and ending their usage of Graphite
-// state.
-class GraphiteVizMemoryDumpProvider
+// Records memory dumps and responds to memory pressure signals for Graphite Viz
+// via a global object.
+class GraphiteVizMemoryAssistant
     : public base::trace_event::MemoryDumpProvider {
  public:
-  static GraphiteVizMemoryDumpProvider& GetInstance() {
-    static base::NoDestructor<GraphiteVizMemoryDumpProvider> instance;
+  static GraphiteVizMemoryAssistant& GetInstance() {
+    static base::NoDestructor<GraphiteVizMemoryAssistant> instance;
     return *instance;
   }
 
   void AddClient(skgpu::graphite::Recorder* recorder,
+                 gpu::raster::GraphiteCacheController* cache_controller,
                  scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     if (num_clients_ == 0) {
       CHECK(!recorder_);
+      CHECK(!cache_controller_);
       recorder_ = recorder;
+      cache_controller_ = cache_controller;
       base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-          this, "GraphiteVizMemoryDumpProvider", std::move(task_runner));
+          this, "GraphiteVizMemoryAssistant", std::move(task_runner));
+
+      memory_pressure_listener_.emplace(
+          FROM_HERE,
+          base::BindRepeating(&GraphiteVizMemoryAssistant::HandleMemoryPressure,
+                              base::Unretained(this)));
     }
     num_clients_++;
   }
@@ -116,17 +124,19 @@ class GraphiteVizMemoryDumpProvider
   void RemoveClient() {
     num_clients_--;
     if (num_clients_ == 0) {
+      memory_pressure_listener_.reset();
       recorder_ = nullptr;
+      cache_controller_ = nullptr;
       base::trace_event::MemoryDumpManager::GetInstance()
           ->UnregisterDumpProvider(this);
     }
   }
 
  private:
-  friend class base::NoDestructor<GraphiteVizMemoryDumpProvider>;
+  friend class base::NoDestructor<GraphiteVizMemoryAssistant>;
 
-  GraphiteVizMemoryDumpProvider() = default;
-  ~GraphiteVizMemoryDumpProvider() override = default;
+  GraphiteVizMemoryAssistant() = default;
+  ~GraphiteVizMemoryAssistant() override = default;
 
   // MemoryDumpProvider:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
@@ -145,6 +155,23 @@ class GraphiteVizMemoryDumpProvider
           base::trace_event::MemoryAllocatorDump::kNameSize,
           base::trace_event::MemoryAllocatorDump::kUnitsBytes,
           recorder_->currentBudgetedBytes());
+
+      // The ImageProvider's bytes are not included in the recorder's budgeted
+      // bytes as they are owned by Chrome, so dump them separately.
+      const auto* image_provider =
+          static_cast<const gpu::GraphiteImageProvider*>(
+              recorder_->clientImageProvider());
+      std::string image_provider_dump_name = base::StringPrintf(
+          "skia/gpu_resources/"
+          "viz_compositor_graphite_image_provider_0x%" PRIXPTR,
+          reinterpret_cast<uintptr_t>(image_provider));
+      base::trace_event::MemoryAllocatorDump* image_provider_dump =
+          pmd->CreateAllocatorDump(image_provider_dump_name);
+      image_provider_dump->AddScalar(
+          base::trace_event::MemoryAllocatorDump::kNameSize,
+          base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+          image_provider->CurrentSizeInBytes());
+
     } else {
       skia::SkiaTraceMemoryDumpImpl trace_memory_dump(args.level_of_detail,
                                                       pmd);
@@ -154,7 +181,27 @@ class GraphiteVizMemoryDumpProvider
     return true;
   }
 
+  void HandleMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    switch (memory_pressure_level) {
+      case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+        return;
+      case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+        // With moderate pressure, clear any unlocked resources.
+        cache_controller_->CleanUpScratchResources();
+        break;
+      case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+        cache_controller_->CleanUpAllResources();
+        break;
+    }
+  }
+
+  // NOTE: The implementation guarantees that the callback will always be called
+  // on the thread that created the listener.
+  std::optional<base::MemoryPressureListener> memory_pressure_listener_;
+
   raw_ptr<skgpu::graphite::Recorder> recorder_ = nullptr;
+  raw_ptr<gpu::raster::GraphiteCacheController> cache_controller_ = nullptr;
   uint32_t num_clients_ = 0;
 };
 
@@ -404,7 +451,7 @@ SkiaOutputSurfaceImpl::~SkiaOutputSurfaceImpl() {
   root_ddl_recorder_.reset();
 
   if (graphite_recorder_) {
-    GraphiteVizMemoryDumpProvider::GetInstance().RemoveClient();
+    GraphiteVizMemoryAssistant::GetInstance().RemoveClient();
   }
 
   if (!render_pass_image_cache_.empty()) {
@@ -1249,8 +1296,9 @@ bool SkiaOutputSurfaceImpl::Initialize() {
   if (graphite_recorder_) {
     graphite_cache_controller_ =
         GetOrCreateGraphiteCacheController(graphite_recorder_);
-    GraphiteVizMemoryDumpProvider::GetInstance().AddClient(
-        graphite_recorder_, dependency_->GetClientTaskRunner());
+    GraphiteVizMemoryAssistant::GetInstance().AddClient(
+        graphite_recorder_, graphite_cache_controller_.get(),
+        dependency_->GetClientTaskRunner());
   }
   return result;
 }

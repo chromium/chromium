@@ -7,8 +7,8 @@
 #include "base/time/time.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/cellular/cellular_util.h"
+#include "chrome/test/base/ash/interactive/cellular/esim_interactive_uitest_base.h"
 #include "chrome/test/base/ash/interactive/cellular/wait_for_service_connected_observer.h"
-#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
@@ -28,57 +28,44 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(WaitForServiceConnectedObserver,
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(WaitForServiceConnectedObserver,
                                     kConnectedToSecondCellularService);
 
-class EsimInstallationInteractiveUiTest : public InteractiveAshTest {
+class EsimInstallationInteractiveUiTest : public EsimInteractiveUiTestBase {
  protected:
   // InteractiveAshTest:
   void SetUpOnMainThread() override {
-    InteractiveAshTest::SetUpOnMainThread();
-
-    // Set up context for element tracking for InteractiveBrowserTest.
-    SetupContextWidget();
-
-    // Ensure the OS Settings app is installed.
-    InstallSystemApps();
-
-    auto* hermes_manager_client =
-        HermesManagerClient::Get()->GetTestInterface();
-    ASSERT_TRUE(hermes_manager_client);
-
-    hermes_manager_client->ClearEuiccs();
-
-    hermes_manager_client->AddEuicc(dbus::ObjectPath(euicc_info_.path()),
-                                    euicc_info_.eid(),
-                                    /*is_active=*/true,
-                                    /*physical_slot=*/0);
+    EsimInteractiveUiTestBase::SetUpOnMainThread();
 
     auto* hermes_euicc_client = HermesEuiccClient::Get()->GetTestInterface();
     ASSERT_TRUE(hermes_euicc_client);
 
-    activation_code0_ = hermes_euicc_client->GenerateFakeActivationCode();
-    hermes_euicc_client->AddCarrierProfile(
-        dbus::ObjectPath(esim_info0_.profile_path()),
-        dbus::ObjectPath(euicc_info_.path()), esim_info0_.iccid(),
-        esim_info0_.name(), esim_info0_.nickname(),
-        esim_info0_.service_provider(), activation_code0_,
-        /*network_service_path=*/esim_info0_.service_path(),
-        /*state=*/hermes::profile::State::kPending,
-        /*profile_class=*/hermes::profile::ProfileClass::kOperational,
-        /*add_carrier_profile_behavior=*/
-        HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
-            kAddProfileWithoutService);
+    esim_info0_ = std::make_unique<SimInfo>(/*id=*/0);
 
-    activation_code1_ = hermes_euicc_client->GenerateFakeActivationCode();
+    // Add a pending profile.
     hermes_euicc_client->AddCarrierProfile(
-        dbus::ObjectPath(esim_info1_.profile_path()),
-        dbus::ObjectPath(euicc_info_.path()), esim_info1_.iccid(),
-        esim_info1_.name(), esim_info1_.nickname(),
-        esim_info1_.service_provider(), activation_code1_,
-        /*network_service_path=*/esim_info1_.service_path(),
+        dbus::ObjectPath(esim_info0_->profile_path()),
+        dbus::ObjectPath(euicc_info().path()), esim_info0_->iccid(),
+        esim_info0_->name(), esim_info0_->nickname(),
+        esim_info0_->service_provider(), esim_info0_->activation_code(),
+        /*network_service_path=*/esim_info0_->service_path(),
         /*state=*/hermes::profile::State::kPending,
         /*profile_class=*/hermes::profile::ProfileClass::kOperational,
         /*add_carrier_profile_behavior=*/
         HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
-            kAddProfileWithoutService);
+            kAddProfileWithService);
+
+    esim_info1_ = std::make_unique<SimInfo>(/*id=*/1);
+
+    // Add a pending profile.
+    hermes_euicc_client->AddCarrierProfile(
+        dbus::ObjectPath(esim_info1_->profile_path()),
+        dbus::ObjectPath(euicc_info().path()), esim_info1_->iccid(),
+        esim_info1_->name(), esim_info1_->nickname(),
+        esim_info1_->service_provider(), esim_info1_->activation_code(),
+        /*network_service_path=*/esim_info1_->service_path(),
+        /*state=*/hermes::profile::State::kPending,
+        /*profile_class=*/hermes::profile::ProfileClass::kOperational,
+        /*add_carrier_profile_behavior=*/
+        HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+            kAddProfileWithService);
 
     // Make Hermes operations take 1 second to complete.
     hermes_euicc_client->SetInteractiveDelay(base::Seconds(1));
@@ -161,8 +148,7 @@ class EsimInstallationInteractiveUiTest : public InteractiveAshTest {
   }
 
   ui::test::internal::InteractiveTestPrivate::MultiStep PerformSmdpSteps(
-      const SimInfo& esim_info,
-      const std::string& activation_code) {
+      const SimInfo& esim_info) {
     return Steps(
         Log("Waiting to skip to manual entry"),
 
@@ -182,7 +168,7 @@ class EsimInstallationInteractiveUiTest : public InteractiveAshTest {
             kOSSettingsId, settings::cellular::EsimDialogActivationCodeInput()),
         ClickElement(kOSSettingsId,
                      settings::cellular::EsimDialogActivationCodeInput()),
-        SendTextAsKeyEvents(kOSSettingsId, activation_code),
+        SendTextAsKeyEvents(kOSSettingsId, esim_info.activation_code()),
         WaitForElementEnabled(kOSSettingsId,
                               settings::cellular::EsimDialogForwardButton()),
         WaitForElementTextContains(
@@ -238,17 +224,12 @@ class EsimInstallationInteractiveUiTest : public InteractiveAshTest {
             /*text=*/esim_info.nickname()));
   }
 
-  const SimInfo& esim_info0() const { return esim_info0_; }
-  const SimInfo& esim_info1() const { return esim_info1_; }
-  const std::string& activation_code0() const { return activation_code0_; }
-  const std::string& activation_code1() const { return activation_code1_; }
+  const SimInfo& esim_info0() const { return *esim_info0_; }
+  const SimInfo& esim_info1() const { return *esim_info1_; }
 
  private:
-  const EuiccInfo euicc_info_ = EuiccInfo(/*id=*/0);
-  const SimInfo esim_info0_ = SimInfo(/*id=*/0);
-  const SimInfo esim_info1_ = SimInfo(/*id=*/1);
-  std::string activation_code0_;
-  std::string activation_code1_;
+  std::unique_ptr<SimInfo> esim_info0_;
+  std::unique_ptr<SimInfo> esim_info1_;
 };
 
 IN_PROC_BROWSER_TEST_F(EsimInstallationInteractiveUiTest, WithSmds) {
@@ -314,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(EsimInstallationInteractiveUiTest, WithSmdp) {
 
       OpenInstallationDialog(),
 
-      PerformSmdpSteps(esim_info0(), activation_code0()),
+      PerformSmdpSteps(esim_info0()),
 
       FinishInstallationFlow(esim_info0(), kConnectedToFirstCellularService),
 
@@ -322,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(EsimInstallationInteractiveUiTest, WithSmdp) {
 
       OpenInstallationDialog(),
 
-      PerformSmdpSteps(esim_info1(), activation_code1()),
+      PerformSmdpSteps(esim_info1()),
 
       FinishInstallationFlow(esim_info1(), kConnectedToSecondCellularService),
 

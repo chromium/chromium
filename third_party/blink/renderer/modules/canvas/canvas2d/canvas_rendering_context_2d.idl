@@ -136,6 +136,10 @@ interface CanvasRenderingContext2D {
     [RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
     [RaisesException] void drawImage(CanvasImageSource image, unrestricted double sx, unrestricted double sy, unrestricted double sw, unrestricted double sh, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
 
+    // placeElement: https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md
+    [RuntimeEnabled=CanvasPlaceElement, RaisesException] void placeElement(Element element, unrestricted double x,
+                                        unrestricted double y);
+
     // triangle mesh API
     [MeasureAs=Canvas2DMesh, RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DVertexBuffer createMesh2DVertexBuffer(Float32Array buffer);
     [MeasureAs=Canvas2DMesh, RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DUVBuffer createMesh2DUVBuffer(Float32Array buffer);

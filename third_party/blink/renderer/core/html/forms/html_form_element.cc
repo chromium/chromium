@@ -79,27 +79,9 @@ using mojom::blink::FormControlType;
 
 namespace {
 
-bool HasFormInBetween(const Node* root, const Node* descendant) {
-  DCHECK(!IsA<HTMLFormElement>(descendant));
-  // |descendant| might not actually be a descendant of |root|.
-  if (!descendant->IsDescendantOf(root))
-    return false;
-  for (ContainerNode* parent = descendant->parentNode();
-       parent && parent != root; parent = parent->parentNode()) {
-    if (DynamicTo<HTMLFormElement>(parent)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 // Invalidates the cache of all form elements that are ancestors of
 // `starting_node` or `starting_node` itself.
 void InvalidateShadowIncludingAncestorForms(ContainerNode* starting_node) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillIncludeFormElementsInShadowDom)) {
-    return;
-  }
   for (ContainerNode* node = starting_node; node;
        node = node->ParentOrShadowHostNode()) {
     if (HTMLFormElement* form = DynamicTo<HTMLFormElement>(node)) {
@@ -786,9 +768,7 @@ void HTMLFormElement::CollectListedElements(
   HeapVector<Member<HTMLFormElement>> nested_forms;
   if (!in_shadow_tree) {
     elements.clear();
-    if (elements_including_shadow_trees &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillIncludeFormElementsInShadowDom)) {
+    if (elements_including_shadow_trees) {
       for (HTMLFormElement& nested_form :
            Traversal<HTMLFormElement>::DescendantsOf(*this)) {
         nested_forms.push_back(nested_form);
@@ -816,25 +796,13 @@ void HTMLFormElement::CollectListedElements(
 
   for (HTMLElement& element : Traversal<HTMLElement>::DescendantsOf(*root)) {
     if (ListedElement* listed_element = ListedElement::From(element)) {
-      // There are two scenarios:
-      // - If `kAutofillIncludeFormElementsInShadowDom` is disabled, then we
-      //   expect every form control element to belong to at most one form
-      //   element. This means that if there is a <form> in between `root` and
-      //   `listed_element, then we should not include it in
-      //   `elements_including_shadow_trees`. Otherwise, multiple forms would
-      //    "own" the same `listed_element` as indicated by their
-      //    `elements_including_shadow_trees`.
-      // - If `kAutofillIncludeFormElementsInShadowDom` is enabled, then
-      //   Autofill only considers top level forms - forms that have form
-      //   ancestors are ignored. In that case, we should include all form
-      //   control descendants of the form for which we collect the listed
-      //   elements.
-      // Note that `elements` does not have this problem because it can check
+      // Autofill only considers top level forms. We therefore include all form
+      // control descendants of the form whose elements we collect in
+      // `elements_including_shadow_trees`, even if their closest ancestor is a
+      // different form.
+      // `elements` does not have this complication because it can check
       // `listed_element->Form()`.
-      if (in_shadow_tree &&
-          (base::FeatureList::IsEnabled(
-               features::kAutofillIncludeFormElementsInShadowDom) ||
-           (!HasFormInBetween(root, &element) && !listed_element->Form()))) {
+      if (in_shadow_tree) {
         elements_including_shadow_trees->push_back(listed_element);
       } else if (listed_element->Form() == this) {
         elements.push_back(listed_element);
@@ -849,13 +817,8 @@ void HTMLFormElement::CollectListedElements(
     // - `element` is a shadow root.
     // - `element` is a shadow-including descendant of `this`. If `root` is a
     //   descendant of `this`, then that is trivially true.
-    // - If `kAutofillIncludeFormElementsInShadowDom` is disabled, then we also
-    //   require that there no nested forms.
     if (elements_including_shadow_trees && element.AuthorShadowRoot() &&
-        (root_is_descendant || element.IsDescendantOf(this)) &&
-        (base::FeatureList::IsEnabled(
-             features::kAutofillIncludeFormElementsInShadowDom) ||
-         !HasFormInBetween(in_shadow_tree ? root : this, &element))) {
+        (root_is_descendant || element.IsDescendantOf(this))) {
       CollectListedElements(element.AuthorShadowRoot(), elements,
                             elements_including_shadow_trees,
                             /*in_shadow_tree=*/true);

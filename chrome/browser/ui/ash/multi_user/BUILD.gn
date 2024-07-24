@@ -20,6 +20,8 @@ static_library("multi_user") {
     "multi_user_window_manager_stub.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/public/cpp",

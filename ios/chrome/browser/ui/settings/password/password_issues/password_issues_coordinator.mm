@@ -27,14 +27,12 @@
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_presenter.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/settings/utils/password_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using password_manager::WarningType;
-using password_manager::features::IsAuthOnEntryV2Enabled;
 
 namespace {
 
@@ -160,10 +158,8 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 
   // Disable animation when content will be blocked for reauth to prevent
   // flickering in navigation bar.
-  [self.baseNavigationController
-      pushViewController:_viewController
-                animated:_skipAuthenticationOnStart ||
-                         !IsAuthOnEntryV2Enabled()];
+  [self.baseNavigationController pushViewController:_viewController
+                                           animated:_skipAuthenticationOnStart];
 
   [self startReauthCoordinatorWithAuthOnStart:!_skipAuthenticationOnStart];
 }
@@ -323,11 +319,6 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 // Local authentication is required every time the current
 // scene is backgrounded and foregrounded until reauthCoordinator is stopped.
 - (void)startReauthCoordinatorWithAuthOnStart:(BOOL)authOnStart {
-  // No-op if Auth on Entry is not enabled for the password manager.
-  if (!IsAuthOnEntryV2Enabled()) {
-    return;
-  }
-
   DCHECK(!_reauthCoordinator);
 
   _reauthCoordinator = [[ReauthenticationCoordinator alloc]
@@ -359,9 +350,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 - (void)restartReauthCoordinator {
   // Restart reauth coordinator so it monitors scene state changes and requests
   // local authentication after the scene goes to the background.
-  if (IsAuthOnEntryV2Enabled()) {
-    [self startReauthCoordinatorWithAuthOnStart:NO];
-  }
+  [self startReauthCoordinatorWithAuthOnStart:NO];
 }
 
 @end

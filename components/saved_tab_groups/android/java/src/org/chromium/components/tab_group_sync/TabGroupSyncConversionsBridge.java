@@ -26,7 +26,8 @@ public class TabGroupSyncConversionsBridge {
             long creationTimeMs,
             long updateTimeMs,
             String creatorCacheGuid,
-            String lastUpdaterCacheGuid) {
+            String lastUpdaterCacheGuid,
+            String collaborationId) {
         SavedTabGroup group = new SavedTabGroup();
         group.syncId = syncId;
         group.localId = localId;
@@ -37,6 +38,7 @@ public class TabGroupSyncConversionsBridge {
         group.updateTimeMs = updateTimeMs;
         group.creatorCacheGuid = creatorCacheGuid;
         group.lastUpdaterCacheGuid = lastUpdaterCacheGuid;
+        group.collaborationId = collaborationId;
         return group;
     }
 

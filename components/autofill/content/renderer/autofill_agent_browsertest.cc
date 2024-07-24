@@ -324,19 +324,7 @@ TEST_F(AutofillAgentTestWithFeatures, TriggerFormExtractionWithResponse) {
   task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle / 2);
 }
 
-class AutofillAgentShadowDomTest : public AutofillAgentTestWithFeatures {
- public:
-  AutofillAgentShadowDomTest() {
-    scoped_features_.InitWithFeatures(
-        /*enabled_features=*/
-        {blink::features::kAutofillIncludeShadowDomInUnassociatedListedElements,
-         blink::features::kAutofillIncludeFormElementsInShadowDom},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
-};
+using AutofillAgentShadowDomTest = AutofillAgentTestWithFeatures;
 
 // Tests that unassociated form control elements in a Shadow DOM tree that do
 // not have a form ancestor are extracted correctly.
@@ -1207,10 +1195,6 @@ class AutofillAgentTestFocus : public AutofillAgentTest {
     ASSERT_TRUE(e) << "Field " << id << " doesn't exist";
     FocusedElementChanged(e);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      autofill::features::kAutofillNewFocusEvents};
 };
 
 // Tests that when the focus moves from field to field, FocusedElementChanged()

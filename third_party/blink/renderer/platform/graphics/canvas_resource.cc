@@ -992,7 +992,7 @@ CanvasResourceSwapChain::~CanvasResourceSwapChain() {
 }
 
 bool CanvasResourceSwapChain::IsValid() const {
-  return context_provider_wrapper_ && HasGpuMailbox();
+  return !!context_provider_wrapper_;
 }
 
 void CanvasResourceSwapChain::TakeSkImage(sk_sp<SkImage> image) {
@@ -1027,10 +1027,6 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
 scoped_refptr<gpu::ClientSharedImage>
 CanvasResourceSwapChain::GetClientSharedImage() {
   return front_buffer_shared_image_;
-}
-
-bool CanvasResourceSwapChain::HasGpuMailbox() const {
-  return front_buffer_shared_image_ != nullptr;
 }
 
 const gpu::SyncToken

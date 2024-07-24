@@ -289,8 +289,14 @@ def main():
         cfgpath = os.path.join(THIS_DIR, cfg)
         if os.path.exists(cfgpath):
             if os.path.isdir(cfgpath):
-                shutil.rmtree(cfgpath)
+
+                def onerror(func, cfgpath, exc_info):
+                    os.chmod(cfgpath, 0o644)
+                    func(cfgpath)
+
+                shutil.rmtree(cfgpath, onerror=onerror)
             else:
+                os.chmod(cfgpath, 0o644)
                 os.remove(cfgpath)
 
     tool_revisions = {

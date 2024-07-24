@@ -21,8 +21,6 @@ const CGFloat kButtonSpace = 8;
 const CGFloat kButtonTitleImagePadding = 4;
 /// The button's image size.
 const CGFloat kIconSize = 13;
-/// The button's layer radius.
-const CGFloat kButtonLayerRadius = 15;
 /// Actions leading padding.
 const CGFloat kLeadingPadding = 61;
 }  // namespace
@@ -190,8 +188,7 @@ const CGFloat kLeadingPadding = 61;
 + (UIButton*)actionButtonWithSuggestAction:(SuggestAction*)suggestAction
                                highlighted:(BOOL)highlighted {
   UIButton* button = [[UIButton alloc] init];
-  button.layer.cornerRadius = kButtonLayerRadius;
-  button.layer.masksToBounds = YES;
+
   [button
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
@@ -226,6 +223,10 @@ const CGFloat kLeadingPadding = 61;
   }
 
   button.configuration = configuration;
+
+  [button sizeToFit];
+  button.layer.cornerRadius = button.frame.size.height / 2;
+  button.layer.masksToBounds = YES;
 
   return button;
 }

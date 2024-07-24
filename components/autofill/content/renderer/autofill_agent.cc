@@ -381,8 +381,8 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
              caret_bounds, trigger_source);
   }
   void HidePopup() override { DeferMsg(&mojom::AutofillDriver::HidePopup); }
-  void FocusOnNonFormField(bool had_interacted_form) override {
-    DeferMsg(&mojom::AutofillDriver::FocusOnNonFormField, had_interacted_form);
+  void FocusOnNonFormField() override {
+    DeferMsg(&mojom::AutofillDriver::FocusOnNonFormField);
   }
   void FocusOnFormField(const FormData& form,
                         FieldRendererId field_id) override {
@@ -600,88 +600,6 @@ void AutofillAgent::DidChangeScrollOffsetImpl(FieldRendererId element_id) {
   HidePopup();
 }
 
-// With the old focus behavior, the context menu may be opened in a
-// contenteditable without AutofillDriverRouter in the browser process
-// knowing about the contenteditable and therefore may have not known
-// the frame. The old, hacky fix was to call
-// `ShowSuggestionsForContentEditable()` in `HandleFocusChangeComplete()`
-// even if `!focused_node_was_last_clicked`. This behavior has been removed
-// in crrev.com/c/5502049 in the anticipation of `kAutofillNewFocusEvents`.
-void AutofillAgent::FocusedElementChangedDeprecated(const WebElement& element) {
-  CHECK(!base::FeatureList::IsEnabled(features::kAutofillNewFocusEvents));
-  HidePopup();
-
-  WebFormElement last_focused_form = last_interacted_form().GetForm();
-  if (!element) {
-    // Focus moved away from the last interacted form (if any) to somewhere else
-    // on the page.
-    if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->FocusOnNonFormField(!last_focused_form.IsNull());
-    }
-    return;
-  }
-
-  const WebFormControlElement form_control_element =
-      element.DynamicTo<WebFormControlElement>();
-
-  bool focus_moved_to_new_form = false;
-  if (last_focused_form &&
-      (!form_control_element ||
-       last_focused_form != form_util::GetOwningForm(form_control_element))) {
-    // The focused element is not part of the last interacted form (could be
-    // in a different form).
-    if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->FocusOnNonFormField(/*had_interacted_form=*/true);
-    }
-    focus_moved_to_new_form = true;
-  }
-
-  // Calls HandleFocusChangeComplete() after notifying the focus is no longer on
-  // the previous form, then early return. No need to notify the newly focused
-  // element because that will be done by HandleFocusChangeComplete().
-  // Refer to http://crbug.com/1105254
-  if ((config_.uses_keyboard_accessory_for_suggestions ||
-       !config_.focus_requires_scroll) &&
-      element && unsafe_render_frame() &&
-      unsafe_render_frame()->GetWebFrame()->HasTransientUserActivation()) {
-    // If the focus change was caused by a user gesture,
-    // DidReceiveLeftMouseDownOrGestureTapInNode() will show the autofill
-    // suggestions. See crbug.com/730764 for why showing autofill suggestions as
-    // a result of JavaScript changing focus is enabled on WebView.
-    bool focused_node_was_last_clicked =
-        !base::FeatureList::IsEnabled(
-            features::kAutofillAndroidDisableSuggestionsOnJSFocus) ||
-        !config_.focus_requires_scroll;
-    HandleFocusChangeComplete(
-        /*focused_node_was_last_clicked=*/focused_node_was_last_clicked);
-  }
-
-  if (focus_moved_to_new_form) {
-    return;
-  }
-
-  if (!form_control_element || !form_control_element.IsEnabled() ||
-      !form_util::IsTextAreaElementOrTextInput(form_control_element)) {
-    return;
-  }
-
-  last_queried_element_ = FieldRef(form_control_element);
-
-  if (form_control_element.IsReadOnly()) {
-    return;
-  }
-  if (std::optional<FormAndField> form_and_field =
-          FindFormAndFieldForFormControlElement(
-              last_queried_element_.GetField(), field_data_manager(),
-              GetCallTimerState(kFocusedElementChangedDeprecated),
-              MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
-    auto& [form, field] = *form_and_field;
-    if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->FocusOnFormField(form, field->renderer_id());
-    }
-  }
-}
-
 CallTimerState AutofillAgent::GetCallTimerState(
     CallTimerState::CallSite call_site) const {
   return {.call_site = call_site,
@@ -692,11 +610,6 @@ CallTimerState AutofillAgent::GetCallTimerState(
 void AutofillAgent::FocusedElementChanged(
     const WebElement& new_focused_element) {
   ObserveCaret(new_focused_element);
-
-  if (!base::FeatureList::IsEnabled(features::kAutofillNewFocusEvents)) {
-    FocusedElementChangedDeprecated(new_focused_element);
-    return;
-  }
 
   HidePopup();
 
@@ -751,7 +664,7 @@ void AutofillAgent::FocusedElementChanged(
   }
 
   if (auto* autofill_driver = unsafe_autofill_driver()) {
-    autofill_driver->FocusOnNonFormField(true);
+    autofill_driver->FocusOnNonFormField();
     handle_focus_change();
   }
 }
@@ -1852,8 +1765,7 @@ void AutofillAgent::HandleFocusChangeComplete(
   // non-click focus.
   // TODO(crbug.com/40284726): This seems to be redundant. Remove call to
   // ShowSuggestionsForContentEditable.
-  if (focused_node_was_last_clicked ||
-      !base::FeatureList::IsEnabled(features::kAutofillNewFocusEvents)) {
+  if (focused_node_was_last_clicked) {
     ShowSuggestionsForContentEditable(
         focused_element,
         AutofillSuggestionTriggerSource::kContentEditableClicked);

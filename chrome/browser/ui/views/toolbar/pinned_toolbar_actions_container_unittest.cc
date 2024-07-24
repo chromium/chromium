@@ -321,7 +321,8 @@ TEST_F(PinnedToolbarActionsContainerTest, PoppedOutButtonsAreAfterPinned) {
   ASSERT_EQ(toolbar_buttons[1]->GetActionId(), actions::kActionCut);
 }
 
-TEST_F(PinnedToolbarActionsContainerTest, DividerVisibleWhileButtonPoppedOut) {
+TEST_F(PinnedToolbarActionsContainerTest,
+       DividerNotVisibleWhileButtonPoppedOut) {
   actions::ActionItem* browser_action_item =
       browser_view()->browser()->browser_actions()->root_action_item();
 
@@ -339,24 +340,11 @@ TEST_F(PinnedToolbarActionsContainerTest, DividerVisibleWhileButtonPoppedOut) {
   child_views = container()->children();
   ASSERT_EQ(child_views.size(), 2u);
   ASSERT_EQ(
-      static_cast<PinnedActionToolbarButton*>(child_views[0])->GetActionId(),
+      static_cast<PinnedActionToolbarButton*>(child_views[1])->GetActionId(),
       actions::kActionCut);
-  ASSERT_EQ(child_views[1]->GetProperty(views::kElementIdentifierKey),
+  ASSERT_EQ(child_views[0]->GetProperty(views::kElementIdentifierKey),
             kPinnedToolbarActionsContainerDividerElementId);
-  ASSERT_FALSE(child_views[1]->GetVisible());
-  // Pin kActionCut and verify the pinned button is there and the divider is
-  // visible.
-  model()->UpdatePinnedState(actions::kActionCut, true);
-  CheckIsPoppedOut(actions::kActionCut, false);
-  CheckIsPinned(actions::kActionCut, true);
-  child_views = container()->children();
-  ASSERT_EQ(child_views.size(), 2u);
-  ASSERT_EQ(
-      static_cast<PinnedActionToolbarButton*>(child_views[0])->GetActionId(),
-      actions::kActionCut);
-  ASSERT_EQ(child_views[1]->GetProperty(views::kElementIdentifierKey),
-            kPinnedToolbarActionsContainerDividerElementId);
-  ASSERT_TRUE(child_views[1]->GetVisible());
+  ASSERT_FALSE(child_views[0]->GetVisible());
 }
 
 TEST_F(PinnedToolbarActionsContainerTest, MovingActionsUpdateOrderUsingDrag) {
@@ -429,7 +417,7 @@ TEST_F(PinnedToolbarActionsContainerTest, ContextMenuPinTest) {
   container()->UpdateActionState(actions::kActionCut, true);
   auto child_views = container()->children();
   auto* pop_out_button =
-      static_cast<PinnedActionToolbarButton*>(child_views[0]);
+      static_cast<PinnedActionToolbarButton*>(child_views[1]);
   EXPECT_EQ(
       pop_out_button->menu_model()->GetLabelAt(0),
       l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN));

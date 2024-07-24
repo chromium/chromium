@@ -7,10 +7,7 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import android.app.Dialog;
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 import java.lang.ref.WeakReference;
 
@@ -36,8 +33,7 @@ public class PrivacySandboxDialogController {
     }
 
     /** Launches an appropriate dialog if necessary and returns whether that happened. */
-    public static boolean maybeLaunchPrivacySandboxDialog(
-            Context context, @NonNull SettingsLauncher settingsLauncher, Profile profile) {
+    public static boolean maybeLaunchPrivacySandboxDialog(Context context, Profile profile) {
         assert profile != null;
         if (profile.isOffTheRecord()) {
             return false;
@@ -51,27 +47,20 @@ public class PrivacySandboxDialogController {
             case PromptType.M1_CONSENT:
                 dialog =
                         new PrivacySandboxDialogConsentEEA(
-                                context,
-                                privacySandboxBridge,
-                                settingsLauncher,
-                                sDisableAnimations);
+                                context, privacySandboxBridge, sDisableAnimations);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
             case PromptType.M1_NOTICE_EEA:
-                showNoticeEEA(context, privacySandboxBridge, settingsLauncher);
+                showNoticeEEA(context, privacySandboxBridge);
                 return true;
             case PromptType.M1_NOTICE_ROW:
-                dialog =
-                        new PrivacySandboxDialogNoticeROW(
-                                context, privacySandboxBridge, settingsLauncher);
+                dialog = new PrivacySandboxDialogNoticeROW(context, privacySandboxBridge);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
             case PromptType.M1_NOTICE_RESTRICTED:
-                dialog =
-                        new PrivacySandboxDialogNoticeRestricted(
-                                context, privacySandboxBridge, settingsLauncher);
+                dialog = new PrivacySandboxDialogNoticeRestricted(context, privacySandboxBridge);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
@@ -83,15 +72,10 @@ public class PrivacySandboxDialogController {
     }
 
     /** Shows the NoticeEEA dialog. */
-    public static void showNoticeEEA(
-            Context context,
-            PrivacySandboxBridge privacySandboxBridge,
-            SettingsLauncher settingsLauncher) {
+    public static void showNoticeEEA(Context context, PrivacySandboxBridge privacySandboxBridge) {
         if (!sDisableEEANoticeForTesting) {
             Dialog dialog;
-            dialog =
-                    new PrivacySandboxDialogNoticeEEA(
-                            context, privacySandboxBridge, settingsLauncher);
+            dialog = new PrivacySandboxDialogNoticeEEA(context, privacySandboxBridge);
             dialog.show();
             sDialog = new WeakReference<>(dialog);
         }

@@ -16,6 +16,19 @@ class AutofillManagerTestApi {
   explicit AutofillManagerTestApi(AutofillManager* manager)
       : manager_(*manager) {}
 
+  AutofillManager::LifecycleState lifecycle_state() const {
+    return manager_->lifecycle_state_;
+  }
+
+  void SetLifecycleState(AutofillManager::LifecycleState lifecycle_state) {
+    manager_->SetLifecycleState(lifecycle_state, {});
+  }
+
+  void Reset() {
+    SetLifecycleState(AutofillManager::LifecycleState::kPendingReset);
+    manager_->Reset({});
+  }
+
   void OnLoadedServerPredictions(
       std::string response,
       const std::vector<FormSignature>& queried_form_signatures) {

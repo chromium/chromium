@@ -102,8 +102,7 @@ class AndroidAutofillProvider : public AutofillProvider,
                        const FormData& form,
                        bool known_success,
                        mojom::SubmissionSource source) override;
-  void OnFocusOnNonFormField(AndroidAutofillManager* manager,
-                             bool had_interacted_form) override;
+  void OnFocusOnNonFormField(AndroidAutofillManager* manager) override;
   void OnFocusOnFormField(AndroidAutofillManager* manager,
                           const FormData& form,
                           const FormFieldData& field) override;

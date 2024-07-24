@@ -2423,8 +2423,8 @@ const base::TimeTicks& RenderProcessHostImpl::GetLastInitTime() {
   return last_init_time_;
 }
 
-bool RenderProcessHostImpl::IsProcessBackgrounded() {
-  return priority_.is_background();
+base::Process::Priority RenderProcessHostImpl::GetPriority() {
+  return priority_.GetProcessPriority();
 }
 
 void RenderProcessHostImpl::IncrementKeepAliveRefCount(uint64_t handle_id) {
@@ -2917,20 +2917,28 @@ void RenderProcessHostImpl::DiscardSpareRenderProcessHostForTesting() {
 
 // static
 bool RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes() {
-  if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
-    return false;
-
-  if (!base::FeatureList::IsEnabled(features::kSpareRendererForSitePerProcess))
-    return false;
-
   // Spare renderer actually hurts performance on low-memory devices.  See
   // https://crbug.com/843775 for more details.
   //
   // The comparison below is using 1077 rather than 1024 because this helps
   // ensure that devices with exactly 1GB of RAM won't get included because of
   // inaccuracies or off-by-one errors.
-  if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 1077)
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 1077) {
     return false;
+  }
+
+  bool android_spare_process_override = base::FeatureList::IsEnabled(
+      features::kAndroidWarmUpSpareRendererWithTimeout);
+  if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites() &&
+      !android_spare_process_override) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          features::kSpareRendererForSitePerProcess) &&
+      !android_spare_process_override) {
+    return false;
+  }
 
   return true;
 }
@@ -3987,17 +3995,18 @@ void RenderProcessHostImpl::RemovePriorityClient(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void RenderProcessHostImpl::SetPriorityOverride(bool foregrounded) {
-  foreground_override_ = foregrounded;
+void RenderProcessHostImpl::SetPriorityOverride(
+    base::Process::Priority priority) {
+  priority_override_ = priority;
   UpdateProcessPriority();
 }
 
 bool RenderProcessHostImpl::HasPriorityOverride() {
-  return foreground_override_.has_value();
+  return priority_override_.has_value();
 }
 
 void RenderProcessHostImpl::ClearPriorityOverride() {
-  foreground_override_.reset();
+  priority_override_.reset();
   UpdateProcessPriority();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -4967,14 +4976,15 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
 #endif
 #if !BUILDFLAG(IS_ANDROID)
           ,
-      foreground_override_
+      priority_override_
 #endif
   );
 
-  if (priority_ == priority)
+  if (priority_ == priority) {
     return;
-  const bool background_state_changed =
-      priority_.is_background() != priority.is_background();
+  }
+  const bool priority_state_changed =
+      priority_.GetProcessPriority() != priority.GetProcessPriority();
   const bool visibility_state_changed = priority_.visible != priority.visible;
 
   TRACE_EVENT("renderer_host", "RenderProcessHostImpl::UpdateProcessPriority",
@@ -5006,16 +5016,16 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
   }
 
   // Notify the child process of the change in state.
-  if ((background_state_changed) || visibility_state_changed) {
+  if (priority_state_changed || visibility_state_changed) {
     SendProcessStateToRenderer();
   }
   for (auto& observer : internal_observers_)
-    observer.RenderProcessBackgroundedChanged(this);
+    observer.RenderProcessPriorityChanged(this);
 
   // Update the priority of the process running the controller service worker
   // when client's background state changed. We can make the service worker
   // process backgrounded if all of its clients are backgrounded.
-  if (background_state_changed) {
+  if (priority_state_changed) {
     UpdateControllerServiceWorkerProcessPriority();
   }
 }
@@ -5066,7 +5076,7 @@ void RenderProcessHostImpl::OnProcessLaunched() {
   if (child_process_launcher_) {
     DCHECK(child_process_launcher_->GetProcess().IsValid());
     // TODO(crbug.com/40590142): This should be based on
-    // |priority_.is_background()|, see similar check below.
+    // |priority_.GetProcessPriority()|, see similar check below.
     DCHECK_EQ(blink::kLaunchingProcessIsBackgrounded, !priority_.visible);
 
     // Unpause the channel now that the process is launched. We don't flush it
@@ -5094,7 +5104,7 @@ void RenderProcessHostImpl::OnProcessLaunched() {
     // Android child process priority works differently and cannot be queried
     // directly from base::Process.
     // TODO(crbug.com/40590142): Fix initial priority on Android to
-    // reflect |priority_.is_background()|.
+    // reflect |priority_.GetProcessPriority()|.
     DCHECK_EQ(blink::kLaunchingProcessIsBackgrounded, !priority_.visible);
 #else
     priority_.visible = child_process_launcher_->GetProcess().GetPriority() ==

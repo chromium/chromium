@@ -182,6 +182,21 @@ void SavedTabGroupModel::UpdateVisualData(
   }
 }
 
+void SavedTabGroupModel::MakeTabGroupShared(
+    const LocalTabGroupID& local_group_id,
+    std::string collaboration_id) {
+  SavedTabGroup* group = GetMutableGroup(local_group_id);
+  CHECK(group);
+  CHECK(!group->is_shared_tab_group());
+
+  group->SetCollaborationId(std::move(collaboration_id));
+
+  for (auto& observer : observers_) {
+    observer.SavedTabGroupUpdatedLocally(group->saved_guid(),
+                                         /*tab_guid=*/std::nullopt);
+  }
+}
+
 void SavedTabGroupModel::AddedFromSync(SavedTabGroup saved_group) {
   base::Uuid group_guid = saved_group.saved_guid();
   if (Contains(group_guid))

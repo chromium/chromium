@@ -11,6 +11,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
@@ -52,7 +54,7 @@ class PerksDiscoveryScreen : public BaseScreen {
  public:
   using TView = PerksDiscoveryScreenView;
 
-  enum class Result { kNext, kError, kNotApplicable };
+  enum class Result { kNext, kError, kTimeout, kNotApplicable };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
@@ -73,6 +75,14 @@ class PerksDiscoveryScreen : public BaseScreen {
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
   void GetOobePerksPayloadAndShow();
+  void ShowOverviewStep();
+  void ExitScreenTimeout();
+
+  base::OneShotTimer delay_overview_timer_;
+  base::TimeDelta delay_overview_step_ = base::Seconds(2);
+
+  base::OneShotTimer timeout_overview_timer_;
+  base::TimeDelta delay_exit_timeout_ = base::Minutes(1);
 
   std::vector<SinglePerkDiscoveryPayload> perks_data_;
   base::WeakPtr<PerksDiscoveryScreenView> view_;

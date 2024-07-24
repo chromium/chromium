@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
@@ -136,7 +137,7 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
 
   bool HasNewTrackingProtectionUi() {
     return base::FeatureList::IsEnabled(
-        privacy_sandbox::kTrackingProtectionSettingsLaunch);
+        privacy_sandbox::kTrackingProtectionContentSettingFor3pcb);
   }
 
   auto CheckStateForTemporaryException() {
@@ -757,9 +758,14 @@ class CookieControlsInteractiveUiTrackingProtectionTest
   CookieControlsInteractiveUiTrackingProtectionTest() = default;
   ~CookieControlsInteractiveUiTrackingProtectionTest() override = default;
 
+  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings() {
+    return TrackingProtectionSettingsFactory::GetForProfile(
+        browser()->profile());
+  }
+
  protected:
   std::vector<base::test::FeatureRef> EnabledFeatures() override {
-    return {privacy_sandbox::kTrackingProtectionSettingsLaunch};
+    return {privacy_sandbox::kTrackingProtectionContentSettingFor3pcb};
   }
 
   std::vector<base::test::FeatureRef> DisabledFeatures() override { return {}; }
@@ -787,8 +793,8 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTrackingProtectionTest,
   BlockThirdPartyCookies(/*use_3pcd=*/true);
   SetHighSiteEngagement();
   SetBlockAll3pcToggle(GetParam());
-  cookie_settings()->SetCookieSettingForUserBypass(
-      third_party_cookie_page_url());
+  tracking_protection_settings()->AddTrackingProtectionException(
+      third_party_cookie_page_url(), /*is_user_bypass_exception=*/true);
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),

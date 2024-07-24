@@ -610,6 +610,10 @@ struct NetworkContextParams {
   // created out of this, will perform all network request using only
   // |bound_network|.
   int64 bound_network = -1;
+
+  // Stores mapping of endpoint name to endpoint url from initial reporting
+  // endpoints set by the ReportingEndpoints enterprise policy.
+  map<string, url.mojom.Url>? enterprise_reporting_endpoints;
 };
 
 struct NetworkConditions {
@@ -1211,6 +1215,13 @@ interface NetworkContext {
       mojo_base.mojom.UnguessableToken reporting_source,
       url.mojom.Origin origin, IsolationInfo isolation_info,
       map<string,string> endpoints);
+
+  // Configures reporting endpoints set by the ReportingEndpoints enterprise
+  // policy.
+  // `endpoints` is a mapping of endpoint name to URL (URLs will be rejected if
+  // they fail to parse or are not secure).
+  SetEnterpriseReportingEndpoints(
+      map<string,url.mojom.Url> endpoints);
 
   // Queues any outstanding reports for a single |reporting_source| (which
   // must not be empty), and removes the reporting endpoint configuration for

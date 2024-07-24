@@ -81,7 +81,6 @@ class AutofillKeyboardAccessoryControllerImpl
   void Show(std::vector<Suggestion> suggestions,
             AutofillSuggestionTriggerSource trigger_source,
             AutoselectFirstSuggestion autoselect_first_suggestion) override;
-  void DisableThresholdForTesting(bool disable_threshold) override;
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
   void PinView() override;
@@ -92,15 +91,13 @@ class AutofillKeyboardAccessoryControllerImpl
   bool GetRemovalConfirmationText(int index,
                                   std::u16string* title,
                                   std::u16string* body) override;
-  void SetViewForTesting(
-      std::unique_ptr<AutofillKeyboardAccessoryView> view) override;
 
   base::WeakPtr<AutofillKeyboardAccessoryControllerImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
-  AutofillKeyboardAccessoryView* view() { return view_.get(); }
 
  private:
+  friend class AutofillKeyboardAccessoryControllerImplTestApi;
   friend class AutofillSuggestionController;
 
   // Returns true if the popup has entries that are not "Manage ...".

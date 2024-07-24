@@ -2,5 +2,7 @@ include_rules = [
   "+components/autofill/core/browser/proto",
   "+components/password_manager/core/browser/generation",
   "+components/password_manager/core/common/password_manager_constants.h",
+  "+components/sync/protocol",
+  "+components/webauthn/core/browser",
   "+ios/components/credential_provider_extension",
 ]

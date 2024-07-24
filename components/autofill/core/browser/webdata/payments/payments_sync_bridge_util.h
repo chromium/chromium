@@ -130,7 +130,8 @@ void PopulateWalletTypesFromSyncData(
     std::vector<PaymentsCustomerData>& customer_data,
     std::vector<CreditCardCloudTokenData>& cloud_token_data,
     std::vector<BankAccount>& bank_accounts,
-    std::vector<CreditCardBenefit>& benefits);
+    std::vector<CreditCardBenefit>& benefits,
+    std::vector<sync_pb::PaymentInstrument>& payment_instruments);
 
 // A helper function to compare two sets of data. Returns true if there is
 // any difference. It uses the Compare() of the Item class instead of comparison
@@ -165,6 +166,8 @@ bool IsAutofillWalletCredentialDataSpecificsValid(
         wallet_credential_specifics);
 
 bool AreMaskedBankAccountSupported();
+
+bool IsEwalletAccountSupported();
 
 }  // namespace autofill
 

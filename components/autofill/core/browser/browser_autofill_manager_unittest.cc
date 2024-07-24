@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -66,6 +67,7 @@
 #include "components/autofill/core/browser/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
+#include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -1558,7 +1560,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   auto simulate_user_ignored_suggestions = [&](const FormData& form,
                                                const FormFieldData& field) {
-    browser_autofill_manager_->Reset();
+    test_api(*browser_autofill_manager_).Reset();
     browser_autofill_manager_->AddSeenForm(form, {NAME_FIRST, NAME_LAST});
     GetAutofillSuggestions(form, field);
     // This ensures that the field has `did_trigger_suggestion_` set.
@@ -3042,29 +3044,6 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 }
 
-// Tests that BrowserAutofillManager ignores loss of focus events sent from the
-// renderer if the renderer did not have a previously-interacted form.
-// TODO(crbug.com/40726656): Remove this test when workaround is no longer
-// needed.
-TEST_F(BrowserAutofillManagerTest,
-       ShouldIgnoreLossOfFocusWithNoPreviouslyInteractedForm) {
-  FormData form = CreateTestAddressFormData();
-
-  browser_autofill_manager_->UpdatePendingForm(form);
-  ASSERT_TRUE(test_api(*browser_autofill_manager_)
-                  .pending_form_data()
-                  ->SameFormAs(form));
-
-  // Receiving a notification that focus is no longer on the form *without* the
-  // renderer having a previously-interacted form should not result in
-  // any changes to the pending form.
-  browser_autofill_manager_->OnFocusOnNonFormField(
-      /*had_interacted_form=*/false);
-  EXPECT_TRUE(test_api(*browser_autofill_manager_)
-                  .pending_form_data()
-                  ->SameFormAs(form));
-}
-
 TEST_F(BrowserAutofillManagerTest,
        ShouldNotShowCreditCardsSuggestionsIfCreditCardAutofillDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -3294,7 +3273,7 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
     FormSubmitted(form);
 
   // Flush FormEventLoggers.
-  browser_autofill_manager_->Reset();
+  test_api(*browser_autofill_manager_).Reset();
 
   // Validate the recorded metrics.
   std::string form_type_str = (form_type == LogAblationFormType::kAddress ||
@@ -3606,7 +3585,7 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFields_KeyMetrics) {
     FormSubmitted(form);
 
     base::HistogramTester histogram_tester;
-    browser_autofill_manager_->Reset();
+    test_api(*browser_autofill_manager_).Reset();
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingAssistance.Address", 1);
   }
@@ -3619,7 +3598,7 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFields_KeyMetrics) {
     FormSubmitted(form);
 
     base::HistogramTester histogram_tester;
-    browser_autofill_manager_->Reset();
+    test_api(*browser_autofill_manager_).Reset();
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingAssistance.Address", 0);
   }
@@ -4291,8 +4270,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = trigger_fill_field_log_event2->fill_event_id,
           .had_value_before_filling = OptionalBoolean::kTrue,
-          .autofill_skipped_status =
-              FieldFillingSkipReason::kAutofilledFieldsNotRefill,
+          .autofill_skipped_status = FieldFillingSkipReason::kAlreadyAutofilled,
           .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
           .had_value_after_filling = OptionalBoolean::kTrue,
           .filling_method = FillingMethod::kNone,
@@ -5114,7 +5092,7 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictions_ResetManager) {
   std::string response_string;
   ASSERT_TRUE(response.SerializeToString(&response_string));
   // Reset the manager (such as during a navigation).
-  browser_autofill_manager_->Reset();
+  test_api(*browser_autofill_manager_).Reset();
 
   base::HistogramTester histogram_tester;
   test_api(*browser_autofill_manager_)
@@ -5509,7 +5487,7 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndUnfocus_Upload) {
       form, form.fields().front().global_id(), base::TimeTicks::Now());
 
   // Simulate lost of focus on the form.
-  browser_autofill_manager_->OnFocusOnNonFormField(true);
+  browser_autofill_manager_->OnFocusOnNonFormField();
 }
 
 // Test that navigating with a filled form sends an upload with types matching
@@ -5559,7 +5537,7 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndNavigation_Upload) {
       form, form.fields().front().global_id(), base::TimeTicks::Now());
 
   // Simulate a navigation so that the pending form is uploaded.
-  browser_autofill_manager_->Reset();
+  test_api(*browser_autofill_manager_).Reset();
 }
 
 // Test that unfocusing a filled form sends an upload with types matching the
@@ -5608,7 +5586,7 @@ TEST_F(BrowserAutofillManagerTest, OnDidFillAutofillFormDataAndUnfocus_Upload) {
                                                        base::TimeTicks::Now());
 
   // Simulate lost of focus on the form.
-  browser_autofill_manager_->OnFocusOnNonFormField(true);
+  browser_autofill_manager_->OnFocusOnNonFormField();
 }
 
 // Test that suggestions are returned for credit card fields with an
@@ -7803,7 +7781,7 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
 
   // 2. Simulate removing focus from the form, which triggers a blur vote.
   FormSignature first_form_signature = CalculateFormSignature(form_);
-  browser_autofill_manager_->OnFocusOnNonFormField(true);
+  browser_autofill_manager_->OnFocusOnNonFormField();
 
   // 3. Simulate typing into second field
   test_api(form_).field(1).set_value(u"Presley");
@@ -7825,7 +7803,7 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
                                        FieldType::NAME_LAST_SECOND})),
               ObservedSubmissionIs(false))),
           _, _));
-  browser_autofill_manager_->OnFocusOnNonFormField(true);
+  browser_autofill_manager_->OnFocusOnNonFormField();
 
   // 5. Grow the form by one field, which changes the form signature.
   test_api(form_).Append(CreateTestFormField(
@@ -7867,10 +7845,10 @@ TEST_F(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
                                 FieldAutofillTypeIs({FieldType::EMPTY_TYPE})),
                       ObservedSubmissionIs(false))),
                   _, _));
-  browser_autofill_manager_->OnFocusOnNonFormField(true);
+  browser_autofill_manager_->OnFocusOnNonFormField();
 
   // Simulate a navigation. This is when the vote is sent.
-  browser_autofill_manager_->Reset();
+  test_api(*browser_autofill_manager_).Reset();
 }
 
 // Ensure that a submission vote blocks sending a blur vote for the same form
@@ -7880,7 +7858,7 @@ TEST_F(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
 
   // Simulate removing focus from form, which enqueues a blur vote. The blur
   // vote will be ignored and only the submission will be sent.
-  browser_autofill_manager_->OnFocusOnNonFormField(true);
+  browser_autofill_manager_->OnFocusOnNonFormField();
   EXPECT_CALL(*crowdsourcing_manager(),
               StartUploadRequest(
                   FirstElementIs(AllOf(
@@ -7961,8 +7939,8 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
   personal_data().test_address_data_manager().ClearProfiles();
   AutofillProfile profile = test::GetFullProfile();
   // This is needed to not get an update prompt that would compromise the test.
-  profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  profile.token_quality().disable_randomization_for_testing();
+  test_api(profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(profile.token_quality()).disable_randomization();
   personal_data().address_data_manager().AddProfile(profile);
   const AutofillProfile* pdm_profile =
       personal_data().address_data_manager().GetProfileByGUID(profile.guid());

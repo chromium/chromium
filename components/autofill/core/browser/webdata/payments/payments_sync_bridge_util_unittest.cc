@@ -157,9 +157,10 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   std::vector<CreditCardCloudTokenData> cloud_token_data;
   std::vector<BankAccount> bank_accounts;
   std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
                                   customer_data, cloud_token_data,
-                                  bank_accounts, benefits);
+                                  bank_accounts, benefits, payment_instruments);
 
   ASSERT_EQ(2U, wallet_cards.size());
 
@@ -299,9 +300,10 @@ TEST_P(PaymentsSyncBridgeUtilCardBenefitsTest,
   std::vector<CreditCardCloudTokenData> cloud_token_data;
   std::vector<BankAccount> bank_accounts;
   std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
                                   customer_data, cloud_token_data,
-                                  bank_accounts, benefits);
+                                  bank_accounts, benefits, payment_instruments);
 
   EXPECT_EQ(2U, wallet_cards.size());
 
@@ -887,9 +889,10 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateBankAccountFromSyncData) {
   std::vector<CreditCardCloudTokenData> cloud_token_data;
   std::vector<BankAccount> bank_accounts;
   std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
                                   customer_data, cloud_token_data,
-                                  bank_accounts, benefits);
+                                  bank_accounts, benefits, payment_instruments);
 
   ASSERT_EQ(1u, bank_accounts.size());
   EXPECT_EQ(expected_bank_account, bank_accounts.at(0));
@@ -922,9 +925,10 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   std::vector<CreditCardCloudTokenData> cloud_token_data;
   std::vector<BankAccount> bank_accounts;
   std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
                                   customer_data, cloud_token_data,
-                                  bank_accounts, benefits);
+                                  bank_accounts, benefits, payment_instruments);
 
   EXPECT_EQ(0u, bank_accounts.size());
 }
@@ -948,6 +952,110 @@ TEST_F(PaymentsSyncBridgeUtilTest, BankAccountFromWalletSpecifics) {
       expected_bank_account,
       BankAccountFromWalletSpecifics(
           payment_instrument_bank_account_specifics.payment_instrument()));
+}
+
+// Tests that PopulateWalletTypesFromSyncData populates PaymentInstruments for
+// eWallet accounts.
+TEST_F(PaymentsSyncBridgeUtilTest,
+       PopulatePaymentInstrumentsFromSyncData_EwalletAccounts) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillSyncEwalletAccounts);
+  syncer::EntityChangeList entity_data;
+  std::string ewallet_account_id = "payment_instrument:123545";
+  sync_pb::AutofillWalletSpecifics
+      payment_instrument_ewallet_account_specifics =
+          CreateAutofillWalletSpecificsForEwalletAccount(
+              /*client_tag=*/ewallet_account_id, /*nickname=*/"eWallet account",
+              /*display_icon_url=*/GURL("http://www.google.com"),
+              /*ewallet_name=*/"ABC Pay",
+              /*account_display_name=*/"1234",
+              /*is_fido_enrolled=*/false);
+  entity_data.push_back(EntityChange::CreateAdd(
+      ewallet_account_id,
+      SpecificsToEntity(payment_instrument_ewallet_account_specifics,
+                        /*client_tag=*/"ewallet_account")));
+
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data,
+                                  bank_accounts, benefits, payment_instruments);
+
+  ASSERT_EQ(1u, payment_instruments.size());
+  sync_pb::PaymentInstrument payment_instrument = payment_instruments.at(0);
+  EXPECT_EQ(payment_instrument_ewallet_account_specifics.payment_instrument()
+                .instrument_id(),
+            payment_instrument.instrument_id());
+  EXPECT_EQ(payment_instrument_ewallet_account_specifics.payment_instrument()
+                .nickname(),
+            payment_instrument.nickname());
+  EXPECT_EQ(payment_instrument_ewallet_account_specifics.payment_instrument()
+                .display_icon_url(),
+            payment_instrument.display_icon_url());
+  EXPECT_EQ(payment_instrument_ewallet_account_specifics.payment_instrument()
+                .supported_rails()
+                .at(0),
+            payment_instrument.supported_rails().at(0));
+  EXPECT_EQ(payment_instrument_ewallet_account_specifics.payment_instrument()
+                .ewallet_details()
+                .ewallet_name(),
+            payment_instrument.ewallet_details().ewallet_name());
+  EXPECT_EQ(payment_instrument_ewallet_account_specifics.payment_instrument()
+                .ewallet_details()
+                .account_display_name(),
+            payment_instrument.ewallet_details().account_display_name());
+  EXPECT_EQ(
+      payment_instrument_ewallet_account_specifics.payment_instrument()
+          .ewallet_details()
+          .supported_payment_link_uris()
+          .at(0),
+      payment_instrument.ewallet_details().supported_payment_link_uris().at(0));
+  EXPECT_EQ(payment_instrument_ewallet_account_specifics.payment_instrument()
+                .device_details()
+                .is_fido_enrolled(),
+            payment_instrument.device_details().is_fido_enrolled());
+}
+
+// Tests that PopulateWalletTypesFromSyncData does not populate
+// PaymentInstruments for eWallet accounts if eWallet sync experiment flag is
+// disabled.
+TEST_F(PaymentsSyncBridgeUtilTest,
+       PopulatePaymentInstrumentsFromSyncDataExperimentOff_EwalletAccounts) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillSyncEwalletAccounts);
+  syncer::EntityChangeList entity_data;
+  std::string ewallet_account_id = "payment_instrument:123545";
+  sync_pb::AutofillWalletSpecifics
+      payment_instrument_ewallet_account_specifics =
+          CreateAutofillWalletSpecificsForEwalletAccount(
+              /*client_tag=*/ewallet_account_id, /*nickname=*/"eWallet account",
+              /*display_icon_url=*/GURL("http://www.google.com"),
+              /*ewallet_name=*/"ABC Pay",
+              /*account_display_name=*/"1234",
+              /*is_fido_enrolled=*/false);
+  entity_data.push_back(EntityChange::CreateAdd(
+      ewallet_account_id,
+      SpecificsToEntity(payment_instrument_ewallet_account_specifics,
+                        /*client_tag=*/"ewallet_account")));
+
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data,
+                                  bank_accounts, benefits, payment_instruments);
+
+  EXPECT_EQ(0u, payment_instruments.size());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -986,9 +1094,10 @@ TEST_P(PaymentsSyncBridgeUtilTest_WalletCardMapping,
   std::vector<CreditCardCloudTokenData> cloud_token_data;
   std::vector<BankAccount> bank_accounts;
   std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
                                   customer_data, cloud_token_data,
-                                  bank_accounts, benefits);
+                                  bank_accounts, benefits, payment_instruments);
 
   ASSERT_EQ(1U, wallet_cards.size());
   EXPECT_EQ(test_case.card_network, wallet_cards.front().network());

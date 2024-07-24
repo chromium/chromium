@@ -12,8 +12,6 @@
 
 namespace autofill {
 
-class AutofillKeyboardAccessoryView;
-
 // The interface implemented by Android implementations of the
 // `AutofillSuggestionController` - that is, the methods found below are
 // specific to Android and used to control the keyboard accessory.
@@ -33,9 +31,6 @@ class AutofillKeyboardAccessoryController
   virtual bool GetRemovalConfirmationText(int index,
                                           std::u16string* title,
                                           std::u16string* body) = 0;
-
-  virtual void SetViewForTesting(
-      std::unique_ptr<AutofillKeyboardAccessoryView> view) = 0;
 };
 
 }  // namespace autofill

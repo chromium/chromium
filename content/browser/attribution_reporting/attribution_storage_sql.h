@@ -29,8 +29,13 @@
 #include "sql/database.h"
 #include "sql/transaction.h"
 
+namespace attribution_reporting {
+class SuitableOrigin;
+}  // namespace attribution_reporting
+
 namespace base {
 class Time;
+class Uuid;
 }  // namespace base
 
 namespace sql {
@@ -266,13 +271,92 @@ class CONTENT_EXPORT AttributionStorageSql {
       const std::vector<StoredSource::Id>&,
       base::Time now);
 
-  [[nodiscard]] bool StoreAttributionReport(AttributionReport& report,
-                                            const StoredSource* source);
+  [[nodiscard]] std::optional<AttributionReport::Id> StoreAttributionReport(
+      StoredSource::Id,
+      base::Time trigger_time,
+      base::Time initial_report_time,
+      const base::Uuid& external_report_id,
+      std::optional<uint64_t> trigger_debug_key,
+      const attribution_reporting::SuitableOrigin& context_origin,
+      const attribution_reporting::SuitableOrigin& reporting_origin,
+      uint32_t trigger_data,
+      int64_t priority);
 
   int64_t StorageFileSizeKB();
 
   // Returns the number of sources in storage.
   std::optional<int64_t> NumberOfSources();
+
+  // Generates null aggregatable reports for the given trigger and stores all
+  // those reports.
+  [[nodiscard]] bool GenerateNullAggregatableReportsAndStoreReports(
+      const AttributionTrigger&,
+      const AttributionInfo&,
+      const StoredSource* source,
+      std::optional<AttributionReport>& new_aggregatable_report,
+      std::optional<base::Time>& min_null_aggregatable_report_time);
+
+  // Deactivates the given sources. Returns false on error.
+  [[nodiscard]] bool DeactivateSources(
+      const std::vector<StoredSource::Id>& sources);
+
+  // Returns false on failure.
+  [[nodiscard]] bool DeleteSources(
+      const std::vector<StoredSource::Id>& source_ids);
+
+  // Returns whether the database execution was successful.
+  // `source_id_to_attribute` and `source_ids_to_delete` would be populated if
+  // matching sources were found.
+  bool FindMatchingSourceForTrigger(
+      const AttributionTrigger& trigger,
+      base::Time trigger_time,
+      std::optional<StoredSource::Id>& source_id_to_attribute,
+      std::vector<StoredSource::Id>& source_ids_to_delete,
+      std::vector<StoredSource::Id>& source_ids_to_deactivate);
+
+  struct StoredSourceData {
+    StoredSource source;
+    int num_attributions;
+    int num_aggregatable_attribution_reports;
+  };
+
+  std::optional<StoredSourceData> ReadSourceToAttribute(
+      StoredSource::Id source_id);
+
+  enum class ConversionCapacityStatus {
+    kHasCapacity,
+    kNoCapacity,
+    kError,
+  };
+
+  ConversionCapacityStatus CapacityForStoringReport(
+      const url::Origin& context_origin,
+      AttributionReport::Type);
+
+  AttributionTrigger::EventLevelResult MaybeStoreEventLevelReport(
+      AttributionReport& report,
+      const StoredSource& source,
+      std::optional<uint64_t> dedup_key,
+      int num_attributions,
+      std::optional<AttributionReport>& replaced_report,
+      std::optional<AttributionReport>& dropped_report,
+      std::optional<int>& max_event_level_reports_per_destination,
+      std::optional<int64_t>& rate_limits_max_attributions);
+
+  // Stores the data associated with the aggregatable report, e.g. budget
+  // consumed and dedup keys. The report itself will be stored in
+  // `GenerateNullAggregatableReportsAndStoreReports()`.
+  AttributionTrigger::AggregatableResult
+  MaybeStoreAggregatableAttributionReportData(
+      AttributionReport& report,
+      StoredSource::Id source_id,
+      int remaining_aggregatable_attribution_budget,
+      int num_aggregatable_attribution_reports,
+      std::optional<uint64_t> dedup_key,
+      std::optional<int>& max_aggregatable_reports_per_source);
+
+  base::Time GetAggregatableReportTime(const AttributionTrigger&,
+                                       base::Time trigger_time) const;
 
  private:
   using ReportCorruptionStatusSet =
@@ -281,7 +365,6 @@ class CONTENT_EXPORT AttributionStorageSql {
                     ReportCorruptionStatus::kMaxValue>;
 
   struct ReportCorruptionStatusSetAndIds;
-  struct StoredSourceData;
 
   enum class DbStatus {
     kOpen,
@@ -298,27 +381,7 @@ class CONTENT_EXPORT AttributionStorageSql {
     kClosedDueToCatastrophicError,
   };
 
-  // Deactivates the given sources. Returns false on error.
-  [[nodiscard]] bool DeactivateSources(
-      const std::vector<StoredSource::Id>& sources)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  // Returns false on failure.
-  [[nodiscard]] bool DeleteSources(
-      const std::vector<StoredSource::Id>& source_ids)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
   void RecordSourcesPerSourceOrigin() VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  enum class ConversionCapacityStatus {
-    kHasCapacity,
-    kNoCapacity,
-    kError,
-  };
-
-  ConversionCapacityStatus CapacityForStoringReport(
-      const url::Origin& context_origin,
-      AttributionReport::Type) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   enum class ReplaceReportResult {
     kError,
@@ -356,40 +419,7 @@ class CONTENT_EXPORT AttributionStorageSql {
   ReadSourceFromStatement(sql::Statement&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  std::optional<StoredSourceData> ReadSourceToAttribute(
-      StoredSource::Id source_id) VALID_CONTEXT_REQUIRED(sequence_checker_);
-
   [[nodiscard]] bool DeleteReportInternal(AttributionReport::Id)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  // Returns whether the database execution was successful.
-  // `source_id_to_attribute` and `source_ids_to_delete` would be populated if
-  // matching sources were found.
-  bool FindMatchingSourceForTrigger(
-      const AttributionTrigger& trigger,
-      base::Time trigger_time,
-      std::optional<StoredSource::Id>& source_id_to_attribute,
-      std::vector<StoredSource::Id>& source_ids_to_delete,
-      std::vector<StoredSource::Id>& source_ids_to_deactivate)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  AttributionTrigger::EventLevelResult MaybeCreateEventLevelReport(
-      const AttributionInfo& attribution_info,
-      const StoredSource&,
-      const AttributionTrigger& trigger,
-      std::optional<AttributionReport>& report,
-      std::optional<uint64_t>& dedup_key)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  AttributionTrigger::EventLevelResult MaybeStoreEventLevelReport(
-      AttributionReport& report,
-      const StoredSource& source,
-      std::optional<uint64_t> dedup_key,
-      int num_attributions,
-      std::optional<AttributionReport>& replaced_report,
-      std::optional<AttributionReport>& dropped_report,
-      std::optional<int>& max_event_level_reports_per_destination,
-      std::optional<int64_t>& rate_limits_max_attributions)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns false on failure.
@@ -443,42 +473,16 @@ class CONTENT_EXPORT AttributionStorageSql {
       StoredSource::Id source_id,
       int additional_budget_consumed) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  AttributionTrigger::AggregatableResult
-  MaybeCreateAggregatableAttributionReport(
-      const AttributionInfo& attribution_info,
-      const StoredSource&,
-      const AttributionTrigger& trigger,
-      std::optional<AttributionReport>& report,
-      std::optional<uint64_t>& dedup_key,
-      std::optional<int>& max_aggregatable_reports_per_destination,
-      std::optional<int64_t>& rate_limits_max_attributions)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  // Stores the data associated with the aggregatable report, e.g. budget
-  // consumed and dedup keys. The report itself will be stored in
-  // `GenerateNullAggregatableReportsAndStoreReports()`.
-  AttributionTrigger::AggregatableResult
-  MaybeStoreAggregatableAttributionReportData(
-      AttributionReport& report,
-      StoredSource::Id source_id,
-      int remaining_aggregatable_attribution_budget,
-      int num_aggregatable_attribution_reports,
-      std::optional<uint64_t> dedup_key,
-      std::optional<int>& max_aggregatable_reports_per_source)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  // Generates null aggregatable reports for the given trigger and stores all
-  // those reports.
-  [[nodiscard]] bool GenerateNullAggregatableReportsAndStoreReports(
-      const AttributionTrigger&,
-      const AttributionInfo&,
-      const StoredSource* source,
-      std::optional<AttributionReport>& new_aggregatable_report,
-      std::optional<base::Time>& min_null_aggregatable_report_time)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  base::Time GetAggregatableReportTime(const AttributionTrigger&,
-                                       base::Time trigger_time) const
+  [[nodiscard]] std::optional<AttributionReport::Id> StoreAttributionReport(
+      int64_t source_id,
+      base::Time trigger_time,
+      base::Time initial_report_time,
+      const base::Uuid& external_report_id,
+      std::optional<uint64_t> trigger_debug_key,
+      const attribution_reporting::SuitableOrigin& context_origin,
+      const attribution_reporting::SuitableOrigin& reporting_origin,
+      AttributionReport::Type,
+      const std::string& serialized_metadata)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool AdjustAggregatableDebugSourceData(

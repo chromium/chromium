@@ -10,6 +10,7 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@macro/signin_body_background"
     android:orientation="vertical">
 
     <org.chromium.chrome.browser.ui.signin.SigninScrollView

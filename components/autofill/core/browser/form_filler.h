@@ -40,7 +40,7 @@ enum class FieldFillingSkipReason : uint8_t {
   kInvisibleField = 5,
   kValuePrefilled = 6,
   kUserFilledFields = 7,
-  kAutofilledFieldsNotRefill = 8,
+  kAlreadyAutofilled = 8,
   kNoFillableGroup = 9,
   kRefillNotInInitialFill = 10,
   kExpiredCards = 11,
@@ -105,13 +105,12 @@ class FormFiller {
       const AutofillField& autofill_field,
       const AutofillField& trigger_field,
       base::flat_map<FieldType, size_t>& type_count,
-      base::optional_ref<const DenseSet<FieldTypeGroup>>
-          type_group_originally_filled,
-      const FieldTypeSet field_types_to_fill = kAllFieldTypes,
-      const FillingProduct filling_product = FillingProduct::kNone,
-      const bool skip_unrecognized_autocomplete_fields = false,
-      const bool is_refill = false,
-      const bool is_expired_credit_card = false);
+      std::optional<DenseSet<FieldTypeGroup>> type_group_originally_filled,
+      FieldTypeSet field_types_to_fill = kAllFieldTypes,
+      FillingProduct filling_product = FillingProduct::kNone,
+      bool skip_unrecognized_autocomplete_fields = false,
+      bool is_refill = false,
+      bool is_expired_credit_card = false);
 
   // Resets states that FormFiller holds and maintains.
   void Reset();
@@ -127,16 +126,16 @@ class FormFiller {
   // TODO(crbug.com/40281552): Make `optional_type_groups_originally_filled`
   // also a FieldTypeSet.
   base::flat_map<FieldGlobalId, FieldFillingSkipReason>
-  GetFieldFillingSkipReasons(base::span<const FormFieldData> fields,
-                             const FormStructure& form_structure,
-                             const AutofillField& trigger_field,
-                             const FieldTypeSet& field_types_to_fill,
-                             base::optional_ref<const DenseSet<FieldTypeGroup>>
-                                 type_groups_originally_filled,
-                             FillingProduct filling_product,
-                             bool skip_unrecognized_autocomplete_fields,
-                             bool is_refill,
-                             bool is_expired_credit_card) const;
+  GetFieldFillingSkipReasons(
+      base::span<const FormFieldData> fields,
+      const FormStructure& form_structure,
+      const AutofillField& trigger_field,
+      const FieldTypeSet& field_types_to_fill,
+      std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
+      FillingProduct filling_product,
+      bool skip_unrecognized_autocomplete_fields,
+      bool is_refill,
+      bool is_expired_credit_card) const;
 
   // Reverts the last autofill operation on `form` that affected
   // `trigger_field`. `renderer_action` denotes whether this is an actual

@@ -249,8 +249,6 @@ class CookieEncryptionProviderBrowserTest
         histogram_tester_.ExpectBucketCount(
             "OSCrypt.AppBoundProvider.Encrypt.ResultCode", S_OK, 1);
         histogram_tester_.ExpectTotalCount(
-            "OSCrypt.AppBoundProvider.Encrypt.Time", 1);
-        histogram_tester_.ExpectTotalCount(
             "OSCrypt.AppBoundProvider.Encrypt.ResultLastError", 0);
         histogram_tester_.ExpectTotalCount(
             "OSCrypt.AppBoundProvider.Decrypt.ResultCode", 0);
@@ -260,8 +258,6 @@ class CookieEncryptionProviderBrowserTest
             "OSCrypt.AppBoundProvider.KeyRetrieval.Status", /*kSuccess*/ 0, 1);
         histogram_tester_.ExpectBucketCount(
             "OSCrypt.AppBoundProvider.Decrypt.ResultCode", S_OK, 1);
-        histogram_tester_.ExpectTotalCount(
-            "OSCrypt.AppBoundProvider.Decrypt.Time", 1);
         histogram_tester_.ExpectTotalCount(
             "OSCrypt.AppBoundProvider.Decrypt.ResultLastError", 0);
         histogram_tester_.ExpectTotalCount(

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
 
 #include "base/containers/contains.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "cc/trees/browser_controls_params.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -1599,19 +1601,86 @@ TEST_F(AnchorElementMetricsSenderTest, SubframeWithObservedAnchorsDetached) {
   Compositor().BeginFrame();
   ProcessEvents(/*expected_anchors=*/2);
 
+  WebLocalFrameImpl* subframe =
+      To<WebLocalFrameImpl>(MainFrame().FirstChild()->ToWebLocalFrame());
+  Persistent<Document> subframe_doc = subframe->GetFrame()->GetDocument();
+  uint32_t subframe_anchor_id =
+      AnchorElementId(To<HTMLAnchorElement>(*subframe_doc->links()->item(0)));
+
   EXPECT_EQ(1u, hosts_.size());
   const auto& mock_host = hosts_[0];
   EXPECT_EQ(2u, mock_host->entered_viewport_.size());
   EXPECT_EQ(0u, mock_host->left_viewport_.size());
 
-  WebLocalFrameImpl* subframe =
-      To<WebLocalFrameImpl>(MainFrame().FirstChild()->ToWebLocalFrame());
-  Persistent<Document> subframe_doc = subframe->GetFrame()->GetDocument();
   subframe->Detach();
-
   VerticalScroll(-scroll_height_px);
+
+  ProcessEvents(/*expected_anchors=*/1);
   ProcessPositionUpdates();
+
   EXPECT_EQ(1u, mock_host->positions_.size());
+  EXPECT_EQ(1u, mock_host->removed_anchor_ids_.size());
+  EXPECT_TRUE(
+      base::Contains(mock_host->removed_anchor_ids_, subframe_anchor_id));
+}
+
+TEST_F(AnchorElementMetricsSenderTest,
+       AnchorsNotReportedAsRemovedWhenMainFrameIsDetached) {
+  // Navigate the main frame.
+  String source("https://foo.com");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(String::Format(R"html(
+    <body>
+      <iframe width="400px" height="400px"></iframe>
+      <a href="https://foo.com/one">one</a>
+    </body>
+  )html"));
+
+  String subframe_source("https://foo.com/iframe");
+  SimRequest subframe_resource(subframe_source, "text/html");
+  frame_test_helpers::LoadFrameDontWait(
+      MainFrame().FirstChild()->ToWebLocalFrame(), KURL(subframe_source));
+  subframe_resource.Complete(R"html(
+    <body>
+      <a href="https://foo.com/two">two</a>
+    </body>
+  )html");
+
+  Compositor().BeginFrame();
+  ProcessEvents(/*expected_anchors=*/2);
+  EXPECT_EQ(1u, hosts_.size());
+  const auto& mock_host = hosts_[0];
+
+  Document* document = &GetDocument();
+  LocalFrameView* view = GetDocument().View();
+  AnchorElementMetricsSender* sender =
+      AnchorElementMetricsSender::From(GetDocument());
+  // Note: This relies on the microtask running after the subframe detaches (in
+  // FrameLoader::DetachDocumentLoader), but before the main frame is detached.
+  base::OnceClosure microtask = base::BindLambdaForTesting([view, sender]() {
+    view->UpdateAllLifecyclePhasesForTest();
+    sender->FireUpdateTimerForTesting();
+  });
+  static_cast<frame_test_helpers::TestWebFrameClient*>(
+      MainFrame().FirstChild()->ToWebLocalFrame()->Client())
+      ->SetFrameDetachedCallback(
+          base::BindLambdaForTesting([&document, &microtask]() {
+            document->GetAgent().event_loop()->EnqueueMicrotask(
+                std::move(microtask));
+          }));
+
+  source = "https://foo.com/two";
+  SimRequest main_resource_2(source, "text/html");
+  LoadURL(source);
+  main_resource_2.Complete(String::Format(R"html(
+    <body>
+      <div>second page</div>
+    </body>
+  )html"));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0u, mock_host->removed_anchor_ids_.size());
 }
 
 }  // namespace blink

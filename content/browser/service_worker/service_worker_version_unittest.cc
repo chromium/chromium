@@ -1531,7 +1531,8 @@ TEST_P(ServiceWorkerVersionTest,
       helper_->mock_render_process_host()->foreground_service_worker_count());
 
   // Set controllee process to background priority.
-  client_render_process_hosts_[0]->set_is_process_backgrounded(true);
+  client_render_process_hosts_[0]->set_priority(
+      base::Process::Priority::kBestEffort);
   version_->UpdateForegroundPriority();
 
   EXPECT_EQ(
@@ -1539,7 +1540,8 @@ TEST_P(ServiceWorkerVersionTest,
       helper_->mock_render_process_host()->foreground_service_worker_count());
 
   // Set controllee process to foreground priority.
-  client_render_process_hosts_[0]->set_is_process_backgrounded(false);
+  client_render_process_hosts_[0]->set_priority(
+      base::Process::Priority::kUserBlocking);
   version_->UpdateForegroundPriority();
 
   EXPECT_EQ(

@@ -1345,6 +1345,7 @@ interface CanvasRenderingContext2D
     method lineTo
     method measureText
     method moveTo
+    method placeElement
     method putImageData
     method quadraticCurveTo
     method rect

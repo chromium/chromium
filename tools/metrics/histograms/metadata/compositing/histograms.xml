@@ -1463,6 +1463,33 @@ chromium-metrics-reviews@google.com.
   <token key="Sequence" variants="AccumulatedSequences"/>
 </histogram>
 
+<histogram
+    name="Graphics.Smoothness.PercentDroppedFrames3.{Sequence}.1MinAfterResume"
+    units="%" expires_after="2024-11-17">
+  <owner>kawasin@google.com</owner>
+  <owner>baseos-perf@google.com</owner>
+  <summary>
+    Tracks the percent of dropped frames for a sequence by aggregating all
+    {Sequence}, where a sequence is a series of frames produced which contain at
+    least one of the aforementioned effects.
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother the experience.
+
+    Note that this metric is reported only when there are a sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until an additional sequence completes where there are (&gt;=
+    100) frames available in total.
+
+    This metric is only recorded for 1 minute after the device is resumed.
+
+    This is supported by ChromeOS only.
+  </summary>
+  <token key="Sequence" variants="AccumulatedSequences"/>
+</histogram>
+
 <histogram name="Graphics.Smoothness.PercentDroppedFrames3.{Thread}{Sequence}"
     units="%" expires_after="2025-01-19">
   <owner>jonross@chromium.org</owner>

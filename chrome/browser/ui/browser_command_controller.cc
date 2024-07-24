@@ -1446,10 +1446,6 @@ void BrowserCommandController::InitCommandState() {
                                           true);
   }
 
-  command_updater_.UpdateCommandEnabled(
-      IDC_CONTENT_CONTEXT_LENS_OVERLAY,
-      LensOverlayController::IsEnabled(browser_));
-
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   if (base::FeatureList::IsEnabled(
           lens::features::kEnableRegionSearchKeyboardShortcut)) {

@@ -90,7 +90,7 @@ void OfferNotificationIconView::MaybeShowPageActionLabel() {
   }
   should_extend_label_shown_duration_ = true;
   SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
-  AnimateIn(IDS_DISCOUNT_ICON_EXPANDED_TEXT);
+  AnimateIn(IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT);
   controller->OnIconExpanded();
   GetViewAccessibility().SetProperties(
       /*role*/ std::nullopt,

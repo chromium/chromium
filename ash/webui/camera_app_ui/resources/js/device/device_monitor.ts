@@ -32,16 +32,17 @@ export class DeviceMonitor {
   private devicesInfo: DeviceInfo[] = [];
 
   /**
-   * Array of listeners for device change event.
-   */
-  private readonly listeners: Array<(devices: DeviceInfo[]) => void> = [];
-
-  /**
    * Filters out lagging 720p on grunt. See https://crbug.com/1122852.
    */
   private readonly videoConfigFilter: (config: VideoConfig) => boolean;
 
-  constructor() {
+  /**
+   * Indicates whether the device list has been updated at least once
+   * since initialization.
+   */
+  private hasUpdated: boolean = false;
+
+  constructor(private readonly listener: (devices: DeviceInfo[]) => void) {
     if (loadTimeData.getBoard() === 'grunt') {
       this.videoConfigFilter = ({height}: VideoConfig) => {
         if (state.get(
@@ -59,28 +60,17 @@ export class DeviceMonitor {
   }
 
   /**
-   * Registers listener to be called when state of available devices
-   * changes.
-   */
-  addDeviceChangeListener(listener: (devices: DeviceInfo[]) => void): void {
-    this.listeners.push(listener);
-  }
-
-  /**
    * Handling function for device changing.
    */
   async deviceUpdate(): Promise<void> {
     const devices = await this.doDeviceInfoUpdate();
-    if (devices === null) {
-      return;
-    }
     this.doDeviceNotify(devices);
   }
 
   /**
    * Updates devices information via mojo IPC.
    */
-  private async doDeviceInfoUpdate(): Promise<DeviceInfo[]|null> {
+  private async doDeviceInfoUpdate(): Promise<DeviceInfo[]> {
     try {
       const devicesInfo = await this.enumerateDevices();
       return await this.queryMojoDevicesInfo(devicesInfo);
@@ -94,7 +84,7 @@ export class DeviceMonitor {
         reportError(ErrorType.DEVICE_INFO_UPDATE_FAILURE, ErrorLevel.ERROR, e);
       }
     }
-    return null;
+    return this.devicesInfo;
   }
 
   /**
@@ -111,12 +101,11 @@ export class DeviceMonitor {
       speak(I18nString.STATUS_MSG_CAMERA_UNPLUGGED, removed.v1Info.label);
       isDeviceChanged = true;
     }
-    if (isDeviceChanged) {
-      for (const listener of this.listeners) {
-        listener(devices);
-      }
+    if (!this.hasUpdated || isDeviceChanged) {
+      this.listener(devices);
     }
     this.devicesInfo = devices;
+    this.hasUpdated = true;
   }
 
   /**
@@ -157,7 +146,7 @@ export class DeviceMonitor {
    *     and querying mojo APIs with current device info results.
    */
   private async queryMojoDevicesInfo(devices: MediaDeviceInfo[]):
-      Promise<DeviceInfo[]|null> {
+      Promise<DeviceInfo[]> {
     const isV3Supported = DeviceOperator.isSupported();
     return Promise.all(devices.map(
         async (d) => ({

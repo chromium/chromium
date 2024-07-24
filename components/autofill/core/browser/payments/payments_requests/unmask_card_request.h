@@ -38,6 +38,8 @@ class UnmaskCardRequest : public PaymentsRequest {
   void RespondToDelegate(
       PaymentsAutofillClient::PaymentsRpcResult result) override;
   bool IsRetryableFailure(const std::string& error_code) override;
+  std::string GetHistogramName() const override;
+  std::optional<base::TimeDelta> GetTimeout() const override;
 
  private:
   // Returns whether the response contains all the information of the virtual

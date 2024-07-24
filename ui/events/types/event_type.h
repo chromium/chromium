@@ -8,8 +8,7 @@
 namespace ui {
 
 // Event types.
-// TODO(https://crbug.com/354162574): Refactor EventType enum to enum class.
-enum EventType {
+enum class EventType {
   kUnknown = 0,
   kMousePressed,
   kMouseDragged,

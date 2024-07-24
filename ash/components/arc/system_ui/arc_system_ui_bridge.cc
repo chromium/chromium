@@ -97,11 +97,6 @@ void ArcSystemUIBridge::OnColorPaletteChanging(
     const ash::ColorPaletteSeed& in_seed) {
   // Make a copy so we can modify the seed for backward compatibility.
   ash::ColorPaletteSeed seed = in_seed;
-  if (!chromeos::features::IsJellyEnabled()) {
-    // Force scheme and seed color to the defaults if Jelly is disabled.
-    seed.scheme = ash::style::mojom::ColorScheme::kTonalSpot;
-    seed.seed_color = gfx::kGoogleBlue400;
-  }
 
   if (previous_seed_ == seed) {
     // Skip sending identical events

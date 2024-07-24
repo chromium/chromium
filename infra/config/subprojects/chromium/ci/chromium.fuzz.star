@@ -26,7 +26,7 @@ ci.defaults.set(
     gardener_rotations = gardener_rotations.CHROMIUM,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
-    notifies = ["chromesec-lkgr-failures"],
+    notifies = ["chrome-fuzzing-core"],
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,

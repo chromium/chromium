@@ -11,38 +11,53 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the Safety Hub Magic Stack module. */
-class SafetyHubMagicStackMediator implements TabModelSelectorObserver {
+class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStackBridge.Observer {
     private final Context mContext;
+    private final PrefService mPrefService;
     private final PropertyModel mModel;
     private final MagicStackBridge mMagicStackBridge;
     private final TabModelSelector mTabModelSelector;
     private final ModuleDelegate mModuleDelegate;
     private final SettingsLauncher mSettingsLauncher;
+    private final PrefChangeRegistrar mPrefChangeRegistrar;
+
+    private boolean mHasBeenDismissed;
 
     SafetyHubMagicStackMediator(
             Context context,
+            PrefService prefService,
             PropertyModel model,
             MagicStackBridge magicStackBridge,
             TabModelSelector tabModelSelector,
             ModuleDelegate moduleDelegate,
-            SettingsLauncher settingsLauncher) {
+            SettingsLauncher settingsLauncher,
+            PrefChangeRegistrar prefChangeRegistrar) {
         mContext = context;
+        mPrefService = prefService;
         mModel = model;
         mMagicStackBridge = magicStackBridge;
         mTabModelSelector = tabModelSelector;
         mModuleDelegate = moduleDelegate;
         mSettingsLauncher = settingsLauncher;
+        mPrefChangeRegistrar = prefChangeRegistrar;
     }
 
     void showModule() {
+        if (mHasBeenDismissed) {
+            return;
+        }
+
         if (!mTabModelSelector.isTabStateInitialized()) {
             mTabModelSelector.addObserver(this);
             return;
@@ -71,10 +86,21 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver {
         }
 
         mModuleDelegate.onDataReady(ModuleType.SAFETY_HUB, mModel);
+
+        // Add observers to dismiss the module if necessary.
+        mMagicStackBridge.addObserver(this);
+        if (magicStackEntry.getModuleType().equals(MagicStackEntry.ModuleType.SAFE_BROWSING)) {
+            mPrefChangeRegistrar.addObserver(
+                    Pref.SAFE_BROWSING_ENABLED, this::onSafeBrowsingChanged);
+        }
     }
 
     void destroy() {
         mTabModelSelector.removeObserver(this);
+        mMagicStackBridge.removeObserver(this);
+
+        mPrefChangeRegistrar.removeObserver(Pref.SAFE_BROWSING_ENABLED);
+        mPrefChangeRegistrar.destroy();
     }
 
     int getModuleType() {
@@ -82,9 +108,29 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver {
     }
 
     @Override
+    public void activeModuleDismissed() {
+        if (!mHasBeenDismissed) {
+            dismissModule();
+        }
+    }
+
+    @Override
     public void onTabStateInitialized() {
         mTabModelSelector.removeObserver(this);
         showModule();
+    }
+
+    private void onSafeBrowsingChanged() {
+        boolean isSafeBrowsingEnabled = mPrefService.getBoolean(Pref.SAFE_BROWSING_ENABLED);
+        if (isSafeBrowsingEnabled && !mHasBeenDismissed) {
+            mMagicStackBridge.dismissSafeBrowsingModule();
+            dismissModule();
+        }
+    }
+
+    private void dismissModule() {
+        mHasBeenDismissed = true;
+        mModuleDelegate.removeModule(ModuleType.SAFETY_HUB);
     }
 
     private void bindSafeStateView(@NonNull String title, @Nullable String summary) {

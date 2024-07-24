@@ -1011,21 +1011,21 @@ class IsProcessBackgroundedObserver : public RenderProcessHostInternalObserver {
     host_observation_.Observe(host);
   }
 
-  void RenderProcessBackgroundedChanged(RenderProcessHostImpl* host) override {
-    backgrounded_ = host->IsProcessBackgrounded();
+  void RenderProcessPriorityChanged(RenderProcessHostImpl* host) override {
+    priority_ = host->GetPriority();
   }
 
   // Returns the latest recorded value if there was one and resets the recorded
   // value to |nullopt|.
-  std::optional<bool> TakeValue() {
-    auto value = backgrounded_;
-    backgrounded_ = std::nullopt;
+  std::optional<base::Process::Priority> TakeValue() {
+    auto value = priority_;
+    priority_ = std::nullopt;
     return value;
   }
 
  private:
-  // Stores the last observed value of IsProcessBackgrounded for a host.
-  std::optional<bool> backgrounded_;
+  // Stores the last observed value of GetPriority() for a host.
+  std::optional<base::Process::Priority> priority_;
   base::ScopedObservation<RenderProcessHostImpl,
                           RenderProcessHostInternalObserver>
       host_observation_{this};
@@ -1045,36 +1045,36 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, PriorityOverride) {
 
   // It starts off as normal priority with no override.
   EXPECT_FALSE(process->HasPriorityOverride());
-  EXPECT_FALSE(process->IsProcessBackgrounded());
+  EXPECT_EQ(process->GetPriority(), base::Process::Priority::kUserBlocking);
   EXPECT_FALSE(observer.TakeValue().has_value());
 
-  process->SetPriorityOverride(false /* foreground */);
+  process->SetPriorityOverride(base::Process::Priority::kBestEffort);
   EXPECT_TRUE(process->HasPriorityOverride());
-  EXPECT_TRUE(process->IsProcessBackgrounded());
-  EXPECT_EQ(observer.TakeValue().value(), process->IsProcessBackgrounded());
+  EXPECT_EQ(process->GetPriority(), base::Process::Priority::kBestEffort);
+  EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
 
-  process->SetPriorityOverride(true /* foreground */);
+  process->SetPriorityOverride(base::Process::Priority::kUserBlocking);
   EXPECT_TRUE(process->HasPriorityOverride());
-  EXPECT_FALSE(process->IsProcessBackgrounded());
-  EXPECT_EQ(observer.TakeValue().value(), process->IsProcessBackgrounded());
+  EXPECT_EQ(process->GetPriority(), base::Process::Priority::kUserBlocking);
+  EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
 
-  process->SetPriorityOverride(false /* foreground */);
+  process->SetPriorityOverride(base::Process::Priority::kBestEffort);
   EXPECT_TRUE(process->HasPriorityOverride());
-  EXPECT_TRUE(process->IsProcessBackgrounded());
-  EXPECT_EQ(observer.TakeValue().value(), process->IsProcessBackgrounded());
+  EXPECT_EQ(process->GetPriority(), base::Process::Priority::kBestEffort);
+  EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
 
   // Add a pending view, and expect the process to *stay* backgrounded.
   process->AddPendingView();
   EXPECT_TRUE(process->HasPriorityOverride());
-  EXPECT_TRUE(process->IsProcessBackgrounded());
-  EXPECT_EQ(observer.TakeValue().value(), process->IsProcessBackgrounded());
+  EXPECT_EQ(process->GetPriority(), base::Process::Priority::kBestEffort);
+  EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
 
   // Clear the override. The pending view should cause the process to go back to
   // being foregrounded.
   process->ClearPriorityOverride();
   EXPECT_FALSE(process->HasPriorityOverride());
-  EXPECT_FALSE(process->IsProcessBackgrounded());
-  EXPECT_EQ(observer.TakeValue().value(), process->IsProcessBackgrounded());
+  EXPECT_EQ(process->GetPriority(), base::Process::Priority::kUserBlocking);
+  EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
 
   // Clear the pending view so the test doesn't explode.
   process->RemovePendingView();
@@ -1121,7 +1121,8 @@ class BoostRenderProcessForLoadingBrowserTest
     RenderProcessHost* render_process_host = render_frame_host->GetProcess();
     // Emulate render_process_host is not visible to users.
     SetVisibleClients(render_process_host, 0);
-    EXPECT_EQ(render_process_host->IsProcessBackgrounded(),
+    EXPECT_EQ(render_process_host->GetPriority() ==
+                  base::Process::Priority::kBestEffort,
               GetParam().expect_render_process_backgrounded_);
   }
 
@@ -1178,7 +1179,8 @@ IN_PROC_BROWSER_TEST_P(BoostRenderProcessForLoadingBrowserTest,
 
   // Emulate render_process_host is not visible to users.
   SetVisibleClients(render_process_host, 0);
-  EXPECT_TRUE(render_process_host->IsProcessBackgrounded());
+  EXPECT_EQ(render_process_host->GetPriority(),
+            base::Process::Priority::kBestEffort);
 }
 
 // This test verifies properties of RenderProcessHostImpl *before* Init method

@@ -198,6 +198,23 @@ const TestParam kTestParams[] = {
         .with_explicit_browser_signin_design = true,
     },
 
+    // Supervised user sign-in intercept bubble, no accounts in chrome.
+    {
+        .test_suffix = "ChromeSignInSupervisedUserIntercepted",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+        .intercepted_account_management_state =
+            ManagedAccountState::kSupervisedAccount,
+    },
+    // Profile switch for supervised user.
+    {
+        .test_suffix = "SupervisedUserProfileSwitch",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
+        .intercepted_account_management_state =
+            ManagedAccountState::kSupervisedAccount,
+    },
+
     // Chrome Signin bubble: no accounts in chrome, and signing triggers this
     // intercept bubble.
     {

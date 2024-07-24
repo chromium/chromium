@@ -77,22 +77,16 @@ enum class OffersSuggestionsEvent {
 
 // Logs when the offer notification bubble shows. Records histogram of
 // what type of offer is showing in the bubble and whether the bubble is opened
-// by reshow. This method also records UKM for when the bubble is reshowing for
-// free listing offer.
+// by reshow.
 void LogOfferNotificationBubbleOfferMetric(
     AutofillOfferData::OfferType offer_type,
-    bool is_reshow,
-    const GURL& url,
-    ukm::SourceId ukm_source_id);
+    bool is_reshow);
 
 // Logs when the promo code button is clicked in the offer notification bubble.
 // Records histogram of what type of offer is showing in the bubble that
-// is being clicked. This method also records UKM for when the bubble being
-// clicked is showing free listing offer.
+// is being clicked.
 void LogOfferNotificationBubblePromoCodeButtonClicked(
-    AutofillOfferData::OfferType offer_type,
-    const GURL& url,
-    ukm::SourceId ukm_source_id);
+    AutofillOfferData::OfferType offer_type);
 
 // Logs when the offer notification bubble closes. Records histogram of
 // what type of offer is in the bubble that is being closed, and whether the
@@ -125,11 +119,6 @@ void LogStoredOfferMetrics(
 
 // Logs whether the synced autofill offer data is valid.
 void LogSyncedOfferDataBeingValid(bool invalid);
-
-// Log the presence of the offer notification icon shows on navigation `url`
-// for `offer_type`.
-void LogPageLoadsWithOfferIconShown(AutofillOfferData::OfferType offer_type,
-                                    const GURL& url);
 
 }  // namespace autofill::autofill_metrics
 

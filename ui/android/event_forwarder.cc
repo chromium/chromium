@@ -50,12 +50,6 @@ ScopedJavaLocalRef<jobject> EventForwarder::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(java_obj_);
 }
 
-ScopedJavaLocalRef<jobject> EventForwarder::GetJavaWindowAndroid(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  return view_->GetWindowAndroid()->GetJavaObject();
-}
-
 jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
                                       const JavaParamRef<jobject>& obj,
                                       const JavaParamRef<jobject>& motion_event,

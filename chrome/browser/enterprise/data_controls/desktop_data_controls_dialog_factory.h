@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DESKTOP_DATA_CONTROLS_DIALOG_FACTORY_H_
 #define CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DESKTOP_DATA_CONTROLS_DIALOG_FACTORY_H_
 
-#include "components/enterprise/data_controls/core/data_controls_dialog_factory.h"
+#include "components/enterprise/data_controls/core/browser/data_controls_dialog_factory.h"
 
 namespace data_controls {
 

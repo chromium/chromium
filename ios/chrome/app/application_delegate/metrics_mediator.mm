@@ -234,6 +234,10 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms) {
     kCredentialExtensionCopyURLCount : @"IOS.CredentialExtension.CopyURLCount",
     app_group::kCredentialExtensionCopyUsernameCount :
         @"IOS.CredentialExtension.CopyUsernameCount",
+    app_group::kCredentialExtensionCopyUserDisplayNameCount :
+        @"IOS.CredentialExtension.CopyUserDisplayNameCount",
+    app_group::kCredentialExtensionCopyCreationDateCount :
+        @"IOS.CredentialExtension.CopyCreationDateCount",
     app_group::kCredentialExtensionCopyPasswordCount :
         @"IOS.CredentialExtension.CopyPasswordCount",
     app_group::kCredentialExtensionShowPasswordCount :
@@ -242,8 +246,12 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms) {
     kCredentialExtensionSearchCount : @"IOS.CredentialExtension.SearchCount",
     app_group::kCredentialExtensionPasswordUseCount :
         @"IOS.CredentialExtension.PasswordUseCount",
+    app_group::kCredentialExtensionPasskeyUseCount :
+        @"IOS.CredentialExtension.PasskeyUseCount",
     app_group::kCredentialExtensionQuickPasswordUseCount :
         @"IOS.CredentialExtension.QuickPasswordUseCount",
+    app_group::kCredentialExtensionQuickPasskeyUseCount :
+        @"IOS.CredentialExtension.QuickPasskeyUseCount",
     app_group::kCredentialExtensionFetchPasswordFailureCount :
         @"IOS.CredentialExtension.FetchPasswordFailure",
     app_group::kCredentialExtensionFetchPasswordNilArgumentCount :
@@ -747,7 +755,12 @@ BOOL _credentialExtensionWasUsed = NO;
       integerForKey:app_group::kCredentialExtensionPasswordUseCount];
   int quick_password_use_count = [shared_defaults
       integerForKey:app_group::kCredentialExtensionQuickPasswordUseCount];
-  if (password_use_count != 0 || quick_password_use_count != 0) {
+  int passkey_use_count = [shared_defaults
+      integerForKey:app_group::kCredentialExtensionPasskeyUseCount];
+  int quick_passkey_use_count = [shared_defaults
+      integerForKey:app_group::kCredentialExtensionQuickPasskeyUseCount];
+  if (password_use_count != 0 || quick_password_use_count != 0 ||
+      passkey_use_count != 0 || quick_passkey_use_count != 0) {
     _credentialExtensionWasUsed = YES;
   }
 }

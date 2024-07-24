@@ -37,6 +37,7 @@ class TabGroupServiceWrapper : public TabGroupSyncService {
   void RemoveGroup(const base::Uuid& sync_id) override;
   void UpdateVisualData(const LocalTabGroupID local_group_id,
                         const TabGroupVisualData* visual_data) override;
+
   void AddTab(const LocalTabGroupID& group_id,
               const LocalTabID& tab_id,
               const std::u16string& title,
@@ -54,6 +55,9 @@ class TabGroupServiceWrapper : public TabGroupSyncService {
                int new_group_index) override;
   void OnTabSelected(const LocalTabGroupID& group_id,
                      const LocalTabID& tab_id) override;
+
+  void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
+                          std::string_view collaboration_id) override;
 
   std::vector<SavedTabGroup> GetAllGroups() override;
   std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) override;

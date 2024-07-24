@@ -23,7 +23,7 @@ class ProcessPriorityPolicy : public GraphOwned,
  public:
   using SetPriorityOnUiThreadCallback =
       base::RepeatingCallback<void(RenderProcessHostProxy rph_proxy,
-                                   bool foreground)>;
+                                   base::Process::Priority)>;
 
   ProcessPriorityPolicy();
   ProcessPriorityPolicy(const ProcessPriorityPolicy&) = delete;

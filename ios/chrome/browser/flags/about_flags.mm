@@ -1994,6 +1994,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRichBubbleWithoutImageName,
      flag_descriptions::kRichBubbleWithoutImageDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kRichBubbleWithoutImage)},
+    {"autofill-unmask-card-request-timeout",
+     flag_descriptions::kAutofillUnmaskCardRequestTimeoutName,
+     flag_descriptions::kAutofillUnmaskCardRequestTimeoutDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillUnmaskCardRequestTimeout)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

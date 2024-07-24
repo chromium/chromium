@@ -70,6 +70,9 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+// TODO(crbug.com/355025532): Re-enable these tests on official builds.
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 using set_up_list_prefs::SetUpListItemState;
 using startup_metric_utils::FirstRunSentinelCreationResult;
 
@@ -615,3 +618,5 @@ TEST_F(MagicStackRankingModelTest, TestDisabledSegmentationRanking) {
   base::RunLoop().RunUntilIdle();
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
+
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)

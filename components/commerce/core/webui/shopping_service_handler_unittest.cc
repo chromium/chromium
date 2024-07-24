@@ -27,7 +27,9 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
+#include "components/optimization_guide/proto/features/product_specifications.pb.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
@@ -42,6 +44,9 @@
 
 namespace commerce {
 namespace {
+
+const std::string kTestUrl1 = "http://www.example.com/1";
+const std::string kTestUrl2 = "http://www.example.com/2";
 
 class MockPage : public shopping_service::mojom::Page {
  public:
@@ -665,8 +670,25 @@ TEST_F(ShoppingServiceHandlerTest,
   CHECK(handler_->current_log_quality_entry_for_testing());
   handler_->SetProductSpecificationsUserFeedback(
       shopping_service::mojom::UserFeedback::kThumbsUp);
+
+  optimization_guide::proto::LogAiDataRequest* request =
+      handler_->current_log_quality_entry_for_testing()->log_ai_data_request();
+  ASSERT_EQ(
+      optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP,
+      optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
+          *request)
+          ->quality()
+          .user_feedback());
+
   handler_->SetProductSpecificationsUserFeedback(
       shopping_service::mojom::UserFeedback::kUnspecified);
+
+  ASSERT_EQ(
+      optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED,
+      optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
+          *request)
+          ->quality()
+          .user_feedback());
 }
 
 TEST_F(ShoppingServiceHandlerTest,
@@ -680,6 +702,15 @@ TEST_F(ShoppingServiceHandlerTest,
   CHECK(handler_->current_log_quality_entry_for_testing());
   handler_->SetProductSpecificationsUserFeedback(
       shopping_service::mojom::UserFeedback::kThumbsDown);
+
+  optimization_guide::proto::LogAiDataRequest* request =
+      handler_->current_log_quality_entry_for_testing()->log_ai_data_request();
+  ASSERT_EQ(
+      optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN,
+      optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
+          *request)
+          ->quality()
+          .user_feedback());
 }
 
 TEST_F(ShoppingServiceHandlerTest, TestIsShoppingListEligible) {
@@ -834,22 +865,12 @@ TEST_F(ShoppingServiceHandlerTest, TestGetProductSpecifications) {
   shopping_service_->SetResponseForGetProductSpecificationsForUrls(
       std::move(specs));
 
-  ASSERT_EQ(nullptr, handler_->current_log_quality_entry_for_testing());
   base::RunLoop run_loop;
   handler_->GetProductSpecificationsForUrls(
       {GURL("http://example.com")},
       base::BindOnce(
           [](base::RunLoop* run_loop, ShoppingServiceHandler* handler,
              shopping_service::mojom::ProductSpecificationsPtr specs_ptr) {
-            // Check log quality entry is created and has correct execution_id.
-            CHECK(handler->current_log_quality_entry_for_testing());
-            std::string log_id =
-                handler->current_log_quality_entry_for_testing()
-                    ->log_ai_data_request()
-                    ->model_execution_info()
-                    .execution_id();
-            ASSERT_EQ(0u, log_id.find(kProductSpecificationsLoggingPrefix));
-
             ASSERT_EQ("color", specs_ptr->product_dimension_map[1]);
 
             ASSERT_EQ(12345u, specs_ptr->products[0]->product_cluster_id);
@@ -868,6 +889,89 @@ TEST_F(ShoppingServiceHandlerTest, TestGetProductSpecifications) {
   run_loop.Run();
 
   handler_->ShowBookmarkEditorForCurrentUrl();
+}
+
+TEST_F(ShoppingServiceHandlerTest,
+       TestGetProductSpecifications_RecordLogEntry) {
+  ProductSpecifications specs;
+  specs.product_dimension_map[1] = "color";
+  ProductSpecifications::Product product;
+  product.product_cluster_id = 12345L;
+  product.title = "title";
+
+  ProductSpecifications::Value value;
+  ProductSpecifications::Description desc;
+  ProductSpecifications::Description::Option option;
+  ProductSpecifications::DescriptionText desc_text;
+  desc_text.text = "red";
+  option.descriptions.push_back(desc_text);
+  desc.options.push_back(option);
+  value.descriptions.push_back(desc);
+  product.product_dimension_values[1] = value;
+
+  ProductSpecifications::DescriptionText product_desc;
+  product_desc.text = "summary";
+  product.summary.push_back(std::move(product_desc));
+  specs.products.push_back(std::move(product));
+
+  shopping_service_->SetResponseForGetProductSpecificationsForUrls(
+      std::move(specs));
+
+  ASSERT_EQ(nullptr, handler_->current_log_quality_entry_for_testing());
+  base::RunLoop run_loop;
+  handler_->GetProductSpecificationsForUrls(
+      {GURL(kTestUrl1), GURL(kTestUrl2)},
+      base::BindOnce(
+          [](base::RunLoop* run_loop, ShoppingServiceHandler* handler,
+             shopping_service::mojom::ProductSpecificationsPtr specs_ptr) {
+            // Check log quality entry is created and has correct execution_id.
+            CHECK(handler->current_log_quality_entry_for_testing());
+            std::string log_id =
+                handler->current_log_quality_entry_for_testing()
+                    ->log_ai_data_request()
+                    ->model_execution_info()
+                    .execution_id();
+            ASSERT_EQ(0u, log_id.find(kProductSpecificationsLoggingPrefix));
+
+            // Check response is recorded in the log entry.
+            optimization_guide::proto::LogAiDataRequest* request =
+                handler->current_log_quality_entry_for_testing()
+                    ->log_ai_data_request();
+            CHECK(request);
+            auto quality_proto =
+                optimization_guide::ProductSpecificationsFeatureTypeMap::
+                    GetLoggingData(*request)
+                        ->quality();
+            ASSERT_EQ(2, quality_proto.product_identifiers_size());
+
+            auto product_specification_data_proto =
+                quality_proto.product_specification_data();
+            ASSERT_EQ(1, product_specification_data_proto
+                             .product_specification_sections_size());
+            ASSERT_EQ("1", product_specification_data_proto
+                               .product_specification_sections()[0]
+                               .key());
+            ASSERT_EQ("color", product_specification_data_proto
+                                   .product_specification_sections()[0]
+                                   .title());
+
+            ASSERT_EQ(
+                1,
+                product_specification_data_proto.product_specifications_size());
+            auto first_product =
+                product_specification_data_proto.product_specifications()[0];
+            ASSERT_EQ(12345u, first_product.identifiers().gpc_id());
+            ASSERT_EQ("red", first_product.product_specification_values()[0]
+                                 .specification_descriptions()[0]
+                                 .options()[0]
+                                 .description()[0]
+                                 .text());
+            ASSERT_EQ("summary", first_product.summary_description()[0].text());
+
+            run_loop->Quit();
+          },
+          &run_loop, handler_.get()));
+  run_loop.Run();
 }
 
 TEST_F(ShoppingServiceHandlerTest,

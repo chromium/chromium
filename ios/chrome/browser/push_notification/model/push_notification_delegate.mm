@@ -84,10 +84,10 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       continue;
     }
 
-    base::FilePath path = info_cache->GetPathOfBrowserStateAtIndex(i);
+    const std::string& name = info_cache->GetNameOfBrowserStateAtIndex(i);
     PrefService* pref_service = GetApplicationContext()
                                     ->GetChromeBrowserStateManager()
-                                    ->GetBrowserStateByPath(path)
+                                    ->GetBrowserStateByName(name)
                                     ->GetPrefs();
 
     NSMutableDictionary<NSString*, NSNumber*>* preference_map =

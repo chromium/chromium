@@ -10,6 +10,7 @@ source_set("coordinator") {
     "home_customization_delegate.h",
     "home_customization_mediator.h",
     "home_customization_mediator.mm",
+    "home_customization_navigation_delegate.h",
   ]
   deps = [
     "//base",

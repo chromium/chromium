@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/is_required.h"
 #include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -38,8 +39,10 @@
 
 namespace autofill {
 
+class AutofillDriverIOS;
 class AutofillField;
 class AutofillProfile;
+class ContentAutofillDriver;
 class CreditCard;
 class FormData;
 class FormFieldData;
@@ -57,6 +60,53 @@ class LogManager;
 class AutofillManager
     : public translate::TranslateDriver::LanguageDetectionObserver {
  public:
+  // An AutofillManager's LifecycleState indicates whether its content is
+  // currently presented to the user. It closely follows
+  // content::RenderFrameHost's LifecycleState but collapses inactive states.
+  //
+  // Observer::OnAutofillManagerStateChanged() is fired when the state changes.
+  // State changes must not happen during construction or destruction.
+  //
+  // The possible transitions are:
+  //
+  //   ╭───────────────────────────╮
+  //   │                           ▼
+  // kInactive ◄──► kActive ──► kPendingDeletion
+  //   ▲                ▲
+  //   │                ╰─────► kPendingReset
+  //   ╰──────────────────────► kPendingReset
+  //
+  // The initial state is kInactive.
+  //
+  // Transitions from kPendingReset can only return to the previous state.
+  // Transitions between kInactive and kPendingReset only happen if the frame is
+  // prerendering.
+  // TODO: crbug.com/342132628 - Such transitions won't be possible anymore when
+  // prerendered CADs are deferred.
+  //
+  // Common behavior very shortly after the AutofillManager's creation is the
+  // following:
+  // 1. It transitions to kActive.
+  //    That happens unless the document is prerendering.
+  // 2. It transitions to kPendingReset and then back to its previous state,
+  //    kActive or kInactive. That happens on non-iOS when the frame does its
+  //    first navigation, which is just a special case of a navigation that the
+  //    AutofillManager survives.
+  enum class LifecycleState {
+    // The AutofillManager corresponds to a frame that is currently not
+    // displayed to the user, either because it is being prerendered or because
+    // it is BFCached.
+    kInactive,
+    // The AutofillManager corresponds to a frame that is being displayed.
+    kActive,
+    // The AutofillManager is about to be reset because the document in its
+    // associated driver is about to change.
+    kPendingReset,
+    // The destructor of AutofillManager and its associated AutofillDriver are
+    // about to begin. The AutofillManager is still fully intact at this point.
+    kPendingDeletion,
+  };
+
   // Observer of AutofillManager events.
   //
   // For the On{Before,After}Foo() events, the following invariant holds:
@@ -66,13 +116,16 @@ class AutofillManager
   // - if the number of cached forms exceeds `kAutofillManagerMaxFormCacheSize`;
   // - if this AutofillManager has been destroyed or reset in the meantime.
   // - if the request in AutofillCrowdsourcingManager was not successful (i.e.
-  // no 2XX
-  //   response code or a null response body).
+  //   no 2XX response code or a null response body).
   //
   // TODO(crbug.com/40280003): Consider moving events that are specific to BAM
   // to a new BAM::Observer class.
   class Observer : public base::CheckedObserver {
    public:
+    virtual void OnAutofillManagerStateChanged(AutofillManager& manager,
+                                               LifecycleState previous,
+                                               LifecycleState current) {}
+
     virtual void OnAutofillManagerDestroyed(AutofillManager& manager) {}
     virtual void OnAutofillManagerReset(AutofillManager& manager) {}
 
@@ -189,6 +242,14 @@ class AutofillManager
                                  const FormData& form) {}
   };
 
+  class AutofillDriverPassKey {
+   private:
+    friend class AutofillDriverIOS;
+    friend class AutofillManagerTestApi;
+    friend class ContentAutofillDriver;
+    AutofillDriverPassKey() = default;
+  };
+
   // TODO(crbug.com/40733066): Move to anonymous namespace once
   // BrowserAutofillManager::OnLoadedServerPredictions() moves to
   // AutofillManager.
@@ -200,6 +261,15 @@ class AutofillManager
   AutofillManager& operator=(const AutofillManager&) = delete;
 
   ~AutofillManager() override;
+
+  // Fires Observer::OnAutofillManagerStateChanged().
+  // State changes must not happen during construction or destruction of
+  // AutofillManager or its owning AutofillDriver.
+  void SetLifecycleState(LifecycleState state, AutofillDriverPassKey);
+
+  // Clears the managed forms and other objects held by the AutofillManager.
+  // Does not touch the LifecycleState, which is controlled by the caller.
+  void Reset(AutofillDriverPassKey);
 
   AutofillClient& client() { return driver_->GetAutofillClient(); }
   const AutofillClient& client() const { return driver_->GetAutofillClient(); }
@@ -225,7 +295,7 @@ class AutofillManager
                                 const FieldGlobalId& field_id);
   void OnSelectOrSelectListFieldOptionsDidChange(const FormData& form);
   void OnFocusOnFormField(const FormData& form, const FieldGlobalId& field_id);
-  void OnFocusOnNonFormField(bool had_interacted_form);
+  void OnFocusOnNonFormField();
   virtual void OnAskForValuesToFill(
       const FormData& form,
       const FieldGlobalId& field_id,
@@ -249,9 +319,6 @@ class AutofillManager
   // Other events.
 
   virtual void ReportAutofillWebOTPMetrics(bool used_web_otp) = 0;
-
-  // Resets cache.
-  virtual void Reset();
 
   // translate::TranslateDriver::LanguageDetectionObserver:
   void OnTranslateDriverDestroyed(
@@ -316,6 +383,9 @@ class AutofillManager
  protected:
   explicit AutofillManager(AutofillDriver* driver);
 
+  // Must only be called by Reset().
+  virtual void ResetImpl();
+
   LogManager* log_manager() { return log_manager_; }
 
   // Retrieves the page language from |client_|
@@ -341,7 +411,7 @@ class AutofillManager
       const FormData& form) = 0;
   virtual void OnFocusOnFormFieldImpl(const FormData& form,
                                       const FieldGlobalId& field_id) = 0;
-  virtual void OnFocusOnNonFormFieldImpl(bool had_interacted_form) = 0;
+  virtual void OnFocusOnNonFormFieldImpl() = 0;
   virtual void OnAskForValuesToFillImpl(
       const FormData& form,
       const FieldGlobalId& field_id,
@@ -435,6 +505,8 @@ class AutofillManager
 
   std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
   CreateFormInteractionsUkmLogger();
+
+  LifecycleState lifecycle_state_ = LifecycleState::kInactive;
 
   // Provides driver-level context to the shared code of the component.
   // `*driver_` owns this object.

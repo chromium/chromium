@@ -295,12 +295,6 @@ class AutofillAgent : public content::RenderFrameObserver,
     const raw_ref<AutofillAgent> agent_;
   };
 
-  // The legacy focus-change behavior is broken in many ways and to be removed
-  // once the kill switch `kAutofillNewFocusEvents` is removed.
-  // TODO(crbug.com/337690061): Remove when cleaning up
-  // `kAutofillNewFocusEvents`.
-  void FocusedElementChangedDeprecated(const blink::WebElement& element);
-
   // The RenderFrame* is nullptr while the AutofillAgent is pending deletion,
   // between OnDestruct() and ~AutofillAgent().
   content::RenderFrame* unsafe_render_frame() const {

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 
+#import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
@@ -15,11 +16,15 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/test/scoped_key_window.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+
+using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 @interface LensOverlayCoordinator ()
 - (BOOL)isUICreated;
@@ -31,6 +36,10 @@ class LensOverlayCoordinatorTest : public PlatformTest {
  public:
   LensOverlayCoordinatorTest() {
     feature_list_.InitAndEnableFeature(kEnableLensOverlay);
+
+    root_view_controller_ = [[UIViewController alloc] init];
+    root_view_controller_.definesPresentationContext = YES;
+    scoped_window_.Get().rootViewController = root_view_controller_;
 
     // Browser state
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
@@ -68,6 +77,31 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     // Mark the only web state as active.
     browser_.get()->GetWebStateList()->InsertWebState(std::move(web_state_));
     browser_.get()->GetWebStateList()->ActivateWebStateAt(0);
+
+    // Wait for the base view controller to be presented.
+    base_view_controller_.modalPresentationStyle =
+        UIModalPresentationOverCurrentContext;
+    __block bool presentation_finished = NO;
+    [root_view_controller_ presentViewController:base_view_controller_
+                                        animated:NO
+                                      completion:^{
+                                        presentation_finished = YES;
+                                      }];
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
+      return presentation_finished;
+    }));
+  }
+
+  ~LensOverlayCoordinatorTest() override {
+    // Dismisses `base_view_controller_` and waits for the dismissal to finish.
+    __block bool dismissal_finished = NO;
+    [root_view_controller_ dismissViewControllerAnimated:NO
+                                              completion:^{
+                                                dismissal_finished = YES;
+                                              }];
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
+      return dismissal_finished;
+    }));
   }
 
  protected:
@@ -80,6 +114,8 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   std::unique_ptr<web::WebState> web_state_;
   UIViewController* base_view_controller_;
   base::test::ScopedFeatureList feature_list_;
+  ScopedKeyWindow scoped_window_;
+  UIViewController* root_view_controller_ = nil;
   id dispatcher_;
   LensOverlayTabHelper* tab_helper_;
 
@@ -89,6 +125,87 @@ class LensOverlayCoordinatorTest : public PlatformTest {
                       object:nil];
   }
 };
+
+// The overlay should appear shown only after the UI is created.
+TEST_F(LensOverlayCoordinatorTest, ShouldMarkOverlayShownWhenUICreated) {
+  // Given a started `LensOverlayCoordinator`.
+  [coordinator_ start];
+
+  // Then the UI should not be shown to the user.
+  EXPECT_FALSE(tab_helper_->IsLensOverlayShown());
+
+  // When the coordinator is asked to create and show the UI.
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands) createAndShowLensUI:NO];
+
+  // Then the UI should appear created and shown to the user.
+  EXPECT_TRUE(tab_helper_->IsLensOverlayShown());
+}
+
+// When the UI is destroyed the overlay should not appear shown.
+TEST_F(LensOverlayCoordinatorTest, ShouldDestroyTheUIUponRequest) {
+  // Given a started `LensOverlayCoordinator`.
+  [coordinator_ start];
+
+  // When the coordinator is asked to create and show the UI.
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands) createAndShowLensUI:NO];
+
+  // Then the UI should appear created and shown to the user.
+  EXPECT_TRUE(tab_helper_->IsLensOverlayShown());
+
+  // When the destroy command is dispatched.
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands) destroyLensUI:NO];
+
+  // Then the UI should not appear shown anymore.
+  EXPECT_FALSE(tab_helper_->IsLensOverlayShown());
+}
+
+// When the UI is not created the `show` command should do nothing.
+TEST_F(LensOverlayCoordinatorTest, ShouldNotShowTheOverlayWhenUIIsNotCreated) {
+  // Given a started `LensOverlayCoordinator` without a created UI.
+  [coordinator_ start];
+
+  // When the coordinator is asked to show the UI.
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands) showLensUI:NO];
+
+  // Then nothing should be presented.
+  EXPECT_TRUE(base_view_controller_.presentedViewController == nil);
+}
+
+// Showing the overlay should present the container view controller.
+TEST_F(LensOverlayCoordinatorTest, ShouldPresentVCOnShowCommandDispatched) {
+  // Given a started `LensOverlayCoordinator` without a created UI.
+  [coordinator_ start];
+
+  // Before showing anything nothing should appear presented.
+  EXPECT_TRUE(base_view_controller_.presentedViewController == nil);
+
+  // Dispatch the create & show command.
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands) createAndShowLensUI:NO];
+
+  // After dispatching the create & show command, a view controller should
+  // appear presented.
+  EXPECT_TRUE(base_view_controller_.presentedViewController != nil);
+}
+
+// Hiding the overlay should trigger dismissing the container VC.
+TEST_F(LensOverlayCoordinatorTest, ShouldDismissVCOnHideCommandDispatched) {
+  // Given a started `LensOverlayCoordinator` with a created and shown UI.
+  [coordinator_ start];
+
+  // Dispatch the create & show command.
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands) createAndShowLensUI:NO];
+
+  // After dispatching the create & show command, a view controller should
+  // appear presented.
+  EXPECT_TRUE(base_view_controller_.presentedViewController != nil);
+
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands) hideLensUI:NO];
+
+  // The presented view controller is set to `nil` when the dismiss is over.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
+    return base_view_controller_.presentedViewController == nil;
+  }));
+}
 
 // When the UI is created but not shown, then the memory warning should destroy
 // the UI.
@@ -104,7 +221,10 @@ TEST_F(LensOverlayCoordinatorTest,
   EXPECT_TRUE([coordinator_ isUICreated]);
 
   // Given a hidden lens overlay.
-  tab_helper_->SetLensOverlayShown(false);
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands) hideLensUI:NO];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
+    return base_view_controller_.presentedViewController == nil;
+  }));
 
   // When UIKit delivers a low-memory warning notification.
   DeliverMemoryWarningNotification();

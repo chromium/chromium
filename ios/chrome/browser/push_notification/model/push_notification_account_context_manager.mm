@@ -49,7 +49,7 @@ struct PermissionsPref {
     BrowserStateInfoCache* infoCache = manager->GetBrowserStateInfoCache();
     const size_t numberOfBrowserStates = infoCache->GetNumberOfBrowserStates();
     for (size_t i = 0; i < numberOfBrowserStates; i++) {
-      std::string gaiaID = infoCache->GetGAIAIdOfBrowserStateAtIndex(i);
+      const std::string& gaiaID = infoCache->GetGAIAIdOfBrowserStateAtIndex(i);
       [self addAccount:gaiaID];
     }
   }
@@ -172,11 +172,11 @@ struct PermissionsPref {
   const size_t numberOfBrowserStates = infoCache->GetNumberOfBrowserStates();
 
   for (size_t i = 0; i < numberOfBrowserStates; i++) {
-    std::string browserStateGaiaID =
+    const std::string& browserStateGaiaID =
         infoCache->GetGAIAIdOfBrowserStateAtIndex(i);
     if (gaiaID == browserStateGaiaID) {
-      base::FilePath path = infoCache->GetPathOfBrowserStateAtIndex(i);
-      return _chromeBrowserStateManager->GetBrowserStateByPath(path);
+      const std::string& name = infoCache->GetNameOfBrowserStateAtIndex(i);
+      return _chromeBrowserStateManager->GetBrowserStateByName(name);
     }
   }
 

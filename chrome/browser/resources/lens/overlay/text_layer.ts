@@ -371,6 +371,11 @@ export class TextLayerElement extends PolymerElement {
     this.renderedWords = receivedWords;
     assert(this.lineNumbers.length === this.renderedWords.length);
     assert(this.paragraphNumbers.length === this.renderedWords.length);
+
+    // Used to notify the post selection renderer so that, if a region has
+    // already been selected, text in the region can be detected.
+    this.dispatchEvent(new CustomEvent(
+        'finished-receiving-text', {bubbles: true, composed: true}));
   }
 
   // Returns the rectangle circumscribing the given lines.

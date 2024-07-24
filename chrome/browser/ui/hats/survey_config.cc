@@ -553,9 +553,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
                               kHatsSurveyTriggerAndroidStartupSurvey);
 
   survey_configs.emplace_back(
-      &chrome::android::kQuickDeleteAndroidFollowup,
+      &chrome::android::kQuickDeleteAndroidSurvey,
       kHatsSurveyTriggerQuickDelete,
-      chrome::android::kQuickDeleteAndroidFollowupTriggerId.Get());
+      chrome::android::kQuickDeleteAndroidSurveyTriggerId.Get());
 
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 

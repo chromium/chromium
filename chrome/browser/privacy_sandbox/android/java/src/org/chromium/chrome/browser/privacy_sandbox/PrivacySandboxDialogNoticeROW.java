@@ -11,9 +11,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
-import androidx.annotation.NonNull;
-
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
@@ -22,7 +19,6 @@ import org.chromium.ui.widget.CheckableImageView;
 public class PrivacySandboxDialogNoticeROW extends ChromeDialog
         implements View.OnClickListener, DialogInterface.OnShowListener {
     private final PrivacySandboxBridge mPrivacySandboxBridge;
-    private final SettingsLauncher mSettingsLauncher;
     private View mContentView;
 
     private final CheckableImageView mExpandArrowView;
@@ -33,12 +29,9 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
     private ScrollView mScrollView;
 
     public PrivacySandboxDialogNoticeROW(
-            Context context,
-            PrivacySandboxBridge privacySandboxBridge,
-            @NonNull SettingsLauncher settingsLauncher) {
+            Context context, PrivacySandboxBridge privacySandboxBridge) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         mPrivacySandboxBridge = privacySandboxBridge;
-        mSettingsLauncher = settingsLauncher;
         mContentView =
                 LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_notice_row, null);
         setContentView(mContentView);
@@ -96,7 +89,7 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
             mPrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_OPEN_SETTINGS);
             dismiss();
             PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
-                    getContext(), mSettingsLauncher, PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);
+                    getContext(), PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);
         } else if (id == R.id.more_button) {
             mPrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_BUTTON_CLICKED);
             if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {

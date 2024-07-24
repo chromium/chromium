@@ -52,6 +52,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
 #include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
@@ -775,9 +776,12 @@ ChromePaymentsAutofillClient::GetAutofillMessageController() {
 
   return *autofill_message_controller_;
 }
-#endif  // #if BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
+TouchToFillPaymentMethodController&
+ChromePaymentsAutofillClient::GetTouchToFillPaymentMethodController() {
+  return touch_to_fill_payment_method_controller_;
+}
+
 void ChromePaymentsAutofillClient::
     SetAutofillSaveCardBottomSheetBridgeForTesting(
         std::unique_ptr<AutofillSaveCardBottomSheetBridge>

@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/check.h"
-#include "base/not_fatal_until.h"
 #include "base/time/time.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/origin.h"
@@ -17,7 +16,7 @@ namespace content {
 namespace {
 base::Time FloorToDuration(base::Time time) {
   // `FloorToMultiple` would no-op on `base::Time::Max()`.
-  CHECK(!time.is_max(), base::NotFatalUntil::M128);
+  CHECK(!time.is_max());
 
   return base::Time() + time.since_origin().FloorToMultiple(
                             PrivateAggregationBudgetKey::TimeWindow::kDuration);
@@ -32,8 +31,7 @@ PrivateAggregationBudgetKey::PrivateAggregationBudgetKey(
     base::Time api_invocation_time,
     Api api)
     : origin_(std::move(origin)), time_window_(api_invocation_time), api_(api) {
-  CHECK(network::IsOriginPotentiallyTrustworthy(origin_),
-        base::NotFatalUntil::M128);
+  CHECK(network::IsOriginPotentiallyTrustworthy(origin_));
 }
 
 std::optional<PrivateAggregationBudgetKey> PrivateAggregationBudgetKey::Create(

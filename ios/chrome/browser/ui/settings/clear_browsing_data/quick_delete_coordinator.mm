@@ -58,7 +58,6 @@
                                  identityManager:identityManager
                              browsingDataRemover:browsingDataRemover
                              discoverFeedService:discoverFeedService];
-  _mediator.presentationHandler = self;
 
   _viewController = [[QuickDeleteViewController alloc] init];
   _mediator.consumer = _viewController;

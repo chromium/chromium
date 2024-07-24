@@ -13,6 +13,14 @@ luci.notifier(
 )
 
 luci.notifier(
+    name = "chrome-fuzzing-core",
+    on_status_change = True,
+    notify_emails = [
+        "chrome-fuzzing-core+bots@google.com",
+    ],
+)
+
+luci.notifier(
     name = "chrome-lacros-engprod-alerts",
     on_status_change = True,
     notify_emails = [

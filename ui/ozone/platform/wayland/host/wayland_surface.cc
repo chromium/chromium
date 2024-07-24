@@ -102,7 +102,14 @@ WaylandSurface::WaylandSurface(WaylandConnection* connection,
       surface_submission_in_pixel_coordinates_(
           connection->surface_submission_in_pixel_coordinates()),
       use_viewporter_surface_scaling_(
-          connection->UseViewporterSurfaceScaling()) {}
+          connection->UseViewporterSurfaceScaling()) {
+  // Inherit per-surface preferred scale when owned by non-toplevel windows.
+  // See https://wayland.app/protocols/fractional-scale-v1.
+  if (root_window_ && root_window_->parent_window()) {
+    preferred_scale_factor_ =
+        root_window_->parent_window()->GetPreferredScaleFactor();
+  }
+}
 
 WaylandSurface::~WaylandSurface() {
   for (auto& release : linux_buffer_releases_) {

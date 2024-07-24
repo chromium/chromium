@@ -179,8 +179,7 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
     payments_data().SetSyncServiceForTest(&sync_service_);
     autofill_client_.set_autofill_offer_manager(
         std::make_unique<AutofillOfferManager>(
-            autofill_client_.GetPersonalDataManager(),
-            /*coupon_service_delegate=*/nullptr, /*shopping_service=*/nullptr));
+            autofill_client_.GetPersonalDataManager()));
   }
 
   void TearDown() override {
@@ -674,6 +673,61 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   EXPECT_THAT(get_cards(u""), ElementsAre(credit_card));
   EXPECT_THAT(get_cards(u"1"), ElementsAre(credit_card));
   EXPECT_THAT(get_cards(u"2"), ElementsAre(credit_card));
+}
+
+// Tests that all the credit card suggestions are shown when a credit card field
+// was autofilled and focused. Given that `kAutofillEnablePaymentsFieldSwapping`
+// and `kAutofillDontPrefixMatchCreditCardNumbersOrCvcs` are enabled.
+TEST_F(PaymentsSuggestionGeneratorTest, PaymentsFieldSwapping) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /* enabled_features=*/
+      {features::kAutofillEnablePaymentsFieldSwapping,
+       features::kAutofillDontPrefixMatchCreditCardNumbersOrCvcs},
+      /* disabled_features=*/{});
+  CreditCard credit_card1;
+  test::SetCreditCardInfo(&credit_card1, /*name_on_card=*/"Cardholder name",
+                          /*card_number=*/"1111222233334444",
+                          /*expiration_month=*/nullptr,
+                          /*expiration_year*/ nullptr,
+                          /*billing_address_id=*/"", /*cvc=*/u"123");
+  credit_card1.set_record_type(CreditCard::RecordType::kLocalCard);
+  payments_data().AddCreditCard(credit_card1);
+
+  CreditCard credit_card2;
+  test::SetCreditCardInfo(&credit_card2, /*name_on_card=*/"Cardholder name",
+                          /*card_number=*/"4444333322221111",
+                          /*expiration_month=*/nullptr,
+                          /*expiration_year*/ nullptr,
+                          /*billing_address_id=*/"", /*cvc=*/u"123");
+  credit_card2.set_record_type(CreditCard::RecordType::kLocalCard);
+  payments_data().AddCreditCard(credit_card2);
+
+  auto get_cards = [&](std::u16string field_value, FieldType type,
+                       bool is_autofilled) {
+    FormFieldData field;
+    field.set_is_autofilled(is_autofilled);
+    field.set_value(std::move(field_value));
+    return GetOrderedCardsToSuggestForTest(*autofill_client(), field, type,
+                                           /*suppress_disused_cards=*/false,
+                                           /*prefix_match=*/true,
+                                           /*include_virtual_cards=*/false);
+  };
+
+  EXPECT_THAT(get_cards(u"", CREDIT_CARD_NUMBER, false),
+              ElementsAre(credit_card2, credit_card1));
+  EXPECT_THAT(get_cards(u"1111222233334444", CREDIT_CARD_NUMBER, true),
+              ElementsAre(credit_card2, credit_card1));
+  EXPECT_THAT(get_cards(u"4444333322221111", CREDIT_CARD_NUMBER, true),
+              ElementsAre(credit_card2, credit_card1));
+  EXPECT_THAT(get_cards(u"1111222233334444", CREDIT_CARD_NUMBER, false),
+              ElementsAre(credit_card2, credit_card1));
+  EXPECT_THAT(get_cards(u"1", CREDIT_CARD_NUMBER, true),
+              ElementsAre(credit_card2, credit_card1));
+  EXPECT_THAT(get_cards(u"", CREDIT_CARD_NAME_FULL, false),
+              ElementsAre(credit_card2, credit_card1));
+  EXPECT_THAT(get_cards(u"Cardholder name", CREDIT_CARD_NAME_FULL, false),
+              ElementsAre(credit_card2, credit_card1));
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest,

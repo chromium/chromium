@@ -116,10 +116,10 @@ IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, Reload) {
   EXPECT_NE(title_before_crash, title_after_crash);
   ASSERT_TRUE(
       GetActiveWebContents()->GetPrimaryMainFrame()->GetView()->IsShowing());
-  ASSERT_FALSE(GetActiveWebContents()
-                   ->GetPrimaryMainFrame()
-                   ->GetProcess()
-                   ->IsProcessBackgrounded());
+  ASSERT_NE(base::Process::Priority::kBestEffort, GetActiveWebContents()
+                                                      ->GetPrimaryMainFrame()
+                                                      ->GetProcess()
+                                                      ->GetPriority());
 }
 
 // Test that reload after a crash forces a cache revalidation.

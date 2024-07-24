@@ -17,10 +17,10 @@ namespace segmentation_platform {
 
 class OTRWebStateObserver::WebStateObserver : public WebStateListObserver {
  public:
-  WebStateObserver(const base::FilePath& browser_state_path,
+  WebStateObserver(std::string_view browser_state_name,
                    OTRWebStateObserver* states_observer,
                    BrowserList* browser_list)
-      : browser_state_path_(browser_state_path),
+      : browser_state_name_(browser_state_name),
         states_observer_(states_observer),
         browser_list_(browser_list) {
     // Ensure the count is updated at creation time.
@@ -36,7 +36,7 @@ class OTRWebStateObserver::WebStateObserver : public WebStateListObserver {
  private:
   void UpdateOtrWebStateCount();
 
-  const base::FilePath browser_state_path_;
+  const std::string browser_state_name_;
 
   const raw_ptr<OTRWebStateObserver> states_observer_;
 
@@ -94,7 +94,7 @@ void OTRWebStateObserver::WebStateObserver::UpdateOtrWebStateCount() {
       otr_state_count += web_state_list->count();
     }
   }
-  states_observer_->OnWebStateListChanged(browser_state_path_, otr_state_count);
+  states_observer_->OnWebStateListChanged(browser_state_name_, otr_state_count);
 }
 
 OTRWebStateObserver::BrowserStateData::BrowserStateData() = default;
@@ -106,7 +106,7 @@ OTRWebStateObserver::OTRWebStateObserver(
   browser_state_manager_->GetBrowserStateInfoCache()->AddObserver(this);
   for (ChromeBrowserState* state :
        browser_state_manager_->GetLoadedBrowserStates()) {
-    OnBrowserStateAdded(state->GetStatePath());
+    OnBrowserStateAdded(state->GetBrowserStateName());
   }
 }
 
@@ -115,30 +115,30 @@ OTRWebStateObserver::~OTRWebStateObserver() {
   DCHECK(shutting_down_);
 }
 
-void OTRWebStateObserver::OnBrowserStateAdded(const base::FilePath& path) {
+void OTRWebStateObserver::OnBrowserStateAdded(std::string_view name) {
   // This method can be called by the constructor and then the browser state
   // cache if this class is created at browser state init time. So, if the state
   // is already tracked, do nothing.
-  if (browser_state_data_.count(path)) {
+  if (browser_state_data_.count(name)) {
     return;
   }
   BrowserList* browser_list = BrowserListFactory::GetForBrowserState(
-      browser_state_manager_->GetBrowserStateByPath(path));
+      browser_state_manager_->GetBrowserStateByName(name));
   DCHECK(browser_list);
 
   auto it = browser_state_data_.emplace(
-      std::make_pair(path, std::make_unique<BrowserStateData>()));
+      std::make_pair(std::string(name), std::make_unique<BrowserStateData>()));
   DCHECK(it.second);
   BrowserStateData& data = *it.first->second;
   data.all_web_state_observation =
       std::make_unique<AllWebStateListObservationRegistrar>(
           browser_list,
-          std::make_unique<WebStateObserver>(path, this, browser_list),
+          std::make_unique<WebStateObserver>(name, this, browser_list),
           AllWebStateListObservationRegistrar::Mode::INCOGNITO);
 }
 
-void OTRWebStateObserver::OnBrowserStateWasRemoved(const base::FilePath& path) {
-  browser_state_data_.erase(path);
+void OTRWebStateObserver::OnBrowserStateWasRemoved(std::string_view name) {
+  browser_state_data_.erase(name);
 }
 
 void OTRWebStateObserver::AddObserver(ObserverClient* client) {
@@ -159,9 +159,9 @@ void OTRWebStateObserver::TearDown() {
 }
 
 void OTRWebStateObserver::OnWebStateListChanged(
-    const base::FilePath& browser_state_path,
+    const std::string& browser_state_name,
     int otr_web_state_count) {
-  auto& data = browser_state_data_[browser_state_path];
+  auto& data = browser_state_data_[browser_state_name];
   data->otr_web_state_count = otr_web_state_count;
 
   const bool has_otr_state = HasAnyOtrWebState();

@@ -55,10 +55,11 @@ class NATIVE_THEME_EXPORT NativeThemeFluent : public NativeThemeBase {
                            const gfx::Rect& rect,
                            const ScrollbarThumbExtraParams& extra_params,
                            ColorScheme color_scheme) const override;
+  gfx::Insets GetScrollbarSolidColorThumbInsets(Part part) const override;
   SkColor4f GetScrollbarThumbColor(
       const ui::ColorProvider& color_provider,
       State state,
-      const ScrollbarThumbExtraParams& extra) const;
+      const ScrollbarThumbExtraParams& extra) const override;
   void PaintScrollbarCorner(cc::PaintCanvas* canvas,
                             const ColorProvider* color_provider,
                             State state,

@@ -19,12 +19,10 @@
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_coordinator.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 
 using password_manager::PasswordCheckReferrer;
-using password_manager::features::IsAuthOnEntryV2Enabled;
 
 @interface PasswordCheckupCoordinator () <PasswordCheckupCommands,
                                           PasswordIssuesCoordinatorDelegate,
@@ -110,9 +108,7 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
     [_visitsRecorder maybeRecordVisitMetric];
   }
 
-  if (IsAuthOnEntryV2Enabled()) {
-    [self startReauthCoordinatorWithAuthOnStart:requireAuthOnStart];
-  }
+  [self startReauthCoordinatorWithAuthOnStart:requireAuthOnStart];
 }
 
 - (void)stop {
@@ -276,18 +272,12 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 - (void)restartReauthCoordinator {
   // Restart reauth coordinator so it monitors scene state changes and requests
   // local authentication after the scene goes to the background.
-  if (password_manager::features::IsAuthOnEntryV2Enabled()) {
-    [self startReauthCoordinatorWithAuthOnStart:NO];
-  }
+  [self startReauthCoordinatorWithAuthOnStart:NO];
 }
 
 // Whether Local Authentication sould be required when the coordinator is
 // started.
 - (BOOL)shouldRequireAuthOnStart {
-  if (!IsAuthOnEntryV2Enabled()) {
-    return NO;
-  }
-
   // Request auth when opened from outside Password Manager.
   switch (_referrer) {
     case PasswordCheckReferrer::kSafetyCheck:

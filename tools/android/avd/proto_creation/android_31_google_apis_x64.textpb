@@ -6,7 +6,7 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "PHbIavAVAbWEwBSPaKdL0xTfZVqR_9TEcNi82ye_snsC"  # 34.2.5 (Canary)
+  version: "N2X90_ADQtGKgoxkXZH3-TM5dbrynU-zGC4mj0B5KMIC"  # 32.1.15
   dest_path: "android_31_google_apis_x64"
 }
 
@@ -38,6 +38,6 @@ avd_settings {
 min_sdk: 31
 additional_apk {
   package_name: "chrome_internal/third_party/google3/apks/gmscore/x86_64"
-  version: "m_TViN18791czg8SgcZed7HWA7oNG6gHpQzLm5M7VSUC" # 24.23.35
+  version: "5mF806AbGnsm29dfwLgz7FkLBXv2l2POLvQ2nojUlhgC" # 24.26.32
   dest_path: "android_31_google_apis_x64/gmscore_apks"
 }

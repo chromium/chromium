@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -543,14 +544,12 @@ TEST_F(MemoryProgramCacheTest, MemoryProgramCacheEviction) {
   fragment_shader_->set_source("al sdfkjdk");
   TestHelper::SetShaderStates(gl_.get(), fragment_shader_, true);
 
-  std::unique_ptr<char[]> bigTestBinary =
-      std::unique_ptr<char[]>(new char[kEvictingBinaryLength]);
+  auto bigTestBinary = base::HeapArray<char>::Uninit(kEvictingBinaryLength);
   for (size_t i = 0; i < kEvictingBinaryLength; ++i) {
     bigTestBinary[i] = i % 250;
   }
-  ProgramBinaryEmulator emulator2(kEvictingBinaryLength,
-                                  kFormat,
-                                  bigTestBinary.get());
+  ProgramBinaryEmulator emulator2(kEvictingBinaryLength, kFormat,
+                                  bigTestBinary.data());
 
   SetExpectationsForSaveLinkedProgram(kEvictingProgramId, &emulator2);
   cache_->SaveLinkedProgram(kEvictingProgramId, vertex_shader_,

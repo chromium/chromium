@@ -9,6 +9,7 @@
 
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/views/picker_badge_view.h"
+#include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/picker/views/picker_submenu_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -156,6 +157,35 @@ TEST_F(PickerListItemViewTest, SetPreviewUpdatesIconOncePreviewIconResolves) {
                 .AsBitmap()
                 .getColor(1, 1),
             SK_ColorBLUE);
+}
+
+TEST_F(PickerListItemViewTest, CreatesPreviewBubbleAfterGainingPseudoFocus) {
+  PickerPreviewBubbleController preview_controller;
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* item_view = widget->SetContentsView(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  widget->Show();
+  item_view->SetPreview(&preview_controller, base::FilePath(),
+                        base::DoNothing(), /*update_icon=*/true);
+
+  item_view->SetItemState(PickerItemView::ItemState::kPseudoFocused);
+
+  EXPECT_NE(preview_controller.bubble_view_for_testing(), nullptr);
+}
+
+TEST_F(PickerListItemViewTest, ClosesPreviewBubbleAfterLosingPseudoFocus) {
+  PickerPreviewBubbleController preview_controller;
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* item_view = widget->SetContentsView(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  widget->Show();
+  item_view->SetPreview(&preview_controller, base::FilePath(),
+                        base::DoNothing(), /*update_icon=*/true);
+  item_view->SetItemState(PickerItemView::ItemState::kPseudoFocused);
+
+  item_view->SetItemState(PickerItemView::ItemState::kNormal);
+
+  EXPECT_EQ(preview_controller.bubble_view_for_testing(), nullptr);
 }
 
 TEST_F(PickerListItemViewTest, ClosesSubmenuOnEnter) {

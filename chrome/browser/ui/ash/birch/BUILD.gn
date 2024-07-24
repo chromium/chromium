@@ -34,6 +34,8 @@ static_library("birch") {
     "refresh_token_waiter.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/constants",

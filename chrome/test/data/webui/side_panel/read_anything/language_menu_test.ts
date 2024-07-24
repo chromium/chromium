@@ -60,7 +60,7 @@ suite('LanguageMenu', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     languageMenu = document.createElement('language-menu');
     document.body.appendChild(languageMenu);
-    languageMenu.baseLanguages = new Set();
+    languageMenu.baseLanguages = new Set(['it-it']);
     languageMenu.voicePackInstallStatus = {};
     flush();
   });
@@ -75,10 +75,7 @@ suite('LanguageMenu', () => {
       availableVoices =
           [createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'})];
       const expectedLanguages =
-          chrome.readingMode.isLanguagePackDownloadingEnabled &&
-              chrome.readingMode.isChromeOsAsh ?
-          34 :
-          availableVoices.length;
+          chrome.readingMode.isChromeOsAsh ? 34 : availableVoices.length;
       setAvailableVoices();
       assertTrue(isPositionedOnPage(languageMenu));
       assertEquals(expectedLanguages, getLanguageLineItems().length);
@@ -100,11 +97,7 @@ suite('LanguageMenu', () => {
     });
 
     test('adds language from available voice', () => {
-      const expectedLanguages =
-          chrome.readingMode.isLanguagePackDownloadingEnabled &&
-              chrome.readingMode.isChromeOsAsh ?
-          1 :
-          0;
+      const expectedLanguages = chrome.readingMode.isChromeOsAsh ? 1 : 0;
       availableVoices =
           [createSpeechSynthesisVoice({name: 'test voice 5', lang: 'en-es'})];
       setAvailableVoices();
@@ -113,11 +106,7 @@ suite('LanguageMenu', () => {
     });
 
     test('sorts alphabetically', () => {
-      const expectedLanguages =
-          chrome.readingMode.isLanguagePackDownloadingEnabled &&
-              chrome.readingMode.isChromeOsAsh ?
-          1 :
-          0;
+      const expectedLanguages = chrome.readingMode.isChromeOsAsh ? 1 : 0;
       availableVoices = [
         createSpeechSynthesisVoice({name: 'Steve', lang: 'da-dk'}),
         createSpeechSynthesisVoice({name: 'Dustin', lang: 'bn-bd'}),
@@ -132,6 +121,7 @@ suite('LanguageMenu', () => {
 
   suite('with one language', () => {
     setup(() => {
+      languageMenu.baseLanguages = new Set(['en-us']);
       availableVoices =
           [createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'})];
       setAvailableVoices();
@@ -246,7 +236,8 @@ suite('LanguageMenu', () => {
         assertEquals('', getLanguageSearchField().value);
       });
 
-      test('it does not groups languages with different name', () => {
+      test('it does not group languages with different names', () => {
+        languageMenu.baseLanguages = new Set(['en-us']);
         availableVoices = [
           createSpeechSynthesisVoice({name: 'test voice 0', lang: 'en-US'}),
           createSpeechSynthesisVoice({name: 'test voice 3', lang: 'en'}),
@@ -292,7 +283,7 @@ suite('LanguageMenu', () => {
         assertLanguageNotification('', getNotificationItems()[2]!);
       });
 
-      test('it shows and hides downloading notification', async () => {
+      test('it shows and hides downloading notification', () => {
         languageMenu.baseLanguages = new Set(['it-it']);
         enabledLangs = ['it-it', 'English (United States)'];
         setEnabledLanguages();
@@ -302,8 +293,12 @@ suite('LanguageMenu', () => {
         assertEquals(3, getNotificationItems().length);
         assertLanguageNotification('', getNotificationItems()[0]!);
         assertLanguageNotification('', getNotificationItems()[1]!);
-        assertLanguageNotification(
-            'Downloading voices…', getNotificationItems()[2]!);
+        if (chrome.readingMode.isChromeOsAsh) {
+          assertLanguageNotification(
+              'Downloading voices…', getNotificationItems()[2]!);
+        } else {
+          assertLanguageNotification('', getNotificationItems()[2]!);
+        }
 
         languagesToNotificationMap['it'] =
             VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE;
@@ -311,8 +306,12 @@ suite('LanguageMenu', () => {
         assertEquals(3, getNotificationItems().length);
         assertLanguageNotification('', getNotificationItems()[0]!);
         assertLanguageNotification('', getNotificationItems()[1]!);
-        assertLanguageNotification(
-            'Downloading voices…', getNotificationItems()[2]!);
+        if (chrome.readingMode.isChromeOsAsh) {
+          assertLanguageNotification(
+              'Downloading voices…', getNotificationItems()[2]!);
+        } else {
+          assertLanguageNotification('', getNotificationItems()[2]!);
+        }
 
         languagesToNotificationMap['it'] = VoiceClientSideStatusCode.AVAILABLE;
         setNotificationForLanguage();
@@ -322,9 +321,8 @@ suite('LanguageMenu', () => {
         assertLanguageNotification('', getNotificationItems()[2]!);
       });
 
-
       test('non-Google language does not show downloading notification', () => {
-        languageMenu.baseLanguages = new Set(['it', 'en-us']);
+        languageMenu.baseLanguages = new Set(['en-us']);
         enabledLangs = ['it', 'en-us', 'es'];
         setEnabledLanguages();
 
@@ -342,7 +340,7 @@ suite('LanguageMenu', () => {
         assertLanguageNotification('', getNotificationItems()[1]!);
       });
 
-      test('shows generic error notification with internet', async () => {
+      test('shows generic error notification with internet', () => {
         enabledLangs = ['Italian', 'English (United States)'];
         setEnabledLanguages();
         languagesToNotificationMap['it'] =
@@ -351,8 +349,12 @@ suite('LanguageMenu', () => {
         assertEquals(3, getNotificationItems().length);
         assertLanguageNotification('', getNotificationItems()[0]!);
         assertLanguageNotification('', getNotificationItems()[1]!);
-        assertLanguageNotification(
-            'Download failed', getNotificationItems()[2]!);
+        if (chrome.readingMode.isChromeOsAsh) {
+          assertLanguageNotification(
+              'Download failed', getNotificationItems()[2]!);
+        } else {
+          assertLanguageNotification('', getNotificationItems()[2]!);
+        }
       });
 
       test('does not show old error notifications', () => {
@@ -369,14 +371,13 @@ suite('LanguageMenu', () => {
         document.body.appendChild(newMenu);
         flush();
 
-        const notificationItems =
-            newMenu.$.languageMenu.querySelectorAll<HTMLElement>(
-                '#notificationText');
+        const notificationItems: HTMLElement[] =
+            Array.from(newMenu.$.languageMenu.querySelectorAll<HTMLElement>(
+                '#notificationText'));
 
-        assertEquals(3, notificationItems.length);
-        assertLanguageNotification('', notificationItems[0]!);
-        assertLanguageNotification('', notificationItems[1]!);
-        assertLanguageNotification('', notificationItems[2]!);
+        const noNotifications = notificationItems.every(
+            notification => notification.innerText === '');
+        assertTrue(noNotifications);
       });
 
       test('shows old downloading notifications', () => {
@@ -393,15 +394,17 @@ suite('LanguageMenu', () => {
         document.body.appendChild(newMenu);
         flush();
 
-        const notificationItems =
-            newMenu.$.languageMenu.querySelectorAll<HTMLElement>(
-                '#notificationText');
+        const notificationItems: HTMLElement[] =
+            Array.from(newMenu.$.languageMenu.querySelectorAll<HTMLElement>(
+                '#notificationText'));
 
-        assertEquals(3, notificationItems.length);
-        assertLanguageNotification('', notificationItems[0]!);
-        assertLanguageNotification('', notificationItems[1]!);
-        assertLanguageNotification(
-            'Downloading voices…', notificationItems[2]!);
+        const downloadingNotifications = notificationItems.filter(
+            notification => notification.innerText === 'Downloading voices…');
+        if (chrome.readingMode.isChromeOsAsh) {
+          assertEquals(downloadingNotifications.length, 1);
+        } else {
+          assertEquals(downloadingNotifications.length, 0);
+        }
       });
 
       test(
@@ -414,12 +417,17 @@ suite('LanguageMenu', () => {
             assertEquals(3, getNotificationItems().length);
             assertLanguageNotification('', getNotificationItems()[0]!);
             assertLanguageNotification('', getNotificationItems()[1]!);
-            assertLanguageNotification(
-                'For higher quality voices, clear space on your device',
-                getNotificationItems()[2]!);
+            if (chrome.readingMode.isChromeOsAsh) {
+              assertLanguageNotification(
+                  'For higher quality voices, clear space on your device',
+                  getNotificationItems()[2]!);
+
+            } else {
+              assertLanguageNotification('', getNotificationItems()[2]!);
+            }
           });
 
-      test('with no voices it shows allocation notification ', async () => {
+      test('with no voices it shows allocation notification ', () => {
         languageMenu.baseLanguages = new Set(['it', 'English (United States)']);
 
         enabledLangs = ['it', 'English (United States)'];
@@ -438,11 +446,7 @@ suite('LanguageMenu', () => {
         // pack downloading flag is disabled. Therefore, it won't be possible
         // to test the non-high quality voice allocation error message when
         // languages for uninstalled languages are unavailable.
-        const areLanguagesWithUninstalledVoicesAvailable =
-            chrome.readingMode.isChromeOsAsh &&
-            chrome.readingMode.isLanguagePackDownloadingEnabled;
-        const notificationItemSize =
-            areLanguagesWithUninstalledVoicesAvailable ? 3 : 1;
+        const notificationItemSize = chrome.readingMode.isChromeOsAsh ? 3 : 1;
         assertEquals(notificationItemSize, getNotificationItems().length);
         assertLanguageNotification('', getNotificationItems()[0]!);
 

@@ -4,8 +4,6 @@
 
 #import "base/test/ios/wait_util.h"
 #import "build/branding_buildflags.h"
-#import "components/password_manager/core/browser/features/password_features.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -14,7 +12,6 @@
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/common/string_util.h"
@@ -37,7 +34,9 @@
 namespace {
 
 using base::test::ios::kWaitForActionTimeout;
+using password_manager_test_utils::EditDoneButton;
 using password_manager_test_utils::kScrollAmount;
+using password_manager_test_utils::NavigationBarEditButton;
 using password_manager_test_utils::OpenPasswordManager;
 using password_manager_test_utils::PasswordDetailsShareButtonMatcher;
 using password_manager_test_utils::PasswordDetailsTableViewMatcher;
@@ -136,16 +135,6 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       std::string("-") + password_manager::kEnableShareButtonUnbranded);
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  if ([self isRunningTest:@selector
-            (testFirstRunExperienceViewDismissedForAuthentication)] ||
-      [self isRunningTest:@selector
-            (testPasswordPickerViewDismissedForAuthentication)] ||
-      [self isRunningTest:@selector
-            (testFamilyPickerViewDismissedForAuthentication)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kIOSPasswordAuthOnEntryV2);
-  }
-
   return config;
 }
 
@@ -222,6 +211,27 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kEnterpriseInfoBubbleViewId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)testShareButtonVisibilityDuringPasswordEditing {
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Share button should not be visible during password details editing.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+
+  // Share button should be visible again after editing is finished.
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

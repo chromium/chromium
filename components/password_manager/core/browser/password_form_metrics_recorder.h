@@ -243,15 +243,17 @@ class PasswordFormMetricsRecorder
     // security origin.
     kPublicSuffixMatch = 1,
     // A credential exists for an affiliated matched android app but not for the
-    // current security origin.
+    // current security origin. This is provided as a credential sharing
+    // affiliation by AffiliationService.
     kAffiliatedApp = 2,
     // A credential exists for an affiliated matched site but not for the
-    // current security origin.
+    // current security origin. This is provided as a credential sharing
+    // affiliation by AffiliationService.
     kAffiliatedWebsites = 3,
-    // A credential exists for a web site, which is grouped with the current
-    // domain by the `AffiliationService`.
-    kGroupedWebsites = 4,
-    kMaxValue = kGroupedWebsites,
+    // A credential exists for another entity, which is grouped with the current
+    // domain by the AffiliationService through a grouping affiliation.
+    kGrouped = 4,
+    kMaxValue = kGrouped,
   };
 
   // This metric records the user experience with the passwords filling. The

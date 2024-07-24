@@ -44,6 +44,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -85,6 +86,7 @@ public final class PrivacySandboxDialogTest {
         mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
         mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
         PrivacySandboxDialogController.disableAnimationsForTesting(true);
+        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
     }
 
     @After
@@ -123,9 +125,7 @@ public final class PrivacySandboxDialogTest {
                         mDialog = null;
                     }
                     PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                            sActivityTestRule.getActivity(),
-                            mSettingsLauncher,
-                            sActivityTestRule.getProfile(false));
+                            sActivityTestRule.getActivity(), sActivityTestRule.getProfile(false));
                     mDialog = PrivacySandboxDialogController.getDialogForTesting();
                 });
     }
@@ -173,7 +173,6 @@ public final class PrivacySandboxDialogTest {
                             new PrivacySandboxDialogConsentEEA(
                                     sActivityTestRule.getActivity(),
                                     new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
-                                    /* animate= */ mSettingsLauncher,
                                     false);
                     mDialog.show();
                 });
@@ -189,8 +188,7 @@ public final class PrivacySandboxDialogTest {
                     mDialog =
                             new PrivacySandboxDialogNoticeEEA(
                                     sActivityTestRule.getActivity(),
-                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
-                                    mSettingsLauncher);
+                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)));
                     mDialog.show();
                 });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_eea_notice_dialog");
@@ -205,8 +203,7 @@ public final class PrivacySandboxDialogTest {
                     mDialog =
                             new PrivacySandboxDialogNoticeROW(
                                     sActivityTestRule.getActivity(),
-                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
-                                    mSettingsLauncher);
+                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)));
                     mDialog.show();
                 });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_row_notice_dialog");
@@ -221,8 +218,7 @@ public final class PrivacySandboxDialogTest {
                     mDialog =
                             new PrivacySandboxDialogNoticeRestricted(
                                     sActivityTestRule.getActivity(),
-                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
-                                    mSettingsLauncher);
+                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)));
                     mDialog.show();
                 });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_restricted_notice_dialog");
@@ -234,9 +230,7 @@ public final class PrivacySandboxDialogTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                            sActivityTestRule.getActivity(),
-                            mSettingsLauncher,
-                            sActivityTestRule.getProfile(true));
+                            sActivityTestRule.getActivity(), sActivityTestRule.getProfile(true));
                 });
         // Verify that nothing is shown.
         onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());

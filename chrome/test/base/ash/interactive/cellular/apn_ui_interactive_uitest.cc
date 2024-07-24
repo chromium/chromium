@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/ash/interactive/cellular/esim_interactive_uitest_base.h"
-#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 #include "chromeos/ash/components/dbus/hermes/fake_hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_service_client.h"
@@ -25,7 +24,19 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kApnRevamp);
   }
 
+  // InteractiveAshTest:
+  void SetUpOnMainThread() override {
+    EsimInteractiveUiTestBase::SetUpOnMainThread();
+
+    esim_info_ = std::make_unique<SimInfo>(/*id=*/0);
+    ConfigureEsimProfile(euicc_info(), *esim_info_, /*connected=*/true);
+  }
+
+  const SimInfo& esim_info() const { return *esim_info_; }
+
  private:
+  std::unique_ptr<SimInfo> esim_info_;
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -58,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest,
 
       Log("Disconnect cellular network"),
 
-      Do([&]() { DisconnectEsimService(); }),
+      Do([&]() { esim_info().Disconnect(); }),
 
       Log("Verify Zero state message shows and no APN shows in the list when "
           "not connected"),

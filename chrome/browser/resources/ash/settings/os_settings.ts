@@ -31,6 +31,7 @@ import './device_page/input_device_settings_types.js';
 import './device_page/graphics_tablet_subpage.js';
 import './device_page/keyboard.js';
 import './device_page/keyboard_six_pack_key_row.js';
+import './device_page/per_device_install_row.js';
 import './device_page/per_device_keyboard.js';
 import './device_page/per_device_keyboard_remap_keys.js';
 import './device_page/per_device_keyboard_subsection.js';
@@ -166,6 +167,7 @@ export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting
 export {AcceleratorAction, BatteryInfo, Fkey, GraphicsTablet, InputDeviceSettingsPolicy, Keyboard, KeyEvent, MetaKey, ModifierKey, Mouse, PolicyStatus, ShortcutInputProviderInterface, SimulateRightClickModifier, SixPackKey, SixPackKeyInfo, SixPackShortcutModifier, TopRowActionKey, Vkey} from './device_page/input_device_settings_types.js';
 export {KeyboardRemapModifierKeyRowElement} from './device_page/keyboard_remap_modifier_key_row.js';
 export {KeyboardSixPackKeyRowElement, sixPackKeyProperties} from './device_page/keyboard_six_pack_key_row.js';
+export {PerDeviceInstallRowElement} from './device_page/per_device_install_row.js';
 export {SettingsPerDeviceKeyboardElement} from './device_page/per_device_keyboard.js';
 export {SettingsPerDeviceKeyboardRemapKeysElement} from './device_page/per_device_keyboard_remap_keys.js';
 export {SettingsPerDeviceKeyboardSubsectionElement} from './device_page/per_device_keyboard_subsection.js';

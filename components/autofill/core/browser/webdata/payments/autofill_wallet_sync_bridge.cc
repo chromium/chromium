@@ -363,9 +363,10 @@ void AutofillWalletSyncBridge::SetSyncData(
   std::vector<CreditCardCloudTokenData> cloud_token_data;
   std::vector<BankAccount> bank_accounts;
   std::vector<CreditCardBenefit> card_benefits;
-  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
-                                  customer_data, cloud_token_data,
-                                  bank_accounts, card_benefits);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  PopulateWalletTypesFromSyncData(
+      entity_data, wallet_cards, wallet_ibans, customer_data, cloud_token_data,
+      bank_accounts, card_benefits, payment_instruments);
 
   bool wallet_card_data_changed =
       SetWalletCards(std::move(wallet_cards), notify_webdata_backend);

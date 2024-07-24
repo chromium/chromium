@@ -1,24 +1,24 @@
 {
     "trace_processor_shell": {
         "linux_arm64": {
-            "hash": "083268344b1dc5f75fac79a2fdae4b49b7745b7a",
-            "full_remote_path": "perfetto-luci-artifacts/v46.0/linux-arm64/trace_processor_shell"
+            "hash": "5503b4bb05787593e39f9932d19a0e2a8a29b402",
+            "full_remote_path": "perfetto-luci-artifacts/cdeacaec0330d6c5483af4e10545c61a9e59b96c/linux-arm64/trace_processor_shell"
         },
         "win": {
-            "hash": "2da1a0905c98560bd6f119e4e4889fa69b3cadf3",
-            "full_remote_path": "chromium-telemetry/perfetto_binaries/trace_processor_shell/win/077d742d9f9738a0453e408560a283a7514c9e8e/trace_processor_shell.exe"
+            "hash": "fe6b3648262b8e7a8e02d5fb8fcc34253f96cc2a",
+            "full_remote_path": "chromium-telemetry/perfetto_binaries/trace_processor_shell/win/9b34310937c350c42cc3426282bff1b4eedb7622/trace_processor_shell.exe"
         },
         "linux_arm": {
-            "hash": "871ca76c36e35af95152c733fa906677dc04b9d9",
-            "full_remote_path": "perfetto-luci-artifacts/v46.0/linux-arm/trace_processor_shell"
+            "hash": "270d42bcb5ef14e2f9d5bbe64c367bedc52200e5",
+            "full_remote_path": "perfetto-luci-artifacts/cdeacaec0330d6c5483af4e10545c61a9e59b96c/linux-arm/trace_processor_shell"
         },
         "mac": {
             "hash": "f5d83eca972747f7c3db9f35c07ed57902418e8c",
             "full_remote_path": "chromium-telemetry/perfetto_binaries/trace_processor_shell/mac/881ad50c05049ca13d4b34e4f92f4167de5ac52a/trace_processor_shell"
         },
         "mac_arm64": {
-            "hash": "78ed29b50ae8e7c67c25c31f6b210a5b84417b08",
-            "full_remote_path": "perfetto-luci-artifacts/v46.0/mac-arm64/trace_processor_shell"
+            "hash": "c4691c6ba629b143bcad2264ae0f86f409b1388f",
+            "full_remote_path": "perfetto-luci-artifacts/cdeacaec0330d6c5483af4e10545c61a9e59b96c/mac-arm64/trace_processor_shell"
         },
         "linux": {
             "hash": "2ec88b824743e06eb6404d4a3f4112de8bc0af03",

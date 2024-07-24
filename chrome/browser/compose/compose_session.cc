@@ -1149,7 +1149,8 @@ void ComposeSession::RefreshAXSnapshot() {
           weak_ptr_factory_.GetWeakPtr(), current_ax_snapshot_request_id_),
       ui::kAXModeWebContentsOnly,
       compose::GetComposeConfig().max_ax_node_count_for_page_context,
-      /*timeout=*/{});
+      /*timeout=*/{},
+      content::WebContents::AXTreeSnapshotPolicy::kSameOriginDirectDescendants);
 }
 
 void ComposeSession::SetFirstRunCloseReason(

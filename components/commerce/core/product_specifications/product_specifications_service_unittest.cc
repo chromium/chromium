@@ -7,8 +7,10 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -136,6 +138,15 @@ MATCHER_P(IsSetWithUuid, uuid, "") {
 }
 
 MATCHER_P2(HasProductSpecsNameUrl, name, urls, "") {
+  *result_listener << "Actual name:  " << arg.name() << "\n";
+  *result_listener << "Actual urls:  "
+                   << base::JoinString(base::ToVector(arg.urls(), &GURL::spec),
+                                       ", ")
+                   << "\n";
+  *result_listener << "Expected name:  " << name << "\n";
+  *result_listener << "Expeted urls:  "
+                   << base::JoinString(base::ToVector(urls, &GURL::spec), ", ")
+                   << "\n";
   return arg.name() == name && arg.urls() == urls;
 }
 
@@ -788,15 +799,22 @@ TEST_F(ProductSpecificationsServiceTest, TestSetUrlsMultiSpecifics) {
                              GURL("https://y.example.com"),
                              GURL("https://z.example.com")};
 
-  const base::Uuid& uuid_to_modify = sets[1].uuid();
-  service()->SetUrls(uuid_to_modify, new_urls);
+  const ProductSpecificationsSet set_to_modify = sets[1];
+
+  EXPECT_CALL(
+      *observer(),
+      OnProductSpecificationsSetUpdate(
+          HasProductSpecsNameUrl(set_to_modify.name(), set_to_modify.urls()),
+          HasProductSpecsNameUrl(set_to_modify.name(), new_urls)))
+      .Times(1);
+  service()->SetUrls(set_to_modify.uuid(), new_urls);
   base::RunLoop().RunUntilIdle();
 
   std::vector<ProductSpecificationsSet> all_sets =
       service()->GetAllProductSpecifications();
   const ProductSpecificationsSet* modified_set = nullptr;
   for (const ProductSpecificationsSet& set : all_sets) {
-    if (set.uuid() == uuid_to_modify) {
+    if (set.uuid() == set_to_modify.uuid()) {
       modified_set = &set;
     }
   }
@@ -817,12 +835,20 @@ TEST_F(ProductSpecificationsServiceTest, TestSetNameMultiSpecifics) {
   base::RunLoop().RunUntilIdle();
   CheckProductSpecificationsExists(sets);
 
-  const base::Uuid& uuid_to_modify = sets[1].uuid();
-  EXPECT_EQ("Set 1", FindProductSpecificationsSet(uuid_to_modify).name());
-  service()->SetName(uuid_to_modify, "New name");
+  ProductSpecificationsSet set_to_modify =
+      FindProductSpecificationsSet(sets[1].uuid());
+  EXPECT_EQ("Set 1", set_to_modify.name());
+  EXPECT_CALL(
+      *observer(),
+      OnProductSpecificationsSetUpdate(
+          HasProductSpecsNameUrl(set_to_modify.name(), set_to_modify.urls()),
+          HasProductSpecsNameUrl("New name", set_to_modify.urls())))
+      .Times(1);
+  service()->SetName(set_to_modify.uuid(), "New name");
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ("New name", FindProductSpecificationsSet(uuid_to_modify).name());
+  EXPECT_EQ("New name",
+            FindProductSpecificationsSet(set_to_modify.uuid()).name());
 }
 
 TEST_F(ProductSpecificationsServiceTest,

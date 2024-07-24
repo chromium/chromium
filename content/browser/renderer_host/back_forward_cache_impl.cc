@@ -352,7 +352,8 @@ void RequestRecordTimeToVisible(RenderFrameHostImpl* rfh,
 // this Entry are foregrounded.
 bool HasForegroundedProcess(BackForwardCacheImpl::Entry& entry) {
   for (const auto& rvh : entry.render_view_hosts()) {
-    if (!rvh->GetProcess()->IsProcessBackgrounded()) {
+    if (rvh->GetProcess()->GetPriority() !=
+        base::Process::Priority::kBestEffort) {
       return true;
     }
   }
@@ -564,7 +565,7 @@ void BackForwardCacheImpl::Entry::WriteIntoTrace(
   dict.Add("render_frame_host", render_frame_host());
 }
 
-void BackForwardCacheImpl::RenderProcessBackgroundedChanged(
+void BackForwardCacheImpl::RenderProcessPriorityChanged(
     RenderProcessHostImpl* host) {
   EnforceCacheSizeLimit();
 }

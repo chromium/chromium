@@ -96,7 +96,7 @@ namespace policy {
 namespace {
 
 constexpr char kPolicyInvalidationTopic[] = "test_policy_topic";
-constexpr char kPolicyInvalidationType[] = "policy";
+constexpr char kPolicyInvalidationType[] = "USER_POLICY_FETCH";
 
 struct FeaturesTestParam {
   std::vector<base::test::FeatureRef> enabled_features;

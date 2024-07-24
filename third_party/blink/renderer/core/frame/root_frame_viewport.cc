@@ -482,7 +482,7 @@ bool RootFrameViewport::DistributeScrollBetweenViewports(
 }
 
 gfx::Vector2d RootFrameViewport::ScrollOffsetInt() const {
-  return gfx::ToFlooredVector2d(GetScrollOffset());
+  return SnapScrollOffsetToPhysicalPixels(GetScrollOffset());
 }
 
 ScrollOffset RootFrameViewport::GetScrollOffset() const {

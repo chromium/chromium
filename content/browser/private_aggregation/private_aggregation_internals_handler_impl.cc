@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
-#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -74,8 +73,7 @@ CreateWebUIAggregatableReport(
 
     constexpr char kAggregationServicePayloadsKey[] =
         "aggregation_service_payloads";
-    CHECK(!report_body.Find(kAggregationServicePayloadsKey),
-          base::NotFatalUntil::M128);
+    CHECK(!report_body.Find(kAggregationServicePayloadsKey));
     report_body.Set(kAggregationServicePayloadsKey,
                     "Not generated prior to send");
   }
@@ -83,7 +81,7 @@ CreateWebUIAggregatableReport(
   std::string output_json;
   bool success = base::JSONWriter::WriteWithOptions(
       report_body, base::JSONWriter::OPTIONS_PRETTY_PRINT, &output_json);
-  CHECK(success, base::NotFatalUntil::M128);
+  CHECK(success);
 
   base::Time report_time =
       actual_report_time.value_or(request.shared_info().scheduled_report_time);

@@ -12,7 +12,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
@@ -31,7 +30,7 @@ AggregationServiceKeyFetcher::~AggregationServiceKeyFetcher() = default;
 
 void AggregationServiceKeyFetcher::GetPublicKey(const GURL& url,
                                                 FetchCallback callback) {
-  CHECK(network::IsUrlPotentiallyTrustworthy(url), base::NotFatalUntil::M128);
+  CHECK(network::IsUrlPotentiallyTrustworthy(url));
 
   base::circular_deque<FetchCallback>& pending_callbacks = url_callbacks_[url];
   bool in_progress = !pending_callbacks.empty();
@@ -105,11 +104,11 @@ void AggregationServiceKeyFetcher::RunCallbacksForUrl(
     const GURL& url,
     const std::vector<PublicKey>& keys) {
   auto iter = url_callbacks_.find(url);
-  CHECK(iter != url_callbacks_.end(), base::NotFatalUntil::M128);
+  CHECK(iter != url_callbacks_.end());
 
   base::circular_deque<FetchCallback> pending_callbacks =
       std::move(iter->second);
-  CHECK(!pending_callbacks.empty(), base::NotFatalUntil::M128);
+  CHECK(!pending_callbacks.empty());
 
   url_callbacks_.erase(iter);
 

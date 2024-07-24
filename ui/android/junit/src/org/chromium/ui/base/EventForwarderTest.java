@@ -34,6 +34,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.ui.MotionEventUtils;
 
@@ -370,6 +371,10 @@ public class EventForwarderTest {
         doReturn(21f).when(event).getY();
         doReturn(clipData).when(event).getClipData();
         doReturn(clipDescription).when(event).getClipDescription();
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.DragDrop.Files.Count", expectedFilenames.length)
+                        .build();
         eventForwarder.onDragEvent(event, mock(View.class));
         verify(mNativeMock, times(1))
                 .onDragEvent(
@@ -386,5 +391,6 @@ public class EventForwarderTest {
                         expectedText,
                         expectedHtml,
                         expectedUrl);
+        histograms.assertExpected();
     }
 }

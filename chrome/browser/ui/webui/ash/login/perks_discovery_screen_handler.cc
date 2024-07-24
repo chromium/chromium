@@ -48,6 +48,10 @@ void PerksDiscoveryScreenHandler::SetPerksData(
   CallExternalAPI("setPerksData", std::move(perks_list));
 }
 
+void PerksDiscoveryScreenHandler::SetOverviewStep() {
+  CallExternalAPI("setOverviewStep");
+}
+
 base::WeakPtr<PerksDiscoveryScreenView>
 PerksDiscoveryScreenHandler::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

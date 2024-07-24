@@ -100,6 +100,8 @@ inline constexpr uint32_t kTypePropId = 5000;
 inline constexpr uint32_t kInFormatsPropId = 5001;
 inline constexpr uint32_t kPlaneCtmId = 5002;
 inline constexpr uint32_t kRotationPropId = 5003;
+inline constexpr uint32_t kColorEncodingPropId = 5004;
+inline constexpr uint32_t kColorRangePropId = 5005;
 
 // Blob IDs:
 inline constexpr uint32_t kBaseBlobId = 6000;
@@ -165,6 +167,8 @@ class FakeDrmDevice : public DrmDevice {
     std::vector<EncoderProperties> encoder_properties;
     std::vector<PlaneProperties> plane_properties;
     std::map<uint32_t, std::string> property_names;
+    std::map<uint32_t, std::vector<std::pair<uint64_t, std::string>>>
+        enum_values;
   };
 
   explicit FakeDrmDevice(std::unique_ptr<GbmDevice> gbm_device);
@@ -265,6 +269,13 @@ class FakeDrmDevice : public DrmDevice {
   // Add a `property.id` to `object_id`, and set its value to `property.value`.
   // This can only be called before InitializeState.
   void AddProperty(uint32_t object_id, const DrmWrapper::Property& property);
+
+  // Configure the possible enum values for a particular property. This can only
+  // be called before InitializeState.
+  void SetPossibleValuesForEnumProperty(
+      uint32_t property_id,
+      std::vector<std::pair<uint64_t /* value */, std::string /* name */>>
+          values);
 
   // Functions to configure the FakeDrmState. Must be called before Initialize
   // is called.
@@ -412,6 +423,16 @@ class FakeDrmDevice : public DrmDevice {
                       bool add_property_if_needed = false);
 
   bool ValidatePropertyValue(uint32_t id, uint64_t value);
+
+  // Returns true iff SetPossibleValuesForEnumProperty() has been called for
+  // `prop_id`.
+  bool IsPropertyValueEnum(uint32_t prop_id) const;
+
+  // Fills `property->count_enums` and `property->enums` with the possible enum
+  // values for the property (provided to a previous call to
+  // SetPossibleValuesForEnumProperty()). It's assumed that `property->id` has
+  // the correct property ID.
+  void FillPossibleValuesForEnumProperty(drmModePropertyRes* property) const;
 
   int set_crtc_call_count_ = 0;
   int add_framebuffer_call_count_ = 0;

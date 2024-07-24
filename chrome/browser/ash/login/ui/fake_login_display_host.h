@@ -42,7 +42,6 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void CancelUserAdding() override;
   void StartSignInScreen() override;
   void StartKiosk(const KioskAppId& kiosk_app_id, bool is_auto_launch) override;
-  void AttemptShowEnableConsumerKioskScreen() override;
   void CompleteLogin(const UserContext& user_context) override;
   void OnGaiaScreenReady() override;
   void SetDisplayEmail(const std::string& email) override;

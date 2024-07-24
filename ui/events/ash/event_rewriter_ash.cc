@@ -113,7 +113,7 @@ void RecordAutoRepeatUsageMetric(
 
   // Only want to record metrics if its a repeated keypressed event.
   if (!(auto_repeat_event->flags() & EF_IS_REPEAT) ||
-      !(auto_repeat_event->type() & EventType::kKeyPressed)) {
+      auto_repeat_event->type() != EventType::kKeyPressed) {
     return;
   }
 

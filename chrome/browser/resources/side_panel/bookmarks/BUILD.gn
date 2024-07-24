@@ -29,6 +29,7 @@ build_webui("build") {
     "power_bookmarks_drag_manager.ts",
     "power_bookmark_row.html.ts",
     "power_bookmark_row.ts",
+    "power_bookmarks_utils.ts",
     "power_bookmarks_service.ts",
   ]
 

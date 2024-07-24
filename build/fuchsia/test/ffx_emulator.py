@@ -30,7 +30,6 @@ class FfxEmulator(AbstractContextManager):
                 self._product = 'terminal.qemu-arm64'
 
         self._enable_graphics = args.enable_graphics
-        self._hardware_gpu = args.hardware_gpu
         self._logs_dir = args.logs_dir
         self._with_network = args.with_network
         if args.everlasting:
@@ -64,8 +63,6 @@ class FfxEmulator(AbstractContextManager):
         configs = ['emu.start.timeout=300']
         if not self._enable_graphics:
             emu_command.append('-H')
-        if self._hardware_gpu:
-            emu_command.append('--gpu')
         if self._logs_dir:
             emu_command.extend(
                 ('-l', os.path.join(self._logs_dir, 'emulator_log')))

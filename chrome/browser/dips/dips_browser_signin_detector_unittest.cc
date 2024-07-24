@@ -161,7 +161,7 @@ TEST_F(BrowserSigninDetectorServiceTest, NonEnterpriseAccount) {
   signin::AccountManagedStatusFinder finder(identity_manager(), account_info,
                                             base::DoNothing());
   EXPECT_EQ(finder.GetOutcome(),
-            signin::AccountManagedStatusFinder::Outcome::kNonEnterprise);
+            signin::AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown);
 
   // There should be a recorded interaction for the`kIdentityProviderDomain`.
   auto dips_state =

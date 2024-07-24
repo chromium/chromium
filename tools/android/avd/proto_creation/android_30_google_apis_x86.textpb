@@ -38,6 +38,6 @@ avd_settings {
 min_sdk: 30
 additional_apk {
   package_name: "chrome_internal/third_party/google3/apks/gmscore/x86"
-  version: "5MEIDFI0DLU5TA5od1JVi-atwyU0QBR__Ouytc078rYC" # 24.23.35
+  version: "-rCzVFgS21dIKhLDnLwcldFij4xnnS0scaKnB44WlfoC" # 24.26.32
   dest_path: "android_30_google_apis_x86/gmscore_apks"
 }

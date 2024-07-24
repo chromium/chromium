@@ -4,10 +4,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "components/password_manager/core/common/password_manager_features.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/constants.h"
@@ -127,15 +124,6 @@ void OpensPasswordsInOtherApps() {
   _passwordAutoFillStatusSwizzler.reset();
   // Remove mock to keep the app in the same state as before running the test.
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  config.features_enabled.push_back(
-      password_manager::features::kIOSPasswordAuthOnEntryV2);
-
-  return config;
 }
 
 #pragma mark - helper functions

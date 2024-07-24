@@ -47,6 +47,9 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   PickerListItemView& operator=(const PickerListItemView&) = delete;
   ~PickerListItemView() override;
 
+  // PickerItemView:
+  void SetItemState(ItemState item_state) override;
+
   void SetLeadingIcon(const ui::ImageModel& icon,
                       std::optional<gfx::Size> icon_size = std::nullopt);
 
@@ -89,6 +92,9 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   void UpdateIconWithPreview();
   std::u16string GetAccessibilityLabel() const;
   void UpdateAccessibleName();
+
+  void ShowPreview();
+  void HidePreview();
 
   raw_ptr<views::ImageView> leading_icon_view_ = nullptr;
 

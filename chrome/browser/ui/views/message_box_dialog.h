@@ -34,6 +34,8 @@ class MessageBoxDialog : public views::DialogDelegate,
       const std::u16string& checkbox_text,
       MessageBoxResultCallback callback = MessageBoxResultCallback());
 
+  static views::Widget* GetLastMessageBoxWidgetForTesting();
+
   // views::DialogDelegate:
   std::u16string GetWindowTitle() const override;
   views::View* GetContentsView() override;

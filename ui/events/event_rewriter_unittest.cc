@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -72,7 +73,7 @@ std::unique_ptr<Event> CreateEventForType(EventType type) {
       return std::make_unique<ScrollEvent>(
           type, gfx::Point(), base::TimeTicks::Now(), 0, 0, 0, 0, 0, 0);
     default:
-      NOTREACHED_IN_MIGRATION() << type;
+      NOTREACHED_IN_MIGRATION() << base::to_underlying(type);
       return nullptr;
   }
 }

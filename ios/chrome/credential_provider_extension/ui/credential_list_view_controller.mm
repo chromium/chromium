@@ -303,11 +303,13 @@ UIColor* BackgroundColor() {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     return;
   }
-  UpdateUMACountForKey(app_group::kCredentialExtensionPasswordUseCount);
   id<Credential> credential = [self credentialForIndexPath:indexPath];
   if (!credential) {
     return;
   }
+  UpdateUMACountForKey(credential.isPasskey
+                           ? app_group::kCredentialExtensionPasskeyUseCount
+                           : app_group::kCredentialExtensionPasswordUseCount);
   [self.delegate userSelectedCredential:credential];
 }
 

@@ -390,6 +390,9 @@ extern const char kAutofillSyncEwalletAccountsName[];
 extern const char kAutofillSyncEwalletAccountsDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+extern const char kAutofillUnmaskCardRequestTimeoutName[];
+extern const char kAutofillUnmaskCardRequestTimeoutDescription[];
+
 extern const char kAutofillUploadCardRequestTimeoutName[];
 extern const char kAutofillUploadCardRequestTimeoutDescription[];
 
@@ -681,6 +684,9 @@ extern const char kAccessibilityCaretBlinkIntervalSettingDescription[];
 extern const char kAccessibilityDisableTrackpadName[];
 extern const char kAccessibilityDisableTrackpadDescription[];
 
+extern const char kAccessibilityFlashScreenFeatureName[];
+extern const char kAccessibilityFlashScreenFeatureDescription[];
+
 extern const char kAccessibilityOverscrollSettingFeatureName[];
 extern const char kAccessibilityOverscrollSettingFeatureDescription[];
 
@@ -829,6 +835,9 @@ extern const char kEnableGamepadMultitouchDescription[];
 
 extern const char kEnableGamepadTriggerRumbleName[];
 extern const char kEnableGamepadTriggerRumbleDescription[];
+
+extern const char kEnableGooglePlayProtectPromptName[];
+extern const char kEnableGooglePlayProtectPromptDescription[];
 
 extern const char kEnableIsolatedWebAppsName[];
 extern const char kEnableIsolatedWebAppsDescription[];
@@ -1818,6 +1827,9 @@ extern const char kQuickDeleteForAndroidDescription[];
 extern const char kQuickDeleteAndroidFollowupName[];
 extern const char kQuickDeleteAndroidFollowupDescription[];
 
+extern const char kQuickDeleteAndroidSurveyName[];
+extern const char kQuickDeleteAndroidSurveyDescription[];
+
 extern const char kQuickShareV2Name[];
 extern const char kQuickShareV2Description[];
 
@@ -1883,9 +1895,6 @@ extern const char kSameAppWindowCycleDescription[];
 
 extern const char kTestThirdPartyCookiePhaseoutName[];
 extern const char kTestThirdPartyCookiePhaseoutDescription[];
-
-extern const char kThirdPartyStoragePartitioningName[];
-extern const char kThirdPartyStoragePartitioningDescription[];
 
 extern const char kScrollableTabStripFlagId[];
 extern const char kScrollableTabStripName[];
@@ -2453,9 +2462,6 @@ extern const char kAndroidTabDeclutterDescription[];
 
 extern const char kAndroidTabDeclutterArchiveAllButActiveTabName[];
 extern const char kAndroidTabDeclutterArchiveAllButActiveTabDescription[];
-
-extern const char kAndroidTabGroupStableIdsName[];
-extern const char kAndroidTabGroupStableIdsDescription[];
 
 extern const char kAppSpecificHistoryName[];
 extern const char kAppSpecificHistoryDescription[];
@@ -4271,9 +4277,6 @@ extern const char kPerformantSplitViewResizingDescription[];
 
 extern const char kPhoneHubCallNotificationName[];
 extern const char kPhoneHubCallNotificationDescription[];
-
-extern const char kPhoneHubOnboardingNotifierRevampName[];
-extern const char kPhoneHubOnboardingNotifierRevampDescription[];
 
 extern const char kPreferDcheckName[];
 extern const char kPreferDcheckDescription[];

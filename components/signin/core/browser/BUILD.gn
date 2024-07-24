@@ -16,6 +16,8 @@ static_library("browser") {
     "about_signin_internals.h",
     "account_investigator.cc",
     "account_investigator.h",
+    "account_management_type_metrics_recorder.cc",
+    "account_management_type_metrics_recorder.h",
     "account_reconcilor.cc",
     "account_reconcilor.h",
     "account_reconcilor_delegate.cc",

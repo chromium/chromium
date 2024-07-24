@@ -16,6 +16,7 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/magic_boost",
+  "+chrome/browser/history/history_service_factory.h",
   "+chrome/browser/manta",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser_finder.h",

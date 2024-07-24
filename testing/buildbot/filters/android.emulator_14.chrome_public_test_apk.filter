@@ -49,3 +49,8 @@
 -org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.testContinueButtonWithChildAccount_replaceSyncWithSigninPromosEnabled
 -org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.testFragmentSigninWhenAddedAccountIsNotYetAvailable
 -org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.testSigninWithDefaultAccount
+
+# crbug.com/326040498
+-org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionOther
+-org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionPassword
+-org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionPasswordAndOther

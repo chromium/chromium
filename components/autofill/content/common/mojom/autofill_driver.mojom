@@ -90,11 +90,8 @@ interface AutofillDriver {
   //
   // `field_id` must identify a field of `form`. This is enforced by
   // ContentAutofillDriver.
-  //
-  // TODO(crbug.com/40726656): Remove `had_interacted_form` when cleaning up
-  // `kAutofillNewFocusEvents`.
   FocusOnFormField(FormData form, FieldRendererId field_id);
-  FocusOnNonFormField(bool had_interacted_form);
+  FocusOnNonFormField();
 
   // Queries the browser for Autofill suggestions for a form input field.
   // For autofill this means asking the user which values to fill.

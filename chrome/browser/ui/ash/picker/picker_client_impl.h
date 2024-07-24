@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ui/ash/picker/picker_link_suggester.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -87,6 +88,10 @@ class PickerClientImpl
     ranker_manager_ = std::move(ranker_manager);
   }
 
+  PickerLinkSuggester* get_link_suggester_for_test() {
+    return link_suggester_.get();
+  }
+
  private:
   // Implements `AppListControllerDelegate` with empty methods. Used only for
   // constructing search engine providers.
@@ -116,10 +121,6 @@ class PickerClientImpl
       CrosSearchResultsCallback callback,
       ash::AppListSearchResultType result_type,
       std::vector<std::unique_ptr<ChromeSearchResult>> results);
-  void OnZeroStateLinksSearchResultsUpdated(
-      SuggestedLinksCallback callback,
-      ash::AppListSearchResultType result_type,
-      std::vector<std::unique_ptr<ChromeSearchResult>> results);
   void SetProfileByUser(const user_manager::User* user);
   void SetProfile(Profile* profile);
 
@@ -145,11 +146,7 @@ class PickerClientImpl
   std::vector<app_list::CategoryMetadata> ranker_categories_;
 
   std::unique_ptr<PickerFileSuggester> file_suggester_;
-
-  // A dedicated cros search engine for zero state results for links.
-  // TODO: b/330938446 - Replace with proper zero-state logic.
-  std::unique_ptr<app_list::SearchEngine> zero_state_links_search_engine_;
-
+  std::unique_ptr<PickerLinkSuggester> link_suggester_;
   std::unique_ptr<PickerThumbnailLoader> thumbnail_loader_;
 
   base::ScopedObservation<user_manager::UserManager,

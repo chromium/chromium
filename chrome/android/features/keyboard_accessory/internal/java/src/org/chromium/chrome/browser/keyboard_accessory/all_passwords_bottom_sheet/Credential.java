@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
+
 /**
  * This class holds the data used to represent a selectable credential in the
  * AllPasswordsBottomSheet.
@@ -22,15 +25,16 @@ class Credential {
      * @param originUrl Origin URL shown to the user in case this credential is a PSL match.
      * @param isAndroidCredential Indicating whether it is an Android credential.
      * @param appDisplayName The display name (e.g. Play Store name) of the Android application if
-     *         it is an Android credential or app package name if app name is not available.
+     *     it is an Android credential or app package name if app name is not available.
      */
+    @CalledByNative
     Credential(
-            String username,
-            String password,
-            String formattedUsername,
-            String originUrl,
+            @JniType("std::u16string") String username,
+            @JniType("std::u16string") String password,
+            @JniType("std::u16string") String formattedUsername,
+            @JniType("std::string") String originUrl,
             boolean isAndroidCredential,
-            String appDisplayName) {
+            @JniType("std::string") String appDisplayName) {
         assert originUrl != null : "Credential origin is null! Pass an empty one instead.";
         mUsername = username;
         mPassword = password;

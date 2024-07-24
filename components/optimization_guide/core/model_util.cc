@@ -133,6 +133,8 @@ std::string GetStringNameForOptimizationTarget(
       return "URLVisitResumptionRanker";
     case proto::OPTIMIZATION_TARGET_CAMERA_BACKGROUND_SEGMENTATION:
       return "CameraBackgroundSegmentation";
+    case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_SEARCH:
+      return "ModelExecutionFeatureHistorySearch";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.

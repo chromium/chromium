@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
@@ -1431,7 +1430,7 @@ blink::mojom::PrivateAggregationOperationDetailsPtr
 SharedStorageWorkletHost::MaybeConstructPrivateAggregationOperationDetails(
     const blink::mojom::PrivateAggregationConfigPtr&
         private_aggregation_config) {
-  CHECK(browser_context_, base::NotFatalUntil::M128);
+  CHECK(browser_context_);
   CHECK(private_aggregation_config);
 
   if (!blink::ShouldDefinePrivateAggregationInSharedStorage()) {
@@ -1440,7 +1439,7 @@ SharedStorageWorkletHost::MaybeConstructPrivateAggregationOperationDetails(
 
   PrivateAggregationManager* private_aggregation_manager =
       PrivateAggregationManager::GetManager(*browser_context_);
-  CHECK(private_aggregation_manager, base::NotFatalUntil::M128);
+  CHECK(private_aggregation_manager);
 
   blink::mojom::PrivateAggregationOperationDetailsPtr pa_operation_details =
       blink::mojom::PrivateAggregationOperationDetails::New(

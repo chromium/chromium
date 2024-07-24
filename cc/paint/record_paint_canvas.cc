@@ -415,11 +415,13 @@ InspectableRecordPaintCanvas::InspectableRecordPaintCanvas(
 InspectableRecordPaintCanvas::~InspectableRecordPaintCanvas() = default;
 
 int InspectableRecordPaintCanvas::save() {
+  device_clip_bounds_.reset();
   return CheckSaveCount(RecordPaintCanvas::save(), canvas_.save());
 }
 
 int InspectableRecordPaintCanvas::saveLayer(const PaintFlags& flags) {
   SkPaint paint = flags.ToSkPaint();
+  device_clip_bounds_.reset();
   return CheckSaveCount(RecordPaintCanvas::saveLayer(flags),
                         canvas_.saveLayer(nullptr, &paint));
 }
@@ -427,17 +429,20 @@ int InspectableRecordPaintCanvas::saveLayer(const PaintFlags& flags) {
 int InspectableRecordPaintCanvas::saveLayer(const SkRect& bounds,
                                             const PaintFlags& flags) {
   SkPaint paint = flags.ToSkPaint();
+  device_clip_bounds_.reset();
   return CheckSaveCount(RecordPaintCanvas::saveLayer(bounds, flags),
                         canvas_.saveLayer(&bounds, &paint));
 }
 
 int InspectableRecordPaintCanvas::saveLayerAlphaf(float alpha) {
+  device_clip_bounds_.reset();
   return CheckSaveCount(RecordPaintCanvas::saveLayerAlphaf(alpha),
                         canvas_.saveLayerAlphaf(nullptr, alpha));
 }
 
 int InspectableRecordPaintCanvas::saveLayerAlphaf(const SkRect& bounds,
                                                   float alpha) {
+  device_clip_bounds_.reset();
   return CheckSaveCount(RecordPaintCanvas::saveLayerAlphaf(bounds, alpha),
                         canvas_.saveLayerAlphaf(&bounds, alpha));
 }
@@ -446,6 +451,7 @@ int InspectableRecordPaintCanvas::saveLayerFilters(
     base::span<sk_sp<PaintFilter>> filters,
     const PaintFlags& flags) {
   SkPaint paint = flags.ToSkPaint();
+  device_clip_bounds_.reset();
   return CheckSaveCount(RecordPaintCanvas::saveLayerFilters(filters, flags),
                         // Don't bother copying the filter span, filters don't
                         // impact the current clip or CTM.
@@ -455,6 +461,7 @@ int InspectableRecordPaintCanvas::saveLayerFilters(
 void InspectableRecordPaintCanvas::restore() {
   RecordPaintCanvas::restore();
   canvas_.restore();
+  device_clip_bounds_.reset();
   DCHECK_EQ(getSaveCount(), canvas_.getSaveCount());
 }
 
@@ -468,26 +475,31 @@ int InspectableRecordPaintCanvas::CheckSaveCount(int super_prev_save_count,
 void InspectableRecordPaintCanvas::translate(SkScalar dx, SkScalar dy) {
   RecordPaintCanvas::translate(dx, dy);
   canvas_.translate(dx, dy);
+  device_clip_bounds_.reset();
 }
 
 void InspectableRecordPaintCanvas::scale(SkScalar sx, SkScalar sy) {
   RecordPaintCanvas::scale(sx, sy);
   canvas_.scale(sx, sy);
+  device_clip_bounds_.reset();
 }
 
 void InspectableRecordPaintCanvas::rotate(SkScalar degrees) {
   RecordPaintCanvas::rotate(degrees);
   canvas_.rotate(degrees);
+  device_clip_bounds_.reset();
 }
 
 void InspectableRecordPaintCanvas::concat(const SkM44& matrix) {
   RecordPaintCanvas::concat(matrix);
   canvas_.concat(matrix);
+  device_clip_bounds_.reset();
 }
 
 void InspectableRecordPaintCanvas::setMatrix(const SkM44& matrix) {
   RecordPaintCanvas::setMatrix(matrix);
   canvas_.setMatrix(matrix);
+  device_clip_bounds_.reset();
 }
 
 void InspectableRecordPaintCanvas::clipRect(const SkRect& rect,
@@ -495,6 +507,7 @@ void InspectableRecordPaintCanvas::clipRect(const SkRect& rect,
                                             bool antialias) {
   RecordPaintCanvas::clipRect(rect, op, antialias);
   canvas_.clipRect(rect, op, antialias);
+  device_clip_bounds_.reset();
 }
 
 void InspectableRecordPaintCanvas::clipRRectInternal(const SkRRect& rrect,
@@ -502,6 +515,7 @@ void InspectableRecordPaintCanvas::clipRRectInternal(const SkRRect& rrect,
                                                      bool antialias) {
   RecordPaintCanvas::clipRRectInternal(rrect, op, antialias);
   canvas_.clipRRect(rrect, op, antialias);
+  device_clip_bounds_.reset();
 }
 
 void InspectableRecordPaintCanvas::clipPathInternal(
@@ -511,6 +525,7 @@ void InspectableRecordPaintCanvas::clipPathInternal(
     UsePaintCache use_paint_cache) {
   RecordPaintCanvas::clipPathInternal(path, op, antialias, use_paint_cache);
   canvas_.clipPath(path, op, antialias);
+  device_clip_bounds_.reset();
 }
 
 SkImageInfo InspectableRecordPaintCanvas::imageInfo() const {
@@ -522,7 +537,15 @@ bool InspectableRecordPaintCanvas::getLocalClipBounds(SkRect* bounds) const {
 }
 
 bool InspectableRecordPaintCanvas::getDeviceClipBounds(SkIRect* bounds) const {
-  return canvas_.getDeviceClipBounds(bounds);
+  if (device_clip_bounds_) {
+    *bounds = *device_clip_bounds_;
+    return true;
+  }
+  if (canvas_.getDeviceClipBounds(bounds)) {
+    device_clip_bounds_.emplace(*bounds);
+    return true;
+  }
+  return false;
 }
 
 SkM44 InspectableRecordPaintCanvas::getLocalToDevice() const {

@@ -56,9 +56,12 @@ class ZWPTextInputWrapperV3 : public ZWPTextInputWrapper {
 
  private:
   struct ContentType {
+    constexpr ContentType() = default;
+    constexpr ContentType(uint32_t content_hint, uint32_t content_purpose)
+        : content_hint(content_hint), content_purpose(content_purpose) {}
     bool operator==(const ContentType& other) const = default;
-    uint32_t content_hint;
-    uint32_t content_purpose;
+    uint32_t content_hint = ZWP_TEXT_INPUT_V3_CONTENT_HINT_NONE;
+    uint32_t content_purpose = ZWP_TEXT_INPUT_V3_CONTENT_PURPOSE_NORMAL;
   };
 
   void SendCursorRect(const gfx::Rect& rect);

@@ -20,6 +20,8 @@ static_library("keyboard") {
     "chrome_keyboard_web_contents.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/constants",

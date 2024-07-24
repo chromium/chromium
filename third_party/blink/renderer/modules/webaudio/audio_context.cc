@@ -1078,6 +1078,10 @@ void AudioContext::NotifySetSinkIdIsDone(
     SetContextState(kRunning);
     sink_transition_flag_was_running_ = false;
   }
+
+  // The sink ID was given and has been accepted; it will be used as an output
+  // audio device.
+  is_sink_id_given_ = true;
 }
 
 void AudioContext::InitializeMediaDeviceService() {
@@ -1132,6 +1136,8 @@ void AudioContext::DevicesEnumerated(
 
 void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
                                     const Vector<WebMediaDeviceInfo>& devices) {
+  DCHECK(IsMainThread());
+
   if (device_type == mojom::blink::MediaDeviceType::kMediaAudioOuput) {
     output_device_ids_.clear();
     for (auto device : devices) {
@@ -1144,27 +1150,34 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
     }
   }
 
-  // On some platforms, unplugging the current audio device doesn't
-  // automatically fallback to the default audio device. When the current
-  // `sink_descriptor_` becomes invalid here, we need to manually call
-  // `SetSinkDescriptor()` to fallback to the default audio output
-  // device to keep the audio playing.
+  // If the device in use was disconnected (i.e. the current `sink_descriptor_`
+  // is invalid), we need to decide how to handle the rendering.
   if (!IsValidSinkDescriptor(sink_descriptor_)) {
-    GetExecutionContext()->AddConsoleMessage(
+    if (is_sink_id_given_) {
+      // If the user's intent is to select a specific output device, do not
+      // fallback to the default audio device. Invoke `RenderError` routine
+      // instead.
+      HandleRenderError();
+    } else {
+      // If there was no sink selected, manually call `SetSinkDescriptor()` to
+      // fallback to the default audio output device to keep the audio playing.
+      GetExecutionContext()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kOther,
             mojom::ConsoleMessageLevel::kInfo,
             "[AudioContext] Fallback to the default device due to an invalid"
             " audio device change. ("
             + String(sink_descriptor_.SinkId().Utf8()) + ")"));
-    sink_descriptor_ = WebAudioSinkDescriptor(
-        String(""),
-        To<LocalDOMWindow>(GetExecutionContext())->GetLocalFrameToken());
-    auto* destination_node = GetRealtimeAudioDestinationNode();
-    if (destination_node) {
-      destination_node->SetSinkDescriptor(sink_descriptor_, base::DoNothing());
+      sink_descriptor_ = WebAudioSinkDescriptor(
+          String(""),
+          To<LocalDOMWindow>(GetExecutionContext())->GetLocalFrameToken());
+      auto* destination_node = GetRealtimeAudioDestinationNode();
+      if (destination_node) {
+        destination_node->SetSinkDescriptor(sink_descriptor_,
+                                            base::DoNothing());
+      }
+      UpdateV8SinkId();
     }
-    UpdateV8SinkId();
   }
 }
 

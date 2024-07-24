@@ -8,6 +8,7 @@
 
 #include "base/callback_list.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -32,7 +33,13 @@ namespace content {
 class SpareRenderProcessHostManagerTest : public ContentBrowserTest,
                                           public RenderProcessHostObserver {
  public:
-  SpareRenderProcessHostManagerTest() = default;
+  SpareRenderProcessHostManagerTest() {
+    // The AndroidWarmUpSpareRendererWithTimeout will stop
+    // PrepareForFutureRequests from creating a delayed process. Disable so that
+    // we can test the defer behavior.
+    feature_list_.InitAndDisableFeature(
+        features::kAndroidWarmUpSpareRendererWithTimeout);
+  }
 
  protected:
   void SetUpOnMainThread() override {
@@ -57,6 +64,16 @@ class SpareRenderProcessHostManagerTest : public ContentBrowserTest,
     observation_.Observe(rph);
   }
 
+  void CreateSpareRendererWithoutTimeout() {
+    SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
+        ShellContentBrowserClient::Get()->browser_context());
+  }
+
+  void CreateSpareRendererWithTimeout(base::TimeDelta timeout) {
+    SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
+        ShellContentBrowserClient::Get()->browser_context(), timeout);
+  }
+
   // RenderProcessHostObserver:
   void RenderProcessExited(RenderProcessHost* host,
                            const ChildProcessTerminationInfo& info) override {
@@ -73,6 +90,7 @@ class SpareRenderProcessHostManagerTest : public ContentBrowserTest,
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
       observation_{this};
   base::OnceClosure process_exit_callback_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // This test verifies the creation of a deferred spare renderer. It checks two
@@ -137,6 +155,44 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
       "BrowserRenderProcessHost.SpareProcessDelayTime", 1);
 }
 
+// The test verifies the deferred render process creation is only
+// overridden when WarmupSpareRenderProcessHost is called without
+// a timeout
+IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
+                       WarmupSpareRenderProcessHostDuringDefer) {
+  constexpr base::TimeDelta kDelay = base::Seconds(1);
+
+  base::HistogramTester histogram_tester;
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      new base::TestMockTimeTaskRunner();
+  auto& manager = SpareRenderProcessHostManager::GetInstance();
+  manager.SetDeferTimerTaskRunnerForTesting(task_runner);
+  auto* browser_context = ShellContentBrowserClient::Get()->browser_context();
+
+  // Check that a delayed spare render host creation will be cancelled
+  // if WarmupSpareRenderProcessHost is called without a timeout.
+  manager.PrepareForFutureRequests(browser_context, kDelay);
+  manager.WarmupSpareRenderProcessHost(browser_context);
+  EXPECT_NE(manager.spare_render_process_host(), nullptr);
+  histogram_tester.ExpectTotalCount(
+      "BrowserRenderProcessHost.SpareProcessDelayTime", 1);
+  // Reset the spare renderer manager.
+  manager.CleanupSpareRenderProcessHost();
+  EXPECT_EQ(manager.spare_render_process_host(), nullptr);
+
+  // Check that a delayed spare render host creation will not be
+  // cancelled if WarmupSpareRenderProcessHost is called with
+  // a timeout.
+  constexpr base::TimeDelta kTimeout = base::Milliseconds(500);
+  manager.PrepareForFutureRequests(browser_context, kDelay);
+  manager.WarmupSpareRenderProcessHost(browser_context, kTimeout);
+  EXPECT_NE(manager.spare_render_process_host(), nullptr);
+  task_runner->FastForwardBy(kTimeout);
+  EXPECT_EQ(manager.spare_render_process_host(), nullptr);
+  task_runner->FastForwardBy(kDelay - kTimeout);
+  EXPECT_NE(manager.spare_render_process_host(), nullptr);
+}
+
 IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
                        SpareRenderProcessHostTaken) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -166,6 +222,111 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
     EXPECT_EQ(nullptr,
               RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
   }
+}
+
+// Verifies that creating a spare renderer without a timeout
+// will create a spare renderer and destroy it after the timeout.
+IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
+                       CreateWithTimeoutDestroyedAfterTimeout) {
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      new base::TestMockTimeTaskRunner();
+  SpareRenderProcessHostManager::GetInstance()
+      .SetDeferTimerTaskRunnerForTesting(task_runner);
+  base::TimeDelta kTimeout = base::Seconds(1);
+
+  // Setup a spare renderer with a timeout
+  CreateSpareRendererWithTimeout(kTimeout);
+  EXPECT_NE(nullptr,
+            RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
+  // After the timeout the spare renderer shall be destroyed
+  task_runner->FastForwardBy(kTimeout);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(nullptr,
+            RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
+}
+
+// Verifies that creating a spare renderer without a timeout
+// shall compare the timeout with the current renderer.
+IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
+                       MultipleCreateOverrideBehavior) {
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      new base::TestMockTimeTaskRunner();
+  SpareRenderProcessHostManager::GetInstance()
+      .SetDeferTimerTaskRunnerForTesting(task_runner);
+  base::TimeDelta kTimeoutShort = base::Seconds(1);
+  base::TimeDelta kTimeoutLong = base::Seconds(2);
+  auto& manager = SpareRenderProcessHostManager::GetInstance();
+
+  // Setup a spare renderer without a timeout
+  CreateSpareRendererWithoutTimeout();
+  auto* created_renderer =
+      RenderProcessHostImpl::GetSpareRenderProcessHostForTesting();
+  EXPECT_NE(nullptr, created_renderer);
+  // Creating a spare renderer with a timeout shall not override
+  // the timeout.
+  CreateSpareRendererWithTimeout(kTimeoutShort);
+  task_runner->FastForwardBy(kTimeoutShort);
+  base::RunLoop().RunUntilIdle();
+  // Verify that the spare render process itself does not get recreated
+  EXPECT_EQ(created_renderer,
+            RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
+  manager.CleanupSpareRenderProcessHost();
+  EXPECT_EQ(nullptr,
+            RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
+
+  // Setup a spare renderer with a timeout
+  CreateSpareRendererWithTimeout(kTimeoutShort);
+  created_renderer =
+      RenderProcessHostImpl::GetSpareRenderProcessHostForTesting();
+  EXPECT_NE(nullptr, created_renderer);
+  // Creating a spare renderer without a timeout cancels the timer.
+  CreateSpareRendererWithoutTimeout();
+  task_runner->FastForwardBy(kTimeoutShort);
+  base::RunLoop().RunUntilIdle();
+  // Verify that the spare render process itself does not get recreated
+  EXPECT_EQ(created_renderer,
+            RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
+  manager.CleanupSpareRenderProcessHost();
+  EXPECT_EQ(nullptr,
+            RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
+
+  // First create a spare renderer with a long timeout
+  CreateSpareRendererWithTimeout(kTimeoutLong);
+  created_renderer =
+      RenderProcessHostImpl::GetSpareRenderProcessHostForTesting();
+  EXPECT_NE(nullptr, created_renderer);
+  // Creating a spare renderer with a short timeout shall not override
+  // the timeout.
+  CreateSpareRendererWithTimeout(kTimeoutShort);
+  task_runner->FastForwardBy(kTimeoutShort);
+  base::RunLoop().RunUntilIdle();
+  // Verify that the spare render process itself does not get recreated
+  EXPECT_EQ(created_renderer,
+            RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
+  // The spare renderer shall be destroyed after the long timeout.
+  task_runner->FastForwardBy(kTimeoutLong - kTimeoutShort);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(nullptr,
+            RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
+
+  // First create a spare renderer with a short timeout
+  CreateSpareRendererWithTimeout(kTimeoutShort);
+  created_renderer =
+      RenderProcessHostImpl::GetSpareRenderProcessHostForTesting();
+  EXPECT_NE(nullptr, created_renderer);
+  // Creating a spare renderer with a long timeout shall override
+  // the timeout.
+  CreateSpareRendererWithTimeout(kTimeoutLong);
+  task_runner->FastForwardBy(kTimeoutShort);
+  base::RunLoop().RunUntilIdle();
+  // Verify that the spare render process itself does not get recreated
+  EXPECT_EQ(created_renderer,
+            RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
+  // The spare renderer shall be destroyed after the long timeout.
+  task_runner->FastForwardBy(kTimeoutLong - kTimeoutShort);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(nullptr,
+            RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
@@ -369,6 +530,25 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
   content::RenderProcessHost::WarmupSpareRenderProcessHost(
       shell()->web_contents()->GetBrowserContext());
   shell()->web_contents()->Close();
+
+  // The verification is that there are no DCHECKs or UaF anywhere during test
+  // tear down.
+}
+
+// Verifies that the destroy timeout triggered after closing
+// is correctly handled.
+IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
+                       DestroyTimeoutDuringClosing) {
+  base::TimeDelta kTimeout = base::Seconds(1);
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      new base::TestMockTimeTaskRunner();
+  SpareRenderProcessHostManager::GetInstance()
+      .SetDeferTimerTaskRunnerForTesting(task_runner);
+  SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
+      shell()->web_contents()->GetBrowserContext(), kTimeout);
+  shell()->web_contents()->Close();
+  task_runner->FastForwardBy(kTimeout);
+  base::RunLoop().RunUntilIdle();
 
   // The verification is that there are no DCHECKs or UaF anywhere during test
   // tear down.

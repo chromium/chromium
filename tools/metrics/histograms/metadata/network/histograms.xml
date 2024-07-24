@@ -3688,6 +3688,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.WiFi.Band6GHzSupport" enum="Band6GHzSupport"
+    expires_after="2024-12-31">
+  <owner>rmekonnen@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network metric that tracks the 6GHz Band support of access points
+    that devices connect to. Results are recorded every time a device connects
+    to an access point.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.WiFi.BSSTransitionManagementSupport"
     enum="WiFiBSSTransitionManagementSupport" expires_after="2024-12-31">
   <owner>matthewmwang@chromium.org</owner>

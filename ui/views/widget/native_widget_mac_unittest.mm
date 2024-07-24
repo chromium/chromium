@@ -318,7 +318,7 @@ class MouseTrackingWidget : public Widget {
   }
 
  private:
-  std::map<int, int> counts_;
+  std::map<ui::EventType, int> counts_;
 };
 
 // Test visibility states triggered externally.

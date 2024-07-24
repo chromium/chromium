@@ -55,9 +55,9 @@ TEST(PolicyEngineTest, OpcodeConstraints) {
   EXPECT_FALSE(__is_polymorphic(PolicyOpcode));
   // Keep developers from adding smarts to the opcodes which should
   // be pretty much a bag of bytes with a OO interface.
-  EXPECT_TRUE(__has_trivial_destructor(PolicyOpcode));
-  EXPECT_TRUE(__has_trivial_constructor(PolicyOpcode));
-  EXPECT_TRUE(__has_trivial_copy(PolicyOpcode));
+  EXPECT_TRUE(__is_trivially_destructible(PolicyOpcode));
+  EXPECT_TRUE(__is_trivially_constructible(PolicyOpcode));
+  EXPECT_TRUE(__is_trivially_copyable(PolicyOpcode));
 }
 
 TEST(PolicyEngineTest, TrueFalseOpcodes) {

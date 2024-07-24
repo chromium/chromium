@@ -24,6 +24,8 @@ static_library("assistant") {
     "search_and_assistant_enabled_checker.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/components/arc:arc_base_utils",
     "//ash/components/arc/mojom",

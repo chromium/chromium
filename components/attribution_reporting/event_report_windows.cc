@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
@@ -206,6 +207,10 @@ EventReportWindows::FromJSON(const base::Value::Dict& registration,
                              SourceType source_type) {
   const base::Value* singular_window = registration.Find(kEventReportWindow);
   const base::Value* multiple_windows = registration.Find(kEventReportWindows);
+
+  base::UmaHistogramBoolean("Conversions.LegacyEventReportWindow",
+                            !!singular_window);
+
   if (singular_window && multiple_windows) {
     return base::unexpected(
         SourceRegistrationError::kBothEventReportWindowFieldsFound);

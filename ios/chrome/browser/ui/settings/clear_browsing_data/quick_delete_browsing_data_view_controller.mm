@@ -127,6 +127,14 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [self updateSnapshotForItemIdentifier:ItemIdentifierAutofill];
 }
 
+- (void)deletionInProgress {
+  NOTREACHED_NORETURN();
+}
+
+- (void)deletionFinished {
+  NOTREACHED_NORETURN();
+}
+
 #pragma mark - Private
 
 // Returns the cancel button on the navigation bar.

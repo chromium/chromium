@@ -62,6 +62,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_challenge_key_handler.h"
@@ -1238,7 +1239,7 @@ class SAMLPolicyTest : public SamlTestBase {
 
   std::string GetCookieValue(const std::string& name);
 
-  void GetCookies();
+  void GetCookies(Profile* profile = nullptr);
 
  protected:
   NiceMock<policy::MockConfigurationPolicyProvider> provider_;
@@ -1479,10 +1480,11 @@ std::string SAMLPolicyTest::GetCookieValue(const std::string& name) {
   return std::string();
 }
 
-void SAMLPolicyTest::GetCookies() {
-  Profile* profile = ProfileHelper::Get()->GetProfileByUser(
-      user_manager::UserManager::Get()->GetActiveUser());
-  ASSERT_TRUE(profile);
+void SAMLPolicyTest::GetCookies(Profile* profile) {
+  if (!profile) {
+    profile = ProfileManager::GetActiveUserProfile();
+    ASSERT_TRUE(profile);
+  }
   base::RunLoop run_loop;
   profile->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
@@ -1694,6 +1696,27 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLChangeAccount) {
   // Verify Gaia path used by the Gaia screen.
   EXPECT_EQ(GaiaPath(), WizardContext::GaiaPath::kSamlRedirect);
 
+  // Adding a cookie to the signin profile.
+  // After the "Enter Google Account info" button is pressed, all the
+  // cookies must be deleted.
+  net::CookieOptions options;
+  options.set_include_httponly();
+  auto* profile = ProfileHelper::Get()->GetSigninProfile();
+  ASSERT_TRUE(profile);
+  profile->GetDefaultStoragePartition()
+      ->GetCookieManagerForBrowserProcess()
+      ->SetCanonicalCookie(
+          *net::CanonicalCookie::CreateSanitizedCookie(
+              fake_saml_idp()->GetSamlPageUrl(), kSAMLIdPCookieName,
+              kSAMLIdPCookieValue1, ".example.com", /*path=*/std::string(),
+              /*creation_time=*/base::Time(),
+              /*expiration_time=*/base::Time(),
+              /*last_access_time=*/base::Time(), /*secure=*/true,
+              /*http_only=*/false, net::CookieSameSite::NO_RESTRICTION,
+              net::COOKIE_PRIORITY_DEFAULT,
+              /*partition_key=*/std::nullopt, /*status=*/nullptr),
+          fake_saml_idp()->GetSamlPageUrl(), options, base::DoNothing());
+
   // Click the "Enter Google Account info" button on the SAML page.
   test::OobeJS().TapOnPath(kChangeIdPButton);
 
@@ -1704,11 +1727,10 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLChangeAccount) {
   test::OobeJS().ExpectAttributeEQ("isSamlAuthFlowForTesting()",
                                    {"gaia-signin"}, false);
 
-  // TODO(b/259181755): change this to expect
-  // `WizardContext::GaiaPath::kDefault` once we change the implementation of
-  // the "Enter Google Account info" button to fully reload the flow through cpp
-  // code.
-  EXPECT_EQ(GaiaPath(), WizardContext::GaiaPath::kSamlRedirect);
+  EXPECT_EQ(GaiaPath(), WizardContext::GaiaPath::kDefault);
+
+  GetCookies(profile);
+  EXPECT_EQ("", GetCookieValue(kSAMLIdPCookieName));
 }
 
 // Tests that clicking back on the SAML page successfully closes the oobe

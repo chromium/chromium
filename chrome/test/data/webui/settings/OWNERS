@@ -1,6 +1,7 @@
 file://chrome/browser/resources/settings/OWNERS
 
 per-file cookies_page_test.ts=fmacintosh@google.com,rainhard@chromium.org
+per-file *language* , translate_* = file://components/language/OWNERS
 per-file privacy_page_test.ts=rainhard@chromium.org,sideyilmaz@chromium.org
 per-file privacy_guide_fragments_test.ts=rainhard@chromium.org
 per-file privacy_guide_integration_test.ts=rainhard@chromium.org

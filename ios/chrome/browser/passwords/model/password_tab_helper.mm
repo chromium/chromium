@@ -30,6 +30,10 @@ id<FormSuggestionProvider> PasswordTabHelper::GetSuggestionProvider() {
   return controller_.suggestionProvider;
 }
 
+SharedPasswordController* PasswordTabHelper::GetSharedPasswordController() {
+  return controller_.sharedPasswordController;
+}
+
 password_manager::PasswordManager* PasswordTabHelper::GetPasswordManager() {
   return controller_.passwordManager;
 }

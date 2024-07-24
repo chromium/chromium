@@ -156,10 +156,10 @@ using base::SysUTF16ToNSString;
 // Alerts the host app that the user selected a credential.
 - (void)userSelectedCredential:(id<Credential>)credential {
   NSString* password = credential.password;
-  ASPasswordCredential* ASCredential =
+  ASPasswordCredential* passwordCredential =
       [ASPasswordCredential credentialWithUser:credential.username
                                       password:password];
-  [self.credentialResponseHandler userSelectedPassword:ASCredential];
+  [self.credentialResponseHandler userSelectedPassword:passwordCredential];
 }
 
 - (NSString*)currentIdentifier {

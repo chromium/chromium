@@ -49,6 +49,8 @@ bool TestNavigationURLLoader::SetNavigationTimeout(base::TimeDelta timeout) {
   return false;
 }
 
+void TestNavigationURLLoader::CancelNavigationTimeout() {}
+
 void TestNavigationURLLoader::SimulateServerRedirect(const GURL& redirect_url) {
   DCHECK_EQ(loader_type_, NavigationURLLoader::LoaderType::kRegular);
   net::RedirectInfo redirect_info;

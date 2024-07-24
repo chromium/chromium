@@ -621,6 +621,8 @@ public class EventForwarder {
                 Log.e(TAG, "Parsing clip data content failed.", e);
                 content = "";
             }
+            RecordHistogram.recordCount100Histogram(
+                    "Android.DragDrop.Files.Count", filenames.size());
         }
 
         int[] locationOnScreen = new int[2];
@@ -777,8 +779,6 @@ public class EventForwarder {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     interface Natives {
-        WindowAndroid getJavaWindowAndroid(long nativeEventForwarder, EventForwarder caller);
-
         // All touch events (including flings, scrolls etc) accept coordinates in physical pixels.
         boolean onTouchEvent(
                 long nativeEventForwarder,

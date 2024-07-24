@@ -155,68 +155,84 @@ class CONTENT_EXPORT PrefetchService {
   friend class PrefetchURLLoaderInterceptorTestBase;
 
   // Checks whether the given |prefetch_container| is eligible for prefetch.
-  // Once the eligibility is determined then |result_callback| will be called
-  // with result (`PreloadingEligibility::kEligible` when eligible).
-  using OnEligibilityResultCallback =
-      base::OnceCallback<void(base::WeakPtr<PrefetchContainer>,
-                              PreloadingEligibility eligibility)>;
+  // Once the eligibility is determined then |OnGotEligibility()| will be
+  // called.
   void CheckEligibilityOfPrefetch(
-      const GURL& url,
       base::WeakPtr<PrefetchContainer> prefetch_container,
-      OnEligibilityResultCallback result_callback) const;
+      const GURL& url,
+      std::optional<
+          std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>
+          redirect_data);
 
   void CheckHasServiceWorker(
-      const GURL& url,
       base::WeakPtr<PrefetchContainer> prefetch_container,
-      OnEligibilityResultCallback result_callback) const;
+      const GURL& url,
+      std::optional<
+          std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>
+          redirect_data);
 
   void OnGotServiceWorkerResult(
-      const GURL& url,
       base::WeakPtr<PrefetchContainer> prefetch_container,
+      const GURL& url,
+      std::optional<
+          std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>
+          redirect_data,
       base::Time check_has_service_worker_start_time,
-      OnEligibilityResultCallback result_callback,
-      ServiceWorkerCapability service_worker_capability) const;
+      ServiceWorkerCapability service_worker_capability);
 
   // Called after getting the existing cookies associated with
   // |prefetch_container|. If there are any cookies, then the prefetch is not
   // eligible.
   void OnGotCookiesForEligibilityCheck(
-      const GURL& url,
       base::WeakPtr<PrefetchContainer> prefetch_container,
-      OnEligibilityResultCallback result_callback,
+      const GURL& url,
+      std::optional<
+          std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>
+          redirect_data,
       const net::CookieAccessResultList& cookie_list,
-      const net::CookieAccessResultList& excluded_cookies) const;
+      const net::CookieAccessResultList& excluded_cookies);
 
   // Starts the check for whether or not there is a proxy configured for the URL
   // of |prefetch_container|. If there is an existing proxy, then the prefetch
   // is not eligible.
   void StartProxyLookupCheck(
-      const GURL& url,
       base::WeakPtr<PrefetchContainer> prefetch_container,
-      OnEligibilityResultCallback result_callback) const;
+      const GURL& url,
+      std::optional<
+          std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>
+          redirect_data);
 
   // Called after looking up the proxy configuration for the URL of
   // |prefetch_container|. If there is an existing proxy, then the prefetch is
   // not eligible.
   void OnGotProxyLookupResult(
       base::WeakPtr<PrefetchContainer> prefetch_container,
-      OnEligibilityResultCallback result_callback,
-      bool has_proxy) const;
+      std::optional<
+          std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>
+          redirect_data,
+      bool has_proxy);
 
-  // Called once the eligibility of |prefetch_container| is determined. If the
-  // prefetch is eligible it is added to the queue to be prefetched. If it is
-  // not eligible, then we consider making it a decoy request.
-  void OnGotEligibilityResult(
+  // Called when the eligibility is determined for each fetch of prefetch, i.e.
+  // initial fetch and redirects.
+  //
+  // If ineligible, these methods may convert the prefetch into decoy.
+  //
+  // If the initial fetch (respectively, the redirect) is eligible or the
+  // prefetch is decoy, the prefetch is added to `prefetch_queue_`
+  // (respectively, is retained in the queue) and proceeds to the next fetch.
+  void OnGotEligibility(
+      base::WeakPtr<PrefetchContainer> prefetch_container,
+      std::optional<
+          std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>
+          redirect_data,
+      PreloadingEligibility eligibility);
+  void OnGotEligibilityForNonRedirect(
       base::WeakPtr<PrefetchContainer> prefetch_container,
       PreloadingEligibility eligibility);
-
-  // Called once the eligibility of a redirect for a |prefetch_container| is
-  // determined. If its eligible, then the prefetch will continue, otherwise it
-  // is stopped.
-  void OnGotEligibilityResultForRedirect(
+  void OnGotEligibilityForRedirect(
+      base::WeakPtr<PrefetchContainer> prefetch_container,
       net::RedirectInfo redirect_info,
       network::mojom::URLResponseHeadPtr redirect_head,
-      base::WeakPtr<PrefetchContainer> prefetch_container,
       PreloadingEligibility eligibility);
 
   // Adds `prefetch_container` to the cache but doesn't initiate prefetching.

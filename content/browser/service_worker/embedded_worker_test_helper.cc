@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_future.h"
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
+#include "content/browser/loader/reconnectable_url_loader_factory.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"

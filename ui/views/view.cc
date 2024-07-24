@@ -2999,8 +2999,9 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
   view->UpdateLayerVisibility();
 
   // Make sure that the accessible focusable state of the descendants of the
-  // `view` is correct.
-  view->GetViewAccessibility().UpdateFocusableStateRecursive();
+  // `view` is correct, and make sure they are ready to send event
+  // notifications.
+  view->GetViewAccessibility().UpdateStatesForViewAndDescendants();
 
   if (widget) {
     // There are scenarios where we might be reparenting a view from a widget

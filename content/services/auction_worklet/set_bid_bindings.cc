@@ -474,12 +474,12 @@ SetBidBindings::SemanticCheckBid(
   if (!idl.ad.has_value()) {
     ad_json = "null";
   } else {
-    AuctionV8Helper::ExtractJsonResult json_result =
+    AuctionV8Helper::Result json_result =
         v8_helper_->ExtractJson(context, *idl.ad, &ad_json);
-    if (json_result == AuctionV8Helper::ExtractJsonResult::kFailure) {
+    if (json_result == AuctionV8Helper::Result::kFailure) {
       return base::unexpected(IdlConvert::Status::MakeErrorMessage(
           base::StrCat({error_prefix, "bid has invalid ad value."})));
-    } else if (json_result == AuctionV8Helper::ExtractJsonResult::kTimeout) {
+    } else if (json_result == AuctionV8Helper::Result::kTimeout) {
       return base::unexpected(IdlConvert::Status::MakeTimeout(base::StrCat(
           {error_prefix, "serializing bid 'ad' value to JSON timed out."})));
     }

@@ -16,6 +16,8 @@
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/manta/mahi_provider.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -29,7 +31,8 @@ class MahiNudgeController;
 
 // Implementation of `MahiManager`.
 class MahiManagerImpl : public chromeos::MahiManager,
-                        public chromeos::MagicBoostState::Observer {
+                        public chromeos::MagicBoostState::Observer,
+                        public history::HistoryServiceObserver {
  public:
   MahiManagerImpl();
 
@@ -66,6 +69,10 @@ class MahiManagerImpl : public chromeos::MahiManager,
 
   MahiUiController* ui_controller_for_test() { return &ui_controller_; }
 
+  // history::HistoryServiceObserver:
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
+
  private:
   friend class MahiManagerImplTest;
   friend class MahiManagerImplFeatureKeyTest;
@@ -85,6 +92,8 @@ class MahiManagerImpl : public chromeos::MahiManager,
   // pending requests to avoid racing condition.
   // Returns true if successfully initialized.
   bool MaybeInitializeAndDiscardPendingRequests();
+
+  void MaybeObserveHistoryService();
 
   void OnGetPageContentForSummary(
       crosapi::mojom::MahiPageInfoPtr request_page_info,
@@ -155,6 +164,10 @@ class MahiManagerImpl : public chromeos::MahiManager,
   // NOTE: It is used only when the magic boost feature is enabled.
   std::unique_ptr<chromeos::MagicBoostState::Observer>
       on_consent_state_update_closure_runner_;
+
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      scoped_history_service_observer_{this};
 
   base::WeakPtrFactory<MahiManagerImpl> weak_ptr_factory_for_closure_runner_{
       this};

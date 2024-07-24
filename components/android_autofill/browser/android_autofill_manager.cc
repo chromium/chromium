@@ -30,7 +30,7 @@ AndroidAutofillManager::AndroidAutofillManager(AutofillDriver* driver)
 }
 
 AndroidAutofillManager::~AndroidAutofillManager() {
-  Reset();
+  ResetImpl();
 }
 
 base::WeakPtr<AutofillManager> AndroidAutofillManager::GetWeakPtr() {
@@ -134,10 +134,9 @@ bool AndroidAutofillManager::ShouldParseForms() {
   return true;
 }
 
-void AndroidAutofillManager::OnFocusOnNonFormFieldImpl(
-    bool had_interacted_form) {
+void AndroidAutofillManager::OnFocusOnNonFormFieldImpl() {
   if (auto* provider = GetAutofillProvider())
-    provider->OnFocusOnNonFormField(this, had_interacted_form);
+    provider->OnFocusOnNonFormField(this);
 }
 
 void AndroidAutofillManager::OnDidFillAutofillFormDataImpl(
@@ -163,7 +162,7 @@ void AndroidAutofillManager::OnFormProcessed(
   }
 }
 
-void AndroidAutofillManager::Reset() {
+void AndroidAutofillManager::ResetImpl() {
   // Inform the provider before resetting state in case it needs to access it.
   if (auto* rfh =
           static_cast<ContentAutofillDriver&>(driver()).render_frame_host()) {
@@ -175,7 +174,7 @@ void AndroidAutofillManager::Reset() {
       }
     }
   }
-  AutofillManager::Reset();
+  AutofillManager::ResetImpl();
   forms_with_server_predictions_.clear();
   StartNewLoggingSession();
 }

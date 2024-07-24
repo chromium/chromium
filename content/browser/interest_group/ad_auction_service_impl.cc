@@ -44,6 +44,7 @@
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/browser/loader/reconnectable_url_loader_factory.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/page_impl.h"
@@ -63,7 +64,6 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -699,36 +699,26 @@ AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
   // GetPageUkmSourceId() doesn't work with prerendering pages.
   CHECK(!render_frame_host().IsInLifecycleState(
       RenderFrameHost::LifecycleState::kPrerendering));
+  return ref_counted_trusted_url_loader_factory_.get();
+}
 
-  if (!trusted_url_loader_factory_ ||
-      !trusted_url_loader_factory_.is_connected()) {
-    trusted_url_loader_factory_.reset();
-
-    // TODO(mmenke): Should this have its own URLLoaderFactoryType? FLEDGE
-    // requests are very different from subresource requests.
-    //
-    // TODO(mmenke): Hook up devtools.
-    url_loader_factory::CreateAndConnectToPendingReceiver(
-        trusted_url_loader_factory_.BindNewPipeAndPassReceiver(),
-        ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-        url_loader_factory::TerminalParams::ForBrowserProcess(
-            static_cast<RenderFrameHostImpl&>(render_frame_host())
-                .GetStoragePartition()),
-        url_loader_factory::ContentClientParams(
-            render_frame_host().GetSiteInstance()->GetBrowserContext(),
-            &render_frame_host(), render_frame_host().GetProcess()->GetID(),
-            url::Origin(), net::IsolationInfo(),
-            ukm::SourceIdObj::FromInt64(
-                render_frame_host().GetPageUkmSourceId())));
-
-    mojo::Remote<network::mojom::URLLoaderFactory> shared_remote;
-    trusted_url_loader_factory_->Clone(
-        shared_remote.BindNewPipeAndPassReceiver());
-    ref_counted_trusted_url_loader_factory_ =
-        base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
-            std::move(shared_remote));
-  }
-  return trusted_url_loader_factory_.get();
+void AdAuctionServiceImpl::CreateUnderlyingTrustedURLLoaderFactory(
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
+  // TODO(mmenke): Should this have its own URLLoaderFactoryType? FLEDGE
+  // requests are very different from subresource requests.
+  //
+  // TODO(mmenke): Hook up devtools.
+  *out_factory = url_loader_factory::CreatePendingRemote(
+      ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
+      url_loader_factory::TerminalParams::ForBrowserProcess(
+          static_cast<RenderFrameHostImpl&>(render_frame_host())
+              .GetStoragePartition()),
+      url_loader_factory::ContentClientParams(
+          render_frame_host().GetSiteInstance()->GetBrowserContext(),
+          &render_frame_host(), render_frame_host().GetProcess()->GetID(),
+          url::Origin(), net::IsolationInfo(),
+          ukm::SourceIdObj::FromInt64(
+              render_frame_host().GetPageUkmSourceId())));
 }
 
 void AdAuctionServiceImpl::PreconnectSocket(
@@ -742,9 +732,8 @@ void AdAuctionServiceImpl::PreconnectSocket(
                           network_anonymization_key);
 }
 
-scoped_refptr<network::WrapperSharedURLLoaderFactory>
+scoped_refptr<network::SharedURLLoaderFactory>
 AdAuctionServiceImpl::GetRefCountedTrustedURLLoaderFactory() {
-  GetTrustedURLLoaderFactory();
   return ref_counted_trusted_url_loader_factory_;
 }
 
@@ -793,6 +782,14 @@ AdAuctionServiceImpl::AdAuctionServiceImpl(
       auction_nonce_manager_(CreateAuctionNonceManager(GetFrame())),
       private_aggregation_manager_(PrivateAggregationManager::GetManager(
           *render_frame_host.GetBrowserContext())) {
+  // Construct `ref_counted_trusted_url_loader_factory_` here because
+  // `weak_ptr_factory_` is not yet initialized during the member initializer
+  // list above.
+  ref_counted_trusted_url_loader_factory_ =
+      base::MakeRefCounted<ReconnectableURLLoaderFactory>(base::BindRepeating(
+          &AdAuctionServiceImpl::CreateUnderlyingTrustedURLLoaderFactory,
+          weak_ptr_factory_.GetWeakPtr()));
+
   // Throughout the auction, the `PageImpl` of the frame which initiates the
   // auction should stay the same. When an inconsistency is detected, the
   // auction must be aborted. This is done by storing a weak pointer to the

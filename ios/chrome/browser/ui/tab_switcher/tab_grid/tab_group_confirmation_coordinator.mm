@@ -21,6 +21,8 @@
   TabGroupActionType _actionType;
   // The source view where the confirmation dialog anchors to.
   UIView* _sourceView;
+  // The source button item where the confirmation dialog anchors to.
+  UIBarButtonItem* _sourceButtonItem;
   // The action sheet coordinator, if one is currently being shown.
   ActionSheetCoordinator* _actionSheetCoordinator;
 }
@@ -37,6 +39,18 @@
   return self;
 }
 
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                actionType:(TabGroupActionType)actionType
+                          sourceButtonItem:(UIBarButtonItem*)sourceButtonItem {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _actionType = actionType;
+    _sourceButtonItem = sourceButtonItem;
+  }
+  return self;
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -47,13 +61,24 @@
              name:UIDeviceOrientationDidChangeNotification
            object:nil];
 
-  _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                           title:[self sheetTitle]
-                         message:[self sheetMessage]
-                            rect:_sourceView.bounds
-                            view:_sourceView];
+  if (_sourceView) {
+    _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+        initWithBaseViewController:self.baseViewController
+                           browser:self.browser
+                             title:[self sheetTitle]
+                           message:[self sheetMessage]
+                              rect:_sourceView.bounds
+                              view:_sourceView];
+  } else {
+    CHECK(_sourceButtonItem);
+    _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+        initWithBaseViewController:self.baseViewController
+                           browser:self.browser
+                             title:[self sheetTitle]
+                           message:[self sheetMessage]
+                     barButtonItem:_sourceButtonItem];
+  }
+
   _actionSheetCoordinator.popoverArrowDirection =
       UIPopoverArrowDirectionDown | UIPopoverArrowDirectionUp;
 

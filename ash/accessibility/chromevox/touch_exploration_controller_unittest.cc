@@ -24,6 +24,7 @@
 #include "ui/events/gestures/gesture_provider_aura.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/events_test_utils.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/gl_implementation.h"
@@ -219,17 +220,8 @@ class TouchExplorationTest : public aura::test::AuraTestBase {
     return located_events;
   }
 
-  std::vector<ui::Event*> GetCapturedEventsOfType(int type) {
-    const EventList& all_events = GetCapturedEvents();
-    std::vector<ui::Event*> events;
-    for (size_t i = 0; i < all_events.size(); ++i) {
-      if (type == all_events[i]->type())
-        events.push_back(all_events[i].get());
-    }
-    return events;
-  }
-
-  std::vector<ui::LocatedEvent*> GetCapturedLocatedEventsOfType(int type) {
+  std::vector<ui::LocatedEvent*> GetCapturedLocatedEventsOfType(
+      ui::EventType type) {
     std::vector<ui::LocatedEvent*> located_events = GetCapturedLocatedEvents();
     std::vector<ui::LocatedEvent*> events;
     for (size_t i = 0; i < located_events.size(); ++i) {

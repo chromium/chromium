@@ -17,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source_observer.h"
@@ -36,10 +35,6 @@ class WebContents;
 }  // namespace content
 
 namespace resource_coordinator {
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class TabManagerDelegate;
-#endif
 
 // TabManager is responsible for triggering tab lifecycle state transitions.
 //
@@ -90,11 +85,6 @@ class TabManager : public LifecycleUnitObserver,
   // was discarded.
   content::WebContents* DiscardTabByExtension(content::WebContents* contents);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Discards a tab in response to memory pressure.
-  void DiscardTabFromMemoryPressure();
-#endif
-
   // TODO(fdoray): Remove these methods. TabManager shouldn't know about tabs.
   // https://crbug.com/775644
   void AddObserver(TabLifecycleObserver* observer);
@@ -136,23 +126,6 @@ class TabManager : public LifecycleUnitObserver,
   // can be easily reloaded and hence makes a good choice to discard.
   static bool IsInternalPage(const GURL& url);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Called by the memory pressure listener when the memory pressure rises.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
-
-  // Called when we finished handling the memory pressure by discarding tabs.
-  void OnTabDiscardDone();
-
-  // Register to start listening to memory pressure. Called on startup or end
-  // of tab discards.
-  void RegisterMemoryPressureListener();
-
-  // Unregister to stop listening to memory pressure. Called on shutdown or
-  // beginning of tab discards.
-  void UnregisterMemoryPressureListener();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   // Discards the less important LifecycleUnit that supports discarding under
   // |reason|.
   content::WebContents* DiscardTabImpl(
@@ -177,10 +150,6 @@ class TabManager : public LifecycleUnitObserver,
 
   // A listener to global memory pressure events.
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<TabManagerDelegate> delegate_;
-#endif
 
   class TabManagerSessionRestoreObserver;
   std::unique_ptr<TabManagerSessionRestoreObserver> session_restore_observer_;

@@ -175,4 +175,20 @@ TEST_F(MahiCacheManagerTest, GetCorrectPageContentFromURL) {
   EXPECT_EQ(result, u"");
 }
 
+TEST_F(MahiCacheManagerTest, DeleteExistingURL) {
+  // Current cache size.
+  EXPECT_EQ(GetPageCache().size(), 2u);
+
+  GetMahiCacheManager()->DeleteCacheForUrl("http://url1.com");
+  EXPECT_EQ(GetPageCache().size(), 1u);
+}
+
+TEST_F(MahiCacheManagerTest, DeleteURLNotInCache) {
+  // Current cache size.
+  EXPECT_EQ(GetPageCache().size(), 2u);
+
+  GetMahiCacheManager()->DeleteCacheForUrl("http://notthere.com");
+  EXPECT_EQ(GetPageCache().size(), 2u);
+}
+
 }  // namespace ash

@@ -283,14 +283,20 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     return shared_image_usage_flags_ &
            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
   }
-  gpu::Mailbox GetBackingMailboxForOverwrite() override {
+  scoped_refptr<gpu::ClientSharedImage>
+  GetBackingClientSharedImageForOverwrite() override {
     DCHECK(is_accelerated_);
 
     if (IsGpuContextLost())
-      return gpu::Mailbox();
+      return nullptr;
 
     WillDrawInternal(false);
-    return resource_->GetClientSharedImage()->mailbox();
+    return resource_->GetClientSharedImage();
+  }
+
+  gpu::Mailbox GetBackingMailboxForOverwrite() override {
+    auto client_si = GetBackingClientSharedImageForOverwrite();
+    return client_si ? client_si->mailbox() : gpu::Mailbox();
   }
 
   GLenum GetBackingTextureTarget() const override {
@@ -316,9 +322,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       return false;
 
     WillDrawInternal(true);
-    RasterInterface()->WritePixels(GetBackingMailboxForOverwrite(), x, y,
-                                   GetBackingTextureTarget(),
-                                   SkPixmap(orig_info, pixels, row_bytes));
+    RasterInterface()->WritePixels(
+        GetBackingMailboxForOverwrite(), x, y,
+        resource()->GetClientSharedImage()->GetTextureTarget(),
+        SkPixmap(orig_info, pixels, row_bytes));
 
     // If the overdraw optimization kicked in, we need to indicate that the
     // pixels do not need to be cleared, otherwise the subsequent
@@ -474,8 +481,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
           auto mailbox = resource()->GetClientSharedImage()->mailbox();
 
           raster_interface->CopySharedImage(
-              old_mailbox, mailbox, GetBackingTextureTarget(), 0, 0, 0, 0,
-              Size().width(), Size().height(), false /* unpack_flip_y */,
+              old_mailbox, mailbox,
+              resource()->GetClientSharedImage()->GetTextureTarget(), 0, 0, 0,
+              0, Size().width(), Size().height(), false /* unpack_flip_y */,
               false /* unpack_premultiply_alpha */);
         } else if (use_oop_rasterization_) {
           // If we're not copying over the previous contents, we need to ensure
@@ -917,7 +925,8 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     WillDraw();
     RasterInterface()->WritePixels(
         resource_->GetBackBufferClientSharedImage()->mailbox(), x, y,
-        GetBackingTextureTarget(), SkPixmap(orig_info, pixels, row_bytes));
+        resource_->GetBackBufferClientSharedImage()->GetTextureTarget(),
+        SkPixmap(orig_info, pixels, row_bytes));
     return true;
   }
 
@@ -1426,14 +1435,14 @@ bool CanvasResourceProvider::OverwriteImage(
   if (!raster) {
     return false;
   }
-  gpu::Mailbox dst_mailbox = GetBackingMailboxForOverwrite();
-  if (dst_mailbox.IsZero()) {
+  auto dst_client_si = GetBackingClientSharedImageForOverwrite();
+  if (!dst_client_si) {
     return false;
   }
 
   raster->WaitSyncTokenCHROMIUM(ready_sync_token.GetConstData());
-  raster->CopySharedImage(shared_image_mailbox, dst_mailbox,
-                          GetBackingTextureTarget(), /*xoffset=*/0,
+  raster->CopySharedImage(shared_image_mailbox, dst_client_si->mailbox(),
+                          dst_client_si->GetTextureTarget(), /*xoffset=*/0,
                           /*yoffset=*/0, copy_rect.x(), copy_rect.y(),
                           copy_rect.width(), copy_rect.height(), unpack_flip_y,
                           unpack_premultiply_alpha);

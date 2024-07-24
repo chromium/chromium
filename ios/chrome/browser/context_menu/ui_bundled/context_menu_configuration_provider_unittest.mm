@@ -3,16 +3,19 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
-#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider+Testing.h"
 
+#import "base/ios/ios_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider+Testing.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
@@ -26,6 +29,7 @@
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/ui/context_menu_params.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -41,10 +45,23 @@ const char kPrimaryAccountEmail[] = "peter.parker@gmail.com";
 // Image source URL for the context menu params.
 const char kImageUrl[] = "https://www.example.com/image.jpg";
 
+// Link URL for the context menu params.
+const char kLinkUrl[] = "https://www.example.com";
+
 // Returns context menu params with `src_url` set to `image_url`.
 web::ContextMenuParams GetContextMenuParamsWithImageUrl(const char* image_url) {
   web::ContextMenuParams params;
   params.src_url = GURL(image_url);
+  return params;
+}
+
+// Returns context menu params with `link_url` set to `kLinkUrl` and the given
+// location.
+web::ContextMenuParams GetContextMenuParamsWithLinkURL(const char* link_url,
+                                                       CGPoint location) {
+  web::ContextMenuParams params;
+  params.link_url = GURL(kLinkUrl);
+  params.location = location;
   return params;
 }
 
@@ -54,6 +71,7 @@ web::ContextMenuParams GetContextMenuParamsWithImageUrl(const char* image_url) {
 class ContextMenuConfigurationProviderTest : public PlatformTest {
  protected:
   void SetUp() final {
+    PlatformTest::SetUp();
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
@@ -72,6 +90,11 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
            initWithBrowser:browser_.get()
         baseViewController:base_view_controller_];
 
+    mock_application_command_handler =
+        OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_application_command_handler
+                     forProtocol:@protocol(ApplicationCommands)];
     mock_mini_map_commands_handler =
         OCMStrictProtocolMock(@protocol(MiniMapCommands));
     [browser_->GetCommandDispatcher()
@@ -87,9 +110,17 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_save_to_photos_commands_handler
                      forProtocol:@protocol(SaveToPhotosCommands)];
+    mock_activity_service_commands_handler =
+        OCMStrictProtocolMock(@protocol(ActivityServiceCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_activity_service_commands_handler
+                     forProtocol:@protocol(ActivityServiceCommands)];
   }
 
-  void TearDown() final { [configuration_provider_ stop]; }
+  void TearDown() final {
+    [configuration_provider_ stop];
+    PlatformTest::TearDown();
+  }
 
   // Sign-in with a fake account.
   void SignIn() {
@@ -129,6 +160,8 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
   id mock_mini_map_commands_handler;
   id mock_unit_conversion_handler;
   id mock_save_to_photos_commands_handler;
+  id mock_activity_service_commands_handler;
+  id mock_application_command_handler;
 };
 
 // Test that the "Save Image in Google Photos" action is added to the context
@@ -165,4 +198,40 @@ TEST_F(ContextMenuConfigurationProviderTest, HasSaveImageToPhotosMenuElement) {
   EXPECT_EQ(foundMenuElement.subtitle, expectedMenuElement.subtitle);
   // Test that the element has the expected image.
   EXPECT_TRUE([foundMenuElement.image isEqual:expectedMenuElement.image]);
+}
+
+// Test that the "Share" action is added to the context
+// menu if enough conditions are met.
+TEST_F(ContextMenuConfigurationProviderTest, HasShareInWebContextMenuElement) {
+  // Enable the Share in web context menu flag.
+  base::test::ScopedFeatureList feature_list(kShareInWebContextMenuIOS);
+
+  // Get menu with params containing url.
+  web::ContextMenuParams params_with_link =
+      GetContextMenuParamsWithLinkURL(kLinkUrl, CGPointMake(0, 0));
+
+  UIMenu* menu = GetContextMenuForParams(params_with_link);
+
+  BrowserActionFactory* action_factory = GetBrowserActionFactory();
+  UIMenuElement* expected_menu_element =
+      [action_factory actionToShareWithBlock:nil];
+
+  ASSERT_NE(expected_menu_element, nil);
+
+  // Test that there is an element with the expected title in the menu.
+  NSUInteger index_of_found_menu_element =
+      [menu.children indexOfObjectPassingTest:^BOOL(UIMenuElement* menu_element,
+                                                    NSUInteger, BOOL*) {
+        return [menu_element.title isEqualToString:expected_menu_element.title];
+      }];
+
+  ASSERT_TRUE(index_of_found_menu_element != NSNotFound);
+
+  UIMenuElement* found_menu_element =
+      menu.children[index_of_found_menu_element];
+
+  // Test that the element has the expected subtitle.
+  EXPECT_NSEQ(found_menu_element.subtitle, expected_menu_element.subtitle);
+  // Test that the element has the expected image.
+  EXPECT_NSEQ(found_menu_element.image, expected_menu_element.image);
 }

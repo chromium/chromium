@@ -786,9 +786,6 @@ crbug.com/350292231 [ Fuchsia ] tables/mozilla/bugs/bug2479-4.html [ Failure ]
 crbug.com/350292231 [ Fuchsia ] tables/mozilla_expected_failures/bugs/bug2479-5.html [ Failure ]
 crbug.com/350292231 [ Fuchsia ] virtual/text-antialias/international/003.html [ Failure ]
 
-crbug.com/350628679 [ Win ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Crash Pass ]
-crbug.com/350628679 [ Win ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Crash Pass ]
-
 # ====== Paint team owned tests to here ======
 
 # WPT speculative-parsing tests failing
@@ -833,7 +830,6 @@ crbug.com/1322062 external/wpt/css/css-sizing/aspect-ratio/fieldset-element-001.
 crbug.com/970201 external/wpt/css/css-sizing/slice-intrinsic-size.html [ Failure ]
 crbug.com/970201 external/wpt/css/css-sizing/clone-intrinsic-size.html [ Failure ]
 crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-038.html [ Failure ]
-crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-039.html [ Failure ]
 crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-042.html [ Failure ]
 crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-043.html [ Failure ]
 
@@ -2620,9 +2616,6 @@ crbug.com/350823140 [ Win11-arm64 ] virtual/no-auto-wpt-origin-isolation/externa
 crbug.com/350792702 external/wpt/trusted-types/trusted-types-reporting.html [ Skip Timeout ]
 [ Win11-arm64 ] virtual/async-script-scheduling-finished-parsing/wpt_internal/async-script-scheduling/execution-order.sub.html?reload [ Timeout ]
 [ Win11-arm64 ] virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/revoke-service-workers.https.html [ Timeout ]
-crbug.com/350770746 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-043.html [ Failure ]
-crbug.com/350770746 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-044.html [ Failure ]
-crbug.com/350770746 external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-042.html [ Failure ]
 [ Linux ] wpt_internal/html/semantics/forms/the-select-element/stylable-select/native-popup-with-datalist.tentative.html [ Failure ]
 crbug.com/350325616 [ Mac14 ] virtual/threaded/external/wpt/css/css-view-transitions/iframe-transition.sub.html [ Failure ]
 crbug.com/350122897 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/navigate-descendant-by-name.https.html [ Timeout ]
@@ -6969,7 +6962,7 @@ crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/exter
 crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/redirect/redirect-location.any.serviceworker.html [ Timeout ]
 
 # Gardener 2023-02-28
-crbug.com/327434497 [ Mac13 ] wpt_internal/scheduler/task-signal-any-memory-abort-1.any.html [ Failure Pass ]
+crbug.com/327434497 [ Mac ] wpt_internal/scheduler/task-signal-any-memory-abort-1.any.html [ Failure Pass ]
 
 # Flaky test on all platforms
 crbug.com/41484244 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-service-worker-img.tentative.https.sub.html [ Failure Pass Timeout ]
@@ -7345,16 +7338,6 @@ crbug.com/324111880 fast/ruby/float-overhang-from-ruby-text.html [ Failure ]
 crbug.com/40501131 external/wpt/css/css-flexbox/flexbox-writing-mode-slr-row-mix.html [ Failure ]
 crbug.com/40501131 external/wpt/css/css-flexbox/flexbox-writing-mode-slr.html [ Failure ]
 
-# Temporarily disabled to unblock https://crrev.com/c/5701110
-crbug.com/41433391 http/tests/devtools/console/console-clear-function.js [ Failure Pass ]
-crbug.com/41433391 http/tests/devtools/console/console-command-clear.js [ Failure Pass ]
-crbug.com/41433391 http/tests/devtools/sources/debugger/async-callstack-network-initiator.js [ Failure Pass ]
-crbug.com/41433391 http/tests/devtools/sources/debugger/rethrow-error-from-bindings-crash.js [ Failure Pass ]
-crbug.com/41433391 http/tests/devtools/sources/debugger-async/async-callstack-in-console.js [ Failure Pass ]
-crbug.com/41433391 http/tests/devtools/sources/debugger-ui/script-snippet-model.js [ Failure Pass ]
-crbug.com/41433391 inspector-protocol/runtime/runtime-console-basic-functions-paused.js [ Failure Pass ]
-crbug.com/41433391 inspector-protocol/runtime/runtime-console-basic-functions.js [ Failure Pass ]
-
 crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-029.xht [ Crash Timeout ]
 crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-035.xht [ Crash Timeout ]
 
@@ -7514,10 +7497,6 @@ crbug.com/340651310 external/wpt/uievents/mouse/mouse_boundary_events_after_reap
 
 # Gardener 2024-05-15
 b/40270061 http/tests/inspector-protocol/tracing/runtime-stats.js [ Crash Failure Pass Timeout ]
-
-# Temporarily disabled to unblock https://crrev.com/c/5688760
-crbug.com/350443026 http/tests/inspector-protocol/cpu-profiler/console-profileEnd-parameterless-crash.js [ Failure Pass ]
-crbug.com/350443026 inspector-protocol/performance/perf-push-metrics.js [ Failure Pass ]
 
 #Loading bug triage 2024-05-16
 crbug.com/339833760 [ Win ] http/tests/preload/meta-viewport-link-headers-imagesrcset.html [ Failure Pass ]

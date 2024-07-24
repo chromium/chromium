@@ -170,9 +170,14 @@ class AutofillMetricsBaseTest {
   // BrowserAutofillManager. Use these if your test does not depends on
   // OnDidGetRealPan but just need to mock the card fetching result (so that
   // you don't need to branch on what auth method was used).
-  void OnCreditCardFetchingSuccessful(const std::u16string& real_pan,
+  void OnCreditCardFetchingSuccessful(const FormData& form,
+                                      const FormFieldData& field,
+                                      AutofillTriggerSource trigger_source,
+                                      const std::u16string& real_pan,
                                       bool is_virtual_card = false);
-  void OnCreditCardFetchingFailed();
+  void OnCreditCardFetchingFailed(const FormData& form,
+                                  const FormFieldData& field,
+                                  AutofillTriggerSource trigger_source);
 
   FormData GetAndAddSeenForm(const test::FormDescription& form_description) {
     FormData form = test::GetFormData(form_description);

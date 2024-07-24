@@ -1,8 +1,6 @@
 include_rules = [
-  "+components/commerce",
   "+components/os_crypt/sync",
   "+components/pref_registry",
-  "+components/search",
   "+components/unified_consent",
   "+components/webauthn/core",
 ]

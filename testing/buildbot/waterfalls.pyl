@@ -1205,6 +1205,9 @@
           'linux-jammy',
           'x86-64',
         ],
+        'args': [
+            '--emulator-debug-tags=all',
+        ],
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'android_15_emulator_gtests',
@@ -2317,6 +2320,20 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromium_android_gtests',
+        },
+        'os_type': 'android',
+      },
+      'android-cronet-code-coverage-java': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          '14-x64-emulator',
+          'emulator-8-cores',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'cronet_gtests',
         },
         'os_type': 'android',
       },
@@ -6904,22 +6921,6 @@
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_linux_blink_rel_isolated_scripts',
-        },
-      },
-      'mac10.15-blink-rel': {
-        'swarming': {
-          'dimensions': {
-            # This matches the dimensions for "Chromium Mac10.15" in
-            # chromium_fyi.py.
-            'cpu': 'x86-64',
-            'gpu': '8086:0a2e',
-            'hidpi': '0',
-            'os': 'Mac-10.15',
-          },
-          'hard_timeout': 900,
-        },
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
       'mac11.0-blink-rel': {

@@ -181,6 +181,18 @@ void TabGroupServiceWrapper::OnTabSelected(const LocalTabGroupID& group_id,
   NOTIMPLEMENTED();
 }
 
+void TabGroupServiceWrapper::MakeTabGroupShared(
+    const LocalTabGroupID& local_group_id,
+    std::string_view collaboration_id) {
+  if (ShouldUseSyncService()) {
+    sync_service_->MakeTabGroupShared(local_group_id,
+                                      std::string(collaboration_id));
+  } else {
+    saved_keyed_service_->model()->MakeTabGroupShared(
+        local_group_id, std::string(collaboration_id));
+  }
+}
+
 std::vector<SavedTabGroup> TabGroupServiceWrapper::GetAllGroups() {
   if (ShouldUseSyncService()) {
     return sync_service_->GetAllGroups();

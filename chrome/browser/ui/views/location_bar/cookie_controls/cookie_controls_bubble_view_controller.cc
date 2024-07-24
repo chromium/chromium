@@ -39,8 +39,7 @@
 namespace {
 
 using TrackingProtectionFeature = ::content_settings::TrackingProtectionFeature;
-using TrackingProtectionFeatureType =
-    ::content_settings::TrackingProtectionFeatureType;
+using FeatureType = ::content_settings::TrackingProtectionFeatureType;
 
 constexpr int kProgressBarHeight = 3;
 
@@ -62,7 +61,7 @@ const gfx::VectorIcon& GetToggleIcon(bool enabled) {
 
 bool IsNewUiEnabled() {
   return base::FeatureList::IsEnabled(
-      privacy_sandbox::kTrackingProtectionSettingsLaunch);
+      privacy_sandbox::kTrackingProtectionContentSettingFor3pcb);
 }
 
 }  // namespace
@@ -254,8 +253,7 @@ void CookieControlsBubbleViewController::OnStatusChanged(
     FillViewForTrackingProtection(enforcement, expiration, features);
   } else {
     // The legacy UI only supports 3PC blocking.
-    CHECK(features[0].feature_type ==
-          TrackingProtectionFeatureType::kThirdPartyCookies);
+    CHECK(features[0].feature_type == FeatureType::kThirdPartyCookies);
     FillViewForThirdPartyCookies(features[0], expiration);
   }
 }

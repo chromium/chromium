@@ -126,7 +126,7 @@ WorkerWatcher::WorkerWatcher(
     const std::string& browser_context_id,
     content::DedicatedWorkerService* dedicated_worker_service,
     content::SharedWorkerService* shared_worker_service,
-    content::ServiceWorkerContext* service_worker_context,
+    ServiceWorkerContextAdapter* service_worker_context_adapter,
     ProcessNodeSource* process_node_source,
     FrameNodeSource* frame_node_source)
     : browser_context_id_(browser_context_id),
@@ -135,13 +135,14 @@ WorkerWatcher::WorkerWatcher(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(dedicated_worker_service);
   DCHECK(shared_worker_service);
-  DCHECK(service_worker_context);
+  DCHECK(service_worker_context_adapter);
   DCHECK(process_node_source_);
   DCHECK(frame_node_source_);
 
   dedicated_worker_service_observation_.Observe(dedicated_worker_service);
   shared_worker_service_observation_.Observe(shared_worker_service);
-  service_worker_context_observation_.Observe(service_worker_context);
+  service_worker_context_adapter_observation_.Observe(
+      service_worker_context_adapter);
 }
 
 WorkerWatcher::~WorkerWatcher() {
@@ -153,7 +154,7 @@ WorkerWatcher::~WorkerWatcher() {
   DCHECK(!shared_worker_service_observation_.IsObserving());
   DCHECK(service_worker_nodes_.empty());
   CHECK(service_worker_ids_by_token_.empty());
-  DCHECK(!service_worker_context_observation_.IsObserving());
+  DCHECK(!service_worker_context_adapter_observation_.IsObserving());
 }
 
 void WorkerWatcher::TearDown() {
@@ -225,8 +226,8 @@ void WorkerWatcher::TearDown() {
   dedicated_worker_service_observation_.Reset();
   DCHECK(shared_worker_service_observation_.IsObserving());
   shared_worker_service_observation_.Reset();
-  DCHECK(service_worker_context_observation_.IsObserving());
-  service_worker_context_observation_.Reset();
+  DCHECK(service_worker_context_adapter_observation_.IsObserving());
+  service_worker_context_adapter_observation_.Reset();
 }
 
 void WorkerWatcher::OnWorkerCreated(

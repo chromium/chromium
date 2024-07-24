@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
@@ -649,28 +650,27 @@ void GLES2DecoderTest::CheckReadPixelsOutOfRange(GLint in_read_x,
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
 
   GLint unpadded_row_size = emu.ComputeImageDataSize(in_read_width, 1);
-  std::unique_ptr<int8_t[]> zero(new int8_t[unpadded_row_size]);
-  std::unique_ptr<int8_t[]> pack(new int8_t[kPackAlignment]);
-  memset(zero.get(), kInitialMemoryValue, unpadded_row_size);
-  memset(pack.get(), kInitialMemoryValue, kPackAlignment);
+  auto zero = base::HeapArray<int8_t>::Uninit(unpadded_row_size);
+  auto pack = base::HeapArray<int8_t>::Uninit(kPackAlignment);
+  memset(zero.data(), kInitialMemoryValue, unpadded_row_size);
+  memset(pack.data(), kInitialMemoryValue, kPackAlignment);
   for (GLint yy = 0; yy < in_read_height; ++yy) {
     const int8_t* row = static_cast<const int8_t*>(
         emu.ComputePackAlignmentAddress(0, yy, in_read_width, dest));
     GLint y = in_read_y + yy;
     if (y < 0 || y >= kHeight) {
-      EXPECT_EQ(0, memcmp(zero.get(), row, unpadded_row_size));
+      EXPECT_EQ(0, memcmp(zero.data(), row, unpadded_row_size));
     } else {
       // check off left.
       GLint num_left_pixels = std::max(-in_read_x, 0);
       GLint num_left_bytes = num_left_pixels * kBytesPerPixel;
-      EXPECT_EQ(0, memcmp(zero.get(), row, num_left_bytes));
+      EXPECT_EQ(0, memcmp(zero.data(), row, num_left_bytes));
 
       // check off right.
       GLint num_right_pixels = std::max(in_read_x + in_read_width - kWidth, 0);
       GLint num_right_bytes = num_right_pixels * kBytesPerPixel;
       EXPECT_EQ(0,
-                memcmp(zero.get(),
-                       row + unpadded_row_size - num_right_bytes,
+                memcmp(zero.data(), row + unpadded_row_size - num_right_bytes,
                        num_right_bytes));
 
       // check middle.
@@ -687,8 +687,8 @@ void GLES2DecoderTest::CheckReadPixelsOutOfRange(GLint in_read_x,
       GLint padded_row_size = (temp / kPackAlignment ) * kPackAlignment;
       GLint num_padding_bytes = padded_row_size - unpadded_row_size;
       if (num_padding_bytes) {
-        EXPECT_EQ(0, memcmp(pack.get(),
-                            row + unpadded_row_size, num_padding_bytes));
+        EXPECT_EQ(
+            0, memcmp(pack.data(), row + unpadded_row_size, num_padding_bytes));
       }
     }
   }

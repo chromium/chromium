@@ -213,8 +213,15 @@ bool ShouldShowSplashScreenDialog(ArcResizeLockPrefDelegate* pref_delegate) {
   return true;
 }
 
-int GetPortraitPhoneSizeWidth(aura::Window* window) {
-  return GetPossibleSizeInWorkArea(window, kPortraitPhoneDp).width();
+int GetUnresizableSnappedWidth(aura::Window* window) {
+  const auto& bounds = window->bounds();
+  const bool isPortrait = bounds.width() <= bounds.height();
+  const bool isNormal =
+      window->GetProperty(aura::client::kShowStateKey) == ui::SHOW_STATE_NORMAL;
+  if (isPortrait && isNormal) {
+    return bounds.width();
+  }
+  return kPortraitPhoneDp.width();
 }
 
 }  // namespace arc

@@ -96,7 +96,6 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // This is virtual for mocking in the unit tests.
   virtual void Login(const UserContext& user_context,
                      const SigninSpecifics& specifics);
-  void OnStartKioskEnableScreen();
 
   // ui::UserActivityObserver:
   void OnUserActivity(const ui::Event* event) override;
@@ -197,16 +196,8 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // not localized.
   void ShowError(SigninError error, const std::string& details);
 
-  // Handles result of consumer kiosk configurability check and starts
-  // enable kiosk screen if applicable.
-  void OnConsumerKioskAutoLaunchCheckCompleted(
-      KioskChromeAppManager::ConsumerKioskAutoLaunchStatus status);
-
   // Shows privacy notification in case of auto lunch managed guest session.
   void ShowAutoLaunchManagedGuestSessionNotification();
-
-  // Shows kiosk feature enable screen.
-  void ShowKioskEnableScreen();
 
   // Shows "filesystem encryption migration" screen.
   void ShowEncryptionMigrationScreen(std::unique_ptr<UserContext> user_context,

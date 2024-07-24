@@ -45,6 +45,7 @@ static_library("service") {
     "sync_api_component_factory.h",
     "sync_auth_manager.cc",
     "sync_auth_manager.h",
+    "sync_client.cc",
     "sync_client.h",
     "sync_feature_status_for_migrations_recorder.cc",
     "sync_feature_status_for_migrations_recorder.h",

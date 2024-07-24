@@ -63,6 +63,7 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
                 AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled(getProfile()));
         mRadioButtonGroup.setStatePredictor(
                 new AdaptiveToolbarStatePredictor(
+                        getContext(),
                         getProfile(),
                         new ActivityAndroidPermissionDelegate(new WeakReference(getActivity()))));
         mRadioButtonGroup.setOnPreferenceChangeListener(

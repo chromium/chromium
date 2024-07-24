@@ -249,7 +249,7 @@ bool CanShowEnterpriseBadging(Profile* profile) {
 }
 
 bool IsKnownConsumerDomain(const std::string& email_domain) {
-  return signin::AccountManagedStatusFinder::IsKnownConsumerDomain(
+  return !signin::AccountManagedStatusFinder::MayBeEnterpriseDomain(
       email_domain);
 }
 

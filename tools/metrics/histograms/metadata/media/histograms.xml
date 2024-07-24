@@ -6082,7 +6082,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.VideoCapture.Device.Opened.ByModelId" units="usb_id"
     expires_after="2024-11-17">
-  <owner>atadres@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <summary>
     This metric records an unsigned interger value that corresponds to the USB
     ID (vendor + device ID) of the webcam that is currently in use by the user.
@@ -6098,7 +6099,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.VideoCapture.Device.Opened.PixelFormat"
     enum="VideoPixelFormatUnion" expires_after="2025-01-05">
-  <owner>atadres@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     This metric records the pixel format of the active camera video feed at
@@ -6107,8 +6108,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Device.Opened.Resolution"
-    units="resolution" expires_after="2024-09-01">
-  <owner>atadres@chromium.org</owner>
+    units="resolution" expires_after="2025-07-22">
+  <owner>bryantchandler@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     This metric records the resolution of the active camera video feed at start,
@@ -6122,7 +6123,8 @@ chromium-metrics-reviews@google.com.
     enum="VideoPixelFormatUnion" expires_after="2024-12-15">
   <owner>eshr@google.com</owner>
   <owner>handellm@google.com</owner>
-  <owner>atadres@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <summary>
     Counts each pixel format an enumerated video capture device supports. This
     is recorded during the first device enumeration per Capture process launch.
@@ -6132,11 +6134,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Device.SupportedResolution"
-    enum="VideoResolutionDesignation" expires_after="2024-06-08">
+    enum="VideoResolutionDesignation" expires_after="2025-07-22">
+  <owner>bryantchandler@chromium.org</owner>
   <owner>eshr@google.com</owner>
   <owner>handellm@google.com</owner>
   <owner>jophba@chromium.org</owner>
-  <owner>atadres@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <summary>
     Counts each resolution supported by an enumerated video capture device.
     These are categorized by designation (eg. QVGA, HD, 4KUHD, etc) instead of
@@ -6148,7 +6151,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.VideoCapture.Device.TotalAvailable" units="count"
     expires_after="2024-12-08">
-  <owner>atadres@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     This metric counts the number of webcams that are accessible to the user at
@@ -7014,7 +7017,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MediaPreviews.UI.DeviceSelection.PageInfo.Camera.NumDevices"
     units="devices" expires_after="2025-04-01">
-  <owner>atadres@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the number of camera devices available in the PageInfo combobox.
@@ -7023,7 +7026,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MediaPreviews.UI.DeviceSelection.PageInfo.Mic.NumDevices"
     units="devices" expires_after="2025-04-01">
-  <owner>atadres@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the number of microphones (audio input) devices available in the
@@ -7034,7 +7037,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="MediaPreviews.UI.DeviceSelection.Permissions.Camera.NumDevices"
     units="devices" expires_after="2025-04-01">
-  <owner>atadres@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the number of camera devices available in the Permissions combobox.
@@ -7043,7 +7046,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MediaPreviews.UI.DeviceSelection.Permissions.Mic.NumDevices"
     units="devices" expires_after="2025-04-01">
-  <owner>atadres@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the number of microphones (audio input) devices available in the
@@ -7071,7 +7074,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MediaPreviews.UI.PageInfo.Camera.NumInUseDevices"
     units="devices" expires_after="2025-04-01">
-  <owner>atadres@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the number of previews shown for camera devices in use on PageInfo.
@@ -7080,7 +7083,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MediaPreviews.UI.PageInfo.Camera.PixelHeight" units="pixels"
     expires_after="2025-04-01">
-  <owner>atadres@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the height in pixels of the camera frames rendered in the PageInfo
@@ -7090,7 +7093,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MediaPreviews.UI.PageInfo.Mic.NumInUseDevices" units="devices"
     expires_after="2025-04-01">
-  <owner>atadres@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the number of previews shown for microphones (audio input) devices
@@ -7100,7 +7103,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MediaPreviews.UI.Permissions.Camera.PixelHeight"
     units="pixels" expires_after="2025-04-01">
-  <owner>atadres@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the height in pixels of the camera frames rendered in the
@@ -7110,7 +7113,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MediaPreviews.UI.Preview.{UiLocation}.Video.ActualFPS"
     units="fps" expires_after="2025-04-01">
-  <owner>atadres@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the actual FPS of the {UiLocation} camera preview for the time it's
@@ -7138,7 +7141,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MediaPreviews.UI.Preview.{UiLocation}.Video.ExpectedFPS"
     units="fps" expires_after="2025-04-01">
-  <owner>atadres@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the actual FPS of the {UiLocation} camera preview for the time it's
@@ -7153,7 +7156,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MediaPreviews.UI.Preview.{UiLocation}.Video.RenderedPercent"
     units="%" expires_after="2025-04-01">
-  <owner>atadres@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the percentage of frames that we got from the camera (ActualFPS)
@@ -7323,7 +7326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Mdns.Channel.Open_Failure" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-07-22">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -7333,7 +7336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Mdns.Channel.Open_Success" units="ms"
-    expires_after="2024-09-03">
+    expires_after="2025-07-22">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -7501,7 +7504,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Dial.AvailableDevicesCount" units="devices"
-    expires_after="2024-09-03">
+    expires_after="2025-07-22">
   <owner>mfoltz@chromium.org</owner>
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>

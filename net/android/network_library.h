@@ -16,6 +16,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "net/android/cert_verify_result_android.h"
 #include "net/base/ip_endpoint.h"
@@ -42,7 +43,7 @@ void VerifyX509CertChain(const std::vector<std::string>& cert_chain,
 
 // Adds a certificate as a root trust certificate to the trust manager.
 // |cert| is DER encoded certificate, |len| is its length in bytes.
-void AddTestRootCertificate(const uint8_t* cert, size_t len);
+void AddTestRootCertificate(base::span<const uint8_t> cert);
 
 // Removes all root certificates added by |AddTestRootCertificate| calls.
 void ClearTestRootCertificates();

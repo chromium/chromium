@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
+import android.app.Activity;
 import android.util.Pair;
 
 import androidx.test.filters.SmallTest;
@@ -15,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -28,18 +30,22 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredicto
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
+import java.util.List;
+
 /** Unit tests for the {@code AdaptiveToolbarStatePredictor} */
 @Config(manifest = Config.NONE)
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 public class AdaptiveToolbarStatePredictorTest {
 
+    private Activity mActivity;
     @Mock private Profile mProfile;
     @Mock private AndroidPermissionDelegate mAndroidPermissionDelegate;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mActivity = Robolectric.setupActivity(Activity.class);
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
     }
@@ -344,7 +350,7 @@ public class AdaptiveToolbarStatePredictorTest {
             Integer manualOverride,
             boolean isReady,
             Integer segmentationResult) {
-        return new AdaptiveToolbarStatePredictor(mProfile, mAndroidPermissionDelegate) {
+        return new AdaptiveToolbarStatePredictor(mActivity, mProfile, mAndroidPermissionDelegate) {
             @Override
             int readManualOverrideFromPrefs() {
                 return manualOverride;
@@ -356,8 +362,9 @@ public class AdaptiveToolbarStatePredictorTest {
             }
 
             @Override
-            public void readFromSegmentationPlatform(Callback<Pair<Boolean, Integer>> callback) {
-                callback.onResult(new Pair<>(isReady, segmentationResult));
+            public void readFromSegmentationPlatform(
+                    Callback<Pair<Boolean, List<Integer>>> callback) {
+                callback.onResult(new Pair<>(isReady, List.of(segmentationResult)));
             }
         };
     }

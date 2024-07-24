@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
+#include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -196,10 +197,33 @@ void AnchorElementMetricsSender::RemoveAnchorElement(
     anchor_elements_to_report_.erase(it);
   } else {
     // The element wasn't recently added, so we may have already informed the
-    // browser about it. So we'll inform the browser of its removal with the
-    // next batch of new elements, so it can prune its memory usage for old
-    // elements.
+    // browser about it. So we'll inform the browser of its removal so it can
+    // prune its memory usage for old elements.
     removed_anchors_to_report_.push_back(AnchorElementId(element));
+  }
+  RegisterForLifecycleNotifications();
+}
+
+void AnchorElementMetricsSender::DocumentDetached(Document& document) {
+  // We don't need to do anything if the main frame's document is being detached
+  // as we don't want to notify the browser of anchors being removed in that
+  // scenario.
+  if (document.IsInMainFrame()) {
+    return;
+  }
+  // We also don't need to do anything if a subframe is being detached as part
+  // of the main frame being detached, or when a navigation is committing.
+  LocalFrame* main_frame = GetSupplementable()->GetFrame();
+  CHECK(main_frame);
+  if (!main_frame->IsAttached() ||
+      main_frame->Loader().IsCommittingNavigation()) {
+    return;
+  }
+  for (Element* element : *(document.links())) {
+    HTMLAnchorElement* anchor = IsA<HTMLAreaElement>(element)
+                                    ? To<HTMLAreaElement>(element)
+                                    : To<HTMLAnchorElement>(element);
+    RemoveAnchorElement(*anchor);
   }
 }
 

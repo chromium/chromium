@@ -29,7 +29,12 @@ ContentAutofillDriverFactoryTestApi::ExchangeDriver(
     std::unique_ptr<ContentAutofillDriver> new_driver) {
   auto it = factory_->driver_map_.find(rfh);
   CHECK(it != factory_->driver_map_.end());
-  return std::exchange(it->second, std::move(new_driver));
+  std::unique_ptr<ContentAutofillDriver> old_driver =
+      std::exchange(it->second, std::move(new_driver));
+  test_api(*old_driver)
+      .SetLifecycleState(
+          ContentAutofillDriver::LifecycleState::kPendingDeletion);
+  return old_driver;
 }
 
 ContentAutofillDriver* ContentAutofillDriverFactoryTestApi::GetDriver(

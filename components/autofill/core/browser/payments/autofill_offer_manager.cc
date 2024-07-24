@@ -15,32 +15,13 @@
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/commerce/core/commerce_types.h"
-#include "components/commerce/core/commerce_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
-AutofillOfferData ToAutofillOfferData(
-    const GURL& url,
-    const commerce::DiscountInfo& discount_info) {
-  return AutofillOfferData::FreeListingCouponOffer(
-      discount_info.id,
-      base::Time::FromSecondsSinceUnixEpoch(discount_info.expiry_time_sec),
-      {url}, url, DisplayStrings{discount_info.description_detail},
-      discount_info.discount_code.value_or(""), discount_info.is_merchant_wide,
-      discount_info.terms_and_conditions);
-}
-
-AutofillOfferManager::AutofillOfferManager(
-    PersonalDataManager* personal_data,
-    CouponServiceDelegate* coupon_service_delegate,
-    std::unique_ptr<ShoppingServiceDelegate> shopping_service_delegate)
-    : personal_data_(personal_data),
-      coupon_service_delegate_(coupon_service_delegate),
-      shopping_service_delegate_(std::move(shopping_service_delegate)) {
+AutofillOfferManager::AutofillOfferManager(PersonalDataManager* personal_data)
+    : personal_data_(personal_data) {
   payments_data_manager_observation.Observe(
       &personal_data_->payments_data_manager());
   UpdateEligibleMerchantDomains();
@@ -100,10 +81,6 @@ AutofillOfferManager::GetCardLinkedOffersMap(
 
 bool AutofillOfferManager::IsUrlEligible(
     const GURL& last_committed_primary_main_frame_url) {
-  if (coupon_service_delegate_ && coupon_service_delegate_->IsUrlEligible(
-                                      last_committed_primary_main_frame_url)) {
-    return true;
-  }
   return base::Contains(
       eligible_merchant_domains_,
       last_committed_primary_main_frame_url.DeprecatedGetOriginAsURL());
@@ -111,18 +88,6 @@ bool AutofillOfferManager::IsUrlEligible(
 
 AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
     const GURL& last_committed_primary_main_frame_url) {
-  if (coupon_service_delegate_) {
-    for (AutofillOfferData* offer :
-         coupon_service_delegate_->GetFreeListingCouponsForUrl(
-             last_committed_primary_main_frame_url)) {
-      if (offer->IsActiveAndEligibleForOrigin(
-              last_committed_primary_main_frame_url
-                  .DeprecatedGetOriginAsURL())) {
-        return offer;
-      }
-    }
-  }
-
   for (AutofillOfferData* offer :
        personal_data_->payments_data_manager().GetAutofillOffers()) {
     if (offer->IsActiveAndEligibleForOrigin(
@@ -134,18 +99,6 @@ AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
   return nullptr;
 }
 
-void AutofillOfferManager::GetShoppingServiceOfferForUrl(
-    const GURL& url,
-    AsyncOfferCallback callback) {
-  if (shopping_service_delegate_ &&
-      shopping_service_delegate_->IsDiscountEligibleToShowOnNavigation()) {
-    shopping_service_delegate_->GetDiscountInfoForUrls(
-        {url}, base::BindOnce(
-                   &AutofillOfferManager::HandleShoppingServiceResponse,
-                   weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
-  }
-}
-
 void AutofillOfferManager::UpdateEligibleMerchantDomains() {
   eligible_merchant_domains_.clear();
   std::vector<AutofillOfferData*> offers =
@@ -155,20 +108,6 @@ void AutofillOfferManager::UpdateEligibleMerchantDomains() {
     eligible_merchant_domains_.insert(offer->GetMerchantOrigins().begin(),
                                       offer->GetMerchantOrigins().end());
   }
-}
-
-void AutofillOfferManager::HandleShoppingServiceResponse(
-    const GURL& url,
-    AsyncOfferCallback callback,
-    const commerce::DiscountsMap& discounts) {
-  if (discounts.empty()) {
-    return;
-  }
-
-  CHECK(discounts.size() == 1 && discounts.count(url) == 1 &&
-        discounts.at(url).size() > 0);
-
-  std::move(callback).Run(url, ToAutofillOfferData(url, discounts.at(url)[0]));
 }
 
 }  // namespace autofill

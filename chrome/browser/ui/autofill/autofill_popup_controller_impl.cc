@@ -302,11 +302,6 @@ void AutofillPopupControllerImpl::Show(
   }
 }
 
-void AutofillPopupControllerImpl::DisableThresholdForTesting(
-    bool disable_threshold) {
-  disable_threshold_for_testing_ = disable_threshold;
-}
-
 void AutofillPopupControllerImpl::SetKeepPopupOpenForTesting(
     bool keep_popup_open_for_testing) {
   keep_popup_open_for_testing_ = keep_popup_open_for_testing;
@@ -845,13 +840,6 @@ void AutofillPopupControllerImpl::OnPopupPainted() {
 bool AutofillPopupControllerImpl::HasFilteredOutSuggestions() const {
   return filter_.has_value() &&
          filtered_suggestions_.size() != non_filtered_suggestions_.size();
-}
-
-void AutofillPopupControllerImpl::SetViewForTesting(
-    base::WeakPtr<AutofillPopupView> view) {
-  view_ = std::move(view);
-  barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
-      kIgnoreEarlyClicksOnSuggestionsDuration);
 }
 
 }  // namespace autofill

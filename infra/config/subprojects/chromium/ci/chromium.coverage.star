@@ -323,6 +323,55 @@ ci.builder(
 )
 
 coverage_builder(
+    name = "android-cronet-code-coverage-java",
+    description_html = "Builder for Cronet java code coverage",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "cronet_builder",
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "x64_builder"),
+        build_gs_bucket = "chromium-fyi-archive",
+    ),
+    # No symbols to prevent linker file too large error on
+    # android_webview_unittests target.
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder_without_codecs",
+            "cronet_android",
+            "debug_static_builder",
+            "remoteexec",
+            "x64",
+            "use_java_coverage",
+        ],
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "cronet",
+            short_name = "x64",
+        ),
+    ],
+    contact_team_email = "woa-engprod@google.com",
+    coverage_test_types = ["overall", "unit"],
+    export_coverage_to_zoss = True,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+    use_java_coverage = True,
+)
+
+coverage_builder(
     name = "android-cronet-code-coverage-native",
     description_html = "Builder for Cronet clang coverage",
     builder_spec = builder_config.builder_spec(
@@ -636,6 +685,7 @@ coverage_builder(
             short_name = "lnx-fuzz",
         ),
     ],
+    notifies = ["chrome-fuzzing-core"],
     properties = {
         "collect_fuzz_coverage": True,
     },

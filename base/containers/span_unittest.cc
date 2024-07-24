@@ -610,6 +610,20 @@ TEST(SpanTest, ConstructFromRange) {
     auto s = base::span(r);
     static_assert(std::same_as<decltype(s), base::span<const int>>);
     EXPECT_EQ(s, base::span({1, 2, 3}));
+
+    // Implicit from modern range with dynamic size to dynamic span.
+    base::span<const int> imp = r;
+    EXPECT_EQ(imp, base::span({1, 2, 3}));
+  }
+  {
+    Range r;
+    auto s = base::span<const int, 3u>(r);
+    EXPECT_EQ(s, base::span({1, 2, 3}));
+
+    // Explicit from modern range with dynamic size to fixed span.
+    static_assert(!std::convertible_to<decltype(r), base::span<const int, 3u>>);
+    base::span<const int, 3u> imp(r);
+    EXPECT_EQ(imp, base::span({1, 2, 3}));
   }
 
   struct LegacyRange {
@@ -625,7 +639,71 @@ TEST(SpanTest, ConstructFromRange) {
     auto s = base::span(r);
     static_assert(std::same_as<decltype(s), base::span<const int>>);
     EXPECT_EQ(s, base::span({1, 2, 3}));
+
+    // Implicit from legacy range with dynamic size to dynamic span.
+    base::span<const int> imp = r;
+    EXPECT_EQ(imp, base::span({1, 2, 3}));
   }
+  {
+    LegacyRange r;
+    auto s = base::span<const int, 3u>(r);
+    EXPECT_EQ(s, base::span({1, 2, 3}));
+
+    // Explicit from legacy range with dynamic size to fixed span.
+    static_assert(!std::convertible_to<decltype(r), base::span<const int, 3u>>);
+    base::span<const int, 3> imp(r);
+    EXPECT_EQ(imp, base::span({1, 2, 3}));
+  }
+
+  using FixedRange = const std::array<int, 3>;
+  static_assert(std::ranges::contiguous_range<FixedRange>);
+  static_assert(std::ranges::sized_range<FixedRange>);
+  {
+    FixedRange r = {1, 2, 3};
+    auto s = base::span(r);
+    static_assert(std::same_as<decltype(s), base::span<const int, 3>>);
+    EXPECT_EQ(s, base::span({1, 2, 3}));
+
+    // Implicit from fixed size to dynamic span.
+    base::span<const int> imp = r;
+    EXPECT_EQ(imp, base::span({1, 2, 3}));
+  }
+  {
+    FixedRange r = {1, 2, 3};
+    auto s = base::span<const int, 3u>(r);
+    EXPECT_EQ(s, base::span({1, 2, 3}));
+
+    // Implicit from fixed size to fixed span.
+    base::span<const int, 3u> imp = r;
+    EXPECT_EQ(imp, base::span({1, 2, 3}));
+  }
+
+  // Construction from std::vectors.
+
+  {
+    // Implicit.
+    static_assert(std::convertible_to<const std::vector<int>, span<const int>>);
+    const std::vector<int> i{1, 2, 3};
+    span<const int> s = i;
+    EXPECT_EQ(s, i);
+  }
+  {
+    // Explicit.
+    static_assert(
+        !std::convertible_to<const std::vector<int>, span<const int, 3u>>);
+    static_assert(
+        std::constructible_from<span<const int, 3u>, const std::vector<int>>);
+    const std::vector<int> i{1, 2, 3};
+    span<const int, 3u> s(i);
+    EXPECT_EQ(s, base::span(i));
+  }
+
+  // vector<bool> is special and can't be converted to a span since it does not
+  // actually hold an array of `bool`.
+  static_assert(
+      !std::constructible_from<span<const bool>, const std::vector<bool>>);
+  static_assert(
+      !std::constructible_from<span<const bool, 3u>, const std::vector<bool>>);
 }
 
 TEST(SpanTest, FromRefOfMutableStackVariable) {

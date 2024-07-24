@@ -49,22 +49,24 @@ class SigninBrowserStateInfoUpdaterTest : public PlatformTest {
   SigninBrowserStateInfoUpdaterTest()
       : scoped_browser_state_manager_(
             std::make_unique<TestChromeBrowserStateManager>(
-                browser_state_path().DirName())),
+                browser_state_path())),
         signin_error_controller_(
             SigninErrorController::AccountMode::PRIMARY_ACCOUNT,
             identity_test_env()->identity_manager()),
         signin_browser_state_info_updater_(
             identity_test_env()->identity_manager(),
             &signin_error_controller_,
-            browser_state_path()) {
-    browser_state_info()->AddBrowserState(browser_state_path(),
+            browser_state_name()) {
+    browser_state_info()->AddBrowserState(browser_state_name(),
                                           /*gaia_id=*/std::string(),
-                                          /*username=*/std::u16string());
+                                          /*username=*/std::string());
   }
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return &identity_test_env_;
   }
+
+  std::string browser_state_name() const { return "default"; }
 
   base::FilePath browser_state_path() const {
     return scoped_state_path_.GetPath();
@@ -78,8 +80,8 @@ class SigninBrowserStateInfoUpdaterTest : public PlatformTest {
 
   // Returns index of cached information.
   size_t cached_information_index() const {
-    return browser_state_info()->GetIndexOfBrowserStateWithPath(
-        browser_state_path());
+    return browser_state_info()->GetIndexOfBrowserStateWithName(
+        browser_state_name());
   }
 
   ScopedTempDirWrapper scoped_state_path_;
@@ -106,10 +108,8 @@ TEST_F(SigninBrowserStateInfoUpdaterTest, SigninSignout) {
       browser_state_info()->BrowserStateIsAuthenticatedAtIndex(cache_index));
   EXPECT_EQ(account_info.gaia,
             browser_state_info()->GetGAIAIdOfBrowserStateAtIndex(cache_index));
-  EXPECT_EQ(
-      kEmail,
-      base::UTF16ToUTF8(
-          browser_state_info()->GetUserNameOfBrowserStateAtIndex(cache_index)));
+  EXPECT_EQ(kEmail, browser_state_info()->GetUserNameOfBrowserStateAtIndex(
+                        cache_index));
 
   // Signout.
   identity_test_env()->ClearPrimaryAccount();

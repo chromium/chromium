@@ -1023,22 +1023,8 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, MAYBE_DiscardTabsWithOccludedWindow) {
 
   base::RunLoop().RunUntilIdle();
 
-// On ChromeOS, active tabs are discarded if their window is non-visible. On
-// other platforms, they are never discarded.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::
-              kAshUrgentDiscardingFromPerformanceManager)) {
-    EXPECT_FALSE(
-        IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(0)));
-  } else {
-    EXPECT_TRUE(
-        IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(0)));
-  }
-#else
   EXPECT_FALSE(
       IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(0)));
-#endif
 
   // Non-active tabs can be discarded on all platforms.
   EXPECT_TRUE(

@@ -1385,6 +1385,15 @@ void NetworkContext::SetDocumentReportingEndpoints(
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 }
 
+void NetworkContext::SetEnterpriseReportingEndpoints(
+    const base::flat_map<std::string, GURL>& endpoints) {
+#if BUILDFLAG(ENABLE_REPORTING)
+  if (auto* reporting_service = url_request_context()->reporting_service()) {
+    reporting_service->SetEnterpriseReportingEndpoints(endpoints);
+  }
+#endif  // BUILDFLAG(ENABLE_REPORTING)
+}
+
 void NetworkContext::SendReportsAndRemoveSource(
     const base::UnguessableToken& reporting_source) {
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -2723,6 +2732,10 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     builder.set_persistent_reporting_and_nel_store(nullptr);
   }
 
+  if (params_->enterprise_reporting_endpoints.has_value()) {
+    builder.set_enterprise_reporting_endpoints(
+        params_->enterprise_reporting_endpoints.value());
+  }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
   net::HttpNetworkSessionParams session_params;

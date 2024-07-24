@@ -158,6 +158,18 @@ void TabGroupSyncServiceAndroid::UpdateVisualData(
   tab_group_sync_service_->UpdateVisualData(group_id, &visual_data);
 }
 
+void TabGroupSyncServiceAndroid::MakeTabGroupShared(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_caller,
+    const JavaParamRef<jobject>& j_group_id,
+    const JavaParamRef<jstring>& j_collaboration_id) {
+  LocalTabGroupID tab_group_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
+  std::string collaboration_id =
+      ConvertJavaStringToUTF8(env, j_collaboration_id);
+  tab_group_sync_service_->MakeTabGroupShared(tab_group_id, collaboration_id);
+}
+
 void TabGroupSyncServiceAndroid::AddTab(JNIEnv* env,
                                         const JavaParamRef<jobject>& j_caller,
                                         const JavaParamRef<jobject>& j_group_id,

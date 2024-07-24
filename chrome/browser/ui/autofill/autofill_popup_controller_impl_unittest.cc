@@ -9,6 +9,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller_impl_test_api.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/test_autofill_popup_controller_autofill_client.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
@@ -335,8 +336,8 @@ TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
           {0, 0, 10, 10}, {Suggestion(SuggestionType::kAddressEntry)},
           AutoselectFirstSuggestion(false));
   ASSERT_TRUE(sub_controller);
-  static_cast<AutofillPopupControllerImpl*>(sub_controller.get())
-      ->SetViewForTesting(client().sub_popup_view()->GetWeakPtr());
+  test_api(static_cast<AutofillPopupControllerImpl&>(*sub_controller))
+      .SetView(client().sub_popup_view()->GetWeakPtr());
 
   EXPECT_CALL(manager().external_delegate(),
               DidAcceptSuggestion(_, EqualsSuggestionPosition(
@@ -474,8 +475,8 @@ TEST_F(AutofillPopupControllerImplTest,
 
   // Setting a view makes the subsequent `Show()` call successful and stores
   // the visible duration metric start time.
-  static_cast<AutofillPopupControllerImpl*>(sub_controller.get())
-      ->SetViewForTesting(client().sub_popup_view()->GetWeakPtr());
+  test_api(static_cast<AutofillPopupControllerImpl&>(*sub_controller))
+      .SetView(client().sub_popup_view()->GetWeakPtr());
   sub_controller->Show({Suggestion(SuggestionType::kPasswordEntry)},
                        AutofillSuggestionTriggerSource::kPasswordManager,
                        AutoselectFirstSuggestion(false));

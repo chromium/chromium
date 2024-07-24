@@ -24,9 +24,11 @@
 #include "base/containers/contains.h"
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -38,6 +40,10 @@
 namespace ash {
 
 namespace {
+
+// Inset value for the transient parent, ensuring the divider remains visible
+// and clear of the window resizer border.
+constexpr int kTransientParentInset = chromeos::kResizeOutsideBoundsSize + 1;
 
 // Returns the allowed range of `divider_position` within `windows`,
 // accounting for the windows' minimum sizes.
@@ -384,6 +390,14 @@ void SplitViewDivider::EnlargeOrShrinkDivider(bool should_enlarge) {
 
   divider_widget_->SetBounds(GetDividerBoundsInScreen(should_enlarge));
   divider_view_->RefreshDividerHandler();
+
+  // Even though the divider is a transient of the topmost window, it's not
+  // observed. Mouse/gesture events on the divider may not trigger a refresh of
+  // the stacking order which becomes noticeable with the existence of other
+  // observed transient windows (divider stacked on top of the transient
+  // window). Explicitly call `RefreshStackingOrder()` to apply needed
+  // adjustments.
+  RefreshStackingOrder();
 }
 
 void SplitViewDivider::SetAdjustable(bool adjustable) {
@@ -519,8 +533,15 @@ void SplitViewDivider::OnWindowBoundsChanged(aura::Window* window,
   }
   DCHECK(transient_parent);
 
+  // Inset the bounds of the `transient_parent` by `kTransientParentInset`
+  // to prevent the snapped window's resize border from obscuring the divider.
+  // This simplifies resizing when a transient window is present.
+  gfx::Rect adjusted_transient_parent_bounds =
+      transient_parent->GetBoundsInScreen();
+  adjusted_transient_parent_bounds.Inset(gfx::Insets(kTransientParentInset));
   gfx::Rect transient_bounds = window->GetBoundsInScreen();
-  transient_bounds.AdjustToFit(transient_parent->GetBoundsInScreen());
+  transient_bounds.AdjustToFit(adjusted_transient_parent_bounds);
+
   window->SetBoundsInScreen(
       transient_bounds,
       display::Screen::GetScreen()->GetDisplayNearestWindow(window));

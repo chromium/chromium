@@ -7305,31 +7305,39 @@ New install
 
       <!-- Picker -->
       <!-- TODO: b/309706053 - Finalize these strings and then mark them as these as translateable -->
-      <message name="IDS_PICKER_EXPRESSIONS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show expression results.">
+      <message name="IDS_PICKER_EXPRESSIONS_CATEGORY_LABEL" translateable="false"
+        desc="This string appears in a selectable menu item in a menu. When selected, it opens the ChromeOS emoji picker. The term 'more' indicates that it has more than just emojis and GIFs, including symbols and emoticons.">
         Emojis, GIFs, and more
       </message>
-      <message name="IDS_PICKER_LINKS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show browsing history results.">
+      <message name="IDS_PICKER_LINKS_CATEGORY_LABEL" translateable="false"
+        desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page showing the user's recent browsing history. Browsing history refers to recent websites that the user has visited.">
         Browsing history
       </message>
-      <message name="IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show Drive results.">
+      <message name="IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL" translateable="false"
+        desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page showing the user's recently viewed Google Drive files.">
         Google Drive
       </message>
       <message name="IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show local file results.">
         Files
       </message>
-      <message name="IDS_PICKER_DATES_TIMES_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show date and time results.">
+      <message name="IDS_PICKER_DATES_TIMES_CATEGORY_LABEL" translateable="false"
+        desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page where users can enter date-related phrases (e.g. 'two weeks from now') and it converts the phrase into a specific date (e.g. 'Feb 05'). The translation should only mean 'date' and not 'time', since this does not support time-related phrases.">
         Date
       </message>
-      <message name="IDS_PICKER_UNITS_MATHS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show unit and maths results.">
+      <message name="IDS_PICKER_UNITS_MATHS_CATEGORY_LABEL" translateable="false"
+        desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page where users can enter mathematical calculations or unit conversions (e.g. '1 + 1' or '1 meter to feet').">
         Calculator
       </message>
-      <message name="IDS_PICKER_CAPS_ON_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to turn on caps lock.">
+      <message name="IDS_PICKER_CAPS_ON_CATEGORY_LABEL" translateable="false"
+        desc="This string appears as a selectable menu item in a menu. When selected, it turns on the user's keyboard Caps Lock.">
         Turn on Caps Lock
       </message>
-      <message name="IDS_PICKER_CAPS_OFF_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to turn off caps lock.">
+      <message name="IDS_PICKER_CAPS_OFF_CATEGORY_LABEL" translateable="false"
+        desc="This string appears a selectable menu item in a menu. When selected, it turns off the user's keyboard Caps Lock.">
         Turn off Caps Lock
       </message>
-      <message name="IDS_PICKER_CLIPBOARD_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show clipboard results.">
+      <message name="IDS_PICKER_CLIPBOARD_CATEGORY_LABEL" translateable="false"
+        desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page showing the items in the user's clipboard.">
         Clipboard
       </message>
       <message name="IDS_PICKER_UPPER_CASE_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to transform the selected text to upper case.">

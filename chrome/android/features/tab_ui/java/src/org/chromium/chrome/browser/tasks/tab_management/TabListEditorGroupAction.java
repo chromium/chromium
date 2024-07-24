@@ -65,25 +65,28 @@ public class TabListEditorGroupAction extends TabListEditorAction {
 
     @Override
     public void onSelectionStateChange(List<Integer> tabIds) {
-        int size =
+        int tabCount =
                 editorSupportsActionOnRelatedTabs()
                         ? getTabCountIncludingRelatedTabs(getTabGroupModelFilter(), tabIds)
                         : tabIds.size();
 
-        boolean isEnabled = tabIds.size() > 1;
-        if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled() && tabIds.size() == 1) {
+        boolean isEnabled = false;
+        int tabIdsSize = tabIds.size();
+        if (tabIdsSize == 1) {
             TabGroupModelFilter filter = getTabGroupModelFilter();
             Tab tab = filter.getTabModel().getTabById(tabIds.get(0));
             isEnabled = tab != null && !filter.isTabInTabGroup(tab);
+        } else {
+            isEnabled = tabIdsSize > 1;
         }
-        setEnabledAndItemCount(isEnabled, size);
+        setEnabledAndItemCount(isEnabled, tabCount);
     }
 
     @Override
     public boolean performAction(List<Tab> tabs) {
         TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter();
 
-        if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled() && tabs.size() == 1) {
+        if (tabs.size() == 1) {
             Tab tab = tabs.get(0);
             if (tabGroupModelFilter.isTabInTabGroup(tab)) return true;
 

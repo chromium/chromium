@@ -222,6 +222,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_URL_VISIT_RESUMPTION_RANKER = 46;
   // Target for background segmentation of video frames.
   OPTIMIZATION_TARGET_CAMERA_BACKGROUND_SEGMENTATION = 47;
+  // Target for History search model.
+  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_SEARCH = 48;
 }
 
 // The model engine versions that can be used to do model inference.

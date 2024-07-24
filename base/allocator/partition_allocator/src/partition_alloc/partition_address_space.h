@@ -513,14 +513,20 @@ PA_ALWAYS_INLINE bool IsManagedByPartitionAlloc(uintptr_t address) {
 #if !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   PA_DCHECK(!internal::PartitionAddressSpace::IsInBRPPool(address));
 #endif
-  return internal::PartitionAddressSpace::IsInRegularPool(address)
+
+  return
+#if PA_BUILDFLAG(GLUE_CORE_POOLS)
+      internal::PartitionAddressSpace::IsInCorePools(address)
+#else
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-         || internal::PartitionAddressSpace::IsInBRPPool(address)
+      internal::PartitionAddressSpace::IsInBRPPool(address) ||
 #endif
+      internal::PartitionAddressSpace::IsInRegularPool(address)
+#endif  // PA_BUILDFLAG(GLUE_CORE_POOLS)
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
-         || internal::PartitionAddressSpace::IsInThreadIsolatedPool(address)
+      || internal::PartitionAddressSpace::IsInThreadIsolatedPool(address)
 #endif
-         || internal::PartitionAddressSpace::IsInConfigurablePool(address);
+      || internal::PartitionAddressSpace::IsInConfigurablePool(address);
 }
 
 // Returns false for nullptr.

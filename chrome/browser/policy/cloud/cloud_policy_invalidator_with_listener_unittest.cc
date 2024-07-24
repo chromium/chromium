@@ -140,7 +140,7 @@ class CloudPolicyInvalidatorWithListenerTestBase : public testing::Test {
 
   void SetUp() override {
     ON_CALL(mock_instance_id_driver_,
-            GetInstanceID(invalidation::InvalidationListener::app_id_))
+            GetInstanceID(invalidation::InvalidationListener::kFmAppId))
         .WillByDefault(Return(&mock_instance_id_));
   }
 

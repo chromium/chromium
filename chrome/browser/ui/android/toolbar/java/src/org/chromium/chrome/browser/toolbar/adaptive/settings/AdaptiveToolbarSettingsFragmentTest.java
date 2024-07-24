@@ -52,6 +52,8 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
+import java.util.List;
+
 /** Tests for {@link AdaptiveToolbarSettingsFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -83,7 +85,11 @@ public class AdaptiveToolbarSettingsFragmentTest {
         ChromeSharedPreferences.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
         ChromeSharedPreferences.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
-                new Pair<>(false, AdaptiveToolbarButtonVariant.NEW_TAB));
+                new Pair<>(
+                        false,
+                        List.of(
+                                AdaptiveToolbarButtonVariant.NEW_TAB,
+                                AdaptiveToolbarButtonVariant.SHARE)));
 
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);

@@ -4,6 +4,7 @@
 
 #include "ui/events/blink/web_input_event.h"
 
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/blink/blink_event_util.h"
@@ -173,10 +174,12 @@ blink::WebGestureEvent MakeWebGestureEventFromUiEvent(
       type = blink::WebInputEvent::Type::kGestureFlingCancel;
       break;
     case EventType::kScroll:
-      NOTREACHED_IN_MIGRATION() << "Invalid gesture type: " << event.type();
+      NOTREACHED_IN_MIGRATION()
+          << "Invalid gesture type: " << base::to_underlying(event.type());
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown gesture type: " << event.type();
+      NOTREACHED_IN_MIGRATION()
+          << "Unknown gesture type: " << base::to_underlying(event.type());
   }
 
   blink::WebGestureEvent webkit_event(
@@ -393,7 +396,8 @@ blink::WebMouseEvent MakeWebMouseEventFromUiEvent(const MouseEvent& event) {
       type = blink::WebInputEvent::Type::kMouseMove;
       break;
     default:
-      NOTIMPLEMENTED() << "Received unexpected event: " << event.type();
+      NOTIMPLEMENTED() << "Received unexpected event: "
+                       << base::to_underlying(event.type());
       break;
   }
 

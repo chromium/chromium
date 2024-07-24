@@ -27,7 +27,7 @@ class BrowserProcessPlatformPart;
 class BuildState;
 class DownloadRequestLimiter;
 class DownloadStatusUpdater;
-class GlobalDesktopFeatures;
+class GlobalFeatures;
 class GpuModeManager;
 class IconManager;
 class MediaFileSystemRegistry;
@@ -287,9 +287,6 @@ class BrowserProcess {
   // Returns the object which maintains Universal Serial Bus (USB) system tray
   // icon.
   virtual UsbSystemTrayIcon* usb_system_tray_icon() = 0;
-
-  // Returns the feature controllers scoped to this browser process.
-  virtual GlobalDesktopFeatures* GetDesktopFeatures() = 0;
 #endif
 
   // Obtain the browser instance of OSCryptAsync, which should be used for data
@@ -303,6 +300,9 @@ class BrowserProcess {
       std::unique_ptr<os_crypt_async::KeyProvider> provider) = 0;
 
   virtual BuildState* GetBuildState() = 0;
+
+  // Returns the feature controllers scoped to this browser process.
+  virtual GlobalFeatures* GetFeatures() = 0;
 };
 
 extern BrowserProcess* g_browser_process;

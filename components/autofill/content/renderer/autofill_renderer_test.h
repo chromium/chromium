@@ -86,10 +86,7 @@ class MockAutofillDriver : public mojom::AutofillDriver {
                AutofillSuggestionTriggerSource trigger_source),
               (override));
   MOCK_METHOD(void, HidePopup, (), (override));
-  MOCK_METHOD(void,
-              FocusOnNonFormField,
-              (bool had_interacted_form),
-              (override));
+  MOCK_METHOD(void, FocusOnNonFormField, (), (override));
   MOCK_METHOD(void,
               FocusOnFormField,
               (const FormData& form, FieldRendererId field_id),

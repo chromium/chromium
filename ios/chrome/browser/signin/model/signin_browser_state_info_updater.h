@@ -5,8 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_BROWSER_STATE_INFO_UPDATER_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_BROWSER_STATE_INFO_UPDATER_H_
 
-#include "base/files/file_path.h"
-#import "base/memory/raw_ptr.h"
+#include <string>
+
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -21,7 +22,7 @@ class SigninBrowserStateInfoUpdater : public KeyedService,
  public:
   SigninBrowserStateInfoUpdater(signin::IdentityManager* identity_manager,
                                 SigninErrorController* signin_error_controller,
-                                const base::FilePath& browser_state_path);
+                                const std::string& browser_state_name);
 
   SigninBrowserStateInfoUpdater(const SigninBrowserStateInfoUpdater&) = delete;
   SigninBrowserStateInfoUpdater& operator=(
@@ -45,7 +46,7 @@ class SigninBrowserStateInfoUpdater : public KeyedService,
 
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   raw_ptr<SigninErrorController> signin_error_controller_ = nullptr;
-  const base::FilePath browser_state_path_;
+  const std::string browser_state_name_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};

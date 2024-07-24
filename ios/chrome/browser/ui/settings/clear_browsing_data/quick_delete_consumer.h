@@ -34,6 +34,12 @@ enum class TimePeriod;
 
 // TODO(crbug.com/341107834): Add other browsing data type methods here.
 
+// Shows a loading UI while the deletion is in progress.
+- (void)deletionInProgress;
+
+// Shows a confirmation UI after the deletion is finished.
+- (void)deletionFinished;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_QUICK_DELETE_CONSUMER_H_

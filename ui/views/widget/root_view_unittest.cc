@@ -544,7 +544,7 @@ class NestedEventOnEvent : public View {
                                 ui::EF_NONE, ui::EF_NONE);
       // Avoid infinite recursion if |nested_event_type_| ==
       // EventType::kMouseExited.
-      nested_event_type_ = ui::kUnknown;
+      nested_event_type_ = ui::EventType::kUnknown;
       root_view_->OnMouseExited(exit_event);
     }
   }

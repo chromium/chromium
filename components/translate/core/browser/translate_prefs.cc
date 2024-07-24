@@ -110,6 +110,17 @@ void MigrateObsoleteAlwaysTranslateLanguagesPref(PrefService* prefs) {
   prefs->ClearPref(TranslatePrefs::kPrefAlwaysTranslateListDeprecated);
 }
 
+bool IsTranslateLanguage(std::string_view language) {
+  // Allow "xx" to be used for testing purposes.
+  if (language == "xx") {
+    return true;
+  }
+
+  // Check if |language| is translatable.
+  TranslateLanguageList* language_list =
+      TranslateDownloadManager::GetInstance()->language_list();
+  return language_list && language_list->IsSupportedLanguage(language);
+}
 }  // namespace
 
 // The below properties used to be used but now are deprecated. Don't use them
@@ -250,14 +261,18 @@ bool TranslatePrefs::IsBlockedLanguage(std::string_view input_language) const {
 
 void TranslatePrefs::BlockLanguage(std::string_view input_language) {
   DCHECK(!input_language.empty());
-  if (!IsBlockedLanguage(input_language)) {
-    std::string canonical_lang(input_language);
-    language::ToTranslateLanguageSynonym(&canonical_lang);
+  std::string canonical_lang(input_language);
+  language::ToTranslateLanguageSynonym(&canonical_lang);
+  if (!l10n_util::IsPossibleAcceptLanguage(canonical_lang)) {
+    return;
+  }
+
+  if (!IsBlockedLanguage(canonical_lang)) {
     ScopedListPrefUpdate update(prefs_, translate::prefs::kBlockedLanguages);
     update->Append(std::move(canonical_lang));
   }
   // Remove the blocked language from the always translate list if present.
-  SetLanguageAlwaysTranslateState(input_language, false);
+  RemoveLanguagePairFromAlwaysTranslateList(input_language);
 }
 
 void TranslatePrefs::UnblockLanguage(std::string_view input_language) {
@@ -611,13 +626,17 @@ bool TranslatePrefs::IsLanguagePairOnAlwaysTranslateList(
 void TranslatePrefs::AddLanguagePairToAlwaysTranslateList(
     std::string_view source_language,
     std::string_view target_language) {
-  ScopedDictPrefUpdate update(prefs_, prefs::kPrefAlwaysTranslateList);
-
   // Get translate version of language codes.
   std::string translate_source_language(source_language);
   language::ToTranslateLanguageSynonym(&translate_source_language);
   std::string translate_target_language(target_language);
   language::ToTranslateLanguageSynonym(&translate_target_language);
+  if (!IsTranslateLanguage(translate_source_language) ||
+      !IsTranslateLanguage(translate_target_language)) {
+    return;
+  }
+
+  ScopedDictPrefUpdate update(prefs_, prefs::kPrefAlwaysTranslateList);
 
   update->Set(translate_source_language, translate_target_language);
   // Remove source language from block list if present.
@@ -625,26 +644,13 @@ void TranslatePrefs::AddLanguagePairToAlwaysTranslateList(
 }
 
 void TranslatePrefs::RemoveLanguagePairFromAlwaysTranslateList(
-    std::string_view source_language,
-    std::string_view target_language) {
+    std::string_view source_language) {
   ScopedDictPrefUpdate update(prefs_, prefs::kPrefAlwaysTranslateList);
 
   // Get translate version of language codes.
   std::string translate_source_language(source_language);
   language::ToTranslateLanguageSynonym(&translate_source_language);
   update->Remove(translate_source_language);
-}
-
-void TranslatePrefs::SetLanguageAlwaysTranslateState(
-    std::string_view source_language,
-    bool always_translate) {
-  if (always_translate) {
-    AddLanguagePairToAlwaysTranslateList(source_language,
-                                         GetRecentTargetLanguage());
-  } else {
-    RemoveLanguagePairFromAlwaysTranslateList(source_language,
-                                              GetRecentTargetLanguage());
-  }
 }
 
 std::vector<std::string> TranslatePrefs::GetAlwaysTranslateLanguages() const {

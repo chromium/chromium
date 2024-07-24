@@ -45,6 +45,13 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForBankAccount(
     std::string account_number_suffix,
     sync_pb::BankAccountDetails::AccountType account_type);
 
+sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForEwalletAccount(
+    const std::string_view client_tag,
+    std::string nickname,
+    const GURL& display_icon_url,
+    std::string ewallet_name,
+    std::string account_display_name,
+    bool is_fido_enrolled);
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_PAYMENTS_SYNC_BRIDGE_TEST_UTIL_H_

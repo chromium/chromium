@@ -12,9 +12,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
-import androidx.annotation.NonNull;
-
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
@@ -25,7 +22,6 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     private static final int SPINNER_DURATION_MS = 1500;
     private static final int BACKGROUND_TRANSITION_DURATION_MS = 300;
 
-    private final SettingsLauncher mSettingsLauncher;
     private final PrivacySandboxBridge mPrivacySandboxBridge;
 
     private View mContentView;
@@ -42,13 +38,9 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     private boolean mAreAnimationsDisabled;
 
     public PrivacySandboxDialogConsentEEA(
-            Context context,
-            PrivacySandboxBridge privacySandboxBridge,
-            @NonNull SettingsLauncher settingsLauncher,
-            boolean disableAnimations) {
+            Context context, PrivacySandboxBridge privacySandboxBridge, boolean disableAnimations) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         mPrivacySandboxBridge = privacySandboxBridge;
-        mSettingsLauncher = settingsLauncher;
         mAreAnimationsDisabled = disableAnimations;
         mContentView =
                 LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_consent_eea, null);
@@ -198,8 +190,7 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     }
 
     private void showNotice() {
-        PrivacySandboxDialogController.showNoticeEEA(
-                getContext(), mPrivacySandboxBridge, mSettingsLauncher);
+        PrivacySandboxDialogController.showNoticeEEA(getContext(), mPrivacySandboxBridge);
     }
 
     private boolean isDropdownExpanded() {

@@ -13,6 +13,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/style/typography.h"
 #include "base/check.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
@@ -29,7 +30,7 @@ bool ShouldCloseBubbleForEvent(const ui::LocatedEvent& event) {
          event.type() == ui::EventType::kGestureTap ||
          event.type() == ui::EventType::kGestureTwoFingerTap ||
          event.type() == ui::EventType::kGestureScrollBegin)
-      << event.type();
+      << base::to_underlying(event.type());
 
   // Users in a capture session may be trying to capture the bubble.
   if (capture_mode_util::IsCaptureModeActive())

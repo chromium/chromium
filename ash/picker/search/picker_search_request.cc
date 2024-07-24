@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/picker/picker_clipboard_provider.h"
+#include "ash/picker/picker_clipboard_history_provider.h"
 #include "ash/picker/search/picker_action_search.h"
 #include "ash/picker/search/picker_date_search.h"
 #include "ash/picker/search/picker_editor_search.h"
@@ -112,7 +112,7 @@ PickerSearchRequest::PickerSearchRequest(std::u16string_view query,
 
   if ((!category.has_value() || category == PickerCategory::kClipboard) &&
       base::Contains(available_categories, PickerCategory::kClipboard)) {
-    clipboard_provider_ = std::make_unique<PickerClipboardProvider>();
+    clipboard_provider_ = std::make_unique<PickerClipboardHistoryProvider>();
     MarkSearchStarted(PickerSearchSource::kClipboard);
     clipboard_provider_->FetchResults(
         base::BindOnce(&PickerSearchRequest::HandleClipboardSearchResults,

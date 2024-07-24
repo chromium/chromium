@@ -67,14 +67,10 @@ class AppBoundEncryptionProviderWin::COMWorker {
     std::string plaintext_string(decrypted_key.begin(), decrypted_key.end());
     std::string ciphertext;
     DWORD last_error;
-    HRESULT res;
 
-    {
-      SCOPED_UMA_HISTOGRAM_TIMER("OSCrypt.AppBoundProvider.Encrypt.Time");
-      res = os_crypt::EncryptAppBoundString(
-          ProtectionLevel::PROTECTION_PATH_VALIDATION, plaintext_string,
-          ciphertext, last_error);
-    }
+    HRESULT res = os_crypt::EncryptAppBoundString(
+        ProtectionLevel::PROTECTION_PATH_VALIDATION, plaintext_string,
+        ciphertext, last_error);
 
     base::UmaHistogramSparse("OSCrypt.AppBoundProvider.Encrypt.ResultCode",
                              res);
@@ -98,12 +94,8 @@ class AppBoundEncryptionProviderWin::COMWorker {
                                      encrypted_key.end());
     std::string decrypted_key_string;
     std::string log_message;
-    HRESULT res;
-    {
-      SCOPED_UMA_HISTOGRAM_TIMER("OSCrypt.AppBoundProvider.Decrypt.Time");
-      res = os_crypt::DecryptAppBoundString(
-          encrypted_key_string, decrypted_key_string, last_error, &log_message);
-    }
+    HRESULT res = os_crypt::DecryptAppBoundString(
+        encrypted_key_string, decrypted_key_string, last_error, &log_message);
 
     base::UmaHistogramSparse("OSCrypt.AppBoundProvider.Decrypt.ResultCode",
                              res);

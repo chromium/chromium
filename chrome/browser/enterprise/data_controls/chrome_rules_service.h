@@ -8,7 +8,7 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/enterprise/data_controls/content/browser/rules_service.h"
 #include "components/enterprise/data_controls/content/browser/rules_service_factory.h"
-#include "components/enterprise/data_controls/core/verdict.h"
+#include "components/enterprise/data_controls/core/browser/verdict.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/browser_context.h"

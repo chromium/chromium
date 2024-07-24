@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/test/mock_callback.h"
+#include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller_impl_test_api.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/mock_autofill_keyboard_accessory_view.h"
@@ -47,8 +48,8 @@ class TestAutofillKeyboardAccessoryControllerAutofillClient
                           &GetWebContents(), gfx::RectF(),
                           show_pwd_migration_warning_callback_.Get()))
               ->GetWeakPtr();
-      cast_popup_controller().SetViewForTesting(
-          std::make_unique<MockAutofillKeyboardAccessoryView>());
+      test_api(cast_popup_controller())
+          .SetView(std::make_unique<MockAutofillKeyboardAccessoryView>());
       manager_of_last_controller_ = manager.GetWeakPtr();
       ON_CALL(cast_popup_controller(), Hide)
           .WillByDefault(
@@ -59,7 +60,7 @@ class TestAutofillKeyboardAccessoryControllerAutofillClient
 
   MockAutofillKeyboardAccessoryView* popup_view() {
     return popup_controller_ ? static_cast<MockAutofillKeyboardAccessoryView*>(
-                                   cast_popup_controller().view())
+                                   test_api(cast_popup_controller()).view())
                              : nullptr;
   }
 

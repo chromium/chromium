@@ -12,13 +12,14 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.List;
+
 /**
  * This bridge creates and initializes a {@link AllPasswordsBottomSheetCoordinator} on construction
  * and forwards native calls to it.
  */
 class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinator.Delegate {
     private long mNativeView;
-    private Credential[] mCredentials;
     private final AllPasswordsBottomSheetCoordinator mAllPasswordsBottomSheetCoordinator;
 
     private AllPasswordsBottomSheetBridge(
@@ -50,32 +51,9 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
     }
 
     @CalledByNative
-    private void createCredentialArray(int size) {
-        mCredentials = new Credential[size];
-    }
-
-    @CalledByNative
-    private void insertCredential(
-            int index,
-            @JniType("std::u16string") String username,
-            @JniType("std::u16string") String password,
-            @JniType("std::u16string") String formattedUsername,
-            @JniType("std::string") String originUrl,
-            boolean isAndroidCredential,
-            @JniType("std::string") String appDisplayName) {
-        mCredentials[index] =
-                new Credential(
-                        username,
-                        password,
-                        formattedUsername,
-                        originUrl,
-                        isAndroidCredential,
-                        appDisplayName);
-    }
-
-    @CalledByNative
-    private void showCredentials(boolean isPasswordField) {
-        mAllPasswordsBottomSheetCoordinator.showCredentials(mCredentials, isPasswordField);
+    private void showCredentials(
+            @JniType("std::vector") List<Credential> credentials, boolean isPasswordField) {
+        mAllPasswordsBottomSheetCoordinator.showCredentials(credentials, isPasswordField);
     }
 
     @Override

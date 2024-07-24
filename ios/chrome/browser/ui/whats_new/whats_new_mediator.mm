@@ -49,7 +49,8 @@
 #pragma mark - WhatsNewDetailViewActionHandler
 
 - (void)didTapActionButton:(WhatsNewType)type
-             primaryAction:(WhatsNewPrimaryAction)primaryAction {
+             primaryAction:(WhatsNewPrimaryAction)primaryAction
+        baseViewController:(UIViewController*)baseViewController {
   base::UmaHistogramEnumeration("IOS.WhatsNew.PrimaryActionTapped", type);
 
   switch (primaryAction) {
@@ -60,12 +61,12 @@
     case WhatsNewPrimaryAction::kPrivacySettings:
       // Handles actions that open privacy in Chrome settings.
       [self.applicationHandler
-          showPrivacySettingsFromViewController:self.baseViewController];
+          showPrivacySettingsFromViewController:baseViewController];
       break;
     case WhatsNewPrimaryAction::kChromeSettings:
       // Handles actions that open Chrome Settings.
       [self.applicationHandler
-          showSettingsFromViewController:self.baseViewController];
+          showSettingsFromViewController:baseViewController];
       break;
     case WhatsNewPrimaryAction::kIOSSettingsPasswords:
       // Handles actions that open Passwords in iOS Settings.
@@ -80,7 +81,7 @@
     case WhatsNewPrimaryAction::kSafeBrowsingSettings:
       // Handles actions that open ESB in Chrome settings.
       [self.applicationHandler
-          showSafeBrowsingSettingsFromViewController:self.baseViewController];
+          showSafeBrowsingSettingsFromViewController:baseViewController];
       break;
     case WhatsNewPrimaryAction::kChromePasswordManager:
       // Handles actions that open Chrome Password Manager.

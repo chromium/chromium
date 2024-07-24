@@ -16,6 +16,7 @@
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/skottie_color_map.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 
@@ -276,6 +277,11 @@ class CC_PAINT_EXPORT InspectableRecordPaintCanvas : public RecordPaintCanvas {
   int CheckSaveCount(int super_prev_save_count, int canvas_prev_save_count);
 
   SkNoDrawCanvas canvas_;
+
+  // Cached value of `canvas.getDeviceClipBounds()`. Cached as this value is
+  // used in every fill/stroke operation and calculating is on the expensive
+  // side.
+  mutable std::optional<SkIRect> device_clip_bounds_;
 };
 
 }  // namespace cc

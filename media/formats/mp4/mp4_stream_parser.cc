@@ -1017,7 +1017,10 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
   // opposite of what the coded frame contains.
   bool is_keyframe = runs_->is_keyframe();
 
-  std::vector<uint8_t> frame_buf(buf, buf + sample_size);
+  // `frame_buf` should be used for post-processing buffer storage if
+  // [buf, buf + sample_size] needs any kind of processing before being put in a
+  // StreamParserBuffer.
+  std::vector<uint8_t> frame_buf;
   if (video) {
     if (runs_->video_description().video_info.codec == VideoCodec::kH264 ||
         runs_->video_description().video_info.codec == VideoCodec::kHEVC ||
@@ -1025,6 +1028,7 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
             VideoCodec::kDolbyVision) {
       DCHECK(runs_->video_description().frame_bitstream_converter);
       BitstreamConverter::AnalysisResult analysis;
+      frame_buf.assign(buf, buf + sample_size);
       if (!runs_->video_description()
                .frame_bitstream_converter->ConvertAndAnalyzeFrame(
                    &frame_buf, is_keyframe, &subsamples, &analysis)) {
@@ -1072,6 +1076,7 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
   if (audio) {
     if (ESDescriptor::IsAAC(runs_->audio_description().esds.object_type)) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
+      frame_buf.assign(buf, buf + sample_size);
       if (!PrepareAACBuffer(runs_->audio_description().esds.aac, &frame_buf,
                             &subsamples)) {
         MEDIA_LOG(ERROR, media_log_)
@@ -1084,6 +1089,7 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
     } else {
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
       if (runs_->audio_description().format == FOURCC_IAMF) {
+        frame_buf.assign(buf, buf + sample_size);
         if (!PrependIADescriptors(runs_->audio_description().iacb, &frame_buf,
                                   &subsamples)) {
           MEDIA_LOG(ERROR, media_log_)
@@ -1113,14 +1119,24 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
   if (auto* media_client = GetMediaClient()) {
     if (auto* alloc = media_client->GetMediaAllocator()) {
       stream_buf = StreamParserBuffer::FromExternalMemory(
-          alloc->CopyFrom(frame_buf), is_keyframe, buffer_type,
-          runs_->track_id());
+          alloc->CopyFrom(
+              frame_buf.empty()
+                  ? base::span<const uint8_t>{buf, buf + sample_size}
+                  : frame_buf),
+          is_keyframe, buffer_type, runs_->track_id());
     }
   }
   if (!stream_buf) {
-    stream_buf = StreamParserBuffer::FromExternalMemory(
-        std::make_unique<ExternalMemoryAdapter>(std::move(frame_buf)),
-        is_keyframe, buffer_type, runs_->track_id());
+    // Skip using the ExternalMemoryAdapter if possible since it can have more
+    // overhead in some applications. See https://crbug.com/353751208.
+    if (frame_buf.empty()) {
+      stream_buf = StreamParserBuffer::CopyFrom(buf, sample_size, is_keyframe,
+                                                buffer_type, runs_->track_id());
+    } else {
+      stream_buf = StreamParserBuffer::FromExternalMemory(
+          std::make_unique<ExternalMemoryAdapter>(std::move(frame_buf)),
+          is_keyframe, buffer_type, runs_->track_id());
+    }
   }
 
   if (decrypt_config)

@@ -52,7 +52,7 @@ class TrainingDataCache {
   const raw_ptr<SegmentInfoDatabase, DanglingUntriaged> segment_info_database_;
   base::flat_map<std::pair<proto::SegmentId, proto::ModelSource>,
                  base::flat_map<TrainingRequestId, proto::TrainingData>>
-      cache;
+      cache_;
   base::WeakPtrFactory<TrainingDataCache> weak_ptr_factory_{this};
 };
 

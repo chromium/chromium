@@ -356,7 +356,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // Sets a process priority override. This overrides the entire built-in
   // priority setting mechanism for the process.
   // TODO(pmonette): Make this work well on Android.
-  virtual void SetPriorityOverride(bool foreground) = 0;
+  virtual void SetPriorityOverride(base::Process::Priority priority) = 0;
   virtual bool HasPriorityOverride() = 0;
   virtual void ClearPriorityOverride() = 0;
 #endif
@@ -448,8 +448,8 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // a crash.
   virtual const base::TimeTicks& GetLastInitTime() = 0;
 
-  // Returns true if this process currently has backgrounded priority.
-  virtual bool IsProcessBackgrounded() = 0;
+  // Returns the priority of this process.
+  virtual base::Process::Priority GetPriority() = 0;
 
   // Returns a list of durations for active KeepAlive requests.
   // For debugging only. TODO(wjmaclean): Remove once the causes behind

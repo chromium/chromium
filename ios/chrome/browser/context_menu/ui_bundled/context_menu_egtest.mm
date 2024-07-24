@@ -7,9 +7,11 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
@@ -266,6 +268,7 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 // Context menu tests for Chrome.
 @interface ContextMenuTestCase : ChromeTestCase {
   std::unique_ptr<ScopedBlockPopupsPref> _blockPopupsPref;
+  bool _setUpHistogramTesterCalled;
 }
 
 @end
@@ -277,6 +280,7 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   config.features_enabled.push_back(kTabGroupsInGrid);
   config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kModernTabStrip);
+  config.features_enabled.push_back(kShareInWebContextMenuIOS);
   config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
   return config;
 }
@@ -288,6 +292,20 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+}
+
+- (void)setUpHistogramTester {
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+  _setUpHistogramTesterCalled = true;
+}
+
+- (void)tearDown {
+  if (_setUpHistogramTesterCalled) {
+    GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                  @"Failed to release histogram tester.");
+  }
+  [super tearDown];
 }
 
 // Tests that selecting "Open Image" from the context menu properly opens the
@@ -549,6 +567,15 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                           IDS_IOS_COPY_LINK_ACTION_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_ancestor(grey_kindOfClassName(
+                                       @"_UIContextMenuCell")),
+                                   ContextMenuItemWithAccessibilityLabelId(
+                                       IDS_IOS_SHARE_BUTTON_LABEL),
+                                   nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Checks that "open in new window" shows up on a long press of a url link
@@ -732,4 +759,32 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
       assertWithMatcher:grey_notNil()];
 }
+
+// Tests "Share URL" action in the web context menu when long
+// pressing a link in a web page, and tests that triggering the
+// action does present the Share menu as expected.
+- (void)testShareInWebContextMenu {
+  [self setUpHistogramTester];
+  const GURL pageURL = self.testServer->GetURL(kInitialPageUrl);
+  NSString* pageTitle = base::SysUTF8ToNSString(pageURL.GetContent());
+  [ChromeEarlGrey loadURL:pageURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLinkText];
+  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
+
+  LongPressElement(kInitialPageDestinationLinkId);
+
+  [ChromeEarlGrey verifyShareActionWithURL:pageURL pageTitle:pageTitle];
+
+  // Ensure that UMA was logged correctly.
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:13  // Number refering to
+                       // SharingScenario::ShareInWebContextMenu
+      forHistogram:@"Mobile.Share.EntryPoints"];
+  if (error) {
+    GREYFail([error description]);
+  }
+}
+
 @end

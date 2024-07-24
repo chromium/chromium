@@ -36,6 +36,9 @@ import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Controller tests for the all passwords bottom sheet. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.FILLING_PASSWORDS_FROM_ANY_ORIGIN)
@@ -46,7 +49,7 @@ public class AllPasswordsBottomSheetControllerTest {
             new Credential("Bob", "*****", "Bob", "https://subdomain.example.xyz", false, "");
     private static final Credential CARL =
             new Credential("Carl", "G3h3!m", "Carl", "https://www.origin.xyz", false, "");
-    private static final Credential[] TEST_CREDENTIALS = new Credential[] {BOB, CARL, ANA};
+    private static final List<Credential> TEST_CREDENTIALS = List.of(BOB, CARL, ANA);
     private static final boolean IS_PASSWORD_FIELD = true;
     private static final String EXAMPLE_ORIGIN = "https://m.example.com/";
 
@@ -83,7 +86,7 @@ public class AllPasswordsBottomSheetControllerTest {
 
     @Test
     public void testShowCredentialSetsCredentialListModel() {
-        mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.showCredentials(new ArrayList<>(TEST_CREDENTIALS), IS_PASSWORD_FIELD);
 
         ListModel<ListItem> itemList = mListModel;
         assertThat(itemList.size(), is(3));
@@ -98,8 +101,8 @@ public class AllPasswordsBottomSheetControllerTest {
 
     @Test
     public void testOnCredentialSelected() {
-        mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
-        CredentialFillRequest request = new CredentialFillRequest(TEST_CREDENTIALS[1], true);
+        mMediator.showCredentials(new ArrayList<>(TEST_CREDENTIALS), IS_PASSWORD_FIELD);
+        CredentialFillRequest request = new CredentialFillRequest(TEST_CREDENTIALS.get(1), true);
         mMediator.onCredentialSelected(request);
         assertThat(mModel.get(VISIBLE), is(false));
         verify(mMockDelegate).onCredentialSelected(request);
@@ -107,7 +110,7 @@ public class AllPasswordsBottomSheetControllerTest {
 
     @Test
     public void testOnDismiss() {
-        mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.showCredentials(new ArrayList<>(TEST_CREDENTIALS), IS_PASSWORD_FIELD);
         mMediator.onDismissed(BottomSheetController.StateChangeReason.BACK_PRESS);
         assertThat(mModel.get(VISIBLE), is(false));
         verify(mMockDelegate).onDismissed();
@@ -115,21 +118,21 @@ public class AllPasswordsBottomSheetControllerTest {
 
     @Test
     public void testSearchFilterByUsername() {
-        mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.showCredentials(new ArrayList<>(TEST_CREDENTIALS), IS_PASSWORD_FIELD);
         mMediator.onQueryTextChange("Bob");
         assertThat(mListModel.size(), is(1));
     }
 
     @Test
     public void testSearchFilterByURL() {
-        mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.showCredentials(new ArrayList<>(TEST_CREDENTIALS), IS_PASSWORD_FIELD);
         mMediator.onQueryTextChange("subdomain");
         assertThat(mListModel.size(), is(1));
     }
 
     @Test
     public void testCredentialSortedByOrigin() {
-        mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.showCredentials(new ArrayList<>(TEST_CREDENTIALS), IS_PASSWORD_FIELD);
 
         ListModel<ListItem> itemList = mListModel;
 

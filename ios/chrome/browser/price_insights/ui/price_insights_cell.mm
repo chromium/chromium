@@ -105,6 +105,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
     _contentStackView.alignment = UIStackViewAlignmentFill;
     _contentStackView.clipsToBounds = YES;
     _contentStackView.layer.cornerRadius = kCornerRadius;
+    _contentStackView.insetsLayoutMarginsFromSafeArea = NO;
     [_contentStackView setAccessibilityIdentifier:kContentStackViewIdentifier];
 
     [self.contentView addSubview:_contentStackView];
@@ -264,6 +265,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
   verticalStack.distribution = UIStackViewDistributionFill;
   verticalStack.alignment = UIStackViewAlignmentLeading;
   verticalStack.spacing = kPriceTrackingVerticalStackViewSpacing;
+  verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
 
   _priceTrackingStackView = [[UIStackView alloc] init];
   [_priceTrackingStackView
@@ -290,6 +292,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
   _priceTrackingStackView.layoutMargins =
       UIEdgeInsets(kContentVerticalInset, kContentHorizontalInset,
                    kContentVerticalInset, kContentHorizontalInset);
+  _priceTrackingStackView.insetsLayoutMarginsFromSafeArea = NO;
 }
 
 // Method that creates a view for the buying options module.
@@ -317,11 +320,13 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
   verticalStack.alignment = UIStackViewAlignmentLeading;
   verticalStack.spacing = kPriceTrackingVerticalStackViewSpacing;
   verticalStack.isAccessibilityElement = NO;
+  verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
 
   UIImage* icon = DefaultSymbolWithPointSize(kOpenImageActionSymbol, kIconSize);
   UIImageView* iconView = [[UIImageView alloc] initWithImage:icon];
   iconView.tintColor = [UIColor colorNamed:kGrey500Color];
   iconView.isAccessibilityElement = NO;
+  iconView.translatesAutoresizingMaskIntoConstraints = NO;
 
   _buyingOptionsStackView = [[UIStackView alloc]
       initWithArrangedSubviews:@[ verticalStack, iconView ]];
@@ -340,6 +345,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
                    kContentVerticalInset, kContentHorizontalInset);
   _buyingOptionsStackView.isAccessibilityElement = YES;
   _buyingOptionsStackView.accessibilityTraits = UIAccessibilityTraitLink;
+  _buyingOptionsStackView.insetsLayoutMarginsFromSafeArea = NO;
   _buyingOptionsStackView.accessibilityLabel =
       l10n_util::GetNSString(IDS_BUYING_OPTIONS_ACCESSIBILITY_DESCRIPTION);
   [_buyingOptionsStackView
@@ -360,6 +366,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
   verticalStack.distribution = UIStackViewDistributionFill;
   verticalStack.alignment = UIStackViewAlignmentLeading;
   verticalStack.spacing = kPriceTrackingVerticalStackViewSpacing;
+  verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
 
   UILabel* title = [self createLabel];
   [title setAccessibilityIdentifier:kPriceHistoryTitleIdentifier];
@@ -423,6 +430,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
   _priceHistoryStackView.layoutMargins =
       UIEdgeInsets(kContentVerticalInset, kContentHorizontalInset,
                     kContentVerticalInset, kContentHorizontalInset);
+  _priceHistoryStackView.insetsLayoutMarginsFromSafeArea = NO;
 }
 
 - (void)configurePriceRangeWithTitle:(NSString*)titleText
@@ -433,6 +441,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
   labelStackView.alignment = UIStackViewAlignmentLeading;
   labelStackView.spacing = kPriceTrackingVerticalStackViewSpacing;
   labelStackView.isAccessibilityElement = NO;
+  labelStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   UILabel* title = [self createLabel];
   [title setAccessibilityIdentifier:kPriceRangeTitleIdentifier];
@@ -470,6 +479,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
                   currentValue:self.item.currentPrice
                sliderViewWidth:sliderViewWidth];
   sliderStackView.isAccessibilityElement = NO;
+  sliderStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   _priceRangeStackView = [[UIStackView alloc]
       initWithArrangedSubviews:@[ labelStackView, sliderStackView ]];

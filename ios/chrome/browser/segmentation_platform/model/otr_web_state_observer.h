@@ -5,9 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_MODEL_OTR_WEB_STATE_OBSERVER_H_
 #define IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_MODEL_OTR_WEB_STATE_OBSERVER_H_
 
+#include <string>
+#include <string_view>
+
 #include "base/containers/flat_map.h"
-#include "base/files/file_path.h"
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache_observer.h"
 
@@ -40,8 +42,8 @@ class OTRWebStateObserver : public BrowserStateInfoCacheObserver {
   OTRWebStateObserver& operator=(OTRWebStateObserver&) = delete;
 
   // BrowserStateInfoCacheObserver:
-  void OnBrowserStateAdded(const base::FilePath& path) override;
-  void OnBrowserStateWasRemoved(const base::FilePath& path) override;
+  void OnBrowserStateAdded(std::string_view name) override;
+  void OnBrowserStateWasRemoved(std::string_view name) override;
 
   // Add/Remove observers.
   void AddObserver(ObserverClient* client);
@@ -64,7 +66,7 @@ class OTRWebStateObserver : public BrowserStateInfoCacheObserver {
     int otr_web_state_count = 0;
   };
 
-  void OnWebStateListChanged(const base::FilePath& browser_state_path,
+  void OnWebStateListChanged(const std::string& browser_state_name,
                              int otr_web_state_count);
 
   // Counts OTR WebState(s) across all the BrowserState(s) and returns true if
@@ -73,7 +75,7 @@ class OTRWebStateObserver : public BrowserStateInfoCacheObserver {
 
   base::ObserverList<ObserverClient, true> observer_clients_;
   raw_ptr<ios::ChromeBrowserStateManager> browser_state_manager_;
-  base::flat_map<base::FilePath, std::unique_ptr<BrowserStateData>>
+  base::flat_map<std::string, std::unique_ptr<BrowserStateData>, std::less<>>
       browser_state_data_;
 
   bool shutting_down_ = false;

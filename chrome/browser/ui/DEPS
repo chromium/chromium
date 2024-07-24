@@ -24,6 +24,7 @@ include_rules = [
   "+components/soda",
   "+components/supervised_user/core/common",
   "+components/tab_groups",
+  "+components/tpcd/enterprise_reporting",
   "+components/translate/content/android",
   "+components/user_education/common",
   "+components/user_education/test",

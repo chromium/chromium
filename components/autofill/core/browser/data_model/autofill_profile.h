@@ -33,6 +33,7 @@
 namespace autofill {
 
 class AutofillProfileComparator;
+class AutofillProfileTestApi;
 
 // A collection of FormGroups stored in a profile.  AutofillProfile also
 // implements the FormGroup interface so that owners of this object can request
@@ -150,10 +151,6 @@ class AutofillProfile : public AutofillDataModel {
   // purposes, meaning that if equal we do not need to update this profile to
   // the |new_profile|.
   bool EqualsForUpdatePurposes(const AutofillProfile& new_profile) const;
-
-  // Same as operator==, but cares about differences in usage stats.
-  bool EqualsIncludingUsageStatsForTesting(
-      const AutofillProfile& profile) const;
 
   // Equality operators compare GUIDs, origins, language code, and the contents
   // in the comparison. Usage metadata (use count, use date, modification date)
@@ -278,9 +275,6 @@ class AutofillProfile : public AutofillDataModel {
   void set_profile_label(const std::string& label) { profile_label_ = label; }
 
   Source source() const { return source_; }
-  void set_source_for_testing(AutofillProfile::Source source) {
-    source_ = source;
-  }
 
   int initial_creator_id() const { return initial_creator_id_; }
   void set_initial_creator_id(int creator_id) {
@@ -315,6 +309,8 @@ class AutofillProfile : public AutofillDataModel {
   AutofillType GetFillingType(AutofillType field_type) const;
 
  private:
+  friend class AutofillProfileTestApi;
+
   // FormGroup:
   std::u16string GetInfoImpl(const AutofillType& type,
                              const std::string& app_locale) const override;

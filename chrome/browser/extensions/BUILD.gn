@@ -1570,7 +1570,7 @@ source_set("extensions") {
   if (enterprise_data_controls) {
     deps += [
       "//components/enterprise/buildflags",
-      "//components/enterprise/data_controls/core",
+      "//components/enterprise/data_controls/core/browser",
     ]
   }
 }

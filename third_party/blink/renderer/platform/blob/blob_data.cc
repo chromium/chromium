@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 
 #include <memory>
@@ -166,16 +161,12 @@ void BlobData::AppendText(const String& text,
       AppendDataInternal(base::make_span(buffer));
     }
   } else {
-    AppendDataInternal(base::make_span(utf8_text.data(), utf8_text.length()));
+    AppendDataInternal(base::span(utf8_text));
   }
 }
 
 void BlobData::AppendBytes(base::span<const uint8_t> bytes) {
   AppendDataInternal(base::as_chars(bytes));
-}
-
-void BlobData::AppendBytes(const void* bytes, size_t length) {
-  AppendDataInternal(base::make_span(static_cast<const char*>(bytes), length));
 }
 
 uint64_t BlobData::length() const {

@@ -264,16 +264,24 @@
   base::WeakPtr<const TabGroup> weakGroup = tabGroup->GetWeakPtr();
   __weak BaseGridCoordinator* weakSelf = self;
   _tabGroupConfirmationCoordinator.action = ^{
-    switch (actionType) {
-      case TabGroupActionType::kUngroupTabGroup:
-        [weakSelf ungroupTabGroup:weakGroup];
-        break;
-      case TabGroupActionType::kDeleteTabGroup:
-        [weakSelf closeTabsAndDeleteGroup:weakGroup];
-        break;
-    }
+    [weakSelf takeActionForActionType:actionType weakGroup:weakGroup];
   };
+  [_tabGroupConfirmationCoordinator start];
+}
 
+- (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
+                                    group:(const TabGroup*)tabGroup
+                         sourceButtonItem:(UIBarButtonItem*)sourceButtonItem {
+  _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                      actionType:actionType
+                sourceButtonItem:sourceButtonItem];
+  base::WeakPtr<const TabGroup> weakGroup = tabGroup->GetWeakPtr();
+  __weak BaseGridCoordinator* weakSelf = self;
+  _tabGroupConfirmationCoordinator.action = ^{
+    [weakSelf takeActionForActionType:actionType weakGroup:weakGroup];
+  };
   [_tabGroupConfirmationCoordinator start];
 }
 
@@ -330,20 +338,25 @@
       arrayByAddingObjectsFromArray:secondaryInactiveItems];
 }
 
-// Helper method to close a tab group and dismiss the confirmation coordinator.
-- (void)closeTabsAndDeleteGroup:(base::WeakPtr<const TabGroup>)weakGroup {
-  if (weakGroup) {
-    [self.mediator closeTabGroup:weakGroup.get() andDeleteGroup:YES];
+// Helper method to execute a corresponded action to `actionType` and dismiss
+// the confirmation coordinator.
+- (void)takeActionForActionType:(TabGroupActionType)actionType
+                      weakGroup:(base::WeakPtr<const TabGroup>)weakGroup {
+  switch (actionType) {
+    case TabGroupActionType::kUngroupTabGroup:
+      if (weakGroup) {
+        [self.mediator ungroupTabGroup:weakGroup.get()];
+      }
+      break;
+    case TabGroupActionType::kDeleteTabGroup:
+      if (weakGroup) {
+        [self.mediator closeTabGroup:weakGroup.get() andDeleteGroup:YES];
+      }
+      break;
   }
-  [_tabGroupConfirmationCoordinator stop];
-  _tabGroupConfirmationCoordinator = nil;
-}
 
-// Helper method to ungroup a tab group and dismiss the confirmation
-// coordinator.
-- (void)ungroupTabGroup:(base::WeakPtr<const TabGroup>)weakGroup {
-  if (weakGroup) {
-    [self.mediator ungroupTabGroup:weakGroup.get()];
+  if (_tabGroupCoordinator) {
+    [self hideTabGroup];
   }
   [_tabGroupConfirmationCoordinator stop];
   _tabGroupConfirmationCoordinator = nil;

@@ -10,6 +10,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -185,8 +186,8 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
   [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
 
   // Verify that the whole navigation stack is gone.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsNavigationBar()]
-      assertWithMatcher:grey_nil()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::SettingsNavigationBar()];
 }
 
 // Checks that the password manual filling option is as expected and visible.
@@ -213,8 +214,8 @@ void CheckKeyboardIsUpAndNotCovered() {
                    @"Keyboard should be shown");
   }
 
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
-      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
+                      ManualFallbackPasswordTableViewMatcher()];
 }
 
 }  // namespace
@@ -556,9 +557,8 @@ void CheckKeyboardIsUpAndNotCovered() {
       selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
-      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
+                      ManualFallbackOtherPasswordsDismissMatcher()];
 
   // Open it again to make sure the old coordinator was properly cleaned up.
   [self openOtherPasswords];
@@ -624,12 +624,11 @@ void CheckKeyboardIsUpAndNotCovered() {
   [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
 
   // Verify that the whole navigation stack is gone.
-  [[EarlGrey selectElementWithMatcher:password_manager_test_utils::
-                                          ReauthenticationController()]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
-      assertWithMatcher:grey_nil()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:password_manager_test_utils::
+                                                 ReauthenticationController()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      ManualFallbackOtherPasswordsDismissMatcher()];
 
   // The keyboard should be visible.
   CheckKeyboardIsUpAndNotCovered();
@@ -1149,24 +1148,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
   [self loadLoginPage];
 
-  // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementUsername)];
-
-  // Wait for the accessory icon to appear.
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
-
-  // Open the password manual fill view.
-  OpenPasswordManualFillView(/*has_suggestions=*/false);
-
-  // Tap the "Select Password..." action.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
-      performAction:grey_tap()];
-
-  // Acknowledge concerns using other passwords on a website.
-  [[EarlGrey selectElementWithMatcher:ConfirmUsingOtherPasswordButton()]
-      performAction:grey_tap()];
+  [self openOtherPasswords];
 
   // Tap the overflow menu button and select the "Edit" action.
   [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
@@ -1191,6 +1173,10 @@ void CheckKeyboardIsUpAndNotCovered() {
                             @"Accessory Upgrade feature is disabled.")
   }
 
+  [FormInputAccessoryAppInterface setUpMockReauthenticationModule];
+  [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
+                                      ReauthenticationResult::kSuccess];
+
   // Disable the password bottom sheet.
   [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
 
@@ -1211,11 +1197,117 @@ void CheckKeyboardIsUpAndNotCovered() {
   // Open the password manual fill view.
   OpenPasswordManualFillView(/*has_suggestions=*/true);
 
+  // Tap the "Autofill Form" button.
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      performAction:grey_tap()];
 
-  // TODO(crbug.com/326413161): Perform tap on the button and assert that the
-  // form was filled.
+  // Verify that the page is filled properly.
+  [self verifyPasswordInfoHasBeenFilled:base::SysUTF8ToNSString(
+                                            kExampleUsername)];
+
+  [FormInputAccessoryAppInterface removeMockReauthenticationModule];
+}
+
+// Tests that tapping the "Autofill Form" button doesn't fill the password form
+// if reauth failed.
+- (void)testAutofillFormButtonWithFailedAuth {
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
+                            @"Accessory Upgrade feature is disabled.")
+  }
+
+  [FormInputAccessoryAppInterface setUpMockReauthenticationModule];
+  [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
+                                      ReauthenticationResult::kFailure];
+
+  // Disable the password bottom sheet.
+  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+
+  // Save password for site.
+  NSString* URLString = base::SysUTF8ToNSString(self.URL.spec());
+  [AutofillAppInterface savePasswordFormForURLSpec:URLString];
+
+  [self loadLoginPage];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementUsername)];
+
+  // Wait for the accessory icon to appear.
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                 @"Keyboard Should be Shown");
+
+  // Open the password manual fill view.
+  OpenPasswordManualFillView(/*has_suggestions=*/true);
+
+  // Tap the "Autofill Form" button.
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      performAction:grey_tap()];
+
+  // Verify that the page is filled properly.
+  [self verifyPasswordInfoHasntBeenFilled];
+
+  [FormInputAccessoryAppInterface removeMockReauthenticationModule];
+}
+
+// Tests that tapping the "Autofill Form" button in the all password list fills
+// the password form with the right data.
+- (void)testAutofillFormButtonInAllPasswordListFillsForm {
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
+                            @"Accessory Upgrade feature is disabled.")
+  }
+
+  // Disable the password bottom sheet.
+  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+
+  [self loadLoginPage];
+
+  [self openOtherPasswords];
+
+  // Tap the "Autofill Form" button.
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      performAction:grey_tap()];
+
+  // Verify that the page is filled properly.
+  [self verifyPasswordInfoHasBeenFilled:base::SysUTF8ToNSString(
+                                            kExampleUsername)];
+}
+
+#pragma mark - Private
+
+// Verify that the password info has been filled.
+- (void)verifyPasswordInfoHasBeenFilled:(NSString*)username {
+  // Username.
+  NSString* usernameCondition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormElementUsername, username];
+
+  // Password.
+  NSString* passwordCondition =
+      [NSString stringWithFormat:@"document.getElementById('%s').value !== ''",
+                                 kFormElementPassword];
+
+  NSString* condition = [NSString
+      stringWithFormat:@"%@ && %@", usernameCondition, passwordCondition];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+}
+
+// Verify that the password info has not been filled.
+- (void)verifyPasswordInfoHasntBeenFilled {
+  // Username.
+  NSString* usernameCondition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === ''",
+                       kFormElementUsername];
+
+  // Password.
+  NSString* passwordCondition =
+      [NSString stringWithFormat:@"document.getElementById('%s').value === ''",
+                                 kFormElementPassword];
+
+  NSString* condition = [NSString
+      stringWithFormat:@"%@ && %@", usernameCondition, passwordCondition];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
 }
 
 @end

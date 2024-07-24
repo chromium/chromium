@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
 
@@ -46,6 +47,8 @@ class SiteIconTextAndOriginView : public views::View,
                                 text_tracker_callback);
 
   ~SiteIconTextAndOriginView() override;
+
+  views::Textfield* title_field() { return title_field_; }
 
  protected:
   // views::TextfieldController override

@@ -36,7 +36,7 @@ namespace performance_manager {
 
 class PerformanceManagerMainThreadMechanism;
 class PerformanceManagerMainThreadObserver;
-class ServiceWorkerContextAdapter;
+class ServiceWorkerContextAdapterImpl;
 class WorkerNodeImpl;
 class WorkerWatcher;
 
@@ -159,9 +159,9 @@ class PerformanceManagerRegistryImpl
   base::flat_set<raw_ptr<content::RenderProcessHost, CtnExperimental>>
       render_process_hosts_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Maps each browser context to its ServiceWorkerContextAdapter.
+  // Maps each browser context to its ServiceWorkerContextAdapterImpl.
   base::flat_map<content::BrowserContext*,
-                 std::unique_ptr<ServiceWorkerContextAdapter>>
+                 std::unique_ptr<ServiceWorkerContextAdapterImpl>>
       service_worker_context_adapters_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Maps each browser context to its worker watcher.

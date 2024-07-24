@@ -159,7 +159,8 @@ class GaiaCookieRetriever : public network::mojom::CookieChangeListener {
   explicit GaiaCookieRetriever(
       std::string signin_partition_name,
       login::SigninPartitionManager* signin_partition_manager,
-      OnCookieTimeoutCallback on_cookie_timeout_callback);
+      OnCookieTimeoutCallback on_cookie_timeout_callback,
+      bool allow_empty_auth_code_for_testing = false);
 
   GaiaCookieRetriever(const GaiaCookieRetriever&) = delete;
   GaiaCookieRetriever& operator=(const GaiaCookieRetriever&) = delete;
@@ -193,6 +194,9 @@ class GaiaCookieRetriever : public network::mojom::CookieChangeListener {
   OnCookieTimeoutCallback on_cookie_timeout_callback_;
 
   std::optional<OnCookieRetrievedCallback> on_cookie_retrieved_callback_;
+
+  // To allow testing to continue without an oauth cookie.
+  bool allow_empty_auth_code_for_testing_ = false;
 
   base::WeakPtrFactory<GaiaCookieRetriever> weak_factory_{this};
 };

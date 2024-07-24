@@ -1961,7 +1961,7 @@ if (enable_java_templates) {
         "--output",
         rebase_path(invoker.output_manifest, root_build_dir),
         "--extras",
-        "@FileArg($_rebased_build_config:extra_android_manifests)",
+        "@FileArg($_rebased_build_config:deps_info:extra_android_manifests)",
         "--min-sdk-version=${invoker.min_sdk_version}",
         "--target-sdk-version=${invoker.target_sdk_version}",
       ]

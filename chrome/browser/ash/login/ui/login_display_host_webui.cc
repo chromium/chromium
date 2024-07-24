@@ -18,6 +18,7 @@
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -25,6 +26,8 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -1059,12 +1062,6 @@ void LoginDisplayHostWebUI::HandleDisplayCaptivePortal() {
 }
 
 void LoginDisplayHostWebUI::OnCancelPasswordChangedFlow() {}
-
-void LoginDisplayHostWebUI::ShowEnableConsumerKioskScreen() {
-  if (GetExistingUserController()) {
-    GetExistingUserController()->OnStartKioskEnableScreen();
-  }
-}
 
 void LoginDisplayHostWebUI::UpdateAddUserButtonStatus() {
   NOTREACHED_IN_MIGRATION();

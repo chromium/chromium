@@ -6,6 +6,9 @@
 
 #include <utility>
 
+#include "base/containers/flat_map.h"
+#include "base/ranges/algorithm.h"
+#include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/suitable_origin.h"
 
 namespace content {
@@ -31,5 +34,14 @@ AttributionTrigger& AttributionTrigger::operator=(AttributionTrigger&&) =
     default;
 
 AttributionTrigger::~AttributionTrigger() = default;
+
+bool AttributionTrigger::HasAggregatableData() const {
+  return !registration_.aggregatable_trigger_data.empty() ||
+         base::ranges::any_of(
+             registration_.aggregatable_values,
+             [](const attribution_reporting::AggregatableValues& values) {
+               return !values.values().empty();
+             });
+}
 
 }  // namespace content

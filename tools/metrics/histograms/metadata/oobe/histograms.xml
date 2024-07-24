@@ -379,6 +379,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Password-selection.LocalPasswordForced"/>
   <variant name="Perks-discovery.Error"/>
   <variant name="Perks-discovery.Next"/>
+  <variant name="Perks-discovery.Timeout"/>
   <variant name="Personalized-apps.Back"/>
   <variant name="Personalized-apps.DataMalformed"/>
   <variant name="Personalized-apps.Error"/>

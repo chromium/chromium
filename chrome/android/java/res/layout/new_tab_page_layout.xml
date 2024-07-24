@@ -78,15 +78,6 @@ found in the LICENSE file.
         android:layout_marginTop="@dimen/search_resumption_module_margin_top"
         android:layout="@layout/search_resumption_module_layout" />
 
-    <ViewStub
-        android:id="@+id/tab_resumption_module_container_stub"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/mvt_container_top_margin"
-        android:layout_marginLeft="@dimen/mvt_container_lateral_margin"
-        android:layout_marginRight="@dimen/mvt_container_lateral_margin"
-        android:layout="@layout/tab_resumption_module_layout" />
-
     <!-- Spacer for when there is no search provider logo. -->
     <View
         android:id="@+id/no_search_logo_spacer"

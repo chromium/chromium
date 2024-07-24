@@ -691,7 +691,7 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
           style.OverflowBlockDirection() == EOverflow::kVisible &&
           intrinsic_size != kIndefiniteSize &&
           intrinsic_size != LayoutUnit::Max()) {
-        min_max.min_size = intrinsic_size;
+        min_max.min_size = std::min(intrinsic_size, min_max.max_size);
       }
     }
   }

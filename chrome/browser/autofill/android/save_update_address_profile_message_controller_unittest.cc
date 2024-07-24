@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/signin/public/base/consent_level.h"
@@ -195,8 +196,8 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
 // migration flow.
 TEST_F(SaveUpdateAddressProfileMessageControllerTest,
        SaveMessageContent_AddressProfileMigrationFlow) {
-  profile_->set_source_for_testing(AutofillProfile::Source::kAccount);
-  original_profile_->set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(*profile_).set_source(AutofillProfile::Source::kAccount);
+  test_api(*original_profile_).set_source(AutofillProfile::Source::kAccount);
   SigninUser(TestingProfile::kDefaultProfileUserName,
              signin::ConsentLevel::kSignin);
   EnqueueSaveMessage(*profile_, /*is_migration_to_account=*/true,
@@ -228,8 +229,8 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
 // profile is saved in account.
 TEST_F(SaveUpdateAddressProfileMessageControllerTest,
        SaveMessageContent_AccountAddressProfile) {
-  profile_->set_source_for_testing(AutofillProfile::Source::kAccount);
-  original_profile_->set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(*profile_).set_source(AutofillProfile::Source::kAccount);
+  test_api(*original_profile_).set_source(AutofillProfile::Source::kAccount);
   SigninUser(TestingProfile::kDefaultProfileUserName,
              signin::ConsentLevel::kSignin);
   EnqueueSaveMessage(*profile_, /*is_migration_to_account=*/false,

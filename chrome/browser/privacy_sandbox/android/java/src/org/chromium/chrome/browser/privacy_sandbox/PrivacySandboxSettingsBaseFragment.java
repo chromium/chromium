@@ -23,20 +23,19 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 /**
- * Base class for PrivacySandboxSettings related Fragments. Initializes the options menu to
- * open a help page about the PrivacySandbox instead of the regular help center.
+ * Base class for PrivacySandboxSettings related Fragments. Initializes the options menu to open a
+ * help page about the PrivacySandbox instead of the regular help center.
  *
- * Subclasses have to call super.onCreatePreferences(bundle, s) when overriding onCreatePreferences.
+ * <p>Subclasses have to call super.onCreatePreferences(bundle, s) when overriding
+ * onCreatePreferences.
  */
-public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSettingsFragment
-        implements FragmentSettingsLauncher {
+public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSettingsFragment {
     // Key for the argument with which the PrivacySandbox fragment will be launched. The value for
     // this argument should be part of the PrivacySandboxReferrer enum, which contains all points of
     // entry to the Privacy Sandbox UI.
@@ -44,19 +43,17 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
 
     private PrivacySandboxBridge mPrivacySandboxBridge;
     private PrivacySandboxHelpers.CustomTabIntentHelper mCustomTabHelper;
-    private SettingsLauncher mSettingsLauncher;
     private SnackbarManager mSnackbarManager;
     private Callback<Context> mCookieSettingsLauncher;
 
     /** Launches the right version of PrivacySandboxSettings depending on feature flags. */
     public static void launchPrivacySandboxSettings(
-            Context context,
-            SettingsLauncher settingsLauncher,
-            @PrivacySandboxReferrer int referrer) {
+            Context context, @PrivacySandboxReferrer int referrer) {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(PRIVACY_SANDBOX_REFERRER, referrer);
-        settingsLauncher.launchSettingsActivity(
-                context, PrivacySandboxSettingsFragment.class, fragmentArgs);
+        SettingsLauncherFactory.createSettingsLauncher()
+                .launchSettingsActivity(
+                        context, PrivacySandboxSettingsFragment.class, fragmentArgs);
     }
 
     @Override
@@ -159,9 +156,8 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
     }
 
     protected void launchSettingsActivity(Class<? extends Fragment> fragment) {
-        if (mSettingsLauncher != null) {
-            mSettingsLauncher.launchSettingsActivity(getContext(), fragment);
-        }
+        SettingsLauncherFactory.createSettingsLauncher()
+                .launchSettingsActivity(getContext(), fragment);
     }
 
     @Override
@@ -178,11 +174,6 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
         assert mPrivacySandboxBridge != null
                 : "Attempting to use PrivacySandboxBridge prior to setProfile being called.";
         return mPrivacySandboxBridge;
-    }
-
-    @Override
-    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
-        mSettingsLauncher = settingsLauncher;
     }
 
     protected void launchCookieSettings() {

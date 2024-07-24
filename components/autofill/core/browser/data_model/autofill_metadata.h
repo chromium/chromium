@@ -11,17 +11,19 @@
 
 namespace autofill {
 
+class AutofillDataModel;
+
 // This struct contains the metadata to an autofill data model. It is used to
 // abstract the data from the metadata.
 struct AutofillMetadata {
- public:
   AutofillMetadata() = default;
+  explicit AutofillMetadata(const AutofillDataModel& model);
   ~AutofillMetadata() = default;
 
   bool operator==(const AutofillMetadata&) const = default;
 
   // Returns whether the metadata is deletable: if it has not been used for
-  // longer than |kDisusedAddressDeletionTimeDelta|.
+  // longer than `kDisusedDataModelDeletionTimeDelta`.
   bool IsDeletable() const;
 
   // The ID for the model. This should be the guid for local data and server_id

@@ -27,6 +27,7 @@ class TestEventCapturer : public ui::EventHandler {
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
+  std::string_view GetLogContext() const override;
 
   ui::KeyEvent* LastKeyEvent();
   ui::MouseEvent* LastMouseEvent();

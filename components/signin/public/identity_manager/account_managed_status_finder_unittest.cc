@@ -14,8 +14,38 @@
 
 namespace signin {
 
-TEST(AccountManagedStatusFinderStaticTest, IsEnterpriseUserBasedOnEmail) {
-  // List of example emails that are not enterprise users.
+TEST(AccountManagedStatusFinderStaticTest, MayBeEnterpriseDomain) {
+  // List of example domains that are well-known to not be enterprise domains.
+  // As a special case, this includes the empty string (which is often output
+  // by extract-domain-from-email helpers if the email is invalid).
+  static const char* kNonEnterpriseDomains[] = {
+      "aol.com",     "gmail.com",     "googlemail.com",
+      "hotmail.it",  "hotmail.co.uk", "hotmail.fr",
+      "msn.com",     "live.com",      "qq.com",
+      "yahoo.com",   "yahoo.com.tw",  "yahoo.fr",
+      "yahoo.co.uk", "yandex.ru",     ""};
+
+  // List of example domains that are potential enterprise domains.
+  static const char* kPotentialEnterpriseDomains[] = {
+      "google.com",
+      "chromium.org",
+      "hotmail.enterprise.com",
+      "unknown-domain.asdf",
+  };
+
+  for (const char* username : kNonEnterpriseDomains) {
+    EXPECT_FALSE(AccountManagedStatusFinder::MayBeEnterpriseDomain(username))
+        << username;
+  }
+  for (const char* username : kPotentialEnterpriseDomains) {
+    EXPECT_TRUE(AccountManagedStatusFinder::MayBeEnterpriseDomain(username))
+        << username;
+  }
+}
+
+TEST(AccountManagedStatusFinderStaticTest, MayBeEnterpriseUserBasedOnEmail) {
+  // List of example emails that are well-known to not be enterprise users. This
+  // includes some invalid of malformed emails.
   // clang-format off
   static const char* kNonEnterpriseUsers[] = {
       "fizz@aol.com",       "foo@gmail.com",         "bar@googlemail.com",
@@ -23,11 +53,11 @@ TEST(AccountManagedStatusFinderStaticTest, IsEnterpriseUserBasedOnEmail) {
       "user@msn.com",       "another_user@live.com", "foo@qq.com",
       "i_love@yahoo.com",   "i_love@yahoo.com.tw",   "i_love@yahoo.fr",
       "i_love@yahoo.co.uk", "user@yandex.ru",        "test",
-      "test@"};
+      "test@", ""};
   // clang-format on
 
   // List of example emails that are potential enterprise users.
-  static const char* kEnterpriseUsers[] = {
+  static const char* kPotentialEnterpriseUsers[] = {
       "foo@google.com",
       "chrome_rules@chromium.org",
       "user@hotmail.enterprise.com",
@@ -35,16 +65,13 @@ TEST(AccountManagedStatusFinderStaticTest, IsEnterpriseUserBasedOnEmail) {
   };
 
   for (const char* username : kNonEnterpriseUsers) {
-    EXPECT_EQ(
-        AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(username),
-        AccountManagedStatusFinder::EmailEnterpriseStatus::kKnownNonEnterprise)
-        << "IsEnterpriseUserBasedOnEmail returned kUnknown for " << username;
+    EXPECT_FALSE(
+        AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(username))
+        << username;
   }
-  for (const char* username : kEnterpriseUsers) {
-    EXPECT_EQ(
-        AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(username),
-        AccountManagedStatusFinder::EmailEnterpriseStatus::kUnknown)
-        << "IsEnterpriseUserBasedOnEmail returned kKnownNonEnterprise for "
+  for (const char* username : kPotentialEnterpriseUsers) {
+    EXPECT_TRUE(
+        AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(username))
         << username;
   }
 }
@@ -66,7 +93,32 @@ TEST_F(AccountManagedStatusFinderTest, GmailAccountDeterminedImmediately) {
   AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
                                     base::DoNothing());
   EXPECT_EQ(finder.GetOutcome(),
-            AccountManagedStatusFinder::Outcome::kNonEnterprise);
+            AccountManagedStatusFinder::Outcome::kConsumerGmail);
+}
+
+TEST_F(AccountManagedStatusFinderTest, GooglemailAccountDeterminedImmediately) {
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@googlemail.com");
+
+  // Simple case: An @googlemail.com account should be immediately determined as
+  // non-enterprise.
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+                                    base::DoNothing());
+  EXPECT_EQ(finder.GetOutcome(),
+            AccountManagedStatusFinder::Outcome::kConsumerGmail);
+}
+
+TEST_F(AccountManagedStatusFinderTest,
+       WellKnownConsumerAccountDeterminedImmediately) {
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@hotmail.com");
+
+  // An account from a well-known consumer domain should be immediately
+  // determined as non-enterprise.
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+                                    base::DoNothing());
+  EXPECT_EQ(finder.GetOutcome(),
+            AccountManagedStatusFinder::Outcome::kConsumerWellKnown);
 }
 
 TEST_F(AccountManagedStatusFinderTest,
@@ -117,7 +169,7 @@ TEST_F(AccountManagedStatusFinderTest,
   AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
                                     base::DoNothing());
   EXPECT_EQ(finder.GetOutcome(),
-            AccountManagedStatusFinder::Outcome::kNonEnterprise);
+            AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown);
 }
 
 TEST_F(AccountManagedStatusFinderTest,
@@ -166,7 +218,7 @@ TEST_F(AccountManagedStatusFinderTest,
       /*hosted_domain=*/"", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
   EXPECT_EQ(finder.GetOutcome(),
-            AccountManagedStatusFinder::Outcome::kNonEnterprise);
+            AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown);
 }
 
 TEST_F(AccountManagedStatusFinderTest, KeepsWaitingOnPartialAccountInfoUpdate) {
@@ -196,7 +248,7 @@ TEST_F(AccountManagedStatusFinderTest, KeepsWaitingOnPartialAccountInfoUpdate) {
       /*hosted_domain=*/"", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
   EXPECT_EQ(finder.GetOutcome(),
-            AccountManagedStatusFinder::Outcome::kNonEnterprise);
+            AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown);
 }
 
 TEST_F(AccountManagedStatusFinderTest,
@@ -238,7 +290,7 @@ TEST_F(AccountManagedStatusFinderTest,
       /*hosted_domain=*/"", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
   EXPECT_EQ(finder.GetOutcome(),
-            AccountManagedStatusFinder::Outcome::kNonEnterprise);
+            AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown);
 }
 
 TEST_F(AccountManagedStatusFinderTest, ErrorOnNonExistentAccount) {
@@ -285,12 +337,34 @@ TEST_F(AccountManagedStatusFinderTest,
                                     outcome_determined.Get());
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
 
-  // An @gmail.com account should be immediately determined as non-enterprise
-  // after refresh tokens are loaded.
+  // An @gmail.com account should be immediately determined as such after
+  // refresh tokens are loaded.
   EXPECT_CALL(outcome_determined, Run);
   identity_env_.ReloadAccountsFromDisk();
   EXPECT_EQ(finder.GetOutcome(),
-            AccountManagedStatusFinder::Outcome::kNonEnterprise);
+            AccountManagedStatusFinder::Outcome::kConsumerGmail);
+}
+
+TEST_F(
+    AccountManagedStatusFinderTest,
+    WellKnownConsumerAccountDeterminedImmediatelyAfterRefreshTokensAreLoaded) {
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@hotmail.com");
+  // Simulate refresh tokens not being loaded state.
+  identity_env_.ResetToAccountsNotYetLoadedFromDiskState();
+
+  // Outcome is pending until tokens are loaded.
+  base::MockCallback<base::OnceClosure> outcome_determined;
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+                                    outcome_determined.Get());
+  EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
+
+  // An account from a well-known consumer domain should be immediately
+  // determined as such after refresh tokens are loaded.
+  EXPECT_CALL(outcome_determined, Run);
+  identity_env_.ReloadAccountsFromDisk();
+  EXPECT_EQ(finder.GetOutcome(),
+            AccountManagedStatusFinder::Outcome::kConsumerWellKnown);
 }
 
 TEST_F(AccountManagedStatusFinderTest,

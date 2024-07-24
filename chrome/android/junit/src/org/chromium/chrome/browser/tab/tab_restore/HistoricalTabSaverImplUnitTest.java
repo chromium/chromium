@@ -19,10 +19,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -40,7 +37,6 @@ import java.util.List;
 
 /** Unit tests for {@link HistoricalTabSaverImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
 public class HistoricalTabSaverImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -109,25 +105,6 @@ public class HistoricalTabSaverImplUnitTest {
         verify(mHistoricalTabSaverJni).createHistoricalTab(tab, buf, -1);
     }
 
-    /** Tests collapsing a group with a single tab into a single tab entry. */
-    @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
-    public void testCreateHistoricalTab_FromGroup_WithTabGroupId() {
-        Tab tab = new MockTab(0, mProfile);
-
-        HistoricalEntry group =
-                new HistoricalEntry(
-                        0,
-                        new Token(1L, 2L),
-                        "Foo",
-                        TabGroupColorId.GREY,
-                        Arrays.asList(new Tab[] {tab}));
-        mHistoricalTabSaver.createHistoricalTabOrGroup(group);
-
-        ByteBuffer buf = ByteBuffer.allocateDirect(0);
-        verify(mHistoricalTabSaverJni).createHistoricalTab(tab, buf, -1);
-    }
-
     /**
      * Tests collapsing a group with a single tab into a single tab entry with non null web contents
      * state buffer.
@@ -144,32 +121,6 @@ public class HistoricalTabSaverImplUnitTest {
         HistoricalEntry group =
                 new HistoricalEntry(
                         0, null, "Foo", TabGroupColorId.GREY, Arrays.asList(new Tab[] {tab}));
-        mHistoricalTabSaver.createHistoricalTabOrGroup(group);
-
-        verify(mHistoricalTabSaverJni).createHistoricalTab(tab, buf, 1);
-    }
-
-    /**
-     * Tests collapsing a group with a single tab into a single tab entry with non null web contents
-     * state buffer.
-     */
-    @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
-    public void testCreateHistoricalTab_FromGroup_WithTabGroupId_NonNullBuffer() {
-        ByteBuffer buf = ByteBuffer.allocateDirect(3);
-        WebContentsState tempState = new WebContentsState(buf);
-        tempState.setVersion(1);
-
-        MockTab tab = MockTab.createAndInitialize(0, mProfile);
-        TabTestUtils.setWebContentsState(tab, tempState);
-
-        HistoricalEntry group =
-                new HistoricalEntry(
-                        0,
-                        new Token(1L, 2L),
-                        "Foo",
-                        TabGroupColorId.GREY,
-                        Arrays.asList(new Tab[] {tab}));
         mHistoricalTabSaver.createHistoricalTabOrGroup(group);
 
         verify(mHistoricalTabSaverJni).createHistoricalTab(tab, buf, 1);
@@ -264,25 +215,6 @@ public class HistoricalTabSaverImplUnitTest {
                         eq(new Tab[] {tab0}),
                         eq(buffers),
                         eq(versions));
-    }
-
-    /** Tests incognito tabs are removed and collapse to a single tab. */
-    @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
-    public void testCreateHistoricalTab_FromGroupWithIncognito_SingleTabGroupNotSupported() {
-        Tab tab0 = new MockTab(0, mProfile);
-        Tab tab1 = new MockTab(1, mIncognitoProfile);
-
-        // Also test duplicates are allowed.
-        Tab[] tabList = new Tab[] {tab0, tab1};
-        HistoricalEntry group =
-                new HistoricalEntry(
-                        0, new Token(1L, 2L), "Foo", TabGroupColorId.GREY, Arrays.asList(tabList));
-        mHistoricalTabSaver.createHistoricalTabOrGroup(group);
-
-        byte[] bytes = new byte[0];
-        ByteBuffer buf = ByteBuffer.wrap(bytes);
-        verify(mHistoricalTabSaverJni).createHistoricalTab(tab0, buf, -1);
     }
 
     /** Tests that collapsing is ignored if the tab has a tab group ID. */
@@ -479,92 +411,6 @@ public class HistoricalTabSaverImplUnitTest {
         Tab[] tabs = new Tab[] {tab0, tab4, tab6, tab7, tab8, tab10, tab11};
 
         String[] savedTabGroupIds = new String[] {"", "", ""};
-        byte[] bytes = new byte[0];
-        ByteBuffer buf = ByteBuffer.wrap(bytes);
-        ByteBuffer[] buffers = new ByteBuffer[] {buf, buf, buf, buf, buf, buf, buf};
-        int[] versions = new int[] {-1, -1, -1, -1, -1, -1, -1};
-        verify(mHistoricalTabSaverJni)
-                .createHistoricalBulkClosure(
-                        eq(mTabModel),
-                        eq(rootIds),
-                        eq(tabGroupIds),
-                        eq(savedTabGroupIds),
-                        eq(groupTitles),
-                        eq(groupColors),
-                        eq(perTabRootIds),
-                        eq(tabs),
-                        eq(buffers),
-                        eq(versions));
-    }
-
-    /** Tests a bulk closure of tabs and groups including some invalid entries. */
-    @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
-    public void testCreateHistoricalBulk_MixedWithInvalid_WithoutTabGroupIds() {
-        // Tab.
-        Tab tab0 = new MockTab(0, mProfile);
-        // Incognito tab.
-        Tab tab1 = new MockTab(1, mIncognitoProfile);
-        // Incognito group.
-        Tab tab2 = new MockTab(2, mIncognitoProfile);
-        Tab tab3 = new MockTab(3, mIncognitoProfile);
-        // Group.
-        Tab tab4 = new MockTab(4, mProfile);
-        Tab tab5 = new MockTab(5, mIncognitoProfile);
-        Tab tab6 = new MockTab(6, mProfile);
-        // Tab.
-        Tab tab7 = new MockTab(7, mProfile);
-        // Group collapse to tab.
-        Tab tab8 = new MockTab(8, mProfile);
-        Tab tab9 = new MockTab(9, mIncognitoProfile);
-        // Group.
-        Tab tab10 = new MockTab(10, mProfile);
-        Tab tab11 = new MockTab(11, mProfile);
-
-        // Also test duplicates are allowed.
-        List<HistoricalEntry> entries = new ArrayList<>();
-        entries.add(new HistoricalEntry(tab0));
-        entries.add(new HistoricalEntry(tab1));
-        entries.add(
-                new HistoricalEntry(
-                        0,
-                        null,
-                        "Incognito",
-                        TabGroupColorId.GREY,
-                        Arrays.asList(new Tab[] {tab2, tab3})));
-        entries.add(
-                new HistoricalEntry(
-                        1,
-                        null,
-                        "Group 1",
-                        TabGroupColorId.GREY,
-                        Arrays.asList(new Tab[] {tab4, tab5, tab6})));
-        entries.add(new HistoricalEntry(tab7));
-        entries.add(
-                new HistoricalEntry(
-                        2,
-                        null,
-                        "Group 2",
-                        TabGroupColorId.BLUE,
-                        Arrays.asList(new Tab[] {tab8, tab9})));
-        entries.add(
-                new HistoricalEntry(
-                        3,
-                        null,
-                        "Group 3",
-                        TabGroupColorId.RED,
-                        Arrays.asList(new Tab[] {tab10, tab11})));
-        mHistoricalTabSaver.createHistoricalBulkClosure(entries);
-
-        int[] rootIds = new int[] {1, 3};
-        Token[] tabGroupIds = new Token[] {null, null};
-        String[] groupTitles = new String[] {"Group 1", "Group 3"};
-        int[] groupColors = new int[] {TabGroupColorId.GREY, TabGroupColorId.RED};
-        int[] perTabRootIds =
-                new int[] {Tab.INVALID_TAB_ID, 1, 1, Tab.INVALID_TAB_ID, Tab.INVALID_TAB_ID, 3, 3};
-        Tab[] tabs = new Tab[] {tab0, tab4, tab6, tab7, tab8, tab10, tab11};
-
-        String[] savedTabGroupIds = new String[] {"", ""};
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
         ByteBuffer[] buffers = new ByteBuffer[] {buf, buf, buf, buf, buf, buf, buf};

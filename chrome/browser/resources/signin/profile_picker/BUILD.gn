@@ -35,11 +35,13 @@ build_webui("build") {
     "navigation_mixin.ts",
     "policy_helper.ts",
     "profile_picker.ts",
+    "profile_picker_util.ts",
   ]
 
   icons_html_files = [ "icons.html" ]
 
   css_files = [
+    "profile_card.css",
     "profile_card_menu.css",
     "profile_creation_flow/profile_creation_shared.css",
     "profile_picker_shared.css",

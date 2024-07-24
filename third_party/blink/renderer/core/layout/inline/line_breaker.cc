@@ -3251,6 +3251,7 @@ bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
       // No ruby-text. We don't need a kOpenRubyColumn result.
       return false;
     }
+    UseCounter::Count(GetDocument(), WebFeature::kRenderRuby);
     DCHECK_EQ(Items()[base_end_index].Type(), InlineItem::kOpenTag);
     DCHECK(Items()[base_end_index].GetLayoutObject()->IsInlineRubyText());
     base_start = {current_.item_index + 1,

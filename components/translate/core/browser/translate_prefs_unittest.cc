@@ -1145,39 +1145,25 @@ TEST_F(TranslatePrefsTest, AlwaysTranslateLanguages) {
       translate_prefs_->IsLanguagePairOnAlwaysTranslateList("am", "es"));
 
   // GetAlwaysTranslateLanguages
-  translate_prefs_->AddLanguagePairToAlwaysTranslateList("aa", "es");
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("ak", "es");
   // Use 'tl' as the translate language which is 'fil' as a Chrome language.
   translate_prefs_->AddLanguagePairToAlwaysTranslateList("tl", "es");
   std::vector<std::string> always_translate_languages =
       translate_prefs_->GetAlwaysTranslateLanguages();
-  EXPECT_EQ(std::vector<std::string>({"aa", "af", "am", "fil"}),
+  EXPECT_EQ(std::vector<std::string>({"af", "ak", "am", "fil"}),
             always_translate_languages);
   always_translate_languages.clear();
 
   // RemoveLanguagePairs
-  translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("af",
-                                                              "<anything>");
+  translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("af");
   always_translate_languages = translate_prefs_->GetAlwaysTranslateLanguages();
-  EXPECT_EQ(std::vector<std::string>({"aa", "am", "fil"}),
+  EXPECT_EQ(std::vector<std::string>({"ak", "am", "fil"}),
             always_translate_languages);
-  translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("aa",
-                                                              "<anything>");
-  translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("am",
-                                                              "<anything>");
-  translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("tl",
-                                                              "<anything>");
+  translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("ak");
+  translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("am");
+  translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("tl");
 
   // AlwaysTranslateList should be empty now
-  EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
-
-  // SetLanguageAlwaysTranslateState
-  translate_prefs_->SetRecentTargetLanguage("es");
-  translate_prefs_->SetLanguageAlwaysTranslateState("am", true);
-  translate_prefs_->SetRecentTargetLanguage("en");
-  translate_prefs_->SetLanguageAlwaysTranslateState("am", true);
-  always_translate_languages = translate_prefs_->GetAlwaysTranslateLanguages();
-  EXPECT_EQ(std::vector<std::string>({"am"}), always_translate_languages);
-  translate_prefs_->SetLanguageAlwaysTranslateState("am", false);
   EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
 }
 

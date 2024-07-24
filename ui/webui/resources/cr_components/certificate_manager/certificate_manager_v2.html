@@ -177,7 +177,9 @@
     <div id="crsCertSection" class="cr-centered-card-container" path="crscerts">
       <h2>[[i18n('certificateManagerV2CRSCerts')]]</h2>
       [[i18n("certificateManagerV2CRSCertsDescription")]]
-      <!-- TODO(crbug.com/40928765): Add Learn More link -->
+      <a href="[[crsLearnMoreUrl_]]" target="_blank">
+        [[i18n("certificateManagerV2CRSLearnMoreLink")]]
+      </a>
 
       <certificate-list-v2
           id="crsCerts"
@@ -205,15 +207,13 @@
   <span id="toast-message">[[toastMessage_]]</span>
 </cr-toast>
 
-<cr-dialog id="dialog">
-  <div slot="title">[[dialogTitle_]]</div>
-  <div slot="body">
-    [[dialogBody_]]
-  </div>
-  <div slot="button-container">
-    <!-- TODO(crbug.com/40928765): localize -->
-    <cr-button class="action-button" on-click="onDialogClickOk_">
-      Ok
-    </cr-button>
-  </div>
-</cr-dialog>
+<template is="dom-if" if="[[showInfoDialog_]]" restamp>
+  <certificate-info-dialog id="infoDialog" dialog-title="[[infoDialogTitle_]]"
+      dialog-message="[[infoDialogMessage_]]" on-close="onInfoDialogClose_">
+  </certificate-info-dialog>
+</template>
+<template is="dom-if" if="[[showPasswordDialog_]]" restamp>
+  <certificate-password-dialog id="passwordDialog"
+      on-close="onPasswordDialogClose_">
+  </certificate-password-dialog>
+</template>

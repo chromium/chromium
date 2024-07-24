@@ -5,12 +5,14 @@
 package org.chromium.content_public.browser.test.mock;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Parcel;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
@@ -374,6 +376,9 @@ public class MockWebContents implements WebContents {
     public int getCurrentBackForwardTransitionStage() {
         return AnimationStage.NONE;
     }
+
+    @Override
+    public void captureContentAsBitmapForTesting(Callback<Bitmap> callback) {}
 
     @Override
     public void setLongPressLinkSelectText(boolean enabled) {}

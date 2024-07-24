@@ -2173,6 +2173,15 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V3" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance.">
           Chromium can make these tabs inactive to improve your browsing experience and keep things fast.
         </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V1" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance.">
+          This tab is using extra resources. To improve your performance, let Chromium make it inactive.
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V2" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance.">
+          Chromium can make this tab inactive to improve your browsing experience and free up resources.
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V3" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance.">
+          Chromium can make this tab inactive to improve your browsing experience and keep things fast.
+        </message>
       </if>
 
       <!-- Delete Browsing Data -->

@@ -19,7 +19,7 @@
 #include "components/enterprise/common/files_scan_data.h"
 #include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
-#include "components/enterprise/data_controls/core/prefs.h"
+#include "components/enterprise/data_controls/core/browser/prefs.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/clipboard_types.h"

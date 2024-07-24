@@ -42,6 +42,8 @@ ShortcutIntegrationBrowserTestApi::ShowCreateShortcutDialog() {
                         &views::View::GetEnabled, true),
       SelectMenuItem(AppMenuModel::kCreateShortcutItem),
       WaitForShow(
+          CreateDesktopShortcutDelegate::kCreateShortcutDialogTitleFieldId),
+      WaitForShow(
           CreateDesktopShortcutDelegate::kCreateShortcutDialogOkButtonId),
       // Need to flush events so we're not trying to close the dialog while
       // showing it is still on the stack.
@@ -63,13 +65,11 @@ ShortcutIntegrationBrowserTestApi::ShowAndAcceptCreateShortcutDialog() {
 ui::test::InteractiveTestApi::MultiStep
 ShortcutIntegrationBrowserTestApi::ShowCreateShortcutDialogSetTitleAndAccept(
     const std::u16string& title) {
-  constexpr char kTitleTextFieldName[] = "title_text_field";
   return Steps(
       ShowCreateShortcutDialog(),
-      NameChildViewByType<views::Textfield>(
+      EnterText(
           CreateDesktopShortcutDelegate::kCreateShortcutDialogTitleFieldId,
-          kTitleTextFieldName),
-      EnterText(kTitleTextFieldName, title),
+          title),
       PressButton(
           CreateDesktopShortcutDelegate::kCreateShortcutDialogOkButtonId),
       // Wait for the dialog to go away, to make sure showing the dialog again

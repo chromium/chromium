@@ -292,6 +292,13 @@ BASE_FEATURE(kAutofillEnableLabelPrecedenceForTurkishAddresses,
              "AutofillEnableLabelPrecedenceForTurkishAddresses",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, focusing on a credit card number field that was traditionally
+// autofilled will yield all credit card suggestions.
+// TODO(crbug.com/354175563): Remove when launched.
+BASE_FEATURE(kAutofillEnablePaymentsFieldSwapping,
+             "AutofillEnablePaymentsFieldSwapping",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, trunk prefix-related phone number types are added to the
 // supported and matching types of |PhoneNumber|. Local heuristics for these
 // types are enabled as well.
@@ -335,18 +342,6 @@ BASE_FEATURE(kAutofillAddressFieldSwapping,
 BASE_FEATURE(kAutofillFixCachingOnJavaScriptChanges,
              "AutofillFixCachingOnJavaScriptChanges",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Changes the semantics of FocusOnFormField() and FocusOnNonFormField() so that
-// - FocusOnFormField() is called when the focus moves to another field,
-//   including fields owned by form, unowned fields, and contenteditables.
-// - FocusOnNonFormField() is called in all remaining cases.
-// See crbug.com/337690061 for details.
-// This is a kill switch.
-// TODO(crbug.com/337690061): Remove when cleaning up
-// `kAutofillNewFocusEvents`.
-BASE_FEATURE(kAutofillNewFocusEvents,
-             "AutofillNewFocusEvents",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Killswitch for not running logic in `AutofillAgent::ApplyFieldsAction` that
 // is responsible for updating `AutofillAgent::last_queried_element_`.

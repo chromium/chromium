@@ -22,14 +22,12 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.CustomTabIntentHelper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /** Last privacy guide page. */
 public class DoneFragment extends PrivacyGuideBasePage {
     private CustomTabIntentHelper mCustomTabIntentHelper;
-    private SettingsLauncher mSettingsLauncher;
 
     @Nullable
     @Override
@@ -76,10 +74,6 @@ public class DoneFragment extends PrivacyGuideBasePage {
         mCustomTabIntentHelper = customTabIntentHelper;
     }
 
-    void setSettingsLauncher(SettingsLauncher settingsLauncher) {
-        mSettingsLauncher = settingsLauncher;
-    }
-
     private void openUrlInCct(String url) {
         assert (mCustomTabIntentHelper != null)
                 : "CCT helpers must be set on DoneFragment before opening a link";
@@ -96,9 +90,7 @@ public class DoneFragment extends PrivacyGuideBasePage {
     }
 
     private void launchPrivacySandboxSettings() {
-        assert (mSettingsLauncher != null)
-                : "SettingsLauncher must be set on DoneFragment before opening another page";
         PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
-                getContext(), mSettingsLauncher, PrivacySandboxReferrer.PRIVACY_SETTINGS);
+                getContext(), PrivacySandboxReferrer.PRIVACY_SETTINGS);
     }
 }

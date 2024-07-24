@@ -1160,6 +1160,13 @@
         Go to settings
       </message>
 
+      <!-- Tab Grid Drag-and-drop IPH strings -->
+      <message name="IDS_IPH_DRAG_AND_DROP_TITLE" desc="This text shows on the in-product help dialog for drag-and-drop. It decribes why drag-and-drop is useful.">
+        Get organized
+      </message>
+      <message name="IDS_IPH_DRAG_AND_DROP_CONTENT" desc="This text shows on the in-product help dialog for drag-and-drop. It gives instructions on how to drag and drop to create a group.">
+        To group tabs, touch &amp; hold a tab. Then, drag it onto another tab.
+      </message>
     </messages>
   </release>
 </grit>

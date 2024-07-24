@@ -26,6 +26,7 @@ class EnrollmentRequisitionManager {
   static const char kRemoraRequisition[];
   static const char kSharkRequisition[];
   static const char kDemoRequisition[];
+  static const char kCuttlefishRequisition[];
 
   // Initializes requisition settings at OOBE with values from VPD.
   static void Initialize();
@@ -38,6 +39,9 @@ class EnrollmentRequisitionManager {
 
   // If the current device extends the CFM Overlay or has Remora bit set
   static bool IsMeetDevice();
+
+  // If the current device is a Cuttlefish device.
+  static bool IsCuttlefishDevice();
 
   // Gets/Sets the sub organization.
   static std::string GetSubOrganization();

@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_STORAGE_PARTITION_IMPL_H_
 
 #include <stdint.h>
-
 #include <map>
 #include <memory>
 #include <set>
@@ -30,7 +29,6 @@
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/browser/url_loader_factory_getter.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
@@ -108,6 +106,7 @@ class PrivateAggregationManager;
 class PrivateAggregationManagerImpl;
 class PushMessagingContext;
 class QuotaContext;
+class ReconnectableURLLoaderFactoryForIOThreadWrapper;
 class SharedStorageHeaderObserver;
 class SharedStorageWorkletHostManager;
 class SharedWorkerServiceImpl;
@@ -389,11 +388,6 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   SharedStorageHeaderObserver* shared_storage_header_observer() {
     return shared_storage_header_observer_.get();
-  }
-
-  scoped_refptr<ReconnectableURLLoaderFactoryForIOThread>
-  url_loader_factory_getter() {
-    return url_loader_factory_getter_;
   }
 
   // Can return nullptr while `this` is being destroyed.
@@ -720,8 +714,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   bool initialized_ = false;
 
   mojo::Remote<storage::mojom::Partition> remote_partition_;
-  scoped_refptr<ReconnectableURLLoaderFactoryForIOThread>
-      url_loader_factory_getter_;
   scoped_refptr<QuotaContext> quota_context_;
   scoped_refptr<storage::QuotaManager> quota_manager_;
   scoped_refptr<storage::FileSystemContext> filesystem_context_;
@@ -810,7 +802,7 @@ class CONTENT_EXPORT StoragePartitionImpl
       network_context_client_receiver_{this};
 
   // Always valid/non-null after `Initialize()`.
-  scoped_refptr<ReconnectableURLLoaderFactory>
+  std::unique_ptr<ReconnectableURLLoaderFactoryForIOThreadWrapper>
       shared_url_loader_factory_for_browser_process_;
 
   mojo::Remote<cert_verifier::mojom::CertVerifierServiceUpdater>

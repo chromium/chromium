@@ -26,6 +26,8 @@ import java.util.Set;
  * Manages observers that monitor for updates to tab group visual aspects such as colors and titles.
  */
 public class TabGroupVisualDataManager {
+    private static final int DELETE_DATA_GROUP_SIZE_THRESHOLD = 1;
+
     private final TabModelSelector mTabModelSelector;
     private TabModelObserver mTabModelObserver;
     private TabGroupModelFilterObserver mFilterObserver;
@@ -52,16 +54,9 @@ public class TabGroupVisualDataManager {
                             boolean wasAdded = processedRootIds.add(rootId);
                             if (!wasAdded) continue;
 
-                            if (remainingRootIds.get().contains(rootId)) {
-                                // If any related tab still exist keep the data as size 1 groups are
-                                // valid.
-                                if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
-                                    continue;
-                                }
-
-                                // Groups of size 1 are not supported so delete the data.
-                                if (filter.getRelatedTabCountForRootId(rootId) > 1) continue;
-                            }
+                            // If any related tab still exist keep the data as size 1 groups are
+                            // valid.
+                            if (remainingRootIds.get().contains(rootId)) continue;
 
                             Runnable deleteTask =
                                     () -> {
@@ -125,10 +120,9 @@ public class TabGroupVisualDataManager {
                         // If the group size is 2, i.e. the group becomes a single tab after
                         // ungroup, delete the stored visual data. When tab groups of size 1 are
                         // supported this behavior is no longer valid.
-                        int sizeThreshold =
-                                ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled() ? 1 : 2;
                         boolean shouldDeleteVisualData =
-                                filter.getRelatedTabCountForRootId(rootId) <= sizeThreshold;
+                                filter.getRelatedTabCountForRootId(rootId)
+                                        <= DELETE_DATA_GROUP_SIZE_THRESHOLD;
                         if (shouldDeleteVisualData) {
                             if (title != null) {
                                 filter.deleteTabGroupTitle(rootId);

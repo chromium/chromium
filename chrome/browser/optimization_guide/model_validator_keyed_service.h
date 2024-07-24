@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/proto/model_validation.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
@@ -26,13 +27,17 @@ class ModelValidatorKeyedService : public KeyedService,
  private:
   void StartModelExecutionValidation();
 
-  // Kicks off the validation process for the Compose on-device model.
+  // Kicks off the validation process for the on-device model.
   void StartOnDeviceModelExecutionValidation(
-      std::unique_ptr<optimization_guide::proto::ComposeRequest> request);
+      std::unique_ptr<optimization_guide::proto::ModelValidationInput> input);
 
-  // Calls the on-device model executor to execute the Compose model.
+  // Calls the on-device model executor to execute the model.
   void PerformOnDeviceModelExecutionValidation(
-      std::unique_ptr<optimization_guide::proto::ComposeRequest> request);
+      std::unique_ptr<optimization_guide::proto::ModelValidationInput> input);
+
+  // Calls ExecuteModel on the on-device validation session.
+  void ExecuteModel(
+      std::unique_ptr<google::protobuf::MessageLite> request_metadata);
 
   // Invoked when model execution completes.
   void OnModelExecuteResponse(OptimizationGuideModelExecutionResult result,

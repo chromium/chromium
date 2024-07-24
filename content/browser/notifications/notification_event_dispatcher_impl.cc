@@ -427,15 +427,16 @@ NotificationEventDispatcherImpl::NonPersistentNotificationListenerInfo::
 NotificationEventDispatcherImpl::NonPersistentNotificationListenerInfo::
     ~NonPersistentNotificationListenerInfo() = default;
 
-bool NotificationEventDispatcherImpl::
-    ShouldDispatchNonPersistentNotificationEvent(
-        const std::string& notification_id) {
+base::optional_ref<content::NotificationEventDispatcherImpl::
+                       NonPersistentNotificationListenerInfo>
+NotificationEventDispatcherImpl::GetListenerIfNotifiable(
+    const std::string& notification_id) {
   auto listener = non_persistent_notification_listeners_.find(notification_id);
 
   // If there is no listener registered for this notification id, no event
   // should be dispatched.
   if (listener == non_persistent_notification_listeners_.end()) {
-    return false;
+    return std::nullopt;
   }
 
   // The non-persistent notification should not be created by service workers.
@@ -451,26 +452,29 @@ bool NotificationEventDispatcherImpl::
         // notification service is communicating with, if it's empty, it's
         // possible that the document is already destroyed. In this case, the
         // notification event shouldn't be dispatched.
-        return false;
+        return std::nullopt;
       }
       case RenderProcessHost::NotificationServiceCreatorType::kSharedWorker: {
         // In this case, the weak document pointer is always null and we
         // shouldn't block the notification.
-        return true;
+        return listener->second;
       }
       case RenderProcessHost::NotificationServiceCreatorType::kServiceWorker: {
         NOTREACHED_IN_MIGRATION();
-        return false;
+        return std::nullopt;
       }
     }
   }
 
   // If the associated document is currently in back/forward cache, the
-  // function returns false to prevent the listener from being triggered.
+  // function returns nullopt to prevent the listener from being triggered.
   // TODO: in the future, this could be improved to cover more lifecycle
   // state. see: https://crrev.com/c/3861889/comment/e1759c1e_4dd15e4e/
-  return !rfh->IsInLifecycleState(
-      RenderFrameHost::LifecycleState::kInBackForwardCache);
+  if (rfh->IsInLifecycleState(
+          RenderFrameHost::LifecycleState::kInBackForwardCache)) {
+    return std::nullopt;
+  }
+  return listener->second;
 }
 
 void NotificationEventDispatcherImpl::DispatchNotificationClickEvent(
@@ -551,20 +555,18 @@ void NotificationEventDispatcherImpl::RegisterNonPersistentNotificationListener(
 // See https://crbug.com/1350944
 void NotificationEventDispatcherImpl::DispatchNonPersistentShowEvent(
     const std::string& notification_id) {
-  if (ShouldDispatchNonPersistentNotificationEvent(notification_id)) {
-    auto listener =
-        non_persistent_notification_listeners_.find(notification_id);
-    listener->second.remote->OnShow();
+  auto listener = GetListenerIfNotifiable(notification_id);
+  if (listener.has_value()) {
+    listener->remote->OnShow();
   }
 }
 
 void NotificationEventDispatcherImpl::DispatchNonPersistentClickEvent(
     const std::string& notification_id,
     NotificationClickEventCallback callback) {
-  if (ShouldDispatchNonPersistentNotificationEvent(notification_id)) {
-    auto listener =
-        non_persistent_notification_listeners_.find(notification_id);
-    listener->second.remote->OnClick(
+  auto listener = GetListenerIfNotifiable(notification_id);
+  if (listener.has_value()) {
+    listener->remote->OnClick(
         base::BindOnce(std::move(callback), true /* success */));
   } else {
     std::move(callback).Run(false /* success */);
@@ -574,11 +576,10 @@ void NotificationEventDispatcherImpl::DispatchNonPersistentClickEvent(
 void NotificationEventDispatcherImpl::DispatchNonPersistentCloseEvent(
     const std::string& notification_id,
     base::OnceClosure completed_closure) {
-  if (ShouldDispatchNonPersistentNotificationEvent(notification_id)) {
+  auto listener = GetListenerIfNotifiable(notification_id);
+  if (listener.has_value()) {
     // Listeners get freed together with `this`, thus the Unretained is safe.
-    auto listener =
-        non_persistent_notification_listeners_.find(notification_id);
-    listener->second.remote->OnClose(base::BindOnce(
+    listener->remote->OnClose(base::BindOnce(
         &NotificationEventDispatcherImpl::OnNonPersistentCloseComplete,
         base::Unretained(this), notification_id, std::move(completed_closure)));
   } else {

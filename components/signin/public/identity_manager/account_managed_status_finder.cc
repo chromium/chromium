@@ -14,10 +14,32 @@ namespace {
 
 const char* g_non_managed_domain_for_testing = nullptr;
 
+std::string GetDomainFromEmail(const std::string& email) {
+  size_t email_separator_pos = email.find('@');
+  if (email.empty() || email_separator_pos == std::string::npos ||
+      email_separator_pos == email.size() - 1) {
+    // An empty email means no logged-in user, or incognito user in case of
+    // ChromiumOS. Also, some tests use nonsense email addresses (e.g. "test").
+    return std::string();
+  }
+  return gaia::ExtractDomainName(email);
+}
+
+bool IsGmailDomain(const std::string& email_domain) {
+  static constexpr auto kGmailDomains =
+      base::MakeFixedFlatSet<std::string_view>({"gmail.com", "googlemail.com"});
+
+  return kGmailDomains.contains(email_domain);
+}
+
+bool IsGmailUserBasedOnEmail(const std::string& email) {
+  return IsGmailDomain(GetDomainFromEmail(email));
+}
+
 }  // namespace
 
 // static
-bool AccountManagedStatusFinder::IsKnownConsumerDomain(
+bool AccountManagedStatusFinder::MayBeEnterpriseDomain(
     const std::string& email_domain) {
   // List of consumer-only domains from the server side logic. See
   // `KNOWN_INVALID_DOMAINS` from GetAgencySignupStateProducerModule.java.
@@ -441,29 +463,21 @@ bool AccountManagedStatusFinder::IsKnownConsumerDomain(
                                                 "your-mail.com",
                                                 "zoho.com"});
 
+  if (email_domain.empty()) {
+    return false;
+  }
   if (g_non_managed_domain_for_testing &&
       email_domain == g_non_managed_domain_for_testing) {
-    return true;
+    return false;
   }
 
-  return kKnownConsumerDomains.contains(email_domain);
+  return !kKnownConsumerDomains.contains(email_domain);
 }
 
 // static
-AccountManagedStatusFinder::EmailEnterpriseStatus
-AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+bool AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
     const std::string& email) {
-  size_t email_separator_pos = email.find('@');
-  if (email.empty() || email_separator_pos == std::string::npos ||
-      email_separator_pos == email.size() - 1) {
-    // An empty email means no logged-in user, or incognito user in case of
-    // ChromiumOS. Also, some tests use nonsense email addresses (e.g. "test");
-    // these should be treated as non-enterprise too.
-    return EmailEnterpriseStatus::kKnownNonEnterprise;
-  }
-  return IsKnownConsumerDomain(gaia::ExtractDomainName(email))
-             ? EmailEnterpriseStatus::kKnownNonEnterprise
-             : EmailEnterpriseStatus::kUnknown;
+  return MayBeEnterpriseDomain(GetDomainFromEmail(email));
 }
 
 // static
@@ -515,7 +529,7 @@ void AccountManagedStatusFinder::OnExtendedAccountInfoUpdated(
 
   // This is the relevant account! Determine its type.
   OutcomeDeterminedAsync(info.IsManaged() ? Outcome::kEnterprise
-                                          : Outcome::kNonEnterprise);
+                                          : Outcome::kConsumerNotWellKnown);
 }
 
 void AccountManagedStatusFinder::OnRefreshTokenRemovedForAccount(
@@ -552,7 +566,7 @@ void AccountManagedStatusFinder::OnIdentityManagerShutdown(
 }
 
 AccountManagedStatusFinder::Outcome
-AccountManagedStatusFinder::DetermineOutcome() {
+AccountManagedStatusFinder::DetermineOutcome() const {
   // This must be called only after refresh tokens have been loaded.
   CHECK(identity_manager_->AreRefreshTokensLoaded());
 
@@ -563,9 +577,12 @@ AccountManagedStatusFinder::DetermineOutcome() {
     return Outcome::kError;
   }
 
-  if (IsEnterpriseUserBasedOnEmail(account_.email) ==
-      EmailEnterpriseStatus::kKnownNonEnterprise) {
-    return Outcome::kNonEnterprise;
+  if (IsGmailUserBasedOnEmail(account_.email)) {
+    return Outcome::kConsumerGmail;
+  }
+
+  if (!MayBeEnterpriseUserBasedOnEmail(account_.email)) {
+    return Outcome::kConsumerWellKnown;
   }
 
   if (gaia::IsGoogleInternalAccountEmail(
@@ -579,7 +596,8 @@ AccountManagedStatusFinder::DetermineOutcome() {
   // IdentityManager. This may or may not be available immediately.
   AccountInfo info = identity_manager_->FindExtendedAccountInfo(account_);
   if (info.IsValid()) {
-    return info.IsManaged() ? Outcome::kEnterprise : Outcome::kNonEnterprise;
+    return info.IsManaged() ? Outcome::kEnterprise
+                            : Outcome::kConsumerNotWellKnown;
   }
 
   // Extended account info isn't (fully) available yet. Observe the

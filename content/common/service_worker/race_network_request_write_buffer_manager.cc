@@ -133,23 +133,9 @@ size_t RaceNetworkRequestWriteBufferManager::CopyAndCompleteWriteDataWithSize(
   size_t num_bytes_to_consume =
       std::min({buffer_size(), read_buffer.size(), max_num_bytes_to_consume});
 
-  SCOPED_CRASH_KEY_NUMBER("SWRace", "physical_memory_mb",
-                          base::SysInfo::AmountOfPhysicalMemoryMB());
-  SCOPED_CRASH_KEY_NUMBER("SWRace", "num_bytes_to_consume",
-                          num_bytes_to_consume);
-
   CHECK_GE(data_pipe_buffer_size_, num_bytes_to_consume);
   CHECK_GE(buffer_size(), num_bytes_to_consume);
   CHECK_GE(read_buffer.size(), num_bytes_to_consume);
-  // Check if all memory spaces are available to access. `volatile` to avoid the
-  // compiler optimization.
-  // TODO(crbug.com/40943349) Remove this code once we confirmed the root cause
-  // of the crash.
-  volatile const char* read_buffer_v =
-      static_cast<volatile const char*>(read_buffer.data());
-  for (size_t i = 0; i < read_buffer.size(); ++i) {
-    read_buffer_v[i];
-  }
   base::as_writable_chars(buffer_)
       .first(num_bytes_to_consume)
       .copy_from(read_buffer.first(num_bytes_to_consume));

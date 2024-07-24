@@ -28,15 +28,37 @@
 using base::test::RunClosure;
 using ::testing::_;
 using ::testing::ByMove;
+using testing::InSequence;
 using ::testing::Return;
 using ::testing::StrictMock;
 
 namespace media {
+namespace {
+constexpr std::string kEmptyData = "";
+constexpr std::string kInvalidData = "ThisIsInvalidData";
+constexpr uint8_t kEncodedData[] = {1, 2, 3};
 
 constexpr gfx::Size kCodedSize(128, 128);
+VideoDecoderConfig DefaultVideoDecoderConfig() {
+  const VideoDecoderConfig config(
+      media::VideoCodec::kVP8, VP8PROFILE_ANY,
+      VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
+      kNoTransformation, kCodedSize, gfx::Rect(kCodedSize), kCodedSize,
+      EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  DCHECK(config.IsValidConfig());
+  return config;
+}
+}  // namespace
 
 MATCHER_P(MatchesStatusCode, status_code, "") {
   return arg.code() == status_code;
+}
+
+scoped_refptr<DecoderBuffer> CreateDecoderBuffer(
+    const base::span<const uint8_t>& bitstream) {
+  scoped_refptr<DecoderBuffer> buffer = DecoderBuffer::CopyFrom(bitstream);
+  EXPECT_NE(buffer.get(), nullptr);
+  return buffer;
 }
 
 class MockVaapiWrapper : public VaapiWrapper {
@@ -144,6 +166,7 @@ class VaapiVideoDecoderTest : public ::testing::Test {
   void ResetDecoder() {
     auto mock_accelerated_video_decoder =
         std::make_unique<StrictMock<MockAcceleratedVideoDecoder>>();
+    mock_accelerated_video_decoder_ = mock_accelerated_video_decoder.get();
     decoder_ = VaapiVideoDecoder::Create(
         std::make_unique<media::NullMediaLog>(),
         base::SequencedTaskRunner::GetCurrentDefault(),
@@ -153,9 +176,10 @@ class VaapiVideoDecoderTest : public ::testing::Test {
     vaapi_decoder()->decoder_ = std::move(mock_accelerated_video_decoder);
   }
 
-  void InitializeVaapiVideoDecoder(const VideoDecoderConfig& config,
-                                   const DecoderStatus::Codes& status_code,
-                                   CdmContext* cdm_context = nullptr) {
+  void InitializeVaapiVideoDecoder(
+      const DecoderStatus::Codes& status_code,
+      const VideoDecoderConfig& config = DefaultVideoDecoderConfig(),
+      CdmContext* cdm_context = nullptr) {
     base::RunLoop run_loop;
     EXPECT_CALL(client_, InitCallback(MatchesStatusCode(status_code)))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
@@ -173,9 +197,31 @@ class VaapiVideoDecoderTest : public ::testing::Test {
     testing::Mock::VerifyAndClearExpectations(this);
   }
 
+  void Decode(scoped_refptr<DecoderBuffer> buffer,
+              AcceleratedVideoDecoder::DecodeResult mock_decoder_result,
+              DecoderStatus::Codes vaapi_decoder_status) {
+    ASSERT_TRUE(mock_accelerated_video_decoder_);
+    {
+      InSequence sequence;
+      EXPECT_CALL(*mock_accelerated_video_decoder_, SetStream(_, _));
+      EXPECT_CALL(*mock_accelerated_video_decoder_, Decode())
+          .WillOnce(Return(mock_decoder_result));
+      EXPECT_CALL(*this,
+                  OnDecodeCompleted(MatchesStatusCode(vaapi_decoder_status)));
+    }
+    vaapi_decoder()->Decode(
+        std::move(buffer),
+        base::BindOnce(&VaapiVideoDecoderTest::OnDecodeCompleted,
+                       base::Unretained(this)));
+    task_environment_.RunUntilIdle();
+  }
+
   VaapiVideoDecoder* vaapi_decoder() {
     return reinterpret_cast<VaapiVideoDecoder*>(decoder_.get());
   }
+
+  MOCK_METHOD(void, OnDecodeCompleted, (DecoderStatus), ());
+  MOCK_METHOD(void, OnResetDone, (), ());
 
   MockCdmContext cdm_context_;
   MockChromeOsCdmContext chromeos_cdm_context_;
@@ -184,16 +230,12 @@ class VaapiVideoDecoderTest : public ::testing::Test {
   scoped_refptr<MockVaapiWrapper> mock_vaapi_wrapper_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   MockVideoDecoderMixinClient client_;
+  raw_ptr<StrictMock<MockAcceleratedVideoDecoder>>
+      mock_accelerated_video_decoder_ = nullptr;
 };
 
 TEST_F(VaapiVideoDecoderTest, Initialize) {
-  InitializeVaapiVideoDecoder(
-      VideoDecoderConfig(VideoCodec::kVP8, VP8PROFILE_ANY,
-                         VideoDecoderConfig::AlphaMode::kIsOpaque,
-                         VideoColorSpace(), kNoTransformation, kCodedSize,
-                         gfx::Rect(kCodedSize), kCodedSize, EmptyExtraData(),
-                         EncryptionScheme::kUnencrypted),
-      DecoderStatus::Codes::kOk);
+  InitializeVaapiVideoDecoder(DecoderStatus::Codes::kOk);
   EXPECT_FALSE(vaapi_decoder()->NeedsTranscryption());
 }
 
@@ -202,12 +244,12 @@ TEST_F(VaapiVideoDecoderTest, Initialize) {
 TEST_F(VaapiVideoDecoderTest,
        InitializeFailsDueToMissingCdmContextForEncryptedContent) {
   InitializeVaapiVideoDecoder(
+      DecoderStatus::Codes::kUnsupportedEncryptionMode,
       VideoDecoderConfig(VideoCodec::kVP8, VP8PROFILE_ANY,
                          VideoDecoderConfig::AlphaMode::kIsOpaque,
                          VideoColorSpace(), kNoTransformation, kCodedSize,
                          gfx::Rect(kCodedSize), kCodedSize, EmptyExtraData(),
-                         EncryptionScheme::kCenc),
-      DecoderStatus::Codes::kUnsupportedEncryptionMode);
+                         EncryptionScheme::kCenc));
 }
 
 // Verifies that Initialize() fails when trying to decode encrypted content with
@@ -216,12 +258,13 @@ TEST_F(VaapiVideoDecoderTest, InitializeFailsDueToEncryptedContentForVP8) {
   EXPECT_CALL(cdm_context_, GetChromeOsCdmContext())
       .WillRepeatedly(Return(&chromeos_cdm_context_));
   InitializeVaapiVideoDecoder(
+      DecoderStatus::Codes::kUnsupportedEncryptionMode,
       VideoDecoderConfig(VideoCodec::kVP8, VP8PROFILE_ANY,
                          VideoDecoderConfig::AlphaMode::kIsOpaque,
                          VideoColorSpace(), kNoTransformation, kCodedSize,
                          gfx::Rect(kCodedSize), kCodedSize, EmptyExtraData(),
                          EncryptionScheme::kCenc),
-      DecoderStatus::Codes::kUnsupportedEncryptionMode, &cdm_context_);
+      &cdm_context_);
   testing::Mock::VerifyAndClearExpectations(&chromeos_cdm_context_);
   testing::Mock::VerifyAndClearExpectations(&cdm_context_);
 }
@@ -239,15 +282,61 @@ TEST_F(VaapiVideoDecoderTest, InitializeForVP9EncryptedContent) {
           Return(ByMove(std::make_unique<FakeCdmContextRef>(&cdm_context_))));
   EXPECT_CALL(chromeos_cdm_context_, IsRemoteCdm()).WillOnce(Return(false));
   InitializeVaapiVideoDecoder(
+      DecoderStatus::Codes::kOk,
       VideoDecoderConfig(VideoCodec::kVP9, VP9PROFILE_PROFILE0,
                          VideoDecoderConfig::AlphaMode::kIsOpaque,
                          VideoColorSpace(), kNoTransformation, kCodedSize,
                          gfx::Rect(kCodedSize), kCodedSize, EmptyExtraData(),
                          EncryptionScheme::kCenc),
-      DecoderStatus::Codes::kOk, &cdm_context_);
+      &cdm_context_);
   EXPECT_FALSE(vaapi_decoder()->NeedsTranscryption());
   testing::Mock::VerifyAndClearExpectations(&chromeos_cdm_context_);
   testing::Mock::VerifyAndClearExpectations(&cdm_context_);
+}
+
+TEST_F(VaapiVideoDecoderTest, DecodeSucceeds) {
+  InitializeVaapiVideoDecoder(DecoderStatus::Codes::kOk);
+  EXPECT_FALSE(vaapi_decoder()->NeedsTranscryption());
+  auto buffer = CreateDecoderBuffer(base::as_byte_span(kEncodedData));
+  Decode(buffer, AcceleratedVideoDecoder::DecodeResult::kRanOutOfStreamData,
+         DecoderStatus::Codes::kOk);
+  testing::Mock::VerifyAndClearExpectations(mock_accelerated_video_decoder_);
+}
+
+TEST_F(VaapiVideoDecoderTest, DecodeFails) {
+  InitializeVaapiVideoDecoder(DecoderStatus::Codes::kOk);
+  EXPECT_FALSE(vaapi_decoder()->NeedsTranscryption());
+  auto buffer = CreateDecoderBuffer(base::as_byte_span(kInvalidData));
+  Decode(buffer, AcceleratedVideoDecoder::DecodeResult::kDecodeError,
+         DecoderStatus::Codes::kFailed);
+  testing::Mock::VerifyAndClearExpectations(mock_accelerated_video_decoder_);
+}
+
+// Verifies that kConfigChange event can be triggered correctly.
+TEST_F(VaapiVideoDecoderTest, ConfigChange) {
+  InitializeVaapiVideoDecoder(DecoderStatus::Codes::kOk);
+  EXPECT_FALSE(vaapi_decoder()->NeedsTranscryption());
+  auto buffer = CreateDecoderBuffer(base::as_byte_span(kEmptyData));
+  Decode(buffer, AcceleratedVideoDecoder::DecodeResult::kRanOutOfStreamData,
+         DecoderStatus::Codes::kOk);
+  buffer = CreateDecoderBuffer(kEncodedData);
+  EXPECT_CALL(client_, PrepareChangeResolution());
+  Decode(buffer, AcceleratedVideoDecoder::DecodeResult::kConfigChange,
+         DecoderStatus::Codes::kAborted);
+  testing::Mock::VerifyAndClearExpectations(mock_accelerated_video_decoder_);
+}
+
+// Verifies the Reset sequence.
+TEST_F(VaapiVideoDecoderTest, Reset) {
+  InitializeVaapiVideoDecoder(DecoderStatus::Codes::kOk);
+  EXPECT_FALSE(vaapi_decoder()->NeedsTranscryption());
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_accelerated_video_decoder_, Reset());
+  EXPECT_CALL(*this, OnResetDone())
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  vaapi_decoder()->Reset(base::BindOnce(&VaapiVideoDecoderTest::OnResetDone,
+                                        base::Unretained(this)));
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace media

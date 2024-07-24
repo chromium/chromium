@@ -111,7 +111,7 @@ Iban& Iban::operator=(const Iban& iban) = default;
 
 AutofillMetadata Iban::GetMetadata() const {
   CHECK_NE(record_type_, Iban::kUnknown);
-  AutofillMetadata metadata = AutofillDataModel::GetMetadata();
+  AutofillMetadata metadata(*this);
   metadata.id = record_type_ == Iban::kLocalIban
                     ? guid()
                     : base::NumberToString(instrument_id());
@@ -488,8 +488,12 @@ size_t Iban::GetLengthOfIbanCountry(IbanSupportedCountry supported_country) {
 }
 
 bool Iban::SetMetadata(const AutofillMetadata& metadata) {
-  // Make sure the ids match.
-  return metadata.id != guid() && AutofillDataModel::SetMetadata(metadata);
+  if (metadata.id != guid()) {
+    return false;
+  }
+  set_use_count(metadata.use_count);
+  set_use_date(metadata.use_date);
+  return true;
 }
 
 std::u16string Iban::GetRawInfo(FieldType type) const {

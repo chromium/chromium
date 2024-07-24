@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
@@ -29,8 +28,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-
-class CouponService;
 
 namespace autofill {
 
@@ -86,24 +83,13 @@ class OfferNotificationBubbleViewsTestBase
   std::unique_ptr<AutofillOfferData> CreateGPayPromoCodeOfferDataWithDomains(
       const std::vector<GURL>& domains);
 
-  std::unique_ptr<AutofillOfferData> CreateFreeListingCouponDataWithDomains(
-      const std::vector<GURL>& domains);
-
-  void DeleteFreeListingCouponForUrl(const GURL& url);
-
   void SetUpOfferDataWithDomains(AutofillOfferData::OfferType offer_type,
                                  const std::vector<GURL>& domains);
 
   // Also creates a credit card for the offer.
   void SetUpCardLinkedOfferDataWithDomains(const std::vector<GURL>& domains);
 
-  void SetUpFreeListingCouponOfferDataWithDomains(
-      const std::vector<GURL>& domains);
-
   void SetUpGPayPromoCodeOfferDataWithDomains(const std::vector<GURL>& domains);
-
-  void SetUpFreeListingCouponOfferDataForCouponService(
-      std::unique_ptr<AutofillOfferData> offer);
 
   TestAutofillManager* GetAutofillManager();
 
@@ -126,9 +112,6 @@ class OfferNotificationBubbleViewsTestBase
       OfferNotificationBubbleControllerImpl* controller);
 
   void ResetEventWaiterForSequence(std::list<DialogEvent> event_sequence);
-
-  void UpdateFreeListingCouponDisplayTime(
-      std::unique_ptr<AutofillOfferData> offer);
 
   AutofillOfferManager* GetOfferManager();
 
@@ -159,10 +142,8 @@ class OfferNotificationBubbleViewsTestBase
 
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
   raw_ptr<PersonalDataManager> personal_data_ = nullptr;
-  raw_ptr<CouponService> coupon_service_ = nullptr;
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   net::EmbeddedTestServer https_server_;
   content::ContentMockCertVerifier cert_verifier_;

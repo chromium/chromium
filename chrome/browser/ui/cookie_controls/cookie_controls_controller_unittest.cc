@@ -1599,7 +1599,7 @@ class CookieControlsUserBypassTrackingProtectionUiTest
           {{"include-in-user-bypass", "true"}}},
          {privacy_sandbox::kFingerprintingProtectionUx,
           {{"include-in-user-bypass", "true"}}},
-         {privacy_sandbox::kTrackingProtectionSettingsLaunch, {}}},
+         {privacy_sandbox::kTrackingProtectionContentSettingFor3pcb, {}}},
         {});
   }
   ~CookieControlsUserBypassTrackingProtectionUiTest() override = default;

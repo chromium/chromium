@@ -670,7 +670,7 @@ const Extension* ExtensionBrowserTest::UpdateExtensionWaitForIdle(
     const extensions::ExtensionId& id,
     const base::FilePath& path,
     std::optional<int> expected_change) {
-  return InstallOrUpdateExtension(id, path, INSTALL_UI_TYPE_NONE,
+  return InstallOrUpdateExtension(id, path, InstallUIType::kNone,
                                   std::move(expected_change),
                                   ManifestLocation::kInternal, browser(),
                                   Extension::NO_FLAGS, false, false);
@@ -680,7 +680,7 @@ const Extension* ExtensionBrowserTest::InstallExtensionFromWebstore(
     const base::FilePath& path,
     std::optional<int> expected_change) {
   return InstallOrUpdateExtension(
-      std::string(), path, INSTALL_UI_TYPE_AUTO_CONFIRM,
+      std::string(), path, InstallUIType::kAutoConfirm,
       std::move(expected_change), ManifestLocation::kInternal, browser(),
       Extension::FROM_WEBSTORE, true, false);
 }
@@ -735,13 +735,13 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
   std::optional<CrxInstallError> install_error;
   {
     std::unique_ptr<ScopedTestDialogAutoConfirm> prompt_auto_confirm;
-    if (ui_type == INSTALL_UI_TYPE_CANCEL) {
+    if (ui_type == InstallUIType::kCancel) {
       prompt_auto_confirm = std::make_unique<ScopedTestDialogAutoConfirm>(
           ScopedTestDialogAutoConfirm::CANCEL);
-    } else if (ui_type == INSTALL_UI_TYPE_NORMAL) {
+    } else if (ui_type == InstallUIType::kNormal) {
       prompt_auto_confirm = std::make_unique<ScopedTestDialogAutoConfirm>(
           ScopedTestDialogAutoConfirm::NONE);
-    } else if (ui_type == INSTALL_UI_TYPE_AUTO_CONFIRM) {
+    } else if (ui_type == InstallUIType::kAutoConfirm) {
       prompt_auto_confirm = std::make_unique<ScopedTestDialogAutoConfirm>(
           ScopedTestDialogAutoConfirm::ACCEPT);
     }

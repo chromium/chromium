@@ -23,18 +23,18 @@ namespace network {
 
 namespace {
 
-bool HasSubdomainCoverage(std::string_view domain) {
+bool HasSubdomainCoverage(const std::string_view domain) {
   return domain.starts_with(".") || domain.starts_with("*");
 }
 
-void AddRulesToMatcher(net::SchemeHostPortMatcher* matcher,
-                       std::string_view domain,
-                       bool include_subdomains) {
+void AddRulesToMatcher(const std::string_view domain,
+                       const bool include_subdomains,
+                       net::SchemeHostPortMatcher& matcher) {
   auto domain_rule =
       net::SchemeHostPortMatcherRule::FromUntrimmedRawString(domain);
 
   if (domain_rule) {
-    matcher->AddAsLastRule(std::move(domain_rule));
+    matcher.AddAsLastRule(std::move(domain_rule));
   } else {
     DVLOG(3) << "UrlMatcherWithBypass::UpdateMatcher() - " << domain
              << " is not a valid rule";
@@ -47,7 +47,7 @@ void AddRulesToMatcher(net::SchemeHostPortMatcher* matcher,
         net::SchemeHostPortMatcherRule::FromUntrimmedRawString(subdomain);
 
     if (subdomain_rule) {
-      matcher->AddAsLastRule(std::move(subdomain_rule));
+      matcher.AddAsLastRule(std::move(subdomain_rule));
     } else {
       DVLOG(3) << "UrlMatcherWithBypass::UpdateMatcher() - " << subdomain
                << " is not a valid rule";
@@ -86,8 +86,7 @@ UrlMatcherWithBypass::BuildBypassMatcher(
   }
 
   for (std::string_view domain : domains) {
-    AddRulesToMatcher(bypass_matcher.get(), domain,
-                      !HasSubdomainCoverage(domain));
+    AddRulesToMatcher(domain, !HasSubdomainCoverage(domain), *bypass_matcher);
   }
 
   return bypass_matcher;
@@ -110,27 +109,28 @@ UrlMatcherWithBypass::~UrlMatcherWithBypass() = default;
 
 void UrlMatcherWithBypass::AddMaskedDomainListRules(
     const std::set<std::string>& domains,
-    base::optional_ref<masked_domain_list::ResourceOwner> resource_owner) {
+    base::optional_ref<const masked_domain_list::ResourceOwner>
+        resource_owner) {
   net::SchemeHostPortMatcher* bypass_matcher = nullptr;
 
   if (resource_owner.has_value()) {
     bypass_matchers_.emplace_back(BuildBypassMatcher(resource_owner.value()));
     bypass_matcher = bypass_matchers_.back().get();
   } else {
-    bypass_matcher = &empty_bypass_matcher;
+    bypass_matcher = &empty_bypass_matcher_;
   }
 
   for (const auto& [partition_key, partitioned_domains] :
        PartitionDomains(domains)) {
     net::SchemeHostPortMatcher matcher;
-    for (auto domain : partitioned_domains) {
+    for (const auto& domain : partitioned_domains) {
       DCHECK(domain.ends_with(partition_key));
-      AddRulesToMatcher(&matcher, domain, !HasSubdomainCoverage(domain));
+      AddRulesToMatcher(domain, !HasSubdomainCoverage(domain), matcher);
     }
 
     if (!matcher.rules().empty()) {
       match_list_with_bypass_map_[partition_key].emplace_back(
-          std::make_pair(std::move(matcher), bypass_matcher));
+          std::move(matcher), bypass_matcher);
     }
   }
 }
@@ -150,14 +150,14 @@ size_t UrlMatcherWithBypass::EstimateMemoryUsage() const {
          base::trace_event::EstimateMemoryUsage(bypass_matchers_);
 }
 
-bool UrlMatcherWithBypass::IsPopulated() {
+bool UrlMatcherWithBypass::IsPopulated() const {
   return !match_list_with_bypass_map_.empty();
 }
 
-bool UrlMatcherWithBypass::Matches(
+UrlMatcherWithBypassResult UrlMatcherWithBypass::Matches(
     const GURL& request_url,
     const std::optional<net::SchemefulSite>& top_frame_site,
-    bool skip_bypass_check) {
+    bool skip_bypass_check) const {
   auto dvlog = [&](std::string_view message, bool matches) {
     DVLOG(3) << "UrlMatcherWithBypass::Matches(" << request_url << ", "
              << top_frame_site.value() << ") - " << message
@@ -171,7 +171,7 @@ bool UrlMatcherWithBypass::Matches(
 
   if (!IsPopulated()) {
     dvlog("skipped (match list not populated)", false);
-    return false;
+    return UrlMatcherWithBypassResult::kNoMatch;
   }
 
   net::SchemefulSite request_site(request_url);
@@ -179,7 +179,7 @@ bool UrlMatcherWithBypass::Matches(
 
   if (!match_list_with_bypass_map_.contains(resource_host_suffix)) {
     dvlog("no suffix match", false);
-    return false;
+    return UrlMatcherWithBypassResult::kNoMatch;
   }
 
   for (const auto& [matcher, bypass_matcher] :
@@ -188,17 +188,19 @@ bool UrlMatcherWithBypass::Matches(
     if (rule_result == net::SchemeHostPortMatcherResult::kInclude) {
       if (skip_bypass_check) {
         dvlog("matched with skipped bypass check", true);
-        return true;
+        return UrlMatcherWithBypassResult::kMatchAndNoBypass;
       }
-      bool matches = bypass_matcher->Evaluate(top_frame_site->GetURL()) ==
-                     net::SchemeHostPortMatcherResult::kNoMatch;
-      dvlog("bypass_matcher.Matches", matches);
-      return matches;
+      const bool no_match =
+          bypass_matcher->Evaluate(top_frame_site->GetURL()) ==
+          net::SchemeHostPortMatcherResult::kNoMatch;
+      dvlog("bypass_matcher.NoMatch", no_match);
+      return no_match ? UrlMatcherWithBypassResult::kMatchAndNoBypass
+                      : UrlMatcherWithBypassResult::kMatchAndBypass;
     }
   }
 
   dvlog("no request match", false);
-  return false;
+  return UrlMatcherWithBypassResult::kNoMatch;
 }
 
 }  // namespace network

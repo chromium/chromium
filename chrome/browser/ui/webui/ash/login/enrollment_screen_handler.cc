@@ -31,7 +31,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/ash/login/cookie_waiter.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
@@ -58,8 +57,6 @@ const char kEnrollmentStepTPMChecking[] = "tpm-checking";
 const char kEnrollmentModeUIForced[] = "forced";
 const char kEnrollmentModeUIManual[] = "manual";
 const char kEnrollmentModeUIRecovery[] = "recovery";
-
-constexpr char kOAUTHCodeCookie[] = "oauth_code";
 
 // Converts `mode` to a mode identifier for the UI.
 std::string EnrollmentModeToUIMode(policy::EnrollmentConfig::Mode mode) {
@@ -638,88 +635,41 @@ void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user,
   login::SigninPartitionManager* signin_partition_manager =
       login::SigninPartitionManager::Factory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));
-  content::StoragePartition* partition =
-      signin_partition_manager->GetCurrentStoragePartition();
 
   // Validity check that partition did not change during enrollment flow.
   DCHECK_EQ(signin_partition_manager->GetCurrentStoragePartitionName(),
             signin_partition_name_);
 
-  network::mojom::CookieManager* cookie_manager =
-      partition->GetCookieManagerForBrowserProcess();
-  if (!oauth_code_waiter_) {
-    // Set listener before requesting the cookies to avoid race conditions.
-    oauth_code_waiter_ = std::make_unique<CookieWaiter>(
-        cookie_manager, kOAUTHCodeCookie,
-        base::BindRepeating(&EnrollmentScreenHandler::
-                                ContinueAuthenticationWhenCookiesAvailable,
-                            weak_ptr_factory_.GetWeakPtr(), user, license_type),
+  if (!gaia_cookie_retriever_) {
+    gaia_cookie_retriever_ = std::make_unique<GaiaCookieRetriever>(
+        signin_partition_name_, signin_partition_manager,
         base::BindOnce(&EnrollmentScreenHandler::OnCookieWaitTimeout,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr()),
+        use_fake_login_for_testing_);
   }
 
-  ContinueAuthenticationWhenCookiesAvailable(user, license_type);
-}
-
-void EnrollmentScreenHandler::ContinueAuthenticationWhenCookiesAvailable(
-    const std::string& user,
-    int license_type) {
-  login::SigninPartitionManager* signin_partition_manager =
-      login::SigninPartitionManager::Factory::GetForBrowserContext(
-          Profile::FromWebUI(web_ui()));
-  content::StoragePartition* partition =
-      signin_partition_manager->GetCurrentStoragePartition();
-
-  // Validity check that partition did not change during enrollment flow.
-  DCHECK_EQ(signin_partition_manager->GetCurrentStoragePartitionName(),
-            signin_partition_name_);
-
-  network::mojom::CookieManager* cookie_manager =
-      partition->GetCookieManagerForBrowserProcess();
-  cookie_manager->GetCookieList(
-      GaiaUrls::GetInstance()->gaia_url(),
-      net::CookieOptions::MakeAllInclusive(),
-      net::CookiePartitionKeyCollection::Todo(),
-      base::BindOnce(&EnrollmentScreenHandler::OnGetCookiesForCompleteLogin,
+  gaia_cookie_retriever_->RetrieveCookies(
+      base::BindOnce(&EnrollmentScreenHandler::CompleteAuthWithCookies,
                      weak_ptr_factory_.GetWeakPtr(), user, license_type));
 }
 
-void EnrollmentScreenHandler::OnGetCookiesForCompleteLogin(
+void EnrollmentScreenHandler::CompleteAuthWithCookies(
     const std::string& user,
     int license_type,
-    const net::CookieAccessResultList& cookies,
-    const net::CookieAccessResultList& excluded_cookies) {
-  std::string auth_code;
-  for (const auto& cookie_with_access_result : cookies) {
-    if (cookie_with_access_result.cookie.Name() == kOAUTHCodeCookie) {
-      auth_code = cookie_with_access_result.cookie.Value();
-      break;
-    }
-  }
-
-  // Allow testing to continue without a oauth cookie.
-  if (auth_code.empty() && !use_fake_login_for_testing_) {
-    // Will try again from oauth_code_waiter callback.
-
-    // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's
-    // preserved in the logs.
-    LOG(WARNING) << "OAuth cookie empty, still waiting";
-    return;
-  }
-
-  oauth_code_waiter_.reset();
+    login::GaiaCookiesData cookies) {
   DCHECK(controller_);
-  controller_->OnLoginDone(gaia::SanitizeEmail(user), license_type, auth_code);
+  controller_->OnLoginDone(gaia::SanitizeEmail(user), license_type,
+                           cookies.auth_code);
 }
 
 void EnrollmentScreenHandler::OnCookieWaitTimeout() {
   LOG(ERROR) << "Timeout waiting for OAuth cookie";
-  oauth_code_waiter_.reset();
 
   // If enrollment ends and the browser is being restarted, the renderers are
   // killed so we can not talk to them anymore.
-  if (!shutdown_)
+  if (!shutdown_) {
     ShowError(IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN, true);
+  }
 }
 
 void EnrollmentScreenHandler::HandleIdentifierEntered(

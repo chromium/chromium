@@ -52,7 +52,6 @@ gfx::BufferPlane GetBufferPlane(viz::SharedImageFormat format,
   DCHECK(format.IsValidPlaneIndex(plane_index));
   switch (format.plane_config()) {
     case viz::SharedImageFormat::PlaneConfig::kY_U_V:
-    case viz::SharedImageFormat::PlaneConfig::kY_V_U:
       switch (plane_index) {
         case 0:
           return gfx::BufferPlane::Y;
@@ -60,6 +59,15 @@ gfx::BufferPlane GetBufferPlane(viz::SharedImageFormat format,
           return gfx::BufferPlane::U;
         case 2:
           return gfx::BufferPlane::V;
+      }
+    case viz::SharedImageFormat::PlaneConfig::kY_V_U:
+      switch (plane_index) {
+        case 0:
+          return gfx::BufferPlane::Y;
+        case 1:
+          return gfx::BufferPlane::V;
+        case 2:
+          return gfx::BufferPlane::U;
       }
     case viz::SharedImageFormat::PlaneConfig::kY_UV:
       switch (plane_index) {

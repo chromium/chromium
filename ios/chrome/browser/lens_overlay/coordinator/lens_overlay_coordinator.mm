@@ -320,11 +320,7 @@
 }
 
 - (BOOL)isLensOverlayVisible {
-  if (_associatedTabHelper) {
-    return _associatedTabHelper->IsLensOverlayShown();
-  }
-
-  return NO;
+  return self.baseViewController.presentedViewController != nil;
 }
 
 - (void)lensResultPageWebStateDestroyed {

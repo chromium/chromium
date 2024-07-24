@@ -29,10 +29,6 @@ jboolean JNI_TabGroupSyncFeatures_IsTabGroupSyncEnabled(JNIEnv* env,
 
 bool IsTabGroupSyncEnabled(PrefService* pref_service) {
 #if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(tab_groups::kAndroidTabGroupStableIds)) {
-    return false;
-  }
-
   // Clear the legacy synced boolean pref to its default value (false) that
   // enables syncing across devices even when the feature isn't enabled on the
   // current device but is enabled on one of the remote devices. We will

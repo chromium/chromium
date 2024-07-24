@@ -812,6 +812,12 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
     return index + 1;
   }
 
+  private getSeaPenTileTagClass_(item: Tile|null): string {
+    const defaultTag = 'tile-tag';
+    return this.isSelectableTile_(item) ? defaultTag :
+                                          `${defaultTag} unavailable-tag`;
+  }
+
   private getSeaPenTileTagLabel_(item: Tile|null): string {
     return this.isSelectableTile_(item) ? this.i18n('seaPenExperimentLabel') :
                                           this.i18n('seaPenUnavailableLabel');

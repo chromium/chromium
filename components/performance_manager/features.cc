@@ -55,11 +55,11 @@ BASE_FEATURE(kPrefetchVirtualMemoryPolicy,
 
 BASE_FEATURE(kMemorySaverModeAggressiveness,
              "MemorySaverModeAggressiveness",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDiscardRingImprovements,
              "DiscardRingImprovements",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPerformanceIntervention,
              "PerformanceIntervention",
@@ -112,12 +112,6 @@ const base::FeatureParam<int> kMemoryFreePercentThreshold{
 const base::FeatureParam<int> kMemoryFreeBytesThreshold{
     &kPerformanceIntervention, "memory_free_bytes_threshold",
     1024 * 1024 * 1024};
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-BASE_FEATURE(kAshUrgentDiscardingFromPerformanceManager,
-             "AshUrgentDiscardingFromPerformanceManager",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kUnthrottledTabProcessReporting,

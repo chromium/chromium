@@ -14,6 +14,7 @@
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
+#include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -31,7 +32,8 @@ class POLICY_EXPORT RemoteCommandsInvalidator
     : public invalidation::InvalidationHandler,
       public invalidation::InvalidationListener::Observer {
  public:
-  explicit RemoteCommandsInvalidator(std::string owner_name);
+  RemoteCommandsInvalidator(std::string owner_name,
+                            PolicyInvalidationScope scope);
   RemoteCommandsInvalidator(const RemoteCommandsInvalidator&) = delete;
   RemoteCommandsInvalidator& operator=(const RemoteCommandsInvalidator&) =
       delete;
@@ -128,6 +130,8 @@ class POLICY_EXPORT RemoteCommandsInvalidator
   // TODO(b/343429042): Remove once does not implement
   // `invalidation::InvalidationHandler`.
   const std::string owner_name_;
+
+  const PolicyInvalidationScope scope_;
 
   // The invalidation service or listener.
   std::variant<raw_ptr<invalidation::InvalidationService>,

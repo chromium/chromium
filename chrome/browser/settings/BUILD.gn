@@ -13,6 +13,8 @@ android_library_factory("factory_java") {
 
 android_library("internal_java") {
   deps = [
+    "//base:resetters_java",
+
     # Exception: depends on :chrome_java for SettingsLauncherImpl.
     "//chrome/android:chrome_java",
     "//components/browser_ui/settings/android:java",

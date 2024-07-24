@@ -127,7 +127,7 @@ ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateDeprecatedDoNotUse() {
 }
 
 ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserStateByName(
-    const std::string& name) {
+    std::string_view name) {
   // If the browser state is already loaded, just return it.
   auto iter = browser_states_.find(name);
   if (iter != browser_states_.end()) {
@@ -160,7 +160,7 @@ BrowserStateInfoCache*
 ChromeBrowserStateManagerImpl::GetBrowserStateInfoCache() {
   if (!browser_state_info_cache_) {
     browser_state_info_cache_ = std::make_unique<BrowserStateInfoCache>(
-        GetApplicationContext()->GetLocalState(), GetUserDataDir());
+        GetApplicationContext()->GetLocalState());
   }
   return browser_state_info_cache_.get();
 }
@@ -304,17 +304,16 @@ void ChromeBrowserStateManagerImpl::AddBrowserStateToCache(
       IdentityManagerFactory::GetForBrowserState(browser_state);
   const CoreAccountInfo account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  const std::u16string username = base::UTF8ToUTF16(account_info.email);
 
   BrowserStateInfoCache* cache = GetBrowserStateInfoCache();
-  const size_t browser_state_index =
-      cache->GetIndexOfBrowserStateWithPath(browser_state->GetStatePath());
+  const size_t browser_state_index = cache->GetIndexOfBrowserStateWithName(
+      browser_state->GetBrowserStateName());
   if (browser_state_index != std::string::npos) {
     // The BrowserStateInfoCache's info must match the IdentityManager.
-    cache->SetAuthInfoOfBrowserStateAtIndex(browser_state_index,
-                                            account_info.gaia, username);
+    cache->SetAuthInfoOfBrowserStateAtIndex(
+        browser_state_index, account_info.gaia, account_info.email);
     return;
   }
-  cache->AddBrowserState(browser_state->GetStatePath(), account_info.gaia,
-                         username);
+  cache->AddBrowserState(browser_state->GetBrowserStateName(),
+                         account_info.gaia, account_info.email);
 }

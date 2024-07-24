@@ -15,11 +15,10 @@
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
-#include "net/cookies/canonical_cookie.h"
+#include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 
 namespace ash {
 
-class CookieWaiter;
 class HelpAppLauncher;
 
 // Possible error states of the Active Directory screen. Must be in the same
@@ -80,8 +79,6 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder) override;
   void DeclareJSCallbacks() override;
 
-  void ContinueAuthenticationWhenCookiesAvailable(const std::string& user,
-                                                  int license_type);
   void OnCookieWaitTimeout();
 
  private:
@@ -90,11 +87,9 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
                                                   int license_type);
   void HandleClose(const std::string& reason);
   void HandleCompleteLogin(const std::string& user, int license_type);
-  void OnGetCookiesForCompleteLogin(
-      const std::string& user,
-      int license_type,
-      const net::CookieAccessResultList& cookies,
-      const net::CookieAccessResultList& excluded_cookies);
+  void CompleteAuthWithCookies(const std::string& user,
+                               int license_type,
+                               login::GaiaCookiesData cookies);
   void HandleIdentifierEntered(const std::string& email);
   void HandleRetry();
   void HandleFrameLoadingCompleted();
@@ -165,7 +160,7 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   // Help application used for help dialogs.
   scoped_refptr<HelpAppLauncher> help_app_;
 
-  std::unique_ptr<CookieWaiter> oauth_code_waiter_;
+  std::unique_ptr<GaiaCookieRetriever> gaia_cookie_retriever_;
 
   bool use_fake_login_for_testing_ = false;
 

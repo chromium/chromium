@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("themes") {
@@ -40,7 +42,6 @@ source_set("themes") {
     "//components/resources:components_scaled_resources",
     "//components/sync/protocol",
     "//content/public/browser",
-    "//extensions/browser",
     "//third_party/abseil-cpp:absl",
     "//ui/color",
     "//ui/gfx",
@@ -53,14 +54,19 @@ source_set("themes") {
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/sync/model",
-    "//extensions/buildflags",
-    "//extensions/common",
     "//skia",
     "//ui/base",
     "//ui/base/mojom",
     "//ui/color:color_provider_key",
     "//ui/gfx:color_utils",
   ]
+  if (enable_extensions) {
+    public_deps += [
+      "//extensions/buildflags",
+      "//extensions/common",
+    ]
+    deps += [ "//extensions/browser" ]
+  }
   if (is_win || is_mac || is_linux) {
     public += [ "theme_color_policy_handler.h" ]
     sources += [ "theme_color_policy_handler.cc" ]

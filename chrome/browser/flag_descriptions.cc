@@ -655,6 +655,13 @@ const char kAutofillSyncEwalletAccountsDescription[] =
     "servers and displayed on the payment methods settings page.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const char kAutofillUnmaskCardRequestTimeoutName[] =
+    "Timeout for the credit card unmask request";
+const char kAutofillUnmaskCardRequestTimeoutDescription[] =
+    "When enabled, sets a client-side timeout on the Autofill credit card "
+    "unmask request. Upon timeout, the client will terminate the current "
+    "unmask server call, which may or may not terminate the ongoing unmask UI.";
+
 const char kAutofillUploadCardRequestTimeoutName[] =
     "Timeout for the credit card upload request";
 const char kAutofillUploadCardRequestTimeoutDescription[] =
@@ -1156,6 +1163,12 @@ const char kAccessibilityDisableTrackpadName[] =
 const char kAccessibilityDisableTrackpadDescription[] =
     "Adds a setting that allows the user to disable the built-in trackpad.";
 
+const char kAccessibilityFlashScreenFeatureName[] =
+    "Accessibility feature to flash the screen for each notification";
+const char kAccessibilityFlashScreenFeatureDescription[] =
+    "Allows the user to use a feature which flashes the screen for each "
+    "notification.";
+
 const char kAccessibilityOverscrollSettingFeatureName[] =
     "Adds overscroll to navigate setting";
 const char kAccessibilityOverscrollSettingFeatureDescription[] =
@@ -1391,6 +1404,12 @@ const char
     kEnableFriendlierSafeBrowsingSettingsStandardProtectionDescription[] =
         "Updates the text and layout on both the privacy guide and the "
         "security settings page.";
+
+const char kEnableGooglePlayProtectPromptName[] =
+    "Enable Google Play Protect prompts on Android dangerous downloads";
+const char kEnableGooglePlayProtectPromptDescription[] =
+    "Users with Google Play Protect disabled will be prompted on dangerous "
+    "downloads to re-enable the feature.";
 
 const char kEnableSearchEngineChoiceName[] = "Search engine choice";
 const char kEnableSearchEngineChoiceDescription[] =
@@ -3135,6 +3154,10 @@ const char kQuickDeleteAndroidFollowupDescription[] =
     "Enables some follow up work on Clear Browsing Data for Quick Delete, "
     "including an improved post delete experience and animations.";
 
+const char kQuickDeleteAndroidSurveyName[] = "HaTS for Quick Delete on Android";
+const char kQuickDeleteAndroidSurveyDescription[] =
+    "Enables HaTS survey for Quick Delete on Android.";
+
 const char kQuickShareV2Name[] = "Quick Share v2";
 const char kQuickShareV2Description[] =
     "Enables Quick Share v2, which defaults Quick Share to 'Your Devices' "
@@ -3257,15 +3280,6 @@ const char kTestThirdPartyCookiePhaseoutName[] =
 const char kTestThirdPartyCookiePhaseoutDescription[] =
     "Enable to test third-party cookie phaseout. "
     "Learn more: https://goo.gle/3pcd-flags";
-
-const char kThirdPartyStoragePartitioningName[] =
-    "Third-party Storage Partitioning";
-const char kThirdPartyStoragePartitioningDescription[] =
-    "When disabled, prevents partitioning of third-party storage by top-level "
-    "site. If any site issues are experienced as a result of the third-party "
-    "storage partitioning feature being enabled, please file bugs at "
-    "https://issues.chromium.org/issues/new?component=1363614&template=1922563"
-    "&customFields=1223031:Proj-StoragePartitioningTrial.";
 
 const char kScrollableTabStripFlagId[] = "scrollable-tabstrip";
 const char kScrollableTabStripName[] = "Tab Scrolling";
@@ -4168,11 +4182,6 @@ const char kAndroidTabDeclutterArchiveAllButActiveTabName[] =
 const char kAndroidTabDeclutterArchiveAllButActiveTabDescription[] =
     "Causes all tabs in model (except the current active one) to be archived. "
     "Used for manual testing.";
-
-const char kAndroidTabGroupStableIdsName[] = "Android Tab Group Stable IDs";
-const char kAndroidTabGroupStableIdsDescription[] =
-    "Replaces the tab group ID system on Android with stable IDs. A logical "
-    "consequence is support for tab groups with a single tab.";
 
 const char kAnimatedImageDragShadowName[] =
     "Enable animated image drag shadow on Android.";
@@ -7390,11 +7399,6 @@ const char kPhoneHubCallNotificationName[] =
     "Incoming call notification in Phone Hub";
 const char kPhoneHubCallNotificationDescription[] =
     "Enables the incoming/ongoing call feature in Phone Hub.";
-
-const char kPhoneHubOnboardingNotifierRevampName[] =
-    "Phone Hub onboarding notifier revamp";
-const char kPhoneHubOnboardingNotifierRevampDescription[] =
-    "Enables the revamp for Phone Hub onboarding notifier when eligible.";
 
 const char kPreferDcheckName[] = "Prefer DCHECK-enabled build";
 const char kPreferDcheckDescription[] =

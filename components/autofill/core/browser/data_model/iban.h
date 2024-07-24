@@ -16,6 +16,8 @@
 
 namespace autofill {
 
+struct AutofillMetadata;
+
 // A form group that stores IBAN information.
 class Iban : public AutofillDataModel {
  public:
@@ -168,9 +170,8 @@ class Iban : public AutofillDataModel {
 
   static size_t GetLengthOfIbanCountry(IbanSupportedCountry supported_country);
 
-  // AutofillDataModel:
-  AutofillMetadata GetMetadata() const override;
-  bool SetMetadata(const AutofillMetadata& metadata) override;
+  AutofillMetadata GetMetadata() const;
+  bool SetMetadata(const AutofillMetadata& metadata);
 
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
@@ -181,13 +182,14 @@ class Iban : public AutofillDataModel {
   // Returns true if there are no values (field types) set.
   bool IsEmpty(const std::string& app_locale) const;
 
-  // Comparison for Sync. Returns 0 if |iban| is the same as this, or < 0,
-  // or > 0 if it is different. The implied ordering can be used for culling
+  // Returns 0 if `iban` is the same as this, or < 0, or > 0 if it is different.
+  // It compares `identifier_`, `value_`, `prefix_`, `suffix_`, `nickname_`,
+  // `length_` and `record_type_`. The implied ordering can be used for culling
   // duplicates. The ordering is based on the collation order of the textual
   // contents of the fields.
   int Compare(const Iban& iban) const;
 
-  // Equality operators compare GUIDs, origins, |value_| and |nickname_|.
+  // Equality operators call `Compare()` above.
   bool operator==(const Iban& iban) const;
 
   void set_identifier(const absl::variant<Guid, InstrumentId>& identifier);

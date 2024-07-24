@@ -31,10 +31,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * JNI wrapper for the native SyncServiceImpl.
  *
  * <p>This class mostly makes calls to native and contains a minimum of business logic. It is only
- * usable from the UI thread as the native SyncServiceImpl requires its access to be on the UI
- * thread. See components/sync/service/sync_service_impl.h for more details.
- *
- * <p>TODO(crbug.com/40270701): Update to no reference UI thread.
+ * usable from the same sequence as the native SyncServiceImpl. See
+ * components/sync/service/sync_service_impl.h for more details.
  */
 public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     // Pointer to the C++ counterpart object. Set on construction and reset on destroy() to avoid

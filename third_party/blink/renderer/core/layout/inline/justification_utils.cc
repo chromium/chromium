@@ -87,7 +87,7 @@ String BuildJustificationText(const String& text_content,
   const InlineItemResult& last_item_result = results.back();
   if (last_item_result.hyphen) {
     line_text_builder.Append(last_item_result.hyphen.Text());
-  } else if (RuntimeEnabledFeatures::TextAlignLastJustifyNewLineEnabled()) {
+  } else {
     // Remove the trailing \n.  See crbug.com/331729346.
     wtf_size_t text_length = line_text_builder.length();
     if (text_length > 0u &&

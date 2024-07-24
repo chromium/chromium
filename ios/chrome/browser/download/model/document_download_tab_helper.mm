@@ -178,9 +178,13 @@ void DocumentDownloadTabHelper::PageLoaded(
       load_completion_status == web::PageLoadCompletionStatus::SUCCESS;
 
   // Only trigger for non HTML document.
+  // On back/forward navigation, the content type is not always populated. Add
+  // an additional test to avoid triggering on HTML pages in that case.
+  // TODO(crbug.com/354392267): remove test of content type emptiness.
   should_trigger =
       should_trigger &&
       (!web_state->ContentIsHTML() &&
+       !web_state->GetContentsMimeType().empty() &&
        !base::StartsWith(web_state->GetContentsMimeType(), "video/"));
 
   // Only triggers on http(s).

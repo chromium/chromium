@@ -358,6 +358,15 @@ In case of doubt, or if you need a starting point to debug why `chrome://ukm` is
 ./out/Default/chrome --force-enable-metrics-reporting --metrics-upload-interval=300 --vmodule=*components/ukm*=3
 ```
 
+### When are Use Counter UKM events recorded?
+
+Use counter UKM events are appended to chrome://ukm at a different time than UMA events are appended to
+chrome://histograms. Use counter UKM events are appended to chrome://ukm when the document is destroyed. This means
+that UKM events are recorded when the tab is closed or the page leaves the BF Cache.
+
+![Use Counter Metrics Events](./ukm-use-counter.png)
+In the above screenshot, the value in the right column is the web feature id.
+
 
 ## Unit Testing
 

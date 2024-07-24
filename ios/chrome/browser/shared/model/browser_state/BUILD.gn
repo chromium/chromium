@@ -42,6 +42,7 @@ source_set("browser_state") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "browser_state_info_cache_unittest.cc",
     "chrome_browser_state_unittest.cc",
     "test_chrome_browser_state_manager_unittest.cc",
   ]
@@ -49,7 +50,10 @@ source_set("unit_tests") {
     ":browser_state",
     ":test_support",
     "//base",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
     "//components/variations/net",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
   ]

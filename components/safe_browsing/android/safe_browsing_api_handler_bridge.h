@@ -41,13 +41,13 @@ class SafeBrowsingApiHandlerBridge {
   static SafeBrowsingApiHandlerBridge& GetInstance();
 
   // Makes Native-to-Java call to perform the hash-prefix database check.
-  void StartHashDatabaseUrlCheck(std::unique_ptr<ResponseCallback> callback,
+  void StartHashDatabaseUrlCheck(ResponseCallback callback,
                                  const GURL& url,
                                  const SBThreatTypeSet& threat_types);
 
   // Makes Native-to-Java call to perform the privacy-preserving hash real-time
   // check.
-  void StartHashRealTimeUrlCheck(std::unique_ptr<ResponseCallback> callback,
+  void StartHashRealTimeUrlCheck(ResponseCallback callback,
                                  const GURL& url,
                                  const SBThreatTypeSet& threat_types);
 
@@ -78,13 +78,13 @@ class SafeBrowsingApiHandlerBridge {
 
  private:
   // Makes Native-to-Java call to check the URL through GMSCore SafetyNet API.
-  void StartUrlCheckBySafetyNet(std::unique_ptr<ResponseCallback> callback,
+  void StartUrlCheckBySafetyNet(ResponseCallback callback,
                                 const GURL& url,
                                 const SBThreatTypeSet& threat_types);
 
   // Makes Native-to-Java call to check the URL through GMSCore SafeBrowsing
   // API.
-  void StartUrlCheckBySafeBrowsing(std::unique_ptr<ResponseCallback> callback,
+  void StartUrlCheckBySafeBrowsing(ResponseCallback callback,
                                    const GURL& url,
                                    const SBThreatTypeSet& threat_types,
                                    const SafeBrowsingJavaProtocol& protocol);
@@ -119,10 +119,10 @@ class UrlCheckInterceptor {
  public:
   virtual ~UrlCheckInterceptor() = default;
   virtual void CheckBySafetyNet(
-      std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback> callback,
+      SafeBrowsingApiHandlerBridge::ResponseCallback callback,
       const GURL& url) = 0;
   virtual void CheckBySafeBrowsing(
-      std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback> callback,
+      SafeBrowsingApiHandlerBridge::ResponseCallback callback,
       const GURL& url) = 0;
 };
 

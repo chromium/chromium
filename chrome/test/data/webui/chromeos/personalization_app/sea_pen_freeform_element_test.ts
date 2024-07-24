@@ -76,6 +76,9 @@ suite('SeaPenFreeformElementTest', function() {
     assertTrue(
         !!freeformElement!.shadowRoot!.getElementById('shuffle'),
         'shuffle button should be shown');
+    assertTrue(
+        !!freeformElement!.shadowRoot!.getElementById('promptingGuide'),
+        'prompting guide should exist');
 
     assertFalse(
         !!freeformElement.shadowRoot!.querySelector<HTMLElement>(
@@ -130,6 +133,9 @@ suite('SeaPenFreeformElementTest', function() {
     assertFalse(
         !!freeformElement!.shadowRoot!.getElementById('shuffle'),
         'shuffle button should be hidden for results tab');
+    assertFalse(
+        !!freeformElement!.shadowRoot!.getElementById('promptingGuide'),
+        'prompting guide should be hidden for results tab');
 
     assertTrue(
         !!freeformElement.shadowRoot!.querySelector<HTMLElement>(
@@ -165,6 +171,9 @@ suite('SeaPenFreeformElementTest', function() {
     assertTrue(
         !!freeformElement!.shadowRoot!.getElementById('shuffle'),
         'shuffle button should be shown for samples tab');
+    assertTrue(
+        !!freeformElement!.shadowRoot!.getElementById('promptingGuide'),
+        'prompting guide should be shown for samples tab');
     assertFalse(
         !!freeformElement.shadowRoot!.querySelector<HTMLElement>(
             SeaPenImagesElement.is),

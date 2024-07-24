@@ -18,7 +18,6 @@
 #include "content/browser/service_worker/fake_service_worker.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
-#include "content/browser/url_loader_factory_getter.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
@@ -37,6 +36,7 @@ namespace content {
 
 class FakeServiceWorker;
 class MockRenderProcessHost;
+class ReconnectableURLLoaderFactory;
 class ServiceWorkerContextCore;
 class ServiceWorkerContextWrapper;
 

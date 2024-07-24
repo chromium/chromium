@@ -935,9 +935,13 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account,
     CreditCardSuggestionSummary& summary) {
-  // Manual fallback entries are shown for all non credit card fields.
-  const bool is_manual_fallback_for_non_credit_card_field =
-      GroupTypeOfFieldType(trigger_field_type) != FieldTypeGroup::kCreditCard;
+  const bool is_trigger_field_a_credit_card_field =
+      GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kCreditCard;
+
+  const bool allow_payment_swapping =
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnablePaymentsFieldSwapping) &&
+      trigger_field.is_autofilled();
 
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
       GetCardLinkedOffers(client);
@@ -949,7 +953,8 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
       SanitizeCreditCardFieldValue(trigger_field.value()).empty() &&
           trigger_source !=
               AutofillSuggestionTriggerSource::kManualFallbackPayments,
-      /*prefix_match=*/!is_manual_fallback_for_non_credit_card_field,
+      /*prefix_match=*/is_trigger_field_a_credit_card_field &&
+          !allow_payment_swapping,
       /*include_virtual_cards=*/true);
 
   // If autofill for cards is triggered from the context menu on a credit card
@@ -963,8 +968,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
   // card field. Then, `GetSuggestionsForCreditCards()` is called with
   // `UNKOWN_TYPE` for the `trigger_field_type`. This guarantees no infinite
   // recursion occurs.
-  if (cards_to_suggest.empty() &&
-      !is_manual_fallback_for_non_credit_card_field &&
+  if (cards_to_suggest.empty() && is_trigger_field_a_credit_card_field &&
       trigger_source ==
           AutofillSuggestionTriggerSource::kManualFallbackPayments &&
       base::FeatureList::IsEnabled(

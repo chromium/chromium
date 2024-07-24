@@ -42,5 +42,21 @@ TEST(ModelExecutionFeature, GetAllowedFeaturesForUnsignedUser) {
   }
 }
 
+TEST(ModelExecutionFeature, GetOptimizationTargetForModelAdaptation) {
+  // This tests the generic logic that we expect for all features going forward.
+  EXPECT_THAT(features::internal::GetOptimizationTargetForModelAdaptation(
+                  ModelBasedCapabilityKey::kHistorySearch),
+              proto::OptimizationTarget::
+                  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_SEARCH);
+
+  // Special cases go here.
+  EXPECT_THAT(features::internal::GetOptimizationTargetForModelAdaptation(
+                  ModelBasedCapabilityKey::kTest),
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION);
+  EXPECT_THAT(features::internal::GetOptimizationTargetForModelAdaptation(
+                  ModelBasedCapabilityKey::kCompose),
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_COMPOSE);
+}
+
 }  // namespace
 }  // namespace optimization_guide

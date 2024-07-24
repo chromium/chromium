@@ -79,11 +79,11 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
                     AutofillSuggestionTriggerSource trigger_source,
                     AutoselectFirstSuggestion autoselect_first_suggestion) = 0;
 
-  // Determines whether to suppress minimum show thresholds. It should only be
-  // set during tests that cannot mock time (e.g. the autofill interactive
-  // browsertests).
-  virtual void DisableThresholdForTesting(bool disable_threshold) = 0;
-
+  // This method cannot be moved into a test api, because it is called by
+  // production code in `ChromeAutofillClient`. This happens because, before the
+  // popup is shown, tests can ask the client to keep the popup open for
+  // testing. Then, once the client shows the popup, the client calls this
+  // method.
   virtual void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) = 0;
 
   // Updates the data list values currently shown.

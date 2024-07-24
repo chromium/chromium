@@ -217,10 +217,10 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
 
 void ViewAccessibility::NotifyEvent(ax::mojom::Event event_type,
                                     bool send_native_event) {
-  // If `pause_accessibility_events_` is true, it means we are initializing
+  // If `ready_to_notify_events_` is false, it means we are initializing
   // property values. In this specific case, we do not want to notify platform
   // assistive technologies that a property has changed.
-  if (pause_accessibility_events_) {
+  if (!ready_to_notify_events_) {
     return;
   }
 
@@ -283,7 +283,6 @@ void ViewAccessibility::SetProperties(
     std::optional<std::u16string> role_description,
     std::optional<ax::mojom::NameFrom> name_from,
     std::optional<ax::mojom::DescriptionFrom> description_from) {
-  base::AutoReset<bool> initializing(&pause_accessibility_events_, true);
   if (role.has_value()) {
     if (role_description.has_value()) {
       SetRole(role.value(), role_description.value());
@@ -831,6 +830,21 @@ void ViewAccessibility::UpdateFocusableStateRecursive() {
   }
 }
 
+void ViewAccessibility::UpdateStatesForViewAndDescendants() {
+  internal::ScopedChildrenLock lock(view_);
+  UpdateFocusableState();
+  UpdateReadyToNotifyEvents();
+  for (auto& child : view_->children()) {
+    child->GetViewAccessibility().UpdateStatesForViewAndDescendants();
+  }
+}
+
+void ViewAccessibility::SetRootViewIsReadyToNotifyEvents() {
+  CHECK(!view_->parent())
+      << "This method should only be called on the RootView.";
+  ready_to_notify_events_ = true;
+}
+
 void ViewAccessibility::UpdateInvisibleState() {
   bool is_invisible =
       !view_->GetVisible() && data_.role != ax::mojom::Role::kAlert;
@@ -1022,6 +1036,17 @@ void ViewAccessibility::UpdateIgnoredState() {
       should_be_ignored_ || pruned_ || data_.role == ax::mojom::Role::kNone;
   SetState(ax::mojom::State::kIgnored, is_ignored);
   UpdateFocusableState();
+}
+
+void ViewAccessibility::UpdateReadyToNotifyEvents() {
+  View* parent = view_->parent();
+  if (parent && parent->GetViewAccessibility().ready_to_notify_events_) {
+    SetReadyToNotifyEvents();
+  }
+}
+
+void ViewAccessibility::SetReadyToNotifyEvents() {
+  ready_to_notify_events_ = true;
 }
 
 void ViewAccessibility::SetWidgetClosedRecursive(Widget* widget, bool value) {

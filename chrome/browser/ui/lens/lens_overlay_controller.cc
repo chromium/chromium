@@ -56,6 +56,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
+#include "net/base/network_change_notifier.h"
 #include "net/base/url_search_params.h"
 #include "net/base/url_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -275,52 +276,6 @@ LensOverlayController::SearchQuery::operator=(
 }
 
 LensOverlayController::SearchQuery::~SearchQuery() = default;
-
-// static
-bool LensOverlayController::IsEnabled(Browser* browser) {
-  // Exit early if browser is null.
-  if (!browser) {
-    return false;
-  }
-
-  // Feature is disabled via finch.
-  if (!lens::features::IsLensOverlayEnabled()) {
-    return false;
-  }
-
-  // Disable on non-normal windows (those without omnibox and toolbar).
-  if (!browser->is_type_normal()) {
-    return false;
-  }
-
-  // Disable in fullscreen without top-chrome. Need to check that
-  // browser->window() exists to avoid to skip this check during initialization.
-  // We skip this check since during initialization, it is too early to know if
-  // the top-chrome exists or not.
-  if (!lens::features::GetLensOverlayEnableInFullscreen() &&
-      browser->window() && !browser->IsTabStripVisible()) {
-    return false;
-  }
-
-  // Lens Overlay is disabled via enterprise policy.
-  lens::prefs::LensOverlaySettingsPolicyValue policy_value =
-      static_cast<lens::prefs::LensOverlaySettingsPolicyValue>(
-          browser->profile()->GetPrefs()->GetInteger(
-              lens::prefs::kLensOverlaySettings));
-  if (policy_value == lens::prefs::LensOverlaySettingsPolicyValue::kDisabled) {
-    return false;
-  }
-
-  // Lens Overlay is only enabled if the user's default search engine is Google.
-  if (lens::features::IsLensOverlayGoogleDseRequired() &&
-      !search::DefaultSearchProviderIsGoogle(browser->profile())) {
-    return false;
-  }
-
-  // Finally, only enable the overlay if user meets our minimum RAM requirement.
-  static int phys_mem_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
-  return phys_mem_mb > lens::features::GetLensOverlayMinRamMb();
-}
 
 void LensOverlayController::ShowUIWithPendingRegion(
     lens::LensOverlayInvocationSource invocation_source,
@@ -1869,7 +1824,12 @@ void LensOverlayController::ShowPreselectionBubble() {
   if (!preselection_widget_) {
     preselection_widget_ = views::BubbleDialogDelegateView::CreateBubble(
         std::make_unique<lens::LensPreselectionBubble>(
-            tab_->GetBrowserWindowInterface()->TopContainer()));
+            tab_->GetBrowserWindowInterface()->TopContainer(),
+            net::NetworkChangeNotifier::IsOffline(),
+            base::BindRepeating(&LensOverlayController::CloseUIAsync,
+                                weak_factory_.GetWeakPtr(),
+                                lens::LensOverlayDismissalSource::
+                                    kPreselectionToastExitButton)));
     preselection_widget_->SetNativeWindowProperty(
         views::kWidgetIdentifierKey,
         const_cast<void*>(kLensOverlayPreselectionWidgetIdentifier));

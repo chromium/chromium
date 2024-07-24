@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_CONTAINERS_INTRUSIVE_HEAP_H_
 #define BASE_CONTAINERS_INTRUSIVE_HEAP_H_
 
@@ -137,6 +132,7 @@
 #include <algorithm>
 #include <compare>
 #include <functional>
+#include <iterator>
 #include <limits>
 #include <memory>
 #include <type_traits>
@@ -146,8 +142,10 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/ranges/from_range.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace base {
@@ -249,17 +247,39 @@ class IntrusiveHeap {
   //////////////////////////////////////////////////////////////////////////////
   // Lifetime.
 
+  // Constructs an empty heap, with the default comparator and handle accessor.
   IntrusiveHeap() = default;
+  // Constructs an empty heap.
   IntrusiveHeap(const value_compare& comp, const heap_handle_accessor& access)
       : impl_(comp, access) {}
 
-  template <class InputIterator>
-  IntrusiveHeap(InputIterator first,
-                InputIterator last,
+  // Constructs a heap containing all elements in the `range`.
+  template <class Range>
+    requires(std::ranges::input_range<Range>)
+  IntrusiveHeap(base::from_range_t,
+                Range&& range,
                 const value_compare& comp = value_compare(),
                 const heap_handle_accessor& access = heap_handle_accessor())
       : impl_(comp, access) {
-    insert(first, last);
+    insert_range(std::forward<Range>(range));
+  }
+
+  // Construct a heap with elements from `[first, last)`. Prefer the
+  // `from_range_t` constructor as it avoid iterator pairs.
+  //
+  // # Safety
+  // The `first` and `last` must be a valid iterator pair for a container with
+  // `first <= last` or Undefined Behaviour results.
+  template <class InputIterator>
+    requires(std::input_iterator<InputIterator>)
+  UNSAFE_BUFFER_USAGE IntrusiveHeap(
+      InputIterator first,
+      InputIterator last,
+      const value_compare& comp = value_compare(),
+      const heap_handle_accessor& access = heap_handle_accessor())
+      : impl_(comp, access) {
+    // SAFETY: The caller must provide a valid iterator pair.
+    UNSAFE_BUFFERS(insert(first, last));
   }
 
   // Moves an intrusive heap. The outstanding handles remain valid and end up
@@ -275,7 +295,7 @@ class IntrusiveHeap {
                 const value_compare& comp = value_compare(),
                 const heap_handle_accessor& access = heap_handle_accessor())
       : impl_(comp, access) {
-    insert(std::begin(ilist), std::end(ilist));
+    insert_range(ilist);
   }
 
   ~IntrusiveHeap();
@@ -352,14 +372,38 @@ class IntrusiveHeap {
 
   const_iterator insert(const value_type& value) { return InsertImpl(value); }
   const_iterator insert(value_type&& value) {
-    return InsertImpl(std::move_if_noexcept(value));
+    return InsertImpl(std::move(value));
   }
 
+  // Inserts all elements in `range` into the heap.
+  template <class Range>
+    requires(std::ranges::input_range<Range>)
+  void insert_range(Range&& range) {
+    for (const auto& i : range) {
+      InsertImpl(value_type(i));
+    }
+  }
+
+  // Inserts all elements in `[first, last)` into the heap. Prefer to use
+  // `insert_range()` as it avoids iterator pairs.
+  //
+  // # Safety
+  // The `first` and `last` must be a valid iterator pair for a container with
+  // `first <= last` or Undefined Behaviour results.
   template <class InputIterator>
-  void insert(InputIterator first, InputIterator last);
+    requires(std::input_iterator<InputIterator>)
+  UNSAFE_BUFFER_USAGE void insert(InputIterator first, InputIterator last) {
+    for (auto it = first; it != last;
+         // SAFETY: The caller must provide a valid iterator pair.
+         UNSAFE_BUFFERS(++it)) {
+      InsertImpl(value_type(*it));
+    }
+  }
 
   template <typename... Args>
-  const_iterator emplace(Args&&... args);
+  const_iterator emplace(Args&&... args) {
+    return InsertImpl(value_type(std::forward<Args>(args)...));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   // Removing elements.
@@ -774,7 +818,7 @@ IntrusiveHeap<T, Compare, HeapHandleAccessor>&
 IntrusiveHeap<T, Compare, HeapHandleAccessor>::operator=(
     std::initializer_list<value_type> ilist) {
   clear();
-  insert(std::begin(ilist), std::end(ilist));
+  insert_range(ilist);
 }
 
 template <typename T, typename Compare, typename HeapHandleAccessor>
@@ -786,23 +830,6 @@ void IntrusiveHeap<T, Compare, HeapHandleAccessor>::clear() {
 
   // Clear the heap.
   impl_.heap_.clear();
-}
-
-template <typename T, typename Compare, typename HeapHandleAccessor>
-template <class InputIterator>
-void IntrusiveHeap<T, Compare, HeapHandleAccessor>::insert(InputIterator first,
-                                                           InputIterator last) {
-  for (auto it = first; it != last; ++it) {
-    insert(value_type(*it));
-  }
-}
-
-template <typename T, typename Compare, typename HeapHandleAccessor>
-template <typename... Args>
-typename IntrusiveHeap<T, Compare, HeapHandleAccessor>::const_iterator
-IntrusiveHeap<T, Compare, HeapHandleAccessor>::emplace(Args&&... args) {
-  value_type value(std::forward<Args>(args)...);
-  return InsertImpl(std::move_if_noexcept(value));
 }
 
 template <typename T, typename Compare, typename HeapHandleAccessor>

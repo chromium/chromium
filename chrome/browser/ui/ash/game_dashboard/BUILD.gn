@@ -12,6 +12,8 @@ static_library("game_dashboard") {
     "chrome_game_dashboard_delegate.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/components/arc",

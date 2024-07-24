@@ -179,7 +179,7 @@ sk_sp<SkTypeface> WebFontDecoder::Decode(SegmentedBuffer* buffer) {
 
   TRACE_EVENT_BEGIN0("blink", "DecodeFont");
   bool ok = ots_context.Process(
-      &output, reinterpret_cast<const uint8_t*>(flattened_buffer.Data()),
+      &output, reinterpret_cast<const uint8_t*>(flattened_buffer.data()),
       buffer->size());
   TRACE_EVENT_END0("blink", "DecodeFont");
 

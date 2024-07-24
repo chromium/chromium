@@ -272,7 +272,7 @@ vars = {
   # reclient CIPD package
   'reclient_package': 'infra/rbe/client/',
   # reclient CIPD package version
-  'reclient_version': 're_client_version:0.150.1.d9707319-gomaip',
+  'reclient_version': 're_client_version:0.148.0.41b09b51-gomaip',
 
   # screen-ai CIPD packages
   # TODO(b/281483558): Use a tag to download the latest version of screen-ai
@@ -307,19 +307,19 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': 'e69378445fe6d7ea55eaebe95e64bf2460129ecb',
+  'src_internal_revision': 'ba8993b6227db02a393614049634db2a5756758a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'f4f81626355d28f29895a1c528f1ee583535d388',
+  'skia_revision': 'a9b1043eb23efdf35e804c98b65818028890e628',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '70cbb397b153166027e34c75adf8e7993858222e',
+  'v8_revision': '773084e619ca0b3995bf5d23c35389ae06a7ec21',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '7691cea7e53bbdee252cde54baa97e59733d4877',
+  'angle_revision': '5a44aa26a0a794711f0f42dfe4f666f6373bcaa4',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -346,7 +346,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling googletest
   # and whatever else without interference from each other.
-  'googletest_revision': 'cee1ba1f24fb12b9ae8f31e70dca3f73dbb12cc2',
+  'googletest_revision': '57e107a10ea4ff5d8d31df9e4833f80b414b0dd2',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling lighttpd
   # and whatever else without interference from each other.
@@ -362,7 +362,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling freetype
   # and whatever else without interference from each other.
-  'freetype_revision': '37cefe33b284d0bad4ec52bcccc1a8c2d8704340',
+  'freetype_revision': '1452355de99d22b0cba6ccc17bf5cdf3682ef61e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling freetype
   # and whatever else without interference from each other.
@@ -382,15 +382,15 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling catapult
   # and whatever else without interference from each other.
-  'catapult_revision': '523ebded2f72a446544e2d9271ef39857f4e6ae7',
+  'catapult_revision': '98802e1e928a508a3fbc93982e0a056920900fdf',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
-  'chromium_variations_revision': 'b8d691c182a2fbf299bf67a7821286c4d6726543',
+  'chromium_variations_revision': '8a343be055a9150250def5c962ecc7e17c7a8a73',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
-  'crossbench_revision': 'b03a515f9e56280ecabfb254b188349d1a049827',
+  'crossbench_revision': '79d43b296e8eb4fc34903ca378cbfba4fc388cc9',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libFuzzer
   # and whatever else without interference from each other.
@@ -402,7 +402,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '625c4bcd65120c8143fd4bbf13402a3b052a7abb',
+  'devtools_frontend_revision': '8ec0bd5a883608f5590698501ab1df8fecf98292',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -430,7 +430,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'quiche_revision': 'aecfea159d58ef53bd690688e4aca512fc4a3d35',
+  'quiche_revision': 'c1927e3568739cbceab911df4b6c736acb74cbc3',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ios_webkit
   # and whatever else without interference from each other.
@@ -462,7 +462,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling nearby
   # and whatever else without interference from each other.
-  'nearby_revision': '76651429b8f96fc6c80949ba8f4e18c4b738e216',
+  'nearby_revision': '09094110c855ca419fabf17facbf2b6cae7a7a74',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling securemessage
   # and whatever else without interference from each other.
@@ -474,7 +474,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'cros_components_revision': '39e57dd0d30ed019d6fb07c24b350f5fe78a1625',
+  'cros_components_revision': '560aa6800fc326ff01b7a31eeb656fb6ccd88658',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -506,7 +506,7 @@ vars = {
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
-  'libcxx_revision':       '1a4465110c870586494f2fc08d6eed3e839e490b',
+  'libcxx_revision':       '437475caeeb67ea7d65883eb406e4c9642e59f5e',
 
   # GN CIPD package version.
   'gn_version': 'git_revision:b2afae122eeb6ce09c52d63f67dc53fc517dbdc8',
@@ -1287,12 +1287,12 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '869a2da3a05862ea19d184ddbadd633db3ce5542',
+    '6e7057f771571f55d272b9d74285858415efe5b2',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
   'src/docs/website': {
-    'url': Var('chromium_git') + '/website.git' + '@' + '82c1d3e5b812b35df1cb6a031f59616dc594d4f7',
+    'url': Var('chromium_git') + '/website.git' + '@' + 'ed19767d81d4754202e1aac1def55dee525a6bc3',
   },
 
   'src/ios/third_party/earl_grey2/src': {
@@ -1441,7 +1441,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': '9eMpMlRf6_8f5Wi3vk-XATYb3DHweh09ioUp6r6ZRzwC',
+          'version': 'CNk1758puhYAd2VoYBnQu3xOVtwPjAw8DAKAYf3Yqa8C',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -1490,7 +1490,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/bundletool',
-               'version': 'X5yajoh75x5lwpY1-eO4tey50eTX4XkB5JE1WXVal_MC',
+               'version': 'sZ24OFOduSafn8fvR3ajsGS6KP_oS_Tq0Cw3SA8XiD0C',
           },
       ],
       'condition': 'checkout_android',
@@ -1703,7 +1703,7 @@ deps = {
   # Tools used when building Chrome for Chrome OS. This affects both the Simple
   # Chrome workflow, as well as the chromeos-chrome ebuild.
   'src/third_party/chromite': {
-      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '34fd166175969865b657e3ecdab165434fc76837',
+      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '9a5e5c192718eb43772530eb345f629a8cb08c0f',
       'condition': 'checkout_chromeos',
   },
 
@@ -1738,13 +1738,13 @@ deps = {
   },
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '1a616deaac7e579d5d6ab463f99657dcec5ce9b5',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '8552a2790064f098dc2347f91b60e7cf2b9f597c',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
 
   'src/third_party/devtools-frontend-internal': {
-      'url': Var('chrome_git') + '/devtools/devtools-internal.git' + '@' + '354b363e126be1626b990a662759925d563715ae',
+      'url': Var('chrome_git') + '/devtools/devtools-internal.git' + '@' + '3679fe47ed44e64e98d30dc43d21feea089db680',
     'condition': 'checkout_src_internal',
   },
 
@@ -2234,7 +2234,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'd072b30d58d119e599c5b519aa6c0f46d8a75311',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + '97caa8a1afc2cd2cde702a43bf73498653bfacb9',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2376,7 +2376,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
-              'version': '8UxK0Gx2bU0BT44gG8VlK1y8ISbMzcxs2r9ZaxiEPL4C',
+              'version': 'UaENs6hma4QjyXPcbPwgnF5trTtS8KqZvOSKc3WvBEwC',
           },
       ],
       'condition': 'checkout_android',
@@ -2510,16 +2510,16 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@5d0bdd3702f77bd39ccf71468fdd585144e8f1c5',
-  'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@592aed9c206c283cac98f7a86e5cc237dadb2638',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@395f385034af7510dbcb4a83ff432bda8b60c5e2',
+  'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@f7f15cf67cac03457c71b52436cdf12faf6909ca',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
   'src/third_party/spirv-headers/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@db5a00f8cebe81146cafabf89019674a3c4bf03d',
   'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@a0817526b8e391732632e6a887134be256a20a18',
   'src/third_party/vulkan-headers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Headers@fabe9e2672334fdb9a622d42a2e8f94578952082',
-  'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@c5c24ad66bf1c7b430a86593f10c62d0acf008b4',
+  'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@be0e1c3683a39a26b4f1a3859226b07a482d030e',
   'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@46df205dcad665b652f57ee580d78051925b296a',
   'src/third_party/vulkan-utility-libraries/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Utility-Libraries@67522b34edde86dbb97e164280291f387ade55fc',
-  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@84d70cb19863a7dc39d3f5437efeef52179e5791',
+  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@27a8c7a33ab376acbcba52e0ceb8224a388ca9a7',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + '56300b29fbfcc693ee6609ddad3fdd5b7a449a21',
@@ -2559,7 +2559,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '198d1770062c1a8aba86e7d6e001bb47bea028ee',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'f90a3ad3b334dd164656bed05fd04f2b9b9a3937',
+    Var('webrtc_git') + '/src.git' + '@' + '7fe62f25d14aef7dc17c4ba7742f8065c22fc968',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -2682,7 +2682,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/boca_app/app',
-        'version': 'GOBw8ZBvTSgf7RjLrLrgr2lnVH0lxgMfNPs1hIpbV7YC',
+        'version': '2kmzXXNXXFxHA4-eeJjK2H133Nvba8QAjpsn--2JMXQC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2693,7 +2693,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'EHrJf332vNaknaw2tf1JbkUL6xwMbAnLRhJcNcE-8ZAC',
+        'version': 'DkPLRBv5iz5ZoAllT77NTfCOYbsaRxx17x0hulEXOmoC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2704,7 +2704,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': '3U0WcASbDx-H7TmXmK0LjVmxHlT4EISYU64Lufono_gC',
+        'version': 'fnvDz68jgherzC4eiBn8vmo8RzVoPKrCSLdZGA3w3e8C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2737,7 +2737,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'KHACchGt7kSgKJO2GXd1uU-0WBxMIVnoiY-ZekxPDY8C',
+        'version': 'iZA8q0u4xgu8dbz7rnqvwjQsDoA3up13zJnysAaJKlYC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4530,7 +4530,7 @@ deps = {
   # Dependencies from src_internal
   'src/chromeos/ash/resources/internal': {
       'url': Var('chrome_git') + '/chrome/chromeos/ash/resources/internal.git' + '@' +
-        'd3a9fae91a30293f1e28a9fc647972e7e2ac45f5',
+        'b891669480b8ddbe34846bceec16a1aeb5a5e154',
       'condition': 'checkout_src_internal and checkout_chromeos',
   },
 
@@ -4569,7 +4569,7 @@ deps = {
 
   'src/chrome/app/theme/google_chrome': {
       'url': Var('chrome_git') + '/chrome/theme/google_chrome.git' + '@' +
-        'e278a632ba3267db09092b28be0ae0f2dddb6fd8',
+        '27761d8a16508d5ecb511c21dfe4f934c3cb4bda',
       'condition': 'checkout_src_internal',
   },
 
@@ -4605,7 +4605,7 @@ deps = {
 
   'src/chrome/browser/platform_experience/win': {
       'url': Var('chrome_git') + '/chrome/browser/platform_experience/win.git' + '@' +
-        '6e4fd80536f59cf3f9238d4650870cf49c3f50aa',
+        'c8ae639df9ebb018ac5793fc76c1a4e74787112e',
       'condition': 'checkout_src_internal',
   },
 
@@ -4759,7 +4759,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        'c24116f632214cd5af4626a55b5aacfd43a21948',
+        '19a384095f19a5ae0c207fd1fd72d298c4aef7c0',
       'condition': 'checkout_src_internal',
   },
 
@@ -4795,7 +4795,7 @@ deps = {
 
   'src/components/test/data/autofill/heuristics-json/internal': {
       'url': Var('chrome_git') + '/chrome/test/autofill/structured_forms.git' + '@' +
-        'd69117fc082d8c68a70954038d93e78578a43c0c',
+        'fdc4a9d5020c357bbe990522c1ca1e646fe00379',
       'condition': 'checkout_chromium_autofill_test_dependencies',
   },
 
@@ -4819,7 +4819,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'e25e6f884d5e7ef5757bcc1af0760da56f31d848',
+        '6901aaca09ef38962411f6bba3b36f8fde888a04',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

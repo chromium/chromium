@@ -50,6 +50,11 @@ void SelectToSpeakEventHandler::SetSelectToSpeakStateSelecting(
   }
 }
 
+bool SelectToSpeakEventHandler::IsKeyDownForTesting(
+    ui::KeyboardCode code) const {
+  return keys_currently_down_.contains(code);
+}
+
 void SelectToSpeakEventHandler::OnKeyEvent(ui::KeyEvent* event) {
   DCHECK(IsSelectToSpeakEnabled());
   DCHECK(event);
@@ -267,6 +272,10 @@ void SelectToSpeakEventHandler::CancelEvent(ui::Event* event) {
     event->SetHandled();
     event->StopPropagation();
   }
+}
+
+std::string_view SelectToSpeakEventHandler::GetLogContext() const {
+  return "SelectToSpeakEventHandler";
 }
 
 }  // namespace ash

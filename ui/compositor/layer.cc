@@ -1577,6 +1577,8 @@ void Layer::StackRelativeTo(Layer* child, Layer* other, bool above) {
       base::ranges::find(children_, child) - children_.begin();
   const size_t other_i =
       base::ranges::find(children_, other) - children_.begin();
+  DCHECK_LT(child_i, children_.size()) << " child not in vector";
+  DCHECK_LT(other_i, children_.size()) << " other not in vector";
   if ((above && child_i == other_i + 1) || (!above && child_i + 1 == other_i))
     return;
 

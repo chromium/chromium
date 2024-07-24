@@ -38,13 +38,13 @@ constexpr uint32_t kIPeriod = 0;
 constexpr uint32_t kIPPeriod = 1;
 
 // The qp range is 0-51 in H264. Select 26 because of the center value.
-// WebRTC H264 encoder uses 1-51. We follow it and additionally sets the minimum
-// QP to 10 for screen content to mitigate the bitrate overshoot due to a scene
-// change.
+// WebRTC H264 encoder uses 1-51. We set the minimum QP to 1 for camera
+// and 10 for screen sharing to mitigate the bitrate overshoot due
+// to a scene, and maximum qp to 42 to pass the CTS test (b/354557852).
 constexpr uint8_t kDefaultQP = 26;
 constexpr uint8_t kMinQP = 1;
 constexpr uint8_t kScreenMinQP = 10;
-constexpr uint8_t kMaxQP = 51;
+constexpr uint8_t kMaxQP = 42;
 
 // Subjectively chosen bitrate window size for rate control, in ms.
 constexpr uint32_t kCPBWindowSizeMs = 1500;

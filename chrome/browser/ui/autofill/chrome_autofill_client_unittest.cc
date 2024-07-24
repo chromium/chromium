@@ -29,6 +29,7 @@
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
@@ -463,7 +464,7 @@ TEST_F(ChromeAutofillClientTest, EditAddressDialogFooter) {
 
   // Account profile
   AutofillProfile profile2 = test::GetFullProfile();
-  profile2.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(profile2).set_source(AutofillProfile::Source::kAccount);
   client()->ShowEditAddressProfileDialog(profile2, base::DoNothing());
   std::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
       web_contents()->GetBrowserContext());

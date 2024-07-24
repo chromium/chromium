@@ -33,3 +33,37 @@ source_set("controlled_frame") {
 
   public_deps = [ "//chrome/browser/controlled_frame/api:api_registration" ]
 }
+
+source_set("test_support") {
+  testonly = true
+
+  # Required by browser_test.h
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "controlled_frame_permission_request_test_base.cc",
+    "controlled_frame_permission_request_test_base.h",
+    "controlled_frame_test_base.cc",
+    "controlled_frame_test_base.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/version_info",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

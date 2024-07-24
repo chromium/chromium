@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/singleton.h"
+#include "base/types/optional_ref.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/notification_event_dispatcher.h"
@@ -99,12 +100,12 @@ class CONTENT_EXPORT NotificationEventDispatcherImpl
   NotificationEventDispatcherImpl();
   ~NotificationEventDispatcherImpl() override;
 
-  // Checks if the event listener for the `notification_id` should be fired.
-  // It returns false if:
+  // Gets the event listener for the `notification_id` if it should be fired.
+  // It returns std::nullopt if:
   // 1. The event listener is not found from the map, or
   // 2. The document is currently in back/forward cache.
-  bool ShouldDispatchNonPersistentNotificationEvent(
-      const std::string& notification_id);
+  base::optional_ref<NonPersistentNotificationListenerInfo>
+  GetListenerIfNotifiable(const std::string& notification_id);
 
   // Removes all references to the listener registered to receive events
   // from the non-persistent notification identified by |notification_id|,

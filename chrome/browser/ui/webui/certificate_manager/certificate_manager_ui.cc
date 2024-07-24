@@ -26,6 +26,10 @@
 
 namespace {
 
+const char kCRSLearnMoreLink[] =
+    "https://chromium.googlesource.com/chromium/src/+/main/net/data/ssl/"
+    "chrome_root_store/faq.md";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void AddCertificateManagerStrings(content::WebUIDataSource* html_source) {
   struct {
@@ -48,6 +52,8 @@ void AddCertificateManagerStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"ok", IDS_OK},
+      {"cancel", IDS_CANCEL},
       {"opensInNewTab", IDS_SETTINGS_OPENS_IN_NEW_TAB},
       {"certificateManagerV2Title", IDS_SETTINGS_CERTIFICATE_MANAGER_V2_TITLE},
       {"certificateManagerV2ClientCerts",
@@ -68,6 +74,8 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_CERTIFICATES},
       {"certificateManagerV2CRSCertsDescription",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_CERTIFICATES_DESCRIPTION},
+      {"certificateManagerV2CRSLearnMoreLink",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_LEARN_MORE_LINK},
       {"certificateManagerV2HashCopiedToast",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_HASH_COPIED_TOAST},
       {"certificateManagerV2AdminCertsTitle",
@@ -142,6 +150,7 @@ CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
   if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2)) {
     source->AddResourcePath("", IDR_CERT_MANAGER_DIALOG_V2_HTML);
     AddCertificateManagerV2Strings(source);
+    source->AddString("crsLearnMoreUrl", kCRSLearnMoreLink);
 
     auto plural_string_handler = std::make_unique<PluralStringHandler>();
     plural_string_handler->AddLocalizedString(

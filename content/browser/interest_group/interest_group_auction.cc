@@ -33,7 +33,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -365,8 +364,7 @@ std::optional<absl::uint128> BucketBaseForReportPaBuyers(
   }
   // Find the index of the buyer in `buyers`. It should be present, since we
   // only load interest groups belonging to owners from `buyers`.
-  CHECK(config.non_shared_params.interest_group_buyers,
-        base::NotFatalUntil::M128);
+  CHECK(config.non_shared_params.interest_group_buyers);
   const std::vector<url::Origin>& buyers =
       *config.non_shared_params.interest_group_buyers;
   std::optional<size_t> index;
@@ -376,7 +374,7 @@ std::optional<absl::uint128> BucketBaseForReportPaBuyers(
       break;
     }
   }
-  CHECK(index, base::NotFatalUntil::M128);
+  CHECK(index);
   // Use that index to get the associated bucket base, if present.
   if (*index >= config.non_shared_params.auction_report_buyer_keys->size()) {
     return std::nullopt;
@@ -494,8 +492,7 @@ void TakePrivateAggregationRequestsForBidState(
         // Only reserved types are supported for k-anon failures.
         // This *should* be guaranteed by `FillInPrivateAggregationRequest`
         // since we passed in `false` for `is_winner`.
-        CHECK(!converted_request_value.event_type.has_value(),
-              base::NotFatalUntil::M128);
+        CHECK(!converted_request_value.event_type.has_value());
         private_aggregation_requests_reserved[std::move(agg_key)].emplace_back(
             std::move(converted_request_value.request));
       }
@@ -1927,15 +1924,13 @@ class InterestGroupAuction::BuyerHelper
 
     // The mojom API declaration should ensure none of these are null.
     CHECK(base::ranges::none_of(
-              pa_requests,
-              [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-                     request_ptr) { return request_ptr.is_null(); }),
-          base::NotFatalUntil::M128);
+        pa_requests,
+        [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
+               request_ptr) { return request_ptr.is_null(); }));
     CHECK(base::ranges::none_of(
-              non_kanon_pa_requests,
-              [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-                     request_ptr) { return request_ptr.is_null(); }),
-          base::NotFatalUntil::M128);
+        non_kanon_pa_requests,
+        [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
+               request_ptr) { return request_ptr.is_null(); }));
 
     if (!base::ranges::all_of(pa_requests, HasValidFilteringId)) {
       mojo_bids.clear();
@@ -3639,7 +3634,7 @@ InterestGroupAuction::TakeReservedPrivateAggregationRequests() {
         requests_map = component_auction_info.second
                            ->TakeReservedPrivateAggregationRequests();
     for (auto& [agg_key, requests] : requests_map) {
-      CHECK(!requests.empty(), base::NotFatalUntil::M128);
+      CHECK(!requests.empty());
       PrivateAggregationRequests& destination_vector =
           private_aggregation_requests_reserved_[agg_key];
       destination_vector.insert(destination_vector.end(),
@@ -3657,7 +3652,7 @@ InterestGroupAuction::TakeNonReservedPrivateAggregationRequests() {
         component_auction_info.second
             ->TakeNonReservedPrivateAggregationRequests();
     for (auto& [event_type, requests] : requests_map) {
-      CHECK(!requests.empty(), base::NotFatalUntil::M128);
+      CHECK(!requests.empty());
       PrivateAggregationRequests& destination_vector =
           private_aggregation_requests_non_reserved_[event_type];
       destination_vector.insert(destination_vector.end(),
@@ -3801,8 +3796,7 @@ base::flat_set<std::string> InterestGroupAuction::GetKAnonKeysToJoin() const {
 void InterestGroupAuction::MaybeLogPrivateAggregationWebFeatures(
     const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
         private_aggregation_requests) {
-  CHECK(maybe_log_private_aggregation_web_features_callback_,
-        base::NotFatalUntil::M128);
+  CHECK(maybe_log_private_aggregation_web_features_callback_);
   maybe_log_private_aggregation_web_features_callback_.Run(
       private_aggregation_requests);
 }
@@ -4875,13 +4869,12 @@ void InterestGroupAuction::OnScoreAdComplete(
   if (IsBidRoleUsedForWinner(kanon_mode_, bid->bid_role)) {
     // The mojom API declaration should ensure none of these are null.
     CHECK(base::ranges::none_of(
-              pa_requests,
-              [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-                     request_ptr) { return request_ptr.is_null(); }),
-          base::NotFatalUntil::M128);
+        pa_requests,
+        [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
+               request_ptr) { return request_ptr.is_null(); }));
     MaybeLogPrivateAggregationWebFeatures(pa_requests);
     if (!pa_requests.empty()) {
-      CHECK(config_, base::NotFatalUntil::M128);
+      CHECK(config_);
       BidState::PrivateAggregationPhaseKey agg_key = {
           config_->seller, seller_phase(),
           config_->aggregation_coordinator_origin};

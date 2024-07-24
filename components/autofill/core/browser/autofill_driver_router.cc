@@ -298,9 +298,8 @@ void AutofillDriverRouter::HidePopup(RoutedCallback<> callback,
   ForEachFrame(form_forest_, callback);
 }
 
-void AutofillDriverRouter::FocusOnNonFormField(RoutedCallback<bool> callback,
-                                               AutofillDriver& source,
-                                               bool had_interacted_form) {
+void AutofillDriverRouter::FocusOnNonFormField(RoutedCallback<> callback,
+                                               AutofillDriver& source) {
   // Suppresses FocusOnNonFormField() if the focus has already moved to a
   // different frame.
   if (focused_frame_ != source.GetFrameToken()) {
@@ -318,9 +317,7 @@ void AutofillDriverRouter::FocusOnNonFormField(RoutedCallback<bool> callback,
   // `form_forest_.UpdateTreeOfRendererForm()` for the same form.
   //
   // Therefore, we simply broadcast the event.
-  ForEachFrame(form_forest_, [&](AutofillDriver& some_driver) {
-    callback(some_driver, had_interacted_form);
-  });
+  ForEachFrame(form_forest_, callback);
 }
 
 void AutofillDriverRouter::FocusOnFormField(

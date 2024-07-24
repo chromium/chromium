@@ -134,6 +134,20 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(AccountManagedStatusFinderOutcome) -->
+
+<enum name="AccountManagedStatusFinderOutcome">
+  <int value="0" label="Pending"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Consumer, gmail.com"/>
+  <int value="3" label="Consumer, other well-known domain"/>
+  <int value="4" label="Consumer, non-well-known domain"/>
+  <int value="5" label="Enterprise, google.com"/>
+  <int value="6" label="Enterprise, other domain"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/public/identity_manager/account_managed_status_finder.h:AccountManagedStatusFinderOutcome) -->
+
 <enum name="AccountReauthenticationEvent">
   <int value="0" label="STARTED"/>
   <int value="1" label="SUCCESS"/>

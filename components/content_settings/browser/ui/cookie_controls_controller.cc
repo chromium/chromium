@@ -45,13 +45,13 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using base::UserMetricsAction;
-using site_engagement::SiteEngagementService;
-using BlockingStatus = content_settings::TrackingProtectionBlockingStatus;
-using FeatureType = content_settings::TrackingProtectionFeatureType;
-using TrackingProtectionFeature = content_settings::TrackingProtectionFeature;
-
 namespace {
+
+using ::base::UserMetricsAction;
+using ::content_settings::TrackingProtectionFeature;
+using ::site_engagement::SiteEngagementService;
+using BlockingStatus = ::content_settings::TrackingProtectionBlockingStatus;
+using FeatureType = ::content_settings::TrackingProtectionFeatureType;
 
 constexpr char kEntryPointAnimatedKey[] = "entry_point_animated";
 constexpr char kLastExpirationKey[] = "last_expiration";
@@ -253,8 +253,8 @@ CookieControlsController::CreateTrackingProtectionFeatureList(
   std::vector<TrackingProtectionFeature> features = {
       {FeatureType::kThirdPartyCookies, enforcement, status_label}};
 
-  // TODO(http://b/5605065): Update to a UB tracking protection specific feature
-  // flag.
+  // Note these features will not be displayed unless the Tracking Protection
+  // User Bypass UI is enabled.
   if (privacy_sandbox::kUserBypassIpProtection.Get() &&
       tracking_protection_settings_->IsIpProtectionEnabled()) {
     features.push_back(
@@ -340,21 +340,25 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
   should_reload_ = true;
   if (block_third_party_cookies) {
     base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOn"));
-    cookie_settings_->ResetThirdPartyCookieSetting(url);
-    if (base::FeatureList::IsEnabled(
-            privacy_sandbox::kTrackingProtectionContentSettingUbControl)) {
-      tracking_protection_settings_->RemoveTrackingProtectionException(url);
+    if (!base::FeatureList::IsEnabled(
+            privacy_sandbox::kTrackingProtectionContentSettingFor3pcb)) {
+      cookie_settings_->ResetThirdPartyCookieSetting(url);
     }
+    // Removing a 3PC exception should always remove a Tracking Protection
+    // exception, if one exists, to respect user preferences since Tracking
+    // Protection exceptions will allow 3PC access post-3PCD.
+    tracking_protection_settings_->RemoveTrackingProtectionException(url);
     return;
   }
 
   CHECK(!block_third_party_cookies);
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOff"));
-  cookie_settings_->SetCookieSettingForUserBypass(url);
   if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kTrackingProtectionContentSettingUbControl)) {
+          privacy_sandbox::kTrackingProtectionContentSettingFor3pcb)) {
     tracking_protection_settings_->AddTrackingProtectionException(
         url, /*is_user_bypass_exception=*/true);
+  } else {
+    cookie_settings_->SetCookieSettingForUserBypass(url);
   }
   // Record expiration metadata for the newly created exception, and increased
   // the activation count.
@@ -626,7 +630,7 @@ bool CookieControlsController::ShouldUserBypassIconBeVisible(
     bool protections_on,
     bool controls_visible) {
   if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kTrackingProtectionSettingsLaunch)) {
+          privacy_sandbox::kTrackingProtectionContentSettingFor3pcb)) {
     bool has_controllable_feature = false;
     std::vector<TrackingProtectionFeature>::iterator it;
     for (it = features.begin(); it != features.end(); it++) {

@@ -4,8 +4,8 @@
 
 #include "components/enterprise/data_controls/content/browser/rules_service.h"
 
-#include "components/enterprise/data_controls/core/features.h"
-#include "components/enterprise/data_controls/core/prefs.h"
+#include "components/enterprise/data_controls/core/browser/features.h"
+#include "components/enterprise/data_controls/core/browser/prefs.h"
 
 namespace data_controls {
 

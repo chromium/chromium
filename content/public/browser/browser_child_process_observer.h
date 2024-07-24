@@ -18,7 +18,7 @@ struct ChildProcessTerminationInfo;
 class CONTENT_EXPORT BrowserChildProcessObserver {
  public:
   // Called when a child process has successfully launched and has connected to
-  // it child process host. The |data.handle| is guaranteed to be valid.
+  // it child process host. `data.GetProcess()` is guaranteed to be valid.
   virtual void BrowserChildProcessLaunchedAndConnected(
       const ChildProcessData& data) {}
 

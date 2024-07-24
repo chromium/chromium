@@ -38,6 +38,14 @@ message ResourceOwner {
   repeated Resource owned_resources = 3;
 }
 
+// Contains information to create rules based on the Public Suffix List.
+message PublicSuffixListRule {
+  // Privately-owned domain listed on the PSL.
+  optional string private_domain = 1;
+}
+
 message MaskedDomainList {
   repeated ResourceOwner resource_owners = 1;
+  // Public Suffix List rules that modify the MDL.
+  repeated PublicSuffixListRule public_suffix_list_rules = 2;
 }

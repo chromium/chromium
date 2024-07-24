@@ -198,6 +198,7 @@
   "chromium.coverage": {
     "android-code-coverage": "ci/android-code-coverage/gn-args.json",
     "android-code-coverage-native": "ci/android-code-coverage-native/gn-args.json",
+    "android-cronet-code-coverage-java": "ci/android-cronet-code-coverage-java/gn-args.json",
     "android-cronet-code-coverage-native": "ci/android-cronet-code-coverage-native/gn-args.json",
     "android-webview-code-coverage": "ci/android-webview-code-coverage/gn-args.json",
     "android-webview-code-coverage-native": "ci/android-webview-code-coverage-native/gn-args.json",
@@ -523,7 +524,6 @@
   "tryserver.blink": {
     "linux-blink-rel": "try/linux-blink-rel/gn-args.json",
     "linux-wpt-chromium-rel": "try/linux-wpt-chromium-rel/gn-args.json",
-    "mac10.15-blink-rel": "try/mac10.15-blink-rel/gn-args.json",
     "mac11.0-blink-rel": "try/mac11.0-blink-rel/gn-args.json",
     "mac11.0.arm64-blink-rel": "try/mac11.0.arm64-blink-rel/gn-args.json",
     "mac12.0-blink-rel": "try/mac12.0-blink-rel/gn-args.json",

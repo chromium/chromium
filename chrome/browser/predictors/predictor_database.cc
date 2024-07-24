@@ -31,6 +31,17 @@ namespace {
 const base::FilePath::CharType kPredictorDatabaseName[] =
     FILE_PATH_LITERAL("Network Action Predictor");
 
+void ReportUMA(const base::FilePath file_path) {
+  int64_t db_file_size;
+  if (!base::GetFileSize(file_path, &db_file_size)) {
+    return;
+  }
+  // "x>>10 == x/1024"
+  const int kb_size = base::saturated_cast<int>(db_file_size >> 10);
+  base::UmaHistogramCounts1M("LoadingPredictor.PredictorDatabaseFileSize",
+                             kb_size);
+}
+
 }  // namespace
 
 namespace predictors {
@@ -63,10 +74,8 @@ class PredictorDatabaseInternal
   // Cancels pending DB transactions. Should only be called on the UI thread.
   void SetCancelled();
 
-  void ReportUMA();
-
   bool is_loading_predictor_enabled_;
-  base::FilePath db_path_;
+  const base::FilePath db_path_;
   std::unique_ptr<sql::Database> db_;
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
 
@@ -121,18 +130,19 @@ void PredictorDatabaseInternal::Initialize() {
   bool success = db_->Open(db_path_);
   db_->Preload();
 
-  if (!success)
+  if (!success) {
     return;
+  }
 
   autocomplete_table_->Initialize(db_.get());
   resource_prefetch_tables_->Initialize(db_.get());
 
   LogDatabaseStats();
-  ReportUMA();
+  ReportUMA(db_path_);
   uma_report_timer_ = std::make_unique<base::RepeatingTimer>();
   // Report DB usage periodically to see its growth.
-  uma_report_timer_->Start(FROM_HERE, base::Days(1), this,
-                           &PredictorDatabaseInternal::ReportUMA);
+  uma_report_timer_->Start(FROM_HERE, base::Days(1),
+                           base::BindRepeating(&ReportUMA, db_path_));
 }
 
 void PredictorDatabaseInternal::SetCancelled() {
@@ -147,19 +157,9 @@ void PredictorDatabaseInternal::LogDatabaseStats() {
   DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
 
   autocomplete_table_->LogDatabaseStats();
-  if (is_loading_predictor_enabled_)
+  if (is_loading_predictor_enabled_) {
     resource_prefetch_tables_->LogDatabaseStats();
-}
-
-void PredictorDatabaseInternal::ReportUMA() {
-  int64_t db_file_size;
-  if (!base::GetFileSize(db_path_, &db_file_size)) {
-    return;
   }
-  // "x>>10 == x/1024"
-  const int kb_size = base::saturated_cast<int>(db_file_size >> 10);
-  base::UmaHistogramCounts1M("LoadingPredictor.PredictorDatabaseFileSize",
-                             kb_size);
 }
 
 PredictorDatabase::PredictorDatabase(
@@ -170,20 +170,19 @@ PredictorDatabase::PredictorDatabase(
       FROM_HERE, base::BindOnce(&PredictorDatabaseInternal::Initialize, db_));
 }
 
-PredictorDatabase::~PredictorDatabase() {
-}
+PredictorDatabase::~PredictorDatabase() {}
 
 void PredictorDatabase::Shutdown() {
   db_->SetCancelled();
 }
 
 scoped_refptr<AutocompleteActionPredictorTable>
-    PredictorDatabase::autocomplete_table() {
+PredictorDatabase::autocomplete_table() {
   return db_->autocomplete_table_;
 }
 
 scoped_refptr<ResourcePrefetchPredictorTables>
-    PredictorDatabase::resource_prefetch_tables() {
+PredictorDatabase::resource_prefetch_tables() {
   return db_->resource_prefetch_tables_;
 }
 

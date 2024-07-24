@@ -232,7 +232,7 @@ bool IsAccessibilityOverscrollSettingFeatureEnabled() {
 
 BASE_FEATURE(kAccessibilitySelectToSpeakShortcut,
              "AccessibilitySelectToSpeakShortcut",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilitySelectToSpeakShortcutEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilitySelectToSpeakShortcut);
@@ -244,6 +244,14 @@ BASE_FEATURE(kAccessibilityDisableTrackpad,
 bool IsAccessibilityDisableTrackpadEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityDisableTrackpad);
+}
+
+BASE_FEATURE(kAccessibilityFlashScreenFeature,
+             "AccessibilityFlashScreenFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityFlashScreenFeatureEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityFlashScreenFeature);
 }
 
 BASE_FEATURE(kAccessibilityShakeToLocate,

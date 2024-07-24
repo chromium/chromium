@@ -71,6 +71,11 @@ std::optional<proto::Value> GetProtoValue(
     const google::protobuf::MessageLite& msg,
     const proto::ProtoField& proto_field);
 
+// Casts the serialized proto in `msg` to the type in `msg.type_url`.
+// Returns a unique_ptr to the casted proto field.
+std::unique_ptr<google::protobuf::MessageLite> GetProtoFromAny(
+    const proto::Any& msg);
+
 // Constructs a new proto of `proto_name` type, and sets `value` in it's
 // `proto_field` and returns it wrapped in a proto::Any.
 // Returns nullopt if `proto_field` is not a valid string type field.

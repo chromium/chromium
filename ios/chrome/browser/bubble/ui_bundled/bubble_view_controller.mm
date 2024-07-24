@@ -35,12 +35,10 @@ BubbleView* BubbleViewWithType(BubbleViewType bubble_view_type,
       show_close_button = YES;
       break;
     case BubbleViewTypeRich:
-      show_close_button = YES;
       show_title = YES;
       show_image = YES;
       break;
     case BubbleViewTypeRichWithSnooze:
-      show_close_button = YES;
       show_title = YES;
       show_image = YES;
       show_snooze_button = YES;

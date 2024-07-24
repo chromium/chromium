@@ -19,21 +19,17 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.metrics.UserAction;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /** Fragment containing Safe Browsing settings. */
 public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBase
-        implements FragmentSettingsLauncher,
-                RadioButtonGroupSafeBrowsingPreference.OnSafeBrowsingModeDetailsRequested,
+        implements RadioButtonGroupSafeBrowsingPreference.OnSafeBrowsingModeDetailsRequested,
                 Preference.OnPreferenceChangeListener {
     @VisibleForTesting static final String PREF_MANAGED_DISCLAIMER_TEXT = "managed_disclaimer_text";
     @VisibleForTesting static final String PREF_SAFE_BROWSING = "safe_browsing_radio_button_group";
     public static final String ACCESS_POINT = "SafeBrowsingSettingsFragment.AccessPoint";
 
-    // An instance of SettingsLauncher that is used to launch Safe Browsing subsections.
-    private SettingsLauncher mSettingsLauncher;
     private RadioButtonGroupSafeBrowsingPreference mSafeBrowsingPreference;
     private @SettingsAccessPoint int mAccessPoint;
 
@@ -98,19 +94,16 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     public void onSafeBrowsingModeDetailsRequested(@SafeBrowsingState int safeBrowsingState) {
         recordUserActionHistogramForStateDetailsClicked(safeBrowsingState);
         if (safeBrowsingState == SafeBrowsingState.ENHANCED_PROTECTION) {
-            mSettingsLauncher.launchSettingsActivity(
-                    getActivity(), EnhancedProtectionSettingsFragment.class);
+            SettingsLauncherFactory.createSettingsLauncher()
+                    .launchSettingsActivity(
+                            getActivity(), EnhancedProtectionSettingsFragment.class);
         } else if (safeBrowsingState == SafeBrowsingState.STANDARD_PROTECTION) {
-            mSettingsLauncher.launchSettingsActivity(
-                    getActivity(), StandardProtectionSettingsFragment.class);
+            SettingsLauncherFactory.createSettingsLauncher()
+                    .launchSettingsActivity(
+                            getActivity(), StandardProtectionSettingsFragment.class);
         } else {
             assert false : "Should not be reached";
         }
-    }
-
-    @Override
-    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
-        mSettingsLauncher = settingsLauncher;
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {

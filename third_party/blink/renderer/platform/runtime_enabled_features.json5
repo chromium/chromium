@@ -407,6 +407,16 @@
       name: "AudioVideoTracks",
       status: "experimental",
     },
+    // Killswitch. Remove after 1 or 2 stable releases.
+    {
+      name: "AuraScrollbarUsesNinePatchTrack",
+      status: "stable",
+    },
+    // Killswitch. Remove after 1 or 2 stable releases.
+    {
+      name: "AuraScrollbarUsesSolidColorThumb",
+      status: "stable",
+    },
     {
       name: "AutoDarkMode",
       base_feature: "none",
@@ -620,6 +630,11 @@
     },
     {
       name: "CanvasImageSmoothing",
+      status: "experimental",
+    },
+    {
+      // https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md
+      name: "CanvasPlaceElement",
       status: "experimental",
     },
     {
@@ -3139,7 +3154,7 @@
     // See https://crbug.com/353538500
     {
       name: "PointerEventTargetsInEventLists",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "PositionOutsideTabSpanCheckSiblingNode",
@@ -4017,11 +4032,6 @@
       status: "stable",
     },
     {
-      // crbug.com/331729346
-      name: "TextAlignLastJustifyNewLine",
-      status: "stable",
-    },
-    {
       // This is a kill switch for the fix to crbug.com/333940413. It landed
       // in M126, and can be removed if all is well by M128.
       name: "TextAreaChildrenChangedStillValidates",
@@ -4514,10 +4524,6 @@
       status: "experimental",
     },
     {
-      name: "WebExposedScrollOffset",
-      status: "stable",
-    },
-    {
       name: "WebFontResizeLCP",
       status: "experimental",
     },
@@ -4563,7 +4569,7 @@
     },
     {
       name: "WebGPUHDR",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Using subgroup related features in WebGPU.

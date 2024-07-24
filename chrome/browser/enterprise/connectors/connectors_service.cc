@@ -434,38 +434,6 @@ std::string ConnectorsService::GetManagementDomain() {
 #endif
 }
 
-std::optional<std::string> ConnectorsService::GetDMTokenForRealTimeUrlCheck()
-    const {
-  if (!ConnectorsEnabled())
-    return std::nullopt;
-
-  if (Profile::FromBrowserContext(context_)->GetPrefs()->GetInteger(
-          prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode) ==
-      safe_browsing::REAL_TIME_CHECK_DISABLED) {
-    return std::nullopt;
-  }
-
-  std::optional<DmToken> dm_token =
-      GetDmToken(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope);
-
-  if (dm_token.has_value())
-    return dm_token.value().value;
-  return std::nullopt;
-}
-
-safe_browsing::EnterpriseRealTimeUrlCheckMode
-ConnectorsService::GetAppliedRealTimeUrlCheck() const {
-  if (!ConnectorsEnabled() ||
-      !GetDmToken(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope)
-           .has_value()) {
-    return safe_browsing::REAL_TIME_CHECK_DISABLED;
-  }
-
-  return static_cast<safe_browsing::EnterpriseRealTimeUrlCheckMode>(
-      Profile::FromBrowserContext(context_)->GetPrefs()->GetInteger(
-          prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode));
-}
-
 std::string ConnectorsService::GetRealTimeUrlCheckIdentifier() const {
   auto dm_token =
       GetDmToken(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope);
@@ -494,14 +462,6 @@ void ConnectorsService::ObserveTelemetryReporting(
     base::RepeatingCallback<void()> callback) {
   connectors_manager_->SetTelemetryObserverCallback(callback);
 }
-
-ConnectorsService::DmToken::DmToken(const std::string& value,
-                                    policy::PolicyScope scope)
-    : value(value), scope(scope) {}
-ConnectorsService::DmToken::DmToken(DmToken&&) = default;
-ConnectorsService::DmToken& ConnectorsService::DmToken::operator=(DmToken&&) =
-    default;
-ConnectorsService::DmToken::~DmToken() = default;
 
 std::optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
     const char* scope_pref) const {
@@ -562,9 +522,7 @@ policy::PolicyScope ConnectorsService::GetPolicyScope(
   // scope should always be POLICY_SCOPE_MACHINE.
   return policy::PolicyScope::POLICY_SCOPE_MACHINE;
 #else
-  return static_cast<policy::PolicyScope>(
-      Profile::FromBrowserContext(context_)->GetPrefs()->GetInteger(
-          scope_pref));
+  return static_cast<policy::PolicyScope>(GetPrefs()->GetInteger(scope_pref));
 #endif
 }
 
@@ -592,6 +550,14 @@ bool ConnectorsService::ConnectorsEnabled() const {
 #endif
 
   return !profile->IsOffTheRecord();
+}
+
+PrefService* ConnectorsService::GetPrefs() {
+  return Profile::FromBrowserContext(context_)->GetPrefs();
+}
+
+const PrefService* ConnectorsService::GetPrefs() const {
+  return Profile::FromBrowserContext(context_)->GetPrefs();
 }
 
 std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(

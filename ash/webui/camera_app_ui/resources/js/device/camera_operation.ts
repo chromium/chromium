@@ -10,7 +10,6 @@ import {
 import {AsyncJobQueue} from '../async_job_queue.js';
 import * as error from '../error.js';
 import * as expert from '../expert.js';
-import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
 import {
@@ -428,7 +427,14 @@ export class OperationScheduler {
 
   private readonly togglePausedEventQueue = new AsyncJobQueue('drop');
 
-  private readonly deviceMonitor = new DeviceMonitor();
+  private readonly deviceMonitor = new DeviceMonitor((devices) => {
+    const info = new CameraInfo(devices);
+    if (this.ongoingOperationType !== null) {
+      this.pendingUpdateInfo = info;
+      return;
+    }
+    this.doUpdate(info);
+  });
 
   constructor(
       private readonly listener: EventListener,
@@ -444,22 +450,12 @@ export class OperationScheduler {
         defaultFacing,
     );
     this.capturer = new Capturer(this.modes);
-    this.deviceMonitor.addDeviceChangeListener((devices) => {
-      const info = new CameraInfo(devices);
-      if (this.ongoingOperationType !== null) {
-        this.pendingUpdateInfo = info;
-        return;
-      }
-      this.doUpdate(info);
-    });
   }
 
   async initialize(cameraViewUI: CameraViewUI): Promise<void> {
     this.modes.initialize(cameraViewUI);
     await this.deviceMonitor.deviceUpdate();
-    if (!loadTimeData.isVideoCaptureDisallowed()) {
-      await this.firstInfoUpdate.wait();
-    }
+    await this.firstInfoUpdate.wait();
   }
 
   private doUpdate(cameraInfo: CameraInfo) {

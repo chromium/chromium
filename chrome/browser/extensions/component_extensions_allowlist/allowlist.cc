@@ -93,6 +93,7 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
     case IDR_HANGOUT_SERVICES_MANIFEST_V3:
 #endif
     case IDR_NETWORK_SPEECH_SYNTHESIS_MANIFEST:
+    case IDR_READING_MODE_GDOCS_HELPER_MANIFEST:
     case IDR_WEBSTORE_MANIFEST:
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

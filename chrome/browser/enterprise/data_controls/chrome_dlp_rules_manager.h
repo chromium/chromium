@@ -12,10 +12,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/substring_set_matcher/matcher_string_pattern.h"
-#include "components/enterprise/data_controls/core/action_context.h"
-#include "components/enterprise/data_controls/core/dlp_rules_manager_base.h"
-#include "components/enterprise/data_controls/core/rule.h"
-#include "components/enterprise/data_controls/core/verdict.h"
+#include "components/enterprise/data_controls/core/browser/action_context.h"
+#include "components/enterprise/data_controls/core/browser/dlp_rules_manager_base.h"
+#include "components/enterprise/data_controls/core/browser/rule.h"
+#include "components/enterprise/data_controls/core/browser/verdict.h"
 #include "components/url_matcher/url_matcher.h"
 
 class Profile;

@@ -247,9 +247,10 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   OpenAddressManualFillView();
 }
 
+// TODO(crbug.com/355146434): Remove FLAKY_ from this test.
 // Tests that the saved address chip buttons are all visible in the address
 // table view controller, and that they have the right accessibility label.
-- (void)testAddressChipButtonsAreAllVisible {
+- (void)FLAKY_testAddressChipButtonsAreAllVisible {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];

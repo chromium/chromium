@@ -31,6 +31,7 @@
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 
@@ -105,6 +106,9 @@ struct SearchResult {
   ~SearchResult();
   SearchResult& operator=(const SearchResult&);
   SearchResult& operator=(SearchResult&&);
+
+  // Unique ID to associate query with answers.
+  SessionID session_id;
 
   // Keep context for search parameters requested, to make logging easier.
   std::string query;

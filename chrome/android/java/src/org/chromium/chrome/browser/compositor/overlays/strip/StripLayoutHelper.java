@@ -1482,9 +1482,11 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             replaceIndex = mActiveTabIndexOnStartup;
             mActiveTabReplaced = true;
         } else {
-            // Should match the index in the model.
+            // Should match the index in the model. Though there are some mechanisms to return us to
+            // a "valid" state that may break this, such as ensuring that grouped tabs are
+            // contiguous. See https://crbug.com/329191924 for details.
             replaceIndex = mCurrentPlaceholderIndex++;
-            assert replaceIndex == mModel.indexOf(getTabById(id));
+            if (replaceIndex != mModel.indexOf(getTabById(id))) return;
         }
 
         if (replaceIndex >= 0 && replaceIndex < mStripTabs.length) {

@@ -12,8 +12,6 @@
 
 namespace autofill {
 
-struct AutofillMetadata;
-
 // This class is an interface for the primary data models that back Autofill.
 // The information in objects of this class is managed by the
 // PersonalDataManager.
@@ -49,17 +47,6 @@ class AutofillDataModel : public FormGroup {
   // `comparison_time_` allows consistent sorting throughout the comparisons.
   bool HasGreaterRankingThan(const AutofillDataModel* other,
                              base::Time comparison_time) const;
-
-  // Gets the metadata associated with this autofill data model.
-  virtual AutofillMetadata GetMetadata() const;
-
-  // Sets the |use_count_| and |use_date_| of this autofill data model. Returns
-  // whether the metadata was set.
-  virtual bool SetMetadata(const AutofillMetadata& metadata);
-
-  // Returns whether the data model is deletable: if it has not been used for
-  // longer than |kDisusedCreditCardDeletionTimeDelta|.
-  virtual bool IsDeletable() const;
 
  protected:
   // Calculate the ranking score of a card or profile depending on their use

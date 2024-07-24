@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
-
 #include "base/no_destructor.h"
+#include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
 
 // This file defines a list of UseCounter WebFeature measured in the
 // UKM-based UseCounter. Features must all satisfy UKM privacy requirements
@@ -403,6 +402,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kSharedStorageAPI_AddModule_CrossOriginScript,
           WebFeature::kIdentityDigitalCredentials,
           WebFeature::kIdentityDigitalCredentialsDeepLink,
+          WebFeature::kV8FileSystemObserver_Observe_Method,
       }));
   return *opt_in_features;
 }

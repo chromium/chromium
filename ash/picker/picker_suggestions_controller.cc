@@ -6,7 +6,7 @@
 
 #include "ash/picker/model/picker_mode_type.h"
 #include "ash/picker/model/picker_model.h"
-#include "ash/picker/picker_clipboard_provider.h"
+#include "ash/picker/picker_clipboard_history_provider.h"
 #include "ash/picker/search/picker_date_search.h"
 #include "ash/picker/search/picker_math_search.h"
 #include "ash/public/cpp/picker/picker_category.h"

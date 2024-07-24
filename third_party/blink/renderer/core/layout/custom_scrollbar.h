@@ -36,8 +36,10 @@
 namespace blink {
 
 class ComputedStyle;
+class GraphicsContext;
 class LayoutObject;
 class LayoutCustomScrollbarPart;
+struct PhysicalOffset;
 
 // Custom scrollbars are created when a box has -webkit-scrollbar* pseudo
 // styles. The parts of a custom scrollbar are layout objects of class
@@ -95,6 +97,8 @@ class CORE_EXPORT CustomScrollbar final : public Scrollbar {
 
   void InvalidateDisplayItemClientsOfScrollbarParts();
   void ClearPaintFlags();
+
+  void Paint(GraphicsContext&, const PhysicalOffset& paint_offset) const;
 
   void Trace(Visitor*) const override;
 

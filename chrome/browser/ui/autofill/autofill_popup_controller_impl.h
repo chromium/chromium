@@ -90,7 +90,6 @@ class AutofillPopupControllerImpl
   void Show(std::vector<Suggestion> suggestions,
             AutofillSuggestionTriggerSource trigger_source,
             AutoselectFirstSuggestion autoselect_first_suggestion) override;
-  void DisableThresholdForTesting(bool disable_threshold) override;
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
   void PinView() override;
@@ -112,7 +111,6 @@ class AutofillPopupControllerImpl
   bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event) override;
   void OnPopupPainted() override;
   base::WeakPtr<AutofillPopupController> GetWeakPtr() override;
-  void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) override;
 
  protected:
   AutofillPopupControllerImpl(
@@ -150,6 +148,7 @@ class AutofillPopupControllerImpl
   virtual void HideViewAndDie();
 
  private:
+  friend class AutofillPopupControllerImplTestApi;
   friend class AutofillSuggestionController;
 
   // Clear the internal state of the controller. This is needed to ensure that

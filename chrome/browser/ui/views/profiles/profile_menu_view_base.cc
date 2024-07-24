@@ -20,6 +20,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/ui/views/promos/bubble_signin_promo_signin_button_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/supervised_user/core/browser/supervised_user_capabilities.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -116,6 +118,10 @@ constexpr auto kBackgroundInsets =
 
 constexpr char kProfileMenuClickedActionableItemHistogram[] =
     "Profile.Menu.ClickedActionableItem";
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+constexpr char kProfileMenuClickedActionableItemSupervisedHistogram[] =
+    "Profile.Menu.ClickedActionableItem_Supervised";
+#endif
 
 gfx::ImageSkia SizeImage(const gfx::ImageSkia& image, int size) {
   return gfx::ImageSkiaOperations::CreateResizedImage(
@@ -1080,6 +1086,19 @@ void ProfileMenuViewBase::RecordClick(ActionableItem item) {
   // TODO(tangltom): Separate metrics for incognito and guest menu.
   base::UmaHistogramEnumeration(kProfileMenuClickedActionableItemHistogram,
                                 item);
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Additionally output a version of the metric for supervised users, to allow
+  // more fine-grained analysis.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfileIfExists(browser()->profile());
+  if (identity_manager &&
+      supervised_user::IsPrimaryAccountSubjectToParentalControls(
+          identity_manager) == signin::Tribool::kTrue) {
+    base::UmaHistogramEnumeration(
+        kProfileMenuClickedActionableItemSupervisedHistogram, item);
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 int ProfileMenuViewBase::GetMaxHeight() const {

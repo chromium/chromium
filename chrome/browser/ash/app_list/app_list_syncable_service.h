@@ -34,7 +34,6 @@
 class AppListModelUpdater;
 class AppServiceAppModelBuilder;
 class AppServicePromiseAppModelBuilder;
-class AppServiceShortcutModelBuilder;
 class ChromeAppListItem;
 class Profile;
 
@@ -514,8 +513,6 @@ class AppListSyncableService : public syncer::SyncableService,
   std::unique_ptr<AppServiceAppModelBuilder> app_service_apps_builder_;
   std::unique_ptr<AppServicePromiseAppModelBuilder>
       app_service_promise_apps_builder_;
-  std::unique_ptr<AppServiceShortcutModelBuilder>
-      app_service_shortcuts_builder_;
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
   SyncItemMap sync_items_;
   // Map that keeps pending request to transfer attributes from one app to

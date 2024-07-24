@@ -62,3 +62,12 @@ void JNI_MagicStackBridge_DismissActiveModule(JNIEnv* env, Profile* profile) {
   CHECK(service);
   service->DismissActiveNotification();
 }
+
+void JNI_MagicStackBridge_DismissSafeBrowsingModule(JNIEnv* env,
+                                                    Profile* profile) {
+  SafetyHubMenuNotificationService* service =
+      SafetyHubMenuNotificationServiceFactory::GetForProfile(profile);
+  CHECK(service);
+  service->DismissActiveNotificationOfModule(
+      safety_hub::SafetyHubModuleType::SAFE_BROWSING);
+}

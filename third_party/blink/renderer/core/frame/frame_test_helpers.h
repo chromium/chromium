@@ -571,6 +571,8 @@ class TestWebFrameClient : public WebLocalFrameClient {
 
   void DestroyChildViews();
 
+  void SetFrameDetachedCallback(base::OnceClosure callback);
+
  private:
   void CommitNavigation(std::unique_ptr<WebNavigationInfo>);
 
@@ -595,6 +597,9 @@ class TestWebFrameClient : public WebLocalFrameClient {
   // The sandbox flags to use when committing navigations.
   network::mojom::WebSandboxFlags sandbox_flags_ =
       network::mojom::WebSandboxFlags::kNone;
+
+  // Callback to run when |FrameDetached| is called.
+  base::OnceClosure frame_detached_callback_ = base::DoNothing();
 
   WTF::Vector<std::unique_ptr<WebViewHelper>> child_web_views_;
   base::WeakPtrFactory<TestWebFrameClient> weak_factory_{this};

@@ -27,7 +27,7 @@ void EnableResizingWithConfirmationIfNeeded(
 
 bool ShouldShowSplashScreenDialog(ArcResizeLockPrefDelegate* pref_delegate);
 
-int GetPortraitPhoneSizeWidth(aura::Window* window);
+int GetUnresizableSnappedWidth(aura::Window* window);
 
 }  // namespace arc
 

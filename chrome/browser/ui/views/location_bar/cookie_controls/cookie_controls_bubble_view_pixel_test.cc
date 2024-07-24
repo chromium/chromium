@@ -304,7 +304,7 @@ class CookieControlsBubbleViewTrackingProtectionUiPixelTest
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kTrackingProtectionSettingsLaunch);
+        privacy_sandbox::kTrackingProtectionContentSettingFor3pcb);
     CookieControlsBubbleViewPixelTest::SetUp();
   }
 

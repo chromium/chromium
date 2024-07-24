@@ -1553,41 +1553,45 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
   auto& controller = web_contents()->GetController();
+
   {
-    SCOPED_TRACE("[red*] -> [red, green&, blue&, green&, red*]");
+    SCOPED_TRACE("[red*] -> [red, green&, blue&, green&, green_CCNS&, red*]");
     NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
                                           GetNextUrl("/green.html"));
     NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
                                           GetNextUrl("/blue.html"));
     NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
                                           GetNextUrl("/green.html"));
-    NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
-                                          GetNextUrl("/red.html"));
+    NavigateTabAndWaitForScreenshotCached(
+        web_contents(), controller,
+        GetNextUrl("/set-header?Cache-Control: no-store"));
+    ASSERT_TRUE(NavigateToURL(web_contents(), GetNextUrl("/red.html")));
     AssertCacheHitOrMissReasonsAre(
         controller,
         {CacheHitOrMissReason::kCacheMissEvicted,
          CacheHitOrMissReason::kCacheHit, CacheHitOrMissReason::kCacheHit,
-         CacheHitOrMissReason::kCacheHit, std::nullopt});
+         CacheHitOrMissReason::kCacheHit, CacheHitOrMissReason::kCacheMissCCNS,
+         std::nullopt});
     AssertOrderedScreenshotsAre(
         controller, {std::nullopt, SK_ColorGREEN, SK_ColorBLUE, SK_ColorGREEN,
-                     std::nullopt});
+                     std::nullopt, std::nullopt});
     ASSERT_EQ(manager->GetCurrentCacheSize(), memory_budget);
   }
   {
     SCOPED_TRACE(
-        "[red, green&, blue&, green&, red*] -> "
-        "[red, green, blue, green, red]");
+        "[red, green&, blue&, green&, green_CCNS&, red*] -> "
+        "[red, green, blue, green, green_CCNS, red]");
 
     controller.GetNavigationEntryScreenshotCache()->PurgeForMemoryPressure();
     AssertCacheHitOrMissReasonsAre(
-        controller,
-        {CacheHitOrMissReason::kCacheMissEvicted,
-         CacheHitOrMissReason::kCacheMissPurgedMemoryPressure,
-         CacheHitOrMissReason::kCacheMissPurgedMemoryPressure,
-         CacheHitOrMissReason::kCacheMissPurgedMemoryPressure, std::nullopt});
+        controller, {CacheHitOrMissReason::kCacheMissEvicted,
+                     CacheHitOrMissReason::kCacheMissPurgedMemoryPressure,
+                     CacheHitOrMissReason::kCacheMissPurgedMemoryPressure,
+                     CacheHitOrMissReason::kCacheMissPurgedMemoryPressure,
+                     CacheHitOrMissReason::kCacheMissCCNS, std::nullopt});
     AssertOrderedScreenshotsAre(
-        controller,
-        {std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt});
+        controller, {std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+                     std::nullopt, std::nullopt});
   }
 }
 
@@ -1601,6 +1605,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
   auto& controller = web_contents()->GetController();
+
   {
     SCOPED_TRACE("[red*] -> [red&, green&]");
     NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
@@ -1636,6 +1641,35 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
     AssertCacheHitOrMissReasonsAre(
         controller, {std::nullopt, CacheHitOrMissReason::kCacheHit});
     AssertOrderedScreenshotsAre(controller, {std::nullopt, SK_ColorGREEN});
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
+                       CCNSMissReason) {
+  // Max of three screenshots per Profile (BrowserContext).
+  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t memory_budget = 3 * page_size;
+  auto* manager = GetManagerForTab(web_contents());
+  manager->SetMemoryBudgetForTesting(memory_budget);
+  auto& controller = web_contents()->GetController();
+
+  {
+    SCOPED_TRACE("[red*] -> [red&, red_CCNS*]");
+    NavigateTabAndWaitForScreenshotCached(
+        web_contents(), controller,
+        GetNextUrl("/set-header?Cache-Control: no-store"));
+    AssertCacheHitOrMissReasonsAre(
+        controller, {CacheHitOrMissReason::kCacheHit, std::nullopt});
+    AssertOrderedScreenshotsAre(controller, {SK_ColorRED, std::nullopt});
+  }
+  {
+    SCOPED_TRACE("[red&, red_CCNS*] -> [red&, red_CCNS&, green*]");
+    ASSERT_TRUE(NavigateToURL(web_contents(), GetNextUrl("/green.html")));
+    AssertCacheHitOrMissReasonsAre(
+        controller, {CacheHitOrMissReason::kCacheHit,
+                     CacheHitOrMissReason::kCacheMissCCNS, std::nullopt});
+    AssertOrderedScreenshotsAre(controller,
+                                {SK_ColorRED, std::nullopt, std::nullopt});
   }
 }
 

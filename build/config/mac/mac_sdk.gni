@@ -32,7 +32,7 @@ declare_args() {
   # `mac_deployment_target` to increase the system requirement without changing
   # how Chromium is compiled. This must be greater than or equal to the
   # `mac_deployment_target` version.
-  mac_min_system_version = "10.15"
+  mac_min_system_version = "11.0"
 
   # Path to a specific version of the Mac SDK, not including a slash at the end.
   # If empty, the path to the lowest version greater than or equal to

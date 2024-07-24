@@ -101,6 +101,12 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
       for (Observer& observer : observers_) {
         observer.OnContentAutofillDriverCreated(*this, *driver);
       }
+      // TODO: crbug.com/342132628 - `driver->IsActive()` is guaranteed once
+      // prerendered CADs are deferred.
+      driver->SetLifecycleState(
+          driver->IsActive() ? AutofillManager::LifecycleState::kActive
+                             : AutofillManager::LifecycleState::kInactive,
+          {});
       DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(),
                 driver.get());
     } else {
@@ -125,6 +131,7 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
 
   if (!render_frame_host->IsInLifecycleState(
           content::RenderFrameHost::LifecycleState::kPrerendering)) {
+    // TODO: crbug.com/354043809 - Move out of CADF.
     driver->GetAutofillManager().ReportAutofillWebOTPMetrics(
         render_frame_host->DocumentUsedWebOTP());
   }
@@ -133,7 +140,44 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
     observer.OnContentAutofillDriverWillBeDeleted(*this, *driver);
   }
 
+  driver->SetLifecycleState(AutofillManager::LifecycleState::kPendingDeletion,
+                            {});
   driver_map_.erase(it);
+}
+
+void ContentAutofillDriverFactory::RenderFrameHostStateChanged(
+    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost::LifecycleState old_state,
+    content::RenderFrameHost::LifecycleState new_state) {
+  auto* driver = DriverForFrame(render_frame_host);
+  if (!driver) {
+    return;
+  }
+  auto state =
+      [new_state]() -> std::optional<ContentAutofillDriver::LifecycleState> {
+    using RFH = content::RenderFrameHost::LifecycleState;
+    using CAD = ContentAutofillDriver::LifecycleState;
+    switch (new_state) {
+      case RFH::kPendingCommit:  // Handled in DidFinishNavigation().
+        return std::nullopt;
+
+      case RFH::kActive:  // Potentially redundant with DriverForFrame().
+        return CAD::kActive;
+
+      case RFH::kPrerendering:
+        // TODO: crbug.com/342132628 - Unreachable once prerendered CADs are
+        // deferred.
+      case RFH::kInBackForwardCache:
+        return CAD::kInactive;
+
+      case RFH::kPendingDeletion:  // Handled in RenderFrameDeleted().
+        return std::nullopt;
+    }
+    NOTREACHED_NORETURN();
+  }();
+  if (state) {
+    driver->SetLifecycleState(*state, {});
+  }
 }
 
 void ContentAutofillDriverFactory::DidFinishNavigation(
@@ -147,23 +191,33 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
     return;
   }
 
-  // If the navigation happened in the main frame and the BrowserAutofillManager
-  // exists (not in Android Webview), and the AutofillOfferManager exists (not
-  // in Incognito windows), notifies the navigation event.
   if (navigation_handle->IsInPrimaryMainFrame() &&
       client().GetAutofillOfferManager()) {
+    // If the navigation happened in the main frame and the AutofillOfferManager
+    // exists (not in Incognito windows, not in WebView), notify it about the
+    // navigation event.
+    // TODO: crbug.com/40178290 - Move out of CADF. Perhaps use the
+    // LifecycleState changes to recognize navigations.
     client().GetAutofillOfferManager()->OnDidNavigateFrame(client());
   }
 
-  // When IsServedFromBackForwardCache or IsPrerendererdPageActivation, the form
-  // data is not parsed again. So, we should keep and use the autofill manager's
-  // FormStructures from BFCache or prerendering page for form submit.
+  // If the navigation is served from BFCache, then the pre-navigation RFH is
+  // swapped with a post-navigation RFH, along with their associated CADs. We do
+  // not reset the swapped-in CAD's state so that its state continues where we
+  // left off when the CAD was swapped out. Similarly for prerendering.
   if (navigation_handle->IsServedFromBackForwardCache() ||
       navigation_handle->IsPrerenderedPageActivation()) {
     return;
   }
 
-  driver->Reset();
+  driver->SetLifecycleState(AutofillManager::LifecycleState::kPendingReset, {});
+  driver->Reset({});
+  // TODO: crbug.com/342132628 - `driver->IsActive()` is guaranteed once
+  // prerendered CADs are deferred.
+  driver->SetLifecycleState(driver->IsActive()
+                                ? AutofillManager::LifecycleState::kActive
+                                : AutofillManager::LifecycleState::kInactive,
+                            {});
 }
 
 std::vector<ContentAutofillDriver*>

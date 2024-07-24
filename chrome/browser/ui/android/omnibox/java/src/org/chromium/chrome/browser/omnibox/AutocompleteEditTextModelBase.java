@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.omnibox.SpannableAutocompleteEditTextModel.AutocompleteInputConnection;
+
 import java.util.Optional;
 
 /** An abstraction of the text model to show, keep track of, and update autocomplete. */
@@ -111,6 +113,99 @@ public interface AutocompleteEditTextModelBase {
          * @return The package name of the current keyboard app.
          */
         String getKeyboardPackageName();
+    }
+
+    /**
+     * Interface defining the delegate for handling input-related actions in the {@link
+     * AutocompleteInputConnection}.
+     */
+    public interface InputDelegate {
+        /**
+         * @return Whether the input are in the batch edit.
+         */
+        boolean isInBatchEdit();
+
+        /**
+         * @return Whether the input are in the first batch edit.
+         */
+        boolean isInFirstBatchEdit();
+
+        /** Increments the count of batch edits. */
+        void incrementBatchEditCount();
+
+        /** Decrements the count of batch edits. */
+        void decrementBatchEditCount();
+
+        /**
+         * Gets the current state of autocomplete.
+         *
+         * @return The current autocomplete state.
+         */
+        AutocompleteState getCurrentState();
+
+        /**
+         * Gets the previously set state of autocomplete.
+         *
+         * @return The previously set autocomplete state.
+         */
+        AutocompleteState getPreviouslySetState();
+
+        /**
+         * Gets the span cursor controller.
+         *
+         * @return The span cursor controller.
+         */
+        SpanCursorController getSpanCursorController();
+
+        /**
+         * Sets whether the last edit was typing.
+         *
+         * @param wasTyping True if the last edit was typing, false otherwise.
+         */
+        void setLastEditWasTyping(boolean wasTyping);
+
+        /**
+         * Gets the {@link AutocompleteEditTextModelBase.Delegate}.
+         *
+         * @return The delegate.
+         */
+        Delegate getAutocompleteEditTextModelBaseDelegate();
+
+        /**
+         * Gets the postfix delete command to execute on the next IME begin command.
+         *
+         * @return The postfix delete command.
+         */
+        int getDeletePostfixOnNextBeginImeCommand();
+
+        /**
+         * Sets the postfix delete command to execute on the next IME begin command.
+         *
+         * @param postfix The postfix delete command.
+         */
+        void setDeletePostfixOnNextBeginImeCommand(int postfix);
+
+        /**
+         * @return Whether any autocomplete information is specified on the current text.
+         */
+        @VisibleForTesting
+        boolean hasAutocomplete();
+
+        /** Clear autocomplete text in the current text. */
+        void clearAutocompleteText();
+
+        /** Notifies that the autocomplete text state has changed. */
+        void notifyAutocompleteTextStateChanged();
+
+        /** Updates the selection, primarily for testing purposes. */
+        void updateSelectionForTesting();
+
+        /**
+         * Determines if the composition should be finished upon deletion.
+         *
+         * @return True if the composition should be finished on deletion, false otherwise.
+         */
+        boolean shouldFinishCompositionOnDeletion();
     }
 
     /**

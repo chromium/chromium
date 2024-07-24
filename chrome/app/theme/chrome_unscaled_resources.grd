@@ -46,11 +46,11 @@
           </if>
           <include name="IDR_CHROME_PASSWORD_MANAGER_LOGO" file="${branding_path_component}/google_password_manager_logo.svg" type="BINDATA" />
           <include name="IDR_CHROME_PASSWORD_MANAGER_PWA_ICON" file="${branding_path_component}/google_password_manager_pwa_icon.svg" type="BINDATA" />
-          <include name="IDR_PRODUCT_LOGO_24PX_1X" file="${branding_path_component}/chrome_24px_1x.svg" type="BINDATA" />
           <include name="IDR_PRODUCT_LOGO_128PX_SVG" file="${branding_path_component}/chrome_128px.svg" type="BINDATA" />
           <include name="IDR_GSHIELD_ICON_SVG" file="${branding_path_component}/gshield.svg" type="BINDATA" />
           <if expr="chromeos_ash">
-            <include name="IDR_PRODUCT_LOGO_24PX_2X" file="${branding_path_component}/chrome_24px_2x.svg" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_24PX_1X" file="${branding_path_component}/chromeos/chrome_24px_1x.svg" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_24PX_2X" file="${branding_path_component}/chromeos/chrome_24px_2x.svg" type="BINDATA" />
             <!-- Used by lacros. -->
             <include name="IDR_PRODUCT_LOGO_256_CANARY" file="${branding_path_component}/product_logo_256_canary.png" type="BINDATA" />
             <!-- Used by ChromeOS OOBE -->

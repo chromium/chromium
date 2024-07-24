@@ -12,7 +12,8 @@ import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -23,7 +24,7 @@ class AllPasswordsBottomSheetMediator {
     private AllPasswordsBottomSheetCoordinator.Delegate mDelegate;
     private PropertyModel mModel;
     private ListModel<ListItem> mListModel;
-    private Credential[] mCredentials;
+    private List<Credential> mCredentials;
     private boolean mIsPasswordField;
 
     void initialize(
@@ -36,9 +37,9 @@ class AllPasswordsBottomSheetMediator {
         mListModel = listModel;
     }
 
-    void showCredentials(Credential[] credentials, boolean isPasswordField) {
+    void showCredentials(List<Credential> credentials, boolean isPasswordField) {
         assert credentials != null;
-        Arrays.sort(credentials, AllPasswordsBottomSheetMediator::compareCredentials);
+        Collections.sort(credentials, AllPasswordsBottomSheetMediator::compareCredentials);
 
         mCredentials = credentials;
         mIsPasswordField = isPasswordField;

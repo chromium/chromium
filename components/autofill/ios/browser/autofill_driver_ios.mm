@@ -87,9 +87,21 @@ AutofillDriverIOS::AutofillDriverIOS(web::WebState* web_state,
       local_frame_token_ = LocalFrameToken(*token_temp);
     }
   }
+
+  // TODO: crbug.com/40269979 - Call AutofillManager::Reset() when necessary.
+  // TODO: crbug.com/354043640 - Call AutofillManager::SetLifecycleState() from
+  // the factory after construction is finished. That's required by the contract
+  // of AutofillManager::LifecycleState.
+  manager_->SetLifecycleState(AutofillManager::LifecycleState::kActive, {});
 }
 
 AutofillDriverIOS::~AutofillDriverIOS() {
+  // TODO: crbug.com/354043640 - Call AutofillManager::SetLifecycleState() from
+  // the factory before destruction starts. That's required by the contract of
+  // AutofillManager::LifecycleState.
+  manager_->SetLifecycleState(AutofillManager::LifecycleState::kPendingDeletion,
+                              {});
+
   router_->UnregisterDriver(*this, /*driver_is_dying=*/true);
 }
 

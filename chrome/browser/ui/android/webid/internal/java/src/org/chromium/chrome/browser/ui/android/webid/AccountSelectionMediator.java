@@ -320,6 +320,9 @@ class AccountSelectionMediator {
                 .with(HeaderProperties.TYPE, headerType)
                 .with(HeaderProperties.RP_CONTEXT, rpContext)
                 .with(HeaderProperties.RP_MODE, mRpMode)
+                .with(
+                        HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER,
+                        mSelectedAccount == null && mAccounts != null && mAccounts.size() > 1)
                 .build();
     }
 

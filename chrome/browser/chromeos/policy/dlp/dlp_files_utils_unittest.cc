@@ -6,7 +6,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
-#include "components/enterprise/data_controls/core/component.h"
+#include "components/enterprise/data_controls/core/browser/component.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;

@@ -59,10 +59,6 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
     receivers_.Add(this, std::move(receiver));
   }
 
-  bool did_unfocus_form() const { return did_unfocus_form_; }
-
-  bool had_interacted_form() const { return had_interacted_form_; }
-
   const FormData* form_submitted() const { return form_submitted_.get(); }
 
   bool known_success() const { return known_success_; }
@@ -115,10 +111,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
   void HidePopup() override {}
 
-  void FocusOnNonFormField(bool had_interacted_form) override {
-    did_unfocus_form_ = true;
-    had_interacted_form_ = had_interacted_form;
-  }
+  void FocusOnNonFormField() override {}
 
   void FocusOnFormField(const FormData& form,
                         FieldRendererId field_id) override {}
@@ -130,13 +123,6 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
   void SelectOrSelectListFieldOptionsDidChange(
       const autofill::FormData& form) override {}
-
-  // Records whether FocusOnNonFormField() got called.
-  bool did_unfocus_form_{false};
-
-  // Records value of `had_interacted_form` on last call to
-  // FocusOnNonFormField(). Meaningless if `did_unfocus_form_` is false.
-  bool had_interacted_form_{false};
 
   // Records the form data received via FormSubmitted() call.
   std::unique_ptr<FormData> form_submitted_;
@@ -562,147 +548,6 @@ TEST_F(FormAutocompleteTest, AcceptDataListSuggestion) {
         form_util::GetFieldRendererId(input_element), kSuggestion);
     EXPECT_EQ(c.expected, input_element.Value().Utf8()) << "Case id: " << c.id;
   }
-}
-
-// TODO(crbug.com/337690061): Remove the test suite when the new focus events
-// are launched. The new tests are `AutofillAgentTestFocus` in
-// `autofill_agent_browsertest.cc`.
-class FormAutocompleteTestFocus : public FormAutocompleteTest {
- public:
-  FormAutocompleteTestFocus() {
-    scoped_feature_list_.InitAndDisableFeature(
-        autofill::features::kAutofillNewFocusEvents);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Test that a FocusOnNonFormField message is sent if focus goes from a
-// focused but uninteracted form to a null element.
-TEST_F(FormAutocompleteTestFocus,
-       UninteractedFormFocusChangesToNull_FocusOnNonFormField) {
-  // Load a form.
-  LoadHTML(
-      "<html><input type='text' id='different'/>"
-      "<form id='myForm' action='http://example.com/blade.php'>"
-      "<input name='fname' id='fname' value='Bob'/>"
-      "<input name='lname' value='Deckard'/><input type=submit></form></html>");
-
-  // Change focus to the form.
-  WebDocument document = GetMainFrame()->GetDocument();
-  WebElement element = document.GetElementById(WebString::FromUTF8("fname"));
-  SetFocused(element);
-
-  ASSERT_FALSE(fake_driver_.did_unfocus_form());
-
-  // Change focus to a null element.
-  ChangeFocusToNull(document);
-
-  base::RunLoop run_loop;
-  run_loop.RunUntilIdle();
-
-  EXPECT_TRUE(fake_driver_.did_unfocus_form());
-  EXPECT_FALSE(fake_driver_.had_interacted_form());
-}
-
-// Test that a FocusOnNonFormField message is sent if focus goes from an
-// interacted form to a null element.
-TEST_F(FormAutocompleteTestFocus,
-       InteractedFormFocusChangesToNull_FocusOnNonFormField) {
-  // Load a form.
-  LoadHTML(
-      "<html><input type='text' id='different'/>"
-      "<form id='myForm' action='http://example.com/blade.php'>"
-      "<input name='fname' id='fname' value='Bob'/>"
-      "<input name='lname' value='Deckard'/><input type=submit></form></html>");
-
-  // Simulate user input so that the form is "remembered".
-  WebDocument document = GetMainFrame()->GetDocument();
-  WebElement element = document.GetElementById(WebString::FromUTF8("fname"));
-  ASSERT_TRUE(element);
-  WebInputElement fname_element = element.To<WebInputElement>();
-  SimulateUserInputChangeForElement(&fname_element, std::string("Rick"));
-
-  ASSERT_FALSE(fake_driver_.did_unfocus_form());
-
-  // Change focus to a null element.
-  ChangeFocusToNull(document);
-
-  base::RunLoop run_loop;
-  run_loop.RunUntilIdle();
-
-  EXPECT_TRUE(fake_driver_.did_unfocus_form());
-  EXPECT_TRUE(fake_driver_.had_interacted_form());
-}
-
-// Test that a FocusOnNonFormField message is sent if focus goes from an
-// interacted form to an element outside the form.
-TEST_F(FormAutocompleteTestFocus,
-       InteractedFormFocusChangesToExternalElement_FocusOnNonFormField) {
-  // Load a form.
-  LoadHTML(
-      "<html><input type='text' id='different'/>"
-      "<form id='myForm' action='http://example.com/blade.php'>"
-      "<input name='fname' id='fname' value='Bob'/>"
-      "<input name='lname' value='Deckard'/><input type=submit></form></html>");
-
-  // Simulate user input so that the form is "remembered".
-  WebDocument document = GetMainFrame()->GetDocument();
-  WebElement element = document.GetElementById(WebString::FromUTF8("fname"));
-  ASSERT_TRUE(element);
-  WebInputElement fname_element = element.To<WebInputElement>();
-  SimulateUserInputChangeForElement(&fname_element, std::string("Rick"));
-
-  ASSERT_FALSE(fake_driver_.did_unfocus_form());
-
-  // Change focus to a different node outside the form.
-  WebElement different =
-      document.GetElementById(WebString::FromUTF8("different"));
-  SetFocused(different);
-
-  base::RunLoop run_loop;
-  run_loop.RunUntilIdle();
-
-  EXPECT_TRUE(fake_driver_.did_unfocus_form());
-  EXPECT_TRUE(fake_driver_.had_interacted_form());
-}
-
-// Test that a FocusOnNonFormField message is sent if focus goes from one
-// interacted form to another.
-TEST_F(FormAutocompleteTestFocus,
-       InteractingInDifferentForms_FocusOnNonFormField) {
-  // Load a form.
-  LoadHTML(
-      "<html><form id='myForm' action='http://example.com/blade.php'>"
-      "<input name='fname' id='fname' value='Bob'/>"
-      "<input name='lname' value='Deckard'/><input type=submit></form>"
-      "<form id='myForm2' action='http://example.com/runner.php'>"
-      "<input name='fname' id='fname2' value='Bob'/>"
-      "<input name='lname' value='Deckard'/><input type=submit></form></html>");
-
-  // Simulate user input in the first form so that the form is "remembered".
-  WebDocument document = GetMainFrame()->GetDocument();
-  WebElement element = document.GetElementById(WebString::FromUTF8("fname"));
-  ASSERT_TRUE(element);
-  WebInputElement fname_element = element.To<WebInputElement>();
-  SimulateUserInputChangeForElement(&fname_element, std::string("Rick"));
-
-  ASSERT_FALSE(fake_driver_.did_unfocus_form());
-
-  // Simulate user input in the second form so that a "no longer focused"
-  // message is sent for the first form.
-  document = GetMainFrame()->GetDocument();
-  element = document.GetElementById(WebString::FromUTF8("fname2"));
-  ASSERT_TRUE(element);
-  fname_element = element.To<WebInputElement>();
-  SimulateUserInputChangeForElement(&fname_element, std::string("John"));
-
-  base::RunLoop run_loop;
-  run_loop.RunUntilIdle();
-
-  EXPECT_TRUE(fake_driver_.did_unfocus_form());
-  EXPECT_TRUE(fake_driver_.had_interacted_form());
 }
 
 TEST_F(FormAutocompleteTest, SelectControlChanged) {

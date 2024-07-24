@@ -143,6 +143,9 @@ bool SplitViewDividerView::OnMousePressed(const ui::MouseEvent& event) {
   gfx::Point location(event.location());
   views::View::ConvertPointToScreen(this, &location);
   initial_mouse_event_location_ = location;
+
+  divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/true);
+
   return true;
 }
 

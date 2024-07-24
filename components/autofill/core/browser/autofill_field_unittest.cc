@@ -329,8 +329,7 @@ TEST(AutofillFieldLogEventTypeTest, AppendLogEventIfNotRepeated) {
   AutofillField::FieldLogEventType c = FillFieldLogEvent{
       .fill_event_id = absl::get<TriggerFillFieldLogEvent>(b).fill_event_id,
       .had_value_before_filling = OptionalBoolean::kTrue,
-      .autofill_skipped_status =
-          FieldFillingSkipReason::kAutofilledFieldsNotRefill,
+      .autofill_skipped_status = FieldFillingSkipReason::kAlreadyAutofilled,
       .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
       .had_value_after_filling = OptionalBoolean::kTrue};
 

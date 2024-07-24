@@ -106,7 +106,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Accepted) {
   AutofillProfile profile = test::GetFullProfile();
   pdm_.address_data_manager().AddProfile(profile);
   ProfileTokenQuality quality(&profile);
-  quality.disable_randomization_for_testing();
+  test_api(quality).disable_randomization();
 
   FormData form = GetFormWithTypes({NAME_FIRST, NAME_MIDDLE_INITIAL});
   FillForm(form, profile);
@@ -130,7 +130,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Edited) {
   AutofillProfile profile = test::GetFullProfile();
   pdm_.address_data_manager().AddProfile(profile);
   ProfileTokenQuality quality(&profile);
-  quality.disable_randomization_for_testing();
+  test_api(quality).disable_randomization();
 
   FormData form = GetFormWithTypes(
       {NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1, ADDRESS_HOME_CITY});
@@ -171,7 +171,7 @@ TEST_F(ProfileTokenQualityTest,
   pdm_.address_data_manager().AddProfile(profile);
   pdm_.address_data_manager().AddProfile(other_profile);
   ProfileTokenQuality quality(&profile);
-  quality.disable_randomization_for_testing();
+  test_api(quality).disable_randomization();
 
   FormData form = GetFormWithTypes({EMAIL_ADDRESS, ADDRESS_HOME_ZIP});
   FillForm(form, profile);

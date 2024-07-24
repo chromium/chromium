@@ -7,6 +7,7 @@
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -44,7 +45,7 @@ ui::EventDispatchDetails KeyboardDrivenEventRewriter::Rewrite(
 
   DCHECK(event.type() == ui::EventType::kKeyPressed ||
          event.type() == ui::EventType::kKeyReleased)
-      << "Unexpected event type " << event.type();
+      << "Unexpected event type " << base::to_underlying(event.type());
   const ui::KeyEvent& key_event = static_cast<const ui::KeyEvent&>(event);
   ui::KeyboardCode key_code = key_event.key_code();
 

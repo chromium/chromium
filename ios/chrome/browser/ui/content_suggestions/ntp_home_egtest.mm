@@ -1641,13 +1641,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
     return;
   }
 
-  // Reset prefs so that this test run is independent.
-  [ChromeEarlGrey setBoolValue:YES
-                   forUserPref:prefs::kHomeCustomizationMostVisitedEnabled];
-  [ChromeEarlGrey setBoolValue:YES
-                   forUserPref:prefs::kHomeCustomizationMagicStackEnabled];
-  [ChromeEarlGrey setBoolValue:YES
-                   forUserPref:prefs::kHomeCustomizationDiscoverEnabled];
+  [self resetCustomizationPrefs];
 
   // Enable customization and reset state so the test can run repeatedly.
   // TODO(crbug.com/350990359): Remove this when feature is enabled by default.
@@ -1759,6 +1753,52 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
           grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier)]
       assertWithMatcher:grey_not(grey_notVisible())];
   [self checkFeedLabelForFeedVisible:YES];
+}
+
+// Tests that the toggles in the main page of the customization menu can be used
+// to navigate to their respective submenus.
+- (void)testNavigateInCustomizationMenu {
+  // Customization is not yet supported on iPads.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    return;
+  }
+
+  [self resetCustomizationPrefs];
+
+  // Enable customization and reset state so the test can run repeatedly.
+  // TODO(crbug.com/350990359): Remove this when feature is enabled by default.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(kHomeCustomization);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Open the Home customization menu and expand it to view all its content.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kNTPCustomizationMenuButtonIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(l10n_util::GetNSString(
+                     IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE))]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+
+  // Tap the Most Visited cell which shouldn't prompt a navigation.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kCustomizationToggleMostVisitedNavigableIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(l10n_util::GetNSString(
+                     IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the Magic Stack cell and check for a navigation to its submenu.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kCustomizationToggleMagicStackNavigableIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Magic Stack")]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 #pragma mark - Helpers
@@ -1921,6 +1961,16 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   feed_visible =
       [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
   GREYAssertFalse(feed_visible, @"Expect feed to be hidden!");
+}
+
+// Resets the preferences related to Home customization.
+- (void)resetCustomizationPrefs {
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kHomeCustomizationMostVisitedEnabled];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kHomeCustomizationMagicStackEnabled];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kHomeCustomizationDiscoverEnabled];
 }
 
 #pragma mark - Matchers

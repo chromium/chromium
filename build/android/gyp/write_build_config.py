@@ -1824,10 +1824,12 @@ def main(argv):
         deps_info['version_code'] = c['version_code']
         deps_info['version_name'] = c['version_name']
         deps_info['base_module_config'] = c['path']
-        # Use the base module's android manifest for linting.
         deps_info['lint_android_manifest'] = c['android_manifest']
       else:
+        # All manifests nodes are merged into the main manfiest by lint.py.
         lint_extra_android_manifests.add(c['android_manifest'])
+
+      lint_extra_android_manifests.update(c['extra_android_manifests'])
       lint_aars.update(c['lint_aars'])
       lint_srcjars.update(c['lint_srcjars'])
       lint_sources.update(c['lint_sources'])
@@ -2114,12 +2116,12 @@ def main(argv):
     # Manifests are listed from highest priority to lowest priority.
     # Ensure directly manfifests come first, and then sort the rest by name.
     # https://developer.android.com/build/manage-manifests#merge_priorities
-    config['extra_android_manifests'] = list(mergeable_android_manifests)
+    deps_info['extra_android_manifests'] = list(mergeable_android_manifests)
     manifests_from_deps = []
     for c in extra_manifest_deps:
       manifests_from_deps += c.get('mergeable_android_manifests', [])
     manifests_from_deps.sort(key=lambda p: (os.path.basename(p), p))
-    config['extra_android_manifests'] += manifests_from_deps
+    deps_info['extra_android_manifests'] += manifests_from_deps
 
     config['assets'], config['uncompressed_assets'], locale_paks = (
         _MergeAssets(deps.All('android_assets')))
@@ -2150,8 +2152,8 @@ def main(argv):
     for ancestor in ancestors:
       RemoveObjDups(config, ancestor, 'deps_info', 'dependency_zips')
       RemoveObjDups(config, ancestor, 'deps_info', 'dependency_zip_overlays')
+      RemoveObjDups(config, ancestor, 'deps_info', 'extra_android_manifests')
       RemoveObjDups(config, ancestor, 'deps_info', 'extra_package_names')
-      RemoveObjDups(config, ancestor, 'extra_android_manifests')
 
   if is_java_target:
     jar_to_target = {}

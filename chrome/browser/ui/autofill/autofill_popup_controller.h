@@ -99,8 +99,6 @@ class AutofillPopupController : public AutofillSuggestionController {
   virtual void OnPopupPainted() = 0;
 
   virtual base::WeakPtr<AutofillPopupController> GetWeakPtr() = 0;
-
-  virtual void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) = 0;
 };
 
 }  // namespace autofill

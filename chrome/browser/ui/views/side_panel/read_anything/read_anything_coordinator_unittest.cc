@@ -12,6 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
 #include "chrome/browser/companion/core/features.h"
+#include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -58,6 +61,8 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
         {});
     TestWithBrowserView::SetUp();
 
+    InitExtensionSystem(profile());
+
     side_panel_coordinator_ =
         SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
     read_anything_coordinator_ =
@@ -94,6 +99,14 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
               SidePanelEntry::Id::kReadAnything);
   }
 
+  void InitExtensionSystem(Profile* profile) {
+    extensions::TestExtensionSystem* extension_system =
+        static_cast<extensions::TestExtensionSystem*>(
+            extensions::ExtensionSystem::Get(profile));
+    extension_system->CreateExtensionService(
+        base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
+  }
+
   // Wrapper methods around the ReadAnythingCoordinator. These do nothing more
   // than keep the below tests less verbose (simple pass-throughs).
 
@@ -127,6 +140,22 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
     registry->Deregister(
         SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion));
   }
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool IsGDocsHelperExtensionLoaded() {
+#if BUILDFLAG(IS_CHROMEOS)
+    return EmbeddedA11yExtensionLoader::GetInstance()->IsExtensionInstalled(
+        extension_misc::kReadingModeGDocsHelperExtensionId);
+#else
+    extensions::ComponentLoader* component_loader =
+        extensions::ExtensionSystem::Get(profile())
+            ->extension_service()
+            ->component_loader();
+    return component_loader->Exists(
+        extension_misc::kReadingModeGDocsHelperExtensionId);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
  protected:
   content::ScopedWebUIConfigRegistration webui_config_registration_{
@@ -177,24 +206,20 @@ TEST_F(ReadAnythingCoordinatorTest,
        SidePanelShowAndHide_NonLacros_CallEmbeddedA11yExtensionLoader) {
   SidePanelEntry* entry = contextual_registries_[0]->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
-  EXPECT_FALSE(EmbeddedA11yExtensionLoader::GetInstance()->IsExtensionInstalled(
-      extension_misc::kReadingModeGDocsHelperExtensionId));
+  EXPECT_FALSE(IsGDocsHelperExtensionLoaded());
 
   // If the local side panel entry is shown, install the helper extension.
   entry->OnEntryShown();
-  EXPECT_TRUE(EmbeddedA11yExtensionLoader::GetInstance()->IsExtensionInstalled(
-      extension_misc::kReadingModeGDocsHelperExtensionId));
+  EXPECT_TRUE(IsGDocsHelperExtensionLoaded());
 
   // If the local side panel entry is hidden, remove the helper extension after
   // a timeout.
   entry->OnEntryHidden();
   // The helper extension is not removed immediately.
-  EXPECT_TRUE(EmbeddedA11yExtensionLoader::GetInstance()->IsExtensionInstalled(
-      extension_misc::kReadingModeGDocsHelperExtensionId));
+  EXPECT_TRUE(IsGDocsHelperExtensionLoaded());
   // The helper extension is removed after a timeout.
   task_environment()->FastForwardBy(base::Seconds(30));
-  EXPECT_FALSE(EmbeddedA11yExtensionLoader::GetInstance()->IsExtensionInstalled(
-      extension_misc::kReadingModeGDocsHelperExtensionId));
+  EXPECT_FALSE(IsGDocsHelperExtensionLoaded());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 

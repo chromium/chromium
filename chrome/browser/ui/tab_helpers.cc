@@ -165,6 +165,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
+#include "net/base/features.h"
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -302,6 +303,10 @@
 #include "chrome/browser/rlz/chrome_rlz_tracker_web_contents_observer.h"
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_REPORTING)
+#include "components/tpcd/enterprise_reporting/enterprise_reporting_tab_helper.h"
+#endif
+
 using content::WebContents;
 
 namespace {
@@ -399,6 +404,13 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ConnectionHelpTabHelper::CreateForWebContents(web_contents);
   CoreTabHelper::CreateForWebContents(web_contents);
   DIPSWebContentsObserver::MaybeCreateForWebContents(web_contents);
+#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_REPORTING)
+  if (base::FeatureList::IsEnabled(
+          net::features::kReportingApiEnableEnterpriseCookieIssues)) {
+    tpcd::enterprise_reporting::EnterpriseReportingTabHelper::
+        CreateForWebContents(web_contents);
+  }
+#endif
   ExternalProtocolObserver::CreateForWebContents(web_contents);
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
   FileSystemAccessPermissionRequestManager::CreateForWebContents(web_contents);

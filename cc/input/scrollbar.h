@@ -95,6 +95,8 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual gfx::Size NinePatchThumbCanvasSize() const = 0;
   virtual gfx::Rect NinePatchThumbAperture() const = 0;
   virtual bool UsesSolidColorThumb() const = 0;
+  // The insets of the solid color thumb from ThumbRect().
+  virtual gfx::Insets SolidColorThumbInsets() const = 0;
   virtual bool UsesNinePatchTrackAndButtonsResource() const = 0;
   virtual gfx::Size NinePatchTrackAndButtonsCanvasSize() const = 0;
   virtual gfx::Rect NinePatchTrackAndButtonsAperture() const = 0;

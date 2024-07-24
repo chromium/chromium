@@ -75,9 +75,9 @@ void VerifyX509CertChain(const std::vector<std::string>& cert_chain,
                           verified_chain);
 }
 
-void AddTestRootCertificate(const uint8_t* cert, size_t len) {
+void AddTestRootCertificate(base::span<const uint8_t> cert) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jbyteArray> cert_array = ToJavaByteArray(env, cert, len);
+  ScopedJavaLocalRef<jbyteArray> cert_array = ToJavaByteArray(env, cert);
   DCHECK(!cert_array.is_null());
   Java_AndroidNetworkLibrary_addTestRootCertificate(env, cert_array);
 }

@@ -198,7 +198,7 @@ class ToolbarDragHandler : public ui::EventHandler {
       case ui::EventType::kGestureScrollEnd:
         DCHECK(is_dragging_) << "Attempting to call end drag logic but the "
                                 "toolbar wasn't dragging. Event = "
-                             << event->type();
+                             << base::to_underlying(event->type());
         is_dragging_ = false;
         toolbar_view_->EndDraggingToolbar(GetOffset(event_location));
         previous_location_in_screen_.SetPoint(0, 0);

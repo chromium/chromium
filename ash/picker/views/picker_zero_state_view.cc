@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "ash/picker/picker_asset_fetcher.h"
-#include "ash/picker/picker_clipboard_provider.h"
+#include "ash/picker/picker_clipboard_history_provider.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_icons.h"
 #include "ash/picker/views/picker_item_view.h"

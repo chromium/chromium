@@ -145,7 +145,7 @@ void InvalidationListenerImpl::Start(
 
   // Note that `AddAppHandler()` causes an immediate replay of all received
   // invalidations in background on Android.
-  gcm_driver_->AddAppHandler(app_id_, this);
+  gcm_driver_->AddAppHandler(kFmAppId, this);
 
   registration_token_handler_ = registration_token_handler;
   FetchRegistrationToken();
@@ -157,7 +157,7 @@ void InvalidationListenerImpl::Shutdown() {
   CHECK(type_to_handler_.empty());
 
   registration_token_handler_ = nullptr;
-  gcm_driver_->RemoveAppHandler(app_id_);
+  gcm_driver_->RemoveAppHandler(kFmAppId);
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -183,7 +183,7 @@ void InvalidationListenerImpl::OnStoreReset() {
 void InvalidationListenerImpl::OnMessage(const std::string& app_id,
                                          const gcm::IncomingMessage& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(app_id, app_id_);
+  CHECK_EQ(app_id, kFmAppId);
 
   LOG(WARNING) << log_prefix_ << " Message received";
   for (const auto& [key, value] : message.data) {
@@ -209,7 +209,7 @@ void InvalidationListenerImpl::OnMessage(const std::string& app_id,
 
 void InvalidationListenerImpl::OnMessagesDeleted(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(app_id, app_id_);
+  DCHECK_EQ(app_id, kFmAppId);
 }
 
 void InvalidationListenerImpl::OnSendError(
@@ -227,7 +227,7 @@ void InvalidationListenerImpl::OnSendAcknowledged(
 }
 
 void InvalidationListenerImpl::FetchRegistrationToken() {
-  instance_id_driver_->GetInstanceID(app_id_)->GetToken(
+  instance_id_driver_->GetInstanceID(kFmAppId)->GetToken(
       project_number_, instance_id::kGCMScope,
       /*time_to_live=*/kRegistrationTokenTimeToLive,
       /*flags=*/{instance_id::InstanceID::Flags::kIsLazy},

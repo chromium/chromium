@@ -100,6 +100,28 @@ void SimulateAudioFocusGainedForSelectedPlaylist(
   }
 }
 
+// Simulate start playing a newly selected playlist during an active session.
+void SimulateStartPlaying() {
+  auto* controller = FocusModeController::Get();
+  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/true);
+  SimulateAudioFocusGainedForSelectedPlaylist(
+      /*focus_gained=*/true,
+      /*id_observed=*/controller->GetMediaSessionRequestId());
+}
+
+// Simulate stop playing the selected playlist during an active session. Note
+// that this function is to stop instead of pause the selected playlist. If you
+// want to simulate pause the selected playlist, please call
+// `SimulatePlaybackState`.
+void SimulateStopPlaying() {
+  auto* controller = FocusModeController::Get();
+  SimulateAudioFocusGainedForSelectedPlaylist(
+      /*focus_gained=*/false,
+      /*id_observed=*/controller->GetMediaSessionRequestId());
+  // Update the id for testing once we close the media widget.
+  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/false);
+}
+
 }  // namespace
 
 class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
@@ -1047,48 +1069,31 @@ TEST_F(FocusModeControllerMultiUserTest, CheckPlaylistPlayedLatencyHistograms) {
   sounds_controller->TogglePlaylist(selected_playlist);
 
   controller->ToggleFocusMode();
-  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/true);
-  auto current_request_id = controller->GetMediaSessionRequestId();
-  SimulateAudioFocusGainedForSelectedPlaylist(
-      /*focus_gained=*/true, /*id_observed=*/current_request_id);
+  SimulateStartPlaying();
   histogram_tester.ExpectTotalCount(
       focus_mode_histogram_names::kSoundscapeLatencyInMillisecondsHistogramName,
       1);
 
   // 2. Simulate that we select another soundscape playlist to play during the
   // active session, the histogram will record the latency.
-  SimulateAudioFocusGainedForSelectedPlaylist(
-      /*focus_gained=*/false, /*id_observed=*/current_request_id);
-  // Update the id for testing once we close the media widget.
-  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/false);
+  SimulateStopPlaying();
 
   selected_playlist.id = "id1";
   sounds_controller->TogglePlaylist(selected_playlist);
-  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/true);
-  current_request_id = controller->GetMediaSessionRequestId();
-  SimulateAudioFocusGainedForSelectedPlaylist(
-      /*focus_gained=*/true,
-      /*id_observed=*/current_request_id);
+  SimulateStartPlaying();
   histogram_tester.ExpectTotalCount(
       focus_mode_histogram_names::kSoundscapeLatencyInMillisecondsHistogramName,
       2);
 
   // Simulate we stop the selected playlist with the soundscape type.
-  SimulateAudioFocusGainedForSelectedPlaylist(
-      /*focus_gained=*/false, /*id_observed=*/current_request_id);
-  // Update the id for testing once we close the media widget.
-  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/false);
+  SimulateStopPlaying();
 
   // 3. Simulate that we select a YouTube Music type of playlist to play during
   // the active session.
   selected_playlist.id = "id2";
   selected_playlist.type = focus_mode_util::SoundType::kYouTubeMusic;
   sounds_controller->TogglePlaylist(selected_playlist);
-  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/true);
-  current_request_id = controller->GetMediaSessionRequestId();
-  SimulateAudioFocusGainedForSelectedPlaylist(
-      /*focus_gained=*/true,
-      /*id_observed=*/current_request_id);
+  SimulateStartPlaying();
   histogram_tester.ExpectTotalCount(
       focus_mode_histogram_names::
           kYouTubeMusicLatencyInMillisecondsHistogramName,
@@ -1096,10 +1101,7 @@ TEST_F(FocusModeControllerMultiUserTest, CheckPlaylistPlayedLatencyHistograms) {
 
   // Simulate we stop the current selected playlist and end the current focus
   // session.
-  SimulateAudioFocusGainedForSelectedPlaylist(
-      /*focus_gained=*/false, /*id_observed=*/current_request_id);
-  // Update the id for testing once we close the media widget.
-  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/false);
+  SimulateStopPlaying();
 
   controller->ToggleFocusMode();
   EXPECT_FALSE(controller->in_focus_session());
@@ -1110,10 +1112,7 @@ TEST_F(FocusModeControllerMultiUserTest, CheckPlaylistPlayedLatencyHistograms) {
   sounds_controller->TogglePlaylist(selected_playlist);
 
   controller->ToggleFocusMode();
-  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/true);
-  current_request_id = controller->GetMediaSessionRequestId();
-  SimulateAudioFocusGainedForSelectedPlaylist(
-      /*focus_gained=*/true, /*id_observed=*/current_request_id);
+  SimulateStartPlaying();
   histogram_tester.ExpectTotalCount(
       focus_mode_histogram_names::
           kYouTubeMusicLatencyInMillisecondsHistogramName,
@@ -1171,6 +1170,66 @@ TEST_F(FocusModeControllerMultiUserTest,
   histogram_tester.ExpectBucketCount(
       /*name=*/focus_mode_histogram_names::kMusicPausedEventsCount,
       /*sample=*/0, /*expected_count=*/1);
+}
+
+TEST_F(FocusModeControllerMultiUserTest, CheckPlaylistChosenHistogram) {
+  base::HistogramTester histogram_tester;
+
+  auto* controller = FocusModeController::Get();
+  auto* sounds_controller = controller->focus_mode_sounds_controller();
+
+  // Create the playlists for two types.
+  using playlist_type = FocusModeSoundsController::Playlist;
+  std::unique_ptr<playlist_type> init_soundscapes[] = {
+      std::make_unique<playlist_type>("id1", "title1", gfx::ImageSkia()),
+      std::make_unique<playlist_type>("id2", "title2", gfx::ImageSkia()),
+      std::make_unique<playlist_type>("id3", "title3", gfx::ImageSkia()),
+      std::make_unique<playlist_type>("id4", "title4", gfx::ImageSkia())};
+  std::vector<std::unique_ptr<playlist_type>> soundscape_list{
+      std::make_move_iterator(std::begin(init_soundscapes)),
+      std::make_move_iterator(std::end(init_soundscapes))};
+  sounds_controller->set_soundscape_playlists_for_testing(
+      std::move(soundscape_list));
+  ASSERT_EQ(sounds_controller->soundscape_playlists().size(), 4u);
+
+  std::unique_ptr<playlist_type> init_youtube_music[] = {
+      std::make_unique<playlist_type>("id1", "title1", gfx::ImageSkia()),
+      std::make_unique<playlist_type>("id2", "title2", gfx::ImageSkia()),
+      std::make_unique<playlist_type>("id3", "title3", gfx::ImageSkia()),
+      std::make_unique<playlist_type>("id4", "title4", gfx::ImageSkia())};
+  std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>
+      youtube_music_list{
+          std::make_move_iterator(std::begin(init_youtube_music)),
+          std::make_move_iterator(std::end(init_youtube_music))};
+  sounds_controller->set_youtube_music_playlists_for_testing(
+      std::move(youtube_music_list));
+  ASSERT_EQ(sounds_controller->youtube_music_playlists().size(), 4u);
+
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+
+  // Simulate we play a soundscape 2 in session.
+  focus_mode_util::SelectedPlaylist selected_playlist;
+  selected_playlist.id = "id2";
+  selected_playlist.type = focus_mode_util::SoundType::kSoundscape;
+  selected_playlist.state = focus_mode_util::SoundState::kNone;
+  sounds_controller->TogglePlaylist(selected_playlist);
+  SimulateStartPlaying();
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kPlaylistChosenHistogram, /*sample=*/
+      focus_mode_histogram_names::FocusModePlaylistChosen::kSoundscapes2,
+      /*expected_count=*/1);
+  SimulateStopPlaying();
+
+  // Simulate we play a YouTube Music 3 in session.
+  selected_playlist.id = "id3";
+  selected_playlist.type = focus_mode_util::SoundType::kYouTubeMusic;
+  sounds_controller->TogglePlaylist(selected_playlist);
+  SimulateStartPlaying();
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kPlaylistChosenHistogram, /*sample=*/
+      focus_mode_histogram_names::FocusModePlaylistChosen::kYouTubeMusic3,
+      /*expected_count=*/1);
 }
 
 }  // namespace ash

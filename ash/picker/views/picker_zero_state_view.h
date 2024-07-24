@@ -28,7 +28,7 @@ class View;
 namespace ash {
 
 class PickerAssetFetcher;
-class PickerClipboardProvider;
+class PickerClipboardHistoryProvider;
 class PickerSearchResult;
 class PickerSectionListView;
 class PickerSectionView;
@@ -96,7 +96,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   std::map<PickerCategoryType, raw_ptr<PickerSectionView>>
       category_section_views_;
 
-  std::unique_ptr<PickerClipboardProvider> clipboard_provider_;
+  std::unique_ptr<PickerClipboardHistoryProvider> clipboard_provider_;
 
   base::WeakPtrFactory<PickerZeroStateView> weak_ptr_factory_{this};
 };

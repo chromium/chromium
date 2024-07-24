@@ -32,8 +32,6 @@ static_library("app_service") {
     "shelf_app_service_app_updater.h",
     "shelf_app_service_promise_app_updater.cc",
     "shelf_app_service_promise_app_updater.h",
-    "shelf_app_service_shortcut_updater.cc",
-    "shelf_app_service_shortcut_updater.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

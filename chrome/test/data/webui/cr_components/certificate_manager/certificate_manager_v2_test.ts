@@ -10,8 +10,9 @@ import 'chrome://certificate-manager/strings.m.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import type {CertificateManagerV2Element} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.js';
 import type {CertManagementMetadata} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
+import type {CertificatePasswordDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_password_dialog.js';
 import {CertificatesV2BrowserProxy} from 'chrome://resources/cr_components/certificate_manager/certificates_v2_browser_proxy.js';
-import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -359,5 +360,96 @@ suite('CertificateManagerV2Test', () => {
     await microtasksFinished();
     assertTrue(
         certManager.$.crsCertSection.classList.contains('iron-selected'));
+  });
+
+  // Tests opening the password dialog through the mojo interface and
+  // retrieving the result of the mojo call, as well as testing that the dialog
+  // is added and removed from the DOM as necessary.
+  test('askForImportPassword ok', async () => {
+    initializeElement();
+    await microtasksFinished();
+
+    const doTest = async (expectedPassword: string) => {
+      // The password dialog should not be present in the DOM initially.
+      assertNull(certManager.shadowRoot!.querySelector('#passwordDialog'));
+
+      const promise = testProxy.callbackRouterRemote.askForImportPassword();
+      await microtasksFinished();
+
+      const passwordDialog =
+          certManager.shadowRoot!
+              .querySelector<CertificatePasswordDialogElement>(
+                  '#passwordDialog');
+      assertTrue(!!passwordDialog);
+      assertTrue(passwordDialog.$.dialog.open);
+      assertEquals('', passwordDialog.$.password.value);
+      passwordDialog.$.password.value = expectedPassword;
+      passwordDialog.$.ok.click();
+
+      assertDeepEquals({password: expectedPassword}, await promise);
+    };
+
+    await doTest('something secret');
+
+    // Try showing the dialog again - the dialog should work multiple times,
+    // and the password field should be cleared (not still containing the value
+    // previously entered).
+    await doTest('something different');
+
+    // The password dialog should no longer be present in the DOM.
+    assertNull(certManager.shadowRoot!.querySelector('#passwordDialog'));
+  });
+
+  // Tests that cancelling the password dialog is signalled through the mojo
+  // interface by returning a null result.
+  test('askForImportPassword cancel', async () => {
+    initializeElement();
+    await microtasksFinished();
+
+    // The password dialog should not be present in the DOM initially.
+    assertNull(certManager.shadowRoot!.querySelector('#passwordDialog'));
+
+    {
+      const promise = testProxy.callbackRouterRemote.askForImportPassword();
+      await microtasksFinished();
+
+      const passwordDialog =
+          certManager.shadowRoot!
+              .querySelector<CertificatePasswordDialogElement>(
+                  '#passwordDialog');
+      assertTrue(!!passwordDialog);
+      assertTrue(passwordDialog.$.dialog.open);
+      assertEquals('', passwordDialog.$.password.value);
+      passwordDialog.$.password.value = 'something secret';
+      passwordDialog.$.cancel.click();
+
+      assertDeepEquals({password: null}, await promise);
+    }
+
+    // The password dialog should no longer be present in the DOM.
+    assertNull(certManager.shadowRoot!.querySelector('#passwordDialog'));
+
+    // Try showing the dialog again - the dialog should work multiple times,
+    // and the password field should be cleared (not still containing the value
+    // previously entered).
+    {
+      const promise = testProxy.callbackRouterRemote.askForImportPassword();
+      await microtasksFinished();
+
+      const passwordDialog =
+          certManager.shadowRoot!
+              .querySelector<CertificatePasswordDialogElement>(
+                  '#passwordDialog');
+      assertTrue(!!passwordDialog);
+      assertTrue(passwordDialog.$.dialog.open);
+      assertEquals('', passwordDialog.$.password.value);
+      passwordDialog.$.password.value = 'something different';
+      passwordDialog.$.ok.click();
+
+      assertDeepEquals({password: 'something different'}, await promise);
+    }
+
+    // The password dialog should no longer be present in the DOM.
+    assertNull(certManager.shadowRoot!.querySelector('#passwordDialog'));
   });
 });

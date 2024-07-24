@@ -195,7 +195,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       StatusCodeCallback callback) override;
   void UnregisterServiceWorker(const GURL& scope,
                                const blink::StorageKey& key,
-                               ResultCallback callback) override;
+                               StatusCodeCallback callback) override;
   void UnregisterServiceWorkerImmediately(const GURL& scope,
                                           const blink::StorageKey& key,
                                           StatusCodeCallback callback) override;
@@ -474,12 +474,13 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
                                     FindRegistrationCallback callback);
 
   // Helper methods for `UnregisterServiceWorker()` and
-  // `UnregisterServiceWorkerImmediately()`. `ResultCallback` provides a boolean
-  // for success while `StatusCodeCallback` additionally provides the
-  // status that was encountered.
+  // `UnregisterServiceWorkerImmediately()`. `callback` provides the status that
+  // was encountered. `blink::ServiceWorkerStatusCode::kOk` means the request to
+  // unregister was sent. It does not mean the worker has been fully
+  // unregistered though.
   void UnregisterServiceWorkerImpl(const GURL& scope,
                                    const blink::StorageKey& key,
-                                   ResultCallback callback);
+                                   StatusCodeCallback callback);
   void UnregisterServiceWorkerImmediatelyImpl(const GURL& scope,
                                               const blink::StorageKey& key,
                                               StatusCodeCallback callback);

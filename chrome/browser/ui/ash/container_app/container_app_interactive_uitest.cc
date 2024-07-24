@@ -323,15 +323,12 @@ class ContainerAppInteractiveUiTestBase
     AppListClientImpl::GetInstance()->UpdateProfile();
 
     // Fetch `device_info` from echo.
-    base::test::TestFuture<
-        base::expected</*oobe_timestamp*/ std::string, /*error=*/std::string>>
-        oobe_timestamp_or_error;
-    chromeos::echo_util::GetOobeTimestamp(
-        oobe_timestamp_or_error.GetCallback());
-    ASSERT_TRUE(oobe_timestamp_or_error.Wait());
-    ASSERT_TRUE(oobe_timestamp_or_error.Get().has_value());
+    base::test::TestFuture<std::optional<base::Time>> oobe_timestamp;
+    chromeos::echo_util::GetOobeTimestamp(oobe_timestamp.GetCallback());
+    ASSERT_TRUE(oobe_timestamp.Wait());
+    ASSERT_TRUE(oobe_timestamp.Get().has_value());
     web_app::DeviceInfo device_info;
-    device_info.oobe_timestamp = oobe_timestamp_or_error.Get().value();
+    device_info.oobe_timestamp = oobe_timestamp.Get().value();
 
     // Cache install info for the container app.
     container_app_install_info_ =

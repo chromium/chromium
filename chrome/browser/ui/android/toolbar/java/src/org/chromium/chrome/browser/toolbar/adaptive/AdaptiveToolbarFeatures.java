@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
@@ -13,8 +14,10 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.HashMap;
+import java.util.List;
 
 /** A utility class for handling feature flags used by {@link AdaptiveToolbarButtonController}. */
 public class AdaptiveToolbarFeatures {
@@ -43,9 +46,6 @@ public class AdaptiveToolbarFeatures {
      * feature config must be ignored (disabled).
      */
     @VisibleForTesting static final int VERSION = 4;
-
-    /** Default value to use in case finch param isn't available for default segment. */
-    private static final String DEFAULT_PARAM_VALUE_DEFAULT_SEGMENT = NEW_TAB;
 
     /** Default minimum width to show the optional button. */
     public static final int DEFAULT_MIN_WIDTH_DP = 360;
@@ -138,10 +138,14 @@ public class AdaptiveToolbarFeatures {
             return Boolean.TRUE.equals(sActionChipOverridesForTesting.get(buttonVariant));
         }
 
-        if (buttonVariant == AdaptiveToolbarButtonVariant.PRICE_TRACKING
-                || buttonVariant == AdaptiveToolbarButtonVariant.READER_MODE) {
-            // Price tracking and reader mode launched with the action chip variant.
-            return true;
+        // Price tracking, price insights and reader mode launched with the action chip variant.
+        switch (buttonVariant) {
+            case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
+            case AdaptiveToolbarButtonVariant.READER_MODE:
+            case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
+                return true;
+            default:
+                break;
         }
 
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
@@ -154,12 +158,14 @@ public class AdaptiveToolbarFeatures {
      */
     public static int getContextualPageActionDelayMs(
             @AdaptiveToolbarButtonVariant int buttonVariant) {
-        if (buttonVariant == AdaptiveToolbarButtonVariant.PRICE_TRACKING) {
-            // Price tracking launched with an action chip delay of 6 seconds.
-            return DEFAULT_PRICE_TRACKING_ACTION_CHIP_DELAY_MS;
-        } else if (buttonVariant == AdaptiveToolbarButtonVariant.READER_MODE) {
-            // Reader mode launched with an action chip delay of 3 seconds.
-            return DEFAULT_READER_MODE_ACTION_CHIP_DELAY_MS;
+        switch (buttonVariant) {
+            case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
+            case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
+                return DEFAULT_PRICE_TRACKING_ACTION_CHIP_DELAY_MS;
+            case AdaptiveToolbarButtonVariant.READER_MODE:
+                return DEFAULT_READER_MODE_ACTION_CHIP_DELAY_MS;
+            default:
+                break;
         }
 
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
@@ -177,11 +183,14 @@ public class AdaptiveToolbarFeatures {
                 && sAlternativeColorOverridesForTesting.containsKey(buttonVariant)) {
             return Boolean.TRUE.equals(sAlternativeColorOverridesForTesting.get(buttonVariant));
         }
-
-        if (buttonVariant == AdaptiveToolbarButtonVariant.PRICE_TRACKING
-                || buttonVariant == AdaptiveToolbarButtonVariant.READER_MODE) {
-            // Price tracking and reader mode launched without using alternative color.
-            return false;
+        // Price tracking, price insights and reader mode launched without using alternative color.
+        switch (buttonVariant) {
+            case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
+            case AdaptiveToolbarButtonVariant.READER_MODE:
+            case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
+                return false;
+            default:
+                break;
         }
 
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
@@ -253,13 +262,37 @@ public class AdaptiveToolbarFeatures {
     }
 
     /**
+     * Returns top choice from segmentation results based on device form-factor.
+     *
+     * @param context @{@link Context} to determine form factor.
+     * @param segmentationResults List of rank-ordered results obtained from segmentation.
+     * @return Top result to use for UI flows.
+     */
+    public static @AdaptiveToolbarButtonVariant int getTopSegmentationResult(
+            Context context, List<Integer> segmentationResults) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+            // Exclude NTB and Bookmarks from segmentation results on tablets since these buttons
+            // are available on top chrome (on tab strip and omnibox).
+            for (int result : segmentationResults) {
+                if (AdaptiveToolbarButtonVariant.NEW_TAB == result
+                        || AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS == result) continue;
+                return result;
+            }
+            return AdaptiveToolbarButtonVariant.UNKNOWN;
+        }
+        return segmentationResults.get(0);
+    }
+
+    /**
      * Returns the default variant to be shown in segmentation experiment when the backend results
      * are unavailable or not configured.
+     *
+     * @param context @{@link Context} to determine form-factor.
      */
-    static @AdaptiveToolbarButtonVariant int getSegmentationDefault() {
+    static @AdaptiveToolbarButtonVariant int getSegmentationDefault(Context context) {
         assert isCustomizationEnabled();
         if (sButtonVariant != null) return sButtonVariant;
-        String defaultSegment = getDefaultSegment();
+        String defaultSegment = getDefaultSegment(context);
         switch (defaultSegment) {
             case NEW_TAB:
                 sButtonVariant = AdaptiveToolbarButtonVariant.NEW_TAB;
@@ -277,15 +310,22 @@ public class AdaptiveToolbarFeatures {
         return sButtonVariant;
     }
 
-    /** Returns the default segment set by the finch experiment. */
-    static String getDefaultSegment() {
+    /**
+     * Returns the default segment set by the finch experiment.
+     *
+     * @param context @{@link Context} to determine form-factor. Defaults defer by form-factor.
+     */
+    static String getDefaultSegment(Context context) {
         if (sDefaultSegmentForTesting != null) return sDefaultSegmentForTesting;
 
         String defaultSegment =
                 ChromeFeatureList.getFieldTrialParamByFeature(
                         ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
                         VARIATION_PARAM_DEFAULT_SEGMENT);
-        if (TextUtils.isEmpty(defaultSegment)) return DEFAULT_PARAM_VALUE_DEFAULT_SEGMENT;
+        // Fallback if default segment is not set in finch.
+        if (TextUtils.isEmpty(defaultSegment)) {
+            return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context) ? SHARE : NEW_TAB;
+        }
         return defaultSegment;
     }
 

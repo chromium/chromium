@@ -1,7 +1,7 @@
 Tests that pausing on uncaught exceptions thrown from C++ bindings will not crash.
 
 Set timer for test function.
-rethrow-error-from-bindings-crash.js:19 Console was cleared
+Console was cleared
 rethrow-error-from-bindings-crash.js:33 Uncaught TypeError: Failed to execute 'compareBoundaryPoints' on 'Range': parameter 2 is not of type 'Range'.
     at f2 (rethrow-error-from-b…ings-crash.js:33:23)
     at testFunction (rethrow-error-from-b…ings-crash.js:23:28)

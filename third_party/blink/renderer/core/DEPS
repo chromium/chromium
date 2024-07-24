@@ -5,6 +5,7 @@ include_rules = [
     "+base/cancelable_callback.h",
     "+base/memory/protected_memory.h",
     "+base/memory/values_equivalent.h",
+    "+base/message_loop/message_pump.h",
     "+base/files/file.h",
     "+base/files/file_path.h",
     "+base/apple/foundation_util.h",

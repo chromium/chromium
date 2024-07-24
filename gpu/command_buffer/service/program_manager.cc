@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
@@ -626,12 +627,12 @@ void Program::UpdateLogInfo() {
     set_log_info(nullptr);
     return;
   }
-  std::unique_ptr<char[]> temp(new char[max_len]);
+  base::HeapArray<char> temp = base::HeapArray<char>::Uninit(max_len);
   GLint len = 0;
-  glGetProgramInfoLog(service_id_, max_len, &len, temp.get());
+  glGetProgramInfoLog(service_id_, max_len, &len, temp.data());
   DCHECK(max_len == 0 || len < max_len);
   DCHECK(len == 0 || temp[len] == '\0');
-  std::string log(temp.get(), len);
+  std::string log(temp.data(), len);
   log = ProcessLogInfo(log);
   set_log_info(log.empty() ? nullptr : log.c_str());
 }
@@ -647,24 +648,25 @@ void Program::Update() {
   glGetProgramiv(service_id_, GL_ACTIVE_ATTRIBUTES, &num_attribs);
   glGetProgramiv(service_id_, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &max_len);
   // TODO(gman): Should we check for error?
-  std::unique_ptr<char[]> name_buffer(new char[max_len]);
+  base::HeapArray<char> name_buffer = base::HeapArray<char>::Uninit(max_len);
   for (GLint ii = 0; ii < num_attribs; ++ii) {
     GLsizei length = 0;
     GLsizei size = 0;
     GLenum type = 0;
-    glGetActiveAttrib(
-        service_id_, ii, max_len, &length, &size, &type, name_buffer.get());
+    glGetActiveAttrib(service_id_, ii, max_len, &length, &size, &type,
+                      name_buffer.data());
     DCHECK(max_len == 0 || length < max_len);
     DCHECK(length == 0 || name_buffer[length] == '\0');
     std::string original_name;
-    GetVertexAttribData(name_buffer.get(), &original_name, &type);
+    GetVertexAttribData(std::string(name_buffer.data(), length), &original_name,
+                        &type);
     base::CheckedNumeric<size_t> location_count = size;
     location_count *= LocationCountForAttribType(type);
     size_t safe_location_count = 0;
     if (!location_count.AssignIfValid(&safe_location_count))
       return;
     GLint location;
-    if (base::StartsWith(name_buffer.get(), "gl_",
+    if (base::StartsWith(base::as_string_view(name_buffer), "gl_",
                          base::CompareCase::SENSITIVE)) {
       // Built-in attributes, for example, gl_VertexID, are still considered
       // as active but their location is -1.
@@ -673,7 +675,7 @@ void Program::Update() {
       location = -1;
     } else {
       // TODO(gman): Should we check for error?
-      location = glGetAttribLocation(service_id_, name_buffer.get());
+      location = glGetAttribLocation(service_id_, name_buffer.data());
       base::CheckedNumeric<size_t> max_location = location;
       max_location += safe_location_count;
       size_t safe_max_location = 0;
@@ -756,7 +758,8 @@ bool Program::UpdateUniforms() {
   glGetProgramiv(service_id_, GL_ACTIVE_UNIFORM_MAX_LENGTH,
                  &name_buffer_length);
   DCHECK(name_buffer_length > 0);
-  std::unique_ptr<char[]> name_buffer(new char[name_buffer_length]);
+  base::HeapArray<char> name_buffer =
+      base::HeapArray<char>::Uninit(name_buffer_length);
 
   size_t unused_client_location_cursor = 0;
 
@@ -765,13 +768,13 @@ bool Program::UpdateUniforms() {
     GLsizei size = 0;
     GLenum type = GL_NONE;
     glGetActiveUniform(service_id_, uniform_index, name_buffer_length,
-                       &name_length, &size, &type, name_buffer.get());
+                       &name_length, &size, &type, name_buffer.data());
     // Avoid immediately crashing if glGetActiveUniform misbehaves.
     if (!size)
       return false;
     DCHECK(name_length < name_buffer_length);
     DCHECK(name_length == 0 || name_buffer[name_length] == '\0');
-    std::string service_name(name_buffer.get(), name_length);
+    std::string service_name(name_buffer.data(), name_length);
 
     GLint service_location = -1;
     // Force builtin uniforms (gl_DepthRange) to have invalid location.

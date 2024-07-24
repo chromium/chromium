@@ -17,6 +17,7 @@ export class TestPowerBookmarksDelegate extends TestBrowserProxy {
       'onBookmarkRemoved',
       'getTrackedProductInfos',
       'getAvailableProductInfos',
+      'getSelectedBookmarks',
       'getProductImageUrl',
     ]);
   }
@@ -62,6 +63,11 @@ export class TestPowerBookmarksDelegate extends TestBrowserProxy {
   getAvailableProductInfos() {
     this.methodCalled('getAvailableProductInfos');
     return new Map<string, BookmarkProductInfo>();
+  }
+
+  getSelectedBookmarks() {
+    this.methodCalled('getSelectedBookmarks');
+    return {};
   }
 
   getProductImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode) {

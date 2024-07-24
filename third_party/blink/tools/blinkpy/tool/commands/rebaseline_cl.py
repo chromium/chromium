@@ -244,7 +244,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 # `TestBaselineSet` later.
                 results = WebTestResults([],
                                          step_name=step,
-                                         builder_name=build.builder_name,
+                                         build=build,
                                          incomplete_reason=incomplete_reason)
                 builds_to_results[build].append(results)
 

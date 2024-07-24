@@ -24,6 +24,17 @@
 // Returns the accessibility identifier for a given toggle type.
 + (NSString*)accessibilityIdentifierForToggleType:(CustomizationToggleType)type;
 
+// Returns the accessibility identifier for the navigable portion of a given
+// toggle type.
++ (NSString*)navigableAccessibilityIdentifierForToggleType:
+    (CustomizationToggleType)type;
+
+// Returns the menu page identifier for a given toggle type.
++ (CustomizationMenuPage)menuPageForToggleType:(CustomizationToggleType)type;
+
+// Returns `YES` if the given type supports navigation to a submenu.
++ (BOOL)doesTypeHaveSubmenu:(CustomizationToggleType)type;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UTILS_HOME_CUSTOMIZATION_HELPER_H_

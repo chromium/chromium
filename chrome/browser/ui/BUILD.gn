@@ -11,7 +11,6 @@ import("//build/config/ui.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
-import("//chromeos/dbus/config/use_real_dbus_clients.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/feed/features.gni")
@@ -81,7 +80,6 @@ static_library("ui") {
     "autofill/payments/credit_card_scanner_view_delegate.h",
     "autofill/payments/payments_ui_constants.h",
     "autofill/payments/view_factory.h",
-    "autofill/popup_constants.h",
     "autofill/popup_controller_common.cc",
     "autofill/popup_controller_common.h",
     "autofill/risk_util.cc",
@@ -420,7 +418,7 @@ static_library("ui") {
   public_deps = [
     # WARNING WARNING WARNING
     # New dependencies outside of //chrome/browser should be added to
-    # ui_public_depedenencies.
+    # ui_public_dependencies.
     # New dependencies inside of //chrome/browser that generate header files
     # should be added to //chrome/browser:browser_generated_files.
     "//chrome/browser:browser_public_dependencies",
@@ -2354,20 +2352,6 @@ static_library("ui") {
       "webui/ash/edu_coexistence/edu_coexistence_login_handler.h",
       "webui/ash/edu_coexistence/edu_coexistence_state_tracker.cc",
       "webui/ash/edu_coexistence/edu_coexistence_state_tracker.h",
-      "webui/ash/emoji/emoji_page_handler.cc",
-      "webui/ash/emoji/emoji_page_handler.h",
-      "webui/ash/emoji/emoji_search_proxy.cc",
-      "webui/ash/emoji/emoji_search_proxy.h",
-      "webui/ash/emoji/emoji_ui.cc",
-      "webui/ash/emoji/emoji_ui.h",
-      "webui/ash/emoji/gif_tenor_api_fetcher.cc",
-      "webui/ash/emoji/gif_tenor_api_fetcher.h",
-      "webui/ash/emoji/new_window_proxy.cc",
-      "webui/ash/emoji/new_window_proxy.h",
-      "webui/ash/emoji/seal.cc",
-      "webui/ash/emoji/seal.h",
-      "webui/ash/emoji/seal_utils.cc",
-      "webui/ash/emoji/seal_utils.h",
       "webui/ash/enterprise_reporting/enterprise_reporting_page_handler.cc",
       "webui/ash/enterprise_reporting/enterprise_reporting_page_handler.h",
       "webui/ash/enterprise_reporting/enterprise_reporting_ui.cc",
@@ -2380,22 +2364,8 @@ static_library("ui") {
       "webui/ash/extended_updates/extended_updates_page_handler.h",
       "webui/ash/extended_updates/extended_updates_ui.cc",
       "webui/ash/extended_updates/extended_updates_ui.h",
-      "webui/ash/healthd_internals/healthd_internals_message_handler.cc",
-      "webui/ash/healthd_internals/healthd_internals_message_handler.h",
-      "webui/ash/healthd_internals/healthd_internals_ui.cc",
-      "webui/ash/healthd_internals/healthd_internals_ui.h",
       "webui/ash/image_source.cc",
       "webui/ash/image_source.h",
-      "webui/ash/in_session_password_change/confirm_password_change_handler.cc",
-      "webui/ash/in_session_password_change/confirm_password_change_handler.h",
-      "webui/ash/in_session_password_change/password_change_dialogs.cc",
-      "webui/ash/in_session_password_change/password_change_dialogs.h",
-      "webui/ash/in_session_password_change/password_change_handler.cc",
-      "webui/ash/in_session_password_change/password_change_handler.h",
-      "webui/ash/in_session_password_change/password_change_ui.cc",
-      "webui/ash/in_session_password_change/password_change_ui.h",
-      "webui/ash/in_session_password_change/urgent_password_expiry_notification_handler.cc",
-      "webui/ash/in_session_password_change/urgent_password_expiry_notification_handler.h",
       "webui/ash/internet_config_dialog.cc",
       "webui/ash/internet_config_dialog.h",
       "webui/ash/internet_detail_dialog.cc",
@@ -2625,18 +2595,6 @@ static_library("ui") {
       "webui/ash/login/welcome_screen_handler.h",
       "webui/ash/login/wrong_hwid_screen_handler.cc",
       "webui/ash/login/wrong_hwid_screen_handler.h",
-      "webui/ash/mako/mako_bubble_coordinator.cc",
-      "webui/ash/mako/mako_bubble_coordinator.h",
-      "webui/ash/mako/mako_bubble_event_handler.cc",
-      "webui/ash/mako/mako_bubble_event_handler.h",
-      "webui/ash/mako/mako_consent_view.cc",
-      "webui/ash/mako/mako_consent_view.h",
-      "webui/ash/mako/mako_rewrite_view.cc",
-      "webui/ash/mako/mako_rewrite_view.h",
-      "webui/ash/mako/mako_ui.cc",
-      "webui/ash/mako/mako_ui.h",
-      "webui/ash/mako/url_constants.cc",
-      "webui/ash/mako/url_constants.h",
       "webui/ash/manage_mirrorsync/manage_mirrorsync_dialog.cc",
       "webui/ash/manage_mirrorsync/manage_mirrorsync_dialog.h",
       "webui/ash/manage_mirrorsync/manage_mirrorsync_page_handler.cc",
@@ -2690,8 +2648,6 @@ static_library("ui") {
       "webui/ash/remote_maintenance_curtain_ui.h",
       "webui/ash/sanitize_dialog.cc",
       "webui/ash/sanitize_dialog.h",
-      "webui/ash/scalable_iph/scalable_iph_debug_ui.cc",
-      "webui/ash/scalable_iph/scalable_iph_debug_ui.h",
       "webui/ash/sensor_info/sensor_info_ui.cc",
       "webui/ash/sensor_info/sensor_info_ui.h",
       "webui/ash/sensor_info/sensor_page_handler.cc",
@@ -3152,6 +3108,8 @@ static_library("ui") {
       "//chrome/browser/ash/policy/handlers",
       "//chrome/browser/ash/policy/remote_commands",
       "//chrome/browser/ash/policy/reporting/metrics_reporting",
+      "//chrome/browser/ash/policy/skyvault",
+      "//chrome/browser/ash/policy/status_collector",
       "//chrome/browser/ash/power",
       "//chrome/browser/ash/power/ml",
       "//chrome/browser/ash/printing",
@@ -3226,7 +3184,9 @@ static_library("ui") {
       "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/ash/user_education",
       "//chrome/browser/ui/quick_answers",
+      "//chrome/browser/ui/webui/ash/emoji",
       "//chrome/browser/ui/webui/ash/sys_internals",
+      "//chrome/browser/ui/webui/ash/vc_tray_tester",
       "//chrome/browser/web_applications",
       "//chrome/browser/webshare:storage",
       "//chrome/services/file_util/public/cpp",
@@ -3541,6 +3501,8 @@ static_library("ui") {
       "//chrome/browser/ash/policy/external_data/handlers",
       "//chrome/browser/ash/policy/handlers",
       "//chrome/browser/ash/policy/remote_commands",
+      "//chrome/browser/ash/policy/skyvault",
+      "//chrome/browser/ash/policy/status_collector",
       "//chrome/browser/ash/power",
       "//chrome/browser/ash/power/ml",
       "//chrome/browser/ash/printing",
@@ -3589,6 +3551,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/ash/user_education",
+      "//chrome/browser/ui/webui/ash/emoji",
     ]
 
     if (is_chrome_branded) {
@@ -3600,14 +3563,6 @@ static_library("ui") {
     }
 
     if (!is_official_build) {
-      if (!use_real_dbus_clients) {
-        sources += [
-          "webui/ash/emulator/device_emulator_message_handler.cc",
-          "webui/ash/emulator/device_emulator_message_handler.h",
-          "webui/ash/emulator/device_emulator_ui.cc",
-          "webui/ash/emulator/device_emulator_ui.h",
-        ]
-      }
       deps += [ "//ash/webui/sample_system_web_app_ui" ]
     }
   }
@@ -3688,7 +3643,7 @@ static_library("ui") {
       "//chromeos/strings",
       "//chromeos/version",
       "//components/account_manager_core:account_manager_core",
-      "//components/enterprise/data_controls/core",
+      "//components/enterprise/data_controls/core/browser",
       "//components/metrics/structured:structured_events",
       "//ui/chromeos/styles:cros_styles_views",
       "//ui/chromeos/styles:cros_tokens_color_mappings",
@@ -4713,8 +4668,6 @@ static_library("ui") {
       "views/autofill/payments/payments_window_user_consent_dialog_view.h",
       "views/autofill/payments/promo_code_label_button.cc",
       "views/autofill/payments/promo_code_label_button.h",
-      "views/autofill/payments/promo_code_label_view.cc",
-      "views/autofill/payments/promo_code_label_view.h",
       "views/autofill/payments/save_card_and_virtual_card_enroll_confirmation_bubble_views.cc",
       "views/autofill/payments/save_card_and_virtual_card_enroll_confirmation_bubble_views.h",
       "views/autofill/payments/save_card_bubble_views.cc",
@@ -4903,6 +4856,10 @@ static_library("ui") {
       "views/device_chooser_content_view.h",
       "views/devtools_process_observer.cc",
       "views/devtools_process_observer.h",
+      "views/digital_credentials/digital_identity_bluetooth_manual_dialog_controller.cc",
+      "views/digital_credentials/digital_identity_bluetooth_manual_dialog_controller.h",
+      "views/digital_credentials/digital_identity_multi_step_dialog.cc",
+      "views/digital_credentials/digital_identity_multi_step_dialog.h",
       "views/digital_credentials/digital_identity_safety_interstitial_controller_desktop.cc",
       "views/digital_credentials/digital_identity_safety_interstitial_controller_desktop.h",
       "views/dotted_icon.cc",
@@ -6656,6 +6613,10 @@ static_library("ui") {
       "//components/compose/core/browser",
       "//components/compose/core/browser:mojo_bindings",
     ]
+  }
+
+  if (!is_chromeos && enable_reporting) {
+    deps += [ "//components/tpcd/enterprise_reporting" ]
   }
 }
 

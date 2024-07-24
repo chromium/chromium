@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("exclusive_access") {
@@ -54,8 +56,6 @@ source_set("exclusive_access") {
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/strings:components_strings",
     "//components/strings:components_strings_grit",
-    "//extensions/browser",
-    "//extensions/common",
     "//services/metrics/public/cpp:gen_ukm_builders",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
@@ -63,4 +63,10 @@ source_set("exclusive_access") {
     "//ui/display",
     "//ui/events:events_base",
   ]
+  if (enable_extensions) {
+    deps += [
+      "//extensions/browser",
+      "//extensions/common",
+    ]
+  }
 }

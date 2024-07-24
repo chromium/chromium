@@ -134,7 +134,7 @@ class InvalidationListenerImplTest : public testing::Test {
 
   void SetUp() override {
     ON_CALL(mock_instance_id__driver_,
-            GetInstanceID(InvalidationListener::app_id_))
+            GetInstanceID(InvalidationListener::kFmAppId))
         .WillByDefault(Return(&mock_instance_id_));
   }
   void TearDown() override {}
@@ -277,7 +277,7 @@ TEST_F(InvalidationListenerImplTest,
   message_for_fake_observer.data["payload"] = kMessagePayload;
   message_for_fake_observer.data["issue_timestamp_ms"] =
       base::NumberToString(kMessageIssueTimeDeltaSinceEpoch.InMilliseconds());
-  listener.OnMessage(InvalidationListener::app_id_, message_for_fake_observer);
+  listener.OnMessage(InvalidationListener::kFmAppId, message_for_fake_observer);
   // Setting up another message not intended for `observer`, to check that
   // `InvalidationListener` correctly redirects cached messages.
   gcm::IncomingMessage message_not_for_fake_observer;
@@ -285,7 +285,7 @@ TEST_F(InvalidationListenerImplTest,
   message_not_for_fake_observer.data["payload"] = kMessagePayload;
   message_not_for_fake_observer.data["issue_timestamp_ms"] =
       base::NumberToString(kMessageIssueTimeDeltaSinceEpoch.InMilliseconds());
-  listener.OnMessage(InvalidationListener::app_id_,
+  listener.OnMessage(InvalidationListener::kFmAppId,
                      message_not_for_fake_observer);
 
   listener.AddObserver(&observer);
@@ -311,7 +311,7 @@ TEST_F(InvalidationListenerImplTest,
   message_for_fake_observer.data["payload"] = kMessagePayload;
   message_for_fake_observer.data["issue_timestamp_ms"] =
       base::NumberToString(kMessageIssueTimeDeltaSinceEpoch.InMilliseconds());
-  listener.OnMessage(InvalidationListener::app_id_, message_for_fake_observer);
+  listener.OnMessage(InvalidationListener::kFmAppId, message_for_fake_observer);
   // Setting up another message not intended for `observer`, to check that
   // `InvalidationListener` correctly redirects incoming messages.
   gcm::IncomingMessage message_for_another_observer;
@@ -319,7 +319,7 @@ TEST_F(InvalidationListenerImplTest,
   message_for_another_observer.data["payload"] = kMessagePayload;
   message_for_another_observer.data["issue_timestamp_ms"] =
       base::NumberToString(kMessageIssueTimeDeltaSinceEpoch.InMilliseconds());
-  listener.OnMessage(InvalidationListener::app_id_,
+  listener.OnMessage(InvalidationListener::kFmAppId,
                      message_for_another_observer);
 
   EXPECT_EQ(
@@ -340,7 +340,7 @@ TEST_F(InvalidationListenerImplTest, ListenerProperlyCleansUpCachedMessages) {
   message_for_fake_observer.data["payload"] = kMessagePayload;
   message_for_fake_observer.data["issue_timestamp_ms"] =
       base::NumberToString(kMessageIssueTimeDeltaSinceEpoch.InMilliseconds());
-  listener.OnMessage(InvalidationListener::app_id_, message_for_fake_observer);
+  listener.OnMessage(InvalidationListener::kFmAppId, message_for_fake_observer);
   listener.AddObserver(&observer);
   EXPECT_EQ(
       observer.CountSpecificInvalidation(

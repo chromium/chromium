@@ -462,38 +462,22 @@ BASE_FEATURE(kVariableRefreshRateAvailable,
 BASE_FEATURE(kEnableVariableRefreshRate,
              "EnableVariableRefreshRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kVariableRefreshRateDefaultEnabled,
-             "VariableRefreshRateDefaultEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// This param indicates whether to ignore the VRR availability flag. It is set
-// to false by Finch for non-forced groups.
-const base::FeatureParam<bool> kVrrIgnoreAvailability{
-    &kEnableVariableRefreshRate, /*name=*/"ignore-availability",
-    /*default_value=*/true};
 bool IsVariableRefreshRateEnabled() {
   if (base::FeatureList::IsEnabled(kEnableVariableRefreshRateAlwaysOn)) {
     return true;
   }
 
-  // Special default case for devices with |kVariableRefreshRateDefaultEnabled|
-  // set. Requires |kVariableRefreshRateAvailable| to also be set. We also check
-  // if the FeatureList exists as it can be null during the ASSERT_DEATH
-  // handling.
-  // TODO(b/310666603): Remove after VRR is enabled-by-default for all hardware.
+  // Special default case for devices with inverted default behavior, indicated
+  // by |kVariableRefreshRateAvailable|. If |kEnableVariableRefreshRate| is not
+  // overridden, then VRR is enabled by default.
   if (!(base::FeatureList::GetInstance() &&
         base::FeatureList::GetInstance()->IsFeatureOverridden(
             kEnableVariableRefreshRate.name)) &&
-      base::FeatureList::IsEnabled(kVariableRefreshRateDefaultEnabled) &&
       base::FeatureList::IsEnabled(kVariableRefreshRateAvailable)) {
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(kEnableVariableRefreshRate)) {
-    return kVrrIgnoreAvailability.Get() ||
-           base::FeatureList::IsEnabled(kVariableRefreshRateAvailable);
-  }
-
-  return false;
+  return base::FeatureList::IsEnabled(kEnableVariableRefreshRate);
 }
 BASE_FEATURE(kEnableVariableRefreshRateAlwaysOn,
              "EnableVariableRefreshRateAlwaysOn",

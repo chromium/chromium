@@ -53,6 +53,8 @@ public class AdaptiveToolbarButtonController
                 ButtonDataObserver,
                 SharedPreferences.OnSharedPreferenceChangeListener,
                 ConfigurationChangedObserver {
+
+    private final Context mContext;
     private ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
     @Nullable private ButtonDataProvider mSingleProvider;
 
@@ -106,6 +108,7 @@ public class AdaptiveToolbarButtonController
             AdaptiveButtonActionMenuCoordinator menuCoordinator,
             AndroidPermissionDelegate androidPermissionDelegate,
             SharedPreferencesManager sharedPreferencesManager) {
+        mContext = context;
         mMenuClickListener =
                 id -> {
                     if (id == R.id.customize_adaptive_button_menu_id) {
@@ -275,13 +278,13 @@ public class AdaptiveToolbarButtonController
         assert mAdaptiveToolbarStatePredictor == null;
         profile = profile.getOriginalProfile();
         mAdaptiveToolbarStatePredictor =
-                new AdaptiveToolbarStatePredictor(profile, mAndroidPermissionDelegate);
+                new AdaptiveToolbarStatePredictor(mContext, profile, mAndroidPermissionDelegate);
         ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
         if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) return;
         mAdaptiveToolbarStatePredictor.recomputeUiState(mUiStateCallback);
         AdaptiveToolbarStats.recordSelectedSegmentFromSegmentationPlatformAsync(
-                mAdaptiveToolbarStatePredictor);
+                mContext, mAdaptiveToolbarStatePredictor);
         // We need the menu handler only if the customization feature is on.
         if (mMenuHandler != null) return;
         mMenuHandler = createMenuHandler();

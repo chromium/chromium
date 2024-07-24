@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/content_settings/content_settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
@@ -54,7 +55,11 @@ TEST_F(ContentSettingsTableViewControllerTest,
   } else {
     ASSERT_EQ(1, NumberOfSections());
   }
-  ASSERT_EQ(5, NumberOfItemsInSection(0));
+  if (base::FeatureList::IsEnabled(web::features::kEnableMeasurements)) {
+    ASSERT_EQ(5, NumberOfItemsInSection(0));
+  } else {
+    ASSERT_EQ(4, NumberOfItemsInSection(0));
+  }
   CheckDetailItemTextWithIds(IDS_IOS_BLOCK_POPUPS, IDS_IOS_SETTING_ON, 0, 0);
 }
 

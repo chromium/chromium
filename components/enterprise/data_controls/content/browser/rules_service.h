@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_CONTENT_BROWSER_RULES_SERVICE_H_
 #define COMPONENTS_ENTERPRISE_DATA_CONTROLS_CONTENT_BROWSER_RULES_SERVICE_H_
 
-#include "components/enterprise/data_controls/core/rule.h"
-#include "components/enterprise/data_controls/core/verdict.h"
+#include "components/enterprise/data_controls/core/browser/rule.h"
+#include "components/enterprise/data_controls/core/browser/verdict.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"

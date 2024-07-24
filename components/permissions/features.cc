@@ -119,7 +119,7 @@ BASE_FEATURE(kPermissionDedicatedCpssSettingAndroid,
 // an expiration date set.
 BASE_FEATURE(kRecordPermissionExpirationTimestamps,
              "RecordPermissionExpirationTimestamps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #else
 

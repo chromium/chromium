@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_BASE_ASH_INTERACTIVE_CELLULAR_CELLULAR_UTIL_H_
 #define CHROME_TEST_BASE_ASH_INTERACTIVE_CELLULAR_CELLULAR_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -37,6 +38,14 @@ class SimInfo {
   explicit SimInfo(unsigned int id);
   ~SimInfo();
 
+  // Connects to the cellular network corresponding to the eSIM profile matching
+  // the properties of this class.
+  void Connect() const;
+
+  // Disconnects from the cellular network corresponding to the eSIM profile
+  // matching the properties of this class.
+  void Disconnect() const;
+
   const std::string& guid() const { return name_; }
   const std::string& profile_path() const { return profile_path_; }
   const std::string& iccid() const { return iccid_; }
@@ -44,6 +53,7 @@ class SimInfo {
   const std::string& nickname() const { return nickname_; }
   const std::string& service_provider() const { return service_provider_; }
   const std::string& service_path() const { return service_path_; }
+  const std::string& activation_code() const { return activation_code_; }
 
  private:
   const std::string guid_;
@@ -53,7 +63,13 @@ class SimInfo {
   const std::string nickname_;
   const std::string service_provider_;
   const std::string service_path_;
+  std::string activation_code_;
 };
+
+// Helper function to configure an eSIM profile and corresponding Shill service.
+void ConfigureEsimProfile(const EuiccInfo& euicc_info,
+                          const SimInfo& esim_info,
+                          bool connected);
 
 }  // namespace ash
 

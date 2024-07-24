@@ -185,8 +185,7 @@ void TranslateInternalsHandler::OnRemovePrefItem(
     if (!args[2].is_string())
       return;
     const std::string& from = args[1].GetString();
-    const std::string& to = args[2].GetString();
-    translate_prefs->RemoveLanguagePairFromAlwaysTranslateList(from, to);
+    translate_prefs->RemoveLanguagePairFromAlwaysTranslateList(from);
   } else {
     return;
   }

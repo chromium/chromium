@@ -1581,8 +1581,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogApplicationStartMetrics) {
 
   // Add values to always translate language, never translate language, and
   // never translate site.
-  translate_prefs->AddLanguagePairToAlwaysTranslateList("es", "x");
-  translate_prefs->AddLanguagePairToAlwaysTranslateList("de", "x");
+  translate_prefs->AddLanguagePairToAlwaysTranslateList("es", "en");
+  translate_prefs->AddLanguagePairToAlwaysTranslateList("de", "en");
 
   translate_prefs->BlockLanguage("en");
   translate_prefs->BlockLanguage("fr");

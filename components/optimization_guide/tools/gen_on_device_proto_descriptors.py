@@ -191,6 +191,7 @@ def GenerateProtoDescriptors(out, includes: set[str], messages: KnownMessages,
 
     out.write(
         '#include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"\n'  # pylint: disable=line-too-long
+        '#include "components/optimization_guide/core/optimization_guide_util.h"\n'  # pylint: disable=line-too-long
     )
     out.write('\n')
 
@@ -209,6 +210,7 @@ def GenerateProtoDescriptors(out, includes: set[str], messages: KnownMessages,
     out.write('}  // namespace\n\n')
     _GetProtoValue.GenPublic(out)
     _GetProtoRepeated.GenPublic(out)
+    _GetProtoFromAny.GenPublic(out, readable_messages)
     _SetProtoValue.GenPublic(out)
     _NestedMessageIteratorGet.GenPublic(out, readable_messages)
     _ConvertValue.GenPublic(out, writable_messages)
@@ -299,6 +301,37 @@ class _GetProtoValue:
                 raise Error()
             out.write('return value;\n')
         out.write('}\n')  # End case
+
+
+class _GetProtoFromAny:
+    """Namespace class for GetProtoFromAny method builders."""
+
+    @classmethod
+    def GenPublic(cls, out, messages: list[Message]):
+        out.write("""
+          std::unique_ptr<google::protobuf::MessageLite> GetProtoFromAny(
+              const proto::Any& msg) {
+        """)
+
+        for msg in messages:
+            cls._IfMsg(out, msg)
+        out.write('return nullptr;\n')
+        out.write('}\n\n')  # End function
+
+    @classmethod
+    def _IfMsg(cls, out, msg: Message):
+        out.write(f"""if (msg.type_url() ==
+                    "type.googleapis.com/{msg.type_name}") {{
+            """)
+        out.write(
+            f'auto casted_msg = ParsedAnyMetadata<{msg.cpp_name}>(msg);\n')
+        out.write("""
+            std::unique_ptr<google::protobuf::MessageLite> copy(
+                casted_msg->New());\n
+        """)
+        out.write('copy->CheckTypeAndMergeFrom(*casted_msg);\n')
+        out.write('return copy;\n')
+        out.write('}\n\n')  # End if statement
 
 
 class _NestedMessageIteratorGet:

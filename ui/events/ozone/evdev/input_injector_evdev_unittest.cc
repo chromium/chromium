@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ozone/device/device_manager.h"
@@ -46,8 +47,9 @@ class EventObserver {
 
 MATCHER_P4(MatchesMouseEvent, type, button, x, y, "") {
   if (arg->type() != type) {
-    *result_listener << "Expected type: " << type << " actual: " << arg->type()
-                     << " (" << arg->GetName() << ")";
+    *result_listener << "Expected type: " << base::to_underlying(type)
+                     << " actual: " << base::to_underlying(arg->type()) << " ("
+                     << arg->GetName() << ")";
     return false;
   }
   if (button == EF_LEFT_MOUSE_BUTTON && !arg->IsLeftMouseButton()) {

@@ -257,6 +257,7 @@ struct HistoryGraph: View {
         }
       }
     )
+    .edgesIgnoringSafeArea(.all)
   }
 
   /// Updates the selected data when the given `location` is selected inside the given

@@ -124,6 +124,14 @@ void NativeThemeFluent::PaintScrollbarThumb(
   }
 }
 
+gfx::Insets NativeThemeFluent::GetScrollbarSolidColorThumbInsets(
+    Part part) const {
+  // TODO(crbug.com/40213017): We should probably move the thumb rect insetting
+  // logic from blink::ScrollbarThemeFluent::ThumbRect() to here, to make sure
+  // the web UI and the native UI use the same thumb insetting logic.
+  return gfx::Insets();
+}
+
 SkColor4f NativeThemeFluent::GetScrollbarThumbColor(
     const ui::ColorProvider& color_provider,
     State state,

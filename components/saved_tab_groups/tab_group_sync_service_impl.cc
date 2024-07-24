@@ -271,6 +271,12 @@ void TabGroupSyncServiceImpl::OnTabSelected(const LocalTabGroupID& group_id,
   LogEvent(TabGroupEvent::kTabSelected, group_id, tab_id);
 }
 
+void TabGroupSyncServiceImpl::MakeTabGroupShared(
+    const LocalTabGroupID& local_group_id,
+    std::string_view collaboration_id) {
+  model_->MakeTabGroupShared(local_group_id, std::string(collaboration_id));
+}
+
 std::vector<SavedTabGroup> TabGroupSyncServiceImpl::GetAllGroups() {
   VLOG(2) << __func__;
   std::vector<SavedTabGroup> non_empty_groups;

@@ -61,11 +61,6 @@ class CORE_EXPORT ScrollbarTheme {
 
   virtual void UpdateEnabledState(const Scrollbar&) {}
 
-  // |context|'s current space is the space of the scrollbar's FrameRect().
-  void Paint(const Scrollbar&,
-             GraphicsContext& context,
-             const gfx::Vector2d& paint_offset);
-
   ScrollbarPart HitTestRootFramePosition(const Scrollbar&,
                                          const gfx::Point&) const;
 
@@ -158,8 +153,7 @@ class CORE_EXPORT ScrollbarTheme {
   virtual int TrackPosition(const Scrollbar&) const;
   // The length of the track along the axis of the scrollbar.
   virtual int TrackLength(const Scrollbar&) const;
-  // The opacity to be applied to the scrollbar. A theme overriding Opacity()
-  // should also override PaintThumbWithOpacity().
+  // The opacity to be applied to the scrollbar.
   virtual float Opacity(const Scrollbar&) const { return 1.0f; }
 
   // Whether the native theme of the OS has scrollbar buttons.
@@ -214,6 +208,9 @@ class CORE_EXPORT ScrollbarTheme {
 
   virtual bool UsesNinePatchThumbResource() const { return false; }
   virtual bool UsesSolidColorThumb() const { return false; }
+  virtual gfx::Insets SolidColorThumbInsets(const Scrollbar& scrollbar) const {
+    NOTREACHED_NORETURN();
+  }
   virtual bool UsesNinePatchTrackAndButtonsResource() const { return false; }
 
   // For a nine-patch scrollbar, this defines the painting canvas size which the
@@ -266,16 +263,6 @@ class CORE_EXPORT ScrollbarTheme {
   virtual void PaintTrackAndButtons(GraphicsContext& context,
                                     const Scrollbar&,
                                     const gfx::Rect&);
-
-  // Paint the thumb with Opacity() applied.
-  virtual void PaintThumbWithOpacity(GraphicsContext& context,
-                                     const Scrollbar& scrollbar,
-                                     const gfx::Rect& rect) {
-    // By default this method just calls PaintThumb(). A theme with custom
-    // Opacity() should override this method to apply the opacity.
-    DCHECK_EQ(1.0f, Opacity(scrollbar));
-    PaintThumb(context, scrollbar, rect);
-  }
 
  protected:
   // For GetTheme().

@@ -108,10 +108,8 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
   // All other user types do not have user policy.
   const AccountId& account_id = user->GetAccountId();
   if (user->GetType() != user_manager::UserType::kChild &&
-      signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-          account_id.GetUserEmail()) ==
-          signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
-              kKnownNonEnterprise) {
+      !signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+          account_id.GetUserEmail())) {
     DLOG(WARNING) << "No policy loaded for known non-enterprise user";
     // Mark this profile as not requiring policy.
     known_user.SetProfileRequiresPolicy(
@@ -265,9 +263,8 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
       ash::CrosSettings::Get()->IsUserAllowlisted(
           account_id.GetUserEmail(), &wildcard_match, user->GetType()) &&
       wildcard_match &&
-      signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-          account_id.GetUserEmail()) ==
-          signin::AccountManagedStatusFinder::EmailEnterpriseStatus::kUnknown) {
+      signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+          account_id.GetUserEmail())) {
     manager->EnableWildcardLoginCheck(account_id.GetUserEmail());
   }
 

@@ -271,14 +271,14 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 - (void)copyUserDisplayName {
   UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
   generalPasteboard.string = self.credential.userDisplayName;
-  // TODO(crbug.com/330355124): Add UMA metric.
+  UpdateUMACountForKey(app_group::kCredentialExtensionCopyUserDisplayNameCount);
 }
 
 // Copy creation date to clipboard.
 - (void)copyCreationDate {
   UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
   generalPasteboard.string = [self creationDate];
-  // TODO(crbug.com/330355124): Add UMA metric.
+  UpdateUMACountForKey(app_group::kCredentialExtensionCopyCreationDateCount);
 }
 
 // Copy password to clipboard.

@@ -207,39 +207,6 @@ try_.builder(
 )
 
 blink_mac_builder(
-    name = "mac10.15-blink-rel",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    builder_config_settings = builder_config.try_settings(
-        retry_failed_shards = True,
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "remoteexec",
-            "chrome_with_codecs",
-            "minimal_symbols",
-            "mac",
-            "x64",
-        ],
-    ),
-    cores = None,
-    cpu = cpu.ARM64,
-)
-
-blink_mac_builder(
     name = "mac11.0-blink-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

@@ -100,10 +100,6 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="org.chromium.components.background_task_scheduler.BackgroundTaskJobService"
-                 android:exported="false"
-                 android:permission="android.permission.BIND_JOB_SERVICE"/>
-
         <service android:name="org.chromium.chrome.browser.crash.ChromeMinidumpUploadJobService"
                  android:permission="android.permission.BIND_JOB_SERVICE"
                  android:exported="false"/>

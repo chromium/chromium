@@ -70,6 +70,7 @@ source_set("ui") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/credential_provider_extension:metrics_util",
+    "//ios/chrome/credential_provider_extension:passkey_util",
     "//ios/chrome/credential_provider_extension:password_spec_fetcher_buildflags",
     "//ios/chrome/credential_provider_extension:password_util",
     "//ios/chrome/credential_provider_extension:reauthentication_handler",

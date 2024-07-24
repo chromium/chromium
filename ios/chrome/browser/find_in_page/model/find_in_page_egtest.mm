@@ -54,6 +54,8 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 #pragma mark - FindInPageTestCaseHelperDelegate
 
 - (void)openFindInPageWithOverflowMenu {
+  GREYAssertFalse([EarlGrey isKeyboardShownWithError:nil],
+                  @"Keyboard Should be Hidden");
   [ChromeEarlGreyUI openToolsMenu];
 
   id<GREYMatcher> tableViewMatcher =

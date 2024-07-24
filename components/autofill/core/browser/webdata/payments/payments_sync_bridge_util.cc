@@ -868,7 +868,8 @@ void PopulateWalletTypesFromSyncData(
     std::vector<PaymentsCustomerData>& customer_data,
     std::vector<CreditCardCloudTokenData>& cloud_token_data,
     std::vector<BankAccount>& bank_accounts,
-    std::vector<CreditCardBenefit>& benefits) {
+    std::vector<CreditCardBenefit>& benefits,
+    std::vector<sync_pb::PaymentInstrument>& payment_instruments) {
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     DCHECK(change->data().specifics.has_autofill_wallet());
 
@@ -913,6 +914,13 @@ void PopulateWalletTypesFromSyncData(
                    sync_pb::PaymentInstrument::InstrumentDetailsCase::kIban) {
           wallet_ibans.push_back(
               IbanFromSpecifics(autofill_specifics.payment_instrument()));
+        } else if (autofill_specifics.payment_instrument()
+                           .instrument_details_case() ==
+                       sync_pb::PaymentInstrument::InstrumentDetailsCase::
+                           kEwalletDetails &&
+                   IsEwalletAccountSupported()) {
+          payment_instruments.push_back(
+              autofill_specifics.payment_instrument());
         }
         break;
       // This entry is deprecated and not supported anymore.
@@ -1052,6 +1060,14 @@ bool AreMaskedBankAccountSupported() {
 #if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(
       features::kAutofillEnableSyncingOfPixBankAccounts);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+bool IsEwalletAccountSupported() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(features::kAutofillSyncEwalletAccounts);
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)

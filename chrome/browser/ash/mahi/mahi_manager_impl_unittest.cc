@@ -200,6 +200,60 @@ TEST_F(MahiManagerImplTest, NoSummaryCallWhenSummaryIsInCache) {
   EXPECT_EQ(summary.value(), new_summary);
 }
 
+TEST_F(MahiManagerImplTest, ClearAllCacheWhenAllHistoryAreBeingCleared) {
+  // No cache yet.
+  EXPECT_EQ(GetCacheManager()->size(), 0);
+
+  RequestSummary();
+
+  // Summary is saved in the cache.
+  EXPECT_EQ(GetCacheManager()->size(), 1);
+
+  mahi_manager_impl_->OnHistoryDeletions(
+      nullptr, history::DeletionInfo::ForAllHistory());
+
+  // Cache should be empty
+  EXPECT_EQ(GetCacheManager()->size(), 0);
+}
+
+TEST_F(MahiManagerImplTest, ClearURLs) {
+  // No cache yet.
+  EXPECT_EQ(GetCacheManager()->size(), 0);
+
+  RequestSummary();
+
+  // Summary is saved in the cache.
+  EXPECT_EQ(GetCacheManager()->size(), 1);
+
+  // Try to delete URLs that aren't in the cache.
+  {
+    const auto kUrl1 = GURL("http://www.a.com");
+    const auto kUrl2 = GURL("http://www.b.com");
+    history::URLRows urls_to_delete = {history::URLRow(kUrl1),
+                                       history::URLRow(kUrl2)};
+    history::DeletionInfo deletion_info =
+        history::DeletionInfo::ForUrls(urls_to_delete, std::set<GURL>());
+    mahi_manager_impl_->OnHistoryDeletions(nullptr, deletion_info);
+
+    // Cache size doesn't change.
+    EXPECT_EQ(GetCacheManager()->size(), 1);
+  }
+
+  // List of URLs contains a URL that is in the cache.
+  {
+    const auto kUrl1 = GURL("http://www.a.com");
+    const auto kUrl2 = GURL("http://url1.com/abc#should_delete");
+    history::URLRows urls_to_delete = {history::URLRow(kUrl1),
+                                       history::URLRow(kUrl2)};
+    history::DeletionInfo deletion_info =
+        history::DeletionInfo::ForUrls(urls_to_delete, std::set<GURL>());
+    mahi_manager_impl_->OnHistoryDeletions(nullptr, deletion_info);
+
+    // The URL should be deleted from the cache.
+    EXPECT_EQ(GetCacheManager()->size(), 0);
+  }
+}
+
 TEST_F(MahiManagerImplTest, TurnOffSettingsClearCache) {
   // No cache yet.
   EXPECT_EQ(GetCacheManager()->size(), 0);

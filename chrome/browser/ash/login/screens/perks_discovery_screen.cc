@@ -15,6 +15,8 @@
 namespace ash {
 namespace {
 
+constexpr const char kUserActionLoaded[] = "loaded";
+
 std::vector<SinglePerkDiscoveryPayload> ParsePayload(
     const growth::Payload* payload) {
   std::vector<SinglePerkDiscoveryPayload> perks_result;
@@ -77,6 +79,8 @@ std::string PerksDiscoveryScreen::GetResultString(Result result) {
       return "Next";
     case Result::kError:
       return "Error";
+    case Result::kTimeout:
+      return "Timeout";
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
@@ -148,6 +152,9 @@ void PerksDiscoveryScreen::ShowImpl() {
 
   view_->Show();
 
+  timeout_overview_timer_.Start(FROM_HERE, delay_exit_timeout_, this,
+                                &PerksDiscoveryScreen::ExitScreenTimeout);
+
   auto* campaigns_manager = growth::CampaignsManager::Get();
   if (!campaigns_manager) {
     LOG(ERROR) << "CampaignsManager object is null. Failed to retrieve "
@@ -162,8 +169,33 @@ void PerksDiscoveryScreen::ShowImpl() {
 
 void PerksDiscoveryScreen::HideImpl() {}
 
+void PerksDiscoveryScreen::ExitScreenTimeout() {
+  exit_callback_.Run(Result::kTimeout);
+}
+
+void PerksDiscoveryScreen::ShowOverviewStep() {
+  if (view_) {
+    view_->SetOverviewStep();
+  }
+}
+
 void PerksDiscoveryScreen::OnUserAction(const base::Value::List& args) {
-  NOTIMPLEMENTED();
+  const std::string& action_id = args[0].GetString();
+
+  if (action_id == kUserActionLoaded) {
+    if (!timeout_overview_timer_.IsRunning()) {
+      LOG(WARNING) << "Perks discovery screen finished loading after timeout";
+      return;
+    }
+    timeout_overview_timer_.Stop();
+    // Add a slight delay before showing the overview to avoid a jarring
+    // transition if the loading step finishes too quickly.
+    delay_overview_timer_.Start(FROM_HERE, delay_overview_step_, this,
+                                &PerksDiscoveryScreen::ShowOverviewStep);
+    return;
+  }
+
+  BaseScreen::OnUserAction(args);
 }
 
 }  // namespace ash

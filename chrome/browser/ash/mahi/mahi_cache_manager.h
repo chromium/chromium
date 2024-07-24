@@ -81,6 +81,10 @@ class MahiCacheManager {
   // Clears the cache.
   void ClearCache();
 
+  // Delete the page cache for a given url. Does nothing if the url doesn't
+  // exist in the cache.
+  void DeleteCacheForUrl(const std::string& url);
+
   // Gets size of the cache.
   int size() { return page_cache_.size(); }
 

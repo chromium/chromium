@@ -20,9 +20,6 @@ class WebContents;
 
 namespace autofill {
 
-class PromoCodeLabelButton;
-class PromoCodeLabelView;
-
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kOfferNotificationBubbleElementId);
 
 // This class implements the Desktop bubble that displays any eligible offers or
@@ -50,25 +47,8 @@ class OfferNotificationBubbleViews : public AutofillLocationBarBubble {
       ReshowOfferNotificationBubble_OfferDeletedBetweenShows);
   FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
                            ShowGPayPromoCodeBubble);
-  FRIEND_TEST_ALL_PREFIXES(
-      OfferNotificationBubbleViewsInteractiveUiTest,
-      ShowGPayPromoCodeOffer_WhenGPayPromoCodeOfferAndShoppingServiceOfferAreBothAvailable);
-  FRIEND_TEST_ALL_PREFIXES(
-      OfferNotificationBubbleViewsInteractiveUiTest,
-      ShowShoppingServiceFreeListingOffer_RecordHistoryClusterUsageRelatedMetrics);
-  FRIEND_TEST_ALL_PREFIXES(
-      OfferNotificationBubbleViewsInteractiveUiTest,
-      ShowShoppingServiceFreeListingOffer_WhenGPayPromoCodeOfferNotAvailable);
   FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
                            TooltipAndAccessibleName);
-  FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
-                           ShowTermsAndConditionsPage);
-  FRIEND_TEST_ALL_PREFIXES(
-      OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest,
-      RecordHistoryClusterUsageRelatedMetrics);
-  FRIEND_TEST_ALL_PREFIXES(
-      OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest,
-      ShowShoppingServiceFreeListingOffer_WhenNavigatedFromChromeHistoryCluster);
 
   // AutofillBubbleBase:
   void Hide() override;
@@ -81,32 +61,11 @@ class OfferNotificationBubbleViews : public AutofillLocationBarBubble {
   void OnWidgetDestroying(views::Widget* widget) override;
 
   void InitWithCardLinkedOfferContent();
-  void InitWithFreeListingCouponOfferContent();
   void InitWithGPayPromoCodeOfferContent();
-
-  // Called when the promo code LabelButton is clicked for a promo code offer.
-  // Copies the promo code to the clipboard and updates the button tooltip.
-  void OnPromoCodeButtonClicked();
 
   // Called when the See Details link of the value prop text is clicked.
   // Browser will switch to a new tab with the offer details url.
   void OnPromoCodeSeeDetailsClicked();
-
-  void UpdateButtonTooltipsAndAccessibleNames();
-
-  void OpenTermsAndConditionsPage(AutofillOfferData offer,
-                                  std::string seller_domain);
-
-  std::unique_ptr<views::View> CreateFreeListingCouponOfferMainPageHeaderView();
-  std::unique_ptr<views::View> CreateFreeListingCouponOfferMainPageTitleView(
-      const AutofillOfferData& offer);
-  std::unique_ptr<views::View> CreateFreeListingCouponOfferMainPageContent(
-      const AutofillOfferData& offer,
-      const std::string& seller_domain);
-  void OpenFreeListingCouponOfferMainPage(AutofillOfferData offer,
-                                          std::string seller_domain);
-
-  void ResetPointersToFreeListingCouponOfferMainPageContent();
 
   raw_ptr<OfferNotificationBubbleController> controller_;
 
@@ -114,15 +73,6 @@ class OfferNotificationBubbleViews : public AutofillLocationBarBubble {
   raw_ptr<views::StyledLabel> promo_code_label_ = nullptr;
 
   raw_ptr<views::Label> instructions_label_ = nullptr;
-
-  // Used in tests for FreeListing offers.
-  raw_ptr<PromoCodeLabelButton> promo_code_label_button_ = nullptr;
-  raw_ptr<PromoCodeLabelView> promo_code_label_view_ = nullptr;
-  raw_ptr<views::StyledLabel> promo_code_value_prop_label_ = nullptr;
-
-  raw_ptr<PageSwitcherView> free_listing_coupon_page_container_ = nullptr;
-
-  base::WeakPtrFactory<OfferNotificationBubbleViews> weak_factory_{this};
 };
 
 }  // namespace autofill

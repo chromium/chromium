@@ -765,11 +765,8 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::NONE);
 
-  EXPECT_EQ(false,
-            content::EvalJs(
-                GetFrame(),
-                "document.requestStorageAccess().then(() => true, () => false)",
-                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()",
+                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
 
   content::FetchHistogramsFromChildProcesses();
@@ -2120,11 +2117,8 @@ IN_PROC_BROWSER_TEST_F(
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::DENY_ALL);
 
-  EXPECT_EQ(false,
-            content::EvalJs(
-                GetFrame(),
-                "document.requestStorageAccess().then(() => true, () => false)",
-                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()",
+                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
 
   content::FetchHistogramsFromChildProcesses();

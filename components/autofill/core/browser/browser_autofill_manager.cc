@@ -675,25 +675,16 @@ BrowserAutofillManager::~BrowserAutofillManager() {
                               has_observed_one_time_code_field_);
   }
 
-  // Process log events and record into UKM when the form is destroyed or
-  // removed.
+  // Process log events and record into UKM when the FormStructure is destroyed.
   for (const auto& [form_id, form_structure] : form_structures()) {
     ProcessFieldLogEventsInForm(*form_structure);
   }
+  FlushPendingLogQualityAndVotesUploadCallbacks();
 
   single_field_form_fill_router_->CancelPendingQueries();
 
   address_form_event_logger_->OnDestroyed();
   credit_card_form_event_logger_->OnDestroyed();
-
-  // We don't flush the `queued_vote_uploads_` here because that would trigger
-  // network requests in the AutofillCrowdsourcingManager, which are managed
-  // with by SimpleURLLoaders owned by the AutofillCrowdsourcingManager.
-  // Destroying the BrowserAutofillManager destroys the
-  // AutofillCrowdsourcingManager and its SimpleURLLoaders, which would
-  // immediately cancel the uploads. As a consequence of this, votes are lost if
-  // the user generates blur votes and closes the tab before the votes are sent
-  // (due to a navigation).
 }
 
 base::WeakPtr<AutofillManager> BrowserAutofillManager::GetWeakPtr() {
@@ -1709,17 +1700,11 @@ void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
   credit_card_form_event_logger_->LogDeprecatedCreditCardSelectedMetric(
       credit_card_, *form_structure, signin_state_for_metrics_);
 
-  credit_card_form_ = form;
-  credit_card_field_ = field;
-
-  // CreditCardAccessManager::FetchCreditCard() will trigger
-  // OnCreditCardFetched() in this class after successfully fetching the
-  // card.
-  fetched_credit_card_trigger_source_ = trigger_details.trigger_source;
   GetCreditCardAccessManager().FetchCreditCard(
       &credit_card_,
       base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), form, field,
+                     trigger_details.trigger_source));
 }
 
 void BrowserAutofillManager::FillOrPreviewProfileForm(
@@ -1846,16 +1831,8 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
                                   /*is_refill=*/false);
 }
 
-void BrowserAutofillManager::OnFocusOnNonFormFieldImpl(
-    bool had_interacted_form) {
+void BrowserAutofillManager::OnFocusOnNonFormFieldImpl() {
   // TODO(crbug.com/349982907): This function is not called on iOS.
-
-  // For historical reasons, Chrome takes action on this message only if focus
-  // was previously on a form with which the user had interacted.
-  // TODO(crbug.com/40726656): Remove need for this short-circuit.
-  if (!had_interacted_form) {
-    return;
-  }
 
   ProcessPendingFormForUpload();
 
@@ -2204,6 +2181,9 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
 }
 
 void BrowserAutofillManager::OnCreditCardFetched(
+    const FormData& form,
+    const FormFieldData& field,
+    AutofillTriggerSource fetched_credit_card_trigger_source,
     CreditCardFetchResult result,
     const CreditCard* credit_card) {
   if (result != CreditCardFetchResult::kSuccess) {
@@ -2217,16 +2197,14 @@ void BrowserAutofillManager::OnCreditCardFetched(
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(credit_card_form_, credit_card_field_,
-                             &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
     return;
   }
 
   FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, credit_card_form_, credit_card_field_,
-      *credit_card, credit_card->cvc(),
-      {.trigger_source = fetched_credit_card_trigger_source_.value_or(
-           AutofillTriggerSource::kCreditCardCvcPopup)});
+      mojom::ActionPersistence::kFill, form, field, *credit_card,
+      credit_card->cvc(),
+      {.trigger_source = fetched_credit_card_trigger_source});
 }
 
 void BrowserAutofillManager::OnDidEndTextFieldEditingImpl() {
@@ -2424,33 +2402,35 @@ void BrowserAutofillManager::OnSubmissionFieldTypesDetermined(
                            submission_time, observed_submission, source_id);
 }
 
-void BrowserAutofillManager::Reset() {
-  // Process log events and record into UKM when the form is destroyed or
-  // removed.
+// Some members are intentionally not recreated or reset here:
+// - `vote_upload_task_runner_`
+// - `weak_ptr_factory_` is used for vote uploading (but also in other cases)
+// TODO: crbug.com/354649269 - Several other members aren't recreated or reset
+// either, which is probably a bug.
+void BrowserAutofillManager::ResetImpl() {
+  // Process log events and record into UKM when the FormStructure is destroyed.
   for (const auto& [form_id, form_structure] : form_structures()) {
     ProcessFieldLogEventsInForm(*form_structure);
   }
-
-  // Note that upload_request_ is not reset here because the prompt to
-  // save a card is shown after page navigation.
   ProcessPendingFormForUpload();
   FlushPendingLogQualityAndVotesUploadCallbacks();
+
   DCHECK(!pending_form_data_);
   // `credit_card_access_manager_` needs to be reset before resetting
   // `credit_card_form_event_logger_`, since it keeps a raw pointer to it.
   credit_card_access_manager_.reset();
   // {address, credit_card}_form_event_logger_ need to be reset before
-  // AutofillManager::Reset() because ~FormEventLoggerBase() uses
+  // AutofillManager::ResetImpl() because ~FormEventLoggerBase() uses
   // form_interactions_ukm_logger_ that is created and assigned in
-  // AutofillManager::Reset(). The new form_interactions_ukm_logger_ instance
-  // is needed for constructing the new *form_event_logger_ instances which is
-  // why calling AutofillManager::Reset() after constructing *form_event_logger_
-  // instances is not an option.
+  // AutofillManager::ResetImpl(). The new form_interactions_ukm_logger_
+  // instance is needed for constructing the new *form_event_logger_ instances
+  // which is why calling AutofillManager::ResetImpl() after constructing
+  // *form_event_logger_ instances is not an option.
   address_form_event_logger_->OnDestroyed();
   address_form_event_logger_.reset();
   credit_card_form_event_logger_->OnDestroyed();
   credit_card_form_event_logger_.reset();
-  AutofillManager::Reset();
+  AutofillManager::ResetImpl();
   address_form_event_logger_ =
       std::make_unique<autofill_metrics::AddressFormEventLogger>(
           driver().IsInAnyMainFrame(), form_interactions_ukm_logger(),
@@ -2467,11 +2447,8 @@ void BrowserAutofillManager::Reset() {
   has_logged_autofill_enabled_ = false;
   user_did_type_ = false;
   credit_card_ = CreditCard();
-  credit_card_form_ = FormData();
-  credit_card_field_ = FormFieldData();
   last_unlocked_credit_card_cvc_.clear();
   initial_interaction_timestamp_ = base::TimeTicks();
-  fetched_credit_card_trigger_source_ = std::nullopt;
   if (touch_to_fill_delegate_) {
     touch_to_fill_delegate_->Reset();
   }

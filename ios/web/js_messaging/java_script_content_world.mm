@@ -11,6 +11,7 @@
 #import "base/debug/crash_logging.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web/javascript_flags.h"
 #import "ios/web/js_messaging/web_view_web_state_map.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/content_world.h"
@@ -21,6 +22,11 @@
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "net/base/apple/url_conversions.h"
+
+#if BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
+#import "base/command_line.h"
+#import "ios/web/switches.h"
+#endif
 
 namespace web {
 
@@ -60,6 +66,54 @@ JavaScriptContentWorld::JavaScriptContentWorld(BrowserState* browser_state,
       content_world_(content_world),
       weak_factory_(this) {
   DCHECK(content_world_);
+
+#if BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    int num_flags_enabled = 0;
+    bool disable_all_scripts =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            web::switches::kDisableAllInjectedScripts);
+    if (disable_all_scripts) {
+      num_flags_enabled++;
+      LOG(WARNING) << "\n\n###########\nFlag set: "
+                   << web::switches::kDisableAllInjectedScripts
+                   << "\n###########\n\n";
+    }
+
+    bool disable_feature_scripts =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            web::switches::kDisableInjectedFeatureScripts);
+    if (disable_feature_scripts) {
+      num_flags_enabled++;
+      LOG(WARNING) << "\n\n###########\nFlag set: "
+                   << web::switches::kDisableInjectedFeatureScripts
+                   << "\n###########\n\n";
+    }
+
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            web::switches::kDisableListedScripts)) {
+      num_flags_enabled++;
+      LOG(WARNING) << "\n\n###########\nFlag set: "
+                   << web::switches::kDisableListedScripts
+                   << "\n###########\n\n";
+    }
+
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            web::switches::kEnableListedScripts)) {
+      num_flags_enabled++;
+      LOG(WARNING) << "\n\n###########\nFlag set: "
+                   << web::switches::kEnableListedScripts
+                   << "\n###########\n\n";
+    }
+
+    if (num_flags_enabled > 1) {
+      LOG(ERROR) << "Multiple JavaScript flags set, results undefined. Ensure "
+                    "only one is set and re-run.";
+      abort();
+    }
+  });
+#endif
 }
 
 WKContentWorld* JavaScriptContentWorld::GetWKContentWorld() {

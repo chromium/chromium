@@ -80,6 +80,11 @@ const std::map<uint32_t, std::string> kPlaneRequiredPropertyNames = {
     {kRotationPropId, "rotation"},
 };
 
+const std::map<uint32_t, std::string> kPlaneOptionalPropertyNames = {
+    {kColorEncodingPropId, "COLOR_ENCODING"},
+    {kColorRangePropId, "COLOR_RANGE"},
+};
+
 template <class T>
 uint32_t GetNextId(const std::vector<T>& collection, uint32_t base) {
   uint32_t max = 0;
@@ -180,6 +185,8 @@ void FakeDrmDevice::ResetStateWithAllProperties() {
                                    kCrtcOptionalPropertyNames.end());
   drm_state_.property_names.insert(kConnectorOptionalPropertyNames.begin(),
                                    kConnectorOptionalPropertyNames.end());
+  drm_state_.property_names.insert(kPlaneOptionalPropertyNames.begin(),
+                                   kPlaneOptionalPropertyNames.end());
 }
 
 FakeDrmDevice::FakeDrmState& FakeDrmDevice::ResetStateWithDefaultObjects(
@@ -649,8 +656,13 @@ ScopedDrmPropertyPtr FakeDrmDevice::GetProperty(uint32_t id) const {
   ScopedDrmPropertyPtr property(DrmAllocator<drmModePropertyRes>());
   property->prop_id = id;
   strcpy(property->name, it->second.c_str());
-  if (IsPropertyValueBlob(property->prop_id))
+
+  if (IsPropertyValueBlob(property->prop_id)) {
     property->flags = DRM_MODE_PROP_BLOB;
+  } else if (IsPropertyValueEnum(property->prop_id)) {
+    FillPossibleValuesForEnumProperty(property.get());
+    property->flags = DRM_MODE_PROP_ENUM;
+  }
 
   return property;
 }
@@ -940,6 +952,35 @@ void FakeDrmDevice::AddProperty(uint32_t object_id,
   DCHECK(!IsInitialized());
   UpdateProperty(object_id, property.id, property.value,
                  /*add_property_if_needed=*/true);
+}
+
+void FakeDrmDevice::SetPossibleValuesForEnumProperty(
+    uint32_t property_id,
+    std::vector<std::pair<uint64_t /* value */, std::string /* name */>>
+        values) {
+  DCHECK(!IsInitialized());
+  DCHECK(!values.empty());
+  drm_state_.enum_values[property_id] = std::move(values);
+}
+
+bool FakeDrmDevice::IsPropertyValueEnum(uint32_t prop_id) const {
+  return drm_state_.enum_values.find(prop_id) != drm_state_.enum_values.end();
+}
+
+void FakeDrmDevice::FillPossibleValuesForEnumProperty(
+    drmModePropertyRes* property) const {
+  DCHECK(IsPropertyValueEnum(property->prop_id));
+
+  const std::vector<std::pair<uint64_t, std::string>>& enum_values =
+      drm_state_.enum_values.find(property->prop_id)->second;
+
+  property->count_enums = enum_values.size();
+  property->enums = DrmAllocator<drm_mode_property_enum>(enum_values.size());
+
+  for (size_t i = 0; i < enum_values.size(); i++) {
+    property->enums[i].value = enum_values[i].first;
+    strcpy(property->enums[i].name, enum_values[i].second.c_str());
+  }
 }
 
 bool FakeDrmDevice::UpdateProperty(uint32_t id,

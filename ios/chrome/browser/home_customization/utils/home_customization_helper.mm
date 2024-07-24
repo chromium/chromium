@@ -55,4 +55,32 @@
   }
 }
 
++ (NSString*)navigableAccessibilityIdentifierForToggleType:
+    (CustomizationToggleType)type {
+  switch (type) {
+    case CustomizationToggleType::kMostVisited:
+      return kCustomizationToggleMostVisitedNavigableIdentifier;
+    case CustomizationToggleType::kMagicStack:
+      return kCustomizationToggleMagicStackNavigableIdentifier;
+    case CustomizationToggleType::kDiscover:
+      return kCustomizationToggleDiscoverNavigableIdentifier;
+  }
+}
+
++ (CustomizationMenuPage)menuPageForToggleType:(CustomizationToggleType)type {
+  switch (type) {
+    case CustomizationToggleType::kMagicStack:
+      return CustomizationMenuPage::kMagicStack;
+    case CustomizationToggleType::kDiscover:
+      return CustomizationMenuPage::kDiscover;
+    default:
+      return CustomizationMenuPage::kUnknown;
+  }
+}
+
++ (BOOL)doesTypeHaveSubmenu:(CustomizationToggleType)type {
+  return [HomeCustomizationHelper menuPageForToggleType:type] !=
+         CustomizationMenuPage::kUnknown;
+}
+
 @end

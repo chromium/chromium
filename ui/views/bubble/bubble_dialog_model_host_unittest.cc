@@ -13,6 +13,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
@@ -177,6 +178,29 @@ TEST_F(BubbleDialogModelHostTest,
             ui::DialogButton::DIALOG_BUTTON_CANCEL);
   EXPECT_EQ(host->GetInitiallyFocusedView()->GetProperty(kElementIdentifierKey),
             kFocusedField);
+}
+
+TEST_F(BubbleDialogModelHostTest, SetCustomInitiallyFocusedView) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCustomFieldId);
+
+  std::unique_ptr<View> container = Builder<View>().Build();
+  std::unique_ptr<Textfield> textfield_unique = Builder<Textfield>().Build();
+  raw_ptr<View> textfield = textfield_unique.get();
+  container->AddChildView(std::move(textfield_unique));
+
+  auto host = std::make_unique<BubbleDialogModelHost>(
+      ui::DialogModel::Builder()
+          .AddCustomField(
+              std::make_unique<views::BubbleDialogModelHost::CustomView>(
+                  std::move(container),
+                  views::BubbleDialogModelHost::FieldType::kControl, textfield),
+              kCustomFieldId)
+          .SetInitiallyFocusedField(kCustomFieldId)
+          .Build(),
+      /*anchor_view=*/nullptr, BubbleBorder::Arrow::TOP_RIGHT);
+
+  EXPECT_EQ(host->GetInitiallyFocusedView(), textfield);
+  textfield = nullptr;
 }
 
 TEST_F(BubbleDialogModelHostTest, SetEnabledButtons) {

@@ -7,6 +7,8 @@
 
 #include <map>
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -28,7 +30,7 @@ class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager,
 
   // ChromeBrowserStateManager:
   ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() override;
-  ChromeBrowserState* GetBrowserStateByName(const std::string& name) override;
+  ChromeBrowserState* GetBrowserStateByName(std::string_view name) override;
   ChromeBrowserState* GetBrowserStateByPath(
       const base::FilePath& path) override;
   BrowserStateInfoCache* GetBrowserStateInfoCache() override;

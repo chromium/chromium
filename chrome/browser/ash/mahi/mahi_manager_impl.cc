@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -489,8 +490,8 @@ void MahiManagerImpl::SetMediaAppPDFFocused() {
 
   // Fits the media app page info into a MahiPageInfoPtr.
   // Particularly, makes up a GURL with the file name.
-  // TODO(b:338140794): Two file with the same name can hit the same cache. Need
-  // to find a way to fix this.
+  // TODO(b:338140794): Two file with the same name can hit the same cache.
+  // Need to find a way to fix this.
   current_page_info_ = crosapi::mojom::MahiPageInfo::New(
       media_app_client_id_,
       /*page_id=*/media_app_client_id_,
@@ -544,6 +545,20 @@ void MahiManagerImpl::NotifyRefreshAvailability(bool available) {
   }
 }
 
+void MahiManagerImpl::OnHistoryDeletions(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  // If IsAllHistory() returns true, all URLs are deleted and `deleted_rows()`
+  //  and `favicon_urls()` are undefined.
+  if (deletion_info.IsAllHistory()) {
+    cache_manager_->ClearCache();
+  } else {
+    for (const auto& row : deletion_info.deleted_rows()) {
+      cache_manager_->DeleteCacheForUrl(row.url().spec());
+    }
+  }
+}
+
 void MahiManagerImpl::OnHMREnabledUpdated(bool enabled) {
   if (enabled) {
     return;
@@ -569,7 +584,22 @@ bool MahiManagerImpl::MaybeInitializeAndDiscardPendingRequests() {
     weak_ptr_factory_for_requests_.InvalidateWeakPtrs();
   }
 
+  MaybeObserveHistoryService();
+
   return mahi_provider_ && mahi_browser_delegate_ash_;
+}
+
+void MahiManagerImpl::MaybeObserveHistoryService() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile) {
+    return;
+  }
+
+  history::HistoryService* service =
+      HistoryServiceFactory::GetForProfileWithoutCreating(profile);
+  if (service && !scoped_history_service_observer_.IsObserving()) {
+    scoped_history_service_observer_.Observe(service);
+  }
 }
 
 void MahiManagerImpl::InterrputRequestHandlingWithDisclaimerView(
@@ -735,7 +765,7 @@ void MahiManagerImpl::OnMahiProviderQAResponse(
   base::UmaHistogramEnumeration(kMahiResponseStatus, latest_response_status_);
 }
 
-// ScopedMahiBrowserDelegateOverrider ------------------------------------------
+// ScopedMahiBrowserDelegateOverrider----------------------------------------
 
 ScopedMahiBrowserDelegateOverrider::ScopedMahiBrowserDelegateOverrider(
     MahiBrowserDelegateAsh* delegate) {

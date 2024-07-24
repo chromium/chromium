@@ -23,6 +23,12 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
       delete;
   ~MockAutofillManagerObserver() override;
 
+  MOCK_METHOD(void,
+              OnAutofillManagerStateChanged,
+              (AutofillManager&,
+               AutofillManager::LifecycleState,
+               AutofillManager::LifecycleState),
+              (override));
   MOCK_METHOD(void, OnAutofillManagerDestroyed, (AutofillManager&), (override));
   MOCK_METHOD(void, OnAutofillManagerReset, (AutofillManager&), (override));
 

@@ -192,13 +192,12 @@ TEST(SharedBufferTest, FlatData) {
     EXPECT_EQ(shared_buffer->size(), flat_buffer.size());
     size_t offset = 0;
     for (const auto& span : *shared_buffer) {
-      EXPECT_EQ(memcmp(span.data(), flat_buffer.Data() + offset, span.size()),
-                0);
+      EXPECT_EQ(span, base::span(flat_buffer).subspan(offset, span.size()));
       offset += span.size();
 
       // If the SharedBuffer is not segmented, FlatData doesn't copy any data.
       EXPECT_EQ(span.size() == flat_buffer.size(),
-                span.data() == flat_buffer.Data());
+                span.data() == flat_buffer.data());
     }
   };
 

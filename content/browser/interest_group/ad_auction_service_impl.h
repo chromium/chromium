@@ -28,7 +28,7 @@
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
@@ -42,10 +42,11 @@
 namespace content {
 
 class InterestGroupManagerImpl;
-struct BiddingAndAuctionServerKey;
+class PrivateAggregationManager;
+class ReconnectableURLLoaderFactory;
 class RenderFrameHost;
 class RenderFrameHostImpl;
-class PrivateAggregationManager;
+struct BiddingAndAuctionServerKey;
 
 // Implements the AdAuctionService service called by Blink code.
 class CONTENT_EXPORT AdAuctionServiceImpl final
@@ -95,7 +96,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                   const blink::AuctionConfig& config,
                   FinalizeAdCallback callback) override;
 
-  scoped_refptr<network::WrapperSharedURLLoaderFactory>
+  scoped_refptr<network::SharedURLLoaderFactory>
   GetRefCountedTrustedURLLoaderFactory();
 
   // AuctionWorkletManager::Delegate implementation:
@@ -197,6 +198,9 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
   url::Origin GetTopWindowOrigin() const;
 
+  void CreateUnderlyingTrustedURLLoaderFactory(
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory);
+
   AdAuctionPageData* GetAdAuctionPageData();
 
   // To avoid race conditions associated with top frame navigations (mentioned
@@ -206,12 +210,12 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   const GURL main_frame_url_;
 
   mojo::Remote<network::mojom::URLLoaderFactory> frame_url_loader_factory_;
-  mojo::Remote<network::mojom::URLLoaderFactory> trusted_url_loader_factory_;
 
-  // Ref counted wrapper of `trusted_url_loader_factory_`. This will be used for
-  // reporting requests, which might happen after the frame is destroyed, when
-  // `trusted_url_loader_factory_` no longer being available.
-  scoped_refptr<network::WrapperSharedURLLoaderFactory>
+  // A URLLoaderFactory connecting to the underlying factory created by
+  // CreateUnderlyingTrustedURLLoaderFactory(), with reconnecting support. This
+  // can be used for reporting requests, which might happen after the frame is
+  // destroyed.
+  scoped_refptr<ReconnectableURLLoaderFactory>
       ref_counted_trusted_url_loader_factory_;
 
   // This must be before `auctions_`, since auctions may own references to

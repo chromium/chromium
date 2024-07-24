@@ -556,7 +556,6 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
 
  private:
   bool IsOverlayCandidate() const final { return true; }
-  bool HasGpuMailbox() const;
   const gpu::SyncToken GetSyncTokenWithOptionalVerification(
       bool needs_verified_token) override;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()

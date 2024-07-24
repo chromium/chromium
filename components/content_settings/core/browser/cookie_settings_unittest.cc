@@ -268,8 +268,7 @@ class CookieSettingsTest : public CookieSettingsTestBase,
  public:
   CookieSettingsTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        privacy_sandbox::kTrackingProtectionContentSettingFor3pcb,
-        privacy_sandbox::kTrackingProtectionSettingsLaunch};
+        privacy_sandbox::kTrackingProtectionContentSettingFor3pcb};
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (IsIndexedContentSettingsEnabled()) {

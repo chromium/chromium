@@ -58,7 +58,7 @@ class ScrollableAreaStub : public GarbageCollected<ScrollableAreaStub>,
   }
 
   gfx::Vector2d ScrollOffsetInt() const override {
-    return gfx::ToFlooredVector2d(scroll_offset_);
+    return SnapScrollOffsetToPhysicalPixels(scroll_offset_);
   }
   ScrollOffset GetScrollOffset() const override { return scroll_offset_; }
   gfx::Vector2d MinimumScrollOffsetInt() const override {

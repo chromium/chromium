@@ -29,31 +29,6 @@ void EsimInteractiveUiTestBase::SetUpOnMainThread() {
                                   euicc_info_.eid(),
                                   /*is_active=*/true,
                                   /*physical_slot=*/0);
-
-  auto* hermes_euicc_client = HermesEuiccClient::Get()->GetTestInterface();
-  DCHECK(hermes_euicc_client);
-
-  hermes_euicc_client->AddCarrierProfile(
-      dbus::ObjectPath(esim_info_.profile_path()),
-      dbus::ObjectPath(euicc_info_.path()), esim_info_.iccid(),
-      esim_info_.name(), esim_info_.nickname(), esim_info_.service_provider(),
-      hermes_euicc_client->GenerateFakeActivationCode(),
-      /*network_service_path=*/esim_info_.service_path(),
-      /*state=*/hermes::profile::State::kActive,
-      /*profile_class=*/hermes::profile::ProfileClass::kOperational,
-      /*add_carrier_profile_behavior=*/
-      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
-          kAddProfileWithService);
-
-  ShillServiceClient::Get()->Connect(
-      dbus::ObjectPath(esim_info_.service_path()), base::DoNothing(),
-      base::DoNothing());
-}
-
-void EsimInteractiveUiTestBase::DisconnectEsimService() {
-  ShillServiceClient::Get()->Disconnect(
-      dbus::ObjectPath(esim_info_.service_path()), base::DoNothing(),
-      base::DoNothing());
 }
 
 }  // namespace ash

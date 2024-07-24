@@ -378,7 +378,7 @@ void CreditCard::SetNetworkForMaskedCard(std::string_view network) {
 }
 
 AutofillMetadata CreditCard::GetMetadata() const {
-  AutofillMetadata metadata = AutofillDataModel::GetMetadata();
+  AutofillMetadata metadata(*this);
   metadata.id = (record_type_ == RecordType::kLocalCard ? guid() : server_id_);
   metadata.billing_address_id = billing_address_id_;
   return metadata;
@@ -414,16 +414,14 @@ bool CreditCard::SetMetadata(const AutofillMetadata& metadata) {
       (record_type_ == RecordType::kLocalCard ? guid() : server_id_)) {
     return false;
   }
-
-  if (!AutofillDataModel::SetMetadata(metadata))
-    return false;
-
+  set_use_count(metadata.use_count);
+  set_use_date(metadata.use_date);
   billing_address_id_ = metadata.billing_address_id;
   return true;
 }
 
 bool CreditCard::IsDeletable() const {
-  return AutofillDataModel::IsDeletable() &&
+  return IsAutofillEntryWithUseDateDeletable(use_date()) &&
          IsExpired(AutofillClock::Now() - kDisusedDataModelDeletionTimeDelta);
 }
 

@@ -24,7 +24,8 @@ impl {{name}} {
             #[allow(unreachable_patterns)]
             Self::r#{{field.name}} => Ok(()),
 {%-   endfor %}
-            _ => Err(bindings::ValidationError::UnknownEnumValue),
+            _ => Err(bindings::ValidationError::new(
+                bindings::ValidationErrorKind::UnknownEnumValue)),
         }
 {%- endif %}
     }

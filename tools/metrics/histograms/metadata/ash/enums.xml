@@ -1218,6 +1218,18 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2" label="Feature pod"/>
 </enum>
 
+<enum name="FocusModePlaylistChosen">
+  <int value="0" label="None"/>
+  <int value="1" label="Soundscapes 1"/>
+  <int value="2" label="Soundscapes 2"/>
+  <int value="3" label="Soundscapes 3"/>
+  <int value="4" label="Soundscapes 4"/>
+  <int value="5" label="YouTube Music 1"/>
+  <int value="6" label="YouTube Music 2"/>
+  <int value="7" label="YouTube Music 3"/>
+  <int value="8" label="YouTube Music 4"/>
+</enum>
+
 <enum name="FocusModeStartedWithTaskState">
   <int value="0" label="Newly selected task"/>
   <int value="1" label="Previously selected task"/>

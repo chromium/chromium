@@ -310,6 +310,8 @@ component("capture_lib") {
       "video/chromeos/camera_hal_dispatcher_impl.h",
       "video/chromeos/camera_metadata_utils.cc",
       "video/chromeos/camera_metadata_utils.h",
+      "video/chromeos/camera_sw_privacy_switch_state_observer.cc",
+      "video/chromeos/camera_sw_privacy_switch_state_observer.h",
       "video/chromeos/camera_trace_utils.cc",
       "video/chromeos/camera_trace_utils.h",
       "video/chromeos/capture_metadata_dispatcher.h",

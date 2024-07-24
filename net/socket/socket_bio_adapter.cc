@@ -211,10 +211,11 @@ void SocketBIOAdapter::OnSocketReadIfReadyComplete(int result) {
   delegate_->OnReadReady();
 }
 
-int SocketBIOAdapter::BIOWrite(const char* in, int len) {
+int SocketBIOAdapter::BIOWrite(base::span<const uint8_t> in) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (len <= 0)
-    return len;
+  if (in.empty()) {
+    return 0;
+  }
 
   // If the write buffer is not empty, there must be a pending Write() to flush
   // it.
@@ -243,32 +244,35 @@ int SocketBIOAdapter::BIOWrite(const char* in, int len) {
 
   // If there is space after the offset, fill it.
   if (write_buffer_used_ < write_buffer_->RemainingCapacity()) {
-    int chunk =
-        std::min(write_buffer_->RemainingCapacity() - write_buffer_used_, len);
-    memcpy(write_buffer_->data() + write_buffer_used_, in, chunk);
-    in += chunk;
-    len -= chunk;
-    bytes_copied += chunk;
-    write_buffer_used_ += chunk;
+    base::span<const uint8_t> chunk = in.first(
+        std::min(base::checked_cast<size_t>(write_buffer_->RemainingCapacity() -
+                                            write_buffer_used_),
+                 in.size()));
+    base::as_writable_bytes(write_buffer_->span())
+        .subspan(write_buffer_used_)
+        .copy_prefix_from(chunk);
+    in = in.subspan(chunk.size());
+    bytes_copied += chunk.size();
+    write_buffer_used_ += chunk.size();
   }
 
   // If there is still space for remaining data, try to wrap around.
-  if (len > 0 && write_buffer_used_ < write_buffer_->capacity()) {
+  if (in.size() > 0 && write_buffer_used_ < write_buffer_->capacity()) {
     // If there were any room after the offset, the previous branch would have
     // filled it.
     CHECK_LE(write_buffer_->RemainingCapacity(), write_buffer_used_);
     int write_offset = write_buffer_used_ - write_buffer_->RemainingCapacity();
-    int chunk = std::min(len, write_buffer_->capacity() - write_buffer_used_);
-    memcpy(write_buffer_->everything().subspan(write_offset, chunk).data(), in,
-           chunk);
-    in += chunk;
-    len -= chunk;
-    bytes_copied += chunk;
-    write_buffer_used_ += chunk;
+    base::span<const uint8_t> chunk = in.first(std::min(
+        in.size(), base::checked_cast<size_t>(write_buffer_->capacity() -
+                                              write_buffer_used_)));
+    write_buffer_->everything().subspan(write_offset).copy_prefix_from(chunk);
+    in = in.subspan(chunk.size());
+    bytes_copied += chunk.size();
+    write_buffer_used_ += chunk.size();
   }
 
   // Either the buffer is now full or there is no more input.
-  CHECK(len == 0 || write_buffer_used_ == write_buffer_->capacity());
+  CHECK(in.empty() || write_buffer_used_ == write_buffer_->capacity());
 
   // Schedule a socket Write() if necessary. (The ring buffer may previously
   // have been empty.)
@@ -400,7 +404,10 @@ int SocketBIOAdapter::BIOWriteWrapper(BIO* bio, const char* in, int len) {
     return -1;
   }
 
-  return adapter->BIOWrite(in, len);
+  return adapter->BIOWrite(base::as_bytes(
+      // SAFETY: The caller must ensure `in` points to `len` bytes.
+      // TODO(crbug.com/354307327): Spanify this method.
+      UNSAFE_BUFFERS(base::span(in, base::checked_cast<size_t>(len)))));
 }
 
 int SocketBIOAdapter::BIOReadWrapper(BIO* bio, char* out, int len) {

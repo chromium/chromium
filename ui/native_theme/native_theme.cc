@@ -422,4 +422,17 @@ bool NativeTheme::UpdateContrastRelatedStates(
 int NativeTheme::GetPaintedScrollbarTrackInset() const {
   return 0;
 }
+
+gfx::Insets NativeTheme::GetScrollbarSolidColorThumbInsets(Part part) const {
+  return gfx::Insets();
+}
+
+SkColor4f NativeTheme::GetScrollbarThumbColor(
+    const ui::ColorProvider& color_provider,
+    State state,
+    const ScrollbarThumbExtraParams& extra_params) const {
+  // A native theme using solid color scrollbar thumb must override this method.
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace ui

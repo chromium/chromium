@@ -27,22 +27,6 @@
 namespace web_app {
 namespace {
 
-// Returns activation time given the specified `device_info`.
-std::optional<base::Time> GetActivationTime(
-    const std::optional<DeviceInfo>& device_info) {
-  if (!device_info || !device_info->oobe_timestamp) {
-    return std::nullopt;
-  }
-
-  // Note: We treat unparsable timestamps as `base::Time()` since we know that
-  // the device was previously activated but we don't know when.
-  base::Time activation_time;
-  std::ignore = base::Time::FromUTCString(device_info->oobe_timestamp->c_str(),
-                                          &activation_time);
-
-  return activation_time;
-}
-
 // Returns launch query params given the specified `device_info`.
 std::string GetLaunchQueryParams(const std::optional<DeviceInfo>& device_info) {
   std::vector<std::string> launch_query_params;
@@ -66,7 +50,8 @@ std::string GetLaunchQueryParams(const std::optional<DeviceInfo>& device_info) {
   // case. This accepts the risk of a false positive to support known instances
   // where activation time may be unavailable, i.e. during first boot due to a
   // race condition between device registration and preinstallation.
-  if (GetActivationTime(device_info).value_or(base::Time::Now()) >=
+  if (device_info.value_or(DeviceInfo{})
+          .oobe_timestamp.value_or(base::Time::Now()) >=
       activation_time_threshold) {
     launch_query_params.emplace_back("cros_activation=true");
   }

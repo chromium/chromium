@@ -65,35 +65,6 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   EXPECT_TRUE(GetOfferNotificationBubbleViews());
 }
 
-// TODO(crbug.com/40200304): Disabled due to flakiness.
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
-                       DISABLED_PromoCodeOffer_FromCouponService) {
-  auto offer_data =
-      CreateFreeListingCouponDataWithDomains({GetUrl("www.example.com", "/")});
-  SetUpFreeListingCouponOfferDataForCouponService(std::move(offer_data));
-
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  NavigateToAndWaitForForm(GetUrl("www.example.com", "/first"));
-  ASSERT_TRUE(WaitForObservedEvent());
-
-  EXPECT_TRUE(IsIconVisible());
-  EXPECT_TRUE(GetOfferNotificationBubbleViews());
-}
-
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
-                       PromoCodeOffer_FromCouponService_WithinTimeGap) {
-  const GURL orgin = GetUrl("www.example.com", "/");
-  SetUpFreeListingCouponOfferDataForCouponService(
-      CreateFreeListingCouponDataWithDomains({orgin}));
-  UpdateFreeListingCouponDisplayTime(
-      CreateFreeListingCouponDataWithDomains({orgin}));
-
-  NavigateToAndWaitForForm(GetUrl("www.example.com", "/first"));
-
-  EXPECT_TRUE(IsIconVisible());
-  EXPECT_FALSE(GetOfferNotificationBubbleViews());
-}
-
 // TODO(crbug.com/40205397): Disabled due to flakiness with linux-wayland-rel.
 // Tests that the offer notification bubble will not be shown if bubble has been
 // shown for kAutofillBubbleSurviveNavigationTime (5 seconds) and the user has
@@ -117,26 +88,6 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   // As kAutofillBubbleSurviveNavigationTime has been reached, the bubble should
   // no longer be showing.
   EXPECT_TRUE(IsIconVisible());
-  EXPECT_FALSE(GetOfferNotificationBubbleViews());
-}
-
-// TODO(crbug.com/40200304): Disabled due to flakiness.
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
-                       DISABLED_PromoCodeOffer_DeleteCoupon) {
-  auto offer_data =
-      CreateFreeListingCouponDataWithDomains({GetUrl("www.example.com", "/")});
-  SetUpFreeListingCouponOfferDataForCouponService(std::move(offer_data));
-
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  NavigateToAndWaitForForm(GetUrl("www.example.com", "/first"));
-  ASSERT_TRUE(WaitForObservedEvent());
-
-  EXPECT_TRUE(IsIconVisible());
-  EXPECT_TRUE(GetOfferNotificationBubbleViews());
-
-  DeleteFreeListingCouponForUrl(GetUrl("www.example.com", "/"));
-
-  EXPECT_FALSE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 

@@ -68,12 +68,14 @@ constexpr CGFloat kSpace = 8;
   UILabel* _titleLabel;
   // Dot view in the navigation bar.
   UIView* _coloredDotView;
+  // Whether this is an incognito group.
+  BOOL _incognito;
 }
 
 #pragma mark - Public
 
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
-                     lightTheme:(BOOL)lightTheme
+                      incognito:(BOOL)incognito
                        tabGroup:(const TabGroup*)tabGroup {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group view controller outside "
@@ -81,9 +83,10 @@ constexpr CGFloat kSpace = 8;
   CHECK(tabGroup);
   if (self = [super init]) {
     _handler = handler;
+    _incognito = incognito;
     _tabGroup = tabGroup;
     _gridViewController = [[TabGroupGridViewController alloc] init];
-    if (lightTheme) {
+    if (!incognito) {
       _gridViewController.theme = GridThemeLight;
     } else {
       _gridViewController.theme = GridThemeDark;
@@ -397,11 +400,16 @@ constexpr CGFloat kSpace = 8;
     [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
                     [weakSelf closeGroup];
                   }]];
+    if (!_incognito) {
+      [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                      [weakSelf deleteGroup];
+                    }]];
+    }
+  } else {
+    [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                    [weakSelf deleteGroup];
+                  }]];
   }
-  // TODO(crbug.com/352297050): Don't show "Delete group" when in incognito.
-  [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                  [weakSelf deleteGroup];
-                }]];
 
   return [UIMenu menuWithTitle:@"" children:menuElements];
 }
@@ -420,6 +428,17 @@ constexpr CGFloat kSpace = 8;
 
 // Ungroups the current group (keeps the tab) and closes the view.
 - (void)ungroup {
+  // Shows the confirmation to ungroup the current group (keep the tab) and
+  // close the view. Do nothing when a user cancels the action.
+  if (IsTabGroupSyncEnabled()) {
+    [_handler
+        showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
+                                    group:_tabGroup
+                         sourceButtonItem:_navigationBar.topItem
+                                              .rightBarButtonItems[0]];
+    return;
+  }
+
   [self.mutator ungroup];
   [_handler hideTabGroup];
 }
@@ -432,6 +451,17 @@ constexpr CGFloat kSpace = 8;
 
 // Deletes the tabs and deletes the current group and closes the view.
 - (void)deleteGroup {
+  if (IsTabGroupSyncEnabled()) {
+    // Shows the confirmation to delete the tabs, delete the current group and
+    // close the view. Do nothing when a user cancels the action.
+    [_handler
+        showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
+                                    group:_tabGroup
+                         sourceButtonItem:_navigationBar.topItem
+                                              .rightBarButtonItems[0]];
+    return;
+  }
+
   [self.mutator deleteGroup];
   [_handler hideTabGroup];
 }

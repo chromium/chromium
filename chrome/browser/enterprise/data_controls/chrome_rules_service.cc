@@ -7,8 +7,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/enterprise/data_controls/core/features.h"
-#include "components/enterprise/data_controls/core/prefs.h"
+#include "components/enterprise/data_controls/core/browser/features.h"
+#include "components/enterprise/data_controls/core/browser/prefs.h"
 #include "components/prefs/pref_service.h"
 
 namespace data_controls {

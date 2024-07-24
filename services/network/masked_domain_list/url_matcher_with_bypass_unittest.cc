@@ -16,14 +16,14 @@
 namespace network {
 
 namespace {
-using masked_domain_list::MaskedDomainList;
+using ::masked_domain_list::MaskedDomainList;
 
 struct MatchTest {
   std::string name;
   std::string req;
   std::string top;
   bool skip_bypass_check;
-  bool matches;
+  UrlMatcherWithBypassResult result;
 };
 
 }  // namespace
@@ -57,9 +57,10 @@ TEST_F(UrlMatcherWithBypassTest, AddRulesWithoutBypass_BypassCheckIsSkipped) {
   UrlMatcherWithBypass matcher;
 
   matcher.AddRulesWithoutBypass({"example.com"});
-  EXPECT_TRUE(matcher.Matches(GURL("http://example.com"),
-                              /*top_frame_site=*/std::nullopt,
-                              /*skip_bypass_check=*/true));
+  EXPECT_EQ(matcher.Matches(GURL("http://example.com"),
+                            /*top_frame_site=*/std::nullopt,
+                            /*skip_bypass_check=*/true),
+            UrlMatcherWithBypassResult::kMatchAndNoBypass);
 }
 
 TEST_F(UrlMatcherWithBypassTest,
@@ -67,9 +68,10 @@ TEST_F(UrlMatcherWithBypassTest,
   UrlMatcherWithBypass matcher;
 
   matcher.AddRulesWithoutBypass({"example.com"});
-  EXPECT_TRUE(matcher.Matches(GURL("http://example.com"),
-                              net::SchemefulSite(GURL("http://top.frame.com")),
-                              /*skip_bypass_check=*/false));
+  EXPECT_EQ(matcher.Matches(GURL("http://example.com"),
+                            net::SchemefulSite(GURL("http://top.frame.com")),
+                            /*skip_bypass_check=*/false),
+            UrlMatcherWithBypassResult::kMatchAndNoBypass);
 }
 
 class UrlMatcherWithBypassMatchTest : public testing::TestWithParam<MatchTest> {
@@ -104,195 +106,261 @@ TEST_P(UrlMatcherWithBypassMatchTest, Match) {
   const MatchTest& p = GetParam();
   GURL request_url(base::StrCat({"https://", p.req}));
   net::SchemefulSite top_frame_site(GURL(base::StrCat({"https://", p.top})));
-  EXPECT_EQ(p.matches,
+  EXPECT_EQ(p.result,
             matcher.Matches(request_url, top_frame_site, p.skip_bypass_check));
 }
 
 const std::vector<MatchTest> kMatchTests = {
     // First-party requests should never be proxied.
-    MatchTest{"1PRsrcHost",
-              "acme-ra.com",
-              "acme-ra.com",
-              false,
-              false},
-    MatchTest{"1PPropHost",
-              "bbco-pb.co.uk",
-              "bbco-pb.co.uk",
-              false,
-              false},
-    MatchTest{"1POtherHost",
-              "somehost.com",
-              "somehost.com",
-              false,
-              false},
+    MatchTest{
+        "1PRsrcHost",
+        "acme-ra.com",
+        "acme-ra.com",
+        false,
+        UrlMatcherWithBypassResult::kMatchAndBypass,
+    },
+    MatchTest{
+        "1PPropHost",
+        "bbco-pb.co.uk",
+        "bbco-pb.co.uk",
+        false,
+        UrlMatcherWithBypassResult::kNoMatch,
+    },
+    MatchTest{
+        "1POtherHost",
+        "somehost.com",
+        "somehost.com",
+        false,
+        UrlMatcherWithBypassResult::kNoMatch,
+    },
 
     // "First-party" is defined as schemefully same-site.
-    MatchTest{"1PSameSiteOther1",
-              "www.somehost.com",
-              "somehost.com",
-              false,
-              false},
-    MatchTest{"1PSameSiteOther2",
-              "somehost.com",
-              "www.somehost.com",
-              false,
-              false},
-    MatchTest{"1PSameSiteRsrc1",
-              "www.acme-ra.com",
-              "acme-ra.com",
-              false,
-              false},
-    MatchTest{"1PSameSiteRsrc2",
-              "acme-ra.com",
-              "www.acme-ra.com",
-              false,
-              false},
-    MatchTest{"1PSameSiteRsrcSub1",
-              "sub.sub.acme-ra.com",
-              "acme-ra.com",
-              false,
-              false},
-    MatchTest{"1PSameSiteRsrcSub2",
-              "acme-ra.com",
-              "sub.sub.acme-ra.com",
-              false,
-              false},
-    MatchTest{"1PSameSiteProp1",
-              "www.bbco-pb.co.uk",
-              "bbco-pb.co.uk",
-              false,
-              false},
-    MatchTest{"1PSameSiteProp2",
-              "bbco-pb.co.uk",
-              "www.bbco-pb.co.uk",
-              false,
-              false},
+    MatchTest{
+        "1PSameSiteOther1",
+        "www.somehost.com",
+        "somehost.com",
+        false,
+        UrlMatcherWithBypassResult::kNoMatch,
+    },
+    MatchTest{
+        "1PSameSiteOther2",
+        "somehost.com",
+        "www.somehost.com",
+        false,
+        UrlMatcherWithBypassResult::kNoMatch,
+    },
+    MatchTest{
+        "1PSameSiteRsrc1",
+        "www.acme-ra.com",
+        "acme-ra.com",
+        false,
+        UrlMatcherWithBypassResult::kMatchAndBypass,
+    },
+    MatchTest{
+        "1PSameSiteRsrc2",
+        "acme-ra.com",
+        "www.acme-ra.com",
+        false,
+        UrlMatcherWithBypassResult::kMatchAndBypass,
+    },
+    MatchTest{
+        "1PSameSiteRsrcSub1",
+        "sub.sub.acme-ra.com",
+        "acme-ra.com",
+        false,
+        UrlMatcherWithBypassResult::kMatchAndBypass,
+    },
+    MatchTest{
+        "1PSameSiteRsrcSub2",
+        "acme-ra.com",
+        "sub.sub.acme-ra.com",
+        false,
+        UrlMatcherWithBypassResult::kMatchAndBypass,
+    },
+    MatchTest{
+        "1PSameSiteProp1",
+        "www.bbco-pb.co.uk",
+        "bbco-pb.co.uk",
+        false,
+        UrlMatcherWithBypassResult::kNoMatch,
+    },
+    MatchTest{
+        "1PSameSiteProp2",
+        "bbco-pb.co.uk",
+        "www.bbco-pb.co.uk",
+        false,
+        UrlMatcherWithBypassResult::kNoMatch,
+    },
 
     // Third-party requests for hosts not appearing in the MDL should never be
     // proxied, regardless of the top-level.
-    MatchTest{"3POtherReqInOther",
-              "somehost.com",
-              "otherhost.com",
-              false,
-              false},
-    MatchTest{"3POtherReqInRsrc",
-              "somehost.com",
-              "acme-rb.co.uk",
-              false,
-              false},
-    MatchTest{"3POtherReqInProp",
-              "somehost.com",
-              "bbco-pb.co.uk",
-              false,
-              false},
+    MatchTest{
+        "3POtherReqInOther",
+        "somehost.com",
+        "otherhost.com",
+        false,
+        UrlMatcherWithBypassResult::kNoMatch,
+    },
+    MatchTest{
+        "3POtherReqInRsrc",
+        "somehost.com",
+        "acme-rb.co.uk",
+        false,
+        UrlMatcherWithBypassResult::kNoMatch,
+    },
+    MatchTest{
+        "3POtherReqInProp",
+        "somehost.com",
+        "bbco-pb.co.uk",
+        false,
+        UrlMatcherWithBypassResult::kNoMatch,
+    },
 
     // Third-party requests for resources (including subdomains) in the MDL
     // should be proxied (with exceptions below).
-    MatchTest{"3PRsrcInOther",
-              "acme-ra.com",
-              "somehost.com",
-              false,
-              true},
-    MatchTest{"3PRsrcInOtherRsrc",
-              "acme-ra.com",
-              "bbco-rb.co.ch",
-              false,
-              true},
-    MatchTest{"3PRsrcInOtherProp",
-              "acme-ra.com",
-              "bbco-pa.com",
-              false,
-              true},
-    MatchTest{"3PSubRsrc",
-              "sub.acme-ra.com",
-              "somehost.com",
-              false,
-              true},
-    MatchTest{"3PSub2Rsrc",
-              "sub.sub.acme-ra.com",
-              "somehost.com",
-              false,
-              true},
+    MatchTest{
+        "3PRsrcInOther",
+        "acme-ra.com",
+        "somehost.com",
+        false,
+        UrlMatcherWithBypassResult::kMatchAndNoBypass,
+    },
+    MatchTest{
+        "3PRsrcInOtherRsrc",
+        "acme-ra.com",
+        "bbco-rb.co.ch",
+        false,
+        UrlMatcherWithBypassResult::kMatchAndNoBypass,
+    },
+    MatchTest{
+        "3PRsrcInOtherProp",
+        "acme-ra.com",
+        "bbco-pa.com",
+        false,
+        UrlMatcherWithBypassResult::kMatchAndNoBypass,
+    },
+    MatchTest{
+        "3PSubRsrc",
+        "sub.acme-ra.com",
+        "somehost.com",
+        false,
+        UrlMatcherWithBypassResult::kMatchAndNoBypass,
+    },
+    MatchTest{
+        "3PSub2Rsrc",
+        "sub.sub.acme-ra.com",
+        "somehost.com",
+        false,
+        UrlMatcherWithBypassResult::kMatchAndNoBypass,
+    },
 
     // Third-party requests for properties in the MDL should not be proxied
     // if bypass policy is kFirstPartyToTopLevelFrame.
-    MatchTest{"3PPropInOther",
-              "acme-pa.com",
-              "somehost.com",
-              false,
-              false},
-    MatchTest{"3PPropInOtherRsrc",
-              "acme-pa.com",
-              "bbco-rb.co.ch",
-              false,
-              false},
-    MatchTest{"3PPropInOtherProp",
-              "acme-pa.com",
-              "bbco-pa.com",
-              false,
-              false},
-    MatchTest{"3PPropInSameRsrc",
-              "acme-pa.com",
-              "acme-rb.co.uk",
-              false,
-              false},
-    MatchTest{"3PPropInSameProp",
-              "acme-pa.com",
-              "acme-pb.co.uk",
-              false,
-              false},
+    MatchTest{
+        "3PPropInOther",
+        "acme-pa.com",
+        "somehost.com",
+        false,
+        UrlMatcherWithBypassResult::kNoMatch,
+    },
+    MatchTest{
+        "3PPropInOtherRsrc",
+        "acme-pa.com",
+        "bbco-rb.co.ch",
+        false,
+        UrlMatcherWithBypassResult::kNoMatch,
+    },
+    MatchTest{
+        "3PPropInOtherProp",
+        "acme-pa.com",
+        "bbco-pa.com",
+        false,
+        UrlMatcherWithBypassResult::kNoMatch,
+    },
+    MatchTest{
+        "3PPropInSameRsrc",
+        "acme-pa.com",
+        "acme-rb.co.uk",
+        false,
+        UrlMatcherWithBypassResult::kNoMatch,
+    },
+    MatchTest{
+        "3PPropInSameProp",
+        "acme-pa.com",
+        "acme-pb.co.uk",
+        false,
+        UrlMatcherWithBypassResult::kNoMatch,
+    },
 
     // As an exception, third-party requests for resources (including
     // subdomains) in the MDL should be not be proxied when the top-level site
     // is a property with the same owner as the resource if bypass policy is
     // kFirstPartyToTopLevelFrame.
-    MatchTest{"3PRsrcInPropSameOwner",
-              "acme-ra.com",
-              "acme-pa.com",
-              false,
-              false},
-    MatchTest{"3PRsrcInRsrcSameOwner",
-              "acme-ra.com",
-              "acme-rb.co.uk",
-              false,
-              false},
-    MatchTest{"3PRsrcInSubRsrcSameOwner",
-              "acme-ra.com",
-              "sub.acme-rb.co.uk",
-              false,
-              false},
-    MatchTest{"3PSubRsrcInSubRsrcSameOwner",
-              "sub.acme-ra.com",
-              "sub.acme-rb.co.uk",
-              false,
-              false},
-    MatchTest{"3PSubSameOwner",
-              "sub.acme-ra.com",
-              "acme-pa.com",
-              false,
-              false},
-    MatchTest{"3PSubSubSameOwner",
-              "sub.sub.acme-ra.com",
-              "acme-pa.com",
-              false,
-              false},
+    MatchTest{
+        "3PRsrcInPropSameOwner",
+        "acme-ra.com",
+        "acme-pa.com",
+        false,
+        UrlMatcherWithBypassResult::kMatchAndBypass,
+    },
+    MatchTest{
+        "3PRsrcInRsrcSameOwner",
+        "acme-ra.com",
+        "acme-rb.co.uk",
+        false,
+        UrlMatcherWithBypassResult::kMatchAndBypass,
+    },
+    MatchTest{
+        "3PRsrcInSubRsrcSameOwner",
+        "acme-ra.com",
+        "sub.acme-rb.co.uk",
+        false,
+        UrlMatcherWithBypassResult::kMatchAndBypass,
+    },
+    MatchTest{
+        "3PSubRsrcInSubRsrcSameOwner",
+        "sub.acme-ra.com",
+        "sub.acme-rb.co.uk",
+        false,
+        UrlMatcherWithBypassResult::kMatchAndBypass,
+    },
+    MatchTest{
+        "3PSubSameOwner",
+        "sub.acme-ra.com",
+        "acme-pa.com",
+        false,
+        UrlMatcherWithBypassResult::kMatchAndBypass,
+    },
+    MatchTest{
+        "3PSubSubSameOwner",
+        "sub.sub.acme-ra.com",
+        "acme-pa.com",
+        false,
+        UrlMatcherWithBypassResult::kMatchAndBypass,
+    },
 
     // Skip the bypass check.
-    MatchTest{"MatchWithSameSiteAndBypass",
-              "acme-ra.com",
-              "acme-ra.com",
-              true,
-              true},
-    MatchTest{"MatchWithSameOwnerAndBypass",
-              "acme-ra.com",
-              "acme-pa.com",
-              true,
-              true},
-    MatchTest{"NoMatchWithSameOwnerAndBypass",
-              "safe.com",
-              "acme-pa.com",
-              true,
-              false},
+    MatchTest{
+        "MatchWithSameSiteAndBypass",
+        "acme-ra.com",
+        "acme-ra.com",
+        true,
+        UrlMatcherWithBypassResult::kMatchAndNoBypass,
+    },
+    MatchTest{
+        "MatchWithSameOwnerAndBypass",
+        "acme-ra.com",
+        "acme-pa.com",
+        true,
+        UrlMatcherWithBypassResult::kMatchAndNoBypass,
+    },
+    MatchTest{
+        "NoMatchWithSameOwnerAndBypass",
+        "safe.com",
+        "acme-pa.com",
+        true,
+        UrlMatcherWithBypassResult::kNoMatch,
+    },
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

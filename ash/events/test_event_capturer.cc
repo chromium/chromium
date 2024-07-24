@@ -95,4 +95,8 @@ ui::TouchEvent* TestEventCapturer::LastTouchEvent() {
   return touch_events_.empty() ? nullptr : &touch_events_.back();
 }
 
+std::string_view TestEventCapturer::GetLogContext() const {
+  return "TestEventCapturer";
+}
+
 }  // namespace ash

@@ -25,7 +25,9 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/webui/webui_utils.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
+#include "components/optimization_guide/proto/features/product_specifications.pb.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
@@ -295,6 +297,98 @@ PrepareQualityLogEntry(optimization_guide::ModelQualityLogsUploaderService*
   return log_entry;
 }
 
+void ConvertDescriptionTextToProto(
+    ProductSpecifications::DescriptionText description_text,
+    optimization_guide::proto::DescriptionText* description_proto) {
+  description_proto->set_text(description_text.text);
+  for (auto url_info : description_text.urls) {
+    optimization_guide::proto::DescriptionText::ReferenceUrl* reference_url =
+        description_proto->add_urls();
+    reference_url->set_url(url_info.url.spec());
+    reference_url->set_title(base::UTF16ToUTF8(url_info.title));
+    if (url_info.favicon_url.has_value()) {
+      reference_url->set_favicon_url(url_info.favicon_url->spec());
+    }
+    if (url_info.thumbnail_url.has_value()) {
+      reference_url->set_thumbail_image_url(url_info.thumbnail_url->spec());
+    }
+  }
+}
+
+void ConvertProductSpecificationsToProto(
+    ProductSpecifications specs,
+    optimization_guide::proto::ProductSpecificationData* product_spec_data) {
+  for (auto pair : specs.product_dimension_map) {
+    optimization_guide::proto::ProductSpecificationSection* section =
+        product_spec_data->add_product_specification_sections();
+    section->set_key(base::NumberToString(pair.first));
+    section->set_title(pair.second);
+  }
+
+  for (auto product : specs.products) {
+    optimization_guide::proto::ProductSpecification* product_spec =
+        product_spec_data->add_product_specifications();
+    product_spec->mutable_identifiers()->set_gpc_id(product.product_cluster_id);
+    product_spec->mutable_identifiers()->set_mid(product.mid);
+    product_spec->set_title(product.title);
+    product_spec->set_image_url(product.image_url.spec());
+
+    for (auto pair : product.product_dimension_values) {
+      optimization_guide::proto::ProductSpecificationValue*
+          product_specification_value =
+              product_spec->add_product_specification_values();
+      product_specification_value->set_key(base::NumberToString(pair.first));
+
+      for (auto description : pair.second.descriptions) {
+        optimization_guide::proto::ProductSpecificationDescription*
+            product_specification_description =
+                product_specification_value->add_specification_descriptions();
+        product_specification_description->set_label(description.label);
+        product_specification_description->set_alternative_text(
+            description.alt_text);
+        for (auto option : description.options) {
+          optimization_guide::proto::ProductSpecificationDescription::Option*
+              option_proto = product_specification_description->add_options();
+          for (auto option_description : option.descriptions) {
+            optimization_guide::proto::DescriptionText* description_text =
+                option_proto->add_description();
+            ConvertDescriptionTextToProto(option_description, description_text);
+          }
+        }
+      }
+
+      for (auto summary : pair.second.summary) {
+        optimization_guide::proto::DescriptionText* summary_description =
+            product_specification_value->add_summary_description();
+        ConvertDescriptionTextToProto(summary, summary_description);
+      }
+    }
+
+    for (auto description_text : product.summary) {
+      optimization_guide::proto::DescriptionText* summary_description =
+          product_spec->add_summary_description();
+      ConvertDescriptionTextToProto(description_text, summary_description);
+    }
+  }
+}
+
+// TODO(b/347064310): Move this method to some lower-level layers instead of
+// here which is only usable in WebUI.
+void RecordQualityEntry(
+    optimization_guide::proto::ProductSpecificationsQuality* quality_proto,
+    std::vector<GURL> input_urls,
+    ProductSpecifications specs) {
+  // Record input.
+  for (auto url : input_urls) {
+    optimization_guide::proto::ProductIdentifier* identifider =
+        quality_proto->add_product_identifiers();
+    identifider->set_product_url(url.spec());
+  }
+  // Record product spec table.
+  optimization_guide::proto::ProductSpecificationData* product_spec_data =
+      quality_proto->mutable_product_specification_data();
+  ConvertProductSpecificationsToProto(specs, product_spec_data);
+}
 }  // namespace
 
 using shopping_service::mojom::BookmarkProductInfo;
@@ -725,21 +819,8 @@ void ShoppingServiceHandler::GetProductSpecificationsForUrls(
       PrepareQualityLogEntry(model_quality_logs_uploader_service_);
   shopping_service_->GetProductSpecificationsForUrls(
       urls, base::BindOnce(
-                [](base::WeakPtr<ShoppingServiceHandler> handler,
-                   GetProductSpecificationsForUrlsCallback callback,
-                   std::vector<uint64_t> ids,
-                   std::optional<ProductSpecifications> specs) {
-                  // TODO(b/347064310): Record response in the current log
-                  // quality entry after the quality proto is added.
-                  if (!handler || !specs.has_value()) {
-                    std::move(callback).Run(
-                        shopping_service::mojom::ProductSpecifications::New());
-                    return;
-                  }
-
-                  std::move(callback).Run(ProductSpecsToMojo(specs.value()));
-                },
-                weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                &ShoppingServiceHandler::OnGetProductSpecificationsForUrls,
+                weak_ptr_factory_.GetWeakPtr(), urls, std::move(callback)));
 }
 
 void ShoppingServiceHandler::GetUrlInfosForProductTabs(
@@ -941,8 +1022,16 @@ void ShoppingServiceHandler::SetProductSpecificationsUserFeedback(
             ->model_execution_info()
             .execution_id());
   }
-  // TODO(b/347064310): Record user feedback in the current log quality entry
-  // after the quality proto is added.
+  optimization_guide::proto::LogAiDataRequest* request =
+      current_log_quality_entry_->log_ai_data_request();
+  if (!request) {
+    return;
+  }
+  optimization_guide::proto::ProductSpecificationsQuality* quality_proto =
+      optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
+          *request)
+          ->mutable_quality();
+  quality_proto->set_user_feedback(user_feedback);
 }
 
 void ShoppingServiceHandler::OnProductSpecificationsSetAdded(
@@ -961,4 +1050,29 @@ void ShoppingServiceHandler::OnProductSpecificationsSetRemoved(
   remote_page_->OnProductSpecificationsSetRemoved(set.uuid());
 }
 
+void ShoppingServiceHandler::OnGetProductSpecificationsForUrls(
+    std::vector<GURL> input_urls,
+    GetProductSpecificationsForUrlsCallback callback,
+    std::vector<uint64_t> ids,
+    std::optional<ProductSpecifications> specs) {
+  if (!specs.has_value()) {
+    std::move(callback).Run(
+        shopping_service::mojom::ProductSpecifications::New());
+    return;
+  }
+
+  // Record response in the current log quality entry.
+  optimization_guide::proto::LogAiDataRequest* request =
+      current_log_quality_entry_->log_ai_data_request();
+  if (!request) {
+    return;
+  }
+  RecordQualityEntry(
+      optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
+          *request)
+          ->mutable_quality(),
+      std::move(input_urls), std::move(specs.value()));
+
+  std::move(callback).Run(ProductSpecsToMojo(specs.value()));
+}
 }  // namespace commerce

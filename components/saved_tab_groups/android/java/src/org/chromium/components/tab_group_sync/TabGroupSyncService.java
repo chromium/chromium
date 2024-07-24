@@ -113,6 +113,14 @@ public interface TabGroupSyncService {
             LocalTabGroupId tabGroupId, @NonNull String title, @TabGroupColorId int color);
 
     /**
+     * Makes the saved tab group a shared group.
+     *
+     * @param tabGroupId The local group ID of the corresponding tab group.
+     * @param collaborationId Collaboration ID with which the group is associated.
+     */
+    void makeTabGroupShared(LocalTabGroupId tabGroupId, @NonNull String collaborationId);
+
+    /**
      * Adds a tab to a remote group. Should be called with response to a local tab addition to a tab
      * group. If position is -1, adds the tab to the end of the group.
      *

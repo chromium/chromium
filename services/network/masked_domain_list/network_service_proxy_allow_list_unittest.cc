@@ -15,13 +15,16 @@
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/proxy_config.mojom-shared.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_util.h"
 
 namespace network {
-
 namespace {
-using masked_domain_list::MaskedDomainList;
+using ::masked_domain_list::MaskedDomainList;
+using ::masked_domain_list::Resource;
+using ::masked_domain_list::ResourceOwner;
+using ::testing::Eq;
 
 struct ExperimentGroupMatchTest {
   std::string name;
@@ -30,6 +33,7 @@ struct ExperimentGroupMatchTest {
   // The proto has an int type but feature init needs a string representation.
   std::string experiment_group;
   bool matches;
+  bool matches_with_bypass;
 };
 
 const std::vector<ExperimentGroupMatchTest> kMatchTests = {
@@ -39,12 +43,14 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
         "top.com",
         "0",
         false,
+        false,
     },
     ExperimentGroupMatchTest{
         "NoExperimentGroup_DefaultResourceMatch",
         "example.com",
         "top.com",
         "0",
+        true,
         true,
     },
     ExperimentGroupMatchTest{
@@ -53,12 +59,14 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
         "top.com",
         "1",
         true,
+        true,
     },
     ExperimentGroupMatchTest{
         "ExperimentGroup2_ExperimentResourceMatch",
         "experiment.com",
         "top.com",
         "2",
+        true,
         true,
     },
     ExperimentGroupMatchTest{
@@ -67,6 +75,7 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
         "top.com",
         "1",
         true,
+        true,
     },
     ExperimentGroupMatchTest{
         "ExperimentGroup2_ExcludedFromDefaultResource",
@@ -74,12 +83,86 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
         "top.com",
         "2",
         false,
+        false,
     },
     ExperimentGroupMatchTest{
         "ExperimentGroup3_ExcludedFromDefaultResource",
         "experiment.com",
         "top.com",
         "3",
+        false,
+        false,
+    },
+    // Public suffix list testcases.
+    // Assumes that "public_suffix.com" is on the public suffix list.
+
+    // The `public_suffix.com` domain is in the owned_resources of an MDL entry,
+    // but the top level site is not owned by it so this is a 3rd party request
+    // and should be proxied.
+    ExperimentGroupMatchTest{
+        "OnPsl_OnOwnedResources_TopToDifferentDomain",
+        "public_suffix.com",
+        "top.com",
+        "1",
+        true,
+        true,
+    },
+
+    // The `public_suffix.com` domain is in the owned_resources of an MDL entry.
+    // This is a request to a subdomain of an owned_resources (known tracker)
+    // The top level site is not owned by the same owner so this is a 3rd
+    // party request and should be proxied.
+    ExperimentGroupMatchTest{
+        "OnPsl_OnOwnedResources_TopToDifferentDomainSubDomain",
+        "sub.public_suffix.com",
+        "top.com",
+        "1",
+        true,
+        true,
+    },
+    // Request from a domain to its subdomain.
+    // `public_suffix.com` is listed on the PSL.
+    // An MDL entry claims ownership of `public_suffix.com`
+    // No MDL entry claims ownership of `sub.public_suffix.com`
+    // Should be proxied because `public_suffix.com` is on the MDL and the two
+    // don't belong to the same owner.
+    ExperimentGroupMatchTest{
+        "OnPsl_MatchingOwnedResources_TopToSubOnSameDomain_"
+        "OwnerDoesntClaimSubdomain",
+        "sub.public_suffix.com",
+        "public_suffix.com",
+        "1",
+        true,
+        true,
+    },
+    // Request from a domain to its subdomain.
+    // `other_public_suffix.com` is listed on the PSL.
+    // No MDL entry claims ownership of `other_public_suffix.com`
+    // An MDL entry claims ownership of `sub.other_public_suffix.com`
+    // Should be proxied because `other_public_suffix.com` is listed on the PSL,
+    // therefore 3rd parties can claim subdomains and this is considered a
+    // request to a 3rd party tracker on the MDL.
+    ExperimentGroupMatchTest{
+        "OnPsl_MatchingOwnedResources_TopToSubOnSameDomain_"
+        "OwnerClaimsSubdomain",
+        "sub.other_public_suffix.com",
+        "other_public_suffix.com",
+        "1",
+        true,
+        true,
+    },
+    // Request from an owned property to an owned resource.
+    // The owned resource is a subdomain of a PSL entry.
+    // Should be proxied but not if bypass is allowed, because while
+    // `other_public_suffix.com` is listed in the PSL, the subdomain is
+    // privately owned and an MDL entry claims ownership of it and this is a
+    // request between an owned property to an owned resource of the same owner.
+    ExperimentGroupMatchTest{
+        "Psl_MatchingOwnedResources_SubdomainNotOnPsl",
+        "sub.other_public_suffix.com",
+        "owned_property.com",
+        "1",
+        true,
         false,
     },
 };
@@ -333,19 +416,41 @@ TEST_P(NetworkServiceProxyAllowListExperimentGroupMatchTest, Match) {
           kFirstPartyToTopLevelFrame);
 
   MaskedDomainList mdl;
-  auto* resourceOwner = mdl.add_resource_owners();
-  resourceOwner->set_owner_name("example");
-  auto* resource = resourceOwner->add_owned_resources();
+
+  // ResourceOwner 1 - Includes the default group.
+  ResourceOwner* resource_owner = mdl.add_resource_owners();
+  resource_owner->set_owner_name("example");
+  Resource* resource = resource_owner->add_owned_resources();
   resource->set_domain("example.com");
   resource->add_experiment_group_ids(1);
 
-  resourceOwner = mdl.add_resource_owners();
-  resourceOwner->set_owner_name("experiment");
-  resource = resourceOwner->add_owned_resources();
+  // ResourceOwner 2 - Excludes the default group.
+  resource_owner = mdl.add_resource_owners();
+  resource_owner->set_owner_name("experiment");
+  resource = resource_owner->add_owned_resources();
   resource->set_domain("experiment.com");
   resource->set_exclude_default_group(true);
   resource->add_experiment_group_ids(1);
   resource->add_experiment_group_ids(2);
+
+  // Public Suffix List
+  mdl.add_public_suffix_list_rules()->set_private_domain("public_suffix.com");
+  mdl.add_public_suffix_list_rules()->set_private_domain(
+      "other_public_suffix.com");
+
+  // ResourceOwner 3 - Includes resources which are on the public suffix list.
+  resource_owner = mdl.add_resource_owners();
+  resource_owner->set_owner_name("public_suffix");
+  resource_owner->add_owned_properties("owned_property.com");
+  // Claim top level domain on the PSL.
+  resource = resource_owner->add_owned_resources();
+  resource->set_domain("public_suffix.com");
+  resource->add_experiment_group_ids(1);
+
+  // Claim a subdomain on the PSL.
+  resource = resource_owner->add_owned_resources();
+  resource->set_domain("sub.other_public_suffix.com");
+  resource->add_experiment_group_ids(1);
 
   allow_list_no_bypass.UseMaskedDomainList(
       mdl, /*exclusion_list=*/std::vector<std::string>());
@@ -359,30 +464,8 @@ TEST_P(NetworkServiceProxyAllowListExperimentGroupMatchTest, Match) {
 
   EXPECT_EQ(p.matches, allow_list_no_bypass.Matches(request_url,
                                                     network_anonymization_key));
-  EXPECT_EQ(p.matches, allow_list_no_bypass.Matches(request_url,
-                                                    network_anonymization_key));
-}
-
-TEST_F(NetworkServiceProxyAllowListBaseTest,
-       ExclusionSetDomainsRemovedFromMDL) {
-  NetworkServiceProxyAllowList allow_list_no_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::kExclusionList);
-  std::set<std::string> mdl_domains(
-      {"com", "example.com", "subdomain.example.com",
-       "sub.subdomain.example.com", "unrelated-example.com", "example.net",
-       "subdomain.example.net", "example.com.example.net", "excluded-tld",
-       "included-tld", "subdomain.excluded-tld", "subdomain.included-tld"});
-  std::set<std::string> exclusion_set(
-      {"example.com", "excluded-tld", "irrelevant-tld"});
-  std::set<std::string> mdl_domains_after_exclusions(
-      {"com", "unrelated-example.com", "example.net", "subdomain.example.net",
-       "example.com.example.net", "included-tld", "subdomain.included-tld"});
-  std::set<std::string> empty_exclusion_set({});
-
-  EXPECT_TRUE(allow_list_no_bypass.ExcludeDomainsFromMDL(
-                  mdl_domains, exclusion_set) == mdl_domains_after_exclusions);
-  EXPECT_TRUE(allow_list_no_bypass.ExcludeDomainsFromMDL(
-                  mdl_domains, empty_exclusion_set) == mdl_domains);
+  EXPECT_EQ(p.matches_with_bypass, allow_list_first_party_bypass.Matches(
+                                       request_url, network_anonymization_key));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -392,5 +475,29 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<ExperimentGroupMatchTest>& info) {
       return info.param.name;
     });
+
+TEST_F(NetworkServiceProxyAllowListBaseTest,
+       ExclusionSetDomainsRemovedFromMDL) {
+  NetworkServiceProxyAllowList allow_list_no_bypass(
+      network::mojom::IpProtectionProxyBypassPolicy::kExclusionList);
+  const std::set<std::string> mdl_domains(
+      {"com", "example.com", "subdomain.example.com",
+       "sub.subdomain.example.com", "unrelated-example.com", "example.net",
+       "subdomain.example.net", "example.com.example.net", "excluded-tld",
+       "included-tld", "subdomain.excluded-tld", "subdomain.included-tld"});
+  const std::set<std::string> exclusion_set(
+      {"example.com", "excluded-tld", "irrelevant-tld"});
+  const std::set<std::string> mdl_domains_after_exclusions(
+      {"com", "unrelated-example.com", "example.net", "subdomain.example.net",
+       "example.com.example.net", "included-tld", "subdomain.included-tld"});
+  const std::set<std::string> empty_exclusion_set({});
+
+  EXPECT_THAT(
+      allow_list_no_bypass.ExcludeDomainsFromMDL(mdl_domains, exclusion_set),
+      Eq(mdl_domains_after_exclusions));
+  EXPECT_THAT(allow_list_no_bypass.ExcludeDomainsFromMDL(mdl_domains,
+                                                         empty_exclusion_set),
+              Eq(mdl_domains));
+}
 
 }  // namespace network

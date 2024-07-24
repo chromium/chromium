@@ -1191,6 +1191,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DragDrop.Files.Count" units="files"
+    expires_after="2025-01-05">
+  <owner>joelhockey@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the number of files included in a drag-drop in chrome. It is
+    recorded on the drop event for a web contents. Android only.
+  </summary>
+</histogram>
+
 <histogram name="Android.DragDrop.FromWebContent.DropInWebContent.DistanceDip"
     units="dp" expires_after="2025-01-05">
   <owner>wenyufu@chromium.org</owner>

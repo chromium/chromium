@@ -26,10 +26,10 @@ class TabGroup;
 @property(nonatomic, readonly) TabGroupGridViewController* gridViewController;
 
 // Initiates a TabGroupViewController with `handler` to handle user action,
-// `lightTheme` to YES to have a light theme, `tabGroup` to get tab group
+// `incognito` to YES to have a dark theme, `tabGroup` to get tab group
 // information.
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
-                     lightTheme:(BOOL)lightTheme
+                      incognito:(BOOL)incognito
                        tabGroup:(const TabGroup*)tabGroup;
 
 // Let this view controller know that its content will appear.

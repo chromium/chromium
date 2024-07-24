@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -326,10 +327,9 @@ TEST_F(RasterImplementationTest, GetBucketContents) {
   const uint32_t kBucketId = RasterImplementation::kResultBucketId;
   const uint32_t kTestSize = MaxTransferBufferSize() + 32;
 
-  std::unique_ptr<uint8_t[]> buf(new uint8_t[kTestSize]);
-  uint8_t* expected_data = buf.get();
+  auto buf = base::HeapArray<uint8_t>::Uninit(kTestSize);
   for (uint32_t ii = 0; ii < kTestSize; ++ii) {
-    expected_data[ii] = ii * 3;
+    buf[ii] = ii * 3;
   }
 
   struct Cmds {
@@ -358,9 +358,9 @@ TEST_F(RasterImplementationTest, GetBucketContents) {
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(DoAll(
           SetMemory(result1.ptr, kTestSize),
-          SetMemoryFromArray(mem1.ptr, expected_data, MaxTransferBufferSize())))
+          SetMemoryFromArray(mem1.ptr, buf.data(), MaxTransferBufferSize())))
       .WillOnce(SetMemoryFromArray(mem2.ptr,
-                                   expected_data + MaxTransferBufferSize(),
+                                   buf.data() + MaxTransferBufferSize(),
                                    kTestSize - MaxTransferBufferSize()))
       .RetiresOnSaturation();
 
@@ -368,7 +368,7 @@ TEST_F(RasterImplementationTest, GetBucketContents) {
   GetBucketContents(kBucketId, &data);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   ASSERT_EQ(kTestSize, data.size());
-  EXPECT_EQ(0, memcmp(expected_data, &data[0], data.size()));
+  EXPECT_EQ(0, memcmp(buf.data(), &data[0], data.size()));
 }
 
 TEST_F(RasterImplementationTest, BeginEndQueryEXT) {

@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
 #else  // !BUILDFLAG(IS_ANDROID)
@@ -192,6 +193,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   // The AutofillMessageController is used to show a message notification
   // on Android.
   AutofillMessageController& GetAutofillMessageController();
+
+  TouchToFillPaymentMethodController& GetTouchToFillPaymentMethodController();
 #endif
 
   AutofillProgressDialogControllerImpl*
@@ -224,6 +227,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
  private:
   std::u16string GetAccountHolderName() const;
 
+  const raw_ref<ContentAutofillClient> client_;
+
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AutofillCvcSaveMessageDelegate>
       autofill_cvc_save_message_delegate_;
@@ -243,8 +248,10 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
   CardExpirationDateFixFlowControllerImpl
       card_expiration_date_fix_flow_controller_;
+
+  TouchToFillPaymentMethodController touch_to_fill_payment_method_controller_{
+      &client_.get()};
 #endif
-  const raw_ref<ContentAutofillClient> client_;
 
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 

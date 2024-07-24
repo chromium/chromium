@@ -339,26 +339,21 @@ bool P2PSocketTcpBase::HandleReadResult(int result) {
   }
 
   read_buffer_->set_offset(read_buffer_->offset() + result);
-  char* head = read_buffer_->StartOfBuffer();  // Purely a convenience.
-  int pos = 0;
-  while (pos <= read_buffer_->offset()) {
+  base::span<uint8_t> span = read_buffer_->span_before_offset();
+  while (!span.empty()) {
     size_t bytes_consumed = 0;
-    if (!ProcessInput(
-            base::make_span(reinterpret_cast<const uint8_t*>(head + pos),
-                            static_cast<size_t>(read_buffer_->offset() - pos)),
-            &bytes_consumed)) {
+    if (!ProcessInput(span, &bytes_consumed)) {
       return false;
     }
-    if (!bytes_consumed)
+    if (!bytes_consumed) {
       break;
-    pos += bytes_consumed;
+    }
+    span = span.subspan(bytes_consumed);
   }
   // We've consumed all complete packets from the buffer; now move any remaining
   // bytes to the head of the buffer and set offset to reflect this.
-  if (pos && pos <= read_buffer_->offset()) {
-    memmove(head, head + pos, read_buffer_->offset() - pos);
-    read_buffer_->set_offset(read_buffer_->offset() - pos);
-  }
+  read_buffer_->everything().copy_prefix_from(span);
+  read_buffer_->set_offset(span.size());
 
   return true;
 }

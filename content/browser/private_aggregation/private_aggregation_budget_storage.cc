@@ -20,7 +20,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/sqlite_proto/key_value_data.h"
@@ -58,7 +57,7 @@ base::OnceClosure PrivateAggregationBudgetStorage::CreateAsync(
     base::FilePath path_to_db_dir,
     base::OnceCallback<void(std::unique_ptr<PrivateAggregationBudgetStorage>)>
         on_done_initializing) {
-  CHECK(on_done_initializing, base::NotFatalUntil::M128);
+  CHECK(on_done_initializing);
   base::UmaHistogramBoolean(
       "PrivacySandbox.PrivateAggregation.BudgetStorage."
       "BeginInitializationCount",
@@ -111,9 +110,8 @@ bool PrivateAggregationBudgetStorage::InitializeOnDbSequence(
     sql::Database* db,
     bool exclusively_run_in_memory,
     base::FilePath path_to_db_dir) {
-  CHECK(db_task_runner_->RunsTasksInCurrentSequence(),
-        base::NotFatalUntil::M128);
-  CHECK(db, base::NotFatalUntil::M128);
+  CHECK(db_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(db);
 
   db->set_histogram_tag("PrivateAggregation");
 
@@ -150,7 +148,7 @@ bool PrivateAggregationBudgetStorage::InitializeOnDbSequence(
 
 void PrivateAggregationBudgetStorage::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(!!db_, !!budgets_table_, base::NotFatalUntil::M128);
+  CHECK_EQ(!!db_, !!budgets_table_);
 
   // Guard against `Shutdown()` being called multiple times.
   if (db_) {
@@ -188,7 +186,7 @@ void PrivateAggregationBudgetStorage::FinishInitializationOnMainSequence(
     base::ElapsedTimer elapsed_timer,
     bool was_successful) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(owned_this, base::NotFatalUntil::M128);
+  CHECK(owned_this);
 
   base::UmaHistogramBoolean(
       "PrivacySandbox.PrivateAggregation.BudgetStorage."
