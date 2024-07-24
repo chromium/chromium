@@ -527,6 +527,51 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveDirectory) {
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
+                       ObserveFailsWhenFileDoesNotExist) {
+  base::FilePath file_path = CreateFileToBePicked();
+
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         GET_FILE(GetTestFileSystemType())
+        "file.remove();"
+        "const observer = new FileSystemObserver(onChange);"
+        "await observer.observe(file);"
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto result = EvalJs(shell(), script);
+
+  // Check if a JavaScript error occurred and contains "NotFoundError"
+  EXPECT_TRUE(result.error.find("NotFoundError") != std::string::npos)
+      << "Unexpected result: " << result.error;
+}
+
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
+                       ObserveFailsWhenDirectoryDoesNotExist) {
+  base::FilePath dir_path = CreateDirectoryToBePicked();
+
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         GET_DIRECTORY(GetTestFileSystemType())
+        "const subDir = await dir.getDirectoryHandle('sub', { create: true });"
+        "await subDir.remove();"
+        "const observer = new FileSystemObserver(onChange);"
+        "await observer.observe(subDir, { recursive: false });"
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto result = EvalJs(shell(), script);
+
+  // Check if a JavaScript error occurred and contains "NotFoundError"
+  EXPECT_TRUE(result.error.find("NotFoundError") != std::string::npos)
+      << "Unexpected result: " << result.error;
+}
+
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryRecursively) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
 
