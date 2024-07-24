@@ -52,7 +52,7 @@ class ClangPluginTest(object):
 
     os.chdir(self._test_base)
 
-    clang_cmd = [self._clang_path, '-c', '-std=c++20']
+    clang_cmd = [self._clang_path, '-std=c++20']
 
     # Use the traditional diagnostics format (see crbug.com/1450229).
     clang_cmd.extend([
@@ -62,6 +62,9 @@ class ClangPluginTest(object):
     for p in self._plugin_names:
       clang_cmd.extend(['-Xclang', '-add-plugin', '-Xclang', p])
     self.AdjustClangArguments(clang_cmd)
+
+    if not any('-fsyntax-only' in arg for arg in clang_cmd):
+      clang_cmd.append('-c')
 
     passing = []
     failing = []
