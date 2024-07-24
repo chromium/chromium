@@ -15,7 +15,7 @@
     font-weight: 400;
   }
 
-  .push-left {
+  #importOsCerts {
     margin-inline-start: auto;
   }
 
@@ -25,7 +25,6 @@
 
   #main {
     flex: 1;
-    overflow: auto;
   }
 
   cr-menu-selector {
@@ -39,8 +38,23 @@
 
   #container {
     display: flex;
-    overflow: auto;
     align-items: flex-start;
+    overflow: auto;
+  }
+
+  #adminCertsSection,
+  #platformCertsSection {
+    box-shadow: var(--cr-card-shadow);
+    padding: 0 40px;
+  }
+
+  .cr-centered-card-container {
+    padding-bottom: 20px;
+  }
+
+  #sidebar {
+    position: sticky;
+    top: 0;
   }
 
 </style>
@@ -48,7 +62,6 @@
 <cr-toolbar page-name="[[i18n('certificateManagerV2Title')]]"
     show-search="[[showSearch_]]" always-show-logo>
 </cr-toolbar>
-
 <div id="container">
   <div id="sidebar" role="navigation">
     <cr-menu-selector id="menu" selectable="a" attr-for-selected="path"
@@ -136,7 +149,7 @@
               [[numSystemCertsString_]]
             </div>
           </div>
-          <cr-toggle id="importOsCerts" class="push-left"
+          <cr-toggle id="importOsCerts"
               aria-label="Toggle operating system certificate imports"
               checked="[[importOsCertsEnabled_]]" disabled>
           </cr-toggle>
@@ -190,12 +203,14 @@
     </div>
 
     <certificate-subpage-v2 id="adminCertsSection" path="admincerts"
+        class="cr-centered-card-container"
         on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
         subpage-title="[[i18n('certificateManagerV2AdminCertsTitle')]]"
         subpage-cert-lists="[[enterpriseSubpageLists_]]">
     </certificate-subpage-v2>
 
     <certificate-subpage-v2 id="platformCertsSection" path="platformcerts"
+        class="cr-centered-card-container"
         on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
         subpage-title="[[i18n('certificateManagerV2PlatformCertsTitle')]]"
         subpage-cert-lists="[[platformSubpageLists_]]">
