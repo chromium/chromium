@@ -29,19 +29,51 @@ SpareRenderProcessHostManager& SpareRenderProcessHostManager::GetInstance() {
   return *s_instance;
 }
 
+void SpareRenderProcessHostManager::StartDestroyTimer(
+    std::optional<base::TimeDelta> timeout) {
+  if (!timeout) {
+    return;
+  }
+  deferred_destroy_timer_.Start(
+      FROM_HERE, timeout.value(),
+      base::BindOnce(
+          &SpareRenderProcessHostManager::CleanupSpareRenderProcessHost,
+          base::Unretained(this)));
+}
+
+bool SpareRenderProcessHostManager::DestroyTimerWillFireBefore(
+    base::TimeDelta timeout) {
+  return deferred_destroy_timer_.IsRunning() &&
+         deferred_destroy_timer_.GetCurrentDelay() < timeout;
+}
+
 void SpareRenderProcessHostManager::WarmupSpareRenderProcessHost(
-    BrowserContext* browser_context) {
+    BrowserContext* browser_context,
+    std::optional<base::TimeDelta> timeout) {
   if (delay_timer_) {
-    UMA_HISTOGRAM_TIMES("BrowserRenderProcessHost.SpareProcessDelayTime",
-                        delay_timer_->Elapsed());
-    delay_timer_.reset();
+    // If the timeout does not have a value, the delayed creation is no longer
+    // required since we will create the spare renderer here.
+    // Otherwise we will create the spare renderer and have the delayed creation
+    // override the timeout later on.
+    if (!timeout.has_value()) {
+      UMA_HISTOGRAM_TIMES("BrowserRenderProcessHost.SpareProcessDelayTime",
+                          delay_timer_->Elapsed());
+      delay_timer_.reset();
+    }
   }
 
   if (spare_render_process_host_ &&
       spare_render_process_host_->GetBrowserContext() == browser_context) {
     DCHECK_EQ(browser_context->GetDefaultStoragePartition(),
               spare_render_process_host_->GetStoragePartition());
-    return;  // Nothing to warm up.
+
+    // Use the new timeout if the specified timeout will be triggered after the
+    // current timeout (or not triggered at all).
+    if (!timeout.has_value() || DestroyTimerWillFireBefore(timeout.value())) {
+      deferred_destroy_timer_.Stop();
+      StartDestroyTimer(timeout);
+    }
+    return;
   }
 
   bool had_spare_renderer = !!spare_render_process_host_;
@@ -93,6 +125,14 @@ void SpareRenderProcessHostManager::WarmupSpareRenderProcessHost(
       browser_context, nullptr /* site_instance */);
   spare_render_process_host_->AddObserver(this);
   spare_render_process_host_->Init();
+  // Use the new timeout if there is no previous renderer or
+  // the specified timeout will be triggered after the current timeout
+  // (or not triggered at all).
+  if (!had_spare_renderer || !timeout.has_value() ||
+      DestroyTimerWillFireBefore(timeout.value())) {
+    deferred_destroy_timer_.Stop();
+    StartDestroyTimer(timeout);
+  }
 
   // The spare render process isn't ready, so wait and do the "spare render
   // process changed" callback in RenderProcessReady().
@@ -271,6 +311,9 @@ void SpareRenderProcessHostManager::CleanupSpareRenderProcessHost() {
       spare_render_process_host_->Cleanup();
     }
 
+    // Stop the destroy timer since it is no longer required.
+    deferred_destroy_timer_.Stop();
+
     // Drop reference to the RenderProcessHost object.
     spare_render_process_host_ = nullptr;
     spare_render_process_host_changed_callback_list_.Notify(nullptr);
@@ -284,6 +327,12 @@ SpareRenderProcessHostManager::RegisterSpareRenderProcessHostChangedCallback(
   // current spare host is.
   cb.Run(spare_render_process_host_.get());
   return spare_render_process_host_changed_callback_list_.Add(cb);
+}
+
+void SpareRenderProcessHostManager::SetDeferTimerTaskRunnerForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  deferred_warmup_timer_.SetTaskRunner(task_runner);
+  deferred_destroy_timer_.SetTaskRunner(task_runner);
 }
 
 void SpareRenderProcessHostManager::ReleaseSpareRenderProcessHost() {
