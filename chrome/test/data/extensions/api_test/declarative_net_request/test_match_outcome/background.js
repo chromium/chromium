@@ -18,7 +18,7 @@ chrome.test.runTests([
 
   function setup() {
     // Enable the extension's rulesets here, instead of by default in the
-    // manifest, to ensure that the ruelsets are ready before running the tests
+    // manifest, to ensure that the rulesets are ready before running the tests
     // and avoid race condition. This works since the tests run sequentially.
     chrome.declarativeNetRequest.updateEnabledRulesets(
         {enableRulesetIds: ['rules1', 'rules2', 'modifyheaders']},

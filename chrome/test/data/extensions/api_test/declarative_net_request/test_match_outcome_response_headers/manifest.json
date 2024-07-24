@@ -1,0 +1,32 @@
+{
+  "name": "Test response header matching extension",
+  "declarative_net_request": {
+    "rule_resources": [{
+      "id": "header_matching",
+      "path": "header_matching_rules.json",
+      "enabled": false
+    }, {
+      "id": "inter_phase",
+      "path": "inter_phase_rules.json",
+      "enabled": false
+    }, {
+      "id": "modify_headers",
+      "path": "modify_headers_rules.json",
+      "enabled": false
+    }]
+  },
+  "manifest_version": 2,
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
+    "tabs",
+    "*://allowed-redirect.example/*"
+  ],
+  "version": "1.0",
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  }
+}

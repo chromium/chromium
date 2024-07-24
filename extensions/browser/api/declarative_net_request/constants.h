@@ -250,6 +250,9 @@ extern const char kIncrementActionCountWithoutUseAsBadgeTextError[];
 extern const char kInvalidTestURLError[];
 extern const char kInvalidTestInitiatorError[];
 extern const char kInvalidTestTabIdError[];
+extern const char kInvalidResponseHeaderObjectError[];
+extern const char kInvalidResponseHeaderNameError[];
+extern const char kInvalidResponseHeaderValueError[];
 
 // Histogram names.
 extern const char kIndexAndPersistRulesTimeHistogram[];
