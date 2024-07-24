@@ -763,20 +763,21 @@ void LensOverlayController::PopAndLoadQueryFromHistory() {
       initialization_data_->currently_loaded_search_query_ = previous_query;
     }
 
+    std::optional<SkBitmap> selected_region_bitmap =
+        query.selected_region_bitmap_.drawsNothing()
+            ? std::nullopt
+            : std::make_optional<SkBitmap>(query.selected_region_bitmap_);
+
     // If the query also has text, we should send it as a multimodal query.
     if (query.search_query_text_.empty()) {
-      DoLensRequest(
-          query.selected_region_->Clone(), query.lens_selection_type_,
-          query.selected_region_bitmap_.drawsNothing()
-              ? std::nullopt
-              : std::make_optional<SkBitmap>(query.selected_region_bitmap_));
+      DoLensRequest(query.selected_region_->Clone(), query.lens_selection_type_,
+                    selected_region_bitmap);
     } else {
-      // TODO(b/348003311): Add support for sending the selected region bitmap
-      // in the multimodal request.
       lens_overlay_query_controller_->SendMultimodalRequest(
           initialization_data_->selected_region_.Clone(),
           query.search_query_text_, query.lens_selection_type_,
-          initialization_data_->additional_search_query_params_);
+          initialization_data_->additional_search_query_params_,
+          selected_region_bitmap);
     }
     return;
   }
@@ -1870,7 +1871,8 @@ void LensOverlayController::IssueSearchBoxRequest(
     lens_overlay_query_controller_->SendMultimodalRequest(
         initialization_data_->selected_region_.Clone(), search_box_text,
         lens_selection_type_,
-        initialization_data_->additional_search_query_params_);
+        initialization_data_->additional_search_query_params_,
+        std::make_optional(initialization_data_->selected_region_bitmap_));
   }
   results_side_panel_coordinator_->RegisterEntryAndShow();
   RecordTimeToFirstInteraction();

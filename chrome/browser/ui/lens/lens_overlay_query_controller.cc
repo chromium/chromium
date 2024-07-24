@@ -449,15 +449,15 @@ void LensOverlayQueryController::SendMultimodalRequest(
     lens::mojom::CenterRotatedBoxPtr region,
     const std::string& query_text,
     lens::LensOverlaySelectionType multimodal_selection_type,
-    std::map<std::string, std::string> additional_search_query_params) {
+    std::map<std::string, std::string> additional_search_query_params,
+    std::optional<SkBitmap> region_bytes) {
   if (base::TrimWhitespaceASCII(query_text, base::TRIM_ALL).empty()) {
     return;
   }
   SendInteraction(/*region=*/std::move(region),
                   /*query_text=*/std::make_optional<std::string>(query_text),
                   /*object_id=*/std::nullopt, multimodal_selection_type,
-                  additional_search_query_params,
-                  /*region_bytes*/ std::nullopt);
+                  additional_search_query_params, region_bytes);
 }
 
 void LensOverlayQueryController::SendTextOnlyQuery(

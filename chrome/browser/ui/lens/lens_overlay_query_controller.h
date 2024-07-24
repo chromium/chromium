@@ -103,7 +103,8 @@ class LensOverlayQueryController {
       lens::mojom::CenterRotatedBoxPtr region,
       const std::string& query_text,
       lens::LensOverlaySelectionType lens_selection_type,
-      std::map<std::string, std::string> additional_search_query_params);
+      std::map<std::string, std::string> additional_search_query_params,
+      std::optional<SkBitmap> region_bytes);
 
  protected:
   // Creates an endpoint fetcher for fetching the request data and fetches
