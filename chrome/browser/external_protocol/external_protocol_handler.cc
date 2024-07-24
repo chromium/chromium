@@ -326,7 +326,8 @@ enum class LoggedScheme {
   SEARCH_MS = 1,
   SEARCH = 2,
   MAILTO = 3,
-  kMaxValue = MAILTO,
+  MICROSOFT_EDGE = 4,
+  kMaxValue = MICROSOFT_EDGE,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/permissions/enums.xml:ExternalProtocolScheme)
 
@@ -336,6 +337,8 @@ void LogRequestForScheme(const std::string& scheme) {
     scheme_bucket = LoggedScheme::SEARCH_MS;
   } else if (scheme == "mailto") {
     scheme_bucket = LoggedScheme::MAILTO;
+  } else if (scheme == "microsoft-edge") {
+    scheme_bucket = LoggedScheme::MICROSOFT_EDGE;
   }
 
   base::UmaHistogramEnumeration("BrowserDialogs.ExternalProtocol.Scheme",
