@@ -1261,9 +1261,6 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerialForDragSource) {
 // unfinished. Regression test for https://crbug.com/1400872.
 TEST_P(WaylandDataDragControllerTest, DropWhileFetchingData) {
   const uint32_t surface_id = window_->root_surface()->get_surface_id();
-  // TODO(crbug.com/328783999): Use a RunLoop here (like in
-  // DropSeveralMimeTypes) so we can pass `no_nested_runloops=true` to
-  // `PostToServerAndWait()`.
 
   // Data for each offered mime-type is asynchronously read (eg: using
   // wl_display.sync callbacks, etc), so a single roundtrip - done implicitly
@@ -1272,25 +1269,22 @@ TEST_P(WaylandDataDragControllerTest, DropWhileFetchingData) {
   // and ensure it does not crash in the next step.
   EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
   EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(0);
-  PostToServerAndWait(
-      [surface_id](wl::TestWaylandServerThread* server) {
-        auto* data_device = server->data_device_manager()->data_device();
-        auto* data_offer = data_device->CreateAndSendDataOffer();
-        data_offer->OnOffer(
-            kMimeTypeText,
-            ToClipboardData(std::string(kSampleTextForDragAndDrop)));
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* data_device = server->data_device_manager()->data_device();
+    auto* data_offer = data_device->CreateAndSendDataOffer();
+    data_offer->OnOffer(
+        kMimeTypeText, ToClipboardData(std::string(kSampleTextForDragAndDrop)));
 
-        auto* surface = server->GetObject<wl::MockSurface>(surface_id);
-        data_device->OnEnter(server->GetNextSerial(), surface->resource(),
-                             wl_fixed_from_int(0), wl_fixed_from_int(0),
-                             data_offer);
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    data_device->OnEnter(server->GetNextSerial(), surface->resource(),
+                         wl_fixed_from_int(0), wl_fixed_from_int(0),
+                         data_offer);
 
-        // Sending `drop` right after `enter` here ensures drag controller has
-        // not yet had the chance to (even) start the data fetching, which helps
-        // avoiding flakiness (quite common in this kind of test case).
-        data_device->OnDrop();
-      },
-      false);
+    // Sending `drop` right after `enter` here ensures drag controller has not
+    // yet had the chance to (even) start the data fetching, which helps
+    // avoiding flakiness (quite common in this kind of test case).
+    data_device->OnDrop();
+  });
   Mock::VerifyAndClearExpectations(drop_handler_.get());
 
   EXPECT_FALSE(drop_handler_->dropped_data());
