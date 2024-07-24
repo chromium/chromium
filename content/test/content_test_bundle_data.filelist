@@ -5604,6 +5604,8 @@ data/accessibility/regression/ignored-crash-expected-blink.txt
 data/accessibility/regression/ignored-crash.html
 data/accessibility/regression/inner1.html
 data/accessibility/regression/inner2.html
+data/accessibility/regression/language-changed-on-html-expected-blink.txt
+data/accessibility/regression/language-changed-on-html.html
 data/accessibility/regression/missing-parent-expected-blink.txt
 data/accessibility/regression/missing-parent.html
 data/accessibility/regression/null-object-on-hypertext-offset-computation-expected-auralinux.txt
