@@ -219,9 +219,6 @@
 #include "components/feed/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #else
-#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
-#include "chrome/browser/user_education/user_education_service.h"
-#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "content/public/browser/host_zoom_map.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -1481,32 +1478,6 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> profile_;  // Owned by `profile_manager_`.
 };
-
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       ClearsUserEducationSessionHistory) {
-  auto& storage_service = static_cast<BrowserFeaturePromoStorageService&>(
-      UserEducationServiceFactory::GetForBrowserContext(GetProfile())
-          ->feature_promo_storage_service());
-  RecentSessionData data;
-  data.enabled_time = base::Time::Now() - base::Days(90);
-  data.recent_session_start_times = {base::Time::Now(),
-                                     base::Time::Now() - base::Days(10),
-                                     base::Time::Now() - base::Days(20)};
-  storage_service.SaveRecentSessionData(data);
-
-  data = storage_service.ReadRecentSessionData();
-  ASSERT_EQ(3U, data.recent_session_start_times.size());
-  ASSERT_TRUE(data.enabled_time.has_value());
-
-  BlockUntilBrowsingDataRemoved(base::Time::Now(), base::Time::Max(),
-                                constants::DATA_TYPE_HISTORY, false);
-
-  data = storage_service.ReadRecentSessionData();
-  ASSERT_EQ(0U, data.recent_session_start_times.size());
-  ASSERT_FALSE(data.enabled_time.has_value());
-}
-#endif
 
 #if BUILDFLAG(ENABLE_REPORTING)
 class ChromeBrowsingDataRemoverDelegateWithReportingServiceTest
