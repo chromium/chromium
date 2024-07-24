@@ -125,6 +125,16 @@ export class PostSelectionRendererElement extends PolymerElement {
         (e: CustomEvent<PostSelectionBoundingBox>) => {
           this.onRenderPostSelection(e);
         });
+    this.eventTracker_.add(document, 'finished-receiving-text', () => {
+      if (this.hasSelection()) {
+        // Check for selectable text
+        this.dispatchEvent(new CustomEvent('detect-text-in-region', {
+          bubbles: true,
+          composed: true,
+          detail: this.getNormalizedCenterRotatedBox(),
+        }));
+      }
+    });
     this.resizeObserver.observe(this);
     // Set up listener to listen to events from C++.
     this.listenerIds = [
