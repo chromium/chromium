@@ -58,7 +58,6 @@
 -build/
 -build_overrides/
 -buildtools/
--cc/
 -chrome/
 +chrome/browser/apps/guest_view/
 +chrome/browser/autofill/
