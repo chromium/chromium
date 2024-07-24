@@ -26,6 +26,9 @@ const char kOptimizationGuideServiceModelQualtiyDefaultURL[] =
 const char kLoadedHintLocalHistogramString[] =
     "OptimizationGuide.LoadedHint.Result";
 
+const char kModelValidationErrorHistogramString[] =
+    "OptimizationGuide.ModelValidation.OnDevice.DidError";
+
 const char kOptimizationGuideLanguageOverrideHeaderKey[] =
     "x-optimization-guide-language-override";
 
