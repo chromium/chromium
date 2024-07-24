@@ -28,7 +28,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "ui/gfx/win/d3d_shared_fence.h"
-#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 
@@ -578,7 +577,7 @@ bool SharedImageManager::SupportsScanoutImages() {
       ->GetPlatformRuntimeProperties()
       .supports_native_pixmaps;
 #elif BUILDFLAG(IS_WIN)
-  return gl::DirectCompositionTextureSupported();
+  return false;
 #else
   return false;
 #endif
