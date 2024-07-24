@@ -299,10 +299,6 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     return client_si ? client_si->mailbox() : gpu::Mailbox();
   }
 
-  GLenum GetBackingTextureTarget() const override {
-    return resource()->GetClientSharedImage()->GetTextureTarget();
-  }
-
   uint32_t GetSharedImageUsageFlags() const override {
     return shared_image_usage_flags_;
   }

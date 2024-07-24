@@ -229,7 +229,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
     NOTREACHED_IN_MIGRATION();
     return gpu::Mailbox();
   }
-  virtual GLenum GetBackingTextureTarget() const { return GL_TEXTURE_2D; }
   virtual void* GetPixelBufferAddressForOverwrite() {
     NOTREACHED_IN_MIGRATION();
     return nullptr;
