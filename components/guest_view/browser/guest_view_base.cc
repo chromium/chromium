@@ -184,7 +184,7 @@ void GuestViewBase::Init(std::unique_ptr<GuestViewBase> owned_this,
 
 void GuestViewBase::InitWithWebContents(const base::Value::Dict& create_params,
                                         WebContents* guest_web_contents) {
-  DCHECK(guest_web_contents);
+  CHECK(guest_web_contents);
 
   // Create a ZoomController to allow the guest's contents to be zoomed.
   // Do this before adding the GuestView as a WebContents Observer so that

@@ -135,7 +135,7 @@ void WebContentsTags::CreateForPrintingContents(
 void WebContentsTags::CreateForGuestContents(
     content::WebContents* web_contents) {
 #if !BUILDFLAG(IS_ANDROID)
-  DCHECK(guest_view::GuestViewBase::IsGuest(web_contents));
+  CHECK(guest_view::GuestViewBase::IsGuest(web_contents));
   if (!WebContentsTag::FromWebContents(web_contents)) {
     TagWebContents(web_contents, base::WrapUnique(new GuestTag(web_contents)),
                    WebContentsTag::kTagKey);
