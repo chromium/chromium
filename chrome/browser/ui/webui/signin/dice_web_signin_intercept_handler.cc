@@ -27,6 +27,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/web_ui.h"
@@ -48,9 +49,9 @@ bool IsManaged(const AccountInfo& info) {
   return info.hosted_domain != kNoHostedDomainFound;
 }
 
-// Returns true if the account is supervised.
-bool IsSupervised(const AccountInfo& info) {
-  return info.capabilities.is_subject_to_parental_controls() ==
+// Returns true if the account capabilities are marked as supervised.
+bool IsSupervisedUser(const AccountCapabilities& capabilities) {
+  return capabilities.is_subject_to_parental_controls() ==
          signin::Tribool::kTrue;
 }
 
@@ -75,9 +76,8 @@ base::Value::Dict GetAccountInfoValue(const AccountInfo& info) {
   std::string_view avatar_badge = "";
   if (IsManaged(info)) {
     avatar_badge = kEnterprizeBadgeSource;
-  } else if (IsSupervised(info) &&
-             base::FeatureList::IsEnabled(
-                 supervised_user::kShowKiteForSupervisedUsers)) {
+  } else if (IsSupervisedUser(info.capabilities) && base::FeatureList::IsEnabled(
+      supervised_user::kShowKiteForSupervisedUsers)) {
     avatar_badge = kSupervisedBadgeSource;
   }
   account_info_value.Set("avatarBadge", avatar_badge);
@@ -255,6 +255,14 @@ DiceWebSigninInterceptHandler::GetInterceptionChromeSigninParametersValue() {
   parameters.Set("fullName", intercepted_account().full_name);
   parameters.Set("givenName", intercepted_account().given_name);
   parameters.Set("pictureUrl", GetAccountPictureUrl(intercepted_account()));
+
+  std::string_view managed_user_badge = "";
+  if (IsSupervisedUser(intercepted_account().capabilities) &&
+      base::FeatureList::IsEnabled(
+          supervised_user::kShowKiteForSupervisedUsers)) {
+    managed_user_badge = kSupervisedBadgeSource;
+  }
+  parameters.Set("managedUserBadge", managed_user_badge);
   return parameters;
 }
 
@@ -470,5 +478,5 @@ std::string DiceWebSigninInterceptHandler::GetManagedDisclaimerText() {
 
 bool DiceWebSigninInterceptHandler::GetShouldUseV2Design() {
   return bubble_parameters_.interception_type !=
-         WebSigninInterceptor::SigninInterceptionType::kProfileSwitch;
+             WebSigninInterceptor::SigninInterceptionType::kProfileSwitch;
 }

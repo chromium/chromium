@@ -43,6 +43,7 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
       givenName: '',
       email: '',
       pictureUrl: '',
+      managedUserBadge: '',
     };
   }
 
