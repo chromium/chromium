@@ -100,6 +100,9 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 - (void)openToolsMenu {
   // TODO(crbug.com/41271107): Add logic to ensure the app is in the correct
   // state, for example DCHECK if no tabs are displayed.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_allOf(chrome_test_util::ToolsMenuButton(),
+                                 grey_sufficientlyVisible(), nil)];
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(chrome_test_util::ToolsMenuButton(),
                                           grey_sufficientlyVisible(), nil)]
