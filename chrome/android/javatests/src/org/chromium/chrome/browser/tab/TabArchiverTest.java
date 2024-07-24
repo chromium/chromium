@@ -271,6 +271,7 @@ public class TabArchiverTest {
 
         runOnUiThreadBlocking(
                 () -> {
+                    mTabArchiveSettings.setAutoDeleteEnabled(true);
                     mTabArchiveSettings.setAutoDeleteTimeDeltaHours(0);
                     mTabArchiver.deleteEligibleArchivedTabs();
                 });

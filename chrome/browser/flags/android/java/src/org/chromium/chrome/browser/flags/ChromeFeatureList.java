@@ -887,9 +887,14 @@ public abstract class ChromeFeatureList {
             sGtsCloseTabAnimation.newBooleanParam("skip_removal_delay", false);
     public static final MutableBooleanParamWithSafeDefault sShouldBlockCapturesForFullscreenParam =
             sSuppressionToolbarCaptures.newBooleanParam("block_for_fullscreen", false);
+    public static final MutableBooleanParamWithSafeDefault sAndroidTabDeclutterArchiveEnabled =
+            sAndroidTabDeclutter.newBooleanParam("android_tab_declutter_archive_enabled", true);
     public static final MutableIntParamWithSafeDefault sAndroidTabDeclutterArchiveTimeDeltaHours =
             sAndroidTabDeclutter.newIntParam(
                     "android_tab_declutter_archive_time_delta_hours", 7 * 24);
+    public static final MutableBooleanParamWithSafeDefault sAndroidTabDeclutterAutoDeleteEnabled =
+            sAndroidTabDeclutter.newBooleanParam(
+                    "android_tab_declutter_auto_delete_enabled", false);
     public static final MutableIntParamWithSafeDefault
             sAndroidTabDeclutterAutoDeleteTimeDeltaHours =
                     sAndroidTabDeclutter.newIntParam(
