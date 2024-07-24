@@ -17,40 +17,33 @@ import {OutputCustomEvent} from '../output/output_types.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
 
-const AutomationEvent = chrome.automation.AutomationEvent;
-const AutomationNode = chrome.automation.AutomationNode;
+type AutomationEvent = chrome.automation.AutomationEvent;
+type AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
+const StateType = chrome.automation.StateType;
 
 export class FocusAutomationHandler extends BaseAutomationHandler {
-  /** @private */
-  constructor() {
-    super(null);
+  private previousActiveDescendant_?: AutomationNode;
 
-    /** @private {AutomationNode|undefined} */
-    this.previousActiveDescendant_;
-  }
+  static instance: FocusAutomationHandler;
 
-  /** @private */
-  async initListener_() {
+  private async initListener_(): Promise<void> {
     const desktop = await AsyncUtil.getDesktop();
     desktop.addEventListener(
-        EventType.FOCUS, node => this.onFocus(node), false);
+        EventType.FOCUS, (node: AutomationEvent) => this.onFocus(node), false);
   }
 
-  static async init() {
+  static async init(): Promise<void> {
     if (FocusAutomationHandler.instance) {
       throw new Error(
           'Trying to create two instances of singleton FocusAutomationHandler');
     }
-    FocusAutomationHandler.instance = new FocusAutomationHandler();
+    FocusAutomationHandler.instance = new FocusAutomationHandler(undefined);
     await FocusAutomationHandler.instance.initListener_();
   }
 
-  /**
-   * @param {!AutomationEvent} evt
-   */
-  onFocus(evt) {
+  onFocus(evt: AutomationEvent): void {
     this.removeAllListeners();
 
     // Events on roots and web views can be very noisy due to bubbling. Ignore
@@ -70,11 +63,8 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
         EventType.SELECTED_VALUE_CHANGED, this.onSelectedValueChanged_);
   }
 
-  /**
-   * Handles active descendant changes.
-   * @param {!AutomationEvent} evt
-   */
-  async onActiveDescendantChanged(evt) {
+  /** Handles active descendant changes. */
+  async onActiveDescendantChanged(evt: AutomationEvent): Promise<void> {
     if (!evt.target.activeDescendant) {
       return;
     }
@@ -85,7 +75,8 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
       skipFocusCheck = true;
     }
 
-    if (!skipFocusCheck && !evt.target.state.focused) {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (!skipFocusCheck && !evt.target.state![StateType.FOCUSED]) {
       return;
     }
 
@@ -99,19 +90,17 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
     new Output()
         .withoutHints()
         .withRichSpeechAndBraille(
-            CursorRange.fromNode(evt.target.activeDescendant), prev,
-            OutputCustomEvent.NAVIGATE)
+            CursorRange.fromNode(evt.target.activeDescendant),
+            prev ?? undefined, OutputCustomEvent.NAVIGATE)
         .go();
     this.previousActiveDescendant_ = evt.target.activeDescendant;
   }
 
-  /**
-   * Informs users that details are now available.
-   * @param {!ChromeVoxEvent} evt
-   */
-  onDetailsChanged(evt) {
-    const range = ChromeVoxRange.current;
-    let node = range.start?.node;
+  /** Informs users that details are now available. */
+  onDetailsChanged(_evt: ChromeVoxEvent): void {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const range = ChromeVoxRange.current!;
+    let node: AutomationNode | undefined = range.start?.node;
     while (node && (!node.details || !node.details.length)) {
       node = node.parent;
     }
@@ -130,21 +119,16 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
         .go();
   }
 
-  /**
-   * @param {!ChromeVoxEvent} evt
-   */
-  onEventIfSelected(evt) {
+  onEventIfSelected(evt: ChromeVoxEvent): void {
     if (evt.target.selected) {
       this.onEventDefault(evt);
     }
   }
 
-  /**
-   * @param {!ChromeVoxEvent} evt
-   */
-  onSelectedValueChanged_(evt) {
+  private onSelectedValueChanged_(evt: ChromeVoxEvent): void {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     if (!AutomationPredicate.popUpButton(evt.target) ||
-        evt.target.state.editable) {
+        evt.target.state![StateType.EDITABLE]) {
       return;
     }
 
@@ -155,7 +139,8 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
 
     // Return early if the menu is expanded, to avoid double speech, as active
     // descendant events will also be received and announced.
-    if (evt.target.state.expanded) {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (evt.target.state![StateType.EXPANDED]) {
       return;
     }
 
@@ -167,6 +152,3 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
     }
   }
 }
-
-/** @type {FocusAutomationHandler} */
-FocusAutomationHandler.instance;
