@@ -23,6 +23,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.ui.base.LocalizationUtils;
 
 /**
  * This class is responsible for rendering the bottom sheet which displays all credentials from any
@@ -73,10 +74,18 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
                 new LinearLayoutManager(
                         mSheetItemListView.getContext(), LinearLayoutManager.VERTICAL, false));
         mSheetItemListView.setItemAnimator(null);
+
+        // Apply RTL layout changes.
+        int layoutDirection =
+                LocalizationUtils.isLayoutRtl()
+                        ? View.LAYOUT_DIRECTION_RTL
+                        : View.LAYOUT_DIRECTION_LTR;
+        mContentView.setLayoutDirection(layoutDirection);
     }
 
     /**
      * Sets a new listener that reacts to events like item selection or dismissal.
+     *
      * @param dismissHandler A {@link Callback<Integer>}.
      */
     void setDismissHandler(Callback<Integer> dismissHandler) {

@@ -37,6 +37,7 @@ android_library("test_java") {
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingUiCaptureTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/PasswordGenerationIntegrationTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetIntegrationTest.java",
+    "javatests/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetRenderTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetViewTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryTestHelper.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryViewTest.java",
@@ -54,6 +55,7 @@ android_library("test_java") {
   deps = [
     ":test_resources",
     "internal:internal_java",
+    "internal:java_resources",
     "public:public_java",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -73,6 +75,7 @@ android_library("test_java") {
     "//chrome/browser/touch_to_fill/password_manager/password_generation/android:test_support_java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/layouts/test:java",
+    "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/autofill/android:autofill_java",
