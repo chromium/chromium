@@ -3178,6 +3178,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (mTabModelObserver != null) mTabModelObserver.destroy();
 
+        if (mTabModelSelectorObserver != null && mTabModelSelector != null) {
+            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+            mTabModelSelectorObserver = null;
+        }
+
         if (mUndoBarPopupController != null) {
             mUndoBarPopupController.destroy();
             mUndoBarPopupController = null;
