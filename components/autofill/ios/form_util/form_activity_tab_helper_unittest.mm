@@ -896,30 +896,6 @@ TEST_P(FormMutationFormControlElements, AddedFormControlElement) {
       observer_->form_activity_info()->form_activity);
 }
 
-TEST_P(FormMutationFormControlElements, RemovedFormControlElement) {
-  auto [element_tag, allow_batching] = GetParam();
-  // Html with the element to be removed.
-  NSString* const html = [NSString
-      stringWithFormat:@"<html><body><%@/ id='element-id'></body></html>",
-                       base::SysUTF8ToNSString(element_tag)];
-  LoadHtml(html);
-  web::WebFrame* main_frame = WaitForMainFrame();
-  ASSERT_TRUE(main_frame);
-
-  TrackFormMutations(main_frame, allow_batching);
-
-  NSString* const remove_element_JS =
-      @"document.getElementById('element-id').remove()";
-  ExecuteJavaScript(remove_element_JS);
-
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
-    return observer_->form_activity_info() != nullptr;
-  }));
-
-  ValidateParamsAfterFormChangedEvent(
-      observer_->form_activity_info()->form_activity);
-}
-
 INSTANTIATE_TEST_SUITE_P(
     /* No InstantiationName */,
     FormMutationFormControlElements,

@@ -23,7 +23,7 @@ let autofillAcrossIframes: boolean = false;
  * Enables sending all form removal events to the browser for submission detection.
  * Corresponds to autofill::feature::AutofillEnableXHRSubmissionDetectionIOS.
  */
-let autofillXHRSubmissionDetection: boolean = false;
+let autofillXHRSubmissionDetection: boolean = true;
 // LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_xhr_submission_detection_ios)
 
 /**

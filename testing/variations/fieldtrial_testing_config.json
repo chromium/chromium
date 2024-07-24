@@ -2044,21 +2044,6 @@
             ]
         }
     ],
-    "AutofillEnableXHRSubmissionDetectionIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableXHRSubmissionDetectionIOS"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillFixCachingOnJavaScriptChanges": [
         {
             "platforms": [

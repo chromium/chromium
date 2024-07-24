@@ -322,7 +322,7 @@ BASE_FEATURE(kAutofillExtractOnlyNonAdFrames,
 // on iOS.
 BASE_FEATURE(kAutofillEnableXHRSubmissionDetectionIOS,
              "AutofillEnableXHRSubmissionDetectionIOS",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_xhr_submission_detection_ios)
 
 // When enabled, focusing on an autofilled field that was traditionally filled
