@@ -176,10 +176,10 @@
     Result updated
   </message>
   <message name="IDS_COMPOSE_UNDO_RESULT_A11Y_MESSAGE" desc="Accessibility string read by screen readers on Mac when the undo button in the result dialog has been pressed.">
-    Undo result
+    Undoing result
   </message>
   <message name="IDS_COMPOSE_REDO_RESULT_A11Y_MESSAGE" desc="Accessibility string read by screen readers on Mac when the redo button in the result dialog has been pressed.">
-    Redo result
+    Redoing result
   </message>
 
   <!-- Errors -->
