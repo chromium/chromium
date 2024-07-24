@@ -397,6 +397,7 @@ void WebNNGraphImplBackendTest::SetUp() {
       ::testing::UnitTest::GetInstance()->current_test_info()->name();
   static auto kSupportedTests = base::MakeFixedFlatSet<std::string_view>({
       "BuildAndComputeConcatWithConstants",
+      "BuildAndComputeSingleOperatorGruCell",
   });
   if (!kSupportedTests.contains(current_test_name)) {
     GTEST_SKIP() << "Skipping test because the operator is not yet supported.";
@@ -2914,8 +2915,13 @@ struct GruCellTester {
   GruCellAttributes attributes;
   OperandInfo<T> output;
 
-  void Test(BuildAndComputeExpectation expectation =
+  void Test(WebNNGraphImplBackendTest& helper,
+            BuildAndComputeExpectation expectation =
                 BuildAndComputeExpectation::kSuccess) {
+#if BUILDFLAG(IS_CHROMEOS)
+    helper.SetComputeResult("output", output.values);
+#endif
+
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
     uint64_t input_operand_id =
@@ -2999,7 +3005,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGruCell) {
                    .dimensions = {batch_size, hidden_size},
                    .values = {-30., -30., -30., -30., -30., -210., -210., -210.,
                               -210., -210., -552., -552., -552., -552., -552.}}}
-        .Test();
+        .Test(*this);
   }
   // Test gruCell with bias and recurrentbias.
   {
@@ -3038,7 +3044,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGruCell) {
                    .dimensions = {batch_size, hidden_size},
                    .values = {-42., -42., -42., -42., -42., -240., -240., -240.,
                               -240., -240., -600., -600., -600., -600., -600.}}}
-        .Test();
+        .Test(*this);
   }
 }
 
