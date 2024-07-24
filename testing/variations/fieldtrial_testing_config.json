@@ -900,6 +900,22 @@
             ]
         }
     ],
+    "ArcExtendServiceAnrTimeout": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ArcExtendServiceAnrTimeout"
+                    ],
+                    "min_os_version": "15962.0.0"
+                }
+            ]
+        }
+    ],
     "ArcIgnoreHoverEventAnr": [
         {
             "platforms": [
