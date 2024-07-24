@@ -111,7 +111,6 @@ ChromeBrowserMainExtraPartsPerformanceManager::GetInstance() {
 // static
 void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
     performance_manager::Graph* graph) {
-  graph->PassToGraph(std::make_unique<performance_manager::PageAggregator>());
   graph->PassToGraph(
       std::make_unique<performance_manager::FrozenFrameAggregator>());
   graph->PassToGraph(

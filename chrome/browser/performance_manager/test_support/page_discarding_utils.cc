@@ -40,14 +40,14 @@ GraphTestHarnessWithMockDiscarder::~GraphTestHarnessWithMockDiscarder() =
     default;
 
 void GraphTestHarnessWithMockDiscarder::SetUp() {
+  // Some tests depends on the existence of the PageAggregator.
+  GetGraphFeatures().EnablePageAggregator();
+
   GraphTestHarness::SetUp();
 
   performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
       local_state_.registry());
   user_performance_tuning_manager_environment_.SetUp(&local_state_);
-
-  // Some tests depends on the existence of the PageAggregator.
-  graph()->PassToGraph(std::make_unique<PageAggregator>());
 
   // Make the policy use a mock PageDiscarder.
   auto mock_discarder = std::make_unique<MockPageDiscarder>();

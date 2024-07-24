@@ -91,7 +91,7 @@ class PerformanceManagerBrowserTestHarness
   // delegates to "OnGraphCreated".
   void OnGraphCreatedImpl(Graph* graph);
 
-  GraphFeatures graph_features_;
+  GraphFeatures graph_features_ = GraphFeatures::WithDefault();
 
   std::set<raw_ptr<content::BrowserContext>> tracked_browser_contexts_;
 };
