@@ -15,6 +15,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_test_utils.h"
 
@@ -74,9 +75,13 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
       builder.BuildOutput("output", {1, 2, 3, 4}, OperandDataType::kFloat32);
   builder.BuildRelu(input_operand_id, output_operand_id);
 
+  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> graph_builder_remote;
+  webnn_context_remote->CreateGraphBuilder(
+      graph_builder_remote.BindNewEndpointAndPassReceiver());
+
   // The GraphImplDml should be built successfully.
   base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
-  webnn_context_remote->CreateGraph(builder.CloneGraphInfo(),
+  graph_builder_remote->CreateGraph(builder.CloneGraphInfo(),
                                     create_graph_future.GetCallback());
   mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
   EXPECT_TRUE(create_graph_result->is_graph_remote());

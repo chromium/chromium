@@ -11,7 +11,7 @@
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -134,19 +134,17 @@ ScriptPromise<MLComputeResult> MLContext::compute(
                         exception_state);
 }
 
-void MLContext::CreateWebNNGraph(
-    webnn::mojom::blink::GraphInfoPtr graph_info,
-    webnn::mojom::blink::WebNNContext::CreateGraphCallback callback) {
+void MLContext::CreateWebNNGraphBuilder(
+    mojo::PendingAssociatedReceiver<webnn::mojom::blink::WebNNGraphBuilder>
+        pending_receiver,
+    ExceptionState& exception_state) {
   if (!context_remote_.is_bound()) {
-    std::move(callback).Run(webnn::mojom::blink::CreateGraphResult::NewError(
-        webnn::mojom::blink::Error::New(
-            webnn::mojom::blink::Error::Code::kUnknownError,
-            "Context is lost.")));
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Context is lost.");
     return;
   }
 
-  context_remote_->CreateGraph(std::move(graph_info),
-                               WTF::BindOnce(std::move(callback)));
+  context_remote_->CreateGraphBuilder(std::move(pending_receiver));
 }
 
 void MLContext::OnLost(uint32_t custom_reason, const std::string& description) {

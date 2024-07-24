@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/mojom/features.mojom-blink.h"
@@ -851,16 +852,43 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
 }  // namespace
 
 // static
-MLGraphBuilder* MLGraphBuilder::Create(MLContext* context) {
-  return MakeGarbageCollected<MLGraphBuilder>(context);
+MLGraphBuilder* MLGraphBuilder::Create(ScriptState* script_state,
+                                       MLContext* context,
+                                       ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid script state");
+    return nullptr;
+  }
+
+  mojo::PendingAssociatedRemote<webnn::mojom::blink::WebNNGraphBuilder>
+      pending_remote;
+  context->CreateWebNNGraphBuilder(
+      pending_remote.InitWithNewEndpointAndPassReceiver(), exception_state);
+
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<MLGraphBuilder>(
+      ExecutionContext::From(script_state), context, std::move(pending_remote));
 }
 
-MLGraphBuilder::MLGraphBuilder(MLContext* context) : ml_context_(context) {}
+MLGraphBuilder::MLGraphBuilder(
+    ExecutionContext* execution_context,
+    MLContext* context,
+    mojo::PendingAssociatedRemote<webnn::mojom::blink::WebNNGraphBuilder>
+        pending_remote)
+    : ml_context_(context), remote_(execution_context) {
+  remote_.Bind(std::move(pending_remote),
+               execution_context->GetTaskRunner(TaskType::kMachineLearning));
+}
 
 MLGraphBuilder::~MLGraphBuilder() = default;
 
 void MLGraphBuilder::Trace(Visitor* visitor) const {
   visitor->Trace(ml_context_);
+  visitor->Trace(remote_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -2233,7 +2261,13 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
       return promise;
     }
 
-    ml_context_->CreateWebNNGraph(
+    if (!remote_.is_bound()) {
+      resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                       "Invalid state");
+      return promise;
+    }
+
+    remote_->CreateGraph(
         *std::move(graph_info),
         WTF::BindOnce(&MLGraphBuilder::DidCreateWebNNGraph,
                       WrapPersistent(this), WrapPersistent(resolver),

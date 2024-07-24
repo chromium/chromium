@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_BUILDER_H_
 
 #include "base/types/expected.h"
-#include "services/webnn/public/mojom/webnn_context_provider.mojom-blink-forward.h"
+#include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 
 namespace blink {
 
@@ -61,9 +62,15 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static MLGraphBuilder* Create(MLContext* context);
+  static MLGraphBuilder* Create(ScriptState* script_state,
+                                MLContext* context,
+                                ExceptionState& exception_state);
 
-  explicit MLGraphBuilder(MLContext* context);
+  explicit MLGraphBuilder(
+      ExecutionContext* execution_context,
+      MLContext* context,
+      mojo::PendingAssociatedRemote<webnn::mojom::blink::WebNNGraphBuilder>
+          pending_remote);
 
   MLGraphBuilder(const MLGraphBuilder&) = delete;
   MLGraphBuilder& operator=(const MLGraphBuilder&) = delete;
@@ -427,6 +434,8 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
       const HeapVector<Member<MLActivation>>& activations);
 
   Member<MLContext> ml_context_;
+
+  HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNGraphBuilder> remote_;
 };
 
 }  // namespace blink

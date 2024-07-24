@@ -207,7 +207,10 @@ dictionary MLTriangularOptions {
   RuntimeEnabled=MachineLearningNeuralNetwork,
   Exposed=(Window, DedicatedWorker)
 ] interface MLGraphBuilder {
-  constructor(MLContext context);
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ] constructor(MLContext context);
 
   [RaisesException] MLOperand input(USVString name, MLOperandDescriptor desc);
 

@@ -1,0 +1,23 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webnn.mojom;
+
+import "services/webnn/public/mojom/webnn_error.mojom";
+import "services/webnn/public/mojom/webnn_graph.mojom";
+
+// Represents the return value of `CreateGraph()`. Let it be `graph_remote` if
+// the graph was successfully created and `error` otherwise.
+union CreateGraphResult {
+  pending_associated_remote<WebNNGraph>? graph_remote;
+  Error error;
+};
+
+// Represents the `MLGraphBuilder` in the WebIDL definition. Hosted in the GPU
+// process and called by the renderer process.
+interface WebNNGraphBuilder {
+  // Compiles and initializes a backend-specific computational graph described
+  // by `graph_info`.
+  CreateGraph(GraphInfo graph_info) => (CreateGraphResult result);
+};

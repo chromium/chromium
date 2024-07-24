@@ -20,12 +20,14 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/features.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -203,7 +205,8 @@ MLGraphBuilder* CreateGraphBuilder(V8TestingScope& scope,
 
   auto* context = NativeValueTraits<MLContext>::NativeValue(
       scope.GetIsolate(), tester.Value().V8Value(), scope.GetExceptionState());
-  return MLGraphBuilder::Create(context);
+  return MLGraphBuilder::Create(scope.GetScriptState(), context,
+                                scope.GetExceptionState());
 }
 
 std::pair<String, String> ComputeGraph(V8TestingScope& scope,
@@ -416,6 +419,8 @@ class WebNNContextHelper {
  private:
   std::map<base::UnguessableToken, std::unique_ptr<FakeWebNNBuffer>>
       buffer_impls_;
+
+  mojo::UniqueAssociatedReceiverSet<blink_mojom::WebNNGraphBuilder> builders_;
 };
 
 class FakeWebNNGraph : public blink_mojom::WebNNGraph {
@@ -447,6 +452,7 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
       const HashMap<WTF::String, base::UnguessableToken>& named_outputs)
       override {}
 
+  // TODO(crbug.com/354741414): Fix this dangling pointer.
   const raw_ref<MLGraphTest, DanglingUntriaged> helper_;
 };
 
@@ -489,6 +495,7 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
     helper_->DisconnectAndDestroyWebNNBufferImpl(handle());
   }
 
+  // TODO(crbug.com/354741414): Fix this dangling pointer.
   const raw_ref<WebNNContextHelper, DanglingUntriaged> helper_;
 
   mojo::AssociatedReceiver<blink_mojom::WebNNBuffer> receiver_;
@@ -498,15 +505,15 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
   mojo_base::BigBuffer buffer_;
 };
 
-class FakeWebNNContext : public blink_mojom::WebNNContext {
+class FakeWebNNGraphBuilder : public blink_mojom::WebNNGraphBuilder {
  public:
-  explicit FakeWebNNContext(MLGraphTest& helper) : helper_(helper) {}
-  FakeWebNNContext(const FakeWebNNContext&) = delete;
-  FakeWebNNContext(FakeWebNNContext&&) = delete;
-  ~FakeWebNNContext() override = default;
+  explicit FakeWebNNGraphBuilder(MLGraphTest& helper) : helper_(helper) {}
+  FakeWebNNGraphBuilder(const FakeWebNNGraphBuilder&) = delete;
+  FakeWebNNGraphBuilder(FakeWebNNGraphBuilder&&) = delete;
+  ~FakeWebNNGraphBuilder() override = default;
 
  private:
-  // Override methods from webnn::mojom::WebNNContext.
+  // webnn::mojom::blink::WebNNGraphBuilder:
   void CreateGraph(blink_mojom::GraphInfoPtr graph_info,
                    CreateGraphCallback callback) override {
     helper_->SetGraphInfo(std::move(graph_info));
@@ -521,6 +528,26 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
         std::move(blink_remote)));
   }
 
+  // TODO(crbug.com/354741414): Fix this dangling pointer.
+  const raw_ref<MLGraphTest, DanglingUntriaged> helper_;
+};
+
+class FakeWebNNContext : public blink_mojom::WebNNContext {
+ public:
+  explicit FakeWebNNContext(MLGraphTest& helper) : helper_(helper) {}
+  FakeWebNNContext(const FakeWebNNContext&) = delete;
+  FakeWebNNContext(FakeWebNNContext&&) = delete;
+  ~FakeWebNNContext() override = default;
+
+ private:
+  // Override methods from webnn::mojom::WebNNContext.
+  void CreateGraphBuilder(
+      mojo::PendingAssociatedReceiver<blink_mojom::WebNNGraphBuilder> receiver)
+      override {
+    mojo::MakeSelfOwnedAssociatedReceiver<blink_mojom::WebNNGraphBuilder>(
+        std::make_unique<FakeWebNNGraphBuilder>(*helper_), std::move(receiver));
+  }
+
   void CreateBuffer(
       mojo::PendingAssociatedReceiver<blink_mojom::WebNNBuffer> receiver,
       blink_mojom::BufferInfoPtr buffer_info,
@@ -531,9 +558,10 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
                            std::move(buffer_info)));
   }
 
-  WebNNContextHelper context_helper_;
-
+  // TODO(crbug.com/354741414): Fix this dangling pointer.
   const raw_ref<MLGraphTest, DanglingUntriaged> helper_;
+
+  WebNNContextHelper context_helper_;
 };
 
 class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {

@@ -13,8 +13,10 @@
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
+#include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
 #include "services/webnn/webnn_buffer_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
+#include "services/webnn/webnn_graph_builder_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn {
@@ -50,9 +52,15 @@ void WebNNContextImpl::AssertCalledOnValidSequence() const {
 }
 #endif
 
+void WebNNContextImpl::ReportBadGraphBuilderMessage(
+    const std::string& message,
+    base::PassKey<WebNNGraphBuilderImpl> pass_key) {
+  graph_builder_impls_.ReportBadMessage(message);
+}
+
 void WebNNContextImpl::CreateGraph(
     mojom::GraphInfoPtr graph_info,
-    mojom::WebNNContext::CreateGraphCallback callback) {
+    mojom::WebNNGraphBuilder::CreateGraphCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto compute_resource_info =
@@ -65,6 +73,12 @@ void WebNNContextImpl::CreateGraph(
   CreateGraphImpl(std::move(graph_info), *std::move(compute_resource_info),
                   base::BindOnce(&WebNNContextImpl::DidCreateWebNNGraphImpl,
                                  AsWeakPtr(), std::move(callback)));
+}
+
+void WebNNContextImpl::CreateGraphBuilder(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraphBuilder> receiver) {
+  graph_builder_impls_.Add(std::make_unique<WebNNGraphBuilderImpl>(*this),
+                           std::move(receiver));
 }
 
 void WebNNContextImpl::CreateBuffer(
@@ -104,7 +118,7 @@ void WebNNContextImpl::DisconnectAndDestroyWebNNBufferImpl(
 }
 
 void WebNNContextImpl::DidCreateWebNNGraphImpl(
-    mojom::WebNNContext::CreateGraphCallback callback,
+    mojom::WebNNGraphBuilder::CreateGraphCallback callback,
     base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

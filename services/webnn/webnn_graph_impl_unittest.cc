@@ -31,6 +31,7 @@
 #include "services/webnn/public/mojom/webnn_buffer.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
 #include "services/webnn/webnn_buffer_impl.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
@@ -204,11 +205,15 @@ bool ValidateInputsForComputing(
   webnn_context.Bind(
       std::move(create_context_result->get_success()->context_remote));
 
+  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> graph_builder_remote;
+  webnn_context->CreateGraphBuilder(
+      graph_builder_remote.BindNewEndpointAndPassReceiver());
+
   // Creates WebNN Graph mojo interface with the graph information which is
   // validated before compiling.
   base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
-  webnn_context->CreateGraph(std::move(graph_info),
-                             create_graph_future.GetCallback());
+  graph_builder_remote->CreateGraph(std::move(graph_info),
+                                    create_graph_future.GetCallback());
   mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
   mojo::AssociatedRemote<mojom::WebNNGraph> webnn_graph;
   webnn_graph.Bind(std::move(create_graph_result->get_graph_remote()));
@@ -264,11 +269,15 @@ bool ValidateDispatch(mojom::GraphInfoPtr graph_info,
   webnn_context.Bind(
       std::move(create_context_result->get_success()->context_remote));
 
+  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> graph_builder_remote;
+  webnn_context->CreateGraphBuilder(
+      graph_builder_remote.BindNewEndpointAndPassReceiver());
+
   // Creates WebNN Graph mojo interface with the graph information which is
   // validated before compiling.
   base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
-  webnn_context->CreateGraph(std::move(graph_info),
-                             create_graph_future.GetCallback());
+  graph_builder_remote->CreateGraph(std::move(graph_info),
+                                    create_graph_future.GetCallback());
   mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
   mojo::AssociatedRemote<mojom::WebNNGraph> webnn_graph;
   webnn_graph.Bind(std::move(create_graph_result->get_graph_remote()));

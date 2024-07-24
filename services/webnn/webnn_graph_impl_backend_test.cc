@@ -22,6 +22,7 @@
 #include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_test_utils.h"
@@ -75,6 +76,7 @@ void BuildAndCompute(
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
   mojo::AssociatedRemote<mojom::WebNNGraph> webnn_graph_remote;
+  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> webnn_graph_builder_remote;
 
   WebNNContextProviderImpl::CreateForTesting(
       webnn_provider_remote.BindNewPipeAndPassReceiver());
@@ -96,10 +98,14 @@ void BuildAndCompute(
       << create_context_result->get_error()->message;
   EXPECT_TRUE(webnn_context_remote.is_bound());
 
+  // Create the GraphBuilder through the context.
+  webnn_context_remote->CreateGraphBuilder(
+      webnn_graph_builder_remote.BindNewEndpointAndPassReceiver());
+
   // The GraphImpl should be built successfully.
   base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
-  webnn_context_remote->CreateGraph(std::move(graph_info),
-                                    create_graph_future.GetCallback());
+  webnn_graph_builder_remote->CreateGraph(std::move(graph_info),
+                                          create_graph_future.GetCallback());
   mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
   if (!create_graph_result->is_error()) {
     webnn_graph_remote.Bind(std::move(create_graph_result->get_graph_remote()));
@@ -109,7 +115,9 @@ void BuildAndCompute(
     EXPECT_TRUE(create_graph_result->is_error());
     EXPECT_FALSE(webnn_graph_remote.is_bound());
     EXPECT_TRUE(webnn_context_remote.is_bound());
+    EXPECT_TRUE(webnn_graph_builder_remote.is_bound());
     webnn_graph_remote.reset();
+    webnn_graph_builder_remote.reset();
     webnn_context_remote.reset();
     webnn_provider_remote.reset();
     base::RunLoop().RunUntilIdle();
@@ -129,6 +137,7 @@ void BuildAndCompute(
   named_outputs = std::move(compute_result->get_named_outputs());
 
   webnn_graph_remote.reset();
+  webnn_graph_builder_remote.reset();
   webnn_context_remote.reset();
   webnn_provider_remote.reset();
   base::RunLoop().RunUntilIdle();
@@ -3135,6 +3144,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildOneGraphToComputeMultipleTimes) {
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
   mojo::AssociatedRemote<mojom::WebNNGraph> webnn_graph_remote;
+  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> webnn_graph_builder_remote;
   WebNNContextProviderImpl::CreateForTesting(
       webnn_provider_remote.BindNewPipeAndPassReceiver());
 
@@ -3154,10 +3164,14 @@ TEST_F(WebNNGraphImplBackendTest, BuildOneGraphToComputeMultipleTimes) {
   }
   EXPECT_TRUE(webnn_context_remote.is_bound());
 
+  // Create the GraphBuilder through the context.
+  webnn_context_remote->CreateGraphBuilder(
+      webnn_graph_builder_remote.BindNewEndpointAndPassReceiver());
+
   // The GraphImpl should be built successfully.
   base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
-  webnn_context_remote->CreateGraph(builder.CloneGraphInfo(),
-                                    create_graph_future.GetCallback());
+  webnn_graph_builder_remote->CreateGraph(builder.CloneGraphInfo(),
+                                          create_graph_future.GetCallback());
   mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
   EXPECT_FALSE(create_graph_result->is_error());
   webnn_graph_remote.Bind(std::move(create_graph_result->get_graph_remote()));

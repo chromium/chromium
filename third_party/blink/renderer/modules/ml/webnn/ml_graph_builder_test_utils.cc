@@ -35,7 +35,7 @@ MLGraphBuilder* CreateMLGraphBuilder(ExecutionContext* execution_context,
   MLContext* ml_context = V8MLContext::ToWrappable(tester.Value().GetIsolate(),
                                                    tester.Value().V8Value());
   CHECK(ml_context);
-  return MLGraphBuilder::Create(ml_context);
+  return MLGraphBuilder::Create(script_state, ml_context, exception_state);
 }
 
 MLOperand* BuildInput(MLGraphBuilder* builder,
