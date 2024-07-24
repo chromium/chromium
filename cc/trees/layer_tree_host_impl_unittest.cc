@@ -705,11 +705,15 @@ class LayerTreeHostImplTestBase : public testing::Test,
   }
 
   void DrawFrame() {
-    PrepareForUpdateDrawProperties(host_impl_->active_tree());
-    TestFrameData frame;
     auto args = viz::CreateBeginFrameArgsForTesting(
         BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
         base::TimeTicks() + base::Milliseconds(1));
+    DrawFrameWithArgs(args);
+  }
+
+  void DrawFrameWithArgs(const viz::BeginFrameArgs& args) {
+    PrepareForUpdateDrawProperties(host_impl_->active_tree());
+    TestFrameData frame;
     host_impl_->WillBeginImplFrame(args);
     EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
     host_impl_->DrawLayers(&frame);
@@ -12173,6 +12177,30 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   EXPECT_EQ(1u, metadata_latency_after.size());
   EXPECT_TRUE(metadata_latency_after[0].FindLatency(
       ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, nullptr));
+}
+
+TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
+       CompositorFrameMetadataFrameIntervalInputs) {
+  CreateHostImpl(DefaultSettings(), CreateLayerTreeFrameSink());
+  SetupRootLayer<SolidColorLayerImpl>(host_impl_->active_tree(),
+                                      gfx::Size(10, 10));
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  auto* fake_layer_tree_frame_sink =
+      static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
+  host_impl_->NotifyInputEvent();
+  host_impl_->SetFullViewportDamage();
+  host_impl_->SetNeedsRedraw();
+  auto args = viz::CreateBeginFrameArgsForTesting(
+      BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
+      base::TimeTicks() + base::Milliseconds(1234));
+  DrawFrameWithArgs(args);
+
+  const auto& frame_interval_inputs =
+      fake_layer_tree_frame_sink->last_sent_frame()
+          ->metadata.frame_interval_inputs;
+  EXPECT_TRUE(frame_interval_inputs.has_input);
+  EXPECT_EQ(args.frame_time, frame_interval_inputs.frame_time);
 }
 
 #if BUILDFLAG(IS_ANDROID)

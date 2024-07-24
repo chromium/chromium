@@ -857,6 +857,15 @@ viz::CompositorFrame VideoFrameSubmitter::CreateCompositorFrame(
   viz::CompositorFrame compositor_frame;
   compositor_frame.metadata.begin_frame_ack = begin_frame_ack;
   compositor_frame.metadata.frame_token = frame_token;
+  if (video_frame_provider_) {
+    compositor_frame.metadata.frame_interval_inputs.frame_time =
+        last_begin_frame_args_.frame_time;
+    compositor_frame.metadata.frame_interval_inputs.content_interval_info
+        .push_back({viz::ContentFrameIntervalType::kVideo,
+                    video_frame_provider_->GetPreferredRenderInterval()});
+    compositor_frame.metadata.frame_interval_inputs
+        .has_only_content_frame_interval_updates = true;
+  }
 
   if (video_frame && video_frame->metadata().decode_end_time.has_value()) {
     base::TimeTicks value = *video_frame->metadata().decode_end_time;

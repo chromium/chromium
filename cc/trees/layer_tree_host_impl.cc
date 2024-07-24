@@ -2830,6 +2830,10 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
       CurrentBeginFrameArgs().frame_time,
       frame->deadline_in_frames.value_or(0u), CurrentBeginFrameArgs().interval,
       frame->use_default_lower_bound_deadline);
+  metadata.frame_interval_inputs.frame_time =
+      CurrentBeginFrameArgs().frame_time;
+  metadata.frame_interval_inputs.has_input =
+      frame_rate_estimator_.input_priority_mode();
 
   base::TimeDelta preferred_frame_interval;
   static const bool feature_allowed =

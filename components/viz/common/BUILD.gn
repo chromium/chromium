@@ -193,6 +193,8 @@ viz_component("common") {
     "quads/draw_quad.h",
     "quads/frame_deadline.cc",
     "quads/frame_deadline.h",
+    "quads/frame_interval_inputs.cc",
+    "quads/frame_interval_inputs.h",
     "quads/largest_draw_quad.cc",
     "quads/largest_draw_quad.h",
     "quads/offset_tag.cc",

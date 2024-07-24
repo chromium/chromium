@@ -992,6 +992,16 @@ TEST_P(VideoFrameSubmitterTest, PreferredInterval) {
   EXPECT_EQ(sink_->last_submitted_compositor_frame()
                 .metadata.begin_frame_ack.preferred_frame_interval,
             video_frame_provider_->preferred_interval);
+  const auto& frame_interval_inputs =
+      sink_->last_submitted_compositor_frame().metadata.frame_interval_inputs;
+  ASSERT_EQ(frame_interval_inputs.content_interval_info.size(), 1u);
+  EXPECT_EQ(frame_interval_inputs.content_interval_info[0].frame_interval,
+            video_frame_provider_->preferred_interval);
+  EXPECT_EQ(frame_interval_inputs.content_interval_info[0].type,
+            viz::ContentFrameIntervalType::kVideo);
+  EXPECT_EQ(frame_interval_inputs.content_interval_info[0].duplicate_count, 0u);
+  EXPECT_TRUE(frame_interval_inputs.has_only_content_frame_interval_updates);
+  EXPECT_EQ(args.frame_time, frame_interval_inputs.frame_time);
 }
 
 TEST_P(VideoFrameSubmitterTest, NoDuplicateFramesOnBeginFrame) {

@@ -78,9 +78,6 @@ class VIZ_SERVICE_EXPORT FrameRateDecider : public SurfaceObserver {
 
   void SetSupportedFrameIntervals(
       base::flat_set<base::TimeDelta> supported_intervals);
-  bool output_surface_supports_set_frame_rate() const {
-    return output_surface_supports_set_frame_rate_;
-  }
 
   void set_min_num_of_frames_to_toggle_interval_for_testing(size_t num) {
     min_num_of_frames_to_toggle_interval_ = num;

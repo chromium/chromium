@@ -10,6 +10,7 @@ import "services/viz/public/mojom/compositing/compositor_frame_transition_direct
 import "ui/gfx/mojom/delegated_ink_metadata.mojom";
 import "services/viz/public/mojom/compositing/offset_tag.mojom";
 import "services/viz/public/mojom/compositing/frame_deadline.mojom";
+import "services/viz/public/mojom/compositing/frame_interval_inputs.mojom";
 import "services/viz/public/mojom/compositing/region_capture_bounds.mojom";
 import "services/viz/public/mojom/compositing/selection.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
@@ -86,4 +87,6 @@ struct CompositorFrameMetadata {
 
   array<OffsetTagDefinition> offset_tag_definitions;
   array<OffsetTagValue> offset_tag_values;
+
+  FrameIntervalInputs frame_interval_inputs;
 };
