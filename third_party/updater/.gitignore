@@ -6,6 +6,7 @@
 /chrome_mac_universal_prod/UpdaterSetup
 /chrome_mac_universal_prod/cipd/GoogleUpdater.app/
 /chrome_mac_universal_prod/cipd/UpdaterSetup
+/chrome_win_arm64/cipd/UpdaterSetup_test.exe
 /chrome_win_x86/UpdaterSetup_test.exe
 /chrome_win_x86/cipd/UpdaterSetup_test.exe
 /chrome_win_x86_64/UpdaterSetup_test.exe
@@ -16,6 +17,7 @@
 /chromium_mac_amd64/cipd/ChromiumUpdater_test.app/
 /chromium_mac_arm64/ChromiumUpdater_test.app/
 /chromium_mac_arm64/cipd/ChromiumUpdater_test.app/
+/chromium_win_arm64/cipd/UpdaterSetup_test.exe
 /chromium_win_x86/UpdaterSetup_test.exe
 /chromium_win_x86/cipd/UpdaterSetup_test.exe
 /chromium_win_x86_64/UpdaterSetup_test.exe
