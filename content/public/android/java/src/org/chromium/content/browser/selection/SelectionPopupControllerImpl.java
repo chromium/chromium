@@ -20,6 +20,7 @@ import android.view.HapticFeedbackConstants;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.textclassifier.SelectionEvent;
 import android.view.textclassifier.TextClassifier;
@@ -40,7 +41,6 @@ import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserData;
-import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -815,7 +815,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
      * @see ActionMode#invalidateContentRect()
      */
     public void invalidateContentRect() {
-        if (isActionModeValid()) ApiHelperForM.invalidateContentRectOnActionMode(mActionMode);
+        if (isActionModeValid()) mActionMode.invalidateContentRect();
     }
 
     // WindowEventObserver
@@ -823,7 +823,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @Override
     public void onWindowFocusChanged(boolean gainFocus) {
         if (isActionModeValid()) {
-            ApiHelperForM.onWindowFocusChangedOnActionMode(mActionMode, gainFocus);
+            mActionMode.onWindowFocusChanged(gainFocus);
         }
     }
 
@@ -913,16 +913,15 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
      */
     private void hideActionModeTemporarily(long duration) {
         assert isFloatingActionMode();
-        if (isActionModeValid()) ApiHelperForM.hideActionMode(mActionMode, duration);
+        if (isActionModeValid()) mActionMode.hide(duration);
     }
 
     private boolean isFloatingActionMode() {
-        return isActionModeValid()
-                && ApiHelperForM.getActionModeType(mActionMode) == ActionMode.TYPE_FLOATING;
+        return isActionModeValid() && mActionMode.getType() == ActionMode.TYPE_FLOATING;
     }
 
     private long getDefaultHideDuration() {
-        return ApiHelperForM.getDefaultActionModeHideDuration();
+        return ViewConfiguration.getDefaultActionModeHideDuration();
     }
 
     // Default handlers for action mode callbacks.

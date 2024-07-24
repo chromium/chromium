@@ -17,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.NetworkChangeNotifier;
 
@@ -134,8 +133,7 @@ public class DeviceConditions {
      * @return Whether the device is in idle / doze mode.
      */
     public static boolean isCurrentlyInIdleMode(Context context) {
-        return ApiHelperForM.isDeviceIdleMode(
-                (PowerManager) context.getSystemService(Context.POWER_SERVICE));
+        return ((PowerManager) context.getSystemService(Context.POWER_SERVICE)).isDeviceIdleMode();
     }
 
     /**

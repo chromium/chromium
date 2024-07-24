@@ -21,7 +21,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForS;
 
 import java.io.Serializable;
@@ -437,16 +436,15 @@ public class IntentUtils {
     }
 
     /**
-     * Gets the PendingIntent flag for the specified mutability.
-     * PendingIntent.FLAG_IMMUTABLE was added in API level 23 (M), and FLAG_MUTABLE was added in
-     * Android S.
+     * Gets the PendingIntent flag for the specified mutability. PendingIntent.FLAG_IMMUTABLE was
+     * added in API level 23 (M), and FLAG_MUTABLE was added in Android S.
      *
-     * Unless mutability is required, PendingIntents should always be marked as Immutable as this
+     * <p>Unless mutability is required, PendingIntents should always be marked as Immutable as this
      * is the more secure default.
      */
     public static int getPendingIntentMutabilityFlag(boolean mutable) {
         if (!mutable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return ApiHelperForM.getPendingIntentImmutableFlag();
+            return PendingIntent.FLAG_IMMUTABLE;
         } else if (mutable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             return ApiHelperForS.getPendingIntentMutableFlag();
         }

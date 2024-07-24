@@ -6,8 +6,6 @@ package org.chromium.ui.permissions;
 
 import android.app.Activity;
 
-import org.chromium.base.compat.ApiHelperForM;
-
 import java.lang.ref.WeakReference;
 
 /** AndroidPermissionDelegate implementation for Activity. */
@@ -22,21 +20,22 @@ public class ActivityAndroidPermissionDelegate extends AndroidPermissionDelegate
     public final boolean shouldShowRequestPermissionRationale(String permission) {
         Activity activity = mActivity.get();
         if (activity == null) return false;
-        return ApiHelperForM.shouldShowRequestPermissionRationale(activity, permission);
+        return activity.shouldShowRequestPermissionRationale(permission);
     }
 
     @Override
     protected final boolean isPermissionRevokedByPolicyInternal(String permission) {
         Activity activity = mActivity.get();
         if (activity == null) return false;
-        return ApiHelperForM.isPermissionRevokedByPolicy(activity, permission);
+        return activity.getPackageManager()
+                .isPermissionRevokedByPolicy(permission, activity.getPackageName());
     }
 
     @Override
     protected boolean requestPermissionsFromRequester(String[] permissions, int requestCode) {
         Activity activity = mActivity.get();
         if (activity == null) return false;
-        ApiHelperForM.requestActivityPermissions(activity, permissions, requestCode);
+        activity.requestPermissions(permissions, requestCode);
         return true;
     }
 }

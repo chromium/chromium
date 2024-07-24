@@ -23,7 +23,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForQ;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.ui.MotionEventUtils;
@@ -499,7 +498,7 @@ public class EventForwarder {
     }
 
     public static int getMouseEventActionButton(MotionEvent event) {
-        return ApiHelperForM.getActionButton(event);
+        return event.getActionButton();
     }
 
     public boolean isTrackpadToMouseEventConversionEnabled() {
