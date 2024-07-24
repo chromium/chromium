@@ -30,6 +30,16 @@ namespace {
 // Unspecified tab position is represented as -1 in Java.
 int kInvalidTabPosition = -1;
 
+// Converts collaboration group ID to Java. If the collaboration group ID is
+// not present, null is returned.
+ScopedJavaLocalRef<jstring> ToJavaCollaborationId(
+    JNIEnv* env,
+    const std::optional<std::string>& collaboration_id) {
+  return collaboration_id.has_value()
+             ? ConvertUTF8ToJavaString(env, collaboration_id.value())
+             : ScopedJavaLocalRef<jstring>();
+}
+
 // Helper method to create a Java SavedTabGroupTab, and optionally add it to
 // a group if a non-null |j_tab_group| is specified.
 ScopedJavaLocalRef<jobject>
@@ -66,13 +76,15 @@ ScopedJavaLocalRef<jobject> JNI_TabGroupSyncConversionsBridge_createGroup(
       env, group.creator_cache_guid().value_or(std::string()));
   auto j_last_updater_cache_guid = ConvertUTF8ToJavaString(
       env, group.last_updater_cache_guid().value_or(std::string()));
+  auto j_collaboration_id =
+      ToJavaCollaborationId(env, group.collaboration_id());
 
   return Java_TabGroupSyncConversionsBridge_createGroup(
       env, j_sync_id, j_local_id, ConvertUTF16ToJavaString(env, group.title()),
       static_cast<int32_t>(group.color()),
       group.creation_time_windows_epoch_micros().InMillisecondsSinceUnixEpoch(),
       group.update_time_windows_epoch_micros().InMillisecondsSinceUnixEpoch(),
-      j_creator_cache_guid, j_last_updater_cache_guid);
+      j_creator_cache_guid, j_last_updater_cache_guid, j_collaboration_id);
 }
 
 }  // namespace

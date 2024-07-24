@@ -45,6 +45,12 @@ public class SavedTabGroup {
     /* The sync cache guid of the device that last updated the tab group. */
     public String lastUpdaterCacheGuid;
 
+    /**
+     * Collaboration group ID for Shared tab groups. This field can be null if the {@link
+     * SavedTabGroup} represents a saved tab group which is not shared.
+     */
+    public @Nullable String collaborationId;
+
     /** The tabs associated with this saved tab group. */
     public List<SavedTabGroupTab> savedTabs = new ArrayList<>();
 
