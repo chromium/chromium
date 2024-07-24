@@ -4853,7 +4853,6 @@ if (is_android) {
   # TODO(crbug.com/40825179): Delete these targets and inline their calls.
   android_library("api_helpers_java") {
     sources = [
-      "android/java/src/org/chromium/base/compat/ApiHelperForOMR1.java",
       "android/java/src/org/chromium/base/compat/ApiHelperForP.java",
       "android/java/src/org/chromium/base/compat/ApiHelperForQ.java",
       "android/java/src/org/chromium/base/compat/ApiHelperForR.java",

@@ -43,7 +43,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnownedUserDataHost;
-import org.chromium.base.compat.ApiHelperForOMR1;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.display.DisplayAndroid;
@@ -736,13 +735,13 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return false;
         Window window = getWindow();
         if (window == null) return false;
-        return ApiHelperForOMR1.isWideColorGamut(window);
+        return window.isWideColorGamut();
     }
 
     /**
      * Set the animation placeholder view, which we set to 'draw' during animations, such that
-     * animations aren't clipped by the SurfaceView 'hole'. This can be the SurfaceView itself
-     * or a view directly on top of it. This could be extended to many views if we ever need it.
+     * animations aren't clipped by the SurfaceView 'hole'. This can be the SurfaceView itself or a
+     * view directly on top of it. This could be extended to many views if we ever need it.
      */
     public void setAnimationPlaceholderView(View view) {
         mAnimationPlaceholderView = view;
