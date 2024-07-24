@@ -24,6 +24,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -242,7 +243,7 @@ public class PreloadPagesSettingsFragmentTest {
     @Feature({"PreloadPages"})
     public void testHelpButtonClicked() {
         launchSettingsActivity();
-        mPreloadPagesSettingsFragment.setHelpAndFeedbackLauncher(mHelpAndFeedbackLauncher);
+        HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
         onView(withId(R.id.menu_id_targeted_help)).perform(click());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

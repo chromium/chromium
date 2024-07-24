@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge.OnClearBrowsingDataListener;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment.DialogOption;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -401,7 +402,7 @@ public class ClearBrowsingDataFragmentTest {
         SettingsActivity activity = startPreferences();
         ClearBrowsingDataFragment fragment = mSettingsActivityTestRule.getFragment();
 
-        fragment.setHelpAndFeedbackLauncher(mHelpAndFeedbackLauncher);
+        HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
         onView(withId(R.id.menu_id_targeted_help)).perform(click());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.autofill.settings.AutofillLocalIbanEditor;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasic;
-import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
@@ -526,12 +525,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (fragment instanceof FragmentSettingsLauncher) {
             FragmentSettingsLauncher fragmentSettingsLauncher = (FragmentSettingsLauncher) fragment;
             fragmentSettingsLauncher.setSettingsLauncher(mSettingsLauncher);
-        }
-        if (fragment instanceof FragmentHelpAndFeedbackLauncher) {
-            FragmentHelpAndFeedbackLauncher fragmentHelpAndFeedbackLauncher =
-                    (FragmentHelpAndFeedbackLauncher) fragment;
-            fragmentHelpAndFeedbackLauncher.setHelpAndFeedbackLauncher(
-                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile));
         }
 
         // Settings screen specific attachments.

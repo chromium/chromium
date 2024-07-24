@@ -32,6 +32,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -421,7 +422,7 @@ public class SafeBrowsingSettingsFragmentTest {
     @Feature({"SafeBrowsing"})
     public void testHelpButtonClicked() {
         launchSettingsActivity();
-        mSafeBrowsingSettingsFragment.setHelpAndFeedbackLauncher(mHelpAndFeedbackLauncher);
+        HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
         onView(withId(R.id.menu_id_targeted_help)).perform(click());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -33,6 +33,7 @@ android_library("java") {
   public_deps = [ ":factory_java" ]
   deps = [
     "//base:base_java",
+    "//chrome/browser/feedback/android:factory_java",
     "//chrome/browser/feedback/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
