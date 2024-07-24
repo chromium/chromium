@@ -4669,8 +4669,7 @@ TEST_P(CaptureModeCameraFramesTest, SelectAnotherCameraWhileRendering) {
 }
 
 // Regression test for https://crbug.com/1316230.
-// Flaky (b/323909190)
-TEST_P(CaptureModeCameraFramesTest, DISABLED_CameraFatalErrors) {
+TEST_P(CaptureModeCameraFramesTest, CameraFatalErrors) {
   CaptureModeTestApi().StartForFullscreen(/*for_video=*/true);
   auto* camera_controller = GetCameraController();
   EXPECT_TRUE(camera_controller->selected_camera().is_valid());
