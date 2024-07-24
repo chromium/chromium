@@ -364,12 +364,15 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   bool IsMultiline() const { return style_->FlexWrap() != EFlexWrap::kNowrap; }
   static bool IsHorizontalFlow(const ComputedStyle&);
   static bool IsColumnFlow(const ComputedStyle&);
-  // Returns true if the main axis faces right or bottom.
-  bool IsLeftToRightFlow() const;
+  // Returns the physical direction of the main axis.
+  // This function is aware of `writing-mode`, `direction`, and
+  // `flex-direction`, but assumes `flex-direction:column-reverse` is same as
+  // `flex-direction:column`.
+  PhysicalDirection MainAxisDirection() const;
   // Returns the physical direction of the cross axis.
   // This function is aware of `writing-mode`, `flex-direction`, and
   // no `flex-wrap`.
-  PhysicalDirection GetPhysicalDirection() const;
+  PhysicalDirection CrossAxisDirection() const;
 
   bool ShouldApplyMinSizeAutoForChild(const LayoutBox& child) const;
 
