@@ -2240,14 +2240,10 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
     return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLGraph>>(
-      script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
-
   auto graph_constraints = DetermineGraphConstraintsFromOutputs(named_outputs);
   if (!graph_constraints.has_value()) {
-    resolver->RejectWithTypeError(graph_constraints.error());
-    return promise;
+    exception_state.ThrowTypeError(graph_constraints.error());
+    return EmptyPromise();
   }
 
   if (base::FeatureList::IsEnabled(
@@ -2255,17 +2251,21 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
     auto graph_info =
         BuildWebNNGraphInfo(named_outputs, ml_context_->GetProperties());
     if (!graph_info.has_value()) {
-      resolver->RejectWithDOMException(
+      exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
           "Failed to build graph: " + graph_info.error());
-      return promise;
+      return EmptyPromise();
     }
 
     if (!remote_.is_bound()) {
-      resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
-                                       "Invalid state");
-      return promise;
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Invalid state");
+      return EmptyPromise();
     }
+
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLGraph>>(
+        script_state, exception_state.GetContext());
+    auto promise = resolver->Promise();
 
     remote_->CreateGraph(
         *std::move(graph_info),
@@ -2275,9 +2275,9 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
     return promise;
   }
 
-  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
-                                   "Not implemented");
-  return promise;
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Not implemented");
+  return EmptyPromise();
 }
 
 void MLGraphBuilder::DidCreateWebNNGraph(

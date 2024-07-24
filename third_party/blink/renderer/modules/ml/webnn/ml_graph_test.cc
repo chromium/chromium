@@ -377,10 +377,16 @@ class MLGraphTest : public testing::Test {
   BuildResult BuildGraph(V8TestingScope& scope,
                          MLGraphBuilder* builder,
                          const MLNamedOperands& named_operands) {
-    ScriptPromiseTester tester(
-        scope.GetScriptState(),
-        builder->build(scope.GetScriptState(), named_operands,
-                       scope.GetExceptionState()));
+    ScriptPromise<MLGraph> build_promise = builder->build(
+        scope.GetScriptState(), named_operands, scope.GetExceptionState());
+    // An empty promise will be returned if `build()` synchronously rejects.
+    if (build_promise.IsEmpty()) {
+      return BuildResult{
+          .error_name = ExceptionCodeToString(scope.GetExceptionState().Code()),
+          .error_message = scope.GetExceptionState().Message()};
+    }
+
+    ScriptPromiseTester tester(scope.GetScriptState(), build_promise);
     tester.WaitUntilSettled();
     if (tester.IsFulfilled()) {
       return BuildResult{.graph = V8ToObject<MLGraph>(&scope, tester.Value())};
