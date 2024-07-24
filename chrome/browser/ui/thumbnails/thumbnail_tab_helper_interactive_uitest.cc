@@ -203,18 +203,8 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
 
 // On browser restore, some tabs may not be loaded. Requesting a
 // thumbnail for one of these tabs should trigger load and capture.
-// TODO(crbug.com/40883117): Flaky on Mac, ChromeOS,
-// and various sanitizer builds.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) ||             \
-    defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-    defined(MEMORY_SANITIZER)
-#define MAYBE_CapturesRestoredTabWhenRequested \
-  DISABLED_CapturesRestoredTabWhenRequested
-#else
-#define MAYBE_CapturesRestoredTabWhenRequested CapturesRestoredTabWhenRequested
-#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
-                       MAYBE_CapturesRestoredTabWhenRequested) {
+                       CapturesRestoredTabWhenRequested) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),
       WindowOpenDisposition::NEW_WINDOW,
