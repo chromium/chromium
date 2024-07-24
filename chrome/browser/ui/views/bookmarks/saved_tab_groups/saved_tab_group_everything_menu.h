@@ -21,6 +21,8 @@
 
 namespace tab_groups {
 
+class TabGroupServiceWrapper;
+
 // A menu that contains a "Create new tab group" item and all the saved tab
 // groups (if there are any) with color icon and tab group name. If no name is
 // given, displays the number of tabs as menu label, e.g. "2 tabs".
@@ -97,7 +99,7 @@ class STGEverythingMenu : public views::MenuDelegate,
   // Returns sorted saved tab groups with the most recently created as the
   // first.
   std::vector<base::Uuid> GetSortedTabGroupsByCreationTime(
-      const SavedTabGroupModel* stg_model);
+      TabGroupServiceWrapper* wrapper_service);
 
   // Because all the menu items (i.e. tab group items in the Everything menu -
   // primary menu and their submenus - secondary menu) need to be recognized and
@@ -126,8 +128,6 @@ class STGEverythingMenu : public views::MenuDelegate,
   // secondary menu items are generated at run time only if you invoke the
   // submenu. That's why you have 112 as the first action's id.
   int GetAndIncrementLatestCommandId();
-
-  const SavedTabGroupModel* GetSavedTabGroupModelFromBrowser();
 
   // Saved tab groups with the most recently created as the first.
   std::vector<base::Uuid> sorted_tab_groups_;

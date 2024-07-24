@@ -14,6 +14,8 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "url/gurl.h"
 
+class Profile;
+
 namespace tab_groups {
 class SavedTabGroupKeyedService;
 
@@ -26,6 +28,11 @@ class SavedTabGroupKeyedService;
 // See crbug.com/350514491 for change-lists related to this effort.
 class TabGroupServiceWrapper : public TabGroupSyncService {
  public:
+  // TODO(crbug.com/350514491): Default to using the TabGroupSyncService when
+  // crbug.com/350514491 is complete.
+  static std::unique_ptr<TabGroupServiceWrapper> GetForProfile(
+      Profile* profile);
+
   explicit TabGroupServiceWrapper(
       TabGroupSyncService* tab_group_sync_service,
       SavedTabGroupKeyedService* saved_tab_group_keyed_service);

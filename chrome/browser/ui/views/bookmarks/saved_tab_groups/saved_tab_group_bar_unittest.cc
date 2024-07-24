@@ -10,6 +10,8 @@
 #include "base/uuid.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h"
@@ -180,8 +182,9 @@ class STGEverythingMenuUnitTest : public SavedTabGroupBarUnitTest {
   }
 
   SavedTabGroupModel* saved_tab_group_model_from_browser() {
-    return const_cast<SavedTabGroupModel*>(
-        everything_menu_->GetSavedTabGroupModelFromBrowser());
+    SavedTabGroupKeyedService* service =
+        SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
+    return service->model();
   }
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model() {
