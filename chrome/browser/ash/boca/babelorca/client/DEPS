@@ -5,5 +5,5 @@ include_rules = [
 
   # This directory is in //chrome, which violates the rule above. Allow this
   # directory to #include its own files.
-  "+chrome/browser/ash/boca",
+  "+chrome/browser/ash/boca/babelorca/client",
 ]

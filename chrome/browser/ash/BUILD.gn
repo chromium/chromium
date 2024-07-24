@@ -1804,6 +1804,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/attestation:attestation_proto",
     "//chrome/browser/ash/attestation:test_support",
     "//chrome/browser/ash/authpolicy",
+    "//chrome/browser/ash/boca:unit_tests",
     "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
     "//chrome/browser/ash/borealis/testing:test_support",
     "//chrome/browser/ash/bruschetta",

@@ -1,0 +1,40 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("client") {
+  sources = [
+    "oauth_token_fetcher.cc",
+    "oauth_token_fetcher.h",
+    "token_data_wrapper.h",
+    "token_fetcher.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "oauth_token_fetcher_unittest.cc" ]
+
+  deps = [
+    ":client",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager:test_support",
+    "//google_apis",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
