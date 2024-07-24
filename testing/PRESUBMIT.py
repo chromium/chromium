@@ -10,6 +10,12 @@ for more details on the presubmit API built into depot_tools.
 PRESUBMIT_VERSION = '2.0.0'
 
 
+def _GetChromiumSrcPath(input_api):
+  """Returns the path to the Chromium src directory."""
+  return input_api.os_path.realpath(
+      input_api.os_path.join(input_api.PresubmitLocalPath(), '..'))
+
+
 def _GetTestingEnv(input_api):
   """Gets the common environment for running testing/ tests."""
   testing_env = dict(input_api.environ)
@@ -52,14 +58,25 @@ def CheckUnexpectedPassesCommonUnittests(input_api, output_api):
 def CheckPylint(input_api, output_api):
   """Runs pylint on all directory content and subdirectories."""
   files_to_skip = input_api.DEFAULT_FILES_TO_SKIP
+  chromium_src_path = _GetChromiumSrcPath(input_api)
+  extra_path_components = [('testing', )]
+  pylint_extra_paths = [
+      input_api.os_path.join(chromium_src_path, *component)
+      for component in extra_path_components
+  ]
   if input_api.is_windows:
     # These scripts don't run on Windows and should not be linted on Windows -
     # trying to do so will lead to spurious errors.
     files_to_skip += ('xvfb.py', '.*host_info.py')
-  pylint_checks = input_api.canned_checks.GetPylint(input_api,
-                                                    output_api,
-                                                    files_to_skip=files_to_skip,
-                                                    version='2.7')
+  pylint_checks = input_api.canned_checks.GetPylint(
+      input_api,
+      output_api,
+      extra_paths_list=pylint_extra_paths,
+      files_to_skip=files_to_skip,
+      # TODO(crbug.com/355016915): Remove this directory-specific pylintrc
+      # file as the default one gets its disable list cleaned up.
+      pylintrc='pylintrc',
+      version='2.7')
   return input_api.RunTests(pylint_checks)
 
 
