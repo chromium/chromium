@@ -39,6 +39,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
@@ -464,6 +465,14 @@ public class ToolbarManager
             // Gestural navigation navigates backwards from both edges since this is an OS-level
             // gesture; users expect both edges to take them back.
             boolean navigatesForward = false;
+            if (TabOnBackGestureHandler.shouldAnimateNavigationTransition(
+                    navigatesForward, backEvent.getSwipeEdge())) {
+                // Always force to show the top control at the start of the gesture.
+                TabBrowserControlsConstraintsHelper.update(
+                        mLocationBarModel.getTab(),
+                        BrowserControlsState.SHOWN,
+                        /* animate= */ true);
+            }
             mHandler.onBackStarted(
                     backEvent.getTouchX(),
                     backEvent.getTouchY(),

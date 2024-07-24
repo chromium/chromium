@@ -26,12 +26,14 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate.ActionType;
 import org.chromium.chrome.browser.gesturenav.NavigationBubble.CloseTarget;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -256,6 +258,12 @@ class NavigationHandler implements TouchEventObserver {
 
             if (willUpdateTabHistory(forward)) {
                 if (ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) {
+                    if (TabOnBackGestureHandler.shouldAnimateNavigationTransition(
+                            forward, initiatingEdge)) {
+                        // Always force to show the top control at the start of the gesture.
+                        TabBrowserControlsConstraintsHelper.update(
+                                mTab, BrowserControlsState.SHOWN, /* animate= */ true);
+                    }
                     mTabOnBackGestureHandler = TabOnBackGestureHandler.from(mTab);
                     mTabOnBackGestureHandler.onBackStarted(
                             x, y, getProgress(), mInitiatingEdge, forward);
