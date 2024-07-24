@@ -6,6 +6,7 @@
 
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace contact_info_helper {
@@ -20,7 +21,7 @@ AutofillProfile BuildTestAccountProfile() {
   AutofillProfile profile = autofill::test::GetFullProfile();
   // The CONTACT_INFO data type is only concerned with kAccount profiles.
   // kLocalOrSyncable profiles are handled by the AUTOFILL_PROFILE type.
-  profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(profile).set_source(AutofillProfile::Source::kAccount);
   return profile;
 }
 

@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -7962,7 +7963,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
   personal_data().test_address_data_manager().ClearProfiles();
   AutofillProfile profile = test::GetFullProfile();
   // This is needed to not get an update prompt that would compromise the test.
-  profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(profile).set_source(AutofillProfile::Source::kAccount);
   test_api(profile.token_quality()).disable_randomization();
   personal_data().address_data_manager().AddProfile(profile);
   const AutofillProfile* pdm_profile =

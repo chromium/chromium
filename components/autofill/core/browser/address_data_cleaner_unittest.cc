@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/address_data_cleaner_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/test_address_data_manager.h"
@@ -185,10 +186,10 @@ TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_OncePerVersion) {
 // Tests that `kAccount` profiles are not deduplicated against each other.
 TEST_F(AddressDataCleanerTest, Deduplicate_kAccountPairs) {
   AutofillProfile account_profile1 = test::StandardProfile();
-  account_profile1.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(account_profile1).set_source(AutofillProfile::Source::kAccount);
   test_adm_.AddProfile(account_profile1);
   AutofillProfile account_profile2 = test::StandardProfile();
-  account_profile2.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(account_profile2).set_source(AutofillProfile::Source::kAccount);
   test_adm_.AddProfile(account_profile2);
 
   test_api(data_cleaner_).ApplyDeduplicationRoutine();
@@ -206,7 +207,7 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSuperset) {
       AutofillProfile::kInitialCreatorOrModifierChrome + 1;
   account_profile.set_initial_creator_id(non_chrome_service);
   account_profile.set_last_modifier_id(non_chrome_service);
-  account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(account_profile).set_source(AutofillProfile::Source::kAccount);
   test_adm_.AddProfile(account_profile);
   test_adm_.AddProfile(test::SubsetOfStandardProfile());
 
@@ -226,7 +227,7 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSuperset) {
 // profile are not deduplicated.
 TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSubset) {
   AutofillProfile account_profile = test::SubsetOfStandardProfile();
-  account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(account_profile).set_source(AutofillProfile::Source::kAccount);
   test_adm_.AddProfile(account_profile);
   AutofillProfile local_profile = test::StandardProfile();
   test_adm_.AddProfile(local_profile);

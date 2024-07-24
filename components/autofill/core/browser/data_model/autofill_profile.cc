@@ -626,12 +626,6 @@ bool AutofillProfile::EqualsForUpdatePurposes(
          Compare(new_profile) == 0;
 }
 
-bool AutofillProfile::EqualsIncludingUsageStatsForTesting(
-    const AutofillProfile& profile) const {
-  return use_count() == profile.use_count() &&
-         UseDateEqualsInSeconds(&profile) && *this == profile;
-}
-
 bool AutofillProfile::operator==(const AutofillProfile& profile) const {
   return guid() == profile.guid() && EqualsSansGuid(profile);
 }

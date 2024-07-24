@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
@@ -246,11 +247,11 @@ void SetProfileCategory(
     autofill_metrics::AutofillProfileSourceCategory category) {
   switch (category) {
     case autofill_metrics::AutofillProfileSourceCategory::kLocalOrSyncable:
-      profile.set_source_for_testing(AutofillProfile::Source::kLocalOrSyncable);
+      test_api(profile).set_source(AutofillProfile::Source::kLocalOrSyncable);
       break;
     case autofill_metrics::AutofillProfileSourceCategory::kAccountChrome:
     case autofill_metrics::AutofillProfileSourceCategory::kAccountNonChrome:
-      profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+      test_api(profile).set_source(AutofillProfile::Source::kAccount);
       // Any value that is not kInitialCreatorOrModifierChrome works.
       const int kInitialCreatorOrModifierNonChrome =
           AutofillProfile::kInitialCreatorOrModifierChrome + 1;

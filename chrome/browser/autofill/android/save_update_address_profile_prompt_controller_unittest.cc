@@ -5,6 +5,7 @@
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_controller.h"
 
 #include <jni.h>
+
 #include <memory>
 #include <string>
 
@@ -22,6 +23,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -338,7 +340,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ReturnsCorrectStringsToDisplayWhenSaveAccountAddress) {
   SigninUser();
-  profile_.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(profile_).set_source(AutofillProfile::Source::kAccount);
   SetUpController(/*is_update=*/false, /*is_migration_to_account=*/false);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE),
@@ -390,7 +392,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ReturnsCorrectStringsToDisplayWhenUpdateAccountAddress) {
   SigninUser();
-  profile_.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(profile_).set_source(AutofillProfile::Source::kAccount);
 
   SetUpController(/*is_update=*/true, /*is_migration_to_account=*/false);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE),

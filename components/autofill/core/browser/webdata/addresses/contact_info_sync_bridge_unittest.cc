@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
@@ -42,7 +43,7 @@ constexpr char kInvalidGUID[] = "1234";
 MATCHER_P(ContactInfoSpecificsEqualsProfile, expected_profile, "") {
   AutofillProfile arg_profile = *CreateAutofillProfileFromContactInfoSpecifics(
       arg->specifics.contact_info());
-  if (!arg_profile.EqualsIncludingUsageStatsForTesting(expected_profile)) {
+  if (!test_api(arg_profile).EqualsIncludingUsageStats(expected_profile)) {
     *result_listener << "entry\n[" << arg_profile << "]\n"
                      << "did not match expected\n[" << expected_profile << "]";
     return false;

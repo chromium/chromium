@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_util.h"
@@ -111,7 +112,7 @@ MATCHER_P(HasSpecifics, expected, "") {
   AutofillProfile arg_profile =
       CreateAutofillProfile(arg->specifics.autofill_profile());
   AutofillProfile expected_profile = CreateAutofillProfile(expected);
-  if (!arg_profile.EqualsIncludingUsageStatsForTesting(expected_profile)) {
+  if (!test_api(arg_profile).EqualsIncludingUsageStats(expected_profile)) {
     *result_listener << "entry\n[" << arg_profile << "]\n"
                      << "did not match expected\n[" << expected_profile << "]";
     return false;
@@ -120,7 +121,8 @@ MATCHER_P(HasSpecifics, expected, "") {
 }
 
 MATCHER_P(WithUsageStats, expected, "") {
-  if (!arg.EqualsIncludingUsageStatsForTesting(expected)) {
+  AutofillProfile arg_profile = arg;
+  if (!test_api(arg_profile).EqualsIncludingUsageStats(expected)) {
     *result_listener << "entry\n[" << arg << "]\n"
                      << "did not match expected\n[" << expected << "]";
     return false;

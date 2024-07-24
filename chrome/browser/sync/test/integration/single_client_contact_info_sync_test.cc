@@ -14,6 +14,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -492,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
   profile2.SetRawInfoWithVerificationStatus(
       autofill::NAME_FULL, u"Name of new profile.",
       autofill::VerificationStatus::kFormatted);
-  profile2.set_source_for_testing(autofill::AutofillProfile::Source::kAccount);
+  test_api(profile2).set_source(autofill::AutofillProfile::Source::kAccount);
 
   // Add an obsolete profile to make sure that the server has received the
   // update.

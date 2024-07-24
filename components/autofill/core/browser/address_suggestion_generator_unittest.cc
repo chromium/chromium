@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/test_address_data_manager.h"
@@ -527,12 +528,12 @@ TEST_F(AddressSuggestionGeneratorTest,
   // Create two profiles that only differ by their source.
   AutofillProfile profile_1(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile_1.SetRawInfo(NAME_FULL, u"First Last");
-  profile_1.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(profile_1).set_source(AutofillProfile::Source::kAccount);
   address_data().AddProfile(profile_1);
 
   AutofillProfile profile_2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile_2.SetRawInfo(NAME_FULL, u"First Last");
-  profile_2.set_source_for_testing(AutofillProfile::Source::kLocalOrSyncable);
+  test_api(profile_2).set_source(AutofillProfile::Source::kLocalOrSyncable);
   // Set high use count for profile 2 so that it has greater ranking than
   // profile_1
   profile_2.set_use_count(100);

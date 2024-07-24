@@ -855,6 +855,8 @@ static_library("test_support") {
     "crowdsourcing/autofill_crowdsourcing_manager_test_api.h",
     "crowdsourcing/mock_autofill_crowdsourcing_manager.cc",
     "crowdsourcing/mock_autofill_crowdsourcing_manager.h",
+    "data_model/autofill_profile_test_api.cc",
+    "data_model/autofill_profile_test_api.h",
     "data_model/autofill_structured_address_component_test_api.h",
     "data_model/autofill_structured_address_test_utils.cc",
     "data_model/autofill_structured_address_test_utils.h",

@@ -17,6 +17,7 @@
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -197,9 +198,9 @@ TEST_F(AddressDataManagerTest, UpdateProfile_ModificationDate) {
 // If duplicates exist across sources, they should be considered distinct.
 TEST_F(AddressDataManagerTest, GetProfiles) {
   AutofillProfile kAccountProfile = test::GetFullProfile();
-  kAccountProfile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(kAccountProfile).set_source(AutofillProfile::Source::kAccount);
   AutofillProfile kAccountProfile2 = test::GetFullProfile2();
-  kAccountProfile2.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(kAccountProfile2).set_source(AutofillProfile::Source::kAccount);
   AutofillProfile kLocalProfile = test::GetFullProfile();
 
   AddProfileToAddressDataManager(kAccountProfile);
@@ -336,12 +337,12 @@ TEST_F(AddressDataManagerTest, GetProfilesForSettings) {
   TestAutofillClock test_clock;
 
   AutofillProfile kAccountProfile = test::GetFullProfile();
-  kAccountProfile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(kAccountProfile).set_source(AutofillProfile::Source::kAccount);
   AddProfileToAddressDataManager(kAccountProfile);
 
   AutofillProfile kLocalOrSyncableProfile = test::GetFullProfile2();
-  kLocalOrSyncableProfile.set_source_for_testing(
-      AutofillProfile::Source::kLocalOrSyncable);
+  test_api(kLocalOrSyncableProfile)
+      .set_source(AutofillProfile::Source::kLocalOrSyncable);
   test_clock.Advance(base::Minutes(123));
   AddProfileToAddressDataManager(kLocalOrSyncableProfile);
 

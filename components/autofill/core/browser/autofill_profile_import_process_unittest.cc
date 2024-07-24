@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
@@ -274,7 +275,7 @@ TEST_F(AutofillProfileImportProcessTest,
 // profile is rejected as a duplicate.
 TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile_kAccount) {
   AutofillProfile account_profile = test::StandardProfile();
-  account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(account_profile).set_source(AutofillProfile::Source::kAccount);
   address_data_manager().AddProfile(account_profile);
 
   ProfileImportProcess import_data(
@@ -294,7 +295,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile_kAccount) {
 // rejected as a duplicate.
 TEST_F(AutofillProfileImportProcessTest, ImportSubsetProfile_kAccount) {
   AutofillProfile account_profile = test::StandardProfile();
-  account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(account_profile).set_source(AutofillProfile::Source::kAccount);
   address_data_manager().AddProfile(account_profile);
 
   ProfileImportProcess import_data(
@@ -315,7 +316,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportSubsetProfile_kAccount) {
 TEST_F(AutofillProfileImportProcessTest,
        ImportSupersetProfile_kAccount_PostStorage) {
   AutofillProfile account_profile = test::SubsetOfStandardProfile();
-  account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(account_profile).set_source(AutofillProfile::Source::kAccount);
   address_data_manager().AddProfile(account_profile);
 
   ProfileImportProcess import_data(
@@ -329,7 +330,7 @@ TEST_F(AutofillProfileImportProcessTest,
   EXPECT_TRUE(import_data.ProfilesChanged());
   AutofillProfile expected_profile = test::StandardProfile();
   expected_profile.set_guid(account_profile.guid());
-  expected_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(expected_profile).set_source(AutofillProfile::Source::kAccount);
   EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
               testing::UnorderedElementsAre(expected_profile));
 }
@@ -337,7 +338,7 @@ TEST_F(AutofillProfileImportProcessTest,
 // Tests that an import can cause a silent update of a `kAccount` profile.
 TEST_F(AutofillProfileImportProcessTest, ImportSilentUpdate_kAccount) {
   AutofillProfile account_profile = test::UpdateableStandardProfile();
-  account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(account_profile).set_source(AutofillProfile::Source::kAccount);
   address_data_manager().AddProfile(account_profile);
 
   // The `observed_profile` is of type `kLocalOrSyncable`. This should not
@@ -354,7 +355,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportSilentUpdate_kAccount) {
   // Expect that the existing profiles was updated to the standard profile,
   // while maintaining it's `kAccount` status.
   AutofillProfile expected_profile = test::StandardProfile();
-  expected_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(expected_profile).set_source(AutofillProfile::Source::kAccount);
   expected_profile.set_guid(account_profile.guid());
   EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
               testing::UnorderedElementsAre(expected_profile));
