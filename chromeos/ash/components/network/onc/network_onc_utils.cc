@@ -516,36 +516,26 @@ int ImportNetworksForUser(const user_manager::User* user,
     base::Value::Dict normalized_network = normalizer.NormalizeObject(
         &chromeos::onc::kNetworkConfigurationSignature, network);
 
-    // TODO(b/235297258): Use ONC and ManagedNetworkConfigurationHandler
-    // instead.
-    base::Value::Dict shill_dict = onc::TranslateONCObjectToShill(
-        &chromeos::onc::kNetworkConfigurationSignature,
-        std::move(normalized_network));
-
-    std::unique_ptr<NetworkUIData> ui_data(
-        NetworkUIData::CreateFromONC(::onc::ONC_SOURCE_USER_IMPORT));
-    shill_dict.Set(shill::kUIDataProperty, ui_data->GetAsJson());
-    shill_dict.Set(shill::kProfileProperty, profile->path);
-
-    std::string type = GetString(shill_dict, shill::kTypeProperty);
-    NetworkConfigurationHandler* config_handler =
-        NetworkHandler::Get()->network_configuration_handler();
-    if (NetworkTypePattern::Ethernet().MatchesType(type)) {
+    std::string type =
+        GetString(normalized_network, ::onc::network_config::kType);
+    ManagedNetworkConfigurationHandler* managed_network_config_handler =
+        NetworkHandler::Get()->managed_network_configuration_handler();
+    if (type == ::onc::network_config::kEthernet) {
       // Ethernet has to be configured using an existing Ethernet service.
       const NetworkState* ethernet =
           NetworkHandler::Get()->network_state_handler()->FirstNetworkByType(
               NetworkTypePattern::Ethernet());
       if (ethernet) {
-        config_handler->SetShillProperties(ethernet->path(), shill_dict,
-                                           base::OnceClosure(),
-                                           network_handler::ErrorCallback());
+        managed_network_config_handler->SetProperties(
+            ethernet->path(), normalized_network.Clone(), base::OnceClosure(),
+            network_handler::ErrorCallback());
       } else {
         ethernet_not_found = true;
       }
-
     } else {
-      config_handler->CreateShillConfiguration(
-          shill_dict, network_handler::ServiceResultCallback(),
+      managed_network_config_handler->CreateConfiguration(
+          user->username_hash(), normalized_network.Clone(),
+          network_handler::ServiceResultCallback(),
           network_handler::ErrorCallback());
       ++networks_created;
     }
