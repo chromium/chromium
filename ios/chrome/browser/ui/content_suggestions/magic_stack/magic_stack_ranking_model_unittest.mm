@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
+#import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
@@ -69,9 +70,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-// TODO(crbug.com/355025532): Re-enable these tests on official builds.
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 using set_up_list_prefs::SetUpListItemState;
 using startup_metric_utils::FirstRunSentinelCreationResult;
@@ -216,6 +214,9 @@ class MagicStackRankingModelTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateMockSyncService));
     test_cbs_builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
@@ -618,5 +619,3 @@ TEST_F(MagicStackRankingModelTest, TestDisabledSegmentationRanking) {
   base::RunLoop().RunUntilIdle();
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
-
-#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
