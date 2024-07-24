@@ -507,6 +507,7 @@ void DevToolsWindow::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kDevToolsEditedFiles);
   registry->RegisterDictionaryPref(prefs::kDevToolsFileSystemPaths);
   registry->RegisterStringPref(prefs::kDevToolsAdbKey, std::string());
+  registry->RegisterInt64Pref(prefs::kDevToolsLastOpenTimestamp, 0L);
 
   registry->RegisterBooleanPref(prefs::kDevToolsDiscoverUsbDevicesEnabled,
                                 true);
@@ -1174,6 +1175,11 @@ DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
       language::prefs::kAcceptLanguages,
       base::BindRepeating(&DevToolsWindow::OnLocaleChanged,
                           base::Unretained(this)));
+
+  int64_t now_timestamp =
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMilliseconds();
+  profile_->GetPrefs()->SetInt64(prefs::kDevToolsLastOpenTimestamp,
+                                 now_timestamp);
 }
 
 // static
