@@ -9,6 +9,8 @@ package J;
 // Please do not change its content.
 
 public class N {
+    public static final long WHOLE_HASH = -7874644414477415950L;
+    public static final long PRIORITY_HASH = 4439870226107528323L;
 
 
     public static native Object _O_O(int switch_num, Object object_param1);

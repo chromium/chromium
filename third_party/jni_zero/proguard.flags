@@ -19,3 +19,8 @@
 -keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class ** {
   native <methods>;
 }
+
+# Used when multiplexing. We don't package our own @UsedByReflection, so using this instead.
+-keepclasseswithmembers class !cr_allowunused,**J.N {
+  public long *_HASH;
+}
