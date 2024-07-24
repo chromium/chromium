@@ -68,7 +68,7 @@ class ASH_EXPORT PickerItemView : public views::Button {
   void SetSubmenuController(PickerSubmenuController* submenu_controller);
 
   ItemState GetItemState() const;
-  void SetItemState(ItemState item_state);
+  virtual void SetItemState(ItemState item_state);
 
  private:
   void UpdateClipPathForFocusRingWithInsetGap();

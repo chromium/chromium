@@ -152,6 +152,15 @@ PickerListItemView::~PickerListItemView() {
   }
 }
 
+void PickerListItemView::SetItemState(ItemState item_state) {
+  PickerItemView::SetItemState(item_state);
+  if (GetItemState() == ItemState::kPseudoFocused) {
+    ShowPreview();
+  } else {
+    HidePreview();
+  }
+}
+
 void PickerListItemView::SetPrimaryText(const std::u16string& primary_text) {
   primary_container_->RemoveAllChildViews();
   primary_label_ = primary_container_->AddChildView(
@@ -272,19 +281,12 @@ void PickerListItemView::SetPreview(
 
 void PickerListItemView::OnMouseEntered(const ui::MouseEvent& event) {
   PickerItemView::OnMouseEntered(event);
-
-  if (preview_bubble_controller_ != nullptr) {
-    preview_bubble_controller_->ShowBubbleAfterDelay(async_preview_image_.get(),
-                                                     file_path_, this);
-  }
+  ShowPreview();
 }
 
 void PickerListItemView::OnMouseExited(const ui::MouseEvent& event) {
   PickerItemView::OnMouseExited(event);
-
-  if (preview_bubble_controller_ != nullptr) {
-    preview_bubble_controller_->CloseBubble();
-  }
+  HidePreview();
 }
 
 std::u16string PickerListItemView::GetPrimaryTextForTesting() const {
@@ -343,6 +345,19 @@ std::u16string PickerListItemView::GetAccessibilityLabel() const {
 
 void PickerListItemView::UpdateAccessibleName() {
   GetViewAccessibility().SetName(GetAccessibilityLabel());
+}
+
+void PickerListItemView::ShowPreview() {
+  if (preview_bubble_controller_ != nullptr) {
+    preview_bubble_controller_->ShowBubbleAfterDelay(async_preview_image_.get(),
+                                                     file_path_, this);
+  }
+}
+
+void PickerListItemView::HidePreview() {
+  if (preview_bubble_controller_ != nullptr) {
+    preview_bubble_controller_->CloseBubble();
+  }
 }
 
 BEGIN_METADATA(PickerListItemView)
