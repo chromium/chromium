@@ -122,10 +122,6 @@ class CORE_EXPORT ScriptPromiseResolverBase
 
   ScriptState* GetScriptState() const { return script_state_.Get(); }
 
-  const ExceptionContext& GetExceptionContext() const {
-    return exception_context_;
-  }
-
   template <typename IDLResolvedType>
   ScriptPromiseResolver<IDLResolvedType>* DowncastTo() {
 #if DCHECK_IS_ON()
