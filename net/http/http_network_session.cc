@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -22,6 +23,7 @@
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_response_body_drainer.h"
 #include "net/http/http_stream_factory.h"
+#include "net/http/http_stream_pool.h"
 #include "net/http/url_security_manager.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/quic/platform/impl/quic_chromium_clock.h"
@@ -220,6 +222,12 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
     memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
         FROM_HERE, base::BindRepeating(&HttpNetworkSession::OnMemoryPressure,
                                        base::Unretained(this)));
+  }
+
+  if (base::FeatureList::IsEnabled(features::kUseServiceEndpointRequest)) {
+    http_stream_pool_ = std::make_unique<HttpStreamPool>(
+        this,
+        /*cleanup_on_ip_address_change=*/!params.ignore_ip_address_changes);
   }
 }
 

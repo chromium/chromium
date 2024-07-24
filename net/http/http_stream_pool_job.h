@@ -55,6 +55,7 @@ class HttpStreamPool::Job
       HttpStreamRequest::Delegate* delegate,
       RequestPriority priority,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+      bool enable_ip_based_pooling,
       const NetLogWithSource& net_log);
 
   // HostResolver::ServiceEndpointRequest::Delegate implementation:
@@ -134,7 +135,10 @@ class HttpStreamPool::Job
 
   const HttpStreamKey& stream_key() const;
 
+  const SpdySessionKey& spdy_session_key() const;
+
   HttpNetworkSession* http_network_session();
+  SpdySessionPool* spdy_session_pool();
 
   HttpStreamPool* pool();
   const HttpStreamPool* pool() const;
@@ -176,6 +180,11 @@ class HttpStreamPool::Job
   void CreateTextBasedStreamAndNotify(
       std::unique_ptr<StreamSocket> stream_socket);
 
+  void CreateSpdyStreamAndNotify();
+
+  void NotifyStreamReady(std::unique_ptr<HttpStream> stream,
+                         NextProto negotiated_protocol);
+
   // Extracts an entry from `requests_` of which priority is highest. The
   // ownership of the entry is moved to `notified_requests_`.
   RequestEntry* ExtractFirstRequestToNotify();
@@ -199,6 +208,9 @@ class HttpStreamPool::Job
   const NetLogWithSource net_log_;
 
   ProxyInfo proxy_info_;
+
+  // TODO(crbug.com/346835898): Implement ip-based pooling and enable this flag.
+  bool enable_ip_based_pooling_ = false;
 
   // Holds requests that are waiting for notifications (a delegate method call
   // to indicate success or failure).
@@ -258,6 +270,9 @@ class HttpStreamPool::Job
   // Updated when a stream attempt is considered slow. Used to calculate next
   // IPEndPoint to attempt.
   std::set<IPEndPoint> slow_ip_endpoints_;
+
+  // Initialized when one of an attempt is negotiated to use HTTP/2.
+  base::WeakPtr<SpdySession> spdy_session_;
 
   base::WeakPtrFactory<Job> weak_ptr_factory_{this};
 };

@@ -15,10 +15,12 @@
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_request.h"
+#include "net/spdy/spdy_session_key.h"
 
 namespace net {
 
 class HttpStream;
+class HttpStreamPoolHandle;
 class StreamSocket;
 
 // Maintains active/idle text-based HTTP streams.
@@ -33,7 +35,9 @@ class HttpStreamPool::Group {
   static constexpr base::TimeDelta kUnusedIdleStreamSocketTimeout =
       base::Seconds(60);
 
-  Group(HttpStreamPool* pool, HttpStreamKey stream_key);
+  Group(HttpStreamPool* pool,
+        HttpStreamKey stream_key,
+        SpdySessionKey spdy_session_key);
 
   Group(const Group&) = delete;
   Group& operator=(const Group&) = delete;
@@ -41,6 +45,8 @@ class HttpStreamPool::Group {
   ~Group();
 
   const HttpStreamKey& stream_key() const { return stream_key_; }
+
+  const SpdySessionKey& spdy_session_key() const { return spdy_session_key_; }
 
   HttpStreamPool* pool() { return pool_; }
   const HttpStreamPool* pool() const { return pool_; }
@@ -51,12 +57,18 @@ class HttpStreamPool::Group {
 
   // Creates an HttpStreamRequest. Will call delegate's methods. See the
   // comments of HttpStreamRequest::Delegate methods for details.
-  // TODO(crbug.com/346835898): Support TLS, HTTP/2 and QUIC.
+  // TODO(crbug.com/346835898): Support QUIC.
   std::unique_ptr<HttpStreamRequest> RequestStream(
       HttpStreamRequest::Delegate* delegate,
       RequestPriority priority,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+      bool enable_ip_based_pooling,
       const NetLogWithSource& net_log);
+
+  // Creates an HttpStreamPoolHandle from `socket`. Call sites must ensure that
+  // the number of active streams do not exceed the global/per-group limits.
+  std::unique_ptr<HttpStreamPoolHandle> CreateHandle(
+      std::unique_ptr<StreamSocket> socket);
 
   // Creates a text-based HttpStream from `socket`. Call sites must ensure that
   // the number of active streams do not exceed the global/per-group limits.
@@ -131,6 +143,7 @@ class HttpStreamPool::Group {
 
   const raw_ptr<HttpStreamPool> pool_;
   const HttpStreamKey stream_key_;
+  const SpdySessionKey spdy_session_key_;
 
   size_t handed_out_stream_count_ = 0;
   int64_t generation_ = 0;

@@ -51,8 +51,12 @@ HttpStreamPool::Group::IdleStreamSocket::IdleStreamSocket(
 
 HttpStreamPool::Group::IdleStreamSocket::~IdleStreamSocket() = default;
 
-HttpStreamPool::Group::Group(HttpStreamPool* pool, HttpStreamKey stream_key)
-    : pool_(pool), stream_key_(std::move(stream_key)) {}
+HttpStreamPool::Group::Group(HttpStreamPool* pool,
+                             HttpStreamKey stream_key,
+                             SpdySessionKey spdy_session_key)
+    : pool_(pool),
+      stream_key_(std::move(stream_key)),
+      spdy_session_key_(std::move(spdy_session_key)) {}
 
 HttpStreamPool::Group::~Group() {
   // TODO(crbug.com/346835898): Ensure `pool_`'s total active stream counts
@@ -63,33 +67,37 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
     HttpStreamRequest::Delegate* delegate,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+    bool enable_ip_based_pooling,
     const NetLogWithSource& net_log) {
   if (!in_flight_job_) {
     in_flight_job_ = std::make_unique<Job>(this, net_log.net_log());
   }
 
   return in_flight_job_->RequestStream(delegate, priority, allowed_bad_certs,
-                                       net_log);
+                                       enable_ip_based_pooling, net_log);
 }
 
-std::unique_ptr<HttpStream> HttpStreamPool::Group::CreateTextBasedStream(
+std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
     std::unique_ptr<StreamSocket> socket) {
-  CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
   CHECK_LE(ActiveStreamSocketCount(), pool_->max_stream_sockets_per_group());
 
   ++handed_out_stream_count_;
   pool_->IncrementTotalHandedOutStreamCount();
 
-  auto stream_handle = std::make_unique<HttpStreamPoolHandle>(
-      this, std::move(socket), generation_);
-  return std::make_unique<HttpBasicStream>(std::move(stream_handle),
+  return std::make_unique<HttpStreamPoolHandle>(this, std::move(socket),
+                                                generation_);
+}
+
+std::unique_ptr<HttpStream> HttpStreamPool::Group::CreateTextBasedStream(
+    std::unique_ptr<StreamSocket> socket) {
+  CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
+  return std::make_unique<HttpBasicStream>(CreateHandle(std::move(socket)),
                                            /*is_for_get_to_http_proxy=*/false);
 }
 
 void HttpStreamPool::Group::ReleaseStreamSocket(
     std::unique_ptr<StreamSocket> socket,
     int64_t generation) {
-  CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
   CHECK_GT(handed_out_stream_count_, 0u);
   --handed_out_stream_count_;
   pool_->DecrementTotalHandedOutStreamCount();

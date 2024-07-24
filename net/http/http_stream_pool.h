@@ -13,12 +13,17 @@
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/request_priority.h"
+#include "net/http/http_stream_request.h"
+#include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 
 class HttpStreamKey;
 class HttpNetworkSession;
+class NetLogWithSource;
 
 // Manages in-flight HTTP stream requests and maintains idle stream sockets.
 // Restricts the number of streams open at a time. HttpStreams are grouped by
@@ -44,6 +49,23 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   class NET_EXPORT_PRIVATE Group;
   class NET_EXPORT_PRIVATE Job;
 
+  // Represents a synchronous success result of RequestStream().
+  struct NET_EXPORT_PRIVATE SucceededStream {
+    SucceededStream(std::unique_ptr<HttpStream> stream,
+                    NextProto negotiated_protocol);
+
+    SucceededStream(SucceededStream&&);
+    SucceededStream& operator=(SucceededStream&&);
+
+    SucceededStream(const SucceededStream&) = delete;
+    SucceededStream& operator=(const SucceededStream&) = delete;
+
+    ~SucceededStream();
+
+    std::unique_ptr<HttpStream> stream;
+    NextProto negotiated_protocol;
+  };
+
   explicit HttpStreamPool(HttpNetworkSession* http_network_session,
                           bool cleanup_on_ip_address_change = true);
 
@@ -51,6 +73,19 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   HttpStreamPool& operator=(const HttpStreamPool&) = delete;
 
   ~HttpStreamPool() override;
+
+  using StreamResult =
+      absl::variant<SucceededStream, std::unique_ptr<HttpStreamRequest>>;
+
+  // Requests an HttpStream. Can return an HttpStream synchronously. In that
+  // case, any methods of `delegate` won't be called.
+  StreamResult RequestStream(
+      HttpStreamRequest::Delegate* delegate,
+      const HttpStreamKey& stream_key,
+      RequestPriority priority,
+      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+      bool enable_ip_based_pooling,
+      const NetLogWithSource& net_log);
 
   // Increments/Decrements the total number of idle streams in this pool.
   void IncrementTotalIdleStreamCount();
@@ -116,7 +151,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   }
 
  private:
-  Group& GetOrCreateGroup(const HttpStreamKey& stream_key);
+  Group& GetOrCreateGroup(const HttpStreamKey& stream_key,
+                          SpdySessionKey spdy_session_key);
 
   // Searches for a group that has the highest priority pending request and
   // hasn't reached reach the `max_stream_socket_per_group()` limit. Returns

@@ -5,12 +5,26 @@
 #include "net/http/http_stream_pool_test_util.h"
 
 #include "net/base/completion_once_callback.h"
+#include "net/base/net_errors.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/stream_socket.h"
+#include "net/ssl/ssl_connection_status_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace net {
+
+// static
+std::unique_ptr<FakeStreamSocket> FakeStreamSocket::CreateForSpdy() {
+  auto stream = std::make_unique<FakeStreamSocket>();
+  SSLInfo ssl_info;
+  SSLConnectionStatusSetVersion(SSL_CONNECTION_VERSION_TLS1_3,
+                                &ssl_info.connection_status);
+  SSLConnectionStatusSetCipherSuite(0x1301 /* TLS_CHACHA20_POLY1305_SHA256 */,
+                                    &ssl_info.connection_status);
+  stream->set_ssl_info(ssl_info);
+  return stream;
+}
 
 FakeStreamSocket::FakeStreamSocket() : MockClientSocket(NetLogWithSource()) {
   connected_ = true;
@@ -21,7 +35,7 @@ FakeStreamSocket::~FakeStreamSocket() = default;
 int FakeStreamSocket::Read(IOBuffer* buf,
                            int buf_len,
                            CompletionOnceCallback callback) {
-  return 0;
+  return ERR_IO_PENDING;
 }
 
 int FakeStreamSocket::Write(
@@ -29,7 +43,7 @@ int FakeStreamSocket::Write(
     int buf_len,
     CompletionOnceCallback callback,
     const NetworkTrafficAnnotationTag& traffic_annotation) {
-  return 0;
+  return ERR_IO_PENDING;
 }
 
 int FakeStreamSocket::Connect(CompletionOnceCallback callback) {
@@ -49,6 +63,11 @@ bool FakeStreamSocket::WasEverUsed() const {
 }
 
 bool FakeStreamSocket::GetSSLInfo(SSLInfo* ssl_info) {
+  if (ssl_info_.has_value()) {
+    *ssl_info = *ssl_info_;
+    return true;
+  }
+
   return false;
 }
 

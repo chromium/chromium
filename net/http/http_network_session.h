@@ -54,6 +54,7 @@ class HttpAuthHandlerFactory;
 class HttpNetworkSessionPeer;
 class HttpResponseBodyDrainer;
 class HttpServerProperties;
+class HttpStreamPool;
 class HttpUserAgentSettings;
 class NetLog;
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -249,6 +250,7 @@ class NET_EXPORT HttpNetworkSession {
   HttpServerProperties* http_server_properties() {
     return http_server_properties_;
   }
+  HttpStreamPool* http_stream_pool() { return http_stream_pool_.get(); }
   HttpStreamFactory* http_stream_factory() {
     return http_stream_factory_.get();
   }
@@ -335,6 +337,8 @@ class NET_EXPORT HttpNetworkSession {
   WebSocketEndpointLockManager websocket_endpoint_lock_manager_;
   std::unique_ptr<ClientSocketPoolManager> normal_socket_pool_manager_;
   std::unique_ptr<ClientSocketPoolManager> websocket_socket_pool_manager_;
+  // `http_stream_pool_` needs to outlive `spdy_session_pool_`.
+  std::unique_ptr<HttpStreamPool> http_stream_pool_;
   QuicSessionPool quic_session_pool_;
   SpdySessionPool spdy_session_pool_;
   std::unique_ptr<HttpStreamFactory> http_stream_factory_;

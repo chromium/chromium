@@ -13,8 +13,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
@@ -27,6 +30,7 @@
 #include "net/http/http_stream_factory_test_util.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_group.h"
+#include "net/http/http_stream_pool_handle.h"
 #include "net/http/http_stream_pool_test_util.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/tcp_stream_attempt.h"
@@ -38,6 +42,7 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
 using ::testing::_;
@@ -288,6 +293,11 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     return *this;
   }
 
+  StreamRequester& set_enable_ip_based_pooling(bool enable_ip_based_pooling) {
+    enable_ip_based_pooling_ = enable_ip_based_pooling;
+    return *this;
+  }
+
   HttpStreamKey GetStreamKey() const {
     return HttpStreamKey(destination_, privacy_mode_, SocketTag(),
                          NetworkAnonymizationKey(), secure_dns_policy_,
@@ -296,9 +306,19 @@ class StreamRequester : public HttpStreamRequest::Delegate {
 
   HttpStreamRequest* RequestStream(HttpStreamPool& pool) {
     HttpStreamKey stream_key = GetStreamKey();
-    Group& group = pool.GetOrCreateGroupForTesting(stream_key);
-    request_ = group.RequestStream(this, priority_, allowed_bad_certs_,
-                                   NetLogWithSource());
+    HttpStreamPool::StreamResult result =
+        pool.RequestStream(this, stream_key, priority_, allowed_bad_certs_,
+                           enable_ip_based_pooling_, NetLogWithSource());
+    if (absl::holds_alternative<std::unique_ptr<HttpStreamRequest>>(result)) {
+      request_ =
+          absl::get<std::unique_ptr<HttpStreamRequest>>(std::move(result));
+    } else if (absl::holds_alternative<HttpStreamPool::SucceededStream>(
+                   result)) {
+      auto success =
+          absl::get<HttpStreamPool::SucceededStream>(std::move(result));
+      stream_ = std::move(success.stream);
+      result_ = OK;
+    }
     return request_.get();
   }
 
@@ -377,6 +397,8 @@ class StreamRequester : public HttpStreamRequest::Delegate {
 
   std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
 
+  bool enable_ip_based_pooling_ = true;
+
   std::unique_ptr<HttpStreamRequest> request_;
 
   std::unique_ptr<HttpStream> stream_;
@@ -394,15 +416,15 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
   HttpStreamPoolJobTest()
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    feature_list_.InitAndEnableFeature(features::kUseServiceEndpointRequest);
     session_deps_.alternate_host_resolver =
         std::make_unique<FakeServiceEndpointResolver>();
     http_network_session_ =
         SpdySessionDependencies::SpdyCreateSession(&session_deps_);
-    pool_ = std::make_unique<HttpStreamPool>(http_network_session_.get());
   }
 
  protected:
-  HttpStreamPool& pool() { return *pool_; }
+  HttpStreamPool& pool() { return *http_network_session_->http_stream_pool(); }
 
   FakeServiceEndpointResolver* resolver() {
     return static_cast<FakeServiceEndpointResolver*>(
@@ -417,10 +439,30 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
     return session_deps_.ssl_config_service.get();
   }
 
+  SpdySessionPool* spdy_session_pool() {
+    return http_network_session_->spdy_session_pool();
+  }
+
+  base::WeakPtr<SpdySession> CreateFakeSpdySession(
+      const HttpStreamKey& stream_key) {
+    Group& group = pool().GetOrCreateGroupForTesting(stream_key);
+    CHECK(!spdy_session_pool()->HasAvailableSession(group.spdy_session_key(),
+                                                    /*is_websocket=*/false));
+    auto handle = group.CreateHandle(FakeStreamSocket::CreateForSpdy());
+    base::WeakPtr<SpdySession> spdy_session;
+    int rv = spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
+        group.spdy_session_key(), std::move(handle), NetLogWithSource(),
+        &spdy_session);
+    CHECK_EQ(rv, OK);
+    // See the comment of CreateFakeSpdySession() in spdy_test_util_common.cc.
+    spdy_session->SetTimeToBufferSmallWindowUpdates(base::TimeDelta::Max());
+    return spdy_session;
+  }
+
  private:
+  base::test::ScopedFeatureList feature_list_;
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> http_network_session_;
-  std::unique_ptr<HttpStreamPool> pool_;
 };
 
 TEST_F(HttpStreamPoolJobTest, ResolveEndpointFailedSync) {
@@ -1292,6 +1334,145 @@ TEST_F(HttpStreamPoolJobTest, SSLConfigForServersChanged) {
       requester_a.GetStreamKey().destination())});
   ASSERT_EQ(group_a.IdleStreamSocketCount(), 0u);
   ASSERT_EQ(group_b.IdleStreamSocketCount(), 1u);
+}
+
+TEST_F(HttpStreamPoolJobTest, SpdyAvailableSession) {
+  StreamRequester requester;
+  requester.set_destination("https://a.test")
+      .set_enable_ip_based_pooling(false);
+
+  CreateFakeSpdySession(requester.GetStreamKey());
+  requester.RequestStream(pool());
+  EXPECT_THAT(*requester.result(), IsOk());
+}
+
+TEST_F(HttpStreamPoolJobTest, SpdyOk) {
+  // Create two requests for the same destination. Once a connection is
+  // established and is negotiated to use H2, another connection attempts should
+  // be canceled and all requests should receive HttpStreams on top of the
+  // SpdySession.
+
+  constexpr size_t kNumRequests = 2;
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  std::vector<std::unique_ptr<SequencedSocketData>> socket_datas;
+  std::vector<std::unique_ptr<SSLSocketDataProvider>> ssls;
+  std::vector<std::unique_ptr<StreamRequester>> requesters;
+
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  for (size_t i = 0; i < kNumRequests; ++i) {
+    auto data = std::make_unique<SequencedSocketData>(reads, writes);
+    socket_factory()->AddSocketDataProvider(data.get());
+    socket_datas.emplace_back(std::move(data));
+    auto ssl = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+    ssl->next_proto = NextProto::kProtoHTTP2;
+    socket_factory()->AddSSLSocketDataProvider(ssl.get());
+    ssls.emplace_back(std::move(ssl));
+
+    auto requester = std::make_unique<StreamRequester>();
+    requester->set_destination("https://a.test")
+        .set_enable_ip_based_pooling(false)
+        .RequestStream(pool());
+    requesters.emplace_back(std::move(requester));
+  }
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  RunUntilIdle();
+
+  for (auto& requester : requesters) {
+    ASSERT_TRUE(requester->result().has_value());
+    EXPECT_THAT(*requester->result(), IsOk());
+  }
+  Group& group =
+      pool().GetOrCreateGroupForTesting(requesters[0]->GetStreamKey());
+  ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), 0u);
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
+}
+
+TEST_F(HttpStreamPoolJobTest, SpdyCreateSessionFail) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  auto data = std::make_unique<SequencedSocketData>(reads, writes);
+  socket_factory()->AddSocketDataProvider(data.get());
+  auto ssl = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  ssl->next_proto = NextProto::kProtoHTTP2;
+  // Set an invalid ALPS to make SPDY session creation fail.
+  ssl->peer_application_settings = "invalid alps";
+  socket_factory()->AddSSLSocketDataProvider(ssl.get());
+
+  StreamRequester requester;
+  requester.set_destination("https://a.test").RequestStream(pool());
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  RunUntilIdle();
+
+  ASSERT_TRUE(requester.result().has_value());
+  EXPECT_THAT(*requester.result(), IsError(ERR_HTTP2_PROTOCOL_ERROR));
+}
+
+TEST_F(HttpStreamPoolJobTest, SpdyReachedPoolLimit) {
+  constexpr size_t kMaxPerGroup = 1;
+  constexpr size_t kMaxPerPool = 2;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+  pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
+
+  // Create SPDY sessions up to the pool limit.
+  StreamRequester requester_a;
+  requester_a.set_destination("https://a.test");
+  base::WeakPtr<SpdySession> spdy_session_a =
+      CreateFakeSpdySession(requester_a.GetStreamKey());
+  requester_a.RequestStream(pool());
+  EXPECT_THAT(*requester_a.result(), IsOk());
+
+  StreamRequester requester_b;
+  requester_b.set_destination("https://b.test");
+  CreateFakeSpdySession(requester_b.GetStreamKey());
+  requester_b.RequestStream(pool());
+  EXPECT_THAT(*requester_b.result(), IsOk());
+
+  ASSERT_TRUE(pool().ReachedMaxStreamLimit());
+  ASSERT_FALSE(pool().IsPoolStalled());
+
+  // Request a stream in group C. It should be blocked.
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  auto data = std::make_unique<SequencedSocketData>(reads, writes);
+  socket_factory()->AddSocketDataProvider(data.get());
+  auto ssl = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  ssl->next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(ssl.get());
+
+  StreamRequester requester_c;
+  requester_c.set_destination("https://c.test").RequestStream(pool());
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  RunUntilIdle();
+  Group& group_c =
+      pool().GetOrCreateGroupForTesting(requester_c.GetStreamKey());
+  ASSERT_EQ(group_c.GetJobForTesting()->PendingRequestCount(), 1u);
+  ASSERT_TRUE(pool().ReachedMaxStreamLimit());
+  ASSERT_TRUE(pool().IsPoolStalled());
+
+  // Close the group A's SPDY session. It should unblock the request in group C.
+  spdy_session_a->CloseSessionOnError(ERR_ABORTED,
+                                      /*description=*/"for testing");
+  RunUntilIdle();
+  ASSERT_TRUE(requester_c.result().has_value());
+  EXPECT_THAT(*requester_c.result(), IsOk());
+  ASSERT_TRUE(pool().ReachedMaxStreamLimit());
+  ASSERT_FALSE(pool().IsPoolStalled());
 }
 
 }  // namespace net

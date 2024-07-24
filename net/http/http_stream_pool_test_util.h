@@ -5,6 +5,9 @@
 #ifndef NET_HTTP_HTTP_STREAM_POOL_TEST_UTIL_H_
 #define NET_HTTP_HTTP_STREAM_POOL_TEST_UTIL_H_
 
+#include <memory>
+#include <optional>
+
 #include "net/base/completion_once_callback.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/stream_socket.h"
@@ -17,6 +20,8 @@ class SSLInfo;
 
 class FakeStreamSocket : public MockClientSocket {
  public:
+  static std::unique_ptr<FakeStreamSocket> CreateForSpdy();
+
   FakeStreamSocket();
 
   FakeStreamSocket(const FakeStreamSocket&) = delete;
@@ -31,6 +36,8 @@ class FakeStreamSocket : public MockClientSocket {
   void set_was_ever_used(bool was_ever_used) { was_ever_used_ = was_ever_used; }
 
   void set_peer_addr(IPEndPoint peer_addr) { peer_addr_ = peer_addr; }
+
+  void set_ssl_info(SSLInfo ssl_info) { ssl_info_ = std::move(ssl_info); }
 
   // StreamSocket implementation:
   int Read(IOBuffer* buf,
@@ -49,6 +56,7 @@ class FakeStreamSocket : public MockClientSocket {
  private:
   bool is_idle_ = true;
   bool was_ever_used_ = false;
+  std::optional<SSLInfo> ssl_info_;
 };
 
 }  // namespace net

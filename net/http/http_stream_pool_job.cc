@@ -19,10 +19,13 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool_group.h"
+#include "net/http/http_stream_pool_handle.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/stream_attempt.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/socket/tls_stream_attempt.h"
+#include "net/spdy/spdy_http_stream.h"
+#include "net/spdy/spdy_session.h"
 #include "net/ssl/ssl_cert_request_info.h"
 
 namespace net {
@@ -106,10 +109,15 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
     HttpStreamRequest::Delegate* delegate,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+    bool enable_ip_based_pooling,
     const NetLogWithSource& net_log) {
   // TODO(crbug.com/346835898): Handle requests that are coming while `this` is
   // failing.
   CHECK(!is_failing_);
+
+  if (!enable_ip_based_pooling) {
+    enable_ip_based_pooling_ = enable_ip_based_pooling;
+  }
 
   auto entry = std::make_unique<RequestEntry>(this);
   std::unique_ptr<HttpStreamRequest> request =
@@ -216,8 +224,16 @@ const HttpStreamKey& HttpStreamPool::Job::stream_key() const {
   return group_->stream_key();
 }
 
+const SpdySessionKey& HttpStreamPool::Job::spdy_session_key() const {
+  return group_->spdy_session_key();
+}
+
 HttpNetworkSession* HttpStreamPool::Job::http_network_session() {
   return group_->http_network_session();
+}
+
+SpdySessionPool* HttpStreamPool::Job::spdy_session_pool() {
+  return http_network_session()->spdy_session_pool();
 }
 
 HttpStreamPool* HttpStreamPool::Job::pool() {
@@ -485,17 +501,43 @@ void HttpStreamPool::Job::CreateTextBasedStreamAndNotify(
 
   std::unique_ptr<HttpStream> http_stream =
       group_->CreateTextBasedStream(std::move(stream_socket));
+  NotifyStreamReady(std::move(http_stream), negotiated_protocol);
+  // `this` may be deleted.
+}
 
+void HttpStreamPool::Job::CreateSpdyStreamAndNotify() {
+  CHECK(spdy_session_);
+  CHECK(service_endpoint_request_);
+  CHECK(!is_canceling_requests_);
+  CHECK(!is_failing_);
+
+  // If there are more than one remaining request, post a task to create
+  // HttpStreams for these requests.
+  if (requests_.size() > 1) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&Job::CreateSpdyStreamAndNotify,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  auto http_stream = std::make_unique<SpdyHttpStream>(
+      spdy_session_, net_log_.source(),
+      service_endpoint_request_->GetDnsAliasResults());
+  NotifyStreamReady(std::move(http_stream), NextProto::kProtoHTTP2);
+  // `this` may be deleted.
+}
+
+void HttpStreamPool::Job::NotifyStreamReady(std::unique_ptr<HttpStream> stream,
+                                            NextProto negotiated_protocol) {
   RequestEntry* entry = ExtractFirstRequestToNotify();
   if (!entry) {
-    // The ownership of the stream will be moved to the group as `http_stream`
-    // is going to be destructed.
+    // The ownership of the stream will be moved to the group as `stream` is
+    // going to be destructed.
     return;
   }
 
   entry->request()->Complete(negotiated_protocol,
                              ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON);
-  entry->delegate()->OnStreamReady(proxy_info_, std::move(http_stream));
+  entry->delegate()->OnStreamReady(proxy_info_, std::move(stream));
 }
 
 HttpStreamPool::Job::RequestEntry*
@@ -567,10 +609,33 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
 
   // TODO(crbug.com/346835898): Support preconnect.
 
-  // TODO(crbug.com/346835898): Support HTTP/2.
   std::unique_ptr<StreamSocket> stream_socket =
       in_flight_attempt->attempt->ReleaseStreamSocket();
   CHECK(stream_socket);
+
+  if (stream_socket->GetNegotiatedProtocol() == NextProto::kProtoHTTP2) {
+    CHECK(!spdy_session_pool()->FindAvailableSession(
+        group_->spdy_session_key(), enable_ip_based_pooling_,
+        /*is_websocket=*/false, net_log_));
+    std::unique_ptr<HttpStreamPoolHandle> handle =
+        group_->CreateHandle(std::move(stream_socket));
+    int create_result =
+        spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
+            spdy_session_key(), std::move(handle), net_log_, &spdy_session_);
+    if (create_result != OK) {
+      HandleAttemptFailure(std::move(in_flight_attempt), create_result);
+      return;
+    }
+    CHECK(spdy_session_);
+
+    // Cancel in-flight requests and close idle streams as we don't need them
+    // anymore.
+    group_->Refresh();
+
+    CreateSpdyStreamAndNotify();
+    return;
+  }
+
   CHECK_NE(stream_socket->GetNegotiatedProtocol(), NextProto::kProtoHTTP2);
   CreateTextBasedStreamAndNotify(std::move(stream_socket));
 }
