@@ -1778,7 +1778,6 @@ if (!is_android) {
       "//chrome/browser/companion/core/proto",
       "//chrome/browser/companion/visual_query:browser_tests",
       "//chrome/browser/companion/visual_query:visual_query",
-      "//chrome/browser/controlled_frame:test_support",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/dips:browser_tests",
@@ -2299,7 +2298,10 @@ if (!is_android) {
     }
 
     if (enable_extensions) {
-      deps += [ "//chrome/browser/web_applications/extensions" ]
+      deps += [
+        "//chrome/browser/controlled_frame:test_support",
+        "//chrome/browser/web_applications/extensions",
+      ]
     }
 
     # Runtime dependencies
@@ -11050,7 +11052,6 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:interactive_ui_tests",
       "//chrome/browser/autofill:test_support_ui",
-      "//chrome/browser/controlled_frame:test_support",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
@@ -11651,6 +11652,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/extensions/api/extension_action/extension_action_api_interactive_uitest.cc",
         "../browser/guest_view/mime_handler_view/chrome_mime_handler_view_interactive_uitest.cc",
       ]
+      deps += [ "//chrome/browser/controlled_frame:test_support" ]
     }
 
     if (enable_chrome_notifications) {
