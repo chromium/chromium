@@ -8962,13 +8962,13 @@
   },
   {
     "name": "use-fullscreen-insets-api",
-    "owners": [ "geoffhuang@google.com"],
-    "expiry_milestone": 126
+    "owners": [ "clhager@google.com"],
+    "expiry_milestone": 140
   },
   {
     "name": "use-fullscreen-insets-api-on-automotive",
-    "owners": [ "clhager@google.com", "geoffhuang@google.com", "twellington@chromium.org"],
-    "expiry_milestone": 126
+    "owners": [ "clhager@google.com", "twellington@chromium.org"],
+    "expiry_milestone": 140
   },
   {
     "name": "use-gpu-scheduler-dfs",
