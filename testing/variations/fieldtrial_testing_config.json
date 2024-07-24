@@ -21803,65 +21803,6 @@
             ]
         }
     ],
-    "StructuredMetricsExternalMetrics": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "UploadCadence20ReadCadence5",
-                    "params": {
-                        "external_metrics_collection_interval_in_seconds": "300",
-                        "upload_time_in_seconds": "1200"
-                    },
-                    "enable_features": [
-                        "EnableStructuredMetrics",
-                        "EnableStructuredMetricsService"
-                    ]
-                },
-                {
-                    "name": "UploadCadence10ReadCadence3",
-                    "params": {
-                        "external_metrics_collection_interval_in_seconds": "180",
-                        "upload_time_in_seconds": "600"
-                    },
-                    "enable_features": [
-                        "EnableStructuredMetrics",
-                        "EnableStructuredMetricsService"
-                    ]
-                },
-                {
-                    "name": "UploadCadence20",
-                    "params": {
-                        "upload_time_in_seconds": "1200"
-                    },
-                    "enable_features": [
-                        "EnableStructuredMetrics",
-                        "EnableStructuredMetricsService"
-                    ]
-                },
-                {
-                    "name": "StructuredMetricsExternalMetrics_100_20231027",
-                    "params": {
-                        "file_limit": "100"
-                    },
-                    "enable_features": [
-                        "EnableStructuredMetrics"
-                    ]
-                },
-                {
-                    "name": "StructuredMetricsExternalMetrics_70_20231027",
-                    "params": {
-                        "file_limit": "70"
-                    },
-                    "enable_features": [
-                        "EnableStructuredMetrics"
-                    ]
-                }
-            ]
-        }
-    ],
     "SuppressToolbarCaptures": [
         {
             "platforms": [
