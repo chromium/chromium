@@ -887,7 +887,10 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   // already checked for matching values. Adding a CHECK here to be safe.
   CHECK(common_params_);
   if (attributes_.url_match_predicate) {
-    CHECK(attributes_.url_match_predicate.Run(potential_activation.url));
+    // TODO(crbug.com/41494389): Figure out what we need to pass here as a
+    // web_url_match result instead of std::nullopt.
+    CHECK(attributes_.url_match_predicate.Run(potential_activation.url,
+                                              std::nullopt));
   } else if (no_vary_search_.has_value()) {
     CHECK(no_vary_search_->AreEquivalent(potential_activation.url,
                                          common_params_->url));
@@ -1206,32 +1209,34 @@ void PrerenderHost::SetFailureReason(
   }
 }
 
-std::optional<PrerenderHost::UrlMatchType> PrerenderHost::IsUrlMatch(
-    const GURL& url) const {
+std::optional<UrlMatchType> PrerenderHost::IsUrlMatch(const GURL& url) const {
   // Triggers are not allowed to treat a cross-origin url as a matched url. It
   // would cause security risks.
   if (!url::IsSameOriginWith(attributes_.prerendering_url, url)) {
     return std::nullopt;
   }
 
-  if (attributes_.url_match_predicate) {
-    if (attributes_.url_match_predicate.Run(url)) {
-      return PrerenderHost::UrlMatchType::kURLPredicateMatch;
-    }
-    return std::nullopt;
-  }
+  std::optional<UrlMatchType> result;
 
   if (GetInitialUrl() == url) {
-    return PrerenderHost::UrlMatchType::kExact;
+    result = UrlMatchType::kExact;
   }
 
   // Check No-Vary-Search header and try and match.
-  if (no_vary_search_.has_value() &&
+  if (!result && no_vary_search_.has_value() &&
       no_vary_search_->AreEquivalent(GetInitialUrl(), url)) {
-    return PrerenderHost::UrlMatchType::kNoVarySearch;
+    result = UrlMatchType::kNoVarySearch;
   }
 
-  return std::nullopt;
+  if (!attributes_.url_match_predicate) {
+    return result;
+  }
+
+  if (attributes_.url_match_predicate.Run(url, result)) {
+    result = UrlMatchType::kURLPredicateMatch;
+  }
+
+  return result;
 }
 
 bool PrerenderHost::IsNoVarySearchHintUrlMatch(const GURL& url) const {

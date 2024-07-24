@@ -55,6 +55,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/mhtml_generation_result.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -954,7 +955,8 @@ class CONTENT_EXPORT WebContentsImpl
       bool should_warm_up_compositor,
       PreloadingHoldbackStatus holdback_status_override,
       PreloadingAttempt* preloading_attempt,
-      base::RepeatingCallback<bool(const GURL&)>,
+      base::RepeatingCallback<bool(const GURL&,
+                                   const std::optional<UrlMatchType>&)>,
       base::RepeatingCallback<void(NavigationHandle&)>) override;
   void CancelAllPrerendering() override;
   void BackNavigationLikely(PreloadingPredictor predictor,

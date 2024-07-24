@@ -212,5 +212,14 @@ bool HasCanonicalPreloadingOmniboxSearchURL(
 bool IsSearchDestinationMatch(const GURL& canonical_preloading_search_url,
                               content::BrowserContext* browser_context,
                               const GURL& navigation_url);
+// Returns true when |navigation_url| is considered as navigating to the same
+// omnibox search results page as |canonical_preloading_search_url|. Includes
+// the result from the default web url match operation.
+bool IsSearchDestinationMatchWithWebUrlMatchResult(
+    const GURL& canonical_preloading_search_url,
+    content::BrowserContext* browser_context,
+    const GURL& navigation_url,
+    const std::optional<content::UrlMatchType>& default_web_url_match =
+        std::nullopt);
 
 #endif  // CHROME_BROWSER_PRELOADING_CHROME_PRELOADING_H_

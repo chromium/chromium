@@ -100,9 +100,6 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     kMaybeNavigationCancelled
   };
 
-  // Types of URL match
-  enum class UrlMatchType { kExact, kNoVarySearch, kURLPredicateMatch };
-
   // Observes a triggered prerender. Note that the observer should overlive the
   // prerender host instance, or be removed properly upon destruction.
   class Observer : public base::CheckedObserver {

@@ -10966,7 +10966,9 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
     bool should_warm_up_compositor,
     PreloadingHoldbackStatus holdback_status_override,
     PreloadingAttempt* preloading_attempt,
-    base::RepeatingCallback<bool(const GURL&)> url_match_predicate,
+    base::RepeatingCallback<bool(const GURL&,
+                                 const std::optional<UrlMatchType>&)>
+        url_match_predicate,
     base::RepeatingCallback<void(NavigationHandle&)>
         prerender_navigation_handle_callback) {
   PrerenderAttributes attributes(

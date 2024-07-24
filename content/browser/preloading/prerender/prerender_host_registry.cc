@@ -1144,7 +1144,7 @@ int PrerenderHostRegistry::ReserveHostToActivate(
   CHECK(host->IsUrlMatch(navigation_request.GetURL()));
 
   if (host->IsUrlMatch(navigation_request.GetURL()).value() ==
-      PrerenderHost::UrlMatchType::kNoVarySearch) {
+      UrlMatchType::kNoVarySearch) {
     // Count use of No-Vary-Search header in prerender.
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         web_contents()->GetPrimaryMainFrame(),

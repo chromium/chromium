@@ -370,6 +370,14 @@ enum class PreloadingFailureReason {
 };
 // LINT.ThenChange()
 
+// Types of URL match:
+// Exact match: the URLs are matching exactly.
+// NoVarySearch match: No-Vary-Search header allows for inexact match by
+// ignoring some query parameters, or the order of query parameters present
+// in URLs.
+// Custom match: custom URL matching provided by a url matching predicate.
+enum class UrlMatchType { kExact, kNoVarySearch, kURLPredicateMatch };
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_PRELOADING_H_
