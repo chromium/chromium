@@ -1,0 +1,26 @@
+{
+  "key": "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDCQ+ePDzpLth/ZnUewmbuutBlIOU7RFD27Cy7Z/hFVAGA4wns+Xzj8SJ4YfcQQ1qIH7XfcPe6L+lT+IF8dMwHd5uXIFQWd8gHxeaQoIJcsPjnNgxbVR+TsAuzrgbCWz+gNz0/dDNjqVs+3Dv1QKGf6XE/+iJ4LfkzahIMtsUFp2UaOy+bYT7eh8FGmO8zuQmjAv5gM2I3K3C/8gUBvwm9yhipv/Dn7OtHLcBNHbCq0fbGIHLythTrhBTT81Z+RLAdQy787rS2gQH3IuFqLxuLfXFNBUI30QBdu2c5bL1PbePP+4w+UY8rBQ4ltqO8RDgIJl6zathCsBNtCLt3Yt5hnAgMBAAECggEAMHmkUwjwOYtJOFKsXG+IK0iKlICkX7zGyKE6QDBLX+QXnqI9AaveOund9WuQnMkKJqNFiQI1P92oDr/CLDWZricbSImiXK7SeFCru02im2otn1AqRu9JOvFh8ERs7b0UgTmtipHVoOgnrdzCLhnfFFSrq26ozWJnSBHP7/tuwLwERmBtRldo5HbV7SZWSd54vS2BimijBo4nob7vC+QZf+1p8KEWzi7GvjLxMfpaMMjaC6BcIfvUJPHvPETEMCaLgjb42d4fjr/HECge4elI1dKcXt+IiCJ0pP6Axo1VglIxNqkHbCXlkb/E+F0mST0drYz+Yix4WpxX6eSMg4aEfQKBgQD+E3mFXa3E73Fc5SoZjdvj3KnmEv7CrM3BC79fI9Ljc52PTpp7LKEpl7ywH3vAl06XW0ktwCL+fOth+frgJgRfAMQsq8u8vl9842+yl81i/yoPRRsxM8cri84d3AJRExffY6eddjc6WHqYUauhTz38gUXNvaz+bMNtGXlE2bTBJQKBgQDDvHyhAdWkZa9wTADbmL5UTlVZb/9jS8+ENUpHISqUkOKEwoxvaa071CccurIpxflfP9T+kzdreXGuKHqrziPl4lVfYCDJXo8UmvB9x7/BXvrm0+CGs8rt2i7gL66wVnf9YsGPs5B7KBK/Z8TwS7gie3MNMFLZS8qdcEvc+xzbmwKBgQDRntOlurJBRqOq1s8zIh0HE+mAjq9tghCHct/C6NV3Hs4hi+JcOWgF3tCoJnF9ZdhLe98WRe0ZNYsl3I6lG/iDQSiZCmwfHpm9eg+PszqasJbM3mEe6O8r+D5n2Dp5FV2eyqNhgET0eEc9IDSP88baavViV1lA2A8sFdY9fbhpmQKBgQCjkrDUHKRdblzei6Vr3omwCoZo55+Va5VP9vjL2HutDCdAqxSRRs7uYK0O5TZekoODheSJmp2Fw0etM0bQrMRzKGIQAlVj8xG/NnwjoPouryEeJZJM/5Nmkh76Wt6xnpFHv2/ilzz2rtZ7/kwmRCDtMB1FuEyEK0J3r5C2a2QCYQKBgASVezK2dt9N9kpNxFSJEdW5k7DUZAmAqMVndgIEWWbsurXot5rbgYfhezoST94XVa0K3juIY3lBigvC3ZTafEcLbNEfL8eYmcgb4zK85F2biyIw9Hv5fxqOPsMJ6Ltub3FaORlJGzHPz2783ZTirBsBQgSvQCqKtISVZlwrzXtl",
+  "manifest_version": 3,
+  "name": "Reading Mode Google Docs Helper",
+  "version": "1.0",
+  "description": "Provides support for Reading Mode to work on Google Docs on non-Lacros platforms",
+  "incognito": "split",
+  "content_scripts": [
+    {
+      "matches": [ "https://docs.google.com/document*",
+                   "https://docs.sandbox.google.com/document*" ],
+      "all_frames": true,
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["gdocs_script.js"],
+      "matches": [ "https://docs.google.com/*",
+                   "https://docs.sandbox.google.com/*" ]
+    }
+  ]
+}
