@@ -241,6 +241,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
   void OnObjectManagerSupported(dbus::Response* response);
   void OnObjectManagerNotSupported(dbus::ErrorResponse* response);
   void OnManagerClientInitComplete();
+  void OnManagerServiceAvailable(bool is_available);
 
   // Initializes the manager client
   void InitializeManagerClient();

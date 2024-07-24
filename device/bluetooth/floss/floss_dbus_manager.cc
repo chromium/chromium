@@ -11,6 +11,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "components/device_event_log/device_event_log.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_manager.h"
@@ -73,19 +74,13 @@ FlossDBusManager::FlossDBusManager(dbus::Bus* bus, bool use_stubs) : bus_(bus) {
 
   CHECK(GetSystemBus()) << "Can't initialize real clients without DBus.";
 
-  dbus::MethodCall method_call(dbus::kObjectManagerInterface,
-                               dbus::kObjectManagerGetManagedObjects);
-
   VLOG(1) << "FlossDBusManager checking for object manager";
-  // Sets up callbacks checking for object manager support. Object manager is
-  // registered on the root object "/"
+
+  // Wait for the Floss Manager to be available
   GetSystemBus()
       ->GetObjectProxy(kManagerService, dbus::ObjectPath("/"))
-      ->CallMethodWithErrorCallback(
-          &method_call, kDBusTimeoutMs,
-          base::BindOnce(&FlossDBusManager::OnObjectManagerSupported,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&FlossDBusManager::OnObjectManagerNotSupported,
+      ->WaitForServiceToBeAvailable(
+          base::BindOnce(&FlossDBusManager::OnManagerServiceAvailable,
                          weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -369,9 +364,34 @@ void FlossDBusManager::OnObjectManagerSupported(dbus::Response* response) {
   object_manager_->RegisterInterface(kSocketManagerInterface, this);
 }
 
+void FlossDBusManager::OnManagerServiceAvailable(bool is_available) {
+  if (!is_available) {
+    BLUETOOTH_LOG(ERROR) << "Floss Manager is not available.";
+    object_manager_support_known_ = true;
+    if (object_manager_support_known_callback_) {
+      std::move(object_manager_support_known_callback_).Run();
+    }
+    return;
+  }
+
+  dbus::MethodCall method_call(dbus::kObjectManagerInterface,
+                               dbus::kObjectManagerGetManagedObjects);
+
+  // Sets up callbacks checking for object manager support. Object manager is
+  // registered on the root object "/"
+  GetSystemBus()
+      ->GetObjectProxy(kManagerService, dbus::ObjectPath("/"))
+      ->CallMethodWithErrorCallback(
+          &method_call, kDBusTimeoutMs,
+          base::BindOnce(&FlossDBusManager::OnObjectManagerSupported,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&FlossDBusManager::OnObjectManagerNotSupported,
+                         weak_ptr_factory_.GetWeakPtr()));
+}
+
 void FlossDBusManager::OnObjectManagerNotSupported(
     dbus::ErrorResponse* response) {
-  DVLOG(1) << "Floss Bluetooth not supported.";
+  BLUETOOTH_LOG(ERROR) << "Floss Bluetooth not supported.";
   object_manager_supported_ = false;
 
   // Don't initialize any clients since they need ObjectManager.
