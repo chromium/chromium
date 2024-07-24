@@ -40,11 +40,13 @@
             hidden="[[!hasAmbientLightSensor]]">
         </settings-toggle-button>
         <div class="settings-box">
-          <div class="start" id="keyboardBrightnessPercentLabel">
+          <div class="start" id="keyboardBrightnessPercentLabel"
+              aria-hidden="true">
             $i18n{keyboardBrightnessLabel}
           </div>
           <settings-slider id="keyboardBrightnessSlider"
               pref="{{keyboardBrightnessPercentPref}}"
+              label-aria="$i18n{keyboardBrightnessLabel}"
               on-pointerup="onPointerup"
               on-keyup="onKeyup"
               on-cr-slider-value-changed="onKeyboardBrightnessSliderChanged">
