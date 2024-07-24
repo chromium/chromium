@@ -9,12 +9,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_estimate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_usage_details.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
-#include "third_party/blink/renderer/core/frame/navigator.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/workers/shared_worker.h"
 #include "third_party/blink/renderer/modules/broadcastchannel/broadcast_channel.h"
 #include "third_party/blink/renderer/modules/file_system_access/storage_manager_file_system_access.h"
-#include "third_party/blink/renderer/modules/storage/storage_controller.h"
+#include "third_party/blink/renderer/modules/storage_access/global_storage_access_handle.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -107,10 +105,7 @@ StorageAccessHandle::StorageAccessHandle(
     LocalDOMWindow& window,
     const StorageAccessTypes* storage_access_types)
     : Supplement<LocalDOMWindow>(window),
-      storage_access_types_(storage_access_types),
-      remote_(window.GetExecutionContext()),
-      broadcast_channel_(window.GetExecutionContext()),
-      shared_worker_(window.GetExecutionContext()) {
+      storage_access_types_(storage_access_types) {
   window.CountUse(
       WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies);
   if (storage_access_types_->all()) {
@@ -176,53 +171,48 @@ StorageAccessHandle::StorageAccessHandle(
         WebFeature::
             kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker);
   }
+  // StorageAccessHandle is constructed in a promise, so while we are 'awaiting'
+  // we should preempt the IPC we know we will need (and let local/session
+  // storage have a chance to load from disk if needed) to ensure the latency of
+  // synchronous methods stays low.
   if (storage_access_types_->all() || storage_access_types_->sessionStorage()) {
-    InitSessionStorage();
+    GlobalStorageAccessHandle::From(window).GetSessionStorageArea();
   }
   if (storage_access_types_->all() || storage_access_types_->localStorage()) {
-    InitLocalStorage();
+    GlobalStorageAccessHandle::From(window).GetLocalStorageArea();
   }
   if (storage_access_types_->all() || storage_access_types_->indexedDB()) {
-    InitIndexedDB();
+    GlobalStorageAccessHandle::From(window).GetIDBFactory();
   }
   if (storage_access_types_->all() || storage_access_types_->locks()) {
-    InitLocks();
+    GlobalStorageAccessHandle::From(window).GetLockManager();
   }
   if (storage_access_types_->all() || storage_access_types_->caches()) {
-    InitCaches();
+    GlobalStorageAccessHandle::From(window).GetCacheStorage();
   }
   if (storage_access_types_->all() || storage_access_types_->getDirectory()) {
-    InitGetDirectory();
+    GlobalStorageAccessHandle::From(window).GetRemote();
   }
   if (storage_access_types_->all() || storage_access_types_->estimate()) {
-    InitQuota();
+    GlobalStorageAccessHandle::From(window).GetRemote();
   }
   if (storage_access_types_->all() ||
       storage_access_types_->createObjectURL() ||
       storage_access_types_->revokeObjectURL() ||
       storage_access_types_->sharedWorker()) {
-    InitBlobStorage();
+    GlobalStorageAccessHandle::From(window).GetPublicURLManager();
   }
   if (storage_access_types_->all() ||
       storage_access_types_->broadcastChannel()) {
-    InitBroadcastChannel();
+    GlobalStorageAccessHandle::From(window).GetBroadcastChannelProvider();
   }
   if (storage_access_types_->all() || storage_access_types_->sharedWorker()) {
-    InitSharedWorker();
+    GlobalStorageAccessHandle::From(window).GetSharedWorkerConnector();
   }
 }
 
 void StorageAccessHandle::Trace(Visitor* visitor) const {
   visitor->Trace(storage_access_types_);
-  visitor->Trace(session_storage_);
-  visitor->Trace(local_storage_);
-  visitor->Trace(remote_);
-  visitor->Trace(indexed_db_);
-  visitor->Trace(locks_);
-  visitor->Trace(caches_);
-  visitor->Trace(blob_storage_);
-  visitor->Trace(broadcast_channel_);
-  visitor->Trace(shared_worker_);
   ScriptWrappable::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
@@ -238,17 +228,19 @@ StorageArea* StorageAccessHandle::sessionStorage(
   window->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use);
-  if (!session_storage_) {
+  StorageArea* session_storage_area =
+      GlobalStorageAccessHandle::From(*window).GetSessionStorageArea();
+  if (!session_storage_area) {
     return nullptr;
   }
   if (window->GetSecurityOrigin()->IsLocal()) {
     window->CountUse(WebFeature::kFileAccessedSessionStorage);
   }
-  if (!session_storage_->CanAccessStorage()) {
+  if (!session_storage_area->CanAccessStorage()) {
     exception_state.ThrowSecurityError(StorageArea::kAccessDeniedMessage);
     return nullptr;
   }
-  return session_storage_;
+  return session_storage_area;
 }
 
 StorageArea* StorageAccessHandle::localStorage(
@@ -261,17 +253,19 @@ StorageArea* StorageAccessHandle::localStorage(
   window->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage_Use);
-  if (!local_storage_) {
+  StorageArea* local_storage_area =
+      GlobalStorageAccessHandle::From(*window).GetLocalStorageArea();
+  if (!local_storage_area) {
     return nullptr;
   }
   if (window->GetSecurityOrigin()->IsLocal()) {
     window->CountUse(WebFeature::kFileAccessedLocalStorage);
   }
-  if (!local_storage_->CanAccessStorage()) {
+  if (!local_storage_area->CanAccessStorage()) {
     exception_state.ThrowSecurityError(StorageArea::kAccessDeniedMessage);
     return nullptr;
   }
-  return local_storage_;
+  return local_storage_area;
 }
 
 IDBFactory* StorageAccessHandle::indexedDB(
@@ -283,7 +277,7 @@ IDBFactory* StorageAccessHandle::indexedDB(
   GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use);
-  return indexed_db_;
+  return GlobalStorageAccessHandle::From(*GetSupplementable()).GetIDBFactory();
 }
 
 LockManager* StorageAccessHandle::locks(ExceptionState& exception_state) const {
@@ -294,7 +288,7 @@ LockManager* StorageAccessHandle::locks(ExceptionState& exception_state) const {
   GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use);
-  return locks_;
+  return GlobalStorageAccessHandle::From(*GetSupplementable()).GetLockManager();
 }
 
 CacheStorage* StorageAccessHandle::caches(
@@ -306,7 +300,8 @@ CacheStorage* StorageAccessHandle::caches(
   GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches_Use);
-  return caches_;
+  return GlobalStorageAccessHandle::From(*GetSupplementable())
+      .GetCacheStorage();
 }
 
 ScriptPromise<FileSystemDirectoryHandle> StorageAccessHandle::getDirectory(
@@ -332,12 +327,14 @@ ScriptPromise<FileSystemDirectoryHandle> StorageAccessHandle::getDirectory(
 
 void StorageAccessHandle::GetDirectoryImpl(
     ScriptPromiseResolver<FileSystemDirectoryHandle>* resolver) const {
-  if (!remote_) {
+  HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote =
+      GlobalStorageAccessHandle::From(*GetSupplementable()).GetRemote();
+  if (!remote) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError));
     return;
   }
-  remote_->GetDirectory(
+  remote->GetDirectory(
       WTF::BindOnce(&StorageManagerFileSystemAccess::DidGetSandboxedFileSystem,
                     WrapPersistent(resolver)));
 }
@@ -356,13 +353,15 @@ ScriptPromise<StorageEstimate> StorageAccessHandle::estimate(
   GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate_Use);
-  if (!remote_) {
+  HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote =
+      GlobalStorageAccessHandle::From(*GetSupplementable()).GetRemote();
+  if (!remote) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError));
     return promise;
   }
-  remote_->Estimate(WTF::BindOnce(&EstimateImplAfterRemoteEstimate,
-                                  WrapPersistent(resolver)));
+  remote->Estimate(WTF::BindOnce(&EstimateImplAfterRemoteEstimate,
+                                 WrapPersistent(resolver)));
   return promise;
 }
 
@@ -374,12 +373,18 @@ String StorageAccessHandle::createObjectURL(
     exception_state.ThrowSecurityError(kCreateObjectURLNotRequested);
     return "";
   }
+  PublicURLManager* public_url_manager =
+      GlobalStorageAccessHandle::From(*GetSupplementable())
+          .GetPublicURLManager();
+  if (!public_url_manager) {
+    return "";
+  }
   GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL_Use);
   GetSupplementable()->CountUse(WebFeature::kCreateObjectURLBlob);
   CHECK(blob);
-  return blob_storage_->RegisterURL(blob);
+  return public_url_manager->RegisterURL(blob);
 }
 
 void StorageAccessHandle::revokeObjectURL(
@@ -390,13 +395,19 @@ void StorageAccessHandle::revokeObjectURL(
     exception_state.ThrowSecurityError(kRevokeObjectURLNotRequested);
     return;
   }
+  PublicURLManager* public_url_manager =
+      GlobalStorageAccessHandle::From(*GetSupplementable())
+          .GetPublicURLManager();
+  if (!public_url_manager) {
+    return;
+  }
   GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use);
   KURL resolved_url(NullURL(), url);
   GetSupplementable()->GetExecutionContext()->RemoveURLFromMemoryCache(
       resolved_url);
-  blob_storage_->Revoke(resolved_url);
+  public_url_manager->Revoke(resolved_url);
 }
 
 BroadcastChannel* StorageAccessHandle::BroadcastChannel(
@@ -408,11 +419,18 @@ BroadcastChannel* StorageAccessHandle::BroadcastChannel(
     exception_state.ThrowSecurityError(kBroadcastChannelNotRequested);
     return nullptr;
   }
+  HeapMojoAssociatedRemote<mojom::blink::BroadcastChannelProvider>&
+      broadcast_channel_provider =
+          GlobalStorageAccessHandle::From(*GetSupplementable())
+              .GetBroadcastChannelProvider();
+  if (!broadcast_channel_provider) {
+    return nullptr;
+  }
   GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use);
   return MakeGarbageCollected<blink::BroadcastChannel>(
-      PassKey(), execution_context, name, broadcast_channel_.get());
+      PassKey(), execution_context, name, broadcast_channel_provider.get());
 }
 
 blink::SharedWorker* StorageAccessHandle::SharedWorker(
@@ -424,161 +442,24 @@ blink::SharedWorker* StorageAccessHandle::SharedWorker(
     exception_state.ThrowSecurityError(kSharedWorkerNotRequested);
     return nullptr;
   }
+  HeapMojoRemote<mojom::blink::SharedWorkerConnector>& shared_worker_connector =
+      GlobalStorageAccessHandle::From(*GetSupplementable())
+          .GetSharedWorkerConnector();
+  if (!shared_worker_connector) {
+    return nullptr;
+  }
+  PublicURLManager* public_url_manager =
+      GlobalStorageAccessHandle::From(*GetSupplementable())
+          .GetPublicURLManager();
+  if (!public_url_manager) {
+    return nullptr;
+  }
   GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker_Use);
   return SharedWorker::Create(PassKey(), context, url, name_or_options,
-                              exception_state, blob_storage_, &shared_worker_);
-}
-
-void StorageAccessHandle::InitSessionStorage() {
-  LocalDOMWindow* window = GetSupplementable();
-  if (!window->GetSecurityOrigin()->CanAccessSessionStorage()) {
-    return;
-  }
-  if (!window->GetFrame()) {
-    return;
-  }
-  StorageNamespace* storage_namespace =
-      StorageNamespace::From(window->GetFrame()->GetPage());
-  if (!storage_namespace) {
-    return;
-  }
-  session_storage_ = StorageArea::Create(
-      window,
-      storage_namespace->GetCachedArea(
-          window, {}, StorageNamespace::StorageContext::kStorageAccessAPI),
-      StorageArea::StorageType::kSessionStorage);
-}
-
-void StorageAccessHandle::InitLocalStorage() {
-  LocalDOMWindow* window = GetSupplementable();
-  if (!window->GetSecurityOrigin()->CanAccessLocalStorage()) {
-    return;
-  }
-  if (!window->GetFrame()) {
-    return;
-  }
-  if (!window->GetFrame()->GetSettings()->GetLocalStorageEnabled()) {
-    return;
-  }
-  auto storage_area = StorageController::GetInstance()->GetLocalStorageArea(
-      window, {}, StorageNamespace::StorageContext::kStorageAccessAPI);
-  local_storage_ = StorageArea::Create(window, std::move(storage_area),
-                                       StorageArea::StorageType::kLocalStorage);
-}
-
-HeapMojoRemote<mojom::blink::StorageAccessHandle>&
-StorageAccessHandle::InitRemote() {
-  if (!remote_) {
-    mojo::PendingRemote<mojom::blink::StorageAccessHandle> remote;
-    GetSupplementable()
-        ->GetExecutionContext()
-        ->GetBrowserInterfaceBroker()
-        .GetInterface(remote.InitWithNewPipeAndPassReceiver());
-    remote_.Bind(std::move(remote),
-                 GetSupplementable()->GetExecutionContext()->GetTaskRunner(
-                     TaskType::kMiscPlatformAPI));
-  }
-  return remote_;
-}
-
-void StorageAccessHandle::InitIndexedDB() {
-  if (!GetSupplementable()->GetSecurityOrigin()->CanAccessDatabase()) {
-    return;
-  }
-  if (!InitRemote()) {
-    return;
-  }
-  mojo::PendingRemote<mojom::blink::IDBFactory> indexed_db_remote;
-  remote_->BindIndexedDB(indexed_db_remote.InitWithNewPipeAndPassReceiver());
-  indexed_db_ = MakeGarbageCollected<IDBFactory>(GetSupplementable());
-  indexed_db_->SetRemote(std::move(indexed_db_remote));
-}
-
-void StorageAccessHandle::InitLocks() {
-  if (!GetSupplementable()->GetSecurityOrigin()->CanAccessLocks()) {
-    return;
-  }
-  if (!InitRemote()) {
-    return;
-  }
-  mojo::PendingRemote<mojom::blink::LockManager> locks_remote;
-  remote_->BindLocks(locks_remote.InitWithNewPipeAndPassReceiver());
-  locks_ = MakeGarbageCollected<LockManager>(*GetSupplementable()->navigator());
-  locks_->SetManager(std::move(locks_remote),
-                     GetSupplementable()->GetExecutionContext());
-}
-
-void StorageAccessHandle::InitCaches() {
-  if (!GetSupplementable()->GetSecurityOrigin()->CanAccessCacheStorage()) {
-    return;
-  }
-  if (!InitRemote()) {
-    return;
-  }
-  mojo::PendingRemote<mojom::blink::CacheStorage> cache_remote;
-  remote_->BindCaches(cache_remote.InitWithNewPipeAndPassReceiver());
-  caches_ = MakeGarbageCollected<CacheStorage>(
-      GetSupplementable()->GetExecutionContext(),
-      GlobalFetch::ScopedFetcher::From(*GetSupplementable()),
-      std::move(cache_remote));
-}
-
-void StorageAccessHandle::InitGetDirectory() {
-  if (!GetSupplementable()->GetSecurityOrigin()->CanAccessFileSystem()) {
-    return;
-  }
-  InitRemote();
-  // Nothing else to init as getDirectory is an async function not a handle.
-}
-
-void StorageAccessHandle::InitQuota() {
-  if (GetSupplementable()->GetSecurityOrigin()->IsOpaque()) {
-    return;
-  }
-  InitRemote();
-  // Nothing else to init as all Quota usage is via async functions.
-}
-
-void StorageAccessHandle::InitBlobStorage() {
-  if (GetSupplementable()->GetSecurityOrigin()->IsOpaque()) {
-    return;
-  }
-  if (!InitRemote()) {
-    return;
-  }
-  mojo::PendingAssociatedRemote<mojom::blink::BlobURLStore> blob_storage_remote;
-  remote_->BindBlobStorage(
-      blob_storage_remote.InitWithNewEndpointAndPassReceiver());
-  blob_storage_ = MakeGarbageCollected<PublicURLManager>(
-      PassKey(), GetSupplementable()->GetExecutionContext(),
-      std::move(blob_storage_remote));
-}
-
-void StorageAccessHandle::InitBroadcastChannel() {
-  if (GetSupplementable()->GetSecurityOrigin()->IsOpaque()) {
-    return;
-  }
-  if (!InitRemote()) {
-    return;
-  }
-  remote_->BindBroadcastChannel(
-      broadcast_channel_.BindNewEndpointAndPassReceiver(
-          GetSupplementable()->GetExecutionContext()->GetTaskRunner(
-              TaskType::kInternalDefault)));
-}
-
-void StorageAccessHandle::InitSharedWorker() {
-  if (!GetSupplementable()->GetSecurityOrigin()->CanAccessSharedWorkers()) {
-    return;
-  }
-  if (!InitRemote()) {
-    return;
-  }
-  remote_->BindSharedWorker(shared_worker_.BindNewPipeAndPassReceiver(
-      GetSupplementable()->GetExecutionContext()->GetTaskRunner(
-          TaskType::kDOMManipulation)));
+                              exception_state, public_url_manager,
+                              &shared_worker_connector);
 }
 
 namespace bindings {

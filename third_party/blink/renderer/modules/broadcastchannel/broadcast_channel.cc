@@ -342,4 +342,8 @@ void BroadcastChannel::SetupDisconnectHandlers() {
       WTF::BindOnce(&BroadcastChannel::OnError, WrapWeakPersistent(this)));
 }
 
+bool BroadcastChannel::IsRemoteClientConnectedForTesting() const {
+  return remote_client_.is_connected();
+}
+
 }  // namespace blink
