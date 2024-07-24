@@ -336,7 +336,6 @@ class LocationBarView
   void FocusSearch() override;
   void UpdateContentSettingsIcons() override;
   void SaveStateToContents(content::WebContents* contents) override;
-  const OmniboxView* GetOmniboxView() const override;
   LocationBarTesting* GetLocationBarForTesting() override;
   void OnChanged() override;
   void OnPopupVisibilityChanged() override;

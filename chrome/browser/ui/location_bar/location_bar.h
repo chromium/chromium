@@ -74,7 +74,6 @@ class LocationBar {
   // Reverts the location bar.  The bar's permanent text will be shown.
   virtual void Revert() = 0;
 
-  virtual const OmniboxView* GetOmniboxView() const = 0;
   virtual OmniboxView* GetOmniboxView() = 0;
 
   // Returns the WebContents of the currently active tab.

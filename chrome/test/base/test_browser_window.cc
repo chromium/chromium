@@ -44,10 +44,6 @@ std::unique_ptr<Browser> CreateBrowserWithTestWindowForParams(
 
 // TestBrowserWindow::TestLocationBar -----------------------------------------
 
-const OmniboxView* TestBrowserWindow::TestLocationBar::GetOmniboxView() const {
-  return nullptr;
-}
-
 OmniboxView* TestBrowserWindow::TestLocationBar::GetOmniboxView() {
   return nullptr;
 }

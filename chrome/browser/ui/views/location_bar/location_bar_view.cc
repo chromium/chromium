@@ -1305,10 +1305,6 @@ void LocationBarView::SaveStateToContents(WebContents* contents) {
   omnibox_view_->SaveStateToTab(contents);
 }
 
-const OmniboxView* LocationBarView::GetOmniboxView() const {
-  return omnibox_view_;
-}
-
 LocationBarTesting* LocationBarView::GetLocationBarForTesting() {
   return this;
 }
