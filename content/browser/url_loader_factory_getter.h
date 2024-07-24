@@ -80,9 +80,13 @@ class CONTENT_EXPORT ReconnectableURLLoaderFactory final
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-// Holds on to URLLoaderFactory for a given StoragePartition and allows code
-// running on the IO thread to access them. Note these are the factories used by
-// the browser process for frame requests.
+// Similar to `ReconnectableURLLoaderFactory`, but this IO-thread-only version
+// caches a URLLoaderFactory on IO thread at
+// `ReconnectableURLLoaderFactoryForIOThread::url_loader_factory_` and
+// re-creates and reconnects it if needed.
+//
+// `ReconnectableURLLoaderFactoryForIOThread` must live on UI thread (just
+// because it is hard-coded using `GetUIThreadTaskRunner`).
 class CONTENT_EXPORT ReconnectableURLLoaderFactoryForIOThread final
     : public base::RefCountedThreadSafe<
           ReconnectableURLLoaderFactoryForIOThread,
@@ -93,7 +97,11 @@ class CONTENT_EXPORT ReconnectableURLLoaderFactoryForIOThread final
   // Initializes this object on the UI thread. Similar to
   // `ReconnectableURLLoaderFactory`, this caches and reuses a URLLoaderFactory
   // remote created by its `CreateCallback`, and re-create and reconnect if the
-  // cached remote is disconnected. The callback is called on the UI thread.
+  // cached remote is disconnected.
+  // The constructor doesn't call `create_url_loader_factory_callback`
+  // synchronously.
+  // `create_url_loader_factory_callback` is always called on UI thread, but can
+  // be destroyed either on UI or IO thread.
   explicit ReconnectableURLLoaderFactoryForIOThread(
       CreateCallback create_url_loader_factory_callback);
 
@@ -102,6 +110,10 @@ class CONTENT_EXPORT ReconnectableURLLoaderFactoryForIOThread final
   ReconnectableURLLoaderFactoryForIOThread& operator=(
       const ReconnectableURLLoaderFactoryForIOThread&) = delete;
 
+  // Eagerly trigger initialization for the use for IO thread. Note that, even
+  // if `Initialize()` is not called, `CloneForIOThread()` still can
+  // be used and is lazily initialized when the created
+  // `PendingSharedURLLoaderFactory` is actually used.
   void Initialize();
 
   // Called on the UI thread to create a PendingSharedURLLoaderFactory that
@@ -110,6 +122,8 @@ class CONTENT_EXPORT ReconnectableURLLoaderFactoryForIOThread final
   // used to access the URLLoaderFactory to the network service and supports
   // auto-reconnect after crash.
   std::unique_ptr<network::PendingSharedURLLoaderFactory> CloneForIOThread();
+
+  void Reset();
 
   // Call |url_loader_factory_.FlushForTesting()| on IO thread. For test use
   // only.
@@ -145,12 +159,49 @@ class CONTENT_EXPORT ReconnectableURLLoaderFactoryForIOThread final
   // flush is complete, |callback| will be called.
   void FlushOnIOThreadForTesting(base::OnceClosure callback);
 
-  // Only accessed on IO thread.
+  // Cached URLLoaderFactory only used from the IO thread.
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
   bool is_test_url_loader_factory_ = false;
 
   // Only accessed on UI thread.
   const CreateCallback create_url_loader_factory_callback_;
+};
+
+// Bundles `ReconnectableURLLoaderFactoryForIOThread` and
+// `ReconnectableURLLoaderFactory`. The two classes are held separately by this
+// wrapper instead of e.g. being merged into a single object, so that
+// `scoped_refptr` for one of them doesn't affect the lifetime of the other.
+class CONTENT_EXPORT ReconnectableURLLoaderFactoryForIOThreadWrapper final {
+ public:
+  using CreateCallback = ReconnectableURLLoaderFactory::CreateCallback;
+
+  // The constructor doesn't call `create_url_loader_factory_callback`
+  // synchronously.
+  // `create_url_loader_factory_callback` is always called on UI thread, but can
+  // be destroyed either on UI or IO thread.
+  explicit ReconnectableURLLoaderFactoryForIOThreadWrapper(
+      CreateCallback create_url_loader_factory_callback);
+
+  ReconnectableURLLoaderFactoryForIOThreadWrapper(
+      const ReconnectableURLLoaderFactoryForIOThreadWrapper&) = delete;
+  ReconnectableURLLoaderFactoryForIOThreadWrapper& operator=(
+      const ReconnectableURLLoaderFactoryForIOThreadWrapper&) = delete;
+
+  ~ReconnectableURLLoaderFactoryForIOThreadWrapper();
+
+  // Always non-null.
+  const scoped_refptr<ReconnectableURLLoaderFactory>& factory() const {
+    return factory_;
+  }
+  const scoped_refptr<ReconnectableURLLoaderFactoryForIOThread>&
+  factory_for_io_thread() const {
+    return factory_for_io_thread_;
+  }
+
+ private:
+  scoped_refptr<ReconnectableURLLoaderFactory> factory_;
+  scoped_refptr<ReconnectableURLLoaderFactoryForIOThread>
+      factory_for_io_thread_;
 };
 
 }  // namespace content

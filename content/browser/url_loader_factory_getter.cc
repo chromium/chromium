@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
-#include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -170,6 +169,7 @@ class ReconnectableURLLoaderFactoryForIOThread::URLLoaderFactoryForIOThread
 scoped_refptr<network::SharedURLLoaderFactory>
 ReconnectableURLLoaderFactoryForIOThread::PendingURLLoaderFactoryForIOThread::
     CreateFactory() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   return base::MakeRefCounted<URLLoaderFactoryForIOThread>(
       std::move(factory_getter_));
 }
@@ -183,6 +183,8 @@ ReconnectableURLLoaderFactoryForIOThread::
           std::move(create_url_loader_factory_callback)) {}
 
 void ReconnectableURLLoaderFactoryForIOThread::Initialize() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   // Create a mojo::PendingRemote<URLLoaderFactory> synchronously and push it to
   // the IO thread. If the pipe errors out later due to a network service crash,
   // the pipe is created on the IO thread, and the request send back to the UI
@@ -228,6 +230,10 @@ ReconnectableURLLoaderFactoryForIOThread::GetURLLoaderFactory() {
   return url_loader_factory_.get();
 }
 
+void ReconnectableURLLoaderFactoryForIOThread::Reset() {
+  Initialize();
+}
+
 void ReconnectableURLLoaderFactoryForIOThread::FlushForTesting() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::RunLoop run_loop;
@@ -258,6 +264,7 @@ void ReconnectableURLLoaderFactoryForIOThread::InitializeOnIOThread(
 
 void ReconnectableURLLoaderFactoryForIOThread::ReinitializeOnIOThread(
     mojo::Remote<network::mojom::URLLoaderFactory> network_factory) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(network_factory.is_bound());
   // Set a disconnect handler so that connection errors on the pipes are
   // noticed, but the class doesn't actually do anything when the error is
@@ -288,5 +295,21 @@ void ReconnectableURLLoaderFactoryForIOThread::
   CHECK(mojo::FusePipes(std::move(network_factory_receiver),
                         std::move(factory_remote)));
 }
+
+// -----------------------------------------------------------------------------
+
+ReconnectableURLLoaderFactoryForIOThreadWrapper::
+    ReconnectableURLLoaderFactoryForIOThreadWrapper(
+        CreateCallback create_url_loader_factory_callback)
+    : factory_(base::MakeRefCounted<ReconnectableURLLoaderFactory>(
+          create_url_loader_factory_callback)),
+      factory_for_io_thread_(
+          base::MakeRefCounted<ReconnectableURLLoaderFactoryForIOThread>(
+              create_url_loader_factory_callback)) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
+
+ReconnectableURLLoaderFactoryForIOThreadWrapper::
+    ~ReconnectableURLLoaderFactoryForIOThreadWrapper() = default;
 
 }  // namespace content
