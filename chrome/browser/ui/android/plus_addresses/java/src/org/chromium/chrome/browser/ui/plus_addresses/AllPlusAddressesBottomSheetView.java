@@ -21,6 +21,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.ui.base.LocalizationUtils;
 
 /** Implements the bottom sheet content for the all plus addresses bottom sheet. */
 class AllPlusAddressesBottomSheetView implements BottomSheetContent {
@@ -63,6 +64,13 @@ class AllPlusAddressesBottomSheetView implements BottomSheetContent {
         mSheetItemListView.setLayoutManager(
                 new LinearLayoutManager(
                         mSheetItemListView.getContext(), LinearLayoutManager.VERTICAL, false));
+
+        // Apply RTL layout changes.
+        int layoutDirection =
+                LocalizationUtils.isLayoutRtl()
+                        ? View.LAYOUT_DIRECTION_RTL
+                        : View.LAYOUT_DIRECTION_LTR;
+        mContentView.setLayoutDirection(layoutDirection);
     }
 
     void setVisible(boolean isVisible) {
