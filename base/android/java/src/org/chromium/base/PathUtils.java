@@ -6,6 +6,7 @@ package org.chromium.base;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.storage.StorageManager;
@@ -18,7 +19,6 @@ import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.base.task.AsyncTask;
 
 import java.io.File;
@@ -312,8 +312,8 @@ public abstract class PathUtils {
             if (!TextUtils.isEmpty(vol) && !vol.contains(MediaStore.VOLUME_EXTERNAL_PRIMARY)) {
                 StorageManager manager =
                         ContextUtils.getApplicationContext().getSystemService(StorageManager.class);
-                File volumeDir =
-                        ApiHelperForR.getVolumeDir(manager, MediaStore.Files.getContentUri(vol));
+                Uri uri = MediaStore.Files.getContentUri(vol);
+                File volumeDir = manager.getStorageVolume(uri).getDirectory();
                 File volumeDownloadDir = new File(volumeDir, Environment.DIRECTORY_DOWNLOADS);
                 // Happens in rare case when Android doesn't create the download directory for this
                 // volume.

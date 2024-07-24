@@ -26,7 +26,6 @@ import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.base.memory.MemoryPressureUma;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -556,7 +555,7 @@ public class ProcessInitializationHandler {
             if (includeNative) {
                 summary += "," + AnrCollector.getSharedLibraryBuildId();
             }
-            ApiHelperForR.setProcessStateSummary(am, summary.getBytes(StandardCharsets.UTF_8));
+            am.setProcessStateSummary(summary.getBytes(StandardCharsets.UTF_8));
         }
     }
 
