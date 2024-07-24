@@ -129,7 +129,8 @@ class AppListSearchViewTest : public AshTestBase {
       int init_id,
       int new_result_count,
       ResultIconType icon_type = ResultIconType::kLoaded,
-      FileMetadataLoader* metadata_loader = nullptr) {
+      FileMetadataLoader* metadata_loader = nullptr,
+      base::FilePath displayable_file_path = base::FilePath()) {
     for (int i = 0; i < new_result_count; ++i) {
       std::unique_ptr<TestSearchResult> result =
           std::make_unique<TestSearchResult>();
@@ -159,6 +160,9 @@ class AppListSearchViewTest : public AshTestBase {
       result->set_category(SearchResult::Category::kFiles);
       if (metadata_loader) {
         result->set_file_metadata_loader_for_test(metadata_loader);
+      }
+      if (!displayable_file_path.empty()) {
+        result->set_displayable_file_path(std::move(displayable_file_path));
       }
       results->Add(std::move(result));
     }
@@ -394,8 +398,9 @@ TEST_P(SearchResultImageViewTest, OneResultShowsImageInfo) {
         auto* test_helper = GetAppListTestHelper();
         SearchModel::SearchResults* results = test_helper->GetSearchResults();
         // Only shows 1 result.
-        SetUpImageSearchResults(results, 1, 1, ResultIconType::kLoaded,
-                                &loader);
+        SetUpImageSearchResults(
+            results, 1, 1, ResultIconType::kLoaded, &loader,
+            base::FilePath("displayable folder").Append("file name"));
       }));
 
   // Press a key to start a search.

@@ -289,8 +289,7 @@ TEST_F(FileResultTest, FileMetadataPopulatedForDisplay) {
   EXPECT_EQ(metadata.file_info.size, kJpegDataSize);
   EXPECT_EQ(metadata.file_info.last_modified,
             base::Time::FromSecondsSinceUnixEpoch(2));
-  EXPECT_EQ(metadata.file_name.value(), "test.jpg");
-  EXPECT_EQ(metadata.displayable_folder_path.value(), "My files");
+  EXPECT_EQ(result.displayable_file_path().value(), "My files/test.jpg");
 
   storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
 }

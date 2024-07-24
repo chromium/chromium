@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 
 #include <map>
+#include <utility>
 
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_context_menu.h"
@@ -208,6 +210,12 @@ void ChromeSearchResult::SetSystemInfoAnswerCardData(
 
 void ChromeSearchResult::SetFilePath(base::FilePath file_path) {
   metadata_->file_path = file_path;
+  SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::SetDisplayableFilePath(
+    base::FilePath displayable_file_path) {
+  metadata_->displayable_file_path = std::move(displayable_file_path);
   SetSearchResultMetadata();
 }
 

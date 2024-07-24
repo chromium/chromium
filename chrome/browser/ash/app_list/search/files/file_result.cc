@@ -197,6 +197,7 @@ FileResult::FileResult(const std::string& id,
     auto displayable_path =
         file_manager::util::GetDisplayablePath(profile_, filepath_)
             .value_or(filepath_);
+    SetDisplayableFilePath(displayable_path);
     SetMetadataLoaderCallback(
         base::BindRepeating(&GetFileMetadata, filepath_, displayable_path));
   }

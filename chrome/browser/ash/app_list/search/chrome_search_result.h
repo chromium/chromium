@@ -12,6 +12,7 @@
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
@@ -116,6 +117,9 @@ class ChromeSearchResult {
   }
   // Only file results have set the filepath.
   const base::FilePath& filePath() const { return metadata_->file_path; }
+  const base::FilePath& displayable_file_path() const {
+    return metadata_->displayable_file_path;
+  }
   ash::FileMetadataLoader* file_metadata_loader() {
     return &metadata_->file_metadata_loader;
   }
@@ -157,6 +161,7 @@ class ChromeSearchResult {
   void SetSystemInfoAnswerCardData(
       ash::SystemInfoAnswerCardData answer_card_info);
   void SetFilePath(base::FilePath file_path);
+  void SetDisplayableFilePath(base::FilePath displayable_file_path);
   void SetMetadataLoaderCallback(MetadataLoaderCallback callback);
 
   void SetSearchResultMetadata();

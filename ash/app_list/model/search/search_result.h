@@ -14,6 +14,7 @@
 
 #include "ash/app_list/model/app_list_model_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/files/file_path.h"
 #include "base/observer_list.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/range/range.h"
@@ -219,6 +220,13 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   }
 
   base::FilePath file_path() const { return metadata_->file_path; }
+
+  void set_displayable_file_path(base::FilePath displayable_file_path) {
+    metadata_->displayable_file_path = std::move(displayable_file_path);
+  }
+  const base::FilePath& displayable_file_path() const {
+    return metadata_->displayable_file_path;
+  }
 
   ash::FileMetadataLoader* file_metadata_loader() {
     return &metadata_->file_metadata_loader;

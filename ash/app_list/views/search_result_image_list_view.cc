@@ -16,6 +16,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
+#include "base/files/file_path.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -209,6 +210,7 @@ void SearchResultImageListView::ConfigureLayoutForAvailableWidth(int width) {
 }
 
 void SearchResultImageListView::OnImageMetadataLoaded(
+    base::FilePath displayable_file_path,
     ash::FileMetadata metadata) {
   if (num_results() != 1) {
     return;
@@ -217,9 +219,9 @@ void SearchResultImageListView::OnImageMetadataLoaded(
   // Check that there are 3 labels in `metadata_content_labels_`.
   CHECK_EQ(metadata_content_labels_.size(), kNumOfContentLabels);
   metadata_content_labels_[0]->SetText(
-      base::UTF8ToUTF16(metadata.file_name.value()));
+      base::UTF8ToUTF16(displayable_file_path.BaseName().value()));
   metadata_content_labels_[1]->SetText(
-      base::UTF8ToUTF16(metadata.displayable_folder_path.value()));
+      base::UTF8ToUTF16(displayable_file_path.DirName().value()));
   metadata_content_labels_[2]->SetText(
       GetFormattedTime(metadata.file_info.last_modified));
 }
@@ -245,10 +247,14 @@ int SearchResultImageListView::DoUpdate() {
   }
 
   if (num_results == 1) {
-    CHECK(display_results[0]->file_metadata_loader());
-    display_results[0]->file_metadata_loader()->RequestFileInfo(
-        base::BindRepeating(&SearchResultImageListView::OnImageMetadataLoaded,
-                            weak_ptr_factory_.GetWeakPtr()));
+    SearchResult* display_result = display_results[0];
+    CHECK(display_result->file_metadata_loader());
+    // Explicitly copy `display_result->displayable_file_path()` below in case
+    // the reference dangles.
+    display_result->file_metadata_loader()->RequestFileInfo(base::BindRepeating(
+        &SearchResultImageListView::OnImageMetadataLoaded,
+        weak_ptr_factory_.GetWeakPtr(),
+        base::FilePath(display_result->displayable_file_path())));
   }
 
   auto* notifier = view_delegate()->GetNotifier();

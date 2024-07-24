@@ -861,6 +861,11 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // is a file.
   base::FilePath file_path;
 
+  // The file path to display to the user as obtained from
+  // `file_manager::util::GetDisplayablePath`. This is set only if the search
+  // result is a file.
+  base::FilePath displayable_file_path;
+
   // Details for file type results.
   FileMetadataLoader file_metadata_loader;
 

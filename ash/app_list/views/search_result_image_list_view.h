@@ -10,6 +10,7 @@
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/app_list/views/search_result_image_view.h"
 #include "ash/app_list/views/search_result_image_view_delegate.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -50,7 +51,8 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
 
   // A callback that is called when the `metadata` is loaded. This updates the
   // `image_info_container_` if needed.
-  void OnImageMetadataLoaded(ash::FileMetadata metadata);
+  void OnImageMetadataLoaded(base::FilePath displayable_file_path,
+                             ash::FileMetadata metadata);
 
   const views::FlexLayoutView* image_info_container_for_test() const {
     return image_info_container_.get();
