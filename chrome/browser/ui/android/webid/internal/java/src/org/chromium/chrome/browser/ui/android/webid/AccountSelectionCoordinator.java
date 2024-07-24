@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.IntentHandler;
@@ -359,7 +360,12 @@ public class AccountSelectionCoordinator
     }
 
     @Override
-    public void onActivityDestroyed() {}
+    public void onActivityDestroyed() {
+        // The observer is only registered while the popup is being
+        // shown, so we can just unconditionally record this histogram.
+        RecordHistogram.recordBooleanHistogram(
+                "Blink.FedCm.Android.ActivityDestroyedWhileCctShown", true);
+    }
 
     @VisibleForTesting
     AccountSelectionMediator getMediator() {
