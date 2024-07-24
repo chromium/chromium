@@ -27,8 +27,11 @@ class SeaPenFetcher {
   using OnFetchWallpaperComplete =
       base::OnceCallback<void(std::optional<ash::SeaPenImage> image)>;
 
-  // The number of thumbnails requested per call.
-  constexpr static size_t kNumThumbnailsRequested = 8;
+  // The number of thumbnails requested per call for text queries.
+  constexpr static size_t kNumTextThumbnailsRequested = 4;
+
+  // The number of thumbnails requested per call for template queries.
+  constexpr static size_t kNumTemplateThumbnailsRequested = 8;
 
   // Timeout value for fetching SeaPen thumbnails and wallpaper. Requests that
   // take longer than this will return with an error instead of completing.

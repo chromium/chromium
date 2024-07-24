@@ -240,7 +240,7 @@ TEST_F(SeaPenFetcherTest, ThumbnailsCallsSnapperProvider) {
       snapper_provider(),
       Call(base::test::EqualsProto(CreateMantaRequest(
                query, /*generation_seed=*/std::nullopt,
-               /*num_outputs=*/SeaPenFetcher::kNumThumbnailsRequested,
+               /*num_outputs=*/SeaPenFetcher::kNumTemplateThumbnailsRequested,
                {880, 440}, manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
            testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
@@ -252,7 +252,7 @@ TEST_F(SeaPenFetcherTest, ThumbnailsCallsSnapperProvider) {
                 [](manta::MantaProtoResponseCallback delayed_callback) {
                   std::move(delayed_callback)
                       .Run(CreateMantaResponse(
-                               SeaPenFetcher::kNumThumbnailsRequested),
+                               SeaPenFetcher::kNumTemplateThumbnailsRequested),
                            {.status_code = manta::MantaStatusCode::kOk,
                             .message = std::string()});
                 },
@@ -271,7 +271,7 @@ TEST_F(SeaPenFetcherTest, ThumbnailsCallsSnapperProvider) {
             fetch_thumbnails_future.Get<manta::MantaStatusCode>());
 
   std::vector<testing::Matcher<ash::SeaPenImage>> matchers;
-  for (size_t i = 0; i < SeaPenFetcher::kNumThumbnailsRequested; i++) {
+  for (size_t i = 0; i < SeaPenFetcher::kNumTemplateThumbnailsRequested; i++) {
     matchers.push_back(
         MatchesSeaPenImage(CreateTestBitmap(), kFakeGenerationSeed + i));
   }
@@ -285,7 +285,8 @@ TEST_F(SeaPenFetcherTest, ThumbnailsCallsSnapperProvider) {
                                         manta::MantaStatusCode::kOk, 1);
   histogram_tester().ExpectUniqueSample(kThumbnailsTimeoutMetric, false, 1);
   histogram_tester().ExpectUniqueSample(
-      kThumbnailsCountMetric, SeaPenFetcher::kNumThumbnailsRequested, 1);
+      kThumbnailsCountMetric, SeaPenFetcher::kNumTemplateThumbnailsRequested,
+      1);
 }
 
 TEST_F(SeaPenFetcherTest, FreeformThumbnailsCallsSnapperProvider) {
@@ -295,7 +296,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsCallsSnapperProvider) {
       snapper_provider(),
       Call(base::test::EqualsProto(CreateMantaRequest(
                query, /*generation_seed=*/std::nullopt,
-               /*num_outputs=*/SeaPenFetcher::kNumThumbnailsRequested,
+               /*num_outputs=*/SeaPenFetcher::kNumTextThumbnailsRequested,
                {880, 440}, manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
            testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
@@ -307,7 +308,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsCallsSnapperProvider) {
                 [](manta::MantaProtoResponseCallback delayed_callback) {
                   std::move(delayed_callback)
                       .Run(CreateMantaResponse(
-                               SeaPenFetcher::kNumThumbnailsRequested),
+                               SeaPenFetcher::kNumTextThumbnailsRequested),
                            {.status_code = manta::MantaStatusCode::kOk,
                             .message = std::string()});
                 },
@@ -326,7 +327,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsCallsSnapperProvider) {
             fetch_thumbnails_future.Get<manta::MantaStatusCode>());
 
   std::vector<testing::Matcher<ash::SeaPenImage>> matchers;
-  for (size_t i = 0; i < SeaPenFetcher::kNumThumbnailsRequested; i++) {
+  for (size_t i = 0; i < SeaPenFetcher::kNumTextThumbnailsRequested; i++) {
     matchers.push_back(
         MatchesSeaPenImage(CreateTestBitmap(), kFakeGenerationSeed + i));
   }
@@ -340,9 +341,9 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsCallsSnapperProvider) {
                                         manta::MantaStatusCode::kOk, 1);
   histogram_tester().ExpectUniqueSample(kFreeformThumbnailsTimeoutMetric, false,
                                         1);
-  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsCountMetric,
-                                        SeaPenFetcher::kNumThumbnailsRequested,
-                                        1);
+  histogram_tester().ExpectUniqueSample(
+      kFreeformThumbnailsCountMetric,
+      SeaPenFetcher::kNumTextThumbnailsRequested, 1);
 }
 
 TEST_F(SeaPenFetcherTest, ThumbnailsEmptyReturnsError) {
@@ -573,7 +574,7 @@ TEST_F(SeaPenFetcherTest, ThumbnailsTimeoutHandled) {
                 [](manta::MantaProtoResponseCallback delayed_callback) {
                   std::move(delayed_callback)
                       .Run(CreateMantaResponse(
-                               SeaPenFetcher::kNumThumbnailsRequested),
+                               SeaPenFetcher::kNumTemplateThumbnailsRequested),
                            {.status_code = manta::MantaStatusCode::kOk,
                             .message = std::string()});
                 },
@@ -618,7 +619,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsTimeoutHandled) {
                 [](manta::MantaProtoResponseCallback delayed_callback) {
                   std::move(delayed_callback)
                       .Run(CreateMantaResponse(
-                               SeaPenFetcher::kNumThumbnailsRequested),
+                               SeaPenFetcher::kNumTemplateThumbnailsRequested),
                            {.status_code = manta::MantaStatusCode::kOk,
                             .message = std::string()});
                 },
@@ -663,7 +664,7 @@ TEST_F(SeaPenFetcherTest, ThumbnailsHandlesDuplicateRequests) {
                 [](manta::MantaProtoResponseCallback delayed_callback) {
                   std::move(delayed_callback)
                       .Run(CreateMantaResponse(
-                               SeaPenFetcher::kNumThumbnailsRequested),
+                               SeaPenFetcher::kNumTemplateThumbnailsRequested),
                            {.status_code = manta::MantaStatusCode::kOk,
                             .message = std::string()});
                 },
@@ -698,7 +699,7 @@ TEST_F(SeaPenFetcherTest, ThumbnailsHandlesDuplicateRequests) {
   EXPECT_TRUE(fetch_thumbnails_futures.at(1).IsReady());
   EXPECT_EQ(manta::MantaStatusCode::kOk,
             fetch_thumbnails_futures.at(1).Get<manta::MantaStatusCode>());
-  EXPECT_EQ(SeaPenFetcher::kNumThumbnailsRequested,
+  EXPECT_EQ(SeaPenFetcher::kNumTemplateThumbnailsRequested,
             fetch_thumbnails_futures.at(1)
                 .Get<std::optional<std::vector<ash::SeaPenImage>>>()
                 ->size());

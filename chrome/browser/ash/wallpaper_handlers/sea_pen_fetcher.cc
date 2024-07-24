@@ -234,9 +234,11 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
                        fetch_thumbnails_weak_ptr_factory_.GetWeakPtr(),
                        query->which()));
 
-    manta::proto::Request request =
-        CreateMantaRequest(query, std::nullopt, kNumThumbnailsRequested,
-                           kDesiredThumbnailSize, feature_name);
+    const int num_outputs = query->is_text_query()
+                                ? kNumTextThumbnailsRequested
+                                : kNumTemplateThumbnailsRequested;
+    manta::proto::Request request = CreateMantaRequest(
+        query, std::nullopt, num_outputs, kDesiredThumbnailSize, feature_name);
     snapper_provider_->Call(
         request, TrafficAnnotationForFeature(feature_name),
         base::BindOnce(&SeaPenFetcherImpl::OnFetchThumbnailsDone,
