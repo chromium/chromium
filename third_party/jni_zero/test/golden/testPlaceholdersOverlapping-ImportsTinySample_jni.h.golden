@@ -3,8 +3,8 @@
 // For
 //     org.jni_zero.extrapackage.ImportsTinySample
 
-#ifndef org_jni_zero_extrapackage_ImportsTinySample_JNI
-#define org_jni_zero_extrapackage_ImportsTinySample_JNI
+#ifndef org_jni_1zero_extrapackage_ImportsTinySample_JNI
+#define org_jni_1zero_extrapackage_ImportsTinySample_JNI
 
 #include <jni.h>
 
@@ -21,4 +21,4 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1e
 }
 
 
-#endif  // org_jni_zero_extrapackage_ImportsTinySample_JNI
+#endif  // org_jni_1zero_extrapackage_ImportsTinySample_JNI

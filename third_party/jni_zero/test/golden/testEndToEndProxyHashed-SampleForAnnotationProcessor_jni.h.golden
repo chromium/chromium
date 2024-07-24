@@ -3,8 +3,8 @@
 // For
 //     org.jni_zero.SampleForAnnotationProcessor
 
-#ifndef org_jni_zero_SampleForAnnotationProcessor_JNI
-#define org_jni_zero_SampleForAnnotationProcessor_JNI
+#ifndef org_jni_1zero_SampleForAnnotationProcessor_JNI
+#define org_jni_1zero_SampleForAnnotationProcessor_JNI
 
 #include <jni.h>
 
@@ -409,4 +409,4 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1S
 }
 
 
-#endif  // org_jni_zero_SampleForAnnotationProcessor_JNI
+#endif  // org_jni_1zero_SampleForAnnotationProcessor_JNI

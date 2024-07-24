@@ -105,7 +105,7 @@ _GENERICS_REGEX = re.compile(r'<[^<>\n]*>(?!>*")')
 def _remove_generics(value):
   """Strips Java generics from a string."""
   while True:
-    ret = _GENERICS_REGEX.sub('', value)
+    ret = _GENERICS_REGEX.sub(' ', value)
     if len(ret) == len(value):
       return ret
     value = ret
@@ -175,7 +175,8 @@ def _parse_type(type_resolver, value):
   array_dimensions = 0
   while parsed_value[-2:] == '[]':
     array_dimensions += 1
-    parsed_value = parsed_value[:-2]
+    # strip to remove possible spaces between type and [].
+    parsed_value = parsed_value[:-2].strip()
 
   if parsed_value in java_types.PRIMITIVES:
     primitive_name = parsed_value

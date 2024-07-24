@@ -361,6 +361,7 @@ class TypeResolver:
     """Return a JavaClass for the given type name."""
     assert name not in PRIMITIVES, 'Name: ' + name
     assert ' ' not in name, 'Name: ' + name
+    assert name != '', 'Cannot resolve empty string'
 
     if '/' in name:
       # Coming from javap, use the fully qualified name directly.

@@ -209,7 +209,8 @@ class JniObject:
 
     # These are different only for legacy reasons.
     if from_javap:
-      self.jni_namespace = options.namespace or 'JNI_' + self.java_class.name
+      self.jni_namespace = options.namespace or 'JNI_' + self.java_class.name.replace(
+          '$', '__')
     else:
       self.jni_namespace = parsed_file.jni_namespace or options.namespace
 
