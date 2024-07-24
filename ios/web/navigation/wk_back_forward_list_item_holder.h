@@ -66,8 +66,11 @@ class WKBackForwardListItemHolder : public base::SupportsUserData::Data {
   // HTTP request method.
   NSString* http_method_;
 
-  // The MIME type of the page content.
-  NSString* mime_type_;
+  // The MIME type of the page content. Default to HTML, to handle same-
+  // document navigations that don't trigger any WebKit navigation callbacks.
+  // Initial navigations to non-HTML content always trigger navigation
+  // callbacks, which will lead to the correct value being stored here.
+  NSString* mime_type_ = @"text/html";
 };
 
 }  // namespace web
