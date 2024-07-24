@@ -161,6 +161,8 @@ class SmallMessageSocket {
     size_t used() const { return used_; }
     size_t capacity() const { return capacity_; }
 
+    base::span<const uint8_t> used_span() const;
+
    private:
     ~BufferWrapper() override;
 
@@ -183,7 +185,7 @@ class SmallMessageSocket {
   bool HandleReadResult(int result);
   bool HandleCompletedMessages();
   bool HandleCompletedMessageBuffers();
-  void ActivateBufferPool(char* current_data, size_t current_size);
+  void ActivateBufferPool(base::span<const uint8_t> current_data);
 
   Delegate* const delegate_;
   const std::unique_ptr<net::Socket> socket_;
