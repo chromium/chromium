@@ -280,17 +280,13 @@ void RTCDataChannel::Observer::OnMessageImpl(webrtc::DataBuffer buffer) {
 
 RTCDataChannel::RTCDataChannel(
     ExecutionContext* context,
-    rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel,
-    RTCPeerConnectionHandler* peer_connection_handler)
+    rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel)
     : ActiveScriptWrappable<RTCDataChannel>({}),
       ExecutionContextLifecycleObserver(context),
       observer_(base::MakeRefCounted<Observer>(
           context->GetTaskRunner(TaskType::kNetworking),
           this,
-          std::move(data_channel))),
-      signaling_thread_(peer_connection_handler->signaling_thread()) {
-  DCHECK(peer_connection_handler);
-
+          std::move(data_channel))) {
   // Register observer and get state update to make up for state change updates
   // that might have been missed between creating the webrtc::DataChannel object
   // on the signaling thread and RTCDataChannel construction posted on the main

@@ -1934,7 +1934,7 @@ RTCDataChannel* RTCPeerConnection::createDataChannel(
     return nullptr;
   }
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
-      GetExecutionContext(), std::move(webrtc_channel), peer_handler_.get());
+      GetExecutionContext(), std::move(webrtc_channel));
 
   return channel;
 }
@@ -2486,7 +2486,7 @@ void RTCPeerConnection::DidAddRemoteDataChannel(
     return;
 
   auto* blink_channel = MakeGarbageCollected<RTCDataChannel>(
-      GetExecutionContext(), std::move(channel), peer_handler_.get());
+      GetExecutionContext(), std::move(channel));
   blink_channel->SetStateToOpenWithoutEvent();
   MaybeDispatchEvent(MakeGarbageCollected<RTCDataChannelEvent>(
       event_type_names::kDatachannel, blink_channel));

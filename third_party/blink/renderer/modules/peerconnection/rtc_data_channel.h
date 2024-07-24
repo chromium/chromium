@@ -44,7 +44,6 @@ class Blob;
 class DOMArrayBuffer;
 class DOMArrayBufferView;
 class ExceptionState;
-class RTCPeerConnectionHandler;
 
 class MODULES_EXPORT RTCDataChannel final
     : public EventTarget,
@@ -55,8 +54,7 @@ class MODULES_EXPORT RTCDataChannel final
 
  public:
   RTCDataChannel(ExecutionContext*,
-                 rtc::scoped_refptr<webrtc::DataChannelInterface> channel,
-                 RTCPeerConnectionHandler* peer_connection_handler);
+                 rtc::scoped_refptr<webrtc::DataChannelInterface> channel);
   ~RTCDataChannel() override;
 
   String label() const;
@@ -204,7 +202,6 @@ class MODULES_EXPORT RTCDataChannel final
   // `RTCDataChannel` instance goes away. This allows properties to be queried
   // after the state reaches `kClosed`.
   const scoped_refptr<Observer> observer_;
-  scoped_refptr<base::SingleThreadTaskRunner> signaling_thread_;
   THREAD_CHECKER(thread_checker_);
 };
 
