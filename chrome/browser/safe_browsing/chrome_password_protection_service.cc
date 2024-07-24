@@ -1289,6 +1289,9 @@ void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
     if (router) {
       router->OnPolicySpecifiedPasswordReuseDetected(
           main_frame_url, username_or_email, is_phishing_url, warning_shown);
+      base::UmaHistogramBoolean(
+          "PasswordProtection.GmailReportSent",
+          base::EndsWith(username_or_email, "@gmail.com"));
     }
   }
 }

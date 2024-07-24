@@ -218,9 +218,7 @@ class MockChromePasswordProtectionService
   bool IsPrimaryAccountSignedIn() const override {
     return is_account_signed_in_;
   }
-  bool IsAccountGmail(const std::string& username) const override {
-    return is_no_hosted_domain_found_;
-  }
+
   AccountInfo GetAccountInfoForUsername(
       const std::string& username) const override {
     return account_info_;
@@ -245,11 +243,13 @@ class MockChromePasswordProtectionService
   void SetIsAccountSignedIn(bool is_account_signed_in) {
     is_account_signed_in_ = is_account_signed_in;
   }
-  void SetAccountInfo(const std::string& username) {
+  void SetAccountInfo(const std::string& username,
+                      const std::string& hosted_domain) {
     AccountInfo account_info;
     account_info.account_id = CoreAccountId::FromGaiaId("gaia");
     account_info.email = username;
     account_info.gaia = "gaia";
+    account_info.hosted_domain = hosted_domain;
     account_info_ = account_info;
   }
 
@@ -1326,10 +1326,22 @@ TEST_F(ChromePasswordProtectionServiceTest,
   EXPECT_EQ(kUserName, *captured_args.FindString("userName"));
   EXPECT_TRUE(*captured_args.FindBool("isPhishingUrl"));
 
+  // If the reused password is possibly a consumer account password, no event
+  // should be sent.
+  service_->SetAccountInfo(kUserName, /*hosted_domain=*/"");
+  service_->SetIsAccountSignedIn(true);
+  service_->MaybeReportPasswordReuseDetected(
+      request_->main_frame_url(), kUserName, PasswordType::OTHER_GAIA_PASSWORD,
+      /*is_phishing_url =*/true,
+      /*warning_shown =*/true);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(1, test_event_router_->GetEventCount(
+                   OnPolicySpecifiedPasswordReuseDetected::kEventName));
+
   // If the reused password is not Enterprise password but the account is
   // GSuite, event should be sent.
-  service_->SetAccountInfo(kUserName);
-  service_->SetIsAccountSignedIn(true);
+  service_->SetAccountInfo(kUserName, "example.com");
   service_->MaybeReportPasswordReuseDetected(
       request_->main_frame_url(), kUserName, PasswordType::OTHER_GAIA_PASSWORD,
       /*is_phishing_url =*/true,

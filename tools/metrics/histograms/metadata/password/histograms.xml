@@ -4383,6 +4383,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordProtection.GmailReportSent" enum="Boolean"
+    expires_after="2024-12-24">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether an enterprise report is sent for a Gmail password. This
+    should not happen due to a fix in M129 and this metric should provide
+    assurance of that claim.
+  </summary>
+</histogram>
+
 <histogram name="PasswordProtection.InterstitialAction"
     enum="PasswordProtectionWarningAction" expires_after="2024-09-01">
   <owner>nwokedi@chromium.org</owner>

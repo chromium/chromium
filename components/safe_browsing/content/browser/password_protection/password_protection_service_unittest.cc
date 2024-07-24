@@ -1157,6 +1157,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   account_info.account_id = CoreAccountId::FromGaiaId("gaia");
   account_info.email = "email";
   account_info.gaia = "gaia";
+  account_info.hosted_domain = "example.com";
   EXPECT_CALL(*password_protection_service_, GetAccountInfoForUsername(_))
       .WillRepeatedly(Return(account_info));
 
