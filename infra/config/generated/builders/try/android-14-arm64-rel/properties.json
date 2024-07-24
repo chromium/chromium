@@ -17,9 +17,13 @@
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "main_builder_mb"
+                "config": "main_builder"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "download_xr_test_apks",
+                  "mb"
+                ],
                 "build_config": "Release",
                 "config": "android",
                 "target_bits": 64,

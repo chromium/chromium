@@ -2358,12 +2358,16 @@ ci.builder(
         ),
         chromium_config = builder_config.chromium_config(
             config = "android",
+            apply_configs = [
+                "download_xr_test_apks",
+                "mb",
+            ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
-            config = "main_builder_mb",
+            config = "main_builder",
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
