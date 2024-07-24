@@ -320,7 +320,9 @@ class BackgroundDownloaderSharedSessionImpl {
           static_cast<int>(CrxDownloaderError::MAC_BG_SESSION_INVALIDATED);
       metrics::RecordBDMStartDownloadOutcome(
           metrics::BDMStartDownloadOutcome::kImmediateError);
-      callback.Run(false, {metrics.error, base::FilePath()}, metrics);
+      callback.Run(false,
+                   {metrics.error, metrics.extra_code1, base::FilePath()},
+                   metrics);
       return;
     }
 
@@ -330,7 +332,9 @@ class BackgroundDownloaderSharedSessionImpl {
           static_cast<int>(CrxDownloaderError::MAC_BG_DUPLICATE_DOWNLOAD);
       metrics::RecordBDMStartDownloadOutcome(
           metrics::BDMStartDownloadOutcome::kImmediateError);
-      callback.Run(false, {metrics.error, base::FilePath()}, metrics);
+      callback.Run(false,
+                   {metrics.error, metrics.extra_code1, base::FilePath()},
+                   metrics);
       return;
     }
 
@@ -369,7 +373,9 @@ class BackgroundDownloaderSharedSessionImpl {
           static_cast<int>(CrxDownloaderError::MAC_BG_SESSION_TOO_MANY_TASKS);
       metrics::RecordBDMStartDownloadOutcome(
           metrics::BDMStartDownloadOutcome::kTooManyTasks);
-      callback.Run(false, {metrics.error, base::FilePath()}, metrics);
+      callback.Run(false,
+                   {metrics.error, metrics.extra_code1, base::FilePath()},
+                   metrics);
     } else {
       metrics::RecordBDMStartDownloadOutcome(
           metrics::BDMStartDownloadOutcome::kNewDownloadTaskCreated);
@@ -435,7 +441,8 @@ class BackgroundDownloaderSharedSessionImpl {
       metrics.downloaded_bytes = download_size;
       metrics.total_bytes = download_size;
       callback.Run(true,
-                   {static_cast<int>(CrxDownloaderError::NONE), cached_path},
+                   {static_cast<int>(CrxDownloaderError::NONE),
+                    /*extra_code1=*/0, cached_path},
                    metrics);
     }
 
@@ -489,7 +496,7 @@ class BackgroundDownloaderSharedSessionImpl {
 
     bool had_result = results_.contains(url);
     bool is_handled = error == 0 || (error >= 500 && error < 600);
-    CrxDownloader::Result result = {error, location};
+    CrxDownloader::Result result = {error, /*extra_code1=*/0, location};
     CrxDownloader::DownloadMetrics download_metrics =
         had_result ? results_.at(url).download_metrics
                    : CrxDownloader::DownloadMetrics{};
@@ -622,6 +629,8 @@ class BackgroundDownloaderSharedSessionImpl {
     metrics.url = url;
     metrics.downloader =
         CrxDownloader::DownloadMetrics::Downloader::kBackgroundMac;
+    metrics.error = 0;
+    metrics.extra_code1 = 0;
     return metrics;
   }
 

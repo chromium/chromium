@@ -1148,6 +1148,7 @@ void Component::StateDownloadingBase::DownloadComplete(
     CHECK(download_result.response.empty());
     set_component_error_category(ErrorCategory::kDownload);
     set_component_error_code(download_result.error);
+    set_component_extra_code1(download_result.extra_code1);
 
     TransitionState(next_state_on_error());
     return;
@@ -1180,6 +1181,9 @@ void Component::StateDownloading::set_component_error_category(
 void Component::StateDownloading::set_component_error_code(int error_code) {
   Component::State::component().error_code_ = error_code;
 }
+void Component::StateDownloading::set_component_extra_code1(int error_code) {
+  Component::State::component().extra_code1_ = error_code;
+}
 std::unique_ptr<Component::State>
 Component::StateDownloading::next_state_on_error() {
   auto& component = Component::State::component();
@@ -1211,6 +1215,10 @@ void Component::StateDownloadingDiff::set_component_error_category(
 }
 void Component::StateDownloadingDiff::set_component_error_code(int error_code) {
   Component::State::component().diff_error_code_ = error_code;
+}
+void Component::StateDownloadingDiff::set_component_extra_code1(
+    int error_code) {
+  Component::State::component().diff_extra_code1_ = error_code;
 }
 std::unique_ptr<Component::State>
 Component::StateDownloadingDiff::next_state_on_error() {
