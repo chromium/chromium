@@ -8,7 +8,6 @@
 
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/common/autofill_clock.h"
-#include "components/autofill/core/common/autofill_constants.h"
 
 namespace autofill {
 
@@ -59,10 +58,6 @@ bool AutofillDataModel::SetMetadata(const AutofillMetadata& metadata) {
   use_count_ = metadata.use_count;
   use_date_ = metadata.use_date;
   return true;
-}
-
-bool AutofillDataModel::IsDeletable() const {
-  return IsAutofillEntryWithUseDateDeletable(use_date_);
 }
 
 }  // namespace autofill

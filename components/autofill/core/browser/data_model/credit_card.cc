@@ -423,7 +423,7 @@ bool CreditCard::SetMetadata(const AutofillMetadata& metadata) {
 }
 
 bool CreditCard::IsDeletable() const {
-  return AutofillDataModel::IsDeletable() &&
+  return IsAutofillEntryWithUseDateDeletable(use_date()) &&
          IsExpired(AutofillClock::Now() - kDisusedDataModelDeletionTimeDelta);
 }
 

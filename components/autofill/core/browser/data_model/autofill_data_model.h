@@ -57,10 +57,6 @@ class AutofillDataModel : public FormGroup {
   // whether the metadata was set.
   virtual bool SetMetadata(const AutofillMetadata& metadata);
 
-  // Returns whether the data model is deletable: if it has not been used for
-  // longer than |kDisusedCreditCardDeletionTimeDelta|.
-  virtual bool IsDeletable() const;
-
  protected:
   // Calculate the ranking score of a card or profile depending on their use
   // count and most recent use date.

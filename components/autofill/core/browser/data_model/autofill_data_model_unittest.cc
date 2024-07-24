@@ -47,19 +47,6 @@ TEST(AutofillDataModelTest, SetMetadata) {
   EXPECT_EQ(metadata.use_date, model.use_date());
 }
 
-TEST(AutofillDataModelTest, IsDeletable) {
-  TestAutofillDataModel model;
-  model.set_use_date(kArbitraryTime);
-
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime);
-  EXPECT_FALSE(model.IsDeletable());
-
-  test_clock.SetNow(kArbitraryTime + kDisusedDataModelDeletionTimeDelta +
-                    base::Days(1));
-  EXPECT_TRUE(model.IsDeletable());
-}
-
 enum Expectation { GREATER, LESS };
 struct AutofillDataModelRankingTestCase {
   const int use_count_a;
