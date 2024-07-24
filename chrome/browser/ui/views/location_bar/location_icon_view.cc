@@ -102,8 +102,9 @@ SkColor LocationIconView::GetForegroundColor() const {
   }
 
   SecurityLevel security_level = SecurityLevel::NONE;
-  if (!delegate_->IsEditingOrEmpty())
-    security_level = delegate_->GetLocationBarModel()->GetSecurityLevel();
+  if (!delegate_->IsEditingOrEmpty()) {
+    security_level = GetSecurityLevel();
+  }
 
   return delegate_->GetSecurityChipColor(security_level);
 }
@@ -144,6 +145,23 @@ void LocationIconView::OnThemeChanged() {
   // depending on the background color of the container.
   UpdateBackground();
   UpdateIcon();
+}
+
+security_state::SecurityLevel LocationIconView::GetSecurityLevel() const {
+  if (security_level_for_testing_.has_value()) {
+    return security_level_for_testing_.value();
+  }
+
+  return delegate_->GetLocationBarModel()->GetSecurityLevel();
+}
+
+bool LocationIconView::HasSecurityStateChanged() const {
+  return last_update_security_level_ != GetSecurityLevel();
+}
+
+void LocationIconView::SetSecurityLevelForTesting(
+    security_state::SecurityLevel security_level) {
+  security_level_for_testing_ = security_level;
 }
 
 int LocationIconView::GetMinimumLabelTextWidth() const {
@@ -221,7 +239,7 @@ bool LocationIconView::GetAnimateTextVisibilityChange() const {
   if (delegate_->IsEditingOrEmpty())
     return false;
 
-  SecurityLevel level = delegate_->GetLocationBarModel()->GetSecurityLevel();
+  SecurityLevel level = GetSecurityLevel();
   // Do not animate transitions from WARNING to DANGEROUS, since
   // the transition can look confusing/messy.
   if (level == SecurityLevel::DANGEROUS &&
@@ -378,8 +396,7 @@ void LocationIconView::Update(bool suppress_animations,
 
   last_update_security_level_ = SecurityLevel::NONE;
   if (!is_editing_or_empty) {
-    last_update_security_level_ =
-        delegate_->GetLocationBarModel()->GetSecurityLevel();
+    last_update_security_level_ = GetSecurityLevel();
   }
 
   was_editing_or_empty_ = is_editing_or_empty;
@@ -407,8 +424,7 @@ void LocationIconView::UpdateBorder() {
   // content bounds so the background gets painted correctly.
     gfx::Insets insets = GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
     if (ShouldShowLabel()) {
-      SecurityLevel level =
-          delegate_->GetLocationBarModel()->GetSecurityLevel();
+      SecurityLevel level = GetSecurityLevel();
       if (level == security_state::DANGEROUS) {
         // Extra space between the left edge and label.
         const int kLeftHorizontalPadding = 6;

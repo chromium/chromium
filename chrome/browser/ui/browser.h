@@ -1139,6 +1139,10 @@ class Browser : public TabStripModelObserver,
   // well.
   void UpdateToolbar(bool should_restore_state);
 
+  // Asks the toolbar to layout and redraw to reflect the current security
+  // state.
+  void UpdateToolbarSecurityState();
+
   // Does one or both of the following for each bit in |changed_flags|:
   // . If the update should be processed immediately, it is.
   // . If the update should processed asynchronously (to avoid lots of ui

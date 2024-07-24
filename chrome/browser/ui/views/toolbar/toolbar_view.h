@@ -108,6 +108,10 @@ class ToolbarView : public views::AccessiblePaneView,
   // as well.
   void Update(content::WebContents* tab);
 
+  // Updates the toolbar's visible security state if the state has changed
+  // since the last update. Returns true if the toolbar was updated.
+  bool UpdateSecurityState();
+
   // Updates the visibility of the custom tab bar, potentially animating the
   // transition.
   void UpdateCustomTabBarVisibility(bool visible, bool animate);

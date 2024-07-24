@@ -181,6 +181,10 @@ bool TestBrowserWindow::IsForceFullscreen() const {
   return false;
 }
 
+bool TestBrowserWindow::UpdateToolbarSecurityState() {
+  return false;
+}
+
 bool TestBrowserWindow::IsVisible() const {
   return true;
 }

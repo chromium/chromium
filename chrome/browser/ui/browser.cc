@@ -1865,10 +1865,11 @@ void Browser::VisibleSecurityStateChanged(WebContents* source) {
   // bar to reflect the new state.
   DCHECK(source);
   if (tab_strip_model_->GetActiveWebContents() == source) {
-    UpdateToolbar(false);
+    UpdateToolbarSecurityState();
 
-    if (app_controller_)
+    if (app_controller_) {
       app_controller_->UpdateCustomTabBarVisibility(true);
+    }
   }
 }
 
@@ -2857,6 +2858,11 @@ void Browser::UpdateToolbar(bool should_restore_state) {
   window_->UpdateToolbar(should_restore_state
                              ? tab_strip_model_->GetActiveWebContents()
                              : nullptr);
+}
+
+void Browser::UpdateToolbarSecurityState() {
+  TRACE_EVENT0("ui", "Browser::UpdateToolbarSecurityState");
+  window_->UpdateToolbarSecurityState();
 }
 
 void Browser::ScheduleUIUpdate(WebContents* source, unsigned changed_flags) {

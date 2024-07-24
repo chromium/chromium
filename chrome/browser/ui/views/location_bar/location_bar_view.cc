@@ -941,6 +941,10 @@ void LocationBarView::ChildPreferredSizeChanged(views::View* child) {
   SchedulePaint();
 }
 
+bool LocationBarView::HasSecurityStateChanged() {
+  return location_icon_view_->HasSecurityStateChanged();
+}
+
 void LocationBarView::Update(WebContents* contents) {
   if (contents)
     page_action_icon_controller_->UpdateWebContents(contents);

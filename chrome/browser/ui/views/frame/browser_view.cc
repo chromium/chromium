@@ -2190,6 +2190,15 @@ void BrowserView::UpdateToolbar(content::WebContents* contents) {
     toolbar_->Update(contents);
 }
 
+bool BrowserView::UpdateToolbarSecurityState() {
+  // We may end up here during destruction.
+  if (toolbar_) {
+    return toolbar_->UpdateSecurityState();
+  }
+
+  return false;
+}
+
 void BrowserView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
   if (toolbar_)
     toolbar_->UpdateCustomTabBarVisibility(visible, animate);

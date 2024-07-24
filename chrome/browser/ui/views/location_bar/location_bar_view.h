@@ -172,6 +172,10 @@ class LocationBarView
 
   OmniboxViewViews* omnibox_view() { return omnibox_view_; }
 
+  // Returns true if the location bar's current security state does not match
+  // the currently visible state.
+  bool HasSecurityStateChanged();
+
   // Updates the controller, and, if |contents| is non-null, restores saved
   // state that the tab holds.
   void Update(content::WebContents* contents);

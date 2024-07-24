@@ -60,6 +60,17 @@ class ToolbarViewTest : public InteractiveBrowserTest {
   }
 
   void RunToolbarCycleFocusTest(Browser* browser);
+
+  void SetLocationBarSecurityLevelForTesting(
+      security_state::SecurityLevel security_level) {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    LocationBarView* location_bar_view = browser_view->GetLocationBarView();
+    LocationIconView* location_icon_view =
+        location_bar_view->location_icon_view();
+
+    location_icon_view->SetSecurityLevelForTesting(security_level);
+  }
 };
 
 void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
@@ -298,4 +309,24 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonMenu) {
       Log("Waiting for menu to dismiss."),
       WaitForHide(kToolbarBackButtonMenuElementId), Log("Menu dismissed."));
 #endif
+}
+
+// Tests that the browser updates the toolbar's visible security state only
+// when the state changes, not every time it's asked to update.
+IN_PROC_BROWSER_TEST_F(ToolbarViewTest, SecurityStateChanged) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+
+  // Set the location bar's initial security level and check that the browser
+  // updates to it.
+  SetLocationBarSecurityLevelForTesting(security_state::SecurityLevel::SECURE);
+  EXPECT_TRUE(browser_view->UpdateToolbarSecurityState());
+
+  // The security level has not changed, so asking the browser again to update
+  // should fail.
+  EXPECT_FALSE(browser_view->UpdateToolbarSecurityState());
+
+  // Change the security level and check that the browser updates its toolbar.
+  SetLocationBarSecurityLevelForTesting(
+      security_state::SecurityLevel::DANGEROUS);
+  EXPECT_TRUE(browser_view->UpdateToolbarSecurityState());
 }

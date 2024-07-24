@@ -575,6 +575,15 @@ void ToolbarView::Update(WebContents* tab) {
     reload_->SetMenuEnabled(chrome::IsDebuggerAttachedToCurrentTab(browser_));
 }
 
+bool ToolbarView::UpdateSecurityState() {
+  if (location_bar_ && location_bar_->HasSecurityStateChanged()) {
+    Update(nullptr);
+    return true;
+  }
+
+  return false;
+}
+
 void ToolbarView::SetToolbarVisibility(bool visible) {
   SetVisible(visible);
   views::View* bar = display_mode_ == DisplayMode::CUSTOM_TAB
