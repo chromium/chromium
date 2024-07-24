@@ -280,8 +280,27 @@ InteractiveAshTest::NavigateToInternetDetailsPage(
       ClickAnyElementTextContains(element_id, network_list,
                                   network_list_item_title, network_name),
       WaitForElementTextContains(element_id,
-                                 ash::settings::SettingsSubpageTitle(),
+                                 ash::settings::InternetSettingsSubpageTitle(),
                                  /*text=*/network_name.c_str()));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::NavigateToBluetoothDeviceDetailsPage(
+    const ui::ElementIdentifier& element_id,
+    const std::string& device_name) {
+  const WebContentsInteractionTestUtil::DeepQuery bluetooth_device_item_title(
+      {"os-settings-paired-bluetooth-list-item", "div#deviceName"});
+
+  return Steps(NavigateSettingsToBluetoothPage(element_id),
+               WaitForAnyElementTextContains(
+                   element_id, ash::settings::bluetooth::BluetoothDeviceList(),
+                   bluetooth_device_item_title, device_name),
+               ClickAnyElementTextContains(
+                   element_id, ash::settings::bluetooth::BluetoothDeviceList(),
+                   bluetooth_device_item_title, device_name),
+               WaitForElementTextContains(
+                   element_id, ash::settings::bluetooth::BluetoothDeviceName(),
+                   device_name));
 }
 
 Profile* InteractiveAshTest::GetActiveUserProfile() {

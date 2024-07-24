@@ -84,6 +84,13 @@ class InteractiveAshTest
                                 const ash::NetworkTypePattern network_pattern,
                                 const std::string& network_name);
 
+  //  Navigates the Settings app, which is expected to be associated with
+  // `element_id`, to the Bluetooth details page for the device named
+  // `device_name`.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  NavigateToBluetoothDeviceDetailsPage(const ui::ElementIdentifier& element_id,
+                                       const std::string& device_name);
+
   // This function expects the Settings to already be open and on the detailed
   // page of a cellular network.
   ui::test::internal::InteractiveTestPrivate::MultiStep

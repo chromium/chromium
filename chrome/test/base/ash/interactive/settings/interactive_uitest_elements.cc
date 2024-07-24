@@ -24,7 +24,7 @@ WebContentsInteractionTestUtil::DeepQuery NetworkMoreDetailsMenuButton() {
          "cr-icon-button#moreNetworkDetail";
 }
 
-WebContentsInteractionTestUtil::DeepQuery SettingsSubpageTitle() {
+WebContentsInteractionTestUtil::DeepQuery InternetSettingsSubpageTitle() {
   return InternetPage() + "os-settings-subpage" + "h1#subpageTitle";
 }
 
@@ -285,5 +285,48 @@ WebContentsInteractionTestUtil::DeepQuery VpnSummaryItem() {
 }
 
 }  // namespace vpn
+
+namespace bluetooth {
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothPage() {
+  return WebContentsInteractionTestUtil::DeepQuery({{
+      "os-settings-ui",
+      "os-settings-main",
+      "main-page-container",
+      "os-settings-bluetooth-page",
+  }});
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceList() {
+  return BluetoothPage() + "os-settings-bluetooth-devices-subpage" +
+         "os-settings-paired-bluetooth-list";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceDetailSubpage() {
+  return BluetoothPage() + "os-settings-bluetooth-device-detail-subpage";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothChangeDeviceNameButton() {
+  return BluetoothDeviceDetailSubpage() + "cr-button#changeNameBtn";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceName() {
+  return BluetoothDeviceDetailSubpage() + "div#bluetoothDeviceNameLabel";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothRenameDialog() {
+  return BluetoothDeviceDetailSubpage() +
+         "os-settings-bluetooth-change-device-name-dialog";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothRenameDialogInputField() {
+  return BluetoothRenameDialog() + "cr-input#changeNameInput";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothRenameDialogDoneButton() {
+  return BluetoothRenameDialog() + "cr-button#done";
+}
+
+}  // namespace bluetooth
 
 }  // namespace ash::settings

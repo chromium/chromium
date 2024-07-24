@@ -15,8 +15,8 @@ WebContentsInteractionTestUtil::DeepQuery InternetPage();
 // The "more options" / "three dots" button on the network details page.
 WebContentsInteractionTestUtil::DeepQuery NetworkMoreDetailsMenuButton();
 
-// The title of a settings subpage.
-WebContentsInteractionTestUtil::DeepQuery SettingsSubpageTitle();
+// The title of a internet settings subpage.
+WebContentsInteractionTestUtil::DeepQuery InternetSettingsSubpageTitle();
 
 // The network state shown on a settings subpage.
 WebContentsInteractionTestUtil::DeepQuery SettingsSubpageNetworkState();
@@ -207,6 +207,33 @@ namespace vpn {
 // The vpn "row" on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery VpnSummaryItem();
 }  // namespace vpn
+
+namespace bluetooth {
+
+// The top level Bluetooth page.
+WebContentsInteractionTestUtil::DeepQuery BluetoothPage();
+
+// The Bluetooth device list page.
+WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceList();
+
+// The Bluetooth device details subpage.
+WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceDetailSubpage();
+
+// The change name button in Bluetooth device details page.
+WebContentsInteractionTestUtil::DeepQuery BluetoothChangeDeviceNameButton();
+
+// The Bluetooth name label in Bluetooth device details page.
+WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceName();
+
+// The Bluetooth rename dialog.
+WebContentsInteractionTestUtil::DeepQuery BluetoothRenameDialog();
+
+// The Bluetooth rename dialog text input field.
+WebContentsInteractionTestUtil::DeepQuery BluetoothRenameDialogInputField();
+
+// The Bluetooth rename dialog done button.
+WebContentsInteractionTestUtil::DeepQuery BluetoothRenameDialogDoneButton();
+}  // namespace bluetooth
 
 }  // namespace ash::settings
 
