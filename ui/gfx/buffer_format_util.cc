@@ -369,26 +369,6 @@ const char* BufferFormatToString(BufferFormat format) {
   return "Invalid Format";
 }
 
-const char* BufferPlaneToString(BufferPlane format) {
-  switch (format) {
-    case BufferPlane::DEFAULT:
-      return "DEFAULT";
-    case BufferPlane::Y:
-      return "Y";
-    case BufferPlane::UV:
-      return "UV";
-    case BufferPlane::U:
-      return "U";
-    case BufferPlane::V:
-      return "V";
-    case BufferPlane::A:
-      return "A";
-  }
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid BufferPlane: " << base::to_underlying(format);
-  return "Invalid Plane";
-}
-
 bool IsOddHeightMultiPlanarBuffersAllowed() {
   return base::FeatureList::IsEnabled(features::kOddHeightMultiPlanarBuffers);
 }

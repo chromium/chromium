@@ -79,9 +79,6 @@ GFX_EXPORT size_t BufferOffsetForBufferFormat(const Size& size,
 // Returns the name of |format| as a string.
 GFX_EXPORT const char* BufferFormatToString(BufferFormat format);
 
-// Returns the name of |plane| as a string.
-GFX_EXPORT const char* BufferPlaneToString(BufferPlane plane);
-
 // Multiplanar buffer formats (e.g, YUV_420_BIPLANAR, YVU_420, P010) can be
 // tricky when the size of the primary plane is odd, because the subsampled
 // planes will have a size that is not a divisor of the primary plane's size.
