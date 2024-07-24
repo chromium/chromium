@@ -670,7 +670,6 @@ public class StripLayoutHelperManager
             mDesktopWindowStateProvider.removeObserver(this);
         }
         mStripVisibilityStateSupplier.removeObserver(mStripVisibilityStateObserver);
-        mStripVisibilityStateSupplier = null;
     }
 
     /** Mark whether tab strip is hidden by a height transition. */
