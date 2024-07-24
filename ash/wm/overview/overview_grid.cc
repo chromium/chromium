@@ -29,7 +29,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/rounded_label_widget.h"
-#include "ash/style/typography.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/default_desk_button.h"
@@ -157,14 +156,6 @@ constexpr int kScrollingLayoutRow = 2;
 constexpr int kMinimumItemsForScrollingLayout = 6;
 
 constexpr int kTabletModeOverviewItemTopPaddingDp = 16;
-
-// The horizontal and vertical distance from the bottom left corner of the grid
-// area to the origin of the `feedback_widget_`.
-constexpr int kFeedbackCornerSpacing = 8;
-
-// The minimum height of the grid area in order for the feedback button to be
-// visible.
-constexpr int kFeedbackGridMinHeight = 100;
 
 // The bottom padding applied to the bottom of the birch bar.
 constexpr int kBirchBarBottomPadding = 16;
@@ -823,12 +814,6 @@ void OverviewGrid::PositionWindows(
     OverviewTransition transition) {
   if (!overview_session_ || suspend_reposition_) {
     return;
-  }
-
-  // Create a feedback button that shows even when no items are present (e.g.,
-  // for Pine).
-  if (features::IsForestFeatureEnabled()) {
-    UpdateFeedbackButton();
   }
 
   if (item_list_.empty()) {
@@ -2343,10 +2328,6 @@ void OverviewGrid::RefreshGridBounds(bool animate) {
         ScopedOverviewWallpaperClipper::AnimationType::kNone,
         base::DoNothing());
   }
-
-  if (features::IsForestFeatureEnabled()) {
-    UpdateFeedbackButton();
-  }
 }
 
 void OverviewGrid::UpdateSaveDeskButtons() {
@@ -3351,7 +3332,6 @@ void OverviewGrid::OnBirchBarLayoutChanged(
 
   // A relayout means the bar's accessibility may have changed.
   overview_session_->UpdateAccessibilityFocus();
-  UpdateFeedbackButton();
 }
 
 void OverviewGrid::RefreshDesksWidgets(bool visible) {
@@ -3544,61 +3524,6 @@ void OverviewGrid::UpdateSplitViewSetupViewWidget() {
   split_view_setup_widget_->SetBounds(centered_bounds);
 
   overview_session_->UpdateAccessibilityFocus();
-}
-
-void OverviewGrid::UpdateFeedbackButton() {
-  CHECK(features::IsForestFeatureEnabled());
-
-  // Only show the feedback button on the primary display.
-  if (SplitViewController::Get(root_window_)->InSplitViewMode() ||
-      root_window_ != Shell::GetPrimaryRootWindow()) {
-    feedback_widget_.reset();
-    return;
-  }
-
-  // We don't want the feedback button to overlap the desk bar and birch bar.
-  gfx::Rect wallpaper_clip_bounds = GetWallpaperClipBounds();
-  if (wallpaper_clip_bounds.height() < kFeedbackGridMinHeight) {
-    return;
-  }
-
-  if (!feedback_widget_) {
-    auto contents_view = std::make_unique<PillButton>(
-        base::BindRepeating(&OverviewGrid::ShowFeedbackPage,
-                            base::Unretained(this)),
-        u"Send Feedback", PillButton::Type::kDefaultElevatedWithIconLeading,
-        &kFeedbackIcon);
-
-    views::Widget::InitParams params(
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-        views::Widget::InitParams::TYPE_POPUP);
-    params.activatable = features::IsOverviewNewFocusEnabled()
-                             ? views::Widget::InitParams::Activatable::kYes
-                             : views::Widget::InitParams::Activatable::kNo;
-    params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
-    params.init_properties_container.SetProperty(kOverviewUiKey, true);
-    params.name = "PineFeedbackButton";
-    params.parent = desks_util::GetActiveDeskContainerForRoot(root_window_);
-
-    feedback_widget_ = std::make_unique<views::Widget>(std::move(params));
-    feedback_widget_->SetContentsView(std::move(contents_view));
-    feedback_widget_->ShowInactive();
-  }
-
-  const gfx::Size contents_size =
-      feedback_widget_->GetContentsView()->GetPreferredSize();
-  feedback_widget_->SetBounds(gfx::Rect(
-      wallpaper_clip_bounds.bottom_left().x() + kFeedbackCornerSpacing,
-      wallpaper_clip_bounds.bottom_left().y() - kFeedbackCornerSpacing -
-          contents_size.height(),
-      contents_size.width(), contents_size.height()));
-}
-
-void OverviewGrid::ShowFeedbackPage() {
-  Shell::Get()->shell_delegate()->OpenFeedbackDialog(
-      ShellDelegate::FeedbackSource::kOverview,
-      /*description_template=*/std::string(),
-      /*category_tag=*/"FromForest");
 }
 
 bool OverviewGrid::ShouldInitDesksWidget() const {
