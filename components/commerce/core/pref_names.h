@@ -27,6 +27,9 @@ inline constexpr char kProductSpecificationsEntryPointLastDismissedTime[] =
 inline constexpr char kProductSpecificationsEntryPointShowIntervalInDays[] =
     "product_specifications_entry_point_show_interval_in_days";
 
+inline constexpr char kProductSpecificationsAcceptedDisclosureVersion[] =
+    "product_specifications.accepted_disclosure_version";
+
 // Register preference names for commerce features.
 void RegisterPrefs(PrefRegistrySimple* registry);
 

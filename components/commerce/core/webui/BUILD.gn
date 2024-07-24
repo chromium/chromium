@@ -19,6 +19,7 @@ source_set("webui") {
     "//components/commerce/core:commerce_constants",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:metrics",
+    "//components/commerce/core:pref_names",
     "//components/commerce/core:shopping_service",
     "//components/commerce/core:utils",
     "//components/feature_engagement/public",

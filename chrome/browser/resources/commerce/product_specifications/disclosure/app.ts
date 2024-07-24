@@ -8,10 +8,13 @@ import '/images/icons.html.js';
 import '../strings.m.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {ProductSpecificationsDisclosureVersion} from './../shopping_service.mojom-webui.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 
@@ -23,7 +26,6 @@ interface DisclosureItem {
 const DisclosureAppElementBase =
     WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
 
-// TODO (b/353825838): implement accept button click handler.
 export class DisclosureAppElement extends DisclosureAppElementBase {
   static get is() {
     return 'product-specifications-disclosure-app';
@@ -34,6 +36,7 @@ export class DisclosureAppElement extends DisclosureAppElementBase {
   }
 
   protected items_: DisclosureItem[];
+  private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   constructor() {
     super();
@@ -58,6 +61,14 @@ export class DisclosureAppElement extends DisclosureAppElementBase {
   override render() {
     return getHtml.bind(this)();
   }
+
+  protected acceptDisclosure() {
+    this.shoppingApi_.setProductSpecificationDisclosureAcceptVersion(
+        ProductSpecificationsDisclosureVersion.kV1);
+  }
+
+  // TODO(b/349898403): Dismiss disclosure on decline when the host UI is done.
+  protected declineDisclosure() {}
 }
 
 declare global {

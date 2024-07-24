@@ -20,6 +20,7 @@
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
@@ -1032,6 +1033,16 @@ void ShoppingServiceHandler::SetProductSpecificationsUserFeedback(
           *request)
           ->mutable_quality();
   quality_proto->set_user_feedback(user_feedback);
+}
+
+void ShoppingServiceHandler::SetProductSpecificationAcceptedDisclosureVersion(
+    shopping_service::mojom::ProductSpecificationsDisclosureVersion version) {
+  if (!pref_service_) {
+    return;
+  }
+
+  pref_service_->SetInteger(kProductSpecificationsAcceptedDisclosureVersion,
+                            static_cast<int>(version));
 }
 
 void ShoppingServiceHandler::OnProductSpecificationsSetAdded(

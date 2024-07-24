@@ -597,6 +597,9 @@
   <message name="IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ACCEPT" translateable="false" desc="The text for the accept button on the FRE disclosure.">
     Lets go
   </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_DECLINE" translateable="false" desc="The text for the decline button on the FRE disclosure.">
+    No thanks
+  </message>
   <message name="IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_TITLE" translateable="false" desc="The text for the FRE disclosure bubble.">
     Chrome can help you view product specifications
   </message>

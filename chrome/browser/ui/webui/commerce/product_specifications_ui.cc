@@ -75,6 +75,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"acceptDisclosure", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ACCEPT},
       {"addToNewGroup", IDS_PRODUCT_SPECIFICATIONS_ADD_TO_NEW_GROUP},
+      {"declineDisclosure", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_DECLINE},
       {"delete", IDS_PRODUCT_SPECIFICATIONS_DELETE},
       {"disclosureAboutItem", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ABOUT_ITEM},
       {"disclosureAccountItem",

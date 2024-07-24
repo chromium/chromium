@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
-import type {BookmarkProductInfo, PageRemote, PriceInsightsInfo, ProductInfo, ProductSpecifications, UserFeedback} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {BookmarkProductInfo, PageRemote, PriceInsightsInfo, ProductInfo, ProductSpecifications, ProductSpecificationsDisclosureVersion, UserFeedback} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {PageCallbackRouter, PriceInsightsInfo_PriceBucket} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -73,6 +73,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'setNameForProductSpecificationsSet',
       'setUrlsForProductSpecificationsSet',
       'setProductSpecificationsUserFeedback',
+      'setProductSpecificationDisclosureAcceptVersion',
     ]);
 
     this.callbackRouter = new PageCallbackRouter();
@@ -224,5 +225,11 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
 
   getCallbackRouterRemote() {
     return this.callbackRouterRemote;
+  }
+
+  setProductSpecificationDisclosureAcceptVersion(
+      version: ProductSpecificationsDisclosureVersion) {
+    this.methodCalled(
+        'setProductSpecificationDisclosureAcceptVersion', version);
   }
 }
