@@ -131,6 +131,12 @@ public @interface BaseSuggestionViewProperties {
     /** {@see BaseSuggestionView#setShowDecorationIcon(boolean} */
     WritableBooleanPropertyKey SHOW_DECORATION = new WritableBooleanPropertyKey();
 
+    /**
+     * The top padding to apply to the BaseSuggestionView. This is distinct from the padding for the
+     * contained content view, which is controlled separately.
+     */
+    WritableIntPropertyKey TOP_PADDING = new WritableIntPropertyKey();
+
     /** {@see BaseSuggestionView#setUseLargeDecorationIcon(boolean)} */
     WritableBooleanPropertyKey USE_LARGE_DECORATION = new WritableBooleanPropertyKey();
 
@@ -145,6 +151,7 @@ public @interface BaseSuggestionViewProperties {
                 ON_LONG_CLICK,
                 ON_TOUCH_DOWN_EVENT,
                 SHOW_DECORATION,
+                TOP_PADDING,
                 USE_LARGE_DECORATION
             };
 

@@ -36,8 +36,11 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     static final WritableObjectPropertyKey<String> TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
+    /**
+     * The right padding to apply to the answer suggestion content view. This is distinct from the
+     * padding for the containing BaseSuggestionView, which is controlled separately.
+     */
     WritableIntPropertyKey RIGHT_PADDING = new WritableIntPropertyKey();
-    WritableIntPropertyKey TOP_PADDING = new WritableIntPropertyKey();
 
     static final PropertyKey[] ALL_UNIQUE_KEYS =
             new PropertyKey[] {
@@ -48,7 +51,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
                 TEXT_LINE_2_MAX_LINES,
                 TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION,
                 RIGHT_PADDING,
-                TOP_PADDING
             };
 
     static final PropertyKey[] ALL_KEYS =

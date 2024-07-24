@@ -148,6 +148,8 @@ public final class BaseSuggestionViewBinder<T extends View>
             }
         } else if (BaseSuggestionViewProperties.SHOW_DECORATION == propertyKey) {
             view.setShowDecorationIcon(model.get(BaseSuggestionViewProperties.SHOW_DECORATION));
+        } else if (BaseSuggestionViewProperties.TOP_PADDING == propertyKey) {
+            view.setPadding(0, model.get(BaseSuggestionViewProperties.TOP_PADDING), 0, 0);
         } else if (BaseSuggestionViewProperties.USE_LARGE_DECORATION == propertyKey) {
             view.setUseLargeDecorationIcon(
                     model.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));

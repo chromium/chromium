@@ -77,7 +77,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         boolean suggestionTextColorReversal = checkColorReversalRequired(answerType);
         AnswerText[] details;
         boolean shouldShowCardUi = false;
-        model.set(AnswerSuggestionViewProperties.TOP_PADDING, 0);
+        model.set(BaseSuggestionViewProperties.TOP_PADDING, 0);
         model.set(AnswerSuggestionViewProperties.RIGHT_PADDING, 0);
         if (suggestion.getAnswerTemplate() != null) {
             shouldShowCardUi =
@@ -98,7 +98,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
                                 .getDimensionPixelSize(R.dimen.omnibox_simple_card_leadin);
                 model.set(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING, leadInSpacing);
                 model.set(
-                        AnswerSuggestionViewProperties.TOP_PADDING,
+                        BaseSuggestionViewProperties.TOP_PADDING,
                         mContext.getResources()
                                 .getDimensionPixelSize(R.dimen.omnibox_simple_card_top_padding));
                 model.set(AnswerSuggestionViewProperties.RIGHT_PADDING, leadInSpacing);

@@ -372,7 +372,7 @@ public class AnswerSuggestionProcessorUnitTest {
                         .getDimensionPixelSize(
                                 org.chromium.chrome.browser.omnibox.R.dimen
                                         .omnibox_simple_card_top_padding),
-                suggHelper.mModel.get(AnswerSuggestionViewProperties.TOP_PADDING));
+                suggHelper.mModel.get(BaseSuggestionViewProperties.TOP_PADDING));
         Assert.assertEquals(
                 mContext.getResources()
                         .getDimensionPixelSize(
@@ -391,7 +391,7 @@ public class AnswerSuggestionProcessorUnitTest {
         Assert.assertFalse(
                 suggHelper.mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
         Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
-        Assert.assertEquals(0, suggHelper.mModel.get(AnswerSuggestionViewProperties.TOP_PADDING));
+        Assert.assertEquals(0, suggHelper.mModel.get(BaseSuggestionViewProperties.TOP_PADDING));
         Assert.assertEquals(0, suggHelper.mModel.get(AnswerSuggestionViewProperties.RIGHT_PADDING));
         Assert.assertEquals(
                 1, suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).size());
