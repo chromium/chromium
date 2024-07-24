@@ -300,6 +300,14 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
  protected:
   friend class DeskBarScrollViewLayout;
   friend class DesksTestApi;
+  class AddDeskAnimation;
+  class DeskIconButtonScaleAnimation;
+  class LibraryButtonVisibilityAnimation;
+  class NewDeskButtonPressedScroll;
+  class PostLayoutOperation;
+  class RemoveDeskAnimation;
+  class ReorderDeskAnimation;
+  class ScrollForActiveMiniView;
 
   DeskBarViewBase(
       aura::Window* root,
@@ -446,6 +454,13 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   base::OnceClosure on_update_ui_closure_for_testing_;
 
   const base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator_;
+
+  // Ordered list of operations to run after the next `Layout()` call ends.
+  // This is a short-lived "to-do" list of things that require a layout to
+  // complete first before they can be run. The list is cleared after the layout
+  // completes. In practice, there is usually 1 element in this list.
+  std::vector<std::unique_ptr<PostLayoutOperation>>
+      pending_post_layout_operations_;
 };
 
 }  // namespace ash

@@ -824,11 +824,13 @@ TEST_P(DesksOverviewFocusCyclerTest, RemoveDeskWhileNameFocused) {
   const auto* desks_controller = DesksController::Get();
   auto* desk_1 = desks_controller->GetDeskAtIndex(0);
   RemoveDesk(desk_1);
+  RunScheduledLayoutForAllOverviewDeskBars();
   EXPECT_EQ(nullptr, GetFocusedView());
   EXPECT_FALSE(desk_bar_view->IsZeroState());
 
   // Tabbing again should cause no crashes.
   PressAndReleaseKey(ui::VKEY_TAB);
+  RunScheduledLayoutForAllOverviewDeskBars();
   EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_preview(), GetFocusedView());
 }
 
@@ -868,6 +870,7 @@ TEST_P(DesksOverviewFocusCyclerTest, NewDesksWithKeyboard) {
   // is disabled.
   while (desks_controller->CanCreateDesks()) {
     PressAndReleaseKey(ui::VKEY_SPACE);
+    RunScheduledLayoutForAllOverviewDeskBars();
     check_name_view_at_index(desk_bar_view,
                              desks_controller->desks().size() - 1);
     PressAndReleaseKey(ui::VKEY_TAB);

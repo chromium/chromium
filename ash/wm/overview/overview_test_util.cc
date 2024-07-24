@@ -19,6 +19,7 @@
 #include "base/test/bind.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace ash {
 
@@ -41,10 +42,12 @@ void WaitForOverviewAnimationState(OverviewAnimationState state) {
 
 void ToggleOverview(OverviewEnterExitType type) {
   auto* overview_controller = OverviewController::Get();
-  if (overview_controller->InOverviewSession())
+  if (overview_controller->InOverviewSession()) {
     overview_controller->EndOverview(OverviewEndAction::kTests, type);
-  else
+  } else {
     overview_controller->StartOverview(OverviewStartAction::kTests, type);
+    RunScheduledLayoutForAllOverviewDeskBars();
+  }
 }
 
 void WaitForOverviewEnterAnimation() {
@@ -162,6 +165,15 @@ views::View* GetFocusedView() {
   views::Widget* widget =
       views::Widget::GetWidgetForNativeWindow(active_window);
   return widget ? widget->GetFocusManager()->GetFocusedView() : nullptr;
+}
+
+void RunScheduledLayoutForAllOverviewDeskBars() {
+  for (const auto& window : Shell::GetAllRootWindows()) {
+    OverviewGrid* overview_grid = GetOverviewGridForRoot(window);
+    if (overview_grid && overview_grid->desks_widget()) {
+      views::test::RunScheduledLayout(overview_grid->desks_widget());
+    }
+  }
 }
 
 }  // namespace ash

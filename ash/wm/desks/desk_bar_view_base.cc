@@ -501,6 +501,253 @@ class DeskBarHoverObserver : public ui::EventObserver {
   std::unique_ptr<views::EventMonitor> event_monitor_;
 };
 
+// -----------------------------------------------------------------------------
+// DeskBarViewBase::PostLayoutOperation:
+
+// Addresses this common sequence in `DeskBarViewBase`:
+// 1) Some desk ui-related event happens (ex: a new desk is added).
+// 2) The desk bar layout must happen as a result. Layout is asynchronous.
+// 3) After the layout, some remaining operations (often an animation) must
+//    be performed. But these operations depends on the layout completing first.
+//
+// `PostLayoutOperation` represents the content at step 3. It is a short-lived
+// class that created and cached in step 1, and then run after the next layout
+// completes.
+class DeskBarViewBase::PostLayoutOperation {
+ public:
+  virtual ~PostLayoutOperation() = default;
+
+  // Optional: Allows the implementation to capture any required UI state
+  // immediately before the layout happens and said state is changed. Always
+  // called right before the layout.
+  virtual void InitializePreLayout() {}
+
+  // Called after the layout completes. Runs the content in step 3. The
+  // `PostLayoutOperation` is destroyed immediately after `Run()`.
+  virtual void Run() = 0;
+
+ protected:
+  explicit PostLayoutOperation(DeskBarViewBase* bar_view)
+      : bar_view_(bar_view) {
+    CHECK(bar_view_);
+  }
+
+  const raw_ptr<DeskBarViewBase> bar_view_;
+};
+
+// Runs animations when a new desk is added.
+class DeskBarViewBase::AddDeskAnimation
+    : public DeskBarViewBase::PostLayoutOperation {
+ public:
+  AddDeskAnimation(DeskBarViewBase* bar_view,
+                   const gfx::Rect& old_bar_bounds,
+                   std::vector<DeskMiniView*> new_mini_views)
+      : PostLayoutOperation(bar_view),
+        old_bar_bounds_(old_bar_bounds),
+        new_mini_views_(std::move(new_mini_views)) {}
+
+  // DeskBarViewBase::PostLayoutOperation:
+  void InitializePreLayout() override {
+    views_previous_x_map_ = bar_view_->GetAnimatableViewsCurrentXMap();
+  }
+
+  void Run() override {
+    // Filter out mini views that were erased between the time it was created
+    // and the layout occurred. In practice, this should be extremely rare or
+    // even non-existent but is theoretically possible due to the asynchronous
+    // nature the layout operation.
+    auto new_mini_view_it = new_mini_views_.begin();
+    while (new_mini_view_it != new_mini_views_.end()) {
+      if (base::Contains(bar_view_->mini_views_, *new_mini_view_it)) {
+        ++new_mini_view_it;
+      } else {
+        new_mini_view_it = new_mini_views_.erase(new_mini_view_it);
+      }
+    }
+
+    if (bar_view_->type_ == Type::kDeskButton) {
+      PerformDeskBarAddDeskAnimation(bar_view_, old_bar_bounds_);
+    }
+    PerformAddDeskMiniViewAnimation(new_mini_views_);
+    PerformDeskBarChildViewShiftAnimation(bar_view_, views_previous_x_map_);
+  }
+
+ private:
+  const gfx::Rect old_bar_bounds_;
+  std::vector<DeskMiniView*> new_mini_views_;
+  base::flat_map<views::View*, int> views_previous_x_map_;
+};
+
+// Scales the size of the `new_desk_button_` or `library_button_`.
+class DeskBarViewBase::DeskIconButtonScaleAnimation
+    : public DeskBarViewBase::PostLayoutOperation {
+ public:
+  DeskIconButtonScaleAnimation(DeskBarViewBase* bar_view,
+                               DeskIconButton* button)
+      : PostLayoutOperation(bar_view), button_(button) {
+    CHECK(button_);
+  }
+
+  // DeskBarViewBase::PostLayoutOperation:
+  void InitializePreLayout() override {
+    begin_x_ = bar_view_->GetFirstMiniViewXOffset();
+    current_bounds_ = button_->GetBoundsInScreen();
+  }
+
+  void Run() override {
+    const gfx::RectF target_bounds = gfx::RectF(button_->GetBoundsInScreen());
+    gfx::Transform scale_transform;
+    const int shift_x = begin_x_ - bar_view_->GetFirstMiniViewXOffset();
+    scale_transform.Translate(shift_x, 0);
+    scale_transform.Scale(current_bounds_.width() / target_bounds.width(),
+                          current_bounds_.height() / target_bounds.height());
+
+    PerformDeskIconButtonScaleAnimation(button_, bar_view_, scale_transform,
+                                        shift_x);
+
+    bar_view_->MaybeRefreshOverviewGridBounds();
+  }
+
+ private:
+  const raw_ptr<DeskIconButton> button_;
+  int begin_x_ = 0;
+  gfx::Rect current_bounds_;
+};
+
+// Runs animations when the library button visibility changes.
+class DeskBarViewBase::LibraryButtonVisibilityAnimation
+    : public DeskBarViewBase::PostLayoutOperation {
+ public:
+  explicit LibraryButtonVisibilityAnimation(DeskBarViewBase* bar_view)
+      : PostLayoutOperation(bar_view) {}
+
+  // DeskBarViewBase::PostLayoutOperation:
+  void InitializePreLayout() override {
+    begin_x_ = bar_view_->GetFirstMiniViewXOffset();
+  }
+
+  void Run() override {
+    // This call shifts the transforms of the mini views and new desk button and
+    // then animates to the identity transform.
+    PerformLibraryButtonVisibilityAnimation(
+        bar_view_->mini_views_, bar_view_->new_desk_button_,
+        begin_x_ - bar_view_->GetFirstMiniViewXOffset());
+  }
+
+ private:
+  int begin_x_ = 0;
+};
+
+// Scrolls to make the new desk mini view visible in the desk bar when a new
+// desk is created.
+class DeskBarViewBase::NewDeskButtonPressedScroll
+    : public DeskBarViewBase::PostLayoutOperation {
+ public:
+  explicit NewDeskButtonPressedScroll(DeskBarViewBase* bar_view)
+      : PostLayoutOperation(bar_view) {}
+
+  // DeskBarViewBase::PostLayoutOperation:
+  void Run() override {
+    bar_view_->NudgeDeskName(bar_view_->mini_views_.size() - 1);
+
+    // TODO(b/277081702): When desk order is adjusted for RTL, remove the check
+    // below to always make new desk button visible.
+    if (!base::i18n::IsRTL()) {
+      bar_view_->ScrollToShowViewIfNecessary(bar_view_->new_desk_button_);
+    }
+  }
+};
+
+// Runs animations when a desk is removed.
+class DeskBarViewBase::RemoveDeskAnimation
+    : public DeskBarViewBase::PostLayoutOperation {
+ public:
+  RemoveDeskAnimation(DeskBarViewBase* bar_view,
+                      DeskMiniView* removed_mini_view)
+      : PostLayoutOperation(bar_view),
+        removed_mini_view_(bar_view_->type_ == DeskBarViewBase::Type::kOverview
+                               ? removed_mini_view
+                               : nullptr) {}
+
+  // DeskBarViewBase::PostLayoutOperation:
+  void InitializePreLayout() override {
+    if (bar_view_->type_ == DeskBarViewBase::Type::kDeskButton) {
+      old_background_bounds_ = bar_view_->background_view_->GetBoundsInScreen();
+    }
+    views_previous_x_map_ = bar_view_->GetAnimatableViewsCurrentXMap();
+  }
+
+  void Run() override {
+    if (removed_mini_view_) {
+      DeskMiniView* removed_mini_view = removed_mini_view_;
+      // The mini view is deleted in the call below. Set to null to avoid a
+      // dangling `raw_ptr` reference.
+      removed_mini_view_ = nullptr;
+      PerformRemoveDeskMiniViewAnimation(removed_mini_view);
+    } else {
+      PerformDeskBarRemoveDeskAnimation(bar_view_, old_background_bounds_);
+    }
+    PerformDeskBarChildViewShiftAnimation(bar_view_, views_previous_x_map_);
+    bar_view_->MaybeUpdateDeskActionButtonTooltips();
+  }
+
+ private:
+  raw_ptr<DeskMiniView> removed_mini_view_;
+  gfx::Rect old_background_bounds_;
+  base::flat_map<views::View*, int> views_previous_x_map_;
+};
+
+// Runs animations when a desk is reordered.
+class DeskBarViewBase::ReorderDeskAnimation
+    : public DeskBarViewBase::PostLayoutOperation {
+ public:
+  ReorderDeskAnimation(DeskBarViewBase* bar_view,
+                       size_t old_index,
+                       size_t new_index)
+      : PostLayoutOperation(bar_view),
+        old_index_(old_index),
+        new_index_(new_index) {}
+
+  // DeskBarViewBase::PostLayoutOperation:
+  void Run() override {
+    const auto& mini_views = bar_view_->mini_views_;
+    // Don't crash if the mini view was erased between the time it was reordered
+    // and the layout occurred. In practice, this should be extremely rare or
+    // even non-existent but is theoretically possible due to the asynchronous
+    // nature the layout operation.
+    if (old_index_ >= mini_views.size() || new_index_ >= mini_views.size()) {
+      return;
+    }
+    PerformReorderDeskMiniViewAnimation(old_index_, new_index_, mini_views);
+    bar_view_->MaybeUpdateDeskActionButtonTooltips();
+  }
+
+ private:
+  const size_t old_index_;
+  const size_t new_index_;
+};
+
+// Scrolls to make the active desk visible in the desk bar when the desk bar is
+// opened.
+class DeskBarViewBase::ScrollForActiveMiniView
+    : public DeskBarViewBase::PostLayoutOperation {
+ public:
+  explicit ScrollForActiveMiniView(DeskBarViewBase* bar_view)
+      : PostLayoutOperation(bar_view) {}
+
+  // DeskBarViewBase::PostLayoutOperation:
+  void Run() override {
+    // When the bar is initialized, scroll to make active desk mini view
+    // visible.
+    auto it = base::ranges::find_if(
+        bar_view_->mini_views_,
+        [](DeskMiniView* mini_view) { return mini_view->desk()->is_active(); });
+    if (it != bar_view_->mini_views_.end()) {
+      bar_view_->ScrollToShowViewIfNecessary(*it);
+    }
+  }
+};
+
 DeskBarViewBase::DeskBarViewBase(
     aura::Window* root,
     Type type,
@@ -735,6 +982,14 @@ void DeskBarViewBase::Layout(PassKey) {
     return;
   }
 
+  // Move to a local variable on the stack in case `PostLayoutOperation::Run()`
+  // synchronously calls `DeskBarViewBase::Layout()` again.
+  auto post_layout_operations = std::move(pending_post_layout_operations_);
+  pending_post_layout_operations_.clear();
+  for (const auto& post_layout_operation : post_layout_operations) {
+    post_layout_operation->InitializePreLayout();
+  }
+
   // Scroll buttons are kept `scroll_view_padding` away from the edge of the
   // scroll view. So the horizontal padding of the scroll view is set to
   // guarantee enough space for the scroll buttons.
@@ -766,6 +1021,10 @@ void DeskBarViewBase::Layout(PassKey) {
 
   UpdateScrollButtonsVisibility();
   UpdateGradientMask();
+
+  for (const auto& post_layout_operation : post_layout_operations) {
+    post_layout_operation->Run();
+  }
 }
 
 bool DeskBarViewBase::OnMousePressed(const ui::MouseEvent& event) {
@@ -804,13 +1063,8 @@ void DeskBarViewBase::Init() {
   UpdateNewMiniViews(/*initializing_bar_view=*/true,
                      /*expanding_bar_view=*/false);
 
-  // When the bar is initialized, scroll to make active desk mini view visible.
-  auto it = base::ranges::find_if(mini_views_, [](DeskMiniView* mini_view) {
-    return mini_view->desk()->is_active();
-  });
-  if (it != mini_views_.end()) {
-    ScrollToShowViewIfNecessary(*it);
-  }
+  pending_post_layout_operations_.push_back(
+      std::make_unique<ScrollForActiveMiniView>(this));
 
   hover_observer_ = std::make_unique<DeskBarHoverObserver>(
       this, GetWidget()->GetNativeWindow());
@@ -886,14 +1140,9 @@ void DeskBarViewBase::OnNewDeskButtonPressed(
                                 : kOverviewDeskBarNewDeskHistogramName,
                             true);
 
+  pending_post_layout_operations_.push_back(
+      std::make_unique<NewDeskButtonPressedScroll>(this));
   controller->NewDesk(desks_creation_removal_source);
-  NudgeDeskName(mini_views_.size() - 1);
-
-  // TODO(b/277081702): When desk order is adjusted for RTL, remove the check
-  // below to always make new desk button visible.
-  if (!base::i18n::IsRTL()) {
-    ScrollToShowViewIfNecessary(new_desk_button_);
-  }
 }
 
 void DeskBarViewBase::NudgeDeskName(int desk_index) {
@@ -968,14 +1217,9 @@ void DeskBarViewBase::UpdateLibraryButtonVisibility() {
     return;
   }
 
-  const int begin_x = GetFirstMiniViewXOffset();
-  DeprecatedLayoutImmediately();
-
-  // The mini views and new desk button are already laid out due to the above
-  // `DeprecatedLayoutImmediately()`. This call shifts the transforms of the
-  // mini views and new desk button and then animates to the identity transform.
-  PerformLibraryButtonVisibilityAnimation(mini_views_, new_desk_button_,
-                                          begin_x - GetFirstMiniViewXOffset());
+  pending_post_layout_operations_.push_back(
+      std::make_unique<LibraryButtonVisibilityAnimation>(this));
+  InvalidateLayout();
 }
 
 void DeskBarViewBase::UpdateDeskIconButtonState(
@@ -987,22 +1231,10 @@ void DeskBarViewBase::UpdateDeskIconButtonState(
     return;
   }
 
-  const int begin_x = GetFirstMiniViewXOffset();
-  gfx::Rect current_bounds = button->GetBoundsInScreen();
-
   button->UpdateState(target_state);
-  DeprecatedLayoutImmediately();
-
-  gfx::RectF target_bounds = gfx::RectF(button->GetBoundsInScreen());
-  gfx::Transform scale_transform;
-  const int shift_x = begin_x - GetFirstMiniViewXOffset();
-  scale_transform.Translate(shift_x, 0);
-  scale_transform.Scale(current_bounds.width() / target_bounds.width(),
-                        current_bounds.height() / target_bounds.height());
-
-  PerformDeskIconButtonScaleAnimation(button, this, scale_transform, shift_x);
-
-  MaybeRefreshOverviewGridBounds();
+  pending_post_layout_operations_.push_back(
+      std::make_unique<DeskIconButtonScaleAnimation>(this, button));
+  InvalidateLayout();
 }
 
 void DeskBarViewBase::OnHoverStateMayHaveChanged() {
@@ -1350,27 +1582,20 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
     EndDragDesk(removed_mini_view, /*end_by_user=*/false);
   }
 
-  // Document all the current X coordinates of the views before we perform a
-  // layout operation.
-  const auto views_previous_x_map = GetAnimatableViewsCurrentXMap();
-
-  // There is desk removal animation for overview bar but not for desk button
+  pending_post_layout_operations_.push_back(
+      std::make_unique<RemoveDeskAnimation>(this, removed_mini_view));
+  // There is desk removal animatiion for overview bar but not for desk button
   // desk bar.
   if (type_ == Type::kOverview) {
-    DeprecatedLayoutImmediately();
+    InvalidateLayout();
     // Overview bar desk removal will preform mini view removal animation, while
     // desk button bar removes mini view immediately.
-    PerformRemoveDeskMiniViewAnimation(removed_mini_view);
   } else {
-    const auto old_background_bounds = background_view_->GetBoundsInScreen();
     // Desk button bar does not have mini view removal animation, mini view will
     // disappear immediately. Desk button bar will shrink during desk removal.
     removed_mini_view->parent()->RemoveChildViewT(removed_mini_view);
-    scroll_view_->DeprecatedLayoutImmediately();
-    PerformDeskBarRemoveDeskAnimation(this, old_background_bounds);
+    scroll_view_->InvalidateLayout();
   }
-  PerformDeskBarChildViewShiftAnimation(this, views_previous_x_map);
-  MaybeUpdateDeskActionButtonTooltips();
 }
 
 void DeskBarViewBase::OnDeskReordered(int old_index, int new_index) {
@@ -1386,11 +1611,9 @@ void DeskBarViewBase::OnDeskReordered(int old_index, int new_index) {
   reordered_view->UpdateDeskButtonVisibility();
   mini_views_[old_index]->UpdateDeskButtonVisibility();
 
-  DeprecatedLayoutImmediately();
-
-  // Call the animation function after reorder the mini views.
-  PerformReorderDeskMiniViewAnimation(old_index, new_index, mini_views_);
-  MaybeUpdateDeskActionButtonTooltips();
+  pending_post_layout_operations_.push_back(
+      std::make_unique<ReorderDeskAnimation>(this, old_index, new_index));
+  InvalidateLayout();
 }
 
 void DeskBarViewBase::OnDeskActivationChanged(const Desk* activated,
@@ -1425,9 +1648,6 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
 
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   DCHECK(root_window);
-  // Document all the current X coordinates of the views before we perform a
-  // layout operation.
-  const auto views_previous_x_map = GetAnimatableViewsCurrentXMap();
 
   // New mini views can be added at any index, so we need to iterate through and
   // insert new mini views in a position in `mini_views_` that corresponds to
@@ -1466,17 +1686,12 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
   UpdateBarBounds();
   pause_layout_ = false;
 
-  DeprecatedLayoutImmediately();
-
-  if (initializing_bar_view) {
-    return;
+  if (!initializing_bar_view) {
+    pending_post_layout_operations_.push_back(
+        std::make_unique<AddDeskAnimation>(this, old_bar_bounds,
+                                           std::move(new_mini_views)));
   }
-
-  if (type_ == Type::kDeskButton) {
-    PerformDeskBarAddDeskAnimation(this, old_bar_bounds);
-  }
-  PerformAddDeskMiniViewAnimation(new_mini_views);
-  PerformDeskBarChildViewShiftAnimation(this, views_previous_x_map);
+  InvalidateLayout();
 }
 
 void DeskBarViewBase::SwitchToExpandedState() {

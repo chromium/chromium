@@ -67,6 +67,10 @@ bool IsWindowInItsCorrespondingOverviewGrid(aura::Window* window);
 
 views::View* GetFocusedView();
 
+// Calls `views::test::RunScheduledLayout()` for the desk bar within overview
+// mode for every root window. This is a no-op if a desk bar is not active.
+void RunScheduledLayoutForAllOverviewDeskBars();
+
 }  // namespace ash
 
 #endif  // ASH_WM_OVERVIEW_OVERVIEW_TEST_UTIL_H_

@@ -5993,10 +5993,7 @@ TEST_F(SnapGroupDesksTest, DragOverviewGroupItemToAnotherDesk) {
   SnapTwoTestWindows(window0.get(), window1.get(), /*horizontal=*/true,
                      event_generator);
 
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview(OverviewStartAction::kTests,
-                                     OverviewEnterExitType::kImmediateEnter);
-  ASSERT_TRUE(overview_controller->InOverviewSession());
+  ASSERT_TRUE(EnterOverview(OverviewEnterExitType::kImmediateEnter));
 
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
@@ -6016,6 +6013,7 @@ TEST_F(SnapGroupDesksTest, DragOverviewGroupItemToAnotherDesk) {
 
   // Test that both windows contained in the overview group item will be moved
   // to the another desk.
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
   DragGroupItemToPoint(
       overview_controller->overview_session()->GetOverviewItemForWindow(
           window0.get()),
@@ -6074,9 +6072,7 @@ TEST_F(SnapGroupDesksTest,
   EXPECT_TRUE(
       w0->GetBoundsInScreen().Contains(bubble_window->GetBoundsInScreen()));
 
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview(OverviewStartAction::kTests,
-                                     OverviewEnterExitType::kImmediateEnter);
+  ASSERT_TRUE(EnterOverview(OverviewEnterExitType::kImmediateEnter));
 
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
@@ -6096,6 +6092,7 @@ TEST_F(SnapGroupDesksTest,
 
   // Test that both windows contained in the overview group item are contained
   // in `desk1` after the drag.
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
   DragGroupItemToPoint(
       overview_controller->overview_session()->GetOverviewItemForWindow(
           w0.get()),
@@ -6140,9 +6137,7 @@ TEST_F(SnapGroupDesksTest, DragOverviewGroupItemToAnotherDeskWithSnapGroup) {
   ASSERT_EQ(desks_util::GetDeskForContext(w2.get()), desk1);
   ASSERT_EQ(desks_util::GetDeskForContext(w3.get()), desk1);
 
-  OverviewController* overview_controller = OverviewController::Get();
-  overview_controller->StartOverview(OverviewStartAction::kOverviewButton);
-  ASSERT_TRUE(overview_controller->InOverviewSession());
+  ASSERT_TRUE(EnterOverview());
 
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
@@ -6153,6 +6148,7 @@ TEST_F(SnapGroupDesksTest, DragOverviewGroupItemToAnotherDeskWithSnapGroup) {
 
   // Test that both windows contained in the overview group item will be moved
   // to the `desk0` and no crash on activating `desk0`.
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
   DragGroupItemToPoint(
       overview_controller->overview_session()->GetOverviewItemForWindow(
           w3.get()),
@@ -6428,9 +6424,7 @@ TEST_F(SnapGroupDesksTest, ResizeThenMoveGroupToAnotherDesk) {
   const gfx::Rect cached_w0_bounds(w0->GetBoundsInScreen());
   const gfx::Rect cached_w1_bounds(w1->GetBoundsInScreen());
 
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview(OverviewStartAction::kTests);
-  ASSERT_TRUE(overview_controller->InOverviewSession());
+  ASSERT_TRUE(EnterOverview(OverviewEnterExitType::kImmediateEnter));
 
   auto* overview_grid = GetOverviewGridForRoot(w0->GetRootWindow());
   ASSERT_TRUE(overview_grid);
@@ -6441,6 +6435,7 @@ TEST_F(SnapGroupDesksTest, ResizeThenMoveGroupToAnotherDesk) {
   const auto& mini_views = desks_bar_view->mini_views();
   ASSERT_EQ(2u, mini_views.size());
 
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
   DragGroupItemToPoint(
       overview_controller->overview_session()->GetOverviewItemForWindow(
           w0.get()),
