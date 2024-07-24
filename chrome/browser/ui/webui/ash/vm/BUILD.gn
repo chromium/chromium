@@ -7,6 +7,29 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(is_chromeos_ash)
 
+static_library("vm") {
+  sources = [
+    "vm_ui.cc",
+    "vm_ui.h",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:resources",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui",
+    "//chrome/common",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/base",
+    "//ui/webui",
+  ]
+}
+
 mojom("mojo_bindings") {
   sources = [ "vm.mojom" ]
 
