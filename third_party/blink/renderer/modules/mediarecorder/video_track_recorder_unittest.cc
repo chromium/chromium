@@ -562,7 +562,7 @@ TEST_P(VideoTrackRecorderTestParam, VideoEncoding) {
 
   run_loop.Run();
 
-  const size_t kEncodedSizeThreshold = 14;
+  const size_t kEncodedSizeThreshold = 12;
   EXPECT_GE(first_frame_encoded_data.size(), kEncodedSizeThreshold);
   EXPECT_GE(second_frame_encoded_data.size(), kEncodedSizeThreshold);
   EXPECT_GE(third_frame_encoded_data.size(), kEncodedSizeThreshold);
