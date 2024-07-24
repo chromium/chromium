@@ -4,7 +4,6 @@
 
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 
-#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -385,10 +384,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete() {
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::WatchDataUpdate() {
   auto write_callback =
-      base::GetFieldTrialParamByFeatureAsBool(
-          features::kServiceWorkerAutoPreload, "use_two_phase_write", true)
-          ? &ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite
-          : &ServiceWorkerRaceNetworkRequestURLLoaderClient::Write;
+      &ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite;
   CHECK(read_buffer_manager_.has_value());
   read_buffer_manager_->Watch(
       base::BindRepeating(&ServiceWorkerRaceNetworkRequestURLLoaderClient::Read,
@@ -403,8 +399,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::WatchDataUpdate() {
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
-  SCOPED_CRASH_KEY_BOOL("SWRace", "state_readable", state.readable());
-  SCOPED_CRASH_KEY_BOOL("SWRace", "state_peer_closed", state.peer_closed());
   if (!IsReadyToHandleReadWrite(result)) {
     return;
   }
@@ -416,7 +410,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
     return;
   }
 
-  SCOPED_CRASH_KEY_STRING256("SWRace", "request_url", request_.url.spec());
   auto [read_result, read_buffer] = read_buffer_manager_->ReadData();
   TRACE_EVENT_WITH_FLOW2("ServiceWorker",
                          "ServiceWorkerRaceNetworkRequestURLLoaderClient::Read",
@@ -436,7 +429,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
     case MOJO_RESULT_SHOULD_WAIT:
       return;
     default:
-      SCOPED_CRASH_KEY_NUMBER("SWRace", "read_result", read_result);
       NOTREACHED_IN_MIGRATION() << "ReadData result:" << read_result;
       return;
   }
@@ -557,107 +549,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite(
     num_bytes_to_consume =
         write_buffer_manager_for_fetch_handler_.CopyAndCompleteWriteData(
             read_buffer);
-  }
-  CompleteReadData(num_bytes_to_consume);
-}
-
-void ServiceWorkerRaceNetworkRequestURLLoaderClient::Write(
-    MojoResult result,
-    const mojo::HandleSignalsState& state) {
-  if (!IsReadyToHandleReadWrite(result)) {
-    return;
-  }
-
-  CHECK(read_buffer_manager_.has_value());
-  if (read_buffer_manager_->BytesRemaining() == 0) {
-    read_buffer_manager_->ArmOrNotify();
-    return;
-  }
-  base::span<const char> read_buffer = read_buffer_manager_->RemainingBuffer();
-
-  size_t num_bytes_to_consume = read_buffer.size();
-  if (write_buffer_manager_for_race_network_request_.IsWatching() &&
-      write_buffer_manager_for_fetch_handler_.IsWatching()) {
-    // If both data pipes are watched, write data to both pipes.
-    std::pair<size_t, size_t> written_bytes;
-    std::tie(result, written_bytes.first) =
-        write_buffer_manager_for_race_network_request_.WriteData(read_buffer);
-    RecordMojoResultForWrite(result);
-    switch (result) {
-      case MOJO_RESULT_OK:
-        break;
-      case MOJO_RESULT_FAILED_PRECONDITION:
-        // The data pipe consumer is aborted.
-        TransitionState(State::kAborted);
-        Abort();
-        return;
-      case MOJO_RESULT_SHOULD_WAIT:
-      case MOJO_RESULT_OUT_OF_RANGE:
-        // The data pipe is not writable yet. We don't consume data from |body_|
-        // and write any data in this case. And retry it later.
-        write_buffer_manager_for_race_network_request_.ArmOrNotify();
-        return;
-    }
-    std::tie(result, written_bytes.second) =
-        write_buffer_manager_for_fetch_handler_.WriteData(read_buffer);
-    RecordMojoResultForWrite(result);
-    switch (result) {
-      case MOJO_RESULT_OK:
-        break;
-      case MOJO_RESULT_FAILED_PRECONDITION:
-        TransitionState(State::kAborted);
-        Abort();
-        return;
-      case MOJO_RESULT_SHOULD_WAIT:
-      case MOJO_RESULT_OUT_OF_RANGE:
-        // When the data pipe returns MOJO_RESULT_SHOULD_WAIT, the data pipe is
-        // not consumed yet but the buffer is full. Stop processing the data
-        // pipe for the fetch handler side, not to make the data transfer
-        // process for the race network request side being stuck.
-        write_buffer_manager_for_fetch_handler_.CancelWatching();
-        write_buffer_manager_for_race_network_request_.ArmOrNotify();
-        return;
-    }
-    CHECK_EQ(written_bytes.first, written_bytes.second);
-    num_bytes_to_consume = written_bytes.first;
-    CHECK_EQ(write_buffer_manager_for_race_network_request_.num_bytes_written(),
-             write_buffer_manager_for_fetch_handler_.num_bytes_written());
-  } else if (write_buffer_manager_for_race_network_request_.IsWatching()) {
-    // If the data pipe for RaceNetworkRequest is the only watcher, don't write
-    // data to the data pipe for the fetch handler.
-    std::tie(result, num_bytes_to_consume) =
-        write_buffer_manager_for_race_network_request_.WriteData(read_buffer);
-    RecordMojoResultForWrite(result);
-    switch (result) {
-      case MOJO_RESULT_OK:
-        break;
-      case MOJO_RESULT_FAILED_PRECONDITION:
-        TransitionState(State::kAborted);
-        Abort();
-        return;
-      case MOJO_RESULT_SHOULD_WAIT:
-      case MOJO_RESULT_OUT_OF_RANGE:
-        write_buffer_manager_for_race_network_request_.ArmOrNotify();
-        return;
-    }
-  } else if (write_buffer_manager_for_fetch_handler_.IsWatching()) {
-    // If the data pipe for the fetch handler is the only watcher, don't write
-    // data to the data pipe for RaceNetworkRequest.
-    std::tie(result, num_bytes_to_consume) =
-        write_buffer_manager_for_fetch_handler_.WriteData(read_buffer);
-    RecordMojoResultForWrite(result);
-    switch (result) {
-      case MOJO_RESULT_OK:
-        break;
-      case MOJO_RESULT_FAILED_PRECONDITION:
-        TransitionState(State::kAborted);
-        Abort();
-        return;
-      case MOJO_RESULT_SHOULD_WAIT:
-      case MOJO_RESULT_OUT_OF_RANGE:
-        write_buffer_manager_for_fetch_handler_.ArmOrNotify();
-        return;
-    }
   }
   CompleteReadData(num_bytes_to_consume);
 }

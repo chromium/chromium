@@ -202,17 +202,6 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // due to the long fetch handler execution. and test case the mechanism to
   // wait for the fetch handler
   void TwoPhaseWrite(MojoResult result, const mojo::HandleSignalsState& state);
-  // Writes data in RaceNetworkRequestReadBufferManager into the data
-  // pipe producer that handles for both the race network request and the fetch
-  // handler respectively.
-  //
-  // Unlike |TwoPhaseWrite()|, this doesn't use two-phase operations to
-  // write data into data pipes. However, the result should be the same as
-  // |TwoPhaseWrite()| because mojo's |WriteData()| is expected to write
-  // the same amount of data from the given data pipe consumer handle to read.
-  // also |Write()| has CHECK to guarantee that the actual written sizes
-  // to data pips are exactly same.
-  void Write(MojoResult result, const mojo::HandleSignalsState& state);
 
   bool IsReadyToHandleReadWrite(MojoResult result);
 
