@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "content/public/browser/context_factory.h"
 #include "media/capture/video_capture_types.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -39,6 +40,17 @@ VideoStreamCoordinator::VideoStreamCoordinator(
   preview_badge_view_ =
       badge_holder->AddChildView(preview_badge::CreatePreviewBadge());
   preview_badge_view_->SetVisible(false);
+
+  auto* throbber_overlay =
+      container->AddChildView(std::make_unique<views::BoxLayoutView>());
+  throbber_overlay->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+  throbber_overlay->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  const int kThrobberDiameter = 40;
+  throbber_ = throbber_overlay->AddChildView(
+      std::make_unique<views::Throbber>(kThrobberDiameter));
 }
 
 VideoStreamCoordinator::~VideoStreamCoordinator() {
@@ -87,6 +99,8 @@ void VideoStreamCoordinator::ConnectToDevice(
 
     has_requested_any_video_feed_ = true;
     video_stream_request_time_ = base::TimeTicks::Now();
+
+    throbber_->Start();
   }
 }
 
@@ -104,6 +118,9 @@ void VideoStreamCoordinator::OnCameraVideoFrame(
 
   if (!video_stream_start_time_) {
     OnReceivedFirstFrame();
+    if (video_stream_view_) {
+      throbber_->Stop();
+    }
   }
   video_stream_total_frames_++;
 }
