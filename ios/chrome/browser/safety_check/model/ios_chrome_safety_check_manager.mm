@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
@@ -80,6 +81,26 @@ IOSChromeSafetyCheckManager::IOSChromeSafetyCheckManager(
           weak_ptr_factory_.GetWeakPtr()));
 
   RestorePreviousSafetyCheckState();
+
+  // Run the Safety Check automatically, if eligible.
+  //
+  // TODO(crbug.com/354706390): Re-evaluate autorun eligibility during scene
+  // state changes for better accuracy and to support future increased autorun
+  // frequency.
+  //
+  // TODO(crbug.com/354707092): Replace
+  // `GetLastSafetyCheckRunTimeAcrossAllEntrypoints()` with
+  // `GetLastSafetyCheckRunTime()` once the Safety Check (via Settings) is
+  // refactored to use `IOSChromeSafetyCheckManager`. For now
+  // `GetLastSafetyCheckRunTimeAcrossAllEntrypoints()` returns the last run
+  // time, across both entry points.
+  if (IsSafetyCheckNotificationsEnabled()) {
+    if (CanAutomaticallyRunSafetyCheck(
+            GetLatestSafetyCheckRunTimeAcrossAllEntrypoints(
+                local_pref_service))) {
+      StartSafetyCheck();
+    }
+  }
 }
 
 IOSChromeSafetyCheckManager::~IOSChromeSafetyCheckManager() {
