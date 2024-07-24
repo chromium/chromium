@@ -52,7 +52,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/grit/cros_styles_resources.h"  // nogncheck crbug.com/1113869
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -406,12 +405,6 @@ std::string ThemeSource::GetAccessControlAllowOriginForOrigin(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ThemeSource::SendTypographyCss(
     content::URLDataSource::GotDataCallback callback) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
-        std::string("/* This file is intentionally blank */")));
-    return;
-  }
-
   const ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   std::move(callback).Run(rb.LoadDataResourceBytesForScale(
       IDR_CROS_STYLES_UI_CHROMEOS_STYLES_CROS_TYPOGRAPHY_CSS,
