@@ -41,7 +41,6 @@ class SafeBrowsingChildNavigationThrottleTest
     if (parent_filter_) {
       auto throttle = std::make_unique<SafeBrowsingChildNavigationThrottle>(
           navigation_handle, parent_filter_.get(),
-          /*bypass_alias_check=*/false,
           base::BindRepeating([](const GURL& filtered_url) {
             return base::StringPrintf(
                 kDisallowChildFrameConsoleMessageFormat,

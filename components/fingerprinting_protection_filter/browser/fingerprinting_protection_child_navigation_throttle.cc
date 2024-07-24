@@ -11,9 +11,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/subresource_filter/content/shared/browser/child_frame_navigation_filtering_throttle.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/common/time_measurements.h"
+#include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 
 class GURL;
@@ -29,7 +31,9 @@ FingerprintingProtectionChildNavigationThrottle::
     : subresource_filter::ChildFrameNavigationFilteringThrottle(
           handle,
           parent_frame_filter,
-          /*bypass_alias_check=*/true,
+          /*alias_check_enabled=*/
+          base::FeatureList::IsEnabled(
+              features::kUseCnameAliasesForFingerprintingProtectionFilter),
           std::move(disallow_message_callback)) {}
 
 FingerprintingProtectionChildNavigationThrottle::

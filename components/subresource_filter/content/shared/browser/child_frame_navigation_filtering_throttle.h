@@ -46,7 +46,7 @@ class ChildFrameNavigationFilteringThrottle
   ChildFrameNavigationFilteringThrottle(
       content::NavigationHandle* handle,
       AsyncDocumentSubresourceFilter* parent_frame_filter,
-      bool bypass_alias_check,
+      bool alias_check_enabled,
       base::RepeatingCallback<std::string(const GURL& url)>
           disallow_message_callback);
 

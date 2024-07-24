@@ -28,6 +28,10 @@ extern const base::FeatureParam<subresource_filter::mojom::ActivationLevel>
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 extern const base::FeatureParam<bool> kEnableOn3pcBlocked;
 
+// Toggle to enable CNAME alias checks. Enabling this feature will block URL
+// aliases matching fingerprinting protection filtering rules.
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
+BASE_DECLARE_FEATURE(kUseCnameAliasesForFingerprintingProtectionFilter);
 }  // namespace fingerprinting_protection_filter::features
 
 #endif  // COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_COMMON_FINGERPRINTING_PROTECTION_FILTER_FEATURES_H_

@@ -10,6 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/subresource_filter/content/shared/browser/child_frame_navigation_test_utils.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_handle.h"
@@ -141,5 +143,108 @@ TEST_F(FingerprintingProtectionChildNavigationThrottleTest,
   histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 1);
 }
 
+class FingerprintingProtectionChildNavigationThrottleCnameTest
+    : public FingerprintingProtectionChildNavigationThrottleTest {
+ public:
+  FingerprintingProtectionChildNavigationThrottleCnameTest() {
+    feature_list_.InitAndEnableFeature(
+        fingerprinting_protection_filter::features::
+            kUseCnameAliasesForFingerprintingProtectionFilter);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(FingerprintingProtectionChildNavigationThrottleCnameTest,
+       FilterOnWillProcessResponse) {
+  base::HistogramTester histogram_tester;
+  InitializeDocumentSubresourceFilterWithSubstringRules(
+      GURL("https://example.test"), {"disallowedcname.com"},
+      subresource_filter::mojom::ActivationLevel::kEnabled);
+
+  const GURL url = GURL("https://example.test/allowed.html");
+  ChildFrameNavigationFilteringThrottleTestHarness::
+      CreateTestSubframeAndInitNavigation(url, main_rfh());
+
+  std::vector<std::string> dns_aliases({"disallowedcname.com"});
+  SetResponseDnsAliasesForNavigation(std::move(dns_aliases));
+
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+  EXPECT_EQ(content::NavigationThrottle::CANCEL,
+            SimulateCommitAndGetResult(navigation_simulator()));
+
+  histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 1);
+  histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 0);
+  histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 0);
+}
+
+TEST_F(FingerprintingProtectionChildNavigationThrottleCnameTest,
+       DryRunOnWillProcessResponse) {
+  base::HistogramTester histogram_tester;
+  InitializeDocumentSubresourceFilterWithSubstringRules(
+      GURL("https://example.test"),
+      {"cnamed.com", "alias-me.com", "i.am.alias"},
+      subresource_filter::mojom::ActivationLevel::kDryRun);
+
+  const GURL url = GURL("https://example.test/allowed.html");
+  ChildFrameNavigationFilteringThrottleTestHarness::
+      CreateTestSubframeAndInitNavigation(url, main_rfh());
+
+  std::vector<std::string> dns_aliases(
+      {"cnamed.com", "def.not.alias.com", "alias.me.com"});
+  SetResponseDnsAliasesForNavigation(std::move(dns_aliases));
+
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateCommitAndGetResult(navigation_simulator()));
+
+  histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 0);
+  histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 1);
+  histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 0);
+
+  ChildFrameNavigationFilteringThrottleTestHarness::
+      CreateTestSubframeAndInitNavigation(
+          GURL("https://example.test/allowed.html"), main_rfh());
+  std::vector<std::string> allowed_dns_aliases({"allowed.com", "allow-me.com"});
+  SetResponseDnsAliasesForNavigation(std::move(allowed_dns_aliases));
+
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateCommitAndGetResult(navigation_simulator()));
+
+  histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 0);
+  histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 1);
+  histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 1);
+}
+
+TEST_F(FingerprintingProtectionChildNavigationThrottleCnameTest,
+       AllowedDnsAliasesShouldNotFilter) {
+  base::HistogramTester histogram_tester;
+  InitializeDocumentSubresourceFilterWithSubstringRules(
+      GURL("https://example.test"),
+      {"cnamed.com", "alias-me.com", "i.am.alias"},
+      subresource_filter::mojom::ActivationLevel::kEnabled);
+
+  const GURL url = GURL("https://example.test/allowed.html");
+  ChildFrameNavigationFilteringThrottleTestHarness::
+      CreateTestSubframeAndInitNavigation(url, main_rfh());
+
+  std::vector<std::string> dns_aliases(
+      {"disallowed.com", "dis-A-llowed.com", "allowed-to-dis.com"});
+  SetResponseDnsAliasesForNavigation(std::move(dns_aliases));
+
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateCommitAndGetResult(navigation_simulator()));
+
+  histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 0);
+  histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 0);
+  histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 1);
+}
 }  // namespace
 }  // namespace fingerprinting_protection_filter
