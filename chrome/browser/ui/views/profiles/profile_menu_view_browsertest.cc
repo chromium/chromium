@@ -81,6 +81,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/supervised_user/core/browser/supervised_user_capabilities.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "components/sync/service/sync_service.h"
@@ -1006,6 +1007,21 @@ class ProfileMenuClickTest : public SyncTest,
         "Profile.Menu.ClickedActionableItem",
         GetExpectedActionableItemAtIndex(GetParam()),
         /*expected_bucket_count=*/1);
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (supervised_user::IsPrimaryAccountSubjectToParentalControls(
+            identity_manager()) == signin::Tribool::kTrue) {
+      histogram_tester_.ExpectUniqueSample(
+          "Profile.Menu.ClickedActionableItem_Supervised",
+          GetExpectedActionableItemAtIndex(GetParam()),
+          /*expected_bucket_count=*/1);
+    } else {
+      histogram_tester_.ExpectUniqueSample(
+          "Profile.Menu.ClickedActionableItem_Supervised",
+          GetExpectedActionableItemAtIndex(GetParam()),
+          /*expected_bucket_count=*/0);
+    }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   base::CallbackListSubscription test_signin_client_subscription_;
