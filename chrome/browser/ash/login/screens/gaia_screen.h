@@ -101,8 +101,12 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
   void OnQuickStartButtonClicked();
   void SetQuickStartButtonVisibility(bool visible);
 
-  // Loads the default GAIA path.
-  void LoadDefaultOnlineGaia(const AccountId& account);
+  // Starts online authentication for a given account (can be empty if
+  // user is unknown). If `force_default_gaia_page` is true, will
+  // choose the Gaia path corresponding to
+  // `WizardContext::GaiaPath::kDefault`.
+  void LoadOnlineGaiaForAccount(const AccountId& account,
+                                bool force_default_gaia_page = false);
 
   AuthFactorEditor auth_factor_editor_;
   std::unique_ptr<GaiaReauthTokenFetcher> gaia_reauth_token_fetcher_;

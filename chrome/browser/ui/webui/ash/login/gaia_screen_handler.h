@@ -126,15 +126,6 @@ class GaiaScreenHandler final
  public:
   using TView = GaiaView;
 
-  // The possible modes that the Gaia signin screen can be in.
-  enum GaiaScreenMode {
-    // Default Gaia authentication will be used.
-    GAIA_SCREEN_MODE_DEFAULT = 0,
-
-    // SAML authentication will be used by default.
-    GAIA_SCREEN_MODE_SAML_REDIRECT = 1,
-  };
-
   enum FrameState {
     FRAME_STATE_UNKNOWN = 0,
     FRAME_STATE_LOADING,
@@ -189,7 +180,8 @@ class GaiaScreenHandler final
 
   // Returns the initial mode of the Gaia signin screen for a given user email
   // address. Note this also affects which Gaia endpoint is used.
-  static GaiaScreenMode GetGaiaScreenMode(const std::string& email);
+  static WizardContext::GaiaScreenMode GetGaiaScreenMode(
+      const std::string& email);
 
   void SetNextSamlChallengeKeyHandlerForTesting(
       std::unique_ptr<SamlChallengeKeyHandler> handler_for_test);
@@ -426,7 +418,8 @@ class GaiaScreenHandler final
       untrusted_authority_certs_cache_;
 
   // The type of Gaia page to show.
-  GaiaScreenMode screen_mode_ = GAIA_SCREEN_MODE_DEFAULT;
+  WizardContext::GaiaScreenMode screen_mode_ =
+      WizardContext::GaiaScreenMode::kDefault;
 
   std::unique_ptr<LoginClientCertUsageObserver>
       extension_provided_client_cert_usage_observer_;

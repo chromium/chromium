@@ -413,7 +413,9 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
 
   UpdateAuthParams(params);
 
-  screen_mode_ = GetGaiaScreenMode(context.email);
+  if (auto* default_host = LoginDisplayHost::default_host(); default_host) {
+    screen_mode_ = default_host->GetWizardContext()->gaia_config.screen_mode;
+  }
   params.Set("screenMode", screen_mode_);
 
   const std::string app_locale = g_browser_process->GetApplicationLocale();
@@ -480,7 +482,6 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   }
   const std::string default_gaia_path =
       GetPath(gaia_urls.embedded_setup_chromeos_url());
-  params.Set("fallbackGaiaPath", default_gaia_path);
   switch (gaia_path) {
     case WizardContext::GaiaPath::kDefault:
       params.Set("gaiaPath", default_gaia_path);
@@ -1684,25 +1685,23 @@ void GaiaScreenHandler::SetIsGaiaPasswordRequired(bool is_required) {
 }
 
 // static
-GaiaScreenHandler::GaiaScreenMode GaiaScreenHandler::GetGaiaScreenMode(
+WizardContext::GaiaScreenMode GaiaScreenHandler::GetGaiaScreenMode(
     const std::string& email) {
+  // Email is not empty, i.e. this is an existing user going through reauth.
+  // This means they should use Gaia reauth endpoint regardless of
+  // LoginAuthenticationBehavior policy and this should be reflected in
+  // their screen mode.
+  if (!email.empty()) {
+    return WizardContext::GaiaScreenMode::kDefault;
+  }
+
   int authentication_behavior = 0;
   CrosSettings::Get()->GetInteger(kLoginAuthenticationBehavior,
                                   &authentication_behavior);
-  if (authentication_behavior ==
-      em::LoginAuthenticationBehaviorProto::SAML_INTERSTITIAL) {
-    if (email.empty()) {
-      return GaiaScreenHandler::GAIA_SCREEN_MODE_SAML_REDIRECT;
-    } else {
-      // Email is not empty, i.e. this is an existing user going through reauth.
-      // This means they should use Gaia reauth endpoint regardless of
-      // LoginAuthenticationBehavior policy and this should be reflected in
-      // their screen mode.
-      return GaiaScreenHandler::GAIA_SCREEN_MODE_DEFAULT;
-    }
-  }
-
-  return GaiaScreenHandler::GAIA_SCREEN_MODE_DEFAULT;
+  return (authentication_behavior ==
+          em::LoginAuthenticationBehaviorProto::SAML_INTERSTITIAL)
+             ? WizardContext::GaiaScreenMode::kSamlRedirect
+             : WizardContext::GaiaScreenMode::kDefault;
 }
 
 }  // namespace ash
