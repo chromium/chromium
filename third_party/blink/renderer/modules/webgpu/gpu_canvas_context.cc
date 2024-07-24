@@ -800,9 +800,11 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
   if (!shared_context_wrapper || !shared_context_wrapper->ContextProvider())
     return false;
 
-  const auto dst_mailbox = resource_provider->GetBackingMailboxForOverwrite();
-  if (dst_mailbox.IsZero())
+  auto dst_client_si =
+      resource_provider->GetBackingClientSharedImageForOverwrite();
+  if (!dst_client_si) {
     return false;
+  }
 
   auto* ri = shared_context_wrapper->ContextProvider()->RasterInterface();
 
@@ -825,7 +827,8 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
       wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::RenderAttachment;
   webgpu->AssociateMailbox(reservation.deviceId, reservation.deviceGeneration,
                            reservation.id, reservation.generation,
-                           static_cast<uint64_t>(usage), dst_mailbox);
+                           static_cast<uint64_t>(usage),
+                           dst_client_si->mailbox());
   wgpu::ImageCopyTexture source = {
       .texture = texture,
       .aspect = wgpu::TextureAspect::All,
