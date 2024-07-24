@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 assert(enterprise_data_controls)
 
@@ -31,7 +32,6 @@ source_set("data_controls") {
   deps = [
     "//base",
     "//chrome/app:generated_resources",
-    "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//components/constrained_window",
@@ -52,6 +52,10 @@ source_set("data_controls") {
     "//ui/views",
     "//url",
   ]
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/extensions" ]
+  }
   if (is_chromeos) {
     deps += [ "//chromeos/startup" ]
   }

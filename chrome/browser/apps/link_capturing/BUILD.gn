@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 assert(!is_android)
 
@@ -36,10 +37,12 @@ source_set("link_capturing") {
     "//components/page_load_metrics/browser",
     "//components/webapps/common:common",
     "//content/public/browser",
-    "//extensions/common",
     "//third_party/abseil-cpp:absl",
     "//url",
   ]
+  if (enable_extensions) {
+    deps += [ "//extensions/common" ]
+  }
 
   if (is_chromeos) {
     sources += [

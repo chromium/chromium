@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 
@@ -909,9 +910,7 @@ source_set("web_applications_unit_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/link_capturing:test_support",
-    "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/web_applications/extensions:extensions",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
@@ -937,6 +936,13 @@ source_set("web_applications_unit_tests") {
     "//ui/events/devices:test_support",
     "//ui/gfx:test_support",
   ]
+
+  if (enable_extensions) {
+    deps += [
+      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/web_applications/extensions:extensions",
+    ]
+  }
 
   if (is_chromeos_ash) {
     deps += [
@@ -984,8 +990,11 @@ group("unit_tests") {
   deps = [
     ":web_applications_unit_tests",
     "//chrome/browser/web_applications/app_service:unit_tests",
-    "//chrome/browser/web_applications/extensions:unit_tests",
   ]
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/web_applications/extensions:unit_tests" ]
+  }
 }
 
 source_set("web_applications_browser_tests") {

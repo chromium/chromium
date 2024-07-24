@@ -5,6 +5,7 @@
 assert(is_win || is_mac || is_linux || is_chromeos)
 
 import("//components/lens/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 source_set("side_panel_enums") {
   sources = [ "side_panel_enums.h" ]
@@ -125,8 +126,6 @@ source_set("side_panel") {
     "//components/prefs",
     "//components/search_engines",
     "//content/public/browser",
-    "//extensions/browser",
-    "//extensions/common",
     "//ui/actions:actions_headers",
     "//ui/base",
     "//ui/color:color_headers",
@@ -158,7 +157,6 @@ source_set("side_panel") {
     "//chrome/browser/ui/tabs",
     "//chrome/common",
     "//chrome/common:constants",
-    "//chrome/common/extensions/api",
     "//components/accessibility:reading",
     "//components/download/content/factory",
     "//components/download/content/public",
@@ -217,4 +215,12 @@ source_set("side_panel") {
     "//components/webapps/common:mojo_bindings",
     "//ui/webui/resources/cr_components/commerce:mojo_bindings",
   ]
+
+  if (enable_extensions) {
+    public_deps += [
+      "//extensions/browser",
+      "//extensions/common",
+    ]
+    deps += [ "//chrome/common/extensions/api" ]
+  }
 }

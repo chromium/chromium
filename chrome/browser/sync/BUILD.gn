@@ -153,14 +153,19 @@ source_set("sync") {
       "sync_ui_util.cc",
       "sync_ui_util.h",
     ]
-    public_deps += [ "//extensions/buildflags" ]
     deps += [
       "//chrome/browser/themes",
       "//chrome/browser/web_applications",
-      "//extensions/browser",
-      "//extensions/browser/api/storage",
-      "//extensions/common",
     ]
+
+    if (enable_extensions) {
+      public_deps += [ "//extensions/buildflags" ]
+      deps += [
+        "//extensions/browser",
+        "//extensions/browser/api/storage",
+        "//extensions/common",
+      ]
+    }
   }
   if (is_chromeos_ash) {
     sources += [
