@@ -833,12 +833,6 @@ TEST_F(SavedDeskTest, DialogSystemModal) {
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
   ASSERT_TRUE(GetOverviewSession());
 
-  // Checks that pressing tab does not trigger overview keyboard traversal.
-  PressAndReleaseKey(ui::VKEY_TAB);
-  if (!features::IsOverviewNewFocusEnabled()) {
-    EXPECT_FALSE(GetOverviewSession()->focus_cycler_old()->IsFocusVisible());
-  }
-
   // Fetch the widget for the dialog and test that it appears on the primary
   // root window.
   const views::Widget* dialog_widget = dialog_controller->dialog_widget();
@@ -996,12 +990,6 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerAligned) {
 // Tests that the focus ring of the save desk button focus ring is as shown as
 // expected.
 TEST_F(SavedDeskTest, SaveDeskButtonFocusRing) {
-  // TODO(http://b/325335020): Enable this test once support for desk bar focus
-  // has been added.
-  if (features::IsOverviewNewFocusEnabled()) {
-    return;
-  }
-
   // Create a test window in the current desk.
   auto test_window = CreateAppWindow();
 
@@ -1012,23 +1000,23 @@ TEST_F(SavedDeskTest, SaveDeskButtonFocusRing) {
   auto* save_for_later_button = GetSaveDeskForLaterButtonForRoot(root_window);
 
   // Both buttons are not focused.
-  ASSERT_FALSE(save_as_template_button->is_focused());
-  ASSERT_FALSE(save_for_later_button->is_focused());
+  ASSERT_FALSE(save_as_template_button->HasFocus());
+  ASSERT_FALSE(save_for_later_button->HasFocus());
 
   // Reverse tab, then save desk for later button is focused.
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  ASSERT_FALSE(save_as_template_button->is_focused());
-  ASSERT_TRUE(save_for_later_button->is_focused());
+  ASSERT_FALSE(save_as_template_button->HasFocus());
+  ASSERT_TRUE(save_for_later_button->HasFocus());
 
   // Reverse tab, then save desk as template button is focused.
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  ASSERT_TRUE(save_as_template_button->is_focused());
-  ASSERT_FALSE(save_for_later_button->is_focused());
+  ASSERT_TRUE(save_as_template_button->HasFocus());
+  ASSERT_FALSE(save_for_later_button->HasFocus());
 
   // Reverse tab, then both buttons are not focused.
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  ASSERT_FALSE(save_as_template_button->is_focused());
-  ASSERT_FALSE(save_for_later_button->is_focused());
+  ASSERT_FALSE(save_as_template_button->HasFocus());
+  ASSERT_FALSE(save_for_later_button->HasFocus());
 }
 
 // Tests that the save desk as template button and save for later button are
@@ -1131,50 +1119,6 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
     // Exit overview.
     ToggleOverview();
   }
-}
-
-// Tests that pressing `Enter` on save desk buttons does not save anything when
-// disabled.
-TEST_F(SavedDeskTest, SaveDeskButtonsPressEnterWhenDisabled) {
-  if (features::IsOverviewNewFocusEnabled()) {
-    return;
-  }
-  // Prepare the test environment, like creating an app window which should be
-  // supported.
-  auto no_app_id_window = CreateAppWindow();
-  aura::Window* root_window = Shell::GetPrimaryRootWindow();
-  auto* delegate = Shell::Get()->saved_desk_delegate();
-  ASSERT_TRUE(delegate->IsWindowSupportedForSavedDesk(no_app_id_window.get()));
-
-  // Toggle overview and set the save desk buttons to disabled.
-  ToggleOverview();
-  auto* save_as_template_button =
-      GetSaveDeskAsTemplateButtonForRoot(root_window);
-  auto* save_for_later_button = GetSaveDeskForLaterButtonForRoot(root_window);
-  save_as_template_button->SetEnabled(false);
-  save_for_later_button->SetEnabled(false);
-  ASSERT_FALSE(save_as_template_button->GetEnabled());
-  ASSERT_FALSE(save_for_later_button->GetEnabled());
-
-  // Press `Enter` when `Save desk for later` button is focused.
-  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  ASSERT_TRUE(save_for_later_button->is_focused());
-  ASSERT_FALSE(save_for_later_button->GetEnabled());
-  PressAndReleaseKey(ui::VKEY_RETURN);
-  SavedDeskPresenterTestApi(
-      GetOverviewGridList()[0]->overview_session()->saved_desk_presenter())
-      .MaybeWaitForModel();
-  ASSERT_FALSE(GetOverviewGridList()[0]->IsShowingSavedDeskLibrary());
-
-  // Press `Enter` when save desk as template button is focused.
-  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  ASSERT_TRUE(save_as_template_button->is_focused());
-  ASSERT_FALSE(save_as_template_button->GetEnabled());
-  PressAndReleaseKey(ui::VKEY_RETURN);
-  SavedDeskPresenterTestApi(
-      GetOverviewGridList()[0]->overview_session()->saved_desk_presenter())
-      .MaybeWaitForModel();
-  ASSERT_FALSE(GetOverviewGridList()[0]->IsShowingSavedDeskLibrary());
 }
 
 // Tests that clicking the save desk as template button shows the saved desk
@@ -2662,9 +2606,6 @@ TEST_F(SavedDeskTest, EditTemplateNameWithKeyboardNoCrash) {
   ASSERT_EQ(name_view, GetFocusedView());
 
   // Rename template "a" to template "d".
-  if (!features::IsOverviewNewFocusEnabled()) {
-    PressAndReleaseKey(ui::VKEY_RETURN);
-  }
   PressAndReleaseKey(ui::VKEY_D);
   PressAndReleaseKey(ui::VKEY_RETURN);
   WaitForSavedDeskUI();
@@ -4162,21 +4103,13 @@ TEST_F(SavedDeskTest, ScrollWithHighlightChange) {
     SavedDeskItemView* item_view = GetItemViewFromSavedDeskGrid(i);
 
     // Verify item view is focused and fully visible.
-    if (features::IsOverviewNewFocusEnabled()) {
-      EXPECT_TRUE(item_view->HasFocus());
-    } else {
-      EXPECT_TRUE(item_view->is_focused());
-    }
+    EXPECT_TRUE(item_view->HasFocus());
     EXPECT_EQ(item_view->GetPreferredSize(),
               item_view->GetVisibleBounds().size());
     PressAndReleaseKey(ui::VKEY_TAB);
 
     // Verify name view is focused and fully visible.
-    if (features::IsOverviewNewFocusEnabled()) {
-      EXPECT_TRUE(item_view->name_view()->HasFocus());
-    } else {
-      EXPECT_TRUE(item_view->name_view()->is_focused());
-    }
+    EXPECT_TRUE(item_view->name_view()->HasFocus());
     EXPECT_EQ(item_view->name_view()->GetPreferredSize(),
               item_view->name_view()->GetVisibleBounds().size());
     PressAndReleaseKey(ui::VKEY_TAB);
@@ -4252,12 +4185,6 @@ TEST_F(SavedDeskTest, FocusedDeskItemFullyVisible) {
 // visibility is restored for the button when desk removal is undone.
 TEST_F(SavedDeskTest,
        CorrectlyUpdateSaveDeskButtonVisibilityOnActiveDeskClose) {
-  // TODO(http://b/325335020): There is a bug where clicking the toast will exit
-  // overview.
-  if (features::IsOverviewNewFocusEnabled()) {
-    return;
-  }
-
   auto* controller = DesksController::Get();
   const auto& desks = controller->desks();
 

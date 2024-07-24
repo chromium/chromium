@@ -4,7 +4,6 @@
 
 #include "ash/wm/overview/overview_test_util.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
@@ -39,29 +38,6 @@ void WaitForOverviewAnimationState(OverviewAnimationState state) {
 }
 
 }  // namespace
-
-bool FocusOverviewWindow(const aura::Window* window,
-                         ui::test::EventGenerator* event_generator) {
-  if (GetOverviewFocusedWindow() == nullptr) {
-    SendKey(ui::VKEY_TAB, event_generator, /*flags=*/0, /*count=*/2);
-  }
-  const aura::Window* start_window = GetOverviewFocusedWindow();
-  if (start_window == window)
-    return true;
-  aura::Window* window_it = nullptr;
-  do {
-    SendKey(ui::VKEY_TAB, event_generator);
-    window_it = const_cast<aura::Window*>(GetOverviewFocusedWindow());
-  } while (window_it != window && window_it != start_window);
-  return window_it == window;
-}
-
-const aura::Window* GetOverviewFocusedWindow() {
-  CHECK(!features::IsOverviewNewFocusEnabled());
-  OverviewItemBase* item =
-      GetOverviewSession()->focus_cycler_old()->GetFocusedItem();
-  return item ? item->GetWindow() : nullptr;
-}
 
 void ToggleOverview(OverviewEnterExitType type) {
   auto* overview_controller = OverviewController::Get();
@@ -153,16 +129,9 @@ void DragItemToPoint(OverviewItemBase* item,
 void SendKeyUntilOverviewItemIsFocused(
     ui::KeyboardCode key,
     ui::test::EventGenerator* event_generator) {
-  if (features::IsOverviewNewFocusEnabled()) {
-    do {
-      SendKey(key, event_generator);
-    } while (!views::IsViewClass<OverviewItemView>(GetFocusedView()));
-    return;
-  }
-
   do {
     SendKey(key, event_generator);
-  } while (!GetOverviewFocusedWindow());
+  } while (!views::IsViewClass<OverviewItemView>(GetFocusedView()));
 }
 
 void WaitForOcclusionStateChange(aura::Window* window,
@@ -185,12 +154,6 @@ bool IsWindowInItsCorrespondingOverviewGrid(aura::Window* window) {
 }
 
 views::View* GetFocusedView() {
-  if (!features::IsOverviewNewFocusEnabled()) {
-    auto* focused_view =
-        GetOverviewSession()->focus_cycler_old()->focused_view();
-    return focused_view ? focused_view->GetView() : nullptr;
-  }
-
   aura::Window* active_window = window_util::GetActiveWindow();
   if (!active_window) {
     return nullptr;

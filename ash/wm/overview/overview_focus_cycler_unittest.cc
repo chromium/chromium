@@ -540,6 +540,134 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
   }
 }
 
+// Tests that tabbing with desk items and multiple displays works as expected.
+TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
+  base::AutoReset<bool> disable_app_id_check =
+      OverviewController::Get()->SetDisableAppIdCheckForTests();
+
+  UpdateDisplay("600x400,600x400,600x400");
+  aura::Window::Windows roots = Shell::GetAllRootWindows();
+  ASSERT_EQ(3u, roots.size());
+
+  // Create two windows on the first display, and one each on the second and
+  // third displays.
+  std::unique_ptr<aura::Window> window1(CreateAppWindow(gfx::Rect(200, 200)));
+  std::unique_ptr<aura::Window> window2(CreateAppWindow(gfx::Rect(200, 200)));
+  std::unique_ptr<aura::Window> window3(
+      CreateAppWindow(gfx::Rect(600, 0, 200, 200)));
+  std::unique_ptr<aura::Window> window4(
+      CreateAppWindow(gfx::Rect(1200, 0, 200, 200)));
+  ASSERT_EQ(roots[0], window1->GetRootWindow());
+  ASSERT_EQ(roots[0], window2->GetRootWindow());
+  ASSERT_EQ(roots[1], window3->GetRootWindow());
+  ASSERT_EQ(roots[2], window4->GetRootWindow());
+
+  ToggleOverview();
+  const auto* desk_bar_view1 = GetDesksBarViewForRoot(roots[0]);
+  EXPECT_EQ(2u, desk_bar_view1->mini_views().size());
+
+  // Tests that tabbing initially will go through the two overview items on the
+  // first display.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  auto* item2 = GetOverviewItemForWindow(window2.get())
+                    ->GetLeafItemForWindow(window2.get());
+  EXPECT_EQ(item2->overview_item_view(), GetFocusedView());
+  PressAndReleaseKey(ui::VKEY_TAB);
+  auto* item1 = GetOverviewItemForWindow(window1.get())
+                    ->GetLeafItemForWindow(window1.get());
+  EXPECT_EQ(item1->overview_item_view(), GetFocusedView());
+
+  // Tests that further tabbing will go through the desk preview views, desk
+  // name views, the new desk button, and finally the desks templates button on
+  // the first display.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(desk_bar_view1->mini_views()[0]->desk_preview(), GetFocusedView());
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(desk_bar_view1->mini_views()[0]
+                ->desk_action_view()
+                ->combine_desks_button(),
+            GetFocusedView());
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(
+      desk_bar_view1->mini_views()[0]->desk_action_view()->close_all_button(),
+      GetFocusedView());
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(desk_bar_view1->mini_views()[0]->desk_name_view(),
+            GetFocusedView());
+
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(desk_bar_view1->mini_views()[1]->desk_preview(), GetFocusedView());
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(
+      desk_bar_view1->mini_views()[1]->desk_action_view()->close_all_button(),
+      GetFocusedView());
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(desk_bar_view1->mini_views()[1]->desk_name_view(),
+            GetFocusedView());
+  PressAndReleaseKey(ui::VKEY_TAB);
+
+  EXPECT_EQ(desk_bar_view1->new_desk_button(), GetFocusedView());
+  if (AreDeskTemplatesEnabled()) {
+    PressAndReleaseKey(ui::VKEY_TAB);
+    EXPECT_EQ(desk_bar_view1->overview_grid()->GetSaveDeskAsTemplateButton(),
+              GetFocusedView());
+  }
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(desk_bar_view1->overview_grid()->GetSaveDeskForLaterButton(),
+            GetFocusedView());
+
+  // Tests that the next tab will bring us to the first overview item on the
+  // second display.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  auto* item3 = GetOverviewItemForWindow(window3.get())
+                    ->GetLeafItemForWindow(window3.get());
+  EXPECT_EQ(item3->overview_item_view(), GetFocusedView());
+
+  PressAndReleaseKey(ui::VKEY_TAB);
+  const auto* desk_bar_view2 = GetDesksBarViewForRoot(roots[1]);
+  EXPECT_EQ(desk_bar_view2->mini_views()[0]->desk_preview(), GetFocusedView());
+
+  // Tab through all items on the second display.
+  SendKey(ui::VKEY_TAB, GetEventGenerator(), ui::EF_NONE, /*count=*/7);
+  EXPECT_EQ(desk_bar_view2->new_desk_button(), GetFocusedView());
+  if (AreDeskTemplatesEnabled()) {
+    PressAndReleaseKey(ui::VKEY_TAB);
+    EXPECT_EQ(desk_bar_view2->overview_grid()->GetSaveDeskAsTemplateButton(),
+              GetFocusedView());
+  }
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(desk_bar_view2->overview_grid()->GetSaveDeskForLaterButton(),
+            GetFocusedView());
+
+  // Tests that after tabbing through the items on the second display, the
+  // next tab will bring us to the first overview item on the third display.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  auto* item4 = GetOverviewItemForWindow(window4.get())
+                    ->GetLeafItemForWindow(window4.get());
+  EXPECT_EQ(item4->overview_item_view(), GetFocusedView());
+
+  PressAndReleaseKey(ui::VKEY_TAB);
+  const auto* desk_bar_view3 = GetDesksBarViewForRoot(roots[2]);
+  EXPECT_EQ(desk_bar_view3->mini_views()[0]->desk_preview(), GetFocusedView());
+
+  // Tab through all items on the third display.
+  SendKey(ui::VKEY_TAB, GetEventGenerator(), ui::EF_NONE, /*count=*/7);
+  EXPECT_EQ(desk_bar_view3->new_desk_button(), GetFocusedView());
+  if (AreDeskTemplatesEnabled()) {
+    PressAndReleaseKey(ui::VKEY_TAB);
+    EXPECT_EQ(desk_bar_view3->overview_grid()->GetSaveDeskAsTemplateButton(),
+              GetFocusedView());
+  }
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(desk_bar_view3->overview_grid()->GetSaveDeskForLaterButton(),
+            GetFocusedView());
+
+  // Tests that after tabbing through the items on the third display, the next
+  // tab will bring us to the first overview item on the first display.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(item2->overview_item_view(), GetFocusedView());
+}
+
 // Tests that we can tab and chromevox interchangeably through the desk mini
 // views and new desk button in the correct order.
 TEST_P(DesksOverviewFocusCyclerTest, TabbingChromevox) {

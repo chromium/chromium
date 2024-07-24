@@ -135,18 +135,11 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenWithNewSettingsBrowserTest,
           window->GetRootWindow());
   ASSERT_TRUE(overview_grid);
 
-  views::Button* settings_button = nullptr;
-  if (ash::features::IsOverviewNewFocusEnabled()) {
-    auto* split_view_setup_view = overview_grid->GetSplitViewSetupView();
-    ASSERT_TRUE(split_view_setup_view);
-    settings_button = const_cast<views::Button*>(
-        views::AsViewClass<views::Button>(split_view_setup_view->GetViewByID(
-            ash::SplitViewSetupView::kSettingsButtonIDForTest)));
-  } else {
-    auto* split_view_setup_view = overview_grid->GetSplitViewSetupViewOld();
-    ASSERT_TRUE(split_view_setup_view);
-    settings_button = split_view_setup_view->settings_button();
-  }
+  auto* split_view_setup_view = overview_grid->GetSplitViewSetupView();
+  ASSERT_TRUE(split_view_setup_view);
+  views::Button* settings_button = const_cast<views::Button*>(
+      views::AsViewClass<views::Button>(split_view_setup_view->GetViewByID(
+          ash::SplitViewSetupView::kSettingsButtonIDForTest)));
   ASSERT_TRUE(settings_button);
 
   // Setup navigation observer to wait for the OS Settings page.
@@ -207,18 +200,11 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenWithOldSettingsBrowserTest,
   auto* overview_grid =
       ash::OverviewController::Get()->overview_session()->GetGridWithRootWindow(
           window->GetRootWindow());
-  views::Button* settings_button = nullptr;
-  if (ash::features::IsOverviewNewFocusEnabled()) {
-    auto* split_view_setup_view = overview_grid->GetSplitViewSetupView();
-    ASSERT_TRUE(split_view_setup_view);
-    settings_button = const_cast<views::Button*>(
-        views::AsViewClass<views::Button>(split_view_setup_view->GetViewByID(
-            ash::SplitViewSetupView::kSettingsButtonIDForTest)));
-  } else {
-    auto* split_view_setup_view = overview_grid->GetSplitViewSetupViewOld();
-    ASSERT_TRUE(split_view_setup_view);
-    settings_button = split_view_setup_view->settings_button();
-  }
+  auto* split_view_setup_view = overview_grid->GetSplitViewSetupView();
+  ASSERT_TRUE(split_view_setup_view);
+  views::Button* settings_button = const_cast<views::Button*>(
+      views::AsViewClass<views::Button>(split_view_setup_view->GetViewByID(
+          ash::SplitViewSetupView::kSettingsButtonIDForTest)));
   ASSERT_TRUE(settings_button);
 
   // Setup navigation observer to wait for the OS Settings page.

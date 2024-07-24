@@ -4338,7 +4338,6 @@ test("ash_unittests") {
     "wm/overview/cleanup_animation_observer_unittest.cc",
     "wm/overview/delayed_animation_observer_impl_unittest.cc",
     "wm/overview/overview_controller_unittest.cc",
-    "wm/overview/overview_focus_cycler_old_unittest.cc",
     "wm/overview/overview_focus_cycler_unittest.cc",
     "wm/overview/overview_grid_unittest.cc",
     "wm/overview/overview_session_unittest.cc",

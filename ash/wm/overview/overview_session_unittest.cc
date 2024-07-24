@@ -11538,11 +11538,7 @@ TEST_F(OverviewWallpaperTest, NoWindowsWidget) {
   // Test the split view UI is on display 1 but not display 2, with no toast on
   // display 2.
   VerifySplitViewOverviewSession(w1.get());
-  if (ash::features::IsOverviewNewFocusEnabled()) {
-    EXPECT_FALSE(grid1->GetSplitViewSetupView());
-  } else {
-    EXPECT_FALSE(grid1->GetSplitViewSetupViewOld());
-  }
+  EXPECT_FALSE(grid1->GetSplitViewSetupView());
 }
 
 // Tests that the wallpaper view layer clips correctly with animation upon

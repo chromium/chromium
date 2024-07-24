@@ -512,50 +512,6 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreasOverviewMode) {
   EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
 }
 
-TEST_F(DockedMagnifierTest, OverviewTabbing) {
-  // In production code, `DockedMagnifierController::CenterOnPoint()` is called
-  // via an extension function. This code path will not be triggered in ash unit
-  // tests.
-  if (features::IsOverviewNewFocusEnabled()) {
-    GTEST_SKIP() << "Overview new focus uses `views::View::RequestFocus()` and "
-                    "has no custom magnifier logic anymore.";
-  }
-
-  auto window = CreateTestWindow();
-  controller()->SetEnabled(true);
-
-  EnterOverview();
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
-
-  auto* root_window = Shell::GetPrimaryRootWindow();
-  const auto* desk_bar_view = GetOverviewSession()
-                                  ->GetGridWithRootWindow(root_window)
-                                  ->desks_bar_view();
-
-  auto* default_desk_button = desk_bar_view->default_desk_button();
-  auto* new_desk_button = desk_bar_view->new_desk_button();
-
-  // Tab once. The viewport should be centered on the beginning of the overview
-  // item's title.
-  PressAndReleaseKey(ui::VKEY_TAB);
-  auto* item = GetOverviewItemForWindow(window.get());
-  ASSERT_TRUE(item);
-  TestMagnifierLayerTransform(item->GetMagnifierFocusPointInScreen(),
-                              root_window);
-
-  // Tab one more time. The viewport should be centered on the center of the
-  // default desk button in the zero state desks bar.
-  PressAndReleaseKey(ui::VKEY_TAB);
-  TestMagnifierLayerTransform(
-      default_desk_button->GetBoundsInScreen().CenterPoint(), root_window);
-
-  // Tab one more time. The viewport should be centered on the center of the
-  // new desk button in the zero state desks bar.
-  PressAndReleaseKey(ui::VKEY_TAB);
-  TestMagnifierLayerTransform(
-      new_desk_button->GetBoundsInScreen().CenterPoint(), root_window);
-}
-
 // Test that we exist split view and over view modes when a single window is
 // snapped and the other snap region is hosting overview mode.
 TEST_F(DockedMagnifierTest, DisplaysWorkAreasSingleSplitView) {

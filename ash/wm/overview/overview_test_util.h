@@ -21,15 +21,6 @@ namespace ash {
 class OverviewGrid;
 class OverviewItemBase;
 
-// Focuses `window` in the active overview session by cycling through all
-// windows in overview until it is found. Returns true if `window` was found,
-// false otherwise.
-bool FocusOverviewWindow(const aura::Window* window,
-                         ui::test::EventGenerator* event_generator);
-
-// Gets the current focused window. Returns nullptr if no window is focused.
-const aura::Window* GetOverviewFocusedWindow();
-
 void ToggleOverview(
     OverviewEnterExitType type = OverviewEnterExitType::kNormal);
 

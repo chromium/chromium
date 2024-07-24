@@ -874,17 +874,10 @@ TEST_F(FasterSplitScreenTest, SkipPairingToast) {
   auto* overview_grid = GetOverviewGridForRoot(w1->GetRootWindow());
   ASSERT_TRUE(overview_grid);
 
-  if (features::IsOverviewNewFocusEnabled()) {
-    auto* split_view_setup_view = overview_grid->GetSplitViewSetupView();
-    ASSERT_TRUE(split_view_setup_view);
-    LeftClickOn(split_view_setup_view->GetViewByID(
-        SplitViewSetupView::kDismissButtonIDForTest));
-  } else {
-    auto* split_view_setup_view = overview_grid->GetSplitViewSetupViewOld();
-    ASSERT_TRUE(split_view_setup_view);
-    LeftClickOn(split_view_setup_view->GetDismissButton());
-  }
-
+  auto* split_view_setup_view = overview_grid->GetSplitViewSetupView();
+  ASSERT_TRUE(split_view_setup_view);
+  LeftClickOn(split_view_setup_view->GetViewByID(
+      SplitViewSetupView::kDismissButtonIDForTest));
   EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
 }
 
@@ -1331,32 +1324,20 @@ TEST_F(FasterSplitScreenTest, KeyboardAndWorkAreaBoundsChanges) {
   EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             WindowState::Get(window1.get())->GetStateType());
   auto* overview_grid = GetOverviewGridForRoot(root_window);
-  if (features::IsOverviewNewFocusEnabled()) {
-    EXPECT_TRUE(
-        GetOverviewGridBounds(root_window)
-            .Contains(
-                overview_grid->GetSplitViewSetupView()->GetBoundsInScreen()));
-  } else {
-    EXPECT_TRUE(GetOverviewGridBounds(root_window)
-                    .Contains(overview_grid->GetSplitViewSetupViewOld()
-                                  ->GetBoundsInScreen()));
-  }
+  EXPECT_TRUE(
+      GetOverviewGridBounds(root_window)
+          .Contains(
+              overview_grid->GetSplitViewSetupView()->GetBoundsInScreen()));
 
   // Hide the virtual keyboard. Test we refresh the grid and widget bounds.
   keyboard_controller->HideKeyboardByUser();
   VerifySplitViewOverviewSession(window1.get());
   EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             WindowState::Get(window1.get())->GetStateType());
-  if (features::IsOverviewNewFocusEnabled()) {
-    EXPECT_TRUE(
-        GetOverviewGridBounds(root_window)
-            .Contains(
-                overview_grid->GetSplitViewSetupView()->GetBoundsInScreen()));
-  } else {
-    EXPECT_TRUE(GetOverviewGridBounds(root_window)
-                    .Contains(overview_grid->GetSplitViewSetupViewOld()
-                                  ->GetBoundsInScreen()));
-  }
+  EXPECT_TRUE(
+      GetOverviewGridBounds(root_window)
+          .Contains(
+              overview_grid->GetSplitViewSetupView()->GetBoundsInScreen()));
 
   // Show the docked magnifier, which ends overview.
   auto* docked_magnifier_controller =
@@ -1553,157 +1534,7 @@ TEST_F(FasterSplitScreenTest, NoCrashWhenDoubleTapAfterTransition) {
   GetEventGenerator()->GestureTapAt(divider_center);
 }
 
-TEST_F(FasterSplitScreenTest, BasicTabKeyNavigationOld) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kOverviewNewFocus);
-
-  std::unique_ptr<aura::Window> window2(CreateAppWindow());
-  std::unique_ptr<aura::Window> window1(CreateAppWindow());
-
-  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY,
-                                     WindowSnapActionSource::kTest);
-  WindowState::Get(window1.get())->OnWMEvent(&snap_event);
-  ASSERT_TRUE(IsInOverviewSession());
-
-  // Tab until we get to the first overview item.
-  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, GetEventGenerator());
-  const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
-      GetOverviewItemsForRoot(0);
-  EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewFocusedWindow());
-
-  OverviewFocusCyclerOld* focus_cycler_old =
-      GetOverviewSession()->focus_cycler_old();
-  OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
-
-  // Tab to the toast dismiss button.
-  PressAndReleaseKey(ui::VKEY_TAB);
-  ASSERT_TRUE(IsInOverviewSession());
-  EXPECT_EQ(grid->GetSplitViewSetupViewOld()->GetDismissButton(),
-            focus_cycler_old->focused_view()->GetView());
-
-  // Tab to the settings button.
-  PressAndReleaseKey(ui::VKEY_TAB);
-  ASSERT_TRUE(IsInOverviewSession());
-  EXPECT_EQ(grid->GetSplitViewSetupViewOld()->settings_button(),
-            focus_cycler_old->focused_view());
-
-  // Note we use `PressKeyAndModifierKeys()` to send modifier and key separately
-  // to simulate real user input.
-
-  // Shift + Tab reverse tabs to the dismiss button.
-  auto* event_generator = GetEventGenerator();
-  event_generator->PressKeyAndModifierKeys(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  ASSERT_TRUE(IsInOverviewSession());
-  EXPECT_EQ(grid->GetSplitViewSetupViewOld()->GetDismissButton(),
-            focus_cycler_old->focused_view()->GetView());
-
-  // Shift + Tab reverse tabs to the overview item.
-  event_generator->PressKeyAndModifierKeys(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  ASSERT_TRUE(IsInOverviewSession());
-  EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewFocusedWindow());
-}
-
-// Tests no crash when the faster splitview toast is destroyed. Regression test
-// for http://b/336289329.
-TEST_F(FasterSplitScreenTest, NoCrashOnToastDestroyingOld) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kOverviewNewFocus);
-
-  auto w1 = CreateAppWindow(gfx::Rect(100, 100));
-  auto w2 = CreateAppWindow(gfx::Rect(100, 100));
-
-  // Snap `w1` to start faster splitview.
-  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
-                    chromeos::kDefaultSnapRatio,
-                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
-  ASSERT_TRUE(IsInOverviewSession());
-  OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
-  auto* split_view_setup_widget = grid->split_view_setup_widget();
-  ASSERT_TRUE(split_view_setup_widget);
-
-  // Tab to the dismiss button.
-  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, GetEventGenerator());
-  PressAndReleaseKey(ui::VKEY_TAB);
-  OverviewFocusCyclerOld* focus_cycler_old =
-      GetOverviewSession()->focus_cycler_old();
-  EXPECT_EQ(grid->GetSplitViewSetupViewOld()->GetDismissButton(),
-            focus_cycler_old->focused_view()->GetView());
-
-  // Enter tablet mode to destroy the toast.
-  SwitchToTabletMode();
-
-  // Exit tablet mode, then tab.
-  ExitTabletMode();
-  PressAndReleaseKey(ui::VKEY_TAB);
-}
-
-// Tests that the chromevox keys work as expected.
-TEST_F(FasterSplitScreenTest, TabbingChromevoxOld) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kOverviewNewFocus);
-
-  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
-
-  std::unique_ptr<aura::Window> window2(CreateAppWindow());
-  std::unique_ptr<aura::Window> window1(CreateAppWindow());
-
-  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY,
-                                     WindowSnapActionSource::kTest);
-  auto* event_generator = GetEventGenerator();
-
-  enum class TestCase { kDismissButton, kSettingsButton };
-  for (auto test_case : {TestCase::kDismissButton, TestCase::kSettingsButton}) {
-    WindowState::Get(window1.get())->OnWMEvent(&snap_event);
-    ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
-
-    // Note we use `PressKeyAndModifierKeys()` to send modifier and key
-    // separately to simulate real user input.
-
-    // Search + Right moves to the first overview item.
-    event_generator->PressKeyAndModifierKeys(ui::VKEY_RIGHT,
-                                             ui::EF_COMMAND_DOWN);
-    const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
-        GetOverviewItemsForRoot(0);
-    EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewFocusedWindow());
-
-    // Search + Right moves to the dismiss button.
-    event_generator->PressKeyAndModifierKeys(ui::VKEY_RIGHT,
-                                             ui::EF_COMMAND_DOWN);
-    OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
-    OverviewFocusCyclerOld* focus_cycler_old =
-        GetOverviewSession()->focus_cycler_old();
-    EXPECT_EQ(grid->GetSplitViewSetupViewOld()->GetDismissButton(),
-              focus_cycler_old->focused_view()->GetView());
-
-    // Search + Right moves to the settings button.
-    event_generator->PressKeyAndModifierKeys(ui::VKEY_RIGHT,
-                                             ui::EF_COMMAND_DOWN);
-    EXPECT_EQ(grid->GetSplitViewSetupViewOld()->settings_button(),
-              focus_cycler_old->focused_view());
-
-    if (test_case == TestCase::kSettingsButton) {
-      // Search + Space activates the settings button.
-      event_generator->PressKeyAndModifierKeys(ui::VKEY_SPACE,
-                                               ui::EF_COMMAND_DOWN);
-      EXPECT_FALSE(IsInOverviewSession());
-    } else {
-      // Search + Left moves back to the dismiss button.
-      event_generator->PressKeyAndModifierKeys(ui::VKEY_LEFT,
-                                               ui::EF_COMMAND_DOWN);
-      EXPECT_EQ(grid->GetSplitViewSetupViewOld()->GetDismissButton(),
-                focus_cycler_old->focused_view()->GetView());
-
-      // Search + Space activates the dismiss button.
-      event_generator->PressKeyAndModifierKeys(ui::VKEY_SPACE,
-                                               ui::EF_COMMAND_DOWN);
-      EXPECT_FALSE(IsInOverviewSession());
-    }
-  }
-}
-
 TEST_F(FasterSplitScreenTest, BasicTabKeyNavigation) {
-  base::test::ScopedFeatureList feature_list{features::kOverviewNewFocus};
-
   std::unique_ptr<aura::Window> window2(CreateAppWindow());
   std::unique_ptr<aura::Window> window1(CreateAppWindow());
 
@@ -1758,8 +1589,6 @@ TEST_F(FasterSplitScreenTest, BasicTabKeyNavigation) {
 // Tests no crash when the faster splitview toast is destroyed. Regression test
 // for http://b/336289329.
 TEST_F(FasterSplitScreenTest, NoCrashOnToastDestroying) {
-  base::test::ScopedFeatureList feature_list{features::kOverviewNewFocus};
-
   auto w1 = CreateAppWindow(gfx::Rect(100, 100));
   auto w2 = CreateAppWindow(gfx::Rect(100, 100));
 
@@ -1790,8 +1619,6 @@ TEST_F(FasterSplitScreenTest, NoCrashOnToastDestroying) {
 
 // Tests that the chromevox keys work as expected.
 TEST_F(FasterSplitScreenTest, TabbingChromevox) {
-  base::test::ScopedFeatureList feature_list{features::kOverviewNewFocus};
-
   Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
 
   std::unique_ptr<aura::Window> window2(CreateAppWindow());
@@ -5222,8 +5049,6 @@ TEST_F(SnapGroupOverviewTest, CloseIndividualWindowByCloseButton) {
 
 // Test some basic keyboard traversal on a snap group in overview.
 TEST_F(SnapGroupOverviewTest, TabbingBasic) {
-  base::test::ScopedFeatureList scoped_list(features::kOverviewNewFocus);
-
   std::unique_ptr<aura::Window> w0(CreateAppWindow());
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   SnapTwoTestWindows(w0.get(), w1.get(), /*horizontal=*/true,
@@ -9459,14 +9284,6 @@ TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupBetweenDisplays) {
 // relocates the group item and its windows without crashing, while maintaining
 // divider widget invisibility during the overview session.
 TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupBetweenDisplaysInOverview) {
-  //  There is a bug with snap groups, where you can snap two windows that
-  //  cannot be saved as template or saved desk, but the saved desk buttons are
-  //  not disabled. The saved desk buttons are being moved shortly, but for now,
-  //  skip this test.
-  if (features::IsOverviewNewFocusEnabled()) {
-    return;
-  }
-
   UpdateDisplay("800x700,801+0-800x700,1602+0-800x700");
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   const auto& displays = display_manager->active_display_list();
