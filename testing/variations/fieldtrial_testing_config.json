@@ -1714,8 +1714,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillEnableCardBenefitsForAmericanExpress",
-                        "AutofillEnableCardBenefitsForCapitalOne",
-                        "AutofillEnableCardBenefitsSync"
+                        "AutofillEnableCardBenefitsForCapitalOne"
                     ]
                 }
             ]
