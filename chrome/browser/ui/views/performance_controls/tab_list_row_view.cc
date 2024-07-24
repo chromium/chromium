@@ -50,9 +50,9 @@ namespace {
 // won't touch the edge of the TabListRowView.
 constexpr int kFaviconVerticalMargin = 4;
 // Corner radius for the favicon image view.
-constexpr int kFaviconCornerRadius = 8;
+constexpr int kFaviconCornerRadius = 4;
 // Border thickness surrounding the favicon.
-constexpr int kFaviconBorderThickness = 12;
+constexpr int kFaviconBorderThickness = 4;
 
 std::unique_ptr<views::Label> CreateLabel(std::u16string text, int text_style) {
   auto label = std::make_unique<views::Label>(text);
@@ -87,15 +87,6 @@ class TextContainer : public views::View {
 
     title_ =
         AddChildView(CreateLabel(title, views::style::STYLE_BODY_4_MEDIUM));
-    domain_ = AddChildView(
-        CreateLabel(url_formatter::FormatUrl(
-                        domain,
-                        url_formatter::kFormatUrlOmitDefaults |
-                            url_formatter::kFormatUrlOmitHTTPS |
-                            url_formatter::kFormatUrlOmitTrivialSubdomains |
-                            url_formatter::kFormatUrlTrimAfterHost,
-                        base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr),
-                    views::style::STYLE_BODY_5));
 
 #if BUILDFLAG(IS_MAC)
     // We cannot focus on Mac dialog buttons normally so the rows should only be
@@ -109,11 +100,10 @@ class TextContainer : public views::View {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kListBoxOption;
     if (tab_list_model_->count() > 1) {
-      node_data->SetNameChecked(
-          base::StrCat({title_->GetText(), u" ", domain_->GetText()}));
+      node_data->SetNameChecked(title_->GetText());
     } else {
       node_data->SetNameChecked(base::StrCat(
-          {title_->GetText(), u" ", domain_->GetText(), u" ",
+          {title_->GetText(), u" ",
            l10n_util::GetStringUTF16(
                IDS_PERFORMANCE_INTERVENTION_SINGLE_SUGGESTED_ROW_ACCNAME)}));
     }
@@ -127,13 +117,10 @@ class TextContainer : public views::View {
 
   views::Label* title() { return title_; }
 
-  views::Label* domain() { return domain_; }
-
  private:
   raw_ptr<TabListModel> tab_list_model_;
   base::RepeatingClosure on_reverse_focus_tab_traversal_;
   raw_ptr<views::Label> title_ = nullptr;
-  raw_ptr<views::Label> domain_ = nullptr;
 };
 
 BEGIN_METADATA(TextContainer)
@@ -237,10 +224,6 @@ TabListRowView::~TabListRowView() {
 
 std::u16string TabListRowView::GetTitleTextForTesting() {
   return text_container_->title()->GetText();
-}
-
-std::u16string TabListRowView::GetDomainTextForTesting() {
-  return text_container_->domain()->GetText();
 }
 
 views::ImageButton* TabListRowView::GetCloseButtonForTesting() {
