@@ -44,6 +44,8 @@ class GWSAbandonedPageLoadMetricsObserver
   ObservePolicy OnNavigationEvent(
       content::NavigationHandle* navigation_handle) override;
   bool IsAllowedToLogMetrics() const override;
+  const base::flat_map<std::string, NavigationMilestone>&
+  GetCustomUserTimingMarkNames() const override;
 
   // Set to true if we see the navigation involves non-SRP URL, which will be
   // specially marked in the logged metrics.

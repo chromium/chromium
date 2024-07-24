@@ -70,6 +70,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="NavigationMilestone">
+  <variant name="AFTEnd"/>
+  <variant name="AFTStart"/>
   <variant name="CommitSent"/>
   <variant name="DidCommit"/>
   <variant name="DOMContentLoaded"/>
