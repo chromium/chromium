@@ -10,7 +10,6 @@
 #include "ash/public/cpp/desk_profiles_delegate.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "base/check_op.h"
@@ -33,9 +32,7 @@ namespace {
 constexpr gfx::Size kIconButtonSize(22, 22);
 }  // namespace
 
-DeskProfilesButton::DeskProfilesButton(Desk* desk,
-                                       DeskMiniView* mini_view,
-                                       bool owner_bar_is_overview)
+DeskProfilesButton::DeskProfilesButton(Desk* desk, DeskMiniView* mini_view)
     : desk_(desk), mini_view_(mini_view) {
   desk_->AddObserver(this);
   SetCallback(base::BindRepeating(&DeskProfilesButton::OnButtonPressed,
@@ -51,15 +48,6 @@ DeskProfilesButton::DeskProfilesButton(Desk* desk,
   focus_ring->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(
           -gfx::Insets(focus_ring->GetHaloThickness() / 2)));
-  if (owner_bar_is_overview && !features::IsOverviewNewFocusEnabled()) {
-    focus_ring->SetHasFocusPredicate(
-        base::BindRepeating([](const views::View* view) {
-          const auto* v = views::AsViewClass<DeskProfilesButton>(view);
-          CHECK(v);
-          return v->is_focused();
-        }));
-  }
-
   views::InstallCircleHighlightPathGenerator(this);
 
   LoadIconForProfile();
@@ -95,29 +83,6 @@ void DeskProfilesButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
   if (reverse) {
     mini_view_->OnPreviewOrProfileAboutToBeFocusedByReverseTab();
   }
-}
-
-views::View* DeskProfilesButton::GetView() {
-  return this;
-}
-
-void DeskProfilesButton::MaybeActivateFocusedView() {
-  CreateMenu(GetBoundsInScreen().CenterPoint(), ui::MENU_SOURCE_KEYBOARD);
-}
-
-void DeskProfilesButton::MaybeCloseFocusedView(bool primary_action) {}
-void DeskProfilesButton::MaybeSwapFocusedView(bool right) {}
-
-void DeskProfilesButton::OnFocusableViewFocused() {
-  mini_view_->UpdateDeskButtonVisibility();
-  mini_view_->UpdateFocusColor();
-  views::FocusRing::Get(this)->SchedulePaint();
-}
-
-void DeskProfilesButton::OnFocusableViewBlurred() {
-  mini_view_->UpdateDeskButtonVisibility();
-  mini_view_->UpdateFocusColor();
-  views::FocusRing::Get(this)->SchedulePaint();
 }
 
 void DeskProfilesButton::OnButtonPressed(const ui::Event& event) {

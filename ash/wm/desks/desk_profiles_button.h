@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
-#include "ash/wm/overview/overview_focusable_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
@@ -18,17 +17,12 @@ namespace ash {
 class DeskMiniView;
 
 class ASH_EXPORT DeskProfilesButton : public views::ImageButton,
-                                      public Desk::Observer,
-                                      public OverviewFocusableView {
+                                      public Desk::Observer {
   METADATA_HEADER(DeskProfilesButton, views::ImageButton)
 
  public:
-  // Creates a DeskProfilesButton for desk `desk`. If `owner_bar_is_overview`,
-  // then a focus predicate is installed on the focus ring. This is required
-  // to properly implement the `OverviewFocusableView` interface.
-  DeskProfilesButton(Desk* desk,
-                     DeskMiniView* desk_mini_view,
-                     bool owner_bar_is_overview);
+  // Creates a DeskProfilesButton for desk `desk`.
+  DeskProfilesButton(Desk* desk, DeskMiniView* desk_mini_view);
   DeskProfilesButton(const DeskProfilesButton&) = delete;
   DeskProfilesButton& operator=(const DeskProfilesButton&) = delete;
   ~DeskProfilesButton() override;
@@ -45,14 +39,6 @@ class ASH_EXPORT DeskProfilesButton : public views::ImageButton,
   // views::ImageButton:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
-
-  // OverviewFocusableView:
-  views::View* GetView() override;
-  void MaybeActivateFocusedView() override;
-  void MaybeCloseFocusedView(bool primary_action) override;
-  void MaybeSwapFocusedView(bool right) override;
-  void OnFocusableViewFocused() override;
-  void OnFocusableViewBlurred() override;
 
  private:
   void OnButtonPressed(const ui::Event& event);

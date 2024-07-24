@@ -112,6 +112,10 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   // Updates accessible name for this desk preview.
   void UpdateAccessibleName();
 
+  // Called when the user exits overview by using 3-finger vertical trackpad
+  // swipes.
+  void AcceptSelection();
+
   // views::Button:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void Layout(PassKey) override;

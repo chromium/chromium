@@ -15,7 +15,6 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
-#include "ash/wm/desks/desk_profiles_button.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
@@ -28,7 +27,6 @@
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "ash/wm/splitview/split_view_setup_view_old.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -51,11 +49,8 @@ void AddDesksBarTraversableViews(
   if (bar_view->IsZeroState()) {
     out_traversable_views.push_back(bar_view->default_desk_button());
   } else {
-    for (ash::DeskMiniView* mini_view : bar_view->mini_views()) {
+    for (DeskMiniView* mini_view : bar_view->mini_views()) {
       out_traversable_views.push_back(mini_view->desk_preview());
-      if (auto* profiles_button = mini_view->desk_profiles_button()) {
-        out_traversable_views.push_back(profiles_button);
-      }
       auto* desk_action_view = mini_view->desk_action_view();
       if (desk_action_view->combine_desks_button() &&
           desk_action_view->combine_desks_button()->CanShow()) {
@@ -262,21 +257,7 @@ std::vector<OverviewFocusableView*> OverviewFocusCyclerOld::GetTraversableViews(
       }
     }
 
-    // UI elements in faster split screen partial overview will be traversed
-    // right after the overview items.
-    if (auto* split_view_setup_view = grid->GetSplitViewSetupViewOld()) {
-      traversable_views.push_back(split_view_setup_view->GetToast());
-      traversable_views.push_back(split_view_setup_view->settings_button());
-    }
-
     AddDesksBarTraversableViews(grid.get(), traversable_views);
-
-    if (grid->IsSaveDeskAsTemplateButtonVisible()) {
-      traversable_views.push_back(grid->GetSaveDeskAsTemplateButton());
-    }
-    if (grid->IsSaveDeskForLaterButtonVisible()) {
-      traversable_views.push_back(grid->GetSaveDeskForLaterButton());
-    }
   }
   return traversable_views;
 }

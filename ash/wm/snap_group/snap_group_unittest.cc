@@ -69,7 +69,6 @@
 #include "ash/wm/splitview/split_view_divider_view.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_setup_view.h"
-#include "ash/wm/splitview/split_view_setup_view_old.h"
 #include "ash/wm/splitview/split_view_test_util.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"

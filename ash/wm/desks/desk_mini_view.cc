@@ -196,8 +196,8 @@ DeskMiniView::DeskMiniView(
   if (chromeos::features::IsDeskProfilesEnabled() &&
       ((desk_profile_delegate &&
         desk_profile_delegate->GetProfilesSnapshot().size() > 1))) {
-    desk_profile_button_ = AddChildView(std::make_unique<DeskProfilesButton>(
-        desk, this, owner_bar_->type() == DeskBarViewBase::Type::kOverview));
+    desk_profile_button_ =
+        AddChildView(std::make_unique<DeskProfilesButton>(desk, this));
   }
 
   desk_action_view_ = AddChildView(std::make_unique<DeskActionView>(
@@ -320,7 +320,7 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
       if (desk_preview_->is_focused() || desk_action_view_->ChildHasFocus()) {
         return true;
       }
-      return desk_profile_button_ && desk_profile_button_->is_focused();
+      return desk_profile_button_ && desk_profile_button_->HasFocus();
     }
 
     // New overview focus uses the same mechanisms as the desk button desk bar.

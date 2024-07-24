@@ -7,14 +7,12 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/pill_button.h"
-#include "ash/wm/overview/overview_focusable_view.h"
 #include "base/functional/callback.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
-class ASH_EXPORT SavedDeskSaveDeskButton : public PillButton,
-                                           public OverviewFocusableView {
+class ASH_EXPORT SavedDeskSaveDeskButton : public PillButton {
   METADATA_HEADER(SavedDeskSaveDeskButton, PillButton)
 
  public:
@@ -37,18 +35,6 @@ class ASH_EXPORT SavedDeskSaveDeskButton : public PillButton,
   Type button_type() const { return button_type_; }
 
  private:
-  // OverviewFocusableView:
-  views::View* GetView() override;
-  void MaybeActivateFocusedView() override;
-  void MaybeCloseFocusedView(bool primary_action) override;
-  void MaybeSwapFocusedView(bool right) override;
-  void OnFocusableViewFocused() override;
-  void OnFocusableViewBlurred() override;
-
-  // PillButton:
-  void OnFocus() override;
-  void OnBlur() override;
-
   base::RepeatingClosure callback_;
   Type button_type_;
 };

@@ -54,7 +54,6 @@ class ScopedOverviewHideWindows;
 class ScopedOverviewWallpaperClipper;
 class SplitViewController;
 class SplitViewSetupView;
-class SplitViewSetupViewOld;
 class WindowOcclusionCalculator;
 
 // An instance of this class is created during the initialization of an overview
@@ -422,8 +421,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer();
   const SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer() const;
 
-  // TODO(http://b/325335020): Remove this.
-  SplitViewSetupViewOld* GetSplitViewSetupViewOld();
   const SplitViewSetupView* GetSplitViewSetupView() const;
 
   // Gets the cropping area of the wallpaper in screen coordinates.

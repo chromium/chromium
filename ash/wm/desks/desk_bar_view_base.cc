@@ -1330,9 +1330,6 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
               (*iter)->desk_action_view()->combine_desks_button()) {
         focus_cycler->OnViewDestroyingOrDisabling(combine_desks_button);
       }
-      if (auto* desk_profiles_button = (*iter)->desk_profiles_button()) {
-        focus_cycler->OnViewDestroyingOrDisabling(desk_profiles_button);
-      }
       focus_cycler->OnViewDestroyingOrDisabling((*iter)->desk_preview());
     }
   }

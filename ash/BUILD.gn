@@ -3031,8 +3031,6 @@ component("ash") {
     "wm/splitview/split_view_overview_session.h",
     "wm/splitview/split_view_setup_view.cc",
     "wm/splitview/split_view_setup_view.h",
-    "wm/splitview/split_view_setup_view_old.cc",
-    "wm/splitview/split_view_setup_view_old.h",
     "wm/splitview/split_view_test_api.cc",
     "wm/splitview/split_view_types.h",
     "wm/splitview/split_view_utils.cc",

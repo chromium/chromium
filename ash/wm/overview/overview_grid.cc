@@ -74,7 +74,6 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_setup_view.h"
-#include "ash/wm/splitview/split_view_setup_view_old.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/informed_restore_contents_view.h"
@@ -2555,13 +2554,6 @@ OverviewGrid::GetSaveDeskButtonContainer() const {
              : nullptr;
 }
 
-SplitViewSetupViewOld* OverviewGrid::GetSplitViewSetupViewOld() {
-  return split_view_setup_widget_
-             ? views::AsViewClass<SplitViewSetupViewOld>(
-                   split_view_setup_widget_->GetContentsView())
-             : nullptr;
-}
-
 const SplitViewSetupView* OverviewGrid::GetSplitViewSetupView() const {
   return split_view_setup_widget_
              ? views::AsViewClass<SplitViewSetupView>(
@@ -3447,13 +3439,6 @@ void OverviewGrid::OnSettingsButtonPressed() {
 void OverviewGrid::UpdateSplitViewSetupViewWidget() {
   if (!SplitViewController::Get(root_window_)->InClamshellSplitViewMode()) {
     // If we aren't in split view, don't show the widget.
-    if (auto* split_view_setup_view = GetSplitViewSetupViewOld()) {
-      auto* focus_cycler_old = overview_session_->focus_cycler_old();
-      focus_cycler_old->OnViewDestroyingOrDisabling(
-          split_view_setup_view->GetToast());
-      focus_cycler_old->OnViewDestroyingOrDisabling(
-          split_view_setup_view->settings_button());
-    }
     split_view_setup_widget_.reset();
     return;
   }
@@ -3462,9 +3447,7 @@ void OverviewGrid::UpdateSplitViewSetupViewWidget() {
     views::Widget::InitParams params(
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         views::Widget::InitParams::TYPE_POPUP);
-    params.activatable = features::IsOverviewNewFocusEnabled()
-                             ? views::Widget::InitParams::Activatable::kYes
-                             : views::Widget::InitParams::Activatable::kNo;
+    params.activatable = views::Widget::InitParams::Activatable::kYes;
     params.parent = desks_util::GetActiveDeskContainerForRoot(root_window_);
     params.name = "SplitViewSetupViewWidget";
     params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
@@ -3472,21 +3455,12 @@ void OverviewGrid::UpdateSplitViewSetupViewWidget() {
     split_view_setup_widget_ =
         std::make_unique<views::Widget>(std::move(params));
     split_view_setup_widget_->GetLayer()->SetFillsBoundsOpaquely(false);
-    if (features::IsOverviewNewFocusEnabled()) {
-      split_view_setup_widget_->SetContentsView(
-          std::make_unique<SplitViewSetupView>(
-              base::BindRepeating(&OverviewGrid::OnSkipButtonPressed,
-                                  weak_ptr_factory_.GetWeakPtr()),
-              base::BindRepeating(&OverviewGrid::OnSettingsButtonPressed,
-                                  weak_ptr_factory_.GetWeakPtr())));
-    } else {
-      split_view_setup_widget_->SetContentsView(
-          std::make_unique<SplitViewSetupViewOld>(
-              base::BindRepeating(&OverviewGrid::OnSkipButtonPressed,
-                                  weak_ptr_factory_.GetWeakPtr()),
-              base::BindRepeating(&OverviewGrid::OnSettingsButtonPressed,
-                                  weak_ptr_factory_.GetWeakPtr())));
-    }
+    split_view_setup_widget_->SetContentsView(
+        std::make_unique<SplitViewSetupView>(
+            base::BindRepeating(&OverviewGrid::OnSkipButtonPressed,
+                                weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(&OverviewGrid::OnSettingsButtonPressed,
+                                weak_ptr_factory_.GetWeakPtr())));
     split_view_setup_widget_->ShowInactive();
   }
 

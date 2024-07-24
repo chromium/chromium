@@ -61,6 +61,10 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
   // dragging.
   void RefreshPreviewView();
 
+  // Called when the user exits overview by using 3-finger vertical trackpad
+  // swipes.
+  void AcceptSelection(OverviewSession* overview_session);
+
   // WindowMiniView:
   gfx::Size GetPreviewViewSize() const override;
 

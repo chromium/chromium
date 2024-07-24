@@ -22,6 +22,7 @@ class OverviewSession;
 
 // An interface that must be implemented by classes that want to be
 // focused in overview.
+// TODO(http://b/325335020): Deprecating, do not override.
 class ASH_EXPORT OverviewFocusableView {
  public:
   // Returns the view class associated with `this`.

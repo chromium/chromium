@@ -162,6 +162,11 @@ void OverviewItemView::RefreshPreviewView() {
   DeprecatedLayoutImmediately();
 }
 
+void OverviewItemView::AcceptSelection(OverviewSession* overview_session) {
+  CHECK(overview_session);
+  overview_session->SelectWindow(overview_item_);
+}
+
 gfx::Size OverviewItemView::GetPreviewViewSize() const {
   // The preview should expand to fit the bounds allocated for the content,
   // except if it is letterboxed or pillarboxed.
