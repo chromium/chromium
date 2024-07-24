@@ -253,7 +253,7 @@ bool ConsumeRelativeOriginColor(CSSParserTokenRange& args,
   return false;
 }
 
-std::optional<double> ConsumeRelativeColorChannel(
+CSSValue* ConsumeRelativeColorChannel(
     CSSParserTokenRange& input_range,
     const CSSParserContext& context,
     const CSSColorChannelMap& color_channel_map,
@@ -278,38 +278,21 @@ std::optional<double> ConsumeRelativeColorChannel(
     if (calc_value) {
       const CalculationResultCategory category = calc_value->Category();
       if (!expected_categories.Has(category)) {
-        return std::nullopt;
-      }
-      double value;
-      switch (category) {
-        case kCalcNumber:
-          value = calc_value->GetDoubleValueWithoutClamping();
-          break;
-        case kCalcPercent:
-          value = calc_value->GetDoubleValue() / 100;
-          value *= percentage_base;
-          break;
-        case kCalcAngle:
-          value = calc_value->ComputeDegrees();
-          break;
-        default:
-          NOTREACHED_IN_MIGRATION();
-          return std::nullopt;
+        return nullptr;
       }
       // Consume the range, since it has succeeded.
       input_range = calc_range;
-      return value;
+      return calc_value;
     }
   }
 
   // This is for just single variable swaps without calc(). e.g. The "l" in
   // "lab(from cyan l 0.5 0.5)".
   if (color_channel_map.Contains(token.Id())) {
-    input_range.ConsumeIncludingWhitespace();
-    return color_channel_map.at(token.Id());
+    return css_parsing_utils::ConsumeIdent(input_range);
   }
 
-  return std::nullopt;
+  return nullptr;
 }
 
 // Returns true if, when converted to Rec2020 space, all components of `color`
@@ -388,26 +371,6 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
   return true;
 }
 
-// ConsumeHue takes an angle as input (as angle in radians or in degrees, or as
-// plain number in degrees) and returns a plain number in degrees.
-static std::optional<double> ConsumeHue(CSSParserTokenRange& range,
-                                        const CSSParserContext& context) {
-  CSSPrimitiveValue* value =
-      css_parsing_utils::ConsumeAngle(range, context, std::nullopt);
-  double angle_value;
-  if (!value) {
-    value = css_parsing_utils::ConsumeNumber(
-        range, context, CSSPrimitiveValue::ValueRange::kAll);
-    if (!value) {
-      return std::nullopt;
-    }
-    angle_value = value->GetDoubleValueWithoutClamping();
-  } else {
-    angle_value = value->ComputeDegrees();
-  }
-  return angle_value;
-}
-
 bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
                                          const CSSParserContext& context,
                                          int i) {
@@ -418,50 +381,41 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
   }
 
   if (ColorChannelIsHue(color_space_, i)) {
-    if ((channels_[i] = ConsumeHue(args, context))) {
+    if ((unresolved_channels_[i] =
+             css_parsing_utils::ConsumeAngle(args, context, std::nullopt))) {
+      channel_types_[i] = ChannelType::kNumber;
+    } else if ((unresolved_channels_[i] = css_parsing_utils::ConsumeNumber(
+                    args, context, CSSPrimitiveValue::ValueRange::kAll))) {
       channel_types_[i] = ChannelType::kNumber;
     } else if (is_relative_color_) {
-      if ((channels_[i] = ConsumeRelativeColorChannel(
+      if ((unresolved_channels_[i] = ConsumeRelativeColorChannel(
                args, context, color_channel_map_, {kCalcNumber, kCalcAngle}))) {
         channel_types_[i] = ChannelType::kRelative;
       }
     }
 
-    if (!channels_[i].has_value()) {
+    if (!unresolved_channels_[i]) {
       return false;
     }
 
-    // Non-finite values should be clamped to the range [0, 360].
-    // Since 0 = 360 in this case, they can all simply become zero.
-    if (!isfinite(channels_[i].value())) {
-      channels_[i] = 0.0;
-    }
-
-    // Wrap hue to be in the range [0, 360].
-    channels_[i].value() =
-        fmod(fmod(channels_[i].value(), 360.0) + 360.0, 360.0);
     return true;
   }
 
-  CSSPrimitiveValue* temp;
-  if ((temp = css_parsing_utils::ConsumeNumber(
+  if ((unresolved_channels_[i] = css_parsing_utils::ConsumeNumber(
            args, context, CSSPrimitiveValue::ValueRange::kAll))) {
-    channels_[i] = temp->GetDoubleValueWithoutClamping();
     channel_types_[i] = ChannelType::kNumber;
     return true;
   }
 
-  if ((temp = css_parsing_utils::ConsumePercent(
+  if ((unresolved_channels_[i] = css_parsing_utils::ConsumePercent(
            args, context, CSSPrimitiveValue::ValueRange::kAll))) {
-    const double value = temp->GetDoubleValue();
-    channels_[i] = (value / 100.0) * function_metadata_->channel_percentage[i];
     channel_types_[i] = ChannelType::kPercentage;
     return true;
   }
 
   if (is_relative_color_) {
     channel_types_[i] = ChannelType::kRelative;
-    if ((channels_[i] = ConsumeRelativeColorChannel(
+    if ((unresolved_channels_[i] = ConsumeRelativeColorChannel(
              args, context, color_channel_map_, {kCalcNumber, kCalcPercent},
              function_metadata_->channel_percentage[i]))) {
       return true;
@@ -474,28 +428,28 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
 
 bool ColorFunctionParser::ConsumeAlpha(CSSParserTokenRange& args,
                                        const CSSParserContext& context) {
-  CSSPrimitiveValue* temp;
-  if ((temp = css_parsing_utils::ConsumeNumber(
+  if ((unresolved_alpha_ = css_parsing_utils::ConsumeNumber(
            args, context, CSSPrimitiveValue::ValueRange::kAll))) {
-    alpha_ = ClampTo<double>(temp->GetDoubleValue(), 0.0, 1.0);
+    alpha_channel_type_ = ChannelType::kNumber;
     return true;
   }
 
-  if ((temp = css_parsing_utils::ConsumePercent(
+  if ((unresolved_alpha_ = css_parsing_utils::ConsumePercent(
            args, context, CSSPrimitiveValue::ValueRange::kAll))) {
-    alpha_ = ClampTo<double>(temp->GetDoubleValue() / 100.0, 0.0, 1.0);
+    alpha_channel_type_ = ChannelType::kPercentage;
     return true;
   }
 
   if (css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(args)) {
     has_none_ = true;
-    alpha_.reset();
+    alpha_channel_type_ = ChannelType::kNone;
     return true;
   }
 
-  if (is_relative_color_ && (alpha_ = ConsumeRelativeColorChannel(
+  if (is_relative_color_ && (unresolved_alpha_ = ConsumeRelativeColorChannel(
                                  args, context, color_channel_map_,
                                  {kCalcNumber, kCalcPercent}, 1.0))) {
+    alpha_channel_type_ = ChannelType::kRelative;
     return true;
   }
 
@@ -569,6 +523,91 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
     }
   }
   return true;
+}
+
+std::optional<double> ColorFunctionParser::TryResolveColorChannel(
+    const CSSValue* value,
+    ChannelType channel_type,
+    double percentage_base,
+    const CSSColorChannelMap& color_channel_map) {
+  if (const CSSPrimitiveValue* primitive_value =
+          DynamicTo<CSSPrimitiveValue>(value)) {
+    switch (channel_type) {
+      case ChannelType::kNumber:
+        if (primitive_value->IsAngle()) {
+          return primitive_value->ComputeDegrees();
+        } else {
+          return primitive_value->GetDoubleValueWithoutClamping();
+        }
+      case ChannelType::kPercentage:
+        return (primitive_value->GetDoubleValue() / 100.0) * percentage_base;
+      case ChannelType::kRelative:
+        // Proceed to relative channel value resolution below.
+        break;
+      default:
+        NOTREACHED_NORETURN();
+    }
+  }
+
+  return TryResolveRelativeChannelValue(value, channel_type, percentage_base,
+                                        color_channel_map);
+}
+
+std::optional<double> ColorFunctionParser::TryResolveAlpha(
+    const CSSValue* value,
+    ChannelType channel_type,
+    const CSSColorChannelMap& color_channel_map) {
+  if (const CSSPrimitiveValue* primitive_value =
+          DynamicTo<CSSPrimitiveValue>(value)) {
+    switch (channel_type) {
+      case ChannelType::kNumber:
+        return ClampTo<double>(primitive_value->GetDoubleValue(), 0.0, 1.0);
+      case ChannelType::kPercentage:
+        return ClampTo<double>(primitive_value->GetDoubleValue() / 100.0, 0.0,
+                               1.0);
+      case ChannelType::kRelative:
+        // Proceed to relative channel value resolution below.
+        break;
+      default:
+        NOTREACHED_NORETURN();
+    }
+  }
+
+  return TryResolveRelativeChannelValue(
+      value, channel_type, /*percentage_base=*/1.0, color_channel_map);
+}
+
+std::optional<double> ColorFunctionParser::TryResolveRelativeChannelValue(
+    const CSSValue* value,
+    ChannelType channel_type,
+    double percentage_base,
+    const CSSColorChannelMap& color_channel_map) {
+  if (const CSSIdentifierValue* identifier_value =
+          DynamicTo<CSSIdentifierValue>(value)) {
+    // This is for just single variable swaps without calc(). e.g. The "l" in
+    // "lab(from cyan l 0.5 0.5)".
+    if (auto it = color_channel_map.find(identifier_value->GetValueID());
+        it != color_channel_map.end()) {
+      return it->value;
+    }
+  }
+
+  if (const CSSMathFunctionValue* calc_value =
+          DynamicTo<CSSMathFunctionValue>(value)) {
+    switch (calc_value->Category()) {
+      case kCalcNumber:
+        return calc_value->GetDoubleValueWithoutClamping();
+      case kCalcPercent:
+        return (calc_value->GetDoubleValue() / 100) * percentage_base;
+      case kCalcAngle:
+        return calc_value->ComputeDegrees();
+      default:
+        NOTREACHED_IN_MIGRATION();
+        return std::nullopt;
+    }
+  }
+
+  return std::nullopt;
 }
 
 CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
@@ -646,13 +685,46 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColorInternal(
     if (!ConsumeAlpha(args, context)) {
       return nullptr;
     }
-  } else if (is_relative_color_) {
-    alpha_ = color_channel_map_.at(CSSValueID::kAlpha);
   }
 
   // "None" is not a part of the legacy syntax.
   if (!args.AtEnd() || (is_legacy_syntax_ && has_none_)) {
     return nullptr;
+  }
+
+  // Resolve channel values.
+  for (int i = 0; i < 3; i++) {
+    if (channel_types_[i] != ChannelType::kNone) {
+      channels_[i] = TryResolveColorChannel(
+          unresolved_channels_[i], channel_types_[i],
+          function_metadata_->channel_percentage[i], color_channel_map_);
+      if (!channels_[i].has_value()) {
+        return nullptr;
+      }
+
+      if (ColorChannelIsHue(color_space_, i)) {
+        // Non-finite values should be clamped to the range [0, 360].
+        // Since 0 = 360 in this case, they can all simply become zero.
+        if (!isfinite(channels_[i].value())) {
+          channels_[i] = 0.0;
+        }
+
+        // Wrap hue to be in the range [0, 360].
+        channels_[i].value() =
+            fmod(fmod(channels_[i].value(), 360.0) + 360.0, 360.0);
+      }
+    }
+  }
+
+  if (expect_alpha) {
+    if (alpha_channel_type_ != ChannelType::kNone) {
+      alpha_ = TryResolveAlpha(unresolved_alpha_, alpha_channel_type_,
+                               color_channel_map_);
+    } else {
+      alpha_.reset();
+    }
+  } else if (is_relative_color_) {
+    alpha_ = color_channel_map_.at(CSSValueID::kAlpha);
   }
 
   if (!MakePerColorSpaceAdjustments()) {

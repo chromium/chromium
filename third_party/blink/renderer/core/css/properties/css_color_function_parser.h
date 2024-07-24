@@ -17,6 +17,8 @@ namespace blink {
 class CSSValue;
 
 class CORE_EXPORT ColorFunctionParser {
+  STACK_ALLOCATED();
+
  public:
   ColorFunctionParser() = default;
   // Parses the color inputs rgb(), rgba(), hsl(), hsla(), hwb(), lab(),
@@ -46,9 +48,27 @@ class CORE_EXPORT ColorFunctionParser {
   bool ConsumeAlpha(CSSParserTokenRange& args, const CSSParserContext& context);
   bool MakePerColorSpaceAdjustments();
 
+  static std::optional<double> TryResolveColorChannel(
+      const CSSValue* value,
+      ChannelType channel_type,
+      double percentage_base,
+      const CSSColorChannelMap& color_channel_map);
+  static std::optional<double> TryResolveAlpha(
+      const CSSValue* value,
+      ChannelType channel_type,
+      const CSSColorChannelMap& color_channel_map);
+  static std::optional<double> TryResolveRelativeChannelValue(
+      const CSSValue* value,
+      ChannelType channel_type,
+      double percentage_base,
+      const CSSColorChannelMap& color_channel_map);
+
   Color::ColorSpace color_space_ = Color::ColorSpace::kNone;
+  std::array<const CSSValue*, 3> unresolved_channels_;
   std::array<std::optional<double>, 3> channels_;
   std::array<ChannelType, 3> channel_types_;
+  const CSSValue* unresolved_alpha_;
+  ChannelType alpha_channel_type_;
   std::optional<double> alpha_ = 1.0;
 
   // Metadata about the current function being parsed. Set by
