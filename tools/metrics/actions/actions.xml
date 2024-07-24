@@ -19442,6 +19442,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ManagementBubble_OpenedFromManagementToolbarButton">
+  <owner>ydago@chromium.org</owner>
+  <description>
+    The management bubble was opened by clicking on the management toolbar
+    button.
+  </description>
+</action>
+
+<action name="ManagementPage_OpenedFromManagementBubbleLearnMore">
+  <owner>ydago@chromium.org</owner>
+  <description>
+    The chrome://management page was opened using the learn more button from the
+    management bubble.
+  </description>
+</action>
+
 <action name="ManagementPageViewed">
   <owner>hunyadym@chromium.org</owner>
   <description>The chrome://management page was viewed.</description>

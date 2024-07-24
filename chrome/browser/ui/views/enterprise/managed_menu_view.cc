@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -94,8 +96,8 @@ ManagedMenuView::ManagedMenuView(views::Button* anchor_button, Browser* browser)
   GetViewAccessibility().SetName(GetAccessibleWindowTitle());
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-  SetAcceptCallback(base::BindOnce(
-      &chrome::ShowEnterpriseManagementPageInTabbedBrowser, browser_));
+  SetAcceptCallback(base::BindOnce(&ManagedMenuView::OpenManagementPage,
+                                   base::Unretained(this)));
   SetShowCloseButton(true);
   SetTitle(chrome::GetManagementBubbleTitle(GetProfile()));
   SetShowIcon(true);
@@ -133,6 +135,12 @@ void ManagedMenuView::Init() {
 
 Profile* ManagedMenuView::GetProfile() const {
   return browser_->profile();
+}
+
+void ManagedMenuView::OpenManagementPage() {
+  base::RecordAction(base::UserMetricsAction(
+      "ManagementPage_OpenedFromManagementBubbleLearnMore"));
+  chrome::ShowEnterpriseManagementPageInTabbedBrowser(browser_);
 }
 
 void ManagedMenuView::UpdateProfileManagementIcon() {

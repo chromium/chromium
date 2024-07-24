@@ -9,6 +9,8 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
@@ -170,6 +172,8 @@ void ManagementToolbarButton::OnThemeChanged() {
 }
 
 void ManagementToolbarButton::ButtonPressed() {
+  base::RecordAction(base::UserMetricsAction(
+      "ManagementBubble_OpenedFromManagementToolbarButton"));
   browser_->window()->ShowBubbleFromManagementToolbarButton();
 }
 

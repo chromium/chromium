@@ -43,6 +43,7 @@ class ManagedMenuView : public views::BubbleDialogDelegateView {
 
  private:
   Profile* GetProfile() const;
+  void OpenManagementPage();
   void UpdateProfileManagementIcon();
   void UpdateBrowserManagementIcon();
   void SetProfileManagementIcon(const gfx::Image& icon);
