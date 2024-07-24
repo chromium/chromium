@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -133,10 +132,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
     };
 
     // Header used for all messages when the Channel backs an ipcz transport.
-    //
-    // Note: This struct *must* be forward and backward compatible. Changes are
-    // append-only, must add a new "struct {} vx" member, and code must be able
-    // to deal with newer and older versions of this header.
     struct IpczHeader {
       // The size of this header in bytes. Used for versioning.
       uint16_t size;
@@ -148,20 +143,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
       // Total size of this message in bytes. This is the size of this header
       // plus the size of any message data immediately following it.
       uint32_t num_bytes;
-
-      struct {
-        // When this header was created, relative to the reference of
-        // base::TimeTicks().
-        int64_t creation_timeticks_us;
-      } v2;
-      struct {
-      } v2_marker;
     };
-
-    static constexpr size_t kMinIpczHeaderSize = offsetof(IpczHeader, v2);
-    static bool IsAtLeastV2(const IpczHeader& header) {
-      return header.size >= offsetof(IpczHeader, v2_marker);
-    }
 
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
     struct MachPortsEntry {
@@ -528,8 +510,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   // pseudo-random numbers which leaves the synchronization to the client and is
   // not thread-safe, hence guarded by lock here.
   base::MetricsSubSampler sub_sampler_ GUARDED_BY(lock_);
-
-  FRIEND_TEST_ALL_PREFIXES(ChannelTest, IpczHeaderCompatibilityTest);
 };
 
 }  // namespace mojo::core
