@@ -645,12 +645,6 @@
     'blink_xml': {
       'filepath': 'third_party/blink/renderer/core/xml/'
     },
-    'blundell_watch': {
-      'filepath': '^chrome/' \
-                  '|^components/' \
-                  '|^gpu/' \
-                  '|^services/',
-    },
     'borealis': {
       'filepath': 'borealis/',
     },
@@ -2691,7 +2685,6 @@
                       'shimazu+worker@chromium.org'],
     'blink_wtf': ['blink-reviews-wtf@chromium.org'],
     'blink_xml': ['dominicc+watchlist@chromium.org'],
-    'blundell_watch': ['blundell+watchlist@chromium.org'],
     'borealis': ['borealis-reviews+watch@google.com'],
     'bottombar': ['donnd+watch@chromium.org',
                   'mdjones+watch@chromium.org'],
