@@ -22,6 +22,15 @@ import {getTemplate} from './perks_discovery.html.js';
 export const PerksDiscoveryElementBase = OobeDialogHostMixin(
     LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement))));
 
+const GENERATE_WEB_VIEW_CSS = (backgroundColor: string) => {
+  return {
+    code: `svg {
+          background-color: ` +
+        backgroundColor + `;
+        }`,
+  };
+};
+
 interface PerkData {
   perkId: string;
   title: string;
@@ -38,6 +47,14 @@ enum PerksDiscoveryStep {
   LOADING = 'loading',
   OVERVIEW = 'overview',
 }
+
+/**
+ * Available user actions.
+ */
+enum UserAction {
+  LOADED = 'loaded',
+}
+
 
 export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
   static get is() {
@@ -58,14 +75,45 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
         value: [],
         notify: true,
       },
+      /**
+       * Current perk displayed.
+       */
+      currentPerk: {
+        type: Number,
+        value: -1,
+      },
+      /**
+       * Number of dom repeat icons rendered items.
+       */
+      itemIconsRendered: {
+        type: Number,
+        value: 0,
+      },
+      /**
+       * Number of dom repeat illustration rendered items.
+       */
+      itemIllustrationsRendered: {
+        type: Number,
+        value: 0,
+      },
     };
   }
 
   private perksList: PerkData[];
+  private currentPerk: number;
+  private itemIconsRendered: number;
+  private itemIllustrationsRendered: number;
 
   override get UI_STEPS() {
     return PerksDiscoveryStep;
   }
+
+  static get observers(): string[] {
+    return [
+      'itemContentRendered(itemIconsRendered, itemIllustrationsRendered)',
+    ];
+  }
+
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override defaultUIStep() {
@@ -80,12 +128,152 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
   override get EXTERNAL_API(): string[] {
     return [
       'setPerksData',
+      'setOverviewStep',
     ];
+  }
+
+  override onBeforeHide(): void {
+    super.onBeforeHide();
+    this.perksList = [];
+    this.currentPerk = -1;
+    this.itemIconsRendered = 0;
+    this.itemIllustrationsRendered = 0;
+  }
+
+  isElementHidden(currentPerk: number, index: number): boolean {
+    return !(currentPerk === index);
   }
 
   setPerksData(perksData: PerkData[]): void {
     assert(perksData !== null);
     this.perksList = perksData;
+    this.currentPerk = 0;
+  }
+
+  setOverviewStep(): void {
+    this.setUIStep(PerksDiscoveryStep.OVERVIEW);
+  }
+
+  private itemContentRendered(
+      itemIconsRendered: number, itemIllustrationsRendered: number) {
+    if (this.perksList.length === 0) {
+      return;
+    }
+
+    if (itemIconsRendered === this.perksList.length) {
+      this.setIconsWebviewStyle();
+    }
+
+    if (itemIllustrationsRendered === this.perksList.length) {
+      this.setIllustrationWebviewStyle();
+    }
+
+    if (itemIconsRendered === this.perksList.length &&
+        itemIllustrationsRendered === this.perksList.length) {
+      this.userActed(UserAction.LOADED);
+    }
+  }
+
+  /**
+   * Dynamically styles illustration webviews based on data from `perksList`.
+   * It sets the width and height of each webview using corresponding values
+   * from the `perksList` array, ensuring that illustrations are displayed with
+   * their intended dimensions.
+   */
+  private setIllustrationWebviewStyle(): void {
+    const iconWebviews =
+        this.shadowRoot?.querySelectorAll<chrome.webviewTag.WebView>(
+            '.illustration');
+    if (iconWebviews) {
+      iconWebviews.forEach(
+          (iconWebview: chrome.webviewTag.WebView, index: number) => {
+            iconWebview.style['width'] =
+                this.perksList[index].illustrationWidth;
+            iconWebview.style['height'] =
+                this.perksList[index].illustrationHeight;
+          });
+    }
+  }
+
+  /**
+   * Sets the background color of category icon webviews to match the system's
+   * base shaded color.
+   */
+  private setIconsWebviewStyle(): void {
+    const iconWebviews =
+        this.shadowRoot?.querySelectorAll<chrome.webviewTag.WebView>(
+            '.perk-icon');
+    if (iconWebviews) {
+      const BackgroundColor =
+          getComputedStyle(document.body)
+              .getPropertyValue('--cros-sys-app_base_shaded');
+      for (const iconWebview of iconWebviews) {
+        this.injectCss(iconWebview, BackgroundColor);
+      }
+    }
+  }
+
+  /**
+   * Injects CSS into a webview after its content has loaded.
+   */
+  private injectCss(
+      webview: chrome.webviewTag.WebView, backgroundColor: string) {
+    webview.addEventListener('contentload', () => {
+      webview.insertCSS(GENERATE_WEB_VIEW_CSS(backgroundColor), () => {
+        if (chrome.runtime.lastError) {
+          console.warn(
+              'Failed to insertCSS: ' + chrome.runtime.lastError.message);
+        }
+      });
+    });
+  }
+
+  private onNotInterestedClicked(): void {}
+
+  private onInterestedClicked(): void {}
+
+  /**
+   * Returns the title of the perk.
+   */
+  private getCurrentPerkTitle(currentPerk: number): string {
+    if (currentPerk === -1) {
+      return '';
+    }
+    assert(currentPerk >= 0 && currentPerk < this.perksList.length);
+    return this.perksList[currentPerk].title;
+  }
+
+  /**
+   * Returns the subtitle of the perk.
+   */
+  private getCurrentPerkSubtitle(currentPerk: number): string {
+    if (currentPerk === -1) {
+      return '';
+    }
+    assert(currentPerk >= 0 && currentPerk < this.perksList.length);
+    return this.perksList[currentPerk].subtitle;
+  }
+
+  /**
+   * Returns the primary_button_label of the perk.
+   */
+  private getCurrentPerkPrimaryButtonLabel(currentPerk: number): string {
+    if (currentPerk === -1) {
+      return '';
+    }
+    assert(currentPerk >= 0 && currentPerk < this.perksList.length);
+    return this.perksList[currentPerk].primaryButtonLabel;
+  }
+
+  /**
+   * Returns the secondary_button_label of the perk.
+   */
+  private getCurrentPerkSecondaryButtonLabel(currentPerk: number): string {
+    if (currentPerk === -1) {
+      return '';
+    }
+    assert(currentPerk >= 0 && currentPerk < this.perksList.length);
+    return this.perksList[currentPerk].secondaryButtonLabel;
   }
 }
 
