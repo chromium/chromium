@@ -297,7 +297,7 @@ class WPTExpectationsUpdater:
             filled_results.append(filled_result)
 
         return WebTestResults(filled_results,
-                              builder_name=missing_results.builder_name,
+                              build=missing_results.build,
                               step_name=missing_results.step_name())
 
     def _tests(self, results: List[WebTestResults]) -> Set[str]:
@@ -377,7 +377,7 @@ class WPTExpectationsUpdater:
             results_to_update,
             step_name=test_results.step_name(),
             incomplete_reason=test_results.incomplete_reason,
-            builder_name=test_results.builder_name)
+            build=test_results.build)
         return tests_to_rebaseline, results_to_update
 
     def _is_wpt_test(self, test_name):
