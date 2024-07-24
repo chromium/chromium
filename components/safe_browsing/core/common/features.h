@@ -122,7 +122,7 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions);
 
 // Enables the telemetry service to collect signals and generate reports to send
 // for enterprise.
-BASE_DECLARE_FEATURE(kExtensionTelemetryForEnteprise);
+BASE_DECLARE_FEATURE(kExtensionTelemetryForEnterprise);
 
 // Specifies the reporting interval for enterprise telemetry reports.
 extern const base::FeatureParam<int>

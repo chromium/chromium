@@ -247,7 +247,7 @@ ExtensionTelemetryEventRouter::~ExtensionTelemetryEventRouter() = default;
 
 bool ExtensionTelemetryEventRouter::IsPolicyEnabled() {
   if (!base::FeatureList::IsEnabled(
-          safe_browsing::kExtensionTelemetryForEnteprise)) {
+          safe_browsing::kExtensionTelemetryForEnterprise)) {
     return false;
   }
 

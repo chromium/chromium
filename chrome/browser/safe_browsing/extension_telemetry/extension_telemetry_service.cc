@@ -484,7 +484,7 @@ void ExtensionTelemetryService::SetEnabledForESB(bool enable) {
 // - Off-store data collection
 void ExtensionTelemetryService::SetEnabledForEnterprise(bool enable) {
   // Make call idempotent.
-  if (!base::FeatureList::IsEnabled(kExtensionTelemetryForEnteprise) ||
+  if (!base::FeatureList::IsEnabled(kExtensionTelemetryForEnterprise) ||
       enterprise_enabled_ == enable) {
     return;
   }

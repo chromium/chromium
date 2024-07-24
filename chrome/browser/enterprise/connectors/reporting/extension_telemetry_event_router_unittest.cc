@@ -206,7 +206,7 @@ class ExtensionTelemetryEventInstallLocationTest
  public:
   ExtensionTelemetryEventInstallLocationTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kExtensionTelemetryForEnteprise);
+        safe_browsing::kExtensionTelemetryForEnterprise);
   }
 
  protected:
@@ -300,7 +300,7 @@ TEST_F(ExtensionTelemetryEventRouterTest, CheckIsPolicyEnabled) {
 
   // Enable feature.
   scoped_feature_list_.InitAndEnableFeature(
-      safe_browsing::kExtensionTelemetryForEnteprise);
+      safe_browsing::kExtensionTelemetryForEnterprise);
 
   // Expect policy still disabled due to reporting disabled.
   EXPECT_FALSE(extension_telemetry_event_router_->IsPolicyEnabled());

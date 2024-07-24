@@ -192,7 +192,7 @@ ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest()
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{kExtensionTelemetryDisableOffstoreExtensions,
                             kExtensionTelemetryFileDataForCommandLineExtensions,
-                            kExtensionTelemetryForEnteprise},
+                            kExtensionTelemetryForEnterprise},
       /*disabled_features=*/{});
 
   // Create extension prefs and registry instances.

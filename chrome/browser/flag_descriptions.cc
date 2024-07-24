@@ -1776,6 +1776,12 @@ const char kCWSInfoFastCheckDescription[] =
     "When enabled, Chrome checks and fetches metadata for installed extensions "
     "more frequently.";
 
+const char kExtensionTelemetryForEnterpriseName[] =
+    "Extension Telemetry for Enterprise";
+const char kExtensionTelemetryForEnterpriseDescription[] =
+    "When enabled, the extension telemetry service collects signals and "
+    "generates reports to send for enterprise.";
+
 const char kSafetyCheckExtensionsName[] = "Extensions Module in Safety Check";
 const char kSafetyCheckExtensionsDescription[] =
     "When enabled, adds the Extensions Module to Safety Check on "

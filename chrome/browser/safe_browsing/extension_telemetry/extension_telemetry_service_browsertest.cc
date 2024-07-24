@@ -75,7 +75,7 @@ class ExtensionTelemetryServiceBrowserTest
   ExtensionTelemetryServiceBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {kExtensionTelemetryForEnteprise,
+        {kExtensionTelemetryForEnterprise,
          kExtensionTelemetryReportContactedHosts,
          kExtensionTelemetryReportHostsContactedViaWebSocket,
          kExtensionTelemetryTabsApiSignal,
