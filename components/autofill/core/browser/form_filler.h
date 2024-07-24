@@ -40,7 +40,7 @@ enum class FieldFillingSkipReason : uint8_t {
   kInvisibleField = 5,
   kValuePrefilled = 6,
   kUserFilledFields = 7,
-  kAutofilledFieldsNotRefill = 8,
+  kAlreadyAutofilled = 8,
   kNoFillableGroup = 9,
   kRefillNotInInitialFill = 10,
   kExpiredCards = 11,

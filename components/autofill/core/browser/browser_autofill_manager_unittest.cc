@@ -4293,8 +4293,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = trigger_fill_field_log_event2->fill_event_id,
           .had_value_before_filling = OptionalBoolean::kTrue,
-          .autofill_skipped_status =
-              FieldFillingSkipReason::kAutofilledFieldsNotRefill,
+          .autofill_skipped_status = FieldFillingSkipReason::kAlreadyAutofilled,
           .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
           .had_value_after_filling = OptionalBoolean::kTrue,
           .filling_method = FillingMethod::kNone,

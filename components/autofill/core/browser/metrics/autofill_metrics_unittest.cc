@@ -6335,9 +6335,8 @@ TEST_F(AutofillMetricsSeamlessnessTest, CreditCardFormRecordOnIFrames) {
     const auto* const entry = field_entries[i].get();
     DenseSet<FieldFillingSkipReason> skipped_status_vector;
     if (i == 0 || i == 2) {
-      skipped_status_vector = {
-          FieldFillingSkipReason::kNotSkipped,
-          FieldFillingSkipReason::kAutofilledFieldsNotRefill};
+      skipped_status_vector = {FieldFillingSkipReason::kNotSkipped,
+                               FieldFillingSkipReason::kAlreadyAutofilled};
     } else {
       skipped_status_vector = {FieldFillingSkipReason::kNotSkipped};
     }

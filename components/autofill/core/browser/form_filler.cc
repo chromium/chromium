@@ -57,8 +57,8 @@ std::string_view GetSkipFieldFillLogMessage(
       return "Skipped: Value is prefilled";
     case FieldFillingSkipReason::kUserFilledFields:
       return "Skipped: User filled the field";
-    case FieldFillingSkipReason::kAutofilledFieldsNotRefill:
-      return "Skipped: Previously autofilled field and not a refill";
+    case FieldFillingSkipReason::kAlreadyAutofilled:
+      return "Skipped: Field is already autofilled.";
     case FieldFillingSkipReason::kNoFillableGroup:
       return "Skipped: Field type has no fillable group";
     case FieldFillingSkipReason::kRefillNotInInitialFill:
@@ -201,7 +201,7 @@ FieldFillingSkipReason FormFiller::GetFieldFillingSkipReason(
   // `kAutofillEnablePaymentsFieldSwapping` is enabled.
   if (field.is_autofilled() && !is_trigger_field && !is_refill &&
       !allow_payment_swapping) {
-    return FieldFillingSkipReason::kAutofilledFieldsNotRefill;
+    return FieldFillingSkipReason::kAlreadyAutofilled;
   }
 
   FieldTypeGroup field_group_type = autofill_field.Type().group();
