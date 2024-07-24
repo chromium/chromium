@@ -1208,6 +1208,7 @@ class PixelTestPages():
                       test_actions=high_perf_test_actions),
     ]
 
+  # pylint: disable=too-many-locals
   @staticmethod
   def DirectCompositionPages(base_name: str,
                              swap_count: Optional[int] = None
@@ -1267,10 +1268,15 @@ class PixelTestPages():
     h264 = overlay_support.ZeroCopyCodec.H264
     vp9 = overlay_support.ZeroCopyCodec.VP9
 
+    standard_crop = ca.NonWhiteContentCropAction(
+        initial_crop=ca.FixedRectCropAction(0, 0, 300, 300))
+    large_crop = ca.NonWhiteContentCropAction(
+        initial_crop=ca.FixedRectCropAction(0, 0, 1000, 600))
+
     return [
         PixelTestPage(f'pixel_video_mp4.html?width=240&height=135&{swap_param}',
                       base_name + '_DirectComposition_Video_MP4',
-                      test_rect=[0, 0, 240, 135],
+                      crop_action=standard_crop,
                       browser_args=browser_args,
                       other_args={
                           'codec': h264,
@@ -1283,11 +1289,11 @@ class PixelTestPages():
                           'full_size': True,
                           'codec': h264,
                       },
-                      test_rect=[0, 0, 960, 540],
+                      crop_action=large_crop,
                       matching_algorithm=strict_dc_sobel_algorithm),
         PixelTestPage(f'pixel_video_mp4.html?width=240&height=135&{swap_param}',
                       base_name + '_DirectComposition_Video_MP4_NV12',
-                      test_rect=[0, 0, 240, 135],
+                      crop_action=standard_crop,
                       browser_args=browser_args_NV12,
                       other_args={
                           'pixel_format': overlay_support.PixelFormat.NV12,
@@ -1296,7 +1302,7 @@ class PixelTestPages():
                       matching_algorithm=permissive_dc_sobel_algorithm),
         PixelTestPage(f'pixel_video_mp4.html?width=240&height=135&{swap_param}',
                       base_name + '_DirectComposition_Video_MP4_YUY2',
-                      test_rect=[0, 0, 240, 135],
+                      crop_action=standard_crop,
                       browser_args=browser_args_YUY2,
                       other_args={
                           'pixel_format': overlay_support.PixelFormat.YUY2,
@@ -1305,7 +1311,7 @@ class PixelTestPages():
                       matching_algorithm=permissive_dc_sobel_algorithm),
         PixelTestPage(f'pixel_video_mp4.html?width=960&height=540&{swap_param}',
                       base_name + '_DirectComposition_Video_MP4_BGRA',
-                      test_rect=[0, 0, 960, 540],
+                      crop_action=large_crop,
                       browser_args=browser_args_BGRA,
                       other_args={
                           'pixel_format': overlay_support.PixelFormat.BGRA8,
@@ -1314,7 +1320,7 @@ class PixelTestPages():
                       matching_algorithm=permissive_dc_sobel_algorithm),
         PixelTestPage(f'pixel_video_mp4.html?width=240&height=135&{swap_param}',
                       base_name + '_DirectComposition_Video_MP4_VP_SCALING',
-                      test_rect=[0, 0, 240, 135],
+                      crop_action=standard_crop,
                       browser_args=browser_args_vp_scaling,
                       other_args={
                           'zero_copy': False,
@@ -1325,7 +1331,7 @@ class PixelTestPages():
             (f'pixel_video_mp4_four_colors_aspect_4x3.html?'
              f'width=240&height=135&{swap_param}'),
             base_name + '_DirectComposition_Video_MP4_FourColors_Aspect_4x3',
-            test_rect=[0, 0, 240, 135],
+            crop_action=standard_crop,
             browser_args=browser_args,
             other_args={
                 'codec': h264,
@@ -1335,7 +1341,7 @@ class PixelTestPages():
             (f'pixel_video_mp4_four_colors_rot_90.html?'
              f'width=270&height=240&{swap_param}'),
             base_name + '_DirectComposition_Video_MP4_FourColors_Rot_90',
-            test_rect=[0, 0, 270, 240],
+            crop_action=standard_crop,
             browser_args=browser_args,
             other_args={
                 'video_rotation': overlay_support.VideoRotation.ROT90,
@@ -1346,7 +1352,7 @@ class PixelTestPages():
             (f'pixel_video_mp4_four_colors_rot_180.html?'
              f'width=240&height=135&{swap_param}'),
             base_name + '_DirectComposition_Video_MP4_FourColors_Rot_180',
-            test_rect=[0, 0, 240, 135],
+            crop_action=standard_crop,
             browser_args=browser_args,
             other_args={
                 'video_rotation': overlay_support.VideoRotation.ROT180,
@@ -1357,7 +1363,7 @@ class PixelTestPages():
             (f'pixel_video_mp4_four_colors_rot_270.html?'
              f'width=270&height=240&{swap_param}'),
             base_name + '_DirectComposition_Video_MP4_FourColors_Rot_270',
-            test_rect=[0, 0, 270, 240],
+            crop_action=standard_crop,
             browser_args=browser_args,
             other_args={
                 'video_rotation': overlay_support.VideoRotation.ROT270,
@@ -1366,7 +1372,7 @@ class PixelTestPages():
             matching_algorithm=strict_dc_sobel_algorithm),
         PixelTestPage(f'pixel_video_vp9.html?width=240&height=135&{swap_param}',
                       base_name + '_DirectComposition_Video_VP9',
-                      test_rect=[0, 0, 240, 135],
+                      crop_action=standard_crop,
                       browser_args=browser_args,
                       other_args={
                           'codec': vp9,
@@ -1375,7 +1381,7 @@ class PixelTestPages():
         PixelTestPage(
             f'pixel_video_vp9.html?width=960&height=540&{swap_param}',
             base_name + '_DirectComposition_Video_VP9_Fullsize',
-            test_rect=[0, 0, 960, 540],
+            crop_action=large_crop,
             browser_args=browser_args,
             other_args={
                 'full_size': True,
@@ -1390,7 +1396,7 @@ class PixelTestPages():
             )),
         PixelTestPage(f'pixel_video_vp9.html?width=240&height=135&{swap_param}',
                       base_name + '_DirectComposition_Video_VP9_NV12',
-                      test_rect=[0, 0, 240, 135],
+                      crop_action=standard_crop,
                       browser_args=browser_args_NV12,
                       other_args={
                           'pixel_format': overlay_support.PixelFormat.NV12,
@@ -1399,7 +1405,7 @@ class PixelTestPages():
                       matching_algorithm=very_permissive_dc_sobel_algorithm),
         PixelTestPage(f'pixel_video_vp9.html?width=240&height=135&{swap_param}',
                       base_name + '_DirectComposition_Video_VP9_YUY2',
-                      test_rect=[0, 0, 240, 135],
+                      crop_action=standard_crop,
                       browser_args=browser_args_YUY2,
                       other_args={
                           'pixel_format': overlay_support.PixelFormat.YUY2,
@@ -1408,7 +1414,7 @@ class PixelTestPages():
                       matching_algorithm=very_permissive_dc_sobel_algorithm),
         PixelTestPage(f'pixel_video_vp9.html?width=960&height=540&{swap_param}',
                       base_name + '_DirectComposition_Video_VP9_BGRA',
-                      test_rect=[0, 0, 960, 540],
+                      crop_action=large_crop,
                       browser_args=browser_args_BGRA,
                       other_args={
                           'pixel_format': overlay_support.PixelFormat.BGRA8,
@@ -1418,7 +1424,7 @@ class PixelTestPages():
         PixelTestPage((f'pixel_video_vp9_i420a.html?'
                        f'width=240&height=135&{swap_param}'),
                       base_name + '_DirectComposition_Video_VP9_I420A',
-                      test_rect=[0, 0, 240, 135],
+                      crop_action=standard_crop,
                       browser_args=browser_args,
                       other_args={
                           'no_overlay': True,
@@ -1427,7 +1433,7 @@ class PixelTestPages():
                       matching_algorithm=strict_dc_sobel_algorithm),
         PixelTestPage(f'pixel_video_vp9.html?width=240&height=135&{swap_param}',
                       base_name + '_DirectComposition_Video_VP9_VP_SCALING',
-                      test_rect=[0, 0, 240, 135],
+                      crop_action=standard_crop,
                       browser_args=browser_args_vp_scaling,
                       other_args={
                           'zero_copy': False,
@@ -1438,7 +1444,7 @@ class PixelTestPages():
             (f'pixel_video_underlay.html?'
              f'width=240&height=136&{swap_param}'),
             base_name + '_DirectComposition_Underlay',
-            test_rect=[0, 0, 240, 136],
+            crop_action=standard_crop,
             browser_args=browser_args,
             # Underlay zero copy usage seems to track H.264 zero copy
             # support.
@@ -1450,7 +1456,7 @@ class PixelTestPages():
             (f'pixel_video_underlay.html?'
              f'width=960&height=540&{swap_param}'),
             base_name + '_DirectComposition_Underlay_Fullsize',
-            test_rect=[0, 0, 960, 540],
+            crop_action=large_crop,
             browser_args=browser_args,
             # Underlay zero copy usage seems to track H.264 zero copy
             # support.
@@ -1462,7 +1468,7 @@ class PixelTestPages():
         PixelTestPage((f'pixel_video_mp4_rounded_corner.html?'
                        f'width=240&height=135&{swap_param}'),
                       base_name + '_DirectComposition_Video_MP4_Rounded_Corner',
-                      test_rect=[0, 0, 240, 135],
+                      crop_action=standard_crop,
                       browser_args=browser_args,
                       other_args={
                           'codec': h264,
@@ -1471,7 +1477,7 @@ class PixelTestPages():
         PixelTestPage((f'pixel_video_backdrop_filter.html?'
                        f'width=240&height=135&{swap_param}'),
                       base_name + '_DirectComposition_Video_BackdropFilter',
-                      test_rect=[0, 0, 240, 135],
+                      crop_action=standard_crop,
                       browser_args=browser_args,
                       other_args={
                           'no_overlay': True,
@@ -1479,13 +1485,13 @@ class PixelTestPages():
         PixelTestPage(
             f'pixel_video_mp4.html?width=240&height=135&{swap_param}',
             base_name + '_DirectComposition_Video_Disable_Overlays',
-            test_rect=[0, 0, 240, 135],
+            crop_action=standard_crop,
             browser_args=[cba.DISABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS],
             other_args={'no_overlay': True},
             matching_algorithm=very_permissive_dc_sobel_algorithm),
         PixelTestPage(f'pixel_video_mp4.html?width=240&height=135&{swap_param}',
                       base_name + '_DirectComposition_Video_SW_Decode',
-                      test_rect=[0, 0, 240, 135],
+                      crop_action=standard_crop,
                       browser_args=browser_args_sw_decode,
                       other_args={
                           'zero_copy': False,
@@ -1495,14 +1501,15 @@ class PixelTestPages():
             'pixel_media_foundation_clear_dcomp.html?src='
             '/media/test/data/four-colors.mp4',
             base_name + '_MediaFoundationClearDirectComposition',
-            test_rect=[0, 0, 256, 256],
+            crop_action=standard_crop,
             browser_args=[
                 '--enable-features=MediaFoundationClearPlayback, \
                 MediaFoundationClearRendering:strategy/direct-composition'
             ],
-            matching_algorithm=VERY_PERMISSIVE_SOBEL_ALGO,
-            grace_period_end=date(2022, 10, 24)),
+            matching_algorithm=VERY_PERMISSIVE_SOBEL_ALGO),
     ]
+
+  # pylint: enable=too-many-locals
 
   @staticmethod
   def VideoFromCanvasPages(base_name: str) -> List[PixelTestPage]:
