@@ -59,6 +59,7 @@
       <structure type="lottie" name="IDR_INFORMED_RESTORE_ONBOARDING_IMAGE" file="unscaled_resources/informed_restore_onboarding.json" compress="gzip" />
       <!-- Focus Mode -->
       <structure type="lottie" name="IDR_FOCUS_MODE_EQUALIZER_ANIMATION" file="unscaled_resources/equalizer.json" compress="gzip" />
+      <structure type="lottie" name="IDR_FOCUS_MODE_CONFETTI_ANIMATION" file="unscaled_resources/confetti.json" compress="gzip" />
       <!-- Birch -->
       <structure type="lottie" name="IDR_BIRCH_RELEASE_NOTES_ICON" file="unscaled_resources/birch_release_notes_icon.json" compress="gzip" />
       <!-- Mahi -->
