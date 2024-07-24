@@ -31,8 +31,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.ViewportTestUtils;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -50,6 +53,7 @@ import org.chromium.ui.base.UiAndroidFeatures;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * End-to-end tests for default navigation transitions.
@@ -64,7 +68,8 @@ import java.util.List;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "enable-features=BackForwardTransitions,BackGestureRefactorAndroid",
     // Resampling can make scroll offsets non-deterministic so turn it off.
-    "disable-features=ResamplingScrollEvents"
+    "disable-features=ResamplingScrollEvents",
+    "hide-scrollbars"
 })
 @Batch(Batch.PER_CLASS)
 public class NavigationTransitionsTest {
@@ -72,6 +77,8 @@ public class NavigationTransitionsTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private EmbeddedTestServer mTestServer;
+
+    private ViewportTestUtils mViewportTestUtils;
 
     private static final int TEST_TIMEOUT = 10000;
 
@@ -137,6 +144,8 @@ public class NavigationTransitionsTest {
                         return overrideBitmap;
                     }
                 });
+        mViewportTestUtils = new ViewportTestUtils(mActivityTestRule);
+        mViewportTestUtils.setUpForBrowserControls();
     }
 
     @After
@@ -175,6 +184,13 @@ public class NavigationTransitionsTest {
             assert fromX > 0 && fromX < width_px;
             assert toX > 0 && toX < width_px;
 
+            // These are arbitrary values that drag far enough to cause the back gesture to invoke.
+            //
+            // Note: Prefer `performWallClockDrag()` over
+            // `GestureNavigationUtils#swipeFromLeftEdge()` because in the renderer, we perform
+            // coalescing of input events. `swipeFromLeftEdge()` dispatches all the events at once
+            // and all the events can be coalesced into one single event, causing some of the visual
+            // effect not being triggered.
             TouchCommon.performWallClockDrag(
                     mActivityTestRule.getActivity(),
                     fromX,
@@ -332,5 +348,62 @@ public class NavigationTransitionsTest {
             performNavigationTransition(url1, BackEventCompat.EDGE_LEFT);
             Assert.assertEquals(url1, getCurrentUrl());
         }
+    }
+
+    /**
+     * Test that the top control is fully visible during a transition.
+     *
+     * <p>Ensures that the animation is started at the start of the transition.
+     */
+    @Test
+    @MediumTest
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/354197164")
+    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/354197164")
+    public void startBackNavWithTopControlHidden() throws Throwable {
+        // The top control's offset is -top_controls_height when controls are fully hidden, 0 when
+        // fully shown.
+        final AtomicInteger topControlOffsetDuringGesture = new AtomicInteger(Integer.MAX_VALUE);
+        BrowserControlsStateProvider browserControlsStateProvider =
+                mActivityTestRule.getActivity().getBrowserControlsManager();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    browserControlsStateProvider.addObserver(
+                            new BrowserControlsStateProvider.Observer() {
+                                @Override
+                                public void onControlsOffsetChanged(
+                                        int topOffset,
+                                        int topControlsMinHeightOffset,
+                                        int bottomOffset,
+                                        int bottomControlsMinHeightOffset,
+                                        boolean needsAnimate,
+                                        boolean isVisibilityForced) {
+                                    // Since in 3-button mode the gesture sequence is two seconds,
+                                    // the top control must have started to show during the two
+                                    // seconds.
+                                    if (getWebContents().getCurrentBackForwardTransitionStage()
+                                            == AnimationStage.OTHER) {
+                                        topControlOffsetDuringGesture.set(topOffset);
+                                    }
+                                }
+                            });
+                });
+
+        // Put "blue.html" and then "green.html" in the session history.
+        String url1 = mTestServer.getURL("/chrome/test/data/android/blue.html");
+        String url2 = mTestServer.getURL("/chrome/test/data/android/green_scroll.html");
+        mActivityTestRule.loadUrl(url1);
+        mActivityTestRule.loadUrl(url2);
+
+        WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
+
+        // Perform a back gesture transition.
+        mViewportTestUtils.hideBrowserControls();
+        performNavigationTransition(url1, BackEventCompat.EDGE_LEFT);
+
+        Assert.assertEquals(url1, getCurrentUrl());
+
+        Assert.assertTrue(
+                topControlOffsetDuringGesture.get() > -mViewportTestUtils.getTopControlsHeightPx());
+        mViewportTestUtils.waitForBrowserControlsState(/* shown= */ true);
     }
 }
