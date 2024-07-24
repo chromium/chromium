@@ -8,6 +8,7 @@ import android.app.ActivityManager;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.os.Build;
+import android.os.Process;
 import android.os.SystemClock;
 import android.text.format.DateUtils;
 
@@ -19,7 +20,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.metrics.RecordHistogram;
 
 /** Utilities to support startup metrics - Android version. */
@@ -253,7 +253,7 @@ public class UmaUtils {
 
     @CalledByNative
     public static long getProcessStartTime() {
-        return ApiHelperForN.getStartUptimeMillis();
+        return Process.getStartUptimeMillis();
     }
 
     @NativeMethods

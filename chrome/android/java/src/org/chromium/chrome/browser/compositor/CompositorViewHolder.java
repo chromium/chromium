@@ -41,7 +41,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -331,12 +330,13 @@ public class CompositorViewHolder extends FrameLayout
     public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
         View activeView = getContentView();
         if (activeView == null || !ViewCompat.isAttachedToWindow(activeView)) return null;
-        return ApiHelperForN.onResolvePointerIcon(activeView, event, pointerIndex);
+        return activeView.onResolvePointerIcon(event, pointerIndex);
     }
 
     /**
      * Creates a {@link CompositorView}.
-     * @param c     The Context to create this {@link CompositorView} in.
+     *
+     * @param c The Context to create this {@link CompositorView} in.
      * @param attrs The AttributeSet used to create this {@link CompositorView}.
      */
     public CompositorViewHolder(Context c, AttributeSet attrs) {

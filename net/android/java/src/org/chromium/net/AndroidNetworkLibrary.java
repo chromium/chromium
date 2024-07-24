@@ -35,7 +35,6 @@ import org.jni_zero.CalledByNativeUnchecked;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.base.compat.ApiHelperForQ;
 
@@ -377,7 +376,7 @@ class AndroidNetworkLibrary {
                 // No per-host configuration before N.
                 return isCleartextTrafficPermitted();
             }
-            return ApiHelperForN.isCleartextTrafficPermitted(host);
+            return NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted(host);
         }
 
         @RequiresApi(Build.VERSION_CODES.M)
