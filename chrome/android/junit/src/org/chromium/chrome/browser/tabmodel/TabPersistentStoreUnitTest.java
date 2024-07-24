@@ -37,9 +37,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -409,26 +406,6 @@ public class TabPersistentStoreUnitTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
-    public void testSkipNonActiveNtpsWithGroupedAndNavigableNtps_TabGroupStableIdsDisabled()
-            throws IOException {
-        setupSerializationTestMocksWithGroupedAndNavigableNtps();
-        TabModelSelectorMetadata metadata =
-                TabPersistentStore.saveTabModelSelectorMetadata(mTabModelSelector, null);
-
-        assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
-        assertEquals(
-                "Incorrect number of tabs in regular", 1, metadata.normalModelMetadata.ids.size());
-        assertEquals(
-                "Incorrect URL for regular tab.",
-                REGULAR_TAB_STRING_1,
-                metadata.normalModelMetadata.urls.get(0));
-    }
-
-    @Test
-    @SmallTest
-    @Feature("TabPersistentStore")
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
     public void testSkipNonActiveNtpsWithGroupedAndNavigableNtps_TabGroupStableIdsEnabled()
             throws IOException {
         setupSerializationTestMocksWithGroupedAndNavigableNtps();

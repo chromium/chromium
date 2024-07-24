@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tab.tab_restore;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
@@ -59,11 +58,7 @@ public class HistoricalEntry {
             List<Tab> tabs) {
         assert rootId != Tab.INVALID_TAB_ID;
         mRootId = rootId;
-        if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
-            mTabGroupId = tabGroupId;
-        } else {
-            mTabGroupId = null;
-        }
+        mTabGroupId = tabGroupId;
         mGroupTitle = groupTitle;
         mGroupColor = groupColor;
         mTabs = tabs;
@@ -71,11 +66,7 @@ public class HistoricalEntry {
 
     /** Returns whether this entry is a single tab. */
     public boolean isSingleTab() {
-        if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
-            return mTabs.size() == 1 && mTabGroupId == null;
-        } else {
-            return mTabs.size() == 1 && mRootId == Tab.INVALID_TAB_ID;
-        }
+        return mTabs.size() == 1 && mTabGroupId == null;
     }
 
     /** Returns the root ID for the group this entry represents. */

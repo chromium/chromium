@@ -701,17 +701,7 @@ class TabListMediator {
                     TabGroupModelFilter filter =
                             (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
                     Tab previousGroupTab = filter.getTabAt(prevFilterIndex);
-                    boolean isUngroupingLastTabInGroup =
-                            previousGroupTab.getId() == movedTab.getId();
                     if (mActionsOnAllRelatedTabs) {
-                        // When ungrouping the last tab in a group no update was needed. However,
-                        // with tab groups of size 1 an update is still needed to ensure the
-                        // thumbnail, title, etc. get correctly represented.
-                        if (isUngroupingLastTabInGroup
-                                && !ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
-                            return;
-                        }
-
                         final int currentSelectedTabId =
                                 TabModelUtils.getCurrentTabId(filter.getTabModel());
                         // Only add a tab to the model if it represents a new card (new group or new
@@ -734,6 +724,8 @@ class TabListMediator {
                                 true,
                                 false);
                     } else {
+                        boolean isUngroupingLastTabInGroup =
+                                previousGroupTab.getId() == movedTab.getId();
                         int curTabListModelIndex = mModel.indexFromId(movedTab.getId());
                         if (!isValidMovePosition(curTabListModelIndex)) return;
                         mModel.removeAt(curTabListModelIndex);

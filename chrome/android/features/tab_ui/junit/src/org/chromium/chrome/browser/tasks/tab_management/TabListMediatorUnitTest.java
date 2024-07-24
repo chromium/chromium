@@ -186,7 +186,6 @@ import java.util.stream.Collectors;
             "androidx.recyclerview.widget.RecyclerView" // required to mock final
         })
 @LooperMode(LooperMode.Mode.LEGACY)
-@EnableFeatures({ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS})
 public class TabListMediatorUnitTest {
 
     @Rule public JniMocker mMocker = new JniMocker();

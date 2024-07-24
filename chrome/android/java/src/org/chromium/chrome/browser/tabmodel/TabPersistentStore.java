@@ -1160,11 +1160,8 @@ public class TabPersistentStore {
         boolean isNtp = tab.isNativePage() && UrlUtilities.isNtpUrl(tab.getUrl());
         if (!isNtp) return false;
 
-        if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
-            // Only skip NTP tabs that are not in a tab group.
-            return tab.getTabGroupId() == null;
-        }
-        return true;
+        // Only skip NTP tabs that are not in a tab group.
+        return tab.getTabGroupId() == null;
     }
 
     private void saveListToFile(TabModelSelectorMetadata listData) {

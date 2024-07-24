@@ -13,7 +13,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -232,10 +231,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
             List<Tab> validTabs = getValidatedTabs(entry.getTabs());
             if (validTabs.isEmpty()) continue;
 
-            boolean saveAsSingleTab = validTabs.size() == 1;
-            if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
-                saveAsSingleTab &= entry.getTabGroupId() == null;
-            }
+            boolean saveAsSingleTab = validTabs.size() == 1 && entry.getTabGroupId() == null;
             if (saveAsSingleTab) {
                 validatedEntries.add(new HistoricalEntry(validTabs.get(0)));
                 continue;

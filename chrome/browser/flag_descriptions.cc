@@ -4183,11 +4183,6 @@ const char kAndroidTabDeclutterArchiveAllButActiveTabDescription[] =
     "Causes all tabs in model (except the current active one) to be archived. "
     "Used for manual testing.";
 
-const char kAndroidTabGroupStableIdsName[] = "Android Tab Group Stable IDs";
-const char kAndroidTabGroupStableIdsDescription[] =
-    "Replaces the tab group ID system on Android with stable IDs. A logical "
-    "consequence is support for tab groups with a single tab.";
-
 const char kAnimatedImageDragShadowName[] =
     "Enable animated image drag shadow on Android.";
 const char kAnimatedImageDragShadowDescription[] =

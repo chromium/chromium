@@ -93,9 +93,6 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         // TODO(b/336589861): Use savedTabGroupId to reassociate this tab group with a sync entity.
 
         if (tabIds.length == 1) {
-            if (!ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
-                return;
-            }
             groupFilter.createSingleTabGroup(tabIds[0], false);
         } else {
             for (int id : tabIds) {

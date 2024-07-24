@@ -33,7 +33,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -52,10 +51,7 @@ import java.util.Set;
 
 /** Unit tests for {@link HistoricalTabModelObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS,
-    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID
-})
+@EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
 public class HistoricalTabModelObserverUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -143,22 +139,6 @@ public class HistoricalTabModelObserverUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
-    public void testTabGroupWithSingleTab_NotSupported_NotUndoable() {
-        int rootId = 123;
-        MockTab mockTab = createMockTab(rootId);
-        String title = "bar";
-        @TabGroupColorId int color = TabGroupColorId.GREY;
-        createGroup(null, title, color, new MockTab[] {mockTab});
-        when(mTabGroupModelFilter.isTabInTabGroup(mockTab)).thenReturn(false);
-
-        mObserver.onFinishingMultipleTabClosure(
-                Collections.singletonList(mockTab), /* canRestore= */ true);
-
-        verify(mHistoricalTabSaver).createHistoricalTab(eq(mockTab));
-    }
-
-    @Test
     public void testTabGroupWithSingleTab_Undoable() {
         int rootId = 123;
         MockTab mockTab = createMockTab(rootId);
@@ -186,24 +166,6 @@ public class HistoricalTabModelObserverUnitTest {
         assertEquals(title, group.getGroupTitle());
         assertEquals(color, group.getGroupColor());
         assertEquals(mockTab, group.getTabs().get(0));
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
-    public void testTabGroupWithSingleTab_NotSupported_Undoable() {
-        int rootId = 123;
-        MockTab mockTab = createMockTab(rootId);
-        String title = "bar";
-        @TabGroupColorId int color = TabGroupColorId.GREY;
-        createGroup(null, title, color, new MockTab[] {mockTab});
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(rootId)).thenReturn(1);
-        when(mTabGroupModelFilter.tabGroupExistsForRootId(rootId)).thenReturn(false);
-        when(mTabGroupModelFilter.isTabInTabGroup(mockTab)).thenReturn(false);
-
-        mObserver.onFinishingMultipleTabClosure(
-                Collections.singletonList(mockTab), /* canRestore= */ true);
-
-        verify(mHistoricalTabSaver).createHistoricalTab(eq(mockTab));
     }
 
     @Test

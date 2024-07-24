@@ -88,7 +88,6 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({
-    ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS,
     ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
     ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
 })
@@ -717,17 +716,6 @@ public class TabGroupModelFilterUnitTest {
         assertEquals(TAB3_ID, mTab2.getRootId());
         assertEquals(TAB3_ID, mTab3.getRootId());
         verify(mTabGroupModelFilterObserver).didChangeGroupRootId(TAB2_ID, TAB3_ID);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
-    public void testGroupMembershipOfTabAfterClose_NoTabGroupId() {
-        assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab2));
-        assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab3));
-
-        mTabGroupModelFilter.closeTab(mTab2);
-        assertFalse(mTabGroupModelFilter.isTabInTabGroup(mTab2));
-        assertFalse(mTabGroupModelFilter.isTabInTabGroup(mTab3));
     }
 
     @Test
@@ -2142,31 +2130,34 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
-    public void testNullTabGroupIds() {
-        mTabGroupModelFilter.removeTabGroupIdsForAllTabGroups();
-
+    public void testTabGroupIds() {
         assertEquals(mTab1.getRootId(), TAB1_ROOT_ID);
-        assertNull(mTab1.getTabGroupId());
+        assertEquals(mTab1.getTabGroupId(), TAB1_TAB_GROUP_ID);
 
         assertEquals(mTab2.getRootId(), TAB2_ROOT_ID);
-        assertNull(mTab2.getTabGroupId());
+        assertEquals(mTab2.getTabGroupId(), TAB2_TAB_GROUP_ID);
 
         assertEquals(mTab3.getRootId(), TAB3_ROOT_ID);
-        assertNull(mTab3.getTabGroupId());
+        assertEquals(mTab3.getTabGroupId(), TAB3_TAB_GROUP_ID);
 
         assertEquals(mTab4.getRootId(), TAB4_ROOT_ID);
-        assertNull(mTab4.getTabGroupId());
+        assertEquals(mTab4.getTabGroupId(), TAB4_TAB_GROUP_ID);
 
         assertEquals(mTab5.getRootId(), TAB5_ROOT_ID);
-        assertNull(mTab5.getTabGroupId());
+        assertEquals(mTab5.getTabGroupId(), TAB5_TAB_GROUP_ID);
 
         assertEquals(mTab6.getRootId(), TAB6_ROOT_ID);
-        assertNull(mTab6.getTabGroupId());
+        assertEquals(mTab6.getTabGroupId(), TAB6_TAB_GROUP_ID);
     }
 
     @Test
     public void testAssignTabGroupIds() {
-        mTabGroupModelFilter.removeTabGroupIdsForAllTabGroups();
+        mTab1.setTabGroupId(null);
+        mTab2.setTabGroupId(null);
+        mTab3.setTabGroupId(null);
+        mTab4.setTabGroupId(null);
+        mTab5.setTabGroupId(null);
+        mTab6.setTabGroupId(null);
 
         Token tabGroupIdTab2 = new Token(1L, 2L);
         Token tabGroupIdTab5 = new Token(5L, 6L);

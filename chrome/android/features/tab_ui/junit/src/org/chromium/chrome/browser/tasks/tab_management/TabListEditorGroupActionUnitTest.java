@@ -25,7 +25,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -49,7 +48,6 @@ import java.util.Set;
 
 /** Unit tests for {@link TabListEditorGroupAction}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
 public class TabListEditorGroupActionUnitTest {
 
     @Mock private SelectionDelegate<Integer> mSelectionDelegate;
@@ -96,28 +94,7 @@ public class TabListEditorGroupActionUnitTest {
                 mAction.getPropertyModel()
                         .get(TabListEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID)
                         .intValue());
-        Assert.assertNotNull(
-                mAction.getPropertyModel().get(TabListEditorActionProperties.ICON));
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
-    public void testGroupActionDisabled() {
-        configure(false);
-        List<Integer> tabIds = new ArrayList<>();
-        mAction.onSelectionStateChange(tabIds);
-        Assert.assertEquals(
-                false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
-        Assert.assertEquals(
-                0, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
-
-        tabIds.add(1);
-        mAction.onSelectionStateChange(tabIds);
-        Assert.assertEquals(
-                false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
-        Assert.assertEquals(
-                1, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+        Assert.assertNotNull(mAction.getPropertyModel().get(TabListEditorActionProperties.ICON));
     }
 
     @Test

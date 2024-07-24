@@ -52,7 +52,6 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -86,7 +85,6 @@ import java.util.List;
 /** Tests for {@link TabGridDialogMediator}. */
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored"})
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
 public class TabGridDialogMediatorUnitTest {
 
     private static final String TAB1_TITLE = "Tab1";
@@ -608,33 +606,6 @@ public class TabGridDialogMediatorUnitTest {
         // Dialog title should still be the stored title even if the root tab is closed.
         assertThat(
                 mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
-    public void tabClosure_SingleTabAfterClosure_WithStoredTitle_SingleTabGroupNotSupported() {
-        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
-        // Mock that tab1, tab2 are in the same group and tab1 is the root tab.
-        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
-
-        // Mock that tab2 just get closed.
-        List<Tab> tabGroupAfterClosure = new ArrayList<>(Arrays.asList(mTab1));
-        doReturn(tabGroupAfterClosure).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
-
-        // Mock that tab2 is the current tab for the dialog.
-        mMediator.setCurrentTabIdForTesting(TAB2_ID);
-
-        // Mock that we have a stored title stored with reference to root ID of tab1.
-        doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupTitleEditor).getTabGroupTitle(TAB1_ID);
-
-        // Pretend tab groups of size 1 are unsupported.
-        when(mTabGroupModelFilter.isTabInTabGroup(mTab1)).thenReturn(false);
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, true);
-
-        // Even if there is a stored title for tab1, it is now a single tab, so we won't show the
-        // stored title.
-        assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(DIALOG_TITLE1));
     }
 
     @Test

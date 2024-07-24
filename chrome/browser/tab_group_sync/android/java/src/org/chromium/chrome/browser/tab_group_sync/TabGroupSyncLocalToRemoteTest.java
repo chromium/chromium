@@ -52,7 +52,6 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({
     ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
-    ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS,
     ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
     ChromeFeatureList.TAB_GROUP_PANE_ANDROID
 })
