@@ -10,6 +10,7 @@
 </body>
 
 <script>
+appendManyElements(document.body, 6);  // Create tree 6 levels deep.
 
 var isDone = false;
 var startTime;
@@ -23,10 +24,7 @@ function runTest() {
     PerfTestRunner.addRunTestStartMarker();
     startTime = PerfTestRunner.now();
 
-    document.body.innerHTML = '';
-    appendManyElements(document.body, 6);  // Create tree 6 levels deep.
-
-    setTimeout(changeLeafText, 250);
+    changeLeafText();
 
     // Re-run the same test.
     // Wait to allow the asynchronous accessibility code that's
@@ -55,7 +53,7 @@ function changeLeafText(text) {
   function changeSome() {
     const end =  Math.min(count + 100, elements.length);
     for (; count < end; count ++)
-      elements[count].textContent = 'B';
+      elements[count].textContent = elements[count].textContent == 'A' ? 'B' : 'A';
     setTimeout(changeSome, 0);
   }
 

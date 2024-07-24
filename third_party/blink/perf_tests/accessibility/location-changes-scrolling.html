@@ -20,6 +20,8 @@ var startTime;
 
 // Before the test starts, add 5000 rows to the table, something like a
 // message board with lots of replies on a long thread.
+// Ensure test content is generated before page load, so that the test
+// construction is not part of the collected traces.
 let table = document.getElementById('testElement');
 for (let i = 0; i < 5000; i++) {
     let tr = document.createElement('tr');

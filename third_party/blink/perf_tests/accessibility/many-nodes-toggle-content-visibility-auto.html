@@ -34,10 +34,15 @@
 </body>
 
 <script>
-
 var isDone = false;
 var startTime;
+
+// Ensure test content is generated before page load, so that the test
+// construction is not part of the collected traces.
 var container = document.getElementById('container');
+// We need a spacer since we don't want auto to automatically activate.
+container.innerHTML = '<div class=spacer></div>';
+generateAllContent();
 
 function runTest() {
   if (startTime) {
@@ -48,12 +53,7 @@ function runTest() {
     PerfTestRunner.addRunTestStartMarker();
     startTime = PerfTestRunner.now();
 
-    // We need a spacer since we don't want auto to automatically activate.
-    container.innerHTML = '<div class=spacer></div>';
-
-    generateAllContent();
-
-    setTimeout(toggleContentVisibility, 250);
+    toggleContentVisibility();
 
     // Re-run the same test.
     // Wait to allow the asynchronous accessibility code that's

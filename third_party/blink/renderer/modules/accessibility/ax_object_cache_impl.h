@@ -1245,6 +1245,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   // changes remaining to be serialized.
   blink::WeakCellFactory<AXObjectCacheImpl>
       weak_factory_for_loc_updates_pipeline_{this};
+
+  // Whether or not the load event was sent in a previous serialization.
+  bool load_sent_ = false;
 };
 
 // This is the only subclass of AXObjectCache.

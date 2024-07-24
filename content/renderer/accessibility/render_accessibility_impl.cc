@@ -150,6 +150,8 @@ void RenderAccessibilityImpl::DidCommitProvisionalLoad(
   // serialization sent by the old document.
   ax_context_->OnSerializationCancelled();
   weak_factory_for_pending_events_.InvalidateWeakPtrs();
+
+  loading_stage_ = LoadingStage::kPreload;
 }
 
 void RenderAccessibilityImpl::NotifyAccessibilityModeChange(
@@ -430,21 +432,11 @@ void RenderAccessibilityImpl::MarkWebAXObjectDirty(
                                          event_intents);
 }
 
-// TODO(accessibility): Replace all instances of HandleAXEvent with
-// ax_context_->AddEventToSerializationQueue(event, true);. But we'll need to
-// make sure to handle the loading_stage_ variable below.
 void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
   DCHECK(ax_context_);
 
-  if (event.event_type == ax::mojom::Event::kLoadStart) {
-    loading_stage_ = LoadingStage::kPreload;
-  } else if (event.event_type == ax::mojom::Event::kLoadComplete) {
-    loading_stage_ = LoadingStage::kLoadCompleted;
-  }
-
-  ax_context_->AddEventToSerializationQueue(
-      event, true);  // All events sent to AXObjectCache from RAI need
-  // immediate serialization!
+  // All events sent to AXObjectCache from RAI need immediate serialization.
+  ax_context_->AddEventToSerializationQueue(event, /* immediate */ true);
 }
 
 // TODO(accessibility): When legacy mode is deleted, calls to this function may
@@ -477,8 +469,15 @@ bool RenderAccessibilityImpl::SendAccessibilitySerialization(
     std::vector<ui::AXTreeUpdate> updates,
     std::vector<ui::AXEvent> events,
     bool had_load_complete_messages) {
-  TRACE_EVENT0("accessibility",
-               "RenderAccessibilityImpl::SendPendingAccessibilityEvents");
+  if (had_load_complete_messages) {
+    loading_stage_ = LoadingStage::kLoadCompleted;
+  }
+
+  TRACE_EVENT0(
+      "accessibility",
+      loading_stage_ == LoadingStage::kPostLoad
+          ? "RenderAccessibilityImpl::SendPendingAccessibilityEvents"
+          : "RenderAccessibilityImpl::SendPendingAccessibilityEventsLoading");
   base::ElapsedTimer timer;
 
   DCHECK(!accessibility_mode_.is_mode_off());

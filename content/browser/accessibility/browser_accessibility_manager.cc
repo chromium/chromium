@@ -397,8 +397,11 @@ void BrowserAccessibilityManager ::
 
 bool BrowserAccessibilityManager::OnAccessibilityEvents(
     const ui::AXUpdatesAndEvents& details) {
-  TRACE_EVENT0("accessibility",
-               "BrowserAccessibilityManager::OnAccessibilityEvents");
+  TRACE_EVENT0(
+      "accessibility",
+      is_post_load_
+          ? "BrowserAccessibilityManager::OnAccessibilityEvents"
+          : "BrowserAccessibilityManager::OnAccessibilityEventsLoading");
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Accessibility.Performance.BrowserAccessibilityManager::"
       "OnAccessibilityEvents2");
@@ -623,6 +626,15 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
 
   // Allow derived classes to do event post-processing.
   FinalizeAccessibilityEvents();
+
+  if (!is_post_load_) {
+    for (const ui::AXEvent& event : details.events) {
+      if (event.event_type == ax::mojom::Event::kLoadComplete) {
+        is_post_load_ = true;
+      }
+    }
+  }
+
   return true;
 }
 
@@ -633,7 +645,9 @@ void BrowserAccessibilityManager::FinalizeAccessibilityEvents() {}
 void BrowserAccessibilityManager::OnLocationChanges(
     const std::vector<ui::AXLocationChanges>& changes) {
   TRACE_EVENT0("accessibility",
-               "BrowserAccessibilityManager::OnLocationChanges");
+               is_post_load_
+                   ? "BrowserAccessibilityManager::OnLocationChanges"
+                   : "BrowserAccessibilityManager::OnLocationChangesLoading");
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Accessibility.Performance.BrowserAccessibilityManager::"
       "OnLocationChanges");

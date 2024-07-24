@@ -25,6 +25,10 @@ let isDone = false;
 let startTime;
 let animateTimes;
 
+// Ensure test content is generated before page load, so that the test
+// construction is not part of the collected traces.
+generateAllContent();
+
 function runTest() {
   if (startTime) {
     PerfTestRunner.measureValueAsync(PerfTestRunner.now() - startTime);
@@ -33,10 +37,6 @@ function runTest() {
   if (!isDone) {
     PerfTestRunner.addRunTestStartMarker();
     startTime = PerfTestRunner.now();
-
-    container.innerHTML = '';
-
-    generateAllContent();
 
     animateTimes = 0;
     animateRoots();

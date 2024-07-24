@@ -3113,7 +3113,10 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
 
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Accessibility.Performance.TotalAccessibilityCleanLayoutLifecycleStages");
-  TRACE_EVENT0("accessibility", "TotalAccessibilityCleanLayoutLifecycleStages");
+  TRACE_EVENT0("accessibility",
+               load_sent_
+                   ? "TotalAccessibilityCleanLayoutLifecycleStages"
+                   : "TotalAccessibilityCleanLayoutLifecycleStagesLoading");
 
   // Upon exiting this function, listen for tree updates again.
   absl::Cleanup lifecycle_returns_to_queueing_updates = [this] {
@@ -3127,7 +3130,9 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
     {
       SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
           "Accessibility.Performance.ProcessDeferredUpdatesLifecycleStage");
-      TRACE_EVENT0("accessibility", "ProcessDeferredUpdatesLifecycleStage");
+      TRACE_EVENT0("accessibility",
+                   load_sent_ ? "ProcessDeferredUpdatesLifecycleStage"
+                              : "ProcessDeferredUpdatesLifecycleStageLoading");
 
       // If this is the first update, ensure that both an initial tree exists
       // and that the relation cache is initialized. Any existing content with
@@ -3197,7 +3202,9 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
         lifecycle_.AdvanceTo(AXObjectCacheLifecycle::kFinalizingTree);
         SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
             "Accessibility.Performance.FinalizingTreeLifecycleStage");
-        TRACE_EVENT0("accessibility", "FinalizingTreeLifecycleStage");
+        TRACE_EVENT0("accessibility",
+                     load_sent_ ? "FinalizingTreeLifecycleStage"
+                                : "FinalizingTreeLifecycleStageLoading");
 
         // Build out tree, such that each node has computed its children.
         FinalizeTree();
@@ -3216,7 +3223,8 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
   lifecycle_.AdvanceTo(AXObjectCacheLifecycle::kSerialize);
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Accessibility.Performance.SerializeLifecycleStage");
-  TRACE_EVENT0("accessibility", "SerializeLifecycleStage");
+  TRACE_EVENT0("accessibility", load_sent_ ? "SerializeLifecycleStage"
+                                           : "SerializeLifecycleStageLoading");
 
   // Check whether serializations are needed, or whether we are just here to
   // update as part of a tree snapshot.
@@ -3359,6 +3367,10 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
     // really occur and thus the function will return false.
     // Cancel serialization to avoid stalling pipeline.
     OnSerializationCancelled();
+  }
+
+  if (had_load_complete_messages) {
+    load_sent_ = true;
   }
 
   CHECK(serialization_in_flight_ == success);
@@ -5019,6 +5031,10 @@ void AXObjectCacheImpl::MarkDocumentDirtyWithCleanLayout() {
   Root()->SetHasDirtyDescendants(true);
   MarkAXSubtreeDirtyWithCleanLayout(Root());
   ChildrenChangedWithCleanLayout(Root());
+  // Do not trim out load complete messages, they must be fired.
+  if (!load_sent_ && GetDocument().IsLoadCompleted()) {
+    PostNotification(&GetDocument(), ax::mojom::blink::Event::kLoadComplete);
+  }
 }
 
 void AXObjectCacheImpl::ResetSerializer() {
@@ -5190,7 +5206,8 @@ void AXObjectCacheImpl::SerializeLocationChanges() {
     return;
   }
 
-  TRACE_EVENT0("accessibility", "SerializeLocationChanges");
+  TRACE_EVENT0("accessibility", load_sent_ ? "SerializeLocationChanges"
+                                           : "SerializeLocationChangesLoading");
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Accessibility.Performance.SerializeLocationChanges");
 

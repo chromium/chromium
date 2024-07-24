@@ -34,21 +34,21 @@
 let isDone = false;
 let startTime;
 
+// Ensure test content is generated before page load, so that the test
+// construction is not part of the collected traces.
+generateAllContent();
+
 function runTest() {
   if (startTime) {
     PerfTestRunner.measureValueAsync(PerfTestRunner.now() - startTime);
     PerfTestRunner.addRunTestEndMarker();
   }
 
-  if (!document.querySelector('#root1')) {
-    generateAllContent();
-  }
-
   if (!isDone) {
     PerfTestRunner.addRunTestStartMarker();
     startTime = PerfTestRunner.now();
 
-    setTimeout(animateRoots, 0);
+    animateRoots();
     setTimeout(runTest, 2500);
   }
 }

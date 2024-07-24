@@ -12,7 +12,6 @@ var startTime;
 function randomString() {
     return '' + Math.floor(1000000 * Math.random());
 }
-
 function runTest() {
     if (startTime) {
         PerfTestRunner.measureValueAsync(PerfTestRunner.now() - startTime);
@@ -31,7 +30,7 @@ function runTest() {
                 html += randomString() + ' ' + randomString() + '<br>';
             }
             testElement.innerHTML = html;
-        }, 250);
+        }, 0);
 
         // Wait to allow the asynchronous accessibility code that's
         // covered by traceEventsToMeasure to have a chance to run.
@@ -53,7 +52,7 @@ PerfTestRunner.startMeasureValuesAsync({
     traceEventsToMeasure: [
         'TotalAccessibilityCleanLayoutLifecycleStages',
         'ProcessDeferredUpdatesLifecycleStage',
-    'FinalizingTreeLifecycleStage',
+        'FinalizingTreeLifecycleStage',
         'SerializeLifecycleStage',
         'RenderAccessibilityImpl::SendPendingAccessibilityEvents',
         'BrowserAccessibilityManager::OnAccessibilityEvents',

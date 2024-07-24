@@ -16,7 +16,8 @@ var startTime;
 
 // Before the test starts, add 2000 rows to the table, something like a
 // message board with lots of replies on a long thread.
-
+// Ensure test content is generated before page load, so that the test
+// construction is not part of the collected traces.
 let table = document.getElementById('testElement');
 for (let i = 0; i < 2000; i++) {
     let tr = document.createElement('tr');
@@ -34,6 +35,8 @@ for (let i = 0; i < 2000; i++) {
     message.appendChild(link);
     tr.appendChild(message);
 }
+
+document.documentElement.className = '';  // Begin tracing after next a11y update.
 
 function runTest() {
     if (startTime) {
@@ -73,7 +76,7 @@ PerfTestRunner.startMeasureValuesAsync({
     traceEventsToMeasure: [
         'TotalAccessibilityCleanLayoutLifecycleStages',
         'ProcessDeferredUpdatesLifecycleStage',
-    'FinalizingTreeLifecycleStage',
+        'FinalizingTreeLifecycleStage',
         'SerializeLifecycleStage',
         'RenderAccessibilityImpl::SendPendingAccessibilityEvents',
         'BrowserAccessibilityManager::OnAccessibilityEvents',

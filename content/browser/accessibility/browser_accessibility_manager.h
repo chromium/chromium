@@ -530,6 +530,10 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // false, this is set to true and the event will be fired later.
   bool defer_load_complete_event_ = false;
 
+  // If the load complete has been received in a previous serialization, this
+  // is set to true.
+  bool is_post_load_ = false;
+
   BrowserAccessibilityFindInPageInfo find_in_page_info_;
 
   // These cache the AX tree ID, node ID, and global screen bounds of the
