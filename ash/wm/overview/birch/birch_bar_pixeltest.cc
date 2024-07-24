@@ -205,7 +205,7 @@ TEST_P(BirchBarPixelTest, DISABLED_VerifyBirchChips) {
   }
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      param.name, /*revision_number=*/0, birch_bar_view));
+      param.name, /*revision_number=*/1, birch_bar_view));
 
   // Manually shut down chips of birch bar to avoid dangling ptrs of the fake
   // birch items.

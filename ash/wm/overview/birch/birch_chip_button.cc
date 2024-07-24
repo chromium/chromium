@@ -47,10 +47,11 @@ constexpr gfx::Insets kInteriorMarginsWithAddon = gfx::Insets::VH(12, 0);
 // The layout parameters of icon.
 constexpr gfx::Insets kIconMargins = gfx::Insets::VH(0, 12);
 constexpr int kIconViewSize = 40;
+// Web sites often only provide us 16x16 favicons, so don't enlarge them.
 constexpr int kFaviconSize = 16;
-constexpr int kFaviconCornerRadius = 20;
-constexpr int kCalendarIconSize = 20;
-constexpr int kCalendarCornerRadius = 20;
+constexpr int kFaviconCornerRadius = 8;
+constexpr int kAppIconSize = 16;
+constexpr int kAppCornerRadius = 20;
 constexpr int kIllustrationSize = 40;
 constexpr int kIllustrationCornerRadius = 8;
 constexpr int kWeatherImageSize = 32;
@@ -73,9 +74,12 @@ void StylizeIconForItemType(views::ImageView* icon, BirchItemType type) {
   std::optional<ui::ColorId> background_color_id;
 
   switch (type) {
+    case BirchItemType::kTest:
     case BirchItemType::kCalendar:
-      icon_size = kCalendarIconSize;
-      rounded_corners = kCalendarCornerRadius;
+    case BirchItemType::kAttachment:
+    case BirchItemType::kFile:
+      icon_size = kAppIconSize;
+      rounded_corners = kAppCornerRadius;
       background_color_id = kIconBackgroundColorId;
       break;
     case BirchItemType::kWeather:
@@ -86,7 +90,11 @@ void StylizeIconForItemType(views::ImageView* icon, BirchItemType type) {
       rounded_corners = kIllustrationCornerRadius;
       background_color_id = kIconBackgroundColorId;
       break;
-    default:
+    case BirchItemType::kTab:
+    case BirchItemType::kSelfShare:
+    case BirchItemType::kMostVisited:
+    case BirchItemType::kLastActive:
+    case BirchItemType::kLostMedia:
       icon_size = kFaviconSize;
       rounded_corners = kFaviconCornerRadius;
       background_color_id = kIconBackgroundColorId;
