@@ -880,6 +880,9 @@ MLGraphBuilder::MLGraphBuilder(
     mojo::PendingAssociatedRemote<webnn::mojom::blink::WebNNGraphBuilder>
         pending_remote)
     : ml_context_(context), remote_(execution_context) {
+  CHECK(base::FeatureList::IsEnabled(
+      webnn::mojom::features::kWebMachineLearningNeuralNetwork));
+
   remote_.Bind(std::move(pending_remote),
                execution_context->GetTaskRunner(TaskType::kMachineLearning));
 }
@@ -2246,38 +2249,30 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
     return EmptyPromise();
   }
 
-  if (base::FeatureList::IsEnabled(
-          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
-    auto graph_info =
-        BuildWebNNGraphInfo(named_outputs, ml_context_->GetProperties());
-    if (!graph_info.has_value()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotSupportedError,
-          "Failed to build graph: " + graph_info.error());
-      return EmptyPromise();
-    }
-
-    if (!remote_.is_bound()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Invalid state");
-      return EmptyPromise();
-    }
-
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLGraph>>(
-        script_state, exception_state.GetContext());
-    auto promise = resolver->Promise();
-
-    remote_->CreateGraph(
-        *std::move(graph_info),
-        WTF::BindOnce(&MLGraphBuilder::DidCreateWebNNGraph,
-                      WrapPersistent(this), WrapPersistent(resolver),
-                      *std::move(graph_constraints)));
-    return promise;
+  auto graph_info =
+      BuildWebNNGraphInfo(named_outputs, ml_context_->GetProperties());
+  if (!graph_info.has_value()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Failed to build graph: " + graph_info.error());
+    return EmptyPromise();
   }
 
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Not implemented");
-  return EmptyPromise();
+  if (!remote_.is_bound()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid state");
+    return EmptyPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLGraph>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+
+  remote_->CreateGraph(
+      *std::move(graph_info),
+      WTF::BindOnce(&MLGraphBuilder::DidCreateWebNNGraph, WrapPersistent(this),
+                    WrapPersistent(resolver), *std::move(graph_constraints)));
+  return promise;
 }
 
 void MLGraphBuilder::DidCreateWebNNGraph(
