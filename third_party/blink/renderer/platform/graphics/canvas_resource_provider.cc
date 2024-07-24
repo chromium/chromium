@@ -919,7 +919,8 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     WillDraw();
     RasterInterface()->WritePixels(
         resource_->GetBackBufferClientSharedImage()->mailbox(), x, y,
-        GetBackingTextureTarget(), SkPixmap(orig_info, pixels, row_bytes));
+        resource_->GetBackBufferClientSharedImage()->GetTextureTarget(),
+        SkPixmap(orig_info, pixels, row_bytes));
     return true;
   }
 
