@@ -2407,8 +2407,9 @@ void FederatedAuthRequestImpl::ShowModalDialog(DialogType dialog_type,
   config_url_ = idp_config_url;
 
   WebContents* web_contents = request_dialog_controller_->ShowModalDialog(
-      url_to_show, base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
-                                  weak_ptr_factory_.GetWeakPtr()));
+      url_to_show, rp_mode_,
+      base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
+                     weak_ptr_factory_.GetWeakPtr()));
   // This may be null on Android, as the method cannot return the WebContents of
   // the CCT that will be created.
   if (web_contents) {

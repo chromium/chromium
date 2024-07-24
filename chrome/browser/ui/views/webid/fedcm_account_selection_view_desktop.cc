@@ -830,7 +830,8 @@ void FedCmAccountSelectionView::OnMoreDetails(const ui::Event& event) {
 }
 
 content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
-    const GURL& url) {
+    const GURL& url,
+    blink::mojom::RpMode rp_mode) {
   if (popup_window_) {
     // TODO(crbug.com/324052630): Support add account with multi IDP API. An add
     // account pop-up of a different IDP might be open, so this might need to

@@ -107,7 +107,9 @@ class AccountSelectionView {
   virtual std::optional<std::string> GetSubtitle() const = 0;
 
   virtual void ShowUrl(LinkType type, const GURL& url) = 0;
-  virtual content::WebContents* ShowModalDialog(const GURL& url) = 0;
+  virtual content::WebContents* ShowModalDialog(
+      const GURL& url,
+      blink::mojom::RpMode rp_mode) = 0;
   virtual void CloseModalDialog() = 0;
   virtual content::WebContents* GetRpWebContents() = 0;
 

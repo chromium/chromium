@@ -77,6 +77,7 @@ class IdentityDialogController
   // Show a modal dialog that loads content from the IdP in a WebView.
   content::WebContents* ShowModalDialog(
       const GURL& url,
+      blink::mojom::RpMode rp_mode,
       DismissCallback dismiss_callback) override;
   void CloseModalDialog() override;
   content::WebContents* GetRpWebContents() override;

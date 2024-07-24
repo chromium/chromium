@@ -11465,6 +11465,14 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Cross-site with config URL"/>
 </enum>
 
+<enum name="FedCmJavaObjectCreationOutcome">
+  <int value="0" label="New Java object created"/>
+  <int value="1" label="Existing Java object reused"/>
+  <int value="2" label="New Java object creation failed"/>
+  <int value="3" label="No native view"/>
+  <int value="4" label="No window"/>
+</enum>
+
 <enum name="FedCmMultipleRequestsRpMode">
   <int value="0"
       label="A widget flow is invoked while a widget flow is pending"/>

@@ -452,7 +452,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     controller.SetIdpSigninPopupWindowForTesting(
         std::move(idp_signin_popup_window));
 
-    controller.ShowModalDialog(GURL(u"https://example.com"));
+    controller.ShowModalDialog(GURL(u"https://example.com"),
+                               blink::mojom::RpMode::kWidget);
   }
 
   std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShowMultiIdp(
@@ -1895,7 +1896,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       test_web_contents_.get(), controller.get());
   EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
   controller->SetIdpSigninPopupWindowForTesting(std::move(popup_window));
-  controller->ShowModalDialog(GURL(u"https://example.com"));
+  controller->ShowModalDialog(GURL(u"https://example.com"),
+                              blink::mojom::RpMode::kButton);
 
   // Emulate user closing the pop-up window.
   controller->OnPopupWindowDestroyed();
@@ -2197,7 +2199,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       test_web_contents_.get(), controller.get());
   EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
   controller->SetIdpSigninPopupWindowForTesting(std::move(popup_window));
-  controller->ShowModalDialog(GURL(u"https://example.com"));
+  controller->ShowModalDialog(GURL(u"https://example.com"),
+                              blink::mojom::RpMode::kButton);
 
   EXPECT_TRUE(dialog_widget_->IsVisible());
 }

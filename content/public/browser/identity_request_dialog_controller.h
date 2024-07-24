@@ -208,6 +208,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   // Show a modal dialog that loads content from the IdP.
   virtual WebContents* ShowModalDialog(const GURL& url,
+                                       blink::mojom::RpMode rp_mode,
                                        DismissCallback dismiss_callback);
 
   // Closes the modal dialog.

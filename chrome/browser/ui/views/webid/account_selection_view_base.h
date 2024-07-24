@@ -170,9 +170,6 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
     // Called when the accounts UI is displayed.
     virtual void OnAccountsDisplayed() = 0;
 
-    // Called when IdentityProvider.close() is called from the renderer.
-    virtual void CloseModalDialog() = 0;
-
     // Called when the user clicks on the 'Choose an account' button
     virtual void OnChooseAnAccountClicked() = 0;
   };

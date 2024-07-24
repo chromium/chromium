@@ -67,7 +67,7 @@ class MockIdentityRequestDialogController
               (override));
   MOCK_METHOD(WebContents*,
               ShowModalDialog,
-              (const GURL&, DismissCallback),
+              (const GURL&, blink::mojom::RpMode rp_mode, DismissCallback),
               (override));
   MOCK_METHOD(void, CloseModalDialog, (), (override));
 

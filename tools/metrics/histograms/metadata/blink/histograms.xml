@@ -1600,6 +1600,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.JavaObjectCreationOutcome.Button"
+    enum="FedCmJavaObjectCreationOutcome" expires_after="2025-02-12">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    The Java object is tied to the bottomsheet availability so it may not be
+    creatable when we need it. Records one sample each time we request creating
+    the object in button mode. Recorded whenever native is talking with the
+    Android side which could be multiple times per API call.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.JavaObjectCreationOutcome.Widget"
+    enum="FedCmJavaObjectCreationOutcome" expires_after="2025-02-12">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    The Java object is tied to the bottomsheet availability so it may not be
+    creatable when we need it. Records one sample each time we request creating
+    the object in widget mode. Recorded whenever native is talking with the
+    Android side which could be multiple times per API call.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.LifecycleStateFailureReason"
     enum="FedCmLifecycleStateFailureReason" expires_after="2025-02-12">
   <owner>cbiesinger@chromium.org</owner>
