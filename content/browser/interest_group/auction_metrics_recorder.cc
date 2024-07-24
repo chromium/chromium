@@ -302,6 +302,15 @@ void AuctionMetricsRecorder::OnAuctionEnd(AuctionResult auction_result) {
       &UkmEntry::
           SetMeanScoreAdTrustedScoringSignalsCriticalPathLatencyInMillis);
 
+  MaybeSetPhaseStartTime(score_signals_fetch_phase_start_time_,
+                         &UkmEntry::SetScoreSignalsFetchPhaseStartTimeInMillis);
+  MaybeSetPhaseEndTime(score_signals_fetch_phase_end_time_,
+                       &UkmEntry::SetScoreSignalsFetchPhaseEndTimeInMillis);
+  MaybeSetPhaseStartTime(scoring_phase_start_time_,
+                         &UkmEntry::SetScoringPhaseStartTimeInMillis);
+  MaybeSetPhaseEndTime(scoring_phase_end_time_,
+                       &UkmEntry::SetScoringPhaseEndTimeInMillis);
+
   auto* ukm_recorder = ukm::UkmRecorder::Get();
   builder_.Record(ukm_recorder->Get());
 }
@@ -571,6 +580,8 @@ void AuctionMetricsRecorder::RecordScoreAdDependencyLatencies(
       score_ad_trusted_scoring_signals_latency_aggregator_, critical_path);
 
   RecordScoreAdDependencyLatencyCriticalPath(critical_path);
+
+  MaybeRecordScoreAdPhasesStartAndEndTimes(score_ad_dependency_latencies);
 }
 
 void AuctionMetricsRecorder::LatencyAggregator::RecordLatency(
@@ -599,6 +610,20 @@ base::TimeDelta AuctionMetricsRecorder::LatencyAggregator::GetMaxLatency() {
   return max_latency_;
 }
 
+void AuctionMetricsRecorder::EarliestTimeRecorder::MaybeRecordTime(
+    base::TimeTicks time) {
+  if (!earliest_time_.has_value() || time < *earliest_time_) {
+    earliest_time_ = time;
+  }
+}
+
+void AuctionMetricsRecorder::LatestTimeRecorder::MaybeRecordTime(
+    base::TimeTicks time) {
+  if (!latest_time_.has_value() || time > *latest_time_) {
+    latest_time_ = time;
+  }
+}
+
 void AuctionMetricsRecorder::MaybeSetMeanAndMaxLatency(
     AuctionMetricsRecorder::LatencyAggregator& aggregator,
     EntrySetFunction set_mean_function,
@@ -623,6 +648,29 @@ void AuctionMetricsRecorder::SetNumAndMaybeMeanLatency(
     std::invoke(set_mean_function, builder_,
                 GetSemanticBucketMinForDurationTiming(
                     aggregator.GetMeanLatency().InMilliseconds()));
+  }
+}
+
+void AuctionMetricsRecorder::MaybeSetPhaseStartTime(
+    EarliestTimeRecorder& recorder,
+    EntrySetFunction set_function) {
+  std::optional<base::TimeTicks> earliest_start_time =
+      recorder.get_earliest_time();
+  if (earliest_start_time.has_value()) {
+    std::invoke(set_function, builder_,
+                GetBucketMinForPhaseTimeMetric(*earliest_start_time -
+                                               auction_start_time_));
+  }
+}
+
+void AuctionMetricsRecorder::MaybeSetPhaseEndTime(
+    LatestTimeRecorder& recorder,
+    EntrySetFunction set_function) {
+  std::optional<base::TimeTicks> latest_end_time = recorder.get_latest_time();
+  if (latest_end_time.has_value()) {
+    std::invoke(
+        set_function, builder_,
+        GetBucketMinForPhaseTimeMetric(*latest_end_time - auction_start_time_));
   }
 }
 
@@ -716,6 +764,19 @@ void AuctionMetricsRecorder::RecordScoreAdDependencyLatencyCriticalPath(
           critical_path_latency);
       break;
   }
+}
+
+void AuctionMetricsRecorder::MaybeRecordScoreAdPhasesStartAndEndTimes(
+    const auction_worklet::mojom::ScoreAdDependencyLatencies&
+        score_ad_dependency_latencies) {
+  score_signals_fetch_phase_start_time_.MaybeRecordTime(
+      score_ad_dependency_latencies.deps_wait_start_time);
+  score_signals_fetch_phase_end_time_.MaybeRecordTime(
+      score_ad_dependency_latencies.score_ad_start_time);
+  scoring_phase_start_time_.MaybeRecordTime(
+      score_ad_dependency_latencies.score_ad_start_time);
+  scoring_phase_end_time_.MaybeRecordTime(
+      score_ad_dependency_latencies.score_ad_finish_time);
 }
 
 }  // namespace content

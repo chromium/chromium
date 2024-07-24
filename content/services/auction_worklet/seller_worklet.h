@@ -212,6 +212,10 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     base::TimeDelta wait_trusted_signals;
     base::TimeDelta wait_direct_from_seller_signals;
 
+    // Time where the SellerWorklet finished waiting for ScoreAd dependencies,
+    // used to compute start and end times for latency phase UKMs.
+    base::TimeTicks score_ad_start_time;
+
     mojo::Remote<auction_worklet::mojom::ScoreAdClient> score_ad_client;
 
     std::unique_ptr<TrustedSignalsRequestManager::Request>
