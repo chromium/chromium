@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -34,6 +35,17 @@
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
   config.features_enabled.push_back(kIdentityDiscAccountMenu);
+
+  if ([self isRunningTest:@selector
+            (testMultipleIdentities_IdentityConfirmationToast)] ||
+      [self isRunningTest:@selector
+            (testSingleIdentity_IdentityConfirmationToast)] ||
+      [self isRunningTest:@selector
+            (testFrequencyLimitation_IdentityConfirmationToast)] ||
+      [self isRunningTest:@selector
+            (testRecentSignin_IdentityConfirmationToast)]) {
+    config.features_enabled.push_back(kIdentityConfirmationSnackbar);
+  }
 
   return config;
 }

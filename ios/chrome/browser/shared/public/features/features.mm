@@ -933,3 +933,19 @@ BASE_FEATURE(kRichBubbleWithoutImage,
 bool IsRichBubbleWithoutImageEnabled() {
   return base::FeatureList::IsEnabled(kRichBubbleWithoutImage);
 }
+
+BASE_FEATURE(kIdentityConfirmationSnackbar,
+             "IdentityConfirmationSnackbar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Feature parameters for kIdentityConfirmationSnackbar.
+constexpr base::FeatureParam<base::TimeDelta>
+    kIdentityConfirmationMinDisplayInterval{
+        &kIdentityConfirmationSnackbar,
+        /*name=*/"IdentityConfirmationMinDisplayInterval",
+        /*default_value=*/base::Days(14)};
+constexpr base::FeatureParam<base::TimeDelta>
+    kIdentityConfirmationMinTimeSinceSignin{
+        &kIdentityConfirmationSnackbar,
+        /*name=*/"IdentityConfirmationMinTimeSinceSignin",
+        /*default_value=*/base::Hours(24)};

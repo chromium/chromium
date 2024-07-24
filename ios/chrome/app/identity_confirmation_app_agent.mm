@@ -5,6 +5,7 @@
 #import "ios/chrome/app/identity_confirmation_app_agent.h"
 
 #import "base/logging.h"
+#import "base/metrics/field_trial_params.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -26,18 +28,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-namespace {
-// The amount of time (2 weeks) to allow showing the snackbar again since last
-// time it was prompted.
-const base::TimeDelta kTimeBetweenIdentityConfirmationSnackbarPrompts =
-    base::Days(14);
-
-// The amount of time (2 weeks) to allow showing the snackbar again since last
-// time the user has signed in.
-const base::TimeDelta kTimeBetweenLastSigninAndIdentityConfirmationPrompt =
-    base::Days(14);
-}  // namespace
 
 @implementation IdentityConfirmationAppAgent {
   // This code ensures only one snackbar appears at a time on an iPad in
@@ -51,7 +41,7 @@ const base::TimeDelta kTimeBetweenLastSigninAndIdentityConfirmationPrompt =
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (!base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+  if (!base::FeatureList::IsEnabled(kIdentityConfirmationSnackbar)) {
     return;
   }
   if (self.appState.initStage != InitStageFinal) {
@@ -78,7 +68,7 @@ const base::TimeDelta kTimeBetweenLastSigninAndIdentityConfirmationPrompt =
 
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (!base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+  if (!base::FeatureList::IsEnabled(kIdentityConfirmationSnackbar)) {
     return;
   }
   if (!appState.foregroundActiveScene) {
@@ -101,7 +91,7 @@ const base::TimeDelta kTimeBetweenLastSigninAndIdentityConfirmationPrompt =
 #pragma mark - Private
 
 - (void)showIdentityConfirmationSnackbarWithSceneState:(SceneState*)sceneState {
-  CHECK(base::FeatureList::IsEnabled(kIdentityDiscAccountMenu));
+  CHECK(base::FeatureList::IsEnabled(kIdentityConfirmationSnackbar));
 
   Browser* browser =
       sceneState.browserProviderInterface.mainBrowserProvider.browser;
@@ -125,14 +115,14 @@ const base::TimeDelta kTimeBetweenLastSigninAndIdentityConfirmationPrompt =
   PrefService* prefService = browser->GetBrowserState()->GetPrefs();
   base::Time lastSignin = prefService->GetTime(prefs::kLastSigninTimestamp);
   if (base::Time::Now() - lastSignin <
-      kTimeBetweenLastSigninAndIdentityConfirmationPrompt) {
+      kIdentityConfirmationMinTimeSinceSignin.Get()) {
     return;
   }
 
   const base::Time lastPrompted =
       prefService->GetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime);
   if (base::Time::Now() - lastPrompted <
-      kTimeBetweenIdentityConfirmationSnackbarPrompts) {
+      kIdentityConfirmationMinDisplayInterval.Get()) {
     return;
   }
   prefService->SetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime,

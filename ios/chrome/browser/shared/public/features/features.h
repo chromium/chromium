@@ -749,4 +749,18 @@ BASE_DECLARE_FEATURE(kRichBubbleWithoutImage);
 
 bool IsRichBubbleWithoutImageEnabled();
 
+// Feature flag to enable account confirmation snackbar on startup.
+BASE_DECLARE_FEATURE(kIdentityConfirmationSnackbar);
+
+// Feature param to specify how much time between identity confirmation snackbar
+// triggers to avoid over-prompting. Overridable through Finch.
+extern const base::FeatureParam<base::TimeDelta>
+    kIdentityConfirmationMinDisplayInterval;
+
+// Feature param to specify how much time to keep between the identity
+// confirmation snackbar and the last sign-in to avoid over-prompting.
+// Overridable through Finch.
+extern const base::FeatureParam<base::TimeDelta>
+    kIdentityConfirmationMinTimeSinceSignin;
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

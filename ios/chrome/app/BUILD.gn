@@ -326,6 +326,7 @@ source_set("identity_confirmation_app_agent") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/ntp:feature_flags",
