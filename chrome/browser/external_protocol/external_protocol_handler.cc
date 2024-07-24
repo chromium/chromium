@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -332,15 +333,18 @@ enum class LoggedScheme {
 // LINT.ThenChange(/tools/metrics/histograms/metadata/permissions/enums.xml:ExternalProtocolScheme)
 
 void LogRequestForScheme(const std::string& scheme) {
-  LoggedScheme scheme_bucket = LoggedScheme::OTHER;
-  if (scheme == "search-ms") {
-    scheme_bucket = LoggedScheme::SEARCH_MS;
-  } else if (scheme == "mailto") {
-    scheme_bucket = LoggedScheme::MAILTO;
-  } else if (scheme == "microsoft-edge") {
-    scheme_bucket = LoggedScheme::MICROSOFT_EDGE;
-  }
-
+  constexpr auto kSchemeToBucket =
+      base::MakeFixedFlatMap<std::string_view, LoggedScheme>(
+          {{"search-ms", LoggedScheme::SEARCH_MS},
+           {"search", LoggedScheme::SEARCH},
+           {"mailto", LoggedScheme::MAILTO},
+           {"microsoft-edge", LoggedScheme::MICROSOFT_EDGE}});
+  static_assert(kSchemeToBucket.size() ==
+                static_cast<size_t>(LoggedScheme::kMaxValue));
+  auto iterator = kSchemeToBucket.find(scheme);
+  LoggedScheme scheme_bucket = iterator != kSchemeToBucket.end()
+                                   ? iterator->second
+                                   : LoggedScheme::OTHER;
   base::UmaHistogramEnumeration("BrowserDialogs.ExternalProtocol.Scheme",
                                 scheme_bucket);
 }
