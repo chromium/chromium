@@ -11,7 +11,6 @@ import("//build/config/ui.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
-import("//chromeos/dbus/config/use_real_dbus_clients.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/feed/features.gni")
@@ -419,7 +418,7 @@ static_library("ui") {
   public_deps = [
     # WARNING WARNING WARNING
     # New dependencies outside of //chrome/browser should be added to
-    # ui_public_depedenencies.
+    # ui_public_dependencies.
     # New dependencies inside of //chrome/browser that generate header files
     # should be added to //chrome/browser:browser_generated_files.
     "//chrome/browser:browser_public_dependencies",
@@ -3577,14 +3576,6 @@ static_library("ui") {
     }
 
     if (!is_official_build) {
-      if (!use_real_dbus_clients) {
-        sources += [
-          "webui/ash/emulator/device_emulator_message_handler.cc",
-          "webui/ash/emulator/device_emulator_message_handler.h",
-          "webui/ash/emulator/device_emulator_ui.cc",
-          "webui/ash/emulator/device_emulator_ui.h",
-        ]
-      }
       deps += [ "//ash/webui/sample_system_web_app_ui" ]
     }
   }
