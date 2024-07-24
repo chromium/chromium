@@ -16706,6 +16706,14 @@ be describing additional metrics about the same event.
     <summary>
       The estimated private footprint of the page, in kilobytes.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="RecentCPUUsage">
     <summary>
@@ -16713,11 +16721,27 @@ be describing additional metrics about the same event.
       as 100% usage of 1 full core. (The same scale as the
       PerformanceMonitor.AverageCPU8.* histograms.)
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ResidentSetSizeEstimate">
     <summary>
       The estimated resident set size of the page, in kilobytes.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="TotalRecentCPUUsageAllPages">
     <summary>
@@ -16726,6 +16750,14 @@ be describing additional metrics about the same event.
       PerformanceMonitor.AverageCPU8.* histograms.) RecentCPUUsage can be
       compared to this to find how the page compares to other open tabs.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
