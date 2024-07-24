@@ -1718,7 +1718,7 @@ config("runtime_library") {
   # the C++ symbols. This config ensures the C++ symbols exist and are strong in
   # order to cause that replacement to occur by explicitly linking in clang's
   # compiler-rt library.
-  if (is_clang && !is_nacl) {
+  if (is_clang && !is_nacl && !is_cronet_build) {
     configs += [ "//build/config/clang:compiler_builtins" ]
   }
 
