@@ -15,10 +15,12 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/values.h"
 #include "components/ownership/owner_key_util.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/scoped_nss_types.h"
 
 namespace em = enterprise_management;
@@ -33,12 +35,24 @@ using ScopedSGNContext = std::unique_ptr<
 
 crypto::ScopedSECItem SignPolicy(
     const scoped_refptr<ownership::PrivateKey>& private_key,
-    base::span<const uint8_t> policy) {
+    base::span<const uint8_t> policy,
+    const em::PolicyFetchRequest::SignatureType signature_type) {
+  SECOidTag algorithm;
+  switch (signature_type) {
+    case em::PolicyFetchRequest::SHA1_RSA:
+      algorithm = SEC_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION;
+      break;
+    case em::PolicyFetchRequest::SHA256_RSA:
+      algorithm = SEC_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION;
+      break;
+    case em::PolicyFetchRequest::NONE:
+      NOTREACHED_NORETURN();
+  }
+
   crypto::ScopedSECItem sign_result(SECITEM_AllocItem(nullptr, nullptr, 0));
 
   if (SEC_SignData(sign_result.get(), policy.data(), policy.size(),
-                   private_key->key(),
-                   SEC_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION) != SECSuccess) {
+                   private_key->key(), algorithm) != SECSuccess) {
     return nullptr;
   }
   return sign_result;
@@ -74,11 +88,17 @@ std::unique_ptr<em::PolicyFetchResponse> AssembleAndSignPolicy(
   int attempt_counter = 0;
   constexpr int kMaxSignatureAttempts = 5;
   crypto::ScopedSECItem signature_item;
+
+  em::PolicyFetchRequest::SignatureType signature_type =
+      base::FeatureList::IsEnabled(ownership::kOwnerSettingsWithSha256)
+          ? em::PolicyFetchRequest::SHA256_RSA
+          : em::PolicyFetchRequest::SHA1_RSA;
   do {
     ++attempt_counter;
     signature_item = SignPolicy(
         private_key,
-        base::as_bytes(base::make_span(policy_response->policy_data())));
+        base::as_bytes(base::make_span(policy_response->policy_data())),
+        signature_type);
   } while (!signature_item && attempt_counter < kMaxSignatureAttempts);
 
   if (!signature_item) {
@@ -88,10 +108,17 @@ std::unique_ptr<em::PolicyFetchResponse> AssembleAndSignPolicy(
 
   policy_response->mutable_policy_data_signature()->assign(
       reinterpret_cast<const char*>(signature_item->data), signature_item->len);
+  if (base::FeatureList::IsEnabled(ownership::kOwnerSettingsWithSha256)) {
+    policy_response->set_policy_data_signature_type(signature_type);
+  }
   return policy_response;
 }
 
 }  // namespace
+
+BASE_FEATURE(kOwnerSettingsWithSha256,
+             "OwnerSettingsWithSha256",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 OwnerSettingsService::OwnerSettingsService(
     const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util)

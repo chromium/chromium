@@ -29,6 +29,9 @@ class OwnerKeyUtil;
 class PrivateKey;
 class PublicKey;
 
+OWNERSHIP_EXPORT
+BASE_DECLARE_FEATURE(kOwnerSettingsWithSha256);
+
 // This class is a common interface for platform-specific classes
 // which deal with ownership, keypairs and owner-related settings.
 class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
