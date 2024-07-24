@@ -242,7 +242,9 @@ def main():
         format="%(message)s",
     )
 
-    if not args.rewrapper_cfg_project and not args.rbe_instance and not args.get_rbe_instance:
+    if not args.rewrapper_cfg_project and \
+       not args.rbe_instance and \
+       not args.get_rbe_instance:
         logging.error(
             "At least one of --rbe_instance, --rewrapper_cfg_project or "
             "--get-rbe-instance must be provided")
@@ -276,6 +278,26 @@ def main():
     logging.info("fetch reclient_cfgs for RBE project %s..." % rbe_project)
 
     cipd_prefix = posixpath.join(args.cipd_prefix, rbe_project)
+
+    # cleanup unused nacl configs. preserve nacl/rewrapper_linux.cfg
+    # TODO(b/354804085): remove this code.
+    for cfg in [
+            "nacl/rewrapper_mac.cfg",
+            "nacl/rewrapper_windows.cfg",
+            "nacl/win-cross",
+    ]:
+        cfgpath = os.path.join(THIS_DIR, cfg)
+        if os.path.exists(cfgpath):
+            if os.path.isdir(cfgpath):
+
+                def onerror(func, cfgpath, exc_info):
+                    os.chmod(cfgpath, 0o644)
+                    func(cfgpath)
+
+                shutil.rmtree(cfgpath, onerror=onerror)
+            else:
+                os.chmod(cfgpath, 0o644)
+                os.remove(cfgpath)
 
     tool_revisions = {
         "chromium-browser-clang": ClangRevision(),
