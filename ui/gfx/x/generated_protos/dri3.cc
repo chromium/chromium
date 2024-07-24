@@ -876,4 +876,81 @@ Future<void> Dri3::SetDRMDeviceInUse(const Window& window,
       Dri3::SetDRMDeviceInUseRequest{window, drmMajor, drmMinor});
 }
 
+Future<void> Dri3::ImportSyncobj(const Dri3::ImportSyncobjRequest& request) {
+  if (!connection_->Ready() || !present()) {
+    return {};
+  }
+
+  WriteBuffer buf;
+
+  auto& syncobj = request.syncobj;
+  auto& drawable = request.drawable;
+  auto& syncobj_fd = request.syncobj_fd;
+
+  // major_opcode
+  uint8_t major_opcode = info_.major_opcode;
+  buf.Write(&major_opcode);
+
+  // minor_opcode
+  uint8_t minor_opcode = 10;
+  buf.Write(&minor_opcode);
+
+  // length
+  // Caller fills in length for writes.
+  Pad(&buf, sizeof(uint16_t));
+
+  // syncobj
+  buf.Write(&syncobj);
+
+  // drawable
+  buf.Write(&drawable);
+
+  // syncobj_fd
+  buf.fds().push_back(HANDLE_EINTR(dup(syncobj_fd.get())));
+
+  Align(&buf, 4);
+
+  return connection_->SendRequest<void>(&buf, "Dri3::ImportSyncobj", false);
+}
+
+Future<void> Dri3::ImportSyncobj(const Syncobj& syncobj,
+                                 const Drawable& drawable,
+                                 const RefCountedFD& syncobj_fd) {
+  return Dri3::ImportSyncobj(
+      Dri3::ImportSyncobjRequest{syncobj, drawable, syncobj_fd});
+}
+
+Future<void> Dri3::FreeSyncobj(const Dri3::FreeSyncobjRequest& request) {
+  if (!connection_->Ready() || !present()) {
+    return {};
+  }
+
+  WriteBuffer buf;
+
+  auto& syncobj = request.syncobj;
+
+  // major_opcode
+  uint8_t major_opcode = info_.major_opcode;
+  buf.Write(&major_opcode);
+
+  // minor_opcode
+  uint8_t minor_opcode = 11;
+  buf.Write(&minor_opcode);
+
+  // length
+  // Caller fills in length for writes.
+  Pad(&buf, sizeof(uint16_t));
+
+  // syncobj
+  buf.Write(&syncobj);
+
+  Align(&buf, 4);
+
+  return connection_->SendRequest<void>(&buf, "Dri3::FreeSyncobj", false);
+}
+
+Future<void> Dri3::FreeSyncobj(const Syncobj& syncobj) {
+  return Dri3::FreeSyncobj(Dri3::FreeSyncobjRequest{syncobj});
+}
+
 }  // namespace x11

@@ -51,7 +51,26 @@ authorization from the authors.
       <field type="CARD32" name="major_version" />
       <field type="CARD32" name="minor_version" />
       <pad bytes="16" />
+      <doc>
+	<brief>The negotiated version of the DAMAGE extension</brief>
+	<description>
+This indicates the version of the DAMAGE extension chosen by the server.
+It will always be less than or equal to the version offered by the client.
+	</description>
+	<field name="major_version">The major version chosen by the server.</field>
+	<field name="minor_version">The minor version chosen by the server.</field>
+      </doc>
     </reply>
+    <doc>
+      <brief>Negotiate the version of the DAMAGE extension</brief>
+      <description>
+This negotiates the version of the DAMAGE extension.  It must precede any other
+request using the DAMAGE extension.  Failure to do so will cause a BadRequest
+error for those requests.
+      </description>
+      <field name="client_major_version">The major version supported by the client.</field>
+      <field name="client_minor_version">The minor version supported by the client.</field>
+    </doc>
   </request>
 
   <request name="Create" opcode="1">
@@ -59,21 +78,84 @@ authorization from the authors.
     <field type="DRAWABLE" name="drawable" />
     <field type="CARD8"    name="level" enum="ReportLevel" />
     <pad bytes="3" />
+    <doc>
+      <brief>Creates a Damage object to monitor changes to a drawable.</brief>
+      <description><![CDATA[
+This creates a Damage object to monitor changes to a drawable, and specifies
+the level of detail to be reported for changes.
+
+We call changes made to pixel contents of windows and pixmaps 'damage'
+throughout this extension.
+
+Damage accumulates as drawing occurs in the drawable.  Each drawing operation
+'damages' one or more rectangular areas within the drawable.  The rectangles
+are guaranteed to include the set of pixels modified by each operation, but
+may include significantly more than just those pixels.  The desire is for
+the damage to strike a balance between the number of rectangles reported and
+the extraneous area included.  A reasonable goal is for each primitive
+object drawn (line, string, rectangle) to be represented as a single
+rectangle and for the damage area of the operation to be the union of these
+rectangles.
+
+The DAMAGE extension allows applications to either receive the raw
+rectangles as a stream of events, or to have them partially processed within
+the X server to reduce the amount of data transmitted as well as reduce the
+processing latency once the repaint operation has started.
+
+The Damage object holds any accumulated damage region and reflects the
+relationship between the drawable selected for damage notification and the
+drawable for which damage is tracked.
+      ]]></description>
+      <field name="damage"><![CDATA[
+The ID with which you will refer to the new Damage object, created by
+`xcb_generate_id`.
+      ]]></field>
+      <field name="drawable">The ID of the drawable to be monitored.</field>
+      <field name="level">The level of detail to be provided in Damage events.</field>
+    </doc>
   </request>
 
   <request name="Destroy" opcode="2">
     <field type="DAMAGE" name="damage" />
+    <doc>
+      <brief>Destroys a previously created Damage object.</brief>
+      <description>
+This destroys a Damage object and requests the X server stop reporting
+the changes it was tracking.
+      </description>
+      <field name="damage"><![CDATA[
+The ID you provided to `xcb_create_damage`.
+      ]]></field>
+    </doc>
   </request>
 
   <request name="Subtract" opcode="3">
     <field type="DAMAGE" name="damage" />
     <field type="REGION" name="repair" altenum="Region" />
     <field type="REGION" name="parts" altenum="Region" />
+    <doc>
+      <brief>Remove regions from a previously created Damage object.</brief>
+      <description>
+This updates the regions of damage recorded in a a Damage object.
+See https://www.x.org/releases/current/doc/damageproto/damageproto.txt
+for details.
+      </description>
+      <field name="damage">The ID you provided to `xcb_create_damage`.</field>
+    </doc>
   </request>
 
   <request name="Add" opcode="4">
     <field type="DRAWABLE" name="drawable" />
     <field type="REGION" name="region" />
+    <doc>
+      <brief>Add a region to a previously created Damage object.</brief>
+      <description>
+This updates the regions of damage recorded in a a Damage object.
+See https://www.x.org/releases/current/doc/damageproto/damageproto.txt
+for details.
+      </description>
+      <field name="damage">The ID you provided to `xcb_create_damage`.</field>
+    </doc>
   </request>
 
   <event name="Notify" number="0">
@@ -83,5 +165,29 @@ authorization from the authors.
     <field type="TIMESTAMP" name="timestamp" />
     <field type="RECTANGLE" name="area" />
     <field type="RECTANGLE" name="geometry" />
+    <doc>
+      <brief>the contents of the monitored drawable have changed</brief>
+      <field name="level"><![CDATA[
+The level of the damage being reported.
+If the 0x80 bit is set, indicates there are subsequent Damage events
+being delivered immediately as part of a larger Damage region.
+      ]]></field>
+      <field name="drawable"><![CDATA[
+The drawable for which damage is being reported.
+      ]]></field>
+      <field name="damage"><![CDATA[
+The Damage object being used to track the damage.
+      ]]></field>
+      <field name="timestamp"><![CDATA[
+Time when the event was generated (in milliseconds).
+      ]]></field>
+      <field name="area"><![CDATA[
+Damaged area of the drawable.
+      ]]></field>
+      <field name="geometry"><![CDATA[
+Total area of the drawable.
+      ]]></field>
+      <see type="request" name="Create" />
+    </doc>
   </event>
 </xcb>

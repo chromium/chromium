@@ -52,7 +52,7 @@ class Future;
 class COMPONENT_EXPORT(X11) Dri3 {
  public:
   static constexpr unsigned major_version = 1;
-  static constexpr unsigned minor_version = 3;
+  static constexpr unsigned minor_version = 4;
 
   Dri3(Connection* connection, const x11::QueryExtensionReply& info);
 
@@ -62,6 +62,8 @@ class COMPONENT_EXPORT(X11) Dri3 {
   uint8_t first_error() const { return info_.first_error; }
 
   Connection* connection() const { return connection_; }
+
+  enum class Syncobj : uint32_t {};
 
   struct QueryVersionRequest {
     uint32_t major_version{};
@@ -280,6 +282,30 @@ class COMPONENT_EXPORT(X11) Dri3 {
   Future<void> SetDRMDeviceInUse(const Window& window = {},
                                  const uint32_t& drmMajor = {},
                                  const uint32_t& drmMinor = {});
+
+  struct ImportSyncobjRequest {
+    Syncobj syncobj{};
+    Drawable drawable{};
+    RefCountedFD syncobj_fd{};
+  };
+
+  using ImportSyncobjResponse = Response<void>;
+
+  Future<void> ImportSyncobj(const ImportSyncobjRequest& request);
+
+  Future<void> ImportSyncobj(const Syncobj& syncobj = {},
+                             const Drawable& drawable = {},
+                             const RefCountedFD& syncobj_fd = {});
+
+  struct FreeSyncobjRequest {
+    Syncobj syncobj{};
+  };
+
+  using FreeSyncobjResponse = Response<void>;
+
+  Future<void> FreeSyncobj(const FreeSyncobjRequest& request);
+
+  Future<void> FreeSyncobj(const Syncobj& syncobj = {});
 
  private:
   Connection* const connection_;

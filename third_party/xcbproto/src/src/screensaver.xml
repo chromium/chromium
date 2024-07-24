@@ -99,63 +99,63 @@ Draft Standard Version 1.1
     <switch name="value_list">
         <fieldref>value_mask</fieldref>
         <bitcase>
-          <enumref ref="CW">BackPixmap</enumref>
+          <enumref ref="xproto:CW">BackPixmap</enumref>
           <field type="PIXMAP" name="background_pixmap" altenum="BackPixmap"/>
         </bitcase>
         <bitcase>
-          <enumref ref="CW">BackPixel</enumref>
+          <enumref ref="xproto:CW">BackPixel</enumref>
           <field type="CARD32" name="background_pixel" />
         </bitcase>
         <bitcase>
-          <enumref ref="CW">BorderPixmap</enumref>
+          <enumref ref="xproto:CW">BorderPixmap</enumref>
           <field type="PIXMAP" name="border_pixmap" altenum="Pixmap"/>
         </bitcase>
         <bitcase>
-          <enumref ref="CW">BorderPixel</enumref>
+          <enumref ref="xproto:CW">BorderPixel</enumref>
           <field type="CARD32" name="border_pixel" />
         </bitcase>
         <bitcase>
-          <enumref ref="CW">BitGravity</enumref>
+          <enumref ref="xproto:CW">BitGravity</enumref>
           <field type="CARD32" name="bit_gravity" enum="Gravity"/>
         </bitcase>
         <bitcase>
-          <enumref ref="CW">WinGravity</enumref>
+          <enumref ref="xproto:CW">WinGravity</enumref>
           <field type="CARD32" name="win_gravity" enum="Gravity"/>
         </bitcase>
         <bitcase>
-          <enumref ref="CW">BackingStore</enumref>
+          <enumref ref="xproto:CW">BackingStore</enumref>
           <field type="CARD32" name="backing_store" enum="BackingStore"/>
         </bitcase>
         <bitcase>
-          <enumref ref="CW">BackingPlanes</enumref>
+          <enumref ref="xproto:CW">BackingPlanes</enumref>
           <field type="CARD32" name="backing_planes" />
         </bitcase>
         <bitcase>
-          <enumref ref="CW">BackingPixel</enumref>
+          <enumref ref="xproto:CW">BackingPixel</enumref>
           <field type="CARD32" name="backing_pixel" />
         </bitcase>
         <bitcase>
-          <enumref ref="CW">OverrideRedirect</enumref>
+          <enumref ref="xproto:CW">OverrideRedirect</enumref>
           <field type="BOOL32" name="override_redirect" />
         </bitcase>
         <bitcase>
-          <enumref ref="CW">SaveUnder</enumref>
+          <enumref ref="xproto:CW">SaveUnder</enumref>
           <field type="BOOL32" name="save_under" />
         </bitcase>
         <bitcase>
-          <enumref ref="CW">EventMask</enumref>
+          <enumref ref="xproto:CW">EventMask</enumref>
           <field type="CARD32" name="event_mask" mask="EventMask"/>
         </bitcase>
         <bitcase>
-          <enumref ref="CW">DontPropagate</enumref>
+          <enumref ref="xproto:CW">DontPropagate</enumref>
           <field type="CARD32" name="do_not_propogate_mask" mask="EventMask"/>
         </bitcase>
         <bitcase>
-          <enumref ref="CW">Colormap</enumref>
+          <enumref ref="xproto:CW">Colormap</enumref>
           <field type="COLORMAP" name="colormap" altenum="Colormap"/>
         </bitcase>
         <bitcase>
-          <enumref ref="CW">Cursor</enumref>
+          <enumref ref="xproto:CW">Cursor</enumref>
           <field type="CURSOR" name="cursor" altenum="Cursor"/>
         </bitcase>
     </switch>
