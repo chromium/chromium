@@ -126,7 +126,7 @@ RenderInputRouter::RenderInputRouter(
       task_runner_(std::move(task_runner)) {}
 
 void RenderInputRouter::SetupInputRouter(float device_scale_factor) {
-  TRACE_EVENT("toplevel.flow", "RenderInputRouter::SetupInputRouter");
+  TRACE_EVENT("input", "RenderInputRouter::SetupInputRouter");
 
   input_router_ = std::make_unique<InputRouterImpl>(
       this, this, fling_scheduler_.get(),
@@ -145,7 +145,7 @@ void RenderInputRouter::BindRenderInputRouterInterfaces(
 }
 
 void RenderInputRouter::RendererWidgetCreated(bool for_frame_widget) {
-  TRACE_EVENT("toplevel.flow", "RenderInputRouter::RendererWidgetCreated");
+  TRACE_EVENT("input", "RenderInputRouter::RendererWidgetCreated");
 
   client_remote_->GetWidgetInputHandler(
       widget_input_handler_.BindNewPipeAndPassReceiver(task_runner_),
@@ -170,7 +170,7 @@ void RenderInputRouter::SetDeviceScaleFactor(float device_scale_factor) {
 }
 
 void RenderInputRouter::ProgressFlingIfNeeded(base::TimeTicks current_time) {
-  TRACE_EVENT("toplevel.flow", "RenderInputRouter::ProgressFlingIfNeeded");
+  TRACE_EVENT("input", "RenderInputRouter::ProgressFlingIfNeeded");
   fling_scheduler_->ProgressFlingOnBeginFrameIfneeded(current_time);
 }
 
@@ -179,7 +179,7 @@ void RenderInputRouter::StopFling() {
 }
 
 blink::mojom::WidgetInputHandler* RenderInputRouter::GetWidgetInputHandler() {
-  TRACE_EVENT("toplevel.flow", "RenderInputRouter::GetWidgetInputHandler");
+  TRACE_EVENT("input", "RenderInputRouter::GetWidgetInputHandler");
 
   if (widget_input_handler_) {
     return widget_input_handler_.get();
