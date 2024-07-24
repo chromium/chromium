@@ -42,6 +42,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/picker/picker_file_suggester.h"
 #include "chrome/browser/ui/ash/picker/picker_lacros_omnibox_search_provider.h"
+#include "chrome/browser/ui/ash/picker/picker_link_suggester.h"
 #include "chrome/browser/ui/ash/picker/picker_thumbnail_loader.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -299,13 +300,6 @@ void PickerClientImpl::OnCrosSearchResultsUpdated(
                ConvertSearchResults(std::move(results_map[result_type])));
 }
 
-void PickerClientImpl::OnZeroStateLinksSearchResultsUpdated(
-    PickerClientImpl::SuggestedLinksCallback callback,
-    ash::AppListSearchResultType result_type,
-    std::vector<std::unique_ptr<ChromeSearchResult>> results) {
-  callback.Run(ConvertSearchResults(std::move(results)));
-}
-
 void PickerClientImpl::StopCrosQuery() {
   CHECK(search_engine_);
   search_engine_->StopQuery();
@@ -368,19 +362,7 @@ void PickerClientImpl::GetRecentDriveFileResults(size_t max_files,
 
 void PickerClientImpl::GetSuggestedLinkResults(
     SuggestedLinksCallback callback) {
-  // TODO: b/330938446 - Replace with proper zero-state logic.
-  if (zero_state_links_search_engine_ == nullptr) {
-    zero_state_links_search_engine_ =
-        std::make_unique<app_list::SearchEngine>(profile_);
-    zero_state_links_search_engine_->AddProvider(CreateOmniboxProvider(
-        /*bookmarks=*/true, /*history=*/true, /*open_tabs=*/true));
-  }
-
-  zero_state_links_search_engine_->StartSearch(
-      u"http", app_list::SearchOptions(),
-      base::BindRepeating(
-          &PickerClientImpl::OnZeroStateLinksSearchResultsUpdated,
-          weak_factory_.GetWeakPtr(), std::move(callback)));
+  link_suggester_->GetSuggestedLinks(std::move(callback));
 }
 
 bool PickerClientImpl::IsFeatureAllowedForDogfood() {
@@ -430,9 +412,8 @@ void PickerClientImpl::SetProfile(Profile* profile) {
 
   ranker_manager_ = std::make_unique<app_list::RankerManager>(profile_);
 
-  zero_state_links_search_engine_.reset();
-
   file_suggester_ = std::make_unique<PickerFileSuggester>(profile_);
+  link_suggester_ = std::make_unique<PickerLinkSuggester>(profile_);
   thumbnail_loader_ = std::make_unique<PickerThumbnailLoader>(profile_);
 }
 
