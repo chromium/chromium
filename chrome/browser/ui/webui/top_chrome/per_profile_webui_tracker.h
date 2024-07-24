@@ -26,6 +26,9 @@ class PerProfileWebUITracker {
    public:
     // Called when a tracked WebContents is destroyed.
     virtual void OnWebContentsDestroyed(content::WebContents* web_contents) = 0;
+    // Called when a tracked WebContents' primary page changed.
+    virtual void OnWebContentsPrimaryPageChanged(
+        content::WebContents* web_contents) = 0;
   };
 
   static std::unique_ptr<PerProfileWebUITracker> Create();

@@ -152,6 +152,8 @@ class WebUIContentsPreloadManager : public ProfileObserver,
 
   // PerProfileWebUITracker::Observer:
   void OnWebContentsDestroyed(content::WebContents* web_contents) override;
+  void OnWebContentsPrimaryPageChanged(
+      content::WebContents* web_contents) override;
 
   PreloadMode preload_mode_ = PreloadMode::kPreloadOnMakeContents;
 

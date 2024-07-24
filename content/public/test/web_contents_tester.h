@@ -139,6 +139,9 @@ class WebContentsTester {
   // Sets the return value of GetContentsMimeType().
   virtual void SetMainFrameMimeType(const std::string& mime_type) = 0;
 
+  // Sets the main frame size.
+  virtual void SetMainFrameSize(const gfx::Size& frame_size) = 0;
+
   // Change currently audible state for testing. This will cause all relevant
   // notifications to fire as well.
   virtual void SetIsCurrentlyAudible(bool audible) = 0;

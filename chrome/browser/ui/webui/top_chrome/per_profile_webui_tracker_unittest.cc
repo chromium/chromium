@@ -135,6 +135,10 @@ class MockTrackerObserver : public PerProfileWebUITracker::Observer {
               OnWebContentsDestroyed,
               (content::WebContents*),
               (override));
+  MOCK_METHOD(void,
+              OnWebContentsPrimaryPageChanged,
+              (content::WebContents*),
+              (override));
 };
 
 // Tests that the observer of tracker is notified of WebContents destroy.
