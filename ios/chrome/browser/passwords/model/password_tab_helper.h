@@ -15,6 +15,7 @@
 @protocol PasswordControllerDelegate;
 @protocol PasswordGenerationProvider;
 @protocol PasswordsUiDelegate;
+@class SharedPasswordController;
 
 namespace password_manager {
 class PasswordManager;
@@ -51,6 +52,9 @@ class PasswordTabHelper : public web::WebStateObserver,
   // Returns an object that can provide password generation from the
   // PasswordController. May return nil.
   id<PasswordGenerationProvider> GetPasswordGenerationProvider();
+
+  // Returns the SharedPasswordController owned by the PasswordController.
+  SharedPasswordController* GetSharedPasswordController();
 
   // web::WebStatePolicyDecider:
   void ShouldAllowRequest(

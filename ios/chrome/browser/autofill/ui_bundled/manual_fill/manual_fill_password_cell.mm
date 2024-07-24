@@ -6,12 +6,12 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/favicon/model/favicon_loader.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -68,6 +68,10 @@ CGFloat GetFaviconSize() {
 @implementation ManualFillCredentialItem {
   // If `YES`, autofill button is shown for the item.
   BOOL _showAutofillFormButton;
+
+  // If `YES`, the user should be asked to re-authenticate before autofilling
+  // the entire form.
+  BOOL _shouldReauthToAutofill;
 }
 
 - (instancetype)initWithCredential:(ManualFillCredential*)credential
@@ -77,7 +81,8 @@ CGFloat GetFaviconSize() {
                        (id<ManualFillContentInjector>)contentInjector
                        menuActions:(NSArray<UIAction*>*)menuActions
        cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
-            showAutofillFormButton:(BOOL)showAutofillFormButton {
+            showAutofillFormButton:(BOOL)showAutofillFormButton
+            shouldReauthToAutofill:(BOOL)shouldReauthToAutofill {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
     _credential = credential;
@@ -87,6 +92,7 @@ CGFloat GetFaviconSize() {
     _menuActions = menuActions;
     _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
     _showAutofillFormButton = showAutofillFormButton;
+    _shouldReauthToAutofill = shouldReauthToAutofill;
     self.cellClass = [ManualFillPasswordCell class];
   }
   return self;
@@ -101,7 +107,8 @@ CGFloat GetFaviconSize() {
                   contentInjector:self.contentInjector
                       menuActions:self.menuActions
       cellIndexAccessibilityLabel:_cellIndexAccessibilityLabel
-           showAutofillFormButton:_showAutofillFormButton];
+           showAutofillFormButton:_showAutofillFormButton
+           shouldReauthToAutofill:_shouldReauthToAutofill];
 }
 
 - (const GURL&)faviconURL {
@@ -173,6 +180,10 @@ static const CGFloat kOffsetForConnectedCell = 16;
 @implementation ManualFillPasswordCell {
   // If `YES`, autofill button is shown for the cell.
   BOOL _showAutofillFormButton;
+
+  // If `YES`, the user should be asked to re-authenticate before autofilling
+  // the entire form.
+  BOOL _shouldReauthToAutofill;
 }
 
 #pragma mark - Public
@@ -208,8 +219,11 @@ static const CGFloat kOffsetForConnectedCell = 16;
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
-         showAutofillFormButton:(BOOL)showAutofillFormButton {
+         showAutofillFormButton:(BOOL)showAutofillFormButton
+         shouldReauthToAutofill:(BOOL)shouldReauthToAutofill {
   _showAutofillFormButton = showAutofillFormButton;
+  _shouldReauthToAutofill = shouldReauthToAutofill;
+
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
   }
@@ -378,6 +392,9 @@ static const CGFloat kOffsetForConnectedCell = 16;
   if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
     self.autofillFormButton = CreateAutofillFormButton();
     [self.contentView addSubview:self.autofillFormButton];
+    [self.autofillFormButton addTarget:self
+                                action:@selector(onAutofillFormButtonTapped)
+                      forControlEvents:UIControlEventTouchUpInside];
     AppendHorizontalConstraintsForViews(
         staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
   }
@@ -403,6 +420,13 @@ static const CGFloat kOffsetForConnectedCell = 16;
   [self.contentInjector userDidPickContent:self.credential.password
                              passwordField:YES
                              requiresHTTPS:YES];
+}
+
+// Called when the "Autofill Form" button is tapped. Fills the current form with
+// the credential' data.
+- (void)onAutofillFormButtonTapped {
+  [self.contentInjector autofillFormWithCredential:self.credential
+                                      shouldReauth:_shouldReauthToAutofill];
 }
 
 // Configure the favicon with the given `attributes`.

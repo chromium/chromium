@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @class FormSuggestion;
+@class ManualFillCredential;
 
 // Protocol to send Manual Fill user selections to be filled in the active web
 // state.
@@ -35,8 +36,19 @@
              passwordField:(BOOL)passwordField
              requiresHTTPS:(BOOL)requiresHTTPS;
 
+// Called when the user wants to entirely fill the current password form with a
+// credential. No-op if the current form is not a password form.
+//
+// @param credential The credential to fill out the form with.
+// @param shouldReauth Whether the user should be asked to re-authenticate
+// before filling the form.
+- (void)autofillFormWithCredential:(ManualFillCredential*)credential
+                      shouldReauth:(BOOL)shouldReauth;
+
 // Called when the user wants to entirely fill the current form with an
-// autofill suggestion.
+// autofill suggestion. Should only be used for address and payment method
+// suggestions. To fill a password suggestion, `autofillFormWithCredential` must
+// be used.
 //
 // @param formSuggestion The suggestion to fill out the form with.
 - (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion;

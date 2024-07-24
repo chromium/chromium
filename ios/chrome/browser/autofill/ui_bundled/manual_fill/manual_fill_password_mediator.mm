@@ -312,7 +312,8 @@ BOOL AreCredentialsAtIndicesConnected(
                     contentInjector:self
                         menuActions:menuActions
         cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
-             showAutofillFormButton:_showAutofillFormButton];
+             showAutofillFormButton:_showAutofillFormButton
+             shouldReauthToAutofill:![self isFromAllPasswordsContext]];
     [items addObject:item];
   }
   return items;
@@ -456,16 +457,15 @@ BOOL AreCredentialsAtIndicesConnected(
 // Creates a UIAction to edit a password from a UIMenu.
 - (UIAction*)createMenuEditActionForPassword:(PasswordForm)password {
   MenuScenarioHistogram menuScenario =
-      self.isActionSectionEnabled
-          ? kMenuScenarioHistogramAutofillManualFallbackPasswordEntry
-          : kMenuScenarioHistogramAutofillManualFallbackAllPasswordsEntry;
+      [self isFromAllPasswordsContext]
+          ? kMenuScenarioHistogramAutofillManualFallbackAllPasswordsEntry
+          : kMenuScenarioHistogramAutofillManualFallbackPasswordEntry;
   ActionFactory* actionFactory =
       [[ActionFactory alloc] initWithScenario:menuScenario];
 
   __weak __typeof(self) weakSelf = self;
   UIAction* editAction = [actionFactory actionToEditWithBlock:^{
-    [weakSelf openPasswordDetailsInEditMode:CredentialUIEntry(password)
-                           fromMenuScenario:menuScenario];
+    [weakSelf openPasswordDetailsInEditMode:CredentialUIEntry(password)];
   }];
 
   return editAction;
@@ -473,15 +473,17 @@ BOOL AreCredentialsAtIndicesConnected(
 
 // Requests the appropriate delegate to open the details of the given credential
 // in edit mode.
-- (void)openPasswordDetailsInEditMode:(CredentialUIEntry)credential
-                     fromMenuScenario:(MenuScenarioHistogram)menuScenario {
-  if (menuScenario ==
-      kMenuScenarioHistogramAutofillManualFallbackAllPasswordsEntry) {
+- (void)openPasswordDetailsInEditMode:(CredentialUIEntry)credential {
+  if ([self isFromAllPasswordsContext]) {
     [self.delegate manualFillPasswordMediator:self
         didTriggerOpenPasswordDetailsInEditMode:credential];
   } else {
     [self.navigator openPasswordDetailsInEditModeForCredential:credential];
   }
+}
+
+- (BOOL)isFromAllPasswordsContext {
+  return !self.isActionSectionEnabled;
 }
 
 #pragma mark - Setters
@@ -529,6 +531,13 @@ BOOL AreCredentialsAtIndicesConnected(
   [self.contentInjector userDidPickContent:content
                              passwordField:passwordField
                              requiresHTTPS:requiresHTTPS];
+}
+
+- (void)autofillFormWithCredential:(ManualFillCredential*)credential
+                      shouldReauth:(BOOL)shouldReauth {
+  [self.delegate manualFillPasswordMediatorWillInjectContent:self];
+  [self.contentInjector autofillFormWithCredential:credential
+                                      shouldReauth:shouldReauth];
 }
 
 - (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion {

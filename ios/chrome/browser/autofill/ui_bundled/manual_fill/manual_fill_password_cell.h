@@ -44,6 +44,7 @@ extern NSString* const kMaskedPasswordTitle;
                        menuActions:(NSArray<UIAction*>*)menuActions
        cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
             showAutofillFormButton:(BOOL)showAutofillFormButton
+            shouldReauthToAutofill:(BOOL)shouldReauthToAutofill
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithType:(NSInteger)type NS_UNAVAILABLE;
@@ -62,14 +63,17 @@ extern NSString* const kMaskedPasswordTitle;
 // should be available from the cell's overflow menu button.
 // `cellIndexAccessibilityLabel` is the part of this cell's accessibility label
 // that is used to indicate the index at which the password represented by this
-// cell is positioned in the list of passwords to show.
+// cell is positioned in the list of passwords to show. `shouldReauthToAutofill`
+// indicates whether the user should be asked to re-authenticate before
+// autofilling an entire form.
 - (void)setUpWithCredential:(ManualFillCredential*)credential
       isConnectedToPreviousCell:(BOOL)isConnectedToPreviousCell
           isConnectedToNextCell:(BOOL)isConnectedToNextCell
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
-         showAutofillFormButton:(BOOL)showAutofillFormButton;
+         showAutofillFormButton:(BOOL)showAutofillFormButton
+         shouldReauthToAutofill:(BOOL)shouldReauthToAutofill;
 
 // Configures the cell for the passed favicon attributes.
 - (void)configureWithFaviconAttributes:(FaviconAttributes*)attributes;
