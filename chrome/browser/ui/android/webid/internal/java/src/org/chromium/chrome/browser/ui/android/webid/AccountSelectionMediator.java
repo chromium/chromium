@@ -708,7 +708,15 @@ class AccountSelectionMediator {
     private void showContent() {
         if (mWasDismissed) return;
         if (mIsModalDialogOpen) return;
-        if (mBottomSheetController.requestShowContent(mBottomSheetContent, true)) {
+        // When button mode is triggered, if there's a pending widget mode request, we should
+        // prioritize the button mode since it's gated by user intention. With the UI code, both
+        // button flow bottom sheet and widget flow bottom sheet have the same predefined priority
+        // therefore the consecutive button flow would be dismissed. Here we override the
+        // calculation and prioritize the button flow request.
+        boolean prioritizeButtonMode =
+                mRpMode == RpMode.BUTTON && mHeaderType == HeaderType.LOADING;
+        if (mBottomSheetController.requestShowContent(mBottomSheetContent, true)
+                || prioritizeButtonMode) {
             if (mRegisteredObservers) return;
 
             mRegisteredObservers = true;
