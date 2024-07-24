@@ -271,7 +271,7 @@ BASE_FEATURE(kExperimentalFlingAnimation,
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kClipboardFiles,
              "ClipboardFiles",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDragDropFiles,
              "DragDropFiles",
