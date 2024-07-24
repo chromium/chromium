@@ -433,6 +433,7 @@ void FreezingPolicy::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
 
   // Disassociate the frame's page from the frame's browsing instance.
   auto it = browsing_instances_.find(frame_node->GetBrowsingInstanceId());
+  CHECK(it != browsing_instances_.end());
   size_t num_pages_removed = it->second.pages.erase(frame_node->GetPageNode());
   CHECK_EQ(num_pages_removed, 1U);
 
