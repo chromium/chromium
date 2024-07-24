@@ -444,9 +444,6 @@ void SetFlags(IsolateHolder::ScriptMode mode,
     SetV8Flags("--use_strict");
   }
 
-  SetV8FlagsIfOverridden(features::kJavaScriptCompileHintsMagic,
-                         "--compile-hints-magic", "--no-compile-hints-magic");
-
   // WebAssembly features.
 
   SetV8FlagsIfOverridden(features::kWebAssemblyInlining,

@@ -189,7 +189,7 @@ class ScriptStreamingTest : public testing::Test {
       : url_(String("http://streaming-test.example.com/foo" +
                     base::NumberToString(url_counter_++))) {}
 
-  void Init(v8::Isolate* isolate) {
+  void Init(v8::Isolate* isolate, bool use_response_http_scheme = true) {
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     FetchContext* context = MakeGarbageCollected<MockFetchContext>();
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
@@ -214,14 +214,19 @@ class ScriptStreamingTest : public testing::Test {
         kNoCompileHintsProducer = nullptr;
     constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
         kNoCompileHintsConsumer = nullptr;
-    resource_ =
-        ScriptResource::Fetch(params, fetcher, resource_client_, isolate,
-                              ScriptResource::kAllowStreaming,
-                              kNoCompileHintsProducer, kNoCompileHintsConsumer);
+    constexpr bool kNoV8CompileHintsMagicCommentRuntimeEnabled = false;
+    resource_ = ScriptResource::Fetch(
+        params, fetcher, resource_client_, isolate,
+        ScriptResource::kAllowStreaming, kNoCompileHintsProducer,
+        kNoCompileHintsConsumer, kNoV8CompileHintsMagicCommentRuntimeEnabled);
     resource_->AddClient(resource_client_, task_runner.get());
 
     ResourceResponse response(url_);
     response.SetHttpStatusCode(200);
+
+    if (!use_response_http_scheme) {
+      response.SetCurrentRequestUrl(KURL("file:///something"));
+    }
     resource_->SetResponse(response);
 
     resource_->Loader()->DidReceiveResponse(WrappedResourceResponse(response),
@@ -727,6 +732,25 @@ TEST_F(ScriptStreamingTest, ProduceLocalCompileHintsForStreamedScript) {
   EXPECT_EQ(1UL, compile_hints.size());
 }
 
+TEST_F(ScriptStreamingTest, NullCacheHandler) {
+  V8TestingScope scope;
+  // Use setting the responses URL to something else than HTTP(S) to trigger the
+  // "streaming but no cache handler" corner case.
+  Init(scope.GetIsolate(), /*use_response_http_scheme=*/false);
+  EXPECT_FALSE(resource_->CacheHandler());
+
+  AppendData("/*this doesn't matter*/");
+  Finish();
+  RunUntilResourceLoaded();
+  EXPECT_TRUE(resource_client_->Finished());
+
+  ScriptStreamer* script_streamer = std::get<0>(
+      ScriptStreamer::TakeFrom(resource_, mojom::blink::ScriptType::kClassic));
+  ResourceScriptStreamer* resource_script_streamer =
+      reinterpret_cast<ResourceScriptStreamer*>(script_streamer);
+  EXPECT_TRUE(resource_script_streamer);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     InlineScriptStreamingTest,
@@ -1002,10 +1026,11 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
     }
     constexpr v8_compile_hints::V8CrowdsourcedCompileHintsProducer*
         kNoCompileHintsProducer = nullptr;
-    resource_ = ScriptResource::Fetch(params, fetcher, resource_client_,
-                                      isolate, ScriptResource::kAllowStreaming,
-                                      kNoCompileHintsProducer,
-                                      v8_compile_hints_consumer);
+    constexpr bool kNoV8CompileHintsMagicCommentRuntimeEnabled = false;
+    resource_ = ScriptResource::Fetch(
+        params, fetcher, resource_client_, isolate,
+        ScriptResource::kAllowStreaming, kNoCompileHintsProducer,
+        v8_compile_hints_consumer, kNoV8CompileHintsMagicCommentRuntimeEnabled);
     resource_->AddClient(resource_client_, main_thread_task_runner.get());
 
     CHECK(dummy_loader_factory->load_started());
