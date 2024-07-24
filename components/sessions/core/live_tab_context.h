@@ -72,9 +72,12 @@ class SESSIONS_EXPORT LiveTabContext {
   // platform-specific data).
   // |tab.id| is the tab's unique SessionID. Only present if a historical tab
   // has been created by TabRestoreService.
+  // |original_session_type| indicates the type of session entry the tab
+  // belongs to.
   virtual LiveTab* AddRestoredTab(const tab_restore::Tab& tab,
                                   int tab_index,
-                                  bool select) = 0;
+                                  bool select,
+                                  tab_restore::Type original_session_type) = 0;
 
   // Note: |tab.platform_data| may be null (e.g., if restoring from last session
   // as this data is not persisted, or if the platform does not provide

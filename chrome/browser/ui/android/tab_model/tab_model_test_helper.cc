@@ -34,7 +34,8 @@ base::android::ScopedJavaLocalRef<jobject> TestTabModel::GetJavaObject() const {
 }
 
 void TestTabModel::CreateTab(TabAndroid* parent,
-                             content::WebContents* web_contents) {}
+                             content::WebContents* web_contents,
+                             bool select) {}
 
 void TestTabModel::HandlePopupNavigation(TabAndroid* parent,
                                          NavigateParams* params) {}

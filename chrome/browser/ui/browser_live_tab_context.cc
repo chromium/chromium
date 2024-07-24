@@ -206,7 +206,8 @@ std::string BrowserLiveTabContext::GetWorkspace() const {
 sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     const sessions::tab_restore::Tab& tab,
     int tab_index,
-    bool select) {
+    bool select,
+    sessions::tab_restore::Type original_session_type) {
   tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(
           browser_->profile());

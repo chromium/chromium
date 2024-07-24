@@ -119,7 +119,10 @@ class MockLiveTabContext : public sessions::LiveTabContext {
   MOCK_CONST_METHOD0(GetWorkspace, std::string());
   MOCK_METHOD(sessions::LiveTab*,
               AddRestoredTab,
-              ((const sessions::tab_restore::Tab&), int, bool),
+              ((const sessions::tab_restore::Tab&),
+               int,
+               bool,
+               sessions::tab_restore::Type),
               (override));
   MOCK_METHOD(sessions::LiveTab*,
               ReplaceRestoredTab,

@@ -21,7 +21,8 @@ class TestTabModel : public TabModel {
   content::WebContents* GetWebContentsAt(int index) const override;
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override;
   void CreateTab(TabAndroid* parent,
-                 content::WebContents* web_contents) override;
+                 content::WebContents* web_contents,
+                 bool select) override;
   void HandlePopupNavigation(TabAndroid* parent,
                              NavigateParams* params) override;
   content::WebContents* CreateNewTabForDevTools(const GURL& url) override;

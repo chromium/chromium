@@ -186,7 +186,8 @@ class TestTabModel : public TabModel {
   void SetActiveIndex(int index) override {}
   void CloseTabAt(int index) override {}
   void CreateTab(TabAndroid* parent,
-                 content::WebContents* web_contents) override {}
+                 content::WebContents* web_contents,
+                 bool select) override {}
   void HandlePopupNavigation(TabAndroid* parent,
                              NavigateParams* params) override {}
   content::WebContents* CreateNewTabForDevTools(const GURL& url) override {

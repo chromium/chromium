@@ -4513,6 +4513,8 @@ chromium-metrics-reviews@google.com.
     <variant name="ReadingList" summary="tabs opened from the reading list"/>
     <variant name="RecentTabs"
         summary="tabs opened in backrgound from recent tabs"/>
+    <variant name="RecentTabsForeground"
+        summary="tabs opened in foreground from recent tabs"/>
     <variant name="Reparenting" summary="tabs opened from changing windows"/>
     <variant name="Restore" summary="tabs opened from restores"/>
     <variant name="SpeculativeBackgroundCreation"

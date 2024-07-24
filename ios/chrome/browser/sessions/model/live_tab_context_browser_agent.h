@@ -61,9 +61,11 @@ class LiveTabContextBrowserAgent
   const gfx::Rect GetRestoredBounds() const override;
   ui::WindowShowState GetRestoredState() const override;
   std::string GetWorkspace() const override;
-  sessions::LiveTab* AddRestoredTab(const sessions::tab_restore::Tab& tab,
-                                    int tab_index,
-                                    bool select) override;
+  sessions::LiveTab* AddRestoredTab(
+      const sessions::tab_restore::Tab& tab,
+      int tab_index,
+      bool select,
+      sessions::tab_restore::Type original_session_type) override;
   sessions::LiveTab* ReplaceRestoredTab(
       const sessions::tab_restore::Tab& tab) override;
   void CloseTab() override;

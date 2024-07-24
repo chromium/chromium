@@ -155,11 +155,12 @@ public abstract class TabModelJniBridge implements TabModel {
      * @param parent      The parent tab that creates the new tab.
      * @param profile     The profile for which to create the new tab.
      * @param webContents A {@link WebContents} object.
+     * @param select      Select the created tab.
      * @return Whether or not the Tab was successfully created.
      */
     @CalledByNative
     protected abstract boolean createTabWithWebContents(
-            Tab parent, Profile profile, WebContents webContents);
+            Tab parent, Profile profile, WebContents webContents, boolean select);
 
     @CalledByNative
     protected abstract void openNewTab(

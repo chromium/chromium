@@ -471,7 +471,8 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTabOrGroupFromWindow(
     // Restore the tab.
     restored_tab_browser_id = tab.browser_id;
     LiveTab* restored_tab = nullptr;
-    context = RestoreTab(tab, context, disposition, &restored_tab);
+    context = RestoreTab(tab, context, disposition,
+                         sessions::tab_restore::WINDOW, &restored_tab);
     live_tabs->push_back(restored_tab);
 
     std::optional<tab_groups::TabGroupId> group_id = tab.group;
@@ -521,7 +522,8 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTabOrGroupFromWindow(
         // Restore the tab.
         LiveTab* restored_tab = nullptr;
         LiveTabContext* new_context =
-            RestoreTab(tab, context, disposition, &restored_tab);
+            RestoreTab(tab, context, disposition, sessions::tab_restore::WINDOW,
+                       &restored_tab);
         if (tab_i != 0) {
           // CHECK that the context should be the same except for the first tab.
           DCHECK_EQ(new_context, context);
@@ -596,7 +598,8 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
       }
 
       LiveTab* restored_tab = nullptr;
-      context = RestoreTab(tab, context, disposition, &restored_tab);
+      context =
+          RestoreTab(tab, context, disposition, entry.type, &restored_tab);
       live_tabs.push_back(restored_tab);
       context->ShowBrowserWindow();
       break;
@@ -634,7 +637,7 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
         for (const auto& tab : window.tabs) {
           const bool select_tab = tab->id == selected_tab_id;
           LiveTab* restored_tab = context->AddRestoredTab(
-              *tab.get(), context->GetTabCount(), select_tab);
+              *tab.get(), context->GetTabCount(), select_tab, entry.type);
 
           if (restored_tab) {
             client_->OnTabRestored(
@@ -684,7 +687,8 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
       if (entry_id_matches_restore_id) {
         for (const auto& tab : group.tabs) {
           LiveTab* restored_tab = context->AddRestoredTab(
-              *tab.get(), context->GetTabCount(), group.tabs[0]->id == tab->id);
+              *tab.get(), context->GetTabCount(), group.tabs[0]->id == tab->id,
+              entry.type);
           live_tabs.push_back(restored_tab);
         }
       } else {
@@ -694,7 +698,8 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
           const Tab& tab = *group.tabs[i];
           if (tab.id == id) {
             LiveTab* restored_tab = nullptr;
-            context = RestoreTab(tab, context, disposition, &restored_tab);
+            context = RestoreTab(tab, context, disposition, entry.type,
+                                 &restored_tab);
             live_tabs.push_back(restored_tab);
             CHECK(ValidateGroup(group));
             group.tabs.erase(group.tabs.begin() + i);
@@ -940,6 +945,7 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
     const Tab& tab,
     LiveTabContext* context,
     WindowOpenDisposition disposition,
+    sessions::tab_restore::Type session_restore_type,
     LiveTab** live_tab) {
   LiveTab* restored_tab;
   if (disposition == WindowOpenDisposition::CURRENT_TAB && context) {
@@ -989,7 +995,8 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
 
     restored_tab = context->AddRestoredTab(
         tab, tab_index,
-        /*select=*/disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB);
+        /*select=*/disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        session_restore_type);
   }
 
   client_->OnTabRestored(

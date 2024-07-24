@@ -858,9 +858,14 @@ public class TabModelImpl extends TabModelJniBridge {
     /** Used to restore tabs from native. */
     @Override
     protected boolean createTabWithWebContents(
-            Tab parent, Profile profile, WebContents webContents) {
+            Tab parent, Profile profile, WebContents webContents, boolean select) {
         return getTabCreator(profile.isOffTheRecord())
-                .createTabWithWebContents(parent, webContents, TabLaunchType.FROM_RECENT_TABS);
+                .createTabWithWebContents(
+                        parent,
+                        webContents,
+                        select
+                                ? TabLaunchType.FROM_RECENT_TABS_FOREGROUND
+                                : TabLaunchType.FROM_RECENT_TABS);
     }
 
     @Override
