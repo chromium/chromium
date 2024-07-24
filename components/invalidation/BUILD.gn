@@ -50,13 +50,19 @@ static_library("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "invalidation_listener_impl_unittest.cc" ]
+  sources = [
+    "invalidation_factory_unittest.cc",
+    "invalidation_listener_impl_unittest.cc",
+  ]
   deps = [
     "//base",
     "//components/gcm_driver:test_support",
     "//components/gcm_driver/instance_id:test_support",
-    "//components/invalidation:invalidation",
+    "//components/invalidation",
     "//components/invalidation:test_support",
+    "//components/invalidation/impl",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync_preferences:test_support",
     "//google_apis:test_support",
     "//google_apis/gcm:gcm",
     "//testing/gmock",

@@ -24,6 +24,10 @@
 
 namespace invalidation {
 
+namespace {
+constexpr char kDriveFcmSenderId[] = "947318989803";
+}
+
 BASE_FEATURE(kInvalidationsWithDirectMessages,
              "InvalidationsWithDirectMessages",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -39,7 +43,12 @@ CreateInvalidationServiceOrListener(
     std::string sender_id,
     std::string project_number,
     std::string log_prefix) {
-  if (base::FeatureList::IsEnabled(kInvalidationsWithDirectMessages)) {
+  // `DriveNotificationManagerFactory` (identified by `kDriveFcmSenderId` sender
+  // id) will keep using legacy `FCMInvalidationService` until Fandango
+  // shutdown. Create the legacy invalidation stack for it even if the direct
+  // messages feature is on.
+  if (base::FeatureList::IsEnabled(kInvalidationsWithDirectMessages) &&
+      sender_id != kDriveFcmSenderId) {
     return InvalidationListener::Create(gcm_driver, instance_id_driver,
                                         std::move(project_number),
                                         std::move(log_prefix));
