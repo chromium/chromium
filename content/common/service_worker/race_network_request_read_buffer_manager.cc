@@ -11,8 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "content/common/features.h"
@@ -80,23 +78,6 @@ RaceNetworkRequestReadBufferManager::ReadData() {
   if (result == MOJO_RESULT_OK) {
     buffer_ = base::MakeRefCounted<net::DrainableIOBuffer>(std::move(buffer),
                                                            num_bytes);
-    SCOPED_CRASH_KEY_NUMBER("SWRace", "num_bytes_read_buffer", num_bytes);
-    volatile const char* buffer_v =
-        static_cast<volatile const char*>(buffer_->data());
-    for (size_t i = 0; i < num_bytes; ++i) {
-      // Updates the crash key per 50KB to reduce the number of calls.
-      // Also adds the key when |i| is 1 to know whether the entire buffer is
-      // not available to access, or at least the first byte can be accessible.
-      // In addition to it, checks when |i| is |num_bytes| -1 or -2 to capture
-      // off-by-one errors.
-      if (i % (1024 * 50) == 0 || i == 1 || i == num_bytes - 2 ||
-          i == num_bytes - 1) {
-        SCOPED_CRASH_KEY_NUMBER("SWRace", "throttled_read_buffer_index", i);
-        buffer_v[i];
-      } else {
-        buffer_v[i];
-      }
-    }
   }
 
   return std::make_pair(result,
