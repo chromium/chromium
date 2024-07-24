@@ -121,8 +121,8 @@ std::string GetStringNameForOptimizationTarget(
       return "TextSafety";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_ANDROID_HOME_MODULE_RANKER:
       return "SegmentationAndroidHomeModuleRanker";
-    case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_COMPOSE:
-      return "ModelExecutionFeatureCompose";
+    case proto::OPTIMIZATION_TARGET_COMPOSE:
+      return "Compose";
     case proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER:
       return "PassageEmbedder";
     case proto::OPTIMIZATION_TARGET_PHRASE_SEGMENTATION:

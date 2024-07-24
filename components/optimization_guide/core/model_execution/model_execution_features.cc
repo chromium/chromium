@@ -187,6 +187,8 @@ proto::OptimizationTarget GetOptimizationTargetForModelAdaptation(
     return optimization_target;
   } else if (feature_key == ModelBasedCapabilityKey::kTest) {
     return proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+  } else if (feature_key == ModelBasedCapabilityKey::kCompose) {
+    return proto::OPTIMIZATION_TARGET_COMPOSE;
   }
   NOTREACHED_IN_MIGRATION();
   return proto::OPTIMIZATION_TARGET_UNKNOWN;
