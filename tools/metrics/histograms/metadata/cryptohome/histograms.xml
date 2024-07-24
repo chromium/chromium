@@ -471,31 +471,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToAuthSessionRemoveAuthFactorUSS" units="ms"
-    expires_after="2024-10-06">
+    expires_after="2025-06-01">
   <owner>thomascedeno@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     AuthSession is a DBus API for various operations dealing with credential
     storage, processing, and authentication. This metrics record the time an
     RemoveAuthFactor takes to complete for USS. The metric is emitted when the
-    respective RemoveAuthFactor is requested through the DBus API.
-  </summary>
-</histogram>
-
-<histogram name="Cryptohome.TimeToAuthSessionRemoveAuthFactorVK" units="ms"
-    expires_after="2024-08-01">
-  <owner>thomascedeno@google.com</owner>
-  <owner>cros-security-cryptohome+uma@google.com</owner>
-  <summary>
-    AuthSession is a DBus API for various operations dealing with credential
-    storage, processing, and authentication. This metrics record the time an
-    RemoveAuthFactor takes to complete for VK. The metric is emitted when the
-    respective RemoveAuthFactor is requested through the DBus API.
+    respective RemoveAuthFactor operation is requested through the DBus API.
   </summary>
 </histogram>
 
 <histogram name="Cryptohome.TimeToCreatePersistentUser" units="ms"
-    expires_after="2024-08-01">
+    expires_after="2025-06-01">
   <owner>thomascedeno@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
@@ -594,7 +582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToUSSLoadPersisted" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2025-06-01">
   <owner>thomascedeno@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
@@ -607,7 +595,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToUSSPersist" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2025-06-01">
   <owner>thomascedeno@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
