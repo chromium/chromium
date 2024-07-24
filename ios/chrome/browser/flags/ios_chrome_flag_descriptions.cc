@@ -1037,7 +1037,7 @@ const char kSegmentationPlatformIosModuleRankerSplitBySurfaceDescription[] =
 const char kSegmentedDefaultBrowserPromoName[] =
     "Enable Personalized Messaging in Default Browser Promos";
 const char kSegmentedDefaultBrowserPromoDescription[] =
-    "Enabled Default Browser promos with personalized messaging (using "
+    "Enables Default Browser promos with personalized messaging (using "
     "Segmentation Platform).";
 
 const char kSendTabToSelfIOSPushNotificationsName[] =
