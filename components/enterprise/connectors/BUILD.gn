@@ -4,8 +4,6 @@
 
 import("//components/enterprise/buildflags/buildflags.gni")
 
-assert(enterprise_content_analysis)
-
 source_set("connectors") {
   sources = [
     "analysis/analysis_settings.cc",

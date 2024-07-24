@@ -4595,7 +4595,6 @@ static_library("browser") {
       "//components/constrained_window",
       "//components/endpoint_fetcher:endpoint_fetcher",
       "//components/enterprise/buildflags",
-      "//components/enterprise/connectors",
       "//components/feedback",
       "//components/feedback/content:factory",
       "//components/feedback/redaction_tool",
@@ -6862,6 +6861,13 @@ static_library("browser") {
       "enterprise/idle/idle_service_factory.h",
     ]
     deps += [ "//components/enterprise/idle" ]
+  }
+
+  if (enterprise_cloud_content_analysis || is_android) {
+    # Use this scope to migrate files/deps from
+    # `enterprise_cloud_content_analysis` condiitions that now need to be
+    # compiled on Android.
+    deps += [ "//components/enterprise/connectors" ]
   }
 
   if (enterprise_cloud_content_analysis) {
