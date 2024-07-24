@@ -28,6 +28,8 @@ TEST_F(PickerCopyMediaTest, CopiesLinks) {
 
   EXPECT_EQ(ReadTextFromClipboard(ui::Clipboard::GetForCurrentThread()),
             u"https://foo.com/");
+  EXPECT_EQ(ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
+            u"<a href=\"https://foo.com/\">https://foo.com/</a>");
 }
 
 TEST_F(PickerCopyMediaTest, CopiesFiles) {

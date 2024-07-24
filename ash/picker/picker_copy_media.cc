@@ -15,6 +15,8 @@
 #include "ash/public/cpp/system/toast_manager.h"
 #include "base/check_deref.h"
 #include "base/functional/overloaded.h"
+#include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
@@ -34,8 +36,14 @@ std::unique_ptr<ui::ClipboardData> ClipboardDataFromMedia(
                    data->set_text(base::UTF16ToUTF8(media.text));
                  },
                  [&data](const PickerLinkMedia& media) {
-                   // TODO(b/322729192): Copy a real hyperlink.
+                   // TODO: b/337064111 - Add a URL title for domains that
+                   // support inserting links in contenteditable fields.
+                   std::string escaped_spec =
+                       base::EscapeForHTML(media.url.spec());
                    data->set_text(media.url.spec());
+                   data->set_markup_data(
+                       base::StrCat({"<a href=\"", escaped_spec, "\">",
+                                     escaped_spec, "</a>"}));
                  },
                  [&data](const PickerLocalFileMedia& media) {
                    data->set_filenames(
