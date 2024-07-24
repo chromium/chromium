@@ -40,9 +40,8 @@ std::string GetTestName(const ::testing::TestParamInfo<UiTestData>& info) {
   return info.param.name;
 }
 
-AutofillOfferData CreateTestFreeListingCouponOffer(
-    const std::vector<GURL>& merchant_origins,
-    const std::string& promo_code) {
+AutofillOfferData CreateTestOffer(const std::vector<GURL>& merchant_origins,
+                                  const std::string& promo_code) {
   int64_t offer_id = 2468;
   base::Time expiry = base::Time::Now() + base::Days(2);
   autofill::DisplayStrings display_strings;
@@ -50,9 +49,9 @@ AutofillOfferData CreateTestFreeListingCouponOffer(
   display_strings.see_details_text = "See details";
   display_strings.usage_instructions_text =
       "Click the promo code field at checkout to autofill it.";
-  return autofill::AutofillOfferData::FreeListingCouponOffer(
+  return autofill::AutofillOfferData::GPayPromoCodeOffer(
       offer_id, expiry, merchant_origins, /*offer_details_url=*/GURL(),
-      display_strings, promo_code, false, "terms and conditions");
+      display_strings, promo_code);
 }
 }  // namespace
 
@@ -69,7 +68,7 @@ class OfferNotificationIconViewBrowserTest
   }
   // UiBrowserTest:
   void ShowUi(const std::string& name) override {
-    AutofillOfferData offer = CreateTestFreeListingCouponOffer(
+    AutofillOfferData offer = CreateTestOffer(
         /*merchant_origins=*/{GURL(kTestURL)}, kTestPromoCode);
     auto* autofill_client =
         ChromeAutofillClient::FromWebContentsForTesting(GetWebContents());
@@ -107,7 +106,8 @@ class OfferNotificationIconViewBrowserTest
       WaitForIconToFinishAnimating(offer_notification_icon_view);
       EXPECT_TRUE(offer_notification_icon_view->ShouldShowLabel());
       EXPECT_EQ(offer_notification_icon_view->GetIconLabelForTesting(),
-                l10n_util::GetStringUTF16(IDS_DISCOUNT_ICON_EXPANDED_TEXT));
+                l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
     }
 
     return true;

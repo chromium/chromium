@@ -179,8 +179,7 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
     payments_data().SetSyncServiceForTest(&sync_service_);
     autofill_client_.set_autofill_offer_manager(
         std::make_unique<AutofillOfferManager>(
-            autofill_client_.GetPersonalDataManager(),
-            /*shopping_service=*/nullptr));
+            autofill_client_.GetPersonalDataManager()));
   }
 
   void TearDown() override {

@@ -7,13 +7,11 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "url/gurl.h"
 
 namespace autofill {
 
 class AutofillClient;
-class AutofillOfferData;
 class AutofillOfferManager;
 
 // The class to handle actions related to the offer notifications. It is owned
@@ -34,16 +32,6 @@ class OfferNotificationHandler {
 
  private:
   bool ValidOfferExistsForUrl(const GURL& url);
-  // Updates the offer notification for a ShoppingService offer if a
-  // ShoppingService offer is available.
-  void UpdateOfferNotificationForShoppingServiceOffer(
-      AutofillClient& client,
-      const GURL& url,
-      const AutofillOfferData& offer);
-
-  bool ShowShoppingServiceOfferNotificationAutomatically(
-      const GURL& url,
-      const AutofillOfferData& offer);
 
   // The reference to the offer manager that owns |this|.
   raw_ref<AutofillOfferManager> offer_manager_;
@@ -52,8 +40,6 @@ class OfferNotificationHandler {
   // current browser context. It serves as a cross-tab status tracker for the
   // notification UI.
   base::flat_set<int64_t> shown_notification_ids_;
-
-  base::WeakPtrFactory<OfferNotificationHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

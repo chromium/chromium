@@ -74,8 +74,6 @@ std::u16string OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_TITLE);
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_PROMO_CODE_OFFERS_REMINDER_TITLE);
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED_IN_MIGRATION();
       return std::u16string();
@@ -159,14 +157,6 @@ void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
       offer_.GetOfferType(), metric, is_user_gesture_);
 }
 
-void OfferNotificationBubbleControllerImpl::OnPromoCodeButtonClicked() {
-  promo_code_button_clicked_ = true;
-
-  autofill_metrics::LogOfferNotificationBubblePromoCodeButtonClicked(
-      offer_.GetOfferType(), web_contents()->GetLastCommittedURL(),
-      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
-}
-
 void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
     const AutofillOfferData& offer,
     const CreditCard* card,
@@ -190,27 +180,9 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
   HideBubbleAndClearTimestamp(/*should_show_icon=*/true);
 
   DCHECK(IsIconVisible());
-  autofill_metrics::LogPageLoadsWithOfferIconShown(
-      offer.GetOfferType(), web_contents()->GetLastCommittedURL());
 
   if (card)
     card_ = *card;
-
-  if (offer.GetOfferType() ==
-      AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
-    base::Time last_display_time =
-        coupon_service_->GetCouponDisplayTimestamp(offer);
-    if (!last_display_time.is_null() &&
-        (base::Time::Now() - last_display_time) <
-            commerce::kCouponDisplayInterval.Get()) {
-      autofill_metrics::LogOfferNotificationBubbleSuppressed(
-          AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER);
-      return;
-    }
-    // This will update the offer's last shown time both in cache layer and
-    // storage.
-    coupon_service_->RecordCouponDisplayTimestamp(offer);
-  }
 
   is_user_gesture_ = false;
 
@@ -283,10 +255,8 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
   if (observer_for_testing_)
     observer_for_testing_->OnBubbleShown();
 
-  autofill_metrics::LogOfferNotificationBubbleOfferMetric(
-      offer_.GetOfferType(), is_user_gesture_,
-      web_contents()->GetLastCommittedURL(),
-      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+  autofill_metrics::LogOfferNotificationBubbleOfferMetric(offer_.GetOfferType(),
+                                                          is_user_gesture_);
 }
 
 bool OfferNotificationBubbleControllerImpl::IsWebContentsActive() {

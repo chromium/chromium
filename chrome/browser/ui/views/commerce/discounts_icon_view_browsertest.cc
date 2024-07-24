@@ -27,10 +27,6 @@ const char kTestURL[] = "about:blank";
 
 class DiscountsIconViewBrowserTest : public UiBrowserTest {
  public:
-  DiscountsIconViewBrowserTest() {
-    test_features_.InitWithFeatures(
-        {commerce::kPriceInsights, commerce::kDiscountsUiRefactor}, {});
-  }
   // UiBrowserTest:
   void PreShow() override {
     std::string detail =

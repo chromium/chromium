@@ -52,8 +52,7 @@ class DiscountsInteractiveTest : public InteractiveBrowserTest {
     feature_list_.InitWithFeaturesAndParameters(
         {{commerce::kDiscountDialogAutoPopupBehaviorSetting,
           {{commerce::kMerchantWideBehaviorParam, "2"},
-           {commerce::kNonMerchantWideBehaviorParam, "2"}}},
-         {commerce::kDiscountsUiRefactor, {}}},
+           {commerce::kNonMerchantWideBehaviorParam, "2"}}}},
         /*disabled_features=*/{});
   }
   void SetUp() override {

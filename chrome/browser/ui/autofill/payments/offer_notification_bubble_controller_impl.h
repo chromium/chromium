@@ -55,7 +55,6 @@ class OfferNotificationBubbleControllerImpl
   bool ShouldIconExpand() const override;
   void OnIconExpanded() override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
-  void OnPromoCodeButtonClicked() override;
 
   // Displays an offer notification for the given `offer` on the current page.
   // The information of the `card`, if present, will be displayed in the bubble

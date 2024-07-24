@@ -159,8 +159,6 @@ class CommerceUiTabHelper
       const GURL& url,
       const std::optional<PriceInsightsInfo>& info);
 
-  void HandleDiscountsResponse(const DiscountsMap& map);
-
   void UpdateDiscountsIconView();
 
   void UpdatePriceTrackingIconView();

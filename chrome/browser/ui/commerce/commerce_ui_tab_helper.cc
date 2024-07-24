@@ -199,14 +199,6 @@ void CommerceUiTabHelper::DidFinishNavigation(
         base::BindOnce(&CommerceUiTabHelper::HandleProductInfoResponse,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-
-  if (!base::FeatureList::IsEnabled(commerce::kDiscountsUiRefactor) &&
-      shopping_service_->IsDiscountEligibleToShowOnNavigation()) {
-    shopping_service_->GetDiscountInfoForUrls(
-        {web_contents()->GetLastCommittedURL()},
-        base::BindOnce(&CommerceUiTabHelper::HandleDiscountsResponse,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 bool CommerceUiTabHelper::ShouldIgnoreSameUrlNavigation() {
@@ -309,46 +301,16 @@ void CommerceUiTabHelper::HandlePriceInsightsInfoResponse(
   TriggerUpdateForIconView();
 }
 
-// TODO(b/351935350): Remove this.
-void CommerceUiTabHelper::HandleDiscountsResponse(const DiscountsMap& map) {
-  bool response_has_discounts = false;
-  if (!map.empty()) {
-    for (auto it = map.begin(); it == map.end(); ++it) {
-      if (!it->second.empty()) {
-        response_has_discounts = true;
-        break;
-      }
-    }
-  }
-
-  page_has_discounts_ =
-      response_has_discounts
-          ? shopping_service_->IsDiscountEligibleToShowOnNavigation() ||
-                commerce::UrlContainsDiscountUtmTag(
-                    web_contents()->GetLastCommittedURL())
-          : false;
-
-  got_discounts_response_for_page_ = true;
-  MaybeComputePageActionToExpand();
-}
-
 void CommerceUiTabHelper::MaybeComputePageActionToExpand() {
   if (!shopping_service_) {
     return;
   }
 
   // Make sure we have responses from all the relevant features first.
-  if (base::FeatureList::IsEnabled(commerce::kDiscountsUiRefactor)) {
     if (!discounts_page_action_controller_->ShouldShowForNavigation()
              .has_value()) {
       return;
     }
-  } else {
-    if (shopping_service_->IsDiscountEligibleToShowOnNavigation() &&
-        !got_discounts_response_for_page_) {
-      return;
-    }
-  }
 
   if (shopping_service_->IsPriceInsightsEligible() &&
       !got_insights_response_for_page_) {
@@ -556,9 +518,6 @@ CommerceUiTabHelper::GetPriceInsightsInfo() {
 }
 
 void CommerceUiTabHelper::UpdateDiscountsIconView() {
-  if (!base::FeatureList::IsEnabled(commerce::kDiscountsUiRefactor)) {
-    return;
-  }
   UpdatePageActionIconView(web_contents(), PageActionIconType::kDiscounts);
 }
 
@@ -597,22 +556,11 @@ void CommerceUiTabHelper::ComputePageActionToExpand() {
 
   // TODO(b:301440117): Splitting the triggering logic for each icon into
   //                    delegates would make this much easier to test.
-
-  if (base::FeatureList::IsEnabled(commerce::kDiscountsUiRefactor)) {
     if (discounts_page_action_controller_->WantsExpandedUi()) {
       page_action_to_expand_ = PageActionIconType::kDiscounts;
       MaybeRecordShoppingInformationUKM(PageActionIconType::kDiscounts);
       return;
     }
-  } else {
-    // We don't have full control over the discounts icon, so if we detect
-    // that it is showing at all, block the others from expanding.
-    if (IsShowingDiscountsIcon()) {
-      MaybeRecordShoppingInformationUKM(
-          PageActionIconType::kPaymentsOfferNotification);
-      return;
-    }
-  }
 
   if (ShouldShowProductSpecificationsIconView()) {
     page_action_to_expand_ = PageActionIconType::kProductSpecifications;
@@ -766,9 +714,7 @@ void CommerceUiTabHelper::MaybeRecordShoppingInformationUKM(
 
   if (page_action_type.has_value()) {
     int64_t promoted_feature = 0;
-    // TODO(b/351935350): Remove the kPaymentsOfferNotification check.
-    if (page_action_type == PageActionIconType::kPaymentsOfferNotification ||
-        page_action_type == PageActionIconType::kDiscounts) {
+    if (page_action_type == PageActionIconType::kDiscounts) {
       promoted_feature =
           static_cast<int64_t>(ShoppingContextualFeature::kDiscounts);
     } else if (page_action_type == PageActionIconType::kPriceInsights) {
