@@ -1081,14 +1081,9 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
           web_contents()));
 }
 
-// TODO(crbug.com/352578800): Flaky on LaCrOS and ASAN.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(ADDRESS_SANITIZER)
-#define MAYBE_TabHidden DISABLED_TabHidden
-#else
-#define MAYBE_TabHidden TabHidden
-#endif
+// TODO(crbug.com/352578800): Flaky.
 IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
-                       MAYBE_TabHidden) {
+                       DISABLED_TabHidden) {
   base::HistogramTester histogram_tester;
 
   auto waiter = CreatePageLoadMetricsTestWaiter();
