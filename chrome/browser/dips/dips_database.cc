@@ -1500,25 +1500,6 @@ std::vector<std::string> DIPSDatabase::GetGarbageCollectOldestSitesForTesting(
   return sites;
 }
 
-bool DIPSDatabase::MarkAsPrepopulated() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit()) {
-    return false;
-  }
-  return SetConfigValue(kPrepopulatedKey, 1);
-}
-
-bool DIPSDatabase::IsPrepopulated() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit()) {
-    return false;
-  }
-  std::optional<int64_t> value = GetConfigValue(kPrepopulatedKey);
-  DCHECK(!value.has_value() || *value == 0 || *value == 1)
-      << "key '" << kPrepopulatedKey << "' has illegal value " << *value;
-  return value.value_or(0);
-}
-
 bool DIPSDatabase::SetConfigValue(std::string_view key, int64_t value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {

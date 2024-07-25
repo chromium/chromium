@@ -1800,12 +1800,6 @@ TEST_F(DIPSDatabaseConfigTest, MultipleKeys) {
   EXPECT_THAT(db_->GetConfigValueForTesting("bar"), Optional(99));
 }
 
-TEST_F(DIPSDatabaseConfigTest, MarkAsPrepopulated) {
-  ASSERT_FALSE(db_->IsPrepopulated());
-  ASSERT_TRUE(db_->MarkAsPrepopulated());
-  ASSERT_TRUE(db_->IsPrepopulated());
-}
-
 TEST_F(DIPSDatabaseConfigTest, TimerLastFired) {
   const base::Time time = Time::FromSecondsSinceUnixEpoch(1);
 
