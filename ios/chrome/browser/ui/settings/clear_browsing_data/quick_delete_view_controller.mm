@@ -287,9 +287,18 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                   }];
 }
 
+- (void)updateHistoryWithResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result {
+  // TODO(crbug.com/341107834): Refactor summary using this result.
+}
+
 - (void)updateAutofillWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
   // TODO(crbug.com/341107834): Refactor summary using this result.
+}
+
+- (void)setHistorySelection:(BOOL)selected {
+  // TODO(crbug.com/341107834): Refactor summary using this type selection.
 }
 
 - (void)setAutofillSelection:(BOOL)selected {

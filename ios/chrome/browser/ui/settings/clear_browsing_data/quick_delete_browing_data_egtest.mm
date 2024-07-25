@@ -76,19 +76,26 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
   return grey_accessibilityID(kQuickDeleteBrowsingDataConfirmButtonIdentifier);
 }
 
-// Returns a matcher for the autofill cell.
-- (id<GREYMatcher>)autofillCell {
-  return grey_allOf(
-      grey_accessibilityID(kQuickDeleteBrowsingDataAutofillIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
 // Returns matcher for an element with or without the
 // UIAccessibilityTraitSelected accessibility trait depending on `selected`.
 - (id<GREYMatcher>)elementIsSelected:(BOOL)selected {
   return selected
              ? grey_accessibilityTrait(UIAccessibilityTraitSelected)
              : grey_not(grey_accessibilityTrait(UIAccessibilityTraitSelected));
+}
+
+// Returns a matcher for the passwords cell.
+- (id<GREYMatcher>)historyCell {
+  return grey_allOf(
+      grey_accessibilityID(kQuickDeleteBrowsingDataHistoryIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+// Returns a matcher for the autofill cell.
+- (id<GREYMatcher>)autofillCell {
+  return grey_allOf(
+      grey_accessibilityID(kQuickDeleteBrowsingDataAutofillIdentifier),
+      grey_sufficientlyVisible(), nil);
 }
 
 // Opens Quick Delete browsing data page.
@@ -159,22 +166,30 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 
 // Tests the cancel button does not save changes to prefs.
 - (void)testCancelButtonDoesNotUpdatePrefs {
-  // Set autofill pref to false.
-  [ChromeEarlGrey setBoolValue:(BOOL)NO
+  // Set all prefs to false.
+  [ChromeEarlGrey setBoolValue:NO
+                   forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
+  [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteFormData];
 
   // Open quick delete browsing data page.
   [self openQuickDeleteBrowsingDataPage];
 
-  // Assert autofill row is not selected.
+  // Assert all browsing data rows are not selected.
+  [[EarlGrey selectElementWithMatcher:[self historyCell]]
+      assertWithMatcher:[self elementIsSelected:NO]];
   [[EarlGrey selectElementWithMatcher:[self autofillCell]]
       assertWithMatcher:[self elementIsSelected:NO]];
 
-  // Tap on the autofill cell to toggle the selection.
+  // Tap on the browsing data cells to toggle the selection.
+  [[EarlGrey selectElementWithMatcher:[self historyCell]]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:[self autofillCell]]
       performAction:grey_tap()];
 
-  // Assert autofill row is selected.
+  // Assert all browsing data rows are selected.
+  [[EarlGrey selectElementWithMatcher:[self historyCell]]
+      assertWithMatcher:[self elementIsSelected:YES]];
   [[EarlGrey selectElementWithMatcher:[self autofillCell]]
       assertWithMatcher:[self elementIsSelected:YES]];
 
@@ -192,28 +207,40 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 
   // Assert that the pref remains false on cancel.
   GREYAssertEqual(
+      [ChromeEarlGrey
+          userBooleanPref:browsing_data::prefs::kDeleteBrowsingHistory],
+      NO, @"History pref changed on cancel.");
+  GREYAssertEqual(
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteFormData],
-      NO, @"Pref changed on cancel.");
+      NO, @"Autofill pref changed on cancel.");
 }
 
 // Tests the confirm button should save changes to prefs.
 - (void)testConfirmButtonShouldUpdatePrefs {
-  // Set autofill pref to false.
-  [ChromeEarlGrey setBoolValue:(BOOL)NO
+  // Set all prefs to false.
+  [ChromeEarlGrey setBoolValue:NO
+                   forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
+  [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteFormData];
 
   // Open quick delete browsing data page.
   [self openQuickDeleteBrowsingDataPage];
 
-  // Assert autofill row is not selected.
+  // Assert all browsing data rows are not selected.
+  [[EarlGrey selectElementWithMatcher:[self historyCell]]
+      assertWithMatcher:[self elementIsSelected:NO]];
   [[EarlGrey selectElementWithMatcher:[self autofillCell]]
       assertWithMatcher:[self elementIsSelected:NO]];
 
-  // Tap on the autofill cell to toggle the selection.
+  // Tap on the browsing data cells to toggle the selection.
+  [[EarlGrey selectElementWithMatcher:[self historyCell]]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:[self autofillCell]]
       performAction:grey_tap()];
 
-  // Assert autofill row is selected.
+  // Assert all browsing data rows are selected.
+  [[EarlGrey selectElementWithMatcher:[self historyCell]]
+      assertWithMatcher:[self elementIsSelected:YES]];
   [[EarlGrey selectElementWithMatcher:[self autofillCell]]
       assertWithMatcher:[self elementIsSelected:YES]];
 
@@ -230,8 +257,12 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 
   // Assert that the pref was updated to true on confirm.
   GREYAssertEqual(
+      [ChromeEarlGrey
+          userBooleanPref:browsing_data::prefs::kDeleteBrowsingHistory],
+      YES, @"Failed to save history pref change on confirm.");
+  GREYAssertEqual(
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteFormData],
-      YES, @"Failed to save pref change on confirm.");
+      YES, @"Failed to save autofill pref change on confirm.");
 }
 
 @end

@@ -26,8 +26,15 @@ enum class TimePeriod;
 - (void)setShouldShowFooter:(BOOL)shouldShowFooter;
 
 // Updates the ViewController with the result of browsing data counter.
+- (void)updateHistoryWithResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result;
+
+// Updates the ViewController with the result of browsing data counter.
 - (void)updateAutofillWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result;
+
+// Sets the boolean value for the history pref selection.
+- (void)setHistorySelection:(BOOL)selected;
 
 // Sets the boolean value for the autofill pref selection.
 - (void)setAutofillSelection:(BOOL)selected;

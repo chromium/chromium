@@ -19,6 +19,10 @@ enum class TimePeriod;
 - (void)triggerDeletion;
 
 // Called on confirming the browsing data types selection with the user choice
+// for the history type.
+- (void)updateHistorySelection:(BOOL)selected;
+
+// Called on confirming the browsing data types selection with the user choice
 // for the autofill type.
 - (void)updateAutofillSelection:(BOOL)selected;
 

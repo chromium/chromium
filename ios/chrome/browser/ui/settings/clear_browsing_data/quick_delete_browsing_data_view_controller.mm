@@ -30,14 +30,17 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 // Item identifiers in the browsing data page table view.
 typedef NS_ENUM(NSInteger, ItemIdentifier) {
-  ItemIdentifierAutofill = kItemTypeEnumZero,
+  ItemIdentifierHistory = kItemTypeEnumZero,
+  ItemIdentifierAutofill,
 };
 
 }  // namespace
 
 @implementation QuickDeleteBrowsingDataViewController {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
+  NSString* _historySummary;
   NSString* _autofillSummary;
+  BOOL _historySelected;
   BOOL _autofillSelected;
 }
 
@@ -80,7 +83,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot
       appendSectionsWithIdentifiers:@[ @(SectionIdentifierBrowsingData) ]];
-  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierAutofill) ]
+  [snapshot appendItemsWithIdentifiers:@[
+    @(ItemIdentifierHistory), @(ItemIdentifierAutofill)
+  ]
              intoSectionWithIdentifier:@(SectionIdentifierBrowsingData)];
 
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
@@ -116,10 +121,21 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // TODO(crbug.com/341107834): Store the boolean value to used for the footer.
 }
 
+- (void)updateHistoryWithResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result {
+  _historySummary = [self counterTextFromResult:result];
+  [self updateSnapshotForItemIdentifier:ItemIdentifierHistory];
+}
+
 - (void)updateAutofillWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
   _autofillSummary = [self counterTextFromResult:result];
   [self updateSnapshotForItemIdentifier:ItemIdentifierAutofill];
+}
+
+- (void)setHistorySelection:(BOOL)selected {
+  _historySelected = selected;
+  [self updateSnapshotForItemIdentifier:ItemIdentifierHistory];
 }
 
 - (void)setAutofillSelection:(BOOL)selected {
@@ -166,6 +182,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 // Notifies the mutator of the confirmation of the browsing data types
 // selection.
 - (void)onConfirm:(id)sender {
+  [_mutator updateHistorySelection:_historySelected];
   [_mutator updateAutofillSelection:_autofillSelected];
   // TODO(crbug.com/341107834): Update changes in data types selection here.
   [_delegate dismissBrowsingDataPage];
@@ -184,7 +201,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 // Creates the browsing data cell.
 - (TableViewDetailIconCell*)createCellWithTitle:(NSString*)title
                                         summary:(NSString*)summary
-                                         symbol:(NSString*)symbol
+                                           icon:(UIImage*)icon
                                        selected:(BOOL)selected
                         accessibilityIdentifier:
                             (NSString*)accessibilityIdentifier {
@@ -194,7 +211,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // Placeholder description required by the constraint to avoid cell resize.
   cell.detailText = summary ? summary : @" ";
   cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
-  [cell setIconImage:DefaultSymbolWithPointSize(symbol, kDefaultSymbolSize)
+  [cell setIconImage:icon
             tintColor:[UIColor colorNamed:kGrey500Color]
       backgroundColor:cell.backgroundColor
          cornerRadius:0];
@@ -209,11 +226,20 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                            indexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(ItemIdentifier)itemIdentifier {
   switch (itemIdentifier) {
+    case ItemIdentifierHistory: {
+      return [self
+              createCellWithTitle:l10n_util::GetNSString(
+                                      IDS_IOS_CLEAR_BROWSING_HISTORY)
+                          summary:_historySummary
+                             icon:[self iconForItemIdentifier:itemIdentifier]
+                         selected:_historySelected
+          accessibilityIdentifier:kQuickDeleteBrowsingDataHistoryIdentifier];
+    }
     case ItemIdentifierAutofill: {
       return [self
               createCellWithTitle:l10n_util::GetNSString(IDS_IOS_CLEAR_AUTOFILL)
                           summary:_autofillSummary
-                           symbol:kAutofillDataSymbol
+                             icon:[self iconForItemIdentifier:itemIdentifier]
                          selected:_autofillSelected
           accessibilityIdentifier:kQuickDeleteBrowsingDataAutofillIdentifier];
     }
@@ -231,12 +257,31 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 // Toggles the selection for the given `itemIdentifier`.
 - (void)updateSelectionForItemIdentifier:(ItemIdentifier)itemIdentifier {
   switch (itemIdentifier) {
+    case ItemIdentifierHistory: {
+      _historySelected = !_historySelected;
+      break;
+    }
     case ItemIdentifierAutofill: {
       _autofillSelected = !_autofillSelected;
       break;
     }
       // TODO(crbug.com/341107834): Update other data types selection state
       // here.
+  }
+}
+
+// Returns the icon for the given `itemIdentifier`.
+- (UIImage*)iconForItemIdentifier:(ItemIdentifier)itemIdentifier {
+  switch (itemIdentifier) {
+    case ItemIdentifierHistory: {
+      return DefaultSymbolTemplateWithPointSize(kHistorySymbol,
+                                                kDefaultSymbolSize);
+    }
+    case ItemIdentifierAutofill: {
+      return DefaultSymbolTemplateWithPointSize(kAutofillDataSymbol,
+                                                kDefaultSymbolSize);
+    }
+      // TODO(crbug.com/341107834): Add other icons for remaining types here.
   }
 }
 
