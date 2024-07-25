@@ -623,6 +623,8 @@ void ExtensionTelemetryService::CreateAndSendEnterpriseReport() {
     RecordEnterpriseReportSize(enterprise_report->ByteSizeLong());
     GetExtensionTelemetryEventRouter(profile_)->UploadTelemetryReport(
         std::move(enterprise_report));
+  } else {
+    DLOG(WARNING) << "Upload skipped due to empty enterprise report.";
   }
 }
 
