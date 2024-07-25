@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
-#include "content/public/common/content_client.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -138,10 +137,7 @@ BrowserAccessibilityAndroid::GetLocalizedStringForImageAnnotationStatus(
     return BrowserAccessibility::GetLocalizedStringForImageAnnotationStatus(
         status);
 
-  ContentClient* content_client = GetContentClient();
-
   int message_id = 0;
-
   switch (static_cast<ax::mojom::WritingDirection>(
       GetIntAttribute(ax::mojom::IntAttribute::kTextDirection))) {
     case ax::mojom::WritingDirection::kRtl:
@@ -157,7 +153,7 @@ BrowserAccessibilityAndroid::GetLocalizedStringForImageAnnotationStatus(
 
   DCHECK(message_id);
 
-  return content_client->GetLocalizedString(message_id);
+  return GetLocalizedString(message_id);
 }
 
 void BrowserAccessibilityAndroid::AppendTextToString(
@@ -703,8 +699,7 @@ std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
     // If the value itself is empty on a progress indicator, then this would
     // suggest it is indeterminate, so add that keyword.
     if (value.empty() && GetRole() == ax::mojom::Role::kProgressIndicator) {
-      ContentClient* content_client = GetContentClient();
-      value = content_client->GetLocalizedString(IDS_AX_INDETERMINATE_VALUE);
+      value = GetLocalizedString(IDS_AX_INDETERMINATE_VALUE);
     }
 
     // To prevent extra commas, only add if the text is non-empty
@@ -853,8 +848,7 @@ std::u16string BrowserAccessibilityAndroid::GetDialogModalMessageText() const {
     return GetString16Attribute(ax::mojom::StringAttribute::kDescription);
   }
 
-  ContentClient* content_client = GetContentClient();
-  return content_client->GetLocalizedString(IDS_AX_DIALOG_MODAL_OPENED);
+  return GetLocalizedString(IDS_AX_DIALOG_MODAL_OPENED);
 }
 
 std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
@@ -893,9 +887,8 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
 
   // For nodes of any type that are required, add this to the end of the state.
   if (IsRequired()) {
-    ContentClient* content_client = GetContentClient();
     state_descs.push_back(
-        content_client->GetLocalizedString(IDS_AX_ARIA_REQUIRED_STATE_DESCRIPTION));
+        GetLocalizedString(IDS_AX_ARIA_REQUIRED_STATE_DESCRIPTION));
   }
 
   // Concatenate all state descriptions and return.
@@ -904,8 +897,6 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
 
 std::u16string BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
     const {
-  ContentClient* content_client = GetContentClient();
-
   // Count the number of children and selected children.
   int child_count = 0;
   int selected_count = 0;
@@ -919,8 +910,7 @@ std::u16string BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
 
   // If none are selected, return special case.
   if (!selected_count)
-    return content_client->GetLocalizedString(
-        IDS_AX_MULTISELECTABLE_STATE_DESCRIPTION_NONE);
+    return GetLocalizedString(IDS_AX_MULTISELECTABLE_STATE_DESCRIPTION_NONE);
 
   // Generate a state description of the form: "multiselectable, x of y
   // selected.".
@@ -928,33 +918,26 @@ std::u16string BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
   values.push_back(base::NumberToString16(selected_count));
   values.push_back(base::NumberToString16(child_count));
   return base::ReplaceStringPlaceholders(
-      content_client->GetLocalizedString(
-          IDS_AX_MULTISELECTABLE_STATE_DESCRIPTION),
-      values, nullptr);
+      GetLocalizedString(IDS_AX_MULTISELECTABLE_STATE_DESCRIPTION), values,
+      nullptr);
 }
 
 std::u16string BrowserAccessibilityAndroid::GetToggleStateDescription() const {
-  ContentClient* content_client = GetContentClient();
-
   // For checked Toggle buttons and switches, we will return "on", otherwise
   // "off".
   if (IsChecked())
-    return content_client->GetLocalizedString(IDS_AX_TOGGLE_BUTTON_ON);
+    return GetLocalizedString(IDS_AX_TOGGLE_BUTTON_ON);
 
-  return content_client->GetLocalizedString(IDS_AX_TOGGLE_BUTTON_OFF);
+  return GetLocalizedString(IDS_AX_TOGGLE_BUTTON_OFF);
 }
 
 std::u16string BrowserAccessibilityAndroid::GetCheckboxStateDescription()
     const {
-  ContentClient* content_client = GetContentClient();
-
-  return content_client->GetLocalizedString(IDS_AX_CHECKBOX_PARTIALLY_CHECKED);
+  return GetLocalizedString(IDS_AX_CHECKBOX_PARTIALLY_CHECKED);
 }
 
 std::u16string BrowserAccessibilityAndroid::GetAriaCurrentStateDescription()
     const {
-  ContentClient* content_client = GetContentClient();
-
   int message_id;
   switch (static_cast<ax::mojom::AriaCurrentState>(
       GetIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState))) {
@@ -979,13 +962,11 @@ std::u16string BrowserAccessibilityAndroid::GetAriaCurrentStateDescription()
       break;
   }
 
-  return content_client->GetLocalizedString(message_id);
+  return GetLocalizedString(message_id);
 }
 
 std::u16string BrowserAccessibilityAndroid::GetRadioButtonStateDescription()
     const {
-  ContentClient* content_client = GetContentClient();
-
   // The radio button should have an IntListAttribute of kRadioGroupIds, with
   // a length of the total number of radio buttons in this group. Blink sets
   // these attributes for all nodes automatically, including for nodes of
@@ -1004,15 +985,13 @@ std::u16string BrowserAccessibilityAndroid::GetRadioButtonStateDescription()
                        : IDS_AX_RADIO_BUTTON_STATE_DESCRIPTION_UNCHECKED;
 
   return base::ReplaceStringPlaceholders(
-      content_client->GetLocalizedString(message_id),
+      GetLocalizedString(message_id),
       std::vector<std::u16string>({base::NumberToString16(GetItemIndex() + 1),
                                    base::NumberToString16(group_ids.size())}),
       /* offsets */ nullptr);
 }
 
 std::u16string BrowserAccessibilityAndroid::GetComboboxExpandedText() const {
-  ContentClient* content_client = GetContentClient();
-
   // We consider comboboxes of the form:
   //
   // <div role="combobox">
@@ -1061,24 +1040,21 @@ std::u16string BrowserAccessibilityAndroid::GetComboboxExpandedText() const {
 
   // For dialogs, return special case string.
   if (controlled_node->GetRole() == ax::mojom::Role::kDialog)
-    return content_client->GetLocalizedString(IDS_AX_COMBOBOX_EXPANDED_DIALOG);
+    return GetLocalizedString(IDS_AX_COMBOBOX_EXPANDED_DIALOG);
 
   // Find |controlled_node| set size, or return default string.
   if (!controlled_node->GetSetSize())
-    return content_client->GetLocalizedString(
-        IDS_AX_COMBOBOX_EXPANDED_AUTOCOMPLETE_DEFAULT);
+    return GetLocalizedString(IDS_AX_COMBOBOX_EXPANDED_AUTOCOMPLETE_DEFAULT);
 
   // Replace placeholder with count and return string.
   return base::ReplaceStringPlaceholders(
-      content_client->GetLocalizedString(
+      GetLocalizedString(
           IDS_AX_COMBOBOX_EXPANDED_AUTOCOMPLETE_X_OPTIONS_AVAILABLE),
       base::NumberToString16(*controlled_node->GetSetSize()), nullptr);
 }
 
 std::u16string BrowserAccessibilityAndroid::GetComboboxExpandedTextFallback()
     const {
-  ContentClient* content_client = GetContentClient();
-
   // If a combobox was of an indeterminate form, attempt any special cases here,
   // or return "expanded" as a final option.
 
@@ -1097,16 +1073,15 @@ std::u16string BrowserAccessibilityAndroid::GetComboboxExpandedTextFallback()
   // If we find none, or more than one, we will not be able to determine the
   // correct utterance, so return a default string instead.
   if (child_collection_count != 1)
-    return content_client->GetLocalizedString(IDS_AX_COMBOBOX_EXPANDED);
+    return GetLocalizedString(IDS_AX_COMBOBOX_EXPANDED);
 
   // Find |collection_node| set size, or return defaul string.
   if (!collection_node->GetSetSize())
-    return content_client->GetLocalizedString(
-        IDS_AX_COMBOBOX_EXPANDED_AUTOCOMPLETE_DEFAULT);
+    return GetLocalizedString(IDS_AX_COMBOBOX_EXPANDED_AUTOCOMPLETE_DEFAULT);
 
   // Replace placeholder with count and return string.
   return base::ReplaceStringPlaceholders(
-      content_client->GetLocalizedString(
+      GetLocalizedString(
           IDS_AX_COMBOBOX_EXPANDED_AUTOCOMPLETE_X_OPTIONS_AVAILABLE),
       base::NumberToString16(*collection_node->GetSetSize()), nullptr);
 }
@@ -1120,8 +1095,6 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
   if (HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription))
     return GetString16Attribute(ax::mojom::StringAttribute::kRoleDescription);
 
-  ContentClient* content_client = GetContentClient();
-
   // As a special case, if we have a heading level return a string like
   // "heading level 1", etc. - and if the heading consists of a link,
   // append the word link as well.
@@ -1132,16 +1105,13 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
       std::vector<std::u16string> values;
       values.push_back(base::NumberToString16(level));
       role_description = base::ReplaceStringPlaceholders(
-          content_client->GetLocalizedString(IDS_AX_ROLE_HEADING_WITH_LEVEL),
-          values, nullptr);
+          GetLocalizedString(IDS_AX_ROLE_HEADING_WITH_LEVEL), values, nullptr);
     } else {
-      role_description =
-          content_client->GetLocalizedString(IDS_AX_ROLE_HEADING);
+      role_description = GetLocalizedString(IDS_AX_ROLE_HEADING);
     }
 
     if (IsHeadingLink()) {
-      role_description +=
-          u" " + content_client->GetLocalizedString(IDS_AX_ROLE_LINK);
+      role_description += u" " + GetLocalizedString(IDS_AX_ROLE_LINK);
     }
 
     return role_description;
@@ -1184,15 +1154,13 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
         GetIntAttribute(ax::mojom::IntAttribute::kHasPopup))) {
       case ax::mojom::HasPopup::kTrue:
       case ax::mojom::HasPopup::kMenu:
-        return content_client->GetLocalizedString(
-            IDS_AX_ROLE_POP_UP_BUTTON_MENU);
+        return GetLocalizedString(IDS_AX_ROLE_POP_UP_BUTTON_MENU);
       case ax::mojom::HasPopup::kDialog:
-        return content_client->GetLocalizedString(
-            IDS_AX_ROLE_POP_UP_BUTTON_DIALOG);
+        return GetLocalizedString(IDS_AX_ROLE_POP_UP_BUTTON_DIALOG);
       case ax::mojom::HasPopup::kListbox:
       case ax::mojom::HasPopup::kTree:
       case ax::mojom::HasPopup::kGrid:
-        return content_client->GetLocalizedString(IDS_AX_ROLE_POP_UP_BUTTON);
+        return GetLocalizedString(IDS_AX_ROLE_POP_UP_BUTTON);
       case ax::mojom::HasPopup::kFalse:
         break;
     }
@@ -1218,22 +1186,22 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
       break;
     case ax::mojom::Role::kFigure:
       // Default is IDS_AX_ROLE_FIGURE.
-      return content_client->GetLocalizedString(IDS_AX_ROLE_GRAPHIC);
+      return GetLocalizedString(IDS_AX_ROLE_GRAPHIC);
     case ax::mojom::Role::kHeader:
       // Default is IDS_AX_ROLE_HEADER.
-      return content_client->GetLocalizedString(IDS_AX_ROLE_BANNER);
+      return GetLocalizedString(IDS_AX_ROLE_BANNER);
     case ax::mojom::Role::kListGrid:
       // Default is no special role description.
-      return content_client->GetLocalizedString(IDS_AX_ROLE_TABLE);
+      return GetLocalizedString(IDS_AX_ROLE_TABLE);
     case ax::mojom::Role::kMenuItemCheckBox:
       // Default is no special role description.
-      return content_client->GetLocalizedString(IDS_AX_ROLE_CHECK_BOX);
+      return GetLocalizedString(IDS_AX_ROLE_CHECK_BOX);
     case ax::mojom::Role::kMenuItemRadio:
       // Default is no special role description.
-      return content_client->GetLocalizedString(IDS_AX_ROLE_RADIO);
+      return GetLocalizedString(IDS_AX_ROLE_RADIO);
     case ax::mojom::Role::kVideo:
       // Default is no special role description.
-      return content_client->GetLocalizedString(IDS_AX_MEDIA_VIDEO_ELEMENT);
+      return GetLocalizedString(IDS_AX_MEDIA_VIDEO_ELEMENT);
     default:
       return GetLocalizedStringForRoleDescription();
   }
@@ -2025,7 +1993,6 @@ int BrowserAccessibilityAndroid::CountChildrenWithRole(
 
 std::u16string BrowserAccessibilityAndroid::GetContentInvalidErrorMessage()
     const {
-  ContentClient* content_client = GetContentClient();
   int message_id = -1;
 
   if (!IsContentInvalid())
@@ -2068,7 +2035,7 @@ std::u16string BrowserAccessibilityAndroid::GetContentInvalidErrorMessage()
   }
 
   if (message_id != -1)
-    return content_client->GetLocalizedString(message_id);
+    return GetLocalizedString(message_id);
 
   return std::u16string();
 }

@@ -29,7 +29,6 @@
 #include "content/browser/accessibility/browser_accessibility_manager_mac.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/one_shot_accessibility_tree_search.h"
-#include "content/public/common/content_client.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_common.h"
@@ -51,7 +50,6 @@ using content::AccessibilityMatchPredicate;
 using content::BrowserAccessibility;
 using content::BrowserAccessibilityManager;
 using content::BrowserAccessibilityManagerMac;
-using content::ContentClient;
 using content::OneShotAccessibilityTreeSearch;
 using ui::AXActionHandlerRegistry;
 using ui::AXNodeData;
@@ -1465,9 +1463,8 @@ bool content::IsNSRange(id value) {
         _owner->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
     int msg_id =
         is_selected ? IDS_AX_OBJECT_SELECTED : IDS_AX_OBJECT_NOT_SELECTED;
-    ContentClient* content_client = content::GetContentClient();
     std::u16string name_with_selection = base::ReplaceStringPlaceholders(
-        content_client->GetLocalizedString(msg_id), {name}, nullptr);
+        _owner->GetLocalizedString(msg_id), {name}, nullptr);
 
     return base::SysUTF16ToNSString(name_with_selection);
   }

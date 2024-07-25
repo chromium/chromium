@@ -413,6 +413,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   ui::AXPlatformNode* GetTableCaption() const override;
 
   bool AccessibilityPerformAction(const ui::AXActionData& data) override;
+  std::u16string GetLocalizedString(int message_id) const;
   std::u16string GetLocalizedStringForImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus status) const override;
   std::u16string GetLocalizedRoleDescriptionForUnlabeledImage() const override;
