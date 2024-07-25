@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/process/memory.h"
@@ -71,7 +72,8 @@ int RunAsCrashpadHandler(const base::CommandLine& command_line,
            (!str.empty() && str[0] == L'/');
   });
 
-  std::unique_ptr<char* []> argv_as_utf8(new char*[argv.size() + 1]);
+  base::HeapArray<char*> argv_as_utf8 =
+      base::HeapArray<char*>::Uninit(argv.size() + 1);
   std::vector<std::string> storage;
   storage.reserve(argv.size());
   for (size_t i = 0; i < argv.size(); ++i) {
@@ -92,7 +94,7 @@ int RunAsCrashpadHandler(const base::CommandLine& command_line,
 #endif
 
   return crashpad::HandlerMain(static_cast<int>(storage.size()),
-                               argv_as_utf8.get(), &user_stream_data_sources);
+                               argv_as_utf8.data(), &user_stream_data_sources);
 }
 
 }  // namespace crash_reporter
