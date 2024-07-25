@@ -1,0 +1,26 @@
+From 7d8ce443d26b21d8232877a33fea6fc36060f4ac Mon Sep 17 00:00:00 2001
+From: Steven Holte <holte@google.com>
+Date: Thu, 25 Jul 2024 20:00:28 +0000
+Subject: [PATCH] Fix sentencepiece include.
+
+Change-Id: I889974f0ee47e53d5302f688e88df803bd11861c
+---
+ .../tasks/cc/text/tokenizers/sentencepiece_tokenizer.h          | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/third_party/mediapipe/src/mediapipe/tasks/cc/text/tokenizers/sentencepiece_tokenizer.h b/third_party/mediapipe/src/mediapipe/tasks/cc/text/tokenizers/sentencepiece_tokenizer.h
+index 85881c9e8e82..050d621afb11 100644
+--- a/third_party/mediapipe/src/mediapipe/tasks/cc/text/tokenizers/sentencepiece_tokenizer.h
++++ b/third_party/mediapipe/src/mediapipe/tasks/cc/text/tokenizers/sentencepiece_tokenizer.h
+@@ -25,7 +25,7 @@ limitations under the License.
+ #include "absl/strings/string_view.h"
+ #include "mediapipe/framework/port/logging.h"
+ #include "mediapipe/tasks/cc/text/tokenizers/tokenizer.h"
+-#include "sentencepiece/src/sentencepiece_processor.h"  // from @com_google_sentencepiece
++#include "src/sentencepiece_processor.h"  // from @com_google_sentencepiece
+ 
+ namespace mediapipe {
+ namespace tasks {
+-- 
+2.46.0.rc1.232.g9752f9e123-goog
+

@@ -30,7 +30,6 @@
 #include "mediapipe/framework/formats/tensor.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status_macros.h"
-#include "tensorflow/lite/interpreter.h"
 #if defined(MEDIAPIPE_ANDROID)
 #include "tensorflow/lite/delegates/nnapi/nnapi_delegate.h"
 #endif  // ANDROID
@@ -69,7 +68,8 @@ absl::Status InferenceCalculatorCpuImpl::UpdateContract(
 
 absl::Status InferenceCalculatorCpuImpl::Open(CalculatorContext* cc) {
   MP_ASSIGN_OR_RETURN(inference_runner_, CreateInferenceRunner(cc));
-  return absl::OkStatus();
+  return InferenceCalculatorNodeImpl::UpdateIoMapping(
+      cc, inference_runner_->GetInputOutputTensorNames());
 }
 
 absl::StatusOr<std::vector<Tensor>> InferenceCalculatorCpuImpl::Process(
@@ -88,12 +88,14 @@ absl::StatusOr<std::unique_ptr<InferenceRunner>>
 InferenceCalculatorCpuImpl::CreateInferenceRunner(CalculatorContext* cc) {
   MP_ASSIGN_OR_RETURN(auto model_packet, GetModelAsPacket(cc));
   MP_ASSIGN_OR_RETURN(auto op_resolver_packet, GetOpResolverAsPacket(cc));
+  const auto& options = cc->Options<mediapipe::InferenceCalculatorOptions>();
   const int interpreter_num_threads =
       cc->Options<mediapipe::InferenceCalculatorOptions>().cpu_num_thread();
   MP_ASSIGN_OR_RETURN(TfLiteDelegatePtr delegate, MaybeCreateDelegate(cc));
   return CreateInferenceInterpreterDelegateRunner(
       std::move(model_packet), std::move(op_resolver_packet),
-      std::move(delegate), interpreter_num_threads);
+      std::move(delegate), interpreter_num_threads,
+      &options.input_output_config());
 }
 
 absl::StatusOr<TfLiteDelegatePtr>

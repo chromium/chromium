@@ -421,17 +421,18 @@ cc_library_with_tflite(
     srcs = ["inference_calculator.cc"],
     hdrs = ["inference_calculator.h"],
     tflite_deps = [
+        ":inference_runner",
+        ":inference_io_mapper",
         "//mediapipe/util/tflite:tflite_model_loader",
         "@org_tensorflow//tensorflow/lite:framework_stable",
         "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
     ],
     deps = [
         ":inference_calculator_cc_proto",
-        ":inference_calculator_io_map",
         ":inference_calculator_options_lib",
-        ":inference_runner",
         ":tensor_span",
         "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework:port",
         "//mediapipe/framework/api2:node",
         "//mediapipe/framework/api2:packet",
         "//mediapipe/framework/api2:port",
@@ -444,6 +445,7 @@ cc_library_with_tflite(
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
         "@com_google_absl//absl/time",
         "@org_tensorflow//tensorflow/lite/core/api:op_resolver",
     ],
@@ -463,42 +465,119 @@ cc_library(
     ],
 )
 
-cc_library(
-    name = "inference_calculator_io_map",
-    srcs = ["inference_calculator_io_map.cc"],
-    hdrs = ["inference_calculator_io_map.h"],
+cc_library_with_tflite(
+    name = "inference_io_mapper",
+    srcs = ["inference_io_mapper.cc"],
+    hdrs = ["inference_io_mapper.h"],
+    tflite_deps = [
+        "@org_tensorflow//tensorflow/lite/c:c_api_types",
+        "@org_tensorflow//tensorflow/lite:framework_stable",
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
+        "//mediapipe/util/tflite:tflite_signature_reader",
+    ],
     deps = [
         ":inference_calculator_cc_proto",
         ":tensor_span",
         "//mediapipe/framework/formats:tensor",
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework/port:status",
+        "@com_google_absl//absl/container:flat_hash_map",
         "@com_google_absl//absl/container:flat_hash_set",
+        "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+        "@org_tensorflow//tensorflow/lite/core/api:op_resolver",
     ],
 )
 
+# TODO b/336756170 - convert test to use cc_test_with_tflite
 cc_test(
-    name = "inference_calculator_io_map_test",
-    srcs = ["inference_calculator_io_map_test.cc"],
+    name = "inference_io_mapper_test",
+    srcs = ["inference_io_mapper_test.cc"],
     data = [
         ":testdata/3in3out_model_swaps_input_2_and_0.tflite",
+        ":testdata/test_two_signature_keys_model.tflite",
     ],
     deps = [
         ":inference_calculator",
         ":inference_calculator_cc_proto",
         ":inference_calculator_cpu",
-        ":inference_calculator_io_map",
+        ":inference_io_mapper",
         ":tensor_span",
         "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework:packet",
         "//mediapipe/framework/api2:packet",
         "//mediapipe/framework/formats:tensor",
         "//mediapipe/framework/port:gtest_main",
         "//mediapipe/framework/port:parse_text_proto",
         "//mediapipe/framework/tool:sink",
+        "//mediapipe/util/tflite:tflite_model_loader",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
+        "@org_tensorflow//tensorflow/lite:framework_stable",
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
+    ],
+)
+
+cc_library_with_tflite(
+    name = "inference_feedback_manager",
+    srcs = ["inference_feedback_manager.cc"],
+    hdrs = ["inference_feedback_manager.h"],
+    tflite_deps = [
+        ":inference_io_mapper",
+        "//mediapipe/util/tflite:utils",
+        "//mediapipe/util/tflite:tflite_signature_reader",
+        "@org_tensorflow//tensorflow/lite:framework_stable",
+        "@org_tensorflow//tensorflow/lite:namespace",
+        "@org_tensorflow//tensorflow/lite/c:common",
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
+    ],
+    deps = [
+        ":inference_calculator_cc_proto",
+        ":inference_calculator_utils",
+        "//mediapipe/framework/port:ret_check",
+        "//mediapipe/framework/port:status",
+        "@com_google_absl//absl/container:flat_hash_map",
+        "@com_google_absl//absl/container:flat_hash_set",
+        "@com_google_absl//absl/log:absl_log",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
+    ],
+)
+
+cc_test(
+    name = "inference_feedback_manager_test",
+    srcs = ["inference_feedback_manager_test.cc"],
+    data = [
+        ":testdata/feedback_tensor_test_model.tflite",
+        ":testdata/feedback_tensor_with_state_copy_model.tflite",
+    ],
+    deps = [
+        ":inference_calculator",
+        ":inference_calculator_cc_proto",
+        ":inference_calculator_cpu",
+        ":inference_calculator_interface",
+        ":inference_feedback_manager",
+        ":inference_io_mapper",
+        "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework/api2:packet",
+        "//mediapipe/framework/formats:tensor",
+        "//mediapipe/framework/port:gtest_main",
+        "//mediapipe/framework/port:parse_text_proto",
+        "//mediapipe/framework/port:status_matchers",
+        "//mediapipe/framework/tool:sink",
+        "//mediapipe/util/tflite:tflite_model_loader",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+        "@org_tensorflow//tensorflow/lite:framework_stable",
+        "@org_tensorflow//tensorflow/lite:util",
+        "@org_tensorflow//tensorflow/lite/core:framework",
+        "@org_tensorflow//tensorflow/lite/core/api:op_resolver",
+        "@org_tensorflow//tensorflow/lite/delegates/xnnpack:xnnpack_delegate_hdrs_only",
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
     ],
 )
 
@@ -509,8 +588,10 @@ cc_library(
     deps = [
         ":inference_calculator_cc_proto",
         ":inference_calculator_interface",
+        ":inference_io_mapper",
         ":tensor_span",
         "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework:mediapipe_profiling",
         "//mediapipe/framework/api2:node",
         "//mediapipe/framework/api2:packet",
         "//mediapipe/framework/formats:tensor",
@@ -538,8 +619,10 @@ cc_library(
     tags = ["nomac"],
     deps = [
         ":inference_calculator_interface",
+        ":inference_io_mapper",
         ":tensor_span",
         "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework:mediapipe_profiling",
         "//mediapipe/framework/api2:packet",
         "//mediapipe/framework/deps:file_path",
         "//mediapipe/framework/formats:tensor",
@@ -571,8 +654,10 @@ cc_library(
     tags = ["ios"],
     deps = [
         "inference_calculator_interface",
+        ":inference_io_mapper",
         ":tensor_span",
         "//mediapipe/framework/formats:tensor",
+        "//mediapipe/framework/port:status",
         "//mediapipe/gpu:MPPMetalHelper",
         "//mediapipe/gpu:MPPMetalUtil",
         "//mediapipe/gpu:gpu_buffer",
@@ -595,9 +680,12 @@ cc_library(
     alwayslink = 1,
 )
 
-cc_library(
+cc_library_with_tflite(
     name = "inference_runner",
     hdrs = ["inference_runner.h"],
+    tflite_deps = [
+        ":inference_io_mapper",
+    ],
     deps = [
         ":tensor_span",
         "//mediapipe/framework:calculator_context",
@@ -619,24 +707,63 @@ cc_library_with_tflite(
     srcs = ["inference_interpreter_delegate_runner.cc"],
     hdrs = ["inference_interpreter_delegate_runner.h"],
     tflite_deps = [
+        ":inference_runner",
         ":tflite_delegate_ptr",
+        ":inference_io_mapper",
+        ":inference_feedback_manager",
         "//mediapipe/util/tflite:tflite_model_loader",
         "@org_tensorflow//tensorflow/lite:framework_stable",
         "@org_tensorflow//tensorflow/lite/c:c_api_types",
         "@org_tensorflow//tensorflow/lite/c:common",
     ],
     deps = [
-        ":inference_runner",
+        ":inference_calculator_utils",
         ":tensor_span",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework:mediapipe_profiling",
         "//mediapipe/framework/api2:packet",
         "//mediapipe/framework/formats:tensor",
         "//mediapipe/framework/port:ret_check",
+        "//mediapipe/framework/port:status",
+        "@com_google_absl//absl/container:flat_hash_set",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
         "@org_tensorflow//tensorflow/lite:string_util",
+        "@org_tensorflow//tensorflow/lite:util",
         "@org_tensorflow//tensorflow/lite/core/api:op_resolver",
+    ],
+)
+
+cc_test(
+    name = "inference_interpreter_delegate_runner_test",
+    srcs = ["inference_interpreter_delegate_runner_test.cc"],
+    data = [
+        ":testdata/1x3_square_float32.tflite",
+        ":testdata/1x3_square_int32.tflite",
+        ":testdata/3in3out_model_swaps_input_2_and_0.tflite",
+    ],
+    deps = [
+        ":inference_interpreter_delegate_runner",
+        ":tensor_span",
+        ":tflite_delegate_ptr",
+        "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework:calculator_state",
+        "//mediapipe/framework/api2:builder",
+        "//mediapipe/framework/api2:node",
+        "//mediapipe/framework/api2:packet",
+        "//mediapipe/framework/api2:port",
+        "//mediapipe/framework/formats:tensor",
+        "//mediapipe/framework/port:gtest_main",
+        "//mediapipe/framework/port:status",
+        "//mediapipe/util/tflite:tflite_model_loader",
+        "@com_google_absl//absl/functional:any_invocable",
+        "@com_google_absl//absl/status",
+        "@org_tensorflow//tensorflow/lite:framework_stable",
+        "@org_tensorflow//tensorflow/lite:util",
+        "@org_tensorflow//tensorflow/lite/core/api:op_resolver",
+        "@org_tensorflow//tensorflow/lite/delegates/xnnpack:xnnpack_delegate_hdrs_only",
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
     ],
 )
 
@@ -682,10 +809,14 @@ cc_library(
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
         "@com_google_absl//absl/types:span",
         "@org_tensorflow//tensorflow/lite:framework_stable",
+        "@org_tensorflow//tensorflow/lite:string_util",
         "@org_tensorflow//tensorflow/lite:type_to_tflitetype",
+        "@org_tensorflow//tensorflow/lite:util",
         "@org_tensorflow//tensorflow/lite/c:common",
+        "@org_tensorflow//tensorflow/lite/core:framework",
     ] + select({
         "//conditions:default": [
             "//mediapipe/util:cpu_util",
@@ -705,6 +836,8 @@ cc_test(
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/types:span",
         "@org_tensorflow//tensorflow/lite:framework_stable",
+        "@org_tensorflow//tensorflow/lite:string_util",
+        "@org_tensorflow//tensorflow/lite:util",
         "@org_tensorflow//tensorflow/lite/c:common",
         "@org_tensorflow//tensorflow/lite/kernels:cast_test_common",
         "@org_tensorflow//tensorflow/lite/schema:schema_fbs",
@@ -796,7 +929,6 @@ cc_library(
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework/port:status",
         "//mediapipe/framework/port:statusor",
-        "//mediapipe/gpu:gpu_buffer",
         "//mediapipe/gpu:gpu_origin_cc_proto",
         "//mediapipe/util:resource_util",
         "@com_google_absl//absl/log",
@@ -813,6 +945,7 @@ cc_library(
             ":tensor_converter_calculator_gpu_deps",
             "//mediapipe/gpu:gl_base",
             "//mediapipe/gpu:gl_calculator_helper",
+            "//mediapipe/gpu:gpu_buffer",
         ],
     }) + select({
         "//mediapipe:apple": [
@@ -989,6 +1122,9 @@ cc_library(
 cc_test(
     name = "tensor_converter_calculator_test",
     srcs = ["tensor_converter_calculator_test.cc"],
+    tags = [
+        "noasan",  # TODO: Remove noasan tag when SwiftShader supports sanitizers
+    ],
     deps = [
         ":tensor_converter_calculator",
         "//mediapipe/framework:calculator_framework",
@@ -1434,8 +1570,10 @@ cc_test(
         "@com_google_absl//absl/flags:flag",
         "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/strings:str_format",
+        "@com_google_absl//absl/types:optional",
     ] + select({
         "//mediapipe:apple": [],
         "//conditions:default": ["//mediapipe/gpu:gl_context"],
@@ -1636,15 +1774,20 @@ cc_library(
     }),
     deps = [
         ":image_to_tensor_calculator_cc_proto",
+        "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework:packet",
         "//mediapipe/framework/api2:packet",
         "//mediapipe/framework/api2:port",
         "//mediapipe/framework/formats:image",
+        "//mediapipe/framework/formats:image_frame",
         "//mediapipe/framework/formats:rect_cc_proto",
         "//mediapipe/framework/formats:tensor",
         "//mediapipe/framework/port:ret_check",
+        "//mediapipe/framework/port:status",
         "//mediapipe/framework/port:statusor",
         "//mediapipe/gpu:gpu_origin_cc_proto",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/types:optional",
     ] + select({
         "//mediapipe/gpu:disable_gpu": [],
@@ -1701,6 +1844,8 @@ cc_library(
         "//mediapipe/framework:calculator_context",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework:port",
+        "//mediapipe/framework/api2:node",
+        "//mediapipe/framework/api2:port",
         "//mediapipe/framework/formats:image",
         "//mediapipe/framework/formats:tensor",
         "//mediapipe/framework/port:ret_check",
@@ -1998,7 +2143,7 @@ cc_library(
         "image_to_tensor_converter_gl_buffer.h",
         "image_to_tensor_converter_gl_texture.h",
     ],
-    visibility = [":__pkg__"],
+    visibility = ["//visibility:private"],
 )
 
 cc_test(
