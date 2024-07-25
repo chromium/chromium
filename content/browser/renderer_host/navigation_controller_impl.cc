@@ -1355,6 +1355,9 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::LoadURLWithParams(
   switch (params.load_type) {
     case LOAD_TYPE_DEFAULT:
     case LOAD_TYPE_HTTP_POST:
+#if BUILDFLAG(IS_ANDROID)
+    case LOAD_TYPE_PDF_ANDROID:
+#endif
       break;
     case LOAD_TYPE_DATA:
       if (!params.url.SchemeIs(url::kDataScheme)) {
@@ -2870,7 +2873,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   params.is_renderer_initiated = is_renderer_initiated;
   params.override_user_agent = UA_OVERRIDE_INHERIT;
   /* params.base_url_for_data_url: skip */
-  /* params.virtual_url_for_data_url: skip */
+  /* params.virtual_url_for_special_cases: skip */
   /* params.data_url_as_string: skip */
   params.post_data = post_body;
   params.can_load_local_resources = false;
@@ -3864,13 +3867,23 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
       entry->SetPostData(params.post_data);
       break;
     case LOAD_TYPE_DATA:
+      // LoadDataWithBaseURL is a special case that needs to assign both a base
+      // URL and a virtual URL, while loading the actual content from a data
+      // URL.
       entry->SetBaseURLForDataURL(params.base_url_for_data_url);
-      entry->SetVirtualURL(params.virtual_url_for_data_url);
+      entry->SetVirtualURL(params.virtual_url_for_special_cases);
 #if BUILDFLAG(IS_ANDROID)
       entry->SetDataURLAsString(params.data_url_as_string);
 #endif
       entry->SetCanLoadLocalResources(params.can_load_local_resources);
       break;
+#if BUILDFLAG(IS_ANDROID)
+    case LOAD_TYPE_PDF_ANDROID:
+      // Android PDF URLs show the actual PDF URL as a virtual URL, while an
+      // internal URL is used for the navigation URL.
+      entry->SetVirtualURL(params.virtual_url_for_special_cases);
+      break;
+#endif
   }
 
   // TODO(clamy): NavigationEntry is meant for information that will be kept
@@ -3914,9 +3927,17 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     RewriteUrlForNavigation(params.url, browser_context_, &url_to_load,
                             &virtual_url, &ignored_reverse_on_redirect);
 
-    // For DATA loads, override the virtual URL.
-    if (params.load_type == LOAD_TYPE_DATA)
-      virtual_url = params.virtual_url_for_data_url;
+    // Both LoadDataWithBaseURL and Android PDF navigations are special cases
+    // that need to define a virtual URL to display, which differs from the
+    // navigation URL.
+    if (params.load_type == LOAD_TYPE_DATA) {
+      virtual_url = params.virtual_url_for_special_cases;
+    }
+#if BUILDFLAG(IS_ANDROID)
+    if (params.load_type == LOAD_TYPE_PDF_ANDROID) {
+      virtual_url = params.virtual_url_for_special_cases;
+    }
+#endif
 
     if (virtual_url.is_empty())
       virtual_url = url_to_load;

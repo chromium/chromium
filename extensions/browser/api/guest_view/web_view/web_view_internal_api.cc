@@ -920,7 +920,7 @@ WebViewInternalLoadDataWithBaseUrlFunction::Run() {
   content::NavigationController::LoadURLParams load_params(data_url);
   load_params.load_type = content::NavigationController::LOAD_TYPE_DATA;
   load_params.base_url_for_data_url = base_url;
-  load_params.virtual_url_for_data_url = virtual_url;
+  load_params.virtual_url_for_special_cases = virtual_url;
   load_params.override_user_agent =
       content::NavigationController::UA_OVERRIDE_INHERIT;
 

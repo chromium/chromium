@@ -293,7 +293,7 @@ void Shell::LoadDataWithBaseURLInternal(const GURL& url,
 
   params.load_type = NavigationController::LOAD_TYPE_DATA;
   params.base_url_for_data_url = base_url;
-  params.virtual_url_for_data_url = url;
+  params.virtual_url_for_special_cases = url;
   params.override_user_agent = NavigationController::UA_OVERRIDE_FALSE;
   web_contents_->GetController().LoadURLWithParams(params);
 }
