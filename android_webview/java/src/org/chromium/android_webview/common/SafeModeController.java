@@ -178,7 +178,10 @@ public class SafeModeController {
                                 /* selection= */ null,
                                 /* selectionArgs= */ null,
                                 /* sortOrder= */ null)) {
-            assert cursor != null : "ContentProvider doesn't support querying '" + uri + "'";
+            if (cursor == null || cursor.getCount() == 0) {
+                Log.i(TAG, "ContentProvider doesn't support querying '" + uri + "'");
+                return actions;
+            }
             int actionIdColumnIndex = cursor.getColumnIndexOrThrow(ACTIONS_COLUMN);
             while (cursor.moveToNext()) {
                 actions.add(cursor.getString(actionIdColumnIndex));
