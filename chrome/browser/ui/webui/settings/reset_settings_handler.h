@@ -112,6 +112,9 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
 
   void SanitizeSettings();
   void OnSanitizeDone();
+
+  // Call to reset a users's DNS settings.
+  void ResetDnsConfigurations();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const raw_ptr<Profile> profile_;

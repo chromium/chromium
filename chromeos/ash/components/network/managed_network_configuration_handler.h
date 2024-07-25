@@ -183,6 +183,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
       const std::string& guid,
       ::onc::ONCSource* onc_source) const = 0;
 
+  // Calls GetProperties and runs ResetDNSPropertiesCallback as the primary
+  // callback, changes the NameServersConfigType ONC property to be
+  // automatically set by DHCP and applies it to a specific network device.
+  virtual void ResetDNSProperties(const std::string& service_path) = 0;
+
   // Returns true if the user policy for |userhash| or device policy if
   // |userhash| is empty has any policy-configured network.
   // Returns false if |userhash| does not map to any known network profile.

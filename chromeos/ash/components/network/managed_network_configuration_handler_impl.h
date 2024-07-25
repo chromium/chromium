@@ -118,6 +118,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       const std::string& guid,
       ::onc::ONCSource* onc_source) const override;
 
+  void ResetDNSProperties(const std::string& service_path) override;
+
   bool HasAnyPolicyNetwork(const std::string& userhash) const override;
 
   const base::Value::Dict* GetGlobalConfigFromPolicy(
@@ -294,6 +296,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
                              network_handler::PropertiesCallback callback,
                              const std::string& service_path,
                              std::optional<base::Value::Dict> shill_properties);
+
+  // Implemented as a callback for GetProperties, fetches Type,
+  // IPAddressConfig, StaticIPConfig, and changes the
+  // NameServersConfigType ONC property to be automatically set by DHCP and
+  // applies it to a specific network device.
+  void ResetDNSPropertiesCallback(
+      const std::string& service_path,
+      std::optional<base::Value::Dict> network_properties,
+      std::optional<std::string> error);
 
   void OnGetDeviceProperties(
       PropertiesType properties_type,
