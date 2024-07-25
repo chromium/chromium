@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/browser/supervised_user_capabilities.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "ui/base/page_transition_types.h"
@@ -30,12 +30,14 @@ CoreAccountId GetAccountId(Profile* profile) {
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   CHECK(supervised_user_service) << "Incognito mode is not supported.";
-  CHECK(supervised_user::IsSubjectToParentalControls(*profile->GetPrefs()))
-      << "Blocklist control page is only available to user who have that "
-         "feature enabled. Check if member is a subject to parental controls.";
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
+
+  CHECK(supervised_user::IsPrimaryAccountSubjectToParentalControls(
+            identity_manager) == signin::Tribool::kTrue)
+      << "Blocklist control page is only available to user who have that "
+         "feature enabled. Check if member is a subject to parental controls.";
 
   return identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 }
@@ -91,15 +93,16 @@ CoreAccountId FamilyMember::GetAccountId() const {
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(browser()->profile());
   CHECK(supervised_user_service) << "Incognito mode is not supported.";
-  CHECK(supervised_user::IsSubjectToParentalControls(
-      *browser()->profile()->GetPrefs()))
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+
+  CHECK(supervised_user::IsPrimaryAccountSubjectToParentalControls(
+            identity_manager) == signin::Tribool::kTrue)
       << "Blocklist control page is only available to user who have that "
          "feature enabled. Check if member is a subject to parental controls. "
          "Account: "
       << account_.user;
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
 
   return identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 }

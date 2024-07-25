@@ -26,7 +26,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/browser/supervised_user_capabilities.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "components/variations/variations_switches.h"
@@ -115,8 +115,9 @@ class SupervisedUserRegionalURLFilterTest
   }
 
   bool IsUrlFilteringEnabled() const {
-    return supervised_user::IsSubjectToParentalControls(
-        *browser()->profile()->GetPrefs());
+    return signin::Tribool::kTrue ==
+           supervised_user::IsPrimaryAccountSubjectToParentalControls(
+               IdentityManagerFactory::GetForProfile(browser()->profile()));
   }
 
  private:
