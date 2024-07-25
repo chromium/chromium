@@ -269,7 +269,7 @@ class PredictionManagerTestBase : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};

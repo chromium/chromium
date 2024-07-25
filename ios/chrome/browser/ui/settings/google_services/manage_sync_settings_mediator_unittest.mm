@@ -168,7 +168,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
 
   // Needed for the initialization of authentication service.
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
   base::test::ScopedFeatureList feature_list_;
 

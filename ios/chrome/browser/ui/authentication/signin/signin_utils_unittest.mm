@@ -81,7 +81,9 @@ class SigninUtilsTest : public PlatformTest {
     return prefs;
   }
 
-  PrefService* GetLocalState() { return scoped_testing_local_state_.Get(); }
+  PrefService* GetLocalState() {
+    return GetApplicationContext()->GetLocalState();
+  }
 
   FakeSystemIdentityManager* fake_system_identity_manager() {
     return FakeSystemIdentityManager::FromSystemIdentityManager(

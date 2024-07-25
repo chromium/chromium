@@ -127,7 +127,7 @@ class AccountsTableViewControllerTest
  private:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{

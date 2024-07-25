@@ -50,7 +50,7 @@ class TestChromeBrowserStateManager : public ios::ChromeBrowserStateManager {
   // the constructor.
   base::FilePath last_used_browser_state_path_;
 
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::map<base::FilePath, std::unique_ptr<ChromeBrowserState>> browser_states_;
   BrowserStateInfoCache browser_state_info_cache_;
 };

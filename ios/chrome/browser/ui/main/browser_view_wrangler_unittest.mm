@@ -134,7 +134,7 @@ class BrowserViewWranglerTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   id fake_scene_;
   SceneState* scene_state_;

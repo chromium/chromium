@@ -64,8 +64,8 @@ source_set("test_support") {
   sources = [
     "test_chrome_browser_state.h",
     "test_chrome_browser_state.mm",
-    "test_chrome_browser_state_manager.cc",
     "test_chrome_browser_state_manager.h",
+    "test_chrome_browser_state_manager.mm",
   ]
 
   public_deps = [
@@ -91,6 +91,7 @@ source_set("test_support") {
     "//ios/chrome/browser/net/model",
     "//ios/chrome/browser/policy/model:model",
     "//ios/chrome/browser/prefs/model",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
     "//ios/chrome/browser/ui/ntp:logo",

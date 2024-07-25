@@ -292,7 +292,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   GoogleServiceAuthError no_error_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
   syncer::FakeModelTypeControllerDelegate fake_controller_delegate_;
   testing::NiceMock<OpenTabsUIDelegateMock> open_tabs_ui_delegate_;

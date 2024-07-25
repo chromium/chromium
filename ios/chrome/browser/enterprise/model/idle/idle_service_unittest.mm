@@ -70,7 +70,7 @@ class IdleTimeoutServiceTest : public PlatformTest {
   }
 
   void SetLastActiveTime(base::Time time) {
-    local_state_.Get()->SetTime(prefs::kLastActiveTimestamp, time);
+    local_state()->SetTime(prefs::kLastActiveTimestamp, time);
   }
 
   base::Time GetLastIdleTime() {
@@ -120,6 +120,10 @@ class IdleTimeoutServiceTest : public PlatformTest {
     run_loop.RunUntilIdle();
   }
 
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -127,7 +131,7 @@ class IdleTimeoutServiceTest : public PlatformTest {
   raw_ptr<MockActionRunner> action_runner_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<IdleService> idle_service_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   raw_ptr<AuthenticationService> authentication_service_;
 };
 

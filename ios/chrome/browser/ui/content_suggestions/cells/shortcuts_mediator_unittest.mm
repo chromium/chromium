@@ -79,7 +79,7 @@ class ShortcutsMediatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   ShortcutsMediator* mediator_;
   ContentSuggestionsMetricsRecorder* metrics_recorder_;

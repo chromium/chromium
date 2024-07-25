@@ -114,7 +114,7 @@ class ChromeBrowserStateManagerImplTest : public PlatformTest {
   }
 
  private:
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<IOSChromeIOThread> chrome_io_;
   web::WebTaskEnvironment web_task_environment_;
   ChromeBrowserStateManagerImpl browser_state_manager_;

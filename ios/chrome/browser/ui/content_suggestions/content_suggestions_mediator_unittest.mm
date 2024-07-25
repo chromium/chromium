@@ -59,7 +59,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   raw_ptr<WebStateList> web_state_list_;

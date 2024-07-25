@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -48,7 +49,6 @@ class NotificationsOptInMediatorTest : public PlatformTest {
     auth_service_ =
         AuthenticationServiceFactory::GetForBrowserState(browser_state);
     prefs_ = browser_state->GetPrefs();
-    local_state_ = TestingApplicationContext::GetGlobal()->GetLocalState();
     scoped_feature_list_.InitWithFeatures(
         {kIOSTipsNotifications, kContentPushNotifications}, {});
     consumer_ = OCMStrictProtocolMock(@protocol(NotificationsOptInConsumer));
@@ -56,7 +56,11 @@ class NotificationsOptInMediatorTest : public PlatformTest {
 
   void TearDown() override {
     prefs_->ClearPref(prefs::kFeaturePushNotificationPermissions);
-    local_state_.get()->ClearPref(prefs::kAppLevelPushNotificationPermissions);
+    local_state()->ClearPref(prefs::kAppLevelPushNotificationPermissions);
+  }
+
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
   }
 
  protected:
@@ -69,7 +73,7 @@ class NotificationsOptInMediatorTest : public PlatformTest {
 
   // Enables/disables app level notifications with `key`.
   void TurnAppLevelNotificationForKey(BOOL on, const std::string key) {
-    ScopedDictPrefUpdate update(local_state_.get(),
+    ScopedDictPrefUpdate update(local_state(),
                                 prefs::kAppLevelPushNotificationPermissions);
     update->Set(key, on);
   }
@@ -86,7 +90,6 @@ class NotificationsOptInMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<PrefService> prefs_;
-  raw_ptr<PrefService> local_state_;
   std::unique_ptr<TestChromeBrowserStateManager> test_manager_;
   raw_ptr<AuthenticationService> auth_service_ = nullptr;
   NotificationsOptInMediator* mediator_;
@@ -138,7 +141,7 @@ TEST_F(NotificationsOptInMediatorTest, TestNoThanksTapped) {
       initWithAuthenticationService:auth_service_];
   [mediator_ didTapSecondaryActionButton];
   SetUpListItemState item_state = set_up_list_prefs::GetItemState(
-      local_state_.get(), SetUpListItemType::kNotifications);
+      local_state(), SetUpListItemType::kNotifications);
   EXPECT_TRUE(item_state == SetUpListItemState::kCompleteInList ||
               item_state == SetUpListItemState::kCompleteNotInList);
 }

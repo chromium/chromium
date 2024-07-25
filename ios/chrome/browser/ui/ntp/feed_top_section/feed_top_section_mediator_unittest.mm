@@ -66,7 +66,7 @@ class FeedTopSectionMediatorTest : public PlatformTest {
   }
 
  protected:
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   AuthenticationService* fake_authentication_service_;
   PrefService* fake_pref_service_;
   web::WebTaskEnvironment task_environment_;

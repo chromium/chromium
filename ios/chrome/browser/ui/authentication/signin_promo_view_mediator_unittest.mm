@@ -146,7 +146,9 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     fake_system_identity_manager()->AddIdentity(identity_);
   }
 
-  PrefService* GetLocalState() { return scoped_testing_local_state_.Get(); }
+  PrefService* GetLocalState() {
+    return GetApplicationContext()->GetLocalState();
+  }
 
   // Tests the mediator with a new created configurator when no accounts are on
   // the device.

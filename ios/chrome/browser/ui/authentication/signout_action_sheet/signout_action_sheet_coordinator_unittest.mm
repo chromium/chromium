@@ -104,7 +104,9 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
     return signout_coordinator_;
   }
 
-  PrefService* GetLocalState() { return scoped_testing_local_state_.Get(); }
+  PrefService* GetLocalState() {
+    return GetApplicationContext()->GetLocalState();
+  }
 
   PrefService* GetPrefs() { return browser_state_->GetPrefs(); }
 

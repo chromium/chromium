@@ -32,7 +32,7 @@ class UpgradeCenterBrowserAgentTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState scoped_local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   FakeUpgradeCenter* fake_upgrade_center_;

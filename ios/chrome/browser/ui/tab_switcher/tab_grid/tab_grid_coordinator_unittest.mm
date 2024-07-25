@@ -183,7 +183,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
 
   // Browser for the coordinator.

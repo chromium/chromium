@@ -20,6 +20,7 @@
 #import "components/variations/variations_switches.h"
 #import "components/variations/variations_test_utils.h"
 #import "ios/chrome/browser/flags/ios_chrome_field_trials.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_service_client.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "services/network/test/test_network_connection_tracker.h"
@@ -81,7 +82,9 @@ class IOSChromeVariationsSeedStoreTest : public PlatformTest {
   }
 
   // Returns local state.
-  TestingPrefServiceSimple* GetLocalState() { return local_state_.Get(); }
+  PrefService* GetLocalState() {
+    return GetApplicationContext()->GetLocalState();
+  }
 
   // Lazy getter for metrics state manager used to set up variations service.
   metrics::MetricsStateManager* GetMetricsStateManager() {
@@ -137,7 +140,7 @@ class IOSChromeVariationsSeedStoreTest : public PlatformTest {
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<base::FeatureList> original_feature_list_;
   // Variations service dependencies.
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<metrics::TestEnabledStateProvider> enabled_state_provider_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
   // Variations service.

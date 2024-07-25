@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <vector>
+#import <vector>
 
-#include "base/files/file_path.h"
-#include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "base/files/file_path.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 TestChromeBrowserStateManager::TestChromeBrowserStateManager(
     const base::FilePath& user_data_dir)
@@ -20,7 +21,7 @@ TestChromeBrowserStateManager::TestChromeBrowserStateManager(
 TestChromeBrowserStateManager::TestChromeBrowserStateManager(
     std::unique_ptr<ChromeBrowserState> browser_state,
     const base::FilePath& user_data_dir)
-    : browser_state_info_cache_(local_state_.Get()) {
+    : browser_state_info_cache_(GetApplicationContext()->GetLocalState()) {
   if (browser_state) {
     browser_state_info_cache_.AddBrowserState(
         browser_state->GetBrowserStateName(),

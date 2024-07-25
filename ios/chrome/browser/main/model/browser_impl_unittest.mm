@@ -41,7 +41,7 @@ class BrowserImplTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState scoped_local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   __strong FakeSceneState* scene_state_;
 };

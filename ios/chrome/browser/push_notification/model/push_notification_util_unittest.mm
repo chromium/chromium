@@ -27,7 +27,7 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
 
 class PushNotificationUtilTest : public PlatformTest {
  protected:
-  IOSChromeScopedTestingLocalState scoped_local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::HistogramTester histogram_tester_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
 };

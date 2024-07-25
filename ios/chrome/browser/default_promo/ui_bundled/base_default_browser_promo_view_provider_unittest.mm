@@ -64,7 +64,7 @@ class BaseDefaultBrowserPromoViewProviderTest : public PlatformTest {
     ClearDefaultBrowserPromoData();
   }
 
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestDefaultBrowserPromoViewProvider* test_provider_;
 };
 

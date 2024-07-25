@@ -56,7 +56,7 @@ class BaseGridViewControllerTest : public RootViewControllerTest {
     return TabItemForIndex(index).identifier;
   }
 
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   BaseGridViewController* view_controller_;
   const web::WebStateID identifier_a_;
   const web::WebStateID identifier_b_;

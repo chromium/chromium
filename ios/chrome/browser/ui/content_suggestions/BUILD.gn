@@ -298,6 +298,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/safety_check/model:constants",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

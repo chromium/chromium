@@ -48,7 +48,7 @@ class BrowserSigninPolicyHandlerTest : public PlatformTest {
         removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
   }
 
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 };
 
 const char* BrowserSigninModeToString(BrowserSigninMode mode) {

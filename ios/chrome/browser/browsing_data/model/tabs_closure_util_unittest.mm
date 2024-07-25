@@ -136,7 +136,7 @@ class TabsClosureUtilTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   __strong SceneState* scene_state_;
   std::unique_ptr<Browser> browser_;

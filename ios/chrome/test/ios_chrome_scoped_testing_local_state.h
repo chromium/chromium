@@ -20,8 +20,6 @@ class IOSChromeScopedTestingLocalState {
 
   ~IOSChromeScopedTestingLocalState();
 
-  TestingPrefServiceSimple* Get();
-
  private:
   TestingPrefServiceSimple local_state_;
 };

@@ -9,6 +9,7 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -58,17 +59,21 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
          URLLoadingBrowserAgent:url_loader_];
 
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
-        initWithLocalState:local_state_.Get()];
+        initWithLocalState:local_state()];
     mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
     mediator_.NTPMetricsDelegate =
         OCMProtocolMock(@protocol(NewTabPageMetricsDelegate));
   }
   ~MostVisitedTilesMediatorTest() override { [mediator_ disconnect]; }
 
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   FakeUrlLoadingBrowserAgent* url_loader_;

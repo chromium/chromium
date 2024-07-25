@@ -229,8 +229,12 @@ class AuthenticationServiceTest : public PlatformTest {
         prefs::kRestrictAccountsToPatterns, std::move(allowed_patterns));
   }
 
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   raw_ptr<ChromeAccountManagerService> account_manager_;
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -849,9 +853,8 @@ TEST_F(AuthenticationServiceTest, TestGetServiceStatus) {
   EXPECT_EQ(1, observer_test.GetOnServiceStatusChangedCounter());
 
   // Set sign-in disabled by policy.
-  local_state_.Get()->SetInteger(
-      prefs::kBrowserSigninPolicy,
-      static_cast<int>(BrowserSigninMode::kDisabled));
+  local_state()->SetInteger(prefs::kBrowserSigninPolicy,
+                            static_cast<int>(BrowserSigninMode::kDisabled));
   // Expect sign-in to be disabled by policy.
   EXPECT_EQ(AuthenticationService::ServiceStatus::SigninDisabledByPolicy,
             authentication_service()->GetServiceStatus());
@@ -859,8 +862,8 @@ TEST_F(AuthenticationServiceTest, TestGetServiceStatus) {
   EXPECT_EQ(2, observer_test.GetOnServiceStatusChangedCounter());
 
   // Set sign-in forced by policy.
-  local_state_.Get()->SetInteger(prefs::kBrowserSigninPolicy,
-                                 static_cast<int>(BrowserSigninMode::kForced));
+  local_state()->SetInteger(prefs::kBrowserSigninPolicy,
+                            static_cast<int>(BrowserSigninMode::kForced));
   // Expect sign-in to be forced by policy.
   EXPECT_EQ(AuthenticationService::ServiceStatus::SigninForcedByPolicy,
             authentication_service()->GetServiceStatus());

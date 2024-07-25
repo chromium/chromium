@@ -96,7 +96,9 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
         ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
-  PrefService* GetLocalState() { return scoped_testing_local_state_.Get(); }
+  PrefService* GetLocalState() {
+    return GetApplicationContext()->GetLocalState();
+  }
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;

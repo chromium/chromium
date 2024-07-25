@@ -123,7 +123,7 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   TwoScreensSigninCoordinator* coordinator_;

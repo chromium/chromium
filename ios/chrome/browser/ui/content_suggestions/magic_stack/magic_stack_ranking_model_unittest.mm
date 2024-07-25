@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
@@ -241,8 +242,6 @@ class MagicStackRankingModelTest : public PlatformTest {
 
     browser_ = std::make_unique<TestBrowser>(GetBrowserState());
 
-    local_state_ = TestingApplicationContext::GetGlobal()->GetLocalState();
-
     // Necessary set up for kIOSSetUpList.
     GetLocalState()->ClearPref(set_up_list_prefs::kDisabled);
     ClearDefaultBrowserPromoData();
@@ -349,7 +348,9 @@ class MagicStackRankingModelTest : public PlatformTest {
     return browser_state_manager_->GetLastUsedBrowserStateForTesting();
   }
 
-  PrefService* GetLocalState() { return local_state_; }
+  PrefService* GetLocalState() {
+    return GetApplicationContext()->GetLocalState();
+  }
 
   ~MagicStackRankingModelTest() override {
     [_setUpListMediator disconnect];
@@ -383,7 +384,6 @@ class MagicStackRankingModelTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  raw_ptr<PrefService> local_state_;
   FakeSceneState* scene_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;

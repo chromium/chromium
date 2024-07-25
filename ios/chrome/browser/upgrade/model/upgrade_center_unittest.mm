@@ -28,7 +28,7 @@ class UpgradeCenterTest : public PlatformTest {
     }
   }
 
-  IOSChromeScopedTestingLocalState scoped_local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   __strong UpgradeCenter* upgrade_center_ = nil;
 };
 
