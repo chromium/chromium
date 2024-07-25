@@ -126,13 +126,10 @@ public class ChildProcessLauncherIntegrationTest {
 
     @Test
     @MediumTest
-    // This test may run with --site-per-process or AndroidWarmUpSpareRendererWithTimeout, which
-    // also enables a feature to maintain a spare renderer process.
-    // The spare process interferes with assertions on the number of process connections in this
-    // test, so disable it.
-    @CommandLineFlags.Add({
-        "disable-features=SpareRendererForSitePerProcess,AndroidWarmUpSpareRendererWithTimeout"
-    })
+    // This test may run with --site-per-process, which also enables a feature to maintain a
+    // spare renderer process. The spare process interferes with assertions on the number of
+    // process connections in this test, so disable it.
+    @CommandLineFlags.Add({"disable-features=SpareRendererForSitePerProcess"})
     public void testCrossDomainNavigationDoNotLoseImportance() throws Throwable {
         final TestChildProcessConnectionFactory factory = new TestChildProcessConnectionFactory();
         final List<TestChildProcessConnection> connections = factory.getConnections();
@@ -189,13 +186,10 @@ public class ChildProcessLauncherIntegrationTest {
 
     @Test
     @MediumTest
-    // This test may run with --site-per-process or AndroidWarmUpSpareRendererWithTimeout, which
-    // also enables a feature to maintain a spare renderer process.
-    // The spare process interferes with assertions on the number of process connections in this
-    // test, so disable it.
-    @CommandLineFlags.Add({
-        "disable-features=SpareRendererForSitePerProcess,AndroidWarmUpSpareRendererWithTimeout"
-    })
+    // This test may run with --site-per-process, which also enables a feature to maintain a
+    // spare renderer process. The spare process interferes with assertions on the number of
+    // process connections in this test, so disable it.
+    @CommandLineFlags.Add({"disable-features=SpareRendererForSitePerProcess"})
     public void testIntentionalKillToFreeServiceSlot() throws Throwable {
         final TestChildProcessConnectionFactory factory = new TestChildProcessConnectionFactory();
         final List<TestChildProcessConnection> connections = factory.getConnections();

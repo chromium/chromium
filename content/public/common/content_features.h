@@ -27,20 +27,6 @@ namespace features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAdditionalOpaqueOriginEnforcements);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidWarmUpSpareRendererWithTimeout);
-CONTENT_EXPORT extern const base::FeatureParam<std::string>
-    kAndroidSpareRendererCreationTiming;
-inline constexpr const char kAndroidSpareRendererCreationAfterLoading[] =
-    "after-loading";
-inline constexpr const char kAndroidSpareRendererCreationAfterFirstPaint[] =
-    "after-first-paint";
-inline constexpr const char
-    kAndroidSpareRendererCreationDelayedDuringLoading[] =
-        "delayed-during-loading";
-CONTENT_EXPORT extern const base::FeatureParam<int>
-    kAndroidSpareRendererCreationDelayMs;
-CONTENT_EXPORT extern const base::FeatureParam<int>
-    kAndroidSpareRendererTimeoutSeconds;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAudioServiceLaunchOnStartup);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAudioServiceOutOfProcess);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAudioServiceSandbox);

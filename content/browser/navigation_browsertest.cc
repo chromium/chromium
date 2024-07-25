@@ -29,7 +29,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/uuid.h"
@@ -9133,8 +9132,29 @@ class DeferSpeculativeRFHCreationRenderProcessTest
            (AreAllSitesIsolatedForTesting() || IsBackForwardCacheEnabled());
   }
 
+  void SpareRenderProcessHostChanged(RenderProcessHost* render_process_host) {
+    spare_render_process_host_ = render_process_host;
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  RenderProcessHost* spare_render_process_host() {
+    return spare_render_process_host_;
+  }
+
+  void WaitForSpareRenderProcessCreation() {
+    base::RunLoop loop;
+    quit_closure_ = loop.QuitClosure();
+    if (!spare_render_process_host_) {
+      loop.Run();
+    }
+  }
+
  private:
+  raw_ptr<RenderProcessHost> spare_render_process_host_ = nullptr;
   bool warmup_spare_render_process_;
+  base::OnceClosure quit_closure_;
   base::test::ScopedFeatureList always_spare_render_process_feature_list_;
   base::test::ScopedFeatureList defer_rfh_feature_list_;
   base::test::ScopedFeatureList render_document_feature_;
@@ -9150,7 +9170,11 @@ IN_PROC_BROWSER_TEST_P(DeferSpeculativeRFHCreationRenderProcessTest,
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   SpareRenderProcessHostManager::GetInstance().CleanupSpareRenderProcessHost();
-  SpareRenderProcessObserver render_process_observer;
+  base::CallbackListSubscription subscription =
+      RenderProcessHost::RegisterSpareRenderProcessHostChangedCallback(
+          base::BindRepeating(&DeferSpeculativeRFHCreationRenderProcessTest::
+                                  SpareRenderProcessHostChanged,
+                              base::Unretained(this)));
 
   GURL url = embedded_test_server()->GetURL("b.com", "/title1.html");
   TestNavigationManager nav_manager(web_contents, url);
@@ -9167,10 +9191,9 @@ IN_PROC_BROWSER_TEST_P(DeferSpeculativeRFHCreationRenderProcessTest,
   NavigationRequest* navigation_request =
       NavigationRequest::From(nav_manager.GetNavigationHandle());
   if (WillWarmupSpareRenderProcess()) {
-    render_process_observer.WaitForSpareRenderProcessCreation();
+    WaitForSpareRenderProcessCreation();
   }
-  RenderProcessHost* created_process =
-      render_process_observer.spare_render_process_host();
+  RenderProcessHost* created_process = spare_render_process_host();
   ASSERT_EQ(!!created_process, WillWarmupSpareRenderProcess());
   ASSERT_TRUE(navigation_request);
   // The navigation manager pauses the navigation in the WillStartRequest
@@ -9485,97 +9508,5 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationReuseRFHTest,
   ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
 }
-
-#if BUILDFLAG(IS_ANDROID)
-class AndroidPrewarmSpareRendererTest
-    : public NavigationBrowserTest,
-      public ::testing::WithParamInterface<std::tuple<std::string, bool>> {
- public:
-  AndroidPrewarmSpareRendererTest() {
-    std::map<std::string, std::string> parameters = {
-        {"spare_renderer_creation_timing", std::get<0>(GetParam())},
-        {"spare_renderer_timeout_seconds",
-         std::get<1>(GetParam()) ? "10" : "-1"},
-    };
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kAndroidWarmUpSpareRendererWithTimeout,
-                               parameters}},
-        /*disabled_features=*/{{features::kSpareRendererForSitePerProcess}});
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Enable site per process so that the navigation will take
-    // the spare process.
-    command_line->AppendSwitch(switches::kSitePerProcess);
-  }
-
-  bool SpareRendererHasTimeout() { return std::get<1>(GetParam()); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    AndroidPrewarmSpareRendererTest,
-    testing::Combine(
-        testing::Values(
-            features::kAndroidSpareRendererCreationAfterLoading,
-            features::kAndroidSpareRendererCreationAfterFirstPaint,
-            features::kAndroidSpareRendererCreationDelayedDuringLoading),
-        testing::Bool()));
-
-IN_PROC_BROWSER_TEST_P(AndroidPrewarmSpareRendererTest, ReuseSpareRenderer) {
-  SpareRenderProcessHostManager::GetInstance().CleanupSpareRenderProcessHost();
-  SpareRenderProcessObserver render_process_observer;
-  ASSERT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
-  render_process_observer.WaitForSpareRenderProcessCreation();
-  RenderProcessHost* created_process =
-      render_process_observer.spare_render_process_host();
-  ASSERT_TRUE(!!created_process);
-  ASSERT_EQ(
-      SpareRenderProcessHostManager::GetInstance().spare_render_process_host(),
-      created_process);
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-  ASSERT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
-  ASSERT_EQ(web_contents->GetSiteInstance()->GetProcess(), created_process);
-}
-
-IN_PROC_BROWSER_TEST_P(AndroidPrewarmSpareRendererTest, RendererTimeout) {
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
-      new base::TestMockTimeTaskRunner();
-  SpareRenderProcessHostManager& manager =
-      SpareRenderProcessHostManager::GetInstance();
-  manager.SetDeferTimerTaskRunnerForTesting(task_runner);
-  const base::TimeDelta kTimeout = base::Seconds(10);
-
-  SpareRenderProcessHostManager::GetInstance().CleanupSpareRenderProcessHost();
-  SpareRenderProcessObserver render_process_observer;
-  ASSERT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
-  render_process_observer.WaitForSpareRenderProcessCreation();
-  RenderProcessHost* created_process =
-      render_process_observer.spare_render_process_host();
-  ASSERT_TRUE(!!created_process);
-  ASSERT_EQ(manager.spare_render_process_host(), created_process);
-
-  if (!SpareRendererHasTimeout()) {
-    // Warming up a spare renderer with a timeout shall not override
-    // a spare renderer without a timeout.
-    manager.WarmupSpareRenderProcessHost(
-        shell()->web_contents()->GetBrowserContext(), kTimeout);
-  }
-  task_runner->FastForwardBy(kTimeout);
-  base::RunLoop().RunUntilIdle();
-  if (SpareRendererHasTimeout()) {
-    ASSERT_FALSE(!!manager.spare_render_process_host());
-  } else {
-    ASSERT_EQ(created_process, manager.spare_render_process_host());
-  }
-}
-#endif
 
 }  // namespace content

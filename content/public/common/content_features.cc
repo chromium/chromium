@@ -25,35 +25,6 @@ BASE_FEATURE(kAdditionalOpaqueOriginEnforcements,
              "AdditionalOpaqueOriginEnforcements",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Warm up a spare renderer after each navigation on Android.
-BASE_FEATURE(kAndroidWarmUpSpareRendererWithTimeout,
-             "AndroidWarmUpSpareRendererWithTimeout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Create the spare renderer in DidStopLoading rather than in
-// SpareRenderProcessHostManager::PrepareForFutureRequests.
-const base::FeatureParam<std::string> kAndroidSpareRendererCreationTiming{
-    &kAndroidWarmUpSpareRendererWithTimeout, "spare_renderer_creation_timing",
-    kAndroidSpareRendererCreationAfterLoading};
-
-// The delay for creating the Android spare renderer in
-// SpareRenderProcessHostManager::PrepareForFutureRequests.
-// The parameter will not be effective if
-// `spare_renderer_creation_after_stop_loading` is enabled.
-// Since the function is called during loading, a delay is introduced to avoid
-// interfering with critical loading procedures.
-const base::FeatureParam<int> kAndroidSpareRendererCreationDelayMs{
-    &kAndroidWarmUpSpareRendererWithTimeout, "spare_renderer_creation_delay_ms",
-    2000};
-
-// The timeout for the created spare renderer after each navigation on Android.
-// The created renderer will be destroyed after the timeout.
-// A negative value indicates that no timeout will be set for the spare
-// renderer.
-const base::FeatureParam<int> kAndroidSpareRendererTimeoutSeconds{
-    &kAndroidWarmUpSpareRendererWithTimeout, "spare_renderer_timeout_seconds",
-    60};
-
 // Launches the audio service on the browser startup.
 BASE_FEATURE(kAudioServiceLaunchOnStartup,
              "AudioServiceLaunchOnStartup",

@@ -4413,36 +4413,6 @@ void SpeculativeRenderFrameHostObserver::RenderFrameCreated(
   }
 }
 
-SpareRenderProcessObserver::SpareRenderProcessObserver() {
-  subscription_ =
-      RenderProcessHost::RegisterSpareRenderProcessHostChangedCallback(
-          base::BindRepeating(
-              &SpareRenderProcessObserver::SpareRenderProcessHostChanged,
-              weak_factory_.GetWeakPtr()));
-}
-
-SpareRenderProcessObserver::~SpareRenderProcessObserver() = default;
-
-void SpareRenderProcessObserver::SpareRenderProcessHostChanged(
-    RenderProcessHost* render_process_host) {
-  spare_render_process_host_ = render_process_host;
-  if (quit_closure_) {
-    std::move(quit_closure_).Run();
-  }
-}
-
-RenderProcessHost* SpareRenderProcessObserver::spare_render_process_host() {
-  return spare_render_process_host_;
-}
-
-void SpareRenderProcessObserver::WaitForSpareRenderProcessCreation() {
-  base::RunLoop loop;
-  quit_closure_ = loop.QuitClosure();
-  if (!spare_render_process_host_) {
-    loop.Run();
-  }
-}
-
 base::CallbackListSubscription RegisterWebContentsCreationCallback(
     base::RepeatingCallback<void(WebContents*)> callback) {
   return WebContentsImpl::FriendWrapper::AddCreatedCallbackForTesting(callback);

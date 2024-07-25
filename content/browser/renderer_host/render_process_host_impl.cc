@@ -2917,28 +2917,20 @@ void RenderProcessHostImpl::DiscardSpareRenderProcessHostForTesting() {
 
 // static
 bool RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes() {
+  if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
+    return false;
+
+  if (!base::FeatureList::IsEnabled(features::kSpareRendererForSitePerProcess))
+    return false;
+
   // Spare renderer actually hurts performance on low-memory devices.  See
   // https://crbug.com/843775 for more details.
   //
   // The comparison below is using 1077 rather than 1024 because this helps
   // ensure that devices with exactly 1GB of RAM won't get included because of
   // inaccuracies or off-by-one errors.
-  if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 1077) {
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 1077)
     return false;
-  }
-
-  bool android_spare_process_override = base::FeatureList::IsEnabled(
-      features::kAndroidWarmUpSpareRendererWithTimeout);
-  if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites() &&
-      !android_spare_process_override) {
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          features::kSpareRendererForSitePerProcess) &&
-      !android_spare_process_override) {
-    return false;
-  }
 
   return true;
 }
