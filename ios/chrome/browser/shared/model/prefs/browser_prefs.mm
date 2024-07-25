@@ -946,6 +946,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(
       prefs::kContentNotificationsEnrollmentEligibility);
 
+  registry->RegisterStringPref(prefs::kContentNotificationsEnrollmentType, "");
+
   registry->RegisterStringPref(kSyncCachedTrustedVaultAutoUpgradeDebugInfo, "");
 
   // Registers the Home customization visibility prefs.
