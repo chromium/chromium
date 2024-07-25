@@ -15,6 +15,7 @@ source_set("tab_groups") {
     "tab_groups_panel_coordinator.mm",
     "tab_groups_panel_mediator.h",
     "tab_groups_panel_mediator.mm",
+    "tab_groups_panel_mediator_delegate.h",
   ]
   deps = [
     ":tab_group_consumer",

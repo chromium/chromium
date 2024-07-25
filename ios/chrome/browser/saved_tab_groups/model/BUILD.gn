@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "ios_tab_group_action_context.h",
+    "ios_tab_group_action_context.mm",
     "ios_tab_group_sync_delegate.h",
     "ios_tab_group_sync_delegate.mm",
     "ios_tab_group_sync_util.h",

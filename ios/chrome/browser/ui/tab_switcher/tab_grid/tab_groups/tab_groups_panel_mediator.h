@@ -14,6 +14,7 @@
 @protocol GridToolbarsMutator;
 @protocol TabGridToolbarsMainTabGridDelegate;
 @protocol TabGroupsPanelConsumer;
+@protocol TabGroupsPanelMediatorDelegate;
 class WebStateList;
 
 namespace tab_groups {
@@ -38,6 +39,9 @@ class TabGroupSyncService;
 
 // The UI consumer to which updates are made.
 @property(nonatomic, weak) id<TabGroupsPanelConsumer> consumer;
+
+// Delegate.
+@property(nonatomic, weak) id<TabGroupsPanelMediatorDelegate> delegate;
 
 // Mutator to handle toolbars modification.
 @property(nonatomic, weak) id<GridToolbarsMutator> toolbarsMutator;

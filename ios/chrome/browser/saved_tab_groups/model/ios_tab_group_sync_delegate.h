@@ -89,6 +89,11 @@ class IOSTabGroupSyncDelegate : public TabGroupSyncDelegate {
   void UpdateLocalGroupVisualData(utils::LocalTabGroupInfo tab_group_info,
                                   const SavedTabGroup& saved_tab_group);
 
+  // Creates a local tab group based on `saved_tab_group` and `browser`. Pass
+  // nullptr for the browser to create the group on the most active window.
+  void CreateLocalTabGroupImpl(const SavedTabGroup& saved_tab_group,
+                               Browser* browser);
+
   raw_ptr<BrowserList> browser_list_ = nullptr;
   raw_ptr<TabGroupSyncService> sync_service_ = nullptr;
   std::unique_ptr<TabGroupLocalUpdateObserver> local_update_observer_;

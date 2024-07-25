@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item_data.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
@@ -224,9 +225,8 @@ NSString* CreationText(base::Time creation_date) {
 #pragma mark TabGroupsPanelMutator
 
 - (void)selectTabGroupsPanelItem:(TabGroupsPanelItem*)item {
-  _tabGroupSyncService->OpenTabGroup(
-      item.savedTabGroupID,
-      std::make_unique<tab_groups::TabGroupActionContext>());
+  [self.delegate tabGroupsPanelMediator:self
+                    openGroupWithSyncID:item.savedTabGroupID];
 }
 
 #pragma mark TabGroupSyncServiceObserverDelegate

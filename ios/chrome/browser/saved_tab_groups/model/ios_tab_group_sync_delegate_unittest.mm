@@ -17,6 +17,7 @@
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -565,7 +566,7 @@ TEST_F(IOSTabGroupSyncDelegateTest,
   EXPECT_CALL(*mock_service_, GetGroup(saved_tab_group_id))
       .WillOnce(Return(std::nullopt));
   delegate_->HandleOpenTabGroupRequest(
-      saved_tab_group_id, std::make_unique<TabGroupActionContext>());
+      saved_tab_group_id, std::make_unique<IOSTabGroupActionContext>(browser_));
 
   // Check that no tab group was opened locally.
   auto local_group_ids = delegate_->GetLocalTabGroupIds();
@@ -575,6 +576,12 @@ TEST_F(IOSTabGroupSyncDelegateTest,
 // Tests opening a tab group from sync that isn't already open locally.
 TEST_F(IOSTabGroupSyncDelegateTest,
        HandleOpenTabGroupRequest_UnopenedSavedTabGroup) {
+  // Have another scene as the active one to make sure that the `browser` passed
+  // is correctly used.
+  scene_state_same_browser_state_.activationLevel =
+      SceneActivationLevelForegroundActive;
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+
   base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
   SavedTabGroup saved_group(kGroupTitle, kGroupColor,
                             CreateSavedTabs(saved_tab_group_id),
@@ -583,7 +590,7 @@ TEST_F(IOSTabGroupSyncDelegateTest,
   EXPECT_CALL(*mock_service_, GetGroup(saved_tab_group_id))
       .WillOnce(Return(saved_group));
   delegate_->HandleOpenTabGroupRequest(
-      saved_tab_group_id, std::make_unique<TabGroupActionContext>());
+      saved_tab_group_id, std::make_unique<IOSTabGroupActionContext>(browser_));
 
   // Check that a tab group was opened locally.
   auto local_group_ids = delegate_->GetLocalTabGroupIds();
@@ -591,6 +598,7 @@ TEST_F(IOSTabGroupSyncDelegateTest,
   const auto local_group_id = local_group_ids[0];
   const auto local_tab_group_info =
       tab_groups::utils::GetLocalTabGroupInfo(browser_list_, local_group_id);
+  EXPECT_EQ(browser_->GetWebStateList(), local_tab_group_info.web_state_list);
   EXPECT_EQ(1u, local_tab_group_info.web_state_list->GetGroups().size());
 }
 
@@ -617,7 +625,7 @@ TEST_F(IOSTabGroupSyncDelegateTest,
   EXPECT_CALL(*mock_service_, GetGroup(saved_tab_group_id))
       .WillOnce(Return(saved_group));
   delegate_->HandleOpenTabGroupRequest(
-      saved_tab_group_id, std::make_unique<TabGroupActionContext>());
+      saved_tab_group_id, std::make_unique<IOSTabGroupActionContext>(browser_));
 
   // Check that there is still only one tab group opened locally.
   auto local_group_ids = delegate_->GetLocalTabGroupIds();
