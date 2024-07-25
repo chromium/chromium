@@ -33,5 +33,7 @@ NSString* const kQuickDeleteBrowsingDataHistoryIdentifier =
     @"kQuickDeleteBrowsingDataHistoryIdentifier";
 NSString* const kQuickDeleteBrowsingDataSiteDataIdentifier =
     @"kQuickDeleteBrowsingDataSiteDataIdentifier";
+NSString* const kQuickDeleteBrowsingDataPasswordsIdentifier =
+    @"kQuickDeleteBrowsingDataPasswordsIdentifier";
 NSString* const kQuickDeleteBrowsingDataAutofillIdentifier =
     @"kQuickDeleteBrowsingDataAutofillIdentifier";

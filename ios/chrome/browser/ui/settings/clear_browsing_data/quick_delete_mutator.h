@@ -27,6 +27,10 @@ enum class TimePeriod;
 - (void)updateSiteDataSelection:(BOOL)selected;
 
 // Called on confirming the browsing data types selection with the user choice
+// for the passwords type.
+- (void)updatePasswordsSelection:(BOOL)selected;
+
+// Called on confirming the browsing data types selection with the user choice
 // for the autofill type.
 - (void)updateAutofillSelection:(BOOL)selected;
 

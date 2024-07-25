@@ -98,6 +98,13 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
       grey_sufficientlyVisible(), nil);
 }
 
+// Returns a matcher for the passwords cell.
+- (id<GREYMatcher>)passwordsCell {
+  return grey_allOf(
+      grey_accessibilityID(kQuickDeleteBrowsingDataPasswordsIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
 // Returns a matcher for the autofill cell.
 - (id<GREYMatcher>)autofillCell {
   return grey_allOf(
@@ -179,6 +186,8 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteCookies];
   [ChromeEarlGrey setBoolValue:NO
+                   forUserPref:browsing_data::prefs::kDeletePasswords];
+  [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteFormData];
 
   // Open quick delete browsing data page.
@@ -189,6 +198,8 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
       assertWithMatcher:[self elementIsSelected:NO]];
   [[EarlGrey selectElementWithMatcher:[self siteDataCell]]
       assertWithMatcher:[self elementIsSelected:NO]];
+  [[EarlGrey selectElementWithMatcher:[self passwordsCell]]
+      assertWithMatcher:[self elementIsSelected:NO]];
   [[EarlGrey selectElementWithMatcher:[self autofillCell]]
       assertWithMatcher:[self elementIsSelected:NO]];
 
@@ -197,6 +208,8 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:[self siteDataCell]]
       performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:[self passwordsCell]]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:[self autofillCell]]
       performAction:grey_tap()];
 
@@ -204,6 +217,8 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
   [[EarlGrey selectElementWithMatcher:[self historyCell]]
       assertWithMatcher:[self elementIsSelected:YES]];
   [[EarlGrey selectElementWithMatcher:[self siteDataCell]]
+      assertWithMatcher:[self elementIsSelected:YES]];
+  [[EarlGrey selectElementWithMatcher:[self passwordsCell]]
       assertWithMatcher:[self elementIsSelected:YES]];
   [[EarlGrey selectElementWithMatcher:[self autofillCell]]
       assertWithMatcher:[self elementIsSelected:YES]];
@@ -229,6 +244,9 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteCookies], NO,
       @"Site data pref changed on cancel.");
   GREYAssertEqual(
+      [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeletePasswords],
+      NO, @"Passwords pref changed on cancel.");
+  GREYAssertEqual(
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteFormData],
       NO, @"Autofill pref changed on cancel.");
 }
@@ -241,6 +259,8 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteCookies];
   [ChromeEarlGrey setBoolValue:NO
+                   forUserPref:browsing_data::prefs::kDeletePasswords];
+  [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteFormData];
 
   // Open quick delete browsing data page.
@@ -251,6 +271,8 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
       assertWithMatcher:[self elementIsSelected:NO]];
   [[EarlGrey selectElementWithMatcher:[self siteDataCell]]
       assertWithMatcher:[self elementIsSelected:NO]];
+  [[EarlGrey selectElementWithMatcher:[self passwordsCell]]
+      assertWithMatcher:[self elementIsSelected:NO]];
   [[EarlGrey selectElementWithMatcher:[self autofillCell]]
       assertWithMatcher:[self elementIsSelected:NO]];
 
@@ -259,6 +281,8 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:[self siteDataCell]]
       performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:[self passwordsCell]]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:[self autofillCell]]
       performAction:grey_tap()];
 
@@ -266,6 +290,8 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
   [[EarlGrey selectElementWithMatcher:[self historyCell]]
       assertWithMatcher:[self elementIsSelected:YES]];
   [[EarlGrey selectElementWithMatcher:[self siteDataCell]]
+      assertWithMatcher:[self elementIsSelected:YES]];
+  [[EarlGrey selectElementWithMatcher:[self passwordsCell]]
       assertWithMatcher:[self elementIsSelected:YES]];
   [[EarlGrey selectElementWithMatcher:[self autofillCell]]
       assertWithMatcher:[self elementIsSelected:YES]];
@@ -289,6 +315,10 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
   GREYAssertEqual(
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteCookies],
       YES, @"Failed to save site data pref change on confirm.");
+  GREYAssertEqual(
+      [ChromeEarlGrey
+          userBooleanPref:browsing_data::prefs::kDeleteBrowsingHistory],
+      YES, @"Failed to save passwords pref change on confirm.");
   GREYAssertEqual(
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteFormData],
       YES, @"Failed to save autofill pref change on confirm.");

@@ -30,6 +30,10 @@ enum class TimePeriod;
     (const browsing_data::BrowsingDataCounter::Result&)result;
 
 // Updates the ViewController with the result of browsing data counter.
+- (void)updatePasswordsWithResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result;
+
+// Updates the ViewController with the result of browsing data counter.
 - (void)updateAutofillWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result;
 
@@ -38,6 +42,9 @@ enum class TimePeriod;
 
 // Sets the boolean value for the site data pref selection.
 - (void)setSiteDataSelection:(BOOL)selected;
+
+// Sets the boolean value for the passwords pref selection.
+- (void)setPasswordsSelection:(BOOL)selected;
 
 // Sets the boolean value for the autofill pref selection.
 - (void)setAutofillSelection:(BOOL)selected;

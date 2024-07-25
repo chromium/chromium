@@ -292,6 +292,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // TODO(crbug.com/341107834): Refactor summary using this result.
 }
 
+- (void)updatePasswordsWithResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result {
+  // TODO(crbug.com/341107834): Refactor summary using this result.
+}
+
 - (void)updateAutofillWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
   // TODO(crbug.com/341107834): Refactor summary using this result.
@@ -302,6 +307,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)setSiteDataSelection:(BOOL)selected {
+  // TODO(crbug.com/341107834): Refactor summary using this type selection.
+}
+
+- (void)setPasswordsSelection:(BOOL)selected {
   // TODO(crbug.com/341107834): Refactor summary using this type selection.
 }
 

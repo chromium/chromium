@@ -112,6 +112,8 @@
                               browsing_data::prefs::kDeleteBrowsingHistory)];
   [_consumer setSiteDataSelection:_prefs->GetBoolean(
                                       browsing_data::prefs::kDeleteCookies)];
+  [_consumer setPasswordsSelection:_prefs->GetBoolean(
+                                       browsing_data::prefs::kDeletePasswords)];
   [_consumer setAutofillSelection:_prefs->GetBoolean(
                                       browsing_data::prefs::kDeleteFormData)];
 
@@ -197,6 +199,10 @@
 
 - (void)updateSiteDataSelection:(BOOL)selected {
   _prefs->SetBoolean(browsing_data::prefs::kDeleteCookies, selected);
+}
+
+- (void)updatePasswordsSelection:(BOOL)selected {
+  _prefs->SetBoolean(browsing_data::prefs::kDeletePasswords, selected);
 }
 
 - (void)updateAutofillSelection:(BOOL)selected {
@@ -538,6 +544,11 @@
 
   if (prefName == browsing_data::prefs::kDeleteBrowsingHistory) {
     [_consumer updateHistoryWithResult:*result];
+    return;
+  }
+
+  if (prefName == browsing_data::prefs::kDeletePasswords) {
+    [_consumer updatePasswordsWithResult:*result];
     return;
   }
 

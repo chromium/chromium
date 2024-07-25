@@ -32,6 +32,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemIdentifier) {
   ItemIdentifierHistory = kItemTypeEnumZero,
   ItemIdentifierSiteData,
+  ItemIdentifierPasswords,
   ItemIdentifierAutofill,
 };
 
@@ -40,9 +41,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 @implementation QuickDeleteBrowsingDataViewController {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
   NSString* _historySummary;
+  NSString* _passwordsSummary;
   NSString* _autofillSummary;
   BOOL _historySelected;
   BOOL _siteDataSelected;
+  BOOL _passwordsSelected;
   BOOL _autofillSelected;
 }
 
@@ -87,7 +90,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       appendSectionsWithIdentifiers:@[ @(SectionIdentifierBrowsingData) ]];
   [snapshot appendItemsWithIdentifiers:@[
     @(ItemIdentifierHistory), @(ItemIdentifierSiteData),
-    @(ItemIdentifierAutofill)
+    @(ItemIdentifierPasswords), @(ItemIdentifierAutofill)
   ]
              intoSectionWithIdentifier:@(SectionIdentifierBrowsingData)];
 
@@ -130,6 +133,12 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [self updateSnapshotForItemIdentifier:ItemIdentifierHistory];
 }
 
+- (void)updatePasswordsWithResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result {
+  _passwordsSummary = [self counterTextFromResult:result];
+  [self updateSnapshotForItemIdentifier:ItemIdentifierPasswords];
+}
+
 - (void)updateAutofillWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
   _autofillSummary = [self counterTextFromResult:result];
@@ -144,6 +153,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 - (void)setSiteDataSelection:(BOOL)selected {
   _siteDataSelected = selected;
   [self updateSnapshotForItemIdentifier:ItemIdentifierSiteData];
+}
+
+- (void)setPasswordsSelection:(BOOL)selected {
+  _passwordsSelected = selected;
+  [self updateSnapshotForItemIdentifier:ItemIdentifierPasswords];
 }
 
 - (void)setAutofillSelection:(BOOL)selected {
@@ -192,6 +206,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 - (void)onConfirm:(id)sender {
   [_mutator updateHistorySelection:_historySelected];
   [_mutator updateSiteDataSelection:_siteDataSelected];
+  [_mutator updatePasswordsSelection:_passwordsSelected];
   [_mutator updateAutofillSelection:_autofillSelected];
   // TODO(crbug.com/341107834): Update changes in data types selection here.
   [_delegate dismissBrowsingDataPage];
@@ -255,6 +270,15 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                          selected:_siteDataSelected
           accessibilityIdentifier:kQuickDeleteBrowsingDataSiteDataIdentifier];
     }
+    case ItemIdentifierPasswords: {
+      return [self
+              createCellWithTitle:l10n_util::GetNSString(
+                                      IDS_IOS_CLEAR_SAVED_PASSWORDS)
+                          summary:_passwordsSummary
+                             icon:[self iconForItemIdentifier:itemIdentifier]
+                         selected:_passwordsSelected
+          accessibilityIdentifier:kQuickDeleteBrowsingDataPasswordsIdentifier];
+    }
     case ItemIdentifierAutofill: {
       return [self
               createCellWithTitle:l10n_util::GetNSString(IDS_IOS_CLEAR_AUTOFILL)
@@ -285,6 +309,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       _siteDataSelected = !_siteDataSelected;
       break;
     }
+    case ItemIdentifierPasswords: {
+      _passwordsSelected = !_passwordsSelected;
+      break;
+    }
     case ItemIdentifierAutofill: {
       _autofillSelected = !_autofillSelected;
       break;
@@ -304,6 +332,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
     case ItemIdentifierSiteData: {
       return DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
                                                 kDefaultSymbolSize);
+    }
+    case ItemIdentifierPasswords: {
+      return CustomSymbolTemplateWithPointSize(kPasswordSymbol,
+                                               kDefaultSymbolSize);
     }
     case ItemIdentifierAutofill: {
       return DefaultSymbolTemplateWithPointSize(kAutofillDataSymbol,

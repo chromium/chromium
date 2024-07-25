@@ -65,6 +65,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
     OCMStub([consumer_ setShouldShowFooter:NO]);
     OCMStub([consumer_ setHistorySelection:NO]);
     OCMStub([consumer_ setSiteDataSelection:NO]);
+    OCMStub([consumer_ setPasswordsSelection:NO]);
     OCMStub([consumer_ setAutofillSelection:NO]);
 
     fake_browsing_data_counter_wrapper_producer_ =
@@ -162,6 +163,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
     const browsing_data::PasswordsCounter::PasswordsResult passwordsResult(
         &passwordsCounter, num_passwords, 0, 0, std::vector<std::string>(),
         std::vector<std::string>());
+    OCMExpect([consumer_ updatePasswordsWithResult:passwordsResult]);
     [fake_browsing_data_counter_wrapper_producer_
         triggerUpdateUICallbackForResult:passwordsResult];
   }
@@ -306,6 +308,7 @@ TEST_F(QuickDeleteMediatorTest, TestTabsSummary) {
 TEST_F(QuickDeleteMediatorTest, TestPasswordsSummary) {
   // Select passwords for deletion.
   prefs()->SetBoolean(browsing_data::prefs::kDeletePasswords, true);
+  OCMExpect([consumer_ setPasswordsSelection:YES]);
 
   // Trigger creating the counters for browsing data types.
   mediator_.consumer = consumer_;
@@ -352,6 +355,7 @@ TEST_F(QuickDeleteMediatorTest, TestPasswordsSummary) {
         test_case.num_account_passwords, test_case.sync_enabled,
         std::vector<std::string>(), std::vector<std::string>());
     OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
+    OCMExpect([consumer_ updatePasswordsWithResult:result]);
     [fake_browsing_data_counter_wrapper_producer_
         triggerUpdateUICallbackForResult:result];
     EXPECT_OCMOCK_VERIFY(consumer_);
@@ -549,6 +553,7 @@ TEST_F(QuickDeleteMediatorTest, TestSummaryWithSeveralTypes) {
   prefs()->SetBoolean(browsing_data::prefs::kDeletePasswords, true);
 
   OCMExpect([consumer_ setHistorySelection:YES]);
+  OCMExpect([consumer_ setPasswordsSelection:YES]);
 
   // Trigger creating the counters for browsing data types.
   mediator_.consumer = consumer_;
