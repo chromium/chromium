@@ -72,73 +72,61 @@ TEST(LanguageDetectionModelTest, UnsupportedModelFileProvided) {
       "LanguageDetection.TFLiteModel.Create.Duration", 0);
 }
 
-TEST(LanguageDetectionModelTest, ValidModelFileProvided) {
-  base::HistogramTester histogram_tester;
+class LanguageDetectionModelValidTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    base::File file = GetValidModelFile();
+    language_detection_model_.UpdateWithFile(std::move(file));
+    EXPECT_TRUE(language_detection_model_.IsAvailable());
+  }
 
-  base::File file = GetValidModelFile();
-  LanguageDetectionModel language_detection_model;
-  language_detection_model.UpdateWithFile(std::move(file));
-  EXPECT_TRUE(language_detection_model.IsAvailable());
-  histogram_tester.ExpectUniqueSample(
+  base::HistogramTester histogram_tester_;
+  LanguageDetectionModel language_detection_model_;
+};
+
+TEST_F(LanguageDetectionModelValidTest, ValidModelFileProvided) {
+  histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.LanguageDetectionModelState",
       LanguageDetectionModelState::kModelAvailable, 1);
-  histogram_tester.ExpectTotalCount(
+  histogram_tester_.ExpectTotalCount(
       "LanguageDetection.TFLiteModel.InvalidModelFile", 0);
-  histogram_tester.ExpectTotalCount(
+  histogram_tester_.ExpectTotalCount(
       "LanguageDetection.TFLiteModel.Create.Duration", 1);
 }
 
-TEST(LanguageDetectionModelTest, DetectLanguageMetrics) {
-  base::HistogramTester histogram_tester;
-  base::File file = GetValidModelFile();
-  LanguageDetectionModel language_detection_model;
-  language_detection_model.UpdateWithFile(std::move(file));
-  EXPECT_TRUE(language_detection_model.IsAvailable());
-
+TEST_F(LanguageDetectionModelValidTest, DetectLanguageMetrics) {
   std::u16string contents = u"This is a page apparently written in English.";
-  LanguageDetectionModel::Prediction preciction =
-      language_detection_model.DetectLanguage(contents);
-  EXPECT_EQ("en", preciction.language);
-  histogram_tester.ExpectUniqueSample(
+  LanguageDetectionModel::Prediction prediction =
+      language_detection_model_.DetectLanguage(contents);
+  EXPECT_EQ("en", prediction.language);
+  histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.ClassifyText.Size", contents.length(), 1);
-  histogram_tester.ExpectTotalCount(
+  histogram_tester_.ExpectTotalCount(
       "LanguageDetection.TFLiteModel.ClassifyText.Duration", 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.ClassifyText.Detected", true, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.ClassifyText.HighestConfidenceLanguage",
       base::HashMetricName("en"), 1);
 }
 
-TEST(LanguageDetectionModelTest, ReliableLanguageDetermination) {
-  base::HistogramTester histogram_tester;
-  base::File file = GetValidModelFile();
-  LanguageDetectionModel language_detection_model;
-  language_detection_model.UpdateWithFile(std::move(file));
-  EXPECT_TRUE(language_detection_model.IsAvailable());
-
+TEST_F(LanguageDetectionModelValidTest, ReliableLanguageDetermination) {
   bool is_prediction_reliable;
   float model_reliability_score = 0.0;
   std::string predicted_language;
   std::u16string contents = u"This is a page apparently written in English.";
-  std::string language = language_detection_model.DeterminePageLanguage(
+  std::string language = language_detection_model_.DeterminePageLanguage(
       std::string("ja"), std::string(), contents, &predicted_language,
       &is_prediction_reliable, model_reliability_score);
   EXPECT_TRUE(is_prediction_reliable);
   EXPECT_EQ("en", predicted_language);
   EXPECT_EQ(translate::kUnknownLanguageCode, language);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLite.DidAttemptDetection", true, 1);
 }
 
-TEST(LanguageDetectionModelTest, LanguageDetectionAR) {
+TEST_F(LanguageDetectionModelValidTest, LanguageDetectionAR) {
   // This test will fail if the UTF-8 is used to sample the content.
-  base::HistogramTester histogram_tester;
-  base::File file = GetValidModelFile();
-  LanguageDetectionModel language_detection_model;
-  language_detection_model.UpdateWithFile(std::move(file));
-  EXPECT_TRUE(language_detection_model.IsAvailable());
-
   const char* const ar_content_string =
       "متصفح الويب أو مستعرض الويب هو تطبيق برمجي لاسترجاع المعلومات "
       "عبر الإنترنت وعرضها على المستخدم. كما يعرف أنه برمجية تطبيقية "
@@ -164,45 +152,33 @@ TEST(LanguageDetectionModelTest, LanguageDetectionAR) {
   bool is_prediction_reliable;
   float model_reliability_score = 0.0;
   std::string predicted_language;
-  std::string language = language_detection_model.DeterminePageLanguage(
+  std::string language = language_detection_model_.DeterminePageLanguage(
       std::string("ar"), std::string(), contents, &predicted_language,
       &is_prediction_reliable, model_reliability_score);
   EXPECT_TRUE(is_prediction_reliable);
   EXPECT_EQ("ar", predicted_language);
   EXPECT_EQ("ar", language);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLite.DidAttemptDetection", true, 1);
 }
 
-TEST(LanguageDetectionModelTest, UnreliableLanguageDetermination) {
-  base::HistogramTester histogram_tester;
-  base::File file = GetValidModelFile();
-  LanguageDetectionModel language_detection_model;
-  language_detection_model.UpdateWithFile(std::move(file));
-  EXPECT_TRUE(language_detection_model.IsAvailable());
-
+TEST_F(LanguageDetectionModelValidTest, UnreliableLanguageDetermination) {
   bool is_prediction_reliable;
   float model_reliability_score = 0.0;
   std::string predicted_language;
   std::u16string contents = u"e";
-  std::string language = language_detection_model.DeterminePageLanguage(
+  std::string language = language_detection_model_.DeterminePageLanguage(
       std::string("ja"), std::string(), contents, &predicted_language,
       &is_prediction_reliable, model_reliability_score);
   EXPECT_FALSE(is_prediction_reliable);
   EXPECT_EQ(translate::kUnknownLanguageCode, predicted_language);
   // Rely on the provided language code if the mode is unreliable.
   EXPECT_EQ("ja", language);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLite.DidAttemptDetection", true, 1);
 }
 
-TEST(LanguageDetectionModelTest, LongTextLanguageDetemination) {
-  base::HistogramTester histogram_tester;
-  base::File file = GetValidModelFile();
-  LanguageDetectionModel language_detection_model;
-  language_detection_model.UpdateWithFile(std::move(file));
-  EXPECT_TRUE(language_detection_model.IsAvailable());
-
+TEST_F(LanguageDetectionModelValidTest, LongTextLanguageDetemination) {
   bool is_prediction_reliable;
   float model_reliability_score = 0.0;
   std::string predicted_language;
@@ -250,36 +226,31 @@ TEST(LanguageDetectionModelTest, LongTextLanguageDetemination) {
 
   std::u16string contents = base::UTF8ToUTF16(zh_content_string);
   EXPECT_GE(contents.length(), 250u * 3u);
-  std::string language = language_detection_model.DeterminePageLanguage(
+  std::string language = language_detection_model_.DeterminePageLanguage(
       std::string("ja"), std::string(), contents, &predicted_language,
       &is_prediction_reliable, model_reliability_score);
   EXPECT_TRUE(is_prediction_reliable);
   EXPECT_EQ("zh-CN", predicted_language);
   EXPECT_EQ(translate::kUnknownLanguageCode, language);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLite.DidAttemptDetection", true, 1);
 }
 
 // Regression test for https://crbug.com/1414235. This test is expecting that
 // the code under test does not crash on ASan.
-TEST(LanguageDetectionModelTest, UnalignedString) {
-  base::HistogramTester histogram_tester;
-  LanguageDetectionModel language_detection_model;
-  language_detection_model.UpdateWithFile(GetValidModelFile());
-  EXPECT_TRUE(language_detection_model.IsAvailable());
-
+TEST_F(LanguageDetectionModelValidTest, UnalignedString) {
   bool is_prediction_reliable;
   float model_reliability_score = 0.0;
   std::string predicted_language;
   std::u16string contents(1, ' ');
-  std::string language = language_detection_model.DeterminePageLanguage(
+  std::string language = language_detection_model_.DeterminePageLanguage(
       std::string("ja"), std::string(), contents, &predicted_language,
       &is_prediction_reliable, model_reliability_score);
   EXPECT_FALSE(is_prediction_reliable);
   EXPECT_EQ(translate::kUnknownLanguageCode, predicted_language);
   // Rely on the provided language code if the mode is unreliable.
   EXPECT_EQ("ja", language);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLite.DidAttemptDetection", true, 1);
 }
 

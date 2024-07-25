@@ -9,15 +9,9 @@
 
 #include "base/files/file.h"
 
-namespace tflite {
-namespace task {
-namespace text {
-namespace nlclassifier {
+namespace tflite::task::text::nlclassifier {
 class NLClassifier;
-}
-}  // namespace text
-}  // namespace task
-}  // namespace tflite
+}  // namespace tflite::task::text::nlclassifier
 
 namespace translate {
 
