@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/not_fatal_until.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/baseline_utils.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
@@ -746,22 +747,12 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     // is "content" based (e.g. dependent on the child's content).
     bool is_used_flex_basis_indefinite = false;
 
-    const LayoutUnit flex_base_border_box = ([&]() -> LayoutUnit {
-      const Length& specified_length_in_main_axis =
-          is_horizontal_flow_ ? child_style.Width() : child_style.Height();
-      // TODO(https://crbug.com/313072): 'flex-basis' should support
-      // calc-size()
-      const Length& used_flex_basis_length =
-          flex_basis.IsAuto() ? specified_length_in_main_axis : flex_basis;
-
-      // 'auto' for items within a -webkit-box resolve as 'fit-content'.
-      const Length& auto_flex_basis_length =
-          (Style().IsDeprecatedWebkitBox() &&
-           (Style().BoxOrient() == EBoxOrient::kHorizontal ||
-            Style().BoxAlign() != EBoxAlignment::kStretch))
-              ? Length::FitContent()
-              : Length::MaxContent();
-
+    // An auto value for flex-basis says to defer to width or height.
+    // Those might in turn have an auto value.  And in either case the
+    // value might be calc-size(auto, ...).  Because of this, we might
+    // need to handle resolving the length in the main axis twice.
+    auto resolve_main_length = [&](const Length& used_flex_basis_length,
+                                   const Length* auto_length) -> LayoutUnit {
       if (MainAxisIsInlineAxis(child)) {
         const LayoutUnit inline_size = ResolveMainInlineLength(
             flex_basis_space, child_style, border_padding_in_child_writing_mode,
@@ -769,7 +760,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
               is_used_flex_basis_indefinite = true;
               return MinMaxSizesFunc(type);
             },
-            used_flex_basis_length, &auto_flex_basis_length);
+            used_flex_basis_length, auto_length);
 
         if (inline_size != kIndefiniteSize) {
           return inline_size;
@@ -785,9 +776,9 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 
       auto ContentBlockSizeFunc = [&]() -> LayoutUnit {
         DCHECK(!MainAxisIsInlineAxis(child));
-        CHECK(!is_used_flex_basis_indefinite) << "should only be called once";
 
         is_used_flex_basis_indefinite = true;
+
         if (child.HasAspectRatio() && !child.IsReplaced()) {
           const LayoutUnit inline_size = InlineSizeFunc();
           if (inline_size != kIndefiniteSize) {
@@ -805,28 +796,53 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         return IntrinsicBlockSizeFunc();
       };
 
-      LayoutUnit block_size = ResolveMainBlockLength(
+      return ResolveMainBlockLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          used_flex_basis_length, &auto_flex_basis_length,
-          ContentBlockSizeFunc);
+          used_flex_basis_length, auto_length, ContentBlockSizeFunc);
+    };
+
+    const LayoutUnit flex_base_border_box = ([&]() -> LayoutUnit {
+      std::optional<Length> auto_flex_basis_length;
+
+      if (flex_basis.HasAuto()) {
+        const Length& specified_length_in_main_axis =
+            is_horizontal_flow_ ? child_style.Width() : child_style.Height();
+
+        // 'auto' for items within a -webkit-box resolve as 'fit-content'.
+        const Length& auto_size_length =
+            (Style().IsDeprecatedWebkitBox() &&
+             (Style().BoxOrient() == EBoxOrient::kHorizontal ||
+              Style().BoxAlign() != EBoxAlignment::kStretch))
+                ? Length::FitContent()
+                : Length::MaxContent();
+
+        LayoutUnit auto_flex_basis_size = resolve_main_length(
+            specified_length_in_main_axis, &auto_size_length);
+        if (child_style.BoxSizing() == EBoxSizing::kContentBox) {
+          auto_flex_basis_size -= main_axis_border_padding;
+        }
+        DCHECK_GE(auto_flex_basis_size, 0);
+        auto_flex_basis_length = Length::Fixed(auto_flex_basis_size);
+      }
+
+      LayoutUnit main_size = resolve_main_length(
+          flex_basis, base::OptionalToPtr(auto_flex_basis_length));
 
       // Add the caption block-size only to sizes that are not content-based.
-      if (!is_used_flex_basis_indefinite) {
+      if (!MainAxisIsInlineAxis(child) && !is_used_flex_basis_indefinite) {
         // 1. A table interprets forced block-size as the block-size of its
         //    captions and rows.
         // 2. The specified block-size of a table only applies to its rows.
         // 3. If the block-size resolved, add the caption block-size so that
         //    the forced block-size works correctly.
-        LayoutUnit caption_block_size;
         if (const auto* table_child = DynamicTo<TableNode>(&child)) {
-          caption_block_size = table_child->ComputeCaptionBlockSize(
+          main_size += table_child->ComputeCaptionBlockSize(
               BuildSpaceForIntrinsicBlockSize(*table_child,
                                               max_content_contribution));
         }
-        block_size += caption_block_size;
       }
 
-      return block_size;
+      return main_size;
     })();
 
     // Spec calls this "flex base size"
