@@ -169,10 +169,6 @@ BASE_FEATURE(kIpProtectionUx,
 const base::FeatureParam<bool> kUserBypassIpProtection{
     &kIpProtectionUx, "include-in-user-bypass", false};
 
-BASE_FEATURE(kIpProtectionDogfoodDefaultOn,
-             "IpProtectionDogfoodDefaultOn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTrackingProtectionSettingsLaunch,
              "TrackingProtectionSettingsLaunch",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -50,10 +50,6 @@ class TrackingProtectionSettings
   // (i.e. without mitigations).
   bool AreAllThirdPartyCookiesBlocked() const;
 
-  // Returns whether 3PCs are allowed in spite of 3PCD due to an enterprise
-  // policy.
-  bool AreThirdPartyCookiesAllowedByEnterprise() const;
-
   // Returns whether anti-fingerprinting is enabled.
   bool IsFingerprintingProtectionEnabled() const;
 
@@ -83,7 +79,6 @@ class TrackingProtectionSettings
 
  private:
   void OnEnterpriseControlForPrefsChanged();
-  void MaybeInitializeIppPref();
   void MigrateUserBypassExceptions(ContentSettingsType from,
                                    ContentSettingsType to);
 

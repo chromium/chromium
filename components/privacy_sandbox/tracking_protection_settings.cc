@@ -56,11 +56,6 @@ TrackingProtectionSettings::TrackingProtectionSettings(
           &TrackingProtectionSettings::OnBlockAllThirdPartyCookiesPrefChanged,
           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kAllowAll3pcToggleEnabled,
-      base::BindRepeating(
-          &TrackingProtectionSettings::OnBlockAllThirdPartyCookiesPrefChanged,
-          base::Unretained(this)));
-  pref_change_registrar_.Add(
       prefs::kTrackingProtection3pcdEnabled,
       base::BindRepeating(
           &TrackingProtectionSettings::OnTrackingProtection3pcdPrefChanged,
@@ -84,9 +79,9 @@ TrackingProtectionSettings::TrackingProtectionSettings(
     onboarding_observation_.Observe(onboarding_service_);
   }
 
-  MaybeInitializeIppPref();
   // It's possible enterprise status changed while profile was shut down.
   OnEnterpriseControlForPrefsChanged();
+
   // If feature status changed then we need to migrate content settings.
   if (base::FeatureList::IsEnabled(kTrackingProtectionContentSettingFor3pcb) &&
       !pref_service_->GetBoolean(prefs::kUserBypass3pcExceptionsMigrated)) {
@@ -122,19 +117,9 @@ bool TrackingProtectionSettings::IsTrackingProtection3pcdEnabled() const {
 }
 
 bool TrackingProtectionSettings::AreAllThirdPartyCookiesBlocked() const {
-  if (!IsTrackingProtection3pcdEnabled() ||
-      AreThirdPartyCookiesAllowedByEnterprise()) {
-    return false;
-  }
-  return pref_service_->GetBoolean(prefs::kBlockAll3pcToggleEnabled) ||
-         is_incognito_;
-}
-
-bool TrackingProtectionSettings::AreThirdPartyCookiesAllowedByEnterprise()
-    const {
   return IsTrackingProtection3pcdEnabled() &&
-         base::FeatureList::IsEnabled(kTrackingProtectionSettingsLaunch) &&
-         pref_service_->GetBoolean(prefs::kAllowAll3pcToggleEnabled);
+         (pref_service_->GetBoolean(prefs::kBlockAll3pcToggleEnabled) ||
+          is_incognito_);
 }
 
 bool TrackingProtectionSettings::IsFingerprintingProtectionEnabled() const {
@@ -191,15 +176,7 @@ ContentSetting TrackingProtectionSettings::GetTrackingProtectionSetting(
       GURL(), first_party_url, ContentSettingsType::TRACKING_PROTECTION, info);
 }
 
-void TrackingProtectionSettings::MaybeInitializeIppPref() {
-  if (pref_service_->GetBoolean(prefs::kIpProtectionInitializedByDogfood) ||
-      !base::FeatureList::IsEnabled(kIpProtectionDogfoodDefaultOn)) {
-    return;
-  }
-  pref_service_->SetBoolean(prefs::kIpProtectionEnabled, true);
-  pref_service_->SetBoolean(prefs::kIpProtectionInitializedByDogfood, true);
-}
-
+// TODO(https://b/333527273): Delete with Mode B cleanup
 void TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged() {
   if (!IsTrackingProtection3pcdEnabled()) {
     return;
@@ -212,6 +189,7 @@ void TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged() {
   }
 }
 
+// TODO(https://b/333527273): Update with Mode B cleanup
 void TrackingProtectionSettings::OnTrackingProtectionOnboardingUpdated(
     TrackingProtectionOnboarding::OnboardingStatus onboarding_status) {
   switch (onboarding_status) {
@@ -221,16 +199,9 @@ void TrackingProtectionSettings::OnTrackingProtectionOnboardingUpdated(
       return;
     case TrackingProtectionOnboarding::OnboardingStatus::kOnboarded:
       pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-      // If the user chose to block all 3PC pre-3PCD, copy this over.
-      if (base::FeatureList::IsEnabled(kTrackingProtectionSettingsLaunch) &&
-          pref_service_->GetInteger(prefs::kCookieControlsMode) ==
-              1 /* BlockThirdParty */) {
-        pref_service_->SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
-      }
       return;
   }
 }
-
 void TrackingProtectionSettings::MigrateUserBypassExceptions(
     ContentSettingsType from,
     ContentSettingsType to) {

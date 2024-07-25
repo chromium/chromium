@@ -400,10 +400,8 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() const {
 bool CookieSettings::MitigationsEnabledFor3pcdInternal() const {
   if (tracking_protection_settings_ &&
       tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
-    // Mitigations should be on iff we are not blocking or allowing all 3PC.
-    return !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked() &&
-           !tracking_protection_settings_
-                ->AreThirdPartyCookiesAllowedByEnterprise();
+    // Mitigations should be on iff we are not blocking all 3PC.
+    return !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked();
   }
 
   if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
