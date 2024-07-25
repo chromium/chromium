@@ -304,6 +304,13 @@ void TimeView::UpdateTimeFormat() {
   UpdateText();
 }
 
+void TimeView::SetAmPmClockType(base::AmPmClockType am_pm_clock_type) {
+  if (am_pm_clock_type_ != am_pm_clock_type) {
+    am_pm_clock_type_ = am_pm_clock_type;
+    UpdateText();
+  }
+}
+
 void TimeView::UpdateTextInternal(const base::Time& now) {
   // Just in case |now| is null, do NOT update time; otherwise, it will
   // crash icu code by calling into base::TimeFormatTimeOfDayWithHourClockType,
@@ -323,7 +330,7 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
       // Calculate horizontal clock layout label.
       const std::u16string current_time =
           base::TimeFormatTimeOfDayWithHourClockType(
-              now, model_->hour_clock_type(), base::kDropAmPm);
+              now, model_->hour_clock_type(), am_pm_clock_type_);
 
       const bool label_length_changed =
           horizontal_time_label_->GetText().length() != current_time.length();

@@ -347,7 +347,7 @@ TEST_P(UnifiedSystemTrayTest, HorizontalImeAndTimeLabelAlignment) {
 
   gfx::Rect time_bounds = time_view()
                               ->time_view()
-                              ->horizontal_time_label_for_test()
+                              ->GetHorizontalTimeLabelForTesting()
                               ->GetBoundsInScreen();
   gfx::Rect ime_bounds = ime_mode_view()->label()->GetBoundsInScreen();
 
