@@ -336,13 +336,8 @@
         rotated="[[rotated]]" on-close="onDialogClose_">
     </viewer-annotations-mode-dialog>
   </template>
-</if>
-<if expr="enable_ink or enable_pdf_ink2">
   <template is="dom-if" if="[[showAnnotationsBar_]]">
     <viewer-annotations-bar
-<if expr="enable_pdf_ink2">
-      pdf-ink2-enabled="[[pdfInk2Enabled]]"
-</if>
       annotation-mode="[[annotationMode]]">
     </viewer-annotations-bar>
   </template>

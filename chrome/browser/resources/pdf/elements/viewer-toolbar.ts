@@ -12,10 +12,8 @@ import './viewer-download-controls.js';
 import './viewer-page-selector.js';
 import './pdf-shared.css.js';
 import './shared-vars.css.js';
-// <if expr="enable_ink or enable_pdf_ink2">
-import './viewer-annotations-bar.js';
-// </if>
 // <if expr="enable_ink">
+import './viewer-annotations-bar.js';
 import './viewer-annotations-mode-dialog.js';
 // </if>
 

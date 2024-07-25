@@ -7,7 +7,7 @@
 import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
-import type {PluginController, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
@@ -353,18 +353,6 @@ export function finishInkStroke(controller: PluginController) {
 
   eventTarget.dispatchEvent(new CustomEvent(
       PluginControllerEventType.PLUGIN_MESSAGE, {detail: message}));
-}
-
-/**
- * Helper to always get a non-null annotation bar. The annotation bar must
- * exist.
- * @returns The annotation bar.
- */
-export function getAnnotationsBar(viewerToolbar: ViewerToolbarElement) {
-  const annotationsBar =
-      viewerToolbar.shadowRoot!.querySelector('viewer-annotations-bar');
-  assert(annotationsBar);
-  return annotationsBar;
 }
 
 /**
