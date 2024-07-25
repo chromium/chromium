@@ -28,6 +28,7 @@
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -1056,7 +1057,19 @@ void ToolbarView::LayoutCommon() {
     }
   }
 
-  layout_manager_->SetInteriorMargin(interior_margin);
+  if (browser_ && chrome::ShouldUseCompactMode(browser_->profile())) {
+    if (toolbar_divider_) {
+      toolbar_divider_->SetProperty(views::kMarginsKey, gfx::Insets::VH(0, 2));
+    }
+    layout_manager_->SetInteriorMargin(gfx::Insets::VH(3, 0));
+  } else {
+    if (toolbar_divider_) {
+      toolbar_divider_->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
+    }
+    layout_manager_->SetInteriorMargin(interior_margin);
+  }
 
   // Extend buttons to the window edge if we're either in a maximized or
   // fullscreen window. This makes the buttons easier to hit, see Fitts' law.

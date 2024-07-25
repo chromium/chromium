@@ -270,6 +270,10 @@ BASE_DECLARE_FEATURE(kStopLoadingAnimationForHiddenWindow);
 BASE_DECLARE_FEATURE(kUsePortalAccentColor);
 #endif
 
+// This feature introduces a toggle that allows users to switch between the
+// standard UI and a compact version of the UI by right clicking the empty area
+// in the Tabstrip.
+BASE_DECLARE_FEATURE(kCompactMode);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_

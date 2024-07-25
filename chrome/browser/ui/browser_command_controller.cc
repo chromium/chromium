@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/debug/profiler.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -548,6 +549,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     case IDC_NAME_WINDOW:
       PromptToNameWindow(browser_);
+      break;
+    case IDC_COMPACT_MODE:
+      ToggleCompactMode(browser_);
       break;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1249,6 +1253,10 @@ void BrowserCommandController::InitCommandState() {
   UpdateTabRestoreCommandState();
   command_updater_.UpdateCommandEnabled(IDC_EXIT, true);
   command_updater_.UpdateCommandEnabled(IDC_NAME_WINDOW, true);
+  if (base::FeatureList::IsEnabled(features::kCompactMode)) {
+    command_updater_.UpdateCommandEnabled(IDC_COMPACT_MODE, true);
+  }
+
   command_updater_.UpdateCommandEnabled(IDC_ORGANIZE_TABS, true);
   command_updater_.UpdateCommandEnabled(IDC_CREATE_NEW_TAB_GROUP, true);
 #if BUILDFLAG(IS_CHROMEOS)

@@ -14,6 +14,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/pref_names.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_features.h"
@@ -181,7 +183,16 @@ BrowserViewLayout::BrowserViewLayout(
       immersive_mode_controller_(immersive_mode_controller),
       contents_separator_(contents_separator),
       tab_strip_(tab_strip),
-      dialog_host_(std::make_unique<WebContentsModalDialogHostViews>(this)) {}
+      dialog_host_(std::make_unique<WebContentsModalDialogHostViews>(this)) {
+  if (base::FeatureList::IsEnabled(features::kCompactMode)) {
+    registrar_.Init(browser_view_->browser()->profile()->GetPrefs());
+    registrar_.Add(prefs::kCompactModeEnabled,
+                   base::BindRepeating(&BrowserViewLayout::OnCompactModeChanged,
+                                       base::Unretained(this)));
+    is_compact_mode_ =
+        chrome::ShouldUseCompactMode(browser_view_->browser()->profile());
+  }
+}
 
 BrowserViewLayout::~BrowserViewLayout() = default;
 
@@ -561,6 +572,12 @@ int BrowserViewLayout::LayoutTabStripRegion(int top) {
   // anything to the left of it, like the incognito avatar.
   gfx::Rect tab_strip_region_bounds(
       delegate_->GetBoundsForTabStripRegionInBrowserView());
+  if (is_compact_mode_) {
+    constexpr int retain_some_padding = 2;
+    int height = GetLayoutConstant(TAB_STRIP_HEIGHT) -
+                 GetLayoutConstant(TAB_STRIP_PADDING) + retain_some_padding;
+    tab_strip_region_bounds.set_height(height);
+  }
 
   if (web_app_frame_toolbar_) {
     tab_strip_region_bounds.Inset(gfx::Insets::TLBR(
@@ -916,6 +933,10 @@ int BrowserViewLayout::GetMinWebContentsWidth() const {
       right_aligned_side_panel_separator_->GetPreferredSize().width();
   DCHECK_GE(min_width, 0);
   return min_width;
+}
+
+void BrowserViewLayout::OnCompactModeChanged() {
+  is_compact_mode_ = !is_compact_mode_;
 }
 
 bool BrowserViewLayout::IsInfobarVisible() const {

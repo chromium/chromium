@@ -1517,6 +1517,11 @@
     "expiry_milestone": 126
   },
   {
+    "name": "compact-mode",
+    "owners": [ "dljames@chromium.org", "dpenning@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "compose-nudge-display-at-cursor",
     "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
     "expiry_milestone": 132

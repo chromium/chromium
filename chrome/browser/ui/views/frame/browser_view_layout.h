@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -170,6 +171,8 @@ class BrowserViewLayout : public views::LayoutManager {
   // Returns the minimum acceptable width for the browser web contents.
   int GetMinWebContentsWidth() const;
 
+  void OnCompactModeChanged();
+
   // The delegate interface. May be a mock in tests.
   const std::unique_ptr<BrowserViewLayoutDelegate> delegate_;
 
@@ -210,6 +213,13 @@ class BrowserViewLayout : public views::LayoutManager {
   // The widget displaying a border on top of contents container for
   // highlighting the content. Not created by default.
   raw_ptr<views::Widget, DanglingUntriaged> contents_border_widget_ = nullptr;
+
+  bool is_compact_mode_ = false;
+
+  // Listens to prefs::kCompactModeEnabled. When the pref is changed we will
+  // toggle the mode the browser is in. Compact -> Standard, Standard ->
+  // Compact.
+  PrefChangeRegistrar registrar_;
 
   // The bounds within which the vertically-stacked contents of the BrowserView
   // should be laid out within. This is just the local bounds of the

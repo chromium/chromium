@@ -1022,9 +1022,21 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
                           base::Unretained(this), CanFullscreen()));
   UpdateFullscreenAllowedFromPolicy(CanFullscreen());
 
+  if (base::FeatureList::IsEnabled(features::kCompactMode)) {
+    registrar_.Init(browser_->profile()->GetPrefs());
+    registrar_.Add(prefs::kCompactModeEnabled,
+                   base::BindRepeating(&BrowserView::ToggleCompactModeUI,
+                                       base::Unretained(this)));
+    ToggleCompactModeUI();
+  }
+
   WebUIContentsPreloadManager::GetInstance()->WarmupForBrowser(browser_.get());
 
   browser_->GetFeatures().InitPostBrowserViewConstruction(this);
+}
+
+void BrowserView::ToggleCompactModeUI() {
+  InvalidateLayout();
 }
 
 BrowserView::~BrowserView() {
