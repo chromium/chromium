@@ -54,6 +54,7 @@ class WebUiInteractiveTestMixin : public T {
                     const WebContentsInteractionTestUtil::DeepQuery& element) {
     return T::Steps(T::FlushEvents(),
                     WaitForElementToRender(contents_id, element),
+                    T::ScrollIntoView(contents_id, element),
                     T::MoveMouseTo(contents_id, element), T::ClickMouse());
   }
 
