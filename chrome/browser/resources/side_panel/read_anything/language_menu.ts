@@ -30,7 +30,7 @@ export interface LanguageMenuElement {
 
 interface Notification {
   isError: boolean;
-  text: string|undefined;
+  text: string;
 }
 
 interface LanguageDropdownItem {
@@ -227,10 +227,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
                readableLanguage: this.getDisplayName(lang),
                checked: this.enabledLangs.includes(lang),
                languageCode: lang,
-               notification: {
-                 isError: this.isNotificationError(lang),
-                 text: this.getNotificationText(lang),
-               },
+               notification: this.getNotificationFor(lang),
                disabled: this.enabledLangs.includes(lang) &&
                    (lang.toLowerCase() === selectedLangLowerCase),
              }));
@@ -240,56 +237,23 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     return this.localesOfLangPackVoices.has(lang.toLowerCase());
   }
 
-  private isNotificationError(lang: string): boolean {
+  private getNotificationFor(lang: string): Notification {
     // Don't show notification text for a non-Google TTS language, as we're
     // not attempting a download.
     if (!this.hasAvailableNaturalVoices(lang)) {
-      return false;
+      return {isError: false, text: ''};
     }
 
+    // Convert the lang code string to the language-pack format
     const voicePackLanguage = convertLangOrLocaleForVoicePackManager(lang);
-
-    if (!voicePackLanguage) {
-      // If the voice pack language doesn't exist, no need to update the
-      // notification error status.
-      return false;
-    }
-
-    const notification: VoiceClientSideStatusCode|undefined =
-        this.currentNotifications_[voicePackLanguage];
-
-    if (notification === undefined) {
-      return false;
-    }
-
-    // TODO(b/40927698): In the future, some of our install error messages
-    // might not be set to an "error" in the notification status span, so
-    // be more specific.
-    return notification === VoiceClientSideStatusCode.ERROR_INSTALLING ||
-        notification === VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION;
-  }
-
-  private getNotificationText(lang: string): string {
-    // Don't show notification text for a non-Google TTS language, as we're
-    // not attempting a download.
-    if (!this.hasAvailableNaturalVoices(lang)) {
-      return '';
-    }
-
-    // Make sure to convert the lang string, otherwise there could be a
-    // mismatch in a language and locale and what is stored in the installation
-    // map.
-    const voicePackLanguage = convertLangOrLocaleForVoicePackManager(lang);
-
     // No need to check the install status if the language is missing.
     if (!voicePackLanguage) {
-      return '';
+      return {isError: false, text: ''};
     }
-    const notification: VoiceClientSideStatusCode|undefined =
-        this.currentNotifications_[voicePackLanguage];
 
+    const notification = this.currentNotifications_[voicePackLanguage];
     if (notification === undefined) {
-      return '';
+      return {isError: false, text: ''};
     }
 
     // TODO(b/300259625): Show more error messages.
@@ -297,7 +261,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       case VoiceClientSideStatusCode.SENT_INSTALL_REQUEST:
       case VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY:
       case VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE:
-        return 'readingModeLanguageMenuDownloading';
+        return {isError: false, text: 'readingModeLanguageMenuDownloading'};
       case VoiceClientSideStatusCode.ERROR_INSTALLING:
         // There's not a specific error code from the language pack installer
         // for internet connectivity, but if there's an installation error
@@ -307,22 +271,22 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         // app.ts so that this can be reused by the voice menu when other
         // errors are added to the voice menu.
         if (!window.navigator.onLine) {
-          return 'readingModeLanguageMenuNoInternet';
+          return {isError: true, text: 'readingModeLanguageMenuNoInternet'};
         }
         // Show a generic error message.
-        return 'languageMenuDownloadFailed';
+        return {isError: true, text: 'languageMenuDownloadFailed'};
       case VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION:
         // If we get an allocation error but voices exist for the given
         // language, show an allocation error specific to downloading high
         // quality voices.
         if (this.availableVoices.some(
                 voice => voice.lang.toLowerCase() === lang)) {
-          return 'allocationErrorHighQuality';
+          return {isError: true, text: 'allocationErrorHighQuality'};
         }
-        return 'allocationError';
+        return {isError: true, text: 'allocationError'};
       case VoiceClientSideStatusCode.AVAILABLE:
       case VoiceClientSideStatusCode.NOT_INSTALLED:
-        return '';
+        return {isError: false, text: ''};
       default:
         // This ensures the switch statement is exhaustive
         return notification satisfies never;
