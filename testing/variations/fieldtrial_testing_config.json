@@ -4889,17 +4889,9 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WelcomeTourV2"
-                    ]
-                },
-                {
-                    "name": "Counterfactual",
-                    "enable_features": [
-                        "WelcomeTourCounterfactualArm"
-                    ]
-                },
-                {
-                    "name": "Holdback",
-                    "enable_features": [
+                    ],
+                    "disable_features": [
+                        "WelcomeTourCounterfactualArm",
                         "WelcomeTourHoldbackArm"
                     ]
                 }
