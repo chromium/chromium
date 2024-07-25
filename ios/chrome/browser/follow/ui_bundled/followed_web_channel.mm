@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/follow/followed_web_channel.h"
+#import "ios/chrome/browser/follow/ui_bundled/followed_web_channel.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/net/model/crurl.h"

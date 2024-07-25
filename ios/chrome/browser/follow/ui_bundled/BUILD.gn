@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("follow") {
+source_set("ui_bundled") {
   sources = [
     "followed_web_channel.h",
     "followed_web_channel.mm",
@@ -37,7 +37,7 @@ source_set("first_follow") {
   ]
   deps = [
     ":first_follow_ui",
-    ":follow",
+    ":ui_bundled",
     "//ios/chrome/browser/discover_feed/model",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/favicon/model",
@@ -60,7 +60,7 @@ source_set("first_follow_ui") {
     "first_follow_view_controller.mm",
   ]
   deps = [
-    ":follow",
+    ":ui_bundled",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
