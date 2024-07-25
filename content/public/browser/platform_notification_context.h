@@ -27,7 +27,7 @@ namespace content {
 
 // Represents the storage context for persistent Web Notifications, specific to
 // the storage partition owning the instance. All methods defined in this
-// interface may only be used on the IO thread.
+// interface may only be used on the UI thread.
 class PlatformNotificationContext
     : public base::RefCountedThreadSafe<PlatformNotificationContext,
                                         BrowserThread::DeleteOnUIThread> {
