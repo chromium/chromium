@@ -183,49 +183,46 @@ suite('ExtensionItemTest', function() {
   });
 
   /** Tests that the reload button properly fires the load-error event. */
-  test(
-      'FailedReloadFiresLoadError', async function() {
-        item.set('inDevMode', true);
-        item.set('data.location', chrome.developerPrivate.Location.UNPACKED);
-        flush();
-        testVisible(item, '#dev-reload-button', true);
+  test('FailedReloadFiresLoadError', async function() {
+    item.set('inDevMode', true);
+    item.set('data.location', chrome.developerPrivate.Location.UNPACKED);
+    flush();
+    testVisible(item, '#dev-reload-button', true);
 
-        // Check clicking the reload button. The reload button should fire a
-        // load-error event if and only if the reload fails (indicated by a
-        // rejected promise).
-        // This is a bit of a pain to verify because the promises finish
-        // asynchronously, so we have to use setTimeout()s.
-        let firedLoadError = false;
-        item.addEventListener('load-error', () => {
-          firedLoadError = true;
+    // Check clicking the reload button. The reload button should fire a
+    // load-error event if and only if the reload fails (indicated by a
+    // rejected promise).
+    // This is a bit of a pain to verify because the promises finish
+    // asynchronously, so we have to use setTimeout()s.
+    let firedLoadError = false;
+    item.addEventListener('load-error', () => {
+      firedLoadError = true;
+    });
+
+    // This is easier to test with a TestBrowserProxy-style delegate.
+    const proxyDelegate = new TestService();
+    item.delegate = proxyDelegate;
+
+    function verifyEventPromise(expectCalled: boolean): Promise<void> {
+      return new Promise((resolve, _reject) => {
+        setTimeout(() => {
+          assertEquals(expectCalled, firedLoadError);
+          resolve();
         });
-
-        // This is easier to test with a TestBrowserProxy-style delegate.
-        const proxyDelegate = new TestService();
-        item.delegate = proxyDelegate;
-
-        function verifyEventPromise(expectCalled: boolean): Promise<void> {
-          return new Promise((resolve, _reject) => {
-            setTimeout(() => {
-              assertEquals(expectCalled, firedLoadError);
-              resolve();
-            });
-          });
-        }
-
-        item.shadowRoot!.querySelector<HTMLElement>(
-                            '#dev-reload-button')!.click();
-        let id = await proxyDelegate.whenCalled('reloadItem');
-        assertEquals(item.data.id, id);
-        await verifyEventPromise(false);
-        proxyDelegate.resetResolver('reloadItem');
-        proxyDelegate.setForceReloadItemError(true);
-        item.shadowRoot!.querySelector<HTMLElement>(
-                            '#dev-reload-button')!.click();
-        id = await proxyDelegate.whenCalled('reloadItem');
-        assertEquals(item.data.id, id);
-        return verifyEventPromise(true);
       });
+    }
+
+    item.shadowRoot!.querySelector<HTMLElement>('#dev-reload-button')!.click();
+    let id = await proxyDelegate.whenCalled('reloadItem');
+    assertEquals(item.data.id, id);
+    await verifyEventPromise(false);
+    proxyDelegate.resetResolver('reloadItem');
+    proxyDelegate.setForceReloadItemError(true);
+    item.shadowRoot!.querySelector<HTMLElement>('#dev-reload-button')!.click();
+    id = await proxyDelegate.whenCalled('reloadItem');
+    assertEquals(item.data.id, id);
+    return verifyEventPromise(true);
+  });
 
   test('Description', function() {
     // Description is visible if there are no warnings.
@@ -462,37 +459,36 @@ suite('ExtensionItemTest', function() {
     testVisible(item, '#repair-button', false);
   });
 
-  test(
-      'InspectableViewSortOrder', function() {
-        function getUrl(path: string) {
-          return `chrome-extension://${extensionData.id}/${path}`;
-        }
-        item.set('data.views', [
-          {
-            type: chrome.developerPrivate.ViewType.EXTENSION_POPUP,
-            url: getUrl('popup.html'),
-          },
-          {
-            type: chrome.developerPrivate.ViewType.EXTENSION_BACKGROUND_PAGE,
-            url: getUrl('_generated_background_page.html'),
-          },
-          {
-            type: chrome.developerPrivate.ViewType
-                      .EXTENSION_SERVICE_WORKER_BACKGROUND,
-            url: getUrl('sw.js'),
-          },
-        ]);
-        item.set('inDevMode', true);
-        flush();
+  test('InspectableViewSortOrder', function() {
+    function getUrl(path: string) {
+      return `chrome-extension://${extensionData.id}/${path}`;
+    }
+    item.set('data.views', [
+      {
+        type: chrome.developerPrivate.ViewType.EXTENSION_POPUP,
+        url: getUrl('popup.html'),
+      },
+      {
+        type: chrome.developerPrivate.ViewType.EXTENSION_BACKGROUND_PAGE,
+        url: getUrl('_generated_background_page.html'),
+      },
+      {
+        type: chrome.developerPrivate.ViewType
+                  .EXTENSION_SERVICE_WORKER_BACKGROUND,
+        url: getUrl('sw.js'),
+      },
+    ]);
+    item.set('inDevMode', true);
+    flush();
 
-        // Check that when multiple views are available, the service worker is
-        // sorted first.
-        assertEquals(
-            'service worker,',
-            item.shadowRoot!
-                .querySelector<HTMLElement>(
-                    '#inspect-views a:first-of-type')!.textContent!.trim());
-      });
+    // Check that when multiple views are available, the service worker is
+    // sorted first.
+    assertEquals(
+        'service worker,',
+        item.shadowRoot!
+            .querySelector<HTMLElement>(
+                '#inspect-views a:first-of-type')!.textContent!.trim());
+  });
 
   // Test that the correct tooltip text is shown when the enable toggle is
   // hovered over, depending on if the extension is enabled/disabled and its
