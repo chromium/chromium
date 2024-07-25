@@ -19,10 +19,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_concat_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_lost_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_support_limits.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_model_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_op_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
@@ -56,16 +54,12 @@ MLSupportLimits* SupportedDataTypesToSupportLimits(
 
 MLContext::MLContext(
     ExecutionContext* execution_context,
-    const V8MLDevicePreference device_preference,
     const V8MLDeviceType device_type,
     const V8MLPowerPreference power_preference,
-    const V8MLModelFormat model_format,
     const unsigned int num_threads,
     webnn::mojom::blink::CreateContextSuccessPtr create_context_success)
-    : device_preference_(device_preference),
-      device_type_(device_type),
+    : device_type_(device_type),
       power_preference_(power_preference),
-      model_format_(model_format),
       num_threads_(num_threads),
       lost_property_(MakeGarbageCollected<LostProperty>(execution_context)),
       context_remote_(execution_context),
@@ -80,20 +74,12 @@ MLContext::MLContext(
 
 MLContext::~MLContext() = default;
 
-V8MLDevicePreference MLContext::GetDevicePreference() const {
-  return device_preference_;
-}
-
 V8MLDeviceType MLContext::GetDeviceType() const {
   return device_type_;
 }
 
 V8MLPowerPreference MLContext::GetPowerPreference() const {
   return power_preference_;
-}
-
-V8MLModelFormat MLContext::GetModelFormat() const {
-  return model_format_;
 }
 
 unsigned int MLContext::GetNumThreads() const {

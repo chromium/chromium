@@ -16,9 +16,7 @@
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_model_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
@@ -44,10 +42,8 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
  public:
   MLContext(
       ExecutionContext* execution_context,
-      const V8MLDevicePreference device_preference,
       const V8MLDeviceType device_type,
       const V8MLPowerPreference power_preference,
-      const V8MLModelFormat model_format,
       const unsigned int num_threads,
       webnn::mojom::blink::CreateContextSuccessPtr create_context_success);
 
@@ -56,10 +52,8 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   ~MLContext() override;
 
-  V8MLDevicePreference GetDevicePreference() const;
   V8MLDeviceType GetDeviceType() const;
   V8MLPowerPreference GetPowerPreference() const;
-  V8MLModelFormat GetModelFormat() const;
   unsigned int GetNumThreads() const;
 
   const webnn::ContextProperties& GetProperties() { return properties_; }
@@ -154,10 +148,8 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                         std::optional<uint64_t> src_element_count,
                         ExceptionState& exception_state);
 
-  V8MLDevicePreference device_preference_;
   V8MLDeviceType device_type_;
   V8MLPowerPreference power_preference_;
-  V8MLModelFormat model_format_;
   unsigned int num_threads_;
 
   Member<LostProperty> lost_property_;

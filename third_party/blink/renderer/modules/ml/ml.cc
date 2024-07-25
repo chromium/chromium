@@ -106,8 +106,7 @@ ScriptPromise<MLContext> ML::createContext(ScriptState* script_state,
             }
 
             resolver->Resolve(MakeGarbageCollected<MLContext>(
-                context, options->devicePreference(), options->deviceType(),
-                options->powerPreference(), options->modelFormat(),
+                context, options->deviceType(), options->powerPreference(),
                 options->numThreads(), std::move(result->get_success())));
           },
           WrapPersistent(this), WrapPersistent(resolver),
