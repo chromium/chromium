@@ -27,37 +27,32 @@ proto::SafetyCategoryThreshold RequireReasonable() {
   return result;
 }
 
+proto::ProtoField ProtoField(std::initializer_list<int32_t> tags) {
+  proto::ProtoField f;
+  for (int32_t tag : tags) {
+    f.add_proto_descriptors()->set_tag_number(tag);
+  }
+  return f;
+}
+
 proto::ProtoField PageUrlField() {
-  proto::ProtoField result;
-  result.add_proto_descriptors()->set_tag_number(3);
-  result.add_proto_descriptors()->set_tag_number(1);
-  return result;
+  return ProtoField({3, 1});
 }
 
 proto::ProtoField UserInputField() {
-  proto::ProtoField result;
-  result.add_proto_descriptors()->set_tag_number(7);
-  result.add_proto_descriptors()->set_tag_number(1);
-  return result;
+  return ProtoField({7, 1});
 }
 
 proto::ProtoField PreviousResponseField() {
-  proto::ProtoField result;
-  result.add_proto_descriptors()->set_tag_number(8);
-  result.add_proto_descriptors()->set_tag_number(1);
-  return result;
+  return ProtoField({8, 1});
 }
 
 proto::ProtoField OutputField() {
-  proto::ProtoField result;
-  result.add_proto_descriptors()->set_tag_number(1);
-  return result;
+  return ProtoField({1});
 }
 
 proto::ProtoField StringValueField() {
-  proto::ProtoField result;
-  result.add_proto_descriptors()->set_tag_number(1);
-  return result;
+  return ProtoField({1});
 }
 
 proto::SubstitutedString FieldSubstitution(const std::string& tmpl,
