@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.COLOR;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.DIVIDER_COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HEIGHT;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.Y_OFFSET;
@@ -91,6 +92,21 @@ public class EdgeToEdgeBottomChinMediatorTest {
 
         mMediator.onNavigationBarColorChanged(Color.RED);
         assertEquals("The color should have been updated to red.", Color.RED, mModel.get(COLOR));
+    }
+
+    @Test
+    public void testDividerColorChanges() {
+        mMediator.onNavigationBarDividerChanged(Color.WHITE);
+        assertEquals(
+                "The divider color should have been updated to WHITE.",
+                Color.WHITE,
+                mModel.get(DIVIDER_COLOR));
+
+        mMediator.onNavigationBarDividerChanged(Color.TRANSPARENT);
+        assertEquals(
+                "The divider color should have been updated to TRANSPARENT.",
+                Color.TRANSPARENT,
+                mModel.get(DIVIDER_COLOR));
     }
 
     @Test

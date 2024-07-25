@@ -20,5 +20,9 @@ class EdgeToEdgeBottomChinProperties {
     /** The color of the bottom chin layer. */
     static final WritableIntPropertyKey COLOR = new WritableIntPropertyKey();
 
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {Y_OFFSET, HEIGHT, IS_VISIBLE, COLOR};
+    /** The color of the divider */
+    static final WritableIntPropertyKey DIVIDER_COLOR = new WritableIntPropertyKey();
+
+    static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {Y_OFFSET, HEIGHT, IS_VISIBLE, COLOR, DIVIDER_COLOR};
 }

@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.tabbed_mode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -25,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
@@ -79,6 +83,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
 
     @Captor private ArgumentCaptor<Integer> mWindowDividerColorCaptor;
     @Captor private ArgumentCaptor<Integer> mNavigationBarColorChangedCaptor;
+    @Captor private ArgumentCaptor<Integer> mNavigationBarDividerColorChangedCaptor;
 
     @Before
     public void setUp() {
@@ -116,6 +121,9 @@ public class TabbedNavigationBarColorControllerUnitTest {
         doNothing()
                 .when(mObserver)
                 .onNavigationBarColorChanged(mNavigationBarColorChangedCaptor.capture());
+        doNothing()
+                .when(mObserver)
+                .onNavigationBarDividerChanged(mNavigationBarDividerColorChangedCaptor.capture());
     }
 
     @Test
@@ -156,6 +164,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         mNavColorController.updateActiveTabForTesting();
         runColorUpdateAnimation();
 
+        Mockito.clearInvocations(mWindow);
         mNavColorController.onBottomAttachedColorChanged(Color.RED, false, false);
         assertTrue(
                 "Should be using the bottom attached UI color.",
@@ -163,9 +172,9 @@ public class TabbedNavigationBarColorControllerUnitTest {
         assertNavBarColor(Color.RED);
         assertNavBarDividerColor(Color.RED);
         assertWindowNavBarColor(Color.TRANSPARENT);
-        // No need to assertWindowNavBarDividerColor, since TRANSPARENT sets the entire nav bar
-        // transparent.
+        verify(mWindow, times(0)).setNavigationBarDividerColor(anyInt());
 
+        Mockito.clearInvocations(mWindow);
         mNavColorController.onBottomAttachedColorChanged(null, false, false);
         assertFalse(
                 "Should no longer be using the bottom attached UI color.",
@@ -173,6 +182,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         assertNavBarColor(Color.BLUE);
         assertNavBarDividerColor(Color.BLUE);
         assertWindowNavBarColor(Color.TRANSPARENT);
+        verify(mWindow, times(0)).setNavigationBarDividerColor(anyInt());
     }
 
     @Test
@@ -186,6 +196,37 @@ public class TabbedNavigationBarColorControllerUnitTest {
         runColorUpdateAnimation();
         assertWindowNavBarColor(Color.RED);
         assertWindowNavBarDividerColor(NAV_DIVIDER_COLOR);
+    }
+
+    @Test
+    public void testMatchBottomAttachedColor_forceShowDivider_toEdge() {
+        when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mEdgeToEdgeController.isDrawingToEdge()).thenReturn(true);
+        mNavColorController.updateActiveTabForTesting();
+        runColorUpdateAnimation();
+
+        Mockito.clearInvocations(mWindow);
+        mNavColorController.onBottomAttachedColorChanged(Color.RED, true, false);
+        runColorUpdateAnimation();
+        assertTrue(
+                "Should be using the bottom attached UI color.",
+                mNavColorController.getUseBottomAttachedUiColorForTesting());
+        assertNavBarColor(Color.RED);
+        assertNavBarDividerColor(NAV_DIVIDER_COLOR, true);
+        assertWindowNavBarColor(Color.TRANSPARENT);
+        verify(mWindow, times(0)).setNavigationBarDividerColor(anyInt());
+
+        Mockito.clearInvocations(mWindow);
+        mNavColorController.onBottomAttachedColorChanged(null, false, false);
+        runColorUpdateAnimation();
+        assertFalse(
+                "Should no longer be using the bottom attached UI color.",
+                mNavColorController.getUseBottomAttachedUiColorForTesting());
+        assertNavBarColor(Color.BLUE);
+        assertNavBarDividerColor(Color.BLUE);
+        assertWindowNavBarColor(Color.TRANSPARENT);
+        verify(mWindow, times(0)).setNavigationBarDividerColor(anyInt());
     }
 
     @Test
@@ -226,6 +267,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         when(mEdgeToEdgeController.getBottomInset()).thenReturn(100);
         when(mEdgeToEdgeController.isDrawingToEdge()).thenReturn(true);
 
+        Mockito.clearInvocations(mWindow);
         mNavColorController.updateActiveTabForTesting();
         runColorUpdateAnimation();
 
@@ -235,6 +277,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         assertNavBarColor(Color.BLUE);
         assertNavBarDividerColor(Color.BLUE);
         assertWindowNavBarColor(Color.TRANSPARENT);
+        verify(mWindow, times(0)).setNavigationBarDividerColor(anyInt());
     }
 
     private void runColorUpdateAnimation() {
@@ -261,10 +304,18 @@ public class TabbedNavigationBarColorControllerUnitTest {
     }
 
     private void assertNavBarDividerColor(int color) {
+        assertNavBarDividerColor(color, /* forceShowDivider= */ false);
+    }
+
+    private void assertNavBarDividerColor(int color, boolean forceShowDivider) {
         assertEquals(
                 "Incorrect nav bar divider color.",
                 color,
-                mNavColorController.getNavigationBarDividerColor(false, false));
+                mNavColorController.getNavigationBarDividerColor(false, forceShowDivider));
+        assertEquals(
+                "New color is not delivered to the observer.",
+                color,
+                (int) mNavigationBarDividerColorChangedCaptor.getValue());
     }
 
     private void assertWindowNavBarDividerColor(int color) {

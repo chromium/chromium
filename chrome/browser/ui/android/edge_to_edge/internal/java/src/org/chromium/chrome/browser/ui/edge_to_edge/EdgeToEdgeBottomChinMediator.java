@@ -4,6 +4,7 @@
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.COLOR;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.DIVIDER_COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HEIGHT;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.Y_OFFSET;
@@ -102,5 +103,10 @@ class EdgeToEdgeBottomChinMediator
     public void onNavigationBarColorChanged(int color) {
         // TODO(): Animate the color change.
         mModel.set(COLOR, color);
+    }
+
+    @Override
+    public void onNavigationBarDividerChanged(int dividerColor) {
+        mModel.set(DIVIDER_COLOR, dividerColor);
     }
 }

@@ -19,6 +19,8 @@ class EdgeToEdgeBottomChinViewBinder {
             sceneLayer.setIsVisible(model.get(EdgeToEdgeBottomChinProperties.IS_VISIBLE));
         } else if (EdgeToEdgeBottomChinProperties.COLOR == propertyKey) {
             sceneLayer.setColor(model.get(EdgeToEdgeBottomChinProperties.COLOR));
+        } else if (EdgeToEdgeBottomChinProperties.DIVIDER_COLOR == propertyKey) {
+            sceneLayer.setDividerColor(model.get(EdgeToEdgeBottomChinProperties.DIVIDER_COLOR));
         } else {
             assert false : "Unhandled property detected in EdgeToEdgeBottomChinViewBinder!";
         }

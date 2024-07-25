@@ -18,6 +18,13 @@ public interface NavigationBarColorProvider {
          * @param color The color of the navigation bar.
          */
         void onNavigationBarColorChanged(@ColorInt int color);
+
+        /**
+         * Called when the navigation bar has an update to the color of its divider.
+         *
+         * @param dividerColor The color of the navigation bar divider.
+         */
+        void onNavigationBarDividerChanged(@ColorInt int dividerColor);
     }
 
     /**

@@ -34,6 +34,7 @@ class EdgeToEdgeBottomChinSceneLayer : public SceneLayer {
                                        jint container_width,
                                        jint container_height,
                                        jint color_argb,
+                                       jint divider_color,
                                        jfloat y_offset);
 
   void SetContentTree(
@@ -51,6 +52,7 @@ class EdgeToEdgeBottomChinSceneLayer : public SceneLayer {
   // TODO(crbug.com/349876343) Add divider as a new layer in the container.
   scoped_refptr<cc::slim::Layer> view_container_;
   scoped_refptr<cc::slim::SolidColorLayer> view_layer_;
+  scoped_refptr<cc::slim::SolidColorLayer> divider_layer_;
 };
 
 }  // namespace android
