@@ -12024,6 +12024,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFreezingOnEnergySaverDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(
          performance_manager::features::kFreezingOnBatterySaver)},
+
+    {"freezing-on-energy-saver-testing",
+     flag_descriptions::kFreezingOnEnergySaverTestingName,
+     flag_descriptions::kFreezingOnEnergySaverTestingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         performance_manager::features::kFreezingOnBatterySaverForTesting)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

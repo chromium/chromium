@@ -5135,6 +5135,13 @@ const char kFreezingOnEnergySaverDescription[] =
     "lot of CPU. A tab is eligible if it's silent, doesn't provide audio- or "
     "video- conference functionality and doesn't use WebUSB or Web Bluetooth.";
 
+const char kFreezingOnEnergySaverTestingName[] =
+    "Freeze CPU intensive background tabs on Energy Saver - Testing Mode";
+const char kFreezingOnEnergySaverTestingDescription[] =
+    "Similar to #freezing-on-energy-saver, with changes to facilitate testing: "
+    "1) pretend that Energy Saver is active even when it's not and 2) pretend "
+    "that all tabs use a lot of CPU.";
+
 const char kKeyboardAndPointerLockPromptName[] =
     "Keyboard and Pointer Lock prompt";
 const char kKeyboardAndPointerLockPromptDescription[] =

@@ -2981,6 +2981,9 @@ extern const char kForceSigninFlowInProfilePickerDescription[];
 extern const char kFreezingOnEnergySaverName[];
 extern const char kFreezingOnEnergySaverDescription[];
 
+extern const char kFreezingOnEnergySaverTestingName[];
+extern const char kFreezingOnEnergySaverTestingDescription[];
+
 extern const char kKeyboardAndPointerLockPromptName[];
 extern const char kKeyboardAndPointerLockPromptDescription[];
 
