@@ -72,9 +72,9 @@ bool IbanManager::OnGetSingleFieldSuggestions(
   return true;
 }
 
-void IbanManager::OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                                  SuggestionType type) {
-  uma_recorder_.OnIbanSuggestionSelected(value);
+void IbanManager::OnSingleFieldSuggestionSelected(
+    const Suggestion& suggestion) {
+  uma_recorder_.OnIbanSuggestionSelected(suggestion.main_text.value);
 }
 
 void IbanManager::UmaRecorder::OnIbanSuggestionsShown(

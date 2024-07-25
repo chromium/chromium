@@ -57,9 +57,8 @@ void MerchantPromoCodeManager::OnRemoveCurrentSingleFieldSuggestion(
     SuggestionType type) {}
 
 void MerchantPromoCodeManager::OnSingleFieldSuggestionSelected(
-    const std::u16string& value,
-    SuggestionType type) {
-  uma_recorder_.OnOfferSuggestionSelected(type);
+    const Suggestion& suggestion) {
+  uma_recorder_.OnOfferSuggestionSelected(suggestion.type);
 }
 
 void MerchantPromoCodeManager::Init(PersonalDataManager* personal_data_manager,

@@ -52,8 +52,7 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
   void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
                                             const std::u16string& value,
                                             SuggestionType type) override;
-  void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                       SuggestionType type) override;
+  void OnSingleFieldSuggestionSelected(const Suggestion& suggestion) override;
 
   // Initializes the instance with the given parameters.
   // |profile_database_| is a profile-scope DB used to access autocomplete data.

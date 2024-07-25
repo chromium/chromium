@@ -47,7 +47,7 @@ class MockSingleFieldFormFillRouter : public SingleFieldFormFillRouter {
               (override));
   MOCK_METHOD(void,
               OnSingleFieldSuggestionSelected,
-              (const std::u16string&, SuggestionType),
+              (const Suggestion& suggestion),
               (override));
 };
 

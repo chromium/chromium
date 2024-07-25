@@ -190,11 +190,9 @@ class BrowserAutofillManager : public AutofillManager {
                                           const std::u16string& value,
                                           SuggestionType type);
 
-  // Invoked when the user selected |value| in a suggestions list from single
-  // field filling. `type` is the SuggestionType of the
-  // suggestion.
-  void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                       SuggestionType type,
+  // Invoked when the user selected the `suggestion` in a suggestions list from
+  // single field filling.
+  void OnSingleFieldSuggestionSelected(const Suggestion& suggestion,
                                        const FormData& form,
                                        const FormFieldData& field);
 

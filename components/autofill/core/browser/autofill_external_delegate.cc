@@ -628,8 +628,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           query_form_, query_field_, suggestion.main_text.value,
           suggestion.type, /*field_type_used=*/std::nullopt);
-      manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
-                                                suggestion.type, query_form_,
+      manager_->OnSingleFieldSuggestionSelected(suggestion, query_form_,
                                                 query_field_);
       break;
     case SuggestionType::kFillExistingPlusAddress:
@@ -1358,8 +1357,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
                              }
                            },
                            GetWeakPtr()));
-      manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
-                                                suggestion.type, query_form_,
+      manager_->OnSingleFieldSuggestionSelected(suggestion, query_form_,
                                                 query_field_);
       break;
     case SuggestionType::kMerchantPromoCodeEntry:
@@ -1369,8 +1367,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           query_form_, query_field_, suggestion.main_text.value,
           suggestion.type, MERCHANT_PROMO_CODE);
-      manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
-                                                suggestion.type, query_form_,
+      manager_->OnSingleFieldSuggestionSelected(suggestion, query_form_,
                                                 query_field_);
       break;
     case SuggestionType::kSeePromoCodeDetails:
@@ -1378,8 +1375,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       manager_->client()
           .GetPaymentsAutofillClient()
           ->OpenPromoCodeOfferDetailsURL(suggestion.GetPayload<GURL>());
-      manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
-                                                suggestion.type, query_form_,
+      manager_->OnSingleFieldSuggestionSelected(suggestion, query_form_,
                                                 query_field_);
       break;
     case SuggestionType::kShowAccountCards:

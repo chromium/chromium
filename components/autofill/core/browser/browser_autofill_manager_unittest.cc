@@ -7878,33 +7878,34 @@ TEST_F(BrowserAutofillManagerTest, OnSingleFieldSuggestionSelected) {
   FormData form = test::CreateTestAddressFormData();
   FormFieldData& field = test_api(form).field(0);
 
+  Suggestion autocomplete_suggestion(test_value,
+                                     SuggestionType::kAutocompleteEntry);
   EXPECT_CALL(single_field_form_fill_router(),
-              OnSingleFieldSuggestionSelected(
-                  test_value, SuggestionType::kAutocompleteEntry));
+              OnSingleFieldSuggestionSelected(autocomplete_suggestion));
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, SuggestionType::kAutocompleteEntry, form, field);
-
-  EXPECT_CALL(single_field_form_fill_router(),
-              OnSingleFieldSuggestionSelected(
-                  test_value, SuggestionType::kAutocompleteEntry));
-
-  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, SuggestionType::kAutocompleteEntry, form, field);
-
-  EXPECT_CALL(
-      single_field_form_fill_router(),
-      OnSingleFieldSuggestionSelected(test_value, SuggestionType::kIbanEntry));
-
-  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, SuggestionType::kIbanEntry, form, field);
+      autocomplete_suggestion, form, field);
 
   EXPECT_CALL(single_field_form_fill_router(),
-              OnSingleFieldSuggestionSelected(
-                  test_value, SuggestionType::kMerchantPromoCodeEntry));
+              OnSingleFieldSuggestionSelected(autocomplete_suggestion));
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, SuggestionType::kMerchantPromoCodeEntry, form, field);
+      autocomplete_suggestion, form, field);
+
+  Suggestion iban_suggestion(test_value, SuggestionType::kIbanEntry);
+  EXPECT_CALL(single_field_form_fill_router(),
+              OnSingleFieldSuggestionSelected(iban_suggestion));
+
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(iban_suggestion,
+                                                             form, field);
+
+  Suggestion merchant_promo_suggestion(test_value,
+                                       SuggestionType::kMerchantPromoCodeEntry);
+  EXPECT_CALL(single_field_form_fill_router(),
+              OnSingleFieldSuggestionSelected(merchant_promo_suggestion));
+
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
+      merchant_promo_suggestion, form, field);
 }
 
 // Test that we correctly fill an address form and update the used profile.

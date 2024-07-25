@@ -138,10 +138,9 @@ void AutocompleteHistoryManager::OnRemoveCurrentSingleFieldSuggestion(
 }
 
 void AutocompleteHistoryManager::OnSingleFieldSuggestionSelected(
-    const std::u16string& value,
-    SuggestionType type) {
+    const Suggestion& suggestion) {
   // Try to find the AutofillEntry associated with the given suggestion.
-  auto last_entries_iter = last_entries_.find(value);
+  auto last_entries_iter = last_entries_.find(suggestion.main_text.value);
   if (last_entries_iter == last_entries_.end()) {
     // Not found, therefore nothing to do. Most likely there was a race
     // condition, but it's not that big of a deal in the current scenario

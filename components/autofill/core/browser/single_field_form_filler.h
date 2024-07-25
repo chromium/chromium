@@ -83,12 +83,11 @@ class SingleFieldFormFiller {
       const std::u16string& value,
       SuggestionType type) = 0;
 
-  // Invoked when the user selects |value| in the list of suggestions. For
+  // Invoked when the user selects `suggestion` in the list of suggestions. For
   // Autocomplete, this function logs the DaysSinceLastUse of the Autocomplete
-  // entry associated with |value|. `type` is the SuggestionType
-  // of the suggestion selected.
-  virtual void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                               SuggestionType type) = 0;
+  // entry associated with the value of the suggestion.
+  virtual void OnSingleFieldSuggestionSelected(
+      const Suggestion& suggestion) = 0;
 };
 
 }  // namespace autofill

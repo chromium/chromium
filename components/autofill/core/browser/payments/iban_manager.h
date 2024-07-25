@@ -49,8 +49,7 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
   void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
                                             const std::u16string& value,
                                             SuggestionType type) override {}
-  void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                       SuggestionType type) override;
+  void OnSingleFieldSuggestionSelected(const Suggestion& suggestion) override;
 
  private:
   // Records metrics related to the IBAN suggestions popup.

@@ -38,6 +38,7 @@ namespace autofill {
 
 constexpr char kNickname_0[] = "Nickname 0";
 constexpr char kNickname_1[] = "Nickname 1";
+constexpr char16_t kIbanValue[] = u"FR7630006000011234567890189";
 
 namespace {
 
@@ -641,8 +642,8 @@ TEST_F(IbanManagerTest, Metrics_SuggestionSelected) {
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
       form_structure_.get(), *autofill_field_, autofill_field_,
       autofill_client_, mock_callback.Get()));
-  iban_manager_.OnSingleFieldSuggestionSelected(u"FR7630006000011234567890189",
-                                                SuggestionType::kIbanEntry);
+  Suggestion suggestion(kIbanValue, SuggestionType::kIbanEntry);
+  iban_manager_.OnSingleFieldSuggestionSelected(suggestion);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.Iban.Suggestions",
@@ -654,8 +655,7 @@ TEST_F(IbanManagerTest, Metrics_SuggestionSelected) {
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
       form_structure_.get(), *autofill_field_, autofill_field_,
       autofill_client_, mock_callback.Get()));
-  iban_manager_.OnSingleFieldSuggestionSelected(u"FR7630006000011234567890189",
-                                                SuggestionType::kIbanEntry);
+  iban_manager_.OnSingleFieldSuggestionSelected(suggestion);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.Iban.Suggestions",
@@ -668,8 +668,8 @@ TEST_F(IbanManagerTest, Metrics_SuggestionSelected) {
 TEST_F(IbanManagerTest, Metrics_SuggestionSelected_CountryOfSelectedIban) {
   base::HistogramTester histogram_tester;
   // Simulate selecting one suggested IBAN.
-  iban_manager_.OnSingleFieldSuggestionSelected(u"FR7630006000011234567890189",
-                                                SuggestionType::kIbanEntry);
+  Suggestion suggestion(kIbanValue, SuggestionType::kIbanEntry);
+  iban_manager_.OnSingleFieldSuggestionSelected(suggestion);
 
   histogram_tester.ExpectUniqueSample("Autofill.Iban.CountryOfSelectedIban",
                                       Iban::IbanSupportedCountry::kFR, 1);

@@ -2034,21 +2034,21 @@ void BrowserAutofillManager::RemoveCurrentSingleFieldSuggestion(
 }
 
 void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
-    const std::u16string& value,
-    SuggestionType type,
+    const Suggestion& suggestion,
     const FormData& form,
     const FormFieldData& field) {
-  single_field_form_fill_router_->OnSingleFieldSuggestionSelected(value, type);
+  single_field_form_fill_router_->OnSingleFieldSuggestionSelected(suggestion);
 
   AutofillField* autofill_trigger_field = GetAutofillField(form, field);
   if (!autofill_trigger_field) {
     return;
   }
   if (IsSingleFieldFormFillerFillingProduct(
-          GetFillingProductFromSuggestionType(type))) {
+          GetFillingProductFromSuggestionType(suggestion.type))) {
     autofill_trigger_field->AppendLogEventIfNotRepeated(
         TriggerFillFieldLogEvent{
-            .data_type = GetEventTypeFromSingleFieldSuggestionType(type),
+            .data_type =
+                GetEventTypeFromSingleFieldSuggestionType(suggestion.type),
             .associated_country_code = "",
             .timestamp = AutofillClock::Now()});
   }
