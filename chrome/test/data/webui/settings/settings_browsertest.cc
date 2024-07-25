@@ -633,25 +633,9 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, FirstPartySetsUIDisabled) {
           "runMochaSuite('FirstPartySetsUIDisabled')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, IpProtectionToggle) {
-  RunTest("settings/cookies_page_test.js",
-          "runMochaSuite('IpProtectionToggle')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest,
-                       FingerprintingProtectionToggle) {
-  RunTest("settings/cookies_page_test.js",
-          "runMochaSuite('FingerprintingProtectionToggle')");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, TrackingProtectionSettings) {
   RunTest("settings/cookies_page_test.js",
           "runMochaSuite('TrackingProtectionSettings')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, TrackingProtectionRolloutUx) {
-  RunTest("settings/cookies_page_test.js",
-          "runMochaSuite('TrackingProtectionRolloutUx')");
 }
 
 // Test with --enable-pixel-output-in-tests enabled, required by fingerprint

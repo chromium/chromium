@@ -82,17 +82,9 @@ suite('CookiesPageTest', function() {
     // Headers
     assertTrue(isChildVisible(page, '#explanationText'));
     assertTrue(isChildVisible(page, '#generalControls'));
-    assertTrue(isChildVisible(page, '#additionalProtectionsHeader'));
+    assertTrue(isChildVisible(page, '#additionalProtections'));
     assertTrue(isChildVisible(page, '#exceptionHeader3pcd'));
     assertTrue(isChildVisible(page, '#allow3pcExceptionsList'));
-    // To be removed with old UI.
-    assertFalse(isChildVisible(page, '#exceptionHeader'));
-    assertFalse(isChildVisible(page, '#exceptionHeaderSubLabel'));
-    // Will only be shown in the TP rollout.
-    assertFalse(isChildVisible(page, '#exceptionHeaderTrackingProtection'));
-    assertFalse(isChildVisible(page, '#trackingProtectionExceptionsList'));
-    assertFalse(isChildVisible(page, '#defaultHeader'));
-
     // Settings
     assertTrue(isChildVisible(page, '#doNotTrack'));
     assertTrue(isChildVisible(page, '#allowThirdParty'));
@@ -430,137 +422,5 @@ suite('TrackingProtectionSettings', function() {
     assertEquals(
         page.getPref('tracking_protection.block_all_3pc_toggle_enabled.value'),
         true);
-  });
-});
-
-suite('IpProtectionToggle', function() {
-  let page: SettingsCookiesPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      is3pcdCookieSettingsRedesignEnabled: false,
-      isIpProtectionV1Enabled: true,
-    });
-    resetRouterForTesting();
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-
-    page = document.createElement('settings-cookies-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    flush();
-  });
-
-  test('CheckVisibility', function() {
-    // Setting is visible
-    assertTrue(isChildVisible(page, '#ipProtectionToggle'));
-  });
-
-  test('ToggleIpProtection', async function() {
-    page.set('prefs.tracking_protection.ip_protection_enabled.value', false);
-    const ipProtectionToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#ipProtectionToggle')!;
-    assertTrue(!!ipProtectionToggle);
-
-    ipProtectionToggle.click();
-    const result =
-        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
-    assertEquals(PrivacyElementInteractions.IP_PROTECTION, result);
-    assertEquals(
-        page.getPref('tracking_protection.ip_protection_enabled.value'), true);
-  });
-});
-
-suite('FingerprintingProtectionToggle', function() {
-  let page: SettingsCookiesPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({isFingerprintingProtectionEnabled: true});
-    resetRouterForTesting();
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-
-    page = document.createElement('settings-cookies-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    flush();
-  });
-
-  test('CheckVisibility', function() {
-    // Setting is visible
-    assertTrue(isChildVisible(page, '#fingerprintingProtectionToggle'));
-  });
-
-  test('ToggleFingerprintingProtection', async function() {
-    page.set(
-        'prefs.tracking_protection.fingerprinting_protection_enabled.value',
-        false);
-    const fingerprintingProtectionToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#fingerprintingProtectionToggle')!;
-    assertTrue(!!fingerprintingProtectionToggle);
-
-    fingerprintingProtectionToggle.click();
-    const result =
-        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
-    assertEquals(PrivacyElementInteractions.FINGERPRINTING_PROTECTION, result);
-    assertEquals(
-        page.getPref(
-            'tracking_protection.fingerprinting_protection_enabled.value'),
-        true);
-  });
-});
-
-suite('TrackingProtectionRolloutUx', function() {
-  let page: SettingsCookiesPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableTrackingProtectionRolloutUx: true,
-      is3pcdCookieSettingsRedesignEnabled: true,
-    });
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-cookies-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    flush();
-  });
-
-  test('TrackingProtectionExceptionsListDisplayed', function() {
-    // Tracking Protection elements are shown
-    assertTrue(isChildVisible(page, '#defaultHeader'));
-    assertTrue(isChildVisible(page, '#exceptionHeaderTrackingProtection'));
-    assertTrue(isChildVisible(page, '#trackingProtectionExceptionsList'));
-    // 3PC elements are hidden
-    assertFalse(isChildVisible(page, '#explanationText'));
-    assertFalse(isChildVisible(page, '#exceptionHeader3pcd'));
-    assertFalse(isChildVisible(page, '#allow3pcExceptionsList'));
   });
 });
