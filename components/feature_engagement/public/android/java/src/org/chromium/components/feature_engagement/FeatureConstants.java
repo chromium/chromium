@@ -104,7 +104,8 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.VIDEO_TUTORIAL_NTP_VOICE_SEARCH_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE,
     FeatureConstants.PRICE_DROP_NTP_FEATURE,
-    FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE
+    FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE,
+    FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface FeatureConstants {
@@ -206,6 +207,12 @@ public @interface FeatureConstants {
 
     /** An IPH feature to show when the tabstrip shows to explain what each button does. */
     String TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE = "IPH_TabGroupsTapToSeeAnotherTab";
+
+    /**
+     * An IPH feature to show description text on the tab group creation dialog teaching the user
+     * about tab group sync and save functionality.
+     */
+    String TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE = "IPH_TabGroupCreationDialogSyncText";
 
     /** An IPH feature to show when tab group is synced across devices. */
     String TAB_GROUP_SYNC_ON_STRIP_FEATURE = "IPH_TabGroupSyncOnStrip";

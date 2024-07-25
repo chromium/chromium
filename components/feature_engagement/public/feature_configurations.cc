@@ -789,6 +789,21 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHTabGroupCreationDialogSyncTextFeature.name == feature->name) {
+    // A config that allows the sync text IPH on the TabGroupCreationDialog to
+    // be shown up to 3 times total (10 year max in place of unlimited window).
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger =
+        EventConfig("tab_group_creation_dialog_sync_text_iph_triggered",
+                    Comparator(LESS_THAN, 3), 3600, 3600);
+    config->used = EventConfig("tab_group_creation_dialog_shown",
+                               Comparator(LESS_THAN, 3), 3600, 3600);
+    return config;
+  }
+
   if (kIPHAppSpecificHistory.name == feature->name) {
     // A config that allows the AppSpecificHistory IPH to be shown once
     // a week, up to 3 times, unless the button is clicked at least once.

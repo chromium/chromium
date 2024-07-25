@@ -203,6 +203,9 @@ public final class EventConstants {
 
     public static final String TAB_GROUP_SYNC_ON_STRIP_USED = "tab_group_sync_on_strip_used";
 
+    /** Description text for tab group sync functionality in the tab group creation dialog. */
+    public static final String TAB_GROUP_CREATION_DIALOG_SHOWN = "tab_group_creation_dialog_shown";
+
     /** Do not instantiate. */
     private EventConstants() {}
 }

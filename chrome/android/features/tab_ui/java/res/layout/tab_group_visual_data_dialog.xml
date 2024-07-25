@@ -25,10 +25,20 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp"
+                android:paddingLeft="@dimen/tab_group_visual_data_dialog_margin_padding"
+                android:paddingRight="@dimen/tab_group_visual_data_dialog_margin_padding"
                 android:accessibilityHeading="true"
                 android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+            <TextView
+                android:id="@+id/visual_data_dialog_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:paddingLeft="@dimen/tab_group_visual_data_dialog_margin_padding"
+                android:paddingRight="@dimen/tab_group_visual_data_dialog_margin_padding"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                android:visibility="gone" />
 
             <org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataTextInputLayout
                         android:id="@+id/tab_group_title"
