@@ -20,6 +20,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system_sounds_delegate.h"
+#include "ash/public/cpp/tab_strip_delegate.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/system/input_device_settings/touchscreen_metrics_recorder.h"
 #include "ash/system/toast/system_nudge_pause_manager_impl.h"
@@ -234,6 +235,7 @@ class RootWindowController;
 class SavedDeskController;
 class SavedDeskDelegate;
 class TabClusterUIController;
+class TabStripDelegate;
 class UsbPeripheralNotificationController;
 class ScreenLayoutObserver;
 class ScreenOrientationController;
@@ -797,6 +799,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   TabletModeController* tablet_mode_controller() const {
     return tablet_mode_controller_.get();
   }
+  TabStripDelegate* tab_strip_delegate() const {
+    return tab_strip_delegate_.get();
+  }
   ToastManagerImpl* toast_manager() { return toast_manager_.get(); }
   views::corewm::TooltipController* tooltip_controller() {
     return tooltip_controller_.get();
@@ -1147,6 +1152,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<TouchDevicesController> touch_devices_controller_;
   std::unique_ptr<TrayAction> tray_action_;
   std::unique_ptr<UserEducationController> user_education_controller_;
+  std::unique_ptr<TabStripDelegate> tab_strip_delegate_;
   std::unique_ptr<WallpaperControllerImpl> wallpaper_controller_;
   std::unique_ptr<WindowCycleController> window_cycle_controller_;
   std::unique_ptr<WindowRestoreController> window_restore_controller_;

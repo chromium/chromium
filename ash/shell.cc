@@ -1867,6 +1867,8 @@ void Shell::Init(
   // Initialize the D-Bus bus and services for ash.
   dbus_bus_ = dbus_bus;
   ash_dbus_services_ = std::make_unique<AshDBusServices>(dbus_bus.get());
+
+  tab_strip_delegate_ = shell_delegate_->CreateTabStripDelegate();
 }
 
 void Shell::InitializeDisplayManager() {
