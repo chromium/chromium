@@ -48,9 +48,8 @@ class SafeBrowsingServiceTest : public testing::Test {
  public:
   SafeBrowsingServiceTest() {
     feature_list_.InitWithFeatures(
-        {safe_browsing::kDownloadReportWithoutUserDecision,
-         safe_browsing::kExtendedReportingRemovePrefDependency},
-        {});
+        {safe_browsing::kDownloadReportWithoutUserDecision},
+        {safe_browsing::kExtendedReportingRemovePrefDependency});
   }
 
   void SetUp() override {
@@ -352,6 +351,10 @@ TEST_F(SafeBrowsingServiceTest, WhenUserIsInNoProtectionNormallyoReturnsFalse) {
 
 TEST_F(SafeBrowsingServiceTest,
        SaveExtendedReportingPrefValueOnProfileAddedFeatureFlagEnabled) {
+  ResetAndReinitFeatures(
+      {safe_browsing::kDownloadReportWithoutUserDecision,
+       safe_browsing::kExtendedReportingRemovePrefDependency},
+      {});
   SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
   sb_service_->OnProfileAdded(profile());
   // Since the user enabled Extended Reporting, the preference value used to

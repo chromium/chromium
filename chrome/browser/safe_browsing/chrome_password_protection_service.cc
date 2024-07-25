@@ -733,6 +733,10 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseDetectedEvent(
     case SBER_LEVEL_SCOUT:
       status->set_safe_browsing_reporting_population(SafeBrowsingStatus::SCOUT);
       break;
+    case SBER_LEVEL_ENHANCED_PROTECTION:
+      status->set_safe_browsing_reporting_population(
+          SafeBrowsingStatus::ENHANCED_PROTECTION);
+      break;
   }
 
   WebUIInfoSingleton::GetInstance()->AddToPGEvents(*specifics);

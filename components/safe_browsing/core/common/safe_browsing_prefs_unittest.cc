@@ -110,6 +110,17 @@ TEST_F(SafeBrowsingPrefsTest, GetSafeBrowsingExtendedReportingLevel) {
   EXPECT_EQ(SBER_LEVEL_OFF, GetExtendedReportingLevel(prefs_));
 }
 
+TEST_F(SafeBrowsingPrefsTest,
+       GetSafeBrowsingExtendedReportingLevelWhenSBERDeprecated) {
+  // When enhanced protection is on and SBER deprecation flag is on, the
+  // reporting level is ENHANCED_PROTECTION.
+  prefs_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+  base::test::ScopedFeatureList scoped_features_;
+  scoped_features_.InitAndEnableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
+  EXPECT_EQ(SBER_LEVEL_ENHANCED_PROTECTION, GetExtendedReportingLevel(prefs_));
+}
+
 TEST_F(SafeBrowsingPrefsTest, VerifyMatchesPasswordProtectionLoginURL) {
   GURL url("https://mydomain.com/login.html#ref?username=alice");
   GURL chrome_url("chrome://os-settings");

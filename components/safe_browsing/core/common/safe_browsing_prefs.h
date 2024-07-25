@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/values.h"
 #include "components/prefs/pref_member.h"
+#include "components/safe_browsing/core/common/features.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -261,6 +262,7 @@ inline constexpr char kSafeBrowsingAutomaticDeepScanPerformed[] =
 
 namespace safe_browsing {
 
+// TODO(crbug.com/355027426): Convert this enum to enum class.
 // Enumerates the level of Safe Browsing Extended Reporting that is currently
 // available.
 enum ExtendedReportingLevel {
@@ -272,6 +274,9 @@ enum ExtendedReportingLevel {
   // The Scout level of extended reporting is available, some data can be
   // collected to actively detect dangerous apps and sites.
   SBER_LEVEL_SCOUT = 2,
+  // The Scout level of extended reporting is deprecated, however, the user has
+  // the ESB setting on.
+  SBER_LEVEL_ENHANCED_PROTECTION = 3,
 };
 
 // Enumerates the states used for determining whether the Tailored Security flow

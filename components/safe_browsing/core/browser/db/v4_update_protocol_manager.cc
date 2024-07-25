@@ -87,6 +87,8 @@ ChromeClientInfo::SafeBrowsingReportingPopulation GetReportingLevelProtoValue(
       return ChromeClientInfo::EXTENDED;
     case SBER_LEVEL_SCOUT:
       return ChromeClientInfo::SCOUT;
+    case SBER_LEVEL_ENHANCED_PROTECTION:
+      return ChromeClientInfo::ENHANCED_PROTECTION;
     default:
       NOTREACHED_IN_MIGRATION() << "Unexpected reporting_level!";
       return ChromeClientInfo::UNSPECIFIED;
