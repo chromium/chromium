@@ -4583,6 +4583,8 @@ source_set("ash") {
       "chromebox_for_meetings/hotlog2/log_source.h",
       "chromebox_for_meetings/hotlog2/persistent_db.cc",
       "chromebox_for_meetings/hotlog2/persistent_db.h",
+      "chromebox_for_meetings/hotlog2/specialized_log_sources.cc",
+      "chromebox_for_meetings/hotlog2/specialized_log_sources.h",
       "chromebox_for_meetings/logger/cfm_logger_service.cc",
       "chromebox_for_meetings/logger/cfm_logger_service.h",
       "chromebox_for_meetings/logger/reporting_pipeline.cc",

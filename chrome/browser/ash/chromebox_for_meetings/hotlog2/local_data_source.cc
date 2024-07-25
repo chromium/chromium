@@ -210,15 +210,36 @@ void LocalDataSource::BuildLogEntryFromLogLine(
   std::string severity;
   std::string log_msg;
 
-  if (!RE2::PartialMatch(line, *kFullLogLineRegex, &timestamp, &severity,
-                         &log_msg)) {
+  RE2& regex = GetLogLineRegex();
+
+  if (!RE2::PartialMatch(line, regex, &timestamp, &severity, &log_msg)) {
     LOG(ERROR) << "Unable to parse log line properly: " << line;
     entry.set_timestamp_micros(default_timestamp);
     entry.set_severity(default_severity);
     entry.set_text_payload(line);
   } else {
-    auto time_since_epoch =
-        !timestamp.empty() ? TimestampStringToUnixTime(timestamp) : 0;
+    uint64_t time_since_epoch;
+
+    // There are three cases to consider here:
+    // 1. The timestamp is populated and was parsed properly. Pass
+    //    to TimestampStringToUnixTime() to convert to Unix epoch.
+    // 2. The source explicitly does not expect timestamps to be
+    //    present. Apply the passed-in default. Note that most (if
+    //    not all) non-incremental sources fall under this category.
+    // 3. The timestamp is not populated, and this is a data source
+    //    that expects timestamps to be present, so this line is
+    //    likely a new line from a previous log. Carry forward the
+    //    last timestamp that was recorded, plus 1 microsecond.
+    if (!timestamp.empty()) {
+      time_since_epoch = TimestampStringToUnixTime(timestamp);
+      if (time_since_epoch != 0) {
+        last_recorded_timestamp_ = time_since_epoch;
+      }
+    } else if (!AreTimestampsExpected()) {
+      time_since_epoch = default_timestamp;
+    } else {
+      time_since_epoch = ++last_recorded_timestamp_;
+    }
 
     // Use the log source and timestamp to create a unique ID that can be
     // used to identify this entry. This will aid in de-duplication on the
@@ -230,12 +251,17 @@ void LocalDataSource::BuildLogEntryFromLogLine(
 
     // Even if the match succeeded, the timestamps and severity are optional
     // matches, so supply a default if they aren't populated.
-    entry.set_timestamp_micros(timestamp.empty() ? default_timestamp
-                                                 : time_since_epoch);
+    entry.set_timestamp_micros(time_since_epoch);
     entry.set_severity(severity.empty() ? default_severity
                                         : SeverityStringToEnum(severity));
     entry.set_text_payload(log_msg);
   }
+}
+
+RE2& LocalDataSource::GetLogLineRegex() {
+  // Default regex. Data sources can override this if necessary.
+  // See notes in local_data_source.h for restrictions.
+  return *kFullLogLineRegex;
 }
 
 uint64_t LocalDataSource::TimestampStringToUnixTime(
@@ -246,6 +272,13 @@ uint64_t LocalDataSource::TimestampStringToUnixTime(
     return 0;
   }
   return (time - base::Time::UnixEpoch()).InMicroseconds();
+}
+
+bool LocalDataSource::AreTimestampsExpected() const {
+  // By default, assume that non-incremental sources will not supply
+  // timestamps, and assume the opposite for incremental sources. Data
+  // sources that do not follow this rule should override this function.
+  return is_incremental_;
 }
 
 proto::LogSeverity LocalDataSource::SeverityStringToEnum(
