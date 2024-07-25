@@ -102,6 +102,7 @@ source_set("configs") {
       "//chrome/browser/ui/webui/ash/healthd_internals",
       "//chrome/browser/ui/webui/ash/in_session_password_change",
       "//chrome/browser/ui/webui/ash/launcher_internals",
+      "//chrome/browser/ui/webui/ash/lock_screen_reauth",
       "//chrome/browser/ui/webui/ash/mako",
       "//chrome/browser/ui/webui/ash/manage_mirrorsync",
       "//chrome/browser/ui/webui/ash/multidevice_internals",
