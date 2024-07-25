@@ -21,6 +21,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -34,7 +35,7 @@
 namespace {
 
 const char histogram_name[] =
-    "Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked";
+    "Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked2";
 
 }  // namespace
 
@@ -256,7 +257,9 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   EXPECT_EQ(allowed_permission_types.size(),
             histogram_tester.GetAllSamples(histogram_name).size());
   for (const ContentSettingsType type : allowed_permission_types) {
-    histogram_tester.ExpectBucketCount(histogram_name, type, 1);
+    histogram_tester.ExpectBucketCount(
+        histogram_name,
+        content_settings_uma_util::ContentSettingTypeToHistogramValue(type), 1);
   }
 
   // Navigate to content settings page.
@@ -332,8 +335,11 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
 
   // Assert notification auto-revocation is recorded in UMA metrics.
   EXPECT_EQ(1u, histogram_tester.GetAllSamples(histogram_name).size());
-  histogram_tester.ExpectBucketCount(histogram_name,
-                                     ContentSettingsType::NOTIFICATIONS, 1);
+  histogram_tester.ExpectBucketCount(
+      histogram_name,
+      content_settings_uma_util::ContentSettingTypeToHistogramValue(
+          ContentSettingsType::NOTIFICATIONS),
+      1);
 }
 
 // Test that revocation is happen correctly when auto-revoke is on for a site

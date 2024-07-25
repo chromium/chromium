@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "content/public/browser/browser_thread.h"
@@ -207,8 +207,8 @@ void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
     default_constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());
     safety_hub_util::SetRevokedAbusiveNotificationPermission(
         hcsm_.get(), url, /*is_ignored=*/false, default_constraint);
-    base::UmaHistogramEnumeration(
-        "Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked",
+    content_settings_uma_util::RecordContentSettingsHistogram(
+        "Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked2",
         ContentSettingsType::NOTIFICATIONS);
   }
   safe_browsing_request_clients_->erase(this);
