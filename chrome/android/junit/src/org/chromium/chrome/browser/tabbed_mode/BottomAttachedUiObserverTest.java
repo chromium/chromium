@@ -26,6 +26,7 @@ import org.robolectric.Shadows;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelStateProvider;
@@ -42,6 +43,7 @@ import java.util.Optional;
 @RunWith(BaseRobolectricTestRunner.class)
 public class BottomAttachedUiObserverTest {
     private static final int BOTTOM_CONTROLS_HEIGHT = 100;
+    private static final int BOTTOM_CHIN_HEIGHT = 60;
     private static final int BROWSER_CONTROLS_COLOR = Color.RED;
     private static final int SNACKBAR_COLOR = Color.GREEN;
     private static final int OVERLAY_PANEL_COLOR = Color.BLUE;
@@ -67,6 +69,7 @@ public class BottomAttachedUiObserverTest {
     private BottomAttachedUiObserver mBottomAttachedUiObserver;
     private TestBottomUiObserver mColorChangeObserver;
 
+    @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private SnackbarManager mSnackbarManager;
 
@@ -115,6 +118,7 @@ public class BottomAttachedUiObserverTest {
 
         mBottomAttachedUiObserver =
                 new BottomAttachedUiObserver(
+                        mBottomControlsStacker,
                         mBrowserControlsStateProvider,
                         mSnackbarManager,
                         mContextualSearchManagerSupplier,
@@ -135,6 +139,9 @@ public class BottomAttachedUiObserverTest {
     @Test
     public void testAdaptsColorToBrowserControls() {
         mColorChangeObserver.assertState(null, false, false);
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(true);
 
         // Show bottom controls.
         mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
@@ -157,6 +164,19 @@ public class BottomAttachedUiObserverTest {
 
         // Hide bottom controls.
         mBottomAttachedUiObserver.onBottomControlsHeightChanged(0, 0);
+        mColorChangeObserver.assertState(null, false, false);
+    }
+
+    @Test
+    public void testAdaptsColorToBrowserControls_ignoresBottomChin() {
+        mColorChangeObserver.assertState(null, false, false);
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(false);
+
+        // Show bottom controls, but only with the bottom chin.
+        mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(BOTTOM_CHIN_HEIGHT, 0);
         mColorChangeObserver.assertState(null, false, false);
     }
 
@@ -363,6 +383,9 @@ public class BottomAttachedUiObserverTest {
         mColorChangeObserver.assertState(SNACKBAR_COLOR, false, false);
 
         // Show bottom controls.
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(true);
         mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
         mBottomAttachedUiObserver.onBottomControlsHeightChanged(BOTTOM_CONTROLS_HEIGHT, 0);
         mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);

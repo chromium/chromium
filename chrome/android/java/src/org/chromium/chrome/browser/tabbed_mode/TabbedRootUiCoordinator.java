@@ -513,6 +513,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mLayoutManagerSupplier,
                         mFullscreenManager,
                         mEdgeToEdgeControllerSupplier,
+                        mBottomControlsStacker,
                         mBrowserControlsManager,
                         mSnackbarManagerSupplier,
                         mContextualSearchManagerSupplier,

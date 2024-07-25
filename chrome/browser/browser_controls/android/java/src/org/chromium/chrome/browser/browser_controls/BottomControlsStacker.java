@@ -27,10 +27,16 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
 
     /** Enums that defines the type and position for each bottom controls. */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({LayerType.BOTTOM_TOOLBAR, LayerType.READ_ALOUD_PLAYER, LayerType.TEST_BOTTOM_LAYER})
+    @IntDef({
+        LayerType.BOTTOM_TOOLBAR,
+        LayerType.READ_ALOUD_PLAYER,
+        LayerType.BOTTOM_CHIN,
+        LayerType.TEST_BOTTOM_LAYER
+    })
     public @interface LayerType {
         int BOTTOM_TOOLBAR = 0;
         int READ_ALOUD_PLAYER = 1;
+        int BOTTOM_CHIN = 2;
 
         // Layer that's used for testing.
         int TEST_BOTTOM_LAYER = 100;
@@ -47,7 +53,10 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     // The pre-defined stack order for different bottom controls.
     private static final @LayerType int[] STACK_ORDER =
             new int[] {
-                LayerType.BOTTOM_TOOLBAR, LayerType.READ_ALOUD_PLAYER, LayerType.TEST_BOTTOM_LAYER
+                LayerType.BOTTOM_TOOLBAR,
+                LayerType.READ_ALOUD_PLAYER,
+                LayerType.BOTTOM_CHIN,
+                LayerType.TEST_BOTTOM_LAYER
             };
 
     private final SparseArray<BottomControlsLayer> mLayers = new SparseArray<>();
@@ -88,6 +97,29 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
      */
     public void removeLayer(BottomControlsLayer layer) {
         mLayers.remove(layer.getType());
+    }
+
+    /**
+     * @return The height of the given layer type, or 0 if the layer does not exist or isn't
+     *     visible.
+     */
+    public int getLayerHeight(@LayerType int type) {
+        BottomControlsLayer layer = mLayers.get(type);
+        if (layer == null || !layer.isVisible()) return 0;
+        return layer.getHeight();
+    }
+
+    /**
+     * Checks whether there are any layers that are currently visible besides the specified type.
+     */
+    public boolean hasVisibleLayersOtherThan(@LayerType int type) {
+        for (int layerType : STACK_ORDER) {
+            if (type == layerType) continue;
+
+            BottomControlsLayer layer = mLayers.get(type);
+            if (layer != null && layer.isVisible()) return true;
+        }
+        return false;
     }
 
     /**

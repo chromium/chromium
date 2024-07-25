@@ -25,6 +25,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -119,6 +120,8 @@ class TabbedNavigationBarColorController
      * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController} to detect when
      *     the UI is being drawn edge to edge so the navigation bar color can be changed
      *     appropriately.
+     * @param bottomControlsStacker The {@link BottomControlsStacker} for interacting with and
+     *     checking the state of the bottom browser controls.
      * @param browserControlsStateProvider A {@link BrowserControlsStateProvider} to watch for
      *     changes to the browser controls.
      * @param snackbarManagerSupplier Supplies a {@link SnackbarManager} to watch for snackbars
@@ -140,6 +143,7 @@ class TabbedNavigationBarColorController
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            @NonNull BottomControlsStacker bottomControlsStacker,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
@@ -157,6 +161,7 @@ class TabbedNavigationBarColorController
                 edgeToEdgeControllerSupplier,
                 ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
                         ? new BottomAttachedUiObserver(
+                                bottomControlsStacker,
                                 browserControlsStateProvider,
                                 snackbarManagerSupplier.get(),
                                 contextualSearchManagerSupplier,
@@ -560,6 +565,11 @@ class TabbedNavigationBarColorController
 
     private static boolean isNavBarColorAnimationDisabled() {
         return TabbedSystemUiCoordinator.NAV_BAR_COLOR_ANIMATION_DISABLED_CACHED_PARAM.getValue();
+    }
+
+    @Override
+    public int getNavigationBarColor() {
+        return mNavigationBarColor;
     }
 
     @Override

@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -55,6 +56,8 @@ public class TabbedSystemUiCoordinator {
      * @param fullscreenManager The {@link FullscreenManager} used for containing activity
      * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController} to detect when
      *     the UI is being drawn edge to edge.
+     * @param bottomControlsStacker The {@link BottomControlsStacker} for interacting with and
+     *     checking the state of the bottom browser controls.
      * @param browserControlsStateProvider Supplies a {@link BrowserControlsStateProvider} for the
      *     browser controls.
      * @param snackbarManagerSupplier Supplies a {@link SnackbarManager} for snackbar management.
@@ -75,6 +78,7 @@ public class TabbedSystemUiCoordinator {
             @Nullable ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            @NonNull BottomControlsStacker bottomControlsStacker,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
@@ -93,6 +97,7 @@ public class TabbedSystemUiCoordinator {
                             layoutManagerSupplier,
                             fullscreenManager,
                             edgeToEdgeControllerSupplier,
+                            bottomControlsStacker,
                             browserControlsStateProvider,
                             snackbarManagerSupplier,
                             contextualSearchManagerSupplier,
