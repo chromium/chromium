@@ -3053,6 +3053,12 @@ BASE_FEATURE(kAuthPanelUsesOnlyPassword,
              "AuthPanelUsesOnlyPassword",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This features controls the ActiveSessionAuth UI is enabled for authentication
+// on ChromeOS settings and password manager.
+BASE_FEATURE(kActiveSessionAuth,
+             "ActiveSessionAuth",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This features controls whether or not passwordless setup is enabled, such as
 // having a pin-only config.
 BASE_FEATURE(kAllowPasswordlessSetup,
@@ -4944,6 +4950,10 @@ bool IsAuthPanelUsingOnlyPassword() {
 
 bool IsAllowPasswordlessSetupEnabled() {
   return base::FeatureList::IsEnabled(kAllowPasswordlessSetup);
+}
+
+bool IsActiveSessionAuthEnabled() {
+  return base::FeatureList::IsEnabled(kActiveSessionAuth);
 }
 
 bool ShouldEnterOverviewFromWallpaper() {

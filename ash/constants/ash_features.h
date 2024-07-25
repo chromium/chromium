@@ -982,6 +982,8 @@ BASE_DECLARE_FEATURE(kUseAuthPanelInSettings);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kAuthPanelUsesOnlyPassword);
 BASE_DECLARE_FEATURE(kAllowPasswordlessSetup);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kActiveSessionAuth);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kUseLoginShelfWidget);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kUseMessagesStagingUrl);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1447,6 +1449,7 @@ bool IsUnmanagedDeviceDeviceTrustConnectorFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUseAuthPanelInPasswordManagerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUseAuthPanelInSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAuthPanelUsingOnlyPassword();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsActiveSessionAuthEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUserEducationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLiveCaptionUserMicrophoneEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUpstreamTrustedReportsFirmwareEnabled();

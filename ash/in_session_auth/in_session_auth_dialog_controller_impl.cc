@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/in_session_auth/authentication_dialog.h"
 #include "ash/in_session_auth/in_session_auth_dialog_contents_view.h"
+#include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "ash/public/cpp/webauthn_dialog_controller.h"
@@ -124,6 +125,10 @@ void InSessionAuthDialogControllerImpl::ShowAuthDialog(
   auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
   DCHECK(account_id.is_valid());
   DCHECK_NE(auth_token_provider_, nullptr);
+  // Auth panel and Active session auth shouldn't be enabled the same time.
+  CHECK(!((features::IsUseAuthPanelInPasswordManagerEnabled() ||
+           features::IsUseAuthPanelInSettingsEnabled()) &&
+          features::IsActiveSessionAuthEnabled()));
 
   if (reason == Reason::kAccessPasswordManager &&
       features::IsUseAuthPanelInPasswordManagerEnabled()) {
@@ -133,6 +138,16 @@ void InSessionAuthDialogControllerImpl::ShowAuthDialog(
              features::IsUseAuthPanelInSettingsEnabled()) {
     CreateAndShowAuthPanel(prompt, std::move(on_auth_complete), reason,
                            account_id);
+  } else if (reason == Reason::kAccessPasswordManager &&
+             features::IsActiveSessionAuthEnabled()) {
+    Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
+        ActiveSessionAuthController::Reason::kPasswordManager, account_id,
+        std::move(on_auth_complete));
+  } else if (reason == Reason::kAccessAuthenticationSettings &&
+             features::IsActiveSessionAuthEnabled()) {
+    Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
+        ActiveSessionAuthController::Reason::kSettings, account_id,
+        std::move(on_auth_complete));
   } else {
     // We don't manage the lifetime of `AuthenticationDialog` here.
     // `AuthenticatonDialog` is-a View and it is instead owned by it's widget,
