@@ -2617,8 +2617,6 @@ static_library("ui") {
       "webui/ash/onc_import_message_handler.h",
       "webui/ash/power_ui.cc",
       "webui/ash/power_ui.h",
-      "webui/ash/print_preview_cros/print_preview_cros_dialog.cc",
-      "webui/ash/print_preview_cros/print_preview_cros_dialog.h",
       "webui/ash/remote_maintenance_curtain_ui.cc",
       "webui/ash/remote_maintenance_curtain_ui.h",
       "webui/ash/sanitize_dialog.cc",
@@ -3158,6 +3156,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ash/emoji",
       "//chrome/browser/ui/webui/ash/office_fallback",
       "//chrome/browser/ui/webui/ash/parent_access",
+      "//chrome/browser/ui/webui/ash/print_preview_cros",
       "//chrome/browser/ui/webui/ash/skyvault",
       "//chrome/browser/ui/webui/ash/sys_internals",
       "//chrome/browser/ui/webui/ash/vc_tray_tester",
@@ -3532,6 +3531,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ash/emoji",
       "//chrome/browser/ui/webui/ash/office_fallback",
       "//chrome/browser/ui/webui/ash/parent_access",
+      "//chrome/browser/ui/webui/ash/print_preview_cros",
       "//chrome/browser/ui/webui/ash/skyvault",
     ]
 
