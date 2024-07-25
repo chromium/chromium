@@ -4,6 +4,7 @@
 
 #include "services/on_device_model/ml/chrome_ml.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/base_paths.h"
@@ -109,31 +110,19 @@ void RecordCustomCountsHistogram(const char* name,
 
 }  // namespace
 
-ChromeML::ChromeML(base::PassKey<ChromeML>,
-                   base::ScopedNativeLibrary library,
-                   const ChromeMLAPI* api)
+ChromeMLHolder::ChromeMLHolder(base::PassKey<ChromeMLHolder>,
+                               base::ScopedNativeLibrary library,
+                               const ChromeMLAPI* api)
     : library_(std::move(library)), api_(api) {
   CHECK(api_);
 }
 
-ChromeML::~ChromeML() = default;
-
-// static
-ChromeML* ChromeML::Get(const std::optional<std::string>& library_name) {
-  static base::NoDestructor<std::unique_ptr<ChromeML>> chrome_ml{
-      Create(library_name)};
-  return chrome_ml->get();
-}
+ChromeMLHolder::~ChromeMLHolder() = default;
 
 // static
 DISABLE_CFI_DLSYM
-std::unique_ptr<ChromeML> ChromeML::Create(
+std::optional<ChromeMLHolder> ChromeMLHolder::Create(
     const std::optional<std::string>& library_name) {
-  // Log GPU info for crash reports.
-  gpu::GPUInfo gpu_info;
-  gpu::CollectBasicGraphicsInfo(&gpu_info);
-  gpu::SetKeysForCrashLogging(gpu_info);
-
   base::NativeLibraryLoadError error;
   base::FilePath base_dir;
 #if !BUILDFLAG(IS_ANDROID)
@@ -166,26 +155,59 @@ std::unique_ptr<ChromeML> ChromeML::Create(
 
   const ChromeMLAPI* api = get_api();
   if (!api) {
+    LOG(ERROR) << "GetChromeMLAPI() returned null.";
     return {};
   }
 
-  dawnProcSetProcs(&dawn::native::GetProcs());
-  api->InitDawnProcs(dawn::native::GetProcs());
-  if (api->SetFatalErrorFn) {
-    api->SetFatalErrorFn(&FatalGpuErrorFn);
+  return std::make_optional<ChromeMLHolder>(base::PassKey<ChromeMLHolder>(),
+                                            std::move(scoped_library), api);
+}
+
+ChromeML::ChromeML(base::PassKey<ChromeML>, ChromeMLHolder holder)
+    : holder_(std::move(holder)) {}
+
+ChromeML::~ChromeML() = default;
+
+// static
+ChromeML* ChromeML::Get(const std::optional<std::string>& library_name) {
+  static base::NoDestructor<std::unique_ptr<ChromeML>> chrome_ml{
+      Create(library_name)};
+  return chrome_ml->get();
+}
+
+// static
+DISABLE_CFI_DLSYM
+std::unique_ptr<ChromeML> ChromeML::Create(
+    const std::optional<std::string>& library_name) {
+  // Log GPU info for crash reports.
+  gpu::GPUInfo gpu_info;
+  gpu::CollectBasicGraphicsInfo(&gpu_info);
+  gpu::SetKeysForCrashLogging(gpu_info);
+
+  std::optional<ChromeMLHolder> holder = ChromeMLHolder::Create(library_name);
+  if (!holder) {
+    return {};
   }
-  if (api->SetMetricsFns) {
+
+  auto& api = holder->api();
+
+  dawnProcSetProcs(&dawn::native::GetProcs());
+  api.InitDawnProcs(dawn::native::GetProcs());
+  if (api.SetFatalErrorFn) {
+    api.SetFatalErrorFn(&FatalGpuErrorFn);
+  }
+  if (api.SetMetricsFns) {
     const ChromeMLMetricsFns metrics_fns{
         .RecordExactLinearHistogram = &RecordExactLinearHistogram,
         .RecordCustomCountsHistogram = &RecordCustomCountsHistogram,
     };
-    api->SetMetricsFns(&metrics_fns);
+    api.SetMetricsFns(&metrics_fns);
   }
-  if (api->SetFatalErrorNonGpuFn) {
-    api->SetFatalErrorNonGpuFn(&FatalErrorFn);
+  if (api.SetFatalErrorNonGpuFn) {
+    api.SetFatalErrorNonGpuFn(&FatalErrorFn);
   }
   return std::make_unique<ChromeML>(base::PassKey<ChromeML>(),
-                                    std::move(scoped_library), api);
+                                    std::move(*holder));
 }
 
 DISABLE_CFI_DLSYM
