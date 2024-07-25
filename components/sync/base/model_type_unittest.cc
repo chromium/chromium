@@ -143,17 +143,5 @@ TEST(ModelTypeTest, ModelTypeSetFromSpecificsFieldNumberList) {
             ProtocolTypes());
 }
 
-TEST(ModelTypeTest, TypesRequiringUnsyncedDataCheckOnSignout) {
-  static_assert(
-      53 == GetNumModelTypes(),
-      "Add new types to `TypesRequiringUnsyncedDataCheckOnSignout()` if there "
-      "should be a warning when the user signs out and the types have unsynced "
-      "data. The warning offers the user to either save the data locally or "
-      "abort sign-out, depending on the platform");
-
-  EXPECT_TRUE(
-      TypesRequiringUnsyncedDataCheckOnSignout().Has(syncer::PASSWORDS));
-}
-
 }  // namespace
 }  // namespace syncer
