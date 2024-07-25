@@ -64,6 +64,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
                                    IDS_CLEAR_BROWSING_DATA_CALCULATING)]);
     OCMStub([consumer_ setShouldShowFooter:NO]);
     OCMStub([consumer_ setHistorySelection:NO]);
+    OCMStub([consumer_ setSiteDataSelection:NO]);
     OCMStub([consumer_ setAutofillSelection:NO]);
 
     fake_browsing_data_counter_wrapper_producer_ =

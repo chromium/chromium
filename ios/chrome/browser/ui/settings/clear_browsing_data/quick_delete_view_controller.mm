@@ -301,6 +301,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // TODO(crbug.com/341107834): Refactor summary using this type selection.
 }
 
+- (void)setSiteDataSelection:(BOOL)selected {
+  // TODO(crbug.com/341107834): Refactor summary using this type selection.
+}
+
 - (void)setAutofillSelection:(BOOL)selected {
   // TODO(crbug.com/341107834): Refactor summary using this type selection.
 }

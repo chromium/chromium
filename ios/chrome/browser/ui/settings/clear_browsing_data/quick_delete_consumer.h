@@ -36,6 +36,9 @@ enum class TimePeriod;
 // Sets the boolean value for the history pref selection.
 - (void)setHistorySelection:(BOOL)selected;
 
+// Sets the boolean value for the site data pref selection.
+- (void)setSiteDataSelection:(BOOL)selected;
+
 // Sets the boolean value for the autofill pref selection.
 - (void)setAutofillSelection:(BOOL)selected;
 

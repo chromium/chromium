@@ -110,6 +110,8 @@
   [_consumer
       setHistorySelection:_prefs->GetBoolean(
                               browsing_data::prefs::kDeleteBrowsingHistory)];
+  [_consumer setSiteDataSelection:_prefs->GetBoolean(
+                                      browsing_data::prefs::kDeleteCookies)];
   [_consumer setAutofillSelection:_prefs->GetBoolean(
                                       browsing_data::prefs::kDeleteFormData)];
 
@@ -191,6 +193,10 @@
 
 - (void)updateHistorySelection:(BOOL)selected {
   _prefs->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, selected);
+}
+
+- (void)updateSiteDataSelection:(BOOL)selected {
+  _prefs->SetBoolean(browsing_data::prefs::kDeleteCookies, selected);
 }
 
 - (void)updateAutofillSelection:(BOOL)selected {

@@ -31,6 +31,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // Item identifiers in the browsing data page table view.
 typedef NS_ENUM(NSInteger, ItemIdentifier) {
   ItemIdentifierHistory = kItemTypeEnumZero,
+  ItemIdentifierSiteData,
   ItemIdentifierAutofill,
 };
 
@@ -41,6 +42,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   NSString* _historySummary;
   NSString* _autofillSummary;
   BOOL _historySelected;
+  BOOL _siteDataSelected;
   BOOL _autofillSelected;
 }
 
@@ -84,7 +86,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [snapshot
       appendSectionsWithIdentifiers:@[ @(SectionIdentifierBrowsingData) ]];
   [snapshot appendItemsWithIdentifiers:@[
-    @(ItemIdentifierHistory), @(ItemIdentifierAutofill)
+    @(ItemIdentifierHistory), @(ItemIdentifierSiteData),
+    @(ItemIdentifierAutofill)
   ]
              intoSectionWithIdentifier:@(SectionIdentifierBrowsingData)];
 
@@ -138,6 +141,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [self updateSnapshotForItemIdentifier:ItemIdentifierHistory];
 }
 
+- (void)setSiteDataSelection:(BOOL)selected {
+  _siteDataSelected = selected;
+  [self updateSnapshotForItemIdentifier:ItemIdentifierSiteData];
+}
+
 - (void)setAutofillSelection:(BOOL)selected {
   _autofillSelected = selected;
   [self updateSnapshotForItemIdentifier:ItemIdentifierAutofill];
@@ -183,6 +191,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 // selection.
 - (void)onConfirm:(id)sender {
   [_mutator updateHistorySelection:_historySelected];
+  [_mutator updateSiteDataSelection:_siteDataSelected];
   [_mutator updateAutofillSelection:_autofillSelected];
   // TODO(crbug.com/341107834): Update changes in data types selection here.
   [_delegate dismissBrowsingDataPage];
@@ -235,6 +244,17 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                          selected:_historySelected
           accessibilityIdentifier:kQuickDeleteBrowsingDataHistoryIdentifier];
     }
+    case ItemIdentifierSiteData: {
+      // Because there is no counter for site data, an explanatory text is
+      // displayed.
+      return [self
+              createCellWithTitle:l10n_util::GetNSString(IDS_IOS_CLEAR_COOKIES)
+                          summary:l10n_util::GetNSString(
+                                      IDS_DEL_COOKIES_COUNTER)
+                             icon:[self iconForItemIdentifier:itemIdentifier]
+                         selected:_siteDataSelected
+          accessibilityIdentifier:kQuickDeleteBrowsingDataSiteDataIdentifier];
+    }
     case ItemIdentifierAutofill: {
       return [self
               createCellWithTitle:l10n_util::GetNSString(IDS_IOS_CLEAR_AUTOFILL)
@@ -261,6 +281,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       _historySelected = !_historySelected;
       break;
     }
+    case ItemIdentifierSiteData: {
+      _siteDataSelected = !_siteDataSelected;
+      break;
+    }
     case ItemIdentifierAutofill: {
       _autofillSelected = !_autofillSelected;
       break;
@@ -275,6 +299,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   switch (itemIdentifier) {
     case ItemIdentifierHistory: {
       return DefaultSymbolTemplateWithPointSize(kHistorySymbol,
+                                                kDefaultSymbolSize);
+    }
+    case ItemIdentifierSiteData: {
+      return DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
                                                 kDefaultSymbolSize);
     }
     case ItemIdentifierAutofill: {
