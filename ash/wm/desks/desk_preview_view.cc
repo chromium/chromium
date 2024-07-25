@@ -538,7 +538,7 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
       std::make_unique<ui::LayerTreeOwner>(
           std::move(mirrored_content_root_layer));
 
-  DeprecatedLayoutImmediately();
+  InvalidateLayout();
 }
 
 void DeskPreviewView::Close(bool primary_action) {
