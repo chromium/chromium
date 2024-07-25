@@ -676,9 +676,15 @@ IsolatedWebAppBuilder::BuildBundle() {
 
 std::unique_ptr<ScopedBundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
     const web_package::WebBundleSigner::KeyPair& key_pair) {
+  return BuildBundle(CreateSignedWebBundleIdFromKeyPair(key_pair), {key_pair});
+}
+
+std::unique_ptr<ScopedBundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const std::vector<web_package::WebBundleSigner::KeyPair>& key_pairs) {
   return ScopedBundledIsolatedWebApp::Create(
-      CreateSignedWebBundleIdFromKeyPair(key_pair),
-      BuildInMemoryBundle(key_pair), manifest_builder_);
+      web_bundle_id, BuildInMemoryBundle(web_bundle_id, key_pairs),
+      manifest_builder_);
 }
 
 std::unique_ptr<BundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
@@ -691,13 +697,22 @@ std::unique_ptr<BundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
 std::unique_ptr<BundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
     const base::FilePath& bundle_path,
     const web_package::WebBundleSigner::KeyPair& key_pair) {
-  return std::make_unique<BundledIsolatedWebApp>(
-      CreateSignedWebBundleIdFromKeyPair(key_pair),
-      BuildInMemoryBundle(key_pair), bundle_path, manifest_builder_);
+  return BuildBundle(bundle_path, CreateSignedWebBundleIdFromKeyPair(key_pair),
+                     {key_pair});
 }
 
-std::vector<uint8_t> IsolatedWebAppBuilder::BuildInMemoryBundle(
-    const web_package::WebBundleSigner::KeyPair& key_pair) {
+std::unique_ptr<BundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
+    const base::FilePath& bundle_path,
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const std::vector<web_package::WebBundleSigner::KeyPair>& key_pairs) {
+  return std::make_unique<BundledIsolatedWebApp>(
+      web_bundle_id, BuildInMemoryBundle(web_bundle_id, key_pairs), bundle_path,
+      manifest_builder_);
+}
+
+std::vector<uint8_t> IsolatedWebAppBuilder ::BuildInMemoryBundle(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const std::vector<web_package::WebBundleSigner::KeyPair>& key_pairs) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   Validate();
   web_package::WebBundleBuilder builder;
@@ -724,8 +739,9 @@ std::vector<uint8_t> IsolatedWebAppBuilder::BuildInMemoryBundle(
       {{":status", "200"}, {"content-type", "application/manifest+json"}},
       manifest_builder_.ToJson());
 
-  return web_package::WebBundleSigner::SignBundle(builder.CreateBundle(),
-                                                  {key_pair});
+  return web_package::WebBundleSigner::SignBundle(
+      builder.CreateBundle(), key_pairs,
+      {{.web_bundle_id = web_bundle_id.id()}});
 }
 
 void IsolatedWebAppBuilder::Validate() {

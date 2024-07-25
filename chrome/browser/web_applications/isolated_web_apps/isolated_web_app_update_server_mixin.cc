@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
@@ -58,8 +59,11 @@ void IsolatedWebAppUpdateServerMixin::SetUpFilesAndServer() {
   iwa_server_.ServeFilesFromDirectory(temp_dir_);
   EXPECT_TRUE(iwa_server_.Start());
 
+  auto ed25519_kp = test::GetDefaultEd25519KeyPair();
+  auto ecdsa_p256_kp = test::GetDefaultEcdsaP256KeyPair();
+
   auto bundle_id =
-      web_package::SignedWebBundleId::CreateForPublicKey(key_pair_.public_key);
+      web_package::SignedWebBundleId::CreateForPublicKey(ed25519_kp.public_key);
   url_info_ = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id);
 
   auto builder = IsolatedWebAppBuilder(
@@ -72,7 +76,8 @@ void IsolatedWebAppUpdateServerMixin::SetUpFilesAndServer() {
           <h1>Hello from version 1.0.0</h1>
         </body>)");
   base::FilePath bundle_path = temp_dir_.Append(kBundleFileName);
-  bundle_ = builder.BuildBundle(bundle_path, key_pair_);
+  bundle_ =
+      builder.BuildBundle(bundle_path, bundle_id, {ed25519_kp, ecdsa_p256_kp});
   bundle_->TrustSigningKey();
 
   EXPECT_TRUE(base::WriteFile(

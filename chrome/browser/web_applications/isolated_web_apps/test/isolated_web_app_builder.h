@@ -296,6 +296,11 @@ class IsolatedWebAppBuilder {
   [[nodiscard]] std::unique_ptr<ScopedBundledIsolatedWebApp> BuildBundle(
       const web_package::WebBundleSigner::KeyPair& key_pair);
 
+  // Creates and signs a .swbn file on disk containing the app's contents.
+  [[nodiscard]] std::unique_ptr<ScopedBundledIsolatedWebApp> BuildBundle(
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const std::vector<web_package::WebBundleSigner::KeyPair>& key_pairs);
+
   // Creates and signs a .swbn file on disk containing the app's contents. The
   // location of the bundle must be provided in `bundle_path`. A random signing
   // key will be created and used to sign the bundle.
@@ -307,6 +312,13 @@ class IsolatedWebAppBuilder {
   std::unique_ptr<BundledIsolatedWebApp> BuildBundle(
       const base::FilePath& bundle_path,
       const web_package::WebBundleSigner::KeyPair& key_pair);
+
+  // Creates and signs a .swbn file on disk containing the app's contents. The
+  // location of the bundle must be provided in `bundle_path`.
+  std::unique_ptr<BundledIsolatedWebApp> BuildBundle(
+      const base::FilePath& bundle_path,
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const std::vector<web_package::WebBundleSigner::KeyPair>& key_pairs);
 
  private:
   using ResourceBody = absl::variant<base::FilePath, std::string>;
@@ -336,7 +348,8 @@ class IsolatedWebAppBuilder {
       const net::test_server::HttpRequest& request);
 
   std::vector<uint8_t> BuildInMemoryBundle(
-      const web_package::WebBundleSigner::KeyPair& key_pair);
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const std::vector<web_package::WebBundleSigner::KeyPair>& key_pairs);
 
   void Validate();
 
