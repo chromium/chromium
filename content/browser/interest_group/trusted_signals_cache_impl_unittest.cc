@@ -34,8 +34,8 @@ namespace {
 
 // Generic success/error strings used in most tests.
 const char kSuccessBody[] = "Successful result";
-const char kOtherSuccessBody[] = "Other sucessful result";
-const char kSomeOtherSuccessBody[] = "Some other sucessful result";
+const char kOtherSuccessBody[] = "Other successful result";
+const char kSomeOtherSuccessBody[] = "Some other successful result";
 const char kErrorMessage[] = "Error message";
 
 // The error message received when a compression group is requested over the
@@ -59,7 +59,7 @@ struct BiddingParams {
   blink::mojom::InterestGroup_ExecutionMode execution_mode =
       blink::mojom::InterestGroup_ExecutionMode::kCompatibilityMode;
   url::Origin joining_origin;
-  GURL trusted_bidding_signals_url;
+  GURL trusted_signals_url;
   std::optional<std::vector<std::string>> trusted_bidding_signals_keys;
   base::Value::Dict additional_params;
 };
@@ -71,7 +71,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
   class TestTrustedSignalsFetcher : public TrustedSignalsFetcher {
    public:
     struct PendingBiddingSignalsFetch {
-      GURL trusted_bidding_signals_url;
+      GURL trusted_signals_url;
       std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>
           compression_groups;
       TrustedSignalsFetcher::Callback callback;
@@ -89,7 +89,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 
    private:
     void FetchBiddingSignals(
-        const GURL& trusted_bidding_signals_url,
+        const GURL& trusted_signals_url,
         const std::map<int, std::vector<BiddingPartition>>& compression_groups,
         Callback callback) override {
       // This class is single use. Make sure a Fetcher isn't used more than
@@ -121,7 +121,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       }
 
       cache_->OnPendingFetch(PendingBiddingSignalsFetch(
-          trusted_bidding_signals_url, std::move(compression_groups_copy),
+          trusted_signals_url, std::move(compression_groups_copy),
           std::move(callback), weak_ptr_factory_.GetWeakPtr()));
     }
 
@@ -187,7 +187,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 };
 
 // Validates that `partition` has a single partition corresponding to the
-// params in `params`.
+// BiddingParams in `params`.
 void ValidateFetchParamsForPartition(
     const TrustedSignalsFetcher::BiddingPartition& partition,
     const BiddingParams& params,
@@ -201,6 +201,7 @@ void ValidateFetchParamsForPartition(
     EXPECT_THAT(partition.keys, testing::UnorderedElementsAreArray(
                                     *params.trusted_bidding_signals_keys));
   }
+  EXPECT_EQ(partition.additional_params, params.additional_params);
   EXPECT_EQ(partition.partition_id, expected_partition_id);
 }
 
@@ -227,8 +228,8 @@ void ValidateFetchParams(
     const BiddingParams& params,
     int expected_compression_group_id,
     int expected_partition_id) {
-  EXPECT_EQ(trusted_bidding_signals_fetch.trusted_bidding_signals_url,
-            params.trusted_bidding_signals_url);
+  EXPECT_EQ(trusted_bidding_signals_fetch.trusted_signals_url,
+            params.trusted_signals_url);
   ASSERT_EQ(trusted_bidding_signals_fetch.compression_groups.size(), 1u);
   EXPECT_EQ(trusted_bidding_signals_fetch.compression_groups.begin()->first,
             expected_compression_group_id);
@@ -460,7 +461,7 @@ class TrustedSignalsCacheTest : public testing::Test {
     out.execution_mode =
         blink::mojom::InterestGroup_ExecutionMode::kCompatibilityMode;
     out.joining_origin = kJoiningOrigin;
-    out.trusted_bidding_signals_url = kTrustedBiddingSignalsUrl;
+    out.trusted_signals_url = kTrustedBiddingSignalsUrl;
     out.trusted_bidding_signals_keys = {{"key1", "key2"}};
     return out;
   }
@@ -502,7 +503,7 @@ class TrustedSignalsCacheTest : public testing::Test {
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Different trusted bidding signals URLs";
     out.back().request_relation = RequestRelation::kDifferentFetches;
-    out.back().bidding_params2.trusted_bidding_signals_url =
+    out.back().bidding_params2.trusted_signals_url =
         GURL("https://other.bidder.test/signals");
 
     out.emplace_back(CreateDefaultTestCase());
@@ -639,8 +640,8 @@ class TrustedSignalsCacheTest : public testing::Test {
     EXPECT_EQ(bidding_params1.bidder, bidding_params2.bidder);
     EXPECT_EQ(bidding_params1.execution_mode, bidding_params2.execution_mode);
     EXPECT_EQ(bidding_params1.joining_origin, bidding_params2.joining_origin);
-    EXPECT_EQ(bidding_params1.trusted_bidding_signals_url,
-              bidding_params2.trusted_bidding_signals_url);
+    EXPECT_EQ(bidding_params1.trusted_signals_url,
+              bidding_params2.trusted_signals_url);
     EXPECT_EQ(bidding_params1.additional_params,
               bidding_params2.additional_params);
 
@@ -650,7 +651,7 @@ class TrustedSignalsCacheTest : public testing::Test {
         bidding_params1.interest_group_names,
         bidding_params1.execution_mode,
         bidding_params1.joining_origin,
-        bidding_params1.trusted_bidding_signals_url,
+        bidding_params1.trusted_signals_url,
         bidding_params1.trusted_bidding_signals_keys,
         bidding_params1.additional_params.Clone()};
 
@@ -684,7 +685,7 @@ class TrustedSignalsCacheTest : public testing::Test {
         bidding_params.main_frame_origin, bidding_params.bidder,
         *bidding_params.interest_group_names.begin(),
         bidding_params.execution_mode, bidding_params.joining_origin,
-        bidding_params.trusted_bidding_signals_url,
+        bidding_params.trusted_signals_url,
         bidding_params.trusted_bidding_signals_keys,
         bidding_params.additional_params.Clone(), partition_id);
 
@@ -1229,8 +1230,7 @@ TEST_F(TrustedSignalsCacheTest,
   EXPECT_NE(partition_id1, partition_id2);
   auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
 
-  EXPECT_EQ(fetch.trusted_bidding_signals_url,
-            bidding_params1.trusted_bidding_signals_url);
+  EXPECT_EQ(fetch.trusted_signals_url, bidding_params1.trusted_signals_url);
   ASSERT_EQ(fetch.compression_groups.size(), 1u);
   EXPECT_EQ(fetch.compression_groups.begin()->first, 0);
 
@@ -1315,8 +1315,7 @@ TEST_F(
             handle2->compression_group_token());
   auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
 
-  EXPECT_EQ(fetch.trusted_bidding_signals_url,
-            bidding_params1.trusted_bidding_signals_url);
+  EXPECT_EQ(fetch.trusted_signals_url, bidding_params1.trusted_signals_url);
   ASSERT_EQ(fetch.compression_groups.size(), 2u);
 
   // Compression groups are appended in FIFO order.
@@ -1471,8 +1470,7 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsOneCompressionGroupMissing) {
               handle2->compression_group_token());
 
     auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-    EXPECT_EQ(fetch.trusted_bidding_signals_url,
-              bidding_params1.trusted_bidding_signals_url);
+    EXPECT_EQ(fetch.trusted_signals_url, bidding_params1.trusted_signals_url);
     ASSERT_EQ(fetch.compression_groups.size(), 2u);
 
     // Remove missing compression group from the request, and generate a valid
@@ -1555,8 +1553,8 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsDifferentParamsBeforeFetchStart) {
                   handle2->compression_group_token());
         auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
 
-        EXPECT_EQ(fetch.trusted_bidding_signals_url,
-                  bidding_params1.trusted_bidding_signals_url);
+        EXPECT_EQ(fetch.trusted_signals_url,
+                  bidding_params1.trusted_signals_url);
         ASSERT_EQ(fetch.compression_groups.size(), 2u);
 
         // Compression groups are appended in FIFO order.
@@ -1583,8 +1581,8 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsDifferentParamsBeforeFetchStart) {
         EXPECT_NE(partition_id1, partition_id2);
         auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
 
-        EXPECT_EQ(fetch.trusted_bidding_signals_url,
-                  bidding_params1.trusted_bidding_signals_url);
+        EXPECT_EQ(fetch.trusted_signals_url,
+                  bidding_params1.trusted_signals_url);
         ASSERT_EQ(fetch.compression_groups.size(), 1u);
         EXPECT_EQ(fetch.compression_groups.begin()->first, 0);
 
@@ -1836,8 +1834,8 @@ TEST_F(TrustedSignalsCacheTest,
       }
 
       case RequestRelation::kDifferentPartitions: {
-        EXPECT_EQ(fetch1.trusted_bidding_signals_url,
-                  bidding_params1.trusted_bidding_signals_url);
+        EXPECT_EQ(fetch1.trusted_signals_url,
+                  bidding_params1.trusted_signals_url);
         ASSERT_EQ(fetch1.compression_groups.size(), 1u);
         EXPECT_EQ(fetch1.compression_groups.begin()->first, 0);
 
@@ -1952,8 +1950,8 @@ TEST_F(TrustedSignalsCacheTest,
       }
 
       case RequestRelation::kDifferentPartitions: {
-        EXPECT_EQ(fetch1.trusted_bidding_signals_url,
-                  bidding_params2.trusted_bidding_signals_url);
+        EXPECT_EQ(fetch1.trusted_signals_url,
+                  bidding_params2.trusted_signals_url);
         ASSERT_EQ(fetch1.compression_groups.size(), 1u);
         EXPECT_EQ(fetch1.compression_groups.begin()->first, 0);
 
@@ -2087,8 +2085,8 @@ TEST_F(TrustedSignalsCacheTest,
                   handle2->compression_group_token());
         auto fetch1 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
 
-        EXPECT_EQ(fetch1.trusted_bidding_signals_url,
-                  bidding_params1.trusted_bidding_signals_url);
+        EXPECT_EQ(fetch1.trusted_signals_url,
+                  bidding_params1.trusted_signals_url);
         ASSERT_EQ(fetch1.compression_groups.size(), 2u);
 
         // Compression groups are appended in FIFO order.
@@ -2143,8 +2141,8 @@ TEST_F(TrustedSignalsCacheTest,
         EXPECT_NE(partition_id1, partition_id2);
         auto fetch1 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
 
-        EXPECT_EQ(fetch1.trusted_bidding_signals_url,
-                  bidding_params1.trusted_bidding_signals_url);
+        EXPECT_EQ(fetch1.trusted_signals_url,
+                  bidding_params1.trusted_signals_url);
         ASSERT_EQ(fetch1.compression_groups.size(), 1u);
         EXPECT_EQ(fetch1.compression_groups.begin()->first, 0);
 
