@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
@@ -120,9 +121,16 @@ void SharedStorageWorklet::AddModuleHelper(
     return;
   }
 
-  // In an opaque origin context, addModule() is not allowed, but
-  // createWorklet() is allowed.
-  if (!resolve_to_worklet &&
+  // An opaque data origin is not allowed. Here we reject the case where the
+  // context origin is opaque and used as the data origin. Below we will address
+  // the case where the script origin is opaque and used as the data origin.
+  bool use_script_origin_as_data_origin =
+      resolve_to_worklet &&
+      (!base::FeatureList::IsEnabled(
+           features::kSharedStorageCreateWorkletUseContextOriginByDefault) ||
+       data_origin_type == SharedStorageDataOrigin::kScriptOrigin);
+
+  if (!use_script_origin_as_data_origin &&
       execution_context->GetSecurityOrigin()->IsOpaque()) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
@@ -149,8 +157,8 @@ void SharedStorageWorklet::AddModuleHelper(
           script_security_origin.get())) {
     // This `addModule()` call could be affected by the breaking change
     // proposed in https://github.com/WICG/shared-storage/pull/158 and now
-    // partially implemented behind
-    // `blink::features::kSharedStorageCrossOriginScript`. Measure its usage.
+    // implemented behind `blink::features::kSharedStorageCrossOriginScript`.
+    // Measure its usage.
     execution_context->CountUse(
         WebFeature::kSharedStorageAPI_AddModule_CrossOriginScript);
   }
@@ -179,27 +187,26 @@ void SharedStorageWorklet::AddModuleHelper(
       !execution_context->GetSecurityOrigin()->IsSameOriginWith(
           script_security_origin.get()) &&
       data_origin_type != SharedStorageDataOrigin::kScriptOrigin) {
-    // This `createWorklet()` call would be affected by the breaking change
-    // proposed in https://github.com/WICG/shared-storage/pull/158. Increment
-    // the use counter.
+    // This `createWorklet()` call could be affected by the breaking change
+    // proposed in https://github.com/WICG/shared-storage/pull/158 and now
+    // implemented behind
+    // `blink::features::kSharedStorageCreateWorkletUseContextOriginByDefault`.
+    // Increment the use counter.
     execution_context->CountUse(
         WebFeature::
             kSharedStorageAPI_CreateWorklet_CrossOriginScriptDefaultDataOrigin);
   }
 
-  // TODO(crbug.com/348445878): Make the `dataOrigin` option (which is parsed
-  // into `data_origin_type` in `SharedStorage::createWorklet()`) live for
-  // createWorklet after we determine what its default behavior should be.
-
-  // Currently the origin used for `PermissionsPolicy` and shared storage data
-  // access is the module script's origin for `createWorklet()`, and the
-  // invoking context's origin for `addModule()`.
   scoped_refptr<SecurityOrigin> shared_storage_security_origin =
-      resolve_to_worklet
+      use_script_origin_as_data_origin
           ? script_security_origin->IsolatedCopy()
           : execution_context->GetSecurityOrigin()->IsolatedCopy();
 
-  if (shared_storage_security_origin->IsOpaque()) {
+  // Opaque data origins are not allowed. Earlier we rejected the case where the
+  // context origin was both opaque and used as the data origin. Here we reject
+  // the case where the script origin is opaque and used as the data origin.
+  if (use_script_origin_as_data_origin &&
+      shared_storage_security_origin->IsOpaque()) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
         kOpaqueDataOriginCheckErrorMessage));
