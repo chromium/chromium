@@ -219,6 +219,13 @@ export function isLidClosed(): boolean {
 }
 
 /**
+ * Checks if the sw privacy switch is on.
+ */
+export function isSWPrivacySwitchOn(): boolean {
+  return state.get(state.State.SW_PRIVACY_SWITCH_ON);
+}
+
+/**
  * Toggle checked value of element.
  */
 export function toggleChecked(

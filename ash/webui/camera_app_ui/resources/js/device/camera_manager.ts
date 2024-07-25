@@ -248,9 +248,15 @@ export class CameraManager implements EventListener {
     function setLidClosed(lidState: LidState) {
       state.set(state.State.LID_CLOSED, lidState === LidState.kClosed);
     }
-
     const lidState = await helper.initLidStateMonitor(setLidClosed);
     setLidClosed(lidState);
+
+    function setSWPirvacySwitchOn(isSWPrivacySwitchOn: boolean) {
+      state.set(state.State.SW_PRIVACY_SWITCH_ON, isSWPrivacySwitchOn);
+    }
+    const isSWPrivacySwitchOn =
+        await helper.initSWPrivacySwitchMonitor(setSWPirvacySwitchOn);
+    setSWPirvacySwitchOn(isSWPrivacySwitchOn);
 
     const handleScreenLockedChange = async (isScreenLocked: boolean) => {
       this.locked = isScreenLocked;

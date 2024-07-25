@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "components/onc/onc_constants.h"
 #include "content/public/browser/web_contents.h"
+#include "media/capture/video/chromeos/camera_sw_privacy_switch_state_observer.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/url_util.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
@@ -217,6 +218,11 @@ CameraAppHelperImpl::CameraAppHelperImpl(
   window->SetProperty(kCanConsumeSystemKeysKey, true);
   ScreenBacklight::Get()->AddObserver(this);
   ash::SessionManagerClient::Get()->AddObserver(this);
+  sw_privacy_switch_state_observer_ =
+      std::make_unique<media::CrosCameraSWPrivacySwitchStateObserver>(
+          base::BindRepeating(
+              &CameraAppHelperImpl::OnSWPrivacySwitchStateChanged,
+              weak_factory_.GetWeakPtr()));
 }
 
 CameraAppHelperImpl::~CameraAppHelperImpl() {
@@ -545,12 +551,28 @@ void CameraAppHelperImpl::SetLidStateMonitor(
   monitor_->AddLidObserver(lid_observer_receiver_.BindNewPipeAndPassRemote());
 }
 
+void CameraAppHelperImpl::SetSWPrivacySwitchMonitor(
+    mojo::PendingRemote<SWPrivacySwitchMonitor> monitor,
+    SetSWPrivacySwitchMonitorCallback callback) {
+  sw_privacy_switch_monitor_ =
+      mojo::Remote<SWPrivacySwitchMonitor>(std::move(monitor));
+  std::move(callback).Run(is_sw_privacy_switch_on_);
+}
+
 void CameraAppHelperImpl::OnLidStateChanged(cros::mojom::LidState state) {
   auto lid_state = ToMojoLidState(state);
   if (!lid_callback_.is_null()) {
     std::move(lid_callback_).Run(lid_state);
   } else if (lid_state_monitor_.is_bound()) {
     lid_state_monitor_->Update(lid_state);
+  }
+}
+
+void CameraAppHelperImpl::OnSWPrivacySwitchStateChanged(
+    cros::mojom::CameraPrivacySwitchState state) {
+  is_sw_privacy_switch_on_ = state == cros::mojom::CameraPrivacySwitchState::ON;
+  if (sw_privacy_switch_monitor_.is_bound()) {
+    sw_privacy_switch_monitor_->Update(is_sw_privacy_switch_on_);
   }
 }
 
