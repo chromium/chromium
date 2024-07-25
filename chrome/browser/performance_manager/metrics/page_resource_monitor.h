@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/resource_attribution/queries.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
@@ -63,20 +62,7 @@ class PageResourceMonitor : public resource_attribution::QueryResultObserver,
   // advance the mock clock by this amount to trigger metrics collection.
   base::TimeDelta GetCollectionDelayForTesting() const;
 
-  // Returns the delay before logging
-  // PerformanceManager.PerformanceInterventions.CPU.*.Delayed. Tests can
-  // advance the mock clock by this amount after OnResourceUsageUpdated() to
-  // trigger the delayed metrics logging.
-  base::TimeDelta GetDelayedMetricsTimeoutForTesting() const;
-
  private:
-  // Suffix for CPU intervention histograms.
-  enum class CPUInterventionSuffix {
-    kBaseline,
-    kImmediate,
-    kDelayed,
-  };
-
   // The percent CPU usage for each PageNode that was measured. This stores a
   // ResourceContext instead of a node pointer in case the PageNode is deleted
   // while taking asynchronous system CPU measurements.
@@ -97,23 +83,6 @@ class PageResourceMonitor : public resource_attribution::QueryResultObserver,
       const PageCPUUsageMap& page_cpu_usage,
       std::optional<system_cpu::CpuSample> system_cpu);
 
-  // Asynchronously checks if the CPU metrics are still above the threshold
-  // after a delay.
-  void CheckDelayedCPUInterventionMetrics();
-
-  // Invoked asynchronously from CheckDelayedCPUInterventionMetrics() when both
-  // page and system CPU measurements are ready.
-  void OnDelayedCPUInterventionMetricsResult(
-      const PageCPUUsageMap& page_cpu_usage,
-      std::optional<system_cpu::CpuSample> system_cpu);
-
-  // Log CPU intervention metrics with the provided suffix.
-  void LogCPUInterventionMetrics(
-      const PageCPUUsageMap& page_cpu_usage,
-      const std::optional<system_cpu::CpuSample>& system_cpu,
-      const base::TimeTicks now,
-      CPUInterventionSuffix histogram_suffix);
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Repeating query that triggers OnResourceUsageUpdated on a timer.
@@ -122,14 +91,6 @@ class PageResourceMonitor : public resource_attribution::QueryResultObserver,
 
   // Manages notificatoin subscriptions to `resource_query_`.
   resource_attribution::ScopedQueryObservation query_observation_{this};
-
-  // Timer which handles logging high CPU after a potential delay.
-  base::OneShotTimer log_cpu_on_delay_timer_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Keeps track of whether the browser has exceeded the CPU threshold.
-  std::optional<base::TimeTicks> time_of_last_cpu_threshold_exceeded_
-      GUARDED_BY_CONTEXT(sequence_checker_) = std::nullopt;
 
   // Time of last PageResourceUsage collection.
   base::TimeTicks time_of_last_resource_usage_
