@@ -6589,24 +6589,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Android.WebView.ShouldInterceptRequest.IsBrowsingIntentFallback"
-    enum="Boolean" expires_after="2024-09-01">
-  <owner>bewise@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    If a WebViewClient is not provided by an Android developer, we will send a
-    browsing intent if an intent URI is detected while intercepting a request.
-
-    We only do this if Android developers do not provide a WebViewClient so we
-    would like to assess if we can remove this fallback by measuring how often
-    it is used.
-
-    This is recorded everytime WebView checks to override a URL. This happens
-    whenever WebView initiates a new navigation.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.ShouldInterceptRequest.IsRequestIntercepted"
     enum="Boolean" expires_after="2024-06-13">
   <owner>ntfschr@chromium.org</owner>

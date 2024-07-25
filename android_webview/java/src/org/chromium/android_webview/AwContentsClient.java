@@ -29,7 +29,6 @@ import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -230,18 +229,10 @@ public abstract class AwContentsClient {
                     new AwWebResourceRequest(
                             url, isOutermostMainFrame, hasUserGesture, "GET", requestHeaders);
             request.isRedirect = isRedirect;
-            recordBrowsingFallbackHistogram(false);
             return shouldOverrideUrlLoading(request);
-        } else {
-            boolean sentIntent = sendBrowsingIntent(context, url, hasUserGesture, isRedirect);
-            recordBrowsingFallbackHistogram(sentIntent);
-            return sentIntent;
         }
-    }
 
-    private void recordBrowsingFallbackHistogram(boolean isFallbackSent) {
-        RecordHistogram.recordBooleanHistogram(
-                "Android.WebView.ShouldInterceptRequest.IsBrowsingIntentFallback", isFallbackSent);
+        return sendBrowsingIntent(context, url, hasUserGesture, isRedirect);
     }
 
     private static boolean sendBrowsingIntent(
