@@ -32,6 +32,8 @@ class ProfileAttributesStorage;
                    atOffset:(NSInteger)offset
                    fromDock:(BOOL)dock;
 
+- (BOOL)validateMenuItem:(NSMenuItem*)menuItem;
+
 @end
 
 @interface ProfileMenuController (PrivateExposedForTesting)

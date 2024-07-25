@@ -822,10 +822,15 @@ void AppShimController::BindNotificationService(
     // TODO(crbug.com/40616749): Determine when to ask for permissions.
     notification_service_un()->RequestPermission(base::DoNothing());
   } else {
+    // NSUserNotificationCenter is in the process of being replaced, and
+    // warnings about its deprecation are not helpful. https://crbug.com/1127306
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     notification_service_ =
         std::make_unique<mac_notifications::MacNotificationServiceNS>(
             std::move(service), std::move(handler),
             [NSUserNotificationCenter defaultUserNotificationCenter]);
+#pragma clang diagnostic pop
   }
 }
 

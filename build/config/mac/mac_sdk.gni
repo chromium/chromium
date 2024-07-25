@@ -23,7 +23,7 @@ declare_args() {
   # in availability and deprecation, which is why it is often changed
   # separately from `mac_min_system_version` when dropping support for older
   # macOSes.
-  mac_deployment_target = "10.15"
+  mac_deployment_target = "11.0"
 
   # The value of the `LSMinimumSystemVersion` in `Info.plist` files. This value
   # controls the minimum OS version that may launch the application, and OS

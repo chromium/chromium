@@ -715,16 +715,10 @@ void MacNotificationServiceUN::OnGotAuthorizationStatus(
              (void (^)(UNNotificationPresentationOptions options))
                  completionHandler {
   // Receiving a notification when the app is in the foreground.
-  if (@available(macOS 11, *)) {
-    completionHandler(UNNotificationPresentationOptionSound |
-                      UNNotificationPresentationOptionList |
-                      UNNotificationPresentationOptionBanner |
-                      UNNotificationPresentationOptionBadge);
-  } else {
-    completionHandler(UNNotificationPresentationOptionSound |
-                      UNNotificationPresentationOptionAlert |
-                      UNNotificationPresentationOptionBadge);
-  }
+  completionHandler(UNNotificationPresentationOptionSound |
+                    UNNotificationPresentationOptionList |
+                    UNNotificationPresentationOptionBanner |
+                    UNNotificationPresentationOptionBadge);
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
