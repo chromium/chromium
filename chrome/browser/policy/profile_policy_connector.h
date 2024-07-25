@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -123,6 +124,11 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
 
   std::string GetTimeToFirstPolicyLoadMetricSuffix() const;
 
+  // Records profile affiliation-related metrics and then starts a 7 day timer
+  // with itself as the callback. This ensures metrics are recorded at least
+  // every 7 days if the profile remains open.
+  void RecordAffiliationMetrics();
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, primary Profile user policies are forwarded to the
   // device-global PolicyService[1] using a ProxyPolicyProvider.
@@ -209,6 +215,8 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
 
   std::unique_ptr<internal::LocalTestInfoBarVisibilityManager>
       local_test_infobar_visibility_manager_;
+
+  base::RetainingOneShotTimer management_status_metrics_timer_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Returns |true| when this is the main profile.

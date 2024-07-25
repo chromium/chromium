@@ -2828,6 +2828,27 @@ chromium-metrics-reviews@google.com.
   <summary>Tracking the results of policy user verification.</summary>
 </histogram>
 
+<histogram name="Enterprise.ProfileAffiliation.IsAffiliated" enum="Boolean"
+    expires_after="2025-07-01">
+  <owner>igorruvinov@chromium.org</owner>
+  <owner>cbe-magic@google.com</owner>
+  <summary>
+    Whether the current profile is affiliated. Recorded for each active profile
+    every 7 days and upon profile policy service initialization.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ProfileAffiliation.UnaffiliatedReason"
+    enum="EnterpriseProfileUnaffiliatedReason" expires_after="2025-07-01">
+  <owner>igorruvinov@chromium.org</owner>
+  <owner>cbe-magic@google.com</owner>
+  <summary>
+    The reason why the current profile is not affiliated. Recorded for each
+    unaffiliated active profile every 7 days and upon profile policy service
+    initialization.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.ProfileIdentifier.Error"
     enum="EnterpriseProfileIdError" expires_after="2024-11-08">
   <owner>hmare@google.com</owner>
