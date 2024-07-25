@@ -12,6 +12,7 @@ class PrefService;
 class ProfileOAuth2TokenServiceDelegate;
 class ProfileOAuth2TokenService;
 class SystemIdentityManager;
+class TrustedVaultClientBackend;
 namespace drive {
 class DriveService;
 }
@@ -98,6 +99,10 @@ policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider();
 // Allow overriding the SystemIdentityManager factory. The real factory will
 // be used if this hook returns null.
 std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager();
+
+// Allow overriding the TrustedVaultClientBackend factory. The real factory
+// will be used if this hook returns null.
+std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend();
 
 // Returns a bulk leak check service that should be used when testing. The real
 // factory will be used if this hook returns a nullptr.

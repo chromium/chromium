@@ -289,6 +289,7 @@ source_set("trusted_vault_factory") {
     ":trusted_vault",
     "//base",
     "//components/keyed_service/ios",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/public/provider/chrome/browser/signin:trusted_vault_api",

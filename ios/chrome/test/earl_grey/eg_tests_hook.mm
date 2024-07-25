@@ -24,6 +24,7 @@
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
+#import "ios/chrome/test/providers/signin/fake_trusted_vault_client_backend.h"
 
 namespace tests_hook {
 
@@ -144,6 +145,16 @@ std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager() {
   }
 
   return system_identity_manager;
+}
+
+std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(test_switches::kForceRealSystemIdentityManager)) {
+    // By returning nullptr, we force ApplicationContext to use the provider to
+    // create the FakeTrustedVaultClientBackend.
+    return nullptr;
+  }
+  return std::make_unique<FakeTrustedVaultClientBackend>();
 }
 
 std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
