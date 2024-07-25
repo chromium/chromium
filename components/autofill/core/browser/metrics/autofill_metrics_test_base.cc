@@ -81,7 +81,7 @@ void AutofillMetricsBaseTest::SetUpHelper() {
           autofill_client_.get(),
           std::make_unique<TestCreditCardSaveManager>(autofill_client_.get()),
           /*iban_save_manager=*/nullptr, "en-US"));
-  autofill_client_->set_autofill_offer_manager(
+  autofill_client_->GetPaymentsAutofillClient()->set_autofill_offer_manager(
       std::make_unique<AutofillOfferManager>(&personal_data()));
 
   auto browser_autofill_manager =

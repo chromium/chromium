@@ -31,7 +31,6 @@
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
-#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
@@ -195,10 +194,6 @@ class TestAutofillClientTemplate : public T {
 
   TestAddressNormalizer* GetAddressNormalizer() override {
     return &test_address_normalizer_;
-  }
-
-  AutofillOfferManager* GetAutofillOfferManager() override {
-    return autofill_offer_manager_.get();
   }
 
   FastCheckoutClient* GetFastCheckoutClient() override {
@@ -485,11 +480,6 @@ class TestAutofillClientTemplate : public T {
     return &mock_autocomplete_history_manager_;
   }
 
-  void set_autofill_offer_manager(
-      std::unique_ptr<AutofillOfferManager> autofill_offer_manager) {
-    autofill_offer_manager_ = std::move(autofill_offer_manager);
-  }
-
   void set_channel_for_testing(const version_info::Channel channel) {
     channel_for_testing_ = channel;
   }
@@ -550,7 +540,6 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;
   // The below objects must be destroyed before `TestPersonalDataManager`
   // because they keep a reference to it.
-  std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
   std::unique_ptr<payments::TestPaymentsAutofillClient>
       payments_autofill_client_;
   std::unique_ptr<FormDataImporter> form_data_importer_;

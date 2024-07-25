@@ -753,7 +753,8 @@ void CreditCardFormEventLogger::RecordCardUnmaskFlowEvent(
 
 bool CreditCardFormEventLogger::DoesCardHaveOffer(
     const CreditCard& credit_card) {
-  auto* offer_manager = client_->GetAutofillOfferManager();
+  auto* offer_manager =
+      client_->GetPaymentsAutofillClient()->GetAutofillOfferManager();
   if (!offer_manager)
     return false;
 

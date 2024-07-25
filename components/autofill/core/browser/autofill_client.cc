@@ -85,13 +85,16 @@ payments::PaymentsAutofillClient* AutofillClient::GetPaymentsAutofillClient() {
   return nullptr;
 }
 
-AutofillOfferManager* AutofillClient::GetAutofillOfferManager() {
-  return nullptr;
-}
-
-const AutofillOfferManager* AutofillClient::GetAutofillOfferManager() const {
-  return const_cast<const AutofillOfferManager*>(
-      const_cast<AutofillClient*>(this)->GetAutofillOfferManager());
+const payments::PaymentsAutofillClient*
+AutofillClient::GetPaymentsAutofillClient() const {
+  // Gets a pointer to a non-const implementation of
+  // payments::PaymentsAutofillClient for the given platform this is called on,
+  // which is then converted to a pointer to a const implementation. The
+  // implementation returned will already be an existing object that is created
+  // when the given implementation of AutofillClient is created. If there is no
+  // payments::PaymentsAutofillClient for a given platform this will return
+  // nullptr.
+  return const_cast<AutofillClient*>(this)->GetPaymentsAutofillClient();
 }
 
 GeoIpCountryCode AutofillClient::GetVariationConfigCountryCode() const {

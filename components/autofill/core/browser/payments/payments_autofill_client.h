@@ -18,6 +18,7 @@ namespace autofill {
 
 struct AutofillErrorDialogContext;
 class AutofillOfferData;
+class AutofillOfferManager;
 enum class AutofillProgressDialogType;
 class AutofillSaveCardBottomSheetBridge;
 struct CardUnmaskChallengeOption;
@@ -437,6 +438,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // details page for the offers in a promo code suggestions popup. Every offer
   // in a promo code suggestions popup links to the same offer details page.
   virtual void OpenPromoCodeOfferDetailsURL(const GURL& url);
+
+  // Gets an AutofillOfferManager instance (can be null for unsupported
+  // platforms).
+  virtual AutofillOfferManager* GetAutofillOfferManager();
+  const AutofillOfferManager* GetAutofillOfferManager() const;
 };
 
 }  // namespace payments

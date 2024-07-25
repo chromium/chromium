@@ -198,4 +198,13 @@ void PaymentsAutofillClient::DismissOfferNotification() {}
 
 void PaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {}
 
+AutofillOfferManager* PaymentsAutofillClient::GetAutofillOfferManager() {
+  return nullptr;
+}
+
+const AutofillOfferManager* PaymentsAutofillClient::GetAutofillOfferManager()
+    const {
+  return const_cast<PaymentsAutofillClient*>(this)->GetAutofillOfferManager();
+}
+
 }  // namespace autofill::payments

@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -106,7 +107,8 @@ std::u16string SanitizeCreditCardFieldValue(const std::u16string& value) {
 std::map<std::string, AutofillOfferData*> GetCardLinkedOffers(
     const AutofillClient& autofill_client) {
   if (const AutofillOfferManager* offer_manager =
-          autofill_client.GetAutofillOfferManager()) {
+          autofill_client.GetPaymentsAutofillClient()
+              ->GetAutofillOfferManager()) {
     return offer_manager->GetCardLinkedOffersMap(
         autofill_client.GetLastCommittedPrimaryMainFrameURL());
   }

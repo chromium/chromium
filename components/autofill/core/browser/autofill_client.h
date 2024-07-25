@@ -76,7 +76,6 @@ class AutofillComposeDelegate;
 class AutofillCrowdsourcingManager;
 class AutofillDriver;
 class AutofillMlPredictionModelHandler;
-class AutofillOfferManager;
 class AutofillOptimizationGuide;
 class AutofillSuggestionDelegate;
 class AutofillPlusAddressDelegate;
@@ -344,8 +343,14 @@ class AutofillClient {
   // Gets the FormDataImporter instance owned by the client.
   virtual FormDataImporter* GetFormDataImporter() = 0;
 
-  // Gets the payments::PaymentsAutofillClient instance owned by the client.
+  // Gets the payments::PaymentsAutofillClient implementation owned by `this`.
+  // On platforms where there exists a payments::PaymentsAutofillClient, the
+  // instance that is returned is an existing payments::PaymentsAutofillClient
+  // that was created upon the AutofillClient implementation's creation. If no
+  // payments::PaymentsAutofillClient exists for a given platform, these
+  // functions will return nullptr.
   virtual payments::PaymentsAutofillClient* GetPaymentsAutofillClient();
+  const payments::PaymentsAutofillClient* GetPaymentsAutofillClient() const;
 
   // Gets the StrikeDatabase associated with the client. Note: Nullptr may be
   // returned so check before use.
@@ -361,11 +366,6 @@ class AutofillClient {
 
   // Gets an AddressNormalizer instance (can be null).
   virtual AddressNormalizer* GetAddressNormalizer() = 0;
-
-  // Gets an AutofillOfferManager instance (can be null for unsupported
-  // platforms).
-  virtual AutofillOfferManager* GetAutofillOfferManager();
-  const AutofillOfferManager* GetAutofillOfferManager() const;
 
   // Returns the last committed url of the primary main frame.
   virtual const GURL& GetLastCommittedPrimaryMainFrameURL() const = 0;

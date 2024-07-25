@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/merchant_promo_code_manager.h"
+#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
@@ -201,6 +202,10 @@ void TestPaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
 MerchantPromoCodeManager*
 TestPaymentsAutofillClient::GetMerchantPromoCodeManager() {
   return &mock_merchant_promo_code_manager_;
+}
+
+AutofillOfferManager* TestPaymentsAutofillClient::GetAutofillOfferManager() {
+  return autofill_offer_manager_.get();
 }
 
 bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasShown() {

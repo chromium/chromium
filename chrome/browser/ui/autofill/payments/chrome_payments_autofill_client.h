@@ -36,6 +36,7 @@ class AutofillErrorDialogControllerImpl;
 class AutofillMessageController;
 #endif
 class AutofillOfferData;
+class AutofillOfferManager;
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSaveIbanBottomSheetBridge;
 #if BUILDFLAG(IS_ANDROID)
@@ -185,6 +186,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   void DismissOfferNotification() override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
+  AutofillOfferManager* GetAutofillOfferManager() override;
 
 #if BUILDFLAG(IS_ANDROID)
   // The AutofillSnackbarController is used to show a snackbar notification
