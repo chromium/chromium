@@ -101,27 +101,6 @@ source_set("tab_grid") {
   frameworks = [ "UniformTypeIdentifiers.framework" ]
 }
 
-source_set("tab_grid_confirmation") {
-  sources = [
-    "tab_group_confirmation_coordinator.h",
-    "tab_group_confirmation_coordinator.mm",
-  ]
-
-  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
-  deps = [
-    "//base",
-    "//components/strings",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/shared/coordinator/alert",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups:tab_groups_commands",
-    "//ui/base",
-  ]
-}
-
 source_set("tab_grid_activity_observer") {
   sources = [ "tab_grid_activity_observer.h" ]
   deps = [

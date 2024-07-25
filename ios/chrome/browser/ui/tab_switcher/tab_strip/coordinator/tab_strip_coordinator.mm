@@ -23,6 +23,8 @@
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_tab_group_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_action_type.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_confirmation_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/context_menu/tab_strip_context_menu_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift.h"
@@ -47,6 +49,9 @@
   SharingCoordinator* _sharingCoordinator;
   CreateTabGroupCoordinator* _createTabGroupCoordinator;
   AlertCoordinator* _alertCoordinator;
+  // The coordinator to handle the confirmation dialog for the action taken for
+  // a tab group.
+  TabGroupConfirmationCoordinator* _tabGroupConfirmationCoordinator;
 }
 
 @synthesize baseViewController = _baseViewController;
@@ -101,6 +106,10 @@
 }
 
 - (void)stop {
+  if (_tabGroupConfirmationCoordinator) {
+    [_tabGroupConfirmationCoordinator stop];
+    _tabGroupConfirmationCoordinator = nil;
+  }
   [_sharingCoordinator stop];
   _sharingCoordinator = nil;
   [self.contextMenuHelper disconnect];
@@ -213,14 +222,27 @@
   [_alertCoordinator start];
 }
 
-- (void)cancelMoveForTab:(web::WebStateID)tabID
-           originBrowser:(Browser*)originBrowser
-             originIndex:(int)originIndex
-              visualData:(const tab_groups::TabGroupVisualData&)visualData {
-  [_mediator cancelMoveForTab:tabID
-                originBrowser:originBrowser
-                  originIndex:originIndex
-                   visualData:visualData];
+- (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
+                                groupItem:(TabGroupItem*)tabGroupItem
+                               sourceView:(UIView*)sourceView {
+  _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                      actionType:actionType
+                      sourceView:sourceView];
+  __weak TabStripCoordinator* weakSelf = self;
+  _tabGroupConfirmationCoordinator.action = ^{
+    switch (actionType) {
+      case TabGroupActionType::kUngroupTabGroup:
+        [weakSelf ungroupTabGroup:tabGroupItem];
+        break;
+      case TabGroupActionType::kDeleteTabGroup:
+        [weakSelf deleteTabGroup:tabGroupItem];
+        break;
+    }
+  };
+
+  [_tabGroupConfirmationCoordinator start];
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate
@@ -249,10 +271,39 @@
 
 #pragma mark - Private
 
+- (void)cancelMoveForTab:(web::WebStateID)tabID
+           originBrowser:(Browser*)originBrowser
+             originIndex:(int)originIndex
+              visualData:(const tab_groups::TabGroupVisualData&)visualData {
+  [_mediator cancelMoveForTab:tabID
+                originBrowser:originBrowser
+                  originIndex:originIndex
+                   visualData:visualData];
+}
+
 // Dismisses the alert coordinator.
 - (void)dimissAlertCoordinator {
   [_alertCoordinator stop];
   _alertCoordinator = nil;
+}
+
+// Helper method to close a tab group and dismiss the confirmation coordinator.
+- (void)deleteTabGroup:(TabGroupItem*)tabGroupItem {
+  if (tabGroupItem) {
+    [_mediator deleteGroup:tabGroupItem];
+  }
+  [_tabGroupConfirmationCoordinator stop];
+  _tabGroupConfirmationCoordinator = nil;
+}
+
+// Helper method to ungroup a tab group and dismiss the confirmation
+// coordinator.
+- (void)ungroupTabGroup:(TabGroupItem*)tabGroupItem {
+  if (tabGroupItem) {
+    [_mediator ungroupGroup:tabGroupItem];
+  }
+  [_tabGroupConfirmationCoordinator stop];
+  _tabGroupConfirmationCoordinator = nil;
 }
 
 @end

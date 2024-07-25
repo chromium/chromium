@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GROUP_CONFIRMATION_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GROUP_CONFIRMATION_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GROUP_CONFIRMATION_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GROUP_CONFIRMATION_COORDINATOR_H_
 
 #import <UIKit/UIKit.h>
 
@@ -16,8 +16,6 @@ enum class TabGroupActionType;
 // is modified inside the block.
 typedef void (^TabGroupActionBlock)();
 
-// TODO(crbug.com/329631145): Move this class to
-// ios/chrome/browser/ui/tab_switcher/ when this is used from tab strips.
 // Coordinator for displaying an action sheet to confirm the action to a tab
 // group.
 @interface TabGroupConfirmationCoordinator : ChromeCoordinator
@@ -46,4 +44,4 @@ typedef void (^TabGroupActionBlock)();
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GROUP_CONFIRMATION_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GROUP_CONFIRMATION_COORDINATOR_H_

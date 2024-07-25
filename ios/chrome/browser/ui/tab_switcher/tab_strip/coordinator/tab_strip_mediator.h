@@ -61,6 +61,12 @@ class WebStateID;
              originIndex:(int)originIndex
               visualData:(const tab_groups::TabGroupVisualData&)visualData;
 
+// Ungroups all tabs in `tabGroupItem`. The tabs in the group remain open.
+- (void)ungroupGroup:(TabGroupItem*)tabGroupItem;
+
+// Closes and deletes all tabs in `tabGroupItem`.
+- (void)deleteGroup:(TabGroupItem*)tabGroupItem;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_COORDINATOR_TAB_STRIP_MEDIATOR_H_

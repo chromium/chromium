@@ -197,7 +197,7 @@ UIContextMenuConfiguration* CreateUIContextMenuConfiguration(
       }]];
   [editGroupMenuElements
       addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
-        [weakSelf.mutator ungroupGroup:tabGroupItem];
+        [weakSelf.mutator ungroupGroup:tabGroupItem sourceView:originView];
       }]];
   UIMenu* editGroupMenu = CreateDisplayInlineUIMenu(editGroupMenuElements);
   [menuElements addObject:editGroupMenu];
@@ -208,12 +208,14 @@ UIContextMenuConfiguration* CreateUIContextMenuConfiguration(
                   }]];
     if (!self.incognito) {
       [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                      [weakSelf.mutator deleteGroup:tabGroupItem];
+                      [weakSelf.mutator deleteGroup:tabGroupItem
+                                         sourceView:originView];
                     }]];
     }
   } else {
     [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                    [weakSelf.mutator deleteGroup:tabGroupItem];
+                    [weakSelf.mutator deleteGroup:tabGroupItem
+                                       sourceView:originView];
                   }]];
   }
 

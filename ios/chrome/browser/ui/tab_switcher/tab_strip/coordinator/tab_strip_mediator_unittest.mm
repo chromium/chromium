@@ -87,6 +87,11 @@ const char kDraggedUrl[] = "https://dragged_url.com";
                             originGroup:(const TabGroup*)group {
 }
 
+- (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
+                                groupItem:(TabGroupItem*)tabGroupItem
+                               sourceView:(UIView*)sourceView {
+}
+
 @end
 
 // Fake consumer to get the passed value in tests.

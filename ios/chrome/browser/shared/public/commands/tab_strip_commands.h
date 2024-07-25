@@ -11,6 +11,8 @@
 
 class Browser;
 class TabGroup;
+enum class TabGroupActionType;
+@class TabGroupItem;
 @class TabSwitcherItem;
 namespace web {
 class WebStateID;
@@ -42,6 +44,12 @@ class WebStateID;
                           originBrowser:(Browser*)browser
                             originIndex:(int)index
                             originGroup:(const TabGroup*)group;
+
+// Displays a confirmation dialog anchoring to `sourceView` to confirm that
+// selected `groupItem` is going to take an `actionType`.
+- (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
+                                groupItem:(TabGroupItem*)tabGroupItem
+                               sourceView:(UIView*)sourceView;
 
 @end
 

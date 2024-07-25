@@ -627,8 +627,14 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
   // Long press the tab group and tap "Ungroup".
   [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle1)]
       performAction:grey_longPress()];
+  // Tap a ungroup button.
   [[EarlGrey selectElementWithMatcher:ContextMenuButtonMatcher(
                                           IDS_IOS_CONTENT_CONTEXT_UNGROUP)]
+      performAction:grey_tap()];
+  // Confirm ungrouping.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::AlertAction(
+                                          l10n_util::GetNSString(
+                                              IDS_IOS_CONTENT_CONTEXT_UNGROUP))]
       performAction:grey_tap()];
 
   // Wait for the tab group to disappear and check that the tab is still here.
@@ -658,9 +664,15 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
   // Long press the tab group and tap "Delete Group".
   [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle1)]
       performAction:grey_longPress()];
-
+  // Tap a delete button.
   [[EarlGrey selectElementWithMatcher:ContextMenuButtonMatcher(
                                           IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)]
+      performAction:grey_tap()];
+  // Confirm deleting a group.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AlertAction(
+                                   l10n_util::GetNSString(
+                                       IDS_IOS_CONTENT_CONTEXT_DELETEGROUP))]
       performAction:grey_tap()];
 
   // Wait for the tab group to disappear and check that the tab disappeared too.
@@ -737,6 +749,40 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabStripGroupCellMatcher(
                                                           kGroupTitle1)];
+}
+
+// Tests that a tab group can be deleted.
+- (void)testTabStripCancelConfirmation {
+  if ([ChromeEarlGrey isCompactWidth]) {
+    EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
+  }
+
+  // Open a new tab and load "chrome://about".
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GURL("chrome://about")];
+  NSString* aboutTabTitle = [ChromeEarlGrey currentTabTitle];
+
+  // Add the current tab to a new group.
+  AddTabToNewGroup(TabStripTabCellSelectedMatcher(), kGroupTitle1);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabStripGroupCellMatcher(
+                                                          kGroupTitle1)];
+
+  // Long press the tab group and tap "Delete Group".
+  [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle1)]
+      performAction:grey_longPress()];
+  // Tap a delete button.
+  [[EarlGrey selectElementWithMatcher:ContextMenuButtonMatcher(
+                                          IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)]
+      performAction:grey_tap()];
+  // Cancel the action by tapping a tab title (= outside the delete button).
+  [[EarlGrey selectElementWithMatcher:TabStripTabCellMatcher(aboutTabTitle)]
+      performAction:grey_tap()];
+
+  // Check that the group and the tab still exist.
+  [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle1)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabStripTabCellMatcher(aboutTabTitle)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

@@ -285,7 +285,7 @@ void UngroupGroupAtIndex(int group_cell_index) {
   DisplayContextMenuForGroupCellAtIndex(group_cell_index);
   [[EarlGrey selectElementWithMatcher:UngroupButton()]
       performAction:grey_tap()];
-  // Tap a delete button again to confirm the deletion.
+  // Tap a ungroup button again to confirm the deletion.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::AlertAction(
                                           l10n_util::GetNSString(
                                               IDS_IOS_CONTENT_CONTEXT_UNGROUP))]

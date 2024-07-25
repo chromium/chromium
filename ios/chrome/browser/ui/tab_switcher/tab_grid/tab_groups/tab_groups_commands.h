@@ -8,15 +8,10 @@
 #import <set>
 
 class TabGroup;
+enum class TabGroupActionType;
 namespace web {
 class WebStateID;
 }  // namespace web
-
-// Enum to represent an action that a tab group is going to take.
-enum class TabGroupActionType {
-  kUngroupTabGroup,
-  kDeleteTabGroup,
-};
 
 @protocol TabGroupsCommands
 

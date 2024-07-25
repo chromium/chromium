@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_action_type.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_mediator_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift.h"
@@ -215,6 +216,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   return self;
 }
 
+#pragma mark - Public methods
+
 - (void)disconnect {
   if (_webStateList) {
     [self removeWebStateObservations];
@@ -255,6 +258,23 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   browserAndIndexAfterMove.browser->GetWebStateList()->CreateGroup(
       {browserAndIndexAfterMove.tab_index}, visualData,
       tab_groups::TabGroupId::GenerateNew());
+}
+
+- (void)ungroupGroup:(TabGroupItem*)tabGroupItem {
+  if (!self.webStateList) {
+    return;
+  }
+  base::RecordAction(base::UserMetricsAction("MobileTabStripUngroupTabs"));
+  self.webStateList->DeleteGroup(tabGroupItem.tabGroup);
+}
+
+- (void)deleteGroup:(TabGroupItem*)tabGroupItem {
+  if (!self.webStateList) {
+    return;
+  }
+  base::RecordAction(base::UserMetricsAction("MobileTabStripDeleteGroup"));
+  CloseAllWebStatesInGroup(*_webStateList, tabGroupItem.tabGroup,
+                           WebStateList::CLOSE_USER_ACTION);
 }
 
 #pragma mark - Public properties
@@ -710,21 +730,33 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   [self insertAndActivateNewWebStateWithInsertionParams:insertionParams];
 }
 
-- (void)ungroupGroup:(TabGroupItem*)tabGroupItem {
-  if (!self.webStateList) {
+- (void)ungroupGroup:(TabGroupItem*)tabGroupItem
+          sourceView:(UIView*)sourceView {
+  if (IsTabGroupSyncEnabled()) {
+    // Show the confirmation dialog only when the tab group sync feature is
+    // enabled.
+    [_tabStripHandler
+        showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
+                                groupItem:tabGroupItem
+                               sourceView:sourceView];
     return;
   }
-  base::RecordAction(base::UserMetricsAction("MobileTabStripUngroupTabs"));
-  self.webStateList->DeleteGroup(tabGroupItem.tabGroup);
+
+  [self ungroupGroup:tabGroupItem];
 }
 
-- (void)deleteGroup:(TabGroupItem*)tabGroupItem {
-  if (!self.webStateList) {
+- (void)deleteGroup:(TabGroupItem*)tabGroupItem sourceView:(UIView*)sourceView {
+  if (IsTabGroupSyncEnabled()) {
+    // Show the confirmation dialog only when the tab group sync feature is
+    // enabled.
+    [_tabStripHandler
+        showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
+                                groupItem:tabGroupItem
+                               sourceView:sourceView];
     return;
   }
-  base::RecordAction(base::UserMetricsAction("MobileTabStripDeleteGroup"));
-  CloseAllWebStatesInGroup(*_webStateList, tabGroupItem.tabGroup,
-                           WebStateList::CLOSE_USER_ACTION);
+
+  [self deleteGroup:tabGroupItem];
 }
 
 - (void)closeGroup:(TabGroupItem*)tabGroupItem {
