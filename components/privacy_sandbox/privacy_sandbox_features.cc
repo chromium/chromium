@@ -147,8 +147,9 @@ BASE_FEATURE(kFingerprintingProtectionUx,
              "FingerprintingProtectionUx",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<bool> kUserBypassFingerprintingProtection{
-    &kFingerprintingProtectionUx, "include-in-user-bypass", false};
+BASE_FEATURE(kFingerprintingProtectionUserBypass,
+             "FingerprintingProtectionUserBypass",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIpProtectionV1,
              "IpProtectionV1",
@@ -158,8 +159,9 @@ BASE_FEATURE(kIpProtectionUx,
              "IpProtectionUx",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<bool> kUserBypassIpProtection{
-    &kIpProtectionUx, "include-in-user-bypass", false};
+BASE_FEATURE(kIpProtectionUserBypass,
+             "IpProtectionUserBypass",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTrackingProtectionSettingsLaunch,
              "TrackingProtectionSettingsLaunch",

@@ -1579,7 +1579,8 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
   PageInfoBubbleViewBrowserTestTrackingProtectionSubpage() {
     std::vector<base::test::FeatureRef>
         enabled_features =
-            {privacy_sandbox::kTrackingProtectionContentSettingFor3pcb},
+            {privacy_sandbox::kFingerprintingProtectionSetting,
+             privacy_sandbox::kFingerprintingProtectionUserBypass},
         disabled_features = {};
     if (GetParam()) {
       enabled_features.push_back(
@@ -1598,6 +1599,9 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
 IN_PROC_BROWSER_TEST_P(
     PageInfoBubbleViewBrowserTestTrackingProtectionSubpage,
     ToggleForBlockingThirdPartyCookiesUpdatesTrackingProtectionException) {
+  // Enable FPP to display UB UX with ACT features
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kFingerprintingProtectionEnabled, true);
   GURL url_example = GURL("http://example/other/stuff.htm");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
 

@@ -1594,12 +1594,13 @@ class CookieControlsUserBypassTrackingProtectionUiTest
       public testing::WithParamInterface<testing::tuple<bool, bool, bool>> {
  public:
   CookieControlsUserBypassTrackingProtectionUiTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{privacy_sandbox::kIpProtectionUx,
-          {{"include-in-user-bypass", "true"}}},
-         {privacy_sandbox::kFingerprintingProtectionUx,
-          {{"include-in-user-bypass", "true"}}},
-         {privacy_sandbox::kTrackingProtectionContentSettingFor3pcb, {}}},
+    feature_list_.InitWithFeatures(
+        {
+            privacy_sandbox::kFingerprintingProtectionUserBypass,
+            privacy_sandbox::kFingerprintingProtectionSetting,
+            privacy_sandbox::kIpProtectionUserBypass,
+            privacy_sandbox::kIpProtectionV1,
+        },
         {});
   }
   ~CookieControlsUserBypassTrackingProtectionUiTest() override = default;
@@ -1643,7 +1644,6 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
     cookie_settings()->SetThirdPartyCookieSetting(
         GURL("https://example.com"), ContentSetting::CONTENT_SETTING_ALLOW);
   }
-
   profile()->GetPrefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
                                     std::get<1>(GetParam()));
   profile()->GetPrefs()->SetBoolean(prefs::kIpProtectionEnabled,
@@ -1657,47 +1657,6 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
                   CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration(),
                   GetFeatureVector(CookieControlsEnforcement::kNoEnforcement,
                                    protections_on)));
-
-  cookie_controls()->Update(web_contents());
-  testing::Mock::VerifyAndClearExpectations(mock());
-}
-
-TEST_F(CookieControlsUserBypassTrackingProtectionUiTest,
-       DisplayEyeIconWhenActFeaturesNotEnforced) {
-  tracking_protection_settings()->AddTrackingProtectionException(
-      GURL("https://example.com"));
-  cookie_settings()->SetThirdPartyCookieSetting(
-      GURL("https://example.com"), ContentSetting::CONTENT_SETTING_ALLOW);
-
-  NavigateAndCommit(GURL("https://example.com"));
-  // The first param in this function call is the return value for
-  // `ShouldUserBypassIconBeVisible` function. If true, show icon in omnibox.
-  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
-                           /*icon_visible=*/true, /*protections_on=*/false,
-                           CookieBlocking3pcdStatus::kNotIn3pcd,
-                           /*should_highlight=*/false));
-
-  cookie_controls()->Update(web_contents());
-  testing::Mock::VerifyAndClearExpectations(mock());
-}
-
-TEST_F(CookieControlsUserBypassTrackingProtectionUiTest,
-       DoesNotDisplayEyeIconWhenActFeaturesAreEnforced) {
-  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
-
-  NavigateAndCommit(GURL("https://cool.things.com"));
-  // The first param in this function call is the return value for
-  // `ShouldUserBypassIconBeVisible` function. If false, do not show icon in
-  // omnibox.
-  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
-                           /*icon_visible=*/false, /*protections_on=*/false,
-                           CookieBlocking3pcdStatus::kNotIn3pcd,
-                           /*should_highlight=*/false));
-
-  hcsm->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromString("[*.]cool.things.com"),
-      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
 
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());

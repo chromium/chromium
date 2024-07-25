@@ -32,8 +32,8 @@
 
 const int kDaysToExpiration = 30;
 
-using Status = content_settings::TrackingProtectionBlockingStatus;
-using FeatureType = content_settings::TrackingProtectionFeatureType;
+using Status = ::content_settings::TrackingProtectionBlockingStatus;
+using FeatureType = ::content_settings::TrackingProtectionFeatureType;
 
 class MockCookieControlsBubbleView : public CookieControlsBubbleView {
  public:
@@ -67,6 +67,10 @@ class MockCookieControlsBubbleView : public CookieControlsBubbleView {
 
 class MockCookieControlsContentView : public CookieControlsContentView {
  public:
+  explicit MockCookieControlsContentView(bool has_act_features)
+      : CookieControlsContentView(has_act_features) {}
+  ~MockCookieControlsContentView() override = default;
+
   MOCK_METHOD(void,
               UpdateContentLabels,
               (const std::u16string&, const std::u16string&),
@@ -146,7 +150,8 @@ class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
     mock_bubble_view_ =
         std::make_unique<testing::NiceMock<MockCookieControlsBubbleView>>();
     mock_content_view_ =
-        std::make_unique<testing::NiceMock<MockCookieControlsContentView>>();
+        std::make_unique<testing::NiceMock<MockCookieControlsContentView>>(
+            has_act_features_);
 
     empty_reloading_view_ = std::make_unique<views::View>();
 
@@ -236,6 +241,7 @@ class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
   std::unique_ptr<MockCookieControlsBubbleView> mock_bubble_view_;
   std::unique_ptr<views::View> empty_reloading_view_;
   std::unique_ptr<CookieControlsBubbleViewController> view_controller_;
+  bool has_act_features_ = false;
   bool controls_visible_ = true;
   bool protections_on_ = true;
   CookieControlsEnforcement enforcement_ =

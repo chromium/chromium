@@ -22,6 +22,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -157,10 +158,13 @@ class TrackingProtectionBubbleViewBrowserTest
     : public CookieControlsBubbleViewBrowserTest {
  public:
   TrackingProtectionBubbleViewBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kTrackingProtectionContentSettingFor3pcb);
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
+    // Enable FPP to display UB UX with ACT features
+    feature_list_.InitWithFeatures(
+        {privacy_sandbox::kFingerprintingProtectionUserBypass,
+         privacy_sandbox::kFingerprintingProtectionSetting},
+        {});
   }
 
   ContentSetting GetTrackingProtectionSetting() {
@@ -176,6 +180,8 @@ class TrackingProtectionBubbleViewBrowserTest
 
 IN_PROC_BROWSER_TEST_F(TrackingProtectionBubbleViewBrowserTest,
                        ToggleCreatesTrackingProtectionException) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kFingerprintingProtectionEnabled, true);
   ShowBubble();
   EXPECT_EQ(GetTrackingProtectionSetting(), CONTENT_SETTING_BLOCK);
   SimulateTogglePress(false);

@@ -5,6 +5,7 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"

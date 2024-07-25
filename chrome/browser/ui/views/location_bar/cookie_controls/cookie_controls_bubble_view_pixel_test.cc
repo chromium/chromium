@@ -297,57 +297,5 @@ INSTANTIATE_TEST_SUITE_P(
                        CookieBlocking3pcdStatus::kAll}),
     &ParamToTestSuffix);
 
-class CookieControlsBubbleViewTrackingProtectionUiPixelTest
-    : public CookieControlsBubbleViewPixelTest {
- public:
-  CookieControlsBubbleViewTrackingProtectionUiPixelTest() = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kTrackingProtectionContentSettingFor3pcb);
-    CookieControlsBubbleViewPixelTest::SetUp();
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
-                       InvokeUi_SiteHasNoException) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
-                       InvokeUi_SiteHasTemporaryException) {
-  protections_on_ = false;
-  days_to_expiration_ = 90;
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
-                       InvokeUi_EnforcedByCookieSetting) {
-  protections_on_ = false;
-  enforcement_ = CookieControlsEnforcement::kEnforcedByCookieSetting;
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
-                       InvokeUi_EnforcedByPolicy) {
-  protections_on_ = false;
-  enforcement_ = CookieControlsEnforcement::kEnforcedByPolicy;
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
-                       InvokeUi_EnforcedByExtension) {
-  protections_on_ = false;
-  enforcement_ = CookieControlsEnforcement::kEnforcedByExtension;
-  ShowAndVerifyUi();
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    /*no prefix*/,
-    CookieControlsBubbleViewTrackingProtectionUiPixelTest,
-    testing::ValuesIn({CookieBlocking3pcdStatus::kLimited,
-                       CookieBlocking3pcdStatus::kAll}),
-    &ParamToTestSuffix);
+// TODO(https://b/354946320): Add pixel tests for ACT feature states once we
+// have UX.
