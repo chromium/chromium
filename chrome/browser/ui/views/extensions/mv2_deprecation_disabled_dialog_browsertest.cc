@@ -40,8 +40,9 @@ class Mv2DeprecationDisabledDialogBrowserTest
     extensions::ShowMv2DeprecationDisabledDialog(
         browser()->profile(), browser()->window()->GetNativeWindow(),
         {extension_A->id(), extension_B->id()},
-        /*accept_callback=*/base::DoNothing(),
-        /*cancel_callback=*/base::DoNothing());
+        /*remove_callback=*/base::DoNothing(),
+        /*manage_callback=*/base::DoNothing(),
+        /*close_callback=*/base::DoNothing());
   }
 
   scoped_refptr<const extensions::Extension> AddMV2ExtensionAndDisable(

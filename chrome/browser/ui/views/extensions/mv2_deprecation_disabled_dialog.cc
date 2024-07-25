@@ -5,6 +5,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -21,25 +22,34 @@ void ShowMv2DeprecationDisabledDialog(
     gfx::NativeWindow parent,
     const std::vector<ExtensionId>& extension_ids,
     base::OnceClosure remove_callback,
-    base::OnceClosure manage_callback) {
+    base::OnceClosure manage_callback,
+    base::OnceClosure close_callback) {
   CHECK(!extension_ids.empty());
   int extensions_size = extension_ids.size();
 
   ui::DialogModel::Builder dialog_builder;
   dialog_builder
-      .AddParagraph(ui::DialogModelLabel(l10n_util::GetPluralStringFUTF16(
-          IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_DESCRIPTION,
-          extensions_size)))
+      .AddParagraph(
+          ui::DialogModelLabel(l10n_util::GetPluralStringFUTF16(
+              IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_DESCRIPTION,
+              extensions_size)),
+          /*header=*/std::u16string(),
+          /*id=*/kExtensionsMv2DisabledDialogParagraphElementId)
       .AddOkButton(
           std::move(remove_callback),
-          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
-              IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_OK_BUTTON)))
+          ui::DialogModel::Button::Params()
+              .SetLabel(l10n_util::GetStringUTF16(
+                  IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_OK_BUTTON))
+              .SetId(kExtensionsMv2DisabledDialogRemoveButtonElementId))
       .AddCancelButton(
           std::move(manage_callback),
-          ui::DialogModel::Button::Params().SetLabel(
-              l10n_util::GetPluralStringFUTF16(
+          ui::DialogModel::Button::Params()
+              .SetLabel(l10n_util::GetPluralStringFUTF16(
                   IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_CANCEL_BUTTON,
-                  extensions_size)));
+                  extensions_size))
+              .SetId(kExtensionsMv2DisabledDialogManageButtonElementId))
+      .DisableCloseOnDeactivate()
+      .SetCloseActionCallback(std::move(close_callback));
 
   auto* extension_registry = ExtensionRegistry::Get(profile);
   auto* extension_prefs = ExtensionPrefs::Get(profile);

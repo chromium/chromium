@@ -6161,6 +6161,8 @@ static_library("ui") {
       "extensions/icon_with_badge_image_source.h",
       "extensions/installation_error_infobar_delegate.cc",
       "extensions/installation_error_infobar_delegate.h",
+      "extensions/mv2_disabled_dialog_controller.cc",
+      "extensions/mv2_disabled_dialog_controller.h",
       "extensions/settings_api_bubble_helpers.cc",
       "extensions/settings_api_bubble_helpers.h",
       "extensions/settings_overridden_dialog_controller.h",

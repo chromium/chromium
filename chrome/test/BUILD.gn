@@ -2931,6 +2931,7 @@ if (!is_android) {
       "../browser/ui/extensions/extension_image_util_browsertest.cc",
       "../browser/ui/extensions/extension_side_panel_test_utils.h",
       "../browser/ui/extensions/hosted_app_browsertest.cc",
+      "../browser/ui/extensions/mv2_disabled_dialog_controller_browsertest.cc",
       "../browser/ui/extensions/notifications_custom_bindings_browsertest.cc",
       "../browser/ui/extensions/settings_overridden_params_providers_browsertest.cc",
       "../browser/ui/find_bar/find_bar_controller_browsertest.cc",

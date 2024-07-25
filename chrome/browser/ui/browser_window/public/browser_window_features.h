@@ -12,6 +12,10 @@ class BrowserView;
 class SidePanelCoordinator;
 class SidePanelUI;
 
+namespace extensions {
+class Mv2DisabledDialogController;
+}  // namespace extensions
+
 namespace commerce {
 class ProductSpecificationsEntryPointController;
 }  // namespace commerce
@@ -58,6 +62,10 @@ class BrowserWindowFeatures {
   product_specifications_entry_point_controller() {
     return product_specifications_entry_point_controller_.get();
   }
+  extensions::Mv2DisabledDialogController*
+  mv2_disabled_dialog_controller_for_testing() {
+    return mv2_disabled_dialog_controller_.get();
+  }
 
   // TODO(crbug.com/346158959): For historical reasons, side_panel_ui is an
   // abstract base class that contains some, but not all of the public interface
@@ -91,6 +99,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<lens::LensOverlayEntryPointController>
       lens_overlay_entry_point_controller_;
+
+  std::unique_ptr<extensions::Mv2DisabledDialogController>
+      mv2_disabled_dialog_controller_;
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 };
