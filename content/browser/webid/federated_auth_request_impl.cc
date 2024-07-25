@@ -2405,6 +2405,7 @@ void FederatedAuthRequestImpl::ShowModalDialog(DialogType dialog_type,
   // dialog?
   dialog_type_ = dialog_type;
   config_url_ = idp_config_url;
+  UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Popup.DialogType", dialog_type_);
 
   WebContents* web_contents = request_dialog_controller_->ShowModalDialog(
       url_to_show, rp_mode_,
