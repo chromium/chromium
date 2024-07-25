@@ -69,11 +69,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Is phishing"/>
 </enum>
 
-<enum name="BooleanZipHasAES">
-  <int value="0" label="Zip does not have AES"/>
-  <int value="1" label="Zip has AES"/>
-</enum>
-
 <enum name="CancelEphemeralWarningEvent">
   <int value="0" label="CancellationScheduled"/>
   <int value="1" label="CancellationTriggered"/>

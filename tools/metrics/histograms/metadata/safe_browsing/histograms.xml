@@ -1974,17 +1974,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SafeBrowsing.NavigationObserver.NavigationEventsRecordedLength"
-    units="count" expires_after="2024-09-01">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Count of how many NavigationEvents are recorded prior to appending recent
-    navigations to the referrer chain.
-  </summary>
-</histogram>
-
-<histogram
     name="SafeBrowsing.NavigationObserver.NotificationNavigationEventAdded"
     enum="BooleanAccepted" expires_after="2024-09-01">
   <owner>nwokedi@chromium.org</owner>
