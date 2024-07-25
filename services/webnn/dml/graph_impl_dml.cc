@@ -5353,19 +5353,14 @@ void GraphImplDml::OnInitializationComplete(
 }
 
 // static
-void GraphImplDml::CreateAndBuild(
+base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
     scoped_refptr<Adapter> adapter,
-    base::WeakPtr<ContextImplDml> context,
-    mojom::GraphInfoPtr graph_info,
-    ComputeResourceInfo compute_resource_info,
-    WebNNContextImpl::CreateGraphImplCallback callback,
-    const bool pass_dml_execution_disable_meta_commands) {
-  TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndBuild");
-  GraphBuilderDml graph_builder(adapter->dml_device());
+    mojom::GraphInfoPtr& graph_info,
+    GraphBuilderDml& graph_builder,
+    std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
+    GraphBufferBindingInfo& graph_buffer_binding_info) {
   IdToNodeOutputMap id_to_node_output_map;
   const IdToOperandMap& id_to_operand_map = graph_info->id_to_operand_map;
-  std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map;
-  GraphBufferBindingInfo graph_buffer_binding_info;
   // Add inputs.
   for (auto& input_id : graph_info->input_operands) {
     auto graph_input_index = CreateInputNode(
@@ -5703,9 +5698,7 @@ void GraphImplDml::CreateAndBuild(
     }
 
     if (!create_operator_result.has_value()) {
-      std::move(callback).Run(
-          base::unexpected(std::move(create_operator_result.error())));
-      return;
+      return create_operator_result;
     }
   }
 
@@ -5737,6 +5730,35 @@ void GraphImplDml::CreateAndBuild(
   graph_buffer_binding_info.input_buffer_binding_count =
       constant_id_to_input_index_map.size() +
       graph_buffer_binding_info.graph_input_name_to_index_map.size();
+
+  return base::ok();
+}
+
+// static
+void GraphImplDml::CreateAndBuild(
+    scoped_refptr<Adapter> adapter,
+    base::WeakPtr<ContextImplDml> context,
+    mojom::GraphInfoPtr graph_info,
+    ComputeResourceInfo compute_resource_info,
+    WebNNContextImpl::CreateGraphImplCallback callback,
+    const bool pass_dml_execution_disable_meta_commands) {
+  TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndBuild");
+
+  GraphBuilderDml graph_builder(adapter->dml_device());
+  std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map;
+  GraphBufferBindingInfo graph_buffer_binding_info;
+  base::expected<void, mojom::ErrorPtr> create_operator_result =
+      GraphImplDml::CreateAndBuildInternal(adapter, graph_info, graph_builder,
+                                           constant_id_to_input_index_map,
+                                           graph_buffer_binding_info);
+
+  // TODO(crbug.com/349649099): Handle context lost for operator creation
+  // failures.
+  if (!create_operator_result.has_value()) {
+    std::move(callback).Run(
+        base::unexpected(std::move(create_operator_result.error())));
+    return;
+  }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,

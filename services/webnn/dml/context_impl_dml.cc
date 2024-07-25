@@ -31,8 +31,6 @@
 
 namespace webnn::dml {
 
-namespace {
-
 using Microsoft::WRL::ComPtr;
 
 // The context properties follow the supported feature level on the platform.
@@ -40,7 +38,9 @@ using Microsoft::WRL::ComPtr;
 //
 // TODO(crbug.com/345271830): update the context properties based on a certain
 // feature level once there is a bundled DirectML.dll.
-ContextProperties GetProperties(DML_FEATURE_LEVEL feature_level) {
+// static
+ContextProperties ContextImplDml::GetProperties(
+    DML_FEATURE_LEVEL feature_level) {
   CHECK_GE(feature_level, kMinDMLFeatureLevelForGpu);
 
   static constexpr SupportedDataTypes kFloat16To32{OperandDataType::kFloat16,
@@ -108,8 +108,6 @@ ContextProperties GetProperties(DML_FEATURE_LEVEL feature_level) {
 
   return properties;
 }
-
-}  // namespace
 
 ContextImplDml::ContextImplDml(
     scoped_refptr<Adapter> adapter,

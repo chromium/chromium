@@ -11,6 +11,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "third_party/microsoft_dxheaders/include/directml.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
 
 namespace webnn::dml {
@@ -37,6 +38,9 @@ class ContextImplDml final : public WebNNContextImpl {
   ContextImplDml& operator=(const ContextImplDml&) = delete;
 
   ~ContextImplDml() override;
+
+  // static
+  static ContextProperties GetProperties(DML_FEATURE_LEVEL feature_level);
 
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
