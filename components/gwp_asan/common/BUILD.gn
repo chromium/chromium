@@ -43,7 +43,10 @@ source_set("unit_tests") {
 
 fuzzer_test("pack_stack_trace_unpack_fuzzer") {
   sources = [ "pack_stack_trace_unpack_fuzzer.cc" ]
-  deps = [ "//components/gwp_asan/common" ]
+  deps = [
+    "//base",
+    "//components/gwp_asan/common",
+  ]
 }
 
 fuzzer_test("pack_stack_trace_differential_fuzzer") {
