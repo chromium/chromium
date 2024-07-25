@@ -11,12 +11,10 @@ import subprocess
 import sys
 import typing
 
-# Import the UKM codegen library for its hashing function, which is the same
-# hashing function as used for flag names.
-# TODO(crbug.com/40870309) Move `codegen.HashName()` somewhere common so we
-# don't depend on 'ukm'.
-sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, 'ukm'))
-import codegen
+# Import the shared codegen library for its hashing function, which is the
+# same hashing function as used for flag names.
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, 'common'))
+import codegen_shared
 
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir,
@@ -44,7 +42,7 @@ def get_entries_from_feature_string(feature: str) -> typing.List[str]:
   entries = []
   for suffix in ['disabled', 'enabled']:
     label = f'{feature}:{suffix}'
-    value_64 = codegen.HashName(label)
+    value_64 = codegen_shared.HashName(label)
     value_32 = ctypes.c_int32(value_64).value
     entries.append(f'<int value="{value_32}" label="{label}"/>')
   return entries
