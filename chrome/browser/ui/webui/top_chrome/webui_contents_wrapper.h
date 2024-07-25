@@ -145,9 +145,6 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
   // If true will allow the wrapped WebContents to automatically resize its
   // RenderWidgetHostView and send back updates to `Host` for the new size.
   const bool webui_resizes_host_;
-  // Captures the content size when `webui_resizes_host` is true. This
-  // size is passed to Host::ResizeDueToAutoResize() host when the host is set.
-  gfx::Size contents_requested_size_;
 
   bool is_ready_to_show_ = false;
   // If true will cause the ESC key to close the UI during pre-handling.

@@ -26,9 +26,12 @@
 #include "chrome/browser/ui/webui/top_chrome/preload_context.h"
 #include "chrome/browser/ui/webui/top_chrome/profile_preload_candidate_selector.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/models/menu_model.h"
 
 namespace {
@@ -401,10 +404,9 @@ WebUIContentsPreloadManager::CreateNewContents(
   task_manager::WebContentsTags::CreateForToolContents(
       web_contents.get(), IDS_TASK_MANAGER_PRELOADED_RENDERER_FOR_UI);
   chrome::InitializePageLoadMetricsForWebContents(web_contents.get());
+  webui_tracker_->AddWebContents(web_contents.get());
 
   LoadURLForContents(web_contents.get(), url);
-
-  webui_tracker_->AddWebContents(web_contents.get());
 
   return web_contents;
 }
@@ -461,4 +463,20 @@ void WebUIContentsPreloadManager::OnWebContentsDestroyed(
   // the most time.
   MaybePreloadForBrowserContext(web_contents->GetBrowserContext());
   request_time_map_.erase(web_contents);
+}
+
+void WebUIContentsPreloadManager::OnWebContentsPrimaryPageChanged(
+    content::WebContents* web_contents) {
+  if (web_contents == preloaded_web_contents_.get()) {
+    content::RenderWidgetHostView* render_widget_host_view =
+        web_contents->GetRenderWidgetHostView();
+    const bool should_auto_reisze_host =
+        TopChromeWebUIConfig::From(web_contents->GetBrowserContext(),
+                                   web_contents->GetVisibleURL())
+            ->ShouldAutoResizeHost();
+    if (render_widget_host_view && should_auto_reisze_host) {
+      render_widget_host_view->EnableAutoResize(gfx::Size(1, 1),
+                                                gfx::Size(INT_MAX, INT_MAX));
+    }
+  }
 }

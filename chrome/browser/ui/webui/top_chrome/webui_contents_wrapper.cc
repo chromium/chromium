@@ -14,6 +14,7 @@
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/models/menu_model.h"
@@ -135,7 +136,6 @@ WebUIContentsWrapper::~WebUIContentsWrapper() {
 void WebUIContentsWrapper::ResizeDueToAutoResize(content::WebContents* source,
                                                   const gfx::Size& new_size) {
   DCHECK_EQ(web_contents(), source);
-  contents_requested_size_ = new_size;
   if (host_)
     host_->ResizeDueToAutoResize(source, new_size);
 }
@@ -240,8 +240,9 @@ void WebUIContentsWrapper::PrimaryMainFrameRenderProcessGone(
 }
 
 void WebUIContentsWrapper::ShowUI() {
-  if (host_)
+  if (host_) {
     host_->ShowUI();
+  }
 
   // The host should never proactively show the contents after the initial
   // show, in which case the contents could have already been preloaded.
@@ -277,8 +278,11 @@ void WebUIContentsWrapper::SetHost(
     return;
   }
 
-  if (webui_resizes_host_ && !contents_requested_size_.IsEmpty()) {
-    host_->ResizeDueToAutoResize(web_contents_.get(), contents_requested_size_);
+  // Resize the host to the frame size. If there are new updates to the frame
+  // size they will be capture by WebUIContentsWrapper::ResizeDueToAutoResize().
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  if (webui_resizes_host_ && rfh && rfh->GetFrameSize().has_value()) {
+    host_->ResizeDueToAutoResize(web_contents_.get(), *rfh->GetFrameSize());
   }
 
   if (supports_draggable_regions_ && draggable_regions_.has_value()) {
