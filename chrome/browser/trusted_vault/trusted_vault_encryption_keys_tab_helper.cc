@@ -153,9 +153,6 @@ class EncryptionKeyApi
                             &chrome::mojom::TrustedVaultKey::bytes);
     const int32_t last_key_version = keys.back()->version;
 
-    // When Chrome OS wants to enable enclave support in non-primary profiles
-    // this `#if` will need to be more specific.
-#if !BUILDFLAG(IS_CHROMEOS)
     if (security_domain == trusted_vault::SecurityDomainId::kPasskeys) {
       if (enclave_manager_) {
         enclave_manager_->StoreKeys(gaia_id, std::move(keys_as_bytes),
@@ -163,7 +160,6 @@ class EncryptionKeyApi
       }
       return;
     }
-#endif
 
     trusted_vault::TrustedVaultClient* trusted_vault_client =
         trusted_vault_service_->GetTrustedVaultClient(security_domain);

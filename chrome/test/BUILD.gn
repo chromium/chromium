@@ -5394,11 +5394,6 @@ if (!is_android) {
       deps += [ "//components/os_crypt/sync:test_support" ]
     }
 
-    if (is_chromeos) {
-      sources += [ "../browser/webauthn/chromeos/passkey_browsertest.cc" ]
-      deps += [ "//chrome/browser/webauthn:test_support" ]
-    }
-
     if (!is_chromeos) {
       sources +=
           [ "../browser/ui/webui/whats_new/whats_new_fetcher_browsertest.cc" ]

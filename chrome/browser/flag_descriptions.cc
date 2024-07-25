@@ -3868,7 +3868,7 @@ const char kWallpaperPerDeskName[] =
 const char kWallpaperPerDeskDescription[] =
     "Allow users to set different wallpapers on each of their active desks";
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID)
 const char kWebAuthnEnclaveAuthenticatorName[] =
     "Enable the cloud enclave authenticator for GPM passkeys";
 const char kWebAuthnEnclaveAuthenticatorDescription[] =
