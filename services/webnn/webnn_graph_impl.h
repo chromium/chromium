@@ -20,6 +20,7 @@ namespace webnn {
 
 class WebNNBufferImpl;
 class WebNNContextImpl;
+class WebNNGraphBuilderImpl;
 
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
     : public mojom::WebNNGraph {
@@ -30,7 +31,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
                             input_names_to_descriptors,
                         base::flat_map<std::string, OperandDescriptor>
                             output_names_to_descriptors,
-                        base::PassKey<WebNNGraphImpl> pass_key);
+                        base::PassKey<WebNNGraphBuilderImpl> pass_key);
     ~ComputeResourceInfo();
 
     ComputeResourceInfo(const ComputeResourceInfo&);
@@ -51,17 +52,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
   WebNNGraphImpl(const WebNNGraphImpl&) = delete;
   WebNNGraphImpl& operator=(const WebNNGraphImpl&) = delete;
   ~WebNNGraphImpl() override;
-
-  // Return `ComputeResourceInfo` which describe graph constraints if it is
-  // valid; otherwise null.
-  [[nodiscard]] static std::optional<ComputeResourceInfo> ValidateGraph(
-      const ContextProperties& context_properties,
-      const mojom::GraphInfo& graph_info);
-
-  // Same as above, but just return true/false.
-  [[nodiscard]] static bool IsValidForTesting(
-      const ContextProperties& context_properties,
-      const mojom::GraphInfo& graph_info);
 
   const ComputeResourceInfo& compute_resource_info() const {
     return compute_resource_info_;

@@ -79,8 +79,15 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       const std::string& message,
       base::PassKey<WebNNGraphBuilderImpl> pass_key);
 
+  // Create a `WebNNGraphImpl` described by `graph_info` and
+  // `compute_resource_info`.
+  //
+  // TODO(crbug.com/354724062): Destroy the calling `WebNNGraphBuilderImpl`
+  // after returning the result via `callback`.
   void CreateGraph(mojom::GraphInfoPtr graph_info,
-                   mojom::WebNNGraphBuilder::CreateGraphCallback callback);
+                   WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+                   mojom::WebNNGraphBuilder::CreateGraphCallback callback,
+                   base::PassKey<WebNNGraphBuilderImpl> pass_key);
 
   // Get context properties with op support limits that are intersection
   // between WebNN generic limits and backend specific limits.

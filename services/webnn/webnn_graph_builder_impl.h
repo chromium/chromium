@@ -7,8 +7,10 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ref.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
+#include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn {
 
@@ -30,6 +32,17 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
   // mojom::WebNNGraphBuilder
   void CreateGraph(mojom::GraphInfoPtr graph_info,
                    CreateGraphCallback callback) override;
+
+  // Return `ComputeResourceInfo` which describe graph constraints if it is
+  // valid; otherwise null.
+  [[nodiscard]] static std::optional<WebNNGraphImpl::ComputeResourceInfo>
+  ValidateGraph(const ContextProperties& context_properties,
+                const mojom::GraphInfo& graph_info);
+
+  // Same as above, but just return true/false.
+  [[nodiscard]] static bool IsValidForTesting(
+      const ContextProperties& context_properties,
+      const mojom::GraphInfo& graph_info);
 
  private:
   // The `WebNNContextImpl` which owns and will outlive this object.

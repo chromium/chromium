@@ -60,17 +60,12 @@ void WebNNContextImpl::ReportBadGraphBuilderMessage(
 
 void WebNNContextImpl::CreateGraph(
     mojom::GraphInfoPtr graph_info,
-    mojom::WebNNGraphBuilder::CreateGraphCallback callback) {
+    WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+    mojom::WebNNGraphBuilder::CreateGraphCallback callback,
+    base::PassKey<WebNNGraphBuilderImpl> pass_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto compute_resource_info =
-      WebNNGraphImpl::ValidateGraph(properties_, *graph_info);
-  if (!compute_resource_info.has_value()) {
-    receiver_.ReportBadMessage(kBadMessageInvalidGraph);
-    return;
-  }
-
-  CreateGraphImpl(std::move(graph_info), *std::move(compute_resource_info),
+  CreateGraphImpl(std::move(graph_info), std::move(compute_resource_info),
                   base::BindOnce(&WebNNContextImpl::DidCreateWebNNGraphImpl,
                                  AsWeakPtr(), std::move(callback)));
 }
