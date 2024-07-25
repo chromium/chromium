@@ -311,11 +311,15 @@ AutofillProfile CreateStarterProfile(
 
 }  // namespace
 
-
 AutofillProfile::AutofillProfile(const std::string& guid,
                                  Source source,
                                  AddressCountryCode country_code)
-    : guid_(guid),
+    : AutofillDataModel(/*usage_history_size=*/
+                        base::FeatureList::IsEnabled(
+                            features::kAutofillTrackMultipleUseDates)
+                            ? 3
+                            : 1),
+      guid_(guid),
       phone_number_(this),
       address_(country_code),
       source_(source),
@@ -346,7 +350,9 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
     return *this;
 
   set_use_count(profile.use_count());
-  set_use_date(profile.use_date());
+  for (size_t i = 1; i <= usage_history_size(); i++) {
+    set_use_date(profile.use_date(i), i);
+  }
   set_modification_date(profile.modification_date());
 
   set_guid(profile.guid());
@@ -786,7 +792,7 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
   // a similar, fully-typed submission that merges to an existing profile should
   // not be counted as a re-use of that profile.
   set_use_count(std::max(profile.use_count(), use_count()));
-  set_use_date(std::max(profile.use_date(), use_date()));
+  MergeUseDates(profile);
 
   // Update the fields which need to be modified, if any. Note: that we're
   // comparing the fields for representational equality below (i.e., are the
@@ -1009,7 +1015,7 @@ std::u16string AutofillProfile::ConstructInferredLabel(
 void AutofillProfile::RecordAndLogUse() {
   const base::Time now = AutofillClock::Now();
   const base::TimeDelta time_since_last_used = now - use_date();
-  set_use_date(now);
+  RecordUseDate(now);
   // Ensure that use counts are not skewed by multiple filling operations of the
   // form. This is especially important for forms fully annotated with
   // autocomplete=unrecognized. For such forms, keyboard accessory chips only

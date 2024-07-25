@@ -642,7 +642,7 @@ std::string Iban::GetCountryCode() const {
 
 void Iban::RecordAndLogUse() {
   autofill_metrics::LogDaysSinceLastIbanUse(*this);
-  set_use_date(AutofillClock::Now());
+  RecordUseDate(AutofillClock::Now());
   set_use_count(use_count() + 1);
 }
 

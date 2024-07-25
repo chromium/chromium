@@ -803,6 +803,14 @@ BASE_FEATURE(kAutofillUpdateLowQualityTokenOnImport,
              "AutofillUpdateLowQualityTokenOnImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, `AutofillProfile` tracks the second and third last use date of
+// each profile (instead of just the last use date).
+// TODO(crbug.com/354706653): Remove when launched.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kAutofillTrackMultipleUseDates,
+             "AutofillTrackMultipleUseDates",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls if Chrome Autofill UI surfaces ignore touch events if something is
 // fully or partially obscuring the Chrome window.

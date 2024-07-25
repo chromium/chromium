@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
 
@@ -17,8 +19,8 @@ namespace autofill {
 // PersonalDataManager.
 class AutofillDataModel : public FormGroup {
  public:
-  AutofillDataModel();
   ~AutofillDataModel() override;
+  AutofillDataModel(const AutofillDataModel&);
 
   // Calculates the number of days since the model was last used by subtracting
   // the model's last recent |use_date_| from the |current_time|.
@@ -27,11 +29,23 @@ class AutofillDataModel : public FormGroup {
   size_t use_count() const { return use_count_; }
   void set_use_count(size_t count) { use_count_ = count; }
 
-  // Writing in and reading from database converts dates between time_t and
-  // Time, therefore the microseconds get lost. Therefore, we need to round the
-  // dates to seconds for both |use_date_| and |modification_date_|.
-  base::Time use_date() const { return use_date_; }
-  void set_use_date(base::Time time) { use_date_ = time; }
+  size_t usage_history_size() const { return usage_history_size_; }
+
+  // Returns the `i`-th last use date for `1 <= i <= usage_history_size()`.
+  // `i == 1` corresponds to the last use date.
+  // If a model hasn't been used at least `i` times, a null time is returned
+  // instead.
+  // TODO(crbug.com/354706653): Make the return value an optional, where nullopt
+  // indicates that the model wasn't used at least `i` times.
+  base::Time use_date(size_t i = 1) const;
+
+  // Setter with the same semantics as `use_date()`. In particular, only the
+  // `i`-th use date is changed - other use dates are not affected.
+  void set_use_date(base::Time time, size_t i = 1);
+
+  // Records a new use of the model, by updating the last used date to `time`
+  // and shifting the existing use dates backwards.
+  void RecordUseDate(base::Time time);
 
   bool UseDateEqualsInSeconds(const AutofillDataModel* other) const;
 
@@ -49,20 +63,31 @@ class AutofillDataModel : public FormGroup {
                              base::Time comparison_time) const;
 
  protected:
+  explicit AutofillDataModel(size_t usage_history_size = 1);
+
   // Calculate the ranking score of a card or profile depending on their use
   // count and most recent use date.
   virtual double GetRankingScore(base::Time current_time) const;
 
+  // Merges the use dates of `*this` and `other` into `*this*` by choosing the
+  // most recent use dates.
+  void MergeUseDates(const AutofillDataModel& other);
+
  private:
   // The number of times this model has been used.
-  size_t use_count_;
+  size_t use_count_ = 1;
 
-  // The last time the model was used, rounded in seconds. Any change should
-  // use set_previous_use_date()
-  base::Time use_date_;
+  // The last `usage_history_size_` many use dates of the model are tracked in
+  // `use_dates`, which is guaranteed to have size `usage_history_size_`.
+  // `use_dates_[0]` represents the last use date, `use_dates_[1]` the second to
+  // laste use date, etc. A nullopt value means that the model hasn't been used
+  // this often. Since creation counts as a use, `use_dates_[0]` is never
+  // nullopt.
+  size_t usage_history_size_;
+  std::vector<std::optional<base::Time>> use_dates_;
 
   // The last time data in the model was modified, rounded in seconds. Any
-  // change should use set_previous_modification_date()
+  // change should use `set_modification_date()`.
   base::Time modification_date_;
 };
 
