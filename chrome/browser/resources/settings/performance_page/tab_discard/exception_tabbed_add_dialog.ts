@@ -79,6 +79,14 @@ export class ExceptionTabbedAddDialogElement extends
   private submitDisabledList_: boolean;
   private submitDisabledManual_: boolean;
 
+  private onSelectedTabChanged_() {
+    // Asynchronously notify the list that its visibility has changed. This is
+    // necessary because the list has an iron-list child that needs to be
+    // manually notified of visibility changes that are triggered by any element
+    // that does not implement iron-resizable-behavior.
+    setTimeout(() => this.$.list.notifyResize(), 0);
+  }
+
   private onSitesPopulated_(e: CustomEvent<{length: number}>) {
     if (e.detail.length > 0) {
       this.selectedTab_ = ExceptionAddDialogTabs.CURRENT_SITES;
