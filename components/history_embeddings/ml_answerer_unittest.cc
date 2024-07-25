@@ -230,6 +230,7 @@ TEST_F(MlAnswererTest, ComputeAnswerSingleUrl) {
   ComputeAnswerCallback callback =
       base::BindOnce([](AnswererResult answer_result) {
         EXPECT_EQ("Answer_1", answer_result.answer.text());
+        EXPECT_EQ("url_1", answer_result.url);
       });
 
   ml_answerer_->ComputeAnswer("query", context, std::move(callback));
@@ -278,6 +279,7 @@ TEST_F(MlAnswererTest, ComputeAnswerMultipleUrls) {
   ComputeAnswerCallback callback =
       base::BindOnce([](AnswererResult answer_result) {
         EXPECT_EQ("Answer_2", answer_result.answer.text());
+        EXPECT_EQ("url_2", answer_result.url);
       });
 
   ml_answerer_->ComputeAnswer("query", context, std::move(callback));
