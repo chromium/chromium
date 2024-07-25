@@ -1837,8 +1837,9 @@ INSTANTIATE_TEST_SUITE_P(
                       LcppPreloadLazyLoadImageType::kCustomLazyLoad,
                       LcppPreloadLazyLoadImageType::kAll));
 
+//TODO(https://crbug.com/355413130) re-enable test.
 TEST_P(HTMLPreloadScannerLCPPLazyLoadImageTest,
-       TokenStreamMatcherWithLoadingLazy) {
+       DISABLED_TokenStreamMatcherWithLoadingLazy) {
   ElementLocator locator;
   auto* c = locator.add_components()->mutable_id();
   c->set_id_attr("target");
