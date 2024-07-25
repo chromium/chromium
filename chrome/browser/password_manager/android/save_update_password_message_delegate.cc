@@ -165,6 +165,8 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPromptInternal(
 
   CreateMessage(update_password);
   RecordMessageShownMetrics();
+  password_manager::metrics_util::LogFormSubmissionsVsSavePromptsHistogram(
+      password_manager::metrics_util::SaveFlowStep::kSavePromptShown);
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents_, messages::MessageScopeType::WEB_CONTENTS,
       messages::MessagePriority::kUrgent);

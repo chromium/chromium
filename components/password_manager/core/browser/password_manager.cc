@@ -81,8 +81,6 @@ using autofill::UNKNOWN_TYPE;
 using autofill::USERNAME;
 using autofill::mojom::SubmissionIndicatorEvent;
 using base::NumberToString;
-using BlocklistedStatus =
-    password_manager::OriginCredentialStore::BlocklistedStatus;
 
 namespace password_manager {
 
@@ -247,6 +245,17 @@ base::CallbackListSubscription AddSyncEnabledOrDisabledCallback(
   return {};
 }
 
+// Checks whether the filter allows saving this credential. In practice, this
+// prevents saving the password of the syncing account. However, if the
+// password is already saved, then *updating* it is still allowed - better
+// than keeping an outdated password around.
+bool StoreResultFilterAllowsSaving(PasswordFormManager* form_manager,
+                                   PasswordManagerClient* client) {
+  return form_manager->IsPasswordUpdate() ||
+         client->GetStoreResultFilter()->ShouldSave(
+             *form_manager->GetSubmittedForm());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Shows an error message that nudges the user to update GMSCore if necessary.
 void MaybeNudgeToUpdateGMSCoreWhenSavingDisabled(
@@ -259,6 +268,34 @@ void MaybeNudgeToUpdateGMSCoreWhenSavingDisabled(
             kGMSCoreOutdatedSavingDisabled);
   }
 }
+
+// Records the form submission if the user has saving enabled and
+// the password is eligible for saving.
+void LogFormSubmissionIfEligibleForSaving(PasswordFormManager* manager,
+                                          PasswordManagerClient* client) {
+  if (!password_manager_util::IsAbleToSavePasswords(client)) {
+    return;
+  }
+
+  if (!manager->IsSavingAllowed()) {
+    return;
+  }
+
+  if (!ShouldPromptUserToSavePassword(*manager)) {
+    return;
+  }
+
+  if (!StoreResultFilterAllowsSaving(manager, client)) {
+    return;
+  }
+
+  if (manager->IsBlocklisted()) {
+    return;
+  }
+
+  manager->GetMetricsRecorder()->set_form_submission_reached(true);
+}
+
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -605,7 +642,15 @@ bool PasswordManager::IsPasswordFieldDetectedOnPage() const {
 
 void PasswordManager::OnPasswordFormSubmitted(PasswordManagerDriver* driver,
                                               const FormData& form_data) {
+#if BUILDFLAG(IS_ANDROID)
+  PasswordFormManager* form_manager =
+      ProvisionallySaveForm(form_data, driver, false);
+  if (form_manager) {
+    LogFormSubmissionIfEligibleForSaving(form_manager, client_);
+  }
+#else
   ProvisionallySaveForm(form_data, driver, false);
+#endif
 }
 
 void PasswordManager::OnDynamicFormSubmission(
@@ -649,6 +694,10 @@ void PasswordManager::OnDynamicFormSubmission(
     return;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  LogFormSubmissionIfEligibleForSaving(submitted_manager, client_);
+#endif
+
   submitted_manager->UpdateSubmissionIndicatorEvent(event);
 
   if (IsAutomaticSavePromptAvailable()) {
@@ -673,6 +722,10 @@ void PasswordManager::OnPasswordFormCleared(
   if (!form_data.renderer_id().is_null()) {
     manager->UpdateSubmissionIndicatorEvent(
         SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
+
+#if BUILDFLAG(IS_ANDROID)
+    LogFormSubmissionIfEligibleForSaving(manager, client_);
+#endif
     OnLoginSuccessful();
     return;
   }
@@ -685,6 +738,9 @@ void PasswordManager::OnPasswordFormCleared(
   if (it != form_data.fields().end() && it->value().empty()) {
     manager->UpdateSubmissionIndicatorEvent(
         SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
+#if BUILDFLAG(IS_ANDROID)
+    LogFormSubmissionIfEligibleForSaving(manager, client_);
+#endif
     OnLoginSuccessful();
   }
 }
@@ -1317,13 +1373,7 @@ void PasswordManager::OnLoginSuccessful() {
 
   // TODO(crbug.com/40570965): Implement checking whether to save with
   // PasswordFormManager.
-  // Check whether the filter allows saving this credential. In practice, this
-  // prevents saving the password of the syncing account. However, if the
-  // password is already saved, then *updating* it is still allowed - better
-  // than keeping an outdated password around.
-  if (!submitted_manager->IsPasswordUpdate() &&
-      !client_->GetStoreResultFilter()->ShouldSave(
-          *submitted_manager->GetSubmittedForm())) {
+  if (!StoreResultFilterAllowsSaving(submitted_manager, client_)) {
     RecordProvisionalSaveFailure(
         PasswordManagerMetricsRecorder::SYNC_CREDENTIAL,
         submitted_manager->GetURL());

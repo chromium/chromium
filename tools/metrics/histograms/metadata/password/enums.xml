@@ -1507,6 +1507,11 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Unknown password"/>
 </enum>
 
+<enum name="SaveFlowStep">
+  <int value="0" label="Form submitted"/>
+  <int value="1" label="Save prompt shown"/>
+</enum>
+
 <enum name="SavingOnUsernameFirstFlow">
   <int value="0" label="Saved"/>
   <int value="1" label="Saved with edited username"/>
