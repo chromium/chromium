@@ -7,9 +7,13 @@
 #include <map>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/common/buildflags.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
@@ -59,6 +63,24 @@ bool IsFeatureEnabledByEmbedderPermissionsPolicy(
     return false;
   }
   return true;
+}
+
+// Checks whether the embedder frame's origin is allowed the given content
+// setting.
+bool IsContentSettingAllowedInEmbedder(
+    WebViewGuest* web_view_guest,
+    ContentSettingsType content_settings_type) {
+  GURL embedder_url = CHECK_DEREF(web_view_guest->embedder_rfh())
+                          .GetLastCommittedOrigin()
+                          .GetURL();
+
+  const HostContentSettingsMap* const content_settings =
+      HostContentSettingsMapFactory::GetForProfile(
+          web_view_guest->browser_context());
+  ContentSetting setting = content_settings->GetContentSetting(
+      embedder_url, embedder_url, content_settings_type);
+  return setting == CONTENT_SETTING_ALLOW ||
+         setting == CONTENT_SETTING_SESSION_ONLY;
 }
 
 }  // anonymous namespace
@@ -176,6 +198,13 @@ void ChromeWebViewPermissionHelperDelegate::OnPointerLockPermissionResponse(
     base::OnceCallback<void(bool)> callback,
     bool allow,
     const std::string& user_input) {
+  if (web_view_guest()->attached() &&
+      web_view_guest()->IsOwnedByControlledFrameEmbedder() &&
+      !IsContentSettingAllowedInEmbedder(web_view_guest(),
+                                         ContentSettingsType::POINTER_LOCK)) {
+    std::move(callback).Run(false);
+    return;
+  }
   std::move(callback).Run(allow && web_view_guest()->attached());
 }
 
