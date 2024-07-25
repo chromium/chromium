@@ -16,6 +16,10 @@ inline constexpr char kChromeUICompareHost[] = "compare";
 // The URL for compare.
 inline constexpr char kChromeUICompareUrl[] = "chrome://compare";
 
+// The URL for compare disclosure.
+inline constexpr char kChromeUICompareDisclosureUrl[] =
+    "chrome://compare/disclosure";
+
 // The host for the shopping insights side panel page.
 inline constexpr char kChromeUIShoppingInsightsSidePanelHost[] =
     "shopping-insights-side-panel.top-chrome";

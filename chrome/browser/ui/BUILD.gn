@@ -1661,6 +1661,8 @@ static_library("ui") {
       "webui/chrome_content_browser_client_webui_part.h",
       "webui/chrome_web_contents_handler.cc",
       "webui/chrome_web_contents_handler.h",
+      "webui/commerce/product_specifications_disclosure_dialog.cc",
+      "webui/commerce/product_specifications_disclosure_dialog.h",
       "webui/commerce/product_specifications_ui.cc",
       "webui/commerce/product_specifications_ui.h",
       "webui/commerce/shopping_insights_side_panel_ui.cc",

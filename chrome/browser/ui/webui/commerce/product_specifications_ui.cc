@@ -36,7 +36,7 @@
 namespace commerce {
 
 ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui) {
+    : ui::MojoWebDialogUI(web_ui) {
   Profile* const profile = Profile::FromWebUI(web_ui);
   commerce::ShoppingService* shopping_service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);

@@ -1,0 +1,140 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
+
+#include <memory>
+#include <utility>
+
+#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
+#include "chrome/browser/ui/views/chrome_web_dialog_view.h"
+#include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
+#include "components/commerce/core/commerce_constants.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
+#include "url/gurl.h"
+
+namespace {
+
+// TODO(343110207): Adjust the size when the WebUI page is finalized.
+constexpr gfx::Size kDialogSize{500, 290};
+
+void UpdateDialogPosition(views::Widget* widget,
+                          content::WebContents* web_contents) {
+  auto* dialog_host =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
+          ->delegate()
+          ->GetWebContentsModalDialogHost();
+  views::Widget* host_widget =
+      views::Widget::GetWidgetForNativeView(dialog_host->GetHostView());
+  auto size = widget->GetRootView()->GetPreferredSize();
+  if (!host_widget) {
+    widget->SetSize(size);
+    return;
+  }
+  gfx::Point position = dialog_host->GetDialogPosition(size);
+  // Align the first row of pixels inside the border. This is the apparent top
+  // of the dialog.
+  position.set_y(position.y() -
+                 widget->non_client_view()->frame_view()->GetInsets().top());
+
+  // Position the dialog below the top control of current window.
+  gfx::Rect dialog_bounds(position, size);
+  gfx::Rect dialog_screen_bounds =
+      dialog_bounds +
+      host_widget->GetClientAreaBoundsInScreen().OffsetFromOrigin();
+
+  // Adjust the dialog bound to ensure it remains visible on the display.
+  const gfx::Rect display_work_area =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestView(dialog_host->GetHostView())
+          .work_area();
+  if (!display_work_area.Contains(dialog_screen_bounds)) {
+    dialog_screen_bounds.AdjustToFit(display_work_area);
+  }
+
+  dialog_bounds.set_origin(dialog_screen_bounds.origin());
+  widget->SetBounds(dialog_bounds);
+}
+
+gfx::NativeView GetParentView(content::WebContents* web_contents) {
+  gfx::NativeView parent = gfx::NativeView();
+  if (web_contents) {
+    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+        web_contents->GetTopLevelNativeWindow());
+    DCHECK(widget) << "Could not find a parent widget!";
+    if (widget) {
+      parent = widget->GetNativeView();
+    }
+  }
+  return parent;
+}
+
+views::Widget::InitParams CreateParams() {
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  params.remove_standard_frame = true;
+  params.type = views::Widget::InitParams::Type::TYPE_BUBBLE;
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  return params;
+}
+}  // namespace
+
+namespace commerce {
+
+// static
+ProductSpecificationsDisclosureDialog*
+    ProductSpecificationsDisclosureDialog::current_instance_ = nullptr;
+
+// static
+void ProductSpecificationsDisclosureDialog::ShowDialog(
+    content::BrowserContext* browser_context,
+    content::WebContents* web_contents) {
+  if (current_instance_) {
+    current_instance_->dialog_widget_->Close();
+    current_instance_ = nullptr;
+  }
+  // ShowWebDialogWithParams() will take care of ownership.
+  current_instance_ = new ProductSpecificationsDisclosureDialog(web_contents);
+  gfx::NativeWindow dialog_window = chrome::ShowWebDialogWithParams(
+      GetParentView(web_contents), browser_context, current_instance_,
+      std::make_optional<views::Widget::InitParams>(CreateParams()));
+  current_instance_->dialog_widget_ =
+      views::Widget::GetWidgetForNativeWindow(dialog_window);
+
+  // Move it to the top of the screen below omnibox. Default behavior is to show
+  // it in the middle of the screen.
+  UpdateDialogPosition(current_instance_->dialog_widget_, web_contents);
+}
+
+ProductSpecificationsDisclosureDialog::ProductSpecificationsDisclosureDialog(
+    content::WebContents* contents) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  set_dialog_content_url(GURL(kChromeUICompareDisclosureUrl));
+  set_dialog_frame_kind(FrameKind::kDialog);
+  set_show_close_button(false);
+  set_show_dialog_title(false);
+  set_dialog_size(kDialogSize);
+  set_can_close(true);
+  set_allow_default_context_menu(false);
+  set_dialog_modal_type(ui::ModalType::MODAL_TYPE_CHILD);
+}
+
+ProductSpecificationsDisclosureDialog::
+    ~ProductSpecificationsDisclosureDialog() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  current_instance_ = nullptr;
+}
+
+}  // namespace commerce
