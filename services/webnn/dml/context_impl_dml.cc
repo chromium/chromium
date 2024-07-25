@@ -43,13 +43,6 @@ ContextProperties ContextImplDml::GetProperties(
     DML_FEATURE_LEVEL feature_level) {
   CHECK_GE(feature_level, kMinDMLFeatureLevelForGpu);
 
-  static constexpr SupportedDataTypes kFloat16To32{OperandDataType::kFloat16,
-                                                   OperandDataType::kFloat32};
-
-  static constexpr SupportedDataTypes kFloat16To32Int8To32{
-      OperandDataType::kFloat16, OperandDataType::kFloat32,
-      OperandDataType::kInt8, OperandDataType::kInt32};
-
   static constexpr SupportedDataTypes kFloat16To32Ints8To32{
       OperandDataType::kFloat16, OperandDataType::kFloat32,
       OperandDataType::kInt8,    OperandDataType::kUint8,
@@ -66,14 +59,13 @@ ContextProperties ContextImplDml::GetProperties(
        /*constant=*/SupportedDataTypes::All(),
 
        /*arg_min_max_input=*/SupportedDataTypes::All(),
-       /*arg_min_max_output=*/
-       {OperandDataType::kInt32, OperandDataType::kInt64},
+       /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_join_operator_desc#tensor-support
        /*concat_inputs=*/kFloat16To32Ints8To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_elu_operator_desc
-       /*elu_input=*/kFloat16To32,
+       /*elu_input=*/DataTypeConstraint::kFloat16To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_operator_desc#tensor-support
        /*gather_input=*/kFloat16To32Ints8To32,
@@ -81,16 +73,16 @@ ContextProperties ContextImplDml::GetProperties(
 
        // Gelu is emulated when the feature level is less than 5.1.
        // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_gelu_operator_desc
-       /*gelu_input=*/kFloat16To32,
+       /*gelu_input=*/DataTypeConstraint::kFloat16To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_leaky_relu_operator_desc
-       /*leaky_relu_input=*/kFloat16To32,
+       /*leaky_relu_input=*/DataTypeConstraint::kFloat16To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_relu_operator_desc
-       /*relu_input=*/kFloat16To32,
+       /*relu_input=*/DataTypeConstraint::kFloat16To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_if_operator_desc
-       /*where_condition=*/{OperandDataType::kUint8},
+       /*where_condition=*/DataTypeConstraint::kUint8,
        /*where_value=*/kFloat16To32Ints8To32});
 
   if (feature_level >= DML_FEATURE_LEVEL_4_1) {
@@ -103,7 +95,8 @@ ContextProperties ContextImplDml::GetProperties(
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_5_1) {
-    properties.data_type_limits.relu_input = kFloat16To32Int8To32;
+    properties.data_type_limits.relu_input =
+        DataTypeConstraint::kFloat16To32Int8To32;
   }
 
   return properties;

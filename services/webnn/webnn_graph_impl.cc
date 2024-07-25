@@ -866,27 +866,27 @@ bool ValidateElu(const ContextProperties& context_properties,
   return true;
 }
 
-static constexpr auto kUnaryOperatorConstraints =
-    base::MakeFixedFlatMap<mojom::ElementWiseUnary::Kind,
-                           webnn::SupportedDataTypes>({
-        {mojom::ElementWiseUnary::Kind::kAbs,
-         DataTypeConstraint::kFloat16To32Int8To32},
-        {mojom::ElementWiseUnary::Kind::kCeil, DataTypeConstraint::kFloat},
-        {mojom::ElementWiseUnary::Kind::kCos, DataTypeConstraint::kFloat},
-        {mojom::ElementWiseUnary::Kind::kExp, DataTypeConstraint::kFloat},
-        {mojom::ElementWiseUnary::Kind::kFloor, DataTypeConstraint::kFloat},
-        {mojom::ElementWiseUnary::Kind::kLog, DataTypeConstraint::kFloat},
-        {mojom::ElementWiseUnary::Kind::kNeg,
-         DataTypeConstraint::kFloat16To32Int8To32},
-        {mojom::ElementWiseUnary::Kind::kSin, DataTypeConstraint::kFloat},
-        {mojom::ElementWiseUnary::Kind::kTan, DataTypeConstraint::kFloat},
-        {mojom::ElementWiseUnary::Kind::kLogicalNot, {OperandDataType::kUint8}},
-        {mojom::ElementWiseUnary::Kind::kIdentity, SupportedDataTypes::All()},
-        {mojom::ElementWiseUnary::Kind::kSqrt, DataTypeConstraint::kFloat},
-        {mojom::ElementWiseUnary::Kind::kErf, DataTypeConstraint::kFloat},
-        {mojom::ElementWiseUnary::Kind::kReciprocal,
-         DataTypeConstraint::kFloat},
-    });
+static constexpr auto kUnaryOperatorConstraints = base::MakeFixedFlatMap<
+    mojom::ElementWiseUnary::Kind,
+    webnn::SupportedDataTypes>({
+    {mojom::ElementWiseUnary::Kind::kAbs,
+     DataTypeConstraint::kFloat16To32Int8To32},
+    {mojom::ElementWiseUnary::Kind::kCeil, DataTypeConstraint::kFloat16To32},
+    {mojom::ElementWiseUnary::Kind::kCos, DataTypeConstraint::kFloat16To32},
+    {mojom::ElementWiseUnary::Kind::kExp, DataTypeConstraint::kFloat16To32},
+    {mojom::ElementWiseUnary::Kind::kFloor, DataTypeConstraint::kFloat16To32},
+    {mojom::ElementWiseUnary::Kind::kLog, DataTypeConstraint::kFloat16To32},
+    {mojom::ElementWiseUnary::Kind::kNeg,
+     DataTypeConstraint::kFloat16To32Int8To32},
+    {mojom::ElementWiseUnary::Kind::kSin, DataTypeConstraint::kFloat16To32},
+    {mojom::ElementWiseUnary::Kind::kTan, DataTypeConstraint::kFloat16To32},
+    {mojom::ElementWiseUnary::Kind::kLogicalNot, DataTypeConstraint::kUint8},
+    {mojom::ElementWiseUnary::Kind::kIdentity, SupportedDataTypes::All()},
+    {mojom::ElementWiseUnary::Kind::kSqrt, DataTypeConstraint::kFloat16To32},
+    {mojom::ElementWiseUnary::Kind::kErf, DataTypeConstraint::kFloat16To32},
+    {mojom::ElementWiseUnary::Kind::kReciprocal,
+     DataTypeConstraint::kFloat16To32},
+});
 
 bool ValidateElementWiseUnary(const IdToOperandMap& id_to_operand_map,
                               const mojom::ElementWiseUnary& operation,
@@ -1159,7 +1159,8 @@ bool ValidateHardSigmoid(const IdToOperandMap& id_to_operand_map,
                          const mojom::HardSigmoid& hard_sigmoid,
                          base::flat_set<uint64_t>& processed_operands) {
   if (!ValidateUnaryOperation(id_to_operand_map, hard_sigmoid,
-                              DataTypeConstraint::kFloat, processed_operands)) {
+                              DataTypeConstraint::kFloat16To32,
+                              processed_operands)) {
     return false;
   }
   if (!ValidateHardSigmoidAttributes(hard_sigmoid)) {
@@ -1239,7 +1240,8 @@ bool ValidateLinear(const IdToOperandMap& id_to_operand_map,
                     const mojom::Linear& linear,
                     base::flat_set<uint64_t>& processed_operands) {
   if (!ValidateUnaryOperation(id_to_operand_map, linear,
-                              DataTypeConstraint::kFloat, processed_operands)) {
+                              DataTypeConstraint::kFloat16To32,
+                              processed_operands)) {
     return false;
   }
   if (!ValidateLinearAttributes(linear)) {
@@ -1555,8 +1557,8 @@ bool ValidatePool2d(const ContextProperties& context_properties,
 
   if (pool2d.kind == mojom::Pool2d::Kind::kAveragePool2d ||
       pool2d.kind == mojom::Pool2d::Kind::kL2Pool2d) {
-    if (!(input->descriptor.data_type() == OperandDataType::kFloat32 ||
-          input->descriptor.data_type() == OperandDataType::kFloat16)) {
+    if (!(DataTypeConstraint::kFloat16To32.Has(
+            input->descriptor.data_type()))) {
       return false;
     }
   }
@@ -1961,7 +1963,7 @@ bool ValidateOperation(const ContextProperties& context_properties,
     case mojom::Operation::Tag::kHardSwish:
       return ValidateUnaryOperation(
           id_to_operand_map, *operation.get_hard_swish(),
-          DataTypeConstraint::kFloat, processed_operands);
+          DataTypeConstraint::kFloat16To32, processed_operands);
     case mojom::Operation::Tag::kLayerNormalization:
       return ValidateLayerNormalization(id_to_operand_map,
                                         *operation.get_layer_normalization(),
@@ -2012,7 +2014,7 @@ bool ValidateOperation(const ContextProperties& context_properties,
                            processed_operands);
     case mojom::Operation::Tag::kSigmoid:
       return ValidateUnaryOperation(id_to_operand_map, *operation.get_sigmoid(),
-                                    DataTypeConstraint::kFloat,
+                                    DataTypeConstraint::kFloat16To32,
                                     processed_operands);
     case mojom::Operation::Tag::kSoftmax:
       return ValidateSoftmax(id_to_operand_map, *operation.get_softmax(),
@@ -2020,17 +2022,17 @@ bool ValidateOperation(const ContextProperties& context_properties,
     case mojom::Operation::Tag::kSoftplus:
       return ValidateUnaryOperation(
           id_to_operand_map, *operation.get_softplus(),
-          DataTypeConstraint::kFloat, processed_operands);
+          DataTypeConstraint::kFloat16To32, processed_operands);
     case mojom::Operation::Tag::kSoftsign:
       return ValidateUnaryOperation(
           id_to_operand_map, *operation.get_softsign(),
-          DataTypeConstraint::kFloat, processed_operands);
+          DataTypeConstraint::kFloat16To32, processed_operands);
     case mojom::Operation::Tag::kSplit:
       return ValidateSplit(id_to_operand_map, *operation.get_split(),
                            processed_operands);
     case mojom::Operation::Tag::kTanh:
       return ValidateUnaryOperation(id_to_operand_map, *operation.get_tanh(),
-                                    DataTypeConstraint::kFloat,
+                                    DataTypeConstraint::kFloat16To32,
                                     processed_operands);
     case mojom::Operation::Tag::kTranspose:
       return ValidateTranspose(id_to_operand_map, *operation.get_transpose(),

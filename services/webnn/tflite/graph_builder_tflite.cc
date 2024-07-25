@@ -273,25 +273,23 @@ GraphBuilderTflite::CreateAndBuild(const mojom::GraphInfo& graph_info) {
 ContextProperties GraphBuilderTflite::GetContextProperties() {
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   static constexpr SupportedDataTypes kFloat32{OperandDataType::kFloat32};
-  static constexpr SupportedDataTypes kArgMinMaxOutputSupportedDataTypes{
-      OperandDataType::kInt32, OperandDataType::kInt64};
   static constexpr SupportedDataTypes kEluSupportedDataTypes{
       OperandDataType::kFloat32, OperandDataType::kInt8};
-  return ContextProperties(InputOperandLayout::kNhwc,
-                           {/*input=*/SupportedDataTypes::All(),
-                            /*constant=*/SupportedDataTypes::All(),
-                            /*arg_min_max_input=*/SupportedDataTypes::All(),
-                            /*arg_min_max_output=*/
-                            kArgMinMaxOutputSupportedDataTypes,
-                            /*concat_inputs=*/SupportedDataTypes::All(),
-                            /*elu_input=*/kEluSupportedDataTypes,
-                            /*gather_input=*/SupportedDataTypes::All(),
-                            /*gather_indices=*/SupportedDataTypes::All(),
-                            /*gelu_input=*/kFloat32,
-                            /*leaky_relu_input=*/kFloat32,
-                            /*relu_input=*/kFloat32,
-                            /*where_condition=*/{OperandDataType::kUint8},
-                            /*where_value=*/SupportedDataTypes::All()});
+  return ContextProperties(
+      InputOperandLayout::kNhwc,
+      {/*input=*/SupportedDataTypes::All(),
+       /*constant=*/SupportedDataTypes::All(),
+       /*arg_min_max_input=*/SupportedDataTypes::All(),
+       /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
+       /*concat_inputs=*/SupportedDataTypes::All(),
+       /*elu_input=*/kEluSupportedDataTypes,
+       /*gather_input=*/SupportedDataTypes::All(),
+       /*gather_indices=*/SupportedDataTypes::All(),
+       /*gelu_input=*/kFloat32,
+       /*leaky_relu_input=*/kFloat32,
+       /*relu_input=*/kFloat32,
+       /*where_condition=*/DataTypeConstraint::kUint8,
+       /*where_value=*/SupportedDataTypes::All()});
 }
 
 GraphBuilderTflite::GraphBuilderTflite(const mojom::GraphInfo& graph_info)

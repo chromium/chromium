@@ -18,20 +18,6 @@
 
 namespace webnn {
 
-namespace DataTypeConstraint {
-
-static constexpr SupportedDataTypes kFloat = {OperandDataType::kFloat32,
-                                              OperandDataType::kFloat16};
-
-static constexpr SupportedDataTypes kFloat16To32Int8To32 = {
-    OperandDataType::kFloat32, OperandDataType::kFloat16,
-    OperandDataType::kInt32, OperandDataType::kInt8};
-
-static constexpr SupportedDataTypes kGatherOperatorIndexDataTypes = {
-    OperandDataType::kInt32, OperandDataType::kUint32, OperandDataType::kInt64};
-
-}  // namespace DataTypeConstraint
-
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     DataTypeConstraintToString(const SupportedDataTypes& constraint_set);
 

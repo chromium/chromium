@@ -1196,27 +1196,29 @@ BUILD_ELEMENTWISE_BINARY_OP(lesserOrEqual, kLesserOrEqual)
 BUILD_ELEMENTWISE_UNARY_OP(abs,
                            kAbs,
                            webnn::DataTypeConstraint::kFloat16To32Int8To32)
-BUILD_ELEMENTWISE_UNARY_OP(ceil, kCeil, webnn::DataTypeConstraint::kFloat)
-BUILD_ELEMENTWISE_UNARY_OP(cos, kCos, webnn::DataTypeConstraint::kFloat)
-BUILD_ELEMENTWISE_UNARY_OP(exp, kExp, webnn::DataTypeConstraint::kFloat)
-BUILD_ELEMENTWISE_UNARY_OP(floor, kFloor, webnn::DataTypeConstraint::kFloat)
-BUILD_ELEMENTWISE_UNARY_OP(log, kLog, webnn::DataTypeConstraint::kFloat)
+BUILD_ELEMENTWISE_UNARY_OP(ceil, kCeil, webnn::DataTypeConstraint::kFloat16To32)
+BUILD_ELEMENTWISE_UNARY_OP(cos, kCos, webnn::DataTypeConstraint::kFloat16To32)
+BUILD_ELEMENTWISE_UNARY_OP(exp, kExp, webnn::DataTypeConstraint::kFloat16To32)
+BUILD_ELEMENTWISE_UNARY_OP(floor,
+                           kFloor,
+                           webnn::DataTypeConstraint::kFloat16To32)
+BUILD_ELEMENTWISE_UNARY_OP(log, kLog, webnn::DataTypeConstraint::kFloat16To32)
 BUILD_ELEMENTWISE_UNARY_OP(neg,
                            kNeg,
                            webnn::DataTypeConstraint::kFloat16To32Int8To32)
-BUILD_ELEMENTWISE_UNARY_OP(sin, kSin, webnn::DataTypeConstraint::kFloat)
-BUILD_ELEMENTWISE_UNARY_OP(tan, kTan, webnn::DataTypeConstraint::kFloat)
-BUILD_ELEMENTWISE_UNARY_OP(erf, kErf, webnn::DataTypeConstraint::kFloat)
+BUILD_ELEMENTWISE_UNARY_OP(sin, kSin, webnn::DataTypeConstraint::kFloat16To32)
+BUILD_ELEMENTWISE_UNARY_OP(tan, kTan, webnn::DataTypeConstraint::kFloat16To32)
+BUILD_ELEMENTWISE_UNARY_OP(erf, kErf, webnn::DataTypeConstraint::kFloat16To32)
 BUILD_ELEMENTWISE_UNARY_OP(identity,
                            kIdentity,
                            webnn::SupportedDataTypes::All())
 BUILD_ELEMENTWISE_UNARY_OP(logicalNot,
                            kLogicalNot,
-                           {webnn::OperandDataType::kUint8})
+                           webnn::DataTypeConstraint::kUint8)
 BUILD_ELEMENTWISE_UNARY_OP(reciprocal,
                            kReciprocal,
-                           webnn::DataTypeConstraint::kFloat)
-BUILD_ELEMENTWISE_UNARY_OP(sqrt, kSqrt, webnn::DataTypeConstraint::kFloat)
+                           webnn::DataTypeConstraint::kFloat16To32)
+BUILD_ELEMENTWISE_UNARY_OP(sqrt, kSqrt, webnn::DataTypeConstraint::kFloat16To32)
 
 MLOperand* MLGraphBuilder::cast(const MLOperand* input,
                                 const V8MLOperandDataType output_data_type,
@@ -1508,9 +1510,9 @@ MLOperand* MLGraphBuilder::hardSwish(const MLOperand* input,
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-hard-swish, the output
   // tensor of hard-swish has the same data type and dimensions as its input.
-  return BuildUnaryOperator(this, exception_state,
-                            webnn::mojom::blink::Operation::Tag::kHardSwish,
-                            webnn::DataTypeConstraint::kFloat, input, options);
+  return BuildUnaryOperator(
+      this, exception_state, webnn::mojom::blink::Operation::Tag::kHardSwish,
+      webnn::DataTypeConstraint::kFloat16To32, input, options);
 }
 
 MLActivation* MLGraphBuilder::hardSwish(ExceptionState& exception_state) {
@@ -1532,9 +1534,9 @@ MLOperand* MLGraphBuilder::hardSigmoid(const MLOperand* input,
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-hardsigmoid, the output
   // tensor of softplus has the same type and dimensions as its input.
-  return BuildUnaryOperator(this, exception_state,
-                            webnn::mojom::blink::Operation::Tag::kHardSigmoid,
-                            webnn::DataTypeConstraint::kFloat, input, options);
+  return BuildUnaryOperator(
+      this, exception_state, webnn::mojom::blink::Operation::Tag::kHardSigmoid,
+      webnn::DataTypeConstraint::kFloat16To32, input, options);
 }
 
 MLActivation* MLGraphBuilder::hardSigmoid(const MLHardSigmoidOptions* options,
@@ -1659,9 +1661,9 @@ MLOperand* MLGraphBuilder::linear(const MLOperand* input,
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-linear, the output tensor
   // of linear has the same type and dimensions as its input.
-  return BuildUnaryOperator(this, exception_state,
-                            webnn::mojom::blink::Operation::Tag::kLinear,
-                            webnn::DataTypeConstraint::kFloat, input, options);
+  return BuildUnaryOperator(
+      this, exception_state, webnn::mojom::blink::Operation::Tag::kLinear,
+      webnn::DataTypeConstraint::kFloat16To32, input, options);
 }
 
 MLActivation* MLGraphBuilder::linear(const MLLinearOptions* options,
@@ -2068,9 +2070,9 @@ MLOperand* MLGraphBuilder::sigmoid(const MLOperand* input,
   // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-sigmoid, the
   // output tensor of sigmoid has the same data type and dimensions as its
   // input. And the input data type must be one of the floating point types.
-  return BuildUnaryOperator(this, exception_state,
-                            webnn::mojom::blink::Operation::Tag::kSigmoid,
-                            webnn::DataTypeConstraint::kFloat, input, options);
+  return BuildUnaryOperator(
+      this, exception_state, webnn::mojom::blink::Operation::Tag::kSigmoid,
+      webnn::DataTypeConstraint::kFloat16To32, input, options);
 }
 
 MLActivation* MLGraphBuilder::sigmoid(ExceptionState& exception_state) {
@@ -2154,9 +2156,9 @@ MLOperand* MLGraphBuilder::softplus(const MLOperand* input,
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softplus, the output
   // tensor of softplus has the same type and dimensions as its input.
-  return BuildUnaryOperator(this, exception_state,
-                            webnn::mojom::blink::Operation::Tag::kSoftplus,
-                            webnn::DataTypeConstraint::kFloat, input, options);
+  return BuildUnaryOperator(
+      this, exception_state, webnn::mojom::blink::Operation::Tag::kSoftplus,
+      webnn::DataTypeConstraint::kFloat16To32, input, options);
 }
 
 MLActivation* MLGraphBuilder::softplus(ExceptionState& exception_state) {
@@ -2181,9 +2183,9 @@ MLOperand* MLGraphBuilder::softsign(const MLOperand* input,
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softsign, the output tensor
   // of softsign has the same data type and dimensions as its input.
-  return BuildUnaryOperator(this, exception_state,
-                            webnn::mojom::blink::Operation::Tag::kSoftsign,
-                            webnn::DataTypeConstraint::kFloat, input, options);
+  return BuildUnaryOperator(
+      this, exception_state, webnn::mojom::blink::Operation::Tag::kSoftsign,
+      webnn::DataTypeConstraint::kFloat16To32, input, options);
 }
 
 MLActivation* MLGraphBuilder::softsign(ExceptionState& exception_state) {
@@ -2262,9 +2264,9 @@ MLOperand* MLGraphBuilder::tanh(const MLOperand* input,
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-tanh, the output tensor of
   // tanh has the same data type and dimensions as its input.
-  return BuildUnaryOperator(this, exception_state,
-                            webnn::mojom::blink::Operation::Tag::kTanh,
-                            webnn::DataTypeConstraint::kFloat, input, options);
+  return BuildUnaryOperator(
+      this, exception_state, webnn::mojom::blink::Operation::Tag::kTanh,
+      webnn::DataTypeConstraint::kFloat16To32, input, options);
 }
 
 MLActivation* MLGraphBuilder::tanh(ExceptionState& exception_state) {

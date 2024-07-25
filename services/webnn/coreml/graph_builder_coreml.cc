@@ -619,8 +619,6 @@ GraphBuilderCoreml::CreateAndBuild(const mojom::GraphInfo& graph_info,
 
 // static
 ContextProperties GraphBuilderCoreml::GetContextProperties() {
-  static constexpr SupportedDataTypes kFloats{OperandDataType::kFloat16,
-                                              OperandDataType::kFloat32};
   static constexpr SupportedDataTypes kFloatsAndInt32{OperandDataType::kFloat16,
                                                       OperandDataType::kFloat32,
                                                       OperandDataType::kInt32};
@@ -646,14 +644,14 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*arg_min_max_output=*/
        kArgMinMaxOutputSupportedDataTypes,
        /*concat_inputs=*/kFloatsAndInt32,
-       /*elu_input=*/kFloats,
+       /*elu_input=*/DataTypeConstraint::kFloat16To32,
        /*gather_input=*/kGatherInputSupportedDataTypes,
        /*gather_indices=*/
        kGatherIndicesSupportedDataTypes,
-       /*gelu_input=*/kFloats,
-       /*leaky_relu_input=*/kFloats,
-       /*relu_input=*/kFloats,
-       /*where_condition=*/{OperandDataType::kUint8},
+       /*gelu_input=*/DataTypeConstraint::kFloat16To32,
+       /*leaky_relu_input=*/DataTypeConstraint::kFloat16To32,
+       /*relu_input=*/DataTypeConstraint::kFloat16To32,
+       /*where_condition=*/DataTypeConstraint::kUint8,
        // Note that BOOL is also supported by CoreML, but WebNN does not have a
        // corresponding BOOL type. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.transpose

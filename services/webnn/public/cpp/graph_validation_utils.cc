@@ -1982,9 +1982,7 @@ base::expected<OperandDescriptor, std::string> ValidatePreluAndInferOutput(
     const OperandDescriptor& input,
     const OperandDescriptor& slope,
     std::string_view label) {
-  if (!IsFloatingPointType(input.data_type()) &&
-      input.data_type() != OperandDataType::kInt8 &&
-      input.data_type() != OperandDataType::kInt32) {
+  if (!DataTypeConstraint::kFloat16To32Int8To32.Has(input.data_type())) {
     return base::unexpected(ErrorWithLabel(
         label,
         "The data type of input and slope must be one of {float32, float16, "
@@ -2300,7 +2298,7 @@ base::expected<uint32_t, std::string> CalculateConvTranspose2dOutputSize(
 }
 
 bool IsFloatingPointType(OperandDataType data_type) {
-  return DataTypeConstraint::kFloat.Has(data_type);
+  return DataTypeConstraint::kFloat16To32.Has(data_type);
 }
 
 bool IsDepthwiseConv2d(uint32_t input_channels,
