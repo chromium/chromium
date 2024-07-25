@@ -35,7 +35,6 @@ class ASH_PUBLIC_EXPORT ActiveSessionAuthController {
   // Returns whether opening the widget was successful. Will fail if another
   // widget is already opened.
   virtual bool ShowAuthDialog(Reason reason,
-                              const AccountId& account_id,
                               AuthCompletionCallback on_auth_complete) = 0;
 
   virtual bool IsShown() const = 0;

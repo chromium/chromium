@@ -47,7 +47,6 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
 
   // ActiveSessionAuthController:
   bool ShowAuthDialog(Reason reason,
-                      const AccountId& account_id,
                       AuthCompletionCallback on_auth_complete) override;
   bool IsShown() const override;
 

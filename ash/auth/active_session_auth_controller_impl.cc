@@ -87,7 +87,6 @@ ActiveSessionAuthControllerImpl::~ActiveSessionAuthControllerImpl() = default;
 
 bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
     Reason reason,
-    const AccountId& account_id,
     AuthCompletionCallback on_auth_complete) {
   if (IsShown()) {
     LOG(ERROR) << "ActiveSessionAuthController widget is already exists.";
@@ -103,7 +102,7 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
   auth_factor_editor_ =
       std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get());
   auth_performer_ = std::make_unique<AuthPerformer>(UserDataAuthClient::Get());
-  account_id_ = account_id;
+  account_id_ = Shell::Get()->session_controller()->GetActiveAccountId();
 
   user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
