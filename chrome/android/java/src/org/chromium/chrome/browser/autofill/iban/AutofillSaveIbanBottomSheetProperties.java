@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.iban;
 
+import android.view.View.OnClickListener;
+
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 
@@ -18,8 +20,19 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
     static final ReadableObjectPropertyKey<String> CANCEL_BUTTON_LABEL =
             new ReadableObjectPropertyKey();
 
+    static final ReadableObjectPropertyKey<OnClickListener> ON_ACCEPT_BUTTON_CLICK_ACTION =
+            new ReadableObjectPropertyKey<>();
+
+    static final ReadableObjectPropertyKey<OnClickListener> ON_CANCEL_BUTTON_CLICK_ACTION =
+            new ReadableObjectPropertyKey<>();
+
     static final PropertyKey[] ALL_KEYS = {
-        TITLE, IBAN_LABEL, ACCEPT_BUTTON_LABEL, CANCEL_BUTTON_LABEL
+        TITLE,
+        IBAN_LABEL,
+        ACCEPT_BUTTON_LABEL,
+        CANCEL_BUTTON_LABEL,
+        ON_ACCEPT_BUTTON_CLICK_ACTION,
+        ON_CANCEL_BUTTON_CLICK_ACTION,
     };
 
     /** Do not instantiate. */

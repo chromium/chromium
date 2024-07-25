@@ -24,6 +24,14 @@ import org.chromium.ui.modelutil.PropertyModel;
         } else if (AutofillSaveIbanBottomSheetProperties.CANCEL_BUTTON_LABEL == propertyKey) {
             view.mCancelButton.setText(
                     model.get(AutofillSaveIbanBottomSheetProperties.CANCEL_BUTTON_LABEL));
+        } else if (AutofillSaveIbanBottomSheetProperties.ON_ACCEPT_BUTTON_CLICK_ACTION
+                == propertyKey) {
+            view.mAcceptButton.setOnClickListener(
+                    model.get(AutofillSaveIbanBottomSheetProperties.ON_ACCEPT_BUTTON_CLICK_ACTION));
+        } else if (AutofillSaveIbanBottomSheetProperties.ON_CANCEL_BUTTON_CLICK_ACTION
+                == propertyKey) {
+            view.mCancelButton.setOnClickListener(
+                    model.get(AutofillSaveIbanBottomSheetProperties.ON_CANCEL_BUTTON_CLICK_ACTION));
         }
     }
 }

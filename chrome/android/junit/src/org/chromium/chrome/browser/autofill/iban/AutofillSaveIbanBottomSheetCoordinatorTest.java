@@ -39,7 +39,7 @@ public final class AutofillSaveIbanBottomSheetCoordinatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private AutofillSaveIbanBottomSheetBridge mBridge;
+    @Mock private AutofillSaveIbanBottomSheetBridge mDelegate;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private TabModel mTabModel;
@@ -54,7 +54,7 @@ public final class AutofillSaveIbanBottomSheetCoordinatorTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mCoordinator =
                 new AutofillSaveIbanBottomSheetCoordinator(
-                        mBridge,
+                        mDelegate,
                         TEST_IBAN_UI_INFO,
                         mActivity,
                         mBottomSheetController,
@@ -78,7 +78,9 @@ public final class AutofillSaveIbanBottomSheetCoordinatorTest {
 
         verify(mBottomSheetController)
                 .hideContent(
-                        any(AutofillSaveIbanBottomSheetContent.class), /* animate= */ eq(true));
+                        any(AutofillSaveIbanBottomSheetContent.class),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.NONE));
     }
 
     @Test
@@ -103,5 +105,51 @@ public final class AutofillSaveIbanBottomSheetCoordinatorTest {
                 mCoordinator
                         .getPropertyModelForTesting()
                         .get(AutofillSaveIbanBottomSheetProperties.CANCEL_BUTTON_LABEL));
+    }
+
+    @Test
+    public void testClickAccept_savesEmptyNicknameIfNoneEntered() {
+        mCoordinator.requestShowContent();
+
+        mCoordinator.getAutofillSaveIbanBottomSheetViewForTesting().mAcceptButton.performClick();
+
+        verify(mDelegate).onUiAccepted("");
+        verify(mBottomSheetController)
+                .hideContent(
+                        any(AutofillSaveIbanBottomSheetContent.class),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    public void testClickAccept_savesCorrectNickname() {
+        String expectedNickname = "My IBAN";
+        mCoordinator.requestShowContent();
+        mCoordinator
+                .getAutofillSaveIbanBottomSheetViewForTesting()
+                .mNickname
+                .setText(expectedNickname);
+
+        mCoordinator.getAutofillSaveIbanBottomSheetViewForTesting().mAcceptButton.performClick();
+
+        verify(mDelegate).onUiAccepted(expectedNickname);
+        verify(mBottomSheetController)
+                .hideContent(
+                        any(AutofillSaveIbanBottomSheetContent.class),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    public void testClickCancel() {
+        mCoordinator.requestShowContent();
+        mCoordinator.getAutofillSaveIbanBottomSheetViewForTesting().mCancelButton.performClick();
+
+        verify(mDelegate).onUiCanceled();
+        verify(mBottomSheetController)
+                .hideContent(
+                        any(AutofillSaveIbanBottomSheetContent.class),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
     }
 }

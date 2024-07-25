@@ -11,9 +11,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-
-import java.util.function.Consumer;
 
 /**
  * Mediator class for the autofill IBAN save UI.
@@ -28,7 +27,7 @@ import java.util.function.Consumer;
  */
 /*package*/ class AutofillSaveIbanBottomSheetMediator extends EmptyBottomSheetObserver
         implements TabModelObserver, LayoutStateObserver {
-    private final AutofillSaveIbanBottomSheetBridge mBridge;
+    private final AutofillSaveIbanBottomSheetCoordinator.NativeDelegate mDelegate;
     private final AutofillSaveIbanBottomSheetContent mBottomSheetContent;
     private boolean mFinished;
     private final BottomSheetController mBottomSheetController;
@@ -38,7 +37,7 @@ import java.util.function.Consumer;
     /**
      * Creates the mediator.
      *
-     * @param bridge The bridge to signal UI flow events (OnUiCanceled, OnUiAccepted, etc.).
+     * @param delegate The delegate to signal UI flow events (OnUiCanceled, OnUiAccepted, etc.).
      * @param bottomSheetContent The bottom sheet content to be shown.
      * @param bottomSheetController The bottom sheet controller where this bottom sheet will be
      *     shown.
@@ -48,12 +47,12 @@ import java.util.function.Consumer;
      *     tab change.
      */
     AutofillSaveIbanBottomSheetMediator(
-            AutofillSaveIbanBottomSheetBridge bridge,
+            AutofillSaveIbanBottomSheetCoordinator.NativeDelegate delegate,
             AutofillSaveIbanBottomSheetContent bottomSheetContent,
             BottomSheetController bottomSheetController,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel) {
-        mBridge = bridge;
+        mDelegate = delegate;
         mBottomSheetContent = bottomSheetContent;
         mBottomSheetController = bottomSheetController;
         mLayoutStateProvider = layoutStateProvider;
@@ -68,22 +67,26 @@ import java.util.function.Consumer;
     void requestShowContent() {
         if (mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true)) {
             // TODO(b/309163770): call delegate functions.
+        } else {
+            mDelegate.onUiIgnored();
         }
     }
 
-    public void destroy() {
-        mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ true);
+    public void onAccepted(String userProvidedNickname) {
+        hide(StateChangeReason.INTERACTION_COMPLETE);
+        mDelegate.onUiAccepted(userProvidedNickname);
+    }
+
+    public void onCanceled() {
+        hide(StateChangeReason.INTERACTION_COMPLETE);
+        mDelegate.onUiCanceled();
+    }
+
+    void hide(@StateChangeReason int hideReason) {
+        mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ true, hideReason);
         mBottomSheetController.removeObserver(this);
         mLayoutStateProvider.removeObserver(this);
         mTabModel.removeObserver(this);
-        finish(AutofillSaveIbanBottomSheetBridge::onUiIgnored);
-    }
-
-    private void finish(Consumer<AutofillSaveIbanBottomSheetBridge> bridgeCallback) {
-        if (!mFinished) {
-            mFinished = true;
-            bridgeCallback.accept(mBridge);
-        }
     }
 
     // TabModelObserver.

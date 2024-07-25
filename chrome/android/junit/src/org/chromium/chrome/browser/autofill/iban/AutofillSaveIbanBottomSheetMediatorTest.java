@@ -26,7 +26,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 public final class AutofillSaveIbanBottomSheetMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private AutofillSaveIbanBottomSheetBridge mBridge;
+    @Mock private AutofillSaveIbanBottomSheetBridge mDelegate;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private TabModel mTabModel;
@@ -38,7 +38,7 @@ public final class AutofillSaveIbanBottomSheetMediatorTest {
     public void setUp() {
         mMediator =
                 new AutofillSaveIbanBottomSheetMediator(
-                        mBridge,
+                        mDelegate,
                         mBottomSheetContent,
                         mBottomSheetController,
                         mLayoutStateProvider,
@@ -56,9 +56,13 @@ public final class AutofillSaveIbanBottomSheetMediatorTest {
     }
 
     @Test
-    public void testDestroy_hidesBottomSheetContent() {
-        mMediator.destroy();
+    public void testHide_hidesBottomSheetContent() {
+        mMediator.hide(BottomSheetController.StateChangeReason.NONE);
 
-        verify(mBottomSheetController).hideContent(mBottomSheetContent, /* animate= */ true);
+        verify(mBottomSheetController)
+                .hideContent(
+                        mBottomSheetContent,
+                        /* animate= */ true,
+                        BottomSheetController.StateChangeReason.NONE);
     }
 }
