@@ -40,6 +40,7 @@ class LocalDataSource : public mojom::DataSource {
   void Flush() override;
 
   void StartCollectingData();
+  void AssignDeviceID(const std::string& id);
 
  protected:
   void FillDataBuffer();
@@ -81,6 +82,7 @@ class LocalDataSource : public mojom::DataSource {
  private:
   bool IsDataBufferOverMaxLimit();
   void RedactDataBuffer(std::vector<std::string>& buffer);
+  const std::string GetUniqueInsertId(const std::string& log_msg);
   proto::LogSeverity SeverityStringToEnum(const std::string& severity);
   bool IsWatchDogFilterValid(mojom::DataFilterPtr& filter);
   void FireChangeWatchdogCallbacks(const std::string& data);
@@ -88,6 +90,9 @@ class LocalDataSource : public mojom::DataSource {
 
   base::RepeatingTimer poll_timer_;
   base::TimeDelta poll_rate_;
+
+  // The unique ID associated with the CfM device.
+  std::string device_id_;
 
   // True if we should pass the data through the redactor tool
   // before uploading, False otherwise.
