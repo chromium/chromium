@@ -55,8 +55,6 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
@@ -95,7 +93,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
-    @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock private TabGroupModelFilter mTabModelFilter;
     @Mock private TabContentManager mTabContentManager;
     @Mock private TabCreatorManager mTabCreatorManager;
@@ -132,12 +129,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
         mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, mFaviconHelperJniMock);
 
-        mJniMocker.mock(TabGroupSyncFeaturesJni.TEST_HOOKS, mTabGroupSyncFeaturesJniMock);
-        when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
-
         TrackerFactory.setTrackerForTests(mTracker);
 
-        when(mProfile.isNativeInitialized()).thenReturn(true);
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);

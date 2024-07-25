@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -430,18 +429,16 @@ public class TabGridDialogMediator
                             TabUiMetricsHelper.recordSelectionEditorOpenMetrics(
                                     TabListEditorOpenMetricGroups.OPEN_FROM_DIALOG, mContext);
                         }
-                    } else if (result == R.id.edit_group_name) {
+                    }
+
+                    if (result == R.id.edit_group_name) {
                         mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, true);
-                    } else if (result == R.id.edit_group_color) {
+                    }
+
+                    if (result == R.id.edit_group_color) {
                         mShowColorPickerPopupRunnable.run();
                         TabUiMetricsHelper.recordTabGroupColorChangeActionMetrics(
                                 TabGroupColorChangeActionType.VIA_OVERFLOW_MENU);
-                    } else if (result == R.id.delete_tab) {
-                        TabUiUtils.closeTabGroup(
-                                (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
-                                mActionConfirmationManager,
-                                mCurrentTabId,
-                                /* hideTabGroups= */ false);
                     }
                 };
 
@@ -836,13 +833,8 @@ public class TabGridDialogMediator
 
     private View.OnClickListener getMenuButtonClickListener() {
         assert mTabListEditorControllerSupplier != null;
-        boolean shouldShowDeleteGroup =
-                TabGroupSyncFeatures.isTabGroupSyncEnabled(
-                        mCurrentTabModelFilterSupplier.get().getTabModel().getProfile());
         return TabGridDialogMenuCoordinator.getTabGridDialogMenuOnClickListener(
-                mToolbarMenuCallback,
-                mModel.get(TabGridDialogProperties.IS_INCOGNITO),
-                shouldShowDeleteGroup);
+                mToolbarMenuCallback, mModel.get(TabGridDialogProperties.IS_INCOGNITO));
     }
 
     private View.OnClickListener getShareBarClickListener() {

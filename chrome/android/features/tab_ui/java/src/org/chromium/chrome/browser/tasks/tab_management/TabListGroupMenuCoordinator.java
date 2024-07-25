@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.view.View;
 
 import androidx.annotation.DimenRes;
@@ -69,40 +68,32 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
     protected ModelList buildMenuItems(boolean isIncognito) {
         ModelList itemList = new ModelList();
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
                         R.string.close_tab_group_menu_item,
                         R.id.close_tab,
-                        /* startIconId= */ Resources.ID_NULL,
-                        /* iconTintColorStateList= */ Resources.ID_NULL,
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         true));
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
                         R.string.rename_tab_group_menu_item,
                         R.id.edit_group_name,
-                        /* startIconId= */ Resources.ID_NULL,
-                        /* iconTintColorStateList= */ Resources.ID_NULL,
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         true));
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
                         R.string.ungroup_tab_group_menu_item,
                         R.id.ungroup_tab,
-                        /* startIconId= */ Resources.ID_NULL,
-                        /* iconTintColorStateList= */ Resources.ID_NULL,
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         true));
         // Delete does not make sense for incognito since the tab group is not saved to sync.
         if (mShouldShowDeleteGroup && !isIncognito) {
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
                             R.string.delete_tab_group_menu_item,
                             R.id.delete_tab,
-                            /* startIconId= */ Resources.ID_NULL,
-                            /* iconTintColorStateList= */ Resources.ID_NULL,
                             R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                             isIncognito,
                             true));

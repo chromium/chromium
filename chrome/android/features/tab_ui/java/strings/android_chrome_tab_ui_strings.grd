@@ -340,9 +340,6 @@
       <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_EDIT_GROUP_COLOR" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, a color picker popup window will appear and allow the user to update the color for this tab group.">
         Edit group color
       </message>
-      <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_DELETE_GROUP" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the tab group is deleted.">
-        Delete group
-      </message>
 
       <!-- Tab Grid Dialog accessibility strings -->
       <message name="IDS_ACCESSIBILITY_EXPAND_TAB_GROUP" desc="The accessibility text to read when a card representing a tab group is clicked in grid tab switcher. NUMBER_OF_TABS is the number of tabs within this group.">

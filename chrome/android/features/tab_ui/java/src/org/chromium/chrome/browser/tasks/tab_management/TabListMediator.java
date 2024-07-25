@@ -2945,11 +2945,7 @@ class TabListMediator {
     void onMenuItemClicked(@IdRes int menuId, int tabId) {
         if (menuId == R.id.close_tab) {
             RecordUserAction.record("TabGroupItemMenu.Close");
-            TabUiUtils.closeTabGroup(
-                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
-                    mActionConfirmationManager,
-                    tabId,
-                    /* hideTabGroups= */ true);
+            closeTabGroup(tabId, /* hideTabGroups= */ true);
         } else if (menuId == R.id.edit_group_name) {
             RecordUserAction.record("TabGroupItemMenu.Rename");
             renameTabGroup(tabId);
@@ -2958,11 +2954,37 @@ class TabListMediator {
             ungroupTabGroup(tabId);
         } else if (menuId == R.id.delete_tab) {
             RecordUserAction.record("TabGroupItemMenu.Delete");
-            TabUiUtils.closeTabGroup(
-                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
-                    mActionConfirmationManager,
-                    tabId,
-                    /* hideTabGroups= */ false);
+            closeTabGroup(tabId, /* hideTabGroups= */ false);
+        }
+    }
+
+    private void closeTabGroup(int tabId, boolean hideTabGroups) {
+        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        TabModel tabModel = filter.getTabModel();
+        int rootId = tabModel.getTabById(tabId).getRootId();
+        List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
+        boolean isIncognito = filter.getTabModel().isIncognito();
+
+        if (hideTabGroups || isIncognito) {
+            filter.closeMultipleTabs(tabs, /* canUndo= */ true, hideTabGroups);
+        } else {
+            List<Integer> tabIds = tabs.stream().map(Tab::getId).collect(Collectors.toList());
+
+            // Present a confirmation dialog to the user before closing the tab group.
+            Callback<Integer> onResult =
+                    (@ConfirmationResult Integer result) -> {
+                        if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                            boolean canUndo = result == ConfirmationResult.IMMEDIATE_CONTINUE;
+                            List<Tab> tabsToClose =
+                                    tabIds.stream()
+                                            .map(filter.getTabModel()::getTabById)
+                                            .filter(Objects::nonNull)
+                                            .filter(tab -> !tab.isClosing())
+                                            .collect(Collectors.toList());
+                            filter.closeMultipleTabs(tabsToClose, canUndo, hideTabGroups);
+                        }
+                    };
+            mActionConfirmationManager.processDeleteGroupAttempt(onResult);
         }
     }
 

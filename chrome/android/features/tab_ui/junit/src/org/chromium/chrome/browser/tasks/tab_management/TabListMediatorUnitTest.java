@@ -4120,7 +4120,6 @@ public class TabListMediatorUnitTest {
     public void testOnMenuItemClickedCallback_DeleteGroupInTabSwitcher_IncognitoNoShow() {
         mCurrentTabModelFilterSupplier.set(mIncognitoTabGroupModelFilter);
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
-        when(mIncognitoTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
 
         List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < mIncognitoTabModel.getCount(); i++) {

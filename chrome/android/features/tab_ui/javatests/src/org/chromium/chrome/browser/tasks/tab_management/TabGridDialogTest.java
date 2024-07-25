@@ -2188,11 +2188,7 @@ public class TabGridDialogTest {
                                     2,
                                     cta.getString(
                                             R.string.tab_grid_dialog_toolbar_edit_group_color));
-                            verifyTabGridDialogToolbarMenuItem(
-                                    listView,
-                                    3,
-                                    cta.getString(R.string.tab_grid_dialog_toolbar_delete_group));
-                            assertEquals(4, listView.getCount());
+                            assertEquals(3, listView.getCount());
                         });
     }
 
