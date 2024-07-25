@@ -278,6 +278,8 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Opens the "Other Passwords" screen.
 - (void)openOtherPasswords {
   // Bring up the keyboard.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::WebViewMatcher()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
 
