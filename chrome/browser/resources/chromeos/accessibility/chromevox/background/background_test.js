@@ -1490,6 +1490,9 @@ AX_TEST_F(
       const root = await this.runWithLoadedTree(site);
       const group = root.firstChild;
       mockFeedback.call(focus(group))
+          .call(
+              () => assertTrue(RectUtil.equal(
+                  FocusBounds.get()[0], group.firstChild.location)))
           .call(doDefault(group))
           .expectSpeech('Tree item', ' 2 of 2 ')
           .call(doDefault(group))
