@@ -150,8 +150,8 @@ constexpr HeaderNameAndValue kForceValidateHeaders[] = {
 bool HeaderMatches(const HttpRequestHeaders& headers,
                    const HeaderNameAndValue* search) {
   for (; search->name; ++search) {
-    std::string header_value;
-    if (!headers.GetHeader(search->name, &header_value)) {
+    std::optional<std::string> header_value = headers.GetHeader(search->name);
+    if (!header_value) {
       continue;
     }
 
@@ -159,7 +159,7 @@ bool HeaderMatches(const HttpRequestHeaders& headers,
       return true;
     }
 
-    HttpUtil::ValuesIterator v(header_value.begin(), header_value.end(), ',');
+    HttpUtil::ValuesIterator v(header_value->begin(), header_value->end(), ',');
     while (v.GetNext()) {
       if (base::EqualsCaseInsensitiveASCII(v.value_piece(), search->value)) {
         return true;
@@ -2607,13 +2607,14 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
   // cache validation request.
   for (size_t i = 0; i < std::size(kValidationHeaders); ++i) {
     const ValidationHeaderInfo& info = kValidationHeaders[i];
-    std::string validation_value;
-    if (request_->extra_headers.GetHeader(info.request_header_name,
-                                          &validation_value)) {
-      if (!external_validation_.values[i].empty() || validation_value.empty()) {
+    if (std::optional<std::string> validation_value =
+            request_->extra_headers.GetHeader(info.request_header_name);
+        validation_value) {
+      if (!external_validation_.values[i].empty() ||
+          validation_value->empty()) {
         external_validation_error = true;
       }
-      external_validation_.values[i] = validation_value;
+      external_validation_.values[i] = std::move(validation_value).value();
       external_validation_.initialized = true;
     }
   }
