@@ -33,8 +33,13 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
     private final TextView mProposedPlusAddress;
     // The clickable icon used to refresh the suggested plus address.
     private final ImageView mRefreshIcon;
+    // The button to confirm the proposed plus address.
     private final Button mPlusAddressConfirmButton;
-    private boolean mShowingLoadingView;
+    // The button to cancel the plus address creation dialog. Only visible on
+    // first use, i.e., when there is a notice screen.
+    private final Button mPlusAddressCancelButton;
+    // Whether we are showing a notice.
+    private final boolean mShowingNotice;
     private PlusAddressCreationDelegate mDelegate;
 
     /**
@@ -55,18 +60,18 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
             GURL learnMoreUrl,
             GURL errorReportUrl,
             boolean refreshSupported) {
+        mShowingNotice = plusAddressNotice != null;
         View layout =
                 LayoutInflater.from(activity)
                         .inflate(R.layout.plus_address_creation_prompt, /* root= */ null);
         assert (layout instanceof ViewGroup) : "layout is not a ViewGroup!";
         mContentView = (ViewGroup) layout;
-        mLoadingView = new LoadingView(activity);
-        mLoadingView.setVisibility(View.GONE);
-        mContentView.addView(mLoadingView);
 
+        mLoadingView = mContentView.findViewById(R.id.plus_address_creation_loading_view);
         mProposedPlusAddress = mContentView.findViewById(R.id.proposed_plus_address);
         mRefreshIcon = mContentView.findViewById(R.id.refresh_plus_address_icon);
         mPlusAddressConfirmButton = mContentView.findViewById(R.id.plus_address_confirm_button);
+        mPlusAddressCancelButton = mContentView.findViewById(R.id.plus_address_cancel_button);
 
         // TODO(b/303054310): Once project exigencies allow for it, convert all of
         // these back to the android view XML.
@@ -121,12 +126,11 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
                     });
         }
 
-        Button plusAddressCancelButton = mContentView.findViewById(R.id.plus_address_cancel_button);
-        if (plusAddressNotice != null) {
-            plusAddressCancelButton.setText(plusAddressModalCancelText);
-            plusAddressCancelButton.setOnClickListener((View _view) -> mDelegate.onCanceled());
+        if (mShowingNotice) {
+            mPlusAddressCancelButton.setText(plusAddressModalCancelText);
+            mPlusAddressCancelButton.setOnClickListener((View _view) -> mDelegate.onCanceled());
         } else {
-            plusAddressCancelButton.setVisibility(View.GONE);
+            mPlusAddressCancelButton.setVisibility(View.GONE);
         }
 
         // Apply RTL layout changes.
@@ -147,6 +151,10 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_LOADING_STATES_ANDROID)) {
             // This also changes the color of the refresh icon to disabled.
             mRefreshIcon.setEnabled(false);
+
+            // Hide the buttons.
+            mPlusAddressConfirmButton.setVisibility(View.GONE);
+            mPlusAddressCancelButton.setVisibility(View.GONE);
         }
         showLoadingIndicator();
     }
@@ -157,9 +165,14 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
                 mContentView.findViewById(R.id.plus_address_modal_error_report);
         plusAddressErrorReportView.setVisibility(View.VISIBLE);
 
-        // Disable Confirm button if attempts to Confirm() fail.
-        mPlusAddressConfirmButton.setEnabled(false);
         hideLoadingIndicator();
+
+        // Disable Confirm button if attempts to Confirm() fail.
+        mPlusAddressConfirmButton.setVisibility(View.VISIBLE);
+        mPlusAddressConfirmButton.setEnabled(false);
+        if (mShowingNotice) {
+            mPlusAddressCancelButton.setVisibility(View.VISIBLE);
+        }
     }
 
     public void hideRefreshButton() {
@@ -190,8 +203,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
 
     @Override
     public void destroy() {
-        // Some cleanup is handled by PlusAddressCreationMediator.onSheetClosed
-        // TODO: crbug.com/1467623 - Consolidate cleanup behavior.
         mLoadingView.destroy();
     }
 
@@ -244,10 +255,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         return R.string.plus_address_bottom_sheet_content_description;
     }
 
-    public boolean showsLoadingIndicatorForTesting() {
-        return mShowingLoadingView;
-    }
-
     private void maybeShowFirstTimeUseNotice(
             Activity activity, @Nullable String plusAddressNotice, GURL learnMoreUrl) {
         TextView firstTimeNotice =
@@ -271,12 +278,13 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
     }
 
     private void showLoadingIndicator() {
-        mLoadingView.showLoadingUI();
-        mShowingLoadingView = true;
+        // We skip the delay because otherwise the height of the bottomsheet
+        // is adjusted once on hiding the confirm button and then again after
+        // the loading view appears.
+        mLoadingView.showLoadingUI(/* skipDelay= */ true);
     }
 
     private void hideLoadingIndicator() {
         mLoadingView.hideLoadingUI();
-        mShowingLoadingView = false;
     }
 }

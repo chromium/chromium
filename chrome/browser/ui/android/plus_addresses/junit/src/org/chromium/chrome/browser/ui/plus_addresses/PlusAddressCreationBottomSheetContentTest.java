@@ -28,6 +28,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -36,11 +39,17 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 import org.chromium.url.GURL;
 
+import java.util.concurrent.TimeoutException;
+
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowView.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class PlusAddressCreationBottomSheetContentTest {
     private static final String MODAL_TITLE = "lorem ipsum title";
     private static final String MODAL_PLUS_ADDRESS_DESCRIPTION = "lorem ipsum description";
@@ -65,6 +74,9 @@ public class PlusAddressCreationBottomSheetContentTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.setupActivity(TestActivity.class);
+        // Disabling animations is necessary to avoid running into issues with
+        // delayed hiding of loading views.
+        LoadingView.setDisableAnimationForTest(true);
         mBottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(
                         mActivity,
@@ -364,16 +376,34 @@ public class PlusAddressCreationBottomSheetContentTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.PLUS_ADDRESS_LOADING_STATES_ANDROID})
-    public void testOnConfirmButtonClicked_showsLoadingIndicator() {
-        Assert.assertFalse(mBottomSheetContent.showsLoadingIndicatorForTesting());
-        // Show the loading indicator once we click the Confirm button.
+    public void testOnConfirmButtonClicked_showsLoadingIndicator() throws TimeoutException {
+        LoadingView loadingView =
+                mBottomSheetContent
+                        .getContentView()
+                        .findViewById(R.id.plus_address_creation_loading_view);
+
+        // Before clicking confirm, there is no loading indicator, but both
+        // a confirmation and a cancel button.
+        Assert.assertEquals(loadingView.getVisibility(), View.GONE);
         Button modalConfirmButton =
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
+        Button modalCancelButton =
+                mBottomSheetContent.getContentView().findViewById(R.id.plus_address_cancel_button);
+        Assert.assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
+        Assert.assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
+
+        // Show the loading indicator and hide the buttons once we click the confirm button.
         modalConfirmButton.callOnClick();
-        Assert.assertTrue(mBottomSheetContent.showsLoadingIndicatorForTesting());
-        // Hide the loading indicator if we show an error.
+        Assert.assertEquals(modalConfirmButton.getVisibility(), View.GONE);
+        Assert.assertEquals(modalCancelButton.getVisibility(), View.GONE);
+        Assert.assertEquals(loadingView.getVisibility(), View.VISIBLE);
+
+        // Hide the loading indicator and resurface the buttons if we show an error.
         mBottomSheetContent.showError();
-        Assert.assertFalse(mBottomSheetContent.showsLoadingIndicatorForTesting());
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Assert.assertEquals(loadingView.getVisibility(), View.GONE);
+        Assert.assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
+        Assert.assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
     }
 
     @Test
