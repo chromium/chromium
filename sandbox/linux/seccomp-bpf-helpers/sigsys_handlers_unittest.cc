@@ -108,7 +108,10 @@ BPF_DEATH_TEST_C(
     GetSockoptPrintsCorrectMessage,
     DEATH_SEGV_MESSAGE(sandbox::GetSockoptErrorMessageContentForTests()),
     DisallowSockoptPolicy) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnonnull"
   getsockopt(0, 0, 0, nullptr, nullptr);
+#pragma GCC diagnostic pop
 }
 
 const char kSigsysMessage[] =

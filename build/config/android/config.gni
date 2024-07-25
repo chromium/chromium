@@ -134,7 +134,7 @@ if (is_android || is_chromeos) {
       # Today (2023-08-30) only the canary Android NDK supports RISC-V64.
       default_android_ndk_root = "//third_party/android_toolchain_canary/ndk"
     }
-    default_android_ndk_version = "r26b"
+    default_android_ndk_version = "r27"
   } else {
     assert(defined(default_android_ndk_version))
   }
