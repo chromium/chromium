@@ -5128,6 +5128,13 @@ const char kForceSigninFlowInProfilePickerDescription[] =
     "Profile Picker, to the regular sign in flow within the Profile Picker "
     "with adaptation to the policy settings";
 
+const char kFreezingOnEnergySaverName[] =
+    "Freeze CPU intensive background tabs on Energy Saver";
+const char kFreezingOnEnergySaverDescription[] =
+    "When Energy Saver is active, freeze eligible background tabs that use a "
+    "lot of CPU. A tab is eligible if it's silent, doesn't provide audio- or "
+    "video- conference functionality and doesn't use WebUSB or Web Bluetooth.";
+
 const char kKeyboardAndPointerLockPromptName[] =
     "Keyboard and Pointer Lock prompt";
 const char kKeyboardAndPointerLockPromptDescription[] =

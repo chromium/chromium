@@ -2978,6 +2978,9 @@ extern const char kEsbDownloadRowPromoFeatureDescription[];
 extern const char kForceSigninFlowInProfilePickerName[];
 extern const char kForceSigninFlowInProfilePickerDescription[];
 
+extern const char kFreezingOnEnergySaverName[];
+extern const char kFreezingOnEnergySaverDescription[];
+
 extern const char kKeyboardAndPointerLockPromptName[];
 extern const char kKeyboardAndPointerLockPromptDescription[];
 
