@@ -31,10 +31,10 @@
 #include "chromeos/ash/components/enhanced_network_tts/mojom/enhanced_network_tts.mojom.h"
 #include "chromeos/ash/components/language_packs/language_packs_impl.h"
 #include "chromeos/ash/components/language_packs/public/mojom/language_packs.mojom.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/appid_util.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/xu_camera.mojom.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/appid_util.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/xu_camera.mojom.h"
 #include "chromeos/services/media_perception/public/mojom/media_perception.mojom.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -53,7 +53,7 @@
 #if BUILDFLAG(PLATFORM_CFM)
 #include "chrome/browser/ash/chromebox_for_meetings/xu_camera/xu_camera_service.h"
 #include "chromeos/ash/components/chromebox_for_meetings/features.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 #endif
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -165,7 +165,7 @@ void PopulateChromeFrameBindersForExtension(
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  if (ash::cfm::IsChromeboxForMeetingsHashedAppId(
+  if (chromeos::cfm::IsChromeboxForMeetingsHashedAppId(
           extension->hashed_id().value())) {
 // The experimentation framework used to manage the
 // `ash::cfm::features::kMojoServices` feature flag requires
@@ -184,7 +184,7 @@ void PopulateChromeFrameBindersForExtension(
            mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>
                receiver) {
           if (base::FeatureList::IsEnabled(ash::cfm::features::kMojoServices)) {
-            ash::cfm::ServiceConnection::GetInstance()->BindServiceContext(
+            chromeos::cfm::ServiceConnection::GetInstance()->BindServiceContext(
                 std::move(receiver));
           } else {
             receiver.ResetWithReason(
@@ -211,17 +211,17 @@ void PopulateChromeFrameBindersForExtension(
 // images. For those devices reject all requests until they are
 // rebooted to the CfM image variant for their device.
 #else
-    binder_map->Add<
-        chromeos::cfm::mojom::CfmServiceContext>(base::BindRepeating(
-        [](content::RenderFrameHost* frame_host,
-           mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>
-               receiver) {
-          receiver.ResetWithReason(
-              static_cast<uint32_t>(chromeos::cfm::mojom::DisconnectReason::
-                                        kServiceUnavailableCode),
-              chromeos::cfm::mojom::DisconnectReason::
-                  kServiceUnavailableMessage);
-        }));
+    binder_map->Add<chromeos::cfm::mojom::CfmServiceContext>(
+        base::BindRepeating(
+            [](content::RenderFrameHost* frame_host,
+               mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>
+                   receiver) {
+              receiver.ResetWithReason(
+                  static_cast<uint32_t>(chromeos::cfm::mojom::DisconnectReason::
+                                            kServiceUnavailableCode),
+                  chromeos::cfm::mojom::DisconnectReason::
+                      kServiceUnavailableMessage);
+            }));
     binder_map->Add<ash::cfm::mojom::XuCamera>(base::BindRepeating(
         [](content::RenderFrameHost* frame_host,
            mojo::PendingReceiver<ash::cfm::mojom::XuCamera> receiver) {
@@ -239,8 +239,9 @@ void PopulateChromeFrameBindersForExtension(
     extensions::ExtensionsAPIClient* client =
         extensions::ExtensionsAPIClient::Get();
     extensions::MediaPerceptionAPIDelegate* delegate = nullptr;
-    if (client)
+    if (client) {
       delegate = client->GetMediaPerceptionAPIDelegate();
+    }
     if (delegate) {
       // Note that it is safe to use base::Unretained here because |delegate| is
       // owned by the |client|, which is instantiated by the

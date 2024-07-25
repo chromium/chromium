@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/data_aggregator_service.h"
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/test_watchdog.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 
 namespace ash::cfm {
 

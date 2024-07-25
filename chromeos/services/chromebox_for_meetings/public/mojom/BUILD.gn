@@ -6,9 +6,9 @@ import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //ash")
 
-mojom("mojom") {
+mojom_component("mojom") {
   sources = [
     "cfm_service_manager.mojom",
     "xu_camera.mojom",
@@ -16,7 +16,7 @@ mojom("mojom") {
 
   public_deps = [ "//mojo/public/mojom/base" ]
 
-  if (is_cfm) {
+  if (is_cfm && is_chromeos_ash) {
     sources += [
       "cfm_browser.mojom",
       "external_display_brightness.mojom",
@@ -27,4 +27,7 @@ mojom("mojom") {
     ]
     public_deps += [ "//chromeos/ash/services/cros_healthd/public/mojom" ]
   }
+
+  output_prefix = "chromeos_cfmservice_mojom"
+  macro_prefix = "CHROMEOS_CFMSERVICE_MOJOM"
 }

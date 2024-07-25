@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_TEST_WATCHDOG_H_
 #define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_TEST_WATCHDOG_H_
 
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace ash::cfm {

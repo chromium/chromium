@@ -2,22 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONTEXT_H_
-#define CHROMEOS_ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONTEXT_H_
+#ifndef CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONTEXT_H_
+#define CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONTEXT_H_
 
 #include "base/functional/bind.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace ash {
+namespace chromeos {
 namespace cfm {
 
-class FakeCfmServiceContext : public chromeos::cfm::mojom::CfmServiceContext {
+class FakeCfmServiceContext
+    : public mojom::CfmServiceContext {
  public:
   using FakeProvideAdaptorCallback = base::OnceCallback<void(
       const std::string& interface_name,
-      mojo::PendingRemote<chromeos::cfm::mojom::CfmServiceAdaptor>
+      mojo::PendingRemote<mojom::CfmServiceAdaptor>
           adaptor_remote,
       ProvideAdaptorCallback callback)>;
 
@@ -33,7 +34,7 @@ class FakeCfmServiceContext : public chromeos::cfm::mojom::CfmServiceContext {
 
   void ProvideAdaptor(
       const std::string& interface_name,
-      mojo::PendingRemote<chromeos::cfm::mojom::CfmServiceAdaptor>
+      mojo::PendingRemote<mojom::CfmServiceAdaptor>
           adaptor_remote,
       ProvideAdaptorCallback callback) override;
 
@@ -52,6 +53,6 @@ class FakeCfmServiceContext : public chromeos::cfm::mojom::CfmServiceContext {
 };
 
 }  // namespace cfm
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // CHROMEOS_ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONTEXT_H_
+#endif  // CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONTEXT_H_

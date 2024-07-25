@@ -10,7 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/chromebox_for_meetings/logger/cfm_logger_service.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom-shared.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom-shared.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_provider.h"
 

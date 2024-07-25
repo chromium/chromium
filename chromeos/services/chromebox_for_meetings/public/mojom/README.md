@@ -13,10 +13,10 @@ ash and should be synced with other repos where these mojoms are located.
 Hot-tip: Generate  Js w/
 
 ```
-$ ninja -C out_${SDK_BOARD}/Release/chromeos/ash/services/chromebox_for_meetings/public/mojom:mojom_js
+$ ninja -C out_${SDK_BOARD}/Release/chromeos/services/chromebox_for_meetings/public/mojom:mojom_js
 ```
 These files can be found in:
 
-`out_${SDK_BOARD}/Release/gen/chromeos/ash/services/chromebox_for_meetings/public/mojom`
+`out_${SDK_BOARD}/Release/gen/chromeos/services/chromebox_for_meetings/public/mojom`
 
-[cfm_service_manager.mojom]: https://source.chromium.org/chromium/chromium/src/+/HEAD:chromeos/ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom
+[cfm_service_manager.mojom]: https://source.chromium.org/chromium/chromium/src/+/HEAD:chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom
