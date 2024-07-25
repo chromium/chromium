@@ -17,6 +17,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "third_party/tflite/buildflags.h"
 
 namespace optimization_guide {
 
@@ -294,6 +295,14 @@ bool ModelExecutionFeaturesController::IsSettingVisible(
         feature, SettingsVisibilityResult::kNotVisibleGraduatedFeature);
     return false;
   }
+
+#if !BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+  if (feature == UserVisibleFeatureKey::kHistorySearch) {
+    metrics_recorder.SetResult(
+        feature, SettingsVisibilityResult::kNotVisibleHardwareUnsupported);
+    return false;
+  }
+#endif
 
   // If the setting is currently enabled by user, then we should show the
   // setting to the user regardless of any other checks.

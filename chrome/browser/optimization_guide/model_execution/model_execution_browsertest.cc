@@ -39,6 +39,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/tflite/buildflags.h"
 
 namespace optimization_guide {
 
@@ -830,7 +831,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
       ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
   // The feature with automatic enabling disallowed should be visible but not
   // enabled.
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
+#else
+  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
+#endif
   EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kHistorySearch));
 }

@@ -47,9 +47,11 @@ class ModelExecutionFeaturesController
     kNotVisibleModelExecutionCapability = 6,
     // Not visible because the feature is already graduated.
     kNotVisibleGraduatedFeature = 7,
+    // Not visible because the device is unsupported by the feature.
+    kNotVisibleHardwareUnsupported = 8,
     // Updates should match with FeaturesSettingsVisibilityResult enum in
     // enums.xml.
-    kMaxValue = kNotVisibleGraduatedFeature
+    kMaxValue = kNotVisibleHardwareUnsupported
   };
 
   enum class DogfoodStatus {
