@@ -423,8 +423,7 @@ bool FencedFrameReporter::SendReport(
         static_cast<WebContentsImpl*>(web_contents)->GetAttributionSupport();
     auto suitable_context =
         AttributionSuitableContext::Create(request_initiator_frame);
-    if (network::HasAttributionSupport(attribution_reporting_support) &&
-        suitable_context.has_value()) {
+    if (suitable_context.has_value()) {
       BeaconId beacon_id(unique_id_counter.GetNext());
 
       AttributionDataHostManager* manager =

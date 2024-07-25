@@ -74,6 +74,9 @@ using blink::url_test_helpers::ToKURL;
 
 const char kAttributionReportingSupport[] = "Attribution-Reporting-Support";
 
+const char kAttributionSrcRequestStatusMetric[] =
+    "Conversions.AttributionSrcRequestStatus";
+
 const char kUrl[] = "https://example1.com/foo.html";
 
 ResourceRequest GetAttributionRequest(
@@ -385,16 +388,15 @@ TEST_F(AttributionSrcLoaderTest, AttributionSrcRequest_HistogramsRecorded) {
   histograms.ExpectBucketCount("Conversions.AllowedByPermissionPolicy", 1, 2);
 
   // kRequested = 0.
-  histograms.ExpectUniqueSample("Conversions.AttributionSrcRequestStatus", 0,
-                                2);
+  histograms.ExpectUniqueSample(kAttributionSrcRequestStatusMetric, 0, 2);
 
   url_test_helpers::ServeAsynchronousRequests();
 
   // kReceived = 1.
-  histograms.ExpectBucketCount("Conversions.AttributionSrcRequestStatus", 1, 1);
+  histograms.ExpectBucketCount(kAttributionSrcRequestStatusMetric, 1, 1);
 
   // kFailed = 2.
-  histograms.ExpectBucketCount("Conversions.AttributionSrcRequestStatus", 2, 1);
+  histograms.ExpectBucketCount(kAttributionSrcRequestStatusMetric, 2, 1);
 }
 
 TEST_F(AttributionSrcLoaderTest, Referrer) {
@@ -484,14 +486,18 @@ TEST_F(AttributionSrcLoaderTest, EagerlyClosesRemote) {
   EXPECT_EQ(mock_data_host->disconnects(), 1u);
 }
 
-TEST_F(AttributionSrcLoaderTest, NoneSupported_CannotRegister) {
+TEST_F(AttributionSrcLoaderTest, NoneSupport_NoAttributionSrcRequest) {
   GetPage().SetAttributionSupport(AttributionSupport::kNone);
 
-  KURL test_url = ToKURL("https://example1.com/foo.html");
+  base::HistogramTester histograms;
 
-  EXPECT_FALSE(
-      attribution_src_loader_->CanRegister(test_url, /*element=*/nullptr,
-                                           /*request_id=*/std::nullopt));
+  KURL url = ToKURL(kUrl);
+  RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
+
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr,
+                                    network::mojom::ReferrerPolicy::kDefault);
+
+  histograms.ExpectTotalCount(kAttributionSrcRequestStatusMetric, 0);
 }
 
 TEST_F(AttributionSrcLoaderTest, WebDisabled_TriggerNotRegistered) {

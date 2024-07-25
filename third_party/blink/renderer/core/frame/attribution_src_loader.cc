@@ -145,16 +145,26 @@ GetRegistrationInfo(const HTTPHeaderMap& map,
 
 template <typename Container>
 Vector<KURL> ParseAttributionSrcUrls(AttributionSrcLoader& loader,
-                                     const Document& document,
+                                     LocalDOMWindow* window,
                                      const Container& strings,
                                      HTMLElement* element) {
+  CHECK(window);
+
+  if (!network::HasAttributionSupport(loader.GetSupport())) {
+    LogAuditIssue(window, AttributionReportingIssueType::kNoWebOrOsSupport,
+                  element,
+                  /*request_id=*/std::nullopt,
+                  /*invalid_parameter=*/String());
+    return {};
+  }
+
   Vector<KURL> urls;
   urls.reserve(base::checked_cast<wtf_size_t>(strings.size()));
 
   // TODO(crbug.com/1434306): Extract URL-invariant checks to avoid redundant
   // operations and DevTools issues.
   for (wtf_size_t i = 0; i < strings.size(); i++) {
-    KURL url = document.CompleteURL(strings[i]);
+    KURL url = window->CompleteURL(strings[i]);
     if (loader.CanRegister(url, element, /*request_id=*/std::nullopt)) {
       urls.emplace_back(std::move(url));
     }
@@ -433,7 +443,8 @@ void AttributionSrcLoader::RecordAttributionFeatureAllowed(bool enabled) {
 Vector<KURL> AttributionSrcLoader::ParseAttributionSrc(
     const AtomicString& attribution_src,
     HTMLElement* element) {
-  return ParseAttributionSrcUrls(*this, *local_frame_->GetDocument(),
+  CHECK(local_frame_);
+  return ParseAttributionSrcUrls(*this, local_frame_->DomWindow(),
                                  SpaceSplitString(attribution_src), element);
 }
 
@@ -502,9 +513,10 @@ std::optional<Impression> AttributionSrcLoader::RegisterNavigation(
     const WebVector<WebString>& attribution_srcs,
     bool has_transient_user_activation,
     network::mojom::ReferrerPolicy referrer_policy) {
+  CHECK(local_frame_);
   return RegisterNavigationInternal(
       navigation_url,
-      ParseAttributionSrcUrls(*this, *local_frame_->GetDocument(),
+      ParseAttributionSrcUrls(*this, local_frame_->DomWindow(),
                               attribution_srcs,
                               /*element=*/nullptr),
       /*element=*/nullptr, has_transient_user_activation, referrer_policy);
@@ -688,21 +700,7 @@ bool AttributionSrcLoader::CanRegister(const KURL& url,
                                        HTMLElement* element,
                                        std::optional<uint64_t> request_id,
                                        bool log_issues) {
-  if (!ReportingOriginForUrlIfValid(url, element, request_id, log_issues)) {
-    return false;
-  }
-
-  if (!network::HasAttributionSupport(GetSupport())) {
-    if (log_issues) {
-      LogAuditIssue(local_frame_->DomWindow(),
-                    AttributionReportingIssueType::kNoWebOrOsSupport, element,
-                    request_id,
-                    /*invalid_parameter=*/String());
-    }
-    return false;
-  }
-
-  return true;
+  return !!ReportingOriginForUrlIfValid(url, element, request_id, log_issues);
 }
 
 network::mojom::AttributionSupport AttributionSrcLoader::GetSupport() const {

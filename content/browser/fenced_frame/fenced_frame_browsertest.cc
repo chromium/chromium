@@ -7640,10 +7640,12 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
 
   response.WaitForRequest();
   EXPECT_EQ(response.http_request()->content, event_data);
-  EXPECT_FALSE(base::Contains(response.http_request()->headers,
-                              "Attribution-Reporting-Eligible"));
-  EXPECT_FALSE(base::Contains(response.http_request()->headers,
-                              "Attribution-Reporting-Support"));
+  ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+      response.http_request()->headers.at("Attribution-Reporting-Eligible"));
+  ExpectValidAttributionReportingSupportHeader(
+      response.http_request()->headers.at("Attribution-Reporting-Support"),
+      /*web_expected=*/false,
+      /*os_expected=*/false);
 }
 
 // This test case covers the crash due to different implementations are used to
