@@ -5,35 +5,35 @@
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 
 NSString* const kClearBrowsingDataViewAccessibilityIdentifier =
-    @"kClearBrowsingDataViewAccessibilityIdentifier";
+    @"ClearBrowsingDataViewAccessibilityIdentifier";
 
 NSString* const kClearBrowsingHistoryCellAccessibilityIdentifier =
-    @"kClearBrowsingHistoryCellAccessibilityIdentifier";
+    @"ClearBrowsingHistoryCellAccessibilityIdentifier";
 NSString* const kClearCookiesCellAccessibilityIdentifier =
-    @"kClearCookiesCellAccessibilityIdentifier";
+    @"ClearCookiesCellAccessibilityIdentifier";
 NSString* const kClearCacheCellAccessibilityIdentifier =
-    @"kClearCacheCellAccessibilityIdentifier";
+    @"ClearCacheCellAccessibilityIdentifier";
 NSString* const kClearSavedPasswordsCellAccessibilityIdentifier =
-    @"kClearSavedPasswordsCellAccessibilityIdentifier";
+    @"ClearSavedPasswordsCellAccessibilityIdentifier";
 NSString* const kClearAutofillCellAccessibilityIdentifier =
-    @"kClearAutofillCellAccessibilityIdentifier";
+    @"ClearAutofillCellAccessibilityIdentifier";
 
 NSString* const kQuickDeletePopUpButtonIdentifier =
-    @"kQuickDeletePopUpButtonIdentifier";
+    @"QuickDeletePopUpButtonIdentifier";
 
 NSString* const kQuickDeleteBrowsingDataButtonIdentifier =
-    @"kQuickDeleteBrowsingDataButtonIdentifier";
+    @"QuickDeleteBrowsingDataButtonIdentifier";
 
-NSString* const kQuickDeleteFooterIdentifier = @"kQuickDeleteFooterIdentifier";
+NSString* const kQuickDeleteFooterIdentifier = @"QuickDeleteFooterIdentifier";
 
 NSString* const kQuickDeleteBrowsingDataConfirmButtonIdentifier =
-    @"kQuickDeleteBrowsingDataConfirmButtonIdentifier";
+    @"QuickDeleteBrowsingDataConfirmButtonIdentifier";
 
 NSString* const kQuickDeleteBrowsingDataHistoryIdentifier =
-    @"kQuickDeleteBrowsingDataHistoryIdentifier";
+    @"QuickDeleteBrowsingDataHistoryIdentifier";
 NSString* const kQuickDeleteBrowsingDataSiteDataIdentifier =
-    @"kQuickDeleteBrowsingDataSiteDataIdentifier";
+    @"QuickDeleteBrowsingDataSiteDataIdentifier";
 NSString* const kQuickDeleteBrowsingDataPasswordsIdentifier =
-    @"kQuickDeleteBrowsingDataPasswordsIdentifier";
+    @"QuickDeleteBrowsingDataPasswordsIdentifier";
 NSString* const kQuickDeleteBrowsingDataAutofillIdentifier =
-    @"kQuickDeleteBrowsingDataAutofillIdentifier";
+    @"QuickDeleteBrowsingDataAutofillIdentifier";
