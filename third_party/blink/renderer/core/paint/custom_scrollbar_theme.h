@@ -97,9 +97,9 @@ class CustomScrollbarTheme final : public ScrollbarTheme {
   gfx::Rect ForwardButtonRect(const Scrollbar&) const override;
   gfx::Rect TrackRect(const Scrollbar&) const override;
 
-  void PaintTrackAndButtons(GraphicsContext&,
-                            const Scrollbar&,
-                            const gfx::Rect&) override;
+  void PaintTrackBackgroundAndButtons(GraphicsContext&,
+                                      const Scrollbar&,
+                                      const gfx::Rect&) override;
   void PaintButton(GraphicsContext&,
                    const Scrollbar&,
                    const gfx::Rect&,
@@ -116,14 +116,6 @@ class CustomScrollbarTheme final : public ScrollbarTheme {
 
  private:
   gfx::Rect ButtonRect(const Scrollbar&, ScrollbarPart) const;
-  void PaintScrollbarBackground(GraphicsContext&, const Scrollbar&);
-  void PaintTrackBackground(GraphicsContext&,
-                            const Scrollbar&,
-                            const gfx::Rect&);
-  void PaintTrackPiece(GraphicsContext&,
-                       const Scrollbar&,
-                       const gfx::Rect&,
-                       ScrollbarPart);
   void PaintPart(GraphicsContext&,
                  const Scrollbar&,
                  const gfx::Rect&,

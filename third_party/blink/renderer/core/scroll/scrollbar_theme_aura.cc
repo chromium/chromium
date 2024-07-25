@@ -229,16 +229,17 @@ int ScrollbarThemeAura::MinimumThumbLength(const Scrollbar& scrollbar) const {
          scrollbar.ScaleFromDIP();
 }
 
-void ScrollbarThemeAura::PaintTrackAndButtons(GraphicsContext& context,
-                                              const Scrollbar& scrollbar,
-                                              const gfx::Rect& rect) {
+void ScrollbarThemeAura::PaintTrackBackgroundAndButtons(
+    GraphicsContext& context,
+    const Scrollbar& scrollbar,
+    const gfx::Rect& rect) {
   if (rect.size() == scrollbar.FrameRect().size()) {
     // The non-nine-patch code path. The caller should use this code path if
     // - UsesNinePatchTrackAndButtonsResource() is false;
     // - There are tickmarks; or
     // - Is painting non-composited scrollbars
     //   (from ScrollbarDisplayItem::Paint()).
-    ScrollbarTheme::PaintTrackAndButtons(context, scrollbar, rect);
+    ScrollbarTheme::PaintTrackBackgroundAndButtons(context, scrollbar, rect);
     return;
   }
 
@@ -265,27 +266,27 @@ void ScrollbarThemeAura::PaintTrackAndButtons(GraphicsContext& context,
   gfx::Rect forward_button_rect = back_button_rect;
   if (scrollbar.Orientation() == kVerticalScrollbar) {
     forward_button_rect.Offset(
-        0, ButtonSize(scrollbar).height() + aperture_track_space);
+        0, back_button_rect.height() + aperture_track_space);
   } else {
-    forward_button_rect.Offset(
-        ButtonSize(scrollbar).width() + aperture_track_space, 0);
+    forward_button_rect.Offset(back_button_rect.width() + aperture_track_space,
+                               0);
   }
   PaintButton(context, scrollbar, forward_button_rect, kForwardButtonEndPart);
 
   gfx::Rect track_rect = back_button_rect;
   if (scrollbar.Orientation() == kVerticalScrollbar) {
-    track_rect.Offset(0, ButtonSize(scrollbar).height());
+    track_rect.Offset(0, back_button_rect.height());
     track_rect.set_height(aperture_track_space);
   } else {
-    track_rect.Offset(ButtonSize(scrollbar).width(), 0);
+    track_rect.Offset(back_button_rect.width(), 0);
     track_rect.set_width(aperture_track_space);
   }
-  PaintTrack(context, scrollbar, track_rect);
+  PaintTrackBackground(context, scrollbar, track_rect);
 }
 
-void ScrollbarThemeAura::PaintTrack(GraphicsContext& context,
-                                    const Scrollbar& scrollbar,
-                                    const gfx::Rect& rect) {
+void ScrollbarThemeAura::PaintTrackBackground(GraphicsContext& context,
+                                              const Scrollbar& scrollbar,
+                                              const gfx::Rect& rect) {
   if (rect.IsEmpty())
     return;
 

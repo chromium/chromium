@@ -153,9 +153,10 @@ void CustomScrollbarTheme::PaintScrollCorner(
   context.FillRect(corner_rect, Color::kWhite, AutoDarkMode::Disabled());
 }
 
-void CustomScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,
-                                                const Scrollbar& scrollbar,
-                                                const gfx::Rect& rect) {
+void CustomScrollbarTheme::PaintTrackBackgroundAndButtons(
+    GraphicsContext& context,
+    const Scrollbar& scrollbar,
+    const gfx::Rect& rect) {
   // Custom scrollbars are always painted in their original coordinate space,
   // i.e. the space of Scrollbar::FrameRect() and ScrollbarTheme::XXXRect()
   // which is |context|'s current space.

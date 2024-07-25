@@ -46,9 +46,10 @@ class PaintedScrollbar : public FakeScrollbar {
     set_track_rect(gfx::Rect(size));
   }
 
-  void PaintPart(PaintCanvas* canvas,
-                 ScrollbarPart part,
-                 const gfx::Rect& rect) override {
+  void set_paint_scale(int scale) { paint_scale_ = scale; }
+
+ private:
+  void Paint(PaintCanvas& canvas, const gfx::Rect& rect) override {
     PaintFlags flags;
     flags.setStyle(PaintFlags::kStroke_Style);
     flags.setStrokeWidth(SkIntToScalar(paint_scale_));
@@ -59,15 +60,12 @@ class PaintedScrollbar : public FakeScrollbar {
       int small_rect = paint_scale_;
       inset_rect.Inset(
           gfx::Insets::TLBR(big_rect, big_rect, small_rect, small_rect));
-      canvas->drawRect(RectToSkRect(inset_rect), flags);
+      canvas.drawRect(RectToSkRect(inset_rect), flags);
       inset_rect.Inset(
           gfx::Insets::TLBR(big_rect, big_rect, small_rect, small_rect));
     }
   }
 
-  void set_paint_scale(int scale) { paint_scale_ = scale; }
-
- private:
   ~PaintedScrollbar() override = default;
 
   int paint_scale_ = 4;
@@ -208,9 +206,16 @@ class NinePatchThumbScrollbar : public FakeScrollbar {
     set_track_rect(gfx::Rect(0, 0, 15, 400));
   }
 
-  void PaintPart(PaintCanvas* canvas,
-                 ScrollbarPart part,
-                 const gfx::Rect& rect) override {
+  bool UsesNinePatchThumbResource() const override { return true; }
+  gfx::Size NinePatchThumbCanvasSize() const override {
+    return gfx::Size(7, 7);
+  }
+  gfx::Rect NinePatchThumbAperture() const override {
+    return gfx::Rect(3, 3, 1, 1);
+  }
+
+ private:
+  void Paint(PaintCanvas& canvas, const gfx::Rect& rect) override {
     // The outside of the rect will be painted with a 1 pixel black, red, then
     // blue border. The inside will be solid blue. This will allow the test to
     // ensure that scaling the thumb doesn't scale the border at all.  Note
@@ -222,26 +227,17 @@ class NinePatchThumbScrollbar : public FakeScrollbar {
     flags.setColor(SK_ColorBLACK);
 
     gfx::Rect inset_rect = rect;
-    canvas->drawRect(RectToSkRect(inset_rect), flags);
+    canvas.drawRect(RectToSkRect(inset_rect), flags);
 
     flags.setColor(SK_ColorRED);
     inset_rect.Inset(1);
-    canvas->drawRect(RectToSkRect(inset_rect), flags);
+    canvas.drawRect(RectToSkRect(inset_rect), flags);
 
     flags.setColor(SK_ColorBLUE);
     inset_rect.Inset(1);
-    canvas->drawRect(RectToSkRect(inset_rect), flags);
+    canvas.drawRect(RectToSkRect(inset_rect), flags);
   }
 
-  bool UsesNinePatchThumbResource() const override { return true; }
-  gfx::Size NinePatchThumbCanvasSize() const override {
-    return gfx::Size(7, 7);
-  }
-  gfx::Rect NinePatchThumbAperture() const override {
-    return gfx::Rect(3, 3, 1, 1);
-  }
-
- private:
   ~NinePatchThumbScrollbar() override = default;
 };
 

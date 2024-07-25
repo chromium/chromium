@@ -42,9 +42,7 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
   bool mouse_is_near_scrollbar_thumb() const {
     return mouse_is_near_scrollbar_thumb_;
   }
-  bool mouse_is_near_scrollbar_track() const {
-    return mouse_is_near_scrollbar_track_;
-  }
+  bool mouse_is_near_scrollbar() const { return mouse_is_near_scrollbar_; }
 
   bool captured() const { return captured_; }
   gfx::PointF device_viewport_last_pointer_location() const {
@@ -98,23 +96,23 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
   raw_ptr<ScrollbarAnimationControllerClient> client_;
 
   base::TimeTicks last_awaken_time_;
-  bool is_animating_;
+  bool is_animating_ = false;
 
-  ElementId scroll_element_id_;
+  const ElementId scroll_element_id_;
 
-  ScrollbarOrientation orientation_;
-  bool captured_;
-  bool mouse_is_over_scrollbar_thumb_;
-  bool mouse_is_near_scrollbar_thumb_;
-  // For Fluent scrollbars the near distance to the track is 0 which is
-  // equivalent to the mouse being over the thumb/track.
-  bool mouse_is_near_scrollbar_track_;
+  const ScrollbarOrientation orientation_;
+  bool captured_ = false;
+  bool mouse_is_over_scrollbar_thumb_ = false;
+  bool mouse_is_near_scrollbar_thumb_ = false;
+  // For Fluent scrollbars the near distance to the scrollbar is 0 which is
+  // equivalent to the mouse being over the scrollbar.
+  bool mouse_is_near_scrollbar_ = false;
   // Are we narrowing or thickening the bars.
-  AnimationChange thickness_change_;
+  AnimationChange thickness_change_ = AnimationChange::kNone;
 
-  base::TimeDelta thinning_duration_;
+  const base::TimeDelta thinning_duration_;
 
-  bool tickmarks_showing_;
+  bool tickmarks_showing_ = false;
   // Save last known pointer location in the device viewport for use in
   // DidScrollUpdate() to check the pointers proximity to the thumb in case of a
   // scroll.

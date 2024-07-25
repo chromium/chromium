@@ -466,7 +466,7 @@ void CustomScrollbar::Paint(GraphicsContext& context,
   // TODO(crbug.com/40105990): We should not round paint_offset but should
   // consider subpixel accumulation when painting scrollbars.
   gfx::Vector2d offset = ToRoundedVector2d(paint_offset);
-  theme.PaintTrackButtonsTickmarks(context, *this, FrameRect() + offset);
+  theme.PaintTrackAndButtons(context, *this, FrameRect() + offset);
   if (theme.HasThumb(*this)) {
     theme.PaintThumb(context, *this, theme.ThumbRect(*this) + offset);
   }

@@ -999,7 +999,7 @@ class FluentOverlayScrollbarLayerTreeHostImplTest
     UIResourceId ui_resource_id = 1;
     UIResourceBitmap bitmap(gfx::Size(1, 1), true);
     host_impl_->CreateUIResource(ui_resource_id, bitmap);
-    scrollbar->set_track_ui_resource_id(ui_resource_id);
+    scrollbar->set_track_and_buttons_ui_resource_id(ui_resource_id);
     scrollbar->SetThumbColor(SkColors::kRed);
     scrollbar->set_is_web_test(true);
     UpdateDrawProperties(host_impl_->active_tree());

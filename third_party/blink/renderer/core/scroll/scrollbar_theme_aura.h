@@ -52,12 +52,12 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
   gfx::Rect TrackRect(const Scrollbar&) const override;
   int MinimumThumbLength(const Scrollbar&) const override;
 
-  void PaintTrackAndButtons(GraphicsContext& context,
+  void PaintTrackBackgroundAndButtons(GraphicsContext& context,
+                                      const Scrollbar&,
+                                      const gfx::Rect&) override;
+  void PaintTrackBackground(GraphicsContext&,
                             const Scrollbar&,
                             const gfx::Rect&) override;
-  void PaintTrack(GraphicsContext&,
-                  const Scrollbar&,
-                  const gfx::Rect&) override;
   void PaintButton(GraphicsContext&,
                    const Scrollbar&,
                    const gfx::Rect&,

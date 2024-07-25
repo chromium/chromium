@@ -66,7 +66,8 @@ class CC_EXPORT NinePatchThumbScrollbarLayer : public ScrollbarLayerBase {
   ProtectedSequenceReadable<gfx::Rect> aperture_;
 
   ProtectedSequenceReadable<std::unique_ptr<ScopedUIResource>> thumb_resource_;
-  ProtectedSequenceReadable<std::unique_ptr<ScopedUIResource>> track_resource_;
+  ProtectedSequenceReadable<std::unique_ptr<ScopedUIResource>>
+      track_and_buttons_resource_;
 };
 
 }  // namespace cc

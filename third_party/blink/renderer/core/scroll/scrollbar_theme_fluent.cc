@@ -155,13 +155,13 @@ int ScrollbarThemeFluent::ThumbThickness(
   return thumb_thickness - ((scrollbar_thickness - thumb_thickness) % 2);
 }
 
-void ScrollbarThemeFluent::PaintTrack(GraphicsContext& context,
-                                      const Scrollbar& scrollbar,
-                                      const gfx::Rect& rect) {
+void ScrollbarThemeFluent::PaintTrackBackground(GraphicsContext& context,
+                                                const Scrollbar& scrollbar,
+                                                const gfx::Rect& rect) {
   if (rect.IsEmpty()) {
     return;
   }
-  ScrollbarThemeAura::PaintTrack(
+  ScrollbarThemeAura::PaintTrackBackground(
       context, scrollbar,
       UsesOverlayScrollbars() ? InsetTrackRect(scrollbar, rect) : rect);
 }

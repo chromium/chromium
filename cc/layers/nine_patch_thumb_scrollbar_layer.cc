@@ -100,11 +100,12 @@ void NinePatchThumbScrollbarLayer::PushPropertiesTo(
     scrollbar_layer->set_thumb_ui_resource_id(0);
   }
 
-  if (track_resource_.Read(*this))
-    scrollbar_layer->set_track_ui_resource_id(
-        track_resource_.Read(*this)->id());
-  else
-    scrollbar_layer->set_track_ui_resource_id(0);
+  if (track_and_buttons_resource_.Read(*this)) {
+    scrollbar_layer->set_track_and_buttons_ui_resource_id(
+        track_and_buttons_resource_.Read(*this)->id());
+  } else {
+    scrollbar_layer->set_track_and_buttons_ui_resource_id(0);
+  }
 }
 
 void NinePatchThumbScrollbarLayer::SetLayerTreeHost(LayerTreeHost* host) {
@@ -112,7 +113,7 @@ void NinePatchThumbScrollbarLayer::SetLayerTreeHost(LayerTreeHost* host) {
   // all of its associated resources.
   if (host != layer_tree_host()) {
     thumb_resource_.Write(*this).reset();
-    track_resource_.Write(*this).reset();
+    track_and_buttons_resource_.Write(*this).reset();
   }
 
   ScrollbarLayerBase::SetLayerTreeHost(host);
@@ -145,8 +146,7 @@ bool NinePatchThumbScrollbarLayer::Update() {
 
 bool NinePatchThumbScrollbarLayer::PaintThumbIfNeeded() {
   auto& scrollbar = scrollbar_.Read(*this);
-  if (!scrollbar->NeedsRepaintPart(ScrollbarPart::kThumb) &&
-      thumb_resource_.Read(*this)) {
+  if (!scrollbar->ThumbNeedsRepaint() && thumb_resource_.Read(*this)) {
     return false;
   }
 
@@ -159,7 +159,7 @@ bool NinePatchThumbScrollbarLayer::PaintThumbIfNeeded() {
   SkiaPaintCanvas canvas(skbitmap);
   canvas.clear(SkColors::kTransparent);
 
-  scrollbar->PaintPart(&canvas, ScrollbarPart::kThumb, gfx::Rect(paint_size));
+  scrollbar->PaintThumb(canvas, gfx::Rect(paint_size));
   // Make sure that the pixels are no longer mutable to unavoid unnecessary
   // allocation and copying.
   skbitmap.setImmutable();
@@ -174,11 +174,11 @@ bool NinePatchThumbScrollbarLayer::PaintThumbIfNeeded() {
 
 bool NinePatchThumbScrollbarLayer::PaintTickmarks() {
   if (!has_find_in_page_tickmarks()) {
-    if (!track_resource_.Read(*this)) {
+    if (!track_and_buttons_resource_.Read(*this)) {
       return false;
     } else {
       // Remove previous tickmarks.
-      track_resource_.Write(*this).reset();
+      track_and_buttons_resource_.Write(*this).reset();
       SetNeedsPushProperties();
       return true;
     }
@@ -192,13 +192,12 @@ bool NinePatchThumbScrollbarLayer::PaintTickmarks() {
   SkiaPaintCanvas canvas(skbitmap);
   canvas.clear(SkColors::kTransparent);
 
-  scrollbar_.Write(*this)->PaintPart(
-      &canvas, ScrollbarPart::kTrackButtonsTickmarks, gfx::Rect(paint_size));
+  scrollbar_.Write(*this)->PaintTrackAndButtons(canvas, gfx::Rect(paint_size));
   // Make sure that the pixels are no longer mutable to unavoid unnecessary
   // allocation and copying.
   skbitmap.setImmutable();
 
-  track_resource_.Write(*this) = ScopedUIResource::Create(
+  track_and_buttons_resource_.Write(*this) = ScopedUIResource::Create(
       layer_tree_host()->GetUIResourceManager(), UIResourceBitmap(skbitmap));
 
   SetNeedsPushProperties();

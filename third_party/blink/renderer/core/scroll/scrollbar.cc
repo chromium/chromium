@@ -854,14 +854,18 @@ float Scrollbar::ScrollableAreaTargetPos() const {
 
 void Scrollbar::SetNeedsPaintInvalidation(ScrollbarPart invalid_parts) {
   needs_update_display_ = true;
-  if (theme_.ShouldRepaintAllPartsOnInvalidation())
+  if (theme_.ShouldRepaintAllPartsOnInvalidation()) {
     invalid_parts = kAllParts;
-  if (invalid_parts & ~kThumbPart)
-    track_needs_repaint_ = true;
-  if (invalid_parts & kThumbPart)
+  }
+  if (invalid_parts & ~kThumbPart) {
+    track_and_buttons_need_repaint_ = true;
+  }
+  if (invalid_parts & kThumbPart) {
     thumb_needs_repaint_ = true;
-  if (scrollable_area_)
+  }
+  if (scrollable_area_) {
     scrollable_area_->SetScrollbarNeedsPaintInvalidation(Orientation());
+  }
 }
 
 CompositorElementId Scrollbar::GetElementId() const {

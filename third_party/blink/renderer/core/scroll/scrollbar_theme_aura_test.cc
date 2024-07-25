@@ -53,22 +53,24 @@ class ScrollbarThemeAuraTest : public ::testing::TestWithParam<float> {
   void TestSetFrameRect(Scrollbar& scrollbar,
                         const gfx::Rect& rect,
                         bool thumb_expectation,
-                        bool track_expectation) {
+                        bool track_and_buttons_expectation) {
     scrollbar.SetFrameRect(rect);
-    EXPECT_EQ(scrollbar.TrackNeedsRepaint(), track_expectation);
+    EXPECT_EQ(scrollbar.TrackAndButtonsNeedRepaint(),
+              track_and_buttons_expectation);
     EXPECT_EQ(scrollbar.ThumbNeedsRepaint(), thumb_expectation);
-    scrollbar.ClearTrackNeedsRepaint();
+    scrollbar.ClearTrackAndButtonsNeedRepaint();
     scrollbar.ClearThumbNeedsRepaint();
   }
 
   void TestSetProportion(Scrollbar& scrollbar,
                          int proportion,
                          bool thumb_expectation,
-                         bool track_expectation) {
+                         bool track_and_buttons_expectation) {
     scrollbar.SetProportion(proportion, proportion);
-    EXPECT_EQ(scrollbar.TrackNeedsRepaint(), track_expectation);
+    EXPECT_EQ(scrollbar.TrackAndButtonsNeedRepaint(),
+              track_and_buttons_expectation);
     EXPECT_EQ(scrollbar.ThumbNeedsRepaint(), thumb_expectation);
-    scrollbar.ClearTrackNeedsRepaint();
+    scrollbar.ClearTrackAndButtonsNeedRepaint();
     scrollbar.ClearThumbNeedsRepaint();
   }
 
@@ -184,7 +186,7 @@ TEST_P(ScrollbarThemeAuraTest, ScrollbarPartsInvalidationTest) {
   gfx::Rect vertical_rect(1010, 0, 14, 768);
   scrollbar->SetFrameRect(vertical_rect);
   scrollbar->ClearThumbNeedsRepaint();
-  scrollbar->ClearTrackNeedsRepaint();
+  scrollbar->ClearTrackAndButtonsNeedRepaint();
 
   // Tests that mousedown on the thumb causes an invalidation.
   SendEvent(scrollbar, blink::WebInputEvent::Type::kMouseMove,
@@ -202,45 +204,44 @@ TEST_P(ScrollbarThemeAuraTest, ScrollbarPartsInvalidationTest) {
   // Note that, since these tests run with the assumption that the compositor
   // thread has already handled scrolling, a "scroll" will be simulated by
   // calling SetScrollOffset. To check if the arrow was invalidated,
-  // TrackNeedsRepaint needs to be used. TrackNeedsRepaint here means
-  // "everything except the thumb needs to be repainted". The following verifies
-  // that when the offset changes from 0 to a value > 0, an invalidation gets
+  // TrackAndButtonsNeedRepaint needs to be used. The following verifies that
+  // when the offset changes from 0 to a value > 0, an invalidation gets
   // triggered. At (0, 0) there is no upwards scroll available, so the arrow is
   // disabled. When we change the offset, it must be repainted to show available
   // scroll extent.
-  EXPECT_FALSE(scrollbar->TrackNeedsRepaint());
+  EXPECT_FALSE(scrollbar->TrackAndButtonsNeedRepaint());
   mock_scrollable_area->SetScrollOffset(ScrollOffset(0, 10),
                                         mojom::blink::ScrollType::kCompositor);
-  EXPECT_TRUE(scrollbar->TrackNeedsRepaint());
+  EXPECT_TRUE(scrollbar->TrackAndButtonsNeedRepaint());
 
   // Tests that when the scroll offset changes from a value greater than 0 to a
-  // value less than the max scroll offset, a track invalidation is *not*
-  // triggered.
-  scrollbar->ClearTrackNeedsRepaint();
+  // value less than the max scroll offset, a track-and-buttons invalidation is
+  // *not* triggered.
+  scrollbar->ClearTrackAndButtonsNeedRepaint();
   mock_scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                         mojom::blink::ScrollType::kCompositor);
-  EXPECT_FALSE(scrollbar->TrackNeedsRepaint());
+  EXPECT_FALSE(scrollbar->TrackAndButtonsNeedRepaint());
 
-  // Tests that when the scroll offset changes to 0, a track invalidation is
-  // gets triggered (for the arrow).
-  scrollbar->ClearTrackNeedsRepaint();
+  // Tests that when the scroll offset changes to 0, a track-and-buttons
+  // invalidation gets triggered (for the arrow).
+  scrollbar->ClearTrackAndButtonsNeedRepaint();
   mock_scrollable_area->SetScrollOffset(ScrollOffset(0, 0),
                                         mojom::blink::ScrollType::kCompositor);
-  EXPECT_TRUE(scrollbar->TrackNeedsRepaint());
+  EXPECT_TRUE(scrollbar->TrackAndButtonsNeedRepaint());
 
   // Tests that mousedown on the arrow causes an invalidation.
-  scrollbar->ClearTrackNeedsRepaint();
+  scrollbar->ClearTrackAndButtonsNeedRepaint();
   SendEvent(scrollbar, blink::WebInputEvent::Type::kMouseMove,
             gfx::PointF(10, 760));
   SendEvent(scrollbar, blink::WebInputEvent::Type::kMouseDown,
             gfx::PointF(10, 760));
-  EXPECT_TRUE(scrollbar->TrackNeedsRepaint());
+  EXPECT_TRUE(scrollbar->TrackAndButtonsNeedRepaint());
 
   // Tests that mouseup on the arrow causes an invalidation.
-  scrollbar->ClearTrackNeedsRepaint();
+  scrollbar->ClearTrackAndButtonsNeedRepaint();
   SendEvent(scrollbar, blink::WebInputEvent::Type::kMouseUp,
             gfx::PointF(10, 760));
-  EXPECT_TRUE(scrollbar->TrackNeedsRepaint());
+  EXPECT_TRUE(scrollbar->TrackAndButtonsNeedRepaint());
 
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
@@ -293,7 +294,8 @@ TEST_P(ScrollbarThemeAuraTest, NinePatchAperture) {
 }
 
 // Verifies that resizing the scrollbar doesn't generate unnecessary paint
-// invalidations when the scrollbar uses nine-patch track resources.
+// invalidations when the scrollbar uses nine-patch track and buttons
+// resources.
 TEST_P(ScrollbarThemeAuraTest, TestPaintInvalidationsWhenNinePatchScaled) {
   ScrollbarThemeAuraButtonOverride theme;
   ASSERT_TRUE(theme.UsesNinePatchTrackAndButtonsResource());
@@ -303,37 +305,41 @@ TEST_P(ScrollbarThemeAuraTest, TestPaintInvalidationsWhenNinePatchScaled) {
   // flags.
   scrollbar->SetFrameRect(
       gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() * 5));
-  scrollbar->ClearTrackNeedsRepaint();
+  scrollbar->ClearTrackAndButtonsNeedRepaint();
   scrollbar->ClearThumbNeedsRepaint();
 
   // Test that resizing the scrollbar's length while larger than the canvas
   // doesn't trigger a repaint.
-  TestSetFrameRect(*scrollbar,
-                   gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() * 4),
-                   /*thumb_expectation=*/false, /*track_expectation=*/false);
+  TestSetFrameRect(
+      *scrollbar, gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() * 4),
+      /*thumb_expectation=*/false, /*track_and_buttons_expectation=*/false);
   TestSetProportion(*scrollbar, scrollbar->Width() * 4,
-                    /*thumb_expectation=*/true, /*track_expectation=*/false);
+                    /*thumb_expectation=*/true,
+                    /*track_and_buttons_expectation=*/false);
 
   // Test that changing the width the scrollbar triggers a repaint.
-  TestSetFrameRect(*scrollbar,
-                   gfx::Rect(0, 0, scrollbar->Width() / 2, scrollbar->Height()),
-                   /*thumb_expectation=*/true, /*track_expectation=*/true);
+  TestSetFrameRect(
+      *scrollbar, gfx::Rect(0, 0, scrollbar->Width() / 2, scrollbar->Height()),
+      /*thumb_expectation=*/true, /*track_and_buttons_expectation=*/true);
   // Set width back to normal (thickening).
-  TestSetFrameRect(*scrollbar,
-                   gfx::Rect(0, 0, scrollbar->Width() * 2, scrollbar->Height()),
-                   /*thumb_expectation=*/true, /*track_expectation=*/true);
+  TestSetFrameRect(
+      *scrollbar, gfx::Rect(0, 0, scrollbar->Width() * 2, scrollbar->Height()),
+      /*thumb_expectation=*/true, /*track_and_buttons_expectation=*/true);
 
-  // Test that making the track smaller than the canvas size triggers a repaint.
-  TestSetFrameRect(*scrollbar,
-                   gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() / 2),
-                   /*thumb_expectation=*/true, /*track_expectation=*/true);
+  // Test that making the track/buttons smaller than the canvas size triggers a
+  // repaint.
+  TestSetFrameRect(
+      *scrollbar, gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() / 2),
+      /*thumb_expectation=*/true, /*track_and_buttons_expectation=*/true);
   TestSetProportion(*scrollbar, scrollbar->Width() / 2,
-                    /*thumb_expectation=*/true, /*track_expectation=*/true);
+                    /*thumb_expectation=*/true,
+                    /*track_and_buttons_expectation=*/true);
 
   // Test that no paint invalidation is triggered when the dimensions stay the
   // same.
   TestSetFrameRect(*scrollbar, scrollbar->FrameRect(),
-                   /*thumb_expectation=*/false, /*track_expectation=*/false);
+                   /*thumb_expectation=*/false,
+                   /*track_and_buttons_expectation=*/false);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
