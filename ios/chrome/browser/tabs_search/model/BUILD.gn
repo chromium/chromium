@@ -16,11 +16,11 @@ source_set("model") {
     "//components/sync_sessions",
     "//components/tab_groups",
     "//ios/chrome/browser/history/model:utils",
+    "//ios/chrome/browser/history/ui_bundled:history_driver",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/synced_sessions/model",
     "//ios/chrome/browser/tabs/model",
-    "//ios/chrome/browser/ui/history:history_driver",
     "//ios/web/public",
   ]
 }

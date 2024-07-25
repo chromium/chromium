@@ -13,8 +13,8 @@
 #import "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/core/session_id.h"
-#include "ios/chrome/browser/ui/history/ios_browsing_history_driver.h"
-#include "ios/chrome/browser/ui/history/ios_browsing_history_driver_delegate.h"
+#include "ios/chrome/browser/history/ui_bundled/ios_browsing_history_driver.h"
+#include "ios/chrome/browser/history/ui_bundled/ios_browsing_history_driver_delegate.h"
 
 class Browser;
 class BrowserList;
