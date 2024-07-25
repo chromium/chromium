@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/local_data_source.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/local_data_source.h"
 
 #include "base/hash/hash.h"
 #include "base/i18n/time_formatting.h"

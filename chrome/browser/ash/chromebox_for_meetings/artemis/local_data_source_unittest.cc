@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/local_data_source.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/local_data_source.h"
 
 #include "base/logging.h"
 #include "base/test/bind.h"
@@ -177,7 +177,7 @@ class LocalDataSourcePeer : public LocalDataSource {
 };
 
 // Define tests
-TEST(HotlogLocalDataSourceTest, TestFetchWithBasicUsage) {
+TEST(ArtemisLocalDataSourceTest, TestFetchWithBasicUsage) {
   auto source =
       LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
 
@@ -188,7 +188,7 @@ TEST(HotlogLocalDataSourceTest, TestFetchWithBasicUsage) {
   source.RunFetchWithExpectedData({"a", "b", "c"});
 }
 
-TEST(HotlogLocalDataSourceTest, TestNonIncrementalSource) {
+TEST(ArtemisLocalDataSourceTest, TestNonIncrementalSource) {
   auto source =
       LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsNotIncremental);
 
@@ -198,7 +198,7 @@ TEST(HotlogLocalDataSourceTest, TestNonIncrementalSource) {
   source.RunFetchWithExpectedData({"aa", "b", "bb", "aa"});
 }
 
-TEST(HotlogLocalDataSourceTest, TestBufferSizeIsCapped) {
+TEST(ArtemisLocalDataSourceTest, TestBufferSizeIsCapped) {
   auto source =
       LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
 
@@ -224,7 +224,7 @@ TEST(HotlogLocalDataSourceTest, TestBufferSizeIsCapped) {
   source.Fetch(std::move(callback));
 }
 
-TEST(HotlogLocalDataSourceTest, TestRedactionWorksAsExpected) {
+TEST(ArtemisLocalDataSourceTest, TestRedactionWorksAsExpected) {
   auto source = LocalDataSourcePeer(kPollFrequency, kRedactData,
                                     kIsIncremental);
 
@@ -241,7 +241,7 @@ TEST(HotlogLocalDataSourceTest, TestRedactionWorksAsExpected) {
   new_source.RunFetchWithExpectedData(fake_data);
 }
 
-TEST(HotlogLocalDataSourceTest, TestTimestampAndSeverityParser) {
+TEST(ArtemisLocalDataSourceTest, TestTimestampAndSeverityParser) {
   // Test non-incremental sources first
   auto source =
       LocalDataSourcePeer(kPollFrequency, kRedactData, kIsNotIncremental);
@@ -328,7 +328,7 @@ TEST(HotlogLocalDataSourceTest, TestTimestampAndSeverityParser) {
   EXPECT_EQ(entry.text_payload(), text_payload);
 }
 
-TEST(HotlogWatchdogTest, TestVariousInvalidWatchdogs) {
+TEST(ArtemisWatchdogTest, TestVariousInvalidWatchdogs) {
   // All of these tests should fail
   bool expected_result = false;
   auto source =
@@ -358,7 +358,7 @@ TEST(HotlogWatchdogTest, TestVariousInvalidWatchdogs) {
                                                expected_result);
 }
 
-TEST(HotlogWatchdogTest, TestChangeWatchdogsFireCorrectly) {
+TEST(ArtemisWatchdogTest, TestChangeWatchdogsFireCorrectly) {
   base::test::TaskEnvironment task_environment;
 
   // Need non-incremental source for CHANGE watchdogs
@@ -395,7 +395,7 @@ TEST(HotlogWatchdogTest, TestChangeWatchdogsFireCorrectly) {
   source.AssertWatchDogCallbackFiredWithData("third");
 }
 
-TEST(HotlogWatchdogTest, TestRegexWatchdogsFireCorrectly) {
+TEST(ArtemisWatchdogTest, TestRegexWatchdogsFireCorrectly) {
   base::test::TaskEnvironment task_environment;
 
   auto source =

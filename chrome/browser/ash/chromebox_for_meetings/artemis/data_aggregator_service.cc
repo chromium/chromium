@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/data_aggregator_service.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/data_aggregator_service.h"
 
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/log_source.h"
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/persistent_db.h"
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/specialized_log_sources.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/log_source.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/persistent_db.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/specialized_log_sources.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_DATA_AGGREGATOR_SERVICE_H_
-#define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_DATA_AGGREGATOR_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_DATA_AGGREGATOR_SERVICE_H_
+#define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_DATA_AGGREGATOR_SERVICE_H_
 
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/command_source.h"
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/log_source.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/command_source.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/log_source.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_adaptor.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom-shared.h"
@@ -122,4 +122,4 @@ class DataAggregatorService : public CfmObserver,
 
 }  // namespace ash::cfm
 
-#endif  // CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_DATA_AGGREGATOR_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_DATA_AGGREGATOR_SERVICE_H_

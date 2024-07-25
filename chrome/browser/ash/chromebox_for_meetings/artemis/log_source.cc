@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/log_source.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/log_source.h"
 
 #include <sys/stat.h>
 
@@ -11,7 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/specialized_log_sources.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/specialized_log_sources.h"
 
 namespace ash::cfm {
 
