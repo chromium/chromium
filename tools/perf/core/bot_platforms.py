@@ -777,7 +777,7 @@ MAC_M1_MINI_2020_NO_BRP = PerfPlatform(
 MAC_M1_PRO = PerfPlatform('mac-m1-pro-perf',
                           'Mac M1 PRO 2020',
                           _MAC_M1_PRO_BENCHMARK_CONFIGS,
-                          1,
+                          4,
                           'mac',
                           crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 MAC_M2_PRO = PerfPlatform('mac-m2-pro-perf',

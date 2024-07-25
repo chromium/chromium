@@ -273,4 +273,8 @@ TARGET_DEVICES = {
         },
         'rendering.desktop.notracing': 20,
     },
+    'mac-m1-pro-perf': {
+        'speedometer3': 4,
+        'speedometer3.crossbench': 4,
+    },
 }
