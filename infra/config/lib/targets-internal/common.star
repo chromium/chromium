@@ -7,7 +7,50 @@
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys")
 load("//lib/args.star", args_lib = "args")
+load("//lib/enums.star", "enums")
 load("./nodes.star", _targets_nodes = "nodes")
+
+_builder_defaults = args_lib.defaults(
+    mixins = [],
+)
+
+# TODO: crbug.com/40258588 - Add support for remaining OS types
+_os_type = enums.enum(
+    ANDROID = "android",
+)
+
+_settings_defaults = args_lib.defaults(
+    os_type = None,
+    use_swarming = True,
+)
+
+def _settings(
+        *,
+        os_type = args_lib.DEFAULT,
+        use_swarming = args_lib.DEFAULT):
+    """Settings that control the expansions of tests for a builder.
+
+    Args:
+        os_type: One of the values from targets.os_type that indicates the OS
+            type that the tests target. Supports a module-level default.
+        use_swarming: Whether tests for the builder should be swarmed. Supports
+            a module-level default.
+
+    Returns:
+        A struct that can be passed to the targets_setting argument of the
+        builder to control the expansion of tests for the builder.
+    """
+    os_type = _settings_defaults.get_value("os_type", os_type)
+    if os_type and os_type not in _os_type.values:
+        fail("unknown os_type: {}".format(os_type))
+    use_swarming = _settings_defaults.get_value("use_swarming", use_swarming)
+    return struct(
+        os_type = os_type,
+        use_swarming = use_swarming,
+
+        # Computed properties
+        is_android = os_type == _os_type.ANDROID,
+    )
 
 def _create_compile_target(*, name):
     _targets_nodes.COMPILE_TARGET.add(name)
@@ -448,6 +491,10 @@ def _spec_finalize(settings, spec_value, default_merge_script):
 common = struct(
     # Functions used for creating objects that are part of the public API that
     # need to be used internally as well
+    builder_defaults = _builder_defaults,
+    settings = _settings,
+    settings_defaults = _settings_defaults,
+    os_type = _os_type,
     merge = _merge,
     remove = _remove,
     swarming = _swarming,

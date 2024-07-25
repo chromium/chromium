@@ -14,7 +14,7 @@ load("./enums.star", "enums")
 load("./nodes.star", "nodes")
 load("./sheriff_rotations.star", "get_gardener_rotations")
 load("./structs.star", "structs")
-load("./targets.star", "get_targets_spec_generator", "register_targets")
+load("./targets-internal/targets-specs-generation.star", "get_targets_spec_generator", "register_targets")
 
 _execution_mode = enums.enum(
     # The builder will perform compilation of any targets configured in the
