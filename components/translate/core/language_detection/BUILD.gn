@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/optimization_guide/features.gni")
+import("//testing/test.gni")
 
 static_library("chinese_script_classifier") {
   sources = [
@@ -42,7 +43,7 @@ static_library("language_detection") {
     "//third_party/cld_3/src/src:cld_3",
     "//third_party/flatbuffers",
     "//third_party/icu",
-    "//third_party/libphonenumber:libphonenumber_without_metadata",
+    "//third_party/libphonenumber",
     "//third_party/smhasher:murmurhash2",
     "//third_party/tflite",
     "//third_party/tflite_support",
@@ -76,6 +77,18 @@ source_set("unit_tests") {
   if (build_with_tflite_lib) {
     deps += [ ":unit_tests_bundle_data" ]
   }
+}
+
+test("language_detection_util_fuzztest") {
+  sources = [ "language_detection_util_fuzztest.cc" ]
+  fuzztests =
+      [ "LanguageDetectionUtilFuzzTest.DeterminePageLanguageDoesNotCrash" ]
+
+  deps = [
+    ":language_detection",
+    "//testing/gtest",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
 }
 
 bundle_data("unit_tests_bundle_data") {

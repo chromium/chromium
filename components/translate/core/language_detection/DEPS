@@ -7,4 +7,7 @@ include_rules = [
   "+third_party/tflite",
   "+third_party/tflite_support",
   "+third_party/utf",
+
+  # Fuzzers
+  "+third_party/fuzztest",
 ]
