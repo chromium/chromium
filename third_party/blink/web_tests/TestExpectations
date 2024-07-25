@@ -7545,5 +7545,5 @@ crbug.com/354061998 [ Release Win11-arm64 ] http/tests/cookies/partitioned-cooki
 crbug.com/353746882 external/wpt/fs/FileSystemFileHandle-cross-primitive-locking.https.tentative.worker.html [ Failure Pass ]
 
 # Gardener 2024-07-24
-crbug.com/40186254 fast/events/touch/gesture/gesture-tap-reset-selection-range.html [ Failure Pass ]
-crbug.com/40186254 fast/events/touch/gesture/long-press-drag-drop-touch-editing-combined-in-iframe.html [ Failure Pass ]
+crbug.com/40186254 fast/events/touch/gesture/gesture-tap-reset-selection-range.html [ Failure Pass Timeout ]
+crbug.com/40186254 fast/events/touch/gesture/long-press-drag-drop-touch-editing-combined-in-iframe.html [ Failure Pass Timeout ]
