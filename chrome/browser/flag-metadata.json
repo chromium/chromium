@@ -5365,6 +5365,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "lacros-extension-printing",
+    "owners": [ "xiangdongkong@google.com", "cros-peripherals@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "lacros-fork-zygotes-at-login-screen",
     "owners": [ "andreaorru@chromium.org", "lacros-team@google.com" ],
     "expiry_milestone": 140
