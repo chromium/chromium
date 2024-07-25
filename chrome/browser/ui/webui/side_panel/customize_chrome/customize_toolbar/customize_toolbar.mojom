@@ -30,6 +30,7 @@ enum ActionId {
   kTaskManager,
   kDevTools,
   kShowChromeLabs,
+  kCopyLink,
 };
 
 // Unique identifiers for categories the actions can belong to.

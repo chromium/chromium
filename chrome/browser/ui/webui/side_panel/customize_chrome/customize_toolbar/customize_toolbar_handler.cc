@@ -72,6 +72,8 @@ MojoActionForChromeAction(actions::ActionId action_id) {
       return side_panel::customize_chrome::mojom::ActionId::kDevTools;
     case kActionShowChromeLabs:
       return side_panel::customize_chrome::mojom::ActionId::kShowChromeLabs;
+    case kActionCopyUrl:
+      return side_panel::customize_chrome::mojom::ActionId::kCopyLink;
     default:
       return std::nullopt;
   }
@@ -124,6 +126,8 @@ std::optional<actions::ActionId> ChromeActionForMojoAction(
       return kActionDevTools;
     case side_panel::customize_chrome::mojom::ActionId::kShowChromeLabs:
       return kActionShowChromeLabs;
+    case side_panel::customize_chrome::mojom::ActionId::kCopyLink:
+      return kActionCopyUrl;
     default:
       return std::nullopt;
   }
@@ -178,8 +182,6 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
               .Rasterize(provider),
           scale_factor)));
 
-  actions.push_back(std::move(home_action));
-
   auto forward_action = side_panel::customize_chrome::mojom::Action::New(
       MojoActionForChromeAction(kActionForward).value(),
       base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD)),
@@ -190,8 +192,6 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
               vector_icons::kForwardArrowChromeRefreshIcon, ui::kColorIcon)
               .Rasterize(provider),
           scale_factor)));
-
-  actions.push_back(std::move(forward_action));
 
   const auto add_action =
       [&actions, model, provider, scale_factor, scope_action](
@@ -212,18 +212,20 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
         actions.push_back(std::move(mojo_action));
       };
 
+  actions.push_back(std::move(home_action));
+  actions.push_back(std::move(forward_action));
   add_action(kActionNewIncognitoWindow,
              side_panel::customize_chrome::mojom::CategoryId::kNavigation);
 
   add_action(kActionShowPasswordsBubbleOrPage,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
-  add_action(kActionSidePanelShowBookmarks,
-             side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
-  add_action(kActionSidePanelShowReadingList,
-             side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
   add_action(kActionShowPaymentsBubbleOrPage,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
   add_action(kActionShowAddressesBubbleOrPage,
+             side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
+  add_action(kActionSidePanelShowBookmarks,
+             side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
+  add_action(kActionSidePanelShowReadingList,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
   add_action(kActionSidePanelShowHistoryCluster,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
@@ -240,13 +242,15 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
              side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionShowTranslate,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
-  add_action(kActionSendTabToSelf,
-             side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionQrCodeGenerator,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionRouteMedia,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionSidePanelShowReadAnything,
+             side_panel::customize_chrome::mojom::CategoryId::kTools);
+  add_action(kActionCopyUrl,
+             side_panel::customize_chrome::mojom::CategoryId::kTools);
+  add_action(kActionSendTabToSelf,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionTaskManager,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
