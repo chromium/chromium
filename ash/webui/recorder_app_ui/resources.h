@@ -145,6 +145,7 @@ const webui::LocalizedString kLocalizedStrings[] = {
      IDS_RECORDER_SETTINGS_SECTION_GENERAL_HEADER},
     {"settingsSectionTranscriptionSummaryHeader",
      IDS_RECORDER_SETTINGS_SECTION_TRANSCRIPTION_SUMMARY_HEADER},
+    {"summaryDisabledLabel", IDS_RECORDER_SUMMARY_DISABLED_LABEL},
     {"summaryDownloadModelDescription",
      IDS_RECORDER_SUMMARY_DOWNLOAD_MODEL_DESCRIPTION},
     {"summaryDownloadModelDisableButton",

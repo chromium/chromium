@@ -236,6 +236,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Header of the transcription and summary section in settings." name="IDS_RECORDER_SETTINGS_SECTION_TRANSCRIPTION_SUMMARY_HEADER">
     Transcription and summary
   </message>
+  <message desc="Label when summary is disabled." name="IDS_RECORDER_SUMMARY_DISABLED_LABEL">
+    Summary is off
+  </message>
   <message desc="Description of the download progress when the summary model is downloading in summary." name="IDS_RECORDER_SUMMARY_DOWNLOADING_PROGRESS_DESCRIPTION">
     <ph name="PROGRESS_PERCENTAGE">$1<ex>42</ex></ph>% downloaded
   </message>

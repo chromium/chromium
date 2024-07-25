@@ -142,6 +142,15 @@ export class SummarizationView extends ReactiveLitElement {
       position: absolute;
       right: 0;
     }
+
+    #disabled {
+      background: var(--cros-sys-surface_variant);
+      border-radius: 8px;
+      color: var(--cros-sys-on_surface_variant);
+      font: var(--cros-label-1-font);
+      padding: 8px;
+      text-align: center;
+    }
   `;
 
   static override properties: PropertyDeclarations = {
@@ -270,35 +279,39 @@ export class SummarizationView extends ReactiveLitElement {
     );
     const summaryEnabled = settings.value.summaryEnabled;
 
-    if (summaryEnabled === SummaryEnableState.DISABLED ||
-        summaryModelState.value.kind === 'unavailable') {
+    if (summaryModelState.value.kind === 'unavailable') {
       this.classList.add('empty');
       return nothing;
     }
 
     this.classList.remove('empty');
-
-    if (summaryEnabled === SummaryEnableState.UNKNOWN) {
-      return html`<summary-consent-card></summary-consent-card>`;
+    switch (summaryEnabled) {
+      case SummaryEnableState.DISABLED:
+        return html`<div id="disabled">${i18n.summaryDisabledLabel}</div>`;
+      case SummaryEnableState.UNKNOWN:
+        return html`<summary-consent-card></summary-consent-card>`;
+      case SummaryEnableState.ENABLED:
+        switch (summaryModelState.value.kind) {
+          case 'error':
+            // TODO(pihsun): Handle error
+            return nothing;
+          case 'installing':
+            return this.renderSummaryInstalling(
+              summaryModelState.value.progress,
+            );
+          case 'installed':
+            return this.renderSummary();
+          case 'notInstalled':
+            return html`<summary-consent-card></summary-consent-card>`;
+          default:
+            assertExhaustive(summaryModelState.value.kind);
+        }
+      // eslint doesn't detect that the above case never reaches here, but tsc
+      // prevents us from adding "break;" here since it's unreachable code.
+      // eslint-disable-next-line no-fallthrough
+      default:
+        assertExhaustive(summaryEnabled);
     }
-
-    if (summaryEnabled === SummaryEnableState.ENABLED) {
-      switch (summaryModelState.value.kind) {
-        case 'error':
-          // TODO(pihsun): Handle error
-          return nothing;
-        case 'installing':
-          return this.renderSummaryInstalling(summaryModelState.value.progress);
-        case 'installed':
-          return this.renderSummary();
-        case 'notInstalled':
-          return html`<summary-consent-card></summary-consent-card>`;
-        default:
-          assertExhaustive(summaryModelState.value.kind);
-      }
-    }
-
-    assertExhaustive(summaryEnabled);
   }
 }
 

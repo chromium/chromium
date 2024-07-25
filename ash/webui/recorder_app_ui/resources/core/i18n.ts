@@ -92,6 +92,7 @@ const noArgStrings = [
   'settingsOptionsTranscriptionLabel',
   'settingsSectionGeneralHeader',
   'settingsSectionTranscriptionSummaryHeader',
+  'summaryDisabledLabel',
   'summaryDownloadModelDescription',
   'summaryDownloadModelDisableButton',
   'summaryDownloadModelDownloadButton',
