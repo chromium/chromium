@@ -27,7 +27,7 @@
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1135805404083530719">Upravljačka ploča</translation>
-<translation id="1145018782460575098">Otvoren je prozor za ažuriranje opreme za vanjske uređaje. Dostupna ažuriranja: <ph name="NUM_UPDATES" />.</translation>
+<translation id="1145018782460575098">Otvoren je prozor za ažuriranje firmwarea za vanjske uređaje. Dostupna ažuriranja: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Pronađite članke pomoći i odgovore na česta pitanja o Chromebooku</translation>
 <translation id="1154390310959620237">Možete prilagoditi samo 5 prečaca. Izbrišite prečac kako biste dodali novi.</translation>
 <translation id="1155154308031262006">Unesite upit</translation>
@@ -438,7 +438,7 @@
 <translation id="3462187165860821523">Ažuriranje uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Struja</translation>
 <translation id="346539236881580388">Snimi ponovo</translation>
-<translation id="3484914941826596830">Dok se oprema ažurira, nemojte iskopčavati ovaj vanjski uređaj niti isključivati računalo. Ovaj prozor možete minimizirati. Ažuriranje može potrajati nekoliko minuta i vaš vanjski uređaj tada možda neće funkcionirati.</translation>
+<translation id="3484914941826596830">Dok se firmware ažurira, nemojte iskopčavati ovaj vanjski uređaj niti isključivati računalo. Ovaj prozor možete minimizirati. Ažuriranje može potrajati nekoliko minuta i vaš vanjski uređaj tada možda neće funkcionirati.</translation>
 <translation id="3486220673238053218">definicija</translation>
 <translation id="3487866404496702283">Povratne informacije za značajku Mahi</translation>
 <translation id="3488065109653206955">Djelomično aktivirano</translation>
@@ -626,7 +626,7 @@
 <translation id="4536864596629708641">Konfiguracija IP-ja</translation>
 <translation id="4546131424594385779">Izradi ponavljajući videozapis</translation>
 <translation id="4548483925627140043">Signal nije pronađen</translation>
-<translation id="4556753742174065117">Oprema je ažurirana</translation>
+<translation id="4556753742174065117">Firmware je ažuriran</translation>
 <translation id="455835558791489930">Baterija od <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="456077979087158257">gradske vizure</translation>
 <translation id="4561801978359312462">SIM je otključan</translation>
@@ -697,7 +697,7 @@
 <translation id="4921665434385737356">Napunjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4930320165497208503">Da biste postavili ili ažurirali vezu, otvorite <ph name="BEGIN_LINK" />postavke<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
-<translation id="4950314376641394653">Oprema uređaja <ph name="DEVICE_NAME" /> ažurirana je na verziju <ph name="VERSION" /></translation>
+<translation id="4950314376641394653">Firmware uređaja <ph name="DEVICE_NAME" /> ažuriran je na verziju <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">tunel od stabala</translation>
 <translation id="4965703485264574128">Za približan rezultat pomnožite vrijednost <ph name="CATEGORY_TEXT" /> s <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Razdijeli</translation>
@@ -938,7 +938,7 @@
 <translation id="6302401976930124515">Otkazan je test <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Aplikacija Istražite</translation>
 <translation id="6318437367327684789">zauvijek</translation>
-<translation id="6319207335391420837">Ažurirajte opremu na uređaju <ph name="DEVICE_NAME" /></translation>
+<translation id="6319207335391420837">Ažurirajte firmware na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Uključivanje čuvara zaslona</translation>
 <translation id="6324916366299863871">Uređivanje prečaca</translation>
 <translation id="6325525973963619867">Nije uspjelo</translation>
@@ -1062,7 +1062,7 @@
 <translation id="6965978654500191972">Uređaj</translation>
 <translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" /> sa sjajnim elementom <ph name="GLOWSCAPES_FEATURE" /></translation>
 <translation id="6975981640379148271">koale</translation>
-<translation id="6977381486153291903">Revizija opreme</translation>
+<translation id="6977381486153291903">Revizija firmwarea</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="698242338298293034">Odaberite temu, a zatim podcrtane riječi da biste personalizirali svoje AI slike.
           <ph name="LINE_BREAK" />
@@ -1120,7 +1120,7 @@
 <translation id="7206979415662233817">Uvjeti pružanja usluge</translation>
 <translation id="7210635925306941239">modre boje</translation>
 <translation id="7212547870105584639">Upravljajte postavkama APN-a mreže. APN-ovi uspostavljaju vezu između mobilne mreže i interneta. <ph name="BEGIN_LINK_LEARN_MORE" />Saznaj više<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7212734716605298123">Ažuriranja opreme za vanjske uređaje</translation>
+<translation id="7212734716605298123">Ažuriranja firmwarea za vanjske uređaje</translation>
 <translation id="7216409898977639127">Davatelj mobilnih usluga</translation>
 <translation id="7233782086689993269">Prečac je vraćen</translation>
 <translation id="725133483556299729">Odaberite e-poštu</translation>

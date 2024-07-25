@@ -413,7 +413,7 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="256712445991462162">usidreno povećalo</translation>
 <translation id="2573588302192866788">Povezivanje uređaja <ph name="NAME" /> nije uspjelo</translation>
 <translation id="2575685495496069081">Onemogućena je višestruka prijava</translation>
-<translation id="2579264398927991698">Ažuriranja opreme</translation>
+<translation id="2579264398927991698">Ažuriranja firmwarea</translation>
 <translation id="2582112259361606227">Ponovo pokrenite da biste ažurirali</translation>
 <translation id="2586657967955657006">Međuspremnik</translation>
 <translation id="2595239820337756193">5 km u miljama</translation>
@@ -1214,7 +1214,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="547979256943495781">Polica na desnoj strani</translation>
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> ili <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5482873136202102190">, i još</translation>
-<translation id="5491186829646618080">Dostupna su ažuriranja opreme</translation>
+<translation id="5491186829646618080">Dostupna su ažuriranja firmwarea</translation>
 <translation id="5503884284981862082">Otvaranje/zatvaranje Google asistenta</translation>
 <translation id="550391772491508736">Nastavi emitiranje</translation>
 <translation id="5506975627792768506">Uključivanje ili isključivanje povećala</translation>
@@ -2132,7 +2132,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8876661425082386199">Provjerite vezu</translation>
 <translation id="8877788021141246043">Postavi podsjetnik</translation>
 <translation id="8878886163241303700">Produljenje zaslona</translation>
-<translation id="888982883502837004">Za vaš uređaj dostupna su ažuriranja opreme. Kliknite radi pregleda i ažuriranja.</translation>
+<translation id="888982883502837004">Za vaš uređaj dostupna su ažuriranja firmwarea. Kliknite radi pregleda i ažuriranja.</translation>
 <translation id="8893479486525393799">Studijski mikrofon</translation>
 <translation id="8896630965521842259">Predložak <ph name="DESK_TEMPLATE_NAME" /> trajno će se izbrisati</translation>
 <translation id="889790758758811533">Preostalo baterije: <ph name="PERCENTAGE" />% (oko <ph name="TIME_LEFT" />). Priključite uređaj na napajanje.</translation>

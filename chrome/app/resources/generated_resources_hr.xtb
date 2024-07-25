@@ -1050,7 +1050,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1757301747492736405">Deinstalacija na čekanju</translation>
 <translation id="175772926354468439">Omogućiti temu</translation>
 <translation id="1757786065507923842">Upit za roditeljsko dopuštenje nije uspio.</translation>
-<translation id="17584710573359123">Prikaz u Chrome Web Storeu</translation>
+<translation id="17584710573359123">Prikaz u Chrome web-trgovini</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> ponovo je mapiran na opciju <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Računi korisnika <ph name="NAME" /></translation>
 <translation id="176272781006230109">prijedlozi za kupnju</translation>
@@ -2338,7 +2338,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2673873887296220733">Želite li kopirati jednu datoteku u mapu <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="267442004702508783">osvježavanje</translation>
 <translation id="2674764818721168631">Isključeno</translation>
-<translation id="2676084251379299915">Ovo proširenje onemogućilo je pravilo tvrtke jer više nije dostupno u Chrome Web Storeu.</translation>
+<translation id="2676084251379299915">Ovo proširenje onemogućilo je pravilo tvrtke jer više nije dostupno u Chrome web-trgovini.</translation>
 <translation id="2678063897982469759">Ponovo omogući</translation>
 <translation id="2678100101831051676">Emitiranje nije uspjelo.</translation>
 <translation id="268053382412112343">Hi&amp;story (Povijest)</translation>
@@ -2744,7 +2744,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2969411787010981955">Podaci su izvezeni na odabranu lokaciju</translation>
 <translation id="2970766364519518369">Odabrani kontakti mogu dijeliti s vama kad su u blizini. Zatražit će se da odobrite zahtjeve. Nećete trebati odobriti dijeljenje između uređaja koji su prijavljeni na račun <ph name="USER_EMAIL" />.</translation>
 <translation id="2970982365449313350">Chrome s ovim Google računom</translation>
-<translation id="2972557485845626008">Oprema</translation>
+<translation id="2972557485845626008">Firmware</translation>
 <translation id="2972581237482394796">&amp;Vrati poništeno</translation>
 <translation id="2973324205039581528">Isključi zvuk na web-lokaciji</translation>
 <translation id="2975761176769946178">Potreban je URL</translation>
@@ -4338,7 +4338,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4138267921960073861">Prikaži korisnička imena i fotografije na zaslonu za prijavu</translation>
 <translation id="4138598238327913711">Provjera gramatike trenutačno je dostupna samo za engleski</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID uređaj povezan</translation>
-<translation id="4139326893730851150">Ažuriranja opreme</translation>
+<translation id="4139326893730851150">Ažuriranja firmwarea</translation>
 <translation id="4142052906269098341">Otključajte <ph name="DEVICE_TYPE" /> telefonom. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4146026355784316281">Uvijek otvori u pregledniku sustava</translation>
 <translation id="4146785383423576110">Vrati na zadano i očisti</translation>
@@ -5053,7 +5053,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4688176403504673761"><ph name="MANAGER" /> vraća ovaj uređaj na prethodnu verziju (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4689235506267737042">Odaberite svoje demo-postavke</translation>
 <translation id="4689421377817139245">Sinkronizirajte ovu oznaku sa svojim iPhoneom</translation>
-<translation id="4690091457710545971">&lt;Četiri datoteke koje je generirala Intelova oprema za Wi-Fi: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. Prve su tri datoteke binarne i sadrže ispis registra, a Intel potvrđuje da ne sadrže osobne podatke ni podatke za identifikaciju uređaja. Zadnja je datoteka zapis izvedbe Intelove opreme; iz nje su izbrisani svi osobni podaci i podaci za identifikaciju uređaja, no prevelika je da bi se prikazala ovdje. Te su datoteke generirane zbog nedavnih poteškoća s Wi-Fijem na vašem uređaju i podijelit će se s Intelom radi rješavanja tih problema.&gt;</translation>
+<translation id="4690091457710545971">&lt;Četiri datoteke koje je generirao Intelov firmware za Wi-Fi: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. Prve su tri datoteke binarne i sadrže ispis registra, a Intel potvrđuje da ne sadrže osobne podatke ni podatke za identifikaciju uređaja. Zadnja je datoteka zapis izvedbe Intelovog firmwarea; iz nje su izbrisani svi osobni podaci i podaci za identifikaciju uređaja, no prevelika je da bi se prikazala ovdje. Te su datoteke generirane zbog nedavnih poteškoća s Wi-Fijem na vašem uređaju i podijelit će se s Intelom radi rješavanja tih problema.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> moći će pregledavati <ph name="FILENAME" /> dok ne zatvorite sve kartice za ovu web-lokaciju</translation>
 <translation id="4692342362587775867">Obavijesti s ove web-lokacije mogu ometati rad</translation>
 <translation id="4692623383562244444">Tražilice</translation>
@@ -6007,7 +6007,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5427459444770871191">Zakreni u &amp;smjeru kretanja kazaljke na satu</translation>
 <translation id="542750953150239272">Ako nastavite, pristajete na to da ovaj uređaj također može, između ostalog i mobilnim podatkovnim prijenosom, automatski preuzimati i instalirati ažuriranja i aplikacije koje šalju Google, vaš mobilni operater i proizvođač uređaja. U nekima od tih aplikacija mogu se nuditi kupnje putem aplikacije.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Dostupno je ažuriranje)</translation>
-<translation id="542948651837270806">Potrebno je instalirati ažuriranje za opremu za Trusted Platform Module. Prikaži <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
+<translation id="542948651837270806">Potrebno je instalirati ažuriranje za firmware za Trusted Platform Module. Prikaži <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Široko</translation>
 <translation id="5430931332414098647">Automatsko modemsko povezivanje</translation>
 <translation id="5431318178759467895">Boja</translation>
@@ -6070,7 +6070,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5470741195701938302">Brojevi</translation>
 <translation id="5471768120198416576">Bok! Ja sam vaš glas alata za pretvaranje teksta u govor.</translation>
 <translation id="5472627187093107397">Spremanje zaporki za ovu web-lokaciju</translation>
-<translation id="5473062644742711742">Pronađite više alata za pristupačnost u Chrome Web Storeu</translation>
+<translation id="5473062644742711742">Pronađite više alata za pristupačnost u Chrome web-trgovini</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">Ako nastavite, pristajete na to da ovaj uređaj također može, između ostalog i mobilnim podatkovnim prijenosom, automatski preuzimati i instalirati ažuriranja i aplikacije koje šalju Google, djetetov mobilni operater i proizvođač uređaja. Neke od tih aplikacija mogu nuditi kupnje putem aplikacije.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN mora imati najmanje jedan znak}one{PIN mora imati najmanje # znak}few{PIN mora imati najmanje # znaka}other{PIN mora imati najmanje # znakova}}</translation>
@@ -6305,7 +6305,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5637476008227280525">Omogućivanje mobilnih podataka</translation>
 <translation id="5638170200695981015">Odaberite opciju "Otvori u osnovnom uređivaču" da biste koristili ograničene opcije prikaza i uređivanja.</translation>
 <translation id="563821631542362636">Dopusti web-lokaciji da sprema podatke</translation>
-<translation id="5638309510554459422">Pronađite proširenja i teme u <ph name="BEGIN_LINK" />Chrome Web Storeu<ph name="END_LINK" /></translation>
+<translation id="5638309510554459422">Pronađite proširenja i teme u <ph name="BEGIN_LINK" />Chrome web-trgovini<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Ponovo učitajte ovu stranicu, zadržite da biste vidjeli više opcija</translation>
 <translation id="5640133431808313291">Upravljanje sigurnosnim ključevima</translation>
 <translation id="5640159004008030285">Zaporka se sprema samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, <ph name="BEGIN_LINK" />spremite je na svoj Google račun<ph name="END_LINK" />.</translation>
@@ -6335,7 +6335,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5662513737565158057">Promijenite način rada Linux aplikacija.</translation>
 <translation id="5663459693447872156">Automatski prijelaz na poluširinu</translation>
 <translation id="5663653125349867535">&amp;Popis za čitanje</translation>
-<translation id="5663918299073387939">Web-lokacije obično traže dopuštenje za kontrolu i reprogramiranje MIDI uređaja radi stvaranja glazbe, uređivanja glazbe ili ažuriranja opreme uređaja</translation>
+<translation id="5663918299073387939">Web-lokacije obično traže dopuštenje za kontrolu i reprogramiranje MIDI uređaja radi stvaranja glazbe, uređivanja glazbe ili ažuriranja firmwarea uređaja</translation>
 <translation id="5666911576871845853">Dod&amp;ajte novi profil</translation>
 <translation id="5667293444945855280">Zlonamjerni softver</translation>
 <translation id="5667546120811588575">Postavljanje Google Playa...</translation>
@@ -9114,7 +9114,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7770072242481632881">Alat za odabir na bočnoj ploči</translation>
 <translation id="7770450735129978837">Desni klik mišem</translation>
 <translation id="7770612696274572992">Slika kopirana s drugog uređaja</translation>
-<translation id="7770827449915784217">Oprema je ažurna</translation>
+<translation id="7770827449915784217">Firmware je ažuran</translation>
 <translation id="7771452384635174008">Izgled</translation>
 <translation id="7772032839648071052">Potvrdi zaporku</translation>
 <translation id="7772127298218883077">O proizvodu <ph name="PRODUCT_NAME" /></translation>
@@ -10571,7 +10571,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8821045908425223359">Konfiguriraj IP adresu automatski</translation>
 <translation id="8821268776955756404">Aplikacija <ph name="APP_NAME" /> spremna je za upotrebu.</translation>
 <translation id="8821647731831124007">Nema dostupnih žarišnih točaka</translation>
-<translation id="882204272221080310">Ažuriraj opremu radi dodatne zaštite.</translation>
+<translation id="882204272221080310">Ažuriraj firmware radi dodatne zaštite.</translation>
 <translation id="8823514049557262177">Kopiraj te&amp;kst veze</translation>
 <translation id="8823704566850948458">Predloži zaporku...</translation>
 <translation id="8823963789776061136">Možete i odabrati PPD pisača. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
