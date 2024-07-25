@@ -173,6 +173,7 @@
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "chromeos/crosapi/mojom/web_page_info.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "chromeos/services/machine_learning/public/cpp/ml_switches.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/startup/startup.h"
@@ -425,7 +426,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 139,
+static_assert(crosapi::mojom::Crosapi::Version_ == 140,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -451,6 +452,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::CecPrivate>(),
     MakeInterfaceVersionEntry<crosapi::mojom::CertDatabase>(),
     MakeInterfaceVersionEntry<crosapi::mojom::CertProvisioning>(),
+    MakeInterfaceVersionEntry<chromeos::cfm::mojom::CfmServiceContext>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ChapsService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ChromeAppKioskService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Clipboard>(),
