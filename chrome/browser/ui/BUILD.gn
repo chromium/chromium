@@ -2758,14 +2758,6 @@ static_library("ui") {
       "webui/ash/slow_trace_ui.h",
       "webui/ash/slow_ui.cc",
       "webui/ash/slow_ui.h",
-      "webui/ash/smb_shares/smb_credentials_dialog.cc",
-      "webui/ash/smb_shares/smb_credentials_dialog.h",
-      "webui/ash/smb_shares/smb_handler.cc",
-      "webui/ash/smb_shares/smb_handler.h",
-      "webui/ash/smb_shares/smb_share_dialog.cc",
-      "webui/ash/smb_shares/smb_share_dialog.h",
-      "webui/ash/smb_shares/smb_shares_localized_strings_provider.cc",
-      "webui/ash/smb_shares/smb_shares_localized_strings_provider.h",
       "webui/ash/system_web_dialog_delegate.cc",
       "webui/ash/system_web_dialog_delegate.h",
       "webui/ash/system_web_dialog_view.cc",
@@ -3105,6 +3097,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ash/parent_access",
       "//chrome/browser/ui/webui/ash/print_preview_cros",
       "//chrome/browser/ui/webui/ash/skyvault",
+      "//chrome/browser/ui/webui/ash/smb_shares",
       "//chrome/browser/ui/webui/ash/sys_internals",
       "//chrome/browser/ui/webui/ash/vc_tray_tester",
       "//chrome/browser/web_applications",
@@ -3485,6 +3478,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ash/parent_access",
       "//chrome/browser/ui/webui/ash/print_preview_cros",
       "//chrome/browser/ui/webui/ash/skyvault",
+      "//chrome/browser/ui/webui/ash/smb_shares",
     ]
 
     if (is_chrome_branded) {
