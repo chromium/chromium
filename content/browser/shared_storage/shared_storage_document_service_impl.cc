@@ -104,6 +104,7 @@ void SharedStorageDocumentServiceImpl::Bind(
 
 void SharedStorageDocumentServiceImpl::CreateWorklet(
     const GURL& script_source_url,
+    const url::Origin& data_origin,
     network::mojom::CredentialsMode credentials_mode,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -125,7 +126,7 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
   create_worklet_called_ = true;
   bool is_same_origin =
       render_frame_host().GetLastCommittedOrigin().IsSameOriginWith(
-          script_source_url);
+          data_origin);
 
   // A document can only create cross-origin worklets with
   // `kSharedStorageAPIM125` enabled.
@@ -153,8 +154,7 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
   std::string debug_message;
   bool prefs_failure_is_site_specific = false;
   bool prefs_success = IsSharedStorageAddModuleAllowedForOrigin(
-      url::Origin::Create(script_source_url), &debug_message,
-      &prefs_failure_is_site_specific);
+      data_origin, &debug_message, &prefs_failure_is_site_specific);
 
   if (!prefs_success && (is_same_origin || !prefs_failure_is_site_specific)) {
     OnCreateWorkletResponseIntercepted(
@@ -169,8 +169,9 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
   }
 
   GetSharedStorageWorkletHostManager()->CreateWorkletHost(
-      this, render_frame_host().GetLastCommittedOrigin(), script_source_url,
-      credentials_mode, origin_trial_features, std::move(worklet_host),
+      this, render_frame_host().GetLastCommittedOrigin(), data_origin,
+      script_source_url, credentials_mode, origin_trial_features,
+      std::move(worklet_host),
       base::BindOnce(
           &SharedStorageDocumentServiceImpl::OnCreateWorkletResponseIntercepted,
           weak_ptr_factory_.GetWeakPtr(), is_same_origin, prefs_success,

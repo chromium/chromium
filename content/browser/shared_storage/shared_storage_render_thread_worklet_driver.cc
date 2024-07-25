@@ -10,12 +10,13 @@
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
 SharedStorageRenderThreadWorkletDriver::SharedStorageRenderThreadWorkletDriver(
     RenderFrameHost& render_frame_host,
-    const GURL& script_url) {
+    const url::Origin& data_origin) {
   StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
       render_frame_host.GetStoragePartition());
 
@@ -25,13 +26,13 @@ SharedStorageRenderThreadWorkletDriver::SharedStorageRenderThreadWorkletDriver(
   //
   // TODO(yaoxia): This may need to be revisited in the future.
   UrlInfo url_info(
-      UrlInfoInit(script_url)
+      UrlInfoInit(data_origin.GetURL())
           .WithStoragePartitionConfig(storage_partition->GetConfig())
           .WithWebExposedIsolationInfo(
               WebExposedIsolationInfo::CreateNonIsolated()));
 
   // We aim to approximate the process allocation behavior of iframes when
-  // loading the script URL.
+  // loading a URL with origin `data_origin`.
   //
   // Leverage the existing process creation and tracking approach for service
   // workers, with an additional call to `ReuseExistingProcessIfPossible()` that

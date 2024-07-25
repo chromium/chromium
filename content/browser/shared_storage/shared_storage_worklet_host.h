@@ -71,6 +71,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   SharedStorageWorkletHost(
       SharedStorageDocumentServiceImpl& document_service,
       const url::Origin& frame_origin,
+      const url::Origin& data_origin,
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
       const std::vector<blink::mojom::OriginTrialFeature>&
@@ -267,7 +268,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // `IsSharedStorageAllowed()`, and to get the global URLLoaderFactory.
   raw_ptr<BrowserContext> browser_context_;
 
-  // The shared storage script's origin and site.
+  // The shared storage worklet's origin and site for data access and permission
+  // checks.
   url::Origin shared_storage_origin_;
   net::SchemefulSite shared_storage_site_;
 

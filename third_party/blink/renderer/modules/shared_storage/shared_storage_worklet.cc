@@ -122,13 +122,12 @@ void SharedStorageWorklet::AddModuleHelper(
 
   // In an opaque origin context, addModule() is not allowed, but
   // createWorklet() is allowed.
-  if (!cross_origin_script_allowed_) {
-    if (execution_context->GetSecurityOrigin()->IsOpaque()) {
-      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-          script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
-          kOpaqueOriginCheckErrorMessage));
-      return;
-    }
+  if (!resolve_to_worklet &&
+      execution_context->GetSecurityOrigin()->IsOpaque()) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
+        kOpaqueContextOriginCheckErrorMessage));
+    return;
   }
 
   KURL script_source_url = execution_context->CompleteURL(module_url);
@@ -149,8 +148,9 @@ void SharedStorageWorklet::AddModuleHelper(
       !execution_context->GetSecurityOrigin()->IsSameOriginWith(
           script_security_origin.get())) {
     // This `addModule()` call could be affected by the breaking change
-    // proposed in https://github.com/WICG/shared-storage/pull/158. Measure its
-    // usage.
+    // proposed in https://github.com/WICG/shared-storage/pull/158 and now
+    // partially implemented behind
+    // `blink::features::kSharedStorageCrossOriginScript`. Measure its usage.
     execution_context->CountUse(
         WebFeature::kSharedStorageAPI_AddModule_CrossOriginScript);
   }
@@ -191,7 +191,23 @@ void SharedStorageWorklet::AddModuleHelper(
   // into `data_origin_type` in `SharedStorage::createWorklet()`) live for
   // createWorklet after we determine what its default behavior should be.
 
-  url::Origin shared_storage_origin = script_security_origin->ToUrlOrigin();
+  // Currently the origin used for `PermissionsPolicy` and shared storage data
+  // access is the module script's origin for `createWorklet()`, and the
+  // invoking context's origin for `addModule()`.
+  scoped_refptr<SecurityOrigin> shared_storage_security_origin =
+      resolve_to_worklet
+          ? script_security_origin->IsolatedCopy()
+          : execution_context->GetSecurityOrigin()->IsolatedCopy();
+
+  if (shared_storage_security_origin->IsOpaque()) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
+        kOpaqueDataOriginCheckErrorMessage));
+    return;
+  }
+
+  url::Origin shared_storage_origin =
+      shared_storage_security_origin->ToUrlOrigin();
 
   const PermissionsPolicy* policy =
       execution_context->GetSecurityContext().GetPermissionsPolicy();
@@ -222,7 +238,7 @@ void SharedStorageWorklet::AddModuleHelper(
   SharedStorageWindowSupplement::From(To<LocalDOMWindow>(*execution_context))
       ->GetSharedStorageDocumentService()
       ->CreateWorklet(
-          script_source_url, *credentials_mode,
+          script_source_url, shared_storage_security_origin, *credentials_mode,
           origin_trial_features ? *origin_trial_features
                                 : Vector<mojom::blink::OriginTrialFeature>(),
           worklet_host_.BindNewEndpointAndPassReceiver(

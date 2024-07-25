@@ -397,7 +397,7 @@ ScriptPromise<IDLAny> SharedStorage::set(
       execution_context->GetSecurityOrigin()->IsOpaque()) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
-        kOpaqueOriginCheckErrorMessage));
+        kOpaqueContextOriginCheckErrorMessage));
     return promise;
   }
 
@@ -462,7 +462,7 @@ ScriptPromise<IDLAny> SharedStorage::append(ScriptState* script_state,
       execution_context->GetSecurityOrigin()->IsOpaque()) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
-        kOpaqueOriginCheckErrorMessage));
+        kOpaqueContextOriginCheckErrorMessage));
     return promise;
   }
 
@@ -525,7 +525,7 @@ ScriptPromise<IDLAny> SharedStorage::Delete(ScriptState* script_state,
       execution_context->GetSecurityOrigin()->IsOpaque()) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
-        kOpaqueOriginCheckErrorMessage));
+        kOpaqueContextOriginCheckErrorMessage));
     return promise;
   }
 
@@ -578,7 +578,7 @@ ScriptPromise<IDLAny> SharedStorage::clear(ScriptState* script_state,
       execution_context->GetSecurityOrigin()->IsOpaque()) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
-        kOpaqueOriginCheckErrorMessage));
+        kOpaqueContextOriginCheckErrorMessage));
     return promise;
   }
 
@@ -625,7 +625,7 @@ ScriptPromise<IDLString> SharedStorage::get(ScriptState* script_state,
     if (execution_context->GetSecurityOrigin()->IsOpaque()) {
       resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
-          kOpaqueOriginCheckErrorMessage));
+          kOpaqueContextOriginCheckErrorMessage));
       return promise;
     }
 
@@ -890,7 +890,9 @@ SharedStorageWorklet* SharedStorage::worklet(ScriptState* script_state,
                                              ExceptionState& exception_state) {
   if (!shared_storage_worklet_) {
     shared_storage_worklet_ = SharedStorageWorklet::Create(
-        script_state, /*cross_origin_script_allowed=*/false);
+        script_state,
+        /*cross_origin_script_allowed=*/base::FeatureList::IsEnabled(
+            features::kSharedStorageCrossOriginScript));
   }
 
   return shared_storage_worklet_.Get();

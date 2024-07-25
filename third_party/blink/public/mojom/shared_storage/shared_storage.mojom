@@ -111,11 +111,10 @@ interface SharedStorageWorkletHost {
 // https://chromium.googlesource.com/chromium/src/+/main/docs/security/mojo.md#all-possible-message-values-are-semantically-valid
 interface SharedStorageDocumentService {
   // Create the worklet, and download and load the module script in the worklet
-  // environment. The origin of the `script_source_url` should be
-  // checked at the Mojo boundary to ensure it's from the same origin of the
-  // current context. The worklet will be initialized with
+  // environment. The worklet will be initialized with
   // `origin_trial_features` (i.e. inherit the creator document's OT features).
   CreateWorklet(url.mojom.Url script_source_url,
+                url.mojom.Origin data_origin,
                 network.mojom.CredentialsMode credentials_mode,
                 array<OriginTrialFeature> origin_trial_features,
                 pending_associated_receiver<SharedStorageWorkletHost> worklet_host)

@@ -232,6 +232,7 @@ class SharedStorageWorkletHost::ScopedDevToolsHandle
 SharedStorageWorkletHost::SharedStorageWorkletHost(
     SharedStorageDocumentServiceImpl& document_service,
     const url::Origin& frame_origin,
+    const url::Origin& data_origin,
     const GURL& script_source_url,
     network::mojom::CredentialsMode credentials_mode,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
@@ -240,7 +241,7 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
     blink::mojom::SharedStorageDocumentService::CreateWorkletCallback callback)
     : driver_(std::make_unique<SharedStorageRenderThreadWorkletDriver>(
           document_service.render_frame_host(),
-          script_source_url)),
+          data_origin)),
       document_service_(document_service.GetWeakPtr()),
       page_(
           static_cast<PageImpl&>(document_service.render_frame_host().GetPage())
@@ -252,7 +253,7 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
           storage_partition_->GetSharedStorageWorkletHostManager()),
       browser_context_(
           document_service.render_frame_host().GetBrowserContext()),
-      shared_storage_origin_(url::Origin::Create(script_source_url)),
+      shared_storage_origin_(data_origin),
       shared_storage_site_(net::SchemefulSite(shared_storage_origin_)),
       main_frame_origin_(document_service.main_frame_origin()),
       is_same_origin_worklet_(document_service.render_frame_host()
@@ -296,11 +297,14 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
 
+  // The data origin can't be opaque.
+  DCHECK(!shared_storage_origin_.opaque());
+
   url_loader_factory_proxy_ =
       std::make_unique<SharedStorageURLLoaderFactoryProxy>(
           std::move(frame_url_loader_factory),
           url_loader_factory.InitWithNewPipeAndPassReceiver(), frame_origin,
-          script_source_url, credentials_mode,
+          shared_storage_origin_, script_source_url, credentials_mode,
           static_cast<RenderFrameHostImpl&>(
               document_service_->render_frame_host())
               .ComputeSiteForCookies());
