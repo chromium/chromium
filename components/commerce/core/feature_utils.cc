@@ -46,9 +46,6 @@ bool IsProductSpecificationsEnabled(AccountChecker* account_checker) {
   //                  possible turn the whole feature off using one flag
   //                  while also supporting our "staggered" rollout.
   return base::FeatureList::IsEnabled(kProductSpecifications) &&
-         IsEnabledForCountryAndLocale(kProductSpecifications,
-                                      account_checker->GetCountry(),
-                                      account_checker->GetLocale()) &&
          IsProductSpecificationsAllowedForEnterprise(
              account_checker->GetPrefs()) &&
          account_checker->IsSignedIn();
