@@ -127,10 +127,6 @@ int GrowableIOBuffer::RemainingCapacity() {
   return capacity_ - offset_;
 }
 
-char* GrowableIOBuffer::StartOfBuffer() {
-  return real_data_.get();
-}
-
 base::span<uint8_t> GrowableIOBuffer::everything() {
   return base::as_writable_bytes(
       // SAFETY: The capacity_ is the size of the allocation.
