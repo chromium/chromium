@@ -90,17 +90,15 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       },
       availableLanguages_: {
         type: Array,
-        computed:
-            'computeAvailableLanguages_(availableVoices,localeToDisplayName,' +
-            'currentNotifications_,selectedLang,languageSearchValue_,' +
-            'enabledLangs)',
+        computed: 'computeAvailableLanguages_(localeToDisplayName,' +
+            'currentNotifications_,selectedLang,languageSearchValue_)',
       },
     };
   }
 
   selectedLang: string;
   localeToDisplayName: {[lang: string]: string} = {};
-  enabledLangs: string[];
+  enabledLangs: string[] = [];
   lastDownloadedLang: string;
 
   availableVoices: SpeechSynthesisVoice[];
@@ -224,18 +222,17 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
             return true;
           }
         })
-        .map(
-            lang => ({
-              readableLanguage: this.getDisplayName(lang),
-              checked: this.enabledLangs && this.enabledLangs.includes(lang),
-              languageCode: lang,
-              notification: {
-                isError: this.isNotificationError(lang),
-                text: this.getNotificationText(lang),
-              },
-              disabled: this.enabledLangs && this.enabledLangs.includes(lang) &&
-                  (lang.toLowerCase() === selectedLangLowerCase),
-            }));
+        .map(lang => ({
+               readableLanguage: this.getDisplayName(lang),
+               checked: this.enabledLangs.includes(lang),
+               languageCode: lang,
+               notification: {
+                 isError: this.isNotificationError(lang),
+                 text: this.getNotificationText(lang),
+               },
+               disabled: this.enabledLangs.includes(lang) &&
+                   (lang.toLowerCase() === selectedLangLowerCase),
+             }));
   }
 
   private hasAvailableNaturalVoices(lang: string): boolean {

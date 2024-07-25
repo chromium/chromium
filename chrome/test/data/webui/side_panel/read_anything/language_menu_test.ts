@@ -20,6 +20,10 @@ suite('LanguageMenu', () => {
   const languagesToNotificationMap:
       {[language: string]: VoiceClientSideStatusCode} = {};
 
+  function addLanguageMenuToDom() {
+    document.body.appendChild(languageMenu);
+    flush();
+  }
 
   function setAvailableVoices() {
     languageMenu.availableVoices = availableVoices;
@@ -59,37 +63,33 @@ suite('LanguageMenu', () => {
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     languageMenu = document.createElement('language-menu');
-    document.body.appendChild(languageMenu);
     languageMenu.localesOfLangPackVoices = new Set(['it-it']);
     languageMenu.voicePackInstallStatus = {};
     flush();
   });
 
-  suite('using pack manager languages', () => {
-    setup(() => {
-      languageMenu.localesOfLangPackVoices = AVAILABLE_GOOGLE_TTS_LOCALES;
-      flush();
-    });
+  test('with existing available language no duplicates added', () => {
+    availableVoices =
+        [createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'})];
+    setAvailableVoices();
+    languageMenu.localesOfLangPackVoices = AVAILABLE_GOOGLE_TTS_LOCALES;
+    addLanguageMenuToDom();
 
-    test('with existing available language no duplicates added', () => {
-      availableVoices =
-          [createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'})];
-      setAvailableVoices();
-      assertTrue(isPositionedOnPage(languageMenu));
-      assertEquals(34, getLanguageLineItems().length);
-    });
+    assertTrue(isPositionedOnPage(languageMenu));
+    assertEquals(34, getLanguageLineItems().length);
   });
 
   suite('using some base languages', () => {
     setup(() => {
       languageMenu.localesOfLangPackVoices = new Set(['en-us']);
-      flush();
     });
 
     test('with existing available language no duplicates added', () => {
       availableVoices =
           [createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'})];
       setAvailableVoices();
+      addLanguageMenuToDom();
+
       assertTrue(isPositionedOnPage(languageMenu));
       assertEquals(1, getLanguageLineItems().length);
     });
@@ -98,6 +98,8 @@ suite('LanguageMenu', () => {
       availableVoices =
           [createSpeechSynthesisVoice({name: 'test voice 5', lang: 'en-es'})];
       setAvailableVoices();
+      addLanguageMenuToDom();
+
       assertTrue(isPositionedOnPage(languageMenu));
       assertEquals(2, getLanguageLineItems().length);
     });
@@ -108,6 +110,8 @@ suite('LanguageMenu', () => {
         createSpeechSynthesisVoice({name: 'Dustin', lang: 'bn-bd'}),
       ];
       setAvailableVoices();
+      addLanguageMenuToDom();
+
       assertTrue(isPositionedOnPage(languageMenu));
       assertEquals(3, getLanguageLineItems().length);
       assertLanguageLineWithTextAndSwitch('bn-bd', getLanguageLineItems()[0]!);
@@ -126,6 +130,8 @@ suite('LanguageMenu', () => {
     test(
         'defaults to the locale when there is no display name with a switch',
         () => {
+          addLanguageMenuToDom();
+
           assertTrue(isPositionedOnPage(languageMenu));
           assertEquals(1, getLanguageLineItems().length);
           assertLanguageLineWithTextAndSwitch(
@@ -139,6 +145,7 @@ suite('LanguageMenu', () => {
         createSpeechSynthesisVoice({name: 'test voice 2', lang: 'en-UK'}),
       ];
       setAvailableVoices();
+      addLanguageMenuToDom();
 
       assertTrue(isPositionedOnPage(languageMenu));
       assertEquals(2, getLanguageLineItems().length);
@@ -153,33 +160,36 @@ suite('LanguageMenu', () => {
         languageMenu.localeToDisplayName = {
           'en-us': 'English (United States)',
         };
-        flush();
       });
 
       test('it displays the display name', () => {
+        addLanguageMenuToDom();
+
         assertTrue(isPositionedOnPage(languageMenu));
         assertEquals(1, getLanguageLineItems().length);
         assertLanguageLineWithTextAndSwitch(
             'English (United States)', getLanguageLineItems()[0]!);
       });
 
-      suite('with search input', () => {
-        test('it displays no language without a match', async () => {
-          getLanguageSearchField().value = 'test';
-          await getLanguageSearchField().updateComplete;
-          assertTrue(isPositionedOnPage(languageMenu));
-          assertEquals(0, getLanguageLineItems().length);
-          assertEquals(false, getNoResultsFoundMessage()!.hidden);
-        });
+      test('it displays no language without a match', async () => {
+        addLanguageMenuToDom();
+        getLanguageSearchField().value = 'test';
+        await getLanguageSearchField().updateComplete;
 
-        test('it displays matching language with a match', async () => {
-          getLanguageSearchField().value = 'english';
-          await getLanguageSearchField().updateComplete;
-          assertEquals(1, getLanguageLineItems().length);
-          assertLanguageLineWithTextAndSwitch(
-              'English (United States)', getLanguageLineItems()[0]!);
-          assertEquals(true, getNoResultsFoundMessage()!.hidden);
-        });
+        assertTrue(isPositionedOnPage(languageMenu));
+        assertEquals(0, getLanguageLineItems().length);
+        assertEquals(false, getNoResultsFoundMessage()!.hidden);
+      });
+
+      test('it displays matching language with a match', async () => {
+        addLanguageMenuToDom();
+        getLanguageSearchField().value = 'english';
+        await getLanguageSearchField().updateComplete;
+
+        assertEquals(1, getLanguageLineItems().length);
+        assertLanguageLineWithTextAndSwitch(
+            'English (United States)', getLanguageLineItems()[0]!);
+        assertEquals(true, getNoResultsFoundMessage()!.hidden);
       });
     });
   });
@@ -199,6 +209,8 @@ suite('LanguageMenu', () => {
     test(
         'defaults to the locale when there is no display name with a switch',
         () => {
+          addLanguageMenuToDom();
+
           assertTrue(isPositionedOnPage(languageMenu));
           assertEquals(3, getLanguageLineItems().length);
           assertLanguageLineWithTextAndSwitch(
@@ -217,10 +229,11 @@ suite('LanguageMenu', () => {
           'it-it': 'Italian',
           'en-uk': 'English (United Kingdom)',
         };
-        flush();
       });
 
       test('it displays the display name', () => {
+        addLanguageMenuToDom();
+
         assertTrue(isPositionedOnPage(languageMenu));
         assertEquals(3, getLanguageLineItems().length);
         assertLanguageLineWithTextAndSwitch(
@@ -243,7 +256,8 @@ suite('LanguageMenu', () => {
           'en-us': 'English (United States)',
           'en': 'English',
         };
-        flush();
+        addLanguageMenuToDom();
+
         assertTrue(isPositionedOnPage(languageMenu));
         assertEquals(2, getLanguageLineItems().length);
         assertLanguageLineWithTextAndSwitch(
@@ -252,7 +266,9 @@ suite('LanguageMenu', () => {
             'English (United States)', getLanguageLineItems()[1]!);
       });
 
-      test('it toggles switch on for initially enabled line', async () => {
+      test('it toggles switch on for initially enabled line', () => {
+        addLanguageMenuToDom();
+
         assertTrue(isPositionedOnPage(languageMenu));
         assertEquals(3, getLanguageLineItems().length);
         assertLanguageLineWithToggleChecked(false, getLanguageLineItems()[0]!);
@@ -260,9 +276,11 @@ suite('LanguageMenu', () => {
         assertLanguageLineWithToggleChecked(false, getLanguageLineItems()[2]!);
       });
 
-      test('it toggles switch when language pref changes', async () => {
+      test('it toggles switch when language pref changes', () => {
         enabledLangs = ['Italian', 'English (United States)'];
         setEnabledLanguages();
+        addLanguageMenuToDom();
+
         assertTrue(isPositionedOnPage(languageMenu));
         assertEquals(3, getLanguageLineItems().length);
         assertLanguageLineWithToggleChecked(true, getLanguageLineItems()[0]!);
@@ -270,9 +288,11 @@ suite('LanguageMenu', () => {
         assertLanguageLineWithToggleChecked(false, getLanguageLineItems()[2]!);
       });
 
-      test('it shows no notification initially', async () => {
+      test('it shows no notification initially', () => {
         enabledLangs = ['Italian', 'English (United States)'];
         setEnabledLanguages();
+        addLanguageMenuToDom();
+
         assertEquals(3, getNotificationItems().length);
         assertLanguageNotification('', getNotificationItems()[0]!);
         assertLanguageNotification('', getNotificationItems()[1]!);
@@ -286,6 +306,8 @@ suite('LanguageMenu', () => {
         languagesToNotificationMap['it'] =
             VoiceClientSideStatusCode.SENT_INSTALL_REQUEST;
         setNotificationForLanguage();
+        addLanguageMenuToDom();
+
         assertEquals(3, getNotificationItems().length);
         assertLanguageNotification('', getNotificationItems()[0]!);
         assertLanguageNotification('', getNotificationItems()[1]!);
@@ -313,7 +335,6 @@ suite('LanguageMenu', () => {
         languageMenu.localesOfLangPackVoices = new Set(['en-us']);
         enabledLangs = ['it', 'en-us', 'es'];
         setEnabledLanguages();
-
         availableVoices = [
           createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-us'}),
           createSpeechSynthesisVoice({name: 'espeak voice', lang: 'es'}),
@@ -322,6 +343,7 @@ suite('LanguageMenu', () => {
         languagesToNotificationMap['es'] =
             VoiceClientSideStatusCode.SENT_INSTALL_REQUEST;
         setNotificationForLanguage();
+        addLanguageMenuToDom();
 
         assertEquals(2, getNotificationItems().length);
         assertLanguageNotification('', getNotificationItems()[0]!);
@@ -331,9 +353,11 @@ suite('LanguageMenu', () => {
       test('shows generic error notification with internet', () => {
         enabledLangs = ['Italian', 'English (United States)'];
         setEnabledLanguages();
+        addLanguageMenuToDom();
         languagesToNotificationMap['it'] =
             VoiceClientSideStatusCode.ERROR_INSTALLING;
         setNotificationForLanguage();
+
         assertEquals(3, getNotificationItems().length);
         assertLanguageNotification('', getNotificationItems()[0]!);
         assertLanguageNotification('', getNotificationItems()[1]!);
@@ -342,21 +366,18 @@ suite('LanguageMenu', () => {
       });
 
       test('does not show old error notifications', () => {
-        document.body.innerHTML = window.trustedTypes!.emptyHTML;
-        const newMenu = document.createElement('language-menu');
-        newMenu.voicePackInstallStatus = {
+        languageMenu.voicePackInstallStatus = {
           'it': VoiceClientSideStatusCode.ERROR_INSTALLING,
         };
-        newMenu.availableVoices = [
+        languageMenu.availableVoices = [
           createSpeechSynthesisVoice({name: 'test voice 0', lang: 'en-US'}),
           createSpeechSynthesisVoice({name: 'test voice 1', lang: 'it-IT'}),
           createSpeechSynthesisVoice({name: 'test voice 2', lang: 'en-UK'}),
         ];
-        document.body.appendChild(newMenu);
-        flush();
+        addLanguageMenuToDom();
 
-        const notificationItems: HTMLElement[] =
-            Array.from(newMenu.$.languageMenu.querySelectorAll<HTMLElement>(
+        const notificationItems: HTMLElement[] = Array.from(
+            languageMenu.$.languageMenu.querySelectorAll<HTMLElement>(
                 '#notificationText'));
 
         const noNotifications = notificationItems.every(
@@ -365,58 +386,50 @@ suite('LanguageMenu', () => {
       });
 
       test('shows old downloading notifications', () => {
-        document.body.innerHTML = window.trustedTypes!.emptyHTML;
-        const newMenu = document.createElement('language-menu');
-        newMenu.voicePackInstallStatus = {
+        languageMenu.voicePackInstallStatus = {
           'it': VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
         };
-        newMenu.availableVoices = [
+        languageMenu.availableVoices = [
           createSpeechSynthesisVoice({name: 'test voice 0', lang: 'en-US'}),
           createSpeechSynthesisVoice({name: 'test voice 1', lang: 'it-IT'}),
           createSpeechSynthesisVoice({name: 'test voice 2', lang: 'en-UK'}),
         ];
-        document.body.appendChild(newMenu);
-        flush();
+        addLanguageMenuToDom();
 
-        const notificationItems: HTMLElement[] =
-            Array.from(newMenu.$.languageMenu.querySelectorAll<HTMLElement>(
+        const notificationItems: HTMLElement[] = Array.from(
+            languageMenu.$.languageMenu.querySelectorAll<HTMLElement>(
                 '#notificationText'));
 
         const downloadingNotifications = notificationItems.filter(
             notification => notification.innerText === 'Downloading voices…');
-        if (chrome.readingMode.isChromeOsAsh) {
-          assertEquals(downloadingNotifications.length, 1);
-        } else {
-          assertEquals(downloadingNotifications.length, 0);
-        }
+        assertEquals(downloadingNotifications.length, 1);
       });
 
-      test(
-          'shows high quality allocation notification', () => {
-            enabledLangs = ['Italian', 'English (United States)'];
-            setEnabledLanguages();
-            languagesToNotificationMap['it'] =
-                VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION;
-            setNotificationForLanguage();
-            assertEquals(3, getNotificationItems().length);
-            assertLanguageNotification('', getNotificationItems()[0]!);
-            assertLanguageNotification('', getNotificationItems()[1]!);
-              assertLanguageNotification(
-                  'For higher quality voices, clear space on your device',
-                  getNotificationItems()[2]!);
+      test('shows high quality allocation notification', () => {
+        enabledLangs = ['Italian', 'English (United States)'];
+        setEnabledLanguages();
+        addLanguageMenuToDom();
+        languagesToNotificationMap['it'] =
+            VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION;
+        setNotificationForLanguage();
 
-          });
+        assertEquals(3, getNotificationItems().length);
+        assertLanguageNotification('', getNotificationItems()[0]!);
+        assertLanguageNotification('', getNotificationItems()[1]!);
+        assertLanguageNotification(
+            'For higher quality voices, clear space on your device',
+            getNotificationItems()[2]!);
+      });
 
       test('with no voices it shows allocation notification ', () => {
         languageMenu.localesOfLangPackVoices =
             new Set(['it', 'English (United States)']);
-
         enabledLangs = ['it', 'English (United States)'];
         setEnabledLanguages();
-
         availableVoices =
             [createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'})];
         setAvailableVoices();
+        addLanguageMenuToDom();
 
         languagesToNotificationMap['it'] =
             VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION;
@@ -431,21 +444,23 @@ suite('LanguageMenu', () => {
             getNotificationItems()[2]!);
       });
 
-      suite('with search input', () => {
-        test('it displays no language without a match', async () => {
-          getLanguageSearchField().value = 'test';
-          await getLanguageSearchField().updateComplete;
-          assertTrue(isPositionedOnPage(languageMenu));
-          assertEquals(0, getLanguageLineItems().length);
-        });
+      test('it displays no language without a match', async () => {
+        addLanguageMenuToDom();
+        getLanguageSearchField().value = 'test';
+        await getLanguageSearchField().updateComplete;
 
-        test('it displays matching language with a match', async () => {
-          getLanguageSearchField().value = 'italian';
-          await getLanguageSearchField().updateComplete;
-          assertEquals(1, getLanguageLineItems().length);
-          assertLanguageLineWithTextAndSwitch(
-              'Italian', getLanguageLineItems()[0]!);
-        });
+        assertTrue(isPositionedOnPage(languageMenu));
+        assertEquals(0, getLanguageLineItems().length);
+      });
+
+      test('it displays matching language with a match', async () => {
+        addLanguageMenuToDom();
+        getLanguageSearchField().value = 'italian';
+        await getLanguageSearchField().updateComplete;
+
+        assertEquals(1, getLanguageLineItems().length);
+        assertLanguageLineWithTextAndSwitch(
+            'Italian', getLanguageLineItems()[0]!);
       });
     });
   });
@@ -464,6 +479,8 @@ suite('LanguageMenu', () => {
     });
 
     test('only shows one line per unique language name', () => {
+      addLanguageMenuToDom();
+
       assertTrue(isPositionedOnPage(languageMenu));
       assertEquals(4, getLanguageLineItems().length);
       assertLanguageLineWithTextAndSwitch('en-uk', getLanguageLineItems()[0]!);
@@ -480,11 +497,11 @@ suite('LanguageMenu', () => {
           'en-uk': 'English (United Kingdom)',
           'zh-cn': 'Chinese',
         };
-        flush();
       });
 
       test('it displays the display name', () => {
-        flush();
+        addLanguageMenuToDom();
+
         assertTrue(isPositionedOnPage(languageMenu));
         assertEquals(4, getLanguageLineItems().length);
         assertLanguageLineWithTextAndSwitch(
@@ -498,21 +515,23 @@ suite('LanguageMenu', () => {
         assertEquals('', getLanguageSearchField().value);
       });
 
-      suite('with search input', () => {
-        test('it displays no language without a match', async () => {
-          getLanguageSearchField().value = 'test';
-          await getLanguageSearchField().updateComplete;
-          assertTrue(isPositionedOnPage(languageMenu));
-          assertEquals(0, getLanguageLineItems().length);
-        });
+      test('it displays no language without a match', async () => {
+        addLanguageMenuToDom();
 
-        test('it displays matching language with a match', async () => {
-          getLanguageSearchField().value = 'chin';
-          await getLanguageSearchField().updateComplete;
-          assertEquals(1, getLanguageLineItems().length);
-          assertLanguageLineWithTextAndSwitch(
-              'Chinese', getLanguageLineItems()[0]!);
-        });
+        getLanguageSearchField().value = 'test';
+        await getLanguageSearchField().updateComplete;
+        assertTrue(isPositionedOnPage(languageMenu));
+        assertEquals(0, getLanguageLineItems().length);
+      });
+
+      test('it displays matching language with a match', async () => {
+        addLanguageMenuToDom();
+
+        getLanguageSearchField().value = 'chin';
+        await getLanguageSearchField().updateComplete;
+        assertEquals(1, getLanguageLineItems().length);
+        assertLanguageLineWithTextAndSwitch(
+            'Chinese', getLanguageLineItems()[0]!);
       });
     });
   });
