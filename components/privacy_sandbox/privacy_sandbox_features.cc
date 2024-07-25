@@ -117,14 +117,6 @@ BASE_FEATURE(kPrivacySandboxProactiveTopicsBlocking,
              "PrivacySandboxProactiveTopicsBlocking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kPrivacySandboxProactiveTopicsBlockingIncludeModeBName[] =
-    "include-mode-b";
-
-const base::FeatureParam<bool>
-    kPrivacySandboxProactiveTopicsBlockingIncludeModeB{
-        &kPrivacySandboxProactiveTopicsBlocking,
-        kPrivacySandboxProactiveTopicsBlockingIncludeModeBName, false};
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kTrackingProtectionFullOnboardingMobileTrigger,
              "TrackingProtectionFullOnboardingMobileTrigger",

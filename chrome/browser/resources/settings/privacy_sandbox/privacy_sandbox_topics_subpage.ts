@@ -106,22 +106,12 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
         observer: 'focusConfigChanged_',
       },
 
-      // Version 2 of Ad Topics Page should be displayed. True when Proactive
-      // Topics Blocking is enabled. If include-mode-b param is false and user
-      // is part of Mode B, this should be false.
-      // TODO (b/340217427): Consolidate into separate file to be shared
-      // across the different pages.
+      // Version 2 of Ad Topics Page should be displayed when Proactive Topics
+      // Blocking is enabled.
       shouldShowV2_: {
         type: Boolean,
-        value() {
-          if (!loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled')) {
-            return false;
-          }
-          return loadTimeData.getBoolean(
-                     'proactiveTopicsBlockingIncludesModeB') ||
-              !loadTimeData.getBoolean(
-                  'isInCookieDeprecationFacilitatedTesting');
-        },
+        value: () =>
+            loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled'),
       },
 
       blockTopicDialogTitle_: {
@@ -142,7 +132,7 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
       shouldShowV2EmptyState_: {
         type: Boolean,
         computed: 'computeShouldShowV2EmptyState_(' +
-            'shouldShowV2_, prefs.privacy_sandbox.m1.topics_enabled.value)',
+            'shouldShowV2, prefs.privacy_sandbox.m1.topics_enabled.value)',
       },
     };
   }

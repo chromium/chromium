@@ -550,15 +550,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking));
 
   html_source->AddBoolean(
-      "proactiveTopicsBlockingIncludesModeB",
-      privacy_sandbox::kPrivacySandboxProactiveTopicsBlockingIncludeModeB
-          .Get());
-
-  html_source->AddBoolean("isInCookieDeprecationFacilitatedTesting",
-                          base::FeatureList::IsEnabled(
-                              features::kCookieDeprecationFacilitatedTesting));
-
-  html_source->AddBoolean(
       "isPrivacySandboxPrivacyGuideAdTopicsEnabled",
       base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics));

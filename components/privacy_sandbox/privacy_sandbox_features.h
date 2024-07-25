@@ -144,13 +144,6 @@ BASE_DECLARE_FEATURE(kPrivacySandboxAttestationsLoadPreInstalledComponent);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxProactiveTopicsBlocking);
 
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const char kPrivacySandboxProactiveTopicsBlockingIncludeModeBName[];
-
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<bool>
-    kPrivacySandboxProactiveTopicsBlockingIncludeModeB;
-
 #if BUILDFLAG(IS_ANDROID)
 // Triggers Tracking Protection Onboarding notice for 100% launch.
 // TODO(b/341975190): This flag is for testing only and will be replaced by
