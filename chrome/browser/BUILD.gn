@@ -5464,6 +5464,7 @@ static_library("browser") {
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/ash/user_education",
       "//chrome/browser/ui/webui/ash/emoji",
+      "//chrome/browser/ui/webui/ash/launcher_internals",
       "//chrome/browser/ui/webui/ash/mako",
       "//chrome/browser/ui/webui/ash/manage_mirrorsync",
       "//chrome/browser/ui/webui/ash/office_fallback",

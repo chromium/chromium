@@ -11,3 +11,30 @@ mojom("mojo_bindings") {
   sources = [ "launcher_internals.mojom" ]
   webui_module_path = "/"
 }
+
+static_library("launcher_internals") {
+  sources = [
+    "launcher_internals_handler.cc",
+    "launcher_internals_handler.h",
+    "launcher_internals_ui.cc",
+    "launcher_internals_ui.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+
+  deps = [
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/resources/chromeos/launcher_internals:resources",
+    "//chrome/browser/ui/webui",
+  ]
+}
