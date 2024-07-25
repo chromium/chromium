@@ -536,8 +536,7 @@ namespace declarativeNetRequest {
     // match rules which match on the non-existence of headers.
     // E.g. <code>{"content-type": ["text/html; charset=utf-8",
     // "multipart/form-data"]}</code>
-    // TODO(crbug.com/40727004): Remove nodoc once feature is complete.
-    [nodoc] object? responseHeaders;
+    object? responseHeaders;
   };
 
   dictionary MatchedRuleInfoDebug {
