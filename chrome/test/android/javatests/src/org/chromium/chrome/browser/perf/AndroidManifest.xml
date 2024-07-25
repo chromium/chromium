@@ -14,9 +14,7 @@
 
     <application>
         <!-- We do not need/want androidx.profileinstaller to run on startup -->
-        <provider android:authorities="org.chromium.chrome.startup.benchmark.tests.androidx-startup"
-                android:name="androidx.startup.InitializationProvider"
-                android:exported="false"
+        <provider android:name="androidx.startup.InitializationProvider"
                 tools:node="remove" />
     </application>
 

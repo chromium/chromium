@@ -6,6 +6,7 @@
 
 <manifest
       xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
       package="org.chromium.webview_ui_test.test">
 
     <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
@@ -13,9 +14,7 @@
 
     <application>
         <provider
-            xmlns:tools="http://schemas.android.com/tools"
             android:name="androidx.startup.InitializationProvider"
-            android:exported="false"
             tools:node="remove"/>
         <provider
             xmlns:tools="http://schemas.android.com/tools"

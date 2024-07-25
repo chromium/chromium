@@ -149,9 +149,7 @@ by a child template that "extends" this file.
                       tools:ignore="ExportedContentProvider" />
             <!-- Disables at startup init of Emoji2. See http://crbug.com/1205141 -->
             <provider
-                android:authorities="{{ manifest_package }}.androidx-startup"
                 android:name="androidx.startup.InitializationProvider"
-                android:exported="false"
                 tools:node="remove">
             </provider>
             {% if donor_package is not defined %}

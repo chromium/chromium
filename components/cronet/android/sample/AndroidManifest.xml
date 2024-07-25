@@ -27,10 +27,7 @@ found in the LICENSE file.
         </activity>
         <!-- Disables at startup init of Emoji2. See http://crbug.com/1205141 -->
         <provider
-            android:authorities="org.chromium.cronet_sample_apk.androidx-startup"
             android:name="androidx.startup.InitializationProvider"
-            android:exported="false"
-            tools:replace="android:authorities"
             tools:node="remove">
         </provider>
 
