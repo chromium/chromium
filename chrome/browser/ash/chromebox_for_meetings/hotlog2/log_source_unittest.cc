@@ -70,6 +70,10 @@ class LogSourceForTesting : public LogSource {
   ~LogSourceForTesting() override = default;
 
   void FillDataBufferForTesting() { FillDataBuffer(); }
+
+ protected:
+  // Override this and avoid serialization as it greatly complicates testing
+  void SerializeDataBuffer(std::vector<std::string>& buffer) override {}
 };
 
 // Define test fixture. This fixture will be used for both the

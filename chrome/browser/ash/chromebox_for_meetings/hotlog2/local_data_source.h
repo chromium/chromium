@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/proto/logs_payload.pb.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -57,10 +58,16 @@ class LocalDataSource : public mojom::DataSource {
   // buffer for temporary storage until the next call to Fetch().
   virtual std::vector<std::string> GetNextData() = 0;
 
+  void BuildLogEntryFromLogLine(proto::LogEntry& entry,
+                                const std::string& line,
+                                const uint64_t default_timestamp,
+                                const proto::LogSeverity& default_severity);
+
  private:
   bool IsDataBufferOverMaxLimit();
   void RedactDataBuffer(std::vector<std::string>& buffer);
-  void AddTimestamps(std::vector<std::string>& data);
+  uint64_t TimestampStringToUnixTime(const std::string& timestamp);
+  proto::LogSeverity SeverityStringToEnum(const std::string& severity);
   bool IsWatchDogFilterValid(mojom::DataFilterPtr& filter);
   void FireChangeWatchdogCallbacks(const std::string& data);
   void CheckRegexWatchdogsAndFireCallbacks(const std::string& data);
