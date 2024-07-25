@@ -2754,7 +2754,7 @@ BASE_FEATURE(kSeamlessRefreshRateSwitching,
 // Controls whether to enable kSecondaryAccountAllowedInArc policy.
 BASE_FEATURE(kSecondaryAccountAllowedInArcPolicy,
              "SecondaryAccountAllowedInArcPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables displaying separate network icons for different networks types.
 // https://crbug.com/902409
