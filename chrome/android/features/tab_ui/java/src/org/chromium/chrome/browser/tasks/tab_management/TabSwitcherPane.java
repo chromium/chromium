@@ -59,7 +59,6 @@ import java.util.function.DoubleConsumer;
 
 /** A {@link Pane} representing the regular tab switcher. */
 public class TabSwitcherPane extends TabSwitcherPaneBase {
-    private static final int ON_SHOWN_IPH_DELAY = 700;
     private static final int ON_CREATION_IPH_DELAY = 100;
 
     private final TabModelObserver mTabModelObserver =
@@ -96,7 +95,6 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
     private final @NonNull SharedPreferences mSharedPreferences;
     private final @NonNull Supplier<TabModelFilter> mTabModelFilterSupplier;
     private final @NonNull TabSwitcherPaneDrawableCoordinator mTabSwitcherPaneDrawableCoordinator;
-    private final @NonNull UserEducationHelper mUserEducationHelper;
 
     private @Nullable OnSharedPreferenceChangeListener mPriceAnnotationsPrefListener;
     private @Nullable TabGroupSyncService mTabGroupSyncService;
@@ -122,11 +120,16 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
             @NonNull TabSwitcherPaneDrawableCoordinator tabSwitcherDrawableCoordinator,
             @NonNull DoubleConsumer onToolbarAlphaChange,
             @NonNull UserEducationHelper userEducationHelper) {
-        super(context, factory, /* isIncognito= */ false, onToolbarAlphaChange);
+        super(
+                context,
+                profileProviderSupplier,
+                factory,
+                /* isIncognito= */ false,
+                onToolbarAlphaChange,
+                userEducationHelper);
         mSharedPreferences = sharedPreferences;
         mTabModelFilterSupplier = tabModelFilterSupplier;
         mTabSwitcherPaneDrawableCoordinator = tabSwitcherDrawableCoordinator;
-        mUserEducationHelper = userEducationHelper;
 
         // TODO(crbug.com/40946413): Update this string to not be an a11y string and it should
         // probably just say "Tabs".
@@ -142,7 +145,10 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
                                 R.string.button_new_tab,
                                 R.string.button_new_tab,
                                 R.drawable.new_tab_icon),
-                        () -> newTabButtonClickListener.onClick(null)));
+                        () -> {
+                            notifyNewTabButtonClick();
+                            newTabButtonClickListener.onClick(null);
+                        }));
 
         profileProviderSupplier.onAvailable(this::onProfileProviderAvailable);
         getIsVisibleSupplier().addObserver(mVisibilityObserver);
@@ -227,6 +233,13 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
         return this::tryToTriggerTabGroupSurfaceIph;
     }
 
+    @Override
+    protected void tryToTriggerOnShownIphs() {
+        // The IPH system will ensure we don't show both.
+        tryToTriggerTabGroupSurfaceIph();
+        tryToTriggerRemoteGroupIph();
+    }
+
     private void onTabSwitcherPaneCoordinatorChanged(
             @Nullable TabSwitcherPaneCoordinator newValue,
             @Nullable TabSwitcherPaneCoordinator oldValue) {
@@ -282,23 +295,9 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
             if (filter instanceof TabGroupModelFilter groupFilter) {
                 groupFilter.addTabGroupObserver(mFilterObserver);
             }
-            postToTriggerTabGroupSurfaceIph();
         } else {
             removeObservers();
         }
-    }
-
-    private void postToTriggerTabGroupSurfaceIph() {
-        // TODO(crbug.com/346356139): Figure out a more elegant way of observing entering the hub as
-        // well as switching between panes. Knowing when these animations complete turns out to be
-        // fairly difficult, especially knowing when we're about to enter a transition.
-        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, this::onShown, ON_SHOWN_IPH_DELAY);
-    }
-
-    private void onShown() {
-        // The IPH system will ensure we don't show both.
-        tryToTriggerTabGroupSurfaceIph();
-        tryToTriggerRemoteGroupIph();
     }
 
     private void tryToTriggerTabGroupSurfaceIph() {

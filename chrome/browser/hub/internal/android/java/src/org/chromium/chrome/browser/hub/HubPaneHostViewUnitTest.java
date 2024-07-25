@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.hub;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.FLOATING_ACTION_BUTTON_SUPPLIER_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 
@@ -33,6 +36,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -57,6 +62,7 @@ public class HubPaneHostViewUnitTest {
     private Button mActionButton;
     private ImageView mHairline;
     private PropertyModel mPropertyModel;
+    private Supplier<View> mFloatingActionButtonSupplier;
 
     @Before
     public void setUp() throws Exception {
@@ -180,6 +186,24 @@ public class HubPaneHostViewUnitTest {
 
         mPropertyModel.set(HAIRLINE_VISIBILITY, false);
         assertEquals(View.GONE, mHairline.getVisibility());
+    }
+
+    @Test
+    public void testFloatingActionButtonSupplier() {
+        Callback<Supplier<View>> callback =
+                (floatingActionButtonSupplier) -> {
+                    mFloatingActionButtonSupplier = floatingActionButtonSupplier;
+                };
+
+        assertNull(mFloatingActionButtonSupplier);
+        mPropertyModel.set(FLOATING_ACTION_BUTTON_SUPPLIER_CALLBACK, callback);
+        assertNotNull(mFloatingActionButtonSupplier);
+
+        assertEquals(View.GONE, mActionButton.getVisibility());
+        assertNull(mFloatingActionButtonSupplier.get());
+
+        mActionButton.setVisibility(View.VISIBLE);
+        assertEquals(mFloatingActionButtonSupplier.get(), mActionButton);
     }
 
     /** Order of children does not matter. */

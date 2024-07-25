@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.COLOR_SCHEME;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.FLOATING_ACTION_BUTTON_SUPPLIER_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 
@@ -16,6 +17,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -31,6 +33,7 @@ public class HubPaneHostMediator {
     private final @NonNull TransitiveObservableSupplier<Pane, Boolean> mHairlineVisibilitySupplier;
 
     private @Nullable TransitiveObservableSupplier<Pane, FullButtonData> mActionButtonDataSupplier;
+    private @Nullable Supplier<View> mFloatingActionButtonSupplier;
 
     /** Creates the mediator. */
     public HubPaneHostMediator(
@@ -50,6 +53,9 @@ public class HubPaneHostMediator {
                             paneSupplier, p -> p.getActionButtonDataSupplier());
             mActionButtonDataSupplier.addObserver(mOnActionButtonChangeCallback);
         }
+
+        propertyModel.set(
+                FLOATING_ACTION_BUTTON_SUPPLIER_CALLBACK, this::consumeFloatingActionSupplier);
     }
 
     /** Cleans up observers. */
@@ -61,6 +67,11 @@ public class HubPaneHostMediator {
             mActionButtonDataSupplier.removeObserver(mOnActionButtonChangeCallback);
             mActionButtonDataSupplier = null;
         }
+    }
+
+    /** Returns the button view for the floating action button if present. */
+    public @Nullable View getFloatingActionButton() {
+        return mFloatingActionButtonSupplier.get();
     }
 
     private void onPaneChange(@Nullable Pane pane) {
@@ -75,5 +86,9 @@ public class HubPaneHostMediator {
 
     private void onHairlineVisibilityChange(@Nullable Boolean visible) {
         mPropertyModel.set(HAIRLINE_VISIBILITY, Boolean.TRUE.equals(visible));
+    }
+
+    private void consumeFloatingActionSupplier(Supplier<View> floatingActionButtonSupplier) {
+        mFloatingActionButtonSupplier = floatingActionButtonSupplier;
     }
 }

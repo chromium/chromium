@@ -41,4 +41,13 @@ public interface PaneHubController {
      */
     @Nullable
     View getPaneButton(@PaneId int paneId);
+
+    /**
+     * Allows retrieval of the View object for the floating action button. Should never be used to
+     * perform click operations. Instead this is for purposes such as rooting IPHs.
+     *
+     * @return The view if currently visible atop the pane.
+     */
+    @Nullable
+    View getFloatingActionButton();
 }

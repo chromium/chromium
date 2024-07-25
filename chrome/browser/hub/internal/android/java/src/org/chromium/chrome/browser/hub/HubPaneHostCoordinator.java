@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.hub;
 
+import android.view.View;
+
+import androidx.annotation.Nullable;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -28,5 +32,10 @@ public class HubPaneHostCoordinator {
     /** Cleans up observers and resources. */
     public void destroy() {
         mMediator.destroy();
+    }
+
+    /** Returns the button view for the floating action button if present. */
+    public @Nullable View getFloatingActionButton() {
+        return mMediator.getFloatingActionButton();
     }
 }

@@ -116,6 +116,13 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                         modalDialogManager,
                         bottomSheetController,
                         backPressManager);
+        OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
+        Handler handler = new Handler();
+        profileProviderSupplier.onAvailable(
+                (profileProvider) -> profileSupplier.set(profileProvider.getOriginalProfile()));
+        UserEducationHelper userEducationHelper =
+                new UserEducationHelper(activity, profileSupplier, handler);
+
         TabSwitcherPaneBase pane;
         if (isIncognito) {
             Supplier<TabModelFilter> incongitorTabModelFilterSupplier =
@@ -123,20 +130,16 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             pane =
                     new IncognitoTabSwitcherPane(
                             activity,
+                            profileProviderSupplier,
                             factory,
                             incongitorTabModelFilterSupplier,
                             newTabButtonOnClickListener,
                             incognitoReauthControllerSupplier,
-                            onToolbarAlphaChange);
+                            onToolbarAlphaChange,
+                            userEducationHelper);
         } else {
             Supplier<TabModelFilter> tabModelFilterSupplier =
                     () -> tabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
-            OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
-            profileProviderSupplier.onAvailable(
-                    (profileProvider) -> profileSupplier.set(profileProvider.getOriginalProfile()));
-            Handler handler = new Handler();
-            UserEducationHelper userEducationHelper =
-                    new UserEducationHelper(activity, profileSupplier, handler);
             pane =
                     new TabSwitcherPane(
                             activity,

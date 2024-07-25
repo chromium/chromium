@@ -1062,7 +1062,8 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   if (kIPHTabGroupsDragAndDropFeature.name == feature->name) {
     // IPH for drag & drop promo in the Tab Switcher.
     // * Drag & drop has not been used previously in the last 360 days.
-    // * Iff IPH has been shown 0 times in 30 days AND less than 2 times in 90 days window.
+    // * Iff IPH has been shown 0 times in 30 days AND less than 2 times in 90
+    // days window.
     // * Once per session.
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
@@ -1135,6 +1136,26 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(EQUAL, 0), 14, 90);
     config->snooze_params.snooze_interval = 7;
     config->snooze_params.max_limit = 3;
+    return config;
+  }
+  if (kIPHTabSwitcherFloatingActionButtonFeature.name == feature->name) {
+    // Allows an IPH for the tab groups surface through hub toolbar when:
+    // * Only once per week.
+    // * Up to 3 times per year.
+    // * And only as long as the user has never manually pressed the
+    // floating new tab button.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 1);
+    config->trigger =
+        EventConfig("tab_switcher_floating_action_button_iph_triggered",
+                    Comparator(EQUAL, 0), 7, 7);
+    config->event_configs.insert(
+        EventConfig("tab_switcher_floating_action_button_iph_triggered",
+                    Comparator(LESS_THAN, 3), 360, 360));
+    config->used = EventConfig("tab_switcher_floating_action_button_clicked",
+                               Comparator(EQUAL, 0), 360, 360);
     return config;
   }
   if (kIPHWebFeedFollowFeature.name == feature->name) {

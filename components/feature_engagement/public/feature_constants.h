@@ -163,6 +163,7 @@ BASE_DECLARE_FEATURE(kIPHTabGroupsRemoteGroupFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsSurfaceFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsSurfaceOnHideFeature);
 BASE_DECLARE_FEATURE(kIPHTabSwitcherButtonFeature);
+BASE_DECLARE_FEATURE(kIPHTabSwitcherFloatingActionButtonFeature);
 BASE_DECLARE_FEATURE(kIPHTranslateMenuButtonFeature);
 BASE_DECLARE_FEATURE(kIPHVideoTutorialNTPChromeIntroFeature);
 BASE_DECLARE_FEATURE(kIPHVideoTutorialNTPDownloadFeature);

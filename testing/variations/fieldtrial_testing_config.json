@@ -430,8 +430,12 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "hub_alternative_fab_color": "true"
+                    },
                     "enable_features": [
-                        "AndroidHubFloatingActionButton"
+                        "AndroidHubFloatingActionButton",
+                        "IPH_TabSwitcherFloatingActionButton"
                     ]
                 }
             ]

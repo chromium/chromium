@@ -23,6 +23,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.core.widget.TextViewCompat;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.Objects;
@@ -131,6 +133,14 @@ public class HubPaneHostView extends FrameLayout {
 
     void setHairlineVisibility(boolean visible) {
         mHairline.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    void setFloatingActionButtonConsumer(Callback<Supplier<View>> consumer) {
+        consumer.onResult(this::getFloatingActionButton);
+    }
+
+    private @Nullable View getFloatingActionButton() {
+        return mActionButton.getVisibility() == View.VISIBLE ? mActionButton : null;
     }
 
     private void tryAddViewToFrame(View rootView) {
