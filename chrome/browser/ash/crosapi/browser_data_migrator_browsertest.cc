@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
@@ -167,13 +168,10 @@ class BrowserDataMigratorMoveMigrateOnSignInByFeature
   ~BrowserDataMigratorMoveMigrateOnSignInByFeature() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {ash::standalone_browser::features::kLacrosOnly}, {});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
     BrowserDataMigratorOnSignIn::SetUp();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Enabling LacrosOnly with feature flags should trigger move migration during
@@ -314,7 +312,6 @@ class BrowserDataMigratorRestartInSession
   // to be substituted.
   std::unique_ptr<ScopedRestartAttemptForTesting> scoped_attempt_restart_;
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class BrowserDataMigratorMoveMigrateOnRestartInSessionByFeature
@@ -329,8 +326,8 @@ class BrowserDataMigratorMoveMigrateOnRestartInSessionByFeature
       default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {ash::standalone_browser::features::kLacrosOnly}, {});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
     BrowserDataMigratorRestartInSession::SetUp();
   }
 };
@@ -423,13 +420,10 @@ class BrowserDataMigratorForKiosk : public KioskBaseTest {
   ~BrowserDataMigratorForKiosk() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {ash::standalone_browser::features::kLacrosOnly}, {});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
     KioskBaseTest::SetUp();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserDataMigratorForKiosk, MigrateOnKioskLaunch) {
