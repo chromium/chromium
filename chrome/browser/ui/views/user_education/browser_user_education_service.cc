@@ -798,34 +798,6 @@ void MaybeRegisterChromeFeaturePromos(
               120, "boujane@google.com",
               "Privacy standbox tracking protection onboarding notice.")));
 
-  // kIPHTrackingProtectionFullOnboardingFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHTrackingProtectionFullOnboardingFeature,
-          kLocationIconElementId,
-          IDS_TRACKING_PROTECTION_FULL_ONBOARDING_NOTICE_BODY,
-          IDS_TRACKING_PROTECTION_FULL_ONBOARDING_NOTICE_SETTINGS_BUTTON_LABEL,
-          base::BindRepeating(
-              [](ui::ElementContext ctx,
-                 user_education::FeaturePromoHandle promo_handle) {
-                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
-                if (!browser) {
-                  return;
-                }
-                chrome::ShowSettingsSubPage(browser,
-                                            chrome::kCookieSettingsSubPage);
-              }))
-          .SetBubbleTitleText(
-              IDS_TRACKING_PROTECTION_FULL_ONBOARDING_NOTICE_TITLE)
-          .SetPromoSubtype(
-              FeaturePromoSpecification::PromoSubtype::kLegalNotice)
-          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
-          .SetBubbleIcon(&views::kEyeCrossedIcon)
-          .SetCustomActionIsDefault(false)
-          .SetMetadata(
-              120, "boujane@google.com",
-              "Privacy standbox tracking protection full onboarding notice.")));
-
   // kIPHTrackingProtectionReminderFeature:
   registry.RegisterFeature(std::move(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
