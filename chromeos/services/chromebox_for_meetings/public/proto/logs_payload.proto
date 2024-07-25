@@ -1,0 +1,125 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package ash.cfm.proto;
+
+option optimize_for = LITE_RUNTIME;
+option java_outer_classname = "LogEntryProto";
+option java_package = "com.google.videoconf.devices.hotlog";
+
+message LogsPayload {
+  reserved 1;
+
+  // Required. The loglines included in the payload.
+  repeated LogEntry log_lines = 2 [deprecated = true];
+}
+
+message LogPayload {
+  // Required. Sets of log entries with a common source.
+  repeated LogSet log_sets = 1;
+}
+
+// A set of log entries with a common source.
+message LogSet {
+  repeated LogEntry entries = 1;
+
+  // Required. The bucket for logs in log_lines.
+  // Typically a filename from which the logs were derived. Must be less than
+  // 512 characters in length and can only include: upper and lower case
+  // alphanumeric characters, forward-slash, underscore, hyphen, and period.
+  optional string log_source = 2;
+
+  // A map of key, value pairs that provides additional information about the
+  // log entries.
+  map<string, string> labels = 3;
+}
+
+// The representation of a log line, largely mapping to
+// google3/google/logging/v2/log_entry.proto
+message LogEntry {
+  // Was timestamp and gmt_offst.
+  reserved 1, 2;
+
+  // Required. The string payload (minus the timestamp)
+  optional string text_payload = 3;
+
+  // Indictes the source of this LogEntry.
+  optional LogSource log_source = 4 [deprecated = true];
+
+  // Optional. The timestamp of the log entry.
+  optional uint64 timestamp_micros = 5;
+
+  // Optional. A unique identifier for the log entry. May be used to avoid
+  // duplication of log entries by overwriting prior inserts.
+  optional string insert_id = 6;
+
+  // Optional. The severity of the logline.
+  optional LogSeverity severity = 7;
+}
+
+// The severity of the logline, mapping to
+// google3/google/logging/type/log_severity.proto
+enum LogSeverity {
+  // (0) The log entry has no assigned severity level.
+  LOG_SEVERITY_DEFAULT = 0;
+  // (100) Debug or trace information.
+  LOG_SEVERITY_DEBUG = 100;
+  // (200) Routine information, such as ongoing status or performance.
+  LOG_SEVERITY_INFO = 200;
+  // (300) Normal but significant events, such as start up, shut down, or
+  // a configuration change.
+  LOG_SEVERITY_NOTICE = 300;
+  // (400) Warning events might cause problems.
+  LOG_SEVERITY_WARNING = 400;
+  // (500) Error events are likely to cause problems.
+  LOG_SEVERITY_ERROR = 500;
+  // (600) Critical events cause more severe problems or outages.
+  LOG_SEVERITY_CRITICAL = 600;
+  // (700) A person must take an action immediately.
+  LOG_SEVERITY_ALERT = 700;
+  // (800) One or more systems are unusable.
+  LOG_SEVERITY_EMERGENCY = 800;
+}
+
+enum LogSource {
+  DEFAULT_UNKNOWN = 0;
+
+  // Source: /var/log/atrus.log
+  ATRUS = 1;
+
+  // Source: /var/log/eventlog.txt
+  EVENT = 2;
+
+  // Source: Output of the command ifconfig
+  IF_CONFIG = 3;
+
+  // Source: Output of the command lspci
+  LS_PCI = 4;
+
+  // Source: /var/log/messages
+  MESSAGES = 5;
+
+  // Source: /var/log/net.log
+  NET_LOG = 6;
+
+  // Source: hotrod. See go/hotlog-hotrod for more details.
+  PACKAGED_APP = 7;
+
+  // Source: /var/log/power_manager/powerd.LATEST
+  POWERD_LATEST = 8;
+
+  // Source: /var/log/power_manager/powerd.PREVIOUS
+  POWERD_PREVIOUS = 9;
+
+  // Source: /var/log/ui/ui.LATEST
+  UI_LATEST = 10;
+
+  // Source: /var/log/update_engine.log
+  UPDATE_ENGINE_LOG = 11;
+
+  // Source: Output of the command lsusb
+  LS_USB = 12;
+}
