@@ -342,8 +342,8 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
         'androidx.window.layout.adapter.extensions',
     ]
 
-    # R8 OOMs with the default xmx=1G.
-    cmd = build_utils.JavaCmd(xmx='2G') + [
+    # R8 OOMs with xmx=2G.
+    cmd = build_utils.JavaCmd(xmx='3G') + [
         # Allows -whyareyounotinlining, which we don't have by default, but
         # which is useful for one-off queries.
         '-Dcom.android.tools.r8.experimental.enablewhyareyounotinlining=1',

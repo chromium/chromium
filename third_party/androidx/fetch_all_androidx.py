@@ -52,6 +52,12 @@ _OVERRIDES = [
     #('androidx_core_core/core-1.9.0-SNAPSHOT.aar',
     # 'https://androidx.dev/snapshots/builds/8545498/artifacts/repository/'
     # 'androidx/core/core/1.8.0-SNAPSHOT/core-1.8.0-20220505.122105-1.aar'),
+    ('androidx_sqlite_sqlite_android/sqlite-android-2.5.0-SNAPSHOT.aar',
+     'https://maven.google.com/androidx/sqlite/sqlite-android/2.5.0-alpha01/sqlite-android-2.5.0-alpha01.aar'
+     ),
+    ('androidx_room_room_runtime_android/room-runtime-android-2.7.0-SNAPSHOT.aar',
+     'https://maven.google.com/androidx/room/room-runtime-android/2.7.0-alpha01/room-runtime-android-2.7.0-alpha01.aar'
+     ),
 ]
 
 
