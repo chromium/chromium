@@ -4153,7 +4153,6 @@ void BrowserView::OnWidgetActivationChanged(views::Widget* widget,
 
       browser_->DidBecomeActive();
     } else {
-      BrowserList::NotifyBrowserNoLongerActive(browser_.get());
       browser_->DidBecomeInactive();
     }
   }
