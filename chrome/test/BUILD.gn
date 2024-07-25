@@ -8585,7 +8585,6 @@ test("unit_tests") {
       "../browser/ui/webui/ash/cloud_upload/hats_office_trigger_unittest.cc",
       "../browser/ui/webui/ash/diagnostics_dialog_unittest.cc",
       "../browser/ui/webui/ash/edu_account_login_handler_unittest.cc",
-      "../browser/ui/webui/ash/enterprise_reporting/history_converter_unittest.cc",
       "../browser/ui/webui/ash/settings/pages/people/os_sync_handler_unittest.cc",
       "../browser/ui/webui/ash/smb_shares/smb_handler_unittest.cc",
       "../browser/ui/webui/help/version_updater_chromeos_unittest.cc",
@@ -8833,6 +8832,7 @@ test("unit_tests") {
 
       # Gather unit tests from //c/b/ui/webui/ash subdirectories:
       "//chrome/browser/ui/webui/ash/emoji:unit_tests",
+      "//chrome/browser/ui/webui/ash/enterprise_reporting:unit_tests",
       "//chrome/browser/ui/webui/ash/mako:unit_tests",
       "//chrome/browser/ui/webui/ash/parent_access:unit_tests",
       "//chrome/browser/ui/webui/ash/print_preview_cros:unit_tests",
