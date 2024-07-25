@@ -1192,6 +1192,8 @@ CalculationResultCategory DetermineKeywordCategory(
       return kCalcLength;
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
       return kCalcLengthFunction;
+    case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
+      return kCalcNumber;
   };
 }
 
@@ -1228,6 +1230,10 @@ CSSMathExpressionKeywordLiteral::ToCalculationExpression(
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
       return base::MakeRefCounted<CalculationExpressionSizingKeywordNode>(
           CSSValueIDToSizingKeyword(keyword_));
+    case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
+      // TODO(crbug.com/325309578): Produce a CalculationExpressionNode-derived
+      // object for color channel keywords.
+      NOTREACHED_NORETURN();
   };
 }
 
@@ -1245,6 +1251,7 @@ double CSSMathExpressionKeywordLiteral::ComputeDouble(
       }
     }
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
+    case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
       NOTREACHED_NORETURN();
   };
 }
@@ -1263,6 +1270,7 @@ CSSMathExpressionKeywordLiteral::ToPixelsAndPercent(
           NOTREACHED_NORETURN();
       }
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
+    case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
       return std::nullopt;
   }
 }
@@ -3981,13 +3989,23 @@ class CSSMathExpressionNodeParser {
           (token.GetType() == kPercentageToken &&
            parsing_flags_.Has(Flag::AllowPercent)) ||
           token.GetType() == kDimensionToken)) {
-      // For relative color syntax. Swap in the associated value of a color
-      // channel here. e.g. color(from color(srgb 1 0 0) calc(r * 2) 0 0) should
+      // For relative color syntax.
+      // If the associated values of color channels are known, swap them in
+      // here. e.g. color(from color(srgb 1 0 0) calc(r * 2) 0 0) should
       // swap in "1" for the value of "r" in the calc expression.
-      if (color_channel_map_.Contains(token.Id())) {
-        return CSSMathExpressionNumericLiteral::Create(
-            color_channel_map_.at(token.Id()),
-            CSSPrimitiveValue::UnitType::kNumber);
+      // If channel values are not known, create keyword literals for valid
+      // channel names instead.
+      if (auto it = color_channel_map_.find(token.Id());
+          it != color_channel_map_.end()) {
+        const std::optional<double>& channel = it->value;
+        if (channel.has_value()) {
+          return CSSMathExpressionNumericLiteral::Create(
+              channel.value(), CSSPrimitiveValue::UnitType::kNumber);
+        } else {
+          return CSSMathExpressionKeywordLiteral::Create(
+              token.Id(),
+              CSSMathExpressionKeywordLiteral::Context::kColorChannel);
+        }
       }
       return nullptr;
     }
