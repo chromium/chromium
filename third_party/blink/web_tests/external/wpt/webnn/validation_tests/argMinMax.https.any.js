@@ -56,6 +56,7 @@ const tests = [
 function runTests(operatorName, tests) {
   tests.forEach(test => {
     promise_test(async t => {
+      const builder = new MLGraphBuilder(context);
       const input = builder.input(
         'input',
         { dataType: test.input.dataType, dimensions: test.input.dimensions });

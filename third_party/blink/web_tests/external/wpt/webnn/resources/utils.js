@@ -1063,7 +1063,6 @@ const testWebNNOperation = (operationName, buildFunc) => {
   }
 
   let context;
-  let builder;
   operationNameArray.forEach((subOperationName) => {
     const tests = loadTests(subOperationName);
     promise_setup(async () => {
@@ -1075,10 +1074,10 @@ const testWebNNOperation = (operationName, buildFunc) => {
       }
       assert_implements(
           supported, `Unable to create context for ${variant} variant`);
-      builder = new MLGraphBuilder(context);
     });
     for (const subTest of tests) {
       promise_test(async () => {
+        const builder = new MLGraphBuilder(context);
         await run(subOperationName, context, builder, subTest, buildFunc);
       }, `${subTest.name}`);
     }

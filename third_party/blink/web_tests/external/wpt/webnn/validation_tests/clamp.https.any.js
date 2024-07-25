@@ -9,6 +9,7 @@ validateInputFromAnotherBuilder('clamp');
 validateUnaryOperation('clamp', allWebNNOperandDataTypes);
 
 promise_test(async t => {
+  const builder = new MLGraphBuilder(context);
   const options = {minValue: 1.0, maxValue: 3.0};
   if (!context.opSupportLimits().input.dataTypes.includes('uint32')) {
     assert_throws_js(
@@ -25,6 +26,7 @@ promise_test(async t => {
 }, '[clamp] Test building an operator with options');
 
 promise_test(async t => {
+  const builder = new MLGraphBuilder(context);
   const options = {minValue: 0, maxValue: 0};
   if (!context.opSupportLimits().input.dataTypes.includes('int32')) {
     assert_throws_js(
@@ -41,6 +43,7 @@ promise_test(async t => {
 }, '[clamp] Test building an operator with options.minValue == options.maxValue');
 
 promise_test(async t => {
+  const builder = new MLGraphBuilder(context);
   const options = {minValue: 3.0, maxValue: 1.0};
   if (!context.opSupportLimits().input.dataTypes.includes('uint8')) {
     assert_throws_js(
@@ -57,6 +60,7 @@ promise_test(async t => {
 // To be removed once infinite `minValue` is allowed. Tracked in
 // https://github.com/webmachinelearning/webnn/pull/647.
 promise_test(async t => {
+  const builder = new MLGraphBuilder(context);
   const options = {minValue: -Infinity};
   const input = builder.input('input', {dataType: 'float16', dimensions: []});
   assert_throws_js(TypeError, () => builder.clamp(input, options));

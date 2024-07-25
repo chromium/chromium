@@ -195,7 +195,7 @@ function generateOutOfRangeValuesArray(type) {
 let inputIndex = 0;
 let inputAIndex = 0;
 let inputBIndex = 0;
-let context, builder;
+let context;
 
 test(() => assert_not_equals(navigator.ml, undefined, "ml property is defined on navigator"));
 
@@ -204,7 +204,6 @@ promise_setup(async () => {
     return;
   }
   context = await navigator.ml.createContext();
-  builder = new MLGraphBuilder(context);
 }, {explicit_timeout: true});
 
 function validateTwoInputsBroadcastable(operationName) {
@@ -212,6 +211,7 @@ function validateTwoInputsBroadcastable(operationName) {
     return;
   }
   promise_test(async t => {
+    const builder = new MLGraphBuilder(context);
     for (let dataType of allWebNNOperandDataTypes) {
       if (!context.opSupportLimits().input.dataTypes.includes(dataType)) {
         assert_throws_js(
@@ -251,6 +251,7 @@ function validateTwoInputsOfSameDataType(operationName) {
   }
   for (let subOperationName of operationNameArray) {
     promise_test(async t => {
+      const builder = new MLGraphBuilder(context);
       for (let dataType of allWebNNOperandDataTypes) {
         if (!context.opSupportLimits().input.dataTypes.includes(dataType)) {
           assert_throws_js(
@@ -304,6 +305,7 @@ function validateOptionsAxes(operationName) {
   for (let subOperationName of operationNameArray) {
     // TypeError is expected if any of options.axes elements is not an unsigned long interger
     promise_test(async t => {
+      const builder = new MLGraphBuilder(context);
       for (let dataType of allWebNNOperandDataTypes) {
         if (!context.opSupportLimits().input.dataTypes.includes(dataType)) {
           assert_throws_js(
@@ -338,6 +340,7 @@ function validateOptionsAxes(operationName) {
     // TypeError is expected if any of options.axes elements is greater or equal
     // to the size of input
     promise_test(async t => {
+      const builder = new MLGraphBuilder(context);
       for (let dataType of allWebNNOperandDataTypes) {
         if (!context.opSupportLimits().input.dataTypes.includes(dataType)) {
           assert_throws_js(
@@ -364,6 +367,7 @@ function validateOptionsAxes(operationName) {
 
     // TypeError is expected if two or more values are same in the axes sequence
     promise_test(async t => {
+      const builder = new MLGraphBuilder(context);
       for (let dataType of allWebNNOperandDataTypes) {
         if (!context.opSupportLimits().input.dataTypes.includes(dataType)) {
           assert_throws_js(
@@ -403,6 +407,7 @@ function validateOptionsAxes(operationName) {
 function validateUnaryOperation(
     operationName, supportedDataTypes, alsoBuildActivation = false) {
   promise_test(async t => {
+    const builder = new MLGraphBuilder(context);
     for (let dataType of supportedDataTypes) {
       if (!context.opSupportLimits().input.dataTypes.includes(dataType)) {
         assert_throws_js(
@@ -423,6 +428,7 @@ function validateUnaryOperation(
   const unsupportedDataTypes =
       new Set(allWebNNOperandDataTypes).difference(new Set(supportedDataTypes));
   promise_test(async t => {
+    const builder = new MLGraphBuilder(context);
     for (let dataType of unsupportedDataTypes) {
       if (!context.opSupportLimits().input.dataTypes.includes(dataType)) {
         assert_throws_js(
@@ -440,6 +446,7 @@ function validateUnaryOperation(
 
   if (alsoBuildActivation) {
     promise_test(async t => {
+      const builder = new MLGraphBuilder(context);
       builder[operationName]();
     }, `[${operationName}] Test building an activation`);
   }
@@ -454,6 +461,7 @@ function validateUnaryOperation(
 function validateSingleInputOperation(
     operationName, alsoBuildActivation = false) {
   promise_test(async t => {
+    const builder = new MLGraphBuilder(context);
     const supportedDataTypes =
         context.opSupportLimits()[operationName].input.dataTypes;
     for (let dataType of supportedDataTypes) {
@@ -467,6 +475,7 @@ function validateSingleInputOperation(
   }, `[${operationName}] Test building the operator with supported data type.`);
 
   promise_test(async t => {
+    const builder = new MLGraphBuilder(context);
     const unsupportedDataTypes =
         new Set(allWebNNOperandDataTypes)
             .difference(new Set(
@@ -488,6 +497,7 @@ function validateSingleInputOperation(
 
   if (alsoBuildActivation) {
     promise_test(async t => {
+      const builder = new MLGraphBuilder(context);
       builder[operationName]();
     }, `[${operationName}] Test building an activation.`);
   }

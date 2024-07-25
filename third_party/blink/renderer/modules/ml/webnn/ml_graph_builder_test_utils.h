@@ -20,12 +20,6 @@ namespace blink {
 class MLGraphBuilder;
 class MLOperand;
 
-MLGraphBuilder* CreateMLGraphBuilder(
-    ExecutionContext* execution_context,
-    ScriptState* script_state,
-    ExceptionState& exception_state,
-    MLContextOptions* options = MLContextOptions::Create());
-
 MLOperand* BuildInput(MLGraphBuilder* builder,
                       const String& name,
                       const Vector<uint32_t>& dimensions,

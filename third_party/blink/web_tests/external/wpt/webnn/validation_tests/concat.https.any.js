@@ -70,8 +70,9 @@ const tests = [
 
 ];
 
-tests.forEach(test =>
-    promise_test(async t => {
+tests.forEach(
+    test => promise_test(async t => {
+      const builder = new MLGraphBuilder(context);
       let inputs = [];
       if (test.inputs) {
         for (let i = 0; i < test.inputs.length; ++i) {
@@ -88,8 +89,7 @@ tests.forEach(test =>
       } else {
         assert_throws_js(TypeError, () => builder.concat(inputs, test.axis));
       }
-    }, test.name)
-  );
+    }, test.name));
 
 multi_builder_test(async (t, builder, otherBuilder) => {
   const operandDescriptor = {dataType: 'float32', dimensions: [2, 2]};

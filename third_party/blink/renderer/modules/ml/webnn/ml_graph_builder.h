@@ -436,6 +436,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   Member<MLContext> ml_context_;
 
   HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNGraphBuilder> remote_;
+
+  // Tracks whether `build()` has been called (with valid inputs). If so, `this`
+  // is effectively invalid and all methods should reject.
+  bool has_built_ = false;
 };
 
 }  // namespace blink

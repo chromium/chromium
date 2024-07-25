@@ -10,6 +10,7 @@ validateUnaryOperation(
     'linear', floatingPointTypes, /*alsoBuildActivation=*/ true);
 
 promise_test(async t => {
+  const builder = new MLGraphBuilder(context);
   const options = {alpha: 1.5, beta: 0.3};
   const input =
       builder.input('input', {dataType: 'float32', dimensions: [1, 2, 3]});
@@ -19,17 +20,20 @@ promise_test(async t => {
 }, '[linear] Test building an operator with options');
 
 promise_test(async t => {
+  const builder = new MLGraphBuilder(context);
   const options = {beta: 1.5};
   builder.linear(options);
 }, '[linear] Test building an activation with options');
 
 promise_test(async t => {
+  const builder = new MLGraphBuilder(context);
   const options = {beta: -Infinity};
   const input = builder.input('input', {dataType: 'float16', dimensions: []});
   assert_throws_js(TypeError, () => builder.linear(input, options));
 }, '[linear] Throw if options.beta is -Infinity when building an operator');
 
 promise_test(async t => {
+  const builder = new MLGraphBuilder(context);
   const options = {alpha: NaN};
   assert_throws_js(TypeError, () => builder.linear(options));
 }, '[linear] Throw if options.alpha is NaN when building an activation');

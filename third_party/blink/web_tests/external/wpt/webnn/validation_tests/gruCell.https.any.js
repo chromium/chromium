@@ -299,63 +299,68 @@ const tests = [
 ];
 
 tests.forEach(
-    test => promise_test(async t => {
-        const input = builder.input(
-            'input',
-            { dataType: test.input.dataType, dimensions: test.input.dimensions });
-        const weight = builder.input(
-            'weight',
-            { dataType: test.weight.dataType, dimensions: test.weight.dimensions });
-        const recurrentWeight = builder.input('recurrentWeight', {
+    test =>
+        promise_test(async t => {
+          const builder = new MLGraphBuilder(context);
+          const input = builder.input('input', {
+            dataType: test.input.dataType,
+            dimensions: test.input.dimensions
+          });
+          const weight = builder.input('weight', {
+            dataType: test.weight.dataType,
+            dimensions: test.weight.dimensions
+          });
+          const recurrentWeight = builder.input('recurrentWeight', {
             dataType: test.recurrentWeight.dataType,
             dimensions: test.recurrentWeight.dimensions
-        });
-        const hiddenState = builder.input('hiddenState', {
+          });
+          const hiddenState = builder.input('hiddenState', {
             dataType: test.hiddenState.dataType,
             dimensions: test.hiddenState.dimensions
-        });
+          });
 
-        const options = {};
-        if (test.options) {
+          const options = {};
+          if (test.options) {
             if (test.options.bias) {
-                options.bias = builder.input('bias', {
-                    dataType: test.options.bias.dataType,
-                    dimensions: test.options.bias.dimensions
-                });
+              options.bias = builder.input('bias', {
+                dataType: test.options.bias.dataType,
+                dimensions: test.options.bias.dimensions
+              });
             }
             if (test.options.recurrentBias) {
-                options.recurrentBias = builder.input('recurrentBias', {
-                    dataType: test.options.recurrentBias.dataType,
-                    dimensions: test.options.recurrentBias.dimensions
-                });
+              options.recurrentBias = builder.input('recurrentBias', {
+                dataType: test.options.recurrentBias.dataType,
+                dimensions: test.options.recurrentBias.dimensions
+              });
             }
             if (test.options.resetAfter) {
-                options.resetAfter = test.options.resetAfter;
+              options.resetAfter = test.options.resetAfter;
             }
             if (test.options.layout) {
-                options.layout = test.options.layout;
+              options.layout = test.options.layout;
             }
             if (test.options.activations) {
-                options.activations = [];
-                test.options.activations.forEach(
-                    activation => options.activations.push(builder[activation]()));
+              options.activations = [];
+              test.options.activations.forEach(
+                  activation =>
+                      options.activations.push(builder[activation]()));
             }
-        }
+          }
 
-        if (test.output) {
+          if (test.output) {
             const output = builder.gruCell(
                 input, weight, recurrentWeight, hiddenState, test.hiddenSize,
                 options);
             assert_equals(output.dataType(), test.output.dataType);
             assert_array_equals(output.shape(), test.output.dimensions);
-        } else {
+          } else {
             assert_throws_js(
                 TypeError,
                 () => builder.gruCell(
                     input, weight, recurrentWeight, hiddenState, test.hiddenSize,
                     options));
-        }
-    }, test.name));
+          }
+        }, test.name));
 
 multi_builder_test(async (t, builder, otherBuilder) => {
   const inputFromOtherBuilder =

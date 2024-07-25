@@ -9,6 +9,7 @@ validateInputFromAnotherBuilder('leakyRelu');
 validateSingleInputOperation('leakyRelu', /*alsoBuildActivation=*/ true);
 
 promise_test(async t => {
+  const builder = new MLGraphBuilder(context);
   const options = {alpha: 0.02};
   const input =
       builder.input('input', {dataType: 'float32', dimensions: [1, 2, 3]});
@@ -18,17 +19,20 @@ promise_test(async t => {
 }, '[leakyRelu] Test building an operator with options');
 
 promise_test(async t => {
+  const builder = new MLGraphBuilder(context);
   const options = {alpha: 0.03};
   builder.leakyRelu(options);
 }, '[leakyRelu] Test building an activation with options');
 
 promise_test(async t => {
+  const builder = new MLGraphBuilder(context);
   const options = {alpha: Infinity};
   const input = builder.input('input', {dataType: 'float16', dimensions: []});
   assert_throws_js(TypeError, () => builder.leakyRelu(input, options));
 }, '[leakyRelu] Throw if options.alpha is Infinity when building an operator');
 
 promise_test(async t => {
+  const builder = new MLGraphBuilder(context);
   const options = {alpha: -NaN};
   assert_throws_js(TypeError, () => builder.leakyRelu(options));
 }, '[leakyRelu] Throw if options.alpha is -NaN when building an activation');
