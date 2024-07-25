@@ -32,7 +32,3 @@
 # crbug.com/355058571
 -org.chromium.chrome.browser.ntp.RecentlyClosedBridgeTest.testOpenRecentlyClosedTab_FromGroupClosure_InCurrentTab
 -org.chromium.chrome.browser.ntp.RecentlyClosedBridgeTest.testOpenRecentlyClosedTab_InCurrentTab
-
-# crbug.com/355058925
--org.chromium.chrome.browser.InputHintCheckerTest.testInitFailureRecordsHistogram
--org.chromium.chrome.browser.InputHintCheckerTest.testInitFailureReturnsFalse
