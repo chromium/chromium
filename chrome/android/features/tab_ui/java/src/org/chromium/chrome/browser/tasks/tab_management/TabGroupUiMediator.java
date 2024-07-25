@@ -103,7 +103,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     private final IncognitoStateObserver mIncognitoStateObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
-    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier;
+    private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier;
 
     private CallbackController mCallbackController = new CallbackController();
     private final LayoutStateObserver mLayoutStateObserver;
@@ -120,6 +120,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     TabGroupUiMediator(
             Context context,
             BottomControlsVisibilityController visibilityController,
+            ObservableSupplierImpl<Boolean> handleBackPressChangedSupplier,
             ResetHandler resetHandler,
             PropertyModel model,
             TabModelSelector tabModelSelector,
@@ -133,6 +134,7 @@ public class TabGroupUiMediator implements BackPressHandler {
         this(
                 context,
                 visibilityController,
+                handleBackPressChangedSupplier,
                 resetHandler,
                 model,
                 tabModelSelector,
@@ -149,6 +151,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     TabGroupUiMediator(
             Context context,
             BottomControlsVisibilityController visibilityController,
+            ObservableSupplierImpl<Boolean> handleBackPressChangedSupplier,
             ResetHandler resetHandler,
             PropertyModel model,
             TabModelSelector tabModelSelector,
@@ -368,13 +371,13 @@ public class TabGroupUiMediator implements BackPressHandler {
             resetTabStripWithRelatedTabsForId(tab.getId());
         }
 
-        mBackPressStateSupplier = new ObservableSupplierImpl<>();
+        mHandleBackPressChangedSupplier = handleBackPressChangedSupplier;
         if (mTabGridDialogControllerSupplier != null) {
             mTabGridDialogControllerSupplier.onAvailable(
                     controller -> {
                         controller
                                 .getHandleBackPressChangedSupplier()
-                                .addObserver(mBackPressStateSupplier::set);
+                                .addObserver(mHandleBackPressChangedSupplier::set);
                     });
         }
     }
@@ -515,7 +518,7 @@ public class TabGroupUiMediator implements BackPressHandler {
 
     @Override
     public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
-        return mBackPressStateSupplier;
+        return mHandleBackPressChangedSupplier;
     }
 
     public void destroy() {
