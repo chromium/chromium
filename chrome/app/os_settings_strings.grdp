@@ -5180,7 +5180,7 @@ Press an assigned switch or key to remove assignment.
     Stream your phone's apps
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_INSTRUCTIONS" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that to grant permissions, they need to have their phone unlocked, close by, and with Bluetooth/Wi-Fi on to complete setup.">
-    Make sure your phone is close by, unlocked, and Bluetooth and Wi-Fi are turned on
+    Make sure your phone is nearby, unlocked, and Bluetooth and Wi-Fi are turned on
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_AWAITING_RESPONSE_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow shown when the user needs to follow the setup flow instructions on their phone.">
     Finish setting up on your phone
@@ -5192,10 +5192,10 @@ Press an assigned switch or key to remove assignment.
     Can't establish connection
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COULD_NOT_ESTABLISH_CONNECTION_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that the device is unable to establish a connection to the phone.">
-    Something went wrong. Make sure your phone is close by, unlocked, and Bluetooth and Wi-Fi are turned on.
+    Something went wrong. Make sure your phone is nearby, unlocked, and Bluetooth and Wi-Fi are turned on.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CONNECTION_LOST_WITH_PHONE_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow when the device loses its connection to the phone.">
-    Can't maintain a connection with your phone. Make sure your phone is close by, unlocked, and Bluetooth and Wi-Fi are turned on.
+    Can't maintain a connection with your phone. Make sure your phone is nearby, unlocked, and Bluetooth and Wi-Fi are turned on.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ACCESS_PROHIBITED_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow when the phone's account notification streaming is prohibited.">
     Can't use this account
