@@ -58,35 +58,35 @@ export class FaceGazeUtils {
     // TODO(b:341770655): Localize these strings.
     switch (gesture) {
       case FacialGesture.BROW_INNER_UP:
-        return 'Brow inner up';
+        return 'Raise eyebrows';
       case FacialGesture.BROWS_DOWN:
-        return 'Brows down';
+        return 'Lower eyebrows';
       case FacialGesture.EYE_SQUINT_LEFT:
-        return 'Squint left eye';
+        return 'Close left eye';
       case FacialGesture.EYE_SQUINT_RIGHT:
-        return 'Squint right eye';
+        return 'Close right eye';
       case FacialGesture.EYES_BLINK:
-        return 'Eyes blink';
+        return 'Blink both eyes';
       case FacialGesture.EYES_LOOK_DOWN:
-        return 'Eyes look down';
+        return 'Look down';
       case FacialGesture.EYES_LOOK_LEFT:
-        return 'Eyes look left';
+        return 'Look left';
       case FacialGesture.EYES_LOOK_RIGHT:
-        return 'Eyes look right';
+        return 'Look right';
       case FacialGesture.EYES_LOOK_UP:
-        return 'Eyes look up';
+        return 'Look up';
       case FacialGesture.JAW_OPEN:
-        return 'Jaw open';
+        return 'Open your mouth wide';
       case FacialGesture.MOUTH_LEFT:
-        return 'Mouth left';
+        return 'Stretch left corner of your mouth';
       case FacialGesture.MOUTH_PUCKER:
-        return 'Mouth pucker';
+        return 'Put lips together (like a kiss)';
       case FacialGesture.MOUTH_RIGHT:
-        return 'Mouth right';
+        return 'Stretch right corner of your mouth';
       case FacialGesture.MOUTH_SMILE:
-        return 'Mouth smile';
+        return 'Smile';
       case FacialGesture.MOUTH_UPPER_UP:
-        return 'Mouth upper up';
+        return 'Make a circle with your lips';
       default:
         console.error(
             'Display text requested for unsupported FacialGesture ' + gesture);
@@ -106,7 +106,7 @@ export class FaceGazeUtils {
       case MacroName.MOUSE_CLICK_RIGHT:
         return 'Right-click the mouse';
       case MacroName.MOUSE_LONG_CLICK_LEFT:
-        return 'Long click mouse';
+        return 'Drag and drop';
       case MacroName.RESET_CURSOR:
         return 'Reset cursor to center';
       case MacroName.TOGGLE_DICTATION:
@@ -122,7 +122,7 @@ export class FaceGazeUtils {
       case MacroName.KEY_PRESS_UP:
         return 'Press up key';
       case MacroName.KEY_PRESS_TOGGLE_OVERVIEW:
-        return 'Toggle overview';
+        return 'Open overview of windows';
       case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:
         return 'Play or pause media';
       default:
