@@ -219,18 +219,20 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     public @PdfPageType int getPdfPageType() {
         Tab tab = TabUtils.fromWebContents(mWebContents);
         // TODO(shuyng): move this check to PdfUtils. Currently PdfUtils cannot depends on Tab.
-        if (tab == null || !tab.isNativePage() || !tab.getNativePage().isPdf()) {
+        if (tab == null) {
             return PdfPageType.NONE;
         }
-        return PdfUtils.getPdfPageType(tab.getUrl());
+        return PdfUtils.getPdfPageType(tab.getNativePage());
     }
 
     /** {@inheritDoc} */
     @Override
     public @Nullable String getPdfPageConnectionMessage() {
         switch (getPdfPageType()) {
-            case PdfPageType.TRANSIENT:
+            case PdfPageType.TRANSIENT_SECURE:
                 return mContext.getString(R.string.page_info_connection_transient_pdf);
+            case PdfPageType.TRANSIENT_INSECURE:
+                return mContext.getString(R.string.page_info_connection_transient_pdf_insecure);
             case PdfPageType.LOCAL:
                 return mContext.getString(R.string.page_info_connection_local_pdf);
             default:

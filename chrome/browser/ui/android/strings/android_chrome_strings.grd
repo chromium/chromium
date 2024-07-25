@@ -3188,6 +3188,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_PAGE_INFO_CONNECTION_TRANSIENT_PDF" desc="Message to display in the page info bubble when viewing a transient pdf page.">
         You're viewing a PDF file
       </message>
+      <!-- Message to be determined. -->
+      <message name="IDS_PAGE_INFO_CONNECTION_TRANSIENT_PDF_INSECURE" desc="Message to display in the page info bubble when viewing a transient pdf page from insecure source." translateable="false">
+        You're viewing a PDF file from insecure source
+      </message>
       <message name="IDS_PAGE_INFO_CONNECTION_LOCAL_PDF" desc="Message to display in the page info bubble when viewing a local pdf page.">
         You're viewing a local file
       </message>

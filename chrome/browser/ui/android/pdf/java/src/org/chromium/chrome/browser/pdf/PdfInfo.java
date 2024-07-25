@@ -8,14 +8,17 @@ package org.chromium.chrome.browser.pdf;
 public class PdfInfo {
     public final String filename;
     public final String filepath;
+    public final boolean isDownloadSafe;
 
-    public PdfInfo(String filename, String filepath) {
+    public PdfInfo(String filename, String filepath, boolean isDownloadSafe) {
         this.filename = filename;
         this.filepath = filepath;
+        this.isDownloadSafe = isDownloadSafe;
     }
 
     public PdfInfo() {
         filename = null;
         filepath = null;
+        isDownloadSafe = true;
     }
 }

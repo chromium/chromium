@@ -20,6 +20,7 @@ public class PdfPage extends BasicNativePage {
     private String mTitle;
     private final String mUrl;
     private boolean mIsIncognito;
+    private boolean mIsDownloadSafe;
 
     /**
      * Create a new instance of the pdf page.
@@ -40,6 +41,7 @@ public class PdfPage extends BasicNativePage {
             String defaultTitle) {
         super(host);
 
+        mIsDownloadSafe = pdfInfo.isDownloadSafe;
         String decodedUrl = PdfUtils.decodePdfPageUrl(url);
         String filepath =
                 pdfInfo.filepath == null
@@ -81,6 +83,11 @@ public class PdfPage extends BasicNativePage {
     }
 
     @Override
+    public boolean isDownloadSafe() {
+        return mIsDownloadSafe;
+    }
+
+    @Override
     public void destroy() {
         super.destroy();
         // TODO(b/348701300): check if pdf should be opened inline.
@@ -90,8 +97,9 @@ public class PdfPage extends BasicNativePage {
         mPdfCoordinator.destroy();
     }
 
-    public void onDownloadComplete(String pdfFileName, String pdfFilePath) {
+    public void onDownloadComplete(String pdfFileName, String pdfFilePath, boolean isDownloadSafe) {
         mTitle = pdfFileName;
+        mIsDownloadSafe = isDownloadSafe;
         // TODO(b/348701300): check if pdf should be opened inline.
         if (mIsIncognito) {
             Uri uri = PdfContentProvider.createContentUri(pdfFilePath, pdfFileName);

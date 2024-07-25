@@ -58,7 +58,8 @@ public class DownloadController {
         }
         assert nativePage instanceof PdfPage;
         ((PdfPage) nativePage)
-                .onDownloadComplete(downloadInfo.getFileName(), downloadInfo.getFilePath());
+                .onDownloadComplete(
+                        downloadInfo.getFileName(), downloadInfo.getFilePath(), isDownloadSafe);
         tab.updateTitle();
     }
 
