@@ -6895,7 +6895,7 @@ crbug.com/327190607 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fen
 crbug.com/327388802 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/permission-api-denied.https.html [ Failure Pass Timeout ]
 
 # Flaky virtual/keepalive-in-browser-migration tests
-crbug.com/327390559 virtual/keepalive-in-browser-migration/external/wpt/xhr/xhr-timeout-longtask.any.html [ Timeout ]
+crbug.com/327390559 virtual/keepalive-in-browser-migration/external/wpt/xhr/xhr-timeout-longtask.any.html [ Failure Pass Timeout ]
 crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-img-environment-change.https.sub.html [ Timeout ]
 crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
 crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.html [ Timeout ]
