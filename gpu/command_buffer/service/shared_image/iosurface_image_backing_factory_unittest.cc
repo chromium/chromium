@@ -1009,13 +1009,6 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
 
 TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialData) {
   auto format = get_format();
-
-  if (format.is_multi_plane()) {
-    // The below call to CheckedSizeInBytes() works only on single-plane
-    // formats.
-    GTEST_SKIP();
-  }
-
   const bool should_succeed =
       can_create_scanout_shared_image(format,
                                       /*has_pixel_data=*/true);
@@ -1034,9 +1027,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialData) {
   } else if constexpr (BUILDFLAG(SKIA_USE_DAWN)) {
     usage.PutAll({SHARED_IMAGE_USAGE_WEBGPU_READ});
   }
-  std::vector<uint8_t> initial_data(
-      viz::ResourceSizes::CheckedSizeInBytes<unsigned int>(size, format));
-
+  std::vector<uint8_t> initial_data(format.EstimatedSizeInBytes(size));
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       "TestLabel", /*is_thread_safe=*/false, initial_data);
@@ -1287,6 +1278,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, EstimatedSize) {
 // their TexImage2D equivalents, allowing us to minimize the amount of parallel
 // data tracked in the SharedImageFactoryGLImage.
 TEST_P(IOSurfaceImageBackingFactoryScanoutTest, TexImageTexStorageEquivalence) {
+  // GraphiteDawn does not support tex storage.
   if (get_gr_context_type() == GrContextType::kGraphiteDawn) {
     GTEST_SKIP();
   }
