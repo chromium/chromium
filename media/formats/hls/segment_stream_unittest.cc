@@ -241,6 +241,10 @@ TEST(SegmentStreamUnittest, RealWorldExample) {
   std::tie(segment, start, end) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().path(), "/playlist_2500Kb_20909322.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 20909322lu);
+
+  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().path(), "/playlist_2500Kb_20909323.ts");
+  ASSERT_EQ(segment->GetMediaSequenceNumber(), 20909323lu);
 }
 
 TEST(SegmentStreamUnittest, UnseekablePlaylistAdapt) {
@@ -321,6 +325,78 @@ TEST(SegmentStreamUnittest, UnseekablePlaylistAdapt) {
   ASSERT_EQ(segment->GetUri().path(), "/video17_low.ts");
   ASSERT_EQ(segment->GetMediaSequenceNumber(), 17lu);
   ASSERT_FALSE(segment_stream->Exhausted());
+}
+
+TEST(SegmentStreamUnittest, SeekableEncryptedPlaylistAdapt) {
+  auto segment_stream = std::make_unique<SegmentStream>(
+      CreateMediaPlaylist(
+          "#EXT-X-TARGETDURATION:12", "#EXT-X-VERSION:1",
+          "#EXT-X-MEDIA-SEQUENCE:0", "#EXT-X-MEDIA-PLAYLIST-TYPE:VOD",
+          "#EXTINF:12.00000,",       // Encrypted content commonly leads with
+          "playlist_100000Kb_0.ts",  // a few clear segments.
+          "#EXT-X-KEY:METHOD=AES-128,URI=\"example.com/key1\"",
+          "#EXTINF:12.0000000,", "playlist_100000Kb_1.ts",
+          "#EXTINF:12.0000000,", "playlist_100000Kb_2.ts",
+          "#EXTINF:12.0000000,", "playlist_100000Kb_3.ts",
+          "#EXTINF:12.0000000,", "playlist_100000Kb_4.ts",
+          "#EXT-X-KEY:METHOD=AES-128,URI=\"example.com/key2\"",
+          "#EXTINF:12.0000000,", "playlist_100000Kb_5.ts",
+          "#EXTINF:12.0000000,", "playlist_100000Kb_6.ts",
+          "#EXTINF:12.0000000,", "playlist_100000Kb_7.ts",
+          "#EXTINF:12.0000000,", "playlist_100000Kb_8.ts"),
+      true);
+
+  scoped_refptr<hls::MediaSegment> segment;
+  base::TimeDelta start;
+  base::TimeDelta end;
+
+  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().path(), "/playlist_100000Kb_0.ts");
+  ASSERT_EQ(segment->GetMediaSequenceNumber(), 0lu);
+
+  // If we load a new playlist now, it will replace segment 1, because despite
+  // being encrypted, it has a new enc data structure.
+  segment_stream->SetNewPlaylist(CreateMediaPlaylist(
+      "#EXT-X-TARGETDURATION:12", "#EXT-X-VERSION:1", "#EXT-X-MEDIA-SEQUENCE:0",
+      "#EXT-X-MEDIA-PLAYLIST-TYPE:VOD",
+      "#EXTINF:12.00000,",       // Encrypted content commonly leads with
+      "playlist_200000Kb_0.ts",  // a few clear segments.
+      "#EXT-X-KEY:METHOD=AES-128,URI=\"example.com/key3\"",
+      "#EXTINF:12.0000000,", "playlist_200000Kb_1.ts", "#EXTINF:12.0000000,",
+      "playlist_200000Kb_2.ts", "#EXTINF:12.0000000,", "playlist_200000Kb_3.ts",
+      "#EXTINF:12.0000000,", "playlist_200000Kb_4.ts",
+      "#EXT-X-KEY:METHOD=AES-128,URI=\"example.com/key4\"",
+      "#EXTINF:12.0000000,", "playlist_200000Kb_5.ts", "#EXTINF:12.0000000,",
+      "playlist_200000Kb_6.ts", "#EXTINF:12.0000000,", "playlist_200000Kb_7.ts",
+      "#EXTINF:12.0000000,", "playlist_200000Kb_8.ts"));
+
+  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().path(), "/playlist_200000Kb_1.ts");
+  ASSERT_EQ(segment->GetMediaSequenceNumber(), 1lu);
+
+  // Now though, we'll keep the next segment, because it's encrypted with an
+  // existing key. The segment after that will be replaced however.
+  segment_stream->SetNewPlaylist(CreateMediaPlaylist(
+      "#EXT-X-TARGETDURATION:12", "#EXT-X-VERSION:1", "#EXT-X-MEDIA-SEQUENCE:0",
+      "#EXT-X-MEDIA-PLAYLIST-TYPE:VOD",
+      "#EXTINF:12.00000,",       // Encrypted content commonly leads with
+      "playlist_300000Kb_0.ts",  // a few clear segments.
+      "#EXT-X-KEY:METHOD=AES-128,URI=\"example.com/key3\"",
+      "#EXTINF:12.0000000,", "playlist_300000Kb_1.ts", "#EXTINF:12.0000000,",
+      "playlist_300000Kb_2.ts", "#EXTINF:12.0000000,", "playlist_300000Kb_3.ts",
+      "#EXTINF:12.0000000,", "playlist_300000Kb_4.ts",
+      "#EXT-X-KEY:METHOD=AES-128,URI=\"example.com/key4\"",
+      "#EXTINF:12.0000000,", "playlist_300000Kb_5.ts", "#EXTINF:12.0000000,",
+      "playlist_300000Kb_6.ts", "#EXTINF:12.0000000,", "playlist_300000Kb_7.ts",
+      "#EXTINF:12.0000000,", "playlist_300000Kb_8.ts"));
+
+  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().path(), "/playlist_200000Kb_2.ts");
+  ASSERT_EQ(segment->GetMediaSequenceNumber(), 2lu);
+
+  std::tie(segment, start, end) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().path(), "/playlist_300000Kb_3.ts");
+  ASSERT_EQ(segment->GetMediaSequenceNumber(), 3lu);
 }
 
 }  // namespace media::hls

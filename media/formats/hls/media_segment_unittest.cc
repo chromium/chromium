@@ -21,4 +21,11 @@ TEST(HlsMediaSegmentTest, EncryptionDataIVExportTest) {
   ASSERT_EQ("supersecretmessg", data->GetIVStr(0).value_or(""));
 }
 
+TEST(HlsMediaSegmentTest, EncryptionDataIVExportFromSeqNum) {
+  auto data = base::MakeRefCounted<MediaSegment::EncryptionData>(
+      GURL("https://example.com"), XKeyTagMethod::kAES128,
+      XKeyTagKeyFormat::kIdentity, std::nullopt);
+  ASSERT_EQ(63, data->GetIVStr(63).value_or("")[15]);
+}
+
 }  // namespace media::hls

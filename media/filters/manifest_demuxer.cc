@@ -596,9 +596,7 @@ void ManifestDemuxer::OnChunkDemuxerTracksChanged(
 void ManifestDemuxer::OnEncryptedMediaData(EmeInitDataType type,
                                            const std::vector<uint8_t>& data) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  // TODO(crbug.com/40057824): This will be required for iOS support in the
-  // future.
-  NOTIMPLEMENTED();
+  OnError(PIPELINE_ERROR_INVALID_STATE);
 }
 
 void ManifestDemuxer::OnDemuxerStreamRead(
