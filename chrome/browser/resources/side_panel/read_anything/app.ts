@@ -1433,9 +1433,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         }
       }
 
+      // Update speechPlayingState, except for isSpeechTreeInitialized, which
+      // should only be set when initAxTree is called.
       this.speechPlayingState = {
+        isSpeechTreeInitialized:
+            this.speechPlayingState.isSpeechTreeInitialized,
         isSpeechActive: true,
-        isSpeechTreeInitialized: true,
         isAudioCurrentlyPlaying:
             this.speechPlayingState.isAudioCurrentlyPlaying,
       };
@@ -1464,9 +1467,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // speech played and without speech played. Counting resumes would
       // inflate the speech played number.
       this.logger_.logNewPage(/*speechPlayed=*/ true);
+      // Update speechPlayingState, except for isSpeechTreeInitialized, which
+      // should only be set when initAxTree is called.
       this.speechPlayingState = {
+        isSpeechTreeInitialized:
+            this.speechPlayingState.isSpeechTreeInitialized,
         isSpeechActive: true,
-        isSpeechTreeInitialized: true,
         isAudioCurrentlyPlaying:
             this.speechPlayingState.isAudioCurrentlyPlaying,
       };
@@ -1477,15 +1483,27 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
       const playedFromSelection = hasSelection && this.playFromSelection();
       if (!playedFromSelection && this.firstTextNodeSetForReadAloud) {
-        // TODO(crbug.com/40927698): There should be a way to use AXPosition so
-        // that this step can be skipped.
-        chrome.readingMode.initAxPositionWithNode(
-            this.firstTextNodeSetForReadAloud);
+        this.initAxPositionForSpeech();
         if (!this.highlightAndPlayMessage()) {
           // Ensure we're updating Read Aloud state if there's no text to speak.
           this.onSpeechFinished();
         }
       }
+    }
+  }
+
+  initAxPositionForSpeech() {
+    if (this.firstTextNodeSetForReadAloud) {
+      // TODO(crbug.com/40927698): There should be a way to use AXPosition so
+      // that this step can be skipped.
+      chrome.readingMode.initAxPositionWithNode(
+          this.firstTextNodeSetForReadAloud);
+      this.speechPlayingState = {
+        isAudioCurrentlyPlaying:
+            this.speechPlayingState.isAudioCurrentlyPlaying,
+        isSpeechActive: this.speechPlayingState.isSpeechActive,
+        isSpeechTreeInitialized: true,
+      };
     }
   }
 
@@ -1548,8 +1566,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // Iterate through the page from the beginning until we get to the
     // selection. This is so clicking previous works before the selection and
     // so the previous highlights are properly set.
-    chrome.readingMode.initAxPositionWithNode(
-        this.firstTextNodeSetForReadAloud);
+    this.initAxPositionForSpeech();
 
     // Iterate through the nodes asynchronously so that we can show the spinner
     // in the toolbar while we move up to the selection.
