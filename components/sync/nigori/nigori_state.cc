@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -249,6 +250,11 @@ NigoriState::~NigoriState() = default;
 NigoriState& NigoriState::operator=(NigoriState&& other) = default;
 
 sync_pb::NigoriModel NigoriState::ToLocalProto() const {
+  // The private key is expected to always exist (including the case of a
+  // missing private key during remote update).
+  DUMP_WILL_BE_CHECK_NE(GetCrossUserSharingPublicKeyState(*this),
+                        CrossUserSharingKeyPairState::kPublicKeyVersionInvalid);
+
   sync_pb::NigoriModel proto;
   *proto.mutable_cryptographer_data() = cryptographer->ToProto();
   if (pending_keys.has_value()) {

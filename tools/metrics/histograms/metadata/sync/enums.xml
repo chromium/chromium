@@ -120,6 +120,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/nigori/nigori_state.cc:CrossUserSharingKeyPairState) -->
 
+<!-- LINT.IfChange(CrossUserSharingKeyPairStateOnDecryptPendingKeys) -->
+
+<enum name="CrossUserSharingKeyPairStateOnDecryptPendingKeys">
+  <int value="0" label="Valid key pair"/>
+  <int value="1" label="Missing private key"/>
+  <int value="2" label="Empty key pair"/>
+  <int value="3" label="Missing public key"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/nigori/nigori_sync_bridge_impl.cc:CrossUserSharingKeyPairStateOnDecryptPendingKeys) -->
+
 <!-- LINT.IfChange(FaviconAvailabilityStatus) -->
 
 <enum name="FaviconAvailabilityStatus">

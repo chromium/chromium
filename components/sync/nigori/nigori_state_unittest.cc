@@ -118,21 +118,27 @@ TEST(NigoriStateTest, ShouldConvertPublicKeyStateToSpecifics) {
 
 TEST(NigoriStateTest, ShouldContainPublicKeyInLocalProto) {
   const std::string kDefaultEncryptionKey = "defaultkey";
+  const uint32_t kKeyPairVersion = 1;
+
   NigoriState state;
   const std::string default_encryption_key_name =
       state.cryptographer->EmplaceKey(kDefaultEncryptionKey,
                                       KeyDerivationParams::CreateForPbkdf2());
   state.cryptographer->SelectDefaultEncryptionKey(default_encryption_key_name);
+  state.cryptographer->SetKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
+      kKeyPairVersion);
   const std::vector<uint8_t> key(32, 0xDE);
   state.cross_user_sharing_public_key =
       CrossUserSharingPublicKey::CreateByImport(key);
-  state.cross_user_sharing_key_pair_version = 1;
+  state.cross_user_sharing_key_pair_version = kKeyPairVersion;
 
   sync_pb::NigoriModel nigori_model = state.ToLocalProto();
 
   ASSERT_THAT(nigori_model.cross_user_sharing_public_key().x25519_public_key(),
               testing::ElementsAreArray(key));
-  ASSERT_THAT(nigori_model.cross_user_sharing_public_key().version(), Eq(1));
+  ASSERT_THAT(nigori_model.cross_user_sharing_public_key().version(),
+              Eq(kKeyPairVersion));
 }
 
 TEST(NigoriStateTest, ShouldClonePublicKey) {
