@@ -52,8 +52,8 @@ MLActivation::MLActivation(MLGraphBuilder* builder,
     : operator_(
           MakeGarbageCollected<MLOperator>(builder,
                                            ActivationKindToOperationKind(kind),
-                                           /*sub_kind=*/absl::monostate{},
-                                           options)),
+                                           options,
+                                           /*sub_kind=*/absl::monostate{})),
       kind_(kind) {}
 
 MLActivation::~MLActivation() = default;

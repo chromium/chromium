@@ -878,9 +878,10 @@ TEST_F(MLGraphTest, BuildTest) {
     auto* a =
         BuildInput(builder, "a", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
                    scope.GetExceptionState());
-    auto* b = builder->relu(a, scope.GetExceptionState());
+    const MLOperatorOptions* options = MLOperatorOptions::Create();
+    auto* b = builder->relu(a, options, scope.GetExceptionState());
     ASSERT_THAT(b, testing::NotNull());
-    auto* c = builder->sigmoid(a, scope.GetExceptionState());
+    auto* c = builder->sigmoid(a, options, scope.GetExceptionState());
     ASSERT_THAT(c, testing::NotNull());
     auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, {{"b", b}, {"c", c}});
@@ -936,7 +937,7 @@ TEST_F(MLGraphTest, BuildTest) {
     const MLOperatorOptions* options = MLOperatorOptions::Create();
     auto* add = builder->add(conv2d, bias, options, scope.GetExceptionState());
     ASSERT_THAT(add, testing::NotNull());
-    auto* output = builder->relu(add, scope.GetExceptionState());
+    auto* output = builder->relu(add, options, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
 
     auto [graph, error_name, error_message] =
@@ -1576,8 +1577,9 @@ struct SoftmaxTester {
     auto* input_operand =
         BuildInput(builder, "input", input.dimensions, input.data_type,
                    scope.GetExceptionState());
+    const MLOperatorOptions* options = MLOperatorOptions::Create();
     auto* output_operand =
-        builder->softmax(input_operand, scope.GetExceptionState());
+        builder->softmax(input_operand, options, scope.GetExceptionState());
     auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
@@ -1640,8 +1642,9 @@ struct ConstantTester {
     auto* constant_operand =
         BuildConstant(builder, constant.dimensions, constant.data_type,
                       constant.values, scope.GetExceptionState());
+    const MLOperatorOptions* options = MLOperatorOptions::Create();
     auto* output_operand =
-        builder->relu(constant_operand, scope.GetExceptionState());
+        builder->relu(constant_operand, options, scope.GetExceptionState());
     auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
@@ -1750,9 +1753,10 @@ struct CastTester {
     auto* input_operand =
         BuildInput(builder, "input", input.dimensions, input.data_type,
                    scope.GetExceptionState());
+    const MLOperatorOptions* options = MLOperatorOptions::Create();
     auto* output_operand =
         builder->cast(input_operand, V8MLOperandDataType(output_data_type),
-                      scope.GetExceptionState());
+                      options, scope.GetExceptionState());
     auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());

@@ -302,7 +302,7 @@ class GraphInfoBuilder final {
         input_operand_id, weight_operand_id, recurrent_weight_operand_id,
         hidden_state_operand_id, hidden_size, output_operand_id,
         attributes.bias_operand_id, attributes.recurrent_bias_operand_id,
-        attributes.reset_after, attributes.layout, std::move(activations));
+        attributes.reset_after, attributes.layout, std::move(activations), "");
 
     graph_info_->operations.push_back(
         mojom::Operation::NewGruCell(std::move(gru_cell)));
@@ -416,7 +416,7 @@ class GraphInfoBuilder final {
         std::move(output_operand_ids), hidden_size, attributes.bias_operand_id,
         attributes.recurrent_bias_operand_id,
         attributes.peephole_weight_operand_id, attributes.layout,
-        std::move(activations));
+        std::move(activations), "");
 
     graph_info_->operations.push_back(
         mojom::Operation::NewLstmCell(std::move(lstm_cell)));

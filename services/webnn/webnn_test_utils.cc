@@ -204,7 +204,7 @@ void GraphInfoBuilder::BuildElementWiseBinary(
 void GraphInfoBuilder::BuildExpand(uint64_t input_operand_id,
                                    uint64_t output_operand_id) {
   graph_info_->operations.push_back(mojom::Operation::NewExpand(
-      mojom::Expand::New(input_operand_id, output_operand_id)));
+      mojom::Expand::New(input_operand_id, output_operand_id, "")));
 }
 
 void GraphInfoBuilder::BuildMatmul(uint64_t a_operand_id,
@@ -244,7 +244,8 @@ void GraphInfoBuilder::BuildGather(uint64_t input_operand_id,
 
 void GraphInfoBuilder::BuildGelu(uint64_t input_operand_id,
                                  uint64_t output_operand_id) {
-  mojom::GeluPtr gelu = mojom::Gelu::New(input_operand_id, output_operand_id);
+  mojom::GeluPtr gelu =
+      mojom::Gelu::New(input_operand_id, output_operand_id, "");
   graph_info_->operations.push_back(mojom::Operation::NewGelu(std::move(gelu)));
 }
 
@@ -330,14 +331,14 @@ void GraphInfoBuilder::BuildSoftmax(uint64_t input_operand_id,
                                     uint64_t output_operand_id,
                                     uint32_t axis) {
   mojom::SoftmaxPtr softmax =
-      mojom::Softmax::New(input_operand_id, output_operand_id, axis);
+      mojom::Softmax::New(input_operand_id, output_operand_id, axis, "");
   graph_info_->operations.push_back(
       mojom::Operation::NewSoftmax(std::move(softmax)));
 }
 
 void GraphInfoBuilder::BuildSoftplus(uint64_t input_operand_id,
                                      uint64_t output_operand_id) {
-  auto softplus = mojom::Softplus::New(input_operand_id, output_operand_id);
+  auto softplus = mojom::Softplus::New(input_operand_id, output_operand_id, "");
   graph_info_->operations.push_back(
       mojom::Operation::NewSoftplus(std::move(softplus)));
 }
@@ -375,7 +376,7 @@ void GraphInfoBuilder::BuildTriangular(uint64_t input_operand_id,
                                        bool upper,
                                        int32_t diagonal) {
   mojom::TriangularPtr triangular = mojom::Triangular::New(
-      input_operand_id, output_operand_id, upper, diagonal);
+      input_operand_id, output_operand_id, upper, diagonal, "");
   graph_info_->operations.push_back(
       mojom::Operation::NewTriangular(std::move(triangular)));
 }

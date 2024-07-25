@@ -58,7 +58,7 @@ TEST_F(WebNNGraphBuilderDmlTest, BuildSingleOperatorRelu) {
 
   std::array<const NodeOutput*, 1> inputs = {input};
   const OperatorNode* relu_node = graph_builder.CreateOperatorNode(
-      DML_OPERATOR_ACTIVATION_RELU, &relu_operator_desc, inputs);
+      DML_OPERATOR_ACTIVATION_RELU, &relu_operator_desc, inputs, "");
   ASSERT_NE(relu_node, nullptr);
   EXPECT_EQ(relu_node->GetType(), Node::Type::kOperator);
   const NodeOutput* output =
@@ -115,7 +115,7 @@ TEST_F(WebNNGraphBuilderDmlTest, DISABLED_BuildSingleOperatorConv2d) {
 
   std::array<const NodeOutput*, 2> inputs = {input, filter};
   const OperatorNode* conv_node = graph_builder.CreateOperatorNode(
-      DML_OPERATOR_CONVOLUTION, &conv_operator_desc, inputs);
+      DML_OPERATOR_CONVOLUTION, &conv_operator_desc, inputs, "");
   ASSERT_NE(conv_node, nullptr);
   EXPECT_EQ(conv_node->GetType(), Node::Type::kOperator);
 
@@ -159,7 +159,7 @@ TEST_F(WebNNGraphBuilderDmlTest, BuildSingleOperatorSplit) {
 
   std::array<const NodeOutput*, 1> inputs = {input};
   const OperatorNode* split_node = graph_builder.CreateOperatorNode(
-      DML_OPERATOR_SPLIT, &split_operator_desc, inputs);
+      DML_OPERATOR_SPLIT, &split_operator_desc, inputs, "");
   ASSERT_NE(split_node, nullptr);
   EXPECT_EQ(split_node->GetType(), Node::Type::kOperator);
   const NodeOutput* output0 = graph_builder.CreateNodeOutput(
@@ -208,7 +208,7 @@ TEST_F(WebNNGraphBuilderDmlTest, DISABLED_BuildGraphWithReluAndConv2d) {
 
   std::array<const NodeOutput*, 1> relu_node_inputs = {input};
   const OperatorNode* relu_node = graph_builder.CreateOperatorNode(
-      DML_OPERATOR_ACTIVATION_RELU, &relu_operator_desc, relu_node_inputs);
+      DML_OPERATOR_ACTIVATION_RELU, &relu_operator_desc, relu_node_inputs, "");
   ASSERT_NE(relu_node, nullptr);
   EXPECT_EQ(relu_node->GetType(), Node::Type::kOperator);
   const NodeOutput* relu_output =
@@ -238,7 +238,7 @@ TEST_F(WebNNGraphBuilderDmlTest, DISABLED_BuildGraphWithReluAndConv2d) {
 
   std::array<const NodeOutput*, 2> conv_node_inputs = {relu_output, filter};
   const OperatorNode* conv_node = graph_builder.CreateOperatorNode(
-      DML_OPERATOR_CONVOLUTION, &conv_operator_desc, conv_node_inputs);
+      DML_OPERATOR_CONVOLUTION, &conv_operator_desc, conv_node_inputs, "");
   ASSERT_NE(conv_node, nullptr);
   EXPECT_EQ(conv_node->GetType(), Node::Type::kOperator);
 

@@ -62,6 +62,8 @@ struct ArgMinMax {
   uint32 axis;
   // True is to retain reduced dimensions with size 1.
   bool keep_dimensions = false;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents normalizing the tensor values of input features across
@@ -113,6 +115,8 @@ struct Clamp {
   float min_value;
   // The maximum value of the range.
   float max_value;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents the concat operation that concatenates the input tensors along
@@ -126,6 +130,8 @@ struct Concat {
   uint64 output_operand_id;
   // The axis used to concatenate along.
   uint32 axis;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents the `MLInputOperandLayout` that specifies the layout format of
@@ -270,6 +276,8 @@ struct ElementWiseUnary {
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
   uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Expands the shape of input operand to the output shape according to
@@ -281,6 +289,8 @@ struct Expand {
   // broadcastable to the output shape.
   uint64 input_operand_id;
   uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Specifies the different ways to pad a tensor. The padding value is only
@@ -323,6 +333,8 @@ struct InstanceNormalization {
   float epsilon = 1e-5;
   // The layout format of the input.
   InputOperandLayout layout;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents matmul operation which compute the matrix product of two input
@@ -337,6 +349,8 @@ struct Matmul {
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
   uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents a pad operation which inflates the input tensor with constant or
@@ -356,6 +370,8 @@ struct Pad {
   array<uint32> ending_padding;
 
   PaddingMode mode;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 struct Reduce {
@@ -387,6 +403,8 @@ struct Reduce {
   array<uint32> axes;
   // If true, retains reduced dimensions with size 1.
   bool keep_dimensions = false;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents an average or max pooling operation across all the elements with
@@ -421,6 +439,8 @@ struct Pool2d {
   Size2d strides;
   // The dilation factor for each spatial dimension of input.
   Size2d dilations;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 struct StartAndSize {
@@ -438,6 +458,8 @@ struct Slice {
   // An array containing the number of elements of the input window in each
   // dimension.
   array<StartAndSize> starts_and_sizes;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents an operation of exponential linear unit function in the
@@ -451,6 +473,8 @@ struct Elu {
   uint64 output_operand_id;
   // A float scalar multiplier for (exp(min(0, x)) - 1).
   float alpha = 1.0;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents an operation of gathering elements from the axis dimension of
@@ -514,6 +538,8 @@ struct Gather {
 
   // The axis dimension of the input tensor to gather on.
   uint32 axis = 0;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Corresponds to `MLOperand gelu(MLOperand input)` that computes the gelu
@@ -524,6 +550,8 @@ struct Gelu {
   // the output operand (referenced by output_operand_id).
   uint64 input_operand_id;
   uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents the processing direction of the input sequence for the recurrent
@@ -574,6 +602,8 @@ struct Gru {
   // Specifies a pair of activation functions for the update, reset and new
   // gates.
   array<Activation, 2> activations;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents a single step of Gated Recurrent Unit [GRU] recurrent network.
@@ -603,6 +633,8 @@ struct GruCell {
   // Specifies a pair of activation functions for the update, reset and new
   // gates.
   array<Activation, 2> activations;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents general matrix multiplication (gemm) operation in the expression
@@ -629,6 +661,8 @@ struct Gemm {
   bool a_transpose = false;
   // True is to transpose the second tensor before matrix multiplication.
   bool b_transpose = false;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents an operation which performs a hard sigmoid function on every
@@ -645,6 +679,8 @@ struct HardSigmoid {
   float alpha = 0.2;
   // A float scalar addition. The default value is 0.5.
   float beta = 0.5;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents an operation which computes the nonlinear function
@@ -654,6 +690,8 @@ struct HardSwish {
   // the output operand (referenced by output_operand_id).
   uint64 input_operand_id;
   uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents an operation of normalizing the input across the feature
@@ -680,6 +718,8 @@ struct LayerNormalization {
   // A float scalar which specifies a small value to prevent computational
   // error due to divide-by-zero.
   float epsilon = 1e-5;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents a leaky version of relu operation whose calculation follows the
@@ -693,6 +733,8 @@ struct LeakyRelu {
   uint64 output_operand_id;
   // A float scalar multiplier for min(0, x).
   float alpha = 0.01;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents a linear operation whose calculation follows the
@@ -708,6 +750,8 @@ struct Linear {
   float alpha = 1.0;
   // A float scalar addition.
   float beta = 0;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // The ordering of the weight for the input (i), output (o), forget (f) and
@@ -753,6 +797,8 @@ struct Lstm {
   LstmWeightLayout layout;
   // The activation functions for the input, output and forget gates.
   array<Activation, 3> activations;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents a single step of Long Short-Term Memory (LSTM) recurrent network.
@@ -784,6 +830,8 @@ struct LstmCell {
   LstmWeightLayout layout;
   // The activation functions for the input, output and forget gates.
   array<Activation, 3> activations;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents a parametric relu operation whose calculation follows the
@@ -811,6 +859,8 @@ struct Relu {
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
   uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Alters the shape of input operand to the output operand. This operation does
@@ -823,6 +873,8 @@ struct Reshape {
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
   uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Corresponds to `MLOperand sigmoid(MLOperand x)` that compute the sigmoid
@@ -834,6 +886,8 @@ struct Sigmoid {
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
   uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Corresponds to `MLOperand softmax(MLOperand x, unsigned long axis)` that
@@ -848,6 +902,8 @@ struct Softmax {
 
   // The dimension the reduction will be performed on.
   uint32 axis;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Corresponds to `MLOperand softplus(MLOperand x)` that computes the softplus
@@ -857,6 +913,8 @@ struct Softplus {
   // the output operand (referenced by output_operand_id).
   uint64 input_operand_id;
   uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Corresponds to `MLOperand softsign(MLOperand x)` that computes the softsign
@@ -866,6 +924,8 @@ struct Softsign {
   // the output operand (referenced by output_operand_id).
   uint64 input_operand_id;
   uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents a split operation that splits an input tensor into multiple
@@ -889,6 +949,8 @@ struct Split {
 
   // Axis specifies which input tensor dimension will be split.
   uint32 axis = 0;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Corresponds to `MLOperand tanh(MLOperand x)` that compute the hyperbolic
@@ -901,6 +963,8 @@ struct Tanh {
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
   uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents the transpose operation that permutes the dimensions of the
@@ -912,6 +976,8 @@ struct Transpose {
   uint64 output_operand_id;
   // The values used to permute the dimensions of the input tensor.
   array<uint32> permutation;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Given a 2-D tensor (matrix), triangular will return a 2-D tensor
@@ -933,6 +999,8 @@ struct Triangular {
   // diagonals of the input matrix are retained or excluded. A value of 0
   // means no diagonals other than the main diagonals are affected.
   int32 diagonal;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Resample the tensor values from the source to the destination spatial
@@ -981,6 +1049,8 @@ struct Where {
   uint64 false_value_operand_id;
   // The id of output operand.
   uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Represents the `MLActivation` which describes an activation function type.

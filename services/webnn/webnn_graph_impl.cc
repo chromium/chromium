@@ -292,6 +292,7 @@ webnn::LstmAttributes ConvertToLstmAttributes(
         id_to_operand_map, lstm.initial_cell_state_operand_id.value());
     attributes.initial_cell_state = initial_cell_state->descriptor;
   }
+  attributes.label = lstm.label;
 
   return attributes;
 }
@@ -317,6 +318,7 @@ webnn::LstmCellAttributes ConvertToLstmCellAttributes(
         id_to_operand_map, lstm_cell.peephole_weight_operand_id.value());
     attributes.peephole_weight = peephole_weight->descriptor;
   }
+  attributes.label = lstm_cell.label;
 
   return attributes;
 }
@@ -373,6 +375,7 @@ webnn::LayerNormalizationAttributes ConvertToLayerNormalizationAttributes(
         *id_to_operand_map.at(bias_operand_id.value());
     component_attributes.bias = bias_operand.descriptor;
   }
+  component_attributes.label = layer_normalization.label;
 
   return component_attributes;
 }
@@ -410,6 +413,8 @@ webnn::Pool2dAttributes ConvertToPool2dAttributes(
                                   .width = output->descriptor.shape()[2]};
       break;
   }
+  component_attributes.label = pool2d.label;
+
   return component_attributes;
 }
 
@@ -427,6 +432,8 @@ webnn::GemmAttributes ConvertToGemmAttributes(
   component_attributes.beta = gemm.beta;
   component_attributes.a_transpose = gemm.a_transpose;
   component_attributes.b_transpose = gemm.b_transpose;
+  component_attributes.label = gemm.label;
+
   return component_attributes;
 }
 
@@ -455,6 +462,7 @@ webnn::GruAttributes ConvertToGruAttributes(
   component_attributes.direction =
       MojoRecurrentNetworkDirectionToComponent(gru.direction);
   component_attributes.activation_count = gru.activations.size();
+  component_attributes.label = gru.label;
 
   return component_attributes;
 }
@@ -474,6 +482,7 @@ webnn::GruCellAttributes ConvertToGruCellAttributes(
     component_attributes.recurrent_bias = recurrent_bias->descriptor;
   }
   component_attributes.activation_count = gru_cell.activations.size();
+  component_attributes.label = gru_cell.label;
 
   return component_attributes;
 }
@@ -496,6 +505,7 @@ webnn::InstanceNormalizationAttributes ConvertToInstanceNormalizationAttributes(
   }
   component_attributes.layout =
       MojoInputOperandLayoutToComponent(instance_normalization.layout);
+  component_attributes.label = instance_normalization.label;
 
   return component_attributes;
 }
@@ -509,6 +519,8 @@ webnn::SliceAttributes ConvertToSliceAttributes(
     component_attributes.starts.push_back(start_and_size->start);
     component_attributes.sizes.push_back(start_and_size->size);
   }
+  component_attributes.label = slice.label;
+
   return component_attributes;
 }
 
@@ -636,8 +648,9 @@ bool ValidateArgMinMax(const ContextProperties& context_properties,
   }
 
   const auto validated_output = ValidateArgMinMaxAndInferOutput(
-      context_properties, input->descriptor, arg_min_max.axis,
-      output->descriptor.data_type(), arg_min_max.keep_dimensions);
+      context_properties, input->descriptor, arg_min_max.label,
+      arg_min_max.axis, output->descriptor.data_type(),
+      arg_min_max.keep_dimensions);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -686,8 +699,8 @@ bool ValidateConcat(const ContextProperties& context_properties,
     inputs.push_back(input->descriptor);
   }
 
-  auto validated_output =
-      ValidateConcatAndInferOutput(context_properties, inputs, concat.axis);
+  auto validated_output = ValidateConcatAndInferOutput(
+      context_properties, inputs, concat.axis, concat.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -941,7 +954,8 @@ bool ValidateGather(const ContextProperties& context_properties,
   }
 
   auto validated_output = ValidateGatherAndInferOutput(
-      context_properties, input->descriptor, indices->descriptor, gather.axis);
+      context_properties, input->descriptor, indices->descriptor, gather.axis,
+      gather.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1485,7 +1499,7 @@ bool ValidateMatmul(const IdToOperandMap& id_to_operand_map,
     return false;
   }
   auto validated_output =
-      ValidateMatmulAndInferOutput(a->descriptor, b->descriptor);
+      ValidateMatmulAndInferOutput(a->descriptor, b->descriptor, matmul.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1512,7 +1526,7 @@ bool ValidatePad(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidatePadAndInferOutput(
-      input->descriptor, pad.beginning_padding, pad.ending_padding);
+      input->descriptor, pad.beginning_padding, pad.ending_padding, pad.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1706,8 +1720,8 @@ bool ValidateSoftmax(const IdToOperandMap& id_to_operand_map,
     // The softmax operator is invalid.
     return false;
   }
-  auto validated_output =
-      ValidateSoftmaxAndInferOutput(input->descriptor, softmax.axis);
+  auto validated_output = ValidateSoftmaxAndInferOutput(
+      input->descriptor, softmax.axis, softmax.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1746,7 +1760,8 @@ bool ValidateSplit(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidateSplitAndInferOutput(
-      input->descriptor, {.splits = splits, .axis = split.axis});
+      input->descriptor,
+      {.splits = splits, .axis = split.axis, .label = split.label});
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1783,8 +1798,8 @@ bool ValidateTranspose(const IdToOperandMap& id_to_operand_map,
     return false;
   }
 
-  auto validated_output =
-      ValidateTransposeAndInferOutput(input->descriptor, transpose.permutation);
+  auto validated_output = ValidateTransposeAndInferOutput(
+      input->descriptor, transpose.permutation, transpose.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1812,7 +1827,7 @@ bool ValidateTriangular(const IdToOperandMap& id_to_operand_map,
   }
 
   base::expected<OperandDescriptor, std::string> validated_output =
-      ValidateTriangularAndInferOutput(input->descriptor);
+      ValidateTriangularAndInferOutput(input->descriptor, triangular.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1849,7 +1864,7 @@ bool ValidateWhere(const ContextProperties& context_properties,
 
   auto validated_output_descriptor = ValidateWhereAndInferOutput(
       context_properties, condition->descriptor, true_value->descriptor,
-      false_value->descriptor);
+      false_value->descriptor, where.label);
   if (!validated_output_descriptor.has_value()) {
     return false;
   }
@@ -1876,8 +1891,8 @@ bool ValidateReduce(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidateReduceAndInferOutput(
-      MojoReduceTypeToComponent(reduce.kind), input->descriptor, reduce.axes,
-      reduce.keep_dimensions);
+      MojoReduceTypeToComponent(reduce.kind), input->descriptor, reduce.label,
+      reduce.axes, reduce.keep_dimensions);
   if (!validated_output.has_value()) {
     return false;
   }
