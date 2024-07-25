@@ -11,6 +11,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,16 +43,18 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActio
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.TokenHolder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArchivedTabsDialogCoordinator {
+public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarManageable {
 
     /** Interface exposing functionality to the menu items for the archived tabs dialog */
     public interface ArchiveDelegate {
@@ -186,6 +189,7 @@ public class ArchivedTabsDialogCoordinator {
                 @Override
                 public void willHide() {
                     mRootView.removeView(mView);
+                    mSnackbarManager.popParentViewFromOverrideStack(mSnackbarOverrideToken);
                 }
 
                 @Override
@@ -206,12 +210,14 @@ public class ArchivedTabsDialogCoordinator {
     private final @NonNull BackPressManager mBackPressManager;
     private final @NonNull TabArchiveSettings mTabArchiveSettings;
     private final @NonNull ModalDialogManager mModalDialogManager;
+    private final @NonNull UndoBarController mUndoBarController;
 
     private ViewGroup mView;
     private @TabActionState int mTabActionState = TabActionState.CLOSABLE;
     private TabListEditorCoordinator mTabListEditorCoordinator;
     private OnTabSelectingListener mOnTabSelectingListener;
     private PropertyModel mIphMessagePropertyModel;
+    private int mSnackbarOverrideToken;
 
     /**
      * @param context The android context.
@@ -254,6 +260,12 @@ public class ArchivedTabsDialogCoordinator {
                 mArchivedTabModelOrchestrator
                         .getTabModelSelector()
                         .getModel(/* incognito= */ false);
+        mUndoBarController =
+                new UndoBarController(
+                        mContext,
+                        mArchivedTabModelOrchestrator.getTabModelSelector(),
+                        /* snackbarManageable= */ this,
+                        /* dialogVisibilitySupplier= */ null);
         mView =
                 (ViewGroup)
                         LayoutInflater.from(mContext)
@@ -276,6 +288,7 @@ public class ArchivedTabsDialogCoordinator {
 
         mOnTabSelectingListener = onTabSelectingListener;
         mArchivedTabModel.getTabCountSupplier().addObserver(mTabCountObserver);
+        mUndoBarController.initialize();
 
         TabListEditorController controller = mTabListEditorCoordinator.getController();
         controller.setLifecycleObserver(mTabListEditorLifecycleObserver);
@@ -285,10 +298,11 @@ public class ArchivedTabsDialogCoordinator {
         // Register the dialog to handle back press events.
         mBackPressManager.addHandler(controller, BackPressHandler.Type.ARCHIVED_TABS_DIALOG);
 
-        // Add the dialog view.
-        mRootView.addView(mView);
+        FrameLayout snackbarContainer = mView.findViewById(R.id.snackbar_container);
+        mSnackbarOverrideToken = mSnackbarManager.pushParentViewToOverrideStack(snackbarContainer);
         // View is obscured by the TabListEditorCoordinator, so it needs to be brought to the front.
         mView.findViewById(R.id.close_all_tabs_button_container).bringToFront();
+        snackbarContainer.bringToFront();
 
         // Add the IPH to the TabListEditor.
         if (mTabArchiveSettings.shouldShowDialogIph()) {
@@ -309,21 +323,23 @@ public class ArchivedTabsDialogCoordinator {
         mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
 
         moveToState(TabActionState.CLOSABLE);
+        // Add the dialog view.
+        mRootView.addView(mView);
     }
 
     /** Hides the dialog. */
     public void hide() {
-        mRootView.removeView(mView);
-        hideInternal();
+        TabListEditorController controller = mTabListEditorCoordinator.getController();
+        controller.hide();
     }
 
     void hideInternal() {
         TabListEditorController controller = mTabListEditorCoordinator.getController();
-        controller.hide();
         controller.setLifecycleObserver(null);
         mBackPressManager.removeHandler(mTabListEditorCoordinator.getController());
-        mArchivedTabModel.getTabCountSupplier().removeObserver(mTabCountObserver);
         mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
+        mArchivedTabModel.getTabCountSupplier().removeObserver(mTabCountObserver);
+        mSnackbarOverrideToken = TokenHolder.INVALID_TOKEN;
     }
 
     void moveToState(@TabActionState int tabActionState) {
@@ -377,7 +393,7 @@ public class ArchivedTabsDialogCoordinator {
                         mTabContentManager,
                         /* clientTabListRecyclerViewPositionSetter= */ null,
                         mMode,
-                        /* displayGroups= */ false,
+                        /* displayGroups= */ true,
                         mSnackbarManager,
                         /* bottomSheetController= */ null,
                         TabProperties.TabActionState.CLOSABLE,
@@ -447,7 +463,14 @@ public class ArchivedTabsDialogCoordinator {
         return true;
     }
 
-    // Testing-specific methods
+    // SnackbarManageable implementation.
+
+    @Override
+    public SnackbarManager getSnackbarManager() {
+        return mSnackbarManager;
+    }
+
+    // Testing-specific methods.
 
     void setTabListEditorCoordinatorForTesting(TabListEditorCoordinator tabListEditorCoordinator) {
         mTabListEditorCoordinator = tabListEditorCoordinator;

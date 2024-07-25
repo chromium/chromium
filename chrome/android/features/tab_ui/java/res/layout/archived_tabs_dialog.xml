@@ -36,4 +36,11 @@ found in the LICENSE file.
         style="@style/FilledButton"
         android:text="@string/archived_tabs_dialog_close_all_button"/>
     </FrameLayout>
+    <FrameLayout
+        android:id="@+id/snackbar_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

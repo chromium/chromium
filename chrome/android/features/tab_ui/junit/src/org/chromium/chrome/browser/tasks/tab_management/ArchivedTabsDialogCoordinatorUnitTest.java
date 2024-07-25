@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -114,6 +115,13 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         doReturn(mTabCountSupplier).when(mArchivedTabModel).getTabCountSupplier();
 
         doReturn(mTabListEditorController).when(mTabListEditorCoordinator).getController();
+        doAnswer(
+                        invocationOnMock -> {
+                            mCoordinator.hideInternal();
+                            return null;
+                        })
+                .when(mTabListEditorController)
+                .hide();
     }
 
     @Test
@@ -154,7 +162,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
 
         doReturn(0).when(mArchivedTabModel).getCount();
         mTabCountSupplier.set(0);
-        verify(mRootView).removeView(any());
+        verify(mTabListEditorController).hide();
     }
 
     @Test

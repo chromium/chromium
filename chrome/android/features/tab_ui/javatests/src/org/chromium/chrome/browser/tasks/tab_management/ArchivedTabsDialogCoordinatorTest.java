@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertEquals;
@@ -15,12 +16,17 @@ import static org.junit.Assert.assertFalse;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -332,7 +338,9 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
         mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close tabs");
-        mRobot.resultRobot.verifyAdapterHasItemCount(1);
+        mRobot.resultRobot
+                .verifyAdapterHasItemCount(1)
+                .verifyUndoSnackbarWithTextIsShown("2 tabs closed");
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
         histogramExpectation.assertExpected();
@@ -423,6 +431,66 @@ public class ArchivedTabsDialogCoordinatorTest {
         Tab activityTab = mActivityTestRule.getActivity().getActivityTabProvider().get();
         assertEquals(tab, activityTab);
         assertEquals(1, mUserActionTester.getActionCount("Tabs.RestoreSingleTab"));
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseArchivedTab() throws Exception {
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+        showDialog(2);
+        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
+
+        mRobot.actionRobot.clickViewIdAtAdapterPosition(1, R.id.action_button);
+        mRobot.resultRobot
+                .verifyAdapterHasItemCount(1)
+                .verifyUndoSnackbarWithTextIsShown("Closed google");
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseArchivedTab_SnackbarResetForTabSwitcher() throws Exception {
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+        showDialog(2);
+        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
+
+        mRobot.actionRobot.clickViewIdAtAdapterPosition(1, R.id.action_button);
+        mRobot.resultRobot
+                .verifyAdapterHasItemCount(1)
+                .verifyUndoSnackbarWithTextIsShown("Closed google");
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
+                });
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+
+        // Back to the regular tab switcher -- verify that the undo button is showing.
+        int index = 1;
+        onView(withId(R.id.tab_list_recycler_view))
+                .perform(
+                        new ViewAction() {
+                            @Override
+                            public Matcher<View> getConstraints() {
+                                return isDisplayed();
+                            }
+
+                            @Override
+                            public String getDescription() {
+                                return "click on end button of item with index "
+                                        + String.valueOf(index);
+                            }
+
+                            @Override
+                            public void perform(UiController uiController, View view) {
+                                RecyclerView recyclerView = (RecyclerView) view;
+                                RecyclerView.ViewHolder viewHolder =
+                                        recyclerView.findViewHolderForAdapterPosition(index);
+                                if (viewHolder.itemView == null) return;
+                                viewHolder.itemView.findViewById(R.id.action_button).performClick();
+                            }
+                        });
+        mRobot.resultRobot.verifyUndoSnackbarWithTextIsShown("Closed about:blank");
     }
 
     private void showDialog(int numTabs) {
