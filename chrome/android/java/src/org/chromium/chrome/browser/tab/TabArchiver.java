@@ -131,6 +131,8 @@ public class TabArchiver implements TabWindowManager.Observer {
     public Tab archiveAndRemoveTab(TabModel tabModel, Tab tab) {
         ThreadUtils.assertOnUiThread();
         TabState tabState = TabStateExtractor.from(tab);
+        // Scrub the parent id prior to archiving to avoid ordering issues within the tab model.
+        tabState.parentId = Tab.INVALID_TAB_ID;
         Tab newTab = mArchivedTabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
         tabModel.closeTab(tab);
 
@@ -156,6 +158,8 @@ public class TabArchiver implements TabWindowManager.Observer {
     public void unarchiveAndRestoreTab(TabCreator tabCreator, Tab tab) {
         ThreadUtils.assertOnUiThread();
         TabState tabState = TabStateExtractor.from(tab);
+        // Scrub the parent id prior to restoration to avoid ordering issues within the tab model.
+        tabState.parentId = Tab.INVALID_TAB_ID;
         mArchivedTabModel.removeTab(tab);
         mAsyncTabParamsManager.add(tab.getId(), new TabReparentingParams(tab, null));
         tabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
