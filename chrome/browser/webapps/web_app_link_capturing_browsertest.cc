@@ -443,10 +443,7 @@ class WebAppLinkCapturingBrowserTestParameterized
           // Wrap up the rest of the json.
           output += "\n]}";
         }
-        base::File file(json_file_path_,
-                        base::File::FLAG_OPEN | base::File::FLAG_APPEND);
-        return file.Write(-1, output.c_str(), output.length()) ==
-               (int)output.length();
+        return base::AppendToFile(json_file_path_, output);
       }
     }
   }
