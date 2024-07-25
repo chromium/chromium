@@ -1085,24 +1085,6 @@ BUILDERS = {
             'pool': 'chrome.tests.perf',
         },
     },
-    'mac-14-m1-pro-perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'mac',
-        'dimension': {
-            'cpu': 'arm',
-            'mac_model': 'MacBookPro18,3',
-            'os': 'Mac-14',
-            'pool': 'chrome.tests.perf',
-        },
-    },
     'mac-m2-pro-perf': {
         'tests': [
             {
