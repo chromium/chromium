@@ -503,7 +503,8 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     const gfx::Transform& quad_to_root_transform,
     const gfx::RRectF& rounded_corner_bounds,
     float opacity,
-    const std::optional<gfx::Rect>& clip_rect_in_root) {
+    const std::optional<gfx::Rect>& clip_rect_in_root,
+    bool allow_antialiasing) {
   bool needs_commit = false;
 
   // Helper function to set |field| to |parameter| and return whether it
@@ -546,6 +547,8 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
   const bool opacity_changed = SetField(opacity_, opacity);
   const bool clip_rect_in_root_changed =
       SetField(clip_rect_in_root_, clip_rect_in_root);
+  const bool allow_antialiasing_changed =
+      SetField(allow_antialiasing_, allow_antialiasing);
 
   // Methods that update the visual tree can only fail with OOM. We'll assert
   // success in this function to aid in debugging.
@@ -785,13 +788,15 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     }
   }
 
-  if (quad_to_root_transform_changed || quad_rect_changed) {
+  if (quad_to_root_transform_changed || quad_rect_changed ||
+      allow_antialiasing_changed) {
     const float kNeedsSoftBorderTolerance = 0.001;
     const bool content_soft_borders =
-        !quad_to_root_transform_.Preserves2dAxisAlignment() ||
-        !gfx::IsNearestRectWithinDistance(
-            quad_to_root_transform_.MapRect(gfx::RectF(quad_rect_)),
-            kNeedsSoftBorderTolerance);
+        allow_antialiasing_ &&
+        (!quad_to_root_transform_.Preserves2dAxisAlignment() ||
+         !gfx::IsNearestRectWithinDistance(
+             quad_to_root_transform_.MapRect(gfx::RectF(quad_rect_)),
+             kNeedsSoftBorderTolerance));
     // The border mode of the transform visual is set (instead of the content
     // visual), so this setting can affect both the content and the background
     // color, since both are are children of the transform visual.
@@ -872,6 +877,21 @@ bool DCLayerTree::VisualTree::BuildTree(
 
   IDCompositionVisual2* left_sibling_visual = nullptr;
 
+  base::flat_set<uint64_t> layers_with_multiple_overlays;
+  for (size_t i = 1; i < overlays.size(); i++) {
+    if (overlays[i]->aggregated_layer_id == 0) {
+      // A layer ID of 0 is invalid and implies no explicit layer, which should
+      // be treated as different from every other layer ID, including 0 itself.
+      continue;
+    }
+
+    if (overlays[i]->aggregated_layer_id ==
+        overlays[i - 1]->aggregated_layer_id) {
+      // There were at least two contiguous quads in the same layer.
+      layers_with_multiple_overlays.emplace(overlays[i]->aggregated_layer_id);
+    }
+  }
+
   // This loop walks the overlays and builds or updates the visual subtree for
   // each overlay. |left_sibling_visual| is required to properly stack visual
   // subtrees that are detached from the root visual.
@@ -927,6 +947,16 @@ bool DCLayerTree::VisualTree::BuildTree(
             ? overlays[i]->overlay_image->dcomp_visual_content()
             : nullptr;
 
+    // TODO(crbug.com/324460866): We turn off overlay edge antialiasing when
+    // there are multiple overlays in the same layer. This is a workaround to
+    // avoid seams when there is e.g. a complex transform applied to the layer.
+    // This works for partial delegation because we only expect non-trivial
+    // transforms in ephemeral (i.e. animation) states. To support arbitrary
+    // content in full delegation, we'll need to parent overlays in the same
+    // layer under the same transform visual.
+    const bool allow_antialiasing = !layers_with_multiple_overlays.contains(
+        overlays[i]->aggregated_layer_id);
+
     needs_commit |= visual_subtrees[i]->Update(
         dc_layer_tree_->dcomp_device_.Get(), dcomp_visual_content,
         dcomp_surface_serial, image_size, overlays[i]->content_rect,
@@ -934,7 +964,7 @@ bool DCLayerTree::VisualTree::BuildTree(
         overlays[i]->background_color.value_or(SkColors::kTransparent),
         overlays[i]->quad_rect, overlays[i]->nearest_neighbor_filter,
         overlays[i]->transform, overlays[i]->rounded_corner_bounds,
-        overlays[i]->opacity, overlays[i]->clip_rect);
+        overlays[i]->opacity, overlays[i]->clip_rect, allow_antialiasing);
 
     if (!subtree_attached_to_root) {
       HRESULT hr = dc_layer_tree_->dcomp_root_visual_.Get()->AddVisual(

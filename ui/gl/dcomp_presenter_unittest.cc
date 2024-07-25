@@ -2524,6 +2524,66 @@ TEST_P(DCompPresenterSkiaGoldTest, NonIntegralContentRectHalfCoverage) {
   PresentAndCheckScreenshot();
 }
 
+void RunSeamsWithComplexTransformTest(
+    DCompPresenter* presenter,
+    base::RepeatingCallback<void(int x, int y, DCLayerOverlayParams&)>
+        update_overlay) {
+  gfx::Transform non_integral_transform;
+  non_integral_transform.Scale(0.7301, 0.773);
+  non_integral_transform.Skew(3, 5);
+  non_integral_transform.Translate(10.25, 5.15);
+
+  const gfx::Size tile_size = gfx::Size(25, 25);
+  for (int y = 0; y < 4; y++) {
+    for (int x = 0; x < 4; x++) {
+      auto overlay = std::make_unique<DCLayerOverlayParams>();
+      overlay->quad_rect =
+          gfx::Rect(x * tile_size.width(), y * tile_size.height(),
+                    tile_size.width(), tile_size.height());
+      overlay->content_rect = gfx::RectF(tile_size);
+      overlay->overlay_image = CreateDCompSurface(tile_size, SkColors::kWhite);
+      overlay->transform = non_integral_transform;
+      overlay->z_order = x + y * 4 + 1;
+
+      update_overlay.Run(x, y, *overlay.get());
+
+      presenter->ScheduleDCLayer(std::move(overlay));
+    }
+  }
+}
+
+// Check that DCLayerTree does not introduce seams from edge AA on adjacent
+// overlays that are transformed. The result should be a solid quadrilateral.
+TEST_P(DCompPresenterSkiaGoldTest, EdgeAANoSeamsOnSameLayerComplexTransform) {
+  InitializeTest(gfx::Size(100, 100));
+
+  RunSeamsWithComplexTransformTest(
+      presenter_.get(),
+      base::BindRepeating([](int x, int y, DCLayerOverlayParams& overlay) {
+        // All on the same layer.
+        overlay.aggregated_layer_id = 1;
+      }));
+
+  PresentAndCheckScreenshot();
+}
+
+// Check that we always have edge AA turned on for overlay transforms when there
+// is only one overlay per contiguous layer ID in the overlay list. This should
+// have the same output as |NoSeamsOnNonIntegralTransformSameLayer| but may
+// include seams between the overlays.
+TEST_P(DCompPresenterSkiaGoldTest, EdgeAASeamsOnNotSameLayerComplexTransform) {
+  InitializeTest(gfx::Size(100, 100));
+
+  RunSeamsWithComplexTransformTest(
+      presenter_.get(),
+      base::BindRepeating([](int x, int y, DCLayerOverlayParams& overlay) {
+        // Reuse layer IDs but have no two adjacent overlays have the same ID.
+        overlay.aggregated_layer_id = (x + y * 4) % 2 + 1;
+      }));
+
+  PresentAndCheckScreenshot();
+}
+
 class DCompPresenterDelegatedInkSkiaGoldTest
     : public DCompPresenterSkiaGoldTest {
  protected:
