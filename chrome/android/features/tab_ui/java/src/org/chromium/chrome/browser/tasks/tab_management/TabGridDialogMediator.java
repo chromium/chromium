@@ -19,7 +19,6 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordUserAction;
@@ -160,7 +159,7 @@ public class TabGridDialogMediator
     private int mCurrentTabId = Tab.INVALID_TAB_ID;
     private boolean mIsUpdatingTitle;
     private String mCurrentGroupModifiedTitle;
-    private Callback<Integer> mToolbarMenuCallback;
+    private TabGroupOverflowMenuCoordinator.OnItemClickedCallback mToolbarMenuCallback;
     private Activity mActivity;
 
     TabGridDialogMediator(
@@ -423,25 +422,26 @@ public class TabGridDialogMediator
         assert mCurrentTabModelFilterSupplier.get() instanceof TabGroupModelFilter;
 
         mToolbarMenuCallback =
-                result -> {
-                    if (result == R.id.ungroup_tab || result == R.id.select_tabs) {
+                (menuId, tabId) -> {
+                    assert tabId == mCurrentTabId;
+                    if (menuId == R.id.ungroup_tab || menuId == R.id.select_tabs) {
                         mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
-                        if (setupAndShowTabListEditor(mCurrentTabId)) {
+                        if (setupAndShowTabListEditor(tabId)) {
                             TabUiMetricsHelper.recordSelectionEditorOpenMetrics(
                                     TabListEditorOpenMetricGroups.OPEN_FROM_DIALOG, mContext);
                         }
-                    } else if (result == R.id.edit_group_name) {
+                    } else if (menuId == R.id.edit_group_name) {
                         mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, true);
-                    } else if (result == R.id.edit_group_color) {
+                    } else if (menuId == R.id.edit_group_color) {
                         mShowColorPickerPopupRunnable.run();
                         TabUiMetricsHelper.recordTabGroupColorChangeActionMetrics(
                                 TabGroupColorChangeActionType.VIA_OVERFLOW_MENU);
-                    } else if (result == R.id.close_tab || result == R.id.delete_tab) {
-                        boolean hideTabGroups = result == R.id.close_tab;
+                    } else if (menuId == R.id.close_tab || menuId == R.id.delete_tab) {
+                        boolean hideTabGroups = menuId == R.id.close_tab;
                         TabUiUtils.closeTabGroup(
                                 (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
                                 mActionConfirmationManager,
-                                mCurrentTabId,
+                                tabId,
                                 hideTabGroups);
                     }
                 };
@@ -842,7 +842,8 @@ public class TabGridDialogMediator
                         mCurrentTabModelFilterSupplier.get().getTabModel().getProfile());
         return TabGridDialogMenuCoordinator.getTabGridDialogMenuOnClickListener(
                 mToolbarMenuCallback,
-                mModel.get(TabGridDialogProperties.IS_INCOGNITO),
+                () -> mCurrentTabId,
+                () -> mModel.get(TabGridDialogProperties.IS_INCOGNITO),
                 shouldShowDeleteGroup);
     }
 
@@ -1061,7 +1062,7 @@ public class TabGridDialogMediator
         return mCurrentGroupModifiedTitle;
     }
 
-    Callback<Integer> getToolbarMenuCallbackForTesting() {
+    TabGroupOverflowMenuCoordinator.OnItemClickedCallback getToolbarMenuCallbackForTesting() {
         return mToolbarMenuCallback;
     }
 

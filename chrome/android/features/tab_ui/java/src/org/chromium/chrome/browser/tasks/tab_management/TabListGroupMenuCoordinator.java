@@ -9,7 +9,6 @@ import android.content.res.Resources;
 import android.view.View;
 
 import androidx.annotation.DimenRes;
-import androidx.annotation.IdRes;
 
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -20,12 +19,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
  * menu items, setting up the menu and displaying the menu.
  */
 public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator {
-    /** Helper interface for handling menu item clicks for tab group related actions. */
-    @FunctionalInterface
-    public interface OnItemClickedCallback {
-        void onClick(@IdRes int menuId, int tabId);
-    }
-
     /**
      * Creates a {@link TabListMediator.TabActionListener} that creates the menu and shows it when
      * clicked.
@@ -62,11 +55,11 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
             int tabId,
             boolean isIncognito,
             boolean shouldShowDeleteGroup) {
-        super(context, anchorView, null, onItemClicked, tabId, isIncognito, shouldShowDeleteGroup);
+        super(context, anchorView, onItemClicked, tabId, isIncognito, shouldShowDeleteGroup);
     }
 
     @Override
-    protected ModelList buildMenuItems(boolean isIncognito) {
+    protected ModelList buildMenuItems(boolean isIncognito, boolean shouldShowDeleteGroup) {
         ModelList itemList = new ModelList();
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
@@ -96,7 +89,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                         isIncognito,
                         true));
         // Delete does not make sense for incognito since the tab group is not saved to sync.
-        if (mShouldShowDeleteGroup && !isIncognito) {
+        if (shouldShowDeleteGroup && !isIncognito) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.delete_tab_group_menu_item,
@@ -108,11 +101,6 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                             true));
         }
         return itemList;
-    }
-
-    @Override
-    protected void runCallback(int menuId) {
-        mOnItemClickedListGroupCallback.onClick(menuId, mTabId);
     }
 
     @Override

@@ -49,7 +49,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -245,7 +244,8 @@ public class TabGridDialogMediatorUnitTest {
 
         ArgumentCaptor<List<TabListEditorAction>> captor =
                 ArgumentCaptor.forClass((Class) List.class);
-        mMediator.getToolbarMenuCallbackForTesting().onResult(R.id.select_tabs);
+        mMediator.setCurrentTabIdForTesting(TAB1_ID);
+        mMediator.getToolbarMenuCallbackForTesting().onClick(R.id.select_tabs, TAB1_ID);
         verify(mTabListEditorController).configureToolbarWithMenuItems(captor.capture());
         verify(mRecyclerViewPositionSupplier, times(1)).get();
         verify(mTabListEditorController).show(any(), eq(0), eq(null));
@@ -1353,7 +1353,7 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void testDialogToolbarMenu_SelectionModeV2() {
-        Callback<Integer> callback = mMediator.getToolbarMenuCallbackForTesting();
+        var callback = mMediator.getToolbarMenuCallbackForTesting();
         // Mock that currently the title text is focused and the keyboard is showing. The current
         // tab is tab1 which is in a group of {tab1, tab2}.
         mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, true);
@@ -1361,7 +1361,7 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
-        callback.onResult(R.id.select_tabs);
+        callback.onClick(R.id.select_tabs, TAB1_ID);
 
         assertThat(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED), equalTo(false));
         verify(mRecyclerViewPositionSupplier, times(1)).get();
@@ -1370,39 +1370,39 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void testDialogToolbarMenu_EditGroupName() {
-        Callback<Integer> callback = mMediator.getToolbarMenuCallbackForTesting();
+        var callback = mMediator.getToolbarMenuCallbackForTesting();
         mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
 
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
-        callback.onResult(R.id.edit_group_name);
+        callback.onClick(R.id.edit_group_name, TAB1_ID);
         assertTrue(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
     }
 
     @Test
     public void testDialogToolbarMenu_EditGroupColor() {
-        Callback<Integer> callback = mMediator.getToolbarMenuCallbackForTesting();
+        var callback = mMediator.getToolbarMenuCallbackForTesting();
 
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
-        callback.onResult(R.id.edit_group_color);
+        callback.onClick(R.id.edit_group_color, TAB1_ID);
         verify(mShowColorPickerPopupRunnable).run();
     }
 
     @Test
     public void testDialogToolbarMenu_CloseGroup() {
-        Callback<Integer> callback = mMediator.getToolbarMenuCallbackForTesting();
+        var callback = mMediator.getToolbarMenuCallbackForTesting();
 
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
 
-        callback.onResult(R.id.close_tab);
+        callback.onClick(R.id.close_tab, TAB1_ID);
         verify(mTabGroupModelFilter)
                 .closeMultipleTabs(tabGroup, /* canUndo= */ true, /* hideTabGroups= */ true);
 
@@ -1411,19 +1411,19 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void testDialogToolbarMenu_DeleteGroup() {
-        Callback<Integer> callback = mMediator.getToolbarMenuCallbackForTesting();
+        var callback = mMediator.getToolbarMenuCallbackForTesting();
 
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
 
-        callback.onResult(R.id.delete_tab);
+        callback.onClick(R.id.delete_tab, TAB1_ID);
         verify(mTabGroupModelFilter)
                 .closeMultipleTabs(tabGroup, /* canUndo= */ true, /* hideTabGroups= */ false);
 
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);
-        callback.onResult(R.id.delete_tab);
+        callback.onClick(R.id.delete_tab, TAB1_ID);
         verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
     }
 

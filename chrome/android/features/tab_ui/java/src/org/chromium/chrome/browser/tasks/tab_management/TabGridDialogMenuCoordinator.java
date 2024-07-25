@@ -9,7 +9,7 @@ import android.view.View;
 
 import androidx.annotation.DimenRes;
 
-import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -23,18 +23,28 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
     /**
      * Creates a {@link View.OnClickListener} that creates the menu and shows it when clicked.
      *
-     * @param onItemClicked The clicked listener callback that handles clicks on menu items.
-     * @param isIncognito Whether the current tab group model filter is in an incognito state.
+     * @param onItemClickedCallback The clicked listener callback that handles clicks on menu items.
+     * @param currentTabIdSupplier The supplier of the current tab ID.
+     * @param isIncognitoSupplier Whether the current tab group model filter is in an incognito
+     *     state.
      * @param shouldShowDeleteGroup Whether to show the delete group option.
      * @return A {@link View.OnClickListener} for the button that opens up the menu.
      */
     static View.OnClickListener getTabGridDialogMenuOnClickListener(
-            Callback<Integer> onItemClicked, boolean isIncognito, boolean shouldShowDeleteGroup) {
+            OnItemClickedCallback onItemClickedCallback,
+            Supplier<Integer> currentTabIdSupplier,
+            Supplier<Boolean> isIncognitoSupplier,
+            boolean shouldShowDeleteGroup) {
         return view -> {
             Context context = view.getContext();
             TabGridDialogMenuCoordinator menu =
                     new TabGridDialogMenuCoordinator(
-                            context, view, onItemClicked, isIncognito, shouldShowDeleteGroup);
+                            context,
+                            view,
+                            onItemClickedCallback,
+                            currentTabIdSupplier.get(),
+                            isIncognitoSupplier.get(),
+                            shouldShowDeleteGroup);
             menu.display();
         };
     }
@@ -42,14 +52,15 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
     private TabGridDialogMenuCoordinator(
             Context context,
             View anchorView,
-            Callback<Integer> onItemClicked,
+            OnItemClickedCallback onItemClicked,
+            int tabId,
             boolean isIncognito,
             boolean shouldShowDeleteGroup) {
-        super(context, anchorView, onItemClicked, null, null, isIncognito, shouldShowDeleteGroup);
+        super(context, anchorView, onItemClicked, tabId, isIncognito, shouldShowDeleteGroup);
     }
 
     @Override
-    protected ModelList buildMenuItems(boolean isIncognito) {
+    protected ModelList buildMenuItems(boolean isIncognito, boolean shouldShowDeleteGroup) {
         ModelList itemList = new ModelList();
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
@@ -89,7 +100,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         true));
-        if (mShouldShowDeleteGroup && !isIncognito) {
+        if (shouldShowDeleteGroup && !isIncognito) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.tab_grid_dialog_toolbar_delete_group,
@@ -101,11 +112,6 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                             true));
         }
         return itemList;
-    }
-
-    @Override
-    protected void runCallback(int menuId) {
-        mOnItemClickedGridDialogCallback.onResult(menuId);
     }
 
     @Override

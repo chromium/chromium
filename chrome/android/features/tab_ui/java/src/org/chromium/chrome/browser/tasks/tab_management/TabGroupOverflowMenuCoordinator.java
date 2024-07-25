@@ -14,10 +14,9 @@ import android.widget.ListView;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
+import androidx.annotation.IdRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.Callback;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
@@ -36,29 +35,37 @@ import org.chromium.ui.widget.ViewRectProvider;
  * menu and displaying the menu.
  */
 public abstract class TabGroupOverflowMenuCoordinator {
+    /** Helper interface for handling menu item clicks for tab group related actions. */
+    @FunctionalInterface
+    public interface OnItemClickedCallback {
+        void onClick(@IdRes int menuId, int tabId);
+    }
+
     private final Context mContext;
-    protected final @Nullable Callback<Integer> mOnItemClickedGridDialogCallback;
-    protected final @Nullable TabListGroupMenuCoordinator.OnItemClickedCallback
-            mOnItemClickedListGroupCallback;
-    protected final @Nullable Integer mTabId;
-    protected final boolean mShouldShowDeleteGroup;
+    protected final OnItemClickedCallback mOnItemClickedCallback;
+    protected final Integer mTabId;
     private final ComponentCallbacks mComponentCallbacks;
     private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     private AnchoredPopupWindow mMenuWindow;
 
+    /**
+     * @param context The app context.
+     * @param anchorView The view to anchor the UI on.
+     * @param onItemClickedCallback A callback for listening to clicks.
+     * @param tabId The tab ID for the tab or a tab ID from the group being acted on.
+     * @param isIncognito Whether the tab/group incognito.
+     * @param shouldShowDeleteGroup Whether to show the delete group option.
+     */
     public TabGroupOverflowMenuCoordinator(
             Context context,
             View anchorView,
-            @Nullable Callback<Integer> onItemClickedGridDialog,
-            @Nullable TabListGroupMenuCoordinator.OnItemClickedCallback onItemClickedListGroup,
-            @Nullable Integer tabId,
+            OnItemClickedCallback onItemClickedCallback,
+            int tabId,
             boolean isIncognito,
             boolean shouldShowDeleteGroup) {
         mContext = context;
-        mOnItemClickedGridDialogCallback = onItemClickedGridDialog;
-        mOnItemClickedListGroupCallback = onItemClickedListGroup;
+        mOnItemClickedCallback = onItemClickedCallback;
         mTabId = tabId;
-        mShouldShowDeleteGroup = shouldShowDeleteGroup;
         mComponentCallbacks =
                 new ComponentCallbacks() {
                     @Override
@@ -75,12 +82,13 @@ public abstract class TabGroupOverflowMenuCoordinator {
         final View contentView =
                 LayoutInflater.from(context)
                         .inflate(R.layout.tab_switcher_action_menu_layout, null);
-        setupMenu(contentView, anchorView, isIncognito);
+        setupMenu(contentView, anchorView, isIncognito, shouldShowDeleteGroup);
     }
 
-    private void setupMenu(View contentView, View anchorView, boolean isIncognito) {
+    private void setupMenu(
+            View contentView, View anchorView, boolean isIncognito, boolean shouldShowDeleteGroup) {
         ListView listView = contentView.findViewById(R.id.tab_switcher_action_menu_list);
-        ModelList modelList = buildMenuItems(isIncognito);
+        ModelList modelList = buildMenuItems(isIncognito, shouldShowDeleteGroup);
 
         ModelListAdapter adapter =
                 new ModelListAdapter(modelList) {
@@ -97,7 +105,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
                 ListMenuItemViewBinder::binder);
         listView.setOnItemClickListener(
                 (p, v, pos, id) -> {
-                    runCallback((int) id);
+                    mOnItemClickedCallback.onClick((int) id, mTabId);
                     mMenuWindow.dismiss();
                 });
 
@@ -130,15 +138,9 @@ public abstract class TabGroupOverflowMenuCoordinator {
      * Concrete class required to define what the ModelList for the menu contains.
      *
      * @param isIncognito Whether the current tab model is incognito or not.
+     * @param shouldShowDeleteGroup Whether to show the delete group option.
      */
-    protected abstract ModelList buildMenuItems(boolean isIncognito);
-
-    /**
-     * Concrete class required to run a specific callback on a menu item clicked.
-     *
-     * @param isIncognito Whether the current tab model is incognito or not.
-     */
-    protected abstract void runCallback(int menuId);
+    protected abstract ModelList buildMenuItems(boolean isIncognito, boolean shouldShowDeleteGroup);
 
     /** Concrete class required to get a specific menu width for the menu pop up window. */
     protected abstract @DimenRes int getMenuWidth();
