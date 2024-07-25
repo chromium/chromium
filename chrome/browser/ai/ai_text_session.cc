@@ -176,14 +176,11 @@ void AITextSession::Prompt(
     return;
   }
 
-  // TODO(crbug.com/342069219): un-comment this when the model proto is updated,
-  // and add the logic to determine if context handling is supported in the
-  // current version of the model.
-  // if (context_.HasContextItem()) {
-  //   optimization_guide::proto::StringValue context;
-  //   context.set_value(context_.GetContextString());
-  //   session_->AddContext(context);
-  // }
+  if (context_.HasContextItem()) {
+    optimization_guide::proto::StringValue context;
+    context.set_value(context_.GetContextString());
+    session_->AddContext(context);
+  }
 
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
