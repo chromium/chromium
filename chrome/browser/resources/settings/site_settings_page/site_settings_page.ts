@@ -14,6 +14,7 @@ import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_toggle_button.js';
+import '../privacy_icons.html.js';
 import '../settings_shared.css.js';
 import './recent_site_permissions.js';
 import './unused_site_permissions.js';
@@ -216,7 +217,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_MICROPHONE,
       id: Id.MIC,
       label: 'siteSettingsMic',
-      icon: 'cr:mic',
+      icon: 'privacy:mic',
       enabledLabel: 'siteSettingsMicAllowed',
       disabledLabel: 'siteSettingsMicBlocked',
     },
@@ -283,7 +284,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_NOTIFICATIONS,
       id: Id.NOTIFICATIONS,
       label: 'siteSettingsNotifications',
-      icon: 'settings:notifications',
+      icon: 'privacy:notifications',
     },
     {
       route: routes.SITE_SETTINGS_PAYMENT_HANDLER,
@@ -372,7 +373,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_STORAGE_ACCESS,
       id: Id.STORAGE_ACCESS,
       label: 'siteSettingsStorageAccess',
-      icon: 'settings:storage-access',
+      icon: 'privacy:storage-access',
       enabledLabel: 'storageAccessAllowed',
       disabledLabel: 'storageAccessBlocked',
     },

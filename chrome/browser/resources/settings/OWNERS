@@ -12,3 +12,5 @@ per-file settings_columned_section.css=rainhard@chromium.org
 # Settings icons
 per-file icons.html=rainhard@chromium.org
 
+# Privacy settings icons
+per-file privacy_icons.html=rainhard@chromium.org,sideyilmaz@chromium.org

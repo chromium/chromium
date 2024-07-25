@@ -360,7 +360,7 @@
               block-option-label="$i18n{siteSettingsCameraBlocked}"
               block-option-sub-label=
                   "$i18n{siteSettingsCameraBlockedSubLabel}"
-              block-option-icon="settings:videocam-off">
+              block-option-icon="privacy:videocam-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.CAMERA]]" read-only-list
@@ -501,7 +501,7 @@
                   block-option-label="$i18n{siteSettingsLocationBlocked}"
                   block-option-sub-label=
                       "$i18n{siteSettingsLocationBlockedSubLabel}"
-                  block-option-icon="settings:location-off">
+                  block-option-icon="privacy:location-off">
               </settings-category-default-radio-group>
             </template>
 
@@ -548,7 +548,7 @@
                     name="location-block-radio-button"
                     sub-label="$i18n{siteSettingsLocationBlockedSubLabel}"
                     checked$="[[!isLocationAllowed_]]">
-                  <iron-icon icon="settings:location-off"></iron-icon>
+                  <iron-icon icon="privacy:location-off"></iron-icon>
                   $i18n{siteSettingsLocationBlocked}
                 </cr-radio-button>
               </cr-radio-group>
@@ -684,10 +684,10 @@
               category="[[contentSettingsTypesEnum_.MIC]]"
               allow-option-label=
                   "$i18n{siteSettingsMicAllowed}"
-              allow-option-icon="cr:mic"
+              allow-option-icon="privacy:mic"
               block-option-label="$i18n{siteSettingsMicBlocked}"
               block-option-sub-label="$i18n{siteSettingsMicBlockedSubLabel}"
-              block-option-icon="settings:mic-off">
+              block-option-icon="privacy:mic-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.MIC]]" read-only-list
@@ -758,7 +758,7 @@
                     name="[[settingsStateEnum_.LOUD]]"
                     pref="[[prefs.generated.notification]]"
                     label="$i18n{siteSettingsNotificationsAllowed}"
-                    icon="settings:notifications">
+                    icon="privacy:notifications">
                 </settings-collapse-radio-button>
 
                 <settings-collapse-radio-button no-collapse class="two-line"
@@ -767,7 +767,7 @@
                     label="$i18n{siteSettingsNotificationsPartial}"
                     sub-label=
                         "$i18n{siteSettingsNotificationsPartialSubLabel}"
-                    icon="settings:notifications">
+                    icon="privacy:notifications">
                 </settings-collapse-radio-button>
 
                 <settings-collapse-radio-button no-collapse class="two-line"
@@ -775,7 +775,7 @@
                     pref="[[prefs.generated.notification]]"
                     label="$i18n{siteSettingsNotificationsBlocked}"
                     sub-label="$i18n{siteSettingsNotificationsBlockedSubLabel}"
-                    icon="settings:notifications-off">
+                    icon="privacy:notifications-off">
                 </settings-collapse-radio-button>
               </settings-radio-group>
             </template>
@@ -787,7 +787,7 @@
                     id="notification-ask-radio-button"
                     name="notification-ask-radio-button"
                     checked$="[[isNotificationAllowed_]]">
-                  <iron-icon icon="settings:notifications"></iron-icon>
+                  <iron-icon icon="privacy:notifications"></iron-icon>
                   $i18n{siteSettingsNotificationsAskState}
                 </cr-radio-button>
 
@@ -822,7 +822,7 @@
                     name="notification-block-radio-button"
                     sub-label="$i18n{siteSettingsNotificationsBlockedSubLabel}"
                     checked$="[[!isNotificationAllowed_]]">
-                  <iron-icon icon="settings:notifications-off"></iron-icon>
+                  <iron-icon icon="privacy:notifications-off"></iron-icon>
                   $i18n{siteSettingsNotificationsBlocked}
                 </cr-radio-button>
               </cr-radio-group>
@@ -1305,9 +1305,9 @@
           <settings-category-default-radio-group
               category="[[contentSettingsTypesEnum_.STORAGE_ACCESS]]"
               allow-option-label="$i18n{storageAccessAllowed}"
-              allow-option-icon="settings:storage-access"
+              allow-option-icon="privacy:storage-access"
               block-option-label="$i18n{storageAccessBlocked}"
-              block-option-icon="settings:storage-access-off">
+              block-option-icon="privacy:storage-access-off">
           </settings-category-default-radio-group>
           <!-- Exceptions section. -->
           <div class="content-settings-header">
