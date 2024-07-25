@@ -14,6 +14,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_mode_observer.h"
 #include "ui/accessibility/platform/ax_platform.h"
+#include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 #include "ui/events/base_event_utils.h"
 
@@ -50,6 +51,7 @@ class BrowserAccessibilityStateImplTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
       test_browser_accessibility_delegate_;
+  ui::TestAXNodeIdDelegate node_id_delegate_;
 };
 
 TEST_F(BrowserAccessibilityStateImplTest,
@@ -162,11 +164,11 @@ TEST_F(BrowserAccessibilityStateImplTest,
   BrowserAccessibilityManager* manager;
 #if BUILDFLAG(IS_ANDROID)
   manager = BrowserAccessibilityManagerAndroid::Create(
-      MakeAXTreeUpdateForTesting(root),
+      MakeAXTreeUpdateForTesting(root), node_id_delegate_,
       test_browser_accessibility_delegate_.get());
 #else
   manager = BrowserAccessibilityManager::Create(
-      MakeAXTreeUpdateForTesting(root),
+      MakeAXTreeUpdateForTesting(root), node_id_delegate_,
       test_browser_accessibility_delegate_.get());
 #endif
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(

@@ -17,6 +17,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_content_client.h"
+#include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
 struct Env {
@@ -175,10 +176,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   VLOG(1) << child_tree.ToString();
 
   ui::TestAXPlatformTreeManagerDelegate delegate;
+  ui::TestAXNodeIdDelegate node_id_delegate;
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(tree, &delegate));
+      BrowserAccessibilityManager::Create(tree, node_id_delegate, &delegate));
   std::unique_ptr<BrowserAccessibilityManager> child_manager(
-      BrowserAccessibilityManager::Create(child_tree, &delegate));
+      BrowserAccessibilityManager::Create(child_tree, node_id_delegate,
+                                          &delegate));
 
   // We want to call a bunch of functions but we don't care what the
   // return values are. To ensure the compiler doesn't optimize the calls

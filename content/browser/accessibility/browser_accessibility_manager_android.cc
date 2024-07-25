@@ -20,10 +20,12 @@ namespace content {
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
     const ui::AXTreeUpdate& initial_tree,
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate) {
-  if (!delegate)
+  if (!delegate) {
     return new BrowserAccessibilityManagerAndroid(initial_tree, nullptr,
-                                                  nullptr);
+                                                  node_id_delegate, nullptr);
+  }
 
   WebContentsAccessibilityAndroid* wcax = nullptr;
   if (delegate->AccessibilityIsRootFrame()) {
@@ -31,21 +33,25 @@ BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
         delegate->AccessibilityGetWebContentsAccessibility());
   }
   return new BrowserAccessibilityManagerAndroid(
-      initial_tree, wcax ? wcax->GetWeakPtr() : nullptr, delegate);
+      initial_tree, wcax ? wcax->GetWeakPtr() : nullptr, node_id_delegate,
+      delegate);
 }
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate) {
   return BrowserAccessibilityManagerAndroid::Create(
-      BrowserAccessibilityManagerAndroid::GetEmptyDocument(), delegate);
+      BrowserAccessibilityManagerAndroid::GetEmptyDocument(), node_id_delegate,
+      delegate);
 }
 
 BrowserAccessibilityManagerAndroid::BrowserAccessibilityManagerAndroid(
     const ui::AXTreeUpdate& initial_tree,
     base::WeakPtr<WebContentsAccessibilityAndroid> web_contents_accessibility,
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate)
-    : BrowserAccessibilityManager(delegate),
+    : BrowserAccessibilityManager(node_id_delegate, delegate),
       web_contents_accessibility_(std::move(web_contents_accessibility)),
       prune_tree_for_screen_reader_(true) {
   // The Java layer handles the root scroll offset.

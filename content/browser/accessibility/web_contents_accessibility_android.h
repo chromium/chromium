@@ -5,17 +5,17 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
 
-#include "base/memory/raw_ptr.h"
-#include "content/browser/accessibility/web_contents_accessibility.h"
-#include "content/common/content_export.h"
-
 #include <unordered_map>
 
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/browser/accessibility/web_contents_accessibility.h"
+#include "content/common/content_export.h"
+#include "ui/accessibility/platform/ax_node_id_delegate.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ui {
@@ -52,7 +52,8 @@ class WebContentsImpl;
 // Owned by |Connector|, and destroyed together when the associated web contents
 // is destroyed.
 class CONTENT_EXPORT WebContentsAccessibilityAndroid
-    : public WebContentsAccessibility {
+    : public WebContentsAccessibility,
+      public ui::AXNodeIdDelegate {
  public:
   WebContentsAccessibilityAndroid(
       JNIEnv* env,
@@ -78,6 +79,11 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       const WebContentsAccessibilityAndroid&) = delete;
 
   ~WebContentsAccessibilityAndroid() override;
+
+  // ui::AXNodeIdDelegate:
+  ui::AXPlatformNodeId GetOrCreateAXNodeUniqueId(
+      ui::AXNodeID ax_node_id) override;
+  void OnAXNodeDeleted(ui::AXNodeID ax_node_id) override;
 
   // Notify the root BrowserAccessibilityManager that this is the
   // WebContentsAccessibilityAndroid it should talk to.

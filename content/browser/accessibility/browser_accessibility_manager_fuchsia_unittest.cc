@@ -18,6 +18,7 @@
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_registry.h"
+#include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
 namespace content {
@@ -132,7 +133,7 @@ class BrowserAccessibilityManagerFuchsiaTest : public testing::Test {
     mock_accessibility_bridge_ = std::make_unique<MockAccessibilityBridge>();
     manager_ = std::unique_ptr<BrowserAccessibilityManager>(
         BrowserAccessibilityManager::Create(
-            mock_browser_accessibility_delegate_.get()));
+            node_id_delegate_, mock_browser_accessibility_delegate_.get()));
     static_cast<BrowserAccessibilityManagerFuchsia*>(manager_.get())
         ->SetAccessibilityBridgeForTest(mock_accessibility_bridge_.get());
   }
@@ -142,6 +143,7 @@ class BrowserAccessibilityManagerFuchsiaTest : public testing::Test {
       mock_browser_accessibility_delegate_;
   std::unique_ptr<MockAccessibilityBridge> mock_accessibility_bridge_;
   const content::BrowserTaskEnvironment task_environment_;
+  ui::TestAXNodeIdDelegate node_id_delegate_;
   std::unique_ptr<BrowserAccessibilityManager> manager_;
 };
 

@@ -3363,6 +3363,20 @@ RenderFrameHostImpl::AccessibilityGetWebContentsAccessibility() {
   return view->GetWebContentsAccessibility();
 }
 
+ui::AXPlatformNodeId RenderFrameHostImpl::GetOrCreateAXNodeUniqueId(
+    ui::AXNodeID ax_node_id) {
+  auto iter = ax_unique_ids_.lower_bound(ax_node_id);
+  if (iter == ax_unique_ids_.end() || iter->first != ax_node_id) {
+    iter =
+        ax_unique_ids_.emplace_hint(iter, ax_node_id, ui::AXUniqueId::Create());
+  }
+  return iter->second;
+}
+
+void RenderFrameHostImpl::OnAXNodeDeleted(ui::AXNodeID ax_node_id) {
+  ax_unique_ids_.erase(ax_node_id);
+}
+
 void RenderFrameHostImpl::InitializePolicyContainerHost(
     bool renderer_initiated_creation_of_main_frame) {
   // No policy container for speculative frames.
@@ -4458,6 +4472,10 @@ void RenderFrameHostImpl::DidNavigate(
                 ->GetMainFrameDocumentSequenceNumber()) {
       GetMainFrame()->honor_sticky_activation_for_history_intervention_ = false;
     }
+
+    // After a navigation there is no need to map the renderer's AXNodeIds to
+    // unique ids within the WebContents.
+    ax_unique_ids_.clear();
   }
 }
 
@@ -11902,6 +11920,8 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
     // BrowserAccessibilityManager is no longer necessary.
     browser_accessibility_manager_->DetachFromParentManager();
     browser_accessibility_manager_.reset();
+    // Retain ax_unique_ids_ so that if browser accessibility is re-enabled, the
+    // platform nodes corresponding to the blink nodes will have the same IDs.
   }
 }
 
@@ -12001,10 +12021,10 @@ RenderFrameHostImpl::GetOrCreateBrowserAccessibilityManager() {
 
 #if BUILDFLAG(IS_ANDROID)
   browser_accessibility_manager_.reset(
-      BrowserAccessibilityManagerAndroid::Create(this));
+      BrowserAccessibilityManagerAndroid::Create(*this, this));
 #else
   browser_accessibility_manager_.reset(
-      BrowserAccessibilityManager::Create(this));
+      BrowserAccessibilityManager::Create(*this, this));
 #endif
   return browser_accessibility_manager_.get();
 }
@@ -16909,6 +16929,8 @@ void RenderFrameHostImpl::SetEmbeddingToken(
   if (browser_accessibility_manager_) {
     browser_accessibility_manager_->DetachFromParentManager();
     browser_accessibility_manager_.reset();
+    // Clear the node id mapping on account of having a new tree.
+    ax_unique_ids_.clear();
   }
 }
 

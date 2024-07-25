@@ -34,15 +34,19 @@ namespace content {
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate) {
-  return new BrowserAccessibilityManagerMac(initial_tree, delegate);
+  return new BrowserAccessibilityManagerMac(initial_tree, node_id_delegate,
+                                            delegate);
 }
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate) {
   return new BrowserAccessibilityManagerMac(
-      BrowserAccessibilityManagerMac::GetEmptyDocument(), delegate);
+      BrowserAccessibilityManagerMac::GetEmptyDocument(), node_id_delegate,
+      delegate);
 }
 
 BrowserAccessibilityManagerMac*
@@ -52,8 +56,9 @@ BrowserAccessibilityManager::ToBrowserAccessibilityManagerMac() {
 
 BrowserAccessibilityManagerMac::BrowserAccessibilityManagerMac(
     const ui::AXTreeUpdate& initial_tree,
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate)
-    : BrowserAccessibilityManager(delegate) {
+    : BrowserAccessibilityManager(node_id_delegate, delegate) {
   Initialize(initial_tree);
 }
 

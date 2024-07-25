@@ -16,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "cc/base/rtree.h"
 #include "content/browser/accessibility/browser_accessibility.h"
@@ -39,6 +40,10 @@
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/base/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
+
+namespace ui {
+class AXNodeIdDelegate;
+}
 
 namespace content {
 
@@ -106,8 +111,10 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // Creates the platform-specific BrowserAccessibilityManager.
   static BrowserAccessibilityManager* Create(
       const ui::AXTreeUpdate& initial_tree,
+      ui::AXNodeIdDelegate& node_id_delegate,
       ui::AXPlatformTreeManagerDelegate* delegate);
   static BrowserAccessibilityManager* Create(
+      ui::AXNodeIdDelegate& node_id_delegate,
       ui::AXPlatformTreeManagerDelegate* delegate);
 
   static BrowserAccessibilityManager* FromID(ui::AXTreeID ax_tree_id);
@@ -482,6 +489,10 @@ class CONTENT_EXPORT BrowserAccessibilityManager
       BrowserAccessibility* node,
       RetargetEventType type) const;
 
+  // Returns the unique identifier for `node` for exposure to the native
+  // platform.
+  ui::AXPlatformNodeId GetNodeUniqueId(const BrowserAccessibility* node);
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(BrowserAccessibilityManagerTest,
                            TestShouldFireEventForNode);
@@ -491,6 +502,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager
                            TestShouldFireEventForAlertEventWithNonEmptyName);
 
   explicit BrowserAccessibilityManager(
+      ui::AXNodeIdDelegate& node_id_delegate,
       ui::AXPlatformTreeManagerDelegate* delegate);
 
   // Send platform-specific notifications to each of these objects that
@@ -600,6 +612,9 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // called first.
   BrowserAccessibility* AXTreeHitTest(
       const gfx::Point& blink_screen_point) const;
+
+  // A delegate responsible for assigning window-unique identifiers for nodes.
+  const raw_ref<ui::AXNodeIdDelegate> node_id_delegate_;
 
   // Only used on the root node for AXTree hit testing as an alternative to
   // ApproximateHitTest when used without a renderer.

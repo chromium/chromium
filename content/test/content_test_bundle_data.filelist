@@ -2324,6 +2324,7 @@ data/accessibility/event/aria-treeitem-focus-expected-auralinux.txt
 data/accessibility/event/aria-treeitem-focus-expected-mac.txt
 data/accessibility/event/aria-treeitem-focus.html
 data/accessibility/event/button-click-expected-android.txt
+data/accessibility/event/button-click-expected-auralinux.txt
 data/accessibility/event/button-click-expected-uia-win.txt
 data/accessibility/event/button-click.html
 data/accessibility/event/button-remove-children-expected-auralinux.txt
@@ -2613,6 +2614,7 @@ data/accessibility/event/role-changed-expected-uia-win.txt
 data/accessibility/event/role-changed-expected-win.txt
 data/accessibility/event/role-changed.html
 data/accessibility/event/same-page-link-navigation-expected-android.txt
+data/accessibility/event/same-page-link-navigation-expected-auralinux.txt
 data/accessibility/event/same-page-link-navigation-expected-uia-win.txt
 data/accessibility/event/same-page-link-navigation-expected-win.txt
 data/accessibility/event/same-page-link-navigation.html

@@ -330,7 +330,7 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
   std::unique_ptr<ui::AXTreeUpdate> ax_tree_snapshot(
       reinterpret_cast<ui::AXTreeUpdate*>(ax_tree_update_ptr));
   snapshot_root_manager_ = std::make_unique<BrowserAccessibilityManagerAndroid>(
-      *ax_tree_snapshot, GetWeakPtr(), nullptr);
+      *ax_tree_snapshot, GetWeakPtr(), *this, nullptr);
   snapshot_root_manager_->BuildAXTreeHitTestCache();
   connector_ = nullptr;
 }
@@ -357,6 +357,16 @@ WebContentsAccessibilityAndroid::~WebContentsAccessibilityAndroid() {
   DeleteAutofillPopupProxy();
 
   Java_WebContentsAccessibilityImpl_onNativeObjectDestroyed(env, obj);
+}
+
+ui::AXPlatformNodeId WebContentsAccessibilityAndroid::GetOrCreateAXNodeUniqueId(
+    ui::AXNodeID ax_node_id) {
+  // Per-tab uniqueness is not necessary in snapshots, so return the blink node
+  // id.
+  return ui::AXPlatformNodeId(MakePassKey(), ax_node_id);
+}
+
+void WebContentsAccessibilityAndroid::OnAXNodeDeleted(ui::AXNodeID ax_node_id) {
 }
 
 void WebContentsAccessibilityAndroid::ConnectInstanceToRootManager(
@@ -1661,7 +1671,7 @@ void WebContentsAccessibilityAndroid::ProcessCompletedAccessibilityTreeSnapshot(
 
   // Construct a root manager without a delegate using the snapshot result.
   snapshot_root_manager_ = std::make_unique<BrowserAccessibilityManagerAndroid>(
-      result, GetWeakPtr(), /* delegate= */ nullptr);
+      result, GetWeakPtr(), *this, /* delegate= */ nullptr);
 
   auto* root = static_cast<BrowserAccessibilityAndroid*>(
       snapshot_root_manager_->GetBrowserAccessibilityRoot());

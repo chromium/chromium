@@ -16,6 +16,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
@@ -279,5 +280,92 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
     EXPECT_NE(nullptr, GetManager());
   }
 }
+
+// Test platform node ids on OS's that have platform nodes.
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, ReEnablingDoesNotAlterUniqueIds) {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(R"HTML(
+      data:text/html,<!DOCTYPE html>
+      <html>
+      <body>
+        <button>Button 1</button>
+        <iframe srcdoc="
+          <!DOCTYPE html>
+          <html>
+          <body>
+            <button>Button 2</button>
+          </body>
+          </html>
+        "></iframe>
+        <button>Button 3</button>
+      </body>
+      </html>)HTML")));
+
+  auto accessibility_mode = web_contents()->GetAccessibilityMode();
+  // Strip off kNativeAPIs, which may be set in some situations.
+  accessibility_mode.set_mode(ui::AXMode::kNativeAPIs, false);
+  // Accessibility should now be off.
+  ASSERT_TRUE(accessibility_mode.is_mode_off());
+  EXPECT_EQ(nullptr, GetManager());
+
+  // Turn accessibility on.
+  AccessibilityNotificationWaiter waiter(shell()->web_contents());
+  BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
+      ui::kAXModeComplete);
+  ASSERT_TRUE(waiter.WaitForNotification());
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Button 2");
+
+  // Save unique ids.
+  accessibility_mode = web_contents()->GetAccessibilityMode();
+  ASSERT_TRUE(accessibility_mode.has_mode(ui::AXMode::kNativeAPIs));
+  ASSERT_TRUE(accessibility_mode.has_mode(ui::AXMode::kWebContents));
+  EXPECT_NE(nullptr, GetManager());
+  const BrowserAccessibility* button_1 =
+      FindNode(ax::mojom::Role::kButton, "Button 1");
+  ASSERT_NE(nullptr, button_1);
+  const BrowserAccessibility* button_2 =
+      FindNode(ax::mojom::Role::kButton, "Button 2");
+  ASSERT_NE(nullptr, button_2);
+
+  int32_t unique_id_1 = button_1->GetAXPlatformNode()->GetUniqueId();
+  int32_t unique_id_2 = button_2->GetAXPlatformNode()->GetUniqueId();
+
+  // Turn accessibility off again.
+  BrowserAccessibilityState::GetInstance()->ResetAccessibilityMode();
+  accessibility_mode = web_contents()->GetAccessibilityMode();
+  ASSERT_TRUE(accessibility_mode.is_mode_off());
+  EXPECT_EQ(nullptr, GetManager());
+
+  // Turn accessibility on again.
+  AccessibilityNotificationWaiter waiter_3(shell()->web_contents());
+  BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
+      ui::kAXModeBasic);
+  ASSERT_TRUE(waiter_3.WaitForNotification());
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Button 2");
+
+  // Compare unique id for newly created a11y nodes with previous unique ids.
+  accessibility_mode = web_contents()->GetAccessibilityMode();
+  ASSERT_TRUE(accessibility_mode.has_mode(ui::AXMode::kNativeAPIs));
+  ASSERT_TRUE(accessibility_mode.has_mode(ui::AXMode::kWebContents));
+  EXPECT_NE(nullptr, GetManager());
+  const BrowserAccessibility* button_1_refresh =
+      FindNode(ax::mojom::Role::kButton, "Button 1");
+  ASSERT_NE(nullptr, button_1_refresh);
+  // button_1 is now a dangling pointer for the old button.
+  // The pointers are not the same, proving that button_1_refresh is new.
+  ASSERT_NE(button_1, button_1_refresh);
+  const BrowserAccessibility* button_2_refresh =
+      FindNode(ax::mojom::Role::kButton, "Button 2");
+  ASSERT_NE(nullptr, button_2_refresh);
+  // button_2 is now a dangling pointer for the old button.
+  // The pointers are not the same, proving that button_2_refresh is new.
+  ASSERT_NE(button_2, button_2_refresh);
+
+  EXPECT_EQ(unique_id_1, button_1_refresh->GetAXPlatformNode()->GetUniqueId());
+  EXPECT_EQ(unique_id_2, button_2_refresh->GetAXPlatformNode()->GetUniqueId());
+}
+#endif  // #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

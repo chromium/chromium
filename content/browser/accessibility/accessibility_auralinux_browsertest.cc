@@ -2227,6 +2227,87 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       UniqueIdIsStableAfterRoleChange) {
+  LoadInitialAccessibilityTreeFromHtml("<h1>Hello</h1>");
+
+  AtkObject* document = GetRendererAccessible();
+  AtkObject* atk_heading = atk_object_ref_accessible_child(document, 0);
+  auto* heading = static_cast<ui::AXPlatformNodeBase*>(
+      ui::AXPlatformNode::FromNativeViewAccessible(atk_heading));
+  EXPECT_EQ(heading->GetRole(), ax::mojom::Role::kHeading);
+  int32_t heading_unique_id = heading->GetUniqueId();
+  EXPECT_GT(heading_unique_id, 0);
+
+  // Change the heading to a group. This will cause it to get a new AXObject on
+  // the renderer side, but the id will remain the same.
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::ROLE_CHANGED);
+  ExecuteScript(u"document.querySelector('h1').setAttribute('role', 'group');");
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  AtkObject* atk_group = atk_object_ref_accessible_child(document, 0);
+  auto* group = static_cast<ui::AXPlatformNodeBase*>(
+      ui::AXPlatformNode::FromNativeViewAccessible(atk_group));
+  EXPECT_EQ(group->GetRole(), ax::mojom::Role::kGroup);
+  int32_t group_unique_id = group->GetUniqueId();
+  EXPECT_GT(group_unique_id, 0);
+
+  // The incoming id from the renderer remains the same.
+  ASSERT_EQ(heading->GetNodeId(), group->GetNodeId());
+  // The outgoing id assigned on the browser side, which is unique within the
+  // window, also remains the same.
+  ASSERT_EQ(heading_unique_id, group_unique_id);
+
+  g_object_unref(atk_heading);
+  g_object_unref(atk_group);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       UniqueIdIsStableAfterLayoutObjectReplacement) {
+  LoadInitialAccessibilityTreeFromHtml(
+      "<main style='display:block'>Hello</main>");
+
+  AtkObject* document = GetRendererAccessible();
+  AtkObject* atk_block = atk_object_ref_accessible_child(document, 0);
+  auto* block = static_cast<ui::AXPlatformNodeBase*>(
+      ui::AXPlatformNode::FromNativeViewAccessible(atk_block));
+  EXPECT_EQ(block->GetRole(), ax::mojom::Role::kMain);
+  int32_t block_unique_id = block->GetUniqueId();
+  EXPECT_GT(block_unique_id, 0);
+
+  // Change the block to a inline_block. This will cause it to get a new
+  // AXObject on the renderer side, but the id will remain the same.
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kEndOfTest);
+  ExecuteScript(
+      u"document.querySelector('main').style.display = 'inline-block';");
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  BrowserAccessibilityManager* manager =
+      web_contents->GetRootBrowserAccessibilityManager();
+  manager->SignalEndOfTest();
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  AtkObject* atk_inline_block = atk_object_ref_accessible_child(document, 0);
+  auto* inline_block = static_cast<ui::AXPlatformNodeBase*>(
+      ui::AXPlatformNode::FromNativeViewAccessible(atk_inline_block));
+  EXPECT_EQ(inline_block->GetRole(), ax::mojom::Role::kMain);
+  int32_t inline_block_unique_id = inline_block->GetUniqueId();
+  EXPECT_GT(inline_block_unique_id, 0);
+
+  // The incoming id from the renderer remains the same.
+  ASSERT_EQ(block->GetNodeId(), inline_block->GetNodeId());
+  // The outgoing id assigned on the browser side, which is unique within the
+  // window, also remains the same.
+  ASSERT_EQ(block_unique_id, inline_block_unique_id);
+
+  g_object_unref(atk_block);
+  g_object_unref(atk_inline_block);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
                        TestGetIndexInParent) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <p>Hello world</p>

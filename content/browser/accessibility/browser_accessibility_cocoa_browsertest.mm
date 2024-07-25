@@ -25,6 +25,7 @@
 #include "testing/gtest_mac.h"
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #include "ui/accessibility/platform/ax_utils_mac.h"
+#include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -86,6 +87,8 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
     auto* manager = static_cast<BrowserAccessibilityManagerMac*>(GetManager());
     return manager->text_edits_[id];
   }
+
+  ui::TestAXNodeIdDelegate node_id_delegate_;
 
  private:
   BrowserAccessibility* FindNodeInSubtree(BrowserAccessibility& node,
@@ -481,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   int child_count = static_cast<int>(expected_descriptions.size());
 
   std::unique_ptr<BrowserAccessibilityManagerMac> manager(
-      new BrowserAccessibilityManagerMac(tree, nullptr));
+      new BrowserAccessibilityManagerMac(tree, node_id_delegate_, nullptr));
 
   for (int child_index = 0; child_index < child_count; child_index++) {
     BrowserAccessibility* child =
@@ -569,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
                                     "cell2_row3");
 
   std::unique_ptr<BrowserAccessibilityManagerMac> manager(
-      new BrowserAccessibilityManagerMac(tree, nullptr));
+      new BrowserAccessibilityManagerMac(tree, node_id_delegate_, nullptr));
 
   BrowserAccessibility* table =
       manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0);
@@ -619,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   tree.nodes[3].AddStringAttribute(ax::mojom::StringAttribute::kName, "row2");
 
   std::unique_ptr<BrowserAccessibilityManagerMac> manager(
-      new BrowserAccessibilityManagerMac(tree, nullptr));
+      new BrowserAccessibilityManagerMac(tree, node_id_delegate_, nullptr));
 
   BrowserAccessibility* column =
       manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0);

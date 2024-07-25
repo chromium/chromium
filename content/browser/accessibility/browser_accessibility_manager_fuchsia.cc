@@ -17,21 +17,26 @@ namespace content {
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate) {
-  return new BrowserAccessibilityManagerFuchsia(initial_tree, delegate);
+  return new BrowserAccessibilityManagerFuchsia(initial_tree, node_id_delegate,
+                                                delegate);
 }
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate) {
   return new BrowserAccessibilityManagerFuchsia(
-      BrowserAccessibilityManagerFuchsia::GetEmptyDocument(), delegate);
+      BrowserAccessibilityManagerFuchsia::GetEmptyDocument(), node_id_delegate,
+      delegate);
 }
 
 BrowserAccessibilityManagerFuchsia::BrowserAccessibilityManagerFuchsia(
     const ui::AXTreeUpdate& initial_tree,
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate)
-    : BrowserAccessibilityManager(delegate) {
+    : BrowserAccessibilityManager(node_id_delegate, delegate) {
   Initialize(initial_tree);
 
   ui::AccessibilityBridgeFuchsia* accessibility_bridge =

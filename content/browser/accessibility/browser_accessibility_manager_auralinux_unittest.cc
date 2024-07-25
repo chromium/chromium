@@ -15,6 +15,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
+#include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 #include "ui/base/glib/scoped_gsignal.h"
 
@@ -34,6 +35,7 @@ class BrowserAccessibilityManagerAuraLinuxTest : public ::testing::Test {
  protected:
   std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
       test_browser_accessibility_delegate_;
+  ui::TestAXNodeIdDelegate node_id_delegate_;
 
  private:
   void SetUp() override;
@@ -69,7 +71,8 @@ TEST_F(BrowserAccessibilityManagerAuraLinuxTest, TestEmitChildrenChanged) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          initial_state, test_browser_accessibility_delegate_.get()));
+          initial_state, node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
 
   AtkObject* atk_root =
       manager->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();

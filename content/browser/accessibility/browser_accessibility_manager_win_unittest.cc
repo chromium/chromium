@@ -13,6 +13,7 @@
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
+#include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
@@ -56,6 +57,7 @@ class BrowserAccessibilityManagerWinTest : public testing::Test {
  protected:
   std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
       test_browser_accessibility_delegate_;
+  ui::TestAXNodeIdDelegate node_id_delegate_;
 
  private:
   void SetUp() override;
@@ -82,7 +84,7 @@ TEST_F(BrowserAccessibilityManagerWinTest, DynamicallyAddedIFrame) {
 
   std::unique_ptr<BrowserAccessibilityManager> root_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdateForTesting(root),
+          MakeAXTreeUpdateForTesting(root), node_id_delegate_,
           test_browser_accessibility_delegate_.get()));
 
   TestFragmentRootDelegate test_fragment_root_delegate(root_manager.get());
@@ -109,6 +111,7 @@ TEST_F(BrowserAccessibilityManagerWinTest, DynamicallyAddedIFrame) {
 
   std::unique_ptr<BrowserAccessibilityManager> iframe_manager(
       BrowserAccessibilityManager::Create(MakeAXTreeUpdateForTesting(root),
+                                          node_id_delegate_,
                                           iframe_delegate.get()));
 
   // The new frame is not a root frame, so the fragment root's lone child should
@@ -142,7 +145,8 @@ TEST_F(BrowserAccessibilityManagerWinTest, ChildTree) {
 
   std::unique_ptr<BrowserAccessibilityManager> parent_manager(
       BrowserAccessibilityManager::Create(
-          parent_tree_update, test_browser_accessibility_delegate_.get()));
+          parent_tree_update, node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
 
   TestFragmentRootDelegate test_fragment_root_delegate(parent_manager.get());
 
@@ -165,7 +169,7 @@ TEST_F(BrowserAccessibilityManagerWinTest, ChildTree) {
   child_tree_delegate->is_root_frame_ = false;
   child_tree_delegate->accelerated_widget_ = gfx::kMockAcceleratedWidget;
   std::unique_ptr<BrowserAccessibilityManager> child_manager(
-      BrowserAccessibilityManager::Create(child_tree_update,
+      BrowserAccessibilityManager::Create(child_tree_update, node_id_delegate_,
                                           child_tree_delegate.get()));
 
   // The fragment root's lone child should still be the same as before.

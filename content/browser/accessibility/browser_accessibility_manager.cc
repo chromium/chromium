@@ -102,18 +102,20 @@ BrowserAccessibilityFindInPageInfo::BrowserAccessibilityFindInPageInfo()
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate) {
   BrowserAccessibilityManager* manager =
-      new BrowserAccessibilityManager(delegate);
+      new BrowserAccessibilityManager(node_id_delegate, delegate);
   manager->Initialize(initial_tree);
   return manager;
 }
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate) {
   BrowserAccessibilityManager* manager =
-      new BrowserAccessibilityManager(delegate);
+      new BrowserAccessibilityManager(node_id_delegate, delegate);
   manager->Initialize(BrowserAccessibilityManager::GetEmptyDocument());
   return manager;
 }
@@ -135,12 +137,14 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::FromID(
 }
 
 BrowserAccessibilityManager::BrowserAccessibilityManager(
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate)
     : AXPlatformTreeManager(std::make_unique<ui::AXSerializableTree>()),
       delegate_(delegate),
       user_is_navigating_away_(false),
       device_scale_factor_(1.0f),
-      use_custom_device_scale_factor_for_testing_(false) {}
+      use_custom_device_scale_factor_for_testing_(false),
+      node_id_delegate_(node_id_delegate) {}
 
 BrowserAccessibilityManager::~BrowserAccessibilityManager() = default;
 
@@ -1553,6 +1557,8 @@ void BrowserAccessibilityManager::OnNodeDeleted(ui::AXTree* tree,
   DCHECK_NE(node_id, ui::kInvalidAXNodeID);
   id_wrapper_map_.erase(node_id);
   popup_root_ids_.erase(node_id);
+
+  node_id_delegate_->OnAXNodeDeleted(node_id);
 }
 
 void BrowserAccessibilityManager::OnNodeReparented(ui::AXTree* tree,
@@ -1943,6 +1949,11 @@ BrowserAccessibilityManager::RetargetBrowserAccessibilityForEvents(
     return nullptr;
   }
   return GetFromAXNode(RetargetForEvents(node->node(), event_type));
+}
+
+ui::AXPlatformNodeId BrowserAccessibilityManager::GetNodeUniqueId(
+    const BrowserAccessibility* node) {
+  return node_id_delegate_->GetOrCreateAXNodeUniqueId(node->node()->id());
 }
 
 float BrowserAccessibilityManager::device_scale_factor() const {

@@ -863,12 +863,20 @@ BrowserAccessibility::GetSourceNodesForReverseRelations(
 }
 
 ui::AXPlatformNodeId BrowserAccessibility::GetUniqueId() const {
-  // This is not the same as GetData().id which comes from Blink, because
-  // those ids are only unique within the Blink process. We need one that is
-  // unique per OS window.
-  // For example, Windows ATs use this to retrieve IA2 event targets for events
-  // that are fired on an OS-level window with an id. They also use it to
-  // save positions via IAccessible2::get_uniqueID().
+  // The id is computed on first use and saved for subsequent retrieval because
+  // `GetNodeUniqueId` is not free, and because this instance's `node()` may
+  // become a dangling pointer briefly during tree deserialization; see
+  // https://crbug.com/345674549.
+  if (unique_id_ == ui::AXPlatformNodeId()) {
+    // This is not the same as GetData().id (AXNodeID) which comes from Blink.
+    // those ids are only unique within their renderer process. For nodes that
+    // are exposed to accessibility tools, uniqueness is required in the context
+    // of the OS window. For example, Windows ATs use this to retrieve IA2 event
+    // targets for events that are fired on an OS-level window with an id. They
+    // also use it to save positions via IAccessible2::get_uniqueID(). Ask the
+    // tree manager to which this node belongs to assign it a unique id.
+    unique_id_ = manager_->GetNodeUniqueId(this);
+  }
   return unique_id_;
 }
 

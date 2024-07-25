@@ -5782,4 +5782,156 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, FixedRuntimeId) {
   EXPECT_TRUE(are_same);
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, UniqueIdIsStable) {
+  LoadInitialAccessibilityTreeFromHtml("<h1>Hello</h1>");
+
+  Microsoft::WRL::ComPtr<IAccessible> document(GetRendererAccessible());
+  std::vector<base::win::ScopedVariant> document_children =
+      GetAllAccessibleChildren(document.Get());
+
+  // Retrieve heading's IA2 element and unique id.
+  Microsoft::WRL::ComPtr<IAccessible2> heading;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(document.Get(), document_children[0].AsInput())
+          .Get(),
+      &heading));
+  LONG heading_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(heading->role(&heading_role));
+  ASSERT_EQ(IA2_ROLE_HEADING, heading_role);
+  LONG heading_unique_id;
+  heading->get_uniqueID(&heading_unique_id);
+
+  // Change the heading to a group. This will cause it to get a new AXObject on
+  // the renderer side, but the id will remain the same.
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::ROLE_CHANGED);
+  ExecuteScript(u"document.querySelector('h1').setAttribute('role', 'group');");
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  // Retrieve group's IA2 element and unique id.
+  Microsoft::WRL::ComPtr<IAccessible2> group;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(document.Get(), document_children[0].AsInput())
+          .Get(),
+      &group));
+  LONG group_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(group->role(&group_role));
+  ASSERT_EQ(ROLE_SYSTEM_GROUPING, group_role);
+  LONG group_unique_id;
+  group->get_uniqueID(&group_unique_id);
+
+  // The outgoing id assigned on the browser side, which is unique within the
+  // window, remains the same.
+  ASSERT_EQ(heading_unique_id, group_unique_id);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
+                       UniqueIdIsStableAfterReset) {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(R"HTML(
+      data:text/html,<!DOCTYPE html>
+      <html>
+      <body>
+        <button>Button 1</button>
+        <iframe srcdoc="
+          <!DOCTYPE html>
+          <html>
+          <body>
+            <button>Button 2</button>
+          </body>
+          </html>
+        "></iframe>
+        <button>Button 3</button>
+      </body>
+      </html>)HTML")));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  BrowserAccessibilityState::GetInstance()->ResetAccessibilityMode();
+  auto accessibility_mode = web_contents->GetAccessibilityMode();
+  ASSERT_TRUE(accessibility_mode.is_mode_off());
+  EXPECT_EQ(nullptr, GetManager());
+
+  // Turn accessibility on.
+  AccessibilityNotificationWaiter waiter(shell()->web_contents());
+  BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
+      ui::kAXModeComplete);
+  ASSERT_TRUE(waiter.WaitForNotification());
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Button 2");
+
+  // Save unique ids.
+  accessibility_mode = web_contents->GetAccessibilityMode();
+  ASSERT_TRUE(accessibility_mode.has_mode(ui::AXMode::kNativeAPIs));
+  ASSERT_TRUE(accessibility_mode.has_mode(ui::AXMode::kWebContents));
+  EXPECT_NE(nullptr, GetManager());
+  const BrowserAccessibility* button_1 =
+      FindNode(ax::mojom::Role::kButton, "Button 1");
+  ASSERT_NE(nullptr, button_1);
+  const BrowserAccessibility* button_2 =
+      FindNode(ax::mojom::Role::kButton, "Button 2");
+  ASSERT_NE(nullptr, button_2);
+  int32_t unique_id_1 = button_1->GetAXPlatformNode()->GetUniqueId();
+  int32_t unique_id_2 = button_2->GetAXPlatformNode()->GetUniqueId();
+
+  // Turn accessibility off again.
+  BrowserAccessibilityState::GetInstance()->ResetAccessibilityMode();
+  accessibility_mode = web_contents->GetAccessibilityMode();
+  ASSERT_TRUE(accessibility_mode.is_mode_off());
+  EXPECT_EQ(nullptr, GetManager());
+
+  // Turn accessibility on again.
+  AccessibilityNotificationWaiter waiter_3(web_contents);
+  BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
+      ui::kAXModeBasic);
+  ASSERT_TRUE(waiter_3.WaitForNotification());
+  WaitForAccessibilityTreeToContainNodeWithName(web_contents, "Button 2");
+
+  // Compare unique id for newly created a11y nodes with previous unique ids.
+  accessibility_mode = web_contents->GetAccessibilityMode();
+  ASSERT_TRUE(accessibility_mode.has_mode(ui::AXMode::kNativeAPIs));
+  ASSERT_TRUE(accessibility_mode.has_mode(ui::AXMode::kWebContents));
+  EXPECT_NE(nullptr, GetManager());
+  const BrowserAccessibility* button_1_refresh =
+      FindNode(ax::mojom::Role::kButton, "Button 1");
+  ASSERT_NE(nullptr, button_1_refresh);
+  // button_1 is now a dangling pointer for the old button.
+  // The pointers are not the same, proving that button_1_refresh is new.
+  ASSERT_NE(button_1, button_1_refresh);
+  const BrowserAccessibility* button_2_refresh =
+      FindNode(ax::mojom::Role::kButton, "Button 2");
+  ASSERT_NE(nullptr, button_2_refresh);
+  // button_2 is now a dangling pointer for the old button.
+  // The pointers are not the same, proving that button_2_refresh is new.
+  ASSERT_NE(button_2, button_2_refresh);
+
+  // Test platform node ids have remained the same.
+  EXPECT_EQ(unique_id_1, button_1_refresh->GetAXPlatformNode()->GetUniqueId());
+  EXPECT_EQ(unique_id_2, button_2_refresh->GetAXPlatformNode()->GetUniqueId());
+
+  // Test get_accChild with the IA2 unique ids.
+  Microsoft::WRL::ComPtr<IAccessible> document(GetRendererAccessible());
+  base::win::ScopedVariant button_variant_1(-unique_id_1);
+  Microsoft::WRL::ComPtr<IDispatch> dispatch_button_1;
+  ASSERT_HRESULT_SUCCEEDED(
+      document->get_accChild(button_variant_1, &dispatch_button_1));
+  Microsoft::WRL::ComPtr<IAccessible2> ia2_button_1;
+  ASSERT_HRESULT_SUCCEEDED(
+      dispatch_button_1->QueryInterface(IID_PPV_ARGS(&ia2_button_1)));
+  LONG role_button_1 = 0;
+  ASSERT_HRESULT_SUCCEEDED(ia2_button_1->role(&role_button_1));
+  EXPECT_EQ(role_button_1, ROLE_SYSTEM_PUSHBUTTON);
+
+  base::win::ScopedVariant button_variant_2(-unique_id_2);
+  Microsoft::WRL::ComPtr<IDispatch> dispatch_button_2;
+  ASSERT_HRESULT_SUCCEEDED(
+      document->get_accChild(button_variant_2, &dispatch_button_2));
+  Microsoft::WRL::ComPtr<IAccessible2> ia2_button_2;
+  ASSERT_HRESULT_SUCCEEDED(
+      dispatch_button_2->QueryInterface(IID_PPV_ARGS(&ia2_button_2)));
+  LONG role_button_2 = 0;
+  ASSERT_HRESULT_SUCCEEDED(ia2_button_2->role(&role_button_2));
+  EXPECT_EQ(role_button_2, ROLE_SYSTEM_PUSHBUTTON);
+}
+
 }  // namespace content
