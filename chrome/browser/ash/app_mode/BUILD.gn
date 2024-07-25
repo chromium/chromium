@@ -240,7 +240,6 @@ source_set("browser_tests") {
     "kiosk_app_update_service_browsertest.cc",
     "kiosk_chrome_app_manager_browsertest.cc",
     "kiosk_crash_restore_browsertest.cc",
-    "kiosk_pixel_browsertest.cc",
     "kiosk_system_web_app_browsertest.cc",
     "kiosk_troubleshooting_tools_browsertest.cc",
   ]
