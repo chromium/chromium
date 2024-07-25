@@ -1079,6 +1079,8 @@ static_library("ui") {
       "breadcrumb_manager_browser_agent.h",
       "browser.cc",
       "browser.h",
+      "browser_action_prefs_listener.cc",
+      "browser_action_prefs_listener.h",
       "browser_actions.cc",
       "browser_actions.h",
       "browser_command_controller.cc",

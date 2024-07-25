@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "chrome/browser/ui/browser_action_prefs_listener.h"
 #include "chrome/browser/ui/translate_browser_action_listener.h"
 
 class Browser;
@@ -31,6 +32,8 @@ class BrowserActions {
   // Initialization is separate from construction to allow more precise timing.
   void InitializeBrowserActions();
 
+  void RemoveListeners();
+
  private:
   // Creates all the listeners for the action items that update different states
   // and property of the action item.
@@ -39,6 +42,8 @@ class BrowserActions {
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   std::unique_ptr<TranslateBrowserActionListener>
       translate_browser_action_listener_ = nullptr;
+  std::unique_ptr<BrowserActionPrefsListener> browser_action_prefs_listener_ =
+      nullptr;
   const raw_ref<Browser> browser_;
 };
 

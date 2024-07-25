@@ -698,6 +698,11 @@ Browser::~Browser() {
   // it doesn't act on any notifications that are sent as a result of removing
   // the browser.
   command_controller_.reset();
+
+  // Remove listeners associated with browser actions so that
+  // it doesn't act on any during browser destruction.
+  browser_actions_->RemoveListeners();
+
   // Destroy ExclusiveAccessManager, which depends on `window_` which may be
   // destroyed by RemoveBrowser().
   exclusive_access_manager_.reset();

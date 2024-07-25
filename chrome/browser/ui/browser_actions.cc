@@ -13,12 +13,14 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/autofill/address_bubbles_icon_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_action_prefs_listener.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -323,6 +325,8 @@ void BrowserActions::InitializeBrowserActions() {
           kActionSendTabToSelf, IDS_SEND_TAB_TO_SELF, IDS_SEND_TAB_TO_SELF,
           kDevicesChromeRefreshIcon)
           .SetEnabled(chrome::CanSendTabToSelf(browser))
+          .SetVisible(
+              !sharing_hub::SharingIsDisabledByPolicy(browser->profile()))
           .Build());
 
   root_action_item_->AddChild(
@@ -346,6 +350,8 @@ void BrowserActions::InitializeBrowserActions() {
                        kActionQrCodeGenerator, IDS_APP_MENU_CREATE_QR_CODE,
                        IDS_APP_MENU_CREATE_QR_CODE, kQrCodeChromeRefreshIcon)
           .SetEnabled(false)
+          .SetVisible(
+              !sharing_hub::SharingIsDisabledByPolicy(browser->profile()))
           .Build());
 
   root_action_item_->AddChild(
@@ -442,12 +448,21 @@ void BrowserActions::InitializeBrowserActions() {
           kActionCopyUrl, IDS_APP_MENU_COPY_LINK, IDS_APP_MENU_COPY_LINK,
           kLinkChromeRefreshIcon)
           .SetEnabled(chrome::CanCopyUrl(browser))
+          .SetVisible(
+              !sharing_hub::SharingIsDisabledByPolicy(browser->profile()))
           .Build());
 
   AddListeners();
 }
 
+void BrowserActions::RemoveListeners() {
+  translate_browser_action_listener_.reset();
+  browser_action_prefs_listener_.reset();
+}
+
 void BrowserActions::AddListeners() {
   translate_browser_action_listener_ =
       std::make_unique<TranslateBrowserActionListener>(browser_.get());
+  browser_action_prefs_listener_ =
+      std::make_unique<BrowserActionPrefsListener>(browser_.get());
 }
