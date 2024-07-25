@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import {PluginController, SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {createMockPdfPluginForTest, finishInkStroke, getAnnotationsBar} from './test_util.js';
+import {createMockPdfPluginForTest, finishInkStroke, getRequiredElement} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
@@ -15,10 +14,7 @@ const mockPlugin = createMockPdfPluginForTest();
 controller.setPluginForTesting(mockPlugin);
 
 function getDownloadControls() {
-  const downloadControls =
-      viewerToolbar.shadowRoot!.querySelector('viewer-download-controls');
-  assert(downloadControls);
-  return downloadControls;
+  return getRequiredElement(viewerToolbar, 'viewer-download-controls');
 }
 
 chrome.test.runTests([
@@ -99,8 +95,8 @@ chrome.test.runTests([
 
     mockPlugin.clearMessages();
 
-    const annotationBar = getAnnotationsBar(viewerToolbar);
-    const undoButton = annotationBar.$.undo;
+    const undoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo');
     chrome.test.assertFalse(undoButton.disabled);
 
     const downloadControls = getDownloadControls();
@@ -131,8 +127,8 @@ chrome.test.runTests([
   async function testSaveMenuAfterRedo() {
     mockPlugin.clearMessages();
 
-    const annotationBar = getAnnotationsBar(viewerToolbar);
-    const redoButton = annotationBar.$.redo;
+    const redoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#redo');
     chrome.test.assertFalse(redoButton.disabled);
 
     const downloadControls = getDownloadControls();
@@ -157,8 +153,8 @@ chrome.test.runTests([
     // Add another ink stroke. There should now be two ink strokes on the PDF.
     finishInkStroke(controller);
 
-    const annotationBar = getAnnotationsBar(viewerToolbar);
-    const undoButton = annotationBar.$.undo;
+    const undoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo');
     chrome.test.assertFalse(undoButton.disabled);
 
     // Undo both ink strokes.

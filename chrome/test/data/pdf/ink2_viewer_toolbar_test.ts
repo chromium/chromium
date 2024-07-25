@@ -5,21 +5,17 @@
 import {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertShowAnnotationsButton, createMockPdfPluginForTest, enterFullscreenWithUserGesture, finishInkStroke} from './test_util.js';
+import {assertShowAnnotationsButton, createMockPdfPluginForTest, enterFullscreenWithUserGesture, finishInkStroke, getRequiredElement} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
-
-function toolbarQuerySelector(query: string): HTMLElement {
-  return viewerToolbar.shadowRoot!.querySelector<HTMLElement>(query)!;
-}
 
 chrome.test.runTests([
   // Test that clicking the annotation button toggles annotation mode.
   function testAnnotationButton() {
     chrome.test.assertFalse(viewerToolbar.annotationMode);
 
-    const annotateButton = toolbarQuerySelector('#annotate');
+    const annotateButton = getRequiredElement(viewerToolbar, '#annotate');
 
     annotateButton.click();
     chrome.test.assertTrue(viewerToolbar.annotationMode);
@@ -33,7 +29,7 @@ chrome.test.runTests([
     // Start the test with annotation mode disabled and annotations displayed.
     chrome.test.assertFalse(viewerToolbar.annotationMode);
     const showAnnotationsButton =
-        toolbarQuerySelector('#show-annotations-button');
+        getRequiredElement(viewerToolbar, '#show-annotations-button');
     assertShowAnnotationsButton(showAnnotationsButton, true);
 
     // Enabling and disabling annotation mode shouldn't affect displaying
@@ -119,8 +115,10 @@ chrome.test.runTests([
     const mockPlugin = createMockPdfPluginForTest();
     controller.setPluginForTesting(mockPlugin);
 
-    const undoButton = toolbarQuerySelector('#undo') as HTMLButtonElement;
-    const redoButton = toolbarQuerySelector('#redo') as HTMLButtonElement;
+    const undoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo');
+    const redoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#redo');
 
     // The buttons should be disabled when there aren't any strokes.
     chrome.test.assertTrue(undoButton.disabled);

@@ -366,4 +366,21 @@ export function getAnnotationsBar(viewerToolbar: ViewerToolbarElement) {
   assert(annotationsBar);
   return annotationsBar;
 }
+
+/**
+ * Helper to always get a non-null child element of `parent`. The element must
+ * exist.
+ * @param parent The parent to get the child element from.
+ * @param query  The query to get the child element.
+ * @returns A non-null element that matches `query`.
+ */
+export function getRequiredElement<K extends keyof HTMLElementTagNameMap>(
+    parent: HTMLElement, query: K): HTMLElementTagNameMap[K];
+export function getRequiredElement<E extends HTMLElement = HTMLElement>(
+    parent: HTMLElement, query: string): E;
+export function getRequiredElement(parent: HTMLElement, query: string) {
+  const element = parent.shadowRoot!.querySelector(query);
+  assert(element);
+  return element;
+}
 // </if>
