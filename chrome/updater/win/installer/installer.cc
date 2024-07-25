@@ -304,7 +304,7 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
                      return ProcessExitResult(FAILED_TO_ELEVATE_METAINSTALLER,
                                               error);
                    });
-  return ProcessExitResult(result);
+  return ProcessExitResult(UPDATER_EXIT_CODE, result);
 }
 
 ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
@@ -363,7 +363,7 @@ ProcessExitResult InstallerMain(HMODULE module) {
 
   if (!::IsUserAnAdmin() && IsSystemInstall(scope)) {
     ProcessExitResult run_elevated_result = HandleRunElevated(command_line);
-    if (run_elevated_result.exit_code == SUCCESS_EXIT_CODE ||
+    if (run_elevated_result.exit_code == UPDATER_EXIT_CODE ||
         !IsPrefersForCommandLine(command_line)) {
       return run_elevated_result;
     }
