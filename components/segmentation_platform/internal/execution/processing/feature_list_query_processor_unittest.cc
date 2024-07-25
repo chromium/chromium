@@ -18,6 +18,8 @@
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
+#include "components/segmentation_platform/internal/database/ukm_database_backend.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/mock_feature_aggregator.h"
 #include "components/segmentation_platform/internal/mock_ukm_data_manager.h"
 #include "components/segmentation_platform/public/features.h"
@@ -36,20 +38,40 @@ namespace segmentation_platform::processing {
 namespace {
 constexpr base::TimeDelta kOneSecond = base::Seconds(1);
 constexpr base::TimeDelta kTwoSeconds = base::Seconds(2);
+constexpr char kProfileId[] = "profile_id";
 }  // namespace
 
-class FeatureListQueryProcessorTest : public testing::Test {
+class FeatureListQueryProcessorTest : public testing::TestWithParam<bool> {
  public:
   FeatureListQueryProcessorTest() = default;
   ~FeatureListQueryProcessorTest() override = default;
 
   void SetUp() override {
     InitFeatureList();
+
+    ukm_db_ = std::make_unique<UkmDatabaseBackend>(
+        base::FilePath(), /*in_memory=*/true,
+        task_environment_.GetMainThreadTaskRunner());
+    base::RunLoop wait_for_sql_init;
+    ukm_db_->InitDatabase(base::BindOnce(
+        [](base::OnceClosure quit_closure, bool success) {
+          ASSERT_TRUE(success);
+          std::move(quit_closure).Run();
+        },
+        wait_for_sql_init.QuitClosure()));
+    wait_for_sql_init.Run();
+    mock_ukm_data_manager_ = std::make_unique<MockUkmDataManager>();
+    EXPECT_CALL(*mock_ukm_data_manager_, HasUkmDatabase())
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(*mock_ukm_data_manager_, GetUkmDatabase())
+        .WillRepeatedly(testing::Return(ukm_db_.get()));
+
     auto moved_signal_db = std::make_unique<MockSignalDatabase>();
     signal_database_ = moved_signal_db.get();
     storage_service_ = std::make_unique<StorageService>(
         nullptr, std::move(moved_signal_db), nullptr, nullptr, nullptr,
-        &ukm_data_manager_);
+        mock_ukm_data_manager_.get());
+    storage_service_->set_profile_id_for_testing(kProfileId);
     clock_.SetNow(base::Time::Now());
     segment_id_ = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   }
@@ -67,7 +89,14 @@ class FeatureListQueryProcessorTest : public testing::Test {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  void CreateFeatureListQueryProcessor() {
+  void CreateFeatureListQueryProcessor(bool use_sql_db) {
+    if (use_sql_db) {
+      uma_from_sql_feature_list_.InitAndEnableFeature(
+          features::kSegmentationPlatformUmaFromSqlDb);
+    } else {
+      uma_from_sql_feature_list_.InitAndDisableFeature(
+          features::kSegmentationPlatformUmaFromSqlDb);
+    }
     auto feature_aggregator = std::make_unique<MockFeatureAggregator>();
     feature_aggregator_ = feature_aggregator.get();
     feature_list_query_processor_ = std::make_unique<FeatureListQueryProcessor>(
@@ -138,7 +167,9 @@ class FeatureListQueryProcessorTest : public testing::Test {
                                     tensor_length, aggregation,
                                     accepted_enum_ids, default_value));
   }
-  void AddUserActionWithProcessingSetup(base::TimeDelta bucket_duration) {
+
+  void AddUserActionWithProcessingSetup(base::TimeDelta bucket_duration,
+                                        bool use_sql_db) {
     // Set up a single user action feature.
     std::string user_action_name = "some_action";
     AddUmaFeature(proto::SignalType::USER_ACTION, user_action_name, 2, 1,
@@ -164,16 +195,20 @@ class FeatureListQueryProcessorTest : public testing::Test {
             .value = 0},
     };
 
-    EXPECT_CALL(*signal_database_, GetAllSamples()).WillOnce(Return(&samples));
+    AddSamplesToSqlDb(samples);
+    if (!use_sql_db) {
+      EXPECT_CALL(*signal_database_, GetAllSamples())
+          .WillOnce(Return(&samples));
 
-    // After retrieving the samples, they should be processed and aggregated.
-    EXPECT_CALL(
-        *feature_aggregator_,
-        Process(proto::SignalType::USER_ACTION,
-                base::HashMetricName(user_action_name),
-                proto::Aggregation::COUNT, 2, StartTime(bucket_duration, 2),
-                clock_.Now(), bucket_duration, IsEmpty(), _))
-        .WillOnce(Return(std::vector<float>{3}));
+      // After retrieving the samples, they should be processed and aggregated.
+      EXPECT_CALL(
+          *feature_aggregator_,
+          Process(proto::SignalType::USER_ACTION,
+                  base::HashMetricName(user_action_name),
+                  proto::Aggregation::COUNT, 2, StartTime(bucket_duration, 2),
+                  clock_.Now(), bucket_duration, IsEmpty(), _))
+          .WillOnce(Return(std::vector<float>{3}));
+    }
   }
 
   void AddCustomInput(int tensor_length,
@@ -185,6 +220,16 @@ class FeatureListQueryProcessorTest : public testing::Test {
     custom_input->set_tensor_length(tensor_length);
     for (float default_value : default_values)
       custom_input->add_default_value(default_value);
+  }
+
+  void AddSamplesToSqlDb(const std::vector<SignalDatabase::DbEntry>& samples) {
+    for (const auto& sample : samples) {
+      UmaMetricEntry entry{.type = sample.type,
+                           .name_hash = sample.name_hash,
+                           .time = sample.time,
+                           .value = sample.value};
+      ukm_db_->AddUmaMetric(kProfileId, entry);
+    }
   }
 
   void ExpectProcessedFeatureList(
@@ -228,11 +273,13 @@ class FeatureListQueryProcessorTest : public testing::Test {
   }
 
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList uma_from_sql_feature_list_;
   base::SimpleTestClock clock_;
   base::test::TaskEnvironment task_environment_;
   SegmentId segment_id_;
   proto::SegmentationModelMetadata model_metadata;
-  MockUkmDataManager ukm_data_manager_;
+  std::unique_ptr<MockUkmDataManager> mock_ukm_data_manager_;
+  std::unique_ptr<UkmDatabase> ukm_db_;
   std::unique_ptr<StorageService> storage_service_;
   raw_ptr<MockSignalDatabase> signal_database_;
   raw_ptr<MockFeatureAggregator, DanglingUntriaged> feature_aggregator_;
@@ -240,8 +287,13 @@ class FeatureListQueryProcessorTest : public testing::Test {
   std::unique_ptr<FeatureListQueryProcessor> feature_list_query_processor_;
 };
 
-TEST_F(FeatureListQueryProcessorTest, InvalidMetadata) {
-  CreateFeatureListQueryProcessor();
+INSTANTIATE_TEST_SUITE_P(SqlDbAvailability,
+                         FeatureListQueryProcessorTest,
+                         testing::Values(true, false));
+
+TEST_P(FeatureListQueryProcessorTest, InvalidMetadata) {
+  const bool use_sql_db = GetParam();
+  CreateFeatureListQueryProcessor(use_sql_db);
 
   // Initialize with required metadata.
   SetBucketDuration(3, proto::TimeUnit::HOUR);
@@ -255,8 +307,9 @@ TEST_F(FeatureListQueryProcessorTest, InvalidMetadata) {
   ExpectProcessedFeatureList(true, ModelProvider::Request{});
 }
 
-TEST_F(FeatureListQueryProcessorTest, PredictionTimeCustomInput) {
-  CreateFeatureListQueryProcessor();
+TEST_P(FeatureListQueryProcessorTest, PredictionTimeCustomInput) {
+  const bool use_sql_db = GetParam();
+  CreateFeatureListQueryProcessor(use_sql_db);
 
   // Initialize with required metadata.
   SetBucketDuration(3, proto::TimeUnit::HOUR);
@@ -269,8 +322,9 @@ TEST_F(FeatureListQueryProcessorTest, PredictionTimeCustomInput) {
   ExpectProcessedFeatureList(true, ModelProvider::Request{});
 }
 
-TEST_F(FeatureListQueryProcessorTest, DefaultValueCustomInput) {
-  CreateFeatureListQueryProcessor();
+TEST_P(FeatureListQueryProcessorTest, DefaultValueCustomInput) {
+  const bool use_sql_db = GetParam();
+  CreateFeatureListQueryProcessor(use_sql_db);
 
   // Initialize with required metadata.
   SetBucketDuration(3, proto::TimeUnit::HOUR);
@@ -283,8 +337,9 @@ TEST_F(FeatureListQueryProcessorTest, DefaultValueCustomInput) {
   ExpectProcessedFeatureList(false, ModelProvider::Request{1, 2});
 }
 
-TEST_F(FeatureListQueryProcessorTest, SingleUserAction) {
-  CreateFeatureListQueryProcessor();
+TEST_P(FeatureListQueryProcessorTest, SingleUserAction) {
+  const bool use_sql_db = GetParam();
+  CreateFeatureListQueryProcessor(use_sql_db);
 
   // Initialize with required metadata.
   SetBucketDuration(3, proto::TimeUnit::HOUR);
@@ -314,23 +369,26 @@ TEST_F(FeatureListQueryProcessorTest, SingleUserAction) {
           .time = clock_.Now(),
           .value = 0},
   };
-  EXPECT_CALL(*signal_database_, GetAllSamples()).WillOnce(Return(&samples));
+  AddSamplesToSqlDb(samples);
+  if (!use_sql_db) {
+    EXPECT_CALL(*signal_database_, GetAllSamples()).WillOnce(Return(&samples));
 
-  // After retrieving the samples, they should be processed and aggregated.
-  EXPECT_CALL(
-      *feature_aggregator_,
-      Process(proto::SignalType::USER_ACTION,
-              base::HashMetricName(user_action_name_1),
-              proto::Aggregation::COUNT, 2, StartTime(bucket_duration, 2),
-              clock_.Now(), bucket_duration, std::vector<int32_t>(), _))
-      .WillOnce(Return(std::vector<float>{3}));
-
+    // After retrieving the samples, they should be processed and aggregated.
+    EXPECT_CALL(
+        *feature_aggregator_,
+        Process(proto::SignalType::USER_ACTION,
+                base::HashMetricName(user_action_name_1),
+                proto::Aggregation::COUNT, 2, StartTime(bucket_duration, 2),
+                clock_.Now(), bucket_duration, std::vector<int32_t>(), _))
+        .WillOnce(Return(std::vector<float>{3}));
+  }
   // The next step should be to run the feature processor.
   ExpectProcessedFeatureList(false, ModelProvider::Request{3});
 }
 
-TEST_F(FeatureListQueryProcessorTest, LatestOrDefaultUmaFeature) {
-  CreateFeatureListQueryProcessor();
+TEST_P(FeatureListQueryProcessorTest, LatestOrDefaultUmaFeature) {
+  const bool use_sql_db = GetParam();
+  CreateFeatureListQueryProcessor(use_sql_db);
 
   // Initialize with required metadata.
   SetBucketDuration(3, proto::TimeUnit::HOUR);
@@ -366,31 +424,35 @@ TEST_F(FeatureListQueryProcessorTest, LatestOrDefaultUmaFeature) {
           .value = 3},
   };
 
-  EXPECT_CALL(*signal_database_, GetAllSamples()).WillOnce(Return(&samples));
+  AddSamplesToSqlDb(samples);
+  if (!use_sql_db) {
+    EXPECT_CALL(*signal_database_, GetAllSamples()).WillOnce(Return(&samples));
 
-  // After retrieving the samples, they should be processed and aggregated.
-  EXPECT_CALL(*feature_aggregator_,
-              Process(proto::SignalType::USER_ACTION, _,
-                      proto::Aggregation::LATEST_OR_DEFAULT, 2,
-                      StartTime(bucket_duration, 2), clock_.Now(),
-                      bucket_duration, IsEmpty(), _))
-      .Times(2)
-      .WillOnce(Return(std::vector<float>{3}))
-      .WillOnce(Return(std::nullopt));
+    // After retrieving the samples, they should be processed and aggregated.
+    EXPECT_CALL(*feature_aggregator_,
+                Process(proto::SignalType::USER_ACTION, _,
+                        proto::Aggregation::LATEST_OR_DEFAULT, 2,
+                        StartTime(bucket_duration, 2), clock_.Now(),
+                        bucket_duration, IsEmpty(), _))
+        .Times(2)
+        .WillOnce(Return(std::vector<float>{3}))
+        .WillOnce(Return(std::nullopt));
+  }
 
   // The next step should be to run the feature processor.
   ExpectProcessedFeatureList(false, ModelProvider::Request{3, 6});
 }
 
-TEST_F(FeatureListQueryProcessorTest, UmaFeaturesAndCustomInputs) {
-  CreateFeatureListQueryProcessor();
+TEST_P(FeatureListQueryProcessorTest, UmaFeaturesAndCustomInputs) {
+  const bool use_sql_db = GetParam();
+  CreateFeatureListQueryProcessor(use_sql_db);
 
   // Initialize with required metadata.
   SetBucketDuration(3, proto::TimeUnit::HOUR);
   base::TimeDelta bucket_duration = base::Hours(3);
 
   // Set up a user action feature.
-  AddUserActionWithProcessingSetup(bucket_duration);
+  AddUserActionWithProcessingSetup(bucket_duration, use_sql_db);
 
   // Set up a custom input.
   AddCustomInput(2, proto::CustomInput::UNKNOWN_FILL_POLICY, {1, 2});
@@ -400,15 +462,16 @@ TEST_F(FeatureListQueryProcessorTest, UmaFeaturesAndCustomInputs) {
   ExpectProcessedFeatureList(false, ModelProvider::Request{3, 1, 2});
 }
 
-TEST_F(FeatureListQueryProcessorTest, UmaFeaturesAndCustomInputsInvalid) {
-  CreateFeatureListQueryProcessor();
+TEST_P(FeatureListQueryProcessorTest, UmaFeaturesAndCustomInputsInvalid) {
+  const bool use_sql_db = GetParam();
+  CreateFeatureListQueryProcessor(use_sql_db);
 
   // Initialize with required metadata.
   SetBucketDuration(3, proto::TimeUnit::HOUR);
   base::TimeDelta bucket_duration = base::Hours(3);
 
   // Set up a user action feature.
-  AddUserActionWithProcessingSetup(bucket_duration);
+  AddUserActionWithProcessingSetup(bucket_duration, use_sql_db);
 
   // Set up an invalid custom input.
   AddCustomInput(1, proto::CustomInput::UNKNOWN_FILL_POLICY, {});
@@ -417,8 +480,9 @@ TEST_F(FeatureListQueryProcessorTest, UmaFeaturesAndCustomInputsInvalid) {
   ExpectProcessedFeatureList(true, ModelProvider::Request{});
 }
 
-TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithOutputs) {
-  CreateFeatureListQueryProcessor();
+TEST_P(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithOutputs) {
+  const bool use_sql_db = GetParam();
+  CreateFeatureListQueryProcessor(use_sql_db);
 
   // Initialize with required metadata.
   SetBucketDuration(3, proto::TimeUnit::HOUR);
@@ -519,50 +583,56 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithOutputs) {
           .time = clock_.Now(),
           .value = 5},
   };
-  EXPECT_CALL(*signal_database_, GetAllSamples())
-      .WillRepeatedly(Return(&user_action_samples));
-  EXPECT_CALL(
-      *feature_aggregator_,
-      Process(proto::SignalType::USER_ACTION,
-              base::HashMetricName(user_action_name), proto::Aggregation::COUNT,
-              2, StartTime(bucket_duration, 2), clock_.Now(), bucket_duration,
-              IsEmpty(), _))
-      .Times(2)
-      .WillRepeatedly(Return(std::vector<float>{3}));
+  AddSamplesToSqlDb(user_action_samples);
+  if (!use_sql_db) {
+    EXPECT_CALL(*signal_database_, GetAllSamples())
+        .WillRepeatedly(Return(&user_action_samples));
+    EXPECT_CALL(
+        *feature_aggregator_,
+        Process(proto::SignalType::USER_ACTION,
+                base::HashMetricName(user_action_name),
+                proto::Aggregation::COUNT, 2, StartTime(bucket_duration, 2),
+                clock_.Now(), bucket_duration, IsEmpty(), _))
+        .Times(2)
+        .WillRepeatedly(Return(std::vector<float>{3}));
 
-  EXPECT_CALL(*feature_aggregator_,
-              Process(proto::SignalType::HISTOGRAM_VALUE,
-                      base::HashMetricName(histogram_value_name),
-                      proto::Aggregation::SUM, 3, StartTime(bucket_duration, 3),
-                      clock_.Now(), bucket_duration, IsEmpty(), _))
-      .Times(2)
-      .WillRepeatedly(Return(std::vector<float>{6}));
+    EXPECT_CALL(
+        *feature_aggregator_,
+        Process(proto::SignalType::HISTOGRAM_VALUE,
+                base::HashMetricName(histogram_value_name),
+                proto::Aggregation::SUM, 3, StartTime(bucket_duration, 3),
+                clock_.Now(), bucket_duration, IsEmpty(), _))
+        .Times(2)
+        .WillRepeatedly(Return(std::vector<float>{6}));
 
-  EXPECT_CALL(
-      *feature_aggregator_,
-      Process(proto::SignalType::HISTOGRAM_ENUM,
-              base::HashMetricName(histogram_enum_name),
-              proto::Aggregation::COUNT, 4, StartTime(bucket_duration, 4),
-              clock_.Now(), bucket_duration, IsEmpty(), _))
-      .Times(2)
-      .WillRepeatedly(Return(std::vector<float>{4}));
+    EXPECT_CALL(
+        *feature_aggregator_,
+        Process(proto::SignalType::HISTOGRAM_ENUM,
+                base::HashMetricName(histogram_enum_name),
+                proto::Aggregation::COUNT, 4, StartTime(bucket_duration, 4),
+                clock_.Now(), bucket_duration, IsEmpty(), _))
+        .Times(2)
+        .WillRepeatedly(Return(std::vector<float>{4}));
+  }
 
   // The input tensor should contain all three values: 3, 6, and 4.
   ExpectProcessedFeatureList(false, ModelProvider::Request{3, 6, 4});
 
-  EXPECT_CALL(*signal_database_, GetAllSamples())
-      .Times(3)
-      .WillRepeatedly(Return(&user_action_samples));
+  if (!use_sql_db) {
+    EXPECT_CALL(*signal_database_, GetAllSamples())
+        .Times(3)
+        .WillRepeatedly(Return(&user_action_samples));
 
-  // Output is also enum histogram
-  EXPECT_CALL(
-      *feature_aggregator_,
-      Process(proto::SignalType::HISTOGRAM_ENUM,
-              base::HashMetricName(output_histogram_enum_name),
-              proto::Aggregation::COUNT, 5, StartTime(bucket_duration, 5),
-              clock_.Now(), bucket_duration, IsEmpty(), _))
-      .Times(2)
-      .WillRepeatedly(Return(std::vector<float>{5}));
+    // Output is also enum histogram
+    EXPECT_CALL(
+        *feature_aggregator_,
+        Process(proto::SignalType::HISTOGRAM_ENUM,
+                base::HashMetricName(output_histogram_enum_name),
+                proto::Aggregation::COUNT, 5, StartTime(bucket_duration, 5),
+                clock_.Now(), bucket_duration, IsEmpty(), _))
+        .Times(2)
+        .WillRepeatedly(Return(std::vector<float>{5}));
+  }
   // The input tensor should contain all three values: {3, 6, 4}, output
   // contains {5}
   ExpectProcessedFeatureList(
@@ -576,14 +646,15 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithOutputs) {
       base::Time(), FeatureListQueryProcessor::ProcessOption::kOutputsOnly);
 }
 
-TEST_F(FeatureListQueryProcessorTest, SkipCollectionOnlyUmaFeatures) {
-  CreateFeatureListQueryProcessor();
+TEST_P(FeatureListQueryProcessorTest, SkipCollectionOnlyUmaFeatures) {
+  const bool use_sql_db = GetParam();
+  CreateFeatureListQueryProcessor(use_sql_db);
 
   // Initialize with required metadata.
   SetBucketDuration(3, proto::TimeUnit::HOUR);
   base::TimeDelta bucket_duration = base::Hours(3);
 
-  // Set up 3 metadata feature, one of each signal type.
+  // Set up 5 metadata feature, one of each signal type.
   std::string collected_user_action = "some_user_action";
   AddUmaFeature(proto::SignalType::USER_ACTION, collected_user_action, 1, 1,
                 proto::Aggregation::COUNT, {});
@@ -636,29 +707,33 @@ TEST_F(FeatureListQueryProcessorTest, SkipCollectionOnlyUmaFeatures) {
           .time = clock_.Now(),
           .value = 3},
   };
-  EXPECT_CALL(*signal_database_, GetAllSamples())
-      .WillOnce(Return(&user_action_samples));
-  EXPECT_CALL(
-      *feature_aggregator_,
-      Process(proto::SignalType::USER_ACTION,
-              base::HashMetricName(collected_user_action),
-              proto::Aggregation::COUNT, 1, StartTime(bucket_duration, 1),
-              clock_.Now(), bucket_duration, IsEmpty(), _))
-      .WillOnce(Return(std::vector<float>{3}));
+  AddSamplesToSqlDb(user_action_samples);
+  if (!use_sql_db) {
+    EXPECT_CALL(*signal_database_, GetAllSamples())
+        .WillOnce(Return(&user_action_samples));
+    EXPECT_CALL(
+        *feature_aggregator_,
+        Process(proto::SignalType::USER_ACTION,
+                base::HashMetricName(collected_user_action),
+                proto::Aggregation::COUNT, 1, StartTime(bucket_duration, 1),
+                clock_.Now(), bucket_duration, IsEmpty(), _))
+        .WillOnce(Return(std::vector<float>{3}));
 
-  EXPECT_CALL(*feature_aggregator_,
-              Process(proto::SignalType::HISTOGRAM_VALUE,
-                      base::HashMetricName(collected_histogram_value),
-                      proto::Aggregation::SUM, 1, StartTime(bucket_duration, 1),
-                      clock_.Now(), bucket_duration, IsEmpty(), _))
-      .WillOnce(Return(std::vector<float>{6}));
-
+    EXPECT_CALL(
+        *feature_aggregator_,
+        Process(proto::SignalType::HISTOGRAM_VALUE,
+                base::HashMetricName(collected_histogram_value),
+                proto::Aggregation::SUM, 1, StartTime(bucket_duration, 1),
+                clock_.Now(), bucket_duration, IsEmpty(), _))
+        .WillOnce(Return(std::vector<float>{6}));
+  }
   // The input tensor should contain only the first and last uma feature.
   ExpectProcessedFeatureList(false, ModelProvider::Request{3, 6});
 }
 
-TEST_F(FeatureListQueryProcessorTest, SkipNoColumnWeightCustomInput) {
-  CreateFeatureListQueryProcessor();
+TEST_P(FeatureListQueryProcessorTest, SkipNoColumnWeightCustomInput) {
+  const bool use_sql_db = GetParam();
+  CreateFeatureListQueryProcessor(use_sql_db);
 
   // Initialize with required metadata.
   SetBucketDuration(3, proto::TimeUnit::HOUR);
@@ -678,8 +753,9 @@ TEST_F(FeatureListQueryProcessorTest, SkipNoColumnWeightCustomInput) {
   ExpectProcessedFeatureList(false, ModelProvider::Request{1, 4});
 }
 
-TEST_F(FeatureListQueryProcessorTest, FilteredEnumSamples) {
-  CreateFeatureListQueryProcessor();
+TEST_P(FeatureListQueryProcessorTest, FilteredEnumSamples) {
+  const bool use_sql_db = GetParam();
+  CreateFeatureListQueryProcessor(use_sql_db);
 
   // Initialize with required metadata.
   SetBucketDuration(3, proto::TimeUnit::HOUR);
@@ -720,8 +796,11 @@ TEST_F(FeatureListQueryProcessorTest, FilteredEnumSamples) {
           .time = clock_.Now(),
           .value = 5},
   };
-  EXPECT_CALL(*signal_database_, GetAllSamples())
-      .WillOnce(Return(&histogram_enum_samples));
+  AddSamplesToSqlDb(histogram_enum_samples);
+  if (!use_sql_db) {
+    EXPECT_CALL(*signal_database_, GetAllSamples())
+        .WillOnce(Return(&histogram_enum_samples));
+  }
   // The executor must first filter the enum samples.
   std::vector<SignalDatabase::DbEntry> filtered_enum_samples{
       SignalDatabase::DbEntry{
@@ -735,21 +814,24 @@ TEST_F(FeatureListQueryProcessorTest, FilteredEnumSamples) {
           .time = clock_.Now(),
           .value = 4},
   };
-  // Only filtered_enum_samples should be processed.
-  EXPECT_CALL(
-      *feature_aggregator_,
-      Process(proto::SignalType::HISTOGRAM_ENUM,
-              base::HashMetricName(histogram_enum_name),
-              proto::Aggregation::COUNT, 4, StartTime(bucket_duration, 4),
-              clock_.Now(), bucket_duration, accepted_enum_ids, _))
-      .WillOnce(Return(std::vector<float>{2}));
+  if (!use_sql_db) {
+    // Only filtered_enum_samples should be processed.
+    EXPECT_CALL(
+        *feature_aggregator_,
+        Process(proto::SignalType::HISTOGRAM_ENUM,
+                base::HashMetricName(histogram_enum_name),
+                proto::Aggregation::COUNT, 4, StartTime(bucket_duration, 4),
+                clock_.Now(), bucket_duration, accepted_enum_ids, _))
+        .WillOnce(Return(std::vector<float>{2}));
+  }
 
   // The input tensor should contain a single value.
   ExpectProcessedFeatureList(false, ModelProvider::Request{2});
 }
 
-TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithMultipleBuckets) {
-  CreateFeatureListQueryProcessor();
+TEST_P(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithMultipleBuckets) {
+  const bool use_sql_db = GetParam();
+  CreateFeatureListQueryProcessor(use_sql_db);
 
   // Initialize with required metadata.
   SetBucketDuration(3, proto::TimeUnit::HOUR);
@@ -761,8 +843,8 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithMultipleBuckets) {
   AddUmaFeature(proto::SignalType::USER_ACTION, user_action_name, 3, 3,
                 proto::Aggregation::BUCKETED_COUNT, {});
   std::string histogram_value_name = "some_histogram_value";
-  // 4 buckets
-  AddUmaFeature(proto::SignalType::HISTOGRAM_VALUE, histogram_value_name, 4, 4,
+  // 5 buckets
+  AddUmaFeature(proto::SignalType::HISTOGRAM_VALUE, histogram_value_name, 5, 5,
                 proto::Aggregation::BUCKETED_COUNT_BOOLEAN, {});
 
   // First uma feature should be the user action. The timestamp is set to three
@@ -864,33 +946,37 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithMultipleBuckets) {
           .time = clock_.Now() - bucket_duration * 3 - kTwoSeconds,
           .value = 11},
   };
-  EXPECT_CALL(*signal_database_, GetAllSamples())
-      .WillOnce(Return(&user_action_samples));
-  EXPECT_CALL(*feature_aggregator_,
-              Process(proto::SignalType::USER_ACTION,
-                      base::HashMetricName(user_action_name),
-                      proto::Aggregation::BUCKETED_COUNT, 3,
-                      StartTime(bucket_duration, 3), clock_.Now(),
-                      bucket_duration, IsEmpty(), _))
-      .WillOnce(Return(std::vector<float>{1, 2, 3}));
+  AddSamplesToSqlDb(user_action_samples);
+  if (!use_sql_db) {
+    EXPECT_CALL(*signal_database_, GetAllSamples())
+        .WillOnce(Return(&user_action_samples));
+    EXPECT_CALL(*feature_aggregator_,
+                Process(proto::SignalType::USER_ACTION,
+                        base::HashMetricName(user_action_name),
+                        proto::Aggregation::BUCKETED_COUNT, 3,
+                        StartTime(bucket_duration, 3), clock_.Now(),
+                        bucket_duration, IsEmpty(), _))
+        .WillOnce(Return(std::vector<float>{2, 3, 2}));
 
-  // Second uma feature should be the value histogram. The timestamp is set to
-  // four different buckets.
-  EXPECT_CALL(*feature_aggregator_,
-              Process(proto::SignalType::HISTOGRAM_VALUE,
-                      base::HashMetricName(histogram_value_name),
-                      proto::Aggregation::BUCKETED_COUNT_BOOLEAN, 4,
-                      StartTime(bucket_duration, 4), clock_.Now(),
-                      bucket_duration, IsEmpty(), _))
-      .WillOnce(Return(std::vector<float>{4, 5, 6, 7}));
+    // Second uma feature should be the value histogram. The timestamp is set to
+    // four different buckets.
+    EXPECT_CALL(*feature_aggregator_,
+                Process(proto::SignalType::HISTOGRAM_VALUE,
+                        base::HashMetricName(histogram_value_name),
+                        proto::Aggregation::BUCKETED_COUNT_BOOLEAN, 5,
+                        StartTime(bucket_duration, 5), clock_.Now(),
+                        bucket_duration, IsEmpty(), _))
+        .WillOnce(Return(std::vector<float>{0, 1, 1, 1, 1}));
+  }
 
   // The input tensor should contain all values flattened to a single vector.
   ExpectProcessedFeatureList(false,
-                             ModelProvider::Request{1, 2, 3, 4, 5, 6, 7});
+                             ModelProvider::Request{2, 3, 2, 0, 1, 1, 1, 1});
 }
 
-TEST_F(FeatureListQueryProcessorTest, SingleUmaOutputWithObservationTime) {
-  CreateFeatureListQueryProcessor();
+TEST_P(FeatureListQueryProcessorTest, SingleUmaOutputWithObservationTime) {
+  const bool use_sql_db = GetParam();
+  CreateFeatureListQueryProcessor(use_sql_db);
 
   // Initialize with required metadata.
   SetBucketDuration(3, proto::TimeUnit::HOUR);
@@ -909,6 +995,16 @@ TEST_F(FeatureListQueryProcessorTest, SingleUmaOutputWithObservationTime) {
       SignalDatabase::DbEntry{
           .type = proto::SignalType::USER_ACTION,
           .name_hash = base::HashMetricName(output_user_action_name),
+          .time = start_time,
+          .value = 0},
+      SignalDatabase::DbEntry{
+          .type = proto::SignalType::USER_ACTION,
+          .name_hash = base::HashMetricName(output_user_action_name),
+          .time = start_time,
+          .value = 0},
+      SignalDatabase::DbEntry{
+          .type = proto::SignalType::USER_ACTION,
+          .name_hash = base::HashMetricName(output_user_action_name),
           .time = clock_.Now(),
           .value = 0},
       SignalDatabase::DbEntry{
@@ -922,35 +1018,40 @@ TEST_F(FeatureListQueryProcessorTest, SingleUmaOutputWithObservationTime) {
           .time = clock_.Now(),
           .value = 0},
   };
-  // Without observation time.
-  EXPECT_CALL(*signal_database_, GetAllSamples())
-      .Times(1)
-      .WillRepeatedly(Return(&user_action_samples));
-  EXPECT_CALL(*feature_aggregator_,
-              Process(proto::SignalType::USER_ACTION,
-                      base::HashMetricName(output_user_action_name),
-                      proto::Aggregation::COUNT, 2, start_time, prediction_time,
-                      bucket_duration, IsEmpty(), _))
-      .Times(1)
-      .WillRepeatedly(Return(std::vector<float>{5}));
+  AddSamplesToSqlDb(user_action_samples);
+  if (!use_sql_db) {
+    // Without observation time.
+    EXPECT_CALL(*signal_database_, GetAllSamples())
+        .Times(1)
+        .WillRepeatedly(Return(&user_action_samples));
+    EXPECT_CALL(*feature_aggregator_,
+                Process(proto::SignalType::USER_ACTION,
+                        base::HashMetricName(output_user_action_name),
+                        proto::Aggregation::COUNT, 2, start_time,
+                        prediction_time, bucket_duration, IsEmpty(), _))
+        .Times(1)
+        .WillRepeatedly(Return(std::vector<float>{2}));
+  }
 
-  // Without observation time, output contains {5}
+  // Without observation time, output contains {2}
   ExpectProcessedFeatureList(
-      false, ModelProvider::Request(), ModelProvider::Response{5},
+      false, ModelProvider::Request(), ModelProvider::Response{2},
       prediction_time, base::Time(),
       FeatureListQueryProcessor::ProcessOption::kOutputsOnly);
 
-  // With observation time.
-  EXPECT_CALL(*signal_database_, GetAllSamples())
-      .Times(1)
-      .WillRepeatedly(Return(&user_action_samples));
-  EXPECT_CALL(*feature_aggregator_,
-              Process(proto::SignalType::USER_ACTION,
-                      base::HashMetricName(output_user_action_name),
-                      proto::Aggregation::COUNT, 2, prediction_time,
-                      observation_time, bucket_duration, IsEmpty(), _))
-      .Times(1)
-      .WillRepeatedly(Return(std::vector<float>{3}));
+  if (!use_sql_db) {
+    // With observation time.
+    EXPECT_CALL(*signal_database_, GetAllSamples())
+        .Times(1)
+        .WillRepeatedly(Return(&user_action_samples));
+    EXPECT_CALL(*feature_aggregator_,
+                Process(proto::SignalType::USER_ACTION,
+                        base::HashMetricName(output_user_action_name),
+                        proto::Aggregation::COUNT, 2, prediction_time,
+                        observation_time, bucket_duration, IsEmpty(), _))
+        .Times(1)
+        .WillRepeatedly(Return(std::vector<float>{3}));
+  }
 
   // With observation time, output contains {3}
   ExpectProcessedFeatureList(
@@ -967,9 +1068,13 @@ class FeatureListQueryProcessorNoDbCacheTest
         features::kSegmentationPlatformSignalDbCache);
   }
 };
+INSTANTIATE_TEST_SUITE_P(SqlDbAvailability,
+                         FeatureListQueryProcessorNoDbCacheTest,
+                         testing::Values(true, false));
 
-TEST_F(FeatureListQueryProcessorNoDbCacheTest, MultipleUmaFeaturesWithOutputs) {
-  CreateFeatureListQueryProcessor();
+TEST_P(FeatureListQueryProcessorNoDbCacheTest, MultipleUmaFeaturesWithOutputs) {
+  const bool use_sql_db = GetParam();
+  CreateFeatureListQueryProcessor(use_sql_db);
 
   // Initialize with required metadata.
   SetBucketDuration(3, proto::TimeUnit::HOUR);
@@ -1010,20 +1115,23 @@ TEST_F(FeatureListQueryProcessorNoDbCacheTest, MultipleUmaFeaturesWithOutputs) {
           .time = clock_.Now(),
           .value = 0},
   };
-  EXPECT_CALL(*signal_database_,
-              GetSamples(proto::SignalType::USER_ACTION,
-                         base::HashMetricName(user_action_name),
-                         StartTime(bucket_duration, 2), clock_.Now(), _))
-      .Times(2)
-      .WillRepeatedly(RunOnceCallbackRepeatedly<4>(user_action_samples));
-  EXPECT_CALL(
-      *feature_aggregator_,
-      Process(proto::SignalType::USER_ACTION,
-              base::HashMetricName(user_action_name), proto::Aggregation::COUNT,
-              2, StartTime(bucket_duration, 2), clock_.Now(), bucket_duration,
-              IsEmpty(), _))
-      .Times(2)
-      .WillRepeatedly(Return(std::vector<float>{3}));
+  AddSamplesToSqlDb(user_action_samples);
+  if (!use_sql_db) {
+    EXPECT_CALL(*signal_database_,
+                GetSamples(proto::SignalType::USER_ACTION,
+                           base::HashMetricName(user_action_name),
+                           StartTime(bucket_duration, 2), clock_.Now(), _))
+        .Times(2)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<4>(user_action_samples));
+    EXPECT_CALL(
+        *feature_aggregator_,
+        Process(proto::SignalType::USER_ACTION,
+                base::HashMetricName(user_action_name),
+                proto::Aggregation::COUNT, 2, StartTime(bucket_duration, 2),
+                clock_.Now(), bucket_duration, IsEmpty(), _))
+        .Times(2)
+        .WillRepeatedly(Return(std::vector<float>{3}));
+  }
 
   std::vector<SignalDatabase::DbEntry> histogram_value_samples{
       SignalDatabase::DbEntry{
@@ -1042,19 +1150,23 @@ TEST_F(FeatureListQueryProcessorNoDbCacheTest, MultipleUmaFeaturesWithOutputs) {
           .time = clock_.Now(),
           .value = 3},
   };
-  EXPECT_CALL(*signal_database_,
-              GetSamples(proto::SignalType::HISTOGRAM_VALUE,
-                         base::HashMetricName(histogram_value_name),
-                         StartTime(bucket_duration, 3), clock_.Now(), _))
-      .Times(2)
-      .WillRepeatedly(RunOnceCallbackRepeatedly<4>(histogram_value_samples));
-  EXPECT_CALL(*feature_aggregator_,
-              Process(proto::SignalType::HISTOGRAM_VALUE,
-                      base::HashMetricName(histogram_value_name),
-                      proto::Aggregation::SUM, 3, StartTime(bucket_duration, 3),
-                      clock_.Now(), bucket_duration, IsEmpty(), _))
-      .Times(2)
-      .WillRepeatedly(Return(std::vector<float>{6}));
+  AddSamplesToSqlDb(histogram_value_samples);
+  if (!use_sql_db) {
+    EXPECT_CALL(*signal_database_,
+                GetSamples(proto::SignalType::HISTOGRAM_VALUE,
+                           base::HashMetricName(histogram_value_name),
+                           StartTime(bucket_duration, 3), clock_.Now(), _))
+        .Times(2)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<4>(histogram_value_samples));
+    EXPECT_CALL(
+        *feature_aggregator_,
+        Process(proto::SignalType::HISTOGRAM_VALUE,
+                base::HashMetricName(histogram_value_name),
+                proto::Aggregation::SUM, 3, StartTime(bucket_duration, 3),
+                clock_.Now(), bucket_duration, IsEmpty(), _))
+        .Times(2)
+        .WillRepeatedly(Return(std::vector<float>{6}));
+  }
 
   // Third uma feature should be the enum histogram.
   std::vector<SignalDatabase::DbEntry> histogram_enum_samples{
@@ -1079,20 +1191,23 @@ TEST_F(FeatureListQueryProcessorNoDbCacheTest, MultipleUmaFeaturesWithOutputs) {
           .time = clock_.Now(),
           .value = 4},
   };
-  EXPECT_CALL(*signal_database_,
-              GetSamples(proto::SignalType::HISTOGRAM_ENUM,
-                         base::HashMetricName(histogram_enum_name),
-                         StartTime(bucket_duration, 4), clock_.Now(), _))
-      .Times(2)
-      .WillRepeatedly(RunOnceCallbackRepeatedly<4>(histogram_enum_samples));
-  EXPECT_CALL(
-      *feature_aggregator_,
-      Process(proto::SignalType::HISTOGRAM_ENUM,
-              base::HashMetricName(histogram_enum_name),
-              proto::Aggregation::COUNT, 4, StartTime(bucket_duration, 4),
-              clock_.Now(), bucket_duration, IsEmpty(), _))
-      .Times(2)
-      .WillRepeatedly(Return(std::vector<float>{4}));
+  AddSamplesToSqlDb(histogram_enum_samples);
+  if (!use_sql_db) {
+    EXPECT_CALL(*signal_database_,
+                GetSamples(proto::SignalType::HISTOGRAM_ENUM,
+                           base::HashMetricName(histogram_enum_name),
+                           StartTime(bucket_duration, 4), clock_.Now(), _))
+        .Times(2)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<4>(histogram_enum_samples));
+    EXPECT_CALL(
+        *feature_aggregator_,
+        Process(proto::SignalType::HISTOGRAM_ENUM,
+                base::HashMetricName(histogram_enum_name),
+                proto::Aggregation::COUNT, 4, StartTime(bucket_duration, 4),
+                clock_.Now(), bucket_duration, IsEmpty(), _))
+        .Times(2)
+        .WillRepeatedly(Return(std::vector<float>{4}));
+  }
 
   // Output is also enum histogram
   std::vector<SignalDatabase::DbEntry> output_histogram_enum_samples{
@@ -1122,22 +1237,25 @@ TEST_F(FeatureListQueryProcessorNoDbCacheTest, MultipleUmaFeaturesWithOutputs) {
           .time = clock_.Now(),
           .value = 5},
   };
-  EXPECT_CALL(*signal_database_,
-              GetSamples(proto::SignalType::HISTOGRAM_ENUM,
-                         base::HashMetricName(output_histogram_enum_name),
-                         StartTime(bucket_duration, 5), clock_.Now(), _))
-      .Times(2)
-      .WillRepeatedly(
-          RunOnceCallbackRepeatedly<4>(output_histogram_enum_samples));
+  AddSamplesToSqlDb(output_histogram_enum_samples);
+  if (!use_sql_db) {
+    EXPECT_CALL(*signal_database_,
+                GetSamples(proto::SignalType::HISTOGRAM_ENUM,
+                           base::HashMetricName(output_histogram_enum_name),
+                           StartTime(bucket_duration, 5), clock_.Now(), _))
+        .Times(2)
+        .WillRepeatedly(
+            RunOnceCallbackRepeatedly<4>(output_histogram_enum_samples));
 
-  EXPECT_CALL(
-      *feature_aggregator_,
-      Process(proto::SignalType::HISTOGRAM_ENUM,
-              base::HashMetricName(output_histogram_enum_name),
-              proto::Aggregation::COUNT, 5, StartTime(bucket_duration, 5),
-              clock_.Now(), bucket_duration, IsEmpty(), _))
-      .Times(2)
-      .WillRepeatedly(Return(std::vector<float>{5}));
+    EXPECT_CALL(
+        *feature_aggregator_,
+        Process(proto::SignalType::HISTOGRAM_ENUM,
+                base::HashMetricName(output_histogram_enum_name),
+                proto::Aggregation::COUNT, 5, StartTime(bucket_duration, 5),
+                clock_.Now(), bucket_duration, IsEmpty(), _))
+        .Times(2)
+        .WillRepeatedly(Return(std::vector<float>{5}));
+  }
 
   // The input tensor should contain all three values: 3, 6, and 4.
   ExpectProcessedFeatureList(false, ModelProvider::Request{3, 6, 4});
