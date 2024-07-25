@@ -182,14 +182,14 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
   // plan changes, though, we should implement a way for these requests to stop
   // being made.
   if (!IsIpProtectionEnabled()) {
-    std::move(callback).Run(std::nullopt, nullptr);
+    std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
 
   // If we are not able to call `GetProxyConfig` yet, return early.
   if (ip_protection_proxy_config_fetcher_->GetNoGetProxyConfigUntilTime() >
       base::Time::Now()) {
-    std::move(callback).Run(std::nullopt, nullptr);
+    std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
 
@@ -201,7 +201,7 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
   }
 
   if (!CanRequestOAuthToken()) {
-    std::move(callback).Run(std::nullopt, nullptr);
+    std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
   auto request_token_callback =
@@ -291,7 +291,7 @@ void IpProtectionConfigProvider::OnRequestOAuthTokenCompletedForGetProxyConfig(
   if (error.state() != GoogleServiceAuthError::NONE) {
     VLOG(2) << "IPATP::OnRequestOAuthTokenCompletedForGetProxyConfig failed: "
             << static_cast<int>(error.state());
-    std::move(callback).Run(std::nullopt, nullptr);
+    std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
   ip_protection_proxy_config_fetcher_->CallGetProxyConfig(
@@ -360,17 +360,19 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
     return;
   }
 
-  std::vector<network::mojom::BlindSignedAuthTokenPtr> bsa_tokens;
+  std::vector<network::BlindSignedAuthToken> bsa_tokens;
   for (const quiche::BlindSignToken& token : tokens.value()) {
-    network::mojom::BlindSignedAuthTokenPtr converted_token = ip_protection::
-        IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(token);
-    if (converted_token.is_null() || converted_token->token.empty()) {
+    std::optional<network::BlindSignedAuthToken> converted_token =
+        ip_protection::IpProtectionConfigProviderHelper::
+            CreateBlindSignedAuthToken(token);
+    if (!converted_token.has_value() || converted_token->token.empty()) {
       TryGetAuthTokensComplete(
           std::nullopt, std::move(callback),
           IpProtectionTryGetAuthTokensResult::kFailedBSAOther);
       return;
+    } else {
+      bsa_tokens.push_back(std::move(converted_token).value());
     }
-    bsa_tokens.push_back(std::move(converted_token));
   }
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
@@ -383,8 +385,7 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
 }
 
 void IpProtectionConfigProvider::TryGetAuthTokensComplete(
-    std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
-        bsa_tokens,
+    std::optional<std::vector<network::BlindSignedAuthToken>> bsa_tokens,
     TryGetAuthTokensCallback callback,
     IpProtectionTryGetAuthTokensResult result) {
   base::UmaHistogramEnumeration(

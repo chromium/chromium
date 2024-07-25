@@ -4,6 +4,7 @@
 
 #include "components/ip_protection/ip_protection_config_provider_helper.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,13 +23,13 @@
 namespace ip_protection {
 
 // static
-network::mojom::BlindSignedAuthTokenPtr
+std::optional<network::BlindSignedAuthToken>
 IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(
     const quiche::BlindSignToken& bsa_token) {
   // If a GeoHint's country code is empty, the token is invalid. Return a
   // nullptr.
   if (bsa_token.geo_hint.country_code.empty()) {
-    return nullptr;
+    return std::nullopt;
   }
 
   // Set expiration of BlindSignedAuthToken.
@@ -47,12 +48,16 @@ IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(
   }
 
   // Set GeoHint on BlindSignedAuthToken.
-  auto geo_hint = network::mojom::GeoHint::New(bsa_token.geo_hint.country_code,
-                                               bsa_token.geo_hint.region,
-                                               bsa_token.geo_hint.city);
+  network::GeoHint geo_hint = {
+      .country_code = bsa_token.geo_hint.country_code,
+      .iso_region = bsa_token.geo_hint.region,
+      .city_name = bsa_token.geo_hint.city,
+  };
 
-  return network::mojom::BlindSignedAuthToken::New(
-      std::move(token_header_value), expiration, std::move(geo_hint));
+  return std::make_optional<network::BlindSignedAuthToken>(
+      {.token = std::move(token_header_value),
+       .expiration = expiration,
+       .geo_hint = std::move(geo_hint)});
 }
 
 // static
@@ -78,7 +83,7 @@ quiche::BlindSignToken
 IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
     std::string token_value,
     base::Time expiration,
-    const network::mojom::GeoHint& geo_hint) {
+    const network::GeoHint& geo_hint) {
   privacy::ppn::PrivacyPassTokenData privacy_pass_token_data =
       CreatePrivacyPassTokenForTesting(std::move(token_value));
   quiche::BlindSignToken blind_sign_token;
@@ -98,11 +103,11 @@ IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
   return blind_sign_token;
 }
 
-network::mojom::BlindSignedAuthTokenPtr
+std::optional<network::BlindSignedAuthToken>
 IpProtectionConfigProviderHelper::CreateMockBlindSignedAuthTokenForTesting(
     std::string token_value,
     base::Time expiration,
-    const network::mojom::GeoHint& geo_hint) {
+    const network::GeoHint& geo_hint) {
   quiche::BlindSignToken blind_sign_token =
       CreateBlindSignTokenForTesting(token_value, expiration, geo_hint);
   return CreateBlindSignedAuthToken(std::move(blind_sign_token));

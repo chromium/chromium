@@ -5,6 +5,7 @@
 #include "services/network/ip_protection/ip_protection_config_cache_impl.h"
 
 #include <deque>
+#include <memory>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -14,11 +15,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
+#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
-#include "services/network/public/mojom/network_context.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -34,18 +35,16 @@ class MockIpProtectionTokenCacheManager : public IpProtectionTokenCacheManager {
 
   void InvalidateTryAgainAfterTime() override {}
 
-  std::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken()
-      override {
+  std::optional<BlindSignedAuthToken> GetAuthToken() override {
     return std::move(auth_token_);
   }
 
-  void SetAuthToken(
-      std::optional<network::mojom::BlindSignedAuthTokenPtr> auth_token) {
+  void SetAuthToken(std::optional<BlindSignedAuthToken> auth_token) {
     auth_token_ = std::move(auth_token);
   }
 
  private:
-  std::optional<network::mojom::BlindSignedAuthTokenPtr> auth_token_;
+  std::optional<BlindSignedAuthToken> auth_token_;
 };
 
 class MockIpProtectionProxyListManager : public IpProtectionProxyListManager {
@@ -87,8 +86,7 @@ class IpProtectionConfigCacheImplTest : public testing::Test {
   IpProtectionConfigCacheImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         ipp_config_cache_(
-            std::make_unique<IpProtectionConfigCacheImpl>(mojo::NullRemote())) {
-  }
+            std::make_unique<IpProtectionConfigCacheImpl>(nullptr)) {}
 
   // Shortcut to create a ProxyChain from hostnames.
   net::ProxyChain MakeChain(std::vector<std::string> hostnames) {
@@ -111,14 +109,13 @@ class IpProtectionConfigCacheImplTest : public testing::Test {
 
 // Token cache manager returns available token for proxyA.
 TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManagerForProxyA) {
-  auto exp_token = mojom::BlindSignedAuthToken::New();
-  exp_token->token = "a-token";
+  BlindSignedAuthToken exp_token;
+  exp_token.token = "a-token";
   auto ipp_token_cache_manager_ =
       std::make_unique<MockIpProtectionTokenCacheManager>();
   ipp_token_cache_manager_->SetAuthToken(std::move(exp_token));
   ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
-      network::mojom::IpProtectionProxyLayer::kProxyA,
-      std::move(ipp_token_cache_manager_));
+      IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager_));
 
   ASSERT_TRUE(ipp_config_cache_->AreAuthTokensAvailable());
   ASSERT_FALSE(
@@ -128,14 +125,13 @@ TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManagerForProxyA) {
 
 // Token cache manager returns available token for proxyB.
 TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManagerForProxyB) {
-  auto exp_token = mojom::BlindSignedAuthToken::New();
-  exp_token->token = "b-token";
+  BlindSignedAuthToken exp_token;
+  exp_token.token = "b-token";
   auto ipp_token_cache_manager_ =
       std::make_unique<MockIpProtectionTokenCacheManager>();
   ipp_token_cache_manager_->SetAuthToken(std::move(exp_token));
   ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
-      network::mojom::IpProtectionProxyLayer::kProxyB,
-      std::move(ipp_token_cache_manager_));
+      IpProtectionProxyLayer::kProxyB, std::move(ipp_token_cache_manager_));
 
   ASSERT_TRUE(ipp_config_cache_->AreAuthTokensAvailable());
   ASSERT_FALSE(
@@ -145,22 +141,21 @@ TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManagerForProxyB) {
 
 TEST_F(IpProtectionConfigCacheImplTest,
        AreAuthTokensAvailable_OneTokenCacheIsEmpty) {
-  auto exp_token = mojom::BlindSignedAuthToken::New();
-  exp_token->token = "a-token";
+  BlindSignedAuthToken exp_token;
+  exp_token.token = "a-token";
   auto ipp_token_cache_manager =
       std::make_unique<MockIpProtectionTokenCacheManager>();
   ipp_token_cache_manager->SetAuthToken(std::move(exp_token));
   ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
-      network::mojom::IpProtectionProxyLayer::kProxyA,
-      std::move(ipp_token_cache_manager));
+      IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager));
   ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
-      network::mojom::IpProtectionProxyLayer::kProxyB,
+      IpProtectionProxyLayer::kProxyB,
       std::make_unique<MockIpProtectionTokenCacheManager>());
 
   ASSERT_FALSE(ipp_config_cache_->AreAuthTokensAvailable());
   histogram_tester_.ExpectTotalCount(kEmptyTokenCacheHistogram, 1);
-  histogram_tester_.ExpectBucketCount(
-      kEmptyTokenCacheHistogram, mojom::IpProtectionProxyLayer::kProxyB, 1);
+  histogram_tester_.ExpectBucketCount(kEmptyTokenCacheHistogram,
+                                      IpProtectionProxyLayer::kProxyB, 1);
 }
 
 TEST_F(IpProtectionConfigCacheImplTest,
@@ -198,8 +193,7 @@ TEST_F(IpProtectionConfigCacheImplTest, GetProxyListFromManagerWithQuic) {
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier =
       net::NetworkChangeNotifier::CreateMockIfNeeded();
 
-  ipp_config_cache_ =
-      std::make_unique<IpProtectionConfigCacheImpl>(mojo::NullRemote());
+  ipp_config_cache_ = std::make_unique<IpProtectionConfigCacheImpl>(nullptr);
 
   auto ipp_proxy_list_manager_ =
       std::make_unique<MockIpProtectionProxyListManager>();
@@ -267,8 +261,7 @@ TEST_F(IpProtectionConfigCacheImplTest, RefreshProxyListOnNetworkChange) {
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier =
       net::NetworkChangeNotifier::CreateMockIfNeeded();
 
-  ipp_config_cache_ =
-      std::make_unique<IpProtectionConfigCacheImpl>(mojo::NullRemote());
+  ipp_config_cache_ = std::make_unique<IpProtectionConfigCacheImpl>(nullptr);
 
   auto ipp_proxy_list_manager_ =
       std::make_unique<MockIpProtectionProxyListManager>();

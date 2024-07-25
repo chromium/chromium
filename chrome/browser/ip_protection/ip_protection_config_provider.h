@@ -170,8 +170,7 @@ class IpProtectionConfigProvider
   // Finish a call to `TryGetAuthTokens()` by recording the result and invoking
   // its callback.
   void TryGetAuthTokensComplete(
-      std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
-          bsa_tokens,
+      std::optional<std::vector<network::BlindSignedAuthToken>> bsa_tokens,
       TryGetAuthTokensCallback callback,
       IpProtectionTryGetAuthTokensResult result);
 

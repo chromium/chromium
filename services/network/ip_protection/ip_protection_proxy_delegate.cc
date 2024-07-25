@@ -4,6 +4,8 @@
 
 #include "services/network/ip_protection/ip_protection_proxy_delegate.h"
 
+#include <memory>
+
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -19,6 +21,7 @@
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
+#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
 #include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 #include "services/network/url_loader.h"
@@ -288,14 +291,14 @@ net::Error IpProtectionProxyDelegate::OnBeforeTunnelRequest(
     VLOG(2) << "NSPD::OnBeforeTunnelRequest() - " << message;
   };
   if (proxy_chain.is_for_ip_protection()) {
-    std::optional<network::mojom::BlindSignedAuthTokenPtr> token =
+    std::optional<BlindSignedAuthToken> token =
         ipp_config_cache_->GetAuthToken(chain_index);
     if (token) {
       vlog("adding auth token");
       // The token value we have here is the full Authorization header value, so
       // we can add it verbatim.
       extra_headers->SetHeader(net::HttpRequestHeaders::kAuthorization,
-                               std::move((*token)->token));
+                               std::move(token->token));
     } else {
       vlog("no token available");
       // This is an unexpected circumstance, but does happen in the wild. Rather
@@ -330,7 +333,7 @@ void IpProtectionProxyDelegate::VerifyIpProtectionConfigGetterForTesting(
       static_cast<IpProtectionTokenCacheManagerImpl*>(
           ipp_config_cache_
               ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
-                  network::mojom::IpProtectionProxyLayer::kProxyA));
+                  IpProtectionProxyLayer::kProxyA));
   CHECK(ipp_token_cache_manager_impl);
 
   // If active cache management is enabled (the default), disable it and do a
@@ -372,7 +375,7 @@ void IpProtectionProxyDelegate::VerifyIpProtectionConfigGetterForTesting(
       ipp_token_cache_manager_impl
           ->try_get_auth_tokens_after_for_testing();  // IN-TEST
   if (!try_auth_tokens_after.is_null()) {
-    std::move(callback).Run(nullptr, try_auth_tokens_after);
+    std::move(callback).Run(std::nullopt, try_auth_tokens_after);
     return;
   }
 
@@ -412,18 +415,18 @@ void IpProtectionProxyDelegate::OnIpProtectionConfigAvailableForTesting(
       static_cast<IpProtectionTokenCacheManagerImpl*>(
           ipp_config_cache_
               ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
-                  network::mojom::IpProtectionProxyLayer::kProxyA));
+                  IpProtectionProxyLayer::kProxyA));
 
-  std::optional<network::mojom::BlindSignedAuthTokenPtr> result =
+  std::optional<BlindSignedAuthToken> result =
       ipp_config_cache_->GetAuthToken(0);  // kProxyA.
   if (result.has_value()) {
-    std::move(callback).Run(std::move(result).value(), std::nullopt);
+    std::move(callback).Run(std::move(result.value()), std::nullopt);
     return;
   }
   base::Time try_auth_tokens_after =
       ipp_token_cache_manager_impl
           ->try_get_auth_tokens_after_for_testing();  // IN-TEST
-  std::move(callback).Run(nullptr, try_auth_tokens_after);
+  std::move(callback).Run(std::nullopt, try_auth_tokens_after);
 }
 
 void IpProtectionProxyDelegate::

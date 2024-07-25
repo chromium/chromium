@@ -4,13 +4,16 @@
 
 #include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
 
+#include <memory>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "net/base/features.h"
+#include "services/network/ip_protection/ip_protection_data_types.h"
 
 namespace network {
 
@@ -27,8 +30,8 @@ const base::TimeDelta kTokenRateMeasurementInterval = base::Minutes(5);
 }  // namespace
 
 IpProtectionTokenCacheManagerImpl::IpProtectionTokenCacheManagerImpl(
-    mojo::Remote<network::mojom::IpProtectionConfigGetter>* config_getter,
-    network::mojom::IpProtectionProxyLayer proxy_layer,
+    IpProtectionConfigGetter* config_getter,
+    IpProtectionProxyLayer proxy_layer,
     bool disable_cache_management_for_testing)
     : batch_size_(net::features::kIpPrivacyAuthTokenCacheBatchSize.Get()),
       cache_low_water_mark_(
@@ -82,7 +85,7 @@ void IpProtectionTokenCacheManagerImpl::MaybeRefillCache() {
   if (cache_.size() < cache_low_water_mark_) {
     fetching_auth_tokens_ = true;
     VLOG(2) << "IPPATC::MaybeRefillCache calling TryGetAuthTokens";
-    config_getter_->get()->TryGetAuthTokens(
+    config_getter_->TryGetAuthTokens(
         batch_size_, proxy_layer_,
         base::BindOnce(
             &IpProtectionTokenCacheManagerImpl::OnGotAuthTokens,
@@ -121,7 +124,7 @@ void IpProtectionTokenCacheManagerImpl::ScheduleMaybeRefillCache() {
     }
   } else {
     // Call when the next token expires.
-    delay = cache_[0]->expiration - now;
+    delay = cache_[0].expiration - now;
   }
 
   if (delay.is_negative()) {
@@ -136,7 +139,7 @@ void IpProtectionTokenCacheManagerImpl::ScheduleMaybeRefillCache() {
 
 void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
     const base::TimeTicks attempt_start_time_for_metrics,
-    std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>> tokens,
+    std::optional<std::vector<BlindSignedAuthToken>> tokens,
     std::optional<base::Time> try_again_after) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fetching_auth_tokens_ = false;
@@ -152,16 +155,15 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
       base::TimeDelta fuzz =
           base::RandTimeDelta(kMinimumFuzzInterval, fuzz_limit);
       for (auto& token : *tokens) {
-        token->expiration -= fuzz;
+        token.expiration -= fuzz;
       }
     }
 
     cache_.insert(cache_.end(), std::make_move_iterator(tokens->begin()),
                   std::make_move_iterator(tokens->end()));
     std::sort(cache_.begin(), cache_.end(),
-              [](network::mojom::BlindSignedAuthTokenPtr& a,
-                 network::mojom::BlindSignedAuthTokenPtr& b) {
-                return a->expiration < b->expiration;
+              [](BlindSignedAuthToken& a, BlindSignedAuthToken& b) {
+                return a.expiration < b.expiration;
               });
 
     // If the number of tokens in the cache is still below the low-water mark,
@@ -187,7 +189,7 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
   ScheduleMaybeRefillCache();
 }
 
-std::optional<network::mojom::BlindSignedAuthTokenPtr>
+std::optional<BlindSignedAuthToken>
 IpProtectionTokenCacheManagerImpl::GetAuthToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RemoveExpiredTokens();
@@ -197,9 +199,9 @@ IpProtectionTokenCacheManagerImpl::GetAuthToken() {
   VLOG(2) << "IPPATC::GetAuthToken with " << cache_.size()
           << " tokens available";
 
-  std::optional<network::mojom::BlindSignedAuthTokenPtr> result;
+  std::optional<BlindSignedAuthToken> result;
   if (cache_.size() > 0) {
-    result = std::move(cache_.front());
+    result = cache_.front();
     cache_.pop_front();
     tokens_spent_++;
   }
@@ -210,7 +212,7 @@ IpProtectionTokenCacheManagerImpl::GetAuthToken() {
 void IpProtectionTokenCacheManagerImpl::RemoveExpiredTokens() {
   base::Time fresh_after = base::Time::Now();
   // Tokens are sorted, so only the first (soonest to expire) is important.
-  while (cache_.size() > 0 && cache_[0]->expiration <= fresh_after) {
+  while (cache_.size() > 0 && cache_[0].expiration <= fresh_after) {
     cache_.pop_front();
     tokens_expired_++;
   }
@@ -228,10 +230,14 @@ void IpProtectionTokenCacheManagerImpl::MeasureTokenRates() {
     last_token_rate_measurement_ = now;
 
     auto spend_rate = tokens_spent_ * denominator / interval_ms;
-    std::string proxy_layer =
-        proxy_layer_ == network::mojom::IpProtectionProxyLayer::kProxyA
-            ? "ProxyA"
-            : "ProxyB";
+    std::string proxy_layer = [&] {
+      switch (proxy_layer_) {
+        case IpProtectionProxyLayer::kProxyA:
+          return "ProxyA";
+        case IpProtectionProxyLayer::kProxyB:
+          return "ProxyB";
+      }
+    }();
     // A maximum of 1000 would correspond to a spend rate of about 16/min,
     // which is higher than we expect to see.
     base::UmaHistogramCounts1000(base::StrCat({"NetworkService.IpProtection.",
@@ -279,7 +285,7 @@ void IpProtectionTokenCacheManagerImpl::CallTryGetAuthTokensForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(config_getter_);
   CHECK(on_try_get_auth_tokens_completed_for_testing_);
-  config_getter_->get()->TryGetAuthTokens(
+  config_getter_->TryGetAuthTokens(
       batch_size_, proxy_layer_,
       base::BindOnce(
           &IpProtectionTokenCacheManagerImpl::OnGotAuthTokens,

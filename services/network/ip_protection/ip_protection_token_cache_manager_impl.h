@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_TOKEN_CACHE_MANAGER_IMPL_H_
 
 #include <deque>
+#include <memory>
 #include <optional>
 
 #include "base/component_export.h"
@@ -13,9 +14,9 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/ip_protection/ip_protection_config_getter.h"
+#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace network {
 
@@ -25,15 +26,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
     : public IpProtectionTokenCacheManager {
  public:
   explicit IpProtectionTokenCacheManagerImpl(
-      mojo::Remote<network::mojom::IpProtectionConfigGetter>* config_getter,
-      network::mojom::IpProtectionProxyLayer proxy_layer,
+      IpProtectionConfigGetter* config_getter,
+      IpProtectionProxyLayer proxy_layer,
       bool disable_cache_management_for_testing = false);
   ~IpProtectionTokenCacheManagerImpl() override;
 
   // IpProtectionTokenCacheManager implementation.
   bool IsAuthTokenAvailable() override;
-  std::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken()
-      override;
+  std::optional<BlindSignedAuthToken> GetAuthToken() override;
   void InvalidateTryAgainAfterTime() override;
 
   // Set a callback that will be run after the next call to `TryGetAuthTokens()`
@@ -72,11 +72,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
   bool fetching_auth_tokens_for_testing() { return fetching_auth_tokens_; }
 
  private:
-  void OnGotAuthTokens(
-      base::TimeTicks attempt_start_time_for_metrics,
-      std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
-          tokens,
-      std::optional<base::Time> try_again_after);
+  void OnGotAuthTokens(base::TimeTicks attempt_start_time_for_metrics,
+                       std::optional<std::vector<BlindSignedAuthToken>> tokens,
+                       std::optional<base::Time> try_again_after);
   void RemoveExpiredTokens();
   void MeasureTokenRates();
   void MaybeRefillCache();
@@ -94,14 +92,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
 
   // Cache of blind-signed auth tokens. Tokens are sorted by their expiration
   // time.
-  std::deque<network::mojom::BlindSignedAuthTokenPtr> cache_;
+  std::deque<BlindSignedAuthToken> cache_;
 
   // Source of proxy list, when needed.
-  raw_ptr<mojo::Remote<network::mojom::IpProtectionConfigGetter>>
-      config_getter_;
+  raw_ptr<IpProtectionConfigGetter> config_getter_;
 
   // The proxy layer which the cache of tokens will be used for.
-  network::mojom::IpProtectionProxyLayer proxy_layer_;
+  IpProtectionProxyLayer proxy_layer_;
 
   // True if an invocation of `config_getter_.TryGetAuthTokens()` is
   // outstanding.

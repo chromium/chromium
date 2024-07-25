@@ -4,9 +4,10 @@
 
 #include "services/network/ip_protection/ip_protection_geo_utils.h"
 
+#include <optional>
 #include <string>
 
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -14,51 +15,62 @@ namespace network {
 class IpProtectionGeoUtilsTest : public testing::Test {};
 
 TEST_F(IpProtectionGeoUtilsTest, GetGeoIdFromGeoHint_ValidInput) {
-  network::mojom::GeoHintPtr geo_hint =
-      network::mojom::GeoHint::New("US", "US-CA", "MOUNTAIN VIEW");
+  GeoHint geo_hint = {.country_code = "US",
+                      .iso_region = "US-CA",
+                      .city_name = "MOUNTAIN VIEW"};
 
   std::string geo_id = GetGeoIdFromGeoHint(std::move(geo_hint));
+
   EXPECT_EQ(geo_id, "US,US-CA,MOUNTAIN VIEW");
 }
 
 TEST_F(IpProtectionGeoUtilsTest, GetGeoIdFromGeoHint_CountryCodeOnly) {
-  network::mojom::GeoHintPtr geo_hint = network::mojom::GeoHint::New();
-  geo_hint->country_code = "US";
+  GeoHint geo_hint = {
+      .country_code = "US",
+  };
 
   std::string geo_id = GetGeoIdFromGeoHint(std::move(geo_hint));
+
   EXPECT_EQ(geo_id, "US");
 }
 
 TEST_F(IpProtectionGeoUtilsTest, GetGeoIdFromGeoHint_EmptyGeoHintPtr) {
-  network::mojom::GeoHintPtr geo_hint = network::mojom::GeoHint::New();
+  std::optional<GeoHint> geo_hint;
 
   std::string geo_id = GetGeoIdFromGeoHint(std::move(geo_hint));
+
   EXPECT_EQ(geo_id, "");
 }
 
-TEST_F(IpProtectionGeoUtilsTest, GetGeoIdFromGeoHint_NullGeoHintPtr) {
-  std::string geo_id = GetGeoIdFromGeoHint(nullptr);
+TEST_F(IpProtectionGeoUtilsTest, GetGeoIdFromGeoHint_NullOptGeoHint) {
+  std::string geo_id = GetGeoIdFromGeoHint(std::nullopt);
+
   EXPECT_EQ(geo_id, "");
 }
 
 TEST_F(IpProtectionGeoUtilsTest, GetGeoHintFromGeoIdForTesting_CompleteGeoId) {
-  network::mojom::GeoHintPtr geo_hint =
+  std::optional<GeoHint> geo_hint =
       GetGeoHintFromGeoIdForTesting("US,US-CA,MOUNTAIN VIEW");
-  EXPECT_TRUE(geo_hint.Equals(
-      network::mojom::GeoHint::New("US", "US-CA", "MOUNTAIN VIEW")));
+
+  GeoHint expected_geo_hint = {.country_code = "US",
+                               .iso_region = "US-CA",
+                               .city_name = "MOUNTAIN VIEW"};
+
+  EXPECT_TRUE(geo_hint == expected_geo_hint);
 }
 
 TEST_F(IpProtectionGeoUtilsTest,
        GetGeoHintFromGeoIdForTesting_CountryOnlyGeoId) {
-  network::mojom::GeoHintPtr geo_hint = GetGeoHintFromGeoIdForTesting("US");
-  auto expected_geo_hint = network::mojom::GeoHint::New();
-  expected_geo_hint->country_code = "US";
-  EXPECT_TRUE(geo_hint.Equals(expected_geo_hint));
+  std::optional<GeoHint> geo_hint = GetGeoHintFromGeoIdForTesting("US");
+  GeoHint expected_geo_hint = {.country_code = "US"};
+
+  EXPECT_TRUE(geo_hint == expected_geo_hint);
 }
 
 TEST_F(IpProtectionGeoUtilsTest, GetGeoHintFromGeoIdForTesting_EmptyGeoId) {
-  network::mojom::GeoHintPtr geo_hint = GetGeoHintFromGeoIdForTesting("");
-  EXPECT_TRUE(geo_hint.is_null());
+  std::optional<GeoHint> geo_hint = GetGeoHintFromGeoIdForTesting("");
+
+  EXPECT_TRUE(!geo_hint.has_value());
 }
 
 }  // namespace network

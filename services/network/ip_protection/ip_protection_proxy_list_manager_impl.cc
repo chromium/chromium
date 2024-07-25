@@ -4,12 +4,15 @@
 
 #include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
 
+#include <memory>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "net/base/proxy_chain.h"
+#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_geo_utils.h"
 
 namespace network {
@@ -30,7 +33,7 @@ IpProtectionProxyListManagerImpl::ProxyListResult GetProxyListResult(
 }  // namespace
 
 IpProtectionProxyListManagerImpl::IpProtectionProxyListManagerImpl(
-    mojo::Remote<network::mojom::IpProtectionConfigGetter>* config_getter,
+    IpProtectionConfigGetter* config_getter,
     bool disable_proxy_refreshing_for_testing)
     : config_getter_(config_getter),
       disable_proxy_refreshing_for_testing_(
@@ -65,15 +68,15 @@ void IpProtectionProxyListManagerImpl::RefreshProxyList() {
   last_proxy_list_refresh_ = base::Time::Now();
   const base::TimeTicks refresh_start_time_for_metrics = base::TimeTicks::Now();
 
-  config_getter_->get()->GetProxyList(base::BindOnce(
+  config_getter_->GetProxyList(base::BindOnce(
       &IpProtectionProxyListManagerImpl::OnGotProxyList,
       weak_ptr_factory_.GetWeakPtr(), refresh_start_time_for_metrics));
 }
 
 void IpProtectionProxyListManagerImpl::OnGotProxyList(
     const base::TimeTicks refresh_start_time_for_metrics,
-    const std::optional<std::vector<net::ProxyChain>>& proxy_list,
-    const network::mojom::GeoHintPtr geo_hint) {
+    const std::optional<std::vector<net::ProxyChain>> proxy_list,
+    const std::optional<GeoHint> geo_hint) {
   fetching_proxy_list_ = false;
 
   // If the request for fetching the proxy list is successful, utilize the new
@@ -86,7 +89,7 @@ void IpProtectionProxyListManagerImpl::OnGotProxyList(
         "NetworkService.IpProtection.ProxyListRefreshTime",
         base::TimeTicks::Now() - refresh_start_time_for_metrics);
 
-    geo_id_ = network::GetGeoIdFromGeoHint(geo_hint.Clone());
+    geo_id_ = network::GetGeoIdFromGeoHint(std::move(geo_hint));
   }
 
   base::UmaHistogramEnumeration(

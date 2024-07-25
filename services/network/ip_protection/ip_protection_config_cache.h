@@ -5,12 +5,13 @@
 #ifndef SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_CONFIG_CACHE_H_
 #define SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_CONFIG_CACHE_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/component_export.h"
+#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace network {
 
@@ -35,7 +36,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
   // Returns `nullopt` if no token is available, whether for a transient or
   // permanent reason. This method may return `nullopt` even if
   // `IsAuthTokenAvailable()` recently returned `true`.
-  virtual std::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken(
+  virtual std::optional<BlindSignedAuthToken> GetAuthToken(
       size_t chain_index) = 0;
 
   // Invalidate any previous instruction that token requests should not be
@@ -44,14 +45,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
 
   // Set the token cache manager for the cache.
   virtual void SetIpProtectionTokenCacheManagerForTesting(
-      network::mojom::IpProtectionProxyLayer proxy_layer,
+      IpProtectionProxyLayer proxy_layer,
       std::unique_ptr<IpProtectionTokenCacheManager>
           ipp_token_cache_manager) = 0;
 
   // Fetch the token cache manager.
   virtual IpProtectionTokenCacheManager*
   GetIpProtectionTokenCacheManagerForTesting(
-      network::mojom::IpProtectionProxyLayer proxy_layer) = 0;
+      IpProtectionProxyLayer proxy_layer) = 0;
 
   // Set the proxy chain list manager for the cache.
   virtual void SetIpProtectionProxyListManagerForTesting(

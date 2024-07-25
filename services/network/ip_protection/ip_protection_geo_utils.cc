@@ -4,15 +4,17 @@
 
 #include "services/network/ip_protection/ip_protection_geo_utils.h"
 
+#include <memory>
+#include <optional>
 #include <string>
 
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/ip_protection/ip_protection_data_types.h"
 
 namespace network {
 
-std::string GetGeoIdFromGeoHint(network::mojom::GeoHintPtr geo_hint) {
-  if (!geo_hint) {
-    return "";  // If nullptr, return empty string.
+std::string GetGeoIdFromGeoHint(const std::optional<GeoHint> geo_hint) {
+  if (!geo_hint.has_value()) {
+    return "";  // If nullopt, return empty string.
   }
 
   std::string geo_id = geo_hint->country_code;
@@ -26,28 +28,28 @@ std::string GetGeoIdFromGeoHint(network::mojom::GeoHintPtr geo_hint) {
   return geo_id;
 }
 
-network::mojom::GeoHintPtr GetGeoHintFromGeoIdForTesting(
+std::optional<GeoHint> GetGeoHintFromGeoIdForTesting(
     const std::string& geo_id) {
   if (geo_id.empty()) {
-    return nullptr;  // Return nullptr if the geo_id is empty.
+    return std::nullopt;  // Return nullopt if the geo_id is empty.
   }
-  auto geo_hint = network::mojom::GeoHint::New();
+  GeoHint geo_hint;
   std::stringstream geo_id_stream(geo_id);
   std::string segment;
 
   // Extract country code.
   if (std::getline(geo_id_stream, segment, ',')) {
-    geo_hint->country_code = segment;
+    geo_hint.country_code = segment;
   }
 
   // Extract ISO region.
   if (std::getline(geo_id_stream, segment, ',')) {
-    geo_hint->iso_region = segment;
+    geo_hint.iso_region = segment;
   }
 
   // Extract city name.
   if (std::getline(geo_id_stream, segment, ',')) {
-    geo_hint->city_name = segment;
+    geo_hint.city_name = segment;
   }
 
   return geo_hint;

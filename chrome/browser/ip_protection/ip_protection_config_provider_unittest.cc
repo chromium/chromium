@@ -161,7 +161,9 @@ class IpProtectionConfigProviderTest : public testing::Test {
  protected:
   IpProtectionConfigProviderTest()
       : expiration_time_(base::Time::Now() + base::Hours(1)),
-        geo_hint_(network::mojom::GeoHint::New("US", "US-AL", "ALABASTER")) {
+        geo_hint_({.country_code = "US",
+                   .iso_region = "US-AL",
+                   .city_name = "ALABASTER"}) {
     privacy_sandbox::RegisterProfilePrefs(prefs()->registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs()->registry());
   }
@@ -275,7 +277,7 @@ class IpProtectionConfigProviderTest : public testing::Test {
 
   // Expect that the TryGetAuthTokens call returned the given tokens.
   void ExpectTryGetAuthTokensResult(
-      std::vector<network::mojom::BlindSignedAuthTokenPtr> bsa_tokens) {
+      std::vector<network::BlindSignedAuthToken> bsa_tokens) {
     EXPECT_EQ(std::get<0>(tokens_future_.Get()), bsa_tokens);
   }
 
@@ -299,12 +301,12 @@ class IpProtectionConfigProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::TestFuture<
-      std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>,
+      const std::optional<std::vector<network::BlindSignedAuthToken>>&,
       std::optional<base::Time>>
       tokens_future_;
 
   base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
-                         network::mojom::GeoHintPtr>
+                         const std::optional<network::GeoHint>&>
       proxy_list_future_;
 
   // Test environment for IdentityManager. This must come after the
@@ -315,7 +317,7 @@ class IpProtectionConfigProviderTest : public testing::Test {
   base::Time expiration_time_;
 
   // A convenient geo hint for fake tokens.
-  network::mojom::GeoHintPtr geo_hint_;
+  network::GeoHint geo_hint_;
 
   base::HistogramTester histogram_tester_;
 
@@ -342,10 +344,10 @@ TEST_F(IpProtectionConfigProviderTest, Success) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   bsa_->tokens_ = {ip_protection::IpProtectionConfigProviderHelper::
                        CreateBlindSignTokenForTesting(
-                           "single-use-1", expiration_time_, *geo_hint_),
+                           "single-use-1", expiration_time_, geo_hint_),
                    ip_protection::IpProtectionConfigProviderHelper::
                        CreateBlindSignTokenForTesting(
-                           "single-use-2", expiration_time_, *geo_hint_)};
+                           "single-use-2", expiration_time_, geo_hint_)};
 
   TryGetAuthTokens(2, network::mojom::IpProtectionProxyLayer::kProxyB);
 
@@ -353,13 +355,15 @@ TEST_F(IpProtectionConfigProviderTest, Success) {
   EXPECT_EQ(bsa_->oauth_token_, "access_token");
   EXPECT_EQ(bsa_->num_tokens_, 2);
   EXPECT_EQ(bsa_->proxy_layer_, quiche::ProxyLayer::kProxyB);
-  std::vector<network::mojom::BlindSignedAuthTokenPtr> expected;
+  std::vector<network::BlindSignedAuthToken> expected;
   expected.push_back(ip_protection::IpProtectionConfigProviderHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
-                             "single-use-1", expiration_time_, *geo_hint_));
+                             "single-use-1", expiration_time_, geo_hint_)
+                             .value());
   expected.push_back(ip_protection::IpProtectionConfigProviderHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
-                             "single-use-2", expiration_time_, *geo_hint_));
+                             "single-use-2", expiration_time_, geo_hint_)
+                             .value());
   ExpectTryGetAuthTokensResult(std::move(expected));
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
@@ -416,15 +420,14 @@ TEST_F(IpProtectionConfigProviderTest, MalformedTokens) {
 
 TEST_F(IpProtectionConfigProviderTest, TokenGeoHintContainsOnlyCountry) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  auto geo_hint_country = network::mojom::GeoHint::New();
-  geo_hint_country->country_code = "US";
-  bsa_->tokens_ = {
-      ip_protection::IpProtectionConfigProviderHelper::
-          CreateBlindSignTokenForTesting("single-use-1", expiration_time_,
-                                         *geo_hint_country),
-      ip_protection::IpProtectionConfigProviderHelper::
-          CreateBlindSignTokenForTesting("single-use-2", expiration_time_,
-                                         *geo_hint_country)};
+  network::GeoHint geo_hint_country;
+  geo_hint_country.country_code = "US";
+  bsa_->tokens_ = {ip_protection::IpProtectionConfigProviderHelper::
+                       CreateBlindSignTokenForTesting(
+                           "single-use-1", expiration_time_, geo_hint_country),
+                   ip_protection::IpProtectionConfigProviderHelper::
+                       CreateBlindSignTokenForTesting(
+                           "single-use-2", expiration_time_, geo_hint_country)};
 
   TryGetAuthTokens(2, network::mojom::IpProtectionProxyLayer::kProxyB);
 
@@ -432,15 +435,15 @@ TEST_F(IpProtectionConfigProviderTest, TokenGeoHintContainsOnlyCountry) {
   EXPECT_EQ(bsa_->oauth_token_, "access_token");
   EXPECT_EQ(bsa_->num_tokens_, 2);
   EXPECT_EQ(bsa_->proxy_layer_, quiche::ProxyLayer::kProxyB);
-  std::vector<network::mojom::BlindSignedAuthTokenPtr> expected;
-  expected.push_back(
-      ip_protection::IpProtectionConfigProviderHelper::
-          CreateMockBlindSignedAuthTokenForTesting(
-              "single-use-1", expiration_time_, *geo_hint_country));
-  expected.push_back(
-      ip_protection::IpProtectionConfigProviderHelper::
-          CreateMockBlindSignedAuthTokenForTesting(
-              "single-use-2", expiration_time_, *geo_hint_country));
+  std::vector<network::BlindSignedAuthToken> expected;
+  expected.push_back(ip_protection::IpProtectionConfigProviderHelper::
+                         CreateMockBlindSignedAuthTokenForTesting(
+                             "single-use-1", expiration_time_, geo_hint_country)
+                             .value());
+  expected.push_back(ip_protection::IpProtectionConfigProviderHelper::
+                         CreateMockBlindSignedAuthTokenForTesting(
+                             "single-use-2", expiration_time_, geo_hint_country)
+                             .value());
   ExpectTryGetAuthTokensResult(std::move(expected));
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
@@ -451,10 +454,10 @@ TEST_F(IpProtectionConfigProviderTest, TokenGeoHintContainsOnlyCountry) {
 
 TEST_F(IpProtectionConfigProviderTest, TokenHasMissingGeoHint) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  bsa_->tokens_ = {
-      ip_protection::IpProtectionConfigProviderHelper::
-          CreateBlindSignTokenForTesting("single-use-1", expiration_time_,
-                                         *network::mojom::GeoHint::New())};
+  network::GeoHint geo_hint;
+  bsa_->tokens_ = {ip_protection::IpProtectionConfigProviderHelper::
+                       CreateBlindSignTokenForTesting(
+                           "single-use-1", expiration_time_, geo_hint)};
 
   TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA);
 
@@ -556,10 +559,10 @@ TEST_F(IpProtectionConfigProviderTest, AccountCapabilityUnknown) {
   primary_account_behavior_ = PrimaryAccountBehavior::kUnknownEligibility;
   bsa_->tokens_ = {ip_protection::IpProtectionConfigProviderHelper::
                        CreateBlindSignTokenForTesting(
-                           "single-use-1", expiration_time_, *geo_hint_),
+                           "single-use-1", expiration_time_, geo_hint_),
                    ip_protection::IpProtectionConfigProviderHelper::
                        CreateBlindSignTokenForTesting(
-                           "single-use-2", expiration_time_, *geo_hint_)};
+                           "single-use-2", expiration_time_, geo_hint_)};
 
   TryGetAuthTokens(2, network::mojom::IpProtectionProxyLayer::kProxyA);
 
@@ -567,13 +570,15 @@ TEST_F(IpProtectionConfigProviderTest, AccountCapabilityUnknown) {
   EXPECT_EQ(bsa_->oauth_token_, "access_token");
   EXPECT_EQ(bsa_->num_tokens_, 2);
   EXPECT_EQ(bsa_->proxy_layer_, quiche::ProxyLayer::kProxyA);
-  std::vector<network::mojom::BlindSignedAuthTokenPtr> expected;
+  std::vector<network::BlindSignedAuthToken> expected;
   expected.push_back(ip_protection::IpProtectionConfigProviderHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
-                             "single-use-1", expiration_time_, *geo_hint_));
+                             "single-use-1", expiration_time_, geo_hint_)
+                             .value());
   expected.push_back(ip_protection::IpProtectionConfigProviderHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
-                             "single-use-2", expiration_time_, *geo_hint_));
+                             "single-use-2", expiration_time_, geo_hint_)
+                             .value());
   ExpectTryGetAuthTokensResult(std::move(expected));
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
@@ -659,7 +664,7 @@ TEST_F(IpProtectionConfigProviderTest, AccountLoginTriggersBackoffReset) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   bsa_->tokens_ = {ip_protection::IpProtectionConfigProviderHelper::
                        CreateBlindSignTokenForTesting(
-                           "single-use-1", expiration_time_, *geo_hint_)};
+                           "single-use-1", expiration_time_, geo_hint_)};
 
   TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA);
 
@@ -683,7 +688,7 @@ TEST_F(IpProtectionConfigProviderTest, SessionRefreshTriggersBackoffReset) {
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
 
   base::test::TestFuture<
-      std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>,
+      const std::optional<std::vector<network::BlindSignedAuthToken>>&,
       std::optional<base::Time>>
       tokens_future;
   getter_->TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyB,
@@ -699,15 +704,15 @@ TEST_F(IpProtectionConfigProviderTest, SessionRefreshTriggersBackoffReset) {
 
   bsa_->tokens_ = {ip_protection::IpProtectionConfigProviderHelper::
                        CreateBlindSignTokenForTesting(
-                           "single-use-1", expiration_time_, *geo_hint_)};
+                           "single-use-1", expiration_time_, geo_hint_)};
   tokens_future.Clear();
   getter_->TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyB,
                             tokens_future.GetCallback());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Now());
-  const std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>&
-      tokens = tokens_future.Get<std::optional<
-          std::vector<network::mojom::BlindSignedAuthTokenPtr>>>();
+  const std::optional<std::vector<network::BlindSignedAuthToken>>& tokens =
+      tokens_future
+          .Get<std::optional<std::vector<network::BlindSignedAuthToken>>>();
   ASSERT_TRUE(tokens);
 }
 
@@ -797,9 +802,9 @@ TEST_F(IpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
   chain->set_proxy_a("proxyA2");
   chain->set_proxy_b("proxyB2");
 
-  response.mutable_geo_hint()->set_country_code(geo_hint_->country_code);
-  response.mutable_geo_hint()->set_iso_region(geo_hint_->iso_region);
-  response.mutable_geo_hint()->set_city_name(geo_hint_->city_name);
+  response.mutable_geo_hint()->set_country_code(geo_hint_.country_code);
+  response.mutable_geo_hint()->set_iso_region(geo_hint_.iso_region);
+  response.mutable_geo_hint()->set_city_name(geo_hint_.city_name);
 
   getter_->SetUpForTesting(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
@@ -816,8 +821,8 @@ TEST_F(IpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
   EXPECT_THAT(proxy_list.value(),
               testing::ElementsAreArray(proxy_override_list));
 
-  ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
-  EXPECT_TRUE(geo_hint->Equals(*geo_hint_));
+  ASSERT_TRUE(geo_hint.has_value());  // Check that GeoHint is not null.
+  EXPECT_TRUE(geo_hint == geo_hint_);
 }
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyListFailure) {
@@ -846,7 +851,7 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListFailure) {
 
   auto call_get_proxy_list = [this](bool expect_success) {
     base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
-                           network::mojom::GeoHintPtr>
+                           const std::optional<network::GeoHint>&>
         future;
     this->getter_->GetProxyList(future.GetCallback());
     ASSERT_TRUE(future.Wait());
@@ -861,10 +866,10 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListFailure) {
 
       // `GetProxyConfigResponse` used is default instance which means GeoHint
       // will not be populated and should be a nullptr.
-      EXPECT_TRUE(geo_hint.is_null());
+      EXPECT_FALSE(geo_hint.has_value());
     } else {
       EXPECT_EQ(proxy_list, std::nullopt);
-      EXPECT_TRUE(geo_hint.is_null());
+      EXPECT_FALSE(geo_hint.has_value());
     }
   };
 
@@ -922,9 +927,9 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyList_IpProtectionDisabled) {
   chain->set_proxy_b("proxy1b");
   chain->set_chain_id(1);
 
-  response.mutable_geo_hint()->set_country_code(geo_hint_->country_code);
-  response.mutable_geo_hint()->set_iso_region(geo_hint_->iso_region);
-  response.mutable_geo_hint()->set_city_name(geo_hint_->city_name);
+  response.mutable_geo_hint()->set_country_code(geo_hint_.country_code);
+  response.mutable_geo_hint()->set_iso_region(geo_hint_.iso_region);
+  response.mutable_geo_hint()->set_city_name(geo_hint_.city_name);
 
   getter_->SetUpForTesting(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
@@ -942,16 +947,17 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyList_IpProtectionDisabled) {
   const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
 
   EXPECT_EQ(proxy_list, std::nullopt);
-  EXPECT_TRUE(geo_hint.is_null());
+  EXPECT_FALSE(geo_hint.has_value());
 }
 
 // Do a basic check of the token formats.
 TEST_F(IpProtectionConfigProviderTest, TokenFormat) {
-  network::mojom::BlindSignedAuthTokenPtr result =
+  network::BlindSignedAuthToken result =
       ip_protection::IpProtectionConfigProviderHelper::
-          CreateMockBlindSignedAuthTokenForTesting(
-              "single-use-1", expiration_time_, *geo_hint_);
-  std::string token = (*result).token;
+          CreateMockBlindSignedAuthTokenForTesting("single-use-1",
+                                                   expiration_time_, geo_hint_)
+              .value();
+  std::string& token = result.token;
   size_t token_position = token.find("PrivateToken token=");
   size_t extensions_position = token.find("extensions=");
 

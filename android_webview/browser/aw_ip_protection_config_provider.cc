@@ -113,7 +113,7 @@ void AwIpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
   // If IP Protection is disabled then don't attempt to get a proxy list.
   if (!IsIpProtectionEnabled()) {
     std::move(callback).Run(/*proxy_chains=*/std::nullopt,
-                            /*geo_hint=*/nullptr);
+                            /*geo_hint=*/std::nullopt);
     return;
   }
 
@@ -208,11 +208,12 @@ void AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
     return;
   }
 
-  std::vector<network::mojom::BlindSignedAuthTokenPtr> bsa_tokens;
+  std::vector<network::BlindSignedAuthToken> bsa_tokens;
   for (const quiche::BlindSignToken& token : tokens.value()) {
-    network::mojom::BlindSignedAuthTokenPtr converted_token = ip_protection::
-        IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(token);
-    if (converted_token.is_null() || converted_token->token.empty()) {
+    std::optional<network::BlindSignedAuthToken> converted_token =
+        ip_protection::IpProtectionConfigProviderHelper::
+            CreateBlindSignedAuthToken(token);
+    if (!converted_token.has_value() || converted_token->token.empty()) {
       VLOG(2) << "AwIpProtectionConfigProvider::"
                  "OnFetchBlindSignedTokenCompleted failed to convert "
                  "`quiche::BlindSignAuth` token to a "
@@ -221,8 +222,9 @@ void AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
           /*bsa_tokens=*/std::nullopt, std::move(callback),
           AwIpProtectionTryGetAuthTokensResult::kFailedBSAOther);
       return;
+    } else {
+      bsa_tokens.push_back(std::move(converted_token).value());
     }
-    bsa_tokens.push_back(std::move(converted_token));
   }
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
@@ -234,8 +236,7 @@ void AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
 }
 
 void AwIpProtectionConfigProvider::TryGetAuthTokensComplete(
-    std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
-        bsa_tokens,
+    std::optional<std::vector<network::BlindSignedAuthToken>> bsa_tokens,
     TryGetAuthTokensCallback callback,
     AwIpProtectionTryGetAuthTokensResult result) {
   if (result == AwIpProtectionTryGetAuthTokensResult::kSuccess) {

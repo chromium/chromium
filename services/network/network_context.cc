@@ -105,6 +105,7 @@
 #include "services/network/http_server_properties_pref_delegate.h"
 #include "services/network/ignore_errors_cert_verifier.h"
 #include "services/network/ip_protection/ip_protection_config_cache_impl.h"
+#include "services/network/ip_protection/ip_protection_config_getter_mojo_impl.h"
 #include "services/network/ip_protection/ip_protection_proxy_delegate.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
 #include "services/network/is_browser_initiated.h"
@@ -2495,7 +2496,8 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   auto* nspal = network_service_->network_service_proxy_allow_list();
   if (!params_->initial_custom_proxy_config && nspal->IsEnabled()) {
     auto ipp_config_cache = std::make_unique<IpProtectionConfigCacheImpl>(
-        std::move(params_->ip_protection_config_getter));
+        std::make_unique<IpProtectionConfigGetterMojoImpl>(
+            std::move(params_->ip_protection_config_getter)));
     std::unique_ptr<IpProtectionProxyDelegate> proxy_delegate =
         std::make_unique<IpProtectionProxyDelegate>(
             nspal, std::move(ipp_config_cache), params_->enable_ip_protection);

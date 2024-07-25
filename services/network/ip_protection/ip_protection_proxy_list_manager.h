@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManager {
   // Return the `GeoId` string which is the geo for which the current list is
   // valid.
 
-  // This is a formatted version of the `network::mojom::GeoHint`. It consists
+  // This is a formatted version of the `GeoHint`. It consists
   // of a concatenation of the country region, iso region, and city name
   // (separated by commas). If there are fields missing, they are omitted, and
   // there is no trailing comma. String can be empty if a successful request

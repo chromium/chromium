@@ -4,6 +4,7 @@
 
 #include "services/network/ip_protection/ip_protection_proxy_delegate.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -25,6 +26,7 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/ip_protection/ip_protection_config_cache_impl.h"
+#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager.h"
 #include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
@@ -59,15 +61,14 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
       std::move(on_invalidate_try_again_after_time_).Run();
     }
   }
-  std::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken(
+  std::optional<BlindSignedAuthToken> GetAuthToken(
       size_t chain_index) override {
     return std::move(auth_token_);
   }
 
   // Set the auth token that will be returned from the next call to
   // `GetAuthToken()`.
-  void SetNextAuthToken(
-      std::optional<network::mojom::BlindSignedAuthTokenPtr> auth_token) {
+  void SetNextAuthToken(std::optional<BlindSignedAuthToken> auth_token) {
     auth_token_ = std::move(auth_token);
   }
 
@@ -78,12 +79,12 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
   }
 
   IpProtectionTokenCacheManager* GetIpProtectionTokenCacheManagerForTesting(
-      network::mojom::IpProtectionProxyLayer proxy_layer) override {
+      IpProtectionProxyLayer proxy_layer) override {
     NOTREACHED_NORETURN();
   }
 
   void SetIpProtectionTokenCacheManagerForTesting(
-      network::mojom::IpProtectionProxyLayer proxy_layer,
+      IpProtectionProxyLayer proxy_layer,
       std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager)
       override {
     NOTREACHED_NORETURN();
@@ -128,7 +129,7 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
   }
 
  private:
-  std::optional<network::mojom::BlindSignedAuthTokenPtr> auth_token_;
+  std::optional<BlindSignedAuthToken> auth_token_;
   std::optional<std::vector<net::ProxyChain>> proxy_list_;
   std::vector<net::ProxyChain> proxy_chain_list_;
   base::OnceClosure on_force_refresh_proxy_list_;
@@ -221,9 +222,9 @@ class IpProtectionProxyDelegateTest : public testing::Test {
     return net::ProxyChain::ForIpProtection(servers, chain_id);
   }
 
-  mojom::BlindSignedAuthTokenPtr MakeAuthToken(std::string content) {
-    auto token = mojom::BlindSignedAuthToken::New();
-    token->token = std::move(content);
+  BlindSignedAuthToken MakeAuthToken(std::string content) {
+    BlindSignedAuthToken token;
+    token.token = std::move(content);
     return token;
   }
 
