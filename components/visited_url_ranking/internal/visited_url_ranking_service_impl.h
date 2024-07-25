@@ -103,6 +103,7 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
       std::queue<URLVisitAggregatesTransformType> transform_type_queue,
       URLVisitAggregatesTransformType transform_type,
       size_t previous_aggregates_count,
+      base::Time start_time,
       URLVisitAggregatesTransformer::Status status,
       std::vector<URLVisitAggregate> aggregates);
 

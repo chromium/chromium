@@ -298,6 +298,8 @@ TEST_F(VisitedURLRankingServiceImplTest,
       "VisitedURLRanking.TransformType.BookmarkData.Success", 1);
   histogram_tester.ExpectTotalCount(
       "VisitedURLRanking.TransformType.BookmarkData.InOutPercentage", 1);
+  histogram_tester.ExpectTotalCount(
+      "VisitedURLRanking.TransformType.BookmarkData.Latency", 1);
 }
 
 TEST_F(VisitedURLRankingServiceImplTest,

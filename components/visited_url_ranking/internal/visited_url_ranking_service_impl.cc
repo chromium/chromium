@@ -336,7 +336,7 @@ void VisitedURLRankingServiceImpl::MergeVisitsAndCallback(
   TransformVisitsAndCallback(
       std::move(callback), options, std::move(transform_type_queue),
       URLVisitAggregatesTransformType::kUnspecified,
-      /*previous_aggregates_count=*/0,
+      /*previous_aggregates_count=*/0, base::Time::Now(),
       URLVisitAggregatesTransformer::Status::kSuccess,
       ComputeURLVisitAggregates(std::move(fetcher_results)));
 }
@@ -347,6 +347,7 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
     std::queue<URLVisitAggregatesTransformType> transform_type_queue,
     URLVisitAggregatesTransformType transform_type,
     size_t previous_aggregates_count,
+    base::Time start_time,
     URLVisitAggregatesTransformer::Status status,
     std::vector<URLVisitAggregate> aggregates) {
   if (transform_type != URLVisitAggregatesTransformType::kUnspecified) {
@@ -371,6 +372,11 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
         base::StringPrintf("VisitedURLRanking.TransformType.%s.InOutPercentage",
                            URLVisitAggregatesTransformTypeName(transform_type)),
         (aggregates.size() / previous_aggregates_count) * 100, 1, 100, 100);
+
+    base::UmaHistogramMediumTimes(
+        base::StringPrintf("VisitedURLRanking.TransformType.%s.Latency",
+                           URLVisitAggregatesTransformTypeName(transform_type)),
+        base::Time::Now() - start_time);
   }
 
   if (transform_type_queue.empty() || aggregates.empty()) {
@@ -399,7 +405,7 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
       base::BindOnce(&VisitedURLRankingServiceImpl::TransformVisitsAndCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      options, std::move(transform_type_queue), transform_type,
-                     aggregates_count));
+                     aggregates_count, base::Time::Now()));
 }
 
 void VisitedURLRankingServiceImpl::GetNextResult(
