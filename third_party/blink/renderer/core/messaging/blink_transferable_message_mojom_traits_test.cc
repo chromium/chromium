@@ -246,11 +246,11 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
   }
 
   ImageBitmap* CreateAcceleratedStaticImageBitmap() {
-    auto mailbox = gpu::Mailbox::Generate();
+    auto client_si = gpu::ClientSharedImage::CreateForTesting();
 
     return MakeGarbageCollected<ImageBitmap>(
-        AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-            mailbox, GenTestSyncToken(100), 0,
+        AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+            std::move(client_si), GenTestSyncToken(100), 0,
             SkImageInfo::MakeN32Premul(100, 100), GL_TEXTURE_2D, true,
             SharedGpuContext::ContextProviderWrapper(),
             base::PlatformThread::CurrentRef(),
