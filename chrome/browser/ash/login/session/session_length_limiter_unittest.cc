@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/session_length_limiter.h"
+#include "chrome/browser/ash/login/session/session_length_limiter.h"
 
 #include <memory>
 

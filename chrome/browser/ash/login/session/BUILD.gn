@@ -10,6 +10,8 @@ static_library("session") {
   sources = [
     "chrome_session_manager.cc",
     "chrome_session_manager.h",
+    "session_length_limiter.cc",
+    "session_length_limiter.h",
     "user_session_initializer.cc",
     "user_session_initializer.h",
     "user_session_manager.cc",
@@ -176,7 +178,10 @@ source_set("browser_tests") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "user_session_manager_unittest.cc" ]
+  sources = [
+    "session_length_limiter_unittest.cc",
+    "user_session_manager_unittest.cc",
+  ]
 
   deps = [
     ":session",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_SESSION_LENGTH_LIMITER_H_
-#define CHROME_BROWSER_ASH_SESSION_LENGTH_LIMITER_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_SESSION_SESSION_LENGTH_LIMITER_H_
+#define CHROME_BROWSER_ASH_LOGIN_SESSION_SESSION_LENGTH_LIMITER_H_
 
 #include <memory>
 
@@ -81,4 +81,4 @@ class SessionLengthLimiter : public ui::UserActivityObserver {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_SESSION_LENGTH_LIMITER_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SESSION_SESSION_LENGTH_LIMITER_H_
