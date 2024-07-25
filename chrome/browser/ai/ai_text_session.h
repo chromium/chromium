@@ -51,21 +51,20 @@ class AITextSession : public blink::mojom::AITextSession {
   AITextSession(
       std::unique_ptr<
           optimization_guide::OptimizationGuideModelExecutor::Session> session,
-      std::optional<optimization_guide::SamplingParams> sampling_params);
-  AITextSession(
-      std::unique_ptr<
-          optimization_guide::OptimizationGuideModelExecutor::Session> session,
       std::optional<optimization_guide::SamplingParams> sampling_params,
-      Context context);
+      base::WeakPtr<content::BrowserContext> browser_context,
+      const std::optional<const Context>& context);
   AITextSession(const AITextSession&) = delete;
   AITextSession& operator=(const AITextSession&) = delete;
 
   ~AITextSession() override;
 
-  // `blink::mojom::ModelGenericSession` implementation.
+  // `blink::mojom::ModelTextSession` implementation.
   void Prompt(const std::string& input,
               mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                   pending_responder) override;
+  void Fork(mojo::PendingReceiver<blink::mojom::AITextSession> session,
+            ForkCallback callback) override;
   void Destroy() override;
 
  private:
@@ -89,8 +88,9 @@ class AITextSession : public blink::mojom::AITextSession {
   mojo::RemoteSet<blink::mojom::ModelStreamingResponder> responder_set_;
   // The sampling parameters used when creating the current AITextSession.
   std::optional<optimization_guide::SamplingParams> sampling_params_;
+  base::WeakPtr<content::BrowserContext> browser_context_;
   // Holds all the input and output from the previous prompt.
-  Context context_;
+  std::unique_ptr<Context> context_;
 
   base::WeakPtrFactory<AITextSession> weak_ptr_factory_{this};
 };

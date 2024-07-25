@@ -38,11 +38,17 @@ class AITextSession final : public ScriptWrappable,
   ReadableStream* promptStreaming(ScriptState* script_state,
                                   const WTF::String& input,
                                   ExceptionState& exception_state);
+  ScriptPromise<AITextSession> clone(ScriptState* script_state,
+                                     ExceptionState& exception_state);
   void destroy(ScriptState* script_state, ExceptionState& exception_state);
 
  private:
   class Responder;
   class StreamingResponder;
+
+  // Checks and returns if the session is already destroyed. If the session is
+  // destroyed, throw an exception with the corresponding error.
+  bool ThrowExceptionIfIsDestroyed(ExceptionState& exception_state);
 
   bool is_destroyed_ = false;
 

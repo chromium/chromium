@@ -11263,6 +11263,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5035" label="WebGPUSubgroupsFeatures"/>
   <int value="5036" label="AudioContextOnError"/>
   <int value="5037" label="NoVarySearchPrerender"/>
+  <int value="5038" label="V8AITextSession_Clone_Method"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

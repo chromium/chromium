@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ai/ai_text_session.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/functional/bind.h"
@@ -17,7 +18,6 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session.mojom-shared.h"
 
 namespace {
@@ -64,21 +64,22 @@ bool AITextSession::Context::HasContextItem() {
 AITextSession::AITextSession(
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
         session,
-    std::optional<optimization_guide::SamplingParams> sampling_params)
-    : session_(std::move(session)),
-      sampling_params_(sampling_params),
-      context_(
-          optimization_guide::features::GetOnDeviceModelMaxTokensForContext()) {
-}
-
-AITextSession::AITextSession(
-    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-        session,
     std::optional<optimization_guide::SamplingParams> sampling_params,
-    Context context)
+    base::WeakPtr<content::BrowserContext> browser_context,
+    const std::optional<const Context>& context)
     : session_(std::move(session)),
       sampling_params_(sampling_params),
-      context_(context) {}
+      browser_context_(browser_context) {
+  if (context.has_value()) {
+    // If the context is provided, it will be used in this session.
+    context_ = std::make_unique<Context>(context.value());
+  } else {
+    // If the context is not provided, initialize a new context with the default
+    // configuration.
+    context_ = std::make_unique<Context>(
+        optimization_guide::features::GetOnDeviceModelMaxTokensForContext());
+  }
+}
 
 AITextSession::~AITextSession() = default;
 
@@ -118,7 +119,7 @@ void AITextSession::GetContextSizeInTokensCallback(const std::string& text,
   // TODO(crbug.com/351935691): make sure the error is explicitly returned and
   // handled accordingly.
   if (size) {
-    context_.AddContextItem(text, size);
+    context_->AddContextItem(text, size);
   }
 }
 
@@ -176,9 +177,9 @@ void AITextSession::Prompt(
     return;
   }
 
-  if (context_.HasContextItem()) {
+  if (context_->HasContextItem()) {
     optimization_guide::proto::StringValue context;
-    context.set_value(context_.GetContextString());
+    context.set_value(context_->GetContextString());
     session_->AddContext(context);
   }
 
@@ -192,6 +193,29 @@ void AITextSession::Prompt(
       request, base::BindRepeating(&AITextSession::ModelExecutionCallback,
                                    weak_ptr_factory_.GetWeakPtr(),
                                    formatted_input, responder_id));
+}
+
+void AITextSession::Fork(
+    mojo::PendingReceiver<blink::mojom::AITextSession> session,
+    ForkCallback callback) {
+  if (!browser_context_) {
+    // The `browser_context_` is already destroyed before the renderer owner is
+    // gone.
+    std::move(callback).Run(/*success=*/false);
+  } else {
+    AIManagerKeyedService* service =
+        AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
+            browser_context_.get());
+    blink::mojom::AITextSessionSamplingParamsPtr sampling_params;
+    if (sampling_params_.has_value()) {
+      sampling_params = blink::mojom::AITextSessionSamplingParams::New(
+          sampling_params_->top_k, sampling_params_->temperature);
+    }
+    std::move(callback).Run(
+        /*success=*/service->CreateTextSessionForCloning(
+            base::PassKey<AITextSession>(), std::move(session),
+            std::move(sampling_params), *context_));
+  }
 }
 
 void AITextSession::Destroy() {

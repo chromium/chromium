@@ -15,6 +15,7 @@
 #include "third_party/blink/public/mojom/ai/ai_text_session.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -26,6 +27,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -203,6 +205,15 @@ AITextSession::GetModelSessionReceiver() {
   return text_session_remote_.BindNewPipeAndPassReceiver(task_runner_);
 }
 
+bool AITextSession::ThrowExceptionIfIsDestroyed(
+    ExceptionState& exception_state) {
+  if (is_destroyed_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kExceptionMessageSessionDestroyed);
+  }
+  return is_destroyed_;
+}
+
 ScriptPromise<IDLString> AITextSession::prompt(
     ScriptState* script_state,
     const WTF::String& input,
@@ -222,11 +233,7 @@ ScriptPromise<IDLString> AITextSession::prompt(
 
   Responder* responder = MakeGarbageCollected<Responder>(script_state);
 
-  if (is_destroyed_) {
-    responder->GetResolver()->Reject(DOMException::Create(
-        kExceptionMessageSessionDestroyed,
-        DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError)));
-  } else {
+  if (!ThrowExceptionIfIsDestroyed(exception_state)) {
     text_session_remote_->Prompt(
         input, responder->BindNewPipeAndPassRemote(task_runner_));
   }
@@ -269,6 +276,44 @@ ReadableStream* AITextSession::promptStreaming(
       script_state, streaming_responder, 1);
 }
 
+ScriptPromise<AITextSession> AITextSession::clone(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return ScriptPromise<AITextSession>();
+  }
+
+  base::UmaHistogramEnumeration(
+      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kText),
+      AIMetrics::AIAPI::kSessionClone);
+
+  ScriptPromiseResolver<AITextSession>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<AITextSession>>(script_state);
+
+  if (!ThrowExceptionIfIsDestroyed(exception_state)) {
+    AITextSession* cloned_session = MakeGarbageCollected<AITextSession>(
+        GetExecutionContext(), task_runner_);
+    text_session_remote_->Fork(
+        cloned_session->GetModelSessionReceiver(),
+        WTF::BindOnce(
+            [](ScriptPromiseResolver<AITextSession>* resolver,
+               AITextSession* cloned_session, bool success) {
+              if (success) {
+                resolver->Resolve(cloned_session);
+              } else {
+                resolver->Reject(DOMException::Create(
+                    kExceptionMessageUnableToCloneSession,
+                    DOMException::GetErrorName(
+                        DOMExceptionCode::kInvalidStateError)));
+              }
+            },
+            WrapPersistent(resolver), WrapPersistent(cloned_session)));
+  }
+
+  return resolver->Promise();
+}
+
 void AITextSession::destroy(ScriptState* script_state,
                             ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
@@ -279,6 +324,7 @@ void AITextSession::destroy(ScriptState* script_state,
   base::UmaHistogramEnumeration(
       AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kText),
       AIMetrics::AIAPI::kSessionDestroy);
+
   if (!is_destroyed_) {
     is_destroyed_ = true;
     text_session_remote_->Destroy();

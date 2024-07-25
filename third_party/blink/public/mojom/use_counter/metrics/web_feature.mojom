@@ -4404,6 +4404,7 @@ enum WebFeature {
   kWebGPUSubgroupsFeatures = 5035,
   kAudioContextOnError = 5036,
   kNoVarySearchPrerender = 5037,
+  kV8AITextSession_Clone_Method = 5038,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -34,6 +34,8 @@ const char kExceptionMessageInvalidTemperatureAndTopKFormat[] =
     "or neither of them.";
 const char kExceptionMessageUnableToCreateSession[] =
     "The session cannot be created.";
+const char kExceptionMessageUnableToCloneSession[] =
+    "The session cannot be cloned.";
 
 void ThrowInvalidContextException(ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
