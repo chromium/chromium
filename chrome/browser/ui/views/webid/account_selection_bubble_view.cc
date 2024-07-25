@@ -303,6 +303,11 @@ void AccountSelectionBubbleView::InitDialogWidget() {
 
   dialog_widget_ = widget->GetWeakPtr();
   occlusion_observation_.Observe(widget);
+  if (accessibility_state_utils::IsScreenReaderEnabled()) {
+    // When screen reader is enabled, focus on the title label when it first
+    // shows up.
+    GetFocusManager()->SetFocusedView(title_label_);
+  }
 }
 
 void AccountSelectionBubbleView::ShowMultiAccountPicker(
@@ -690,6 +695,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
   title_label_ = header->AddChildView(std::make_unique<views::Label>(
       title_, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_PRIMARY));
+  title_label_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   SetLabelProperties(title_label_);
 
   // Add the close button.
