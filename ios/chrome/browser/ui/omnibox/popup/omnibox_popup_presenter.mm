@@ -240,10 +240,15 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   // Install in the superview the guide tracking the top omnibox.
   if (self.topOmniboxGuide) {
     [[popup superview] removeLayoutGuide:self.topOmniboxGuide];
+    self.topOmniboxGuide = nil;
   }
-  self.topOmniboxGuide =
-      [self.layoutGuideCenter makeLayoutGuideNamed:kTopOmniboxGuide];
-  [[popup superview] addLayoutGuide:self.topOmniboxGuide];
+  GuideName* omniboxGuideName =
+      [self.delegate omniboxGuideNameForPresenter:self];
+  if (omniboxGuideName) {
+    self.topOmniboxGuide =
+        [self.layoutGuideCenter makeLayoutGuideNamed:omniboxGuideName];
+    [[popup superview] addLayoutGuide:self.topOmniboxGuide];
+  }
 
   [self updatePopupLayer];
   [self updateConstraints];
@@ -278,16 +283,24 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 - (void)updateConstraints {
   UIView* popup = self.popupContainerView;
 
-  // Position the top anchor of the popup relatively to that layout guide.
-  NSLayoutConstraint* topConstraint =
-      [popup.topAnchor constraintEqualToAnchor:self.topOmniboxGuide.bottomAnchor
-                                      constant:kVerticalOffset];
+  NSLayoutConstraint* topConstraint;
+  if (self.topOmniboxGuide) {
+    // Position the top anchor of the popup relatively to that layout guide.
+    topConstraint = [popup.topAnchor
+        constraintEqualToAnchor:self.topOmniboxGuide.bottomAnchor
+                       constant:kVerticalOffset];
+  } else {
+    topConstraint = [popup.topAnchor
+        constraintEqualToAnchor:[self.delegate popupParentViewForPresenter:self]
+                                    .topAnchor];
+  }
 
   NSMutableArray<NSLayoutConstraint*>* constraintsToActivate =
       [NSMutableArray arrayWithObject:topConstraint];
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
-      IsRegularXRegularSizeClass(self.popupContainerView.traitCollection)) {
+      IsRegularXRegularSizeClass(self.popupContainerView.traitCollection) &&
+      self.topOmniboxGuide) {
     NSLayoutConstraint* leadingConstraint = [popup.leadingAnchor
         constraintEqualToAnchor:self.topOmniboxGuide.leadingAnchor
                        constant:-16];

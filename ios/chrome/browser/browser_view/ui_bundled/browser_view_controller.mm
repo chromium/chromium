@@ -1834,6 +1834,10 @@ enum HeaderBehaviour {
   return self;
 }
 
+- (GuideName*)omniboxGuideNameForPresenter:(OmniboxPopupPresenter*)presenter {
+  return kTopOmniboxGuide;
+}
+
 - (void)popupDidOpenForPresenter:(OmniboxPopupPresenter*)presenter {
   self.contentArea.accessibilityElementsHidden = YES;
   self.toolbarCoordinator.secondaryToolbarViewController.view
