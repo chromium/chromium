@@ -49,6 +49,8 @@ extern const char kHistogramNoServiceWorkerLoadSearch[];
 extern const char kHistogramServiceWorkerFirstContentfulPaintDocs[];
 extern const char kHistogramNoServiceWorkerFirstContentfulPaintDocs[];
 
+extern const char kHistogramServiceWorkerSubresourceTotalRouterEvaluationTime[];
+
 }  // namespace internal
 
 class ServiceWorkerPageLoadMetricsObserver
