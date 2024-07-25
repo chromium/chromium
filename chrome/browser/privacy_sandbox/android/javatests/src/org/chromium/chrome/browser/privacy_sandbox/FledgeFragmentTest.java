@@ -170,10 +170,7 @@ public final class FledgeFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false"
-    })
-    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testRenderFledgeOff() throws IOException {
         setFledgePrefEnabled(false);
         startFledgeSettings();
@@ -183,10 +180,7 @@ public final class FledgeFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false"
-    })
-    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testRenderFledgeEmpty() throws IOException {
         setFledgePrefEnabled(true);
         startFledgeSettings();
@@ -196,10 +190,7 @@ public final class FledgeFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false"
-    })
-    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testRenderFledgePopulated() throws IOException {
         setFledgePrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
@@ -526,10 +517,7 @@ public final class FledgeFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING,
-        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
-    })
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testFooterTopicsLink() throws IOException {
         setFledgePrefEnabled(true);
         startFledgeSettings();
@@ -543,10 +531,7 @@ public final class FledgeFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false"
-    })
-    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testFooterTopicsLinkV2() throws IOException {
         setFledgePrefEnabled(true);
         startFledgeSettings();
@@ -569,25 +554,5 @@ public final class FledgeFragmentTest {
                 .check(matches(isDisplayed()));
         // Close the additional activity by navigating back.
         pressBack();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/true",
-        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
-    })
-    public void testPTBIncludesModeB() {
-        assertTrue(TopicsUtils.shouldShowProactiveTopicsBlocking());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false",
-        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
-    })
-    public void testPTBExcludesModeB() {
-        assertFalse(TopicsUtils.shouldShowProactiveTopicsBlocking());
     }
 }
