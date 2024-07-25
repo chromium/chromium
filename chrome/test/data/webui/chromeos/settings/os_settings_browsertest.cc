@@ -907,6 +907,11 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestSplitEnabled,
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampDeviceTestPeripheralAndSplitEnabled,
+                       DevicePagePerDeviceAppInstalledRow) {
+  RunSettingsTest("device_page/per_device_app_installed_row_test.js");
+}
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampDeviceTestPeripheralAndSplitEnabled,
                        DevicePagePerDeviceInstallRow) {
   RunSettingsTest("device_page/per_device_install_row_test.js");
 }
