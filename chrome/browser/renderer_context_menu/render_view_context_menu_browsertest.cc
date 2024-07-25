@@ -720,6 +720,55 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
 }
 
+// Verifies "Save as" is not enabled for links blocked via policy.
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
+                       SaveAsEntryIsDisabledForBlockedUrls) {
+  base::Value::List list;
+  list.Append("google.com");
+  browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
+                                            std::move(list));
+  base::RunLoop().RunUntilIdle();
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuMediaTypeNone(GURL(), GURL("http://www.google.com/"));
+
+  ASSERT_TRUE(menu->IsItemPresent(IDC_SAVE_PAGE));
+  EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_SAVE_PAGE));
+}
+
+// Verifies "Save image as" is not enabled for links blocked via policy.
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
+                       SaveImageAsEntryIsDisabledForBlockedUrls) {
+  base::Value::List list;
+  list.Append("url.com");
+  browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
+                                            std::move(list));
+  base::RunLoop().RunUntilIdle();
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuMediaTypeImage(GURL("http://url.com/image.png"));
+
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVEIMAGEAS));
+  EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVEIMAGEAS));
+}
+
+// Verifies "Save video as" is not enabled for links blocked via policy.
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
+                       SaveVideoAsEntryIsDisabledForBlockedUrls) {
+  base::Value::List list;
+  list.Append("example.com");
+  browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
+                                            std::move(list));
+  base::RunLoop().RunUntilIdle();
+
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(
+      GURL("http://example.com/"), GURL("http://example.com/foo.mp4"), u"",
+      blink::mojom::ContextMenuDataMediaType::kVideo, ui::MENU_SOURCE_MOUSE);
+
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVEAVAS));
+  EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVEAVAS));
+}
+
 class ContextMenuForSupervisedUsersBrowserTest
     : public ContextMenuBrowserTestBase {
  protected:

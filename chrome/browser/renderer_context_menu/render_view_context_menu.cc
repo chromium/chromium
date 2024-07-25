@@ -3678,11 +3678,20 @@ bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy() const {
   if (!local_state->GetBoolean(prefs::kAllowFileSelectionDialogs)) {
     return false;
   }
+
   // Check if all downloads are forbidden by policy.
   if (DownloadPrefs::FromBrowserContext(GetProfile())->download_restriction() ==
       DownloadPrefs::DownloadRestriction::ALL_FILES) {
     return false;
   }
+
+  PolicyBlocklistService* service =
+      PolicyBlocklistFactory::GetForBrowserContext(browser_context_);
+  if (service->GetURLBlocklistState(params_.link_url) ==
+      policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
+    return false;
+  }
+
   return true;
 }
 
@@ -3767,13 +3776,6 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
   }
 
   if (!IsSaveAsItemAllowedByUntrustedNetworkStatus()) {
-    return false;
-  }
-
-  PolicyBlocklistService* service =
-      PolicyBlocklistFactory::GetForBrowserContext(browser_context_);
-  if (service->GetURLBlocklistState(params_.link_url) ==
-      policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
     return false;
   }
 
