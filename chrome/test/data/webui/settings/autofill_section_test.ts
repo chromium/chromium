@@ -1234,6 +1234,7 @@ suite('PlusAddressesTest', function() {
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     loadTimeData.overrideValues({
       // Required to show the plus address management entry.
+      plusAddressEnabled: true,
       plusAddressManagementUrl: fakeUrl,
       // Required to show the plus address management entry in the Autofill
       // section - currently dependent on a field trial config.
@@ -1254,10 +1255,10 @@ suite('PlusAddressesTest', function() {
   });
 
   test(
-      'verifyPlusAddressManagementEntryExistenceWithoutManagementUrl',
+      'verifyPlusAddressManagementEntryExistenceWhenNotEnabled',
       async function() {
         loadTimeData.overrideValues({
-          plusAddressManagementUrl: '',
+          plusAddressEnabled: false,
         });
         const autofillSection = await createAutofillSection([], {});
 
