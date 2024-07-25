@@ -174,12 +174,28 @@ void PrerenderBrowserTest::TestPrerenderAndActivateInNewTab(
 }
 
 // An end-to-end test of prerendering in a new tab and activating.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderAndActivate_InNewTab) {
+// Disabled on Android due to failures: https://crbug.com/355255740.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PrerenderAndActivate_InNewTab \
+  DISABLED_PrerenderAndActivate_InNewTab
+#else
+#define MAYBE_PrerenderAndActivate_InNewTab PrerenderAndActivate_InNewTab
+#endif
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       MAYBE_PrerenderAndActivate_InNewTab) {
   TestPrerenderAndActivateInNewTab("clickSameSiteNewWindowLink();", true);
 }
 
+// Disabled on Android due to failures: https://crbug.com/355255740.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PrerenderAndActivate_InNewTab_Noopener \
+  DISABLED_PrerenderAndActivate_InNewTab_Noopener
+#else
+#define MAYBE_PrerenderAndActivate_InNewTab_Noopener \
+  PrerenderAndActivate_InNewTab_Noopener
+#endif
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
-                       PrerenderAndActivate_InNewTab_Noopener) {
+                       MAYBE_PrerenderAndActivate_InNewTab_Noopener) {
   TestPrerenderAndActivateInNewTab("clickSameSiteNewWindowWithNoopenerLink();",
                                    true);
 }
@@ -207,7 +223,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 }
 
 // Tests main frame navigation on a prerendered page in a new tab.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MainFrameNavigation_InNewTab) {
+// Disabled on Android due to failures: https://crbug.com/355255740.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_MainFrameNavigation_InNewTab DISABLED_MainFrameNavigation_InNewTab
+#else
+#define MAYBE_MainFrameNavigation_InNewTab MainFrameNavigation_InNewTab
+#endif
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       MAYBE_MainFrameNavigation_InNewTab) {
   base::HistogramTester histogram_tester;
   std::string link_click_script = "clickSameSiteNewWindowLink();";
 
