@@ -3821,18 +3821,20 @@ class IntegrationTestUserInSystem : public IntegrationTest {
 
  protected:
   void SetUp() override {
-    // The test can't run on Windows with UAC on because installing per-user
-    // applications by code running at high integrity levels, such as the
-    // integration test driver is not supported.
-    if (!IsSystemInstall(GetUpdaterScopeForTesting()) ||
-        WrongUser(UpdaterScope::kUser)) {
-      GTEST_SKIP();
+    if (SkipTest()) {
+      GTEST_SKIP() << "The test is skipped in this configuration";
     }
 
     IntegrationTest::SetUp();
     test_server_ = std::make_unique<ScopedServer>();
     test_server_->ConfigureTestMode(user_test_commands_.get());
     test_server_->ConfigureTestMode(test_commands_.get());
+  }
+
+  void TearDown() override {
+    if (!SkipTest()) {
+      IntegrationTest::TearDown();
+    }
   }
 
   void InstallUserUpdater(const base::Value::List& switches = {}) {
@@ -3886,6 +3888,15 @@ class IntegrationTestUserInSystem : public IntegrationTest {
   scoped_refptr<IntegrationTestCommands> user_test_commands_ =
       CreateIntegrationTestCommandsUser(UpdaterScope::kUser);
   std::unique_ptr<ScopedServer> test_server_;
+
+ private:
+  // The test can't run on Windows with UAC on because installing per-user
+  // applications by code running at high integrity levels, such as the
+  // integration test driver is not supported.
+  bool SkipTest() const {
+    return !IsSystemInstall(GetUpdaterScopeForTesting()) ||
+           WrongUser(UpdaterScope::kUser);
+  }
 };
 
 TEST_F(IntegrationTestUserInSystem, TagNonInterference) {
