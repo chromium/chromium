@@ -61,7 +61,7 @@ TEST(AXPlatformUniqueIdTest, UnassignedIdsAreReused) {
 }
 
 TEST(AXPlatformUniqueIdTest, DoesCreateCorrectId) {
-  int kLargerThanMaxId = kMaxId * 2;
+  constexpr int kLargerThanMaxId = kMaxId * 2;
   std::unique_ptr<AXUniqueId> ids[kLargerThanMaxId];
   // Creates and releases to fill up the internal static counter.
   for (int i = 0; i < kLargerThanMaxId; i++) {
