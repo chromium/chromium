@@ -36,6 +36,7 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
   enable_rcs = False
   enable_details = False
   iteration_count = None
+  take_memory_measurement = False
 
   @classmethod
   def GetStoryClass(cls):
@@ -56,7 +57,8 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
 
     story_set.AddStory(
         story_cls(story_set, should_filter_suites, filtered_suite_names,
-                  iteration_count, self.enable_details))
+                  iteration_count, self.enable_details,
+                  self.take_memory_measurement))
     return story_set
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
@@ -64,6 +66,9 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
       return timeline_based_measurement.Options()
 
     cat_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter()
+
+    if self.take_memory_measurement:
+      cat_filter.AddDisabledByDefault('disabled-by-default-memory-infra')
 
     # "blink.console" is used for marking ranges in
     # cache_temperature.MarkTelemetryInternal.

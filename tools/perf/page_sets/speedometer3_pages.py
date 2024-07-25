@@ -51,12 +51,14 @@ class _Speedometer3Story(press_story.PressStory):
                should_filter_suites,
                filtered_suite_names=None,
                iterations=None,
-               enable_details=False):
+               enable_details=False,
+               take_memory_measurement=False):
     super(_Speedometer3Story, self).__init__(page_set)
     self._should_filter_suites = should_filter_suites
     self._filtered_suite_names = filtered_suite_names
     self._iterations = iterations
     self._enable_details = enable_details
+    self._take_memory_measurement = take_memory_measurement
 
   @staticmethod
   def GetSuites(suite_regex):
@@ -114,6 +116,8 @@ class _Speedometer3Story(press_story.PressStory):
         }
         """)
     action_runner.WaitForJavaScriptCondition('testDone', timeout=900)
+    if self._take_memory_measurement:
+      action_runner.MeasureMemory(deterministic_mode=True)
 
   def ParseTestResults(self, action_runner):
     # Extract the timings for each suite

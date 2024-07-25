@@ -245,6 +245,28 @@ class AndroidProfileTool:
     self._DeleteDeviceData()
     return data
 
+  def CollectSpeedometerProfile(self, apk: str):
+    """Run Speedometer 3 and collect log files
+
+    Args:
+      apk: The location of the chrome apk to profile.
+
+    Returns:
+      A list of cygprofile data files
+    """
+    logging.info('Running Speedometer 3 profile')
+    profile_benchmark = 'orderfile_generation.speedometer3'
+    self._SetUpDeviceFolders()
+    cmd = [
+        'tools/perf/run_benchmark', '--device', self._device.serial,
+        '--browser=exact', '--browser-executable', apk, profile_benchmark
+    ] + ['-v'] * self._verbosity
+    logging.debug('Running telemetry command: %s', cmd)
+    self._RunCommand(cmd)
+    data = self._PullProfileData(profile_benchmark)
+    self._DeleteDeviceData()
+    return data
+
   def CollectWebViewStartupProfile(self, apk: str):
     """Run the given benchmark and collect the generated profiles.
 

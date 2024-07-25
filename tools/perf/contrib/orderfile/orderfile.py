@@ -39,7 +39,7 @@ that is useful for debugging hardware and test setup problems.
 
 import random
 
-from benchmarks import system_health
+from benchmarks import system_health, speedometer3
 from page_sets.system_health import platforms
 from page_sets.system_health import system_health_stories
 from telemetry import benchmark
@@ -328,3 +328,13 @@ class OrderfileWebViewDebugging(OrderfileWebViewStartup):
   @classmethod
   def Name(cls):
     return 'orderfile_generation.webview_startup_debugging'
+
+
+@benchmark.Owner(emails=['rasikan@google.com'])
+class OrderfileSpeedometer3(speedometer3.Speedometer3):
+  enable_systrace = True
+  take_memory_measurement = True
+
+  @classmethod
+  def Name(cls):
+    return 'orderfile_generation.speedometer3'
