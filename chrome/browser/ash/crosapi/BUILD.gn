@@ -395,7 +395,6 @@ source_set("crosapi") {
     "//chromeos/crosapi/mojom",
     "//chromeos/dbus/power",
     "//chromeos/printing",
-    "//chromeos/services/chromebox_for_meetings/public/cpp",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/startup",

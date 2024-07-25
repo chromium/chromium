@@ -117,7 +117,6 @@ import "chromeos/crosapi/mojom/tts.mojom";
 import "chromeos/crosapi/mojom/trusted_vault.mojom";
 import "chromeos/crosapi/mojom/url_handler.mojom";
 import "chromeos/crosapi/mojom/vpn_service.mojom";
-import "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "chromeos/crosapi/mojom/video_capture.mojom";
 import "chromeos/crosapi/mojom/video_conference.mojom";
@@ -167,8 +166,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 141
-// Next method id: 143
+// Next version: 140
+// Next method id: 142
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -258,13 +257,6 @@ interface Crosapi {
   // Added in M102.
   [MinVersion=83]
   BindCertProvisioning@86(pending_receiver<CertProvisioning> receiver);
-
-  // Binds the CfmServiceContext interface for communicating with the Hotline
-  // daemon available only on Meet Devices platforms
-  // Added in M86.
-  [MinVersion=140]
-  BindCfmServiceContext@142(
-      pending_receiver<chromeos.cfm.mojom.CfmServiceContext> receiver);
 
   // Binds the ChapsService interface for communicating with the Chaps daemon.
   // Added in M121.

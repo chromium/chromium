@@ -201,9 +201,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::CertDatabase> receiver) override;
   void BindCertProvisioning(
       mojo::PendingReceiver<mojom::CertProvisioning> receiver) override;
-  void BindCfmServiceContext(
-      mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext> receiver)
-      override;
   void BindChapsService(
       mojo::PendingReceiver<mojom::ChapsService> receiver) override;
   void BindChromeAppKioskService(
