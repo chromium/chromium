@@ -1,0 +1,31 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+tr:nth-child(odd) {
+  background: rgb(239, 243, 255);
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ cr-expand-button {
+   padding-inline-start: 1em;
+ }
+
+ cr-expand-button:hover {
+   filter: contrast(1.1);
+   text-decoration: underline;
+ }
+
+.unloaded {
+  opacity: 50%;
+}

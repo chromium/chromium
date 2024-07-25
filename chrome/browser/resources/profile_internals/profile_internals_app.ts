@@ -6,36 +6,43 @@ import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import './strings.m.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './profile_internals_app.html.js';
+import {getCss} from './profile_internals_app.css.js';
+import {getHtml} from './profile_internals_app.html.js';
 import type {ProfileInternalsBrowserProxy, ProfileState, ProfileStateElement} from './profile_internals_browser_proxy.js';
 import {ProfileInternalsBrowserProxyImpl} from './profile_internals_browser_proxy.js';
 
-const ProfileInternalsAppElementBase = WebUiListenerMixin(PolymerElement);
+const ProfileInternalsAppElementBase = WebUiListenerMixinLit(CrLitElement);
 
 export class ProfileInternalsAppElement extends ProfileInternalsAppElementBase {
   static get is() {
     return 'profile-internals-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * Profiles list supplied by ProfileInternalsBrowserProxy.
        */
-      profilesList_: {type: Array, value: () => []},
+      profilesList_: {type: Array},
     };
   }
 
   private profileInternalsBrowserProxy_: ProfileInternalsBrowserProxy =
       ProfileInternalsBrowserProxyImpl.getInstance();
-  private profilesList_: ProfileStateElement[];
+
+  protected profilesList_: ProfileStateElement[] = [];
 
   override connectedCallback() {
     super.connectedCallback();
@@ -58,6 +65,15 @@ export class ProfileInternalsAppElement extends ProfileInternalsAppElementBase {
           className: profile.isLoaded ? 'loaded' : 'unloaded',
           expanded: profilesExpanded.get(profile.profilePath) ?? false,
         }));
+  }
+
+  protected onExpandedChanged_(event: CustomEvent<{value: boolean}>) {
+    const currentTarget = event.currentTarget as HTMLElement;
+    const index = Number(currentTarget.dataset['index']);
+    const profile = this.profilesList_[index];
+    assert(profile);
+    profile.expanded = event.detail.value;
+    this.requestUpdate();
   }
 }
 
