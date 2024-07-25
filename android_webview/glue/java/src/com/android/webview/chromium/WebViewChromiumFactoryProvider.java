@@ -407,9 +407,12 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
             AndroidXProcessGlobalConfig.extractConfigFromApp(application.getClassLoader());
 
+            // Temporarily disable CHIPS until the CookieManager API supports the feature.
+            CommandLine cl = CommandLine.getInstance();
+            cl.appendSwitch("disable-partitioned-cookies");
+
             boolean multiProcess = webViewDelegate.isMultiProcessEnabled();
             if (multiProcess) {
-                CommandLine cl = CommandLine.getInstance();
                 cl.appendSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
             }
             Log.i(
@@ -424,14 +427,12 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
             // Enable modern SameSite cookie behavior if the app targets at least S.
             if (ctx.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.S) {
-                CommandLine cl = CommandLine.getInstance();
                 cl.appendSwitch(AwSwitches.WEBVIEW_ENABLE_MODERN_COOKIE_SAME_SITE);
             }
 
             // Enable logging JS console messages in system logs only if the app is debuggable or
             // it's a debuggable android build.
             if (BuildInfo.isDebugAndroidOrApp()) {
-                CommandLine cl = CommandLine.getInstance();
                 cl.appendSwitch(AwSwitches.WEBVIEW_LOG_JS_CONSOLE_MESSAGES);
             }
 
