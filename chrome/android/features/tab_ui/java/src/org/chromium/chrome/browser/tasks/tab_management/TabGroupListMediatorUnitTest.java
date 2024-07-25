@@ -682,7 +682,11 @@ public class TabGroupListMediatorUnitTest {
                         /* avatarUrl= */ null);
         GroupMember[] groupMemberArray = new GroupMember[] {groupMember};
         GroupData groupData =
-                new GroupData(COLLABORATION_ID1, /* displayName= */ null, groupMemberArray);
+                new GroupData(
+                        COLLABORATION_ID1,
+                        /* displayName= */ null,
+                        groupMemberArray,
+                        /* groupToken= */ null);
         GroupDataOrFailureOutcome outcome =
                 new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
         mReadGroupCallbackCaptor.getValue().onResult(outcome);
@@ -745,7 +749,11 @@ public class TabGroupListMediatorUnitTest {
                         /* avatarUrl= */ null);
         GroupMember[] groupMemberArray = new GroupMember[] {groupMember1, groupMember2};
         GroupData groupData =
-                new GroupData(COLLABORATION_ID1, /* displayName= */ null, groupMemberArray);
+                new GroupData(
+                        COLLABORATION_ID1,
+                        /* displayName= */ null,
+                        groupMemberArray,
+                        /* groupToken= */ null);
         GroupDataOrFailureOutcome outcome =
                 new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
         mReadGroupCallbackCaptor.getValue().onResult(outcome);

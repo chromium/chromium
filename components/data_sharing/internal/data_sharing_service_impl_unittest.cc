@@ -146,10 +146,11 @@ TEST_F(DataSharingServiceImplTest, ShouldCreateGroup) {
   ASSERT_TRUE(outcome.has_value());
   EXPECT_THAT(outcome->display_name, Eq(display_name));
 
-  ASSERT_TRUE(not_owned_sdk_delegate_->GetGroup(outcome->group_id).has_value());
-  EXPECT_THAT(
-      not_owned_sdk_delegate_->GetGroup(outcome->group_id)->display_name(),
-      Eq(display_name));
+  ASSERT_TRUE(not_owned_sdk_delegate_->GetGroup(outcome->group_token.group_id)
+                  .has_value());
+  EXPECT_THAT(not_owned_sdk_delegate_->GetGroup(outcome->group_token.group_id)
+                  ->display_name(),
+              Eq(display_name));
 }
 
 TEST_F(DataSharingServiceImplTest, ShouldDeleteGroup) {
@@ -191,7 +192,7 @@ TEST_F(DataSharingServiceImplTest, ShouldReadGroup) {
 
   ASSERT_TRUE(outcome.has_value());
   EXPECT_THAT(outcome->display_name, Eq(display_name));
-  EXPECT_THAT(outcome->group_id, Eq(group_id));
+  EXPECT_THAT(outcome->group_token.group_id, Eq(group_id));
 }
 
 TEST_F(DataSharingServiceImplTest, ShouldReadAllGroups) {
@@ -235,9 +236,9 @@ TEST_F(DataSharingServiceImplTest, ShouldReadAllGroups) {
   const GroupData& group1 = *outcome->begin();
   const GroupData& group2 = *(++outcome->begin());
   EXPECT_THAT(group1.display_name, Eq(display_name1));
-  EXPECT_THAT(group1.group_id, Eq(group_id1));
+  EXPECT_THAT(group1.group_token.group_id, Eq(group_id1));
   EXPECT_THAT(group2.display_name, Eq(display_name2));
-  EXPECT_THAT(group2.group_id, Eq(group_id2));
+  EXPECT_THAT(group2.group_token.group_id, Eq(group_id2));
 }
 
 TEST_F(DataSharingServiceImplTest, ShouldInviteMember) {

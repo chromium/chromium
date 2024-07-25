@@ -36,8 +36,32 @@ struct GroupMember {
   GURL avatar_url;
 };
 
+struct GroupToken {
+  GroupToken();
+
+  GroupToken(GroupId group_id, std::string access_token);
+
+  GroupToken(const GroupToken&);
+  GroupToken& operator=(const GroupToken&);
+
+  GroupToken(GroupToken&&);
+  GroupToken& operator=(GroupToken&&);
+
+  ~GroupToken();
+
+  bool IsValid() const;
+
+  GroupId group_id;
+  std::string access_token;
+};
+
 struct GroupData {
   GroupData();
+
+  GroupData(GroupId group_id,
+            std::string display_name,
+            std::vector<GroupMember> members,
+            std::string access_token);
 
   GroupData(const GroupData&);
   GroupData& operator=(const GroupData&);
@@ -47,7 +71,7 @@ struct GroupData {
 
   ~GroupData();
 
-  GroupId group_id;
+  GroupToken group_token;
   std::string display_name;
   std::vector<GroupMember> members;
 };

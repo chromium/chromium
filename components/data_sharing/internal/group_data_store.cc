@@ -15,8 +15,8 @@ GroupDataStore::~GroupDataStore() = default;
 
 void GroupDataStore::StoreGroupData(const VersionToken& version_token,
                                     const GroupData& group_data) {
-  group_id_to_data_[group_data.group_id] = group_data;
-  group_id_to_version_token_[group_data.group_id] = version_token;
+  group_id_to_data_[group_data.group_token.group_id] = group_data;
+  group_id_to_version_token_[group_data.group_token.group_id] = version_token;
 }
 
 void GroupDataStore::DeleteGroupData(const GroupId& group_id) {

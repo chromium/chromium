@@ -27,7 +27,7 @@ class GroupDataStoreTest : public testing::Test {
 TEST_F(GroupDataStoreTest, ShouldStoreAndGetGroupData) {
   const GroupId group_id("test_group_id");
   GroupData group_data;
-  group_data.group_id = group_id;
+  group_data.group_token.group_id = group_id;
   group_data.display_name = "Test group";
 
   const VersionToken version_token("test_version_token");
@@ -36,7 +36,7 @@ TEST_F(GroupDataStoreTest, ShouldStoreAndGetGroupData) {
 
   auto stored_group_data = store().GetGroupData(group_id);
   ASSERT_TRUE(stored_group_data.has_value());
-  EXPECT_THAT(stored_group_data->group_id, Eq(group_id));
+  EXPECT_THAT(stored_group_data->group_token.group_id, Eq(group_id));
   EXPECT_THAT(stored_group_data->display_name, Eq(group_data.display_name));
 
   auto stored_version_token = store().GetGroupVersionToken(group_id);
@@ -47,7 +47,7 @@ TEST_F(GroupDataStoreTest, ShouldStoreAndGetGroupData) {
 TEST_F(GroupDataStoreTest, ShouldDeleteGroupData) {
   const GroupId group_id("test_group_id");
   GroupData group_data;
-  group_data.group_id = group_id;
+  group_data.group_token.group_id = group_id;
 
   const VersionToken version_token("test_version_token");
 
@@ -66,11 +66,11 @@ TEST_F(GroupDataStoreTest, ShouldGetAllGroupsIds) {
 
   const GroupId group_id1("test_group_id1");
   GroupData group_data1;
-  group_data1.group_id = group_id1;
+  group_data1.group_token.group_id = group_id1;
 
   const GroupId group_id2("test_group_id2");
   GroupData group_data2;
-  group_data2.group_id = group_id2;
+  group_data2.group_token.group_id = group_id2;
 
   store().StoreGroupData(version_token, group_data1);
   store().StoreGroupData(version_token, group_data2);

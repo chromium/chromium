@@ -448,13 +448,13 @@ void DataSharingServiceImpl::OnReadGroupsToNotifyObserversCompleted(
        read_groups_result.value().group_data()) {
     GroupData group_data = GroupDataFromProto(group_data_proto);
 
-    if (added_group_ids.count(group_data.group_id) > 0) {
+    if (added_group_ids.count(group_data.group_token.group_id) > 0) {
       for (auto& observer : observers_) {
         observer.OnGroupAdded(group_data);
       }
     }
 
-    if (updated_group_ids.count(group_data.group_id) > 0) {
+    if (updated_group_ids.count(group_data.group_token.group_id) > 0) {
       for (auto& observer : observers_) {
         observer.OnGroupChanged(group_data);
       }

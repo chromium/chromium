@@ -289,11 +289,13 @@ public class TabGroupListMediator {
         for (GroupMember member : groupData.members) {
             if (Objects.equals(accountId, member.gaiaId)) {
                 if (member.role == MemberRole.OWNER) {
-                    model.set(DELETE_RUNNABLE, () -> processDeleteSharedGroup(groupData.groupId));
+                    model.set(
+                            DELETE_RUNNABLE,
+                            () -> processDeleteSharedGroup(groupData.groupToken.groupId));
                 } else {
                     model.set(
                             LEAVE_RUNNABLE,
-                            () -> processLeaveGroup(groupData.groupId, member.email));
+                            () -> processLeaveGroup(groupData.groupToken.groupId, member.email));
                 }
                 return;
             }

@@ -25,16 +25,18 @@ namespace {
 const char kGroup1Id[] = "g1";
 const char kGroup1Name[] = "group1";
 const char kMemberName[] = "John Doe";
+const char kAccessToken[] = "Access Token";
 const data_sharing::MemberRole kMemberRole = data_sharing::MemberRole::kOwner;
 
 data_sharing::GroupData GetTestGroupData() {
   data_sharing::GroupData data;
-  data.group_id = data_sharing::GroupId(kGroup1Id);
+  data.group_token.group_id = data_sharing::GroupId(kGroup1Id);
   data.display_name = kGroup1Name;
   data_sharing::GroupMember member;
   member.display_name = kMemberName;
   member.role = kMemberRole;
   data.members.emplace_back(member);
+  data.group_token.access_token = kAccessToken;
   return data;
 }
 
@@ -140,6 +142,7 @@ TEST_F(DataSharingInternalsPageHandlerImplTest, GetAllGroups) {
         ASSERT_EQ(result[0]->members[0]->display_name, kMemberName);
         ASSERT_EQ(result[0]->members[0]->role,
                   data_sharing_internals::mojom::RoleType::OWNER);
+        ASSERT_EQ(result[0]->access_token, kAccessToken);
         run_loop->Quit();
       },
       &run_loop));

@@ -30,4 +30,5 @@ message GroupData {
   optional string group_id = 1;
   optional string display_name = 2;
   repeated GroupMember members = 3;
+  optional string access_token = 4;
 };
