@@ -516,6 +516,7 @@ static_library("crosapi") {
 
   public_deps = [
     ":browser_util",
+    "//chrome/browser/ui/webui/ash/parent_access",
     "//media/gpu:buildflags",
     "//printing",
   ]
@@ -693,6 +694,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/desks",
     "//chrome/browser/ui/ash/picker",
     "//chrome/browser/ui/ash/shelf",
+    "//chrome/browser/ui/webui/ash/parent_access",
     "//chrome/common/printing",
     "//chrome/test:test_support",
     "//chromeos/ash/components/channel",

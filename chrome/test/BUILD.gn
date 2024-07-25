@@ -4753,9 +4753,6 @@ if (!is_android) {
         "../browser/ui/webui/ash/login/oobe_display_chooser_browsertest.cc",
         "../browser/ui/webui/ash/login/testapi/oobe_test_api_browsertest.cc",
         "../browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_dialog_browsertest.cc",
-        "../browser/ui/webui/ash/parent_access/parent_access_browsertest_base.cc",
-        "../browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h",
-        "../browser/ui/webui/ash/parent_access/parent_access_dialog_browsertest.cc",
         "../browser/ui/webui/ash/settings/integration_tests/os_settings_auto_screen_lock_browsertest.cc",
         "../browser/ui/webui/ash/settings/integration_tests/os_settings_lock_screen_authentication_browsertest.cc",
         "../browser/ui/webui/ash/settings/integration_tests/os_settings_notification_settings_browsertest.cc",
@@ -4985,6 +4982,7 @@ if (!is_android) {
         "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
         "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings",
         "//chrome/browser/ui/webui/ash/manage_mirrorsync:mojo_bindings",
+        "//chrome/browser/ui/webui/ash/parent_access",
         "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",
         "//chrome/browser/ui/webui/ash/parent_access:proto",
         "//chrome/browser/ui/webui/ash/settings/pages/files/mojom",
@@ -5141,6 +5139,7 @@ if (!is_android) {
 
         # Gather browser tests from //c/b/ui/webui/ash subdirectories:
         "//chrome/browser/ui/webui/ash/office_fallback:browser_tests",
+        "//chrome/browser/ui/webui/ash/parent_access:browser_tests",
         "//chrome/browser/ui/webui/ash/skyvault:browser_tests",
       ]
     }
@@ -8836,6 +8835,7 @@ test("unit_tests") {
       # Gather unit tests from //c/b/ui/webui/ash subdirectories:
       "//chrome/browser/ui/webui/ash/emoji:unit_tests",
       "//chrome/browser/ui/webui/ash/mako:unit_tests",
+      "//chrome/browser/ui/webui/ash/parent_access:unit_tests",
       "//chrome/browser/ui/webui/ash/sensor_info:unit_tests",
     ]
 
@@ -9431,7 +9431,6 @@ test("unit_tests") {
         "../browser/extensions/system_display/display_info_provider_chromeos_unittest.cc",
         "../browser/media_galleries/chromeos/mtp_device_object_enumerator_unittest.cc",
         "../browser/policy/restricted_mgs_policy_provider_ash_unittest.cc",
-        "../browser/ui/webui/ash/parent_access/parent_access_ui_handler_impl_unittest.cc",
         "../common/chromeos/extensions/chromeos_system_extension_info_unittest.cc",
         "../common/chromeos/extensions/manifest_tests/extension_manifests_chromeos_system_extension_unittest.cc",
         "../renderer/extensions/api/accessibility_private_hooks_delegate_unittest.cc",

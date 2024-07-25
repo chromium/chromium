@@ -5466,6 +5466,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/emoji",
       "//chrome/browser/ui/webui/ash/mako",
       "//chrome/browser/ui/webui/ash/office_fallback",
+      "//chrome/browser/ui/webui/ash/parent_access",
       "//chrome/browser/ui/webui/ash/sensor_info",
       "//chrome/browser/ui/webui/ash/vm",
       "//chrome/services/sharing/public/cpp",
@@ -5803,6 +5804,7 @@ static_library("browser") {
       "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/ash/user_education",
       "//chrome/browser/ui/webui/ash/emoji",
+      "//chrome/browser/ui/webui/ash/parent_access",
       "//chrome/browser/ui/webui/ash/sensor_info",
     ]
 
