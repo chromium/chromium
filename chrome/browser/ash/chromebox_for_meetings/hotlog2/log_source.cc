@@ -44,6 +44,12 @@ std::unique_ptr<LogSource> LogSource::Create(const std::string& filename,
     return std::make_unique<AuditLogSource>(poll_rate, batch_size);
   } else if (filename == kCfmBiosInfoLogFile) {
     return std::make_unique<BiosInfoLogSource>(poll_rate, batch_size);
+  } else if (filename == kCfmEventlogLogFile) {
+    return std::make_unique<EventlogLogSource>(poll_rate, batch_size);
+  } else if (filename == kCfmLacrosLogFile) {
+    return std::make_unique<LacrosLogSource>(poll_rate, batch_size);
+  } else if (filename == kCfmVariationsListLogFile) {
+    return std::make_unique<VariationsListLogSource>(poll_rate, batch_size);
   }
 
   return std::make_unique<LogSource>(filename, poll_rate, batch_size);
