@@ -7,8 +7,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -133,9 +135,13 @@ void LensOverlayPageActionIconView::OnBoundsChanged(
 }
 
 void LensOverlayPageActionIconView::UpdateImpl() {
-  bool enabled = browser_->profile()->GetPrefs()->GetBoolean(
+  // There are 4 reasons why the lens page action may be hidden.
+  // (1) It may be hidden by pref.
+  bool enabled_by_pref = browser_->profile()->GetPrefs()->GetBoolean(
       omnibox::kShowGoogleLensShortcut);
 
+  // (2) It will always be hidden if the location bar is not focused, or if a
+  // feature flag has been set.
   bool location_bar_has_focus = false;
   if (BrowserView* const browser_view =
           BrowserView::GetBrowserViewForBrowser(browser_);
@@ -145,20 +151,29 @@ void LensOverlayPageActionIconView::UpdateImpl() {
           focus_manager->GetFocusedView());
     }
   }
+  if (lens::features::IsOmniboxEntrypointAlwaysVisible()) {
+    location_bar_has_focus = true;
+  }
 
+  // (3) It is always hidden in the NTP.
   // The overlay is unavailable on the NTP as it is unlikely to be useful to
   // users on the page, it would also appear immediately when a new tab or
   // window is created due to focus immediatey jumping into the location bar.
-  auto* web_Contents = GetWebContents();
-  const bool lens_overlay_available =
-      web_Contents &&
-      LensOverlayController::GetController(web_Contents) != nullptr &&
-      !IsNewTabPage(web_Contents);
+  // `tab` is nullptr during construction of class Browser, during LocationBar
+  // construction.
+  auto* tab = browser_->GetActiveTabInterface();
+  const bool is_ntp = tab && IsNewTabPage(tab->GetContents());
 
-  const bool should_show_lens_overlay =
-      enabled && lens_overlay_available &&
-      (lens::features::IsOmniboxEntrypointAlwaysVisible() ||
-       location_bar_has_focus);
+  // (4) The broader lens feature may be disabled for a number of reasons.
+  // `controller` is nullptr during construction of class Browser, during
+  // LocationBar construction.
+  auto* controller =
+      browser_->GetFeatures().lens_overlay_entry_point_controller();
+  const bool is_broader_feature_enabled = controller && controller->IsEnabled();
+
+  const bool should_show_lens_overlay = enabled_by_pref &&
+                                        location_bar_has_focus && !is_ntp &&
+                                        is_broader_feature_enabled;
   SetVisible(should_show_lens_overlay);
   ResetSlideAnimation(true);
 
