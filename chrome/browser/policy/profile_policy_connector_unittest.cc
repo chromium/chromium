@@ -59,14 +59,6 @@ using testing::SizeIs;
 namespace policy {
 namespace {
 
-constexpr char kProfileIsAffiliatedHistogramName[] =
-    "Enterprise.ProfileAffiliation.IsAffiliated";
-constexpr char kUnaffiliatedReasonHistogramName[] =
-    "Enterprise.ProfileAffiliation.UnaffiliatedReason";
-
-constexpr char kAffiliationId1[] = "id1";
-constexpr char kAffiliationId2[] = "id2";
-
 // Waits for a PolicyService to notify its observers that initialization of a
 // PolicyDomain has finished.
 class PolicyServiceInitializedWaiter : PolicyService::Observer {
@@ -498,109 +490,6 @@ TEST_F(ProfilePolicyConnectorTest, LocalTestProviderUseAndRevert) {
   // Cleanup.
   g_browser_process->browser_policy_connector()
       ->SetLocalTestPolicyProviderForTesting(nullptr);
-  connector.Shutdown();
-}
-
-TEST_F(ProfilePolicyConnectorTest, AffiliationMetrics_UserUnmanaged) {
-  base::HistogramTester histogram_tester;
-
-  ProfilePolicyConnector connector;
-  connector.Init(nullptr /* user */, &schema_registry_,
-                 cloud_policy_manager_.get(), cloud_policy_store_.get(),
-                 g_browser_process->browser_policy_connector(), false);
-  cloud_policy_store_->NotifyStoreLoaded();
-  PolicyServiceInitializedWaiter(connector.policy_service(),
-                                 POLICY_DOMAIN_CHROME)
-      .Wait();
-
-  histogram_tester.ExpectBucketCount(kProfileIsAffiliatedHistogramName, false,
-                                     1);
-  histogram_tester.ExpectBucketCount(kUnaffiliatedReasonHistogramName,
-                                     0 /* kUserUnmanaged */, 1);
-
-  // Cleanup.
-  connector.Shutdown();
-}
-
-TEST_F(ProfilePolicyConnectorTest, AffiliationMetrics_DeviceUnmanaged) {
-  base::HistogramTester histogram_tester;
-  cloud_policy_store_->policy_map_.SetUserAffiliationIds({kAffiliationId1});
-
-  ProfilePolicyConnector connector;
-  connector.Init(nullptr /* user */, &schema_registry_,
-                 cloud_policy_manager_.get(), cloud_policy_store_.get(),
-                 g_browser_process->browser_policy_connector(), false);
-
-  auto policy = std::make_unique<enterprise_management::PolicyData>();
-  cloud_policy_store_->set_policy_data_for_testing(std::move(policy));
-  cloud_policy_store_->NotifyStoreLoaded();
-  PolicyServiceInitializedWaiter(connector.policy_service(),
-                                 POLICY_DOMAIN_CHROME)
-      .Wait();
-
-  histogram_tester.ExpectBucketCount(kProfileIsAffiliatedHistogramName, false,
-                                     1);
-  histogram_tester.ExpectBucketCount(kUnaffiliatedReasonHistogramName,
-                                     1 /* kUserByCloudAndDeviceUnmanaged */, 1);
-
-  // Cleanup.
-  connector.Shutdown();
-}
-
-TEST_F(ProfilePolicyConnectorTest,
-       AffiliationMetrics_DeviceByCloudUnaffiliated) {
-  base::HistogramTester histogram_tester;
-  cloud_policy_store_->policy_map_.SetUserAffiliationIds({kAffiliationId1});
-  cloud_policy_store_->policy_map_.SetDeviceAffiliationIds({kAffiliationId2});
-
-  ProfilePolicyConnector connector;
-  connector.Init(nullptr /* user */, &schema_registry_,
-                 cloud_policy_manager_.get(), cloud_policy_store_.get(),
-                 g_browser_process->browser_policy_connector(), false);
-
-  auto policy = std::make_unique<enterprise_management::PolicyData>();
-  cloud_policy_store_->set_policy_data_for_testing(std::move(policy));
-  cloud_policy_store_->NotifyStoreLoaded();
-  PolicyServiceInitializedWaiter(connector.policy_service(),
-                                 POLICY_DOMAIN_CHROME)
-      .Wait();
-
-  histogram_tester.ExpectBucketCount(kProfileIsAffiliatedHistogramName, false,
-                                     1);
-  histogram_tester.ExpectBucketCount(kUnaffiliatedReasonHistogramName,
-                                     3 /* kUserAndDeviceByCloudUnaffiliated */,
-                                     1);
-
-  // Cleanup.
-  connector.Shutdown();
-}
-
-TEST_F(ProfilePolicyConnectorTest, AffiliationMetrics_Affiliated) {
-  base::HistogramTester histogram_tester;
-  cloud_policy_store_->policy_map_.SetUserAffiliationIds({kAffiliationId1});
-  cloud_policy_store_->policy_map_.SetDeviceAffiliationIds({kAffiliationId1});
-
-  ProfilePolicyConnector connector;
-  connector.Init(nullptr /* user */, &schema_registry_,
-                 cloud_policy_manager_.get(), cloud_policy_store_.get(),
-                 g_browser_process->browser_policy_connector(), false);
-
-  auto policy = std::make_unique<enterprise_management::PolicyData>();
-  cloud_policy_store_->set_policy_data_for_testing(std::move(policy));
-  cloud_policy_store_->NotifyStoreLoaded();
-  PolicyServiceInitializedWaiter(connector.policy_service(),
-                                 POLICY_DOMAIN_CHROME)
-      .Wait();
-
-  histogram_tester.ExpectUniqueSample(kProfileIsAffiliatedHistogramName, true,
-                                      1);
-
-  // Fast forward to ensure the timer results in recording the metrics again.
-  task_environment_.FastForwardBy(base::Days(8));
-  histogram_tester.ExpectUniqueSample(kProfileIsAffiliatedHistogramName, true,
-                                      2);
-
-  // Cleanup.
   connector.Shutdown();
 }
 
