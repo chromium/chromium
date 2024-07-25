@@ -25,6 +25,7 @@ static_library("extended_updates") {
   public_deps = [
     ":mojo_bindings",
     "//base",
+    "//chrome/browser/ui/webui/ash",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//ui/web_dialogs",

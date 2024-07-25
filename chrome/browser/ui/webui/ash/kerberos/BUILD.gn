@@ -17,6 +17,7 @@ static_library("kerberos") {
   public_deps = [
     "//ash/webui/common:chrome_os_webui_config",
     "//base",
+    "//chrome/browser/ui/webui/ash",
     "//chrome/common",
     "//content/public/common",
     "//ui/web_dialogs",

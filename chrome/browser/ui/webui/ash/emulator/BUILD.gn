@@ -31,7 +31,7 @@ static_library("emulator") {
     "//ash/webui/common:trusted_types_util",
     "//chrome/browser:resources",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/audio",
     "//chromeos/dbus/power",

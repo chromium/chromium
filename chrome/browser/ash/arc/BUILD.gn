@@ -74,6 +74,7 @@ static_library("arc") {
     "//chrome/browser/image_decoder",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:component_extension_resources_grit",
+    "//chrome/browser/ui/webui/ash",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",

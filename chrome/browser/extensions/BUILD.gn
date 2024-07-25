@@ -1305,6 +1305,7 @@ source_set("extensions") {
       "//chrome/browser/ui/ash/keyboard",
       "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/ash/shelf/app_service",
+      "//chrome/browser/ui/webui/ash",
       "//chromeos/ash/components/attestation",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/cryptohome",
@@ -1404,6 +1405,7 @@ source_set("extensions") {
       "//chrome/browser/ash/system_logs",
       "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/ash/shelf/app_service",
+      "//chrome/browser/ui/webui/ash",
     ]
 
     if (is_cfm) {

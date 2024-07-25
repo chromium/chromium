@@ -28,6 +28,7 @@ static_library("manage_mirrorsync") {
   public_deps = [
     ":mojo_bindings",
     "//base",
+    "//chrome/browser/ui/webui/ash",
     "//chrome/common",
     "//components/drive",
     "//content/public/browser",

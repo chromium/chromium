@@ -435,6 +435,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash/keyboard",
+    "//chrome/browser/ui/webui/ash",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos:test_utils",

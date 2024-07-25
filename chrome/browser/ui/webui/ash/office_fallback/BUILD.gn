@@ -28,6 +28,7 @@ static_library("office_fallback") {
     ":mojo_bindings",
     "//ash/constants",
     "//base",
+    "//chrome/browser/ui/webui/ash",
     "//chrome/common",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",

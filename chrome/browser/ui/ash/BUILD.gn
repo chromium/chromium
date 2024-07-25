@@ -224,6 +224,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/user_education",
     "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
     "//chrome/browser/ui/quick_answers",
+    "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/lock_screen_reauth",
     "//chrome/browser/ui/webui/ash/multidevice_setup",
     "//chrome/browser/web_applications",
@@ -316,6 +317,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/sharesheet",
     "//chrome/browser/ui/ash/picker",
     "//chrome/browser/ui/ash/shelf",
+    "//chrome/browser/ui/webui/ash",
   ]
 }
 

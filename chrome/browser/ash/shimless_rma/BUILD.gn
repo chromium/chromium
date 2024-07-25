@@ -32,6 +32,7 @@ static_library("shimless_rma") {
     "//chrome/browser/ash/system",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash",
     "//chrome/browser/web_applications",
     "//chrome/common:constants",
     "//chrome/common/chromeos/extensions",

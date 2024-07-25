@@ -52,6 +52,7 @@ static_library("system_web_apps") {
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/ash/system_web_apps/apps/media_app",
     "//chrome/browser/chromeos/app_mode",
+    "//chrome/browser/ui/webui/ash",
   ]
 
   # TODO(crbug.com/40251081): Remove circular includes.
@@ -69,5 +70,6 @@ static_library("system_web_apps") {
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/ash/system_web_apps/apps/media_app",
     "//chrome/browser/chromeos/app_mode",
+    "//chrome/browser/ui/webui/ash",
   ]
 }

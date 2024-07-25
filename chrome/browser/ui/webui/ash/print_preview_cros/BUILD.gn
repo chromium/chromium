@@ -14,6 +14,7 @@ static_library("print_preview_cros") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ui/webui/ash",
     "//ui/gfx",
   ]
 

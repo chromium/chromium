@@ -29,6 +29,10 @@ static_library("tablet_mode") {
     "//ui/base",
     "//ui/display",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ui/webui/ash" ]
+  }
 }
 
 if (is_chromeos_ash) {

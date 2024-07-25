@@ -40,6 +40,7 @@ static_library("parent_access") {
     ":mojo_bindings",
     ":proto",
     "//base",
+    "//chrome/browser/ui/webui/ash",
     "//chrome/common",
     "//components/signin/public/identity_manager",
     "//content/public/browser",

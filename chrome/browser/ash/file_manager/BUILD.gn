@@ -157,6 +157,7 @@ static_library("file_manager") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/smb_client",
     "//chrome/browser/profiles",
+    "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings_shared",
     "//chrome/browser/web_applications",
     "//chrome/common",
@@ -214,6 +215,7 @@ static_library("file_manager") {
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/smb_client",
+    "//chrome/browser/ui/webui/ash",
   ]
 }
 
