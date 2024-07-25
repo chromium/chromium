@@ -24,7 +24,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_promise_app_shelf_context_menu.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_shelf_context_menu.h"
-#include "chrome/browser/ui/ash/shelf/app_service/app_service_shortcut_shelf_context_menu.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/extension_shelf_context_menu.h"
@@ -80,12 +79,6 @@ std::unique_ptr<ShelfContextMenu> ShelfContextMenu::Create(
           ->PromiseAppRegistryCache()
           ->GetPromiseAppForStringPackageId(item->id.app_id)) {
     return std::make_unique<AppServicePromiseAppShelfContextMenu>(
-        controller, item, display_id);
-  }
-
-  if (ShelfControllerHelper::IsAppServiceShortcut(controller->profile(),
-                                                  item->id.app_id)) {
-    return std::make_unique<AppServiceShortcutShelfContextMenu>(
         controller, item, display_id);
   }
 

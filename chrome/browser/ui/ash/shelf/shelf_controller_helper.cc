@@ -153,23 +153,6 @@ std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
     }
   }
 
-  if (IsAppServiceShortcut(profile, app_id)) {
-    std::optional<std::string> shortcut_name =
-        apps::AppServiceProxyFactory::GetForProfile(profile)
-            ->ShortcutRegistryCache()
-            ->GetShortcut(apps::ShortcutId(app_id))
-            ->name;
-
-    std::u16string shortcut_title;
-    if (shortcut_name.has_value()) {
-      shortcut_title = base::UTF8ToUTF16(shortcut_name.value());
-    }
-
-    if (!shortcut_title.empty()) {
-      return shortcut_title;
-    }
-  }
-
   // Get the title for the extension which is not managed by AppService.
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile);
@@ -354,15 +337,6 @@ ash::AppStatus ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
 }
 
 // static
-bool ShelfControllerHelper::IsAppServiceShortcut(Profile* profile,
-                                                 const std::string& id) {
-  return chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled() &&
-         apps::AppServiceProxyFactory::GetForProfile(profile)
-             ->ShortcutRegistryCache()
-             ->HasShortcut(apps::ShortcutId(id));
-}
-
-// static
 std::u16string ShelfControllerHelper::GetAppServiceShortcutAccessibleLabel(
     Profile* profile,
     const apps::ShortcutId& shortcut_id) {
@@ -447,13 +421,6 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
     proxy->Launch(app_id, event_flags,
                   ShelfLaunchSourceToAppsLaunchSource(source),
                   std::make_unique<apps::WindowInfo>(display_id));
-    return;
-  }
-
-  // Launch the shortcut if the shelf item is a shortcut to an app.
-  if (IsAppServiceShortcut(profile_, app_id)) {
-    apps::RecordShortcutLaunchSource(apps::ShortcutActionSource::kShelf);
-    proxy->LaunchShortcut(apps::ShortcutId(app_id), display_id);
     return;
   }
 
@@ -568,8 +535,5 @@ bool ShelfControllerHelper::IsValidIDFromAppService(
         }
       });
 
-  if (IsAppServiceShortcut(profile_, app_id)) {
-    is_valid = true;
-  }
   return is_valid;
 }

@@ -94,9 +94,6 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   static ash::AppStatus ConvertPromiseStatusToAppStatus(
       apps::PromiseStatus promise_status);
 
-  // Check whether this item is an app service shortcut.
-  static bool IsAppServiceShortcut(Profile* profile, const std::string& id);
-
   // Get the accessible label that should be announced by the scrrenreader for
   // the specific app service shortcut shelf item.
   static std::u16string GetAppServiceShortcutAccessibleLabel(

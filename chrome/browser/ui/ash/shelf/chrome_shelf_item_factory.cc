@@ -10,7 +10,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ui/ash/shelf/app_service/app_service_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/arc_playstore_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_app_shelf_item_controller.h"
@@ -20,8 +19,6 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
-#include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 
 ChromeShelfItemFactory::ChromeShelfItemFactory() = default;
@@ -62,16 +59,6 @@ ChromeShelfItemFactory::CreateShelfItemDelegateForAppId(
 
   auto* proxy =
       apps::AppServiceProxyFactory::GetInstance()->GetForProfile(profile_);
-
-  // TODO(crbug.com/40255408): Update the calling methods naming to avoid the
-  // usage of app, to indicate that we could also create a shortcut shelf item
-  // using the shortcut id.
-  if ((chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) &&
-      proxy->ShortcutRegistryCache()->HasShortcut(apps::ShortcutId(app_id))) {
-    return std::make_unique<AppServiceShortcutShelfItemController>(
-        ash::ShelfID(app_id));
-  }
-
   auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
 
   // Note: In addition to other kinds of web apps, standalone browser hosted
