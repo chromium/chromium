@@ -57,23 +57,9 @@ bool ResolveOverrides(
       continue;
     }
 
-    // TODO(ddavenport): Rather than matching a mode from the DisplaySnapshot,
-    // synthesize a DisplayMode that represents the requested size and refresh
-    // rate.
-    const display::DisplayMode* override_mode = nullptr;
-    for (auto& mode : request.display->modes()) {
-      if (mode->size() == request.mode->size() &&
-          mode->refresh_rate() == override_it->second) {
-        override_mode = mode.get();
-        break;
-      }
-    }
-    if (override_mode == nullptr) {
-      LOG(ERROR) << "Could not find DisplayMode to fulfill the requested "
-                    "refresh rate override";
-      return false;
-    }
-    request.mode = override_mode->Clone();
+    request.mode = std::make_unique<const DisplayMode>(
+        request.mode->size(), request.mode->is_interlaced(),
+        override_it->second, /*vsync_rate_min=*/std::nullopt);
   }
   return true;
 }

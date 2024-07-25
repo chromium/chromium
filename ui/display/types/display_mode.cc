@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 
@@ -41,6 +42,17 @@ std::unique_ptr<DisplayMode> DisplayMode::CopyWithSize(
                                        vsync_rate_min_);
 }
 
+void DisplayMode::set_vsync_rate_min(
+    const std::optional<float>& vsync_rate_min) {
+  if (vsync_rate_min_ == vsync_rate_min) {
+    return;
+  }
+  if (vsync_rate_min_.has_value()) {
+    LOG(WARNING) << "set_vsync_rate_min() called when it is already populated.";
+  }
+  vsync_rate_min_ = vsync_rate_min;
+}
+
 bool DisplayMode::operator<(const DisplayMode& other) const {
   if (size_.GetArea() < other.size_.GetArea())
     return true;
@@ -68,6 +80,11 @@ std::string DisplayMode::ToString() const {
                             size_.ToString().c_str(),
                             is_interlaced_ ? "interlaced " : "", refresh_rate_,
                             vsync_rate_min_.value_or(0));
+}
+
+std::string DisplayMode::ToStringForTest() const {
+  return base::StringPrintf("[size=%s %srate=%f]", size_.ToString().c_str(),
+                            is_interlaced_ ? "interlaced " : "", refresh_rate_);
 }
 
 void PrintTo(const DisplayMode& mode, std::ostream* os) {

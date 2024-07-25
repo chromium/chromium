@@ -100,6 +100,7 @@ class DrmDisplay {
   bool SetPrivacyScreen(bool enabled);
   bool SetHdrOutputMetadata(const gfx::ColorSpace color_space);
   bool SetColorspaceProperty(const gfx::ColorSpace color_space);
+  bool IsVrrCapable() const;
 
   void set_crtc(uint32_t crtc_id) { crtc_ = crtc_id; }
 

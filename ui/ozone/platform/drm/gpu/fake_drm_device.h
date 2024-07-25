@@ -67,6 +67,7 @@ inline constexpr uint32_t kEdidBlobPropId = 1002;
 
 // Optional Connector Property IDs:
 inline constexpr uint32_t kTileBlobPropId = 1500;
+inline constexpr uint32_t kVrrCapablePropId = 1501;
 
 // Required CRTC Property IDs:
 inline constexpr uint32_t kActivePropId = 2000;

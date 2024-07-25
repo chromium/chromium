@@ -802,6 +802,31 @@ std::unique_ptr<display::DisplayMode> CreateDisplayMode(
       ModeVSyncRateMin(mode, vsync_rate_min_from_edid));
 }
 
+std::unique_ptr<drmModeModeInfo> CreateVirtualMode(
+    const drmModeModeInfo& base_mode,
+    float virtual_refresh_rate) {
+  if (!base_mode.htotal) {
+    return nullptr;
+  }
+
+  float clock_hz = base_mode.clock * 1000.0f;
+  float htotal = base_mode.htotal;
+
+  uint16_t virtual_vtotal =
+      std::round(clock_hz / (htotal * virtual_refresh_rate));
+  // Vtotal can only be increased from the base mode because virtual modes rely
+  // on VRR capabilities (i.e. the back porch can be extended but not
+  // diminished).
+  if (virtual_vtotal < base_mode.vtotal) {
+    return nullptr;
+  }
+
+  auto out_mode = std::make_unique<drmModeModeInfo>();
+  *out_mode = base_mode;
+  out_mode->vtotal = virtual_vtotal;
+  return out_mode;
+}
+
 display::DisplaySnapshot::DisplayModeList ExtractDisplayModes(
     HardwareDisplayControllerInfo* info,
     const gfx::Size& active_pixel_size,

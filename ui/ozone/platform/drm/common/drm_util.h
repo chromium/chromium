@@ -119,6 +119,13 @@ std::unique_ptr<display::DisplayMode> CreateDisplayMode(
     const drmModeModeInfo& mode,
     const std::optional<uint16_t>& vsync_rate_min_from_edid);
 
+// Returns a virtual mode based on |base_mode| with its vtotal altered to
+// achieve the specified |virtual_refresh_rate|, or nullptr if it could not be
+// created.
+std::unique_ptr<drmModeModeInfo> CreateVirtualMode(
+    const drmModeModeInfo& base_mode,
+    float virtual_refresh_rate);
+
 // Extracts the display modes list from |info| as well as the current and native
 // display modes given the |active_pixel_size| which is retrieved from the first
 // detailed timing descriptor in the EDID.

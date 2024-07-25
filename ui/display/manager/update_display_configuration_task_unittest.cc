@@ -164,7 +164,7 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
                        .SetCurrentMode(small_mode_.Clone())
                        .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
                        .SetBaseConnectorId(kEdpConnectorId)
-                       .SetVariableRefreshRateState(kVrrNotCapable)
+                       .SetVariableRefreshRateState(kVrrDisabled)
                        .Build();
 
     displays_[1] = FakeDisplaySnapshot::Builder()
@@ -174,7 +174,7 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
                        .SetType(DISPLAY_CONNECTION_TYPE_DISPLAYPORT)
                        .AddMode(small_mode_.Clone())
                        .SetBaseConnectorId(kSecondConnectorId)
-                       .SetVariableRefreshRateState(kVrrDisabled)
+                       .SetVariableRefreshRateState(kVrrNotCapable)
                        .Build();
   }
 
@@ -641,19 +641,19 @@ TEST_F(UpdateDisplayConfigurationTaskTest, VrrConfiguration) {
   EXPECT_EQ(
       JoinActions(kTestModesetStr,
                   GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
-                                 &small_mode_, /*enable_vrr=*/false})
+                                 &small_mode_, /*enable_vrr=*/true})
                       .c_str(),
                   GetCrtcAction({displays_[1]->display_id(),
                                  gfx::Point(0, small_mode_.size().height()),
-                                 &big_mode_, /*enable_vrr=*/true})
+                                 &big_mode_, /*enable_vrr=*/false})
                       .c_str(),
                   kModesetOutcomeSuccess, kCommitModesetStr,
                   GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
-                                 &small_mode_, /*enable_vrr=*/false})
+                                 &small_mode_, /*enable_vrr=*/true})
                       .c_str(),
                   GetCrtcAction({displays_[1]->display_id(),
                                  gfx::Point(0, small_mode_.size().height()),
-                                 &big_mode_, /*enable_vrr=*/true})
+                                 &big_mode_, /*enable_vrr=*/false})
                       .c_str(),
                   kModesetOutcomeSuccess, nullptr),
       log_.GetActionsAndClear());

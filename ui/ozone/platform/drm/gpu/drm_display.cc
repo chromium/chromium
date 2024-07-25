@@ -462,4 +462,10 @@ bool DrmDisplay::SetColorspaceProperty(const gfx::ColorSpace color_space) {
   return true;
 }
 
+bool DrmDisplay::IsVrrCapable() const {
+  return connector_ && ui::IsVrrCapable(*drm_, connector_.get()) &&
+         vsync_rate_min_from_edid().has_value() &&
+         vsync_rate_min_from_edid().value() > 0;
+}
+
 }  // namespace ui
