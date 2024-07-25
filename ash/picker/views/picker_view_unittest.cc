@@ -47,6 +47,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/test/test_structured_metrics_recorder.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -2108,9 +2109,11 @@ TEST_F(PickerViewTest, CategoryZeroStateShowsNoResultsPageWithIllustration) {
   EXPECT_TRUE(picker_view->category_results_view_for_testing()
                   .no_results_view_for_testing()
                   ->GetVisible());
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(picker_view->category_results_view_for_testing()
                   .no_results_illustration_for_testing()
                   .GetVisible());
+#endif
   EXPECT_EQ(picker_view->category_results_view_for_testing()
                 .no_results_label_for_testing()
                 .GetText(),

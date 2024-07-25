@@ -35,7 +35,6 @@
 #include "ash/picker/views/picker_zero_state_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -45,12 +44,14 @@
 #include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
+#include "chromeos/ash/grit/ash_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
@@ -189,9 +190,13 @@ std::u16string GetNoResultsFoundDescription(PickerCategory category) {
   }
 }
 
-const gfx::VectorIcon& GetNoResultsFoundIllustration(PickerCategory category) {
-  // TODO: b/348067874 - Add illustrations.
-  return kClipboardEmptyIcon;
+ui::ImageModel GetNoResultsFoundIllustration() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+      IDR_PICKER_NO_RESULTS_ILLUSTRATION);
+#else
+  return {};
+#endif
 }
 
 }  // namespace
@@ -591,9 +596,8 @@ void PickerView::PublishCategoryResults(
     }
   }
 
-  category_results_view_->SearchStopped(
-      ui::ImageModel::FromVectorIcon(GetNoResultsFoundIllustration(category)),
-      GetNoResultsFoundDescription(category));
+  category_results_view_->SearchStopped(GetNoResultsFoundIllustration(),
+                                        GetNoResultsFoundDescription(category));
 }
 
 void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
