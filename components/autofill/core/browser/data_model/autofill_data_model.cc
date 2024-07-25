@@ -30,13 +30,14 @@ int AutofillDataModel::GetDaysSinceLastUse(base::Time current_time) const {
   return current_time <= use_date() ? 0 : (current_time - use_date()).InDays();
 }
 
-base::Time AutofillDataModel::use_date(size_t i) const {
+std::optional<base::Time> AutofillDataModel::use_date(size_t i) const {
   CHECK(1 <= i && i <= usage_history_size());
-  return use_dates_[i - 1].value_or(base::Time());
+  return use_dates_[i - 1];
 }
 
-void AutofillDataModel::set_use_date(base::Time time, size_t i) {
+void AutofillDataModel::set_use_date(std::optional<base::Time> time, size_t i) {
   CHECK(1 <= i && i <= usage_history_size());
+  CHECK(time.has_value() || i > 1);
   use_dates_[i - 1] = time;
 }
 

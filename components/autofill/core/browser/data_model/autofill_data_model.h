@@ -32,16 +32,15 @@ class AutofillDataModel : public FormGroup {
   size_t usage_history_size() const { return usage_history_size_; }
 
   // Returns the `i`-th last use date for `1 <= i <= usage_history_size()`.
-  // `i == 1` corresponds to the last use date.
   // If a model hasn't been used at least `i` times, a null time is returned
   // instead.
-  // TODO(crbug.com/354706653): Make the return value an optional, where nullopt
-  // indicates that the model wasn't used at least `i` times.
-  base::Time use_date(size_t i = 1) const;
+  std::optional<base::Time> use_date(size_t i) const;
+  // Returns the last use date. As creation counts as a use, it's never nullopt.
+  base::Time use_date() const { return *use_date(1); }
 
   // Setter with the same semantics as `use_date()`. In particular, only the
   // `i`-th use date is changed - other use dates are not affected.
-  void set_use_date(base::Time time, size_t i = 1);
+  void set_use_date(std::optional<base::Time> time, size_t i = 1);
 
   // Records a new use of the model, by updating the last used date to `time`
   // and shifting the existing use dates backwards.

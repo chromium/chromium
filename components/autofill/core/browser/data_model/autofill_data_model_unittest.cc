@@ -30,8 +30,8 @@ TEST(AutofillDataModelTest, RecordUseDate) {
   // Data model creation counts as a use.
   TestAutofillDataModel model(/*usage_history_size=*/3);
   EXPECT_EQ(model.use_date(1), base::Time::Now());
-  EXPECT_EQ(model.use_date(2), base::Time());
-  EXPECT_EQ(model.use_date(3), base::Time());
+  EXPECT_FALSE(model.use_date(2).has_value());
+  EXPECT_FALSE(model.use_date(3).has_value());
 
   // Recording a use should propagate the change.
   task_environment.FastForwardBy(base::Seconds(123));
@@ -39,12 +39,12 @@ TEST(AutofillDataModelTest, RecordUseDate) {
   model.RecordUseDate(base::Time::Now());
   EXPECT_EQ(model.use_date(1), base::Time::Now());
   EXPECT_EQ(model.use_date(2), old_last_use_date);
-  EXPECT_EQ(model.use_date(3), base::Time());
+  EXPECT_FALSE(model.use_date(3).has_value());
 
   // Record a second use.
   task_environment.FastForwardBy(base::Seconds(234));
   old_last_use_date = model.use_date();
-  base::Time old_second_last_use_date = model.use_date(2);
+  base::Time old_second_last_use_date = *model.use_date(2);
   model.RecordUseDate(base::Time::Now());
   EXPECT_EQ(model.use_date(1), base::Time::Now());
   EXPECT_EQ(model.use_date(2), old_last_use_date);
