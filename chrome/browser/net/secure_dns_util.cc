@@ -89,10 +89,11 @@ net::DohProviderEntry::List ProvidersForCountry(
 net::DohProviderEntry::List SelectEnabledProviders(
     const net::DohProviderEntry::List& providers) {
   net::DohProviderEntry::List enabled_providers;
-  base::ranges::copy_if(providers, std::back_inserter(enabled_providers),
-                        [](const net::DohProviderEntry* entry) {
-                          return base::FeatureList::IsEnabled(entry->feature);
-                        });
+  base::ranges::copy_if(
+      providers, std::back_inserter(enabled_providers),
+      [](const net::DohProviderEntry* entry) {
+        return base::FeatureList::IsEnabled(entry->feature.get());
+      });
   return enabled_providers;
 }
 

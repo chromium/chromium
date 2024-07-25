@@ -730,7 +730,7 @@ TEST_F(NetworkServiceTest, DisableDohUpgradeProviders) {
     CHECK(it != net::DohProviderEntry::GetList().end())
         << "Provider named \"" << provider
         << "\" not found in DoH provider list.";
-    return (*it)->feature;
+    return (*it)->feature.get();
   };
 
   base::test::ScopedFeatureList scoped_features;
