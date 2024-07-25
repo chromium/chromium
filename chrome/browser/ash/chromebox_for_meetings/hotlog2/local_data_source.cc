@@ -161,6 +161,10 @@ bool LocalDataSource::IsDataBufferOverMaxLimit() {
   return data_buffer_.size() > kMaxInternalBufferSize;
 }
 
+bool LocalDataSource::IsCurrentlyWaitingForUpload() {
+  return !pending_upload_buffer_.empty();
+}
+
 void LocalDataSource::RedactDataBuffer(std::vector<std::string>& buffer) {
   for (size_t i = 0; i < buffer.size(); i++) {
     buffer[i] = redactor_.Redact(buffer[i]);

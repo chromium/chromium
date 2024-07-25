@@ -6,6 +6,7 @@
 
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/persistent_db.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -418,11 +419,16 @@ DataAggregatorService::DataAggregatorService()
   local_task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 
+  local_task_runner_->PostTask(FROM_HERE,
+                               base::BindOnce(&PersistentDb::Initialize));
+
   InitializeUploadEndpoint(/*num_tries=*/0);
   InitializeLocalSources();
 }
 
 DataAggregatorService::~DataAggregatorService() {
+  local_task_runner_->PostTask(FROM_HERE,
+                               base::BindOnce(&PersistentDb::Shutdown));
   CfmHotlineClient::Get()->RemoveObserver(this);
 }
 

@@ -25,14 +25,13 @@ class LogFile {
   const std::string& GetFilePath() const;
   bool OpenAtOffset(std::streampos offset);
   void CloseStream();
+  std::streampos GetCurrentOffset();
   bool IsInFailState() const;
   bool IsAtEOF() const;
   bool Refresh();
   std::vector<std::string> RetrieveNextLogs(size_t count);
 
  private:
-  std::streampos GetCurrentOffset();
-
   const base::FilePath filepath_;
   std::ifstream file_stream_;
 };

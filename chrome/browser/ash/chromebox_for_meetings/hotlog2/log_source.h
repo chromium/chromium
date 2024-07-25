@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/local_data_source.h"
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/log_file.h"
+#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/persistent_db.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 
 namespace ash::cfm {
@@ -27,6 +28,8 @@ class LogSource : public LocalDataSource {
   ~LogSource() override;
 
   // LocalDataSource:
+  void Fetch(FetchCallback callback) override;
+  void Flush() override;
   const std::string& GetDisplayName() override;
   std::vector<std::string> GetNextData() override;
 
@@ -35,6 +38,9 @@ class LogSource : public LocalDataSource {
   bool DidFileRotate();
 
  private:
+  std::streampos GetLastKnownOffsetFromStorage();
+  void PersistCurrentOffsetToStorage();
+
   std::string filepath_;
 
   // Contains a handle to the log file on disk
@@ -48,6 +54,10 @@ class LogSource : public LocalDataSource {
   // Keep track of the last-known inode to detect when the underlying
   // file has rotated. Inodes will not change when the file is renamed.
   int last_known_inode_ = kInvalidFileInode;
+
+  // File offset to seek to after a crash or reboot.
+  // Cached here in memory, then flushed to disk on successful log upload.
+  std::streampos recovery_offset_ = 0;
 
   // Must be the last class member.
   base::WeakPtrFactory<LogSource> weak_ptr_factory_{this};
