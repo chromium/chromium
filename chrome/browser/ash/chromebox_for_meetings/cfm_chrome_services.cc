@@ -17,8 +17,6 @@
 
 namespace ash::cfm {
 
-inline constexpr char kCfmEnableArtemisSwitch[] = "cfm-enable-artemis";
-
 void InitializeCfmServices() {
   if (!base::FeatureList::IsEnabled(features::kMojoServices) ||
       !CfmHotlineClient::Get()) {
@@ -31,10 +29,7 @@ void InitializeCfmServices() {
   DiagnosticsService::Initialize();
   XuCameraService::Initialize();
   ExternalDisplayBrightnessService::Initialize();
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kCfmEnableArtemisSwitch)) {
-    DataAggregatorService::Initialize();
-  }
+  DataAggregatorService::Initialize();
 }
 
 void ShutdownCfmServices() {
@@ -43,10 +38,7 @@ void ShutdownCfmServices() {
     return;
   }
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kCfmEnableArtemisSwitch)) {
-    DataAggregatorService::Shutdown();
-  }
+  DataAggregatorService::Shutdown();
   ExternalDisplayBrightnessService::Shutdown();
   XuCameraService::Shutdown();
   DiagnosticsService::Shutdown();

@@ -27,7 +27,7 @@ LogSource::LogSource(const std::string& filepath,
 
   // No point in proceeding here if the file can't be opened
   if (!log_file_.OpenAtOffset(recovery_offset_)) {
-    LOG(ERROR) << "Unable to open file at " << filepath;
+    file_is_accessible_ = false;
     return;
   }
 
@@ -69,6 +69,9 @@ void LogSource::Fetch(FetchCallback callback) {
 }
 
 void LogSource::Flush() {
+  if (!file_is_accessible_) {
+    return;
+  }
   // The upload succeeded, so update our recovery offset.
   PersistCurrentOffsetToStorage();
   LocalDataSource::Flush();
@@ -79,6 +82,10 @@ const std::string& LogSource::GetDisplayName() {
 }
 
 std::vector<std::string> LogSource::GetNextData() {
+  if (!file_is_accessible_) {
+    return {};
+  }
+
   if (log_file_.IsInFailState()) {
     LOG(ERROR) << "Attempted to fetch logs for '" << log_file_.GetFilePath()
                << "', but the stream is dead";
