@@ -76,6 +76,8 @@ class Reconfigurer {
 
   private readonly failedDevices = new Set<string>();
 
+  private failedBySWPrivacySwitch = false;
+
   constructor(
       private readonly preview: Preview,
       private readonly modes: Modes,
@@ -237,16 +239,27 @@ class Reconfigurer {
   }
 
   /**
-   * Reset the failed devices list so the next reconfiguration
-   * will try to open those devices.
+   * Clears the list of devices that previously failed to open and allows retry
+   * to open devices even when the sw privacy switch is on.
+   *
    */
-  resetFailedDevices(): void {
+
+  resetConfigurationFailure(): void {
+    this.failedBySWPrivacySwitch = false;
     this.failedDevices.clear();
   }
 
   async startConfigure(cameraInfo: CameraInfo): Promise<void> {
     if (this.shouldSuspend) {
       throw new CameraSuspendError();
+    }
+    // CCA should attempt to open device at least once, even if the SW privacy
+    // switch is on, to ensure the user receives a notification about the SW
+    // privacy setting.
+    if (this.failedBySWPrivacySwitch && util.isSWPrivacySwitchOn()) {
+      // If a previous configuration failed due to the SW privacy switch being
+      // on, and the switch is still on, skip this configuration attempt.
+      throw new NoCameraError();
     }
 
     const deviceOperator = DeviceOperator.getInstance();
@@ -337,6 +350,10 @@ class Reconfigurer {
           if (e.name === 'NotReadableError') {
             // TODO(b/187879603): Remove this hacked once we understand more
             // about such error.
+            if (util.isSWPrivacySwitchOn()) {
+              this.failedBySWPrivacySwitch = true;
+              break;
+            }
             let facing: Facing|null = null;
             let errorMessage: string = e.message;
             const deviceOperator = DeviceOperator.getInstance();
