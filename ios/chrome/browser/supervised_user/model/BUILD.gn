@@ -44,6 +44,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/common",
     "//ios/components/security_interstitials",
     "//ios/net",
     "//ios/web/public/js_messaging:js_messaging",

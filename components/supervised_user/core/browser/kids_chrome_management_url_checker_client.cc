@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/version_info/channel.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
@@ -69,9 +70,10 @@ std::unique_ptr<ProtoFetcher<kidsmanagement::ClassifyUrlResponse>> ClassifyURL(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const FetcherConfig& config,
+    version_info::Channel channel,
     const kidsmanagement::ClassifyUrlRequest& request) {
   return CreateClassifyURLFetcher(*identity_manager, url_loader_factory,
-                                  request, config);
+                                  request, config, channel);
 }
 
 FetcherConfig GetFetcherConfig() {
@@ -94,12 +96,14 @@ FetcherConfig GetFetcherConfig() {
 KidsChromeManagementURLCheckerClient::KidsChromeManagementURLCheckerClient(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::string_view country)
+    std::string_view country,
+    version_info::Channel channel)
     : country_(country),
       fetch_manager_(base::BindRepeating(&ClassifyURL,
                                          identity_manager,
                                          url_loader_factory,
-                                         GetFetcherConfig())) {}
+                                         GetFetcherConfig(),
+                                         channel)) {}
 
 KidsChromeManagementURLCheckerClient::~KidsChromeManagementURLCheckerClient() =
     default;

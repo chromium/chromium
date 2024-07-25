@@ -17,6 +17,10 @@
 
 class GURL;
 
+namespace version_info {
+enum class Channel;
+}
+
 namespace supervised_user {
 // This class uses the KidsChromeManagement::ClassifyUrl to check the
 // classification of the content on a given URL and returns the result
@@ -29,7 +33,8 @@ class KidsChromeManagementURLCheckerClient
   KidsChromeManagementURLCheckerClient(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::string_view country);
+      std::string_view country,
+      version_info::Channel channel);
 
   KidsChromeManagementURLCheckerClient(
       const KidsChromeManagementURLCheckerClient&) = delete;

@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -148,7 +149,7 @@ void WaitForRequestToComplete(const FamilyMember& supervising_user,
   StatusFetcher fetcher(
       *supervising_user.identity_manager(),
       supervising_user.url_loader_factory(), serialized_request, config,
-      {browser_user.GetAccountId().ToString()},
+      {browser_user.GetAccountId().ToString()}, version_info::Channel::UNKNOWN,
       base::BindLambdaForTesting([&](const ProtoFetcherStatus& status) {
         CHECK(status.IsOk()) << "WaitForRequestToComplete failed";
         run_loop.Quit();

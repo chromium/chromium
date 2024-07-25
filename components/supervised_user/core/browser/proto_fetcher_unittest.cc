@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/version_info/channel.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
@@ -812,7 +813,7 @@ TEST_P(StatusFetcherTest, StatusFetcherReportsSuccess) {
   StatusFetcher fetcher(
       *identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(), /* payload= */ "",
-      GetConfig(), /* args= */ {},
+      GetConfig(), /* args= */ {}, version_info::Channel::UNKNOWN,
       base::BindOnce(
           &StatusFetcherTest_StatusFetcherReportsSuccess_Test::OnStatus,
           base::Unretained(this)));
@@ -834,7 +835,7 @@ TEST_P(StatusFetcherTest, StatusFetcherReportsFailure) {
   StatusFetcher fetcher(
       *identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(), /* payload= */ "",
-      GetConfig(), /* args= */ {},
+      GetConfig(), /* args= */ {}, version_info::Channel::UNKNOWN,
       base::BindOnce(
           &StatusFetcherTest_StatusFetcherReportsFailure_Test::OnStatus,
           base::Unretained(this)));
@@ -901,6 +902,10 @@ TEST_F(BestEffortProtoFetcherTest, NoAccessToken) {
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  ASSERT_TRUE(
+      test_url_loader_factory_.GetPendingRequest(0)->request.headers.HasHeader(
+          "X-Goog-Api-Key"));
+
   SimulateDefaultResponseForPendingRequest(0);
 
   EXPECT_TRUE(receiver->GetResult().has_value());
