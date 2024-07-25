@@ -2983,13 +2983,12 @@ TEST_F(UkmPageLoadMetricsObserverTest, TestRefreshRateThrottled) {
   TestingPrefServiceSimple local_state;
   performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
       local_state.registry());
-  local_state.SetInteger(
-      performance_manager::user_tuning::prefs::kBatterySaverModeState,
-      static_cast<int>(performance_manager::user_tuning::prefs::
-                           BatterySaverModeState::kEnabled));
   performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
       uptm_environment;
   uptm_environment.SetUp(&local_state);
+  performance_manager::user_tuning::
+      TestUserPerformanceTuningManagerEnvironment::SetBatterySaverMode(
+          &local_state, true);
 
   NavigateAndCommit(GURL(kTestUrl1));
 

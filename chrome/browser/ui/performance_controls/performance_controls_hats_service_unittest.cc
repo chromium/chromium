@@ -22,6 +22,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 using ::testing::_;
 
 class PerformanceControlsHatsServiceTest : public testing::Test {
@@ -155,11 +159,25 @@ class PerformanceControlsHatsServiceBatterySaverOptOutTest
 
 TEST_F(PerformanceControlsHatsServiceTest, LaunchesPerformanceSurvey) {
   SetMemorySaverEnabled(false);
+
+// Battery Saver is controlled by the OS on ChromeOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const bool cros_battery_saver = ash::features::IsBatterySaverAvailable();
+
+  // Enable Chrome Battery Saver if CrOS Battery Saver isn't used.
+  const bool battery_saver_mode = !cros_battery_saver;
+  if (!cros_battery_saver) {
+    SetBatterySaverMode(performance_manager::user_tuning::prefs::
+                            BatterySaverModeState::kEnabledBelowThreshold);
+  }
+#else
   SetBatterySaverMode(performance_manager::user_tuning::prefs::
                           BatterySaverModeState::kEnabledBelowThreshold);
+  const bool battery_saver_mode = true;
+#endif
 
   SurveyBitsData expected_bits = {{"high_efficiency_mode", false},
-                                  {"battery_saver_mode", true}};
+                                  {"battery_saver_mode", battery_saver_mode}};
   SurveyStringData expected_strings = {};
   EXPECT_CALL(*mock_hats_service(),
               LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPerformance, _,
@@ -167,7 +185,9 @@ TEST_F(PerformanceControlsHatsServiceTest, LaunchesPerformanceSurvey) {
   performance_controls_hats_service()->OpenedNewTabPage();
 }
 
+// Battery Saver is controlled by the OS on ChromeOS
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+
 TEST_F(PerformanceControlsHatsServiceHasBatteryTest,
        LaunchesBatteryPerformanceSurvey) {
   EXPECT_CALL(
@@ -176,7 +196,8 @@ TEST_F(PerformanceControlsHatsServiceHasBatteryTest,
                    _, _, _));
   performance_controls_hats_service()->OpenedNewTabPage();
 }
-#endif
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PerformanceControlsHatsServiceMemorySaverOptOutTest,
        LaunchesMemorySaverOptOutSurvey) {
@@ -187,6 +208,9 @@ TEST_F(PerformanceControlsHatsServiceMemorySaverOptOutTest,
   SetMemorySaverEnabled(false);
 }
 
+// Battery Saver is controlled by the OS on ChromeOS
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+
 TEST_F(PerformanceControlsHatsServiceBatterySaverOptOutTest,
        LaunchesBatterySaverOptOutSurvey) {
   EXPECT_CALL(*mock_hats_service(),
@@ -196,3 +220,5 @@ TEST_F(PerformanceControlsHatsServiceBatterySaverOptOutTest,
   SetBatterySaverMode(performance_manager::user_tuning::prefs::
                           BatterySaverModeState::kDisabled);
 }
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

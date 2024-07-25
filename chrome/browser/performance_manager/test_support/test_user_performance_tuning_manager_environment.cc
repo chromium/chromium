@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 
 #include "base/power_monitor/battery_state_sampler.h"
+#include "base/run_loop.h"
 #include "base/test/power_monitor_test_utils.h"
 #include "chrome/browser/performance_manager/test_support/fake_child_process_tuning_delegate.h"
 #include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
@@ -12,7 +13,32 @@
 #include "chrome/browser/performance_manager/test_support/fake_power_monitor_source.h"
 #include "components/prefs/pref_service.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+#endif
+
 namespace performance_manager::user_tuning {
+
+namespace {
+
+class QuitRunLoopOnBSMChangeObserver
+    : public BatterySaverModeManager::Observer {
+ public:
+  explicit QuitRunLoopOnBSMChangeObserver(base::RepeatingClosure quit_closure)
+      : quit_closure_(quit_closure) {}
+
+  ~QuitRunLoopOnBSMChangeObserver() override = default;
+
+  // BatterySaverModeManager::Observer implementation:
+  void OnBatterySaverActiveChanged(bool) override { quit_closure_.Run(); }
+
+ private:
+  base::RepeatingClosure quit_closure_;
+};
+
+}  //  namespace
 
 TestUserPerformanceTuningManagerEnvironment::
     TestUserPerformanceTuningManagerEnvironment() = default;
@@ -28,21 +54,46 @@ TestUserPerformanceTuningManagerEnvironment::
 
 void TestUserPerformanceTuningManagerEnvironment::SetUp(
     PrefService* local_state) {
+  SetUp(local_state, nullptr, nullptr);
+}
+
+void TestUserPerformanceTuningManagerEnvironment::SetUp(
+    PrefService* local_state,
+    std::unique_ptr<base::SamplingEventSource> sampling_event_source,
+    std::unique_ptr<base::BatteryLevelProvider> battery_level_provider) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!chromeos::PowerManagerClient::Get()) {
+    tear_down_power_manager_client_ = true;
+    chromeos::PowerManagerClient::InitializeFake();
+  } else {
+    // Check that it's FakePowerManagerClient.
+    chromeos::FakePowerManagerClient::Get();
+  }
+#endif
   auto source = std::make_unique<FakePowerMonitorSource>();
   power_monitor_source_ = source.get();
   base::PowerMonitor::Initialize(std::move(source));
 
-  auto test_sampling_event_source =
-      std::make_unique<base::test::TestSamplingEventSource>();
-  auto test_battery_level_provider =
-      std::make_unique<base::test::TestBatteryLevelProvider>();
+  if (!sampling_event_source) {
+    auto test_sampling_event_source =
+        std::make_unique<base::test::TestSamplingEventSource>();
+    sampling_source_ = test_sampling_event_source.get();
+    sampling_event_source = std::move(test_sampling_event_source);
+  } else {
+    sampling_source_ = nullptr;
+  }
 
-  sampling_source_ = test_sampling_event_source.get();
-  battery_level_provider_ = test_battery_level_provider.get();
+  if (!battery_level_provider) {
+    auto test_battery_level_provider =
+        std::make_unique<base::test::TestBatteryLevelProvider>();
+    battery_level_provider_ = test_battery_level_provider.get();
+    battery_level_provider = std::move(test_battery_level_provider);
+  } else {
+    battery_level_provider_ = nullptr;
+  }
 
   battery_sampler_ = std::make_unique<base::BatteryStateSampler>(
-      std::move(test_sampling_event_source),
-      std::move(test_battery_level_provider));
+      std::move(sampling_event_source), std::move(battery_level_provider));
 
   user_performance_tuning_manager_.reset(
       new user_tuning::UserPerformanceTuningManager(
@@ -64,16 +115,61 @@ void TestUserPerformanceTuningManagerEnvironment::TearDown() {
   battery_saver_mode_manager_.reset();
   battery_sampler_.reset();
   base::PowerMonitor::ShutdownForTesting();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (tear_down_power_manager_client_) {
+    chromeos::PowerManagerClient::Shutdown();
+    tear_down_power_manager_client_ = false;
+  }
+#endif
+}
+
+// static
+void TestUserPerformanceTuningManagerEnvironment::SetBatterySaverMode(
+    PrefService* local_state,
+    bool enabled) {
+  auto mode = enabled ? performance_manager::user_tuning::prefs::
+                            BatterySaverModeState::kEnabled
+                      : performance_manager::user_tuning::prefs::
+                            BatterySaverModeState::kDisabled;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsBatterySaverAvailable()) {
+    base::RunLoop run_loop;
+    std::unique_ptr<QuitRunLoopOnBSMChangeObserver> observer =
+        std::make_unique<QuitRunLoopOnBSMChangeObserver>(
+            run_loop.QuitClosure());
+    BatterySaverModeManager* manager = BatterySaverModeManager::GetInstance();
+    manager->AddObserver(observer.get());
+    power_manager::SetBatterySaverModeStateRequest request;
+    request.set_enabled(enabled);
+    chromeos::FakePowerManagerClient::Get()->SetBatterySaverModeState(request);
+    run_loop.Run();
+    manager->RemoveObserver(observer.get());
+    return;
+    // Fall through to the Chrome battery saver pref set code if the ChromeOS
+    // battery saver feature is disabled.
+  }
+#endif
+  local_state->SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(mode));
 }
 
 base::test::TestSamplingEventSource*
 TestUserPerformanceTuningManagerEnvironment::sampling_source() {
+  CHECK(sampling_source_) << "sampling_source unavailable when passed to SetUp";
   return sampling_source_;
 }
 
 base::test::TestBatteryLevelProvider*
 TestUserPerformanceTuningManagerEnvironment::battery_level_provider() {
+  CHECK(battery_level_provider_)
+      << "battery_level_provider unavailable when passed to SetUp";
   return battery_level_provider_;
+}
+
+base::BatteryStateSampler*
+TestUserPerformanceTuningManagerEnvironment::battery_state_sampler() {
+  return battery_sampler_.get();
 }
 
 FakePowerMonitorSource*
