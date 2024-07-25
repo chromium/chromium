@@ -207,6 +207,7 @@ PickerView::PickerView(PickerViewDelegate* delegate,
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCollapseMargins(true)
+      .SetIgnoreDefaultMainAxisMargins(true)
       .SetDefault(views::kMarginsKey,
                   gfx::Insets::VH(kVerticalPaddingBetweenPickerContainers, 0));
 
