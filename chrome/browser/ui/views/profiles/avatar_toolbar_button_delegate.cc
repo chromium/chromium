@@ -1153,9 +1153,11 @@ gfx::Image AvatarToolbarButtonDelegate::GetProfileAvatarImage(
     return gaia_account_image;
   }
 
-  return entry->GetAvatarIcon(
-      preferred_size, /*use_high_res_file=*/true,
-      /*icon_params=*/{.has_padding = false, .has_background = false});
+  return entry->GetAvatarIcon(preferred_size, /*use_high_res_file=*/true,
+                              GetPlaceholderAvatarIconParamsDependingOnTheme(
+                                  ThemeServiceFactory::GetForProfile(profile_),
+                                  /*background_color_id=*/kColorToolbar,
+                                  *avatar_toolbar_button_->GetColorProvider()));
 }
 
 int AvatarToolbarButtonDelegate::GetWindowCount() const {
@@ -1184,12 +1186,8 @@ void AvatarToolbarButtonDelegate::OnThemeChanged(
   }
 
   // Use default profile colors only for extension and system themes.
-  const bool use_default_profile_colors =
-      service->UsingExtensionTheme() ||
-      (service->IsSystemThemeDistinctFromDefaultTheme() &&
-       service->UsingSystemTheme());
   entry->SetProfileThemeColors(
-      use_default_profile_colors
+      ShouldUseDefaultProfileColors(*service)
           ? GetDefaultProfileThemeColors(color_provider)
           : GetCurrentProfileThemeColors(*color_provider, *service));
 }

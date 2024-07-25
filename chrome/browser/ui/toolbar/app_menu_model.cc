@@ -41,6 +41,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -497,6 +498,7 @@ ProfileSubMenuModel::ProfileSubMenuModel(
     if (BuildSyncSection()) {
       AddSeparator(ui::NORMAL_SEPARATOR);
     }
+
     ProfileAttributesEntry* profile_attributes =
         GetProfileAttributesFromProfile(profile);
     // If the profile is being deleted, profile_attributes may be null.
@@ -506,8 +508,10 @@ ProfileSubMenuModel::ProfileSubMenuModel(
           account_info.IsEmpty()
               ? profile_attributes->GetAvatarIcon(
                     avatar_icon_size, /*use_high_res_file=*/true,
-                    /*icon_params=*/
-                    {.has_padding = false, .has_background = false})
+                    GetPlaceholderAvatarIconParamsDependingOnTheme(
+                        ThemeServiceFactory::GetForProfile(profile),
+                        /*background_color_id=*/ui::kColorMenuBackground,
+                        *color_provider))
               : account_info.account_image;
       // The avatar image can be empty if the account image hasn't been
       // fetched yet, if there is no image, or in tests.
