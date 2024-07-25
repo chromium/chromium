@@ -23,23 +23,34 @@ using mojom::DataFilter::FilterType::REGEX;
 static DataAggregatorService* g_data_aggregator_service = nullptr;
 
 constexpr base::TimeDelta kFetchFrequency = base::Minutes(1);
-constexpr base::TimeDelta kDefaultCommandPollFrequency = base::Seconds(5);
-constexpr base::TimeDelta kDefaultLogPollFrequency = base::Seconds(10);
 constexpr size_t kDefaultLogBatchSize = 500;  // lines
 
 constexpr base::TimeDelta kServiceAdaptorRetryDelay = base::Seconds(1);
 constexpr size_t kServiceAdaptorRetryMaxTries = 5;
 
-const char* kLocalCommandSources[] = {
-    "df -h",
-    "free -m",
+// List of commands that should be polled frequently. Any commands
+// being watched by watchdogs should be here.
+constexpr base::TimeDelta kDefaultCommandPollFrequency = base::Seconds(5);
+const char* kLocalCommandSourcesFastPoll[] = {
     "ip -brief address",
     "lspci",
     "lsusb -t",
+};
+
+// List of commands that should be polled at a much slower frequency
+// than the default. These are strictly for telemetry purposes in
+// cloud logging and should be reserved for commands that don't need
+// constant monitoring. Commands that are watched by a watchdog should
+// NOT be in this list.
+constexpr base::TimeDelta kExtendedCommandPollFrequency = base::Minutes(1);
+const char* kLocalCommandSourcesSlowPoll[] = {
+    "df -h",
+    "free -m",
     // Hide kernelspace processes and show limited columns.
     "ps -o pid,user,group,args --ppid 2 -p 2 -N --sort=pid",
 };
 
+constexpr base::TimeDelta kDefaultLogPollFrequency = base::Seconds(10);
 const char* kLocalLogSources[] = {
     kCfmAuditLogFile,  kCfmBiosInfoLogFile,     kCfmChromeLogFile,
     kCfmCrosEcLogFile, kCfmEventlogLogFile,     kCfmFwupdLogFile,
@@ -153,7 +164,9 @@ void DataAggregatorService::AddWatchDog(
       std::move(filter), std::move(watch_dog), std::move(callback));
 }
 
-void DataAggregatorService::AddLocalCommandSource(const std::string& command) {
+void DataAggregatorService::AddLocalCommandSource(
+    const std::string& command,
+    const base::TimeDelta& poll_freq) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(data_source_map_.count(command) == 0)
@@ -164,32 +177,32 @@ void DataAggregatorService::AddLocalCommandSource(const std::string& command) {
       FROM_HERE,
       base::BindOnce(
           [](mojo::PendingReceiver<mojom::DataSource> pending_receiver,
-             const std::string& command) {
-            auto source = std::make_unique<CommandSource>(
-                command, kDefaultCommandPollFrequency);
+             const std::string& command, const base::TimeDelta& poll_freq) {
+            auto source = std::make_unique<CommandSource>(command, poll_freq);
             source->StartCollectingData();
 
             mojo::MakeSelfOwnedReceiver(std::move(source),
                                         std::move(pending_receiver));
           },
-          remote.BindNewPipeAndPassReceiver(), command));
+          remote.BindNewPipeAndPassReceiver(), command, poll_freq));
 
   remote.set_disconnect_handler(
       base::BindOnce(&DataAggregatorService::OnLocalCommandDisconnect,
-                     base::Unretained(this), command));
+                     base::Unretained(this), command, poll_freq));
 
   data_source_map_[command] = std::move(remote);
 }
 
 void DataAggregatorService::OnLocalCommandDisconnect(
-    const std::string& command) {
+    const std::string& command,
+    const base::TimeDelta& poll_freq) {
   // This is unlikely, but if one of our local remotes disconnects,
   // just request to re-add it. The pointers in our local maps will
   // be overridden, and the old objects will be destroyed.
   LOG(WARNING) << "Local DataSource for '" << command << "' has disconnected; "
                << "attempting to reconnect.";
   data_source_map_.erase(command);
-  AddLocalCommandSource(command);
+  AddLocalCommandSource(command, poll_freq);
 }
 
 void DataAggregatorService::AddLocalLogSource(const std::string& filepath) {
@@ -236,8 +249,12 @@ void DataAggregatorService::OnMojoDisconnect() {
 
 void DataAggregatorService::InitializeLocalSources() {
   // Add local command sources
-  for (auto* const cmd : kLocalCommandSources) {
-    AddLocalCommandSource(cmd);
+  for (auto* const cmd : kLocalCommandSourcesFastPoll) {
+    AddLocalCommandSource(cmd, kDefaultCommandPollFrequency);
+  }
+
+  for (auto* const cmd : kLocalCommandSourcesSlowPoll) {
+    AddLocalCommandSource(cmd, kExtendedCommandPollFrequency);
   }
 
   // Add local log file sources
