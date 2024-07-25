@@ -16,7 +16,7 @@ public class GroupData {
     public final String displayName;
     public final List<GroupMember> members;
 
-    GroupData(String groupId, String displayName, GroupMember[] members) {
+    public GroupData(String groupId, String displayName, GroupMember[] members) {
         this.groupId = groupId;
         this.displayName = displayName;
         this.members = members == null ? null : List.of(members);

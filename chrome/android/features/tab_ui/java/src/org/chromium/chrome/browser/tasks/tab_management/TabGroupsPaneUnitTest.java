@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -25,17 +26,21 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -44,7 +49,7 @@ import java.util.function.DoubleConsumer;
 
 /** Unit tests for {@link TabGroupsPane}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+@EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID, ChromeFeatureList.DATA_SHARING_ANDROID})
 public class TabGroupsPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -54,6 +59,9 @@ public class TabGroupsPaneUnitTest {
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private DataSharingService mDataSharingService;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityManager mIdentityManager;
     @Mock private Supplier<PaneManager> mPaneManagerSupplier;
     @Mock Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     @Mock FaviconHelper.Natives mFaviconHelperJniMock;
@@ -77,6 +85,9 @@ public class TabGroupsPaneUnitTest {
         mProfileSupplier.set(mProfileProvider);
         mModalDialogManagerSupplier.set(mModalDialogManager);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        DataSharingServiceFactory.setForTesting(mDataSharingService);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
 
         mTabGroupsPane =

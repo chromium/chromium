@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface DataSharingService {
     /** Result that contains group data and an outcome of the action that was requested. */
-    public static class GroupDataOrFailureOutcome {
+    class GroupDataOrFailureOutcome {
         /**
          * The group data requested.
          *
@@ -26,14 +26,15 @@ public interface DataSharingService {
         /** Result of the action, UNKNOWN if the action was successful. */
         public final @PeopleGroupActionFailure int actionFailure;
 
-        GroupDataOrFailureOutcome(GroupData groupData, int actionFailure) {
+        public GroupDataOrFailureOutcome(
+                GroupData groupData, @PeopleGroupActionFailure int actionFailure) {
             this.groupData = groupData;
             this.actionFailure = actionFailure;
         }
     }
 
     /** Result that contains a set of groups and an outcome of the action that was requested. */
-    public static class GroupsDataSetOrFailureOutcome {
+    class GroupsDataSetOrFailureOutcome {
         /**
          * The list of groups requested.
          *
@@ -44,7 +45,8 @@ public interface DataSharingService {
         /** Result of the action */
         public final @PeopleGroupActionFailure int actionFailure;
 
-        GroupsDataSetOrFailureOutcome(List<GroupData> groupDataSet, int actionFailure) {
+        public GroupsDataSetOrFailureOutcome(
+                List<GroupData> groupDataSet, @PeopleGroupActionFailure int actionFailure) {
             this.groupDataSet = groupDataSet;
             this.actionFailure = actionFailure;
         }
@@ -108,15 +110,15 @@ public interface DataSharingService {
     /**
      * Attempt to delete a group.
      *
-     * @param groupID The group ID to delete.
+     * @param groupId The group ID to delete.
      * @param callback The deletion result as PeopleGroupActionOutcome.
      */
-    void deleteGroup(String groupId, Callback</*PeopleGroupActionOutcome*/ Integer> callback);
+    void deleteGroup(String groupId, Callback</* PeopleGroupActionOutcome= */ Integer> callback);
 
     /**
      * Attempt to invite a new user to the group.
      *
-     * @param groupID The group ID to add to.
+     * @param groupId The group ID to add to.
      * @param inviteeEmail The email of the member to add.
      * @param callback The invite result as PeopleGroupActionOutcome.
      */
@@ -128,8 +130,8 @@ public interface DataSharingService {
     /**
      * Attempts to remove a user from the group.
      *
-     * @param groupID The group ID to remove from.
-     * @param membeEmail The email of the member to remove.
+     * @param groupId The group ID to remove from.
+     * @param memberEmail The email of the member to remove.
      * @param callback The removal result as PeopleGroupActionOutcome.
      */
     void removeMember(

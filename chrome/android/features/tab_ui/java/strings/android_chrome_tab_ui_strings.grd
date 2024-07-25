@@ -694,6 +694,9 @@
       <message name="IDS_DELETE_TAB_GROUP_MENU_ITEM" desc="Menu item text which will prompt a confirmation dialog to delete a tab group.">
         Delete
       </message>
+      <message name="IDS_LEAVE_TAB_GROUP_MENU_ITEM" desc="Menu item text for an item which will leave a group the user does not own.">
+        Leave
+      </message>
       <message name="IDS_UNGROUP_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to ungroup all tabs in a group.">
         Ungroup tab group?
       </message>

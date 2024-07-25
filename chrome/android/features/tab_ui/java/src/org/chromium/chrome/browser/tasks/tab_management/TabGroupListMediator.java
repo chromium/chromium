@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
+
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -23,6 +27,14 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
+import org.chromium.components.data_sharing.GroupData;
+import org.chromium.components.data_sharing.GroupMember;
+import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -40,6 +52,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 /** Populates a {@link ModelList} with an item for each tab group. */
@@ -69,6 +82,8 @@ public class TabGroupListMediator {
     private final TabGroupModelFilter mFilter;
     private final BiConsumer<GURL, Callback<Drawable>> mFaviconResolver;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
+    private final @Nullable DataSharingService mDataSharingService;
+    private final IdentityManager mIdentityManager;
     private final PaneManager mPaneManager;
     private final TabGroupUiActionHandler mTabGroupUiActionHandler;
     private final ActionConfirmationManager mActionConfirmationManager;
@@ -137,6 +152,8 @@ public class TabGroupListMediator {
      * @param filter Used to read current tab groups.
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param tabGroupSyncService Used to fetch synced copy of tab groups.
+     * @param dataSharingService Used to fetch shared group data.
+     * @param identityManager Used to fetch current account information.
      * @param paneManager Used switch panes to show details of a group.
      * @param tabGroupUiActionHandler Used to open hidden tab groups.
      * @param actionConfirmationManager Used to show confirmation dialogs.
@@ -148,6 +165,8 @@ public class TabGroupListMediator {
             TabGroupModelFilter filter,
             BiConsumer<GURL, Callback<Drawable>> faviconResolver,
             @Nullable TabGroupSyncService tabGroupSyncService,
+            @Nullable DataSharingService dataSharingService,
+            IdentityManager identityManager,
             PaneManager paneManager,
             TabGroupUiActionHandler tabGroupUiActionHandler,
             ActionConfirmationManager actionConfirmationManager,
@@ -157,6 +176,8 @@ public class TabGroupListMediator {
         mFilter = filter;
         mFaviconResolver = faviconResolver;
         mTabGroupSyncService = tabGroupSyncService;
+        mDataSharingService = dataSharingService;
+        mIdentityManager = identityManager;
         mPaneManager = paneManager;
         mTabGroupUiActionHandler = tabGroupUiActionHandler;
         mActionConfirmationManager = actionConfirmationManager;
@@ -223,20 +244,60 @@ public class TabGroupListMediator {
 
     private void repopulateModelList() {
         mModelList.clear();
+        @Nullable String currentAccountGaiaId = null;
         for (SavedTabGroup savedTabGroup : getSortedGroupList()) {
+            String collaborationId = savedTabGroup.collaborationId;
+            boolean isShared = !TextUtils.isEmpty(collaborationId);
+            Runnable deleteRunnable = isShared ? null : () -> processDeleteGroup(savedTabGroup);
             PropertyModel model =
                     TabGroupRowMediator.buildModel(
                             savedTabGroup,
                             mFaviconResolver,
                             () -> openGroup(savedTabGroup),
-                            () -> processDeleteGroup(savedTabGroup));
+                            deleteRunnable);
 
             ListItem listItem = new ListItem(0, model);
             mModelList.add(listItem);
+
+            if (isShared) {
+                if (currentAccountGaiaId == null) {
+                    currentAccountGaiaId = getAccountGaiaId();
+                }
+                final String finalGaiaId = currentAccountGaiaId;
+                mDataSharingService.readGroup(
+                        collaborationId,
+                        (GroupDataOrFailureOutcome outcome) ->
+                                onGroupDataOrFailureOutcome(outcome, finalGaiaId, model));
+            }
         }
 
         boolean empty = mModelList.size() <= 0;
         mPropertyModel.set(TabGroupListProperties.EMPTY_STATE_VISIBLE, empty);
+    }
+
+    private String getAccountGaiaId() {
+        @Nullable
+        CoreAccountInfo account = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        return account == null ? null : account.getGaiaId();
+    }
+
+    private void onGroupDataOrFailureOutcome(
+            GroupDataOrFailureOutcome outcome, String accountId, PropertyModel model) {
+        @Nullable GroupData groupData = outcome.groupData;
+        if (groupData == null) return;
+
+        for (GroupMember member : groupData.members) {
+            if (Objects.equals(accountId, member.gaiaId)) {
+                if (member.role == MemberRole.OWNER) {
+                    model.set(DELETE_RUNNABLE, () -> processDeleteSharedGroup(groupData.groupId));
+                } else {
+                    model.set(
+                            LEAVE_RUNNABLE,
+                            () -> processLeaveGroup(groupData.groupId, member.email));
+                }
+                return;
+            }
+        }
     }
 
     private void openGroup(SavedTabGroup savedTabGroup) {
@@ -278,6 +339,26 @@ public class TabGroupListMediator {
                 (@ConfirmationResult Integer result) -> {
                     if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
                         deleteGroup(savedTabGroup);
+                    }
+                });
+    }
+
+    private void processDeleteSharedGroup(String groupId) {
+        // TODO(https://crbug.com/355235618): Create and use processDeleteSharedGroupAttempt.
+        mActionConfirmationManager.processDeleteGroupAttempt(
+                (@ConfirmationResult Integer result) -> {
+                    if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                        mDataSharingService.deleteGroup(groupId, null);
+                    }
+                });
+    }
+
+    private void processLeaveGroup(String groupId, String memberEmail) {
+        // TODO(https://crbug.com/355235618): Create and use processDeleteSharedGroupAttempt.
+        mActionConfirmationManager.processDeleteGroupAttempt(
+                (@ConfirmationResult Integer result) -> {
+                    if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                        mDataSharingService.removeMember(groupId, memberEmail, null);
                     }
                 });
     }
