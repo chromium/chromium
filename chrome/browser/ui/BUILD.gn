@@ -2378,10 +2378,6 @@ static_library("ui") {
       "webui/ash/launcher_internals/launcher_internals_handler.h",
       "webui/ash/launcher_internals/launcher_internals_ui.cc",
       "webui/ash/launcher_internals/launcher_internals_ui.h",
-      "webui/ash/lobster/lobster_page_handler.cc",
-      "webui/ash/lobster/lobster_page_handler.h",
-      "webui/ash/lobster/lobster_ui.cc",
-      "webui/ash/lobster/lobster_ui.h",
       "webui/ash/lock_screen_reauth/base_lock_dialog.cc",
       "webui/ash/lock_screen_reauth/base_lock_dialog.h",
       "webui/ash/lock_screen_reauth/lock_screen_captive_portal_dialog.cc",
@@ -3358,6 +3354,11 @@ static_library("ui") {
       "//ui/ozone",
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
       "//ui/webui/resources/cr_components/color_change_listener:mojom",
+
+      # This lobster code is still unused. It's listed here only to make sure
+      # that it compiles fine.
+      # TODO(b:348281154): Move to the appropriate place(s) once it's used.
+      "//chrome/browser/ui/webui/ash/lobster",
     ]
 
     public_deps += [
