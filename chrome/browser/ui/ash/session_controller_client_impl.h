@@ -112,6 +112,7 @@ class SessionControllerClientImpl
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
   void OnUserProfileLoaded(const AccountId& account_id) override;
+  void OnUserSessionStartUpTaskCompleted() override;
 
   // SupervisedUserServiceObserver:
   void OnCustodianInfoChanged() override;

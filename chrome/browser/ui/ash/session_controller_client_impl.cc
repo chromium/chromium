@@ -558,6 +558,10 @@ void SessionControllerClientImpl::OnUserProfileLoaded(
       ash::ProfileHelper::Get()->GetProfileByAccountId(account_id));
 }
 
+void SessionControllerClientImpl::OnUserSessionStartUpTaskCompleted() {
+  session_controller_->NotifyFirstSessionReady();
+}
+
 void SessionControllerClientImpl::OnCustodianInfoChanged() {
   DCHECK(supervised_user_profile_);
   User* user =
