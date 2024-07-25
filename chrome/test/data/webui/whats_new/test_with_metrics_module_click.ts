@@ -15,7 +15,7 @@ window.onload = function() {
           link_text: 'Google Search',
           link_type: 'external',
           link_url: 'https://google.com',
-          module_name: 'FeatureWithLink',
+          module_name: '100-feature-with-link',
           section: 'spotlight',
           order: '1',
         },

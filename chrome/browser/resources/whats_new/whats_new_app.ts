@@ -234,6 +234,41 @@ function parseOrder(
   return moduleSection[orderAsNumber - 1] as ModulePosition;
 }
 
+// Replace first letter with its uppercase equivalent.
+function uppercaseFirstLetter(word: string) {
+  return word.replace(/^\w/, firstLetter => firstLetter.toUpperCase());
+}
+
+// Convert kebab-case string (e.g. my-module-name) to PascalCase (e.g.
+// MyModuleName).
+function kebabCaseToCamelCase(input: string) {
+  return input
+      // Split on hyphen to remove it.
+      .split('-')
+      // Uppercase first letter of each word.
+      .map(uppercaseFirstLetter)
+      // Join back into contiguous string.
+      .join('');
+}
+
+// Convert legacy module names (i.e. module uid) to a format that can
+// be captured in metrics.
+//
+// Previous module names were created in the format `NNN-module-name`.
+// These module names cannot be recorded in metrics as-is, due to the
+// hyphens. They must be switched to a PascalCase format. New module
+// names will not follow this format, therefore will be ignored if they
+// don't contain a hyphen.
+//
+// Exported for testing purposes only.
+export function formatModuleName(moduleName: string) {
+  if (!moduleName.includes('-')) {
+    return moduleName;
+  }
+  // Remove the 3 numbers at the beginning of the name (`NNN-`)
+  const withoutPrefix = moduleName.replace(/^\d{3}-/, '');
+  return kebabCaseToCamelCase(withoutPrefix);
+}
 
 function handleModuleImpression(data: ModuleImpressionMetric) {
   // Reject falsy `module_name`, including empty strings.
@@ -242,7 +277,7 @@ function handleModuleImpression(data: ModuleImpressionMetric) {
   }
   const position = parseOrder(data.section, data.order);
   const {handler} = WhatsNewProxyImpl.getInstance();
-  handler.recordModuleImpression(data.module_name, position);
+  handler.recordModuleImpression(formatModuleName(data.module_name), position);
 }
 
 function handleModuleLinkClicked(data: GeneralLinkClickMetric) {
@@ -252,7 +287,7 @@ function handleModuleLinkClicked(data: GeneralLinkClickMetric) {
   }
   const position = parseOrder(data.section, data.order);
   const {handler} = WhatsNewProxyImpl.getInstance();
-  handler.recordModuleLinkClicked(data.module_name, position);
+  handler.recordModuleLinkClicked(formatModuleName(data.module_name), position);
 }
 
 function handleTimeOnPageMetric(data: TimeOnPageMetric) {
