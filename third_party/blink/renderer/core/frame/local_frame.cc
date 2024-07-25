@@ -255,6 +255,10 @@ namespace blink {
 
 namespace {
 
+// Max size in bytes of the Vector used in ForceSynchronousDocumentInstall to
+// buffer data before sending it to the HTML parser.
+constexpr unsigned kMaxDocumentChunkSize = 1000000;
+
 // Maintain a global (statically-allocated) hash map indexed by the the result
 // of hashing the |frame_token| passed on creation of a LocalFrame object.
 using LocalFramesByTokenMap = HeapHashMap<uint64_t, WeakMember<LocalFrame>>;
@@ -2510,9 +2514,30 @@ void LocalFrame::ForceSynchronousDocumentInstall(const AtomicString& mime_type,
   DCHECK_EQ(document, GetDocument());
   DocumentParser* parser = document->OpenForNavigation(
       kForceSynchronousParsing, mime_type, AtomicString("UTF-8"));
-  for (const auto& segment : data) {
-    parser->AppendBytes(segment.data(), segment.size());
+
+  if (RuntimeEnabledFeatures::DocumentInstallChunkingEnabled()) {
+    // Some code creates a very large number of tiny chunks that show up in
+    // |data|, such as InternalPopupMenu. Calling parser->AppendBytes() with
+    // each tiny piece dramatically slows down document loading. By combining
+    // these chunks in a Vector before passing it to parser->AppendBytes() gets
+    // around this problem.
+    Vector<char> current_chunk;
+    for (const auto& segment : data) {
+      current_chunk.Append(segment.data(),
+                           static_cast<wtf_size_t>(segment.size()));
+      if (current_chunk.size() > kMaxDocumentChunkSize) {
+        parser->AppendBytes(current_chunk.data(), current_chunk.size());
+        current_chunk.clear();
+      }
+    }
+    parser->AppendBytes(current_chunk.data(), current_chunk.size());
+    current_chunk.clear();
+  } else {
+    for (const auto& segment : data) {
+      parser->AppendBytes(segment.data(), segment.size());
+    }
   }
+
   parser->Finish();
 
   // Upon loading of SVGImages, log PageVisits in UseCounter if we did not

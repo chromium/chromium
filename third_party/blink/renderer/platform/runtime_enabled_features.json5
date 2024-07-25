@@ -1337,6 +1337,12 @@
       name: "DocumentDomain",
     },
     {
+      // This is a performance fix for <select> popups which was enabled by
+      // default in M128.
+      name: "DocumentInstallChunking",
+      status: "stable",
+    },
+    {
       name: "DocumentOpenOriginAliasRemoval",
       status: "experimental",
       copied_from_base_feature_if: "overridden",
