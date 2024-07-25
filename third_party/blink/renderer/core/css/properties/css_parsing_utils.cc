@@ -1535,6 +1535,9 @@ CSSPrimitiveValue* ConsumeLengthOrPercentInternal(
   }
   Flags parsing_flags({AllowPercent});
   switch (allow_calc_size) {
+    case AllowCalcSize::kAllowWithAutoAndContent:
+      parsing_flags.Put(AllowContentInCalcSize);
+      [[fallthrough]];
     case AllowCalcSize::kAllowWithAuto:
       parsing_flags.Put(AllowAutoInCalcSize);
       [[fallthrough]];
@@ -7381,6 +7384,9 @@ bool ValidWidthOrHeightKeyword(CSSValueID id, const CSSParserContext& context) {
   // The keywords supported here should be kept in sync with
   // CalculationExpressionSizingKeywordNode::Keyword and the things that use
   // it.
+  // TODO(https://crbug.com/353538495): This should also be kept in sync with
+  // FlexBasis::ParseSingleValue, although we should eventually make it use
+  // this function instead.
   if (id == CSSValueID::kWebkitMinContent ||
       id == CSSValueID::kWebkitMaxContent ||
       id == CSSValueID::kWebkitFillAvailable ||

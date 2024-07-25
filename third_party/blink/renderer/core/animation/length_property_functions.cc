@@ -54,27 +54,31 @@ bool LengthPropertyFunctions::IsZoomedLength(const CSSProperty& property) {
 bool LengthPropertyFunctions::CanAnimateKeyword(const CSSProperty& property,
                                                 CSSValueID value_id) {
   bool is_max_size = false;
-  switch (property.PropertyID()) {
+  switch (CSSPropertyID property_id = property.PropertyID()) {
     case CSSPropertyID::kMaxWidth:
     case CSSPropertyID::kMaxHeight:
       is_max_size = true;
       [[fallthrough]];
+    case CSSPropertyID::kFlexBasis:
     case CSSPropertyID::kWidth:
     case CSSPropertyID::kHeight:
     case CSSPropertyID::kMinWidth:
     case CSSPropertyID::kMinHeight:
       if (RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled()) {
         switch (value_id) {
+          case CSSValueID::kContent:
+            return property_id == CSSPropertyID::kFlexBasis;
           case CSSValueID::kAuto:
             return !is_max_size;
           case CSSValueID::kMinContent:
-          case CSSValueID::kWebkitMinContent:
           case CSSValueID::kMaxContent:
-          case CSSValueID::kWebkitMaxContent:
           case CSSValueID::kFitContent:
+            return true;
+          case CSSValueID::kWebkitMinContent:
+          case CSSValueID::kWebkitMaxContent:
           case CSSValueID::kWebkitFitContent:
           case CSSValueID::kWebkitFillAvailable:
-            return true;
+            return property_id != CSSPropertyID::kFlexBasis;
           default:
             return false;
         }

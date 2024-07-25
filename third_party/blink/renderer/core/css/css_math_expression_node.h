@@ -103,9 +103,10 @@ class CORE_EXPORT CSSMathExpressionNode
     AllowPercent,
     AllowCalcSize,
     AllowAutoInCalcSize,
+    AllowContentInCalcSize,
 
     MinValue = AllowPercent,
-    MaxValue = AllowAutoInCalcSize,
+    MaxValue = AllowContentInCalcSize,
   };
 
   using Flags = base::EnumSet<Flag, Flag::MinValue, Flag::MaxValue>;
