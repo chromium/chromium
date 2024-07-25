@@ -370,6 +370,8 @@ linux_memory_builder(
             "x64",
         ],
     ),
+    # Requires dedicated extra memory builder (crbug.com/352281723).
+    builderless = False,
     ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "linux|msan",
