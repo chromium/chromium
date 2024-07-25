@@ -48,6 +48,11 @@ export class FullDataResetElement extends FullDataResetElementBase {
         value: false,
       },
 
+      isAccountStoreUser: {
+        type: Boolean,
+        value: false,
+      },
+
       passwordsCount_: {
         type: String,
         value: '',
@@ -71,6 +76,7 @@ export class FullDataResetElement extends FullDataResetElementBase {
   }
 
   isSyncingPasswords: boolean;
+  isAccountStoreUser: boolean;
   private passwordsCount_: string = '';
   private passkeysCount_: string = '';
   private passwordsCountDetails_: string = '';
@@ -164,7 +170,7 @@ export class FullDataResetElement extends FullDataResetElementBase {
   }
 
   private getConfirmationDialogTitle_(): string {
-    if (this.isSyncingPasswords) {
+    if (this.isSyncingPasswords || this.isAccountStoreUser) {
       return this.i18n('fullResetConfirmationTitle');
     }
     return this.i18n('fullResetConfirmationTitleLocal');

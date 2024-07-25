@@ -100,7 +100,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
         type: Boolean,
         value: false,
         // <if expr="_google_chrome">
-        computed: 'computeShowShareButton_(isOptedInForAccountStorage, ' +
+        computed: 'computeShowShareButton_(isAccountStoreUser, ' +
             'isSyncingPasswords)',
         // </if>
       },
@@ -245,7 +245,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
 
   private computeShowShareButton_(): boolean {
     return !this.isFederated_() &&
-        (this.isSyncingPasswords || this.isOptedInForAccountStorage);
+        (this.isSyncingPasswords || this.isAccountStoreUser);
   }
 
   private computePasswordSharingDisabled_(): boolean {
