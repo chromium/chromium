@@ -11454,10 +11454,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_INPUT_ARIA_LABEL" desc="The a11y label of the tab group name input in the tab organization UI" is_accessibility_with_no_ui="true">
         Tab group name: <ph name="NAME">$1<ex>My tab group</ex></ph>
       </message>
-      <message name="IDS_TAB_ORGANIZATION_EDIT_ARIA_LABEL" desc="The a11y label of the tab group edit button in the tab organization UI" is_accessibility_with_no_ui="true">
+      <message name="IDS_TAB_ORGANIZATION_EDIT_ARIA_LABEL" desc="The a11y label and tooltip of the tab group edit button in the tab organization UI">
         Edit group name <ph name="NAME">$1<ex>My tab group</ex></ph>
       </message>
-      <message name="IDS_TAB_ORGANIZATION_REJECT_ARIA_LABEL" desc="The a11y label of the tab group reject button in the tab organization UI" is_accessibility_with_no_ui="true">
+      <message name="IDS_TAB_ORGANIZATION_REJECT_ARIA_LABEL" desc="The a11y label and tooltip of the tab group reject button in the tab organization UI">
         Remove group <ph name="NAME">$1<ex>My tab group</ex></ph>
       </message>
       <message name="IDS_TAB_ORGANIZATION_THUMBS_DOWN" desc="Accessibility label for the thumbs down icon that a user can click to provide negative feedback about a tab organization." is_accessibility_with_no_ui="true">

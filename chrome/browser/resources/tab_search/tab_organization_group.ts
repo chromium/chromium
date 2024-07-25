@@ -94,6 +94,17 @@ export class TabOrganizationGroupElement extends CrLitElement {
     }
   }
 
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('showInput_')) {
+      this.focusInput();
+    }
+  }
+
   focusInput() {
     const input = this.getInput_();
     if (input) {

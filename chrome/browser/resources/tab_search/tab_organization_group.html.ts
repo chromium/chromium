@@ -25,6 +25,7 @@ export function getHtml(this: TabOrganizationGroupElement) {
           <div class="tab-organization-header group-name">${this.name}</div>
           <cr-icon-button class="icon-edit"
               aria-label="${this.getEditButtonAriaLabel_()}"
+              title="${this.getEditButtonAriaLabel_()}"
               @click="${this.onEditClick_}">
           </cr-icon-button>
         </div>
@@ -32,6 +33,7 @@ export function getHtml(this: TabOrganizationGroupElement) {
       ${this.showReject ? html`
         <cr-icon-button id="rejectButton"
             aria-label="${this.getRejectButtonAriaLabel_()}"
+            title="${this.getRejectButtonAriaLabel_()}"
             iron-icon="tab-search:close"
             @click="${this.onRejectGroupClick_}">
         </cr-icon-button>
