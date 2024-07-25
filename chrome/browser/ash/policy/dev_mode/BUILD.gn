@@ -1,0 +1,20 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("dev_mode") {
+  sources = [
+    "dev_mode_policy_util.cc",
+    "dev_mode_policy_util.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//components/policy/proto",
+  ]
+}

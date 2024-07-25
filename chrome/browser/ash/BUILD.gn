@@ -70,8 +70,6 @@ static_library("ash") {
     "note_taking_helper.h",
     "os_url_handler.cc",
     "os_url_handler.h",
-    "policy/dev_mode/dev_mode_policy_util.cc",
-    "policy/dev_mode/dev_mode_policy_util.h",
     "policy/display/display_resolution_handler.cc",
     "policy/display/display_resolution_handler.h",
     "policy/display/display_rotation_default_handler.cc",

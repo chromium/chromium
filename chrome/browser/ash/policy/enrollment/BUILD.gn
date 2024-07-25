@@ -57,6 +57,7 @@ static_library("enrollment") {
     "//build/config/chromebox_for_meetings:buildflags",
     "//build/config/cuttlefish:buildflags",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/dev_mode",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common:constants",

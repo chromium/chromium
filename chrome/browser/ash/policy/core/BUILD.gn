@@ -72,6 +72,7 @@ static_library("core") {
     "//build:buildflag_header_h",
     "//build:chromeos_buildflags",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/dev_mode",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/invalidation",
     "//chrome/browser/ash/policy/scheduled_task_handler",
