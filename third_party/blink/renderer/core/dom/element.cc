@@ -6754,6 +6754,10 @@ void Element::SetHasUndoStack(bool value) {
   EnsureElementRareData().SetHasUndoStack(value);
 }
 
+void Element::SetPseudoElementStylesChangeCounters(bool value) {
+  EnsureElementRareData().SetPseudoElementStylesChangeCounters(value);
+}
+
 void Element::SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
   EnsureElementRareData().SetScrollbarPseudoElementStylesDependOnFontMetrics(
       value);
@@ -8029,6 +8033,33 @@ LayoutObject* Element::PseudoElementLayoutObject(PseudoId pseudo_id) const {
   return nullptr;
 }
 
+bool Element::PseudoElementStylesAffectCounters() const {
+  const ComputedStyle* style = GetComputedStyle();
+  if (!style) {
+    return false;
+  }
+  const ElementRareDataVector* rare_data = GetElementRareData();
+  if (!rare_data) {
+    return false;
+  }
+
+  if (rare_data->PseudoElementStylesAffectCounters()) {
+    return true;
+  }
+
+  if (!style->HasAnyPseudoElementStyles()) {
+    return false;
+  }
+
+  for (PseudoElement* pseudo_element : rare_data->GetPseudoElements()) {
+    if (pseudo_element->GetComputedStyle()->GetCounterDirectives()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 bool Element::PseudoElementStylesDependOnFontMetrics() const {
   const ComputedStyle* style = GetComputedStyle();
   if (!style) {
@@ -8134,6 +8165,9 @@ const ComputedStyle* Element::StyleForPseudoElement(
     const ComputedStyle* result = GetDocument().GetStyleResolver().ResolveStyle(
         this, style_recalc_context, before_after_request);
     if (result) {
+      if (result->GetCounterDirectives()) {
+        SetPseudoElementStylesChangeCounters(true);
+      }
       if (auto* quote = DynamicTo<HTMLQuoteElement>(this)) {
         ComputedStyleBuilder builder(*result);
         quote->AdjustPseudoStyleLocale(builder);
@@ -8168,8 +8202,12 @@ const ComputedStyle* Element::StyleForPseudoElement(
   DCHECK(!IsTransitionPseudoElement(GetPseudoId()) ||
          (GetDocument().documentElement() == this));
 
-  return GetDocument().GetStyleResolver().ResolveStyle(
+  const ComputedStyle* result = GetDocument().GetStyleResolver().ResolveStyle(
       this, style_recalc_context, request);
+  if (result && result->GetCounterDirectives()) {
+    SetPseudoElementStylesChangeCounters(true);
+  }
+  return result;
 }
 
 const ComputedStyle* Element::StyleForHighlightPseudoElement(

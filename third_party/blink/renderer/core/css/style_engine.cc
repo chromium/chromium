@@ -3053,6 +3053,9 @@ void StyleEngine::NodeWillBeRemoved(Node& node) {
         element->ComputedStyleRef().ContainsStyle()) {
       MarkCountersDirty();
     }
+    if (element->PseudoElementStylesAffectCounters()) {
+      MarkCountersDirty();
+    }
     if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
       if (element->GetComputedStyle() &&
           element->ComputedStyleRef().ContainsStyle()) {

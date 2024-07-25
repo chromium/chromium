@@ -1066,6 +1066,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       const AtomicString& view_transition_name = g_null_atom) const;
   LayoutObject* PseudoElementLayoutObject(PseudoId) const;
 
+  bool PseudoElementStylesAffectCounters() const;
+
   bool PseudoElementStylesDependOnFontMetrics() const;
 
   // Retrieve the ComputedStyle (if any) corresponding to the provided
@@ -1312,6 +1314,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // For font-related style invalidation.
   void SetScrollbarPseudoElementStylesDependOnFontMetrics(bool);
+
+  void SetPseudoElementStylesChangeCounters(bool value);
 
   // True if a scroller has not been explicitly scrolled by a user or by a
   // programmatic scroll. Indicates that we should use the CSS scroll-start
