@@ -78,4 +78,23 @@ std::string PlaybackContext::ToString() const {
       playback_reporting_token.c_str(), queue_name.c_str());
 }
 
+PlaybackData::PlaybackData(const PlaybackState state,
+                           const std::string& title,
+                           const GURL& url,
+                           std::optional<int> media_start,
+                           std::optional<int> media_end,
+                           bool initial_playback)
+    : state(state),
+      title(title),
+      url(url),
+      media_start(media_start),
+      media_end(media_end),
+      initial_playback(initial_playback) {}
+
+PlaybackData::PlaybackData(const PlaybackData&) = default;
+
+PlaybackData& PlaybackData::operator=(const PlaybackData&) = default;
+
+PlaybackData::~PlaybackData() = default;
+
 }  // namespace ash::youtube_music

@@ -31,6 +31,39 @@ interface MediaClient {
   StartPlay(TrackDefinition track);
 };
 
+// State of the media player.
+enum PlaybackState {
+  kPlaying,
+  kPaused,
+  kSwitchedToNext,
+  kEnded,
+  kNone,
+};
+
+// Defines player playback data. Values are from Typescript and used by Ash to
+// report the playback status.
+struct PlaybackData {
+  // Playback state.
+  PlaybackState state;
+
+  // Track title.
+  string title;
+
+  // Track media url.
+  url.mojom.Url url;
+
+  // Start time in second of the period that the playback event covers. Value is
+  // null when `initial_playback` is true.
+  int32? media_start;
+
+  // End time in second of the period that the playback event covers. Value is
+  // null when `initial_playback` is true.
+  int32? media_end;
+
+  // Indicate if it's the initial playback, i.e. first playback after loading.
+  bool initial_playback;
+};
+
 // Implemented in Ash and used by the WebUI side (Typescript) code to get track
 // data from Ash.
 interface TrackProvider {
@@ -41,4 +74,7 @@ interface TrackProvider {
 
   // Used at startup to install its implementation of `MediaClient`.
   SetMediaClient(pending_remote<MediaClient> client);
+
+  // Used by the player to report playback.
+  ReportPlayback(PlaybackData data);
 };

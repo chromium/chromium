@@ -57,6 +57,51 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         }
     )");
 
+google_apis::youtube_music::ReportPlaybackRequestPayload::PlaybackState
+GetPayloadPlaybackState(const PlaybackState player_state) {
+  switch (player_state) {
+    case PlaybackState::kPlaying:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          PlaybackState::kPlaying;
+    case PlaybackState::kPaused:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          PlaybackState::kPaused;
+    case PlaybackState::kSwitchedToNext:
+    case PlaybackState::kEnded:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          PlaybackState::kCompleted;
+    default:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          PlaybackState::kUnspecified;
+  };
+}
+
+std::unique_ptr<google_apis::youtube_music::ReportPlaybackRequestPayload>
+CreateReportPlaybackRequestPayload(const std::string& playback_reporting_token,
+                                   const PlaybackData& playback_data) {
+  base::Time current_time = base::Time::Now();
+  // TODO(b/350510885): Retrieve network connectivity type from the system.
+  auto connection_type = google_apis::youtube_music::
+      ReportPlaybackRequestPayload::ConnectionType::kUnspecified;
+  std::optional<google_apis::youtube_music::ReportPlaybackRequestPayload::
+                    WatchTimeSegment>
+      watch_time_segment = std::nullopt;
+  if (!playback_data.initial_playback &&
+      playback_data.media_start.has_value() &&
+      playback_data.media_end.has_value()) {
+    watch_time_segment = google_apis::youtube_music::
+        ReportPlaybackRequestPayload::WatchTimeSegment(
+            base::Seconds(playback_data.media_start.value()),
+            base::Seconds(playback_data.media_end.value()), current_time);
+  }
+  google_apis::youtube_music::ReportPlaybackRequestPayload::Params param(
+      playback_reporting_token, current_time, base::TimeDelta(),
+      base::TimeDelta(), connection_type,
+      GetPayloadPlaybackState(playback_data.state), watch_time_segment);
+  return std::make_unique<
+      google_apis::youtube_music::ReportPlaybackRequestPayload>(param);
+}
+
 }  // namespace
 
 YouTubeMusicClient::YouTubeMusicClient(
@@ -126,6 +171,23 @@ void YouTubeMusicClient::PlaybackQueueNext(
           base::BindOnce(&YouTubeMusicClient::OnPlaybackQueueNextRequestDone,
                          weak_factory_.GetWeakPtr(), base::Time::Now()),
           playback_queue_id));
+}
+
+void YouTubeMusicClient::ReportPlayback(
+    const std::string& playback_reporting_token,
+    const PlaybackData& playback_data,
+    ReportPlaybackCallback callback) {
+  CHECK(callback);
+  report_playback_callback_ = std::move(callback);
+
+  auto* const request_sender = GetRequestSender();
+  request_sender->StartRequestWithAuthRetry(
+      std::make_unique<google_apis::youtube_music::ReportPlaybackRequest>(
+          request_sender,
+          CreateReportPlaybackRequestPayload(playback_reporting_token,
+                                             playback_data),
+          base::BindOnce(&YouTubeMusicClient::OnReportPlaybackRequestDone,
+                         weak_factory_.GetWeakPtr(), base::Time::Now())));
 }
 
 google_apis::RequestSender* YouTubeMusicClient::GetRequestSender() {
@@ -237,6 +299,31 @@ void YouTubeMusicClient::OnPlaybackQueueNextRequestDone(
   std::move(playback_context_next_callback_)
       .Run(google_apis::HTTP_SUCCESS,
            GetPlaybackContextFromApiQueue(&result.value()->queue()));
+}
+
+void YouTubeMusicClient::OnReportPlaybackRequestDone(
+    const base::Time& request_start_time,
+    base::expected<
+        std::unique_ptr<google_apis::youtube_music::ReportPlaybackResult>,
+        google_apis::ApiErrorCode> result) {
+  if (!report_playback_callback_) {
+    return;
+  }
+
+  if (!result.has_value()) {
+    std::move(report_playback_callback_).Run(result.error(), std::nullopt);
+    return;
+  }
+
+  if (!result.value()) {
+    std::move(report_playback_callback_)
+        .Run(google_apis::ApiErrorCode::HTTP_SUCCESS, std::nullopt);
+    return;
+  }
+
+  std::move(report_playback_callback_)
+      .Run(google_apis::HTTP_SUCCESS,
+           result.value()->playback_reporting_token());
 }
 
 }  // namespace ash::youtube_music

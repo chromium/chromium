@@ -71,6 +71,14 @@ struct ReportPlaybackRequestPayload {
     kInvalid,
   };
 
+  struct WatchTimeSegment {
+    base::TimeDelta media_time_start;
+
+    base::TimeDelta media_time_end;
+
+    base::Time client_start_time;
+  };
+
   struct Params {
     std::string playback_reporting_token;
 
@@ -83,19 +91,11 @@ struct ReportPlaybackRequestPayload {
     ConnectionType connection_type;
 
     PlaybackState playback_state;
+
+    std::optional<WatchTimeSegment> watch_time_segment;
   };
 
-  struct WatchTimeSegment {
-    base::TimeDelta media_time_start;
-
-    base::TimeDelta media_time_end;
-
-    base::Time client_start_time;
-  };
-
-  ReportPlaybackRequestPayload(
-      const Params& params,
-      const std::optional<WatchTimeSegment>& watch_time_segment);
+  explicit ReportPlaybackRequestPayload(const Params& params);
   ReportPlaybackRequestPayload(const ReportPlaybackRequestPayload&);
   ReportPlaybackRequestPayload& operator=(const ReportPlaybackRequestPayload&);
   ~ReportPlaybackRequestPayload();
@@ -103,8 +103,6 @@ struct ReportPlaybackRequestPayload {
   std::string ToJson() const;
 
   Params params;
-
-  std::optional<WatchTimeSegment> watch_time_segment;
 };
 
 }  // namespace google_apis::youtube_music

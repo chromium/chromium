@@ -6,12 +6,16 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/url_constants.h"
+#include "ash/style/switch.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
+#include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
 #include "ash/webui/common/trusted_types_util.h"
+#include "ash/webui/focus_mode/mojom/focus_mode.mojom-shared.h"
 #include "ash/webui/grit/ash_focus_mode_resources.h"
 #include "ash/webui/grit/ash_focus_mode_resources_map.h"
 #include "base/base64.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/browser/browser_context.h"
@@ -70,6 +74,55 @@ GURL MakeImageDataURL(const gfx::ImageSkia& image) {
   return url;
 }
 
+youtube_music::PlaybackState GetPlaybackState(
+    const focus_mode::mojom::PlaybackState playback_state) {
+  switch (playback_state) {
+    case focus_mode::mojom::PlaybackState::kPlaying:
+      return youtube_music::PlaybackState::kPlaying;
+    case focus_mode::mojom::PlaybackState::kPaused:
+      return youtube_music::PlaybackState::kPaused;
+    case focus_mode::mojom::PlaybackState::kSwitchedToNext:
+      return youtube_music::PlaybackState::kSwitchedToNext;
+    case focus_mode::mojom::PlaybackState::kEnded:
+      return youtube_music::PlaybackState::kEnded;
+    case focus_mode::mojom::PlaybackState::kNone:
+      return youtube_music::PlaybackState::kNone;
+  }
+}
+
+bool ValidatePlaybackData(const focus_mode::mojom::PlaybackDataPtr& data) {
+  if (data.is_null()) {
+    DLOG(ERROR) << "Failed to validate the playback data: empty data";
+    return false;
+  }
+
+  if (data->state == focus_mode::mojom::PlaybackState::kNone) {
+    DLOG(ERROR) << "Failed to validate the playback data: uninitialized state";
+    return false;
+  }
+
+  if (data->initial_playback) {
+    if (data->media_start.has_value() || data->media_end.has_value()) {
+      DLOG(ERROR)
+          << "Failed to validate the playback data: bad initial playback data";
+      return false;
+    }
+  } else {
+    if (!data->media_start.has_value() || !data->media_end.has_value() ||
+        data->media_start < 0 || data->media_start > 18000 ||
+        data->media_end < 0 || data->media_end > 18000 ||
+        data->media_start >= data->media_end) {
+      DLOG(ERROR) << "Failed to validate the playback data: bad subsequent "
+                     "playback data, media_start="
+                  << data->media_start.value_or(-1)
+                  << ", media_end=" << data->media_end.value_or(-1);
+      return false;
+    }
+  }
+
+  return true;
+}
+
 }  // namespace
 
 class FocusModeTrackProvider : public focus_mode::mojom::TrackProvider {
@@ -86,6 +139,20 @@ class FocusModeTrackProvider : public focus_mode::mojom::TrackProvider {
       mojo::PendingRemote<focus_mode::mojom::MediaClient> client) override {
     client_remote_.reset();
     client_remote_.Bind(std::move(client));
+  }
+
+  void ReportPlayback(focus_mode::mojom::PlaybackDataPtr data) override {
+    if (auto* sounds_controller =
+            FocusModeController::Get()->focus_mode_sounds_controller()) {
+      if (ValidatePlaybackData(data)) {
+        // TODO(b/345309770): We may need to add rate limiting for
+        // reports.playback API.
+        sounds_controller->ReportYouTubeMusicPlayback(
+            youtube_music::PlaybackData(
+                GetPlaybackState(data->state), data->title, data->url,
+                data->media_start, data->media_end, data->initial_playback));
+      }
+    }
   }
 
   void BindInterface(

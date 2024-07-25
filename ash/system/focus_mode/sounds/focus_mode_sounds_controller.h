@@ -29,6 +29,10 @@ class UnguessableToken;
 
 namespace ash {
 
+namespace youtube_music {
+struct PlaybackData;
+}  // namespace youtube_music
+
 class FocusModeYouTubeMusicDelegate;
 
 // This class is used to download images and record the info of playlists after
@@ -144,6 +148,11 @@ class ASH_EXPORT FocusModeSoundsController
   // is used to update the specific UIs that are dependent on the account
   // premium status.
   void SetYouTubeMusicFailureCallback(base::RepeatingClosure callback);
+
+  // Reports playback to the media server. It's only used for YouTube Music at
+  // the moment.
+  void ReportYouTubeMusicPlayback(
+      const youtube_music::PlaybackData& playback_data);
 
   void set_soundscape_playlists_for_testing(
       std::vector<std::unique_ptr<Playlist>> soundscape_playlists) {

@@ -17,6 +17,7 @@
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_soundscape_delegate.h"
 #include "ash/system/focus_mode/sounds/focus_mode_youtube_music_delegate.h"
+#include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
 #include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -82,9 +83,6 @@ constexpr net::NetworkTrafficAnnotationTag kFocusModeSoundsThumbnailTag =
            }
          }
         })");
-}
-
-namespace {
 
 // Invoked upon completion of the `thumbnail` download. `thumbnail` can be a
 // null image if the download attempt from the url failed.
@@ -532,6 +530,11 @@ void FocusModeSoundsController::SetYouTubeMusicFailureCallback(
     base::RepeatingClosure callback) {
   CHECK(callback);
   youtube_music_delegate_->SetFailureCallback(std::move(callback));
+}
+
+void FocusModeSoundsController::ReportYouTubeMusicPlayback(
+    const youtube_music::PlaybackData& playback_data) {
+  youtube_music_delegate_->ReportPlayback(playback_data);
 }
 
 bool FocusModeSoundsController::IsPlaylistAllowed(

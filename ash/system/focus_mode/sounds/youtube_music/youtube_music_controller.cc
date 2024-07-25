@@ -108,4 +108,17 @@ bool YouTubeMusicController::PlaybackQueueNext(
   return true;
 }
 
+bool YouTubeMusicController::ReportPlayback(
+    const std::string& playback_reporting_token,
+    const PlaybackData& playback_data,
+    ReportPlaybackCallback callback) {
+  auto* client = GetActiveClient();
+  if (!client) {
+    return false;
+  }
+  client->ReportPlayback(playback_reporting_token, playback_data,
+                         std::move(callback));
+  return true;
+}
+
 }  // namespace ash::youtube_music
