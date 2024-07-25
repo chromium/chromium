@@ -30,6 +30,12 @@ bool LayoutBlockFlow::CreatesNewFormattingContext() const {
     return true;
   }
 
+  if (RuntimeEnabledFeatures::ContainerTypeNoLayoutContainmentEnabled()) {
+    if (StyleRef().ContainerType()) {
+      return true;
+    }
+  }
+
   // https://drafts.csswg.org/css-align/#distribution-block
   // All values other than normal force the block container to establish an
   // independent formatting context.

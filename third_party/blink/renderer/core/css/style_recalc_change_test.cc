@@ -245,7 +245,7 @@ TEST_F(StyleRecalcChangeTestCQ, SkipAttachLayoutTreeForContainer) {
 TEST_F(StyleRecalcChangeTestCQ, DontSkipLayoutRoot) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
-      #outer, #inner { container-type: size; }
+      #outer, #inner { container-type: size; contain: layout; }
     </style>
     <div id="outer">
       <div id="inner">

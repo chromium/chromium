@@ -783,6 +783,10 @@
       status:  {"Android": "stable", "default": "test"},
     },
     {
+      name: "ContainerTypeNoLayoutContainment",
+      status: "stable",
+    },
+    {
       name: "ContentIndex",
       status:  {"Android": "stable", "default": "experimental"},
     },

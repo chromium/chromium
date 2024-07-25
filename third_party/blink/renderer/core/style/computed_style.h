@@ -1459,12 +1459,16 @@ class ComputedStyle final : public ComputedStyleBase {
 
     if (container_type & kContainerTypeInlineSize) {
       effective |= kContainsStyle;
-      effective |= kContainsLayout;
+      if (!RuntimeEnabledFeatures::ContainerTypeNoLayoutContainmentEnabled()) {
+        effective |= kContainsLayout;
+      }
       effective |= kContainsInlineSize;
     }
     if (container_type & kContainerTypeBlockSize) {
       effective |= kContainsStyle;
-      effective |= kContainsLayout;
+      if (!RuntimeEnabledFeatures::ContainerTypeNoLayoutContainmentEnabled()) {
+        effective |= kContainsLayout;
+      }
       effective |= kContainsBlockSize;
     }
     if (!IsContentVisibilityVisible(content_visibility)) {
