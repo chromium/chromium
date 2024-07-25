@@ -39,6 +39,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/frame_header.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -325,6 +327,8 @@ class FeatureHeader : public views::View {
   FeatureHeader& operator=(const FeatureHeader) = delete;
   ~FeatureHeader() override = default;
 
+  const views::Label* GetSubtitle() { return sub_title_.get(); }
+
   void UpdateColors(bool is_enabled) {
     const auto color_id = is_enabled ? cros_tokens::kCrosSysOnSurface
                                      : cros_tokens::kCrosSysDisabled;
@@ -360,6 +364,8 @@ class FeatureHeader : public views::View {
 BEGIN_METADATA(FeatureHeader)
 END_METADATA
 
+}  // namespace
+
 // -----------------------------------------------------------------------------
 // ScreenSizeRow:
 
@@ -367,11 +373,12 @@ END_METADATA
 // +------------------------------------------------+
 // | |feature header|                           |>| |
 // +------------------------------------------------+
-class ScreenSizeRow : public views::Button {
+class GameDashboardMainMenuView::ScreenSizeRow : public views::Button {
   METADATA_HEADER(ScreenSizeRow, views::Button)
 
  public:
-  ScreenSizeRow(PressedCallback callback,
+  ScreenSizeRow(GameDashboardMainMenuView* main_menu,
+                PressedCallback callback,
                 ResizeCompatMode resize_mode,
                 ArcResizeLockType resize_lock_type)
       : views::Button(std::move(callback)) {
@@ -379,19 +386,46 @@ class ScreenSizeRow : public views::Button {
 
     bool enabled = false;
     int tooltip = 0;
+    std::u16string subtitle;
     switch (resize_lock_type) {
       case ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE:
       case ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE:
         enabled = true;
+        subtitle = compat_mode_util::GetText(resize_mode);
         break;
       case ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE:
         enabled = false;
         tooltip =
             IDS_ASH_ARC_APP_COMPAT_DISABLED_COMPAT_MODE_BUTTON_TOOLTIP_PHONE;
+        DCHECK_NE(resize_mode, ResizeCompatMode::kResizable)
+            << "The resize mode should never be resizable with an "
+               "ArcResizeLockType of RESIZE_DISABLED_NONTOGGLABLE.";
+        if (resize_mode == ResizeCompatMode::kPhone) {
+          subtitle = l10n_util::GetStringUTF16(
+              IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_ONLY_PORTRAIT);
+        } else {
+          subtitle = l10n_util::GetStringUTF16(
+              IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_ONLY_LANDSCAPE);
+        }
         break;
       case ArcResizeLockType::NONE:
         enabled = false;
         tooltip = IDS_ASH_GAME_DASHBOARD_FEATURE_NOT_AVAILABLE_TOOLTIP;
+
+        // Set the subtitle text based on whether the size button in the frame
+        // header is present.
+        auto* frame_header =
+            chromeos::FrameHeader::Get(views::Widget::GetWidgetForNativeWindow(
+                main_menu->context_->game_window()));
+        views::FrameCaptionButton* size_button =
+            frame_header->caption_button_container()->size_button();
+        if (size_button && size_button->GetVisible()) {
+          subtitle = l10n_util::GetStringUTF16(
+              IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_EXIT_FULLSCREEN);
+        } else {
+          subtitle = l10n_util::GetStringUTF16(
+              IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_ONLY_FULLSCREEN);
+        }
         break;
     }
 
@@ -404,10 +438,10 @@ class ScreenSizeRow : public views::Button {
     auto* layout =
         ConfigureFeatureRowLayout(this, kBottomMultiRowCorners, enabled);
     // Add header.
-    auto* header = AddChildView(std::make_unique<FeatureHeader>(
+    feature_header_ = AddChildView(std::make_unique<FeatureHeader>(
         enabled, compat_mode_util::GetIcon(resize_mode), title));
-    layout->SetFlexForView(header, /*flex=*/1);
-    header->UpdateSubtitle(compat_mode_util::GetText(resize_mode));
+    layout->SetFlexForView(feature_header_, /*flex=*/1);
+    feature_header_->UpdateSubtitle(subtitle);
     // Add arrow icon.
     AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
@@ -419,12 +453,15 @@ class ScreenSizeRow : public views::Button {
   ScreenSizeRow(const ScreenSizeRow&) = delete;
   ScreenSizeRow& operator=(const ScreenSizeRow) = delete;
   ~ScreenSizeRow() override = default;
+
+  FeatureHeader* feature_header() { return feature_header_; }
+
+ private:
+  raw_ptr<FeatureHeader> feature_header_;
 };
 
-BEGIN_METADATA(ScreenSizeRow)
+BEGIN_METADATA(GameDashboardMainMenuView, ScreenSizeRow)
 END_METADATA
-
-}  // namespace
 
 // -----------------------------------------------------------------------------
 // GameDashboardMainMenuView::GameControlsDetailsRow:
@@ -1140,7 +1177,8 @@ void GameDashboardMainMenuView::AddScreenSizeSettingsRow(
     views::View* container) {
   aura::Window* game_window = context_->game_window();
   DCHECK(IsArcWindow(game_window));
-  container->AddChildView(std::make_unique<ScreenSizeRow>(
+  screen_size_row_ = container->AddChildView(std::make_unique<ScreenSizeRow>(
+      this,
       base::BindRepeating(
           &GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed,
           base::Unretained(this)),
@@ -1348,6 +1386,11 @@ GameDashboardMainMenuView::GetGameControlsSetupNudgeForTesting() {
             kSetupNudgeId);
   }
   return nullptr;
+}
+
+const views::Label* GameDashboardMainMenuView::GetScreenSizeRowSubtitle() {
+  return screen_size_row_ ? screen_size_row_->feature_header()->GetSubtitle()
+                          : nullptr;
 }
 
 void GameDashboardMainMenuView::OnThemeChanged() {

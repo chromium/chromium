@@ -15,6 +15,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/game_dashboard/game_dashboard_button.h"
 #include "ash/game_dashboard/game_dashboard_constants.h"
 #include "ash/game_dashboard/game_dashboard_context_test_api.h"
@@ -52,6 +53,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "extensions/common/constants.h"
@@ -309,6 +312,26 @@ class EventCapturer : public ui::EventHandler {
   }
 
   std::unique_ptr<ui::MouseEvent> last_mouse_event_;
+};
+
+// Test model mimicking a default `chromeos::CaptionButtonModel` that ensures
+// there's no maximize button within the frame header buttons.
+class NonResizableButtonModel : public chromeos::CaptionButtonModel {
+ public:
+  NonResizableButtonModel() = default;
+  NonResizableButtonModel(const NonResizableButtonModel&) = delete;
+  NonResizableButtonModel& operator=(const NonResizableButtonModel&) = delete;
+  ~NonResizableButtonModel() override = default;
+
+  // chromeos::CaptionButtonModel:
+  bool IsVisible(views::CaptionButtonIcon type) const override {
+    if (type == views::CAPTION_BUTTON_ICON_MINIMIZE) {
+      return true;
+    }
+    return false;
+  }
+  bool IsEnabled(views::CaptionButtonIcon type) const override { return true; }
+  bool InZoomMode() const override { return false; }
 };
 
 }  // namespace
@@ -740,7 +763,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     EXPECT_EQ(test_api_->GetToolbarSnapLocation(), desired_location);
   }
 
-  void CreateAnArcAppInFullscreen() {
+  void CreateAnArcAppInFullscreen(std::unique_ptr<chromeos::CaptionButtonModel>
+                                      caption_button_model = nullptr) {
     // Create an ARC game window.
     SetAppBounds(gfx::Rect(50, 50, 800, 700));
     CreateGameWindow(/*is_arc_window=*/true,
@@ -751,10 +775,23 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     views::Widget* button_widget = test_api_->GetGameDashboardButtonWidget();
     CHECK(button_widget);
 
-    // Set initial state to fullscreen and verify Game Dashboard button widget
-    // is not visible.
+    if (caption_button_model) {
+      // Override the caption button model and ensure the values referencing the
+      // model are updated.
+      auto* frame_view = NonClientFrameViewAsh::Get(game_window_.get());
+      ASSERT_TRUE(frame_view);
+      frame_view->SetCaptionButtonModel(std::move(caption_button_model));
+    }
+
+    // Set initial state to fullscreen, ensure the animations are complete after
+    // toggling the fullscreen state, and verify Game Dashboard button widget is
+    // not visible.
     ASSERT_FALSE(test_api_->GetGameDashboardButtonRevealController());
     ToggleFullScreen(window_state, /*delegate=*/nullptr);
+    auto* frame_view = NonClientFrameViewAsh::Get(game_window_.get());
+    chromeos::FrameCaptionButtonContainerView::TestApi test_api(
+        frame_view->GetHeaderView()->caption_button_container());
+    test_api.EndAnimations();
     ASSERT_TRUE(window_state->IsFullscreen());
     ASSERT_FALSE(button_widget->IsVisible());
     ASSERT_TRUE(test_api_->GetGameDashboardButtonRevealController());
@@ -1257,6 +1294,115 @@ TEST_F(GameDashboardContextTest, ScreenSizeRowAvailability) {
   EXPECT_FALSE(test_api_->GetMainMenuScreenSizeSettingsButton());
 }
 
+// Verifies a not O4C resizable app in portrait mode displays the expected
+// description within the screen size row.
+TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_PortraitResizable) {
+  // Create an ARC game window in portrait mode that is resizable.
+  SetAppBounds(gfx::Rect(50, 50, 400, 700));
+  CreateGameWindow(/*is_arc_window=*/true);
+  game_window_->SetProperty(kArcResizeLockTypeKey,
+                            ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
+
+  test_api_->OpenTheMainMenu();
+
+  EXPECT_EQ(u"Portrait", test_api_->GetMainMenuScreenSizeSubtitle());
+}
+
+// Verifies a not O4C resizable app in landscape mode displays the expected
+// description within the screen size row.
+TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_LandscapeResizable) {
+  // Create an ARC game window in landscape mode that is resizable.
+  CreateGameWindow(/*is_arc_window=*/true);
+  game_window_->SetProperty(kArcResizeLockTypeKey,
+                            ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
+
+  test_api_->OpenTheMainMenu();
+
+  EXPECT_EQ(u"Landscape", test_api_->GetMainMenuScreenSizeSubtitle());
+}
+
+// Verifies a not O4C resizable app in resizable mode displays the expected
+// description within the screen size row.
+TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_FreeformResizable) {
+  // Create an ARC game window in free resizing mode.
+  CreateGameWindow(/*is_arc_window=*/true);
+  game_window_->SetProperty(kArcResizeLockTypeKey,
+                            ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE);
+
+  test_api_->OpenTheMainMenu();
+
+  EXPECT_EQ(u"Resizable", test_api_->GetMainMenuScreenSizeSubtitle());
+}
+
+// Verifies a not O4C non-resizable app in portrait mode displays the expected
+// description within the screen size row.
+TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_PortraitNonTogglable) {
+  // Create an ARC game window that only supports portrait mode.
+  SetAppBounds(gfx::Rect(50, 50, 400, 700));
+  CreateGameWindow(/*is_arc_window=*/true);
+  game_window_->SetProperty(kArcResizeLockTypeKey,
+                            ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE);
+
+  test_api_->OpenTheMainMenu();
+
+  EXPECT_EQ(u"Only portrait available",
+            test_api_->GetMainMenuScreenSizeSubtitle());
+}
+
+// Verifies a not O4C non-resizable app in landscape mode displays the expected
+// description within the screen size row.
+TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_LandscapeNonTogglable) {
+  // Create an ARC game window that only supports landscape mode.
+  CreateGameWindow(/*is_arc_window=*/true);
+  game_window_->SetProperty(kArcResizeLockTypeKey,
+                            ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE);
+
+  test_api_->OpenTheMainMenu();
+
+  EXPECT_EQ(u"Only landscape available",
+            test_api_->GetMainMenuScreenSizeSubtitle());
+}
+
+// Verifies a not O4C resizable app in fullscreen displays the expected
+// description within the screen size row.
+TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_FullscreenTogglable) {
+  // Create an ARC game window in fullscreen that can be resized via the size
+  // button in the frame header.
+  CreateAnArcAppInFullscreen();
+
+  // Open the Game Dashboard menu with the accelerator.
+  AcceleratorControllerImpl* controller =
+      Shell::Get()->accelerator_controller();
+  const ui::Accelerator gd_accelerator(ui::VKEY_G, ui::EF_COMMAND_DOWN);
+  auto* button_widget = test_api_->GetGameDashboardButtonWidget();
+  CHECK(button_widget);
+  ASSERT_TRUE(controller->Process(gd_accelerator));
+  ASSERT_TRUE(button_widget->IsVisible());
+
+  EXPECT_EQ(u"Exit fullscreen to resize",
+            test_api_->GetMainMenuScreenSizeSubtitle());
+}
+
+// Verifies a not O4C non-resizable app in fullscreen displays the expected
+// description within the screen size row.
+TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_FullscreenNonTogglable) {
+  // Create an ARC game window in fullscreen that can't be resized.
+  CreateAnArcAppInFullscreen(
+      /*caption_button_model=*/std::make_unique<NonResizableButtonModel>());
+
+  // Open the Game Dashboard menu with the accelerator.
+  AcceleratorControllerImpl* controller =
+      Shell::Get()->accelerator_controller();
+  const ui::Accelerator gd_accelerator(ui::VKEY_G, ui::EF_COMMAND_DOWN);
+  auto* button_widget = test_api_->GetGameDashboardButtonWidget();
+  CHECK(button_widget);
+  ASSERT_TRUE(controller->Process(gd_accelerator));
+  ASSERT_TRUE(button_widget->IsVisible());
+
+  EXPECT_EQ(u"Only fullscreen available",
+            test_api_->GetMainMenuScreenSizeSubtitle());
+}
+
 TEST_F(GameDashboardContextTest, NonCompatModeArcGame) {
   // Create an ARC game window that doesn't support Compat Mode.
   CreateGameWindow(/*is_arc_window=*/true);
@@ -1518,7 +1664,7 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen) {
 
   AcceleratorControllerImpl* controller =
       Shell::Get()->accelerator_controller();
-  ui::Accelerator gd_accelerator(ui::VKEY_G, ui::EF_COMMAND_DOWN);
+  const ui::Accelerator gd_accelerator(ui::VKEY_G, ui::EF_COMMAND_DOWN);
   auto* window_state = WindowState::Get(game_window_.get());
   auto* button_widget = test_api_->GetGameDashboardButtonWidget();
   CHECK(button_widget);
@@ -1563,7 +1709,7 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreenWithMainMenu) {
 
   AcceleratorControllerImpl* controller =
       Shell::Get()->accelerator_controller();
-  ui::Accelerator gd_accelerator(ui::VKEY_G, ui::EF_COMMAND_DOWN);
+  const ui::Accelerator gd_accelerator(ui::VKEY_G, ui::EF_COMMAND_DOWN);
   auto* window_state = WindowState::Get(game_window_.get());
   auto* button_widget = test_api_->GetGameDashboardButtonWidget();
   CHECK(button_widget);

@@ -7993,6 +7993,18 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_TITLE" desc="The display name for the Game Dashboard screen size settings.">
         Screen size
       </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_EXIT_FULLSCREEN" desc="The text displayed within the screen size settings row to indicate that a user must exit fullscreen to resize this game.">
+        Exit fullscreen to resize
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_ONLY_FULLSCREEN" desc="The text displayed within the screen size settings row to indicate that this game is only available in fullscreen.">
+        Only fullscreen available
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_ONLY_PORTRAIT" desc="The text displayed within the screen size settings row to indicate that only the portrait size is available for this game.">
+        Only portrait available
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_ONLY_LANDSCAPE" desc="The text displayed within the screen size settings row to indicate that only the landscape size is available for this game.">
+        Only landscape available
+      </message>
       <message name="IDS_ASH_GAME_DASHBOARD_SEND_FEEDBACK_TITLE" desc="The display name for the Game Dashboard send feedback button.">
         Send feedback
       </message>

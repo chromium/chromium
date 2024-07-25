@@ -71,6 +71,7 @@ class GameDashboardContextTestApi {
   FeatureTile* GetMainMenuToolbarTile();
   FeatureTile* GetMainMenuRecordGameTile();
   FeatureTile* GetMainMenuScreenshotTile();
+  const std::u16string& GetMainMenuScreenSizeSubtitle();
   views::Button* GetMainMenuScreenSizeSettingsButton();
   views::Button* GetMainMenuGameControlsDetailsButton();
   PillButton* GetMainMenuGameControlsSetupButton();
