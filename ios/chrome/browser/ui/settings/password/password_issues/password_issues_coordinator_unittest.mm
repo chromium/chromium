@@ -157,17 +157,6 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
   PasswordIssuesCoordinator* coordinator_ = nil;
 };
 
-// Tests that Password Issues is presented without authentication required.
-TEST_F(PasswordIssuesCoordinatorTest, PasswordIssuesPresentedWithoutAuth) {
-  CheckPasswordIssuesVisitMetricsCount(0);
-
-  StartCoordinatorSkippingAuth(/*skip_auth_on_start=*/YES);
-
-  CheckPasswordIssuesIsPresented();
-
-  CheckPasswordIssuesVisitMetricsCount(1);
-}
-
 // Tests that Password Issues is presented only after passing authentication
 TEST_F(PasswordIssuesCoordinatorTest, PasswordIssuesPresentedWithAuth) {
   StartCoordinatorSkippingAuth(/*skip_auth_on_start=*/NO);
