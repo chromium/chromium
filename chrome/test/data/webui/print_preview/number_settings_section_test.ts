@@ -6,8 +6,8 @@ import 'chrome://print/print_preview.js';
 
 import type {PrintPreviewNumberSettingsSectionElement} from 'chrome://print/print_preview.js';
 import {getTrustedHTML} from 'chrome://print/print_preview.js';
-import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {triggerInputEvent} from './print_preview_test_utils.js';

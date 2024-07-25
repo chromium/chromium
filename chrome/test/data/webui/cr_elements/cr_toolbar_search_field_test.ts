@@ -64,7 +64,7 @@ suite('cr-toolbar-search-field', function() {
     assertTrue(field.showingSearch);
     assertEquals(searchInput, field.shadowRoot!.activeElement);
 
-    pressAndReleaseKeyOn(searchInput, 27, undefined, 'Escape');
+    pressAndReleaseKeyOn(searchInput, 27, [], 'Escape');
     assertFalse(field.showingSearch, 'Pressing escape closes field.');
     assertNotEquals(searchInput, field.shadowRoot!.activeElement);
   });

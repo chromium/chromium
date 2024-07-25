@@ -303,7 +303,7 @@ suite('SyncStatusTests', function() {
   });
 
   // <if expr="chromeos_lacros">
-  test('SignoutDialogLacrosMainProfile', function() {
+  test('SignoutDialogLacrosMainProfile', async function() {
     loadTimeData.overrideValues({
       isSecondaryUser: false,
     });

@@ -70,7 +70,7 @@ suite('cr-checkbox', function() {
   }
 
   function triggerKeyPressEvent(keyName: string, element?: HTMLElement) {
-    pressAndReleaseKeyOn(element || innerCheckbox, 0, undefined, keyName);
+    pressAndReleaseKeyOn(element || innerCheckbox, 0, [], keyName);
   }
 
   // Test that the control is checked when the user taps on it (no movement
@@ -198,14 +198,14 @@ suite('cr-checkbox', function() {
 
   test('space key down does not toggle', async () => {
     assertNotChecked();
-    keyDownOn(innerCheckbox, 0, undefined, ' ');
+    keyDownOn(innerCheckbox, 0, [], ' ');
     await checkbox.updateComplete;
     assertNotChecked();
   });
 
   test('space key up toggles', async () => {
     assertNotChecked();
-    keyUpOn(innerCheckbox, 0, undefined, ' ');
+    keyUpOn(innerCheckbox, 0, [], ' ');
     await checkbox.updateComplete;
     assertChecked();
   });

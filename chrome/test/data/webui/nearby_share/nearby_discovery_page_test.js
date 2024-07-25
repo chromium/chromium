@@ -12,8 +12,8 @@ import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';
 import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
-import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chromeos/chai_assert.js';
 import {isVisible} from '../chromeos/test_util.js';

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-type Modifier = 'alt'|'ctrl'|'meta'|'shift';
-type ModifiersParam = Modifier|Modifier[];
+export type Modifier = 'alt'|'ctrl'|'meta'|'shift';
+export type ModifiersParam = Modifier|Modifier[];
 
 /**
  * Returns a keyboard event. This event bubbles and is cancellable.

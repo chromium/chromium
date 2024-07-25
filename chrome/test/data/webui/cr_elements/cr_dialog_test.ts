@@ -22,7 +22,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('cr-dialog', function() {
   function pressEnter(element: HTMLElement) {
-    keyEventOn(element, 'keypress', 13, undefined, 'Enter');
+    keyEventOn(element, 'keypress', 13, [], 'Enter');
   }
 
   /**
@@ -583,8 +583,8 @@ suite('cr-dialog', function() {
     document.addEventListener('keydown', assertKeydownNotReached);
 
     return flushTasks().then(() => {
-      keyDownOn(dialog, 65, undefined, 'a');
-      keyDownOn(document.body, 65, undefined, 'a');
+      keyDownOn(dialog, 65, [], 'a');
+      keyDownOn(document.body, 65, [], 'a');
       document.removeEventListener('keydown', assertKeydownNotReached);
     });
   });
@@ -607,7 +607,7 @@ suite('cr-dialog', function() {
     document.addEventListener('keydown', assertKeydownCount);
 
     return flushTasks().then(() => {
-      keyDownOn(dialog, 65, undefined, 'a');
+      keyDownOn(dialog, 65, [], 'a');
       assertEquals(1, keydownCounter);
       document.removeEventListener('keydown', assertKeydownCount);
     });

@@ -6,9 +6,9 @@ import type {CrToastManagerElement, DownloadsManagerElement, PageRemote} from 'c
 import {BrowserProxy, DangerType, loadTimeData, State} from 'chrome://downloads/downloads.js';
 import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {isMac} from 'chrome://resources/js/platform.js';
-import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createDownload, TestDownloadsProxy} from './test_support.js';
