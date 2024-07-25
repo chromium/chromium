@@ -38,6 +38,7 @@ import android.widget.EditText;
 import androidx.annotation.Nullable;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -53,11 +54,15 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -102,6 +107,10 @@ public class TabGridDialogMediatorUnitTest {
     private static final int POSITION2 = 1;
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
 
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
+    @Mock Profile mProfile;
+    @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock View mView;
     @Mock TabGridDialogMediator.DialogController mDialogController;
     @Mock TabCreatorManager mTabCreatorManager;
@@ -136,8 +145,11 @@ public class TabGridDialogMediatorUnitTest {
 
     @Before
     public void setUp() {
-
         MockitoAnnotations.initMocks(this);
+
+        mJniMocker.mock(TabGroupSyncFeaturesJni.TEST_HOOKS, mTabGroupSyncFeaturesJniMock);
+        doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
+        when(mProfile.isNativeInitialized()).thenReturn(true);
 
         mTab1 = prepareTab(TAB1_ID, TAB1_TITLE);
         mTab2 = prepareTab(TAB2_ID, TAB2_TITLE);
@@ -145,6 +157,7 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabs2 = new ArrayList<>(Arrays.asList(mTab2));
 
         mCurrentTabModelFilterSupplier.set(mTabGroupModelFilter);
+        doReturn(mProfile).when(mTabModel).getProfile();
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab1);
         doReturn(POSITION2).when(mTabGroupModelFilter).indexOf(mTab2);
@@ -1355,6 +1368,48 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
+    public void testDialogToolbarMenu_EditGroupName() {
+        Callback<Integer> callback = mMediator.getToolbarMenuCallbackForTesting();
+        mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
+
+        mMediator.setCurrentTabIdForTesting(TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+
+        callback.onResult(R.id.edit_group_name);
+        assertTrue(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
+    }
+
+    @Test
+    public void testDialogToolbarMenu_EditGroupColor() {
+        Callback<Integer> callback = mMediator.getToolbarMenuCallbackForTesting();
+
+        mMediator.setCurrentTabIdForTesting(TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+
+        callback.onResult(R.id.edit_group_color);
+        verify(mShowColorPickerPopupRunnable).run();
+    }
+
+    @Test
+    public void testDialogToolbarMenu_DeleteGroup() {
+        Callback<Integer> callback = mMediator.getToolbarMenuCallbackForTesting();
+
+        mMediator.setCurrentTabIdForTesting(TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+        when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
+
+        callback.onResult(R.id.delete_tab);
+        verify(mTabGroupModelFilter).closeMultipleTabs(tabGroup, true, false);
+
+        when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);
+        callback.onResult(R.id.delete_tab);
+        verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
+    }
+
+    @Test
     public void testSnackbarController_onAction_singleTab() {
         mMediator.onAction(TAB1_ID);
 
@@ -1476,6 +1531,7 @@ public class TabGridDialogMediatorUnitTest {
     private void createTabGroup(List<Tab> tabs, int rootId, @Nullable Token tabGroupId) {
         for (Tab tab : tabs) {
             when(mTabGroupModelFilter.getRelatedTabList(tab.getId())).thenReturn(tabs);
+            when(mTabGroupModelFilter.getRelatedTabListForRootId(rootId)).thenReturn(tabs);
             when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
             when(tab.getRootId()).thenReturn(rootId);
             when(tab.getTabGroupId()).thenReturn(tabGroupId);

@@ -134,6 +134,7 @@ import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -2188,8 +2189,24 @@ public class TabGridDialogTest {
                                     2,
                                     cta.getString(
                                             R.string.tab_grid_dialog_toolbar_edit_group_color));
-                            assertEquals(3, listView.getCount());
+                            int itemCount = 3;
+                            boolean shouldShowDelete = isTabGroupSyncEnabled(cta);
+                            if (shouldShowDelete) {
+                                verifyTabGridDialogToolbarMenuItem(
+                                        listView,
+                                        3,
+                                        cta.getString(
+                                                R.string.tab_grid_dialog_toolbar_delete_group));
+                                itemCount++;
+                            }
+                            assertEquals(itemCount, listView.getCount());
                         });
+    }
+
+    private boolean isTabGroupSyncEnabled(ChromeTabbedActivity cta) {
+        Profile profile = cta.getTabModelSelectorSupplier().get().getCurrentModel().getProfile();
+        if (profile.isOffTheRecord()) return false;
+        return TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
     }
 
     private void verifyTabGridDialogToolbarMenuItem(ListView listView, int index, String text) {
