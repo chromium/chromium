@@ -403,6 +403,7 @@
 #include "chrome/browser/lacros/remote_apps/remote_apps_proxy_lacros_factory.h"
 #include "chrome/browser/speech/tts_client_factory_lacros.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
+#include "chrome/browser/ui/webui/print_preview/extension_printer_service_provider_factory_lacros.h"
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -1247,6 +1248,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   TtsClientFactoryLacros::GetInstance();
+  printing::ExtensionPrinterServiceProviderFactoryLacros::GetInstance();
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   TurnSyncOnHelper::EnsureFactoryBuilt();

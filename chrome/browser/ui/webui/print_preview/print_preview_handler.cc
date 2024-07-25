@@ -11,10 +11,12 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
@@ -86,10 +88,12 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ui/webui/print_preview/extension_printer_handler_adapter_ash.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -1162,6 +1166,18 @@ void PrintPreviewHandler::ClearInitiatorDetails() {
 PrinterHandler* PrintPreviewHandler::GetPrinterHandler(
     mojom::PrinterType printer_type) {
   if (printer_type == mojom::PrinterType::kExtension) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // When Lacros is enabled, uses the ExtensionPrinterHandlerAdapterAsh to
+    // talk to Lacros's extension printers.
+    if (ash::features::IsLacrosExtensionPrintingEnabled() &&
+        crosapi::browser_util::IsLacrosEnabled()) {
+      if (!extension_printer_handler_adapter_) {
+        extension_printer_handler_adapter_ =
+            std::make_unique<ExtensionPrinterHandlerAdapterAsh>();
+      }
+      return extension_printer_handler_adapter_.get();
+    }
+#endif
     if (!extension_printer_handler_) {
       extension_printer_handler_ = PrinterHandler::CreateForExtensionPrinters(
           Profile::FromWebUI(web_ui()));

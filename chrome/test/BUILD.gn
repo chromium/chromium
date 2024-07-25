@@ -5495,6 +5495,16 @@ if (!is_android) {
         sources +=
             [ "../browser/printing/system_access_process_print_browsertest.cc" ]
       }
+
+      if (is_chromeos_ash) {
+        sources += [
+          "../browser/ash/crosapi/extension_printer_service_ash_browsertest.cc",
+        ]
+      }
+
+      if (is_chromeos_lacros) {
+        sources += [ "../browser/ui/webui/print_preview/extension_printer_service_provider_lacros_browsertest.cc" ]
+      }
     }
     if (enable_paint_preview) {
       sources += [

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
+#include "chrome/browser/ash/crosapi/extension_printer_service_ash.h"
 #include "chrome/browser/ash/smart_reader/smart_reader_manager_ash.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -81,6 +82,7 @@ class EchoPrivateAsh;
 class EmbeddedAccessibilityHelperClientAsh;
 class EmojiPickerAsh;
 class ExtensionInfoPrivateAsh;
+class ExtensionPrinterServiceAsh;
 class EyeDropperAsh;
 class FeedbackAsh;
 class FieldTrialServiceAsh;
@@ -256,6 +258,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::EmojiPicker> receiver) override;
   void BindExtensionInfoPrivate(
       mojo::PendingReceiver<mojom::ExtensionInfoPrivate> receiver) override;
+  void BindExtensionPrinterService(
+      mojo::PendingReceiver<mojom::ExtensionPrinterService> receiver) override;
   void BindExtensionPublisher(
       mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
   void BindEyeDropper(
@@ -522,6 +526,10 @@ class CrosapiAsh : public mojom::Crosapi {
     return extension_info_private_ash_.get();
   }
 
+  ExtensionPrinterServiceAsh* extension_printer_service_ash() {
+    return extension_printer_service_ash_.get();
+  }
+
   FileSystemAccessCloudIdentifierProviderAsh*
   file_system_access_cloud_identifier_provider_ash() {
     return file_system_access_cloud_identifier_provider_ash_.get();
@@ -704,6 +712,7 @@ class CrosapiAsh : public mojom::Crosapi {
       embedded_accessibility_helper_client_ash_;
   std::unique_ptr<EmojiPickerAsh> emoji_picker_ash_;
   std::unique_ptr<ExtensionInfoPrivateAsh> extension_info_private_ash_;
+  std::unique_ptr<ExtensionPrinterServiceAsh> extension_printer_service_ash_;
   std::unique_ptr<EyeDropperAsh> eye_dropper_ash_;
   std::unique_ptr<FeedbackAsh> feedback_ash_;
   std::unique_ptr<FieldTrialServiceAsh> field_trial_service_ash_;

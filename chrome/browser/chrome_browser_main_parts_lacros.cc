@@ -11,6 +11,7 @@
 #include "chrome/browser/lacros/metrics_reporting_observer.h"
 #include "chrome/browser/lacros/prefs_ash_observer.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
+#include "chrome/browser/ui/webui/print_preview/extension_printer_service_setup_lacros.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/lacros/dbus/lacros_dbus_helper.h"
 #include "chromeos/startup/browser_params_proxy.h"
@@ -86,6 +87,9 @@ void ChromeBrowserMainPartsLacros::PreProfileInit() {
   // Initialize TtsPlatform so that TtsPlatformImplLacros can observe the
   // ProfileManager for OnProfileAdded event before the profile is loaded.
   content::TtsPlatform::GetInstance();
+  // Initialize ExtensionPrinterServiceSetupLacros so that it can observe the
+  // ProfileManager for OnProfileAdded event before the profile is loaded.
+  printing::ExtensionPrinterServiceSetupLacros::GetInstance();
 }
 
 void ChromeBrowserMainPartsLacros::PostProfileInit(Profile* profile,
