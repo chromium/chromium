@@ -265,8 +265,6 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
 
   // This test should have no unexpected calls of observer events.
   EXPECT_CALL(observer, OnAutofillManagerStateChanged).Times(0);
-  EXPECT_CALL(observer, OnAutofillManagerDestroyed).Times(0);
-  EXPECT_CALL(observer, OnAutofillManagerReset).Times(0);
   EXPECT_CALL(observer, OnBeforeLanguageDetermined).Times(0);
   EXPECT_CALL(observer, OnAfterLanguageDetermined).Times(0);
   EXPECT_CALL(observer, OnBeforeFormsSeen).Times(0);
@@ -314,7 +312,6 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer,
               OnAutofillManagerStateChanged(m, kInactive, kPendingReset));
   test_api(manager()).SetLifecycleState(kPendingReset);
-  EXPECT_CALL(observer, OnAutofillManagerReset(m));
   test_api(manager()).Reset();
   EXPECT_CALL(observer,
               OnAutofillManagerStateChanged(m, kPendingReset, kActive));
@@ -388,14 +385,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   // Reset the manager, the observers should stick around.
   EXPECT_CALL(observer,
               OnAutofillManagerStateChanged(m, kActive, kPendingDeletion))
-      .WillOnce(Invoke([&] {
-        // TODO: crbug.com/354043640 - Uncomment the following line when
-        // OnAutofillManagerDestroyed() has been removed:
-        // observation.Reset();
-      }));
-  EXPECT_CALL(observer, OnAutofillManagerDestroyed(m)).WillOnce(Invoke([&] {
-    observation.Reset();
-  }));
+      .WillOnce(Invoke([&] { observation.Reset(); }));
   test_api(manager()).SetLifecycleState(kPendingDeletion);
   driver_.reset();
 }

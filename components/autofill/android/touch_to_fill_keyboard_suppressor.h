@@ -94,7 +94,10 @@ class TouchToFillKeyboardSuppressor
       ContentAutofillDriver& driver) override;
 
   // AutofillManager::Observer:
-  void OnAutofillManagerDestroyed(AutofillManager& manager) override;
+  void OnAutofillManagerStateChanged(
+      AutofillManager& manager,
+      AutofillManager::LifecycleState old_state,
+      AutofillManager::LifecycleState new_state) override;
   void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                   FormGlobalId form_id,
                                   FieldGlobalId field_id,

@@ -224,7 +224,10 @@ class AutofillDriverIOS : public AutofillDriver,
   using web::WebFrameUserData<AutofillDriverIOS>::FromWebFrame;
 
   // AutofillManager::Observer:
-  void OnAutofillManagerDestroyed(AutofillManager& manager) override;
+  void OnAutofillManagerStateChanged(
+      AutofillManager& manager,
+      AutofillManager::LifecycleState old_state,
+      AutofillManager::LifecycleState new_state) override;
   void OnAfterFormsSeen(AutofillManager& manager,
                         base::span<const FormGlobalId> forms) override;
 

@@ -428,8 +428,20 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
 #pragma mark - AutofillManagerObserver
 
-- (void)onAutofillManagerDestroyed:(AutofillManager&)manager {
-  _autofillManagerObservation->RemoveObservation(&manager);
+- (void)onAutofillManagerStateChanged:(AutofillManager&)manager
+                                 from:(AutofillManager::LifecycleState)oldState
+                                   to:(AutofillManager::LifecycleState)
+                                          newState {
+  using enum autofill::AutofillManager::LifecycleState;
+  switch (newState) {
+    case kInactive:
+    case kActive:
+    case kPendingReset:
+      break;
+    case kPendingDeletion:
+      _autofillManagerObservation->RemoveObservation(&manager);
+      break;
+  }
 }
 
 - (void)onFieldTypesDetermined:(AutofillManager&)manager

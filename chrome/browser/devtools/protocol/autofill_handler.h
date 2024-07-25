@@ -55,6 +55,10 @@ class AutofillHandler : public protocol::Autofill::Backend,
   // devtools the filled fields details and information about the profile used.
   // These information is then used to build a UI inside devtools, which will
   // provide developers more visibility on how autofill works on their form.
+  void OnAutofillManagerStateChanged(
+      autofill::AutofillManager& manager,
+      autofill::AutofillManager::LifecycleState old_state,
+      autofill::AutofillManager::LifecycleState new_state) override;
   void OnFillOrPreviewDataModelForm(
       autofill::AutofillManager& manager,
       autofill::FormGlobalId form,
@@ -63,7 +67,6 @@ class AutofillHandler : public protocol::Autofill::Backend,
       absl::variant<const autofill::AutofillProfile*,
                     const autofill::CreditCard*> profile_or_credit_card)
       override;
-  void OnAutofillManagerDestroyed(autofill::AutofillManager& manager) override;
 
   // ContentAutofillDriverFactory::Observer:
   void OnContentAutofillDriverFactoryDestroyed(

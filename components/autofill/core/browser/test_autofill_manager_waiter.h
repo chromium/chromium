@@ -151,8 +151,10 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
   void Increment(Event event, const base::Location& location = FROM_HERE);
   void Decrement(Event event, const base::Location& location = FROM_HERE);
 
-  void OnAutofillManagerDestroyed(AutofillManager& manager) override;
-  void OnAutofillManagerReset(AutofillManager& manager) override;
+  void OnAutofillManagerStateChanged(
+      AutofillManager& manager,
+      AutofillManager::LifecycleState old_state,
+      AutofillManager::LifecycleState new_state) override;
 
   void OnBeforeLanguageDetermined(AutofillManager& manager) override;
   void OnAfterLanguageDetermined(AutofillManager& manager) override;

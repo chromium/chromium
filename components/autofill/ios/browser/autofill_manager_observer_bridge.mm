@@ -12,13 +12,15 @@ AutofillManagerObserverBridge::AutofillManagerObserverBridge(
 
 AutofillManagerObserverBridge::~AutofillManagerObserverBridge() = default;
 
-void AutofillManagerObserverBridge::OnAutofillManagerDestroyed(
-    AutofillManager& manager) {
-  const SEL selector = @selector(onAutofillManagerDestroyed:);
+void AutofillManagerObserverBridge::OnAutofillManagerStateChanged(
+    AutofillManager& manager,
+    AutofillManager::LifecycleState old_state,
+    AutofillManager::LifecycleState new_state) {
+  const SEL selector = @selector(onAutofillManagerStateChanged:from:to:);
   if (![observer_ respondsToSelector:selector]) {
     return;
   }
-  [observer_ onAutofillManagerDestroyed:manager];
+  [observer_ onAutofillManagerStateChanged:manager from:old_state to:new_state];
 }
 
 void AutofillManagerObserverBridge::OnFieldTypesDetermined(

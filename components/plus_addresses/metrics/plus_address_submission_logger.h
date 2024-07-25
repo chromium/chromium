@@ -52,8 +52,10 @@ class PlusAddressSubmissionLogger final : autofill::AutofillManager::Observer {
 
  private:
   // autofill::AutofillManager::Observer:
-  void OnAutofillManagerDestroyed(autofill::AutofillManager& manager) override;
-  void OnAutofillManagerReset(autofill::AutofillManager& manager) override;
+  void OnAutofillManagerStateChanged(
+      autofill::AutofillManager& manager,
+      autofill::AutofillManager::LifecycleState old_state,
+      autofill::AutofillManager::LifecycleState new_state) override;
   void OnFormSubmitted(autofill::AutofillManager& manager,
                        const autofill::FormData& form) override;
 

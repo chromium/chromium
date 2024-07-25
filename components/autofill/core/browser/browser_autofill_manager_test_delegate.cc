@@ -17,9 +17,19 @@ void BrowserAutofillManagerTestDelegate::Observe(AutofillManager& manager) {
   }
 }
 
-void BrowserAutofillManagerTestDelegate::OnAutofillManagerDestroyed(
-    AutofillManager& manager) {
-  observations_.RemoveObservation(&manager);
+void BrowserAutofillManagerTestDelegate::OnAutofillManagerStateChanged(
+    AutofillManager& manager,
+    AutofillManager::LifecycleState old_state,
+    AutofillManager::LifecycleState new_state) {
+  switch (new_state) {
+    case AutofillManager::LifecycleState::kInactive:
+    case AutofillManager::LifecycleState::kActive:
+    case AutofillManager::LifecycleState::kPendingReset:
+      break;
+    case AutofillManager::LifecycleState::kPendingDeletion:
+      observations_.RemoveObservation(&manager);
+      break;
+  }
 }
 
 void BrowserAutofillManagerTestDelegate::OnFillOrPreviewDataModelForm(

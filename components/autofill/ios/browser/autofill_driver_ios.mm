@@ -461,8 +461,19 @@ void AutofillDriverIOS::ClearLastInteractedForm() {
   last_interacted_form_.reset();
 }
 
-void AutofillDriverIOS::OnAutofillManagerDestroyed(AutofillManager& manager) {
-  manager_observation_.Reset();
+void AutofillDriverIOS::OnAutofillManagerStateChanged(
+    AutofillManager& manager,
+    AutofillManager::LifecycleState old_state,
+    AutofillManager::LifecycleState new_state) {
+  switch (new_state) {
+    case AutofillManager::LifecycleState::kInactive:
+    case AutofillManager::LifecycleState::kActive:
+    case AutofillManager::LifecycleState::kPendingReset:
+      break;
+    case AutofillManager::LifecycleState::kPendingDeletion:
+      manager_observation_.Reset();
+      break;
+  }
 }
 
 void AutofillDriverIOS::OnAfterFormsSeen(AutofillManager& manager,

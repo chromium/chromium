@@ -34,7 +34,10 @@ class BrowserAutofillManagerTestDelegate : public AutofillManager::Observer {
 
  private:
   // AutofillManager::Observer:
-  void OnAutofillManagerDestroyed(AutofillManager& manager) override;
+  void OnAutofillManagerStateChanged(
+      AutofillManager& manager,
+      AutofillManager::LifecycleState old_state,
+      AutofillManager::LifecycleState new_state) override;
 
   void OnFillOrPreviewDataModelForm(
       AutofillManager& manager,

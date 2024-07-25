@@ -71,11 +71,10 @@ class FastCheckoutClientImpl
       autofill::AutofillManager& manager) override;
   void OnAfterDidFillAutofillFormData(autofill::AutofillManager& manager,
                                       autofill::FormGlobalId form_id) override;
-  // Is owned by a `ContentAutofillDriver` instance and its lifecycle thus is
-  // dependent on the one of `RenderFrameHost`.
-  void OnAutofillManagerDestroyed(autofill::AutofillManager& manager) override;
-  // Is called on navigation and resets its internal state.
-  void OnAutofillManagerReset(autofill::AutofillManager& manager) override;
+  void OnAutofillManagerStateChanged(
+      autofill::AutofillManager& manager,
+      autofill::AutofillManager::LifecycleState old_state,
+      autofill::AutofillManager::LifecycleState new_state) override;
 
   // ContentAutofillDriverFactory::Observer:
   void OnContentAutofillDriverFactoryDestroyed(

@@ -71,14 +71,20 @@ TestAutofillManagerWaiter::TestAutofillManagerWaiter(
 
 TestAutofillManagerWaiter::~TestAutofillManagerWaiter() = default;
 
-void TestAutofillManagerWaiter::OnAutofillManagerDestroyed(
-    AutofillManager& manager) {
-  observation_.Reset();
-}
-
-void TestAutofillManagerWaiter::OnAutofillManagerReset(
-    AutofillManager& manager) {
-  Reset();
+void TestAutofillManagerWaiter::OnAutofillManagerStateChanged(
+    AutofillManager& manager,
+    AutofillManager::LifecycleState old_state,
+    AutofillManager::LifecycleState new_state) {
+  switch (new_state) {
+    case AutofillManager::LifecycleState::kInactive:
+    case AutofillManager::LifecycleState::kActive:
+    case AutofillManager::LifecycleState::kPendingReset:
+      Reset();
+      break;
+    case AutofillManager::LifecycleState::kPendingDeletion:
+      observation_.Reset();
+      break;
+  }
 }
 
 void TestAutofillManagerWaiter::OnBeforeLanguageDetermined(

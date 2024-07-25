@@ -15,7 +15,12 @@
 
 @optional
 
-- (void)onAutofillManagerDestroyed:(autofill::AutofillManager&)manager;
+- (void)
+    onAutofillManagerStateChanged:(autofill::AutofillManager&)manager
+                             from:(autofill::AutofillManager::LifecycleState)
+                                      oldState
+                               to:(autofill::AutofillManager::LifecycleState)
+                                      newState;
 
 - (void)onFieldTypesDetermined:(autofill::AutofillManager&)manager
                        forForm:(autofill::FormGlobalId)form
@@ -37,7 +42,10 @@ class AutofillManagerObserverBridge final : public AutofillManager::Observer {
   ~AutofillManagerObserverBridge() final;
 
   // AutofillManager::Observer:
-  void OnAutofillManagerDestroyed(AutofillManager& manager) override;
+  void OnAutofillManagerStateChanged(
+      AutofillManager& manager,
+      autofill::AutofillManager::LifecycleState old_state,
+      autofill::AutofillManager::LifecycleState new_state) override;
   void OnFieldTypesDetermined(AutofillManager& manager,
                               FormGlobalId form,
                               FieldTypeSource source) override;

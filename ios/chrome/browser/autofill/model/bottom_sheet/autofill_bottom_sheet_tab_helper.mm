@@ -355,9 +355,20 @@ void AutofillBottomSheetTabHelper::WebFrameBecameAvailable(
 
 // autofill::AutofillManager::Observer
 
-void AutofillBottomSheetTabHelper::OnAutofillManagerDestroyed(
-    autofill::AutofillManager& manager) {
-  autofill_manager_observations_.RemoveObservation(&manager);
+void AutofillBottomSheetTabHelper::OnAutofillManagerStateChanged(
+    autofill::AutofillManager& manager,
+    autofill::AutofillManager::LifecycleState old_state,
+    autofill::AutofillManager::LifecycleState new_state) {
+  using enum autofill::AutofillManager::LifecycleState;
+  switch (new_state) {
+    case kInactive:
+    case kActive:
+    case kPendingReset:
+      break;
+    case kPendingDeletion:
+      autofill_manager_observations_.RemoveObservation(&manager);
+      break;
+  }
 }
 
 void AutofillBottomSheetTabHelper::OnFieldTypesDetermined(

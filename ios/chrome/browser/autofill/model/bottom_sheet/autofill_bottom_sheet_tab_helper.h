@@ -141,7 +141,10 @@ class AutofillBottomSheetTabHelper
                                web::WebFrame* web_frame) override;
 
   // autofill::AutofillManager::Observer:
-  void OnAutofillManagerDestroyed(autofill::AutofillManager& manager) override;
+  void OnAutofillManagerStateChanged(
+      autofill::AutofillManager& manager,
+      autofill::AutofillManager::LifecycleState old_state,
+      autofill::AutofillManager::LifecycleState new_state) override;
   void OnFieldTypesDetermined(autofill::AutofillManager& manager,
                               autofill::FormGlobalId form_id,
                               FieldTypeSource source) override;

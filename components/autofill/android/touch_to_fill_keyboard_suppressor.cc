@@ -72,12 +72,22 @@ void TouchToFillKeyboardSuppressor::OnContentAutofillDriverWillBeDeleted(
       &driver.GetAutofillManager());
 }
 
-void TouchToFillKeyboardSuppressor::OnAutofillManagerDestroyed(
-    AutofillManager& manager) {
-  if (suppressed_manager_.get() == &manager) {
-    Unsuppress();
+void TouchToFillKeyboardSuppressor::OnAutofillManagerStateChanged(
+    AutofillManager& manager,
+    AutofillManager::LifecycleState old_state,
+    AutofillManager::LifecycleState new_state) {
+  switch (new_state) {
+    case AutofillManager::LifecycleState::kInactive:
+    case AutofillManager::LifecycleState::kActive:
+    case AutofillManager::LifecycleState::kPendingReset:
+      break;
+    case AutofillManager::LifecycleState::kPendingDeletion:
+      if (suppressed_manager_.get() == &manager) {
+        Unsuppress();
+      }
+      autofill_manager_observations_.RemoveObservation(&manager);
+      break;
   }
-  autofill_manager_observations_.RemoveObservation(&manager);
 }
 
 void TouchToFillKeyboardSuppressor::OnBeforeAskForValuesToFill(
