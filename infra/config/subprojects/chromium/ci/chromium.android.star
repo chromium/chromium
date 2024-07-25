@@ -2384,7 +2384,7 @@ ci.builder(
     ),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
-        category = "builder_tester",
+        category = "on_cq",
         short_name = "14",
     ),
     cq_mirrors_console_view = "mirrors",

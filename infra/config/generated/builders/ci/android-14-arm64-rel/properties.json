@@ -50,6 +50,10 @@
         {
           "builder": "android-14-arm64-rel",
           "group": "tryserver.chromium.android"
+        },
+        {
+          "builder": "android-arm64-rel",
+          "group": "tryserver.chromium.android"
         }
       ]
     }

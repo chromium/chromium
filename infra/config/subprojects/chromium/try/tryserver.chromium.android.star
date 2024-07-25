@@ -243,7 +243,9 @@ try_.orchestrator_builder(
     description_html = "This builder may trigger tests on multiple Android versions.",
     mirrors = [
         "ci/Android Release (Nexus 5X)",  # Nexus 5X on Nougat
+        # TODO(crbug.com/352811552): Drop Pie after 14 is fully on CQ
         "ci/android-pie-arm64-rel",  # Pixel 1, 2 on Pie
+        "ci/android-14-arm64-rel",  # Pixel 7 on Android 14
     ],
     gn_args = gn_args.config(
         configs = [
