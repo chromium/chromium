@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.notifications;
 
+import android.app.ForegroundServiceStartNotAllowedException;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
@@ -15,7 +16,6 @@ import androidx.core.content.ContextCompat;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.compat.ApiHelperForS;
 
 /**
  * Utility functions that call into Android foreground service related API, and provides
@@ -68,7 +68,11 @@ public class ForegroundServiceUtils {
         if (notification == null) return;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            ApiHelperForS.startForeground(service, id, notification, foregroundServiceType);
+            try {
+                service.startForeground(id, notification, foregroundServiceType);
+            } catch (ForegroundServiceStartNotAllowedException e) {
+                Log.e(TAG, "channelId=%s notificationId=%s", notification.getChannelId(), id, e);
+            }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             service.startForeground(id, notification, foregroundServiceType);
         } else {

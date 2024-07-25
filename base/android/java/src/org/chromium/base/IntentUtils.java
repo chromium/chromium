@@ -21,8 +21,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.compat.ApiHelperForS;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -446,7 +444,7 @@ public class IntentUtils {
         if (!mutable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return PendingIntent.FLAG_IMMUTABLE;
         } else if (mutable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            return ApiHelperForS.getPendingIntentMutableFlag();
+            return PendingIntent.FLAG_MUTABLE;
         }
         return 0;
     }

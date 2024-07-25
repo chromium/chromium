@@ -4,14 +4,18 @@
 
 package org.chromium.media;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.os.Build;
+import android.os.Process;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.compat.ApiHelperForS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +64,13 @@ class AudioDeviceSelectorPostS extends AudioDeviceSelector {
 
     @Override
     public void init() {
-        mHasBluetoothConnectPermission = ApiHelperForS.hasBluetoothConnectPermission();
+        mHasBluetoothConnectPermission =
+                ApiCompatibilityUtils.checkPermission(
+                                ContextUtils.getApplicationContext(),
+                                Manifest.permission.BLUETOOTH_CONNECT,
+                                Process.myPid(),
+                                Process.myUid())
+                        == PackageManager.PERMISSION_GRANTED;
 
         if (!mHasBluetoothConnectPermission) {
             Log.w(TAG, "BLUETOOTH_CONNECT permission is missing.");

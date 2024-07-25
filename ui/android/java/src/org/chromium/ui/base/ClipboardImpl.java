@@ -39,7 +39,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.compat.ApiHelperForS;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -192,11 +191,12 @@ public class ClipboardImpl extends Clipboard
             // If getClassificationStatus() is not CLASSIFICATION_COMPLETE,
             // ClipDescription#getConfidenceScore will trows exception.
             if (!description.hasMimeType(TEXT_MIME_TYPE)
-                    || !ApiHelperForS.isGetClassificationStatusIsComplete(description)) {
+                    || !(description.getClassificationStatus()
+                            == ClipDescription.CLASSIFICATION_COMPLETE)) {
                 return false;
             }
 
-            float score = ApiHelperForS.getConfidenceScore(description, TextClassifier.TYPE_URL);
+            float score = description.getConfidenceScore(TextClassifier.TYPE_URL);
             return score > CONFIDENCE_THRESHOLD_FOR_URL_DETECTION;
         } else {
             GURL url = new GURL(getCoercedText());
@@ -218,7 +218,7 @@ public class ClipboardImpl extends Clipboard
                 firstLinkText = getCoercedText();
             } else {
                 ClipData.Item item = clipData.getItemAt(0);
-                TextLinks textLinks = ApiHelperForS.getTextLinks(item);
+                TextLinks textLinks = item.getTextLinks();
                 if (textLinks == null || textLinks.getLinks().isEmpty()) return null;
 
                 CharSequence fullText = item.getText();
@@ -719,12 +719,13 @@ public class ClipboardImpl extends Clipboard
 
     /**
      * Check Whether the ClipDescription has stypled text.
+     *
      * @param description The {@link ClipDescription} to check if it has stytled text.
      * @return True if the system clipboard contain a styled text, otherwise, false.
      */
     private boolean hasStyledText(ClipDescription description) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            return ApiHelperForS.isStyleText(description);
+            return description.isStyledText();
         } else {
             return hasStyledTextOnPreS();
         }

@@ -24,7 +24,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.compat.ApiHelperForS;
 
 import java.util.Arrays;
 import java.util.List;
@@ -157,11 +156,8 @@ import java.util.function.Consumer;
             // `createWindowContext` on some devices writes to disk. See crbug.com/1408587.
             try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
                 mWindowContext =
-                        ApiHelperForS.createWindowContext(
-                                appContext,
-                                display,
-                                WindowManager.LayoutParams.TYPE_APPLICATION,
-                                null);
+                        appContext.createWindowContext(
+                                display, WindowManager.LayoutParams.TYPE_APPLICATION, null);
             }
             assert display.getDisplayId() == mWindowContext.getDisplay().getDisplayId();
             mComponentCallbacks =
