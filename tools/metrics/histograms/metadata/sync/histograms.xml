@@ -40,6 +40,8 @@ chromium-metrics-reviews@google.com.
       summary="UPM backend outdated error for passwords."/>
 </variants>
 
+<!-- LINT.IfChange(ModelTypeHistogramSuffix) -->
+
 <variants name="SyncModelType">
   <variant name=".APP" summary="APP"/>
   <variant name=".APP_LIST" summary="APP_LIST"/>
@@ -54,7 +56,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".AUTOFILL_WALLET_USAGE" summary="AUTOFILL_WALLET_USAGE"/>
   <variant name=".BOOKMARK" summary="BOOKMARK"/>
   <variant name=".COLLABORATION_GROUP" summary="COLLABORATION_GROUP"/>
-  <variant name=".COMPARE" summary="COMPARE"/>
   <variant name=".CONTACT_INFO" summary="CONTACT_INFO"/>
   <variant name=".COOKIE" summary="COOKIE"/>
   <variant name=".DEVICE_INFO" summary="DEVICE_INFO"/>
@@ -76,13 +77,13 @@ chromium-metrics-reviews@google.com.
   <variant name=".PLUS_ADDRESS_SETTING" summary="PLUS_ADDRESS_SETTING"/>
   <variant name=".POWER_BOOKMARK" summary="POWER_BOOKMARK"/>
   <variant name=".PREFERENCE" summary="PREFERENCE"/>
-  <variant name=".PRINTERS" summary="PRINTERS"/>
-  <variant name=".PRINTERS_AUTHORIZATION_SERVERS"
-      summary="PRINTERS_AUTHORIZATION_SERVERS"/>
+  <variant name=".PRINTER" summary="PRINTER"/>
+  <variant name=".PRINTERS_AUTHORIZATION_SERVER"
+      summary="PRINTERS_AUTHORIZATION_SERVER"/>
   <variant name=".PRIORITY_PREFERENCE" summary="PRIORITY_PREFERENCE"/>
-  <variant name=".PROXY_TABS" summary="PROXY_TABS"/>
+  <variant name=".PRODUCT_COMPARISON" summary="PRODUCT_COMPARISON"/>
   <variant name=".READING_LIST" summary="READING_LIST"/>
-  <variant name=".SAVED_TAB_GROUPS" summary="SAVED_TAB_GROUPS"/>
+  <variant name=".SAVED_TAB_GROUP" summary="SAVED_TAB_GROUP"/>
   <variant name=".SEARCH_ENGINE" summary="SEARCH_ENGINE"/>
   <variant name=".SECURITY_EVENT" summary="SECURITY_EVENT"/>
   <variant name=".SEND_TAB_TO_SELF" summary="SEND_TAB_TO_SELF"/>
@@ -99,6 +100,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".WIFI_CONFIGURATION" summary="WIFI_CONFIGURATION"/>
   <variant name=".WORKSPACE_DESK" summary="WORKSPACE_DESK"/>
 </variants>
+
+<!-- LINT.ThenChange(/components/sync/base/model_type.cc:ModelTypeHistogramSuffix) -->
 
 <variants name="SyncModelTypeForSyncToSigninMigration">
   <variant name=".BOOKMARK" summary="BOOKMARK"/>

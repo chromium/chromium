@@ -42,6 +42,7 @@ struct ModelTypeInfo {
 //  - update the SyncModelTypes enum in enums.xml, and
 //  - update the SyncModelType histogram suffix in histograms.xml.
 // Struct field values should be unique across the entire map.
+// LINT.IfChange(ModelTypeHistogramSuffix)
 constexpr auto kModelTypeInfoMap = std::to_array<ModelTypeInfo>(
     {{UNSPECIFIED, "", "", "Unspecified", -1,
       ModelTypeForHistograms::kUnspecified},
@@ -224,6 +225,7 @@ constexpr auto kModelTypeInfoMap = std::to_array<ModelTypeInfo>(
      {NIGORI, "NIGORI", "nigori", "Encryption Keys",
       sync_pb::EntitySpecifics::kNigoriFieldNumber,
       ModelTypeForHistograms::kNigori}});
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:ModelTypeHistogramSuffix)
 
 static_assert(kModelTypeInfoMap.size() == GetNumModelTypes(),
               "kModelTypeInfoMap should have GetNumModelTypes() elements");
