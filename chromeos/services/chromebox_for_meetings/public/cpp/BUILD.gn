@@ -22,10 +22,7 @@ component("cpp") {
 
   if (is_cfm && is_chromeos_ash) {
     sources += [ "../../cpp/ash/service_connection_cfm_ash.cc" ]
-    deps += [
-      "//chromeos/ash/components/chromebox_for_meetings",
-      "//chromeos/ash/components/dbus/chromebox_for_meetings",
-    ]
+    deps += [ "//chromeos/ash/components/dbus/chromebox_for_meetings" ]
   } else if (is_chromeos_lacros) {
     sources += [ "../../cpp/lacros/service_connection_lacros.cc" ]
     deps += [
