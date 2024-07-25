@@ -40,10 +40,6 @@ PlaylistImageButton::PlaylistImageButton() {
   gfx::Size preferred_size(kSinglePlaylistViewWidth, kSinglePlaylistViewWidth);
   SetPreferredSize(preferred_size);
 
-  // Disable the button until we populate it with the correct playlist
-  // information.
-  SetEnabled(false);
-
   image_view_ = AddChildView(std::make_unique<views::ImageView>());
   image_view_->SetImageSize(preferred_size);
 
@@ -125,7 +121,6 @@ void PlaylistImageButton::SetIsSelected(bool is_selected) {
 }
 
 void PlaylistImageButton::UpdateContents(const gfx::ImageSkia& image) {
-  SetEnabled(true);
   image_view_->SetImage(image);
 }
 
