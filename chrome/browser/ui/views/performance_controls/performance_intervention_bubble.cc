@@ -59,7 +59,7 @@ views::BubbleDialogModelHost* PerformanceInterventionBubble::CreateBubble(
       std::make_unique<PerformanceInterventionBubbleDelegate>(
           browser, std::move(tab_list_model_unique), button_controller);
 
-  const DialogStrings strings = GetStrings();
+  const DialogStrings strings = GetStrings(tab_list_model->count());
   PerformanceInterventionBubbleDelegate* const delegate = bubble_delegate.get();
   auto dialog_model =
       ui::DialogModel::Builder(std::move(bubble_delegate))
@@ -112,30 +112,36 @@ void PerformanceInterventionBubble::CloseBubble(
   bubble_dialog->Close();
 }
 
-DialogStrings PerformanceInterventionBubble::GetStrings() {
+DialogStrings PerformanceInterventionBubble::GetStrings(int count) {
   switch (
       performance_manager::features::kInterventionDialogStringVersion.Get()) {
     case 1:
-      return {l10n_util::GetStringUTF16(
-                  IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V1),
-              l10n_util::GetStringUTF16(
-                  IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V1),
-              l10n_util::GetStringUTF16(
-                  IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V1)};
+      return {
+          l10n_util::GetStringUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V1),
+          l10n_util::GetStringUTF16(
+              count > 1 ? IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V1
+                        : IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V1),
+          l10n_util::GetStringUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V1)};
     case 2:
-      return {l10n_util::GetStringUTF16(
-                  IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V2),
-              l10n_util::GetStringUTF16(
-                  IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V2),
-              l10n_util::GetStringUTF16(
-                  IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V2)};
+      return {
+          l10n_util::GetStringUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V2),
+          l10n_util::GetStringUTF16(
+              count > 1 ? IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V2
+                        : IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V2),
+          l10n_util::GetStringUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V2)};
     case 3:
-      return {l10n_util::GetStringUTF16(
-                  IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V3),
-              l10n_util::GetStringUTF16(
-                  IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V3),
-              l10n_util::GetStringUTF16(
-                  IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V3)};
+      return {
+          l10n_util::GetStringUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V3),
+          l10n_util::GetStringUTF16(
+              count > 1 ? IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V3
+                        : IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V3),
+          l10n_util::GetStringUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V3)};
     default:
       NOTREACHED_NORETURN();
   }

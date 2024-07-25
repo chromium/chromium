@@ -24,6 +24,8 @@
 #include "chrome/browser/ui/views/performance_controls/tab_list_row_view.h"
 #include "chrome/browser/ui/views/performance_controls/tab_list_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
@@ -99,7 +101,8 @@ class PerformanceInterventionInteractiveTest
     set_open_about_blank_on_browser_launch(true);
     feature_list_.InitAndEnableFeatureWithParameters(
         performance_manager::features::kPerformanceInterventionUI,
-        {{"intervention_show_mixed_profile", "false"}});
+        {{"intervention_show_mixed_profile", "false"},
+         {"intervention_dialog_version", "2"}});
     InteractiveFeaturePromoTest::SetUp();
   }
 
@@ -195,6 +198,35 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       EnsurePresent(kToolbarPerformanceInterventionButtonElementId),
       FlushEvents(), TriggerOnActionableTabListChange({}),
       WaitForHide(kToolbarPerformanceInterventionButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
+                       BodyTextControlledByFeatureParamSingluarTab) {
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GetURL()),
+      TriggerOnActionableTabListChange({0}),
+      WaitForShow(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      CheckViewProperty(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody,
+          &views::Label::GetText,
+          l10n_util::GetStringUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V2)));
+}
+
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
+                       BodyTextControlledByFeatureParamPluralTabs) {
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GetURL()),
+      AddInstrumentedTab(kThirdTab, GetURL()),
+      TriggerOnActionableTabListChange({0, 1}),
+      WaitForShow(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      CheckViewProperty(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody,
+          &views::Label::GetText,
+          l10n_util::GetStringUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V2)));
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,

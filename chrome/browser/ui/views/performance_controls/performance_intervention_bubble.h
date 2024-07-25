@@ -46,7 +46,7 @@ class PerformanceInterventionBubble {
   static void RecordCloseReason();
 
  private:
-  static DialogStrings GetStrings();
+  static DialogStrings GetStrings(int count);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_PERFORMANCE_INTERVENTION_BUBBLE_H_
