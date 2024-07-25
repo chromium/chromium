@@ -250,8 +250,8 @@
   },
   {
     "name": "app-install-service-uri-borealis",
-    "owners": [ "tsergeant@chromium.org", "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 128
+    "owners": [ "tsergeant@chromium.org", "crosdev-commerce-eng@google.com" ],
+    "expiry_milestone": 131
   },
   {
     "name": "app-launch-automation",
@@ -1747,7 +1747,7 @@
       "tsergeant@chromium.org",
       "crosdev-commerce-eng@google.com"
     ],
-    "expiry_milestone": 129
+    "expiry_milestone": 131
   },
   {
     "name": "cros-mall-swa",
@@ -1755,7 +1755,7 @@
       "tsergeant@chromium.org",
       "crosdev-commerce-eng@google.com"
     ],
-    "expiry_milestone": 129
+    "expiry_milestone": 131
   },
   {
     "name": "cros-privacy-hub-app-permissions",
