@@ -1564,10 +1564,10 @@ void TabStrip::AddSelectionFromAnchorTo(Tab* tab) {
 void TabStrip::CloseTab(Tab* tab, CloseTabSource source) {
   const std::optional<int> index_to_close =
       tab_container_->GetModelIndexOfFirstNonClosingTab(tab);
-  auto callback =
-      base::BindOnce(&TabStrip::CloseTabInternal, base::Unretained(this),
-                     index_to_close.value(), source);
   if (index_to_close.has_value() && IsValidModelIndex(index_to_close.value())) {
+    auto callback =
+        base::BindOnce(&TabStrip::CloseTabInternal, base::Unretained(this),
+                       index_to_close.value(), source);
     controller_->OnCloseTab(index_to_close.value(), source,
                             std::move(callback));
   }
