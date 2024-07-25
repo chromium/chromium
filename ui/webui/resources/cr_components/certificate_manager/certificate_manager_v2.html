@@ -177,7 +177,9 @@
     <div id="crsCertSection" class="cr-centered-card-container" path="crscerts">
       <h2>[[i18n('certificateManagerV2CRSCerts')]]</h2>
       [[i18n("certificateManagerV2CRSCertsDescription")]]
-      <!-- TODO(crbug.com/40928765): Add Learn More link -->
+      <a href="[[crsLearnMoreUrl_]]" target="_blank">
+        [[i18n("certificateManagerV2CRSLearnMoreLink")]]
+      </a>
 
       <certificate-list-v2
           id="crsCerts"

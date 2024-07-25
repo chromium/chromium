@@ -106,6 +106,9 @@
       The Chrome Root Store contains certificates from Certificate Authorities trusted by the
       Chrome Root Program, and is continually reviewed on an ongoing basis.
     </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_LEARN_MORE_LINK" desc="Link to learning more about the Chrome Root Store.">
+      Learn more
+    </message>
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TOGGLE_LABEL" desc="Label for a toggle controlling if platform certs are imported or not.">
       Use imported local certificates from your operating system
     </message>

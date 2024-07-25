@@ -154,6 +154,7 @@ export class CertificateManagerV2Element extends
       toastMessage_: String,
       numSystemCertsString_: String,
       numPolicyCertsString_: String,
+      crsLearnMoreUrl_: String,
 
       dialogTitle_: String,
       dialogBody_: String,
@@ -188,6 +189,7 @@ export class CertificateManagerV2Element extends
   private dialogBody_: string;
   private numPolicyCertsString_: string;
   private numSystemCertsString_: string;
+  private crsLearnMoreUrl_: string = loadTimeData.getString('crsLearnMoreUrl');
   private certManagementMetadata_: CertManagementMetadata;
   private importOsCertsEnabled_: boolean;
   private importOsCertsEnabledManaged_: boolean;
