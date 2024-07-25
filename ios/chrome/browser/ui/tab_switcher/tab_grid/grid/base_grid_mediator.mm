@@ -1079,10 +1079,16 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)deleteTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView {
-  [self.tabGroupsHandler
-      showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
-                                  group:group
-                             sourceView:sourceView];
+  if (IsTabGroupSyncEnabled()) {
+    [self.tabGroupsHandler
+        showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
+                                    group:group
+                               sourceView:sourceView];
+    return;
+  }
+
+  DCHECK(!IsTabGroupSyncEnabled());
+  [self closeTabGroup:group andDeleteGroup:YES];
 }
 
 - (void)closeTabGroup:(const TabGroup*)group {
@@ -1090,10 +1096,16 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)ungroupTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView {
-  [self.tabGroupsHandler
-      showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
-                                  group:group
-                             sourceView:sourceView];
+  if (IsTabGroupSyncEnabled()) {
+    [self.tabGroupsHandler
+        showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
+                                    group:group
+                               sourceView:sourceView];
+    return;
+  }
+
+  DCHECK(!IsTabGroupSyncEnabled());
+  [self ungroupTabGroup:group];
 }
 
 - (void)closeAllItems {
