@@ -1116,6 +1116,8 @@ static_library("extensions") {
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/missive:missive",
       "//chromeos/dbus/power",
+      "//chromeos/services/chromebox_for_meetings/public/cpp",
+      "//chromeos/services/chromebox_for_meetings/public/mojom",
       "//remoting/host/it2me:chrome_os_host",
     ]
   } else {
@@ -1247,8 +1249,6 @@ static_library("extensions") {
       "//chromeos/ash/services/ime/public/mojom",
       "//chromeos/components/remote_apps/mojom",
       "//chromeos/process_proxy",
-      "//chromeos/services/chromebox_for_meetings/public/cpp",
-      "//chromeos/services/chromebox_for_meetings/public/mojom",
       "//chromeos/services/machine_learning/public/cpp",
       "//chromeos/services/machine_learning/public/mojom",
       "//chromeos/services/media_perception/public/mojom",
