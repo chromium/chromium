@@ -596,6 +596,10 @@
       base_feature: "none",
     },
     {
+      name: "CallExitNodeWithoutLayoutObject",
+      status: "stable",
+    },
+    {
       name: "Canvas2dCanvasFilter",
       status: "experimental",
     },

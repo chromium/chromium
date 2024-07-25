@@ -1110,5 +1110,47 @@ TEST_F(TextIteratorTest, RangeLengthWithSoftLineWrap) {
   EXPECT_EQ(2, TestRangeLength("<div id=sample><input>^  A|</div>"));
 }
 
+// http://crbug.com/41350470
+TEST_F(TextIteratorTest, BasicIterationWithoutLayoutBetweenTextNode) {
+  static const char* input1 =
+      "<p>Line1<!-- A Comment --></p><p>Line2</p><p>Line3</p>";
+  SetBodyContent(input1);
+  EXPECT_EQ("[Line1][\n][\n][Line2][\n][\n][Line3]", Iterate<DOMTree>());
+  EXPECT_EQ("[Line1][\n][\n][Line2][\n][\n][Line3]", Iterate<FlatTree>());
+
+  static const char* input2 =
+      "<p>Line1</p><p>Line2<span hidden>b</span></p><p>Line3</p>";
+  SetBodyContent(input2);
+  EXPECT_EQ("[Line1][\n][\n][Line2][\n][\n][Line3]", Iterate<DOMTree>());
+  EXPECT_EQ("[Line1][\n][\n][Line2][\n][\n][Line3]", Iterate<FlatTree>());
+
+  static const char* input3 =
+      "<p>Line1<span style='display: none;'>hidden "
+      "content</span></p><p>Line2</p><p>Line3</p>";
+  SetBodyContent(input3);
+  EXPECT_EQ("[Line1][\n][\n][Line2][\n][\n][Line3]", Iterate<DOMTree>());
+  EXPECT_EQ("[Line1][\n][\n][Line2][\n][\n][Line3]", Iterate<FlatTree>());
+
+  static const char* input4 =
+      "<p>Line1</p><p>Line2<meta charset='UTF-8'></p><p>Line3</p>";
+  SetBodyContent(input4);
+  EXPECT_EQ("[Line1][\n][\n][Line2][\n][\n][Line3]", Iterate<DOMTree>());
+  EXPECT_EQ("[Line1][\n][\n][Line2][\n][\n][Line3]", Iterate<FlatTree>());
+
+  static const char* input5 =
+      "<p>Line1<style>body{ font-family: Arial, sans-serif; "
+      "}</style></p><p>Line2</p><p>Line3</p>";
+  SetBodyContent(input5);
+  EXPECT_EQ("[Line1][\n][\n][Line2][\n][\n][Line3]", Iterate<DOMTree>());
+  EXPECT_EQ("[Line1][\n][\n][Line2][\n][\n][Line3]", Iterate<FlatTree>());
+
+  static const char* input6 =
+      "<p>Line1</p><p>Line2<base "
+      "href='http://crbug.com/41350470'></p><p>Line3</p>";
+  SetBodyContent(input6);
+  EXPECT_EQ("[Line1][\n][\n][Line2][\n][\n][Line3]", Iterate<DOMTree>());
+  EXPECT_EQ("[Line1][\n][\n][Line2][\n][\n][Line3]", Iterate<FlatTree>());
+}
+
 }  // namespace text_iterator_test
 }  // namespace blink

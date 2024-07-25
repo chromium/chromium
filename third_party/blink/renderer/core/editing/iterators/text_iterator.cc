@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -448,11 +449,15 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
               Strategy::IsDescendantOf(*end_container_, *parent_node)) {
             return;
           }
+          // We should call the ExitNode() always if |node_| has a layout
+          // object or not and it's the last child under |parent_node|.
           bool have_layout_object = node_->GetLayoutObject();
           node_ = parent_node;
           fully_clipped_stack_.Pop();
           parent_node = Strategy::Parent(*node_);
-          if (have_layout_object) {
+          if (RuntimeEnabledFeatures::
+                  CallExitNodeWithoutLayoutObjectEnabled() ||
+              have_layout_object) {
             ExitNode();
           }
           if (text_state_.PositionNode()) {
