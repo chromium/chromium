@@ -134,9 +134,10 @@ bool Iban::IsValid(const std::u16string& value) {
   }
 
   // IBAN length must match the length of IBANs in the country the IBAN is from.
-  size_t iban_value_length = GetLengthOfIbanCountry(
-      GetIbanSupportedCountry(base::UTF16ToUTF8(iban_value.substr(0, 2))));
-  if (iban_value_length == 0 || iban_value_length != iban_value.length()) {
+  const std::string country_code = base::UTF16ToUTF8(iban_value.substr(0, 2));
+  if (!IsIbanApplicableInCountry(country_code) ||
+      GetLengthOfIbanCountry(GetIbanSupportedCountry(country_code)) !=
+          iban_value.length()) {
     return false;
   }
 
