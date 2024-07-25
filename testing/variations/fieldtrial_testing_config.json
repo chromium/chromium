@@ -344,23 +344,6 @@
             ]
         }
     ],
-    "AndroidAutofillPrefillRequestsForLoginForms": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_LooseSimilarityCheckWithCancellingSession_20240604",
-                    "enable_features": [
-                        "AndroidAutofillCancelSessionOnNavigation",
-                        "AndroidAutofillPrefillRequestsForLoginForms",
-                        "AndroidAutofillUsePwmPredictionsForOverrides"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidBackPressRefactor": [
         {
             "platforms": [
