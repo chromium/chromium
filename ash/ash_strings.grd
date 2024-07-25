@@ -1617,9 +1617,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_HOLDING_SPACE_SUGGESTIONS_TITLE" desc="Title of the suggestions area in the holding space bubble.">
         Suggested files
       </message>
-      <message name="IDS_ASH_HOLDING_SPACE_RECENT_FILES_PLACEHOLDER" desc="Text displayed in the holding space recent files bubble when the user has no downloads or screen captures.">
-        You'll find your recent downloads and screen captures here
-      </message>
       <message name="IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE" desc="Title of the downloads area in the holding space bubble.">
         Downloads
       </message>

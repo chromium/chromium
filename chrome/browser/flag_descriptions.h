@@ -4093,9 +4093,6 @@ extern const char kDiacriticsOnPhysicalKeyboardLongpressDescription[];
 extern const char kDiacriticsUseReplaceSurroundingTextName[];
 extern const char kDiacriticsUseReplaceSurroundingTextDescription[];
 
-extern const char kHoldingSpacePredictabilityName[];
-extern const char kHoldingSpacePredictabilityDescription[];
-
 extern const char kHoldingSpaceRefreshName[];
 extern const char kHoldingSpaceRefreshDescription[];
 

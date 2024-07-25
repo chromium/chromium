@@ -732,15 +732,12 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
 class HoldingSpaceKeyedServiceWithExperimentalFeatureTest
     : public HoldingSpaceKeyedServiceTest,
       public testing::WithParamInterface<
-          std::tuple</*enable_predictability=*/bool,
-                     /*enable_suggestions=*/bool>> {
+          /*enable_suggestions=*/bool> {
  public:
   HoldingSpaceKeyedServiceWithExperimentalFeatureTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    (std::get<0>(GetParam()) ? enabled_features : disabled_features)
-        .push_back(features::kHoldingSpacePredictability);
-    (std::get<1>(GetParam()) ? enabled_features : disabled_features)
+    (GetParam() ? enabled_features : disabled_features)
         .push_back(features::kHoldingSpaceSuggestions);
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -749,11 +746,9 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
-    testing::Combine(/*enable_predictability=*/testing::Bool(),
-                     /*enabled_suggestions=*/testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
+                         /*enabled_suggestions=*/testing::Bool());
 
 class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
     : public HoldingSpaceKeyedServiceWithExperimentalFeatureTest {
@@ -824,8 +819,7 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest,
-    testing::Combine(/*enable_predictability=*/testing::Bool(),
-                     /*enabled_suggestions=*/testing::Bool()));
+    /*enabled_suggestions=*/testing::Bool());
 
 TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest,
        GuestUserProfile) {
@@ -2165,9 +2159,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 }
 
 // Verifies that files restored from persistence are not older than
-// `kMaxFileAge`, when the predictability feature is off.
-// Verifies that files restored from persistence are restored, regardless of
-// `kMaxFileAge`, when the predictability feature is on.
+// `kMaxFileAge`.
 // TODO(crbug.com/1427927): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_RemoveOlderFilesFromPersistence \
@@ -2216,12 +2208,10 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
           bool should_restore = ShouldRestoreFromPersistence(type);
 
           if (should_restore) {
-            // Pinned files are exempt from age checks. If the predictability
-            // feature is disabled, we expect all holding space items of other
-            // types to be removed from persistence during restoration due to
-            // being older than `kMaxFileAge`.
-            should_restore = features::IsHoldingSpacePredictabilityEnabled() ||
-                             type == HoldingSpaceItem::Type::kPinnedFile;
+            // We expect all holding space items of other types to be removed
+            // from persistence during restoration due to being older than
+            // `kMaxFileAge`.
+            should_restore = type == HoldingSpaceItem::Type::kPinnedFile;
           }
 
           if (should_restore) {

@@ -10409,10 +10409,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-holding-space-predictability",
-     flag_descriptions::kHoldingSpacePredictabilityName,
-     flag_descriptions::kHoldingSpacePredictabilityDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kHoldingSpacePredictability)},
     {"enable-holding-space-refresh",
      flag_descriptions::kHoldingSpaceRefreshName,
      flag_descriptions::kHoldingSpaceRefreshDescription, kOsCrOS,

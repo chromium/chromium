@@ -1567,12 +1567,6 @@ BASE_FEATURE(kHindiInscriptLayout,
              "HindiInscriptLayout",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables holding space icon to be permanently displayed with extended file
-// expiration to increase predictability of the feature.
-BASE_FEATURE(kHoldingSpacePredictability,
-             "HoldingSpacePredictability",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables refresh of holding space UI to better convey the relationship with
 // the Files app to simplify feature comprehension.
 BASE_FEATURE(kHoldingSpaceRefresh,
@@ -3991,10 +3985,6 @@ bool IsHibernateEnabled() {
 
 bool IsHideShelfControlsInTabletModeEnabled() {
   return base::FeatureList::IsEnabled(kHideShelfControlsInTabletMode);
-}
-
-bool IsHoldingSpacePredictabilityEnabled() {
-  return base::FeatureList::IsEnabled(kHoldingSpacePredictability);
 }
 
 bool IsHoldingSpaceRefreshEnabled() {

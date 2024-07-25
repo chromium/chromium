@@ -7089,12 +7089,6 @@ const char kDiacriticsUseReplaceSurroundingTextDescription[] =
     "When longpress diacritics is enabled, use the ReplaceSurroundingText API "
     "for better app compatibility.";
 
-const char kHoldingSpacePredictabilityName[] =
-    "Enable holding space predictability";
-const char kHoldingSpacePredictabilityDescription[] =
-    "Increases predictability of holding space by being ever present in the "
-    "shelf and always reserving space for downloads and screen captures.";
-
 const char kHoldingSpaceRefreshName[] = "Enable holding space refresh";
 const char kHoldingSpaceRefreshDescription[] =
     "Enables a refresh of holding space which better conveys the relationship "

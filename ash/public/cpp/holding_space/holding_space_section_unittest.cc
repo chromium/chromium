@@ -41,7 +41,6 @@ void ExpectSection(const HoldingSpaceSection* section,
                       HoldingSpaceItem::Type::kPhotoshopWeb,
                       HoldingSpaceItem::Type::kPrintedPdf,
                       HoldingSpaceItem::Type::kScan));
-      EXPECT_EQ(section->max_item_count, 50u);
       EXPECT_EQ(section->max_visible_item_count, 4u);
       break;
     case HoldingSpaceSectionId::kPinnedFiles:
@@ -49,7 +48,6 @@ void ExpectSection(const HoldingSpaceSection* section,
       EXPECT_THAT(
           section->supported_types,
           testing::UnorderedElementsAre(HoldingSpaceItem::Type::kPinnedFile));
-      EXPECT_EQ(section->max_item_count, std::nullopt);
       EXPECT_EQ(section->max_visible_item_count, std::nullopt);
       break;
     case HoldingSpaceSectionId::kScreenCaptures:
@@ -59,7 +57,6 @@ void ExpectSection(const HoldingSpaceSection* section,
                       HoldingSpaceItem::Type::kScreenRecording,
                       HoldingSpaceItem::Type::kScreenRecordingGif,
                       HoldingSpaceItem::Type::kScreenshot));
-      EXPECT_EQ(section->max_item_count, 50u);
       EXPECT_EQ(section->max_visible_item_count, 3u);
       break;
     case HoldingSpaceSectionId::kSuggestions:
@@ -68,7 +65,6 @@ void ExpectSection(const HoldingSpaceSection* section,
                   testing::UnorderedElementsAre(
                       HoldingSpaceItem::Type::kLocalSuggestion,
                       HoldingSpaceItem::Type::kDriveSuggestion));
-      EXPECT_EQ(section->max_item_count, std::nullopt);
       EXPECT_EQ(section->max_visible_item_count, 4u);
       break;
   }

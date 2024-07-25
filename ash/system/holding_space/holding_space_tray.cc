@@ -522,17 +522,10 @@ void HoldingSpaceTray::UpdateVisibility() {
     return;
   }
 
-  // If the predictability flag is enabled, always show the holding space tray.
-  if (features::IsHoldingSpacePredictabilityEnabled()) {
-    SetVisiblePreferred(true);
-    return;
-  }
-
   // The holding space tray should always be shown if the `model` contains items
-  // that are previewable, or if the predictability feature flag is enabled.
-  // Otherwise, it should only be visible if the time of first add has been
-  // marked, but a file has never been pinned, and the Files app chip has never
-  // been pressed.
+  // that are previewable. Otherwise, it should only be visible if the time of
+  // first add has been marked, but a file has never been pinned, and the Files
+  // app chip has never been pressed.
   auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
   SetVisiblePreferred(
       base::ranges::any_of(model->items(), IsPreviewable) ||

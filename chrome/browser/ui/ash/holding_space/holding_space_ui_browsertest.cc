@@ -461,17 +461,7 @@ class NextMainFrameWaiter : public ui::CompositorObserver {
 
 // HoldingSpaceUiBrowserTest ---------------------------------------------------
 
-class HoldingSpaceUiBrowserTest : public HoldingSpaceUiBrowserTestBase {
- public:
-  HoldingSpaceUiBrowserTest() {
-    // TODO(crbug.com/1382945): Parameterize.
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kHoldingSpacePredictability);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using HoldingSpaceUiBrowserTest = HoldingSpaceUiBrowserTestBase;
 
 }  // namespace
 

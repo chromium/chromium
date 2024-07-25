@@ -70,8 +70,7 @@ views::Builder<views::ImageView> CreateGSuiteIcon(const gfx::VectorIcon& icon) {
 // Returns true if the given pref service or currently active features are in a
 // state where the placeholder should be shown in the pinned files section.
 bool ShouldShowPlaceholder(PrefService* prefs) {
-  if (features::IsHoldingSpacePredictabilityEnabled() ||
-      features::IsHoldingSpaceSuggestionsEnabled()) {
+  if (features::IsHoldingSpaceSuggestionsEnabled()) {
     return true;
   }
 
@@ -214,8 +213,7 @@ std::unique_ptr<views::View> PinnedFilesSection::CreateContainer() {
 
 std::unique_ptr<HoldingSpaceItemView> PinnedFilesSection::CreateView(
     const HoldingSpaceItem* item) {
-  if (!(features::IsHoldingSpaceSuggestionsEnabled() ||
-        features::IsHoldingSpacePredictabilityEnabled())) {
+  if (!features::IsHoldingSpaceSuggestionsEnabled()) {
     // When `PinnedFilesSection::CreateView()` is called it implies that the
     // user has at some point in time pinned a file to holding space. That being
     // the case, the placeholder is no longer relevant and can be destroyed.
@@ -282,8 +280,7 @@ void PinnedFilesSection::OnFilesAppChipPressed(const ui::Event& event) {
 
   HoldingSpaceController::Get()->client()->OpenMyFiles(base::DoNothing());
 
-  if (!(features::IsHoldingSpaceSuggestionsEnabled() ||
-        features::IsHoldingSpacePredictabilityEnabled())) {
+  if (!features::IsHoldingSpaceSuggestionsEnabled()) {
     // Once the user has pressed the Files app chip, the placeholder should no
     // longer be displayed. This is accomplished by destroying it. If the
     // holding space model is empty, the holding space tray will also need to

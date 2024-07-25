@@ -53,15 +53,6 @@ std::unique_ptr<HoldingSpaceImage> CreateFakeHoldingSpaceImage(
       /*async_bitmap_resolver=*/base::DoNothing());
 }
 
-std::unique_ptr<HoldingSpaceItem> CreateItem(HoldingSpaceItem::Type type) {
-  return HoldingSpaceItem::CreateFileBackedItem(
-      type,
-      HoldingSpaceFile(base::FilePath("file_path"),
-                       HoldingSpaceFile::FileSystemType::kTest,
-                       GURL("filesystem::file_system_url")),
-      /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
-}
-
 // ScopedModelObservation ------------------------------------------------------
 
 // A class which observes a `HoldingSpaceModel` within its lifetime. Note that
@@ -155,38 +146,23 @@ std::ostream& operator<<(std::ostream& os, const HoldingSpaceItem::Type type) {
 // HoldingSpaceModelTest -------------------------------------------------------
 
 // Base class for `HoldingSpaceModel` tests, parameterized by the set of all
-// holding space item types and whether the predictability feature is enabled.
+// holding space item types.
 class HoldingSpaceModelTest
-    : public testing::TestWithParam<
-          std::tuple<HoldingSpaceItem::Type, /*predictability_enabled=*/bool>> {
+    : public testing::TestWithParam<HoldingSpaceItem::Type> {
  public:
-  HoldingSpaceModelTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kHoldingSpacePredictability,
-        IsHoldingSpacePredictabilityEnabled());
-  }
-
   // Returns the `HoldingSpaceModel` under test.
   HoldingSpaceModel& model() { return model_; }
 
-  HoldingSpaceItem::Type GetHoldingSpaceItemType() const {
-    return std::get<0>(GetParam());
-  }
-
-  bool IsHoldingSpacePredictabilityEnabled() const {
-    return std::get<1>(GetParam());
-  }
+  HoldingSpaceItem::Type GetHoldingSpaceItemType() const { return GetParam(); }
 
  private:
   HoldingSpaceModel model_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceModelTest,
-    testing::Combine(testing::ValuesIn(holding_space_util::GetAllItemTypes()),
-                     /*predictability_enabled=*/testing::Bool()));
+    testing::ValuesIn(holding_space_util::GetAllItemTypes()));
 
 // Tests -----------------------------------------------------------------------
 
@@ -638,60 +614,6 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Progress) {
   EXPECT_EQ(item_ptr->progress(), progress);
   EXPECT_TRUE(item_ptr->progress().IsComplete());
   EXPECT_FALSE(item_ptr->progress().IsIndeterminate());
-}
-
-TEST_P(HoldingSpaceModelTest, EnforcesMaxItemCountsPerSection) {
-  ScopedModelObservation observation(&model());
-
-  // Verify the `model()` is initially empty.
-  EXPECT_EQ(model().items().size(), 0u);
-
-  // Cache the section to which the parameterized type belongs.
-  const HoldingSpaceItem::Type type = GetHoldingSpaceItemType();
-  const HoldingSpaceSection* section = GetHoldingSpaceSection(type);
-  ASSERT_TRUE(section);
-
-  // Add the maximum count of items allowed for the section or some high number
-  // if the section does not specify a maximum item count restriction.
-  constexpr size_t kMaxItemCount = 50u;
-  for (size_t i = 0u; i < section->max_item_count.value_or(kMaxItemCount); ++i)
-    model().AddItem(CreateItem(GetHoldingSpaceItemType()));
-  ASSERT_EQ(model().items().size(),
-            section->max_item_count.value_or(kMaxItemCount));
-
-  // Cache the IDs of items which may be expected to be removed later.
-  constexpr size_t kExtraItemCount = 2u;
-  ASSERT_GE(model().items().size(), kExtraItemCount);
-  std::vector<std::string> item_ids;
-  for (int i = kExtraItemCount - 1; i >= 0; --i)
-    item_ids.push_back(model().items()[i]->id());
-
-  // Add extra items of the same type to the model.
-  std::vector<std::unique_ptr<HoldingSpaceItem>> items;
-  for (size_t i = 0u; i < kExtraItemCount; ++i)
-    items.push_back(CreateItem(GetHoldingSpaceItemType()));
-  model().AddItems(std::move(items));
-
-  // Cache a lambda to return whether the `model()` contains an item for `id`.
-  auto model_contains_item_for_id = [&](const std::string& id) -> bool {
-    return model().GetItem(id);
-  };
-
-  // If the feature flag is enabled and the section specifies a maximum item
-  // count restriction, assert that the oldest items were removed. Otherwise,
-  // nothing should have been removed from the `model()`.
-  if (IsHoldingSpacePredictabilityEnabled() && section->max_item_count) {
-    EXPECT_EQ(model().items().size(), section->max_item_count);
-    EXPECT_TRUE(base::ranges::none_of(item_ids, model_contains_item_for_id));
-    EXPECT_THAT(observation.TakeRemovedItems(),
-                testing::ElementsAreArray(item_ids));
-  } else {
-    EXPECT_EQ(
-        model().items().size(),
-        section->max_item_count.value_or(kMaxItemCount) + kExtraItemCount);
-    EXPECT_TRUE(base::ranges::all_of(item_ids, model_contains_item_for_id));
-    EXPECT_TRUE(observation.TakeRemovedItems().empty());
-  }
 }
 
 }  // namespace ash
