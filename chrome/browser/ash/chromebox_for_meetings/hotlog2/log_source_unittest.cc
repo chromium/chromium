@@ -220,8 +220,23 @@ TEST_F(HotlogLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
   LogFile logfile(test_file_);
   logfile.OpenAtOffset(0);
 
-  // Consume all the lines in the file, then add more
-  logfile.RetrieveNextLogs(kTestFileNumLines);
+  // Note for the below tests: there are two cases we need to
+  // consider:
+  // 1. The case where we "exhaust" the data source by attempting
+  //    to read more than what's available, which triggers an EOF
+  //    and requires a subsequent Refresh().
+  // 2. The case where we read exactly (or less than) the amount
+  //    of data in the log file and do NOT hit an EOF. New lines
+  //    will be available immediately after adding them and will
+  //    not require a Refresh() to observe them.
+  //
+  // This is likely a side effect of how EOFs are handled in the
+  // underlying C++ filesystem API.
+
+  // Exhaust all the lines in the file, then add more. This is
+  // case #1 above.
+  logfile.RetrieveNextLogs(kTestFileNumLines + 1);
+  EXPECT_TRUE(logfile.IsAtEOF());
   AppendNewLines(test_file_, kTestFileNumLines, "NEW: ");
 
   // Verify no new lines are reported before Refresh()
@@ -238,6 +253,22 @@ TEST_F(HotlogLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
   // Verify that the lines are the new lines
   for (auto& line : new_lines) {
     EXPECT_TRUE(line.starts_with("NEW: "));
+  }
+
+  // We read the exact log count in the previous operation, so EOF
+  // should be false and newly appended lines should be available
+  // immediately. Add more lines and test case #2 above.
+  EXPECT_FALSE(logfile.IsAtEOF());
+  AppendNewLines(test_file_, kTestFileNumLines, "NEW2: ");
+
+  // Verify lines are immediately observable.
+  new_lines = logfile.RetrieveNextLogs(kTestFileNumLines);
+  EXPECT_EQ(new_lines.size(), kTestFileNumLines);
+  EXPECT_FALSE(logfile.IsAtEOF());
+
+  // Verify that the lines are the new lines
+  for (auto& line : new_lines) {
+    EXPECT_TRUE(line.starts_with("NEW2: "));
   }
 }
 

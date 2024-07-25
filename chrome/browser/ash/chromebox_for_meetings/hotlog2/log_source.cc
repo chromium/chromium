@@ -91,9 +91,12 @@ std::vector<std::string> LogSource::GetNextData() {
     log_file_.OpenAtOffset(0);
   }
 
-  // ifstreams for files that are currently being written to will not
-  // yield newly-written lines unless the file is explicitly reset.
+  // ifstreams for files that have reached an EOF will not yield
+  // newly-written lines unless the file is explicitly reset.
   // If we've hit an EOF, refresh the stream (close & re-open).
+  //
+  // NB: if the last read didn't cause an EOF, new lines will be
+  // available immediately without the need to Refresh() first.
   if (log_file_.IsAtEOF()) {
     VLOG(4) << "Refreshing log file '" << log_file_.GetFilePath() << "'";
     log_file_.Refresh();
