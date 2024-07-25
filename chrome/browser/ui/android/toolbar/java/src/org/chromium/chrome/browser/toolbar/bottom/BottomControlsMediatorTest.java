@@ -137,7 +137,9 @@ public class BottomControlsMediatorTest {
     }
 
     @Test
-    public void testEdgeToEdge_ToEdge() {
+    public void testEdgeToEdge_ToEdge_bottomChinDisabled() {
+        ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(false);
+
         ChangeObserver changeObserver = mMediator.getEdgeToEdgeChangeObserverForTesting();
         changeObserver.onToEdgeChange(DEFAULT_INSET);
         assertEquals(DEFAULT_HEIGHT + DEFAULT_INSET, mModel.get(ANDROID_VIEW_HEIGHT));

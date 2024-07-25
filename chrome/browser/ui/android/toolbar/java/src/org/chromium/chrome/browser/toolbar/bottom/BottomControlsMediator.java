@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -198,7 +199,9 @@ class BottomControlsMediator
         // this special case to make sure the bottom controls aren't covered by the Read Aloud
         // player when it is shown again following browser UI being recreated.
         if (mReadAloudRestoringSupplier.get()) {
-            mModel.set(BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y, -bottomControlsMinHeight);
+            mModel.set(
+                    BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y,
+                    mModel.get(BottomControlsProperties.Y_OFFSET));
         }
         // A min height greater than 0 suggests the presence of some other UI component underneath
         // the bottom controls.
@@ -270,7 +273,8 @@ class BottomControlsMediator
     private int getAndroidViewHeight() {
         int edgeToEdgePadding = 0;
 
-        if (mEdgeToEdgeControllerSupplier.get() != null) {
+        if (mEdgeToEdgeControllerSupplier.get() != null
+                && !EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
             // TODO(https://crbug.com/327274751): Account for presence of Read Aloud when
             // determining bottom controls height.
             edgeToEdgePadding = mEdgeToEdgePaddingPx;
@@ -303,10 +307,11 @@ class BottomControlsMediator
                         && !mIsInSwipeLayout
                         && getBrowserControls().getBottomControlOffset() == 0;
         if (visible) {
-            // Translate view so that its bottom is aligned with browser controls min height.
+            // Translate view so that its bottom is aligned with the "base" y_offset, or the
+            // y_offset when the bottom controls aren't offset.
             mModel.set(
                     BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y,
-                    -getBrowserControls().getBottomControlsMinHeight());
+                    mModel.get(BottomControlsProperties.Y_OFFSET));
         }
         mModel.set(BottomControlsProperties.ANDROID_VIEW_VISIBLE, visible);
     }
