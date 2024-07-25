@@ -37,6 +37,9 @@ class ASH_EXPORT DeskActionView : public views::BoxLayoutView,
   DeskActionView& operator=(const DeskActionView&) = delete;
   ~DeskActionView() override;
 
+  const DeskActionButton* context_menu_button() const {
+    return context_menu_button_;
+  }
   DeskActionButton* context_menu_button() { return context_menu_button_; }
 
   const DeskActionButton* close_all_button() const { return close_all_button_; }

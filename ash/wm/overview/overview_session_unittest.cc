@@ -44,11 +44,13 @@
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_button.h"
+#include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_icon_button.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
@@ -142,6 +144,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -3338,21 +3341,41 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
 
   auto* focus_widget = views::Widget::GetWidgetForNativeWindow(
       GetOverviewSession()->GetOverviewFocusWindow());
-  DCHECK(focus_widget);
+  ASSERT_TRUE(focus_widget);
 
   OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
   auto* desk_widget = const_cast<views::Widget*>(grid->desks_widget());
-  DCHECK(desk_widget);
-
-  SavedDeskSaveDeskButton* save_button = grid->GetSaveDeskForLaterButton();
-  DCHECK(save_button);
-  auto* save_widget = save_button->GetWidget();
+  ASSERT_TRUE(desk_widget);
 
   // Overview items are in MRU order, so the expected order in the grid list is
   // the reverse creation order.
   auto* item_widget1 = GetOverviewItemForWindow(window1.get())->item_widget();
   auto* item_widget2 = GetOverviewItemForWindow(window2.get())->item_widget();
   auto* item_widget3 = GetOverviewItemForWindow(window3.get())->item_widget();
+
+  // With forest, there are is no saved desk save desk container.
+  if (features::IsForestFeatureEnabled()) {
+    // Order should be [focus_widget, item_widget1, item_widget2, item_widget3,
+    // desk_widget, save_widget].
+    CheckA11yOverrides("focus", focus_widget, desk_widget, item_widget1);
+    CheckA11yOverrides("item1", item_widget1, focus_widget, item_widget2);
+    CheckA11yOverrides("item2", item_widget2, item_widget1, item_widget3);
+    CheckA11yOverrides("item3", item_widget3, item_widget2, desk_widget);
+    CheckA11yOverrides("desk", desk_widget, item_widget3, focus_widget);
+
+    // Remove `window2`. The new order should be [focus_widget, item_widget1,
+    // item_widget3, desk_widget, save_widget].
+    window2.reset();
+    CheckA11yOverrides("focus", focus_widget, desk_widget, item_widget1);
+    CheckA11yOverrides("item1", item_widget1, focus_widget, item_widget3);
+    CheckA11yOverrides("item3", item_widget3, item_widget1, desk_widget);
+    CheckA11yOverrides("desk", desk_widget, item_widget3, focus_widget);
+    return;
+  }
+
+  SavedDeskSaveDeskButton* save_button = grid->GetSaveDeskForLaterButton();
+  ASSERT_TRUE(save_button);
+  views::Widget* save_widget = save_button->GetWidget();
 
   // Order should be [focus_widget, item_widget1, item_widget2, item_widget3,
   // desk_widget, save_widget].
@@ -3363,7 +3386,7 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
   CheckA11yOverrides("desk", desk_widget, item_widget3, save_widget);
   CheckA11yOverrides("save", save_widget, desk_widget, focus_widget);
 
-  // Remove |window2|. The new order should be [focus_widget, item_widget1,
+  // Remove `window2`. The new order should be [focus_widget, item_widget1,
   // item_widget3, desk_widget, save_widget].
   window2.reset();
   CheckA11yOverrides("focus", focus_widget, save_widget, item_widget1);
@@ -5297,7 +5320,15 @@ TEST_P(OverviewRasterScaleTest,
   ASSERT_EQ(3u, desks_bar_view->mini_views().size());
   auto* mini_view = desks_bar_view->mini_views()[2].get();
   EXPECT_EQ(desk3, mini_view->desk());
-  CombineDesksViaMiniView(mini_view, GetEventGenerator());
+  if (features::IsForestFeatureEnabled()) {
+    views::MenuItemView* combine_item_view =
+        DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
+            Shell::GetPrimaryRootWindow(), /*index=*/2,
+            DeskActionContextMenu::CommandId::kCombineDesks);
+    LeftClickOn(combine_item_view);
+  } else {
+    CombineDesksViaMiniView(mini_view, GetEventGenerator());
+  }
 
   EXPECT_TRUE(desk1->is_active());
   EXPECT_EQ(empty, tracker1.TakeRasterScaleChanges());
@@ -5310,7 +5341,15 @@ TEST_P(OverviewRasterScaleTest,
   EXPECT_EQ(2u, overview_grid->item_list().size());
   mini_view = desks_bar_view->mini_views()[0];
   EXPECT_EQ(desk1, mini_view->desk());
-  CombineDesksViaMiniView(mini_view, GetEventGenerator());
+  if (features::IsForestFeatureEnabled()) {
+    views::MenuItemView* combine_item_view =
+        DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
+            Shell::GetPrimaryRootWindow(), /*index=*/0,
+            DeskActionContextMenu::CommandId::kCombineDesks);
+    LeftClickOn(combine_item_view);
+  } else {
+    CombineDesksViaMiniView(mini_view, GetEventGenerator());
+  }
 
   EXPECT_TRUE(desk2->is_active());
   EXPECT_EQ(empty, tracker1.TakeRasterScaleChanges());

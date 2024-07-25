@@ -355,7 +355,8 @@ TEST_P(OverviewFocusCyclerTest, FocusLocationWhileDragging) {
 
 class DesksOverviewFocusCyclerTest : public OverviewFocusCyclerTest {
  public:
-  DesksOverviewFocusCyclerTest() = default;
+  DesksOverviewFocusCyclerTest()
+      : forest_enabled_(features::IsForestFeatureEnabled()) {}
   DesksOverviewFocusCyclerTest(const DesksOverviewFocusCyclerTest&) = delete;
   DesksOverviewFocusCyclerTest& operator=(const DesksOverviewFocusCyclerTest&) =
       delete;
@@ -392,6 +393,8 @@ class DesksOverviewFocusCyclerTest : public OverviewFocusCyclerTest {
     EXPECT_EQ(view->bounds().height(),
               view->GetWidget()->GetWindowBoundsInScreen().height());
   }
+
+  const bool forest_enabled_;
 };
 
 // Tests that we can tab through the desk mini views, new desk button and other
@@ -424,14 +427,15 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
   EXPECT_EQ(first_mini_view->desk_preview(), GetFocusedView());
   CheckDeskBarViewSize(desk_bar_view, "first mini view");
 
-  // Tests that the combine desks and close all buttons of the first desk
-  // preview is focused next.
+  // Tests that the context menu/combine desks and close all buttons of the
+  // first desk preview is focused next.
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(first_mini_view->desk_action_view()->combine_desks_button(),
+  const DeskActionView* desk_action_view = first_mini_view->desk_action_view();
+  EXPECT_EQ(forest_enabled_ ? desk_action_view->context_menu_button()
+                            : desk_action_view->combine_desks_button(),
             GetFocusedView());
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(first_mini_view->desk_action_view()->close_all_button(),
-            GetFocusedView());
+  EXPECT_EQ(desk_action_view->close_all_button(), GetFocusedView());
 
   // Test that one more tab focuses the desks name view.
   PressAndReleaseKey(ui::VKEY_TAB);
@@ -445,6 +449,11 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view->new_desk_button(), GetFocusedView());
   CheckDeskBarViewSize(desk_bar_view, "new desk button");
+
+  // With forest, there are is no saved desk save desk container.
+  if (forest_enabled_) {
+    return;
+  }
 
   // Tests that tabbing past the new desk button, we focus the save to a new
   // desk template. The templates button is not in the tab traversal since it is
@@ -476,18 +485,20 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_EQ(2u, desk_bar_view->mini_views().size());
 
-  // Tests that the first focused item when reversing is the save desk for
-  // later button.
-  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
-            GetFocusedView());
-
-  // Tests that after the save desk for later button, we get the save desk as
-  // template button, if the feature is enabled.
-  if (AreDeskTemplatesEnabled()) {
+  if (!forest_enabled_) {
+    // Tests that the first focused item when reversing is the save desk for
+    // later button.
     PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
+    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
               GetFocusedView());
+
+    // Tests that after the save desk for later button, we get the save desk as
+    // template button, if the feature is enabled.
+    if (AreDeskTemplatesEnabled()) {
+      PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+      EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
+                GetFocusedView());
+    }
   }
 
   // Tests that after the desks templates button (if the feature was enabled),
@@ -508,12 +519,13 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
 
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   DeskMiniView* first_mini_view = desk_bar_view->mini_views()[0];
+  DeskActionView* first_action_view = first_mini_view->desk_action_view();
   EXPECT_EQ(first_mini_view->desk_name_view(), GetFocusedView());
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(first_mini_view->desk_action_view()->close_all_button(),
-            GetFocusedView());
+  EXPECT_EQ(first_action_view->close_all_button(), GetFocusedView());
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(first_mini_view->desk_action_view()->combine_desks_button(),
+  EXPECT_EQ(forest_enabled_ ? first_action_view->context_menu_button()
+                            : first_action_view->combine_desks_button(),
             GetFocusedView());
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(first_mini_view->desk_preview(), GetFocusedView());
@@ -523,6 +535,11 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
   auto* item1 = GetOverviewItemForWindow(window1.get())
                     ->GetLeafItemForWindow(window1.get());
   EXPECT_EQ(item1->overview_item_view(), GetFocusedView());
+
+  // With forest, there are is no saved desk save desk container.
+  if (forest_enabled_) {
+    return;
+  }
 
   // Tests that the next focused item when reversing is the save desk for later
   // button.
@@ -581,40 +598,41 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
   // name views, the new desk button, and finally the desks templates button on
   // the first display.
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view1->mini_views()[0]->desk_preview(), GetFocusedView());
+  DeskMiniView* mini_view1 = desk_bar_view1->mini_views()[0];
+  DeskActionView* action_view1 = mini_view1->desk_action_view();
+  EXPECT_EQ(mini_view1->desk_preview(), GetFocusedView());
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view1->mini_views()[0]
-                ->desk_action_view()
-                ->combine_desks_button(),
-            GetFocusedView());
-  PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(
-      desk_bar_view1->mini_views()[0]->desk_action_view()->close_all_button(),
-      GetFocusedView());
-  PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view1->mini_views()[0]->desk_name_view(),
+  EXPECT_EQ(forest_enabled_ ? action_view1->context_menu_button()
+                            : action_view1->combine_desks_button(),
             GetFocusedView());
 
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view1->mini_views()[1]->desk_preview(), GetFocusedView());
+  EXPECT_EQ(action_view1->close_all_button(), GetFocusedView());
+
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(
-      desk_bar_view1->mini_views()[1]->desk_action_view()->close_all_button(),
-      GetFocusedView());
+  EXPECT_EQ(mini_view1->desk_name_view(), GetFocusedView());
+
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view1->mini_views()[1]->desk_name_view(),
+  DeskMiniView* mini_view2 = desk_bar_view1->mini_views()[1];
+  EXPECT_EQ(mini_view2->desk_preview(), GetFocusedView());
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(mini_view2->desk_action_view()->close_all_button(),
             GetFocusedView());
   PressAndReleaseKey(ui::VKEY_TAB);
-
+  EXPECT_EQ(mini_view2->desk_name_view(), GetFocusedView());
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view1->new_desk_button(), GetFocusedView());
-  if (AreDeskTemplatesEnabled()) {
+
+  if (!forest_enabled_) {
+    if (AreDeskTemplatesEnabled()) {
+      PressAndReleaseKey(ui::VKEY_TAB);
+      EXPECT_EQ(desk_bar_view1->overview_grid()->GetSaveDeskAsTemplateButton(),
+                GetFocusedView());
+    }
     PressAndReleaseKey(ui::VKEY_TAB);
-    EXPECT_EQ(desk_bar_view1->overview_grid()->GetSaveDeskAsTemplateButton(),
+    EXPECT_EQ(desk_bar_view1->overview_grid()->GetSaveDeskForLaterButton(),
               GetFocusedView());
   }
-  PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view1->overview_grid()->GetSaveDeskForLaterButton(),
-            GetFocusedView());
 
   // Tests that the next tab will bring us to the first overview item on the
   // second display.
@@ -630,14 +648,17 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
   // Tab through all items on the second display.
   SendKey(ui::VKEY_TAB, GetEventGenerator(), ui::EF_NONE, /*count=*/7);
   EXPECT_EQ(desk_bar_view2->new_desk_button(), GetFocusedView());
-  if (AreDeskTemplatesEnabled()) {
+
+  if (!forest_enabled_) {
+    if (AreDeskTemplatesEnabled()) {
+      PressAndReleaseKey(ui::VKEY_TAB);
+      EXPECT_EQ(desk_bar_view2->overview_grid()->GetSaveDeskAsTemplateButton(),
+                GetFocusedView());
+    }
     PressAndReleaseKey(ui::VKEY_TAB);
-    EXPECT_EQ(desk_bar_view2->overview_grid()->GetSaveDeskAsTemplateButton(),
+    EXPECT_EQ(desk_bar_view2->overview_grid()->GetSaveDeskForLaterButton(),
               GetFocusedView());
   }
-  PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view2->overview_grid()->GetSaveDeskForLaterButton(),
-            GetFocusedView());
 
   // Tests that after tabbing through the items on the second display, the
   // next tab will bring us to the first overview item on the third display.
@@ -653,14 +674,17 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
   // Tab through all items on the third display.
   SendKey(ui::VKEY_TAB, GetEventGenerator(), ui::EF_NONE, /*count=*/7);
   EXPECT_EQ(desk_bar_view3->new_desk_button(), GetFocusedView());
-  if (AreDeskTemplatesEnabled()) {
+
+  if (!forest_enabled_) {
+    if (AreDeskTemplatesEnabled()) {
+      PressAndReleaseKey(ui::VKEY_TAB);
+      EXPECT_EQ(desk_bar_view3->overview_grid()->GetSaveDeskAsTemplateButton(),
+                GetFocusedView());
+    }
     PressAndReleaseKey(ui::VKEY_TAB);
-    EXPECT_EQ(desk_bar_view3->overview_grid()->GetSaveDeskAsTemplateButton(),
+    EXPECT_EQ(desk_bar_view3->overview_grid()->GetSaveDeskForLaterButton(),
               GetFocusedView());
   }
-  PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view3->overview_grid()->GetSaveDeskForLaterButton(),
-            GetFocusedView());
 
   // Tests that after tabbing through the items on the third display, the next
   // tab will bring us to the first overview item on the first display.
