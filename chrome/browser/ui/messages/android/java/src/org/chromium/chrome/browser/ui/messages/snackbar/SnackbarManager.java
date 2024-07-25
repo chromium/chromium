@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.ui.messages.snackbar;
 
 import android.app.Activity;
 import android.os.Handler;
+import android.util.Pair;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -26,6 +28,9 @@ import org.chromium.ui.InsetObserver;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.util.TokenHolder;
+
+import java.util.Stack;
 
 /**
  * Manager for the snackbar showing at the bottom of activity. There should be only one
@@ -80,16 +85,9 @@ public class SnackbarManager
     private static int sAccessibilitySnackbarDurationMs = ACCESSIBILITY_MODE_SNACKBAR_DURATION_MS;
     private static int sTypeActionSnackbarDurationsMs = DEFAULT_TYPE_ACTION_SNACKBAR_DURATION_MS;
 
-    private Activity mActivity;
-    private SnackbarView mView;
-    private final Handler mUIThreadHandler;
-    private SnackbarCollection mSnackbars = new SnackbarCollection();
-    private boolean mActivityInForeground;
-    private boolean mIsDisabledForTesting;
-    private ViewGroup mSnackbarParentView;
-    private ViewGroup mSnackbarTemporaryParentView;
-    private final WindowAndroid mWindowAndroid;
-    private @Nullable EdgeToEdgeSupplier mEdgeToEdgeSupplier;
+    private final Activity mActivity;
+    private final @NonNull WindowAndroid mWindowAndroid;
+    private final @NonNull Handler mUIThreadHandler;
     private final Runnable mHideRunnable =
             new Runnable() {
                 @Override
@@ -100,7 +98,16 @@ public class SnackbarManager
             };
     private final ObservableSupplierImpl<Boolean> mIsShowingSupplier =
             new ObservableSupplierImpl<>();
-    protected ObserverList<SnackbarStateProvider.Observer> mObservers = new ObserverList<>();
+    private final @NonNull ViewGroup mOriginalParentView;
+    private final Stack<Pair<Integer, ViewGroup>> mParentViewOverrideStack = new Stack<>();
+    protected final ObserverList<SnackbarStateProvider.Observer> mObservers = new ObserverList<>();
+    private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenHolderChanged);
+
+    private SnackbarView mView;
+    private SnackbarCollection mSnackbars = new SnackbarCollection();
+    private boolean mActivityInForeground;
+    private boolean mIsDisabledForTesting;
+    private @Nullable EdgeToEdgeSupplier mEdgeToEdgeSupplier;
 
     /**
      * Constructs a SnackbarManager to show snackbars in the given window.
@@ -111,12 +118,12 @@ public class SnackbarManager
      *     Animator#start is called instead.
      */
     public SnackbarManager(
-            Activity activity,
-            ViewGroup snackbarParentView,
+            @NonNull Activity activity,
+            @NonNull ViewGroup snackbarParentView,
             @Nullable WindowAndroid windowAndroid) {
         mActivity = activity;
         mUIThreadHandler = new Handler();
-        mSnackbarParentView = snackbarParentView;
+        mOriginalParentView = snackbarParentView;
         mWindowAndroid = windowAndroid;
 
         ApplicationStatus.registerStateListenerForActivity(this, mActivity);
@@ -221,28 +228,38 @@ public class SnackbarManager
     }
 
     /**
-     * Overrides the parent {@link ViewGroup} of the currently-showing snackbar. This method removes
-     * the snackbar from its original parent, and attaches it to the given parent. If
-     * <code>null</code> is given, the snackbar will be reattached to its original parent.
+     * Pushes the given {@link ViewGroup} onto the override stack, this given parent will be used
+     * for all {@link SnackbarView}s until #popParentViewFromOverrideStack is called.
      *
-     * @param overridingParent The overriding parent for the current snackbar. If null, previous
-     *                         calls of this method will be reverted.
+     * @param parentView The new parent for snackbars, must be non-null.
+     * @return A token to be used when calling a corresponding pop.
      */
-    public void overrideParent(ViewGroup overridingParent) {
-        if (mView != null) mView.overrideParent(overridingParent);
+    public int pushParentViewToOverrideStack(@NonNull ViewGroup parentView) {
+        assert parentView != null;
+        int overrideToken = mTokenHolder.acquireToken();
+        mParentViewOverrideStack.push(new Pair<Integer, ViewGroup>(overrideToken, parentView));
+        overrideParent(parentView);
+        return overrideToken;
     }
 
     /**
-     * Changes the parent {@link ViewGroup} for snackbars (including the currently showing snackbar,
-     * if it exists). If <code>null</code> is given, snackbars will once again be attached to the
-     * original parent.
+     * Pops the the last {@link ViewGroup} that was pushed onto the stack by the
+     * #pushParentViewToOverrideStack method. The last used parent override will be used, and in if
+     * the stack is empty then the original parent will be used. This function is a no-op if the
+     * stack is already empty.
      *
-     * @param parentView The new parent for snackbars. If null, previous calls of this
-     *                   method will be reverted.
+     * @param token The token passed from #pushParentViewToOverrideStack. This is used to ensure
+     *     that the push/pop methods are matching.
      */
-    public void setParentView(ViewGroup parentView) {
-        mSnackbarTemporaryParentView = parentView;
-        overrideParent(mSnackbarTemporaryParentView);
+    public void popParentViewFromOverrideStack(@NonNull int token) {
+        assert token != TokenHolder.INVALID_TOKEN;
+        Pair<Integer, ViewGroup> parentViewPair = mParentViewOverrideStack.pop();
+        assert parentViewPair.first.equals(token);
+        mTokenHolder.releaseToken(token);
+        overrideParent(
+                mParentViewOverrideStack.empty()
+                        ? mOriginalParentView
+                        : mParentViewOverrideStack.peek().second);
     }
 
     /**
@@ -268,6 +285,20 @@ public class SnackbarManager
     }
 
     /**
+     * Overrides the parent {@link ViewGroup} of the currently-showing snackbar. This method removes
+     * the snackbar from its original parent, and attaches it to the given parent. If <code>null
+     * </code> is given, the snackbar will be reattached to its original parent.
+     *
+     * @param overridingParent The overriding parent for the current snackbar. If null, previous
+     *     calls of this method will be reverted.
+     */
+    // TODO(crbug.com/355062900): Fix upstream tests which reference this method.
+    @VisibleForTesting
+    public void overrideParent(ViewGroup overridingParent) {
+        if (mView != null) mView.overrideParent(overridingParent);
+    }
+
+    /**
      * Updates the {@link SnackbarView} to reflect the value of mSnackbars.currentSnackbar(), which
      * may be null. This might show, change, or hide the view.
      */
@@ -288,7 +319,7 @@ public class SnackbarManager
                                 mActivity,
                                 this,
                                 currentSnackbar,
-                                mSnackbarParentView,
+                                mOriginalParentView,
                                 mWindowAndroid,
                                 mEdgeToEdgeSupplier,
                                 isTablet());
@@ -297,8 +328,8 @@ public class SnackbarManager
                 // If there is a temporary parent set, reparent accordingly. We override here
                 // instead of instantiating the new SnackbarView with the temporary parent, so
                 // that overriding with <code>null</code> will reparent to mSnackbarParentView.
-                if (mSnackbarTemporaryParentView != null) {
-                    mView.overrideParent(mSnackbarTemporaryParentView);
+                if (!mParentViewOverrideStack.empty()) {
+                    mView.overrideParent(mParentViewOverrideStack.peek().second);
                 }
             } else {
                 viewChanged = mView.update(currentSnackbar);
@@ -326,6 +357,10 @@ public class SnackbarManager
 
     private boolean isTablet() {
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+    }
+
+    private void onTokenHolderChanged() {
+        // Intentional no-op.
     }
 
     // ============================================================================================

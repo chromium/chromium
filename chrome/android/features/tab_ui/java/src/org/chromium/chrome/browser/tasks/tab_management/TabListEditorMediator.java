@@ -36,6 +36,7 @@ import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.TokenHolder;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -73,6 +74,7 @@ class TabListEditorMediator
     private TabListEditorCoordinator.NavigationProvider mNavigationProvider;
     private @TabActionState int mTabActionState;
     private LifecycleObserver mLifecycleObserver;
+    private int mSnackbarOverrideToken;
 
     private final View.OnClickListener mNavigationClickListener =
             new View.OnClickListener() {
@@ -208,7 +210,8 @@ class TabListEditorMediator
             @Nullable RecyclerViewPosition recyclerViewPosition) {
         assert mNavigationProvider != null : "NavigationProvider must be set before calling #show";
         // Reparent the snackbarManager to use the selection editor layout to avoid layering issues.
-        mSnackbarManager.setParentView(mTabListEditorLayout);
+        mSnackbarOverrideToken =
+                mSnackbarManager.pushParentViewToOverrideStack(mTabListEditorLayout);
         // Records to a histogram the time since an instance of TabListEditor was last opened
         // within an activity lifespan.
         TabUiMetricsHelper.recordEditorTimeSinceLastShownHistogram();
@@ -305,7 +308,8 @@ class TabListEditorMediator
     private void hideInternal(boolean hiddenByAction) {
         if (!isEditorVisible()) return;
         if (mLifecycleObserver != null) mLifecycleObserver.willHide();
-        mSnackbarManager.setParentView(null);
+        mSnackbarManager.popParentViewFromOverrideStack(mSnackbarOverrideToken);
+        mSnackbarOverrideToken = TokenHolder.INVALID_TOKEN;
         TabUiMetricsHelper.recordSelectionEditorExitMetrics(
                 TabListEditorExitMetricGroups.CLOSED, mContext);
 

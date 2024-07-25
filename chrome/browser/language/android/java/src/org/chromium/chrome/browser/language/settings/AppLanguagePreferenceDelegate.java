@@ -66,7 +66,10 @@ public class AppLanguagePreferenceDelegate {
     /** Show the {@link Snackbar} if one can be shown and there is a saved Snackbar to show. */
     public void maybeShowSnackbar() {
         if (mSnackbar != null && mSnackbarManager.canShowSnackbar()) {
-            mSnackbarManager.setParentView(mActivity.findViewById(android.R.id.content));
+            // SnackbarManager is created/owned by this class, so the override doesn't need to be
+            // popped.
+            mSnackbarManager.pushParentViewToOverrideStack(
+                    mActivity.findViewById(android.R.id.content));
             mSnackbarManager.showSnackbar(mSnackbar);
             mSnackbar = null;
         }

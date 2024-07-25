@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -84,8 +85,9 @@ public class HubManagerImplUnitTest {
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<FullButtonData> mActionButtonDataSupplier =
             new ObservableSupplierImpl<>();
-    private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
+    private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
+    private final int mSnackbarOverrideToken = 1;
 
     private Activity mActivity;
     private FrameLayout mRootView;
@@ -116,6 +118,9 @@ public class HubManagerImplUnitTest {
                 .thenReturn(mPreviousLayoutTypeSupplier);
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+
+        when(mSnackbarManager.pushParentViewToOverrideStack(any()))
+                .thenReturn(mSnackbarOverrideToken);
 
         mActivityScenarioRule
                 .getScenario()
@@ -193,7 +198,7 @@ public class HubManagerImplUnitTest {
 
         FrameLayout containerView = hubController.getContainerView();
         assertNotNull(containerView);
-        verify(mSnackbarManager).setParentView(containerView);
+        verify(mSnackbarManager).pushParentViewToOverrideStack(containerView);
 
         // Attach the container to the parent view.
         mRootView.addView(containerView);
@@ -201,11 +206,11 @@ public class HubManagerImplUnitTest {
 
         hubManager.getPaneManager().focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
         verify(mTabSwitcherPane).setPaneHubController(null);
-        verify(mSnackbarManager).setParentView(null);
+        verify(mSnackbarManager).popParentViewFromOverrideStack(mSnackbarOverrideToken);
         verify(mMenuOrKeyboardActionController)
                 .unregisterMenuOrKeyboardActionHandler(mTabSwitcherMenuOrKeyboardActionHandler);
         verify(mIncognitoTabSwitcherPane).setPaneHubController(coordinator);
-        verify(mSnackbarManager, times(2)).setParentView(containerView);
+        verify(mSnackbarManager, times(2)).pushParentViewToOverrideStack(containerView);
         verify(mMenuOrKeyboardActionController)
                 .registerMenuOrKeyboardActionHandler(
                         mIncognitoTabSwitcherMenuOrKeyboardActionHandler);
@@ -214,7 +219,7 @@ public class HubManagerImplUnitTest {
         assertNull(hubManager.getHubCoordinatorForTesting());
         verify(mBackPressManager).removeHandler(eq(coordinator));
         verify(mIncognitoTabSwitcherPane).setPaneHubController(null);
-        verify(mSnackbarManager, times(2)).setParentView(null);
+        verify(mSnackbarManager, times(2)).popParentViewFromOverrideStack(mSnackbarOverrideToken);
         verify(mMenuOrKeyboardActionController)
                 .unregisterMenuOrKeyboardActionHandler(
                         mIncognitoTabSwitcherMenuOrKeyboardActionHandler);
