@@ -66,6 +66,11 @@ BASE_FEATURE(kPlusAddressGlobalToggle,
              "PlusAddressGlobalToggle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, we offer plus address creation on single username forms.
+BASE_FEATURE(kPlusAddressOfferCreationOnSingleUsernameForms,
+             "PlusAddressOfferCreationOnSingleUsernameForms",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, `GoogleGroupsManager::IsFeatureEnabledForProfile` is used to
 // check whether `kPlusAddressesEnabled` is enabled. Used as a killswitch.
 // TODO: crbug.com/348575889 - Clean up.

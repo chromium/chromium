@@ -90,8 +90,10 @@ bool ShouldOfferPlusAddressCreation(PasswordFormType form_type) {
     case PasswordFormType::kLoginForm:
     case PasswordFormType::kChangePasswordForm:
     case PasswordFormType::kResetPasswordForm:
-    case PasswordFormType::kSingleUsernameForm:
       return false;
+    case PasswordFormType::kSingleUsernameForm:
+      return base::FeatureList::IsEnabled(
+          features::kPlusAddressOfferCreationOnSingleUsernameForms);
   }
   NOTREACHED_NORETURN();
 }
