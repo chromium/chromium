@@ -221,26 +221,29 @@ PickerView::PickerView(PickerViewDelegate* delegate,
   SetInitiallyFocusedView(search_field_view_);
 
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+  AddAccelerator(ui::Accelerator(ui::VKEY_BROWSER_BACK, ui::EF_NONE));
   key_event_handler_.SetActivePseudoFocusHandler(this);
 }
 
 PickerView::~PickerView() = default;
 
 bool PickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
-  CHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
-
-  // Close the submenu if it's active.
-  if (submenu_controller_.GetSubmenuView() != nullptr) {
-    submenu_controller_.Close();
-    return true;
+  switch (accelerator.key_code()) {
+    case ui::VKEY_ESCAPE:
+      // Close the submenu if it's active.
+      if (submenu_controller_.GetSubmenuView() != nullptr) {
+        submenu_controller_.Close();
+      } else if (auto* widget = GetWidget()) {
+        // Otherwise, close the Picker widget.
+        widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
+      }
+      return true;
+    case ui::VKEY_BROWSER_BACK:
+      OnSearchBackButtonPressed();
+      return true;
+    default:
+      NOTREACHED_NORETURN();
   }
-
-  // Close the widget if there's no submenu.
-  if (auto* widget = GetWidget()) {
-    widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
-  }
-
-  return true;
 }
 
 std::unique_ptr<views::NonClientFrameView> PickerView::CreateNonClientFrameView(
