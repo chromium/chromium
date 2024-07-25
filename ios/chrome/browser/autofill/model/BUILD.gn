@@ -98,6 +98,7 @@ source_set("model_internal") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/infobars/core",
     "//components/pref_registry",
     "//components/prefs",

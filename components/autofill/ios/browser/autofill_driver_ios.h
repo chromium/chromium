@@ -161,12 +161,20 @@ class AutofillDriverIOS : public AutofillDriver,
                           base::TimeTicks timestamp);
 
   // AutofillDriverIOS:
+
   // Notification that forms or formless fields have been removed. Since Bling's
   // renderer does not have API's to detect async form submissions, we use he
   // removal last interacted form or formless field as an indication that the
   // form was submitted asynchronously.
   void FormsRemoved(const std::set<FormRendererId>& removed_forms,
                     const std::set<FieldRendererId>& removed_unowned_fields);
+
+  // Unregisters the driver as a standalone node which means that the
+  // corresponding frame is now invalid. It is possible to unregister without
+  // deleting the frame so it is definitely possible that the frame lives while
+  // not being registered. Can't be rolled back where the driver cannot be
+  // re-registered after being unregistered.
+  void Unregister();
 
  private:
   friend AutofillDriverIOSFactory;
@@ -275,6 +283,9 @@ class AutofillDriverIOS : public AutofillDriver,
       manager_observation_{this};
 
   raw_ptr<AutofillDriverRouter> router_;
+
+  // True if the drive was once unregistered.
+  bool unregistered_ = false;
 
   base::WeakPtrFactory<AutofillDriverIOS> weak_ptr_factory_{this};
 };

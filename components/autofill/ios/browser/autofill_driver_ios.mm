@@ -102,7 +102,7 @@ AutofillDriverIOS::~AutofillDriverIOS() {
   manager_->SetLifecycleState(AutofillManager::LifecycleState::kPendingDeletion,
                               {});
 
-  router_->UnregisterDriver(*this, /*driver_is_dying=*/true);
+  Unregister();
 }
 
 LocalFrameToken AutofillDriverIOS::GetFrameToken() const {
@@ -369,7 +369,6 @@ void AutofillDriverIOS::FormsSeen(
         }
       }
     }
-    // TODO(crbug.com/40184363): Notify about deleted fields.
     router_->FormsSeen(callback, *this, updated_forms, removed_forms);
   } else {
     callback(*this, updated_forms, removed_forms);
@@ -424,6 +423,13 @@ void AutofillDriverIOS::TextFieldDidChange(const FormData& form,
 }
 
 void AutofillDriverIOS::SetParent(base::WeakPtr<AutofillDriverIOS> parent) {
+  if (unregistered_) {
+    // Do not set parent if the driver was unregistered to avoid any risk
+    // of connecting it back into a form tree, where it has to be kept alone as
+    // a standalone node.
+    return;
+  }
+
   parent_ = std::move(parent);
 }
 
@@ -576,6 +582,11 @@ bool AutofillDriverIOS::DetectFormSubmissionAfterFormRemoval(
   // Check if the last interacted formless field was removed.
   return removed_unowned_fields.find(last_formless_field_id) !=
          removed_unowned_fields.end();
+}
+
+void AutofillDriverIOS::Unregister() {
+  router_->UnregisterDriver(*this, /*driver_is_dying=*/true);
+  unregistered_ = true;
 }
 
 void AutofillDriverIOS::UpdateLastInteractedFormFromFieldDataManager() {
