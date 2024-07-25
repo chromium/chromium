@@ -61,7 +61,8 @@ HardwareDisplayControllerInfo::GetModesOfSize(const gfx::Size& size) {
   for (int i = 0; i < connector_->count_modes; ++i) {
     const drmModeModeInfo& mode = connector_->modes[i];
     if (ModeSize(mode) == size) {
-      modes.push_back(CreateDisplayMode(mode));
+      modes.push_back(CreateDisplayMode(
+          mode, edid_parser_ ? edid_parser_->vsync_rate_min() : std::nullopt));
     }
   }
 

@@ -1116,8 +1116,8 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   ASSERT_FALSE(snapshots.empty());
   const auto& snapshot = snapshots[0];
   const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset};
-  const display::DisplayMode nonmatching_mode = display::DisplayMode(
-      snapshot->native_mode()->size(), false, 600, 0, 0, 0);
+  const display::DisplayMode nonmatching_mode(snapshot->native_mode()->size(),
+                                              false, 600);
   const std::vector<display::DisplayConfigurationParams> config_requests = {
       display::DisplayConfigurationParams(
           snapshot->display_id(), snapshot->origin(), &nonmatching_mode)};
@@ -1183,8 +1183,8 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   const auto& snapshot = snapshots[0];
   const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset,
                                        display::ModesetFlag::kSeamlessModeset};
-  const display::DisplayMode nonmatching_mode = display::DisplayMode(
-      snapshot->native_mode()->size(), false, 600, 0, 0, 0);
+  const display::DisplayMode nonmatching_mode(snapshot->native_mode()->size(),
+                                              false, 600);
   const std::vector<display::DisplayConfigurationParams> config_requests = {
       display::DisplayConfigurationParams(
           snapshot->display_id(), snapshot->origin(), &nonmatching_mode)};

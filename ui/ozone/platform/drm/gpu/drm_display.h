@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -81,6 +82,9 @@ class DrmDisplay {
   uint32_t connector() const;
   const std::vector<drmModeModeInfo>& modes() const { return modes_; }
   const gfx::Point& origin() { return origin_; }
+  const std::optional<uint16_t>& vsync_rate_min_from_edid() const {
+    return vsync_rate_min_from_edid_;
+  }
 
   void SetOrigin(const gfx::Point origin) { origin_ = origin; }
   bool SetHdcpKeyProp(const std::string& key);
@@ -113,6 +117,7 @@ class DrmDisplay {
   gfx::Point origin_;
   std::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
   std::unique_ptr<PrivacyScreenProperty> privacy_screen_property_;
+  std::optional<uint16_t> vsync_rate_min_from_edid_;
 };
 
 }  // namespace ui

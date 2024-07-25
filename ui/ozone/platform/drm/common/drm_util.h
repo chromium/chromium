@@ -116,7 +116,8 @@ std::vector<uint32_t> GetPossibleCrtcIdsFromBitmask(
 bool SameMode(const drmModeModeInfo& lhs, const drmModeModeInfo& rhs);
 
 std::unique_ptr<display::DisplayMode> CreateDisplayMode(
-    const drmModeModeInfo& mode);
+    const drmModeModeInfo& mode,
+    const std::optional<uint16_t>& vsync_rate_min_from_edid);
 
 // Extracts the display modes list from |info| as well as the current and native
 // display modes given the |active_pixel_size| which is retrieved from the first
@@ -152,6 +153,13 @@ const gfx::Size ModeSize(const drmModeModeInfo& mode);
 float ModeRefreshRate(const drmModeModeInfo& mode);
 
 bool ModeIsInterlaced(const drmModeModeInfo& mode);
+
+// Computes the precise minimum vsync rate using the mode's timing details.
+// The value obtained from the EDID has a loss of precision due to being an
+// integer. The precise rate must correspond to an integer valued vtotal.
+const std::optional<float> ModeVSyncRateMin(
+    const drmModeModeInfo& mode,
+    const std::optional<uint16_t>& vsync_rate_min_from_edid);
 
 bool IsVrrCapable(const DrmWrapper& drm, drmModeConnector* connector);
 

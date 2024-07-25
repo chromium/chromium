@@ -5,6 +5,9 @@
 #ifndef UI_DISPLAY_MOJOM_DISPLAY_MODE_MOJOM_TRAITS_H_
 #define UI_DISPLAY_MOJOM_DISPLAY_MODE_MOJOM_TRAITS_H_
 
+#include <memory>
+#include <optional>
+
 #include "ui/display/mojom/display_mode.mojom.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/gfx/geometry/size.h"
@@ -29,16 +32,9 @@ struct StructTraits<display::mojom::DisplayModeDataView,
     return display_mode->refresh_rate();
   }
 
-  static int htotal(const std::unique_ptr<display::DisplayMode>& display_mode) {
-    return display_mode->htotal_;
-  }
-
-  static int vtotal(const std::unique_ptr<display::DisplayMode>& display_mode) {
-    return display_mode->vtotal_;
-  }
-
-  static int clock(const std::unique_ptr<display::DisplayMode>& display_mode) {
-    return display_mode->clock_;
+  static const std::optional<float>& vsync_rate_min(
+      const std::unique_ptr<display::DisplayMode>& display_mode) {
+    return display_mode->vsync_rate_min();
   }
 
   static bool IsNull(

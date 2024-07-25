@@ -161,6 +161,9 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
   }
 #endif
   drm_->plane_manager()->SetOutputColorSpace(crtc_, output_primaries);
+  vsync_rate_min_from_edid_ = info->edid_parser().has_value()
+                                  ? info->edid_parser()->vsync_rate_min()
+                                  : std::nullopt;
 }
 
 DrmDisplay::~DrmDisplay() = default;

@@ -5,6 +5,7 @@
 #include "ash/display/refresh_rate_controller.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
@@ -31,6 +32,7 @@
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_delegate.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ash {
 namespace {
@@ -86,12 +88,14 @@ class MockNativeDisplayDelegate : public TestNativeDisplayDelegate {
               (override));
 };
 
-std::unique_ptr<DisplayMode> MakeDisplayMode(int width,
-                                             int height,
-                                             bool is_interlaced,
-                                             float refresh_rate) {
-  return display::CreateDisplayModePtrForTest({width, height}, is_interlaced,
-                                              refresh_rate);
+std::unique_ptr<DisplayMode> MakeDisplayMode(
+    int width,
+    int height,
+    bool is_interlaced,
+    float refresh_rate,
+    const std::optional<float>& vsync_rate_min = std::nullopt) {
+  return std::make_unique<DisplayMode>(gfx::Size{width, height}, is_interlaced,
+                                       refresh_rate, vsync_rate_min);
 }
 
 std::unique_ptr<DisplaySnapshot> BuildDualRefreshPanelSnapshot(
@@ -113,10 +117,9 @@ std::unique_ptr<DisplaySnapshot> BuildVrrPanelSnapshot(
   return FakeDisplaySnapshot::Builder()
       .SetId(id)
       .SetType(type)
-      .SetNativeMode(MakeDisplayMode(1920, 1200, false, 120.f))
-      .SetCurrentMode(MakeDisplayMode(1920, 1200, false, 120.f))
+      .SetNativeMode(MakeDisplayMode(1920, 1200, false, 120.f, vsync_rate_min))
+      .SetCurrentMode(MakeDisplayMode(1920, 1200, false, 120.f, vsync_rate_min))
       .SetVariableRefreshRateState(display::kVrrDisabled)
-      .SetVsyncRateMin(vsync_rate_min)
       .Build();
 }
 

@@ -4038,7 +4038,8 @@ TEST_F(DisplayManagerTest, AccelerometerSupport) {
 namespace {
 
 std::unique_ptr<display::DisplayMode> MakeDisplayMode() {
-  return display::CreateDisplayModePtrForTest(gfx::Size(1366, 768), false, 60);
+  return std::make_unique<display::DisplayMode>(gfx::Size(1366, 768), false,
+                                                60);
 }
 
 }  // namespace

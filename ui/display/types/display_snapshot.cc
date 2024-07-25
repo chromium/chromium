@@ -62,7 +62,6 @@ DisplaySnapshot::DisplaySnapshot(
     int32_t year_of_manufacture,
     const gfx::Size& maximum_cursor_size,
     VariableRefreshRateState variable_refresh_rate_state,
-    const std::optional<uint16_t>& vsync_rate_min,
     const DrmFormatsAndModifiers& drm_formats_and_modifiers)
     : display_id_(display_id),
       port_display_id_(port_display_id),
@@ -89,7 +88,6 @@ DisplaySnapshot::DisplaySnapshot(
       year_of_manufacture_(year_of_manufacture),
       maximum_cursor_size_(maximum_cursor_size),
       variable_refresh_rate_state_(variable_refresh_rate_state),
-      vsync_rate_min_(vsync_rate_min),
       drm_formats_and_modifiers_(drm_formats_and_modifiers) {
   // We must explicitly clear out the bytes that represent the serial number.
   const size_t end = std::min(
@@ -123,7 +121,7 @@ std::unique_ptr<DisplaySnapshot> DisplaySnapshot::Clone() const {
       has_content_protection_key_, color_info_, display_name_, sys_path_,
       std::move(clone_modes), panel_orientation_, edid_, cloned_current_mode,
       cloned_native_mode, product_code_, year_of_manufacture_,
-      maximum_cursor_size_, variable_refresh_rate_state_, vsync_rate_min_,
+      maximum_cursor_size_, variable_refresh_rate_state_,
       drm_formats_and_modifiers_);
   // Set current mode in case it is non-native (because non-native modes are not
   // cloned).
@@ -167,8 +165,7 @@ void DisplaySnapshot::AddIndexToDisplayId() {
 }
 
 bool DisplaySnapshot::IsVrrCapable() const {
-  return variable_refresh_rate_state_ != display::kVrrNotCapable &&
-         vsync_rate_min_.has_value() && vsync_rate_min_.value() > 0;
+  return variable_refresh_rate_state_ != display::kVrrNotCapable;
 }
 
 bool DisplaySnapshot::IsVrrEnabled() const {

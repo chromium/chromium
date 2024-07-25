@@ -16,7 +16,6 @@
 #include "ui/display/manager/test/action_logger_util.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
-#include "ui/display/manager/util/display_manager_test_util.h"
 #include "ui/display/types/display_constants.h"
 
 namespace display::test {
@@ -157,8 +156,8 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
  public:
   UpdateDisplayConfigurationTaskTest()
       : delegate_(&log_),
-        small_mode_(CreateDisplayModeForTest({1366, 768}, false, 60.0f)),
-        big_mode_(CreateDisplayModeForTest({2560, 1600}, false, 60.0f)) {
+        small_mode_({1366, 768}, false, 60.0f),
+        big_mode_({2560, 1600}, false, 60.0f, 40.0f) {
     displays_[0] = FakeDisplaySnapshot::Builder()
                        .SetId(123)
                        .SetNativeMode(small_mode_.Clone())
@@ -176,7 +175,6 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
                        .AddMode(small_mode_.Clone())
                        .SetBaseConnectorId(kSecondConnectorId)
                        .SetVariableRefreshRateState(kVrrDisabled)
-                       .SetVsyncRateMin(40)
                        .Build();
   }
 
