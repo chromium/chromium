@@ -22933,6 +22933,23 @@
             ]
         }
     ],
+    "UnoDesktopM0Followup": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OutlineSilhouetteIcon"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnoDesktopM0Full": [
         {
             "platforms": [
