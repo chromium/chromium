@@ -2161,14 +2161,8 @@ extern const char kTpcdTrialSettingsDescription[];
 extern const char kTopLevelTpcdTrialSettingsName[];
 extern const char kTopLevelTpcdTrialSettingsDescription[];
 
-extern const char kIpProtectionV1Name[];
-extern const char kIpProtectionV1Description[];
-
 extern const char kTrackingProtection3pcdName[];
 extern const char kTrackingProtection3pcdDescription[];
-
-extern const char kTrackingProtectionSettingsLaunchName[];
-extern const char kTrackingProtectionSettingsLaunchDescription[];
 
 extern const char kTrustedVaultFrequentDegradedRecoverabilityPollingName[];
 extern const char
