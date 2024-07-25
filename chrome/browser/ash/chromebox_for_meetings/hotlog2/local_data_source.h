@@ -44,7 +44,6 @@ class LocalDataSource : public mojom::DataSource {
 
  protected:
   void FillDataBuffer();
-  bool IsCurrentlyWaitingForUpload();
 
   // Make this virtual so unittests can override it
   virtual void SerializeDataBuffer(std::vector<std::string>& buffer);
@@ -102,13 +101,9 @@ class LocalDataSource : public mojom::DataSource {
   // log file, and False when the source simply yields current state.
   const bool is_incremental_;
 
-  // Contains a chain of the most recent data. Will be moved into
-  // pending_upload_buffer_ below upon a call to Fetch().
+  // Contains a chain of the most recent data. Will be returned
+  // at the next call to Fetch().
   std::deque<std::string> data_buffer_;
-
-  // Contains a chain of data that are queued for upload. Will be
-  // cleared upon a call to Flush();
-  std::vector<std::string> pending_upload_buffer_;
 
   // Redaction tool for PII redaction
   redaction::RedactionTool redactor_;

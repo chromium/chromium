@@ -198,37 +198,6 @@ TEST(HotlogLocalDataSourceTest, TestNonIncrementalSource) {
   source.RunFetchWithExpectedData({"aa", "b", "bb", "aa"});
 }
 
-TEST(HotlogLocalDataSourceTest, TestFlushWithVariousFetches) {
-  auto source =
-      LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
-
-  source.FillDataBufferForTesting({"a", "b", "c"});
-
-  // First fetch will contain the data
-  source.RunFetchWithExpectedData({"a", "b", "c"});
-
-  // Second fetch should contain the same data (no flush)
-  source.RunFetchWithExpectedData({"a", "b", "c"});
-
-  // Third fetch should contain nothing (after flush)
-  source.Flush();
-  source.RunFetchWithExpectedData({});
-
-  // Fill more data
-  source.FillDataBufferForTesting({"d", "e", "f"});
-  source.RunFetchWithExpectedData({"d", "e", "f"});
-
-  // Filling data buffer should have no bearing on what
-  // Fetch returns if we haven't Flush'ed yet
-  source.FillDataBufferForTesting({"a", "b", "c"});
-  source.RunFetchWithExpectedData({"d", "e", "f"});
-
-  // Next Fetch() after Flushing() should yield the data
-  // that built up in the previous block.
-  source.Flush();
-  source.RunFetchWithExpectedData({"a", "b", "c"});
-}
-
 TEST(HotlogLocalDataSourceTest, TestBufferSizeIsCapped) {
   auto source =
       LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
