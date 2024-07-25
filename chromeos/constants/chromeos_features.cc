@@ -16,6 +16,12 @@ namespace chromeos::features {
 // Adds Managed APN Policies support.
 BASE_FEATURE(kApnPolicies, "ApnPolicies", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables smaller battery badge icons to improve legibility of the battery
+// percentage.
+BASE_FEATURE(kBatteryBadgeIcon,
+             "BatteryBadgeIcon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables more filtering out of phones from the Bluetooth UI.
 BASE_FEATURE(kBluetoothPhoneFilter,
              "BluetoothPhoneFilter",
@@ -278,6 +284,10 @@ const char kRoundedWindowsRadius[] = "window_radius";
 
 bool IsApnPoliciesEnabled() {
   return base::FeatureList::IsEnabled(kApnPolicies);
+}
+
+bool IsBatteryBadgeIconEnabled() {
+  return base::FeatureList::IsEnabled(kBatteryBadgeIcon);
 }
 
 bool IsCaptivePortalPopupWindowEnabled() {

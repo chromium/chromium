@@ -969,6 +969,15 @@
     "expiry_milestone": 132
   },
   {
+    "name": "battery-badge-icon",
+    "owners": [
+      "bbetini@google.com",
+      "leandre@chromium.org",
+      "amehfooz@chromium.org"
+    ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "bind-cookies-to-port",
     "owners": [ "bingler@chromium.org"],
     "expiry_milestone": 132

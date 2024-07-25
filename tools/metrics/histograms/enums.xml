@@ -17851,6 +17851,7 @@ from previous Chrome versions.
   <int value="-1285021473" label="save-page-as-mhtml"/>
   <int value="-1284637134" label="pull-to-refresh"/>
   <int value="-1284303269" label="SidePanelWebView:enabled"/>
+  <int value="-1283915653" label="BatteryBadgeIcon:disabled"/>
   <int value="-1283306503" label="LensSearchOptimizations:disabled"/>
   <int value="-1283235938" label="FedCmRevoke:disabled"/>
   <int value="-1283164264" label="CroshSWA:disabled"/>
@@ -20908,6 +20909,7 @@ from previous Chrome versions.
   <int value="7642326" label="hdrnet-override"/>
   <int value="8891567" label="CaptionSettings:enabled"/>
   <int value="9609535" label="BrowsingDataLifetimeManager:disabled"/>
+  <int value="9692911" label="BatteryBadgeIcon:enabled"/>
   <int value="10405060" label="BluetoothSessionizedMetrics:disabled"/>
   <int value="10458238" label="disable-print-preview-simplify"/>
   <int value="11698808" label="enable-dom-distiller-button-animation"/>

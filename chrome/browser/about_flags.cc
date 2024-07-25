@@ -11419,6 +11419,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAssistantIphDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(feature_engagement::kIPHLauncherSearchHelpUiFeature)},
 
+    {"battery-badge-icon", flag_descriptions::kBatteryBadgeIconName,
+     flag_descriptions::kBatteryBadgeIconDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kBatteryBadgeIcon)},
+
     {"container", flag_descriptions::kContainerName,
      flag_descriptions::kContainerDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kContainerAppPreinstall)},
