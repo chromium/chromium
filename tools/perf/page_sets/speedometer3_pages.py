@@ -3,9 +3,12 @@
 # found in the LICENSE file.
 """Speedometer 3 Web Interaction Benchmark Pages
 """
+import os
 import re
 
+from core import path_util
 from page_sets import press_story
+from telemetry import story
 
 _SPEEDOMETER_SUITES = (
   'TodoMVC-JavaScript-ES5',
@@ -41,6 +44,8 @@ _SPEEDOMETER_SUITES = (
   'React-Stockcharts-SVG',
   'Perf-Dashboard',
 )
+_PAGE_SET_DIR = os.path.join(path_util.GetChromiumSrcDir(), 'tools', 'perf',
+                             'page_sets')
 
 
 class _Speedometer3Story(press_story.PressStory):
@@ -153,3 +158,15 @@ class Speedometer30Story(_Speedometer3Story):
 
 class Speedometer3Story(Speedometer30Story):
   NAME = 'Speedometer3'
+
+
+class Speedometer30CrossbenchStory(story.StorySet):
+  NAME = 'speedometer3.crossbench'
+
+  def __init__(self):
+    super().__init__(
+        base_dir=_PAGE_SET_DIR,
+        archive_data_file='data/crossbench_android_speedometer_3.0.json',
+        cloud_storage_bucket=story.PARTNER_BUCKET)
+
+    self.AddStory(_Speedometer3Story(self, should_filter_suites=False))
