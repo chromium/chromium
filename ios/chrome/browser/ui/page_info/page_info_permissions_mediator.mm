@@ -62,6 +62,14 @@
   [self.consumer permissionStateChanged:permissionsDescription];
 }
 
+- (void)webStateDestroyed:(web::WebState*)webState {
+  if (_webState && _observer) {
+    _webState->RemoveObserver(_observer.get());
+    _observer.reset();
+    _webState = nullptr;
+  }
+}
+
 #pragma mark - PermissionsDelegate
 
 - (void)updateStateForPermission:(PermissionInfo*)permissionDescription {
