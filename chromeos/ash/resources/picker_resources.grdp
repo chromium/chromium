@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Resources for Picker. See go/palette-next. -->
+  <structure type="lottie" name="IDR_PICKER_FEATURE_TOUR_ILLUSTRATION" file="../resources/internal/picker_feature_tour_illustration.json" compress="gzip" />
+</grit-part>

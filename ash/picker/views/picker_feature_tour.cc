@@ -14,11 +14,13 @@
 #include "ash/style/typography.h"
 #include "base/functional/callback.h"
 #include "build/branding_buildflags.h"
+#include "chromeos/ash/grit/ash_resources.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -74,6 +76,15 @@ std::u16string GetBodyText() {
   return l10n_util::GetStringUTF16(IDS_PICKER_FEATURE_TOUR_BODY_TEXT);
 #else
   return u"";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+ui::ImageModel GetIllustration() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+      IDR_PICKER_FEATURE_TOUR_ILLUSTRATION);
+#else
+  return {};
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
@@ -135,14 +146,14 @@ class FeatureTourBubbleView : public views::WidgetDelegate,
                         gfx::Insets::TLBR(kBodyTextTopMargin, 0, 0, 0)),
                 std::move(button_row_view));
 
-    // TODO: b/343599950 - Add final banner image.
     views::Builder<views::BoxLayoutView>(this)
         .SetOrientation(views::LayoutOrientation::kVertical)
         .SetBackground(views::CreateThemedRoundedRectBackground(
             cros_tokens::kCrosSysDialogContainer, kDialogBorderRadius))
-        .AddChildren(
-            views::Builder<views::ImageView>().SetImageSize(kIllustrationSize),
-            std::move(main_contents_view))
+        .AddChildren(views::Builder<views::ImageView>()
+                         .SetImage(GetIllustration())
+                         .SetImageSize(kIllustrationSize),
+                     std::move(main_contents_view))
         .BuildChildren();
   }
 

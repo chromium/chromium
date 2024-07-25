@@ -780,6 +780,7 @@
   },
   "chromeos/ash/resources/ash_resources.grd": {
     "includes": [5780],
+    "structures": [5790],
   },
   "chromeos/ash/resources/internal/ash_internal_scaled_resources.grd": {
     "structures": [5800],
