@@ -14,6 +14,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.components.webauthn.CredManSupport;
 import org.chromium.components.webauthn.GmsCoreUtils;
+import org.chromium.components.webauthn.WebauthnMode;
+import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.DeviceFeatureMap;
 
@@ -60,12 +62,19 @@ public class CredManSupportProvider {
                     CredManUiRecommenderProvider.getOrCreate().getCredManUiRecommender();
             boolean customUiRecommended =
                     recommender == null ? false : recommender.recommendsCustomUi();
-            sCredManSupport =
+            boolean gpmInCredMan =
                     DeviceFeatureMap.getInstance()
-                                    .getFieldTrialParamByFeatureAsBoolean(
-                                            DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN,
-                                            "gpm_in_cred_man",
-                                            customUiRecommended)
+                            .getFieldTrialParamByFeatureAsBoolean(
+                                    DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN,
+                                    "gpm_in_cred_man",
+                                    customUiRecommended);
+            boolean isChrome3pPwmMode =
+                    WebauthnModeProvider.getInstance().getGlobalWebauthnMode()
+                            == WebauthnMode.CHROME_3PP_ENABLED;
+            // In CHROME_3PP_ENABLED mode Chrome does not use FIDO2 APIs parallel with CredMan. This
+            // is because Chrome's Password Manager capabilities are disabled.
+            sCredManSupport =
+                    gpmInCredMan || isChrome3pPwmMode
                             ? CredManSupport.FULL_UNLESS_INAPPLICABLE
                             : CredManSupport.PARALLEL_WITH_FIDO_2;
             return sCredManSupport;
