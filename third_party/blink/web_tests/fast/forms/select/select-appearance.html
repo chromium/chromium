@@ -1,6 +1,10 @@
 <!DOCTYPE html>
-<meta name=fuzzy content="maxDifference=0-3; totalPixels=0-100">
 <html>
+<meta name=fuzzy content="maxDifference=0-3; totalPixels=0-100">
+<style>
+.rtl { direction: rtl; }
+.no-appearance { appearance: none; }
+</style>
 <body>
 
 <select></select>
@@ -16,6 +20,24 @@
 <select style="writing-mode: vertical-rl; direction: rtl; appearance: none;"></select>
 <select style="writing-mode: vertical-lr; direction: ltr; appearance: none;"></select>
 <select style="writing-mode: vertical-lr; direction: rtl; appearance: none;"></select>
+
+<br>
+sideways-rl:
+<div style="writing-mode: sideways-rl">
+<select></select><br>
+<select class="rtl"></select><br>
+<select class="no-appearance"></select><br>
+<select class="rtl no-appearance"></select>
+</div>
+
+sideways-lr:
+<div style="writing-mode: sideways-lr">
+<select></select><br>
+<select class="rtl"></select><br>
+<select class="no-appearance"></select><br>
+<select class="rtl no-appearance"></select>
+</div>
+
 <script>
 const selects = document.getElementsByTagName('select');
 for(var s=0; s<selects.length; s++){
