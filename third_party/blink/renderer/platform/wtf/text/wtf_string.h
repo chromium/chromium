@@ -66,6 +66,7 @@ class WTF_EXPORT String {
   String() = default;
 
   // Construct a string with UTF-16 data.
+  explicit String(base::span<const UChar> utf16_data);
   String(const UChar* characters, unsigned length);
 
   // Construct a string by copying the contents of a vector.
@@ -82,6 +83,7 @@ class WTF_EXPORT String {
   String(const UChar*);
 
   // Construct a string with latin1 data.
+  explicit String(base::span<const LChar> latin1_data);
   String(const LChar* characters, unsigned length);
   String(const char* characters, unsigned length);
   explicit String(const std::string& s) : String(s.c_str(), s.length()) {}
