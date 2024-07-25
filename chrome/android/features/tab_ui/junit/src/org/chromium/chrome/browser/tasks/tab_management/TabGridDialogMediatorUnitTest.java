@@ -26,6 +26,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -1393,6 +1394,22 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
+    public void testDialogToolbarMenu_CloseGroup() {
+        Callback<Integer> callback = mMediator.getToolbarMenuCallbackForTesting();
+
+        mMediator.setCurrentTabIdForTesting(TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+        when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
+
+        callback.onResult(R.id.close_tab);
+        verify(mTabGroupModelFilter)
+                .closeMultipleTabs(tabGroup, /* canUndo= */ true, /* hideTabGroups= */ true);
+
+        verifyNoInteractions(mActionConfirmationManager);
+    }
+
+    @Test
     public void testDialogToolbarMenu_DeleteGroup() {
         Callback<Integer> callback = mMediator.getToolbarMenuCallbackForTesting();
 
@@ -1402,7 +1419,8 @@ public class TabGridDialogMediatorUnitTest {
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
 
         callback.onResult(R.id.delete_tab);
-        verify(mTabGroupModelFilter).closeMultipleTabs(tabGroup, true, false);
+        verify(mTabGroupModelFilter)
+                .closeMultipleTabs(tabGroup, /* canUndo= */ true, /* hideTabGroups= */ false);
 
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);
         callback.onResult(R.id.delete_tab);

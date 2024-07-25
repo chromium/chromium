@@ -343,8 +343,11 @@
       <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_EDIT_GROUP_COLOR" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, a color picker popup window will appear and allow the user to update the color for this tab group.">
         Edit group color
       </message>
-      <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_DELETE_GROUP" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the tab group is deleted.">
+      <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_DELETE_GROUP" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the tab group is deleted. All references to the group go away including those in sync.">
         Delete group
+      </message>
+      <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_CLOSE_GROUP" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the tab group is closed. It may still be possible to access the group from tab group sync if enabled.">
+        Close group
       </message>
 
       <!-- Tab Grid Dialog accessibility strings -->

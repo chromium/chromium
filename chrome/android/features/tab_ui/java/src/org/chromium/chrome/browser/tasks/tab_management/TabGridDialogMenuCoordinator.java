@@ -80,6 +80,15 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                             isIncognito,
                             true));
         }
+        itemList.add(
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                        R.string.tab_grid_dialog_toolbar_close_group,
+                        R.id.close_tab,
+                        R.drawable.ic_tab_close_24dp,
+                        R.color.default_icon_color_light_tint_list,
+                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                        isIncognito,
+                        true));
         if (mShouldShowDeleteGroup && !isIncognito) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(

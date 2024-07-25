@@ -436,12 +436,13 @@ public class TabGridDialogMediator
                         mShowColorPickerPopupRunnable.run();
                         TabUiMetricsHelper.recordTabGroupColorChangeActionMetrics(
                                 TabGroupColorChangeActionType.VIA_OVERFLOW_MENU);
-                    } else if (result == R.id.delete_tab) {
+                    } else if (result == R.id.close_tab || result == R.id.delete_tab) {
+                        boolean hideTabGroups = result == R.id.close_tab;
                         TabUiUtils.closeTabGroup(
                                 (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
                                 mActionConfirmationManager,
                                 mCurrentTabId,
-                                /* hideTabGroups= */ false);
+                                hideTabGroups);
                     }
                 };
 

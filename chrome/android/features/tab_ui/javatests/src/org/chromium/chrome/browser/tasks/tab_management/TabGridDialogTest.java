@@ -2189,12 +2189,16 @@ public class TabGridDialogTest {
                                     2,
                                     cta.getString(
                                             R.string.tab_grid_dialog_toolbar_edit_group_color));
-                            int itemCount = 3;
+                            verifyTabGridDialogToolbarMenuItem(
+                                    listView,
+                                    3,
+                                    cta.getString(R.string.tab_grid_dialog_toolbar_close_group));
+                            int itemCount = 4;
                             boolean shouldShowDelete = isTabGroupSyncEnabled(cta);
                             if (shouldShowDelete) {
                                 verifyTabGridDialogToolbarMenuItem(
                                         listView,
-                                        3,
+                                        4,
                                         cta.getString(
                                                 R.string.tab_grid_dialog_toolbar_delete_group));
                                 itemCount++;
