@@ -1883,7 +1883,9 @@ TEST_F(BackupRefPtrTest, GetDeltaElems) {
   size_t requested_size = allocator_.root()->AdjustSizeForExtrasSubtract(512);
   char* ptr1 = static_cast<char*>(allocator_.root()->Alloc(requested_size));
   char* ptr2 = static_cast<char*>(allocator_.root()->Alloc(requested_size));
-  ASSERT_LT(ptr1, ptr2);  // There should be a ref-count between slots.
+  ASSERT_LT(partition_alloc::UntagPtr(ptr1),
+            partition_alloc::UntagPtr(
+                ptr2));  // There should be a ref-count between slots.
   raw_ptr<char, AllowPtrArithmetic> protected_ptr1 = ptr1;
   raw_ptr<char, AllowPtrArithmetic> protected_ptr1_2 = ptr1 + 1;
   raw_ptr<char, AllowPtrArithmetic> protected_ptr1_3 =
