@@ -52,6 +52,7 @@ const CGFloat kWebContainerTopPadding = 8;
   self = [super init];
   if (self) {
     _webViewContainer = [[UIView alloc] init];
+    _omniboxPopupContainer = [[UIView alloc] init];
   }
   return self;
 }
@@ -65,6 +66,13 @@ const CGFloat kWebContainerTopPadding = 8;
   // Webview container.
   self.webViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:self.webViewContainer];
+
+  // Omnibox popup container.
+  self.omniboxPopupContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  self.omniboxPopupContainer.hidden = YES;
+  self.omniboxPopupContainer.layer.zPosition = 1;
+  self.omniboxPopupContainer.clipsToBounds = YES;
+  [self.view addSubview:self.omniboxPopupContainer];
 
   // Back Button.
   _backButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -118,9 +126,14 @@ const CGFloat kWebContainerTopPadding = 8;
     [_webViewContainer.topAnchor
         constraintEqualToAnchor:_horizontalStackView.bottomAnchor
                        constant:kWebContainerTopPadding],
+    [self.omniboxPopupContainer.topAnchor
+        constraintEqualToAnchor:_horizontalStackView.bottomAnchor],
   ]];
   AddSameConstraintsToSides(
       self.webViewContainer, self.view,
+      LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
+  AddSameConstraintsToSides(
+      self.omniboxPopupContainer, self.view,
       LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
 }
 
