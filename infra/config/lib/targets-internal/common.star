@@ -406,7 +406,7 @@ def _finalize_cipd_package(cipd_package):
     return d
 
 def _merge_swarming(swarming1, swarming2):
-    if not swarming1 and swarming2:
+    if not (swarming1 and swarming2):
         return swarming1 or swarming2
 
     d = {a: getattr(swarming1, a) for a in dir(swarming1)}
