@@ -590,9 +590,11 @@ void SidePanelCoordinator::Close(bool supress_animations) {
     return;
   }
 
-  if (current_entry_ &&
-      browser_view_->toolbar()->pinned_toolbar_actions_container()) {
-    NotifyPinnedContainerOfActiveStateChange(current_entry_->key(), false);
+  if (current_entry_) {
+    current_entry_.get()->OnEntryWillHide();
+    if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
+      NotifyPinnedContainerOfActiveStateChange(current_entry_->key(), false);
+    }
   }
   if (views::View* content_wrapper =
           browser_view_->unified_side_panel()->GetViewByID(
@@ -678,6 +680,7 @@ void SidePanelCoordinator::PopulateSidePanel(
                              : SidePanelContentState::kReadyToShow));
 
   if (current_entry_ && content_wrapper->children().size()) {
+    current_entry_->OnEntryWillHide();
     auto current_entry_view =
         content_wrapper->RemoveChildViewT(content_wrapper->children().front());
     current_entry_->CacheView(std::move(current_entry_view));

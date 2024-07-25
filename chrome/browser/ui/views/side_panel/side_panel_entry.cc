@@ -58,6 +58,12 @@ void SidePanelEntry::OnEntryShown() {
     observer.OnEntryShown(this);
 }
 
+void SidePanelEntry::OnEntryWillHide() {
+  for (SidePanelEntryObserver& observer : observers_) {
+    observer.OnEntryWillHide(this);
+  }
+}
+
 void SidePanelEntry::OnEntryHidden() {
   SidePanelUtil::RecordEntryHiddenMetrics(key_.id(), entry_shown_timestamp_);
   for (SidePanelEntryObserver& observer : observers_)

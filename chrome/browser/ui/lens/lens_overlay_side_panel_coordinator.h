@@ -54,6 +54,7 @@ class LensOverlaySidePanelCoordinator
   void RegisterEntryAndShow();
 
   // SidePanelEntryObserver:
+  void OnEntryWillHide(SidePanelEntry* entry) override;
   void OnEntryHidden(SidePanelEntry* entry) override;
 
   // Called by the destructor of the side panel web view.

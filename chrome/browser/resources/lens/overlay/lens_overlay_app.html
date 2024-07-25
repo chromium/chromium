@@ -125,6 +125,11 @@
     opacity: 0;
   }
 
+  :host([is-closing]) cursor-tooltip {
+    /* When the overlay is closing, immediately hide the cursor tooltip. */
+    display: none;
+  }
+
   cursor-tooltip {
     left: 0;
     position: fixed;
