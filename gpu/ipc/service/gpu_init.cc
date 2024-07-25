@@ -462,12 +462,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // Therefore, we only allow or disallow sync and real buffer page flip
   // testing for ash-chrome.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  params.allow_sync_and_real_buffer_page_flip_testing =
-      gpu_preferences_.enable_chromeos_direct_video_decoder;
-#else   // !BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   params.allow_sync_and_real_buffer_page_flip_testing = true;
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ui::OzonePlatform::InitializeForGPU(params);
 #endif  // BUILDFLAG(IS_OZONE)
@@ -982,12 +977,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   // Therefore, we only allow or disallow sync and real buffer page flip
   // testing for ash-chrome.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  params.allow_sync_and_real_buffer_page_flip_testing =
-      gpu_preferences_.enable_chromeos_direct_video_decoder;
-#else   // !BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   params.allow_sync_and_real_buffer_page_flip_testing = true;
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ui::OzonePlatform::InitializeForGPU(params);
 #endif

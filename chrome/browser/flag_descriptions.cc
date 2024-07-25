@@ -8083,15 +8083,6 @@ const char kWebPrintingApiDescription[] =
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#if !BUILDFLAG(USE_VAAPI)
-const char kChromeOSDirectVideoDecoderName[] = "ChromeOS Direct Video Decoder";
-const char kChromeOSDirectVideoDecoderDescription[] =
-    "Enables the hardware-accelerated ChromeOS direct media::VideoDecoder "
-    "implementation. This might be disabled on platforms where said direct "
-    "VideoDecoder does not work or is not well tested (see the "
-    "disable_cros_video_decoder USE flag in ChromeOS). This flag only has an "
-    "effect on non-Intel and non-AMD devices (i.e. on ARM-based SoCs).";
-#endif  // !BUILDFLAG(USE_VAAPI)
 const char kChromeOSHWVBREncodingName[] =
     "ChromeOS Hardware Variable Bitrate Encoding";
 const char kChromeOSHWVBREncodingDescription[] =

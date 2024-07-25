@@ -45,13 +45,11 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
       break;
   }
 
-  if (gpu_preferences.enable_chromeos_direct_video_decoder) {
 #if BUILDFLAG(USE_VAAPI)
-    return VideoDecoderType::kVaapi;
+  return VideoDecoderType::kVaapi;
 #elif BUILDFLAG(USE_V4L2_CODEC)
-    return VideoDecoderType::kV4L2;
+  return VideoDecoderType::kV4L2;
 #endif
-  }
   NOTREACHED_NORETURN();
 }
 

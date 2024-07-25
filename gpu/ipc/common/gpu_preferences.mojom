@@ -118,8 +118,5 @@ struct GpuPreferences {
 
   bool enable_native_gpu_memory_buffers;
 
-  [EnableIf=is_chromeos]
-  bool enable_chromeos_direct_video_decoder;
-
   bool force_separate_egl_display_for_webgl_testing;
 };

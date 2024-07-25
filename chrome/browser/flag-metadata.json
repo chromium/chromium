@@ -1453,12 +1453,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "chromeos-direct-video-decoder",
-    "owners": [ "chromeos-gfx-video@google.com" ],
-    // TODO(b/159825227): remove when the "old" video decoder is fully launched.
-    "expiry_milestone": 132
-  },
-  {
     "name": "clear-cross-site-cross-browsing-context-group-window-name",
     "owners": [ "shuuran@chromium.org", "kaustubhag@chromium.org" ],
     "expiry_milestone": 115

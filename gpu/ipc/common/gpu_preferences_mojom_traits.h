@@ -310,11 +310,6 @@ struct GPU_EXPORT
     out->enable_native_gpu_memory_buffers =
         prefs.enable_native_gpu_memory_buffers();
 
-#if BUILDFLAG(IS_CHROMEOS)
-    out->enable_chromeos_direct_video_decoder =
-        prefs.enable_chromeos_direct_video_decoder();
-#endif
-
     out->force_separate_egl_display_for_webgl_testing =
         prefs.force_separate_egl_display_for_webgl_testing();
 
@@ -508,12 +503,6 @@ struct GPU_EXPORT
       const gpu::GpuPreferences& prefs) {
     return prefs.enable_native_gpu_memory_buffers;
   }
-#if BUILDFLAG(IS_CHROMEOS)
-  static bool enable_chromeos_direct_video_decoder(
-      const gpu::GpuPreferences& prefs) {
-    return prefs.enable_chromeos_direct_video_decoder;
-  }
-#endif
   static bool force_separate_egl_display_for_webgl_testing(
       const gpu::GpuPreferences& prefs) {
     return prefs.force_separate_egl_display_for_webgl_testing;

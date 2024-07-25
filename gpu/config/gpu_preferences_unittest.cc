@@ -88,10 +88,6 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
 #endif
   EXPECT_EQ(left.enable_native_gpu_memory_buffers,
             right.enable_native_gpu_memory_buffers);
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(left.enable_chromeos_direct_video_decoder,
-            right.enable_chromeos_direct_video_decoder);
-#endif
   EXPECT_EQ(left.force_separate_egl_display_for_webgl_testing,
             right.force_separate_egl_display_for_webgl_testing);
 }
@@ -179,9 +175,6 @@ TEST(GpuPreferencesTest, EncodeDecode) {
                                base::MessagePumpType::UI)
 #endif
     GPU_PREFERENCES_FIELD(enable_native_gpu_memory_buffers, true);
-#if BUILDFLAG(IS_CHROMEOS)
-    GPU_PREFERENCES_FIELD(enable_chromeos_direct_video_decoder, true);
-#endif
     GPU_PREFERENCES_FIELD(force_separate_egl_display_for_webgl_testing, true);
 
     // Make sure every field is encoded/decoded.
@@ -260,9 +253,6 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
   PRINT_INT(message_pump_type);
 #endif
   PRINT_BOOL(enable_native_gpu_memory_buffers);
-#if BUILDFLAG(IS_CHROMEOS)
-  PRINT_BOOL(enable_chromeos_direct_video_decoder);
-#endif
   PRINT_BOOL(force_separate_egl_display_for_webgl_testing);
   printf("}\n");
 }

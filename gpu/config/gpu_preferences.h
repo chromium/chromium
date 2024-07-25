@@ -301,14 +301,6 @@ struct GPU_EXPORT GpuPreferences {
   // Enable native CPU-mappable GPU memory buffer support on Linux.
   bool enable_native_gpu_memory_buffers = false;
 
-  // ===================================
-  // Settings from //media/base/media_switches.h
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Enable the hardware-accelerated direct video decoder on ChromeOS.
-  bool enable_chromeos_direct_video_decoder = false;
-#endif
-
   // Disables oppr debug crash dumps.
   bool disable_oopr_debug_crash_dump = false;
 
