@@ -99,13 +99,11 @@ public final class InputHintCheckerTest {
     @Test
     @MediumTest
     public void testInitFailureReturnsFalse() {
-        // Start InputHintChecker asynchronous initialization by calling setView().
-        TextView view =
-                new TextView(InstrumentationRegistry.getInstrumentation().getTargetContext());
+        // Start InputHintChecker asynchronous initialization in a way to fail on a helper thread.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InputHintChecker.setAllowSetViewForTesting(true);
-                    InputHintChecker.setView(view);
+                    InputHintChecker.setWrongViewForTesting();
                 });
 
         // Wait for initialization to fail.
@@ -121,17 +119,15 @@ public final class InputHintCheckerTest {
     @Test
     @MediumTest
     public void testInitFailureRecordsHistogram() {
-        // Start InputHintChecker asynchronous initialization by calling setView().
-        TextView view =
-                new TextView(InstrumentationRegistry.getInstrumentation().getTargetContext());
-
         try (var ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.InputHintChecker.InitializationResult", 1)) {
+            // Start InputHintChecker asynchronous initialization in a way to fail on a helper
+            // thread.
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         InputHintChecker.setAllowSetViewForTesting(true);
-                        InputHintChecker.setView(view);
+                        InputHintChecker.setWrongViewForTesting();
                     });
             // Wait for initialization to fail.
             CriteriaHelper.pollUiThread(InputHintChecker::failedToInitializeForTesting);

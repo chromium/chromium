@@ -68,9 +68,21 @@ public class InputHintChecker {
         return InputHintCheckerJni.get().hasInputWithThrottlingForTesting(); // IN-TEST
     }
 
+    /**
+     * Set the initial view incorrectly to cause initialization failure.
+     *
+     * <p>Wrongly initialized InputHintChecker should not be used across tests, hence tests using
+     * this method cannot be batched. Therefore, there is no need to reset this state between tests.
+     */
+    public static void setWrongViewForTesting() {
+        // On Android V all instances of View have the method probablyHasInput(). Use an
+        // instance of another class to reliably fail at finding this method on all OS releases.
+        InputHintCheckerJni.get().setView(new Object());
+    }
+
     @NativeMethods
     interface Natives {
-        void setView(View view);
+        void setView(Object view);
 
         boolean isInitializedForTesting(); // IN-TEST
 
