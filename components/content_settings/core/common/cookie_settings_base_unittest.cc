@@ -47,14 +47,19 @@ class CallbackCookieSettings : public CookieSettingsBase {
   explicit CallbackCookieSettings(GetSettingCallback callback)
       : callback_(std::move(callback)) {}
 
-  // A simple constructor that returns a specified setting for COOKIES and BLOCK
-  // otherwise.
+  // A simple constructor that returns a specified setting for COOKIES, ALLOW
+  // for TOP_LEVEL_TPCD_ORIGIN_TRIAL, and BLOCK otherwise.
   explicit CallbackCookieSettings(ContentSetting setting)
       : callback_(base::BindLambdaForTesting(
             [setting](const GURL&, ContentSettingsType type, SettingInfo*) {
               if (type == ContentSettingsType::COOKIES) {
                 return setting;
               }
+
+              if (type == ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL) {
+                return CONTENT_SETTING_ALLOW;
+              }
+
               return CONTENT_SETTING_BLOCK;
             })) {}
 
