@@ -273,6 +273,9 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
       GenerateBidDependencyCriticalPath& critical_path);
   void RecordGenerateBidDependencyLatencyCriticalPath(
       GenerateBidDependencyCriticalPath& critical_path);
+  void MaybeRecordGenerateBidPhasesStartAndEndTimes(
+      const auction_worklet::mojom::GenerateBidDependencyLatencies&
+          generate_bid_dependency_latencies);
 
   struct ScoreAdDependencyCriticalPath {
     enum class Dependency {
@@ -392,6 +395,12 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
       generate_bid_config_promises_critical_path_aggregator_,
       generate_bid_direct_from_seller_signals_critical_path_aggregator_,
       generate_bid_trusted_bidding_signals_critical_path_aggregator_;
+
+  // GenerateBid phase metrics.
+  EarliestTimeRecorder bid_signals_fetch_phase_start_time_;
+  LatestTimeRecorder bid_signals_fetch_phase_end_time_;
+  EarliestTimeRecorder bid_generation_phase_start_time_;
+  LatestTimeRecorder bid_generation_phase_end_time_;
 
   // Aggregated critical path latencies of bids generated before the
   // corresponding SellerWorklet is ready.

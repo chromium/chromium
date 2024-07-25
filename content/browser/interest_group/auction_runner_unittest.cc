@@ -2566,6 +2566,11 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                     kMeanGenerateBidDirectFromSellerSignalsCriticalPathLatencyInMillisName,
                 Entry::
                     kMeanGenerateBidTrustedBiddingSignalsCriticalPathLatencyInMillisName,
+                /* GenerateBid phase metrics */
+                Entry::kBidSignalsFetchPhaseStartTimeInMillisName,
+                Entry::kBidSignalsFetchPhaseEndTimeInMillisName,
+                Entry::kBidGenerationPhaseStartTimeInMillisName,
+                Entry::kBidGenerationPhaseEndTimeInMillisName,
                 /* Bids queued waiting to begin ScoreAd */
                 Entry::kNumTopLevelBidsQueuedWaitingForConfigPromisesName,
                 Entry::kNumTopLevelBidsQueuedWaitingForSellerWorkletName,
@@ -2598,7 +2603,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                     kMeanScoreAdDirectFromSellerSignalsCriticalPathLatencyInMillisName,
                 Entry::
                     kMeanScoreAdTrustedScoringSignalsCriticalPathLatencyInMillisName,
-                /* Phase metrics */
+                /* ScoreAd phase metrics */
                 Entry::kScoreSignalsFetchPhaseStartTimeInMillisName,
                 Entry::kScoreSignalsFetchPhaseEndTimeInMillisName,
                 Entry::kScoringPhaseStartTimeInMillisName,
@@ -13293,7 +13298,7 @@ TEST_F(AuctionRunnerTest,
               /*trusted_scoring_signals_latency=*/std::nullopt,
               /*deps_wait_start_time=*/base::TimeTicks::Now(),
               /*score_ad_start_time=*/base::TimeTicks::Now(),
-              /*score_ad_finish_time*/ base::TimeTicks::Now()),
+              /*score_ad_finish_time=*/base::TimeTicks::Now()),
           /*errors=*/{});
 
   // Finish the auction.
@@ -14442,7 +14447,10 @@ TEST_F(
            {/*code_ready_latency=*/base::Milliseconds(550),
             /*config_promises_latency=*/nullopt,
             /*direct_from_seller_signals_latency=*/base::Milliseconds(400),
-            /*trusted_bidding_signals_latency=*/nullopt}),
+            /*trusted_bidding_signals_latency=*/nullopt,
+            /*deps_wait_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_finish_time=*/base::TimeTicks::Now()}),
        /*code_ready_latency_in_millis=*/500,
        /*num_bidder_worklet_on_critical_path=*/1,
        /*bidder_worklet_critical_path_latency_in_millis=*/100,
@@ -14461,7 +14469,10 @@ TEST_F(
            {/*code_ready_latency=*/nullopt,
             /*config_promises_latency=*/base::Milliseconds(550),
             /*direct_from_seller_signals_latency=*/nullopt,
-            /*trusted_bidding_signals_latency=*/base::Milliseconds(300)}),
+            /*trusted_bidding_signals_latency=*/base::Milliseconds(300),
+            /*deps_wait_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_finish_time=*/base::TimeTicks::Now()}),
        /*code_ready_latency_in_millis=*/nullopt,
        /*num_bidder_worklet_on_critical_path=*/0,
        /*bidder_worklet_critical_path_latency_in_millis=*/nullopt,
@@ -14480,7 +14491,10 @@ TEST_F(
            {/*code_ready_latency=*/base::Milliseconds(50),
             /*config_promises_latency=*/base::Milliseconds(200),
             /*direct_from_seller_signals_latency=*/base::Milliseconds(550),
-            /*trusted_bidding_signals_latency=*/nullopt}),
+            /*trusted_bidding_signals_latency=*/nullopt,
+            /*deps_wait_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_finish_time=*/base::TimeTicks::Now()}),
        /*code_ready_latency_in_millis=*/50,
        /*num_bidder_worklet_on_critical_path=*/0,
        /*bidder_worklet_critical_path_latency_in_millis=*/nullopt,
@@ -14499,7 +14513,10 @@ TEST_F(
            {/*code_ready_latency=*/base::Milliseconds(100),
             /*config_promises_latency=*/base::Milliseconds(51),
             /*direct_from_seller_signals_latency=*/base::Milliseconds(100),
-            /*trusted_bidding_signals_latency=*/base::Milliseconds(550)}),
+            /*trusted_bidding_signals_latency=*/base::Milliseconds(550),
+            /*deps_wait_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_finish_time=*/base::TimeTicks::Now()}),
        /*code_ready_latency_in_millis=*/100,
        /*num_bidder_worklet_on_critical_path=*/0,
        /*bidder_worklet_critical_path_latency_in_millis=*/nullopt,
@@ -14518,7 +14535,10 @@ TEST_F(
            {/*code_ready_latency=*/base::Milliseconds(100),
             /*config_promises_latency=*/base::Milliseconds(550),
             /*direct_from_seller_signals_latency=*/base::Milliseconds(100),
-            /*trusted_bidding_signals_latency=*/base::Milliseconds(550)}),
+            /*trusted_bidding_signals_latency=*/base::Milliseconds(550),
+            /*deps_wait_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_finish_time=*/base::TimeTicks::Now()}),
        /*code_ready_latency_in_millis=*/100,
        /*num_bidder_worklet_on_critical_path=*/0,
        /*bidder_worklet_critical_path_latency_in_millis=*/nullopt,
@@ -14812,7 +14832,10 @@ TEST_F(AuctionRunnerTest,
             /*code_ready_latency=*/std::nullopt,
             /*config_promises_latency=*/std::nullopt,
             /*direct_from_seller_signals_latency=*/std::nullopt,
-            /*trusted_bidding_signals_latency=*/std::nullopt));
+            /*trusted_bidding_signals_latency=*/std::nullopt,
+            /*deps_wait_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_finish_time=*/base::TimeTicks::Now()));
 
     // Score the ad.
     auto score_ad_params = seller_worklet->WaitForScoreAd();
@@ -14945,7 +14968,10 @@ TEST_F(AuctionRunnerTest, VerifyPhaseMetrics) {
           /*code_ready_latency=*/std::nullopt,
           /*config_promises_latency=*/std::nullopt,
           /*direct_from_seller_signals_latency=*/std::nullopt,
-          /*trusted_bidding_signals_latency=*/std::nullopt));
+          /*trusted_bidding_signals_latency=*/std::nullopt,
+          /*deps_wait_start_time=*/base::TimeTicks::Now(),
+          /*generate_bid_start_time=*/base::TimeTicks::Now(),
+          /*generate_bid_finish_time=*/base::TimeTicks::Now()));
 
   // Score the first ad.
   auto score_ad_params = seller_worklet->WaitForScoreAd();
@@ -14995,7 +15021,10 @@ TEST_F(AuctionRunnerTest, VerifyPhaseMetrics) {
           /*code_ready_latency=*/std::nullopt,
           /*config_promises_latency=*/std::nullopt,
           /*direct_from_seller_signals_latency=*/std::nullopt,
-          /*trusted_bidding_signals_latency=*/std::nullopt));
+          /*trusted_bidding_signals_latency=*/std::nullopt,
+          /*deps_wait_start_time=*/base::TimeTicks::Now(),
+          /*generate_bid_start_time=*/base::TimeTicks::Now(),
+          /*generate_bid_start_time=*/base::TimeTicks::Now()));
 
   // Score the second ad.
   score_ad_params = seller_worklet->WaitForScoreAd();
@@ -15041,6 +15070,16 @@ TEST_F(AuctionRunnerTest, VerifyPhaseMetrics) {
   ukm::TestUkmRecorder::HumanReadableUkmMetrics ukm_metrics = GetUkmMetrics();
 
   using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency_V2;
+
+  EXPECT_THAT(ukm_metrics,
+              HasMetric(UkmEntry::kBidSignalsFetchPhaseStartTimeInMillisName));
+  EXPECT_THAT(ukm_metrics,
+              HasMetric(UkmEntry::kBidSignalsFetchPhaseEndTimeInMillisName));
+  EXPECT_THAT(ukm_metrics,
+              HasMetric(UkmEntry::kBidGenerationPhaseStartTimeInMillisName));
+  EXPECT_THAT(ukm_metrics,
+              HasMetric(UkmEntry::kBidGenerationPhaseEndTimeInMillisName));
+
   EXPECT_THAT(
       ukm_metrics,
       HasMetric(UkmEntry::kScoreSignalsFetchPhaseStartTimeInMillisName));

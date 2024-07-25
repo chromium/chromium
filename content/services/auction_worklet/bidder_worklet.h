@@ -256,6 +256,10 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     base::TimeDelta wait_direct_from_seller_signals;
     base::TimeDelta wait_promises;
 
+    // Time where the BidderWorklet finished waiting for GenerateBid
+    // dependencies, used to compute start and end times for latency phase UKMs.
+    base::TimeTicks generate_bid_start_time;
+
     // Set while loading is in progress.
     std::unique_ptr<TrustedSignalsRequestManager::Request>
         trusted_bidding_signals_request;

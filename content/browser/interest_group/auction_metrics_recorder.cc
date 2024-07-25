@@ -229,6 +229,15 @@ void AuctionMetricsRecorder::OnAuctionEnd(AuctionResult auction_result) {
       &UkmEntry::
           SetMeanGenerateBidTrustedBiddingSignalsCriticalPathLatencyInMillis);
 
+  MaybeSetPhaseStartTime(bid_signals_fetch_phase_start_time_,
+                         &UkmEntry::SetBidSignalsFetchPhaseStartTimeInMillis);
+  MaybeSetPhaseEndTime(bid_signals_fetch_phase_end_time_,
+                       &UkmEntry::SetBidSignalsFetchPhaseEndTimeInMillis);
+  MaybeSetPhaseStartTime(bid_generation_phase_start_time_,
+                         &UkmEntry::SetBidGenerationPhaseStartTimeInMillis);
+  MaybeSetPhaseEndTime(bid_generation_phase_end_time_,
+                       &UkmEntry::SetBidGenerationPhaseEndTimeInMillis);
+
   SetNumAndMaybeMeanLatency(
       top_level_bid_queued_waiting_for_config_promises_aggregator_,
       /*set_num_function=*/
@@ -527,6 +536,9 @@ void AuctionMetricsRecorder::RecordGenerateBidDependencyLatencies(
       generate_bid_trusted_bidding_signals_latency_aggregator_, critical_path);
 
   RecordGenerateBidDependencyLatencyCriticalPath(critical_path);
+
+  MaybeRecordGenerateBidPhasesStartAndEndTimes(
+      generate_bid_dependency_latencies);
 }
 
 void AuctionMetricsRecorder::RecordTopLevelBidQueuedWaitingForConfigPromises(
@@ -720,6 +732,19 @@ void AuctionMetricsRecorder::RecordGenerateBidDependencyLatencyCriticalPath(
           .RecordLatency(critical_path_latency);
       break;
   }
+}
+
+void AuctionMetricsRecorder::MaybeRecordGenerateBidPhasesStartAndEndTimes(
+    const auction_worklet::mojom::GenerateBidDependencyLatencies&
+        generate_bid_dependency_latencies) {
+  bid_signals_fetch_phase_start_time_.MaybeRecordTime(
+      generate_bid_dependency_latencies.deps_wait_start_time);
+  bid_signals_fetch_phase_end_time_.MaybeRecordTime(
+      generate_bid_dependency_latencies.generate_bid_start_time);
+  bid_generation_phase_start_time_.MaybeRecordTime(
+      generate_bid_dependency_latencies.generate_bid_start_time);
+  bid_generation_phase_end_time_.MaybeRecordTime(
+      generate_bid_dependency_latencies.generate_bid_finish_time);
 }
 
 void AuctionMetricsRecorder::MaybeRecordScoreAdDependencyLatency(

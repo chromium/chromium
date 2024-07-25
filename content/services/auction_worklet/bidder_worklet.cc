@@ -2251,6 +2251,7 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   // Therefore, it's safe to post a callback with the `task`  iterator the v8
   // thread.
   int thread_index = GetNextThreadIndex();
+  task->generate_bid_start_time = base::TimeTicks::Now();
   task->task_id = cancelable_task_tracker_.PostTask(
       v8_runners_[thread_index].get(), FROM_HERE,
       base::BindOnce(
@@ -2412,7 +2413,10 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
           /*direct_from_seller_signals_latency=*/
           NullOptIfZero(task->wait_direct_from_seller_signals),
           /*trusted_bidding_signals_latency=*/
-          NullOptIfZero(task->wait_trusted_signals)),
+          NullOptIfZero(task->wait_trusted_signals),
+          /*deps_wait_start_time=*/task->trace_wait_deps_start,
+          /*generate_bid_start_time=*/task->generate_bid_start_time,
+          /*generate_bid_finish_time=*/base::TimeTicks::Now()),
       reject_reason, error_msgs);
   CleanUpBidTaskOnUserThread(task);
 }
