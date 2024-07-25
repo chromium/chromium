@@ -3006,6 +3006,7 @@ GraphBuilderCoreml::InputOperandInfo
 GraphBuilderCoreml::Result::FindModelInputOperandInfo(
     const std::string& input_name) const {
   auto it = input_name_to_id_map.find(input_name);
+  CHECK(it != input_name_to_id_map.end());
   const OperandInfo& input_operand_info = GetOperandInfo(it->second);
   // Some internally generated operands don't have a matching mojom data type,
   // but model inputs all should have valid mojom data types.
