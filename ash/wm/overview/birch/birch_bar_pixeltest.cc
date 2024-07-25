@@ -89,6 +89,7 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
           /*url=*/kTestURL,
           /*shared_time=*/base::Time(), /*device_name=*/u"my device",
           /*backup_icon=*/kTestIcon,
+          /*secondary_icon_type=*/SecondaryIconType::kTabFromDesktop,
           /*activation_callback=*/base::DoNothing()));
       break;
     case BirchItemType::kMostVisited:

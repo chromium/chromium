@@ -185,7 +185,7 @@ class TestSelfShareProvider : public BirchDataProvider {
     std::vector<BirchSelfShareItem> items;
     items.emplace_back(u"guid", u"tab", GURL("http://example.com/"),
                        base::Time::Now(), u"my device", ui::ImageModel(),
-                       base::DoNothing());
+                       SecondaryIconType::kTabFromPhone, base::DoNothing());
     Shell::Get()->birch_model()->SetSelfShareItems(std::move(items));
   }
 };

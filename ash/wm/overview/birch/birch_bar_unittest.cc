@@ -436,6 +436,7 @@ class BirchBarTest : public AshTestBase {
           /*url=*/GURL("https://www.exampletwo.com/"),
           /*shared_time=*/base::Time(), /*device_name=*/u"my device",
           /*backup_icon=*/ui::ImageModel(),
+          /*secondary_icon_type=*/SecondaryIconType::kTabFromDesktop,
           /*activation_callback=*/base::DoNothing());
       item_list.back().set_ranking(1.0f);
     }

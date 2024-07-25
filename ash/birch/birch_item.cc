@@ -174,10 +174,12 @@ PrefService* GetPrefService() {
 
 std::string SecondaryIconTypeToString(SecondaryIconType type) {
   switch (type) {
-    case SecondaryIconType::kTabFromComputer:
-      return "kTabFromComputer";
+    case SecondaryIconType::kTabFromDesktop:
+      return "kTabFromDesktop";
     case SecondaryIconType::kTabFromPhone:
       return "kTabFromPhone";
+    case SecondaryIconType::kTabFromTablet:
+      return "kTabFromTablet";
     case SecondaryIconType::kLostMediaAudio:
       return "kLostMediaAudio";
     case SecondaryIconType::kLostMediaVideo:
@@ -789,18 +791,21 @@ std::u16string BirchMostVisitedItem::GetSubtitle() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BirchSelfShareItem::BirchSelfShareItem(const std::u16string& guid,
-                                       const std::u16string& title,
-                                       const GURL& url,
-                                       const base::Time& shared_time,
-                                       const std::u16string& device_name,
-                                       const ui::ImageModel& backup_icon,
-                                       base::RepeatingClosure callback)
+BirchSelfShareItem::BirchSelfShareItem(
+    const std::u16string& guid,
+    const std::u16string& title,
+    const GURL& url,
+    const base::Time& shared_time,
+    const std::u16string& device_name,
+    const ui::ImageModel& backup_icon,
+    const SecondaryIconType& secondary_icon_type,
+    base::RepeatingClosure callback)
     : BirchItem(title, GetSubtitle(device_name, shared_time)),
       guid_(guid),
       url_(url),
       shared_time_(shared_time),
       backup_icon_(backup_icon),
+      secondary_icon_type_(secondary_icon_type),
       activation_callback_(std::move(callback)) {}
 
 BirchSelfShareItem::BirchSelfShareItem(BirchSelfShareItem&&) = default;
@@ -825,7 +830,8 @@ std::string BirchSelfShareItem::ToString() const {
      << ", Title: " << base::UTF16ToUTF8(title())
      << ", Device Name: " << base::UTF16ToUTF8(subtitle())
      << ", GUID: " << guid_ << ", Shared Time: " << shared_time_
-     << ", URL: " << url_ << "}";
+     << ", URL: " << url_ << ", Secondary Icon Type: "
+     << SecondaryIconTypeToString(secondary_icon_type_) << "}";
   return ss.str();
 }
 

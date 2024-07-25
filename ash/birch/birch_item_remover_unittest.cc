@@ -66,18 +66,22 @@ TEST_F(BirchItemRemoverTest, RemoveTab) {
 }
 
 TEST_F(BirchItemRemoverTest, RemoveSelfShareItems) {
-  BirchSelfShareItem item0(u"item0_guid", u"item0_title",
-                           GURL("https://example.com/0"), base::Time(),
-                           u"device_name", ui::ImageModel(), base::DoNothing());
-  BirchSelfShareItem item1(u"item1_guid", u"item1_title",
-                           GURL("https://example.com/1"), base::Time(),
-                           u"device_name", ui::ImageModel(), base::DoNothing());
-  BirchSelfShareItem item2(u"item2_guid", u"item2_title",
-                           GURL("https://example.com/2"), base::Time(),
-                           u"device_name", ui::ImageModel(), base::DoNothing());
-  BirchSelfShareItem item3(u"item3_guid", u"item3_title",
-                           GURL("https://example.com/3"), base::Time(),
-                           u"device_name", ui::ImageModel(), base::DoNothing());
+  BirchSelfShareItem item0(
+      u"item0_guid", u"item0_title", GURL("https://example.com/0"),
+      base::Time(), u"device_name", ui::ImageModel(),
+      SecondaryIconType::kTabFromDesktop, base::DoNothing());
+  BirchSelfShareItem item1(
+      u"item1_guid", u"item1_title", GURL("https://example.com/1"),
+      base::Time(), u"device_name", ui::ImageModel(),
+      SecondaryIconType::kTabFromDesktop, base::DoNothing());
+  BirchSelfShareItem item2(
+      u"item2_guid", u"item2_title", GURL("https://example.com/2"),
+      base::Time(), u"device_name", ui::ImageModel(),
+      SecondaryIconType::kTabFromDesktop, base::DoNothing());
+  BirchSelfShareItem item3(
+      u"item3_guid", u"item3_title", GURL("https://example.com/3"),
+      base::Time(), u"device_name", ui::ImageModel(),
+      SecondaryIconType::kTabFromDesktop, base::DoNothing());
   std::vector<BirchSelfShareItem> self_share_items = {item0, item1, item2,
                                                       item3};
 

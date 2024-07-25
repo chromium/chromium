@@ -38,12 +38,13 @@ enum class BirchItemType {
 // These values are used to determine which secondary icon to load for the items
 // that contain secondary icons.
 enum class SecondaryIconType {
-  kTabFromComputer,           // Type that links to landscape icon.
-  kTabFromPhone,              // Type that links to portrait icon.
+  kTabFromDesktop,            // Type that links to desktop icon.
+  kTabFromPhone,              // Type that links to phone/portrait icon.
+  kTabFromTablet,             // Type that links to tablet/landscape icon.
   kLostMediaAudio,            // Type that links to audio icon.
   kLostMediaVideo,            // Type that links to media icon.
   kLostMediaVideoConference,  // Type that links to video conference icon.
-  kUnknown,  // An unknwon type where we will not load a secondary icon.
+  kUnknown,  // An unknown type where we will not load a secondary icon.
   kMaxValue = kUnknown,
 };
 
@@ -370,6 +371,7 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
                      const base::Time& shared_time,
                      const std::u16string& device_name,
                      const ui::ImageModel& backup_icon,
+                     const SecondaryIconType& secondary_icon_type,
                      base::RepeatingClosure activation_callback);
   BirchSelfShareItem(BirchSelfShareItem&&);
   BirchSelfShareItem(const BirchSelfShareItem&);
@@ -387,6 +389,9 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
   const std::u16string& guid() const { return guid_; }
   const base::Time& shared_time() const { return shared_time_; }
   const GURL& url() const { return url_; }
+  const SecondaryIconType& secondary_icon_type() const {
+    return secondary_icon_type_;
+  }
 
  private:
   static std::u16string GetSubtitle(const std::u16string& device_name,
@@ -396,6 +401,7 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
   GURL url_;
   base::Time shared_time_;
   ui::ImageModel backup_icon_;
+  SecondaryIconType secondary_icon_type_;
   // `activation_callback_` is triggered when the item is clicked by the user,
   // calling `OnItemPressed()` in `BirchSelfShareProvider` to mark the
   // corresponding `SendTabToSelfEntry` as opened.

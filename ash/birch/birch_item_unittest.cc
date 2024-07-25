@@ -560,6 +560,7 @@ TEST_F(BirchItemTest, SelfShare_PerformAction) {
       /*url=*/GURL("https://www.example.com/"),
       /*shared_time=*/base::Time(), /*device_name=*/u"my device",
       /*backup_icon=*/ui::ImageModel(),
+      /*secondary_icon_type=*/SecondaryIconType::kTabFromDesktop,
       /*activation_callback=*/activation_callback.Get());
   EXPECT_CALL(activation_callback, Run).Times(1);
   item.PerformAction();
@@ -722,6 +723,7 @@ TEST_F(BirchItemIconTest, SelfShare_LoadIcon) {
   const GURL page_url = GURL("https://www.example.com/");
   BirchSelfShareItem item(u"self share guid", u"self share tab", page_url,
                           base::Time(), u"my device", ui::ImageModel(),
+                          SecondaryIconType::kTabFromDesktop,
                           base::DoNothing());
   base::test::TestFuture<const ui::ImageModel&, bool> future;
   item.LoadIcon(future.GetCallback());

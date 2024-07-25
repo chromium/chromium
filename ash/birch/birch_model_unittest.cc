@@ -490,7 +490,8 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   std::vector<BirchSelfShareItem> self_share_item_list;
   self_share_item_list.emplace_back(
       u"self share guid", u"self share tab", GURL("https://www.example.com/"),
-      base::Time(), u"my device", ui::ImageModel(), base::DoNothing());
+      base::Time(), u"my device", ui::ImageModel(),
+      SecondaryIconType::kTabFromDesktop, base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
   std::vector<BirchWeatherItem> weather_item_list;
   weather_item_list.emplace_back(u"cloudy", 70.f, ui::ImageModel());
@@ -562,7 +563,8 @@ TEST_F(BirchModelTest, GetAllItemsDoesNotReturnItemsWithDisabledPrefs) {
   std::vector<BirchSelfShareItem> self_share_item_list;
   self_share_item_list.emplace_back(
       u"self share guid", u"self share tab", GURL("https://www.example.com/"),
-      base::Time(), u"my device", ui::ImageModel(), base::DoNothing());
+      base::Time(), u"my device", ui::ImageModel(),
+      SecondaryIconType::kTabFromDesktop, base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
   std::vector<BirchWeatherItem> weather_item_list;
   weather_item_list.emplace_back(u"cloudy", 70.f, ui::ImageModel());
@@ -913,7 +915,8 @@ TEST_F(BirchModelTest, PostLoginDataFetchTimeout) {
   std::vector<BirchSelfShareItem> self_share_item_list;
   self_share_item_list.emplace_back(
       u"self share guid", u"self share tab", GURL("foo.bar.two"), base::Time(),
-      u"my device", ui::ImageModel(), base::DoNothing());
+      u"my device", ui::ImageModel(), SecondaryIconType::kTabFromDesktop,
+      base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
@@ -1064,7 +1067,8 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   std::vector<BirchSelfShareItem> self_share_item_list;
   self_share_item_list.emplace_back(
       u"self share guid", u"self share tab", GURL("foo.bar.two"), base::Time(),
-      u"my device", ui::ImageModel(), base::DoNothing());
+      u"my device", ui::ImageModel(), SecondaryIconType::kTabFromDesktop,
+      base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
   model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
   model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));
@@ -1612,7 +1616,8 @@ TEST_F(BirchModelTest, DuplicateSelfShareAndRecentTabItem) {
   std::vector<BirchSelfShareItem> self_share_item_list;
   self_share_item_list.emplace_back(
       u"self share guid", u"self share tab", GURL("https://www.example.com/"),
-      base::Time(), u"my device", ui::ImageModel(), base::DoNothing());
+      base::Time(), u"my device", ui::ImageModel(),
+      SecondaryIconType::kTabFromDesktop, base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
 
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
@@ -1692,10 +1697,10 @@ TEST_F(BirchModelTest, DifferentSelfShareAndRecentTabItem) {
   model->SetRecentTabItems(std::move(tab_item_list));
 
   std::vector<BirchSelfShareItem> self_share_item_list;
-  self_share_item_list.emplace_back(u"self share guid", u"self share tab",
-                                    GURL("https://www.exampletwo.com/"),
-                                    base::Time(), u"my device",
-                                    ui::ImageModel(), base::DoNothing());
+  self_share_item_list.emplace_back(
+      u"self share guid", u"self share tab",
+      GURL("https://www.exampletwo.com/"), base::Time(), u"my device",
+      ui::ImageModel(), SecondaryIconType::kTabFromDesktop, base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
 
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
