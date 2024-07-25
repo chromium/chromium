@@ -43,6 +43,7 @@
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/nacl/common/buildflags.h"
+#include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -73,6 +74,8 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/origin.h"
+
+using PageLoadMetricsTestWaiter = page_load_metrics::PageLoadMetricsTestWaiter;
 
 namespace chrome_service_worker_browser_test {
 
@@ -214,6 +217,12 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
     run_loop.Run();
   }
 
+  std::unique_ptr<PageLoadMetricsTestWaiter> CreatePageLoadMetricsTestWaiter() {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    return std::make_unique<PageLoadMetricsTestWaiter>(web_contents);
+  }
+
   base::ScopedTempDir service_worker_dir_;
 };
 
@@ -325,13 +334,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       kInstallAndWaitForActivatedPageWithModuleScript);
 }
 
-// TODO(crbug.com/40882270): The test is flaky. Re-enable it.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_SubresourceCountUKM DISABLED_SubresourceCountUKM
-#else
-#define MAYBE_SubresourceCountUKM SubresourceCountUKM
-#endif
-IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCountUKM) {
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, SubresourceCountUKM) {
   base::RunLoop ukm_loop;
   ukm::TestAutoSetUkmRecorder test_recorder;
   test_recorder.SetOnAddEntryCallback(
@@ -396,21 +399,17 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCountUKM) {
 
   {
     // Navigate to the service worker controlled page.
-    content::TestFrameNavigationObserver observer(
-        browser()->tab_strip_model()->GetActiveWebContents());
+    auto waiter = CreatePageLoadMetricsTestWaiter();
+    waiter->AddPageExpectation(
+        PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL("/subresources.html")));
-    observer.WaitForCommit();
+    waiter->Wait();
   }
 
-  {
-    // Navigate away to record metrics.
-    content::TestFrameNavigationObserver observer(
-        browser()->tab_strip_model()->GetActiveWebContents());
-    ASSERT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-    observer.WaitForCommit();
-  }
+  // Navigate away to record metrics.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Wait until the UKM record has enough entries.
   ukm_loop.Run();
@@ -523,13 +522,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       internal::kHistogramServiceWorkerSubresourceTotalRouterEvaluationTime, 1);
 }
 
-// TODO(crbug.com/40882270): The test is flaky. Re-enable it.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_SubresourceCountUMA DISABLED_SubresourceCountUMA
-#else
-#define MAYBE_SubresourceCountUMA SubresourceCountUMA
-#endif
-IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCountUMA) {
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, SubresourceCountUMA) {
   base::HistogramTester histogram_tester;
 
   WriteFile(FILE_PATH_LITERAL("fallback.css"), "");
@@ -575,8 +568,12 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCountUMA) {
   }
 
   // Navigate to the service worker controlled page.
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+  waiter->AddPageExpectation(
+      PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/subresources.html")));
+  waiter->Wait();
 
   // Navigate away to record metrics.
   ASSERT_TRUE(
