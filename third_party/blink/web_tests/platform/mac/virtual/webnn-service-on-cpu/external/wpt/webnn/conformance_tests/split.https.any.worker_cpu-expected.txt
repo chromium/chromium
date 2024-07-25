@@ -15,7 +15,9 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator split."
 [FAIL] split float32 4D tensor number splits options.axis
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator split."
-[FAIL] split float32 5D tensor array splits options.axis
+[FAIL] split float32 5D tensor array splits=[3, 3] options.axis=2
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator split."
+[FAIL] split float32 5D tensor array splits=[2, 4] options.axis=0
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator split."
 Harness: the test ran to completion.
 

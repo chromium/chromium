@@ -42,7 +42,6 @@ b/328789624 external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disa
 b/328789624 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Pass Crash ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/343515409 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/constant.https.any.worker.html?gpu [ Timeout ]
 crbug.com/343515409 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pad.https.any.worker.html?gpu [ Timeout ]
 crbug.com/343515409 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pooling.https.any.worker.html?gpu [ Timeout ]
 crbug.com/343515409 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/prelu.https.any.worker.html?gpu [ Timeout ]
@@ -58,7 +57,6 @@ crbug.com/338342080 external/wpt/css/filter-effects/backdrop-filter-backdrop-roo
 crbug.com/338122791 external/wpt/css/css-masking/clip-path/clip-path-rotated-will-change-transform.html [ Failure ]
 crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Crash ]
 crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Crash ]
-crbug.com/626703 external/wpt/webnn/conformance_tests/constant.https.any.worker.html?gpu [ Crash Failure ]
 crbug.com/626703 external/wpt/webnn/conformance_tests/expand.https.any.html?gpu [ Crash ]
 crbug.com/626703 external/wpt/webnn/conformance_tests/pad.https.any.worker.html?gpu [ Crash ]
 crbug.com/626703 external/wpt/webnn/conformance_tests/pooling.https.any.worker.html?gpu [ Crash Failure ]

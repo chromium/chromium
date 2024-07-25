@@ -4,7 +4,7 @@
 // META: script=./resources/utils.js
 // META: timeout=long
 
-// https://webmachinelearning.github.io/webnn/
+// https://www.w3.org/TR/webnn/
 
 'use strict';
 

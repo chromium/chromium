@@ -1,6 +1,6 @@
 'use strict';
 
-// https://webmachinelearning.github.io/webnn/#enumdef-mloperanddatatype
+// https://www.w3.org/TR/webnn/#enumdef-mloperanddatatype
 const allWebNNOperandDataTypes = [
   'float32',
   'float16',

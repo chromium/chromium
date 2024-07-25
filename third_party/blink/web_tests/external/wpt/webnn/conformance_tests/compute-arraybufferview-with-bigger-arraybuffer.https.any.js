@@ -17,14 +17,12 @@ if (navigator.ml) {
   let context;
 
   promise_setup(async () => {
-    let supported = false;
     try {
       context = await navigator.ml.createContext(contextOptions);
-      supported = true;
     } catch (e) {
+      throw new AssertionError(
+          `Unable to create context for ${variant} variant. ${e}`);
     }
-    assert_implements(
-        supported, `Unable to create context for ${variant} variant`);
   });
 
   promise_test(async t => {
