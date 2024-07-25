@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("display") {
+  sources = [
+    "display_resolution_handler.cc",
+    "display_resolution_handler.h",
+    "display_rotation_default_handler.cc",
+    "display_rotation_default_handler.h",
+    "display_settings_handler.cc",
+    "display_settings_handler.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//base",
+    "//chromeos/ash/components/settings",
+    "//chromeos/crosapi/mojom",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/bindings:bindings_base",
+    "//ui/display",
+  ]
+}

@@ -4936,6 +4936,7 @@ if (!is_android) {
         "//chrome/browser/ash/platform_keys",
         "//chrome/browser/ash/platform_keys:test_support",
         "//chrome/browser/ash/platform_keys/key_permissions",
+        "//chrome/browser/ash/policy/display",
         "//chrome/browser/ash/policy/reporting/event_based_logs",
         "//chrome/browser/ash/policy/reporting/event_based_logs/event_observers",
         "//chrome/browser/ash/policy/reporting/metrics_reporting",

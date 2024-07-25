@@ -171,6 +171,7 @@ static_library("ash") {
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/display",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/external_data/handlers",
     "//chrome/browser/ash/policy/handlers",
