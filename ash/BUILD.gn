@@ -348,6 +348,8 @@ component("ash") {
     "assistant/assistant_web_ui_controller.h",
     "assistant/assistant_web_view_delegate_impl.cc",
     "assistant/assistant_web_view_delegate_impl.h",
+    "auth/active_session_auth_controller_impl.cc",
+    "auth/active_session_auth_controller_impl.h",
     "auth/views/active_session_auth_view.cc",
     "auth/views/active_session_auth_view.h",
     "auth/views/auth_common.h",

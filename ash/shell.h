@@ -16,6 +16,7 @@
 #include "ash/in_session_auth/in_session_auth_dialog_controller_impl.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/metrics/unlock_throughput_recorder.h"
+#include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system_sounds_delegate.h"
@@ -644,6 +645,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   local_authentication_request_controller() {
     return local_authentication_request_controller_.get();
   }
+  ActiveSessionAuthController* active_session_auth_controller() {
+    return active_session_auth_controller_.get();
+  }
   LoginScreenController* login_screen_controller() {
     return login_screen_controller_.get();
   }
@@ -1104,6 +1108,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ParentAccessController> parent_access_controller_;
   std::unique_ptr<LocalAuthenticationRequestController>
       local_authentication_request_controller_;
+  std::unique_ptr<ActiveSessionAuthController> active_session_auth_controller_;
   std::unique_ptr<PciePeripheralNotificationController>
       pcie_peripheral_notification_controller_;
   std::unique_ptr<PickerController> picker_controller_;
