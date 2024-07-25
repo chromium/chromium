@@ -5105,7 +5105,35 @@ def CheckPydepsNeedsUpdating(input_api, output_api, checker_for_tests=None):
     if results:
         return results
 
-    is_android = _ParseGclientArgs().get('checkout_android', 'false') == 'true'
+    try:
+        parsed_args = _ParseGclientArgs()
+    except FileNotFoundError:
+        message = (
+            'build/config/gclient_args.gni not found. Please make sure your '
+            'workspace has been initialized with gclient sync.'
+        )
+        import sys
+        original_sys_path = sys.path
+        try:
+            sys.path = sys.path + [
+                input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                    'third_party', 'depot_tools')
+            ]
+            import gclient_utils
+            if gclient_utils.IsEnvCog():
+                # Users will always hit this when they run presubmits before cog
+                # workspace initialization finishes. The check shouldn't fail in
+                # this case. This is an unavoidable workaround that's needed for
+                # good presubmit UX for cog.
+                results.append(output_api.PresubmitPromptWarning(message))
+            else:
+                results.append(output_api.PresubmitError(message))
+            return results
+        finally:
+            # Restore sys.path to what it was before.
+            sys.path = original_sys_path
+
+    is_android = parsed_args.get('checkout_android', 'false') == 'true'
     checker = checker_for_tests or PydepsChecker(input_api, _ALL_PYDEPS_FILES)
     affected_pydeps = set(checker.ComputeAffectedPydeps())
     affected_android_pydeps = affected_pydeps.intersection(
