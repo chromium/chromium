@@ -392,6 +392,7 @@ static_library("crosapi") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/screen_ai:screen_ai_install_state",
     "//chrome/browser/ui/ash/keyboard",
+    "//chrome/browser/ui/webui/ash/kerberos",
     "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",
     "//chrome/browser/web_applications",
     "//chrome/common",
