@@ -2804,6 +2804,13 @@
       status: "stable",
     },
     {
+      // Input event data for textarea should not be null for certain
+      // inputTypes.
+      // https://issues.chromium.org/issues/40737336
+      name: "NonNullInputEventDataForTextArea",
+      status: "stable"
+    },
+    {
       // TODO(crbug.com/924486): This feature enables the deprecated values
       // inner-spin-button, push-button, searchfield-cancel-button,
       // slider-horizontal, square-button. Disable this feature to stop

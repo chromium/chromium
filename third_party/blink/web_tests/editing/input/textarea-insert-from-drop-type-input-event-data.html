@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<textarea id="text" cols="60">Dragging and dropping text should set
+  the event.data with the text for inputType insertFromDrop</textarea>
+<script>
+  const text = document.getElementById("text");
+  let eventData;
+  text.addEventListener('input', (evt) => {
+    if(evt.inputType == 'insertFromDrop')
+      eventData = evt.data;
+  });
+  test(function () {
+    text.focus();
+    // Selecting first word of the text.
+    text.setSelectionRange(0, 8);
+    const selectedData = getSelection().toString();
+    // Note drag and drop doesn't work well with pointerActionSequence, so using
+    // eventSender.
+
+    // Move mouse to the start of the text.
+    eventSender.mouseMoveTo((text.offsetLeft + 10), text.offsetTop + 10);
+    eventSender.mouseDown();
+    eventSender.leapForward(500);
+    // Move mouse to the end of the text.
+    eventSender.mouseMoveTo(text.offsetLeft + text.offsetWidth - 10 , text.offsetTop + 10);
+    eventSender.mouseUp();
+    // Event data should now be set with the first word of the text
+    // which is "Dragging".
+    assert_equals(selectedData, "Dragging");
+    assert_equals(eventData, selectedData);
+  }, 'Input event data for inputType insertFromDrop should be set');
+</script>
+</body>
+</html>

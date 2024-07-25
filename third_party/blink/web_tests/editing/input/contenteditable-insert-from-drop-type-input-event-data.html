@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<div contenteditable id="editable" >Dragging and dropping text should should not
+  set the event.data with the selected part for contenteditable</div>
+<script>
+  const editable = document.getElementById("editable");
+  let eventData;
+  let eventFired = false;
+  editable.addEventListener('input', (evt) => {
+    if(evt.inputType == 'insertFromDrop') {
+      eventFired = true;
+      eventData = evt.data;
+    }
+  });
+  test(function () {
+    editable.focus();
+    // Selecting first word of the text.
+    getSelection().setBaseAndExtent(editable.firstChild, 0, editable.firstChild, 8);
+    const selectedData = getSelection().toString();
+    // Note drag and drop doesn't work well with pointerActionSequence, so using
+    // eventSender.
+
+    // Move mouse to the start of the text.
+    eventSender.mouseMoveTo((editable.offsetLeft + 10), editable.offsetTop + 10);
+    eventSender.mouseDown();
+    eventSender.leapForward(500);
+    // Move mouse to the end of the text.
+    eventSender.mouseMoveTo(editable.offsetLeft + editable.offsetWidth - 10 , editable.offsetTop + 10);
+    eventSender.mouseUp();
+    // Event data should NOT be set with the first word of the text
+    // which is "Dragging" in case of contenteditable, it should be null instead.
+    assert_equals(selectedData, "Dragging");
+    assert_equals(eventData, null);
+    assert_true(eventFired);
+  }, 'Input event data for inputType insertFromDrop should not be set for contenteditable');
+</script>
+</body>
+</html>
