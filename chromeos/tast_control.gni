@@ -122,6 +122,9 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.PhysicalKeyboardEmojiSuggestion.incognito_lacros",
   "inputs.PhysicalKeyboardEmojiSuggestion.lacros",
 
+  # b/355351792, tests failing on jacuzzi.
+  "security.SELinuxFilesDataDir.arcvm_user@jacuzzi",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
