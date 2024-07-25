@@ -12,6 +12,7 @@
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/shell.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -222,6 +223,11 @@ void StartUserSession(user_manager::UserManager* user_manager,
     // First user has been already marked as logged in and active in
     // PreProfileInit(). Restore sessions for other users in the background.
     user_session_mgr->RestoreActiveSessions();
+
+    // Chrome restart with existing user sessions and the last active user
+    // profile is loaded. Notify ash to signal post login work done at this
+    // stage for chrome restart.
+    ash::Shell::Get()->login_unlock_throughput_recorder()->OnAshRestart();
   }
 
   if (!is_running_test) {
