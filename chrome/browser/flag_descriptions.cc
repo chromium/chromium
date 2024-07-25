@@ -3559,10 +3559,11 @@ const char kTabGroupsSaveV2Description[] =
     "experimental.";
 
 const char kCompactModeId[] = "compact-mode";
-const char kCompactModeName[] = "Compact mode for the browser";
+const char kCompactModeName[] = "Compact mode for the browser - Prototype";
 const char kCompactModeDescription[] =
-    "Reduces the height of the browser controls (tabstrip, toolbar, bookmarks "
-    "bar, etc.) to allow more space for the web contents";
+    "This feature is a prototype. Reduces the height of the browser controls "
+    "(tabstrip, toolbar, bookmarks bar, etc.) to allow more space for the web "
+    "contents";
 
 const char kTabGroupsSaveUIUpdateId[] = "tab-groups-save-ui-update";
 const char kTabGroupsSaveUIUpdateName[] = "Tab Groups Save UI Update";
