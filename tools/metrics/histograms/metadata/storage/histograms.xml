@@ -560,7 +560,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Storage.FileSystemAccess.RestorePermissionPromptOutcome"
     enum="FileSystemAccessRestorePermissionPromptOutcome"
-    expires_after="2024-09-01">
+    expires_after="2025-09-01">
   <owner>christinesm@chromium.org</owner>
   <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
@@ -570,7 +570,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.FileSystemAccess.ToggleExtendedPermissionOutcome"
-    enum="Boolean" expires_after="2024-09-01">
+    enum="Boolean" expires_after="2025-09-01">
   <owner>christinesm@chromium.org</owner>
   <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
@@ -593,7 +593,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Storage.FileSystemAccess.{OpType}PermissionRequestOutcome.{EntryType}"
-    enum="FileSystemAccessPermissionRequestOutcome" expires_after="2024-09-01">
+    enum="FileSystemAccessPermissionRequestOutcome" expires_after="2025-09-01">
   <owner>asully@chromium.org</owner>
   <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
