@@ -13,6 +13,9 @@ typedef NSString CustomizationSection;
 // The section identifier for the main menu's visibility toggles.
 extern CustomizationSection* const kCustomizationSectionToggles;
 
+// The section identifier for the Discover submenu's links.
+extern CustomizationSection* const kCustomizationSectionDiscoverLinks;
+
 // The identifier for the bottom sheet's initial detent.
 extern NSString* const kBottomSheetDetentIdentifier;
 
@@ -32,6 +35,18 @@ extern NSString* const kCustomizationToggleMostVisitedNavigableIdentifier;
 extern NSString* const kCustomizationToggleMagicStackNavigableIdentifier;
 extern NSString* const kCustomizationToggleDiscoverNavigableIdentifier;
 
+// The identifiers for the Discover page's link cells.
+extern NSString* const kCustomizationLinkFollowingIdentifier;
+extern NSString* const kCustomizationLinkHiddenIdentifier;
+extern NSString* const kCustomizationLinkActivityIdentifier;
+extern NSString* const kCustomizationLinkLearnMoreIdentifier;
+
+// The URLs for the links in the Discover submenu.
+extern const char kDiscoverFollowingURL[];
+extern const char kDiscoverHiddenURL[];
+extern const char kDiscoverActivityURL[];
+extern const char kDiscoverLearnMoreURL[];
+
 // The size of the toggle cell's icon.
 extern const CGFloat kToggleIconPointSize;
 
@@ -48,6 +63,14 @@ enum class CustomizationToggleType : NSInteger {
   kMostVisited,
   kMagicStack,
   kDiscover,
+};
+
+// Enum representing the link cells to navigate to external URLs.
+enum class CustomizationLinkType : NSInteger {
+  kFollowing,
+  kHidden,
+  kActivity,
+  kLearnMore,
 };
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UTILS_HOME_CUSTOMIZATION_CONSTANTS_H_

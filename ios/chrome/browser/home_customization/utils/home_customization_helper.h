@@ -32,6 +32,15 @@
 // Returns the menu page identifier for a given toggle type.
 + (CustomizationMenuPage)menuPageForToggleType:(CustomizationToggleType)type;
 
+// Returns the title text for a given link type.
++ (NSString*)titleForLinkType:(CustomizationLinkType)type;
+
+// Returns the subtitle text for a given link type.
++ (NSString*)subtitleForLinkType:(CustomizationLinkType)type;
+
+// Returns the accessibility identifier for a given link type.
++ (NSString*)accessibilityIdentifierForLinkType:(CustomizationLinkType)type;
+
 // Returns `YES` if the given type supports navigation to a submenu.
 + (BOOL)doesTypeHaveSubmenu:(CustomizationToggleType)type;
 

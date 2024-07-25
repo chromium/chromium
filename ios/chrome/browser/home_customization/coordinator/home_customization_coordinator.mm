@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 
 @interface HomeCustomizationCoordinator () <
     HomeCustomizationNavigationDelegate,
@@ -52,8 +54,12 @@
       initWithPrefService:ChromeBrowserState::FromBrowserState(
                               self.browser->GetBrowserState())
                               ->GetPrefs()];
+
   _mainViewController.mutator = _mediator;
+  _discoverViewController.mutator = _mediator;
+
   _mediator.mainPageConsumer = _mainViewController;
+  _mediator.discoverPageConsumer = _discoverViewController;
   _mediator.navigationDelegate = self;
 
   [super start];
@@ -115,7 +121,6 @@
 
 #pragma mark - HomeCustomizationNavigationDelegate
 
-// Navigates to a given page within the customization menu.
 - (void)navigateToPage:(CustomizationMenuPage)page {
   switch (page) {
     case CustomizationMenuPage::kMain:
@@ -130,10 +135,19 @@
     case CustomizationMenuPage::kDiscover:
       [self.navigationController pushViewController:self.discoverViewController
                                            animated:YES];
+      [self.mediator configureDiscoverPageData];
       break;
     case CustomizationMenuPage::kUnknown:
       NOTREACHED_NORETURN();
   }
+}
+
+- (void)navigateToURL:(GURL)URL {
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)
+      ->Load(UrlLoadParams::InCurrentTab(URL));
+  [self.mainViewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

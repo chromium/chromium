@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @implementation HomeCustomizationHelper
 
@@ -75,6 +77,45 @@
       return CustomizationMenuPage::kDiscover;
     default:
       return CustomizationMenuPage::kUnknown;
+  }
+}
+
++ (NSString*)titleForLinkType:(CustomizationLinkType)type {
+  switch (type) {
+    case CustomizationLinkType::kFollowing:
+      return l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_FOLLOWING_TEXT);
+    case CustomizationLinkType::kHidden:
+      return l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_HIDDEN_TEXT);
+    case CustomizationLinkType::kActivity:
+      return l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_ACTIVITY_TEXT);
+    case CustomizationLinkType::kLearnMore:
+      return l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_MENU_LEARN_MORE_ITEM);
+  }
+}
+
++ (NSString*)subtitleForLinkType:(CustomizationLinkType)type {
+  switch (type) {
+    case CustomizationLinkType::kFollowing:
+      return l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_FOLLOWING_DETAIL);
+    case CustomizationLinkType::kHidden:
+      return l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_HIDDEN_DETAIL);
+    case CustomizationLinkType::kActivity:
+      return l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_ACTIVITY_DETAIL);
+    case CustomizationLinkType::kLearnMore:
+      return nil;
+  }
+}
+
++ (NSString*)accessibilityIdentifierForLinkType:(CustomizationLinkType)type {
+  switch (type) {
+    case CustomizationLinkType::kFollowing:
+      return kCustomizationLinkFollowingIdentifier;
+    case CustomizationLinkType::kHidden:
+      return kCustomizationLinkHiddenIdentifier;
+    case CustomizationLinkType::kActivity:
+      return kCustomizationLinkActivityIdentifier;
+    case CustomizationLinkType::kLearnMore:
+      return kCustomizationLinkLearnMoreIdentifier;
   }
 }
 

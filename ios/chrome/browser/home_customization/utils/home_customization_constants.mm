@@ -7,6 +7,9 @@
 CustomizationSection* const kCustomizationSectionToggles =
     @"CustomizationSectionToggles";
 
+CustomizationSection* const kCustomizationSectionDiscoverLinks =
+    @"CustomizationSectionDiscoverLinks";
+
 NSString* const kBottomSheetDetentIdentifier = @"BottomSheetDetentIdentifier";
 
 NSString* const kNavigationBarDismissButtonIdentifier =
@@ -28,5 +31,23 @@ NSString* const kCustomizationToggleMagicStackNavigableIdentifier =
     @"CustomizationToggleMagicStackNavigableIdentifier";
 NSString* const kCustomizationToggleDiscoverNavigableIdentifier =
     @"CustomizationToggleDiscoverNavigableIdentifier";
+
+NSString* const kCustomizationLinkFollowingIdentifier =
+    @"CustomizationLinkFollowingIdentifier";
+NSString* const kCustomizationLinkHiddenIdentifier =
+    @"CustomizationLinkHiddenIdentifier";
+NSString* const kCustomizationLinkActivityIdentifier =
+    @"CustomizationLinkActivityIdentifier";
+NSString* const kCustomizationLinkLearnMoreIdentifier =
+    @"CustomizationLinkLearnMoreIdentifier";
+
+const char kDiscoverFollowingURL[] =
+    "https://google.com/preferences/interests/yourinterests";
+const char kDiscoverHiddenURL[] =
+    "https://google.com/preferences/interests/hidden";
+const char kDiscoverActivityURL[] =
+    "https://myactivity.google.com/myactivity?product=50";
+const char kDiscoverLearnMoreURL[] = "https://support.google.com/chrome/"
+                                     "?p=new_tab&co=GENIE.Platform%3DiOS&oco=1";
 
 const CGFloat kToggleIconPointSize = 18;

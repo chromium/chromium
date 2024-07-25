@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 
+@protocol HomeCustomizationDiscoverConsumer;
 @protocol HomeCustomizationMainConsumer;
 @protocol HomeCustomizationNavigationDelegate;
 class PrefService;
@@ -25,12 +26,19 @@ class PrefService;
 // A consumer representing the main page's view controller.
 @property(nonatomic, weak) id<HomeCustomizationMainConsumer> mainPageConsumer;
 
+// A consumer representing the Discover page's view controller.
+@property(nonatomic, weak) id<HomeCustomizationDiscoverConsumer>
+    discoverPageConsumer;
+
 // The delegate which handles navigations within the menu.
 @property(nonatomic, weak) id<HomeCustomizationNavigationDelegate>
     navigationDelegate;
 
 // Sets the data for the main page's cells and sends it to the `consumer`.
 - (void)configureMainPageData;
+
+// Sets the data for the Discover page's cells and sends it to the `consumer`.
+- (void)configureDiscoverPageData;
 
 @end
 

@@ -230,7 +230,7 @@ const CGFloat kSpacingBetweenToggles = 12;
 
 #pragma mark - Helpers
 
-// Returns an array of identifiers for a vector of toggle types, which can be
+// Returns an array of identifiers for a map of toggle types, which can be
 // used by the snapshot.
 - (NSMutableArray<NSNumber*>*)identifiersForToggleMap:
     (std::map<CustomizationToggleType, BOOL>)types {
