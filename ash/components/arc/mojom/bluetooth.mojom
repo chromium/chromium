@@ -174,7 +174,7 @@ struct BluetoothGattValue {
 const int8 kUnknownPower = 127;
 
 // Copied from Android Bluetooth package. See AdvertiseManager$AdvertiseNative
-// http://goo.gl/UnKC5N
+// https://android.googlesource.com/platform/packages/apps/Bluetooth/+/master/src/com/android/bluetooth/gatt/AdvertiseManager.java
 enum BluetoothAdvertisementType {
   ADV_TYPE_CONNECTABLE = 0,
   ADV_TYPE_SCANNABLE = 2,
