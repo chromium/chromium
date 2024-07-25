@@ -6,6 +6,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/testing",
 
     # Dependencies.
+    "+base/base_switches.h",
     "+base/path_service.h",
     "+base/process",
     "+base/task/single_thread_task_executor.h",

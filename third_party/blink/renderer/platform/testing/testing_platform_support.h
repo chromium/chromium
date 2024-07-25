@@ -39,6 +39,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -170,6 +171,7 @@ class ScopedUnittestsEnvironmentSetup final {
   ~ScopedUnittestsEnvironmentSetup();
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::TestDiscardableMemoryAllocator>
       discardable_memory_allocator_;
   std::unique_ptr<Platform> dummy_platform_;
