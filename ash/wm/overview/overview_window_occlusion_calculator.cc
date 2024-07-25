@@ -9,6 +9,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace ash {
 
@@ -29,6 +30,8 @@ void OverviewWindowOcclusionCalculator::OnOverviewModeWillStart() {
   if (!features::IsDeskBarWindowOcclusionOptimizationEnabled()) {
     return;
   }
+  base::ScopedUmaHistogramTimer timer(
+      "Ash.Overview.WindowOcclusionCalculator.EnterLatency");
   calculator_.emplace();
   // Compute initial occlusion state of all desk's windows before occlusion
   // calculations are paused at the end of this method. Without this, the
@@ -67,6 +70,8 @@ void OverviewWindowOcclusionCalculator::OnOverviewModeEnding(
   // bar is going to be destroyed imminently, and they slow down overview exit
   // so the calculator is destroyed early here.
   if (calculator_) {
+    base::ScopedUmaHistogramTimer timer(
+        "Ash.Overview.WindowOcclusionCalculator.ExitLatency");
     calculator_->RemoveObserver(this);
     calculator_.reset();
   }

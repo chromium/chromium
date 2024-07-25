@@ -6300,6 +6300,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Overview.WindowOcclusionCalculator.EnterLatency"
+    units="ms" expires_after="2024-11-25">
+  <owner>esum@google.com</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Records the amount of time window occlusion calculations take when entering
+    overview mode. The window occlusion calculations are used to optimize the
+    desk bar that appears as part of overview mode. Recorded every time overview
+    mode is opened and the DeskBarWindowOcclusionOptimizationEnabled experiment
+    flag is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.WindowOcclusionCalculator.ExitLatency" units="ms"
+    expires_after="2024-11-25">
+  <owner>esum@google.com</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Records the amount of time window occlusion calculations take when exiting
+    overview mode. The window occlusion calculations are used to optimize the
+    desk bar that appears as part of overview mode. Recorded every time overview
+    mode is closed and the DeskBarWindowOcclusionOptimizationEnabled experiment
+    flag is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Peripheral.ConnectivityResults"
     enum="PeripheralConnectivityResult" expires_after="2024-08-21">
   <owner>jimmyxgong@chromium.org</owner>
