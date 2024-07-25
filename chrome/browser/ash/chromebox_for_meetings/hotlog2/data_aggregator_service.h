@@ -7,8 +7,8 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/command_source.h"
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/log_source.h"
-#include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_adaptor.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom-shared.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_info.mojom.h"
@@ -26,7 +26,7 @@ namespace ash::cfm {
 // This is also the class that exposes its API over hotline for
 // external clients to communicate with.
 class DataAggregatorService : public CfmObserver,
-                              public ServiceAdaptor::Delegate,
+                              public chromeos::cfm::ServiceAdaptor::Delegate,
                               public mojom::DataAggregator {
  public:
   DataAggregatorService();
@@ -46,7 +46,7 @@ class DataAggregatorService : public CfmObserver,
   // CfmObserver:
   bool ServiceRequestReceived(const std::string& interface_name) override;
 
-  // ServiceAdaptorDelegate:
+  // chromeos::cfm::ServiceAdaptor::Delegate:
   void OnAdaptorDisconnect() override;
   void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe) override;
 
@@ -95,7 +95,7 @@ class DataAggregatorService : public CfmObserver,
   void HandleEnqueueResponse(const std::string& source_name,
                              chromeos::cfm::mojom::LoggerStatusPtr status);
 
-  ServiceAdaptor service_adaptor_;
+  chromeos::cfm::ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<mojom::DataAggregator> receivers_;
 
   base::RepeatingTimer fetch_timer_;
