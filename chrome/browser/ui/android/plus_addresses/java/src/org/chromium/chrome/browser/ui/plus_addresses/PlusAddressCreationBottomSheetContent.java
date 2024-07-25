@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -100,7 +101,7 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         mPlusAddressConfirmButton.setText(plusAddressModalOkText);
         mPlusAddressConfirmButton.setOnClickListener(
                 (View _view) -> {
-                    showLoadingIndicator();
+                    showConfirmationLoadingState();
                     mDelegate.onConfirmRequested();
                 });
 
@@ -139,6 +140,15 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
     public void setProposedPlusAddress(String proposedPlusAddress) {
         mProposedPlusAddress.setText(proposedPlusAddress);
         mPlusAddressConfirmButton.setEnabled(true);
+    }
+
+    /** Adjusts the UI to show the loading state for confirming the proposed plus address. */
+    public void showConfirmationLoadingState() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_LOADING_STATES_ANDROID)) {
+            // This also changes the color of the refresh icon to disabled.
+            mRefreshIcon.setEnabled(false);
+        }
+        showLoadingIndicator();
     }
 
     public void showError() {

@@ -33,6 +33,8 @@ android_library("java") {
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
@@ -43,6 +45,7 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/color/refresh_plus_address_icon_tint_list.xml",
     "java/res/drawable/proposed_plus_address_background.xml",
     "java/res/layout/all_plus_addresses_bottom_sheet.xml",
     "java/res/layout/plus_address_creation_prompt.xml",

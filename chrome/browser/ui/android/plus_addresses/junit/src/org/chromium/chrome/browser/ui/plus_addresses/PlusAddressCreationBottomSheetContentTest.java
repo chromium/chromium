@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -29,6 +30,9 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.ui.base.TestActivity;
@@ -328,6 +332,7 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.PLUS_ADDRESS_LOADING_STATES_ANDROID})
     public void testOnConfirmButtonClicked_callsDelegateOnConfirmRequested() {
         Button modalConfirmButton =
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
@@ -338,6 +343,27 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.PLUS_ADDRESS_LOADING_STATES_ANDROID})
+    public void testOnConfirmButtonClicked_setsRefreshIconToDisabledColor() {
+        Button modalConfirmButton =
+                mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
+        modalConfirmButton.callOnClick();
+
+        ImageView refreshIcon =
+                mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
+        Assert.assertFalse(refreshIcon.isEnabled());
+
+        verify(mDelegate).onConfirmRequested();
+
+        // Clicking the refresh icon while the confirmation is ongoing does not
+        // call the delegate.
+        refreshIcon.callOnClick();
+        verify(mDelegate, never()).onRefreshClicked();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.PLUS_ADDRESS_LOADING_STATES_ANDROID})
     public void testOnConfirmButtonClicked_showsLoadingIndicator() {
         Assert.assertFalse(mBottomSheetContent.showsLoadingIndicatorForTesting());
         // Show the loading indicator once we click the Confirm button.
