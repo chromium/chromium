@@ -5467,6 +5467,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/launcher_internals",
       "//chrome/browser/ui/webui/ash/mako",
       "//chrome/browser/ui/webui/ash/manage_mirrorsync",
+      "//chrome/browser/ui/webui/ash/multidevice_setup",
       "//chrome/browser/ui/webui/ash/office_fallback",
       "//chrome/browser/ui/webui/ash/parent_access",
       "//chrome/browser/ui/webui/ash/sensor_info",
@@ -5806,6 +5807,7 @@ static_library("browser") {
       "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/ash/user_education",
       "//chrome/browser/ui/webui/ash/emoji",
+      "//chrome/browser/ui/webui/ash/multidevice_setup",
       "//chrome/browser/ui/webui/ash/parent_access",
       "//chrome/browser/ui/webui/ash/sensor_info",
     ]
