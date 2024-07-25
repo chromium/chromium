@@ -400,6 +400,9 @@ public final class ProductionSupportedFlagList {
                 "Automatically darken page if"
                         + " WebView is set to FORCE_DARK_AUTO and the app has dark theme"),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_FRAME_RATE_HINTS,
+                "Provide frame rate hints to View system if supported by OS"),
+        Flag.baseFeature(
                 ContentFeatures.VERIFY_DID_COMMIT_PARAMS,
                 "Enables reporting of browser and renderer navigation inconsistencies on"
                         + "navigations"),

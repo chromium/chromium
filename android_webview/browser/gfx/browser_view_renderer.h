@@ -88,6 +88,8 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   bool OnDrawHardware();
   bool OnDrawSoftware(SkCanvas* canvas);
 
+  float GetVelocityInPixelsPerSecond();
+
   bool NeedToDrawBackgroundColor();
 
   // CapturePicture API methods.

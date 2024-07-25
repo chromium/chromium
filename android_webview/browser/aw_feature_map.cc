@@ -27,6 +27,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewDisplayCutout,
     &features::kWebViewDragDropFiles,
     &features::kWebViewExitReasonMetric,
+    &features::kWebViewFrameRateHints,
     &features::kWebViewInvokeZoomPickerOnGSU,
     &features::kWebViewMixedContentAutoupgrades,
     &features::kWebViewTestFeature,

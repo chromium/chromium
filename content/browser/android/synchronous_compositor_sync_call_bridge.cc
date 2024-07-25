@@ -157,8 +157,9 @@ void SynchronousCompositorSyncCallBridge::BeginFrameCompleteOnUIThread() {
       render_params = last_render_params_.Clone();
     }
   }
-  if (render_params)
-    host_->UpdateState(std::move(render_params));
+  if (render_params) {
+    host_->BeginFrameComplete(std::move(render_params));
+  }
 }
 
 void SynchronousCompositorSyncCallBridge::ProcessFrameMetadataOnUIThread(

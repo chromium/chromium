@@ -151,6 +151,7 @@ class AwContents : public FindHelper::Listener,
               jint visible_right,
               jint visible_bottom,
               jboolean force_auxiliary_bitmap_rendering);
+  jfloat GetVelocityInPixelsPerSecond(JNIEnv* env);
   bool NeedToDrawBackgroundColor(JNIEnv* env);
   jlong CapturePicture(JNIEnv* env, int width, int height);
   void EnableOnNewPicture(JNIEnv* env, jboolean enabled);

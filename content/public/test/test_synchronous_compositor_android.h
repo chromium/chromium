@@ -45,6 +45,7 @@ class CONTENT_EXPORT TestSynchronousCompositor : public SynchronousCompositor {
                                   uint32_t frame_token) override {}
   bool DemandDrawSw(SkCanvas* canvas, bool software_canvas) override;
   void SetMemoryPolicy(size_t bytes_limit) override {}
+  float GetVelocityInPixelsPerSecond() override;
   void DidBecomeActive() override {}
   void DidChangeRootLayerScrollOffset(const gfx::PointF& root_offset) override {
   }

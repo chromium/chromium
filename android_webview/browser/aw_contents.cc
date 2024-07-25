@@ -1098,6 +1098,10 @@ bool AwContents::OnDraw(JNIEnv* env,
   return browser_view_renderer_.OnDrawSoftware(canvas_holder->GetCanvas());
 }
 
+jfloat AwContents::GetVelocityInPixelsPerSecond(JNIEnv* env) {
+  return browser_view_renderer_.GetVelocityInPixelsPerSecond();
+}
+
 bool AwContents::NeedToDrawBackgroundColor(JNIEnv* env) {
   return browser_view_renderer_.NeedToDrawBackgroundColor();
 }
