@@ -39,6 +39,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
@@ -88,13 +89,7 @@ class TextContainer : public views::View {
     title_ =
         AddChildView(CreateLabel(title, views::style::STYLE_BODY_4_MEDIUM));
 
-#if BUILDFLAG(IS_MAC)
-    // We cannot focus on Mac dialog buttons normally so the rows should only be
-    // accessible while screen reader is active.
-    SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-#else
-    SetFocusBehavior(FocusBehavior::ALWAYS);
-#endif  // BUILDFLAG(IS_MAC)
+    SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
