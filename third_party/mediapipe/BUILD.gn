@@ -259,6 +259,7 @@ tflite_source_set("mediapipe_core_always_link") {
     "//build/config/compiler:no_chromium_code",
     ":mediapipe_flags",
     ":mediapipe_config",
+    ":mediapipe_internal_config",
   ]
 
   if (mediapipe_build_with_gpu_support) {
