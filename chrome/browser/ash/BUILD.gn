@@ -357,6 +357,7 @@ static_library("ash") {
     "//chrome/browser/policy:onc",
     "//chrome/browser/sync",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/webui/ash/skyvault",
     "//chrome/browser/web_applications",
   ]
 
@@ -1074,6 +1075,7 @@ static_library("ash") {
     "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings_shared",
     "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings",
     "//chrome/browser/ui/webui/ash/emoji",
+    "//chrome/browser/ui/webui/ash/skyvault",
     "//chrome/browser/webshare:storage",
     "//chrome/common:channel_info",
     "//chrome/common:non_code_constants",

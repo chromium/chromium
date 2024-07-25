@@ -44,6 +44,7 @@ static_library("skyvault") {
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/skyvault",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chromeos/ash/components/drivefs",
@@ -66,6 +67,7 @@ static_library("skyvault") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ui/webui/ash/skyvault",
   ]
 }
 

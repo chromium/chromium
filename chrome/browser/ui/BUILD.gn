@@ -2546,10 +2546,6 @@ static_library("ui") {
       "webui/ash/login/remote_activity_notification_screen_handler.h",
       "webui/ash/os_feedback_dialog.cc",
       "webui/ash/os_feedback_dialog.h",
-      "webui/ash/skyvault/local_files_migration_dialog.cc",
-      "webui/ash/skyvault/local_files_migration_dialog.h",
-      "webui/ash/skyvault/local_files_migration_ui.cc",
-      "webui/ash/skyvault/local_files_migration_ui.h",
 
       # Template used by the `tools/oobe/generate_screen_template.py` script.
       "webui/ash/login/placeholder_screen_handler.cc",
@@ -3185,6 +3181,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/user_education",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/ash/emoji",
+      "//chrome/browser/ui/webui/ash/skyvault",
       "//chrome/browser/ui/webui/ash/sys_internals",
       "//chrome/browser/ui/webui/ash/vc_tray_tester",
       "//chrome/browser/web_applications",
@@ -3551,6 +3548,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/ash/user_education",
       "//chrome/browser/ui/webui/ash/emoji",
+      "//chrome/browser/ui/webui/ash/skyvault",
     ]
 
     if (is_chrome_branded) {
