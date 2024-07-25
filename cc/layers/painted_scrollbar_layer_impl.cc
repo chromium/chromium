@@ -273,7 +273,7 @@ void PaintedScrollbarLayerImpl::AppendNinePatchScaledTrackAndButtons(
     track_and_buttons_patch_generator_.CheckGeometryLimitations();
     track_and_buttons_patches_ =
         track_and_buttons_patch_generator_.GeneratePatches();
-    gfx::Vector2dF offset = track_and_buttons_quad_rect.OffsetFromOrigin();
+    gfx::Vector2d offset = track_and_buttons_quad_rect.OffsetFromOrigin();
     for (auto& patch : track_and_buttons_patches_) {
       patch.output_rect += offset;
     }

@@ -79,11 +79,6 @@ void NinePatchLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
 
   std::vector<NinePatchGenerator::Patch> patches =
       quad_generator_.GeneratePatches();
-
-  for (auto& patch : patches)
-    patch.output_rect =
-        gfx::RectF(gfx::ToFlooredRectDeprecated(patch.output_rect));
-
   quad_generator_.AppendQuadsForCc(this, ui_resource_id_, render_pass,
                                    shared_quad_state, patches);
 }

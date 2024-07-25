@@ -252,7 +252,7 @@ TEST(NinePatchLayerImplTest, VerifyDrawQuads) {
   aperture_rect = gfx::Rect(20, 30, 40, 50);
   border = gfx::Rect(20, 30, 40, 50);
   fill_center = true;
-  expected_quad_size = 9;
+  expected_quad_size = 3;
   NinePatchLayerLayoutTest(bitmap_size, aperture_rect, layer_size, border,
                            fill_center, expected_quad_size);
 }
