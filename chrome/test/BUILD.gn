@@ -11438,7 +11438,6 @@ if (!is_android && !is_chromeos_device) {
       if (is_chromeos_ash) {
         sources += [
           "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc",
-          "../browser/ui/webui/ash/firmware_update_ui/integration_tests/firmware_update_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/device_page/device_settings_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/privacy_hub_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/pages/device/integration_tests/audio_page_interactive_uitest.cc",
@@ -11456,7 +11455,6 @@ if (!is_android && !is_chromeos_device) {
           "//ash:interactive_ui_test_support",
           "//ash/webui/print_management:print_management",
           "//chrome/browser/apps/app_service",
-          "//chrome/browser/ash:interactive_ui_tests",
           "//chrome/browser/ash/accessibility",
           "//chrome/browser/ash/accessibility:test_support",
           "//chrome/browser/ash/app_restore",
@@ -11468,10 +11466,7 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ash/system_web_apps/test_support",
           "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
           "//chrome/browser/ui/ash",
-          "//chrome/browser/ui/ash:interactive_ui_tests",
           "//chrome/browser/ui/ash/multi_user",
-          "//chrome/browser/ui/webui/ash/shortcut_customization/integration_tests:interactive_ui_tests",
-          "//chrome/test/base/ash/interactive:interactive_ui_tests",
           "//chrome/test/base/ash/interactive:test_support",
           "//chromeos/ash/components/dbus/fwupd",
           "//chromeos/ash/components/fwupd",
@@ -11481,6 +11476,13 @@ if (!is_android && !is_chromeos_device) {
           "//ui/chromeos",
           "//ui/events/devices",
           "//ui/events/devices:test_support",
+
+          # Gather tests from other build files:
+          "//chrome/browser/ash:interactive_ui_tests",
+          "//chrome/browser/ui/ash:interactive_ui_tests",
+          "//chrome/browser/ui/webui/ash/firmware_update_ui/integration_tests:interactive_ui_tests",
+          "//chrome/browser/ui/webui/ash/shortcut_customization/integration_tests:interactive_ui_tests",
+          "//chrome/test/base/ash/interactive:interactive_ui_tests",
         ]
       } else {
         sources += [
