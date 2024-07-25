@@ -332,6 +332,10 @@ suite('AppearanceHandler', function() {
   // </if>
 
   test('openCustomizeChrome', function() {
+    loadTimeData.overrideValues({
+      toolbarPinningEnabled: true,
+    });
+    createAppearancePage();
     const button =
         appearancePage.shadowRoot!.querySelector<HTMLElement>('#openTheme');
     assertTrue(!!button);
