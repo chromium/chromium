@@ -121,9 +121,11 @@ bool WmShadowControllerDelegate::ShouldUpdateShadowOnWindowPropertyChange(
     const aura::Window* window,
     const void* key,
     intptr_t old) {
-  return key == chromeos::kWindowStateTypeKey &&
-         window->GetProperty(chromeos::kWindowStateTypeKey) !=
-             static_cast<chromeos::WindowStateType>(old);
+  return (key == chromeos::kIsShowingInOverviewKey &&
+          window->GetProperty(chromeos::kIsShowingInOverviewKey) != old) ||
+         (key == chromeos::kWindowStateTypeKey &&
+          window->GetProperty(chromeos::kWindowStateTypeKey) !=
+              static_cast<chromeos::WindowStateType>(old));
 }
 
 void WmShadowControllerDelegate::ApplyColorThemeToWindowShadow(
