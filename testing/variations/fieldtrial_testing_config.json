@@ -1151,6 +1151,21 @@
             ]
         }
     ],
+    "AshSessionRestoreDeferOccludedActiveTabLoad": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AshSessionRestoreDeferOccludedActiveTabLoad"
+                    ]
+                }
+            ]
+        }
+    ],
     "AssistMultiWord": [
         {
             "platforms": [
