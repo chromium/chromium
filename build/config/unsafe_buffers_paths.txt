@@ -51,7 +51,6 @@
 # See `docs/unsafe_buffers.md`.
 
 -android_webview/
--apps/
 -ash/
 -base/allocator
 -base/third_party
@@ -110,36 +109,25 @@
 -courgette/
 -crypto/
 -data/
--device/
--docs/
 -fuchsia_web/
 -gin/
 -google_apis/
--google_update/
 -gpu/
--headless/
--infra/
--internal/
 -ios/
 -ios_internal/
--ipc/
 -media/
 -native_client/
--native_client_sdk/
 -net/third_party/
--ppapi/
 -printing/
 -remoting/
--sandbox/
+-sandbox/linux/seccomp-bpf-helpers/
+-sandbox/win/fuzzer/
 -services/accessibility
 -services/data_decoder
 -services/shape_detection
 -services/tracing/public/cpp/perfetto/
--signing_keys/
--skia/
 -sql/
--storage/
--testing/
+-testing/iossim/
 -third_party/
 +third_party/blink/
 -tools/
