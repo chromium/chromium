@@ -680,26 +680,6 @@ TEST_F(L10nUtilTest, PlatformLocalesIsSorted) {
   }
 }
 
-TEST_F(L10nUtilTest, AcceptLocalesIsSorted) {
-  // Accept-Language List should be sorted and have no duplicates.
-  const char* const* locales = l10n_util::GetAcceptLanguageListForTesting();
-  const size_t locales_size = l10n_util::GetAcceptLanguageListSizeForTesting();
-
-  // All 0-length and 1-length lists are sorted.
-  if (locales_size <= 1) {
-    return;
-  }
-
-  const char* last_locale = locales[0];
-  for (size_t i = 1; i < locales_size; i++) {
-    const char* cur_locale = locales[i];
-    EXPECT_LT(strcmp(last_locale, cur_locale), 0)
-        << "Incorrect ordering in kPlatformLocales: " << last_locale
-        << " >= " << cur_locale;
-    last_locale = cur_locale;
-  }
-}
-
 TEST_F(L10nUtilTest, IsPossibleAcceptLanguage) {
   EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("en"));
   EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("en-CA"));

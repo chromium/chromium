@@ -225,12 +225,8 @@ TEST(LocaleChangeGuardTest, ShowNotificationLocaleChanged) {
 }
 
 TEST(LocaleChangeGuardTest, ShowNotificationLocaleChangedList) {
-  for (size_t i = 0; i < l10n_util::GetAcceptLanguageListSizeForTesting();
-       ++i) {
-    const char* const locale = l10n_util::GetAcceptLanguageListForTesting()[i];
-    const char* const dash = strchr(locale, '-');
-    const std::string language =
-        (dash ? std::string(locale, dash - locale) : std::string(locale));
+  for (std::string_view locale : l10n_util::GetAcceptLanguageListForTesting()) {
+    const std::string language = std::string(locale, 0, locale.find('-'));
 
     const bool notification_allowed =
         kShowNotificationLanguages.contains(language);
