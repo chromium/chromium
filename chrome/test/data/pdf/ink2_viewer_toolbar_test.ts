@@ -5,7 +5,7 @@
 import {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertShowAnnotationsButton, createMockPdfPluginForTest, enterFullscreenWithUserGesture, finishInkStroke, getRequiredElement} from './test_util.js';
+import {assertCheckboxMenuButton, createMockPdfPluginForTest, enterFullscreenWithUserGesture, finishInkStroke, getRequiredElement, openToolbarMenu} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
@@ -26,33 +26,40 @@ chrome.test.runTests([
   },
   // Test that toggling annotation mode does not affect displaying annotations.
   function testTogglingAnnotationModeDoesNotAffectDisplayAnnotations() {
+    // The menu needs to be open to check for visible menu elements.
+    openToolbarMenu(viewerToolbar);
+
     // Start the test with annotation mode disabled and annotations displayed.
     chrome.test.assertFalse(viewerToolbar.annotationMode);
     const showAnnotationsButton =
         getRequiredElement(viewerToolbar, '#show-annotations-button');
-    assertShowAnnotationsButton(showAnnotationsButton, true);
+    assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, true);
 
     // Enabling and disabling annotation mode shouldn't affect displaying
     // annotations.
     viewerToolbar.toggleAnnotation();
     chrome.test.assertTrue(viewerToolbar.annotationMode);
-    assertShowAnnotationsButton(showAnnotationsButton, true);
+    assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, true);
     viewerToolbar.toggleAnnotation();
     chrome.test.assertFalse(viewerToolbar.annotationMode);
-    assertShowAnnotationsButton(showAnnotationsButton, true);
+    assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, true);
 
     // Hide annotations.
     showAnnotationsButton.click();
-    assertShowAnnotationsButton(showAnnotationsButton, false);
+
+    // Clicking the button closes the menu, so re-open it.
+    openToolbarMenu(viewerToolbar);
+
+    assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, false);
 
     // Enabling and disabling annotation mode shouldn't affect displaying
     // annotations.
     viewerToolbar.toggleAnnotation();
     chrome.test.assertTrue(viewerToolbar.annotationMode);
-    assertShowAnnotationsButton(showAnnotationsButton, false);
+    assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, false);
     viewerToolbar.toggleAnnotation();
     chrome.test.assertFalse(viewerToolbar.annotationMode);
-    assertShowAnnotationsButton(showAnnotationsButton, false);
+    assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, false);
     chrome.test.succeed();
   },
   // Test that toggling annotation mode sends a message to the PDF content.

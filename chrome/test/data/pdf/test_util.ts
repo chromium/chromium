@@ -4,7 +4,7 @@
 
 // Utilities that are used in multiple tests.
 
-import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
 import type {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
@@ -12,7 +12,7 @@ import {PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojof
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 export class MockElement {
   dir: string = '';
@@ -306,15 +306,48 @@ export function createWheelEvent(
 }
 
 /**
- * Check that the show-annotations button matches the `enabled` state.
- * @param button The show-annotations button.
- * @param enabled Whether annotations should be displayed or not.
+ * Helper to always get a non-null child element of `parent`. The element must
+ * exist.
+ * @param parent The parent to get the child element from.
+ * @param query  The query to get the child element.
+ * @returns A non-null element that matches `query`.
  */
-export function assertShowAnnotationsButton(
-    button: HTMLElement, enabled: boolean) {
+export function getRequiredElement<K extends keyof HTMLElementTagNameMap>(
+    parent: HTMLElement, query: K): HTMLElementTagNameMap[K];
+export function getRequiredElement<E extends HTMLElement = HTMLElement>(
+    parent: HTMLElement, query: string): E;
+export function getRequiredElement(parent: HTMLElement, query: string) {
+  const element = parent.shadowRoot!.querySelector(query);
+  assert(element);
+  return element;
+}
+
+/**
+ * Open the toolbar menu. Does nothing if the menu is already open.
+ * @param toolbar The toolbar containing the menu to open.
+ */
+export function openToolbarMenu(toolbar: ViewerToolbarElement) {
+  const menu = toolbar.$.menu;
+  if (menu.open) {
+    return;
+  }
+
+  getRequiredElement(toolbar, '#more').click();
+  assert(menu.open);
+}
+
+/**
+ * Check that the checkbox menu `button` in `toolbar` matches the `checked`
+ * state.
+ */
+export function assertCheckboxMenuButton(
+    toolbar: ViewerToolbarElement, button: HTMLElement, checked: boolean) {
+  chrome.test.assertTrue(toolbar.$.menu.open);
+
+  // Check that the check mark visibility matches `checked`.
+  chrome.test.assertEq(String(checked), button.getAttribute('aria-checked'));
   chrome.test.assertEq(
-      enabled ? 'true' : 'false', button.getAttribute('aria-checked'));
-  chrome.test.assertEq(enabled, !button.querySelector('iron-icon')!.hidden);
+      checked, isVisible(button.querySelector('.check-container iron-icon')));
 }
 
 export async function ensureFullscreen(): Promise<void> {
@@ -353,22 +386,5 @@ export function finishInkStroke(controller: PluginController) {
 
   eventTarget.dispatchEvent(new CustomEvent(
       PluginControllerEventType.PLUGIN_MESSAGE, {detail: message}));
-}
-
-/**
- * Helper to always get a non-null child element of `parent`. The element must
- * exist.
- * @param parent The parent to get the child element from.
- * @param query  The query to get the child element.
- * @returns A non-null element that matches `query`.
- */
-export function getRequiredElement<K extends keyof HTMLElementTagNameMap>(
-    parent: HTMLElement, query: K): HTMLElementTagNameMap[K];
-export function getRequiredElement<E extends HTMLElement = HTMLElement>(
-    parent: HTMLElement, query: string): E;
-export function getRequiredElement(parent: HTMLElement, query: string) {
-  const element = parent.shadowRoot!.querySelector(query);
-  assert(element);
-  return element;
 }
 // </if>
