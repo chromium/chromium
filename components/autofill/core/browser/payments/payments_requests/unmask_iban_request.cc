@@ -53,10 +53,12 @@ std::string UnmaskIbanRequest::GetRequestContent() {
   chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
 
   request_dict.Set("chrome_user_context", std::move(chrome_user_context));
+  request_dict.Set("instrument_id",
+                   base::NumberToString(request_details_.instrument_id));
 
+  // iban_info must always be set, even if blank, so that the Payments server
+  // knows this is an UnmaskIbanRequest.
   base::Value::Dict iban_info;
-  iban_info.Set("instrument_id",
-                base::NumberToString(request_details_.instrument_id));
   request_dict.Set("iban_info", std::move(iban_info));
 
   std::string json_request = base::WriteJson(request_dict).value();
