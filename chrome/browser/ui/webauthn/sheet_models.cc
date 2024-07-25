@@ -551,9 +551,7 @@ void AuthenticatorBlePermissionMacSheetModel::OnAccept() {
 AuthenticatorTouchIdSheetModel::AuthenticatorTouchIdSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
-                                  OtherMechanismButtonVisibility::kVisible) {
-  has_gpm_banner_ = true;
-}
+                                  OtherMechanismButtonVisibility::kVisible) {}
 
 std::u16string AuthenticatorTouchIdSheetModel::GetStepTitle() const {
   const std::u16string rp_id = GetRelyingPartyIdString(dialog_model());

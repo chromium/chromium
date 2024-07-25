@@ -61,14 +61,6 @@ void ConfigureHeaderIllustration(T* illustration, gfx::Size header_size) {
   illustration->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
 }
 
-const gfx::VectorIcon& GooglePasswordManagerIcon() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return vector_icons::kGooglePasswordManagerIcon;
-#else
-  return kKeyIcon;
-#endif
-}
-
 }  // namespace
 
 using views::BoxLayout;
@@ -211,39 +203,6 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
       BoxLayout::Orientation::kVertical, gfx::Insets(),
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
-
-  if (model()->has_gpm_banner()) {
-    auto container = std::make_unique<views::View>();
-    container->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(0, 0,
-                          views::LayoutProvider::Get()->GetDistanceMetric(
-                              views::DISTANCE_RELATED_CONTROL_VERTICAL),
-                          0)));
-    container->SetLayoutManager(std::make_unique<BoxLayout>(
-        BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-        views::LayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_RELATED_CONTROL_VERTICAL)));
-
-    auto image_view = std::make_unique<NonAccessibleImageView>();
-    constexpr int kIconSize = 18;
-    // The icon is vertically centered within this size. The addition of
-    // `kIconSize / 8` adds enough margin at the top so that the icon is better
-    // centered with the text.
-    image_view->SetPreferredSize(
-        gfx::Size(kIconSize, kIconSize + kIconSize / 8));
-    image_view->SetImage(ui::ImageModel::FromVectorIcon(
-        GooglePasswordManagerIcon(), ui::kColorIcon, kIconSize));
-    container->AddChildView(image_view.release());
-
-    auto gpm_label = std::make_unique<views::Label>(
-        l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER),
-        views::style::CONTEXT_DIALOG_BODY_TEXT);
-    gpm_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    gpm_label->SetVerticalAlignment(gfx::ALIGN_TOP);
-    container->AddChildView(gpm_label.release());
-
-    label_container->AddChildView(container.release());
-  }
 
   const std::u16string title = model()->GetStepTitle();
   if (!title.empty()) {

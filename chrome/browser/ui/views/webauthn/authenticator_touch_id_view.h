@@ -31,6 +31,7 @@ class API_AVAILABLE(macos(12.0)) AuthenticatorTouchIdView
   void OnTouchIDComplete(std::optional<crypto::ScopedLAContext> lacontext);
 
   // AuthenticatorRequestSheetView:
+  std::unique_ptr<views::View> BuildStepSpecificHeader() override;
   std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()
       override;
 };
