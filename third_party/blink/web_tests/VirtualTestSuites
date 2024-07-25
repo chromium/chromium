@@ -1688,7 +1688,7 @@
       "http/tests/inspector-protocol/shared-storage"
     ],
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,SharedStorageAPIM118,SharedStorageAPIM125,SharedStorageAPIEnableWALForDatabase,FencedFramesEnforceFocus,FencedFramesReportEventHeaderChanges,SharedStorageCrossOriginScript,SharedStorageCreateWorkletUseContextOriginByDefault"],
-    "expires": "Jul 31, 2024"
+    "expires": "Jan 31, 2025"
   },
   {
     "prefix": "shared-storage-fenced-frame-mparch-selecturl-limit",
@@ -1700,7 +1700,7 @@
       "external/wpt/shared-storage-selecturl-limit/"
     ],
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,FencedFramesEnforceFocus,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit:SharedStorageSelectURLBitBudgetPerPageLoad/9,SharedStorageAPIM118,SharedStorageAPIM125,SharedStorageAPIEnableWALForDatabase,SharedStorageCrossOriginScript,SharedStorageCreateWorkletUseContextOriginByDefault"],
-    "expires": "Jul 31, 2024"
+    "expires": "Jan 31, 2025"
   },
   {
     "prefix": "task-tracking",
