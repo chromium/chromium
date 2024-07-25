@@ -18,8 +18,7 @@
 
 namespace chrome {
 
-MessageBoxResult ShowMessageBoxCocoa(const std::u16string& title,
-                                     const std::u16string& message,
+MessageBoxResult ShowMessageBoxCocoa(const std::u16string& message,
                                      MessageBoxType type,
                                      const std::u16string& checkbox_text) {
   startup_metric_utils::GetBrowser().SetNonBrowserUIDisplayed();
@@ -27,12 +26,7 @@ MessageBoxResult ShowMessageBoxCocoa(const std::u16string& title,
     return MESSAGE_BOX_RESULT_YES;
 
   NSAlert* alert = [[NSAlert alloc] init];
-  if (title.empty()) {
-    alert.messageText = base::SysUTF16ToNSString(message);
-  } else {
-    alert.messageText = base::SysUTF16ToNSString(title);
-    alert.informativeText = base::SysUTF16ToNSString(message);
-  }
+  alert.messageText = base::SysUTF16ToNSString(message);
   alert.alertStyle = NSAlertStyleWarning;
   if (type == MESSAGE_BOX_TYPE_QUESTION) {
     [alert addButtonWithTitle:l10n_util::GetNSString(
