@@ -16,6 +16,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/navigation_handle.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 
 namespace internal {
@@ -93,6 +94,11 @@ bool GWSAbandonedPageLoadMetricsObserver::IsAllowedToLogMetrics() const {
   return involved_srp_url_;
 }
 
+bool GWSAbandonedPageLoadMetricsObserver::IsAllowedToLogUKM() const {
+  // Only log UKMs for navigations that involve SRP.
+  return involved_srp_url_;
+}
+
 std::string GWSAbandonedPageLoadMetricsObserver::GetHistogramPrefix() const {
   // Use the GWS-specific histograms.
   return internal::kGWSAbandonedPageLoadMetricsHistogramPrefix;
@@ -112,4 +118,15 @@ GWSAbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
       suffix,
       suffix + GetSuffixForRTT(
                    g_browser_process->network_quality_tracker()->GetHttpRTT())};
+}
+
+void GWSAbandonedPageLoadMetricsObserver::AddSRPMetricsToUKMIfNeeded(
+    ukm::builders::AbandonedSRPNavigation& builder) {
+  std::optional<base::TimeDelta> rtt =
+      g_browser_process->network_quality_tracker()->GetHttpRTT();
+  if (rtt.has_value()) {
+    builder.SetRTT(ukm::GetSemanticBucketMinForDurationTiming(
+        rtt.value().InMilliseconds()));
+  }
+  builder.SetDidRequestNonSRP(did_request_non_srp_);
 }

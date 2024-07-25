@@ -46,6 +46,9 @@ class GWSAbandonedPageLoadMetricsObserver
   bool IsAllowedToLogMetrics() const override;
   const base::flat_map<std::string, NavigationMilestone>&
   GetCustomUserTimingMarkNames() const override;
+  bool IsAllowedToLogUKM() const override;
+  void AddSRPMetricsToUKMIfNeeded(
+      ukm::builders::AbandonedSRPNavigation& ukm) override;
 
   // Set to true if we see the navigation involves non-SRP URL, which will be
   // specially marked in the logged metrics.

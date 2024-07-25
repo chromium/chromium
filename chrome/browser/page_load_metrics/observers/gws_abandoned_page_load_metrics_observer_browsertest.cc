@@ -17,6 +17,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -296,6 +297,7 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     // Use a newly created HistogramTester, to prevent getting samples that are
     // recorded for previous navigations.
     base::HistogramTester histogram_tester;
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
 
     // Navigate to a non-SRP page, to ensure we have a previous page. This is
     // important for testing hiding the WebContents or crashing the process.
@@ -512,6 +514,60 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
            abandon_after_hiding_reason == AbandonReason::kHidden)
               ? 1
               : 0);
+    }
+
+    // There should be UKM entries corresponding to the navigation.
+    auto ukm_entries = ukm_recorder.GetEntriesByName("AbandonedSRPNavigation");
+    const ukm::mojom::UkmEntry* ukm_entry = ukm_entries[0].get();
+    ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, url_srp());
+    ukm_recorder.ExpectEntryMetric(ukm_entry, "AbandonReason",
+                                   (int)abandon_reason);
+    ukm_recorder.ExpectEntryMetric(ukm_entry, "LastMilestoneBeforeAbandon",
+                                   (int)abandon_milestone);
+    if (!abandon_after_hiding_reason.has_value() ||
+        abandon_after_hiding_reason == AbandonReason::kHidden) {
+      EXPECT_EQ(ukm_entries.size(), 1ul);
+    } else {
+      EXPECT_EQ(ukm_entries.size(), 2ul);
+      const ukm::mojom::UkmEntry* ukm_entry2 = ukm_entries[1].get();
+      ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, url_srp());
+      ukm_recorder.ExpectEntryMetric(ukm_entry2, "AbandonReason",
+                                     (int)abandon_after_hiding_reason.value());
+      ukm_recorder.ExpectEntryMetric(
+          ukm_entry2, "LastMilestoneBeforeAbandon",
+          (int)NavigationMilestone::kNonRedirectResponseLoaderCallback);
+    }
+    for (auto milestone : all_milestones()) {
+      if (abandon_milestone < milestone ||
+          (!has_redirect &&
+           milestone >= NavigationMilestone::kFirstRedirectedRequestStart &&
+           milestone <=
+               NavigationMilestone::kFirstRedirectResponseLoaderCallback)) {
+        EXPECT_FALSE(ukm_recorder.EntryHasMetric(
+            ukm_entry,
+            AbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
+                milestone) +
+                "Time"));
+      } else if (milestone ==
+                     NavigationMilestone::kFirstRedirectResponseStart ||
+                 milestone == NavigationMilestone::
+                                  kFirstRedirectResponseLoaderCallback) {
+        EXPECT_TRUE(ukm_recorder.EntryHasMetric(
+            ukm_entry, "FirstRedirectResponseReceived"));
+      } else if (milestone == NavigationMilestone::kNonRedirectResponseStart ||
+                 milestone ==
+                     NavigationMilestone::kNonRedirectResponseLoaderCallback) {
+        EXPECT_TRUE(ukm_recorder.EntryHasMetric(ukm_entry,
+                                                "NonRedirectResponseReceived"));
+      } else {
+        EXPECT_EQ(
+            milestone != NavigationMilestone::kNavigationStart,
+            ukm_recorder.EntryHasMetric(
+                ukm_entry,
+                AbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
+                    milestone) +
+                    "Time"));
+      }
     }
   }
 
