@@ -338,7 +338,7 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
     auto write_buffer = Write(event);
     CHECK_EQ(write_buffer.GetBuffers().size(), 1ul);
     base::span<uint8_t> first_buffer = write_buffer.GetBuffers()[0];
-    char event_bytes[32] = {};
+    char event_bytes[kMinimumEventSize] = {};
     base::span(event_bytes)
         .first(first_buffer.size_bytes())
         .copy_from(base::as_chars(first_buffer));
@@ -469,6 +469,8 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
     ~Request();
 
     // Takes ownership of |reply| and |error|.
+    // Note that raw_error is an xcb_generic_error_t, but that type is not used
+    // here to avoid having this header file pull in xcb.h.
     void SetResponse(Connection* connection, void* raw_reply, void* raw_error);
 
     // If |callback| is nullptr, then this request has already been processed

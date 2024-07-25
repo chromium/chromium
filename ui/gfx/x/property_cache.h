@@ -61,6 +61,22 @@ class COMPONENT_EXPORT(X11) PropertyCache : public EventObserver {
     return GetAs<T>(Get(atom), size);
   }
 
+  template <typename T>
+  static base::span<const T> GetAsSpan(const GetPropertyResponse& response) {
+    size_t len;
+    const T* const data = GetAs<const T>(response, &len);
+    if (data && len > 0) {
+      UNSAFE_BUFFERS(return base::span<const T>(data, len));
+    } else {
+      return base::span<const T>();
+    }
+  }
+
+  template <typename T>
+  base::span<const T> GetAsSpan(Atom atom) {
+    return GetAsSpan<T>(Get(atom));
+  }
+
  private:
   friend class PropertyCacheTest;
 

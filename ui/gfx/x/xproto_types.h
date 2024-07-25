@@ -120,6 +120,11 @@ using SequenceType = unsigned int;
 
 constexpr uint8_t kSendEventMask = 0x80;
 
+// Constants from the X11 protocol documentation:
+// https://www.x.org/releases/X11R7.5/doc/x11proto/proto.html
+inline constexpr size_t kMinimumErrorSize = 32;
+inline constexpr size_t kMinimumEventSize = 32;
+
 namespace detail {
 
 template <typename T>
@@ -241,4 +246,4 @@ struct Response<void> {
 
 }  // namespace x11
 
-#endif  //  UI_GFX_X_XPROTO_TYPES_H_
+#endif  // UI_GFX_X_XPROTO_TYPES_H_
