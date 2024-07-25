@@ -36,7 +36,7 @@ BASE_FEATURE(kAndroidBrowserControlsInViz,
 
 BASE_FEATURE(kBackdropFilterMirrorEdgeMode,
              "BackdropFilterMirrorEdgeMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseDrmBlackFullscreenOptimization,
              "UseDrmBlackFullscreenOptimization",
