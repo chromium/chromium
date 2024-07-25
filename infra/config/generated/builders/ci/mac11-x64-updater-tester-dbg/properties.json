@@ -62,6 +62,12 @@
           "builder": "mac11-x64-updater-tester-dbg",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "mac-updater-try-builder-dbg",
+          "group": "tryserver.chromium.updater"
+        }
       ]
     }
   },

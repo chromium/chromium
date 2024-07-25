@@ -448,8 +448,6 @@ exempted_from_description_builders = {
         "mac-updater-builder-dbg",
         "mac-updater-builder-rel",
         "mac-upload-perfetto",
-        "mac10.15-updater-tester-dbg",
-        "mac10.15-updater-tester-rel",
         "mac11-arm64-rel-tests",
         "mac11-arm64-updater-tester-dbg",
         "mac11-arm64-updater-tester-rel",
