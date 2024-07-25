@@ -3646,6 +3646,8 @@ if (!is_robolectric && enable_java_templates) {
     android_apk(target_name) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       testonly = true
+      _use_default_launcher =
+          !defined(invoker.use_default_launcher) || invoker.use_default_launcher
 
       # The size info enables the test_runner to find the source file location
       # of a test after it is ran.
@@ -3655,7 +3657,11 @@ if (!is_robolectric && enable_java_templates) {
         data += invoker.data
       }
 
-      deps = [ "//testing/android/instrumentation:test_runner_java" ]
+      if (_use_default_launcher) {
+        deps = [ "//testing/android/instrumentation:test_runner_java" ]
+      } else {
+        deps = []
+      }
       if (defined(invoker.deps)) {
         deps += invoker.deps
       }
