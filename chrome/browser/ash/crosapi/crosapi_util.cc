@@ -956,6 +956,8 @@ void InjectBrowserInitParams(
 
   params->is_cros_mall_enabled = chromeos::features::IsCrosMallEnabled();
 
+  params->is_magic_boost_enabled = chromeos::features::IsMagicBoostEnabled();
+
   params->is_mahi_enabled = chromeos::features::IsMahiEnabled();
 
   params->is_container_app_preinstall_enabled =
