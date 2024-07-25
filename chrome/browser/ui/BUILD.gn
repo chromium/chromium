@@ -3323,7 +3323,6 @@ static_library("ui") {
       "//components/push_notification:push_notification",
       "//components/reporting/proto:health_proto",
       "//components/services/app_service",
-      "//components/services/app_service/public/cpp/shortcut",
       "//components/session_manager/core",
       "//components/supervised_user/core/browser:fetcher",
       "//components/tab_groups",
