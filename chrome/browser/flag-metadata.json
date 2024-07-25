@@ -5464,7 +5464,7 @@
       "gujen@google.com",
       "bling-mony-pod@google.com"
     ],
-    "expiry_milestone": 129
+    "expiry_milestone": 132
   },
   {
     "name": "ios-promo-bookmark-bubble",
@@ -5473,7 +5473,7 @@
       "gujen@google.com",
       "bling-mony-pod@google.com"
     ],
-    "expiry_milestone": 129
+    "expiry_milestone": 132
   },
   {
     "name": "ios-promo-payment-bubble",
@@ -5482,7 +5482,7 @@
       "gujen@google.com",
       "bling-mony-pod@google.com"
     ],
-    "expiry_milestone": 129
+    "expiry_milestone": 132
   },
   {
     "name": "ios-promo-refreshed-password-bubble",
@@ -5492,7 +5492,7 @@
       "gujen@google.com",
       "bling-mony-pod@google.com"
     ],
-    "expiry_milestone": 129
+    "expiry_milestone": 132
   },
   {
     "name": "ios-quick-delete",
