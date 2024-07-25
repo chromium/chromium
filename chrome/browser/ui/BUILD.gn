@@ -2617,12 +2617,6 @@ static_library("ui") {
       "webui/ash/notification_tester/notification_tester_handler.h",
       "webui/ash/notification_tester/notification_tester_ui.cc",
       "webui/ash/notification_tester/notification_tester_ui.h",
-      "webui/ash/office_fallback/office_fallback_dialog.cc",
-      "webui/ash/office_fallback/office_fallback_dialog.h",
-      "webui/ash/office_fallback/office_fallback_page_handler.cc",
-      "webui/ash/office_fallback/office_fallback_page_handler.h",
-      "webui/ash/office_fallback/office_fallback_ui.cc",
-      "webui/ash/office_fallback/office_fallback_ui.h",
       "webui/ash/onc_import_message_handler.cc",
       "webui/ash/onc_import_message_handler.h",
       "webui/ash/parent_access/parent_access_dialog.cc",
@@ -3181,6 +3175,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/user_education",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/ash/emoji",
+      "//chrome/browser/ui/webui/ash/office_fallback",
       "//chrome/browser/ui/webui/ash/skyvault",
       "//chrome/browser/ui/webui/ash/sys_internals",
       "//chrome/browser/ui/webui/ash/vc_tray_tester",
@@ -3548,6 +3543,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/ash/user_education",
       "//chrome/browser/ui/webui/ash/emoji",
+      "//chrome/browser/ui/webui/ash/office_fallback",
       "//chrome/browser/ui/webui/ash/skyvault",
     ]
 

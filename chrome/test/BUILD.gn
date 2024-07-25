@@ -1537,9 +1537,7 @@ if (is_android) {
 
       # Cannot depend on the stack_unwinder/internal:java since it uses a custom
       # GEN_JNI class via @NativeMethods("stack_unwinder").
-      deps += [
-        "//chrome/android/modules/stack_unwinder/internal:stack_unwinder_for_testing",
-      ]
+      deps += [ "//chrome/android/modules/stack_unwinder/internal:stack_unwinder_for_testing" ]
       configs -= [ "//build/config/compiler:default_symbols" ]
       if (symbol_level == 2) {
         configs += [ "//build/config/compiler:symbols" ]
@@ -4755,7 +4753,6 @@ if (!is_android) {
         "../browser/ui/webui/ash/login/oobe_display_chooser_browsertest.cc",
         "../browser/ui/webui/ash/login/testapi/oobe_test_api_browsertest.cc",
         "../browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_dialog_browsertest.cc",
-        "../browser/ui/webui/ash/office_fallback/office_fallback_dialog_browsertest.cc",
         "../browser/ui/webui/ash/parent_access/parent_access_browsertest_base.cc",
         "../browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h",
         "../browser/ui/webui/ash/parent_access/parent_access_dialog_browsertest.cc",
@@ -5142,7 +5139,8 @@ if (!is_android) {
         "//ui/wm/public",
         "//url",
 
-        # Gather browser tests from //c/b/ui/webui/ash.
+        # Gather browser tests from //c/b/ui/webui/ash subdirectories:
+        "//chrome/browser/ui/webui/ash/office_fallback:browser_tests",
         "//chrome/browser/ui/webui/ash/skyvault:browser_tests",
       ]
     }
