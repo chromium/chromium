@@ -59,6 +59,11 @@ function isDownloading(voiceStatus: VoiceClientSideStatusCode) {
   }
 }
 
+// Returns whether `substring` is a non-case-sensitive substring of `value`
+function isSubstring(value: string, substring: string): boolean {
+  return value.toLowerCase().includes(substring.toLowerCase());
+}
+
 const LanguageMenuElementBase = WebUiListenerMixin(I18nMixin(PolymerElement));
 
 export class LanguageMenuElement extends LanguageMenuElementBase {
@@ -102,7 +107,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   lastDownloadedLang: string;
 
   availableVoices: SpeechSynthesisVoice[];
-  private languageSearchValue_: string;
+  private languageSearchValue_: string = '';
   private toastDuration_: number = toastDurationMs;
   voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode};
   private readonly availableLanguages_: LanguageDropdownItem[];
@@ -208,20 +213,16 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     });
 
     return availableLangs
-        .filter(lang => {
-          const readableLang = this.getDisplayName(lang);
-          if (this.languageSearchValue_) {
-            // In addition to matching the readable language, also allow
-            // the search term to extend to the language code to make
-            // searching for specific languages easier. e.g. 'pt-br' will
-            // match with Portugues (Brasil)
-            return readableLang.toLowerCase().includes(
-                       this.languageSearchValue_.toLowerCase()) ||
-                lang.includes(this.languageSearchValue_.toLowerCase());
-          } else {
-            return true;
-          }
-        })
+        .filter(
+            // Check whether the search term matches the readable lang (e.g.
+            // 'ras' will match 'Portugues (Brasil)'), and also if it matches
+            // the language code (e.g. 'pt-br' matches 'Portugues (Brasil)')
+            lang => isSubstring(
+                        /* value= */ this.getDisplayName(lang),
+                        /* substring= */ this.languageSearchValue_) ||
+                isSubstring(
+                        /* value= */ lang,
+                        /* substring= */ this.languageSearchValue_))
         .map(lang => ({
                readableLanguage: this.getDisplayName(lang),
                checked: this.enabledLangs.includes(lang),
