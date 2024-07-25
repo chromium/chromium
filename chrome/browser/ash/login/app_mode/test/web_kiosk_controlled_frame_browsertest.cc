@@ -157,7 +157,9 @@ class WebKioskControlledFrameChannelTest
             /*https=*/true) {}
 };
 
-IN_PROC_BROWSER_TEST_P(WebKioskControlledFrameChannelTest, ApiAvailability) {
+// TODO(crbug.com/355290700): Re-enable this test
+IN_PROC_BROWSER_TEST_P(WebKioskControlledFrameChannelTest,
+                       DISABLED_ApiAvailability) {
   content::WebContents* web_contents = TestSetup();
   ASSERT_NE(web_contents, nullptr);
 
