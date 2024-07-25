@@ -64,6 +64,18 @@ SharedGpuContext::ContextProviderWrapper() {
   return this_ptr->context_provider_wrapper_->GetWeakPtr();
 }
 
+// static
+WebGraphicsSharedImageInterfaceProvider*
+SharedGpuContext::SharedImageInterfaceProvider() {
+  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
+  this_ptr->CreateSharedImageInterfaceProviderIfNeeded();
+  if (!this_ptr->shared_image_interface_provider_) {
+    return nullptr;
+  }
+
+  return this_ptr->shared_image_interface_provider_.get();
+}
+
 gpu::GpuMemoryBufferManager* SharedGpuContext::GetGpuMemoryBufferManager() {
   SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
   if (!this_ptr->gpu_memory_buffer_manager_) {
@@ -178,6 +190,48 @@ void SharedGpuContext::CreateContextProviderIfNeeded(
     if (context_provider_wrapper_ &&
         !context_provider_wrapper_->ContextProvider()->BindToCurrentSequence())
       context_provider_wrapper_ = nullptr;
+  }
+}
+
+static void CreateSharedImageInterfaceProviderOnMainThread(
+    std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>* provider,
+    base::WaitableEvent* waitable_event) {
+  DCHECK(IsMainThread());
+
+  *provider = Platform::Current()->CreateSharedImageInterfaceProvider();
+  waitable_event->Signal();
+}
+
+void SharedGpuContext::CreateSharedImageInterfaceProviderIfNeeded() {
+  // If the feature is not enabled, |shared_image_interface_provider_| is always
+  // nullptr.
+  if (!features::IsCanvasSharedBitmapConversionEnabled()) {
+    return;
+  }
+
+  // Use the current |shared_image_interface_provider_|.
+  if (shared_image_interface_provider_ &&
+      !shared_image_interface_provider_->SharedImageInterface()) {
+    return;
+  }
+
+  // Delete and recreate |shared_image_interface_provider_|.
+  shared_image_interface_provider_.reset();
+
+  if (IsMainThread()) {
+    shared_image_interface_provider_ =
+        Platform::Current()->CreateSharedImageInterfaceProvider();
+  } else {
+    base::WaitableEvent waitable_event;
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+        Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted());
+    PostCrossThreadTask(
+        *task_runner, FROM_HERE,
+        CrossThreadBindOnce(
+            &CreateSharedImageInterfaceProviderOnMainThread,
+            CrossThreadUnretained(&shared_image_interface_provider_),
+            CrossThreadUnretained(&waitable_event)));
+    waitable_event.Wait();
   }
 }
 

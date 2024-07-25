@@ -2679,4 +2679,13 @@ BASE_FEATURE(kOptimizeLoadingDataUrls,
              "OptimizeLoadingDataUrls",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCanvasSharedBitmapToSharedImage,
+             "CanvasSharedBitmapToSharedImage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsCanvasSharedBitmapConversionEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kCanvasSharedBitmapToSharedImage);
+}
+
 }  // namespace blink::features

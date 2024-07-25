@@ -35,7 +35,9 @@
 #include "gpu/config/gpu_feature_type.h"
 #include "skia/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -153,7 +155,7 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
 
   ~CanvasResourceProviderBitmap() override = default;
 
-  bool IsValid() const final { return GetSkSurface(); }
+  bool IsValid() const override { return GetSkSurface(); }
   bool IsAccelerated() const final { return false; }
   bool SupportsDirectCompositing() const override { return false; }
 
@@ -186,16 +188,33 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap {
       const SkImageInfo& info,
       cc::PaintFlags::FilterQuality filter_quality,
       base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
+      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       CanvasResourceHost* resource_host)
       : CanvasResourceProviderBitmap(info,
                                      filter_quality,
                                      std::move(resource_dispatcher),
-                                     resource_host) {
+                                     resource_host),
+        shared_image_interface_provider_(
+            shared_image_interface_provider
+                ? shared_image_interface_provider->GetWeakPtr()
+                : nullptr) {
+    DCHECK(!features::IsCanvasSharedBitmapConversionEnabled() ||
+           shared_image_interface_provider_);
     DCHECK(ResourceDispatcher());
     type_ = kSharedBitmap;
   }
   ~CanvasResourceProviderSharedBitmap() override = default;
+
+  bool IsValid() const final {
+    bool invalid_shared_image_interface =
+        features::IsCanvasSharedBitmapConversionEnabled() &&
+        !shared_image_interface_provider_;
+    return !invalid_shared_image_interface && GetSkSurface();
+  }
+
   bool SupportsDirectCompositing() const override { return true; }
+  base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
+      shared_image_interface_provider_;
 
  private:
   scoped_refptr<CanvasResource> CreateResource() final {
@@ -208,6 +227,7 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap {
     }
 
     return CanvasResourceSharedBitmap::Create(info, CreateWeakPtr(),
+                                              shared_image_interface_provider_,
                                               FilterQuality());
   }
 
@@ -971,6 +991,7 @@ CanvasResourceProvider::CreateSharedBitmapProvider(
     cc::PaintFlags::FilterQuality filter_quality,
     ShouldInitialize should_initialize,
     base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
+    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     CanvasResourceHost* resource_host) {
   // SharedBitmapProvider has to have a valid resource_dispatecher to be able to
   // be created.
@@ -978,7 +999,8 @@ CanvasResourceProvider::CreateSharedBitmapProvider(
     return nullptr;
 
   auto provider = std::make_unique<CanvasResourceProviderSharedBitmap>(
-      info, filter_quality, std::move(resource_dispatcher), resource_host);
+      info, filter_quality, std::move(resource_dispatcher),
+      shared_image_interface_provider, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)

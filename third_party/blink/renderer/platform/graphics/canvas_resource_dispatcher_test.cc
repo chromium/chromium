@@ -106,7 +106,7 @@ class CanvasResourceDispatcherTest
         SkImageInfo::MakeN32Premul(kWidth, kHeight),
         cc::PaintFlags::FilterQuality::kLow,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
-        dispatcher_->GetWeakPtr());
+        dispatcher_->GetWeakPtr(), /*shared_image_interface_provider=*/nullptr);
   }
 
   MockCanvasResourceDispatcher* Dispatcher() { return dispatcher_.get(); }
@@ -247,7 +247,8 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
 
   auto canvas_resource = CanvasResourceSharedBitmap::Create(
       SkImageInfo::MakeN32Premul(GetSize().width(), GetSize().height()),
-      nullptr /* provider */, cc::PaintFlags::FilterQuality::kLow);
+      /*provider=*/nullptr, /*shared_image_interface_provider=*/nullptr,
+      cc::PaintFlags::FilterQuality::kLow);
   EXPECT_TRUE(!!canvas_resource);
   EXPECT_EQ(canvas_resource->Size(), GetSize());
 

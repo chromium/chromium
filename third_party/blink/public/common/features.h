@@ -1792,6 +1792,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderSizeInScoreAdBrowserSignals);
 // Optimize loading data: URLs.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOptimizeLoadingDataUrls);
 
+BLINK_COMMON_EXPORT bool IsCanvasSharedBitmapConversionEnabled();
+
 }  // namespace features
 }  // namespace blink
 

@@ -221,7 +221,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   // provider.
   if (!provider) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        resource_info, FilterQuality(), kShouldInitialize, dispatcher, this);
+        resource_info, FilterQuality(), kShouldInitialize, dispatcher,
+        SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
@@ -305,7 +306,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
   // provider.
   if (!provider) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        resource_info, FilterQuality(), kShouldInitialize, dispatcher, this);
+        resource_info, FilterQuality(), kShouldInitialize, dispatcher,
+        SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
