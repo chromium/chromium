@@ -4752,7 +4752,6 @@ if (!is_android) {
         "../browser/ui/webui/ash/kerberos/kerberos_in_browser_browsertest.cc",
         "../browser/ui/webui/ash/login/oobe_display_chooser_browsertest.cc",
         "../browser/ui/webui/ash/login/testapi/oobe_test_api_browsertest.cc",
-        "../browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_dialog_browsertest.cc",
         "../browser/ui/webui/ash/settings/integration_tests/os_settings_auto_screen_lock_browsertest.cc",
         "../browser/ui/webui/ash/settings/integration_tests/os_settings_lock_screen_authentication_browsertest.cc",
         "../browser/ui/webui/ash/settings/integration_tests/os_settings_notification_settings_browsertest.cc",
@@ -5138,6 +5137,7 @@ if (!is_android) {
         "//url",
 
         # Gather browser tests from //c/b/ui/webui/ash subdirectories:
+        "//chrome/browser/ui/webui/ash/manage_mirrorsync:browser_tests",
         "//chrome/browser/ui/webui/ash/office_fallback:browser_tests",
         "//chrome/browser/ui/webui/ash/parent_access:browser_tests",
         "//chrome/browser/ui/webui/ash/skyvault:browser_tests",
