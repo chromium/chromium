@@ -48,9 +48,8 @@ TEST_F(PickerFeatureTourTest,
                                     completed_future.GetRepeatingCallback());
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
 
-  views::Button* button = feature_tour.complete_button_for_testing();
+  const views::Button* button = feature_tour.complete_button_for_testing();
   ASSERT_NE(button, nullptr);
-  ViewDrawnWaiter().Wait(button);
   LeftClickOn(button);
 
   views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();

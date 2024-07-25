@@ -43,7 +43,7 @@ class ASH_EXPORT PickerFeatureTour {
   views::Widget* widget_for_testing();
 
   // Returns the button to complete the tour.
-  views::Button* complete_button_for_testing();
+  const views::Button* complete_button_for_testing() const;
 
  private:
   views::UniqueWidgetPtr widget_;
