@@ -9,24 +9,20 @@ import {TestImportManager} from './testing/test_import_manager.js';
  * @fileoverview Wraps automation and accessibility_private callbacks
  * in Promises.
  */
-const AutomationNode = chrome.automation?.AutomationNode;
+
+type AutomationNode = chrome.automation.AutomationNode;
 
 export class AsyncUtil {
-  /** @return {!Promise<!AutomationNode>} */
-  static async getDesktop() {
+  static async getDesktop(): Promise<AutomationNode> {
     return new Promise(resolve => chrome.automation.getDesktop(resolve));
   }
 
-  /** @return {!Promise<AutomationNode>} */
-  static async getFocus() {
+  static async getFocus(): Promise<AutomationNode> {
     return new Promise(resolve => chrome.automation.getFocus(resolve));
   }
 
-  /**
-   * @param {!KeyCode} keyCode
-   * @return {!Promise<string>}
-   */
-  static async getLocalizedDomKeyStringForKeyCode(keyCode) {
+  static async getLocalizedDomKeyStringForKeyCode(
+      keyCode: KeyCode): Promise<string> {
     return new Promise(
         resolve =>
             chrome.accessibilityPrivate.getLocalizedDomKeyStringForKeyCode(
