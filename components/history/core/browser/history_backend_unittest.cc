@@ -5301,6 +5301,65 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsWorksInBatches) {
   }
 }
 
+// Regression test for crbug.com/354474887.
+TEST_F(HistoryBackendTest, DeleteAllForeignVisitsPendingAtShutdown) {
+  const ui::PageTransition kLink = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+
+  const int visits_per_batch =
+      HistoryBackend::GetForeignVisitsToDeletePerBatchForTest();
+  const int total_visits = visits_per_batch + 5;
+
+  const base::Time initial_time = base::Time::Now();
+
+  // Setup: Add enough foreign visits that they'll need more than one batch to
+  // delete.
+  for (int i = 0; i < visits_per_batch + 5; ++i) {
+    VisitRow foreign_visit;
+    foreign_visit.visit_time = base::Time::Now();
+    foreign_visit.transition = kLink;
+    foreign_visit.originator_cache_guid = "originator";
+    foreign_visit.is_known_to_sync = true;
+    backend_->AddSyncedVisit(GURL("https://remote.url"), /*title=*/u"",
+                             /*hidden=*/false, foreign_visit, std::nullopt,
+                             std::nullopt);
+
+    task_environment_.FastForwardBy(base::Seconds(1));
+  }
+
+  // Setup finished - verify that the visits are there.
+  {
+    VisitVector visits;
+    backend_->db()->GetAllVisitsInRange(
+        initial_time, base::Time::Now(), kNoAppIdFilter,
+        /*max_results=*/total_visits + 1, &visits);
+    ASSERT_EQ(static_cast<int>(visits.size()), total_visits);
+  }
+
+  // Instruct the backend to delete foreign visits.
+  backend_->DeleteAllForeignVisitsAndResetIsKnownToSync();
+
+  // The first batch of visits got deleted immediately, and a task got posted
+  // to delete the next batch. Ensure that some foreign visits are left.
+  {
+    VisitVector visits;
+    backend_->db()->GetSomeForeignVisits(std::numeric_limits<VisitID>::max(), 1,
+                                         &visits);
+    ASSERT_FALSE(visits.empty());
+  }
+  // Before the next task can run (i.e. before the deletion is completed), shut
+  // down the backend.
+  backend_->Closing();
+  backend_.reset();
+  // Note that since the backend is refcounted, it might not actually be
+  // destroyed yet.
+
+  // Let any remaining tasks run.
+  task_environment_.RunUntilIdle();
+  // This should not cause any (D)CHECK failures.
+}
+
 TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteFutureVisits) {
   const ui::PageTransition kLink = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
