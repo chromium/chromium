@@ -8,6 +8,7 @@
 
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/permissions/system/platform_handle.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "services/device/public/cpp/device_features.h"
@@ -16,30 +17,16 @@
 
 static_assert(BUILDFLAG(IS_WIN));
 
-class SystemPermissionSettingsWin
-    : public SystemPermissionSettings,
+namespace system_permission_settings {
+
+namespace {
+
+class PlatformHandleImpl
+    : public PlatformHandle,
       public device::GeolocationSystemPermissionManager::PermissionObserver {
  public:
-  SystemPermissionSettingsWin() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    // Initialize system permission settings for geolocation based on the
-    // feature flag.
-    if (base::FeatureList::IsEnabled(features::kWinSystemLocationPermission)) {
-      // If the feature is enabled, retrieve and observe the system permission
-      // status.
-      auto* geolocation_system_permission_manager =
-          device::GeolocationSystemPermissionManager::GetInstance();
-      CHECK(geolocation_system_permission_manager);
-      observation_.Observe(geolocation_system_permission_manager);
-    }
-  }
-
-  ~SystemPermissionSettingsWin() override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    FlushGeolocationCallbacks();
-  }
-
-  bool CanPrompt(ContentSettingsType type) const override {
+  // PlatformHandle:
+  bool CanPrompt(ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::GEOLOCATION: {
         if (base::FeatureList::IsEnabled(
@@ -56,7 +43,7 @@ class SystemPermissionSettingsWin
     }
   }
 
-  bool IsDeniedImpl(ContentSettingsType type) const override {
+  bool IsDenied(ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::GEOLOCATION:
         if (base::FeatureList::IsEnabled(
@@ -72,7 +59,7 @@ class SystemPermissionSettingsWin
     }
   }
 
-  bool IsAllowedImpl(ContentSettingsType type) const override {
+  bool IsAllowed(ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::GEOLOCATION:
         if (base::FeatureList::IsEnabled(
@@ -89,7 +76,7 @@ class SystemPermissionSettingsWin
   }
 
   void OpenSystemSettings(content::WebContents* web_contents,
-                          ContentSettingsType type) const override {
+                          ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::GEOLOCATION: {
         if (base::FeatureList::IsEnabled(
@@ -108,14 +95,22 @@ class SystemPermissionSettingsWin
                SystemPermissionResponseCallback callback) override {
     switch (type) {
       case ContentSettingsType::GEOLOCATION: {
+        DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+        if (!base::FeatureList::IsEnabled(
+                features::kWinSystemLocationPermission)) {
+          return;
+        }
         geolocation_callbacks_.push_back(std::move(callback));
         // The system permission prompt is modal and requires a user decision
         // (Allow or Deny) before it can be dismissed.
-        if (geolocation_callbacks_.size() == 1u &&
-            base::FeatureList::IsEnabled(
-                features::kWinSystemLocationPermission)) {
-          device::GeolocationSystemPermissionManager::GetInstance()
-              ->RequestSystemPermission();
+        if (geolocation_callbacks_.size() == 1u) {
+          auto* geolocation_system_permission_manager =
+              device::GeolocationSystemPermissionManager::GetInstance();
+          CHECK(geolocation_system_permission_manager);
+          CHECK(!observation_.IsObserving());
+          // Lazily setup geolocation status observation
+          observation_.Observe(geolocation_system_permission_manager);
+          geolocation_system_permission_manager->RequestSystemPermission();
         }
         return;
       }
@@ -129,6 +124,7 @@ class SystemPermissionSettingsWin
   // implementation.
   void OnSystemPermissionUpdated(
       device::LocationSystemPermissionStatus new_status) override {
+    observation_.Reset();
     FlushGeolocationCallbacks();
   }
 
@@ -147,8 +143,11 @@ class SystemPermissionSettingsWin
       observation_{this};
 };
 
+}  // namespace
+
 // static
-std::unique_ptr<SystemPermissionSettings>
-SystemPermissionSettings::CreateImpl() {
-  return std::make_unique<SystemPermissionSettingsWin>();
+std::unique_ptr<PlatformHandle> PlatformHandle::Create() {
+  return std::make_unique<PlatformHandleImpl>();
 }
+
+}  // namespace system_permission_settings

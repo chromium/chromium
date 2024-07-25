@@ -179,12 +179,12 @@ EmbeddedPermissionPrompt::DeterminePromptVariant(
   // whereas the "OS Prompt" view is only higher priority then the views that
   // are associated with a site-level allowed state.
   // TODO(crbug.com/40275129): Handle going to Windows settings.
-  if (SystemPermissionSettings::GetInstance()->IsDenied(type)) {
+  if (system_permission_settings::IsDenied(type)) {
     return Variant::kOsSystemSettings;
   }
 
   if (setting == CONTENT_SETTING_ALLOW &&
-      SystemPermissionSettings::GetInstance()->CanPrompt(type)) {
+      system_permission_settings::CanPrompt(type)) {
     return Variant::kOsPrompt;
   }
 
@@ -376,7 +376,7 @@ void EmbeddedPermissionPrompt::PrecalculateVariantsForMetrics() {
 
   if (os_prompt_variant_ == Variant::kUninitialized) {
     for (const auto& request : delegate()->Requests()) {
-      if (SystemPermissionSettings::GetInstance()->CanPrompt(
+      if (system_permission_settings::CanPrompt(
               request->GetContentSettingsType())) {
         os_prompt_variant_ = Variant::kOsPrompt;
         break;
@@ -386,7 +386,7 @@ void EmbeddedPermissionPrompt::PrecalculateVariantsForMetrics() {
 
   if (os_system_settings_variant_ == Variant::kUninitialized) {
     for (const auto& request : delegate()->Requests()) {
-      if (SystemPermissionSettings::GetInstance()->IsDenied(
+      if (system_permission_settings::IsDenied(
               request->GetContentSettingsType())) {
         os_system_settings_variant_ = Variant::kOsSystemSettings;
         break;
@@ -481,7 +481,7 @@ void EmbeddedPermissionPrompt::ShowSystemSettings() {
   RecordOsMetrics(permissions::OsScreenAction::SYSTEM_SETTINGS);
   RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kSystemSettings);
-  SystemPermissionSettings::GetInstance()->OpenSystemSettings(
+  system_permission_settings::OpenSystemSettings(
       delegate()->GetAssociatedWebContents(),
       requests_[0]->GetContentSettingsType());
 }
@@ -516,7 +516,7 @@ void EmbeddedPermissionPrompt::PromptForOsPermission() {
                                          prompt_types_.end());
 
   for (unsigned int idx = 0; idx < types.size(); idx++) {
-    SystemPermissionSettings::GetInstance()->Request(
+    system_permission_settings::Request(
         types[idx],
         base::BindOnce(
             &EmbeddedPermissionPrompt::OnRequestSystemPermissionResponse,
@@ -531,14 +531,14 @@ void EmbeddedPermissionPrompt::OnRequestSystemPermissionResponse(
     const ContentSettingsType request_type,
     const ContentSettingsType other_request_type) {
   bool permission_determined =
-      !SystemPermissionSettings::GetInstance()->CanPrompt(request_type);
+      !system_permission_settings::CanPrompt(request_type);
 
   // `other_permission_determined` is left with true in non-grouped scenario,
   // which would make the final logic fully rely on `permission_determined`.
   auto other_permission_determined = true;
   if (other_request_type != ContentSettingsType::DEFAULT) {
     other_permission_determined =
-        !SystemPermissionSettings::GetInstance()->CanPrompt(other_request_type);
+        !system_permission_settings::CanPrompt(other_request_type);
   }
 
   if (permission_determined) {

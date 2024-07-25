@@ -5,11 +5,14 @@
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/mac/mac_util.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
+#include "chrome/browser/permissions/system/platform_handle.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -20,6 +23,8 @@
 
 static_assert(BUILDFLAG(IS_MAC));
 
+namespace system_permission_settings {
+
 namespace {
 bool denied(system_media_permissions::SystemPermission permission) {
   return system_media_permissions::SystemPermission::kDenied == permission;
@@ -29,31 +34,16 @@ bool prompt(system_media_permissions::SystemPermission permission) {
   return system_media_permissions::SystemPermission::kNotDetermined ==
          permission;
 }
-
 bool allowed(system_media_permissions::SystemPermission permission) {
   return system_media_permissions::SystemPermission::kAllowed == permission;
 }
 
-}  // namespace
-
-class SystemPermissionSettingsImpl
-    : public SystemPermissionSettings,
+class PlatformHandleImpl
+    : public PlatformHandle,
       public device::GeolocationSystemPermissionManager::PermissionObserver {
  public:
-  SystemPermissionSettingsImpl() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    auto* geolocation_system_permission_manager =
-        device::GeolocationSystemPermissionManager::GetInstance();
-    CHECK(geolocation_system_permission_manager);
-    observation_.Observe(geolocation_system_permission_manager);
-  }
-
-  ~SystemPermissionSettingsImpl() override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    FlushGeolocationCallbacks();
-  }
-
-  bool CanPrompt(ContentSettingsType type) const override {
+  // PlatformHandle:
+  bool CanPrompt(ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::MEDIASTREAM_CAMERA:
         return prompt(
@@ -70,7 +60,7 @@ class SystemPermissionSettingsImpl
     }
   }
 
-  bool IsDeniedImpl(ContentSettingsType type) const override {
+  bool IsDenied(ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::MEDIASTREAM_CAMERA:
         return denied(
@@ -87,7 +77,7 @@ class SystemPermissionSettingsImpl
     }
   }
 
-  bool IsAllowedImpl(ContentSettingsType type) const override {
+  bool IsAllowed(ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::MEDIASTREAM_CAMERA:
         return allowed(
@@ -105,7 +95,7 @@ class SystemPermissionSettingsImpl
   }
 
   void OpenSystemSettings(content::WebContents* web_contents,
-                          ContentSettingsType type) const override {
+                          ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::NOTIFICATIONS: {
         const webapps::AppId* app_id =
@@ -152,12 +142,18 @@ class SystemPermissionSettingsImpl
         return;
       }
       case ContentSettingsType::GEOLOCATION: {
+        DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
         geolocation_callbacks_.push_back(std::move(callback));
         // The system permission prompt is modal and requires a user decision
         // (Allow or Deny) before it can be dismissed.
         if (geolocation_callbacks_.size() == 1u) {
-          device::GeolocationSystemPermissionManager::GetInstance()
-              ->RequestSystemPermission();
+          auto* geolocation_system_permission_manager =
+              device::GeolocationSystemPermissionManager::GetInstance();
+          CHECK(geolocation_system_permission_manager);
+          CHECK(!observation_.IsObserving());
+          // Lazily setup geolocation status observation
+          observation_.Observe(geolocation_system_permission_manager);
+          geolocation_system_permission_manager->RequestSystemPermission();
         }
         return;
       }
@@ -167,10 +163,12 @@ class SystemPermissionSettingsImpl
     }
   }
 
-  // device::GeolocationSystemPermissionManager::PermissionObserver
-  // implementation.
+  // device::GeolocationSystemPermissionManager::PermissionObserver:
   void OnSystemPermissionUpdated(
       device::LocationSystemPermissionStatus new_status) override {
+    // No further observation needed as all the current requests will now be
+    // resolved
+    observation_.Reset();
     FlushGeolocationCallbacks();
   }
 
@@ -189,7 +187,11 @@ class SystemPermissionSettingsImpl
       observation_{this};
 };
 
-std::unique_ptr<SystemPermissionSettings>
-SystemPermissionSettings::CreateImpl() {
-  return std::make_unique<SystemPermissionSettingsImpl>();
+}  // namespace
+
+// static
+std::unique_ptr<PlatformHandle> PlatformHandle::Create() {
+  return std::make_unique<PlatformHandleImpl>();
 }
+
+}  // namespace system_permission_settings

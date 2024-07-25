@@ -6,11 +6,16 @@
 
 #include <map>
 #include <memory>
+#include <utility>
 
-#include "base/supports_user_data.h"
+#include "base/check.h"
+#include "base/check_deref.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/browser/permissions/system/platform_handle.h"
+
+namespace system_permission_settings {
 
 namespace {
 std::map<ContentSettingsType, bool>& GlobalTestingBlockOverrides() {
@@ -18,53 +23,62 @@ std::map<ContentSettingsType, bool>& GlobalTestingBlockOverrides() {
   return g_testing_block_overrides;
 }
 
-const void* const kSystemPermissionSettingsKey = &kSystemPermissionSettingsKey;
+PlatformHandle* GetPlatformHandle() {
+#if !BUILDFLAG(IS_ANDROID)
+  return CHECK_DEREF(CHECK_DEREF(g_browser_process).GetFeatures())
+      .system_permissions_platform_handle();
+#else
+  return nullptr;
+#endif
+}
 
 }  // namespace
 
-std::unique_ptr<base::SupportsUserData::Data>
-SystemPermissionSettings::Clone() {
-  return nullptr;
+// static
+bool CanPrompt(ContentSettingsType type) {
+  return GetPlatformHandle()->CanPrompt(type);
 }
 
-void SystemPermissionSettings::Create(Profile* profile) {
-  CHECK(profile);
-  profile->SetUserData(kSystemPermissionSettingsKey, CreateImpl());
-}
-
-SystemPermissionSettings* SystemPermissionSettings::GetInstance() {
-  Profile* profile = g_browser_process->profile_manager()->GetLastUsedProfile();
-  CHECK(profile);
-  return static_cast<SystemPermissionSettings*>(
-      profile->GetUserData(kSystemPermissionSettingsKey));
-}
-
-bool SystemPermissionSettings::IsDenied(ContentSettingsType type) const {
+// static
+bool IsDenied(ContentSettingsType type) {
   if (GlobalTestingBlockOverrides().find(type) !=
       GlobalTestingBlockOverrides().end()) {
     return GlobalTestingBlockOverrides().at(type);
   }
-  return IsDeniedImpl(type);
+  return GetPlatformHandle()->IsDenied(type);
 }
 
-bool SystemPermissionSettings::IsAllowed(ContentSettingsType type) const {
+// static
+bool IsAllowed(ContentSettingsType type) {
   if (GlobalTestingBlockOverrides().find(type) !=
       GlobalTestingBlockOverrides().end()) {
-    return GlobalTestingBlockOverrides().at(type);
+    return !GlobalTestingBlockOverrides().at(type);
   }
-  return IsAllowedImpl(type);
+  return GetPlatformHandle()->IsAllowed(type);
 }
 
-ScopedSystemPermissionSettingsForTesting::
-    ScopedSystemPermissionSettingsForTesting(ContentSettingsType type,
-                                             bool blocked)
+// static
+void OpenSystemSettings(content::WebContents* web_contents,
+                        ContentSettingsType type) {
+  GetPlatformHandle()->OpenSystemSettings(web_contents, type);
+}
+
+// static
+void Request(ContentSettingsType type,
+             SystemPermissionResponseCallback callback) {
+  GetPlatformHandle()->Request(type, std::move(callback));
+}
+
+ScopedSettingsForTesting::ScopedSettingsForTesting(ContentSettingsType type,
+                                                   bool blocked)
     : type_(type) {
   CHECK(GlobalTestingBlockOverrides().find(type) ==
         GlobalTestingBlockOverrides().end());
   GlobalTestingBlockOverrides()[type] = blocked;
 }
 
-ScopedSystemPermissionSettingsForTesting::
-    ~ScopedSystemPermissionSettingsForTesting() {
+ScopedSettingsForTesting::~ScopedSettingsForTesting() {
   GlobalTestingBlockOverrides().erase(type_);
 }
+
+}  // namespace system_permission_settings

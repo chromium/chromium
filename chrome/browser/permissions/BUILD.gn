@@ -53,6 +53,7 @@ source_set("permissions") {
     "quiet_notification_permission_ui_config.h",
     "quiet_notification_permission_ui_state.cc",
     "quiet_notification_permission_ui_state.h",
+    "system/platform_handle.h",
     "system/system_permission_settings.cc",
     "system/system_permission_settings.h",
   ]
