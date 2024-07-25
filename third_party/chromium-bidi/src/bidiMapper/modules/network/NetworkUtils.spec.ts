@@ -231,4 +231,18 @@ describe('NetworkUtils', () => {
       ]);
     });
   });
+
+  describe('getTimings', () => {
+    it('should work with undefined', () => {
+      expect(networkUtils.getTiming(undefined)).to.equal(0);
+    });
+
+    it('should work with negative numbers', () => {
+      expect(networkUtils.getTiming(-1)).to.equal(0);
+    });
+
+    it('should work with ints', () => {
+      expect(networkUtils.getTiming(1)).to.equal(1);
+    });
+  });
 });

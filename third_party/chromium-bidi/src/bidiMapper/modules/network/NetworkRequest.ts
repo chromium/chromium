@@ -43,6 +43,7 @@ import {
   cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction,
   bidiBodySizeFromCdpPostDataEntries,
   networkHeaderFromCookieHeaders,
+  getTiming,
 } from './NetworkUtils.js';
 
 const REALM_REGEX = /(?<=realm=").*(?=")/;
@@ -297,22 +298,27 @@ export class NetworkRequest {
     return authChallenges;
   }
 
-  // TODO: implement.
   get #timings(): Network.FetchTimingInfo {
     return {
-      timeOrigin: 0,
-      requestTime: 0,
+      // TODO: Verify this is correct
+      timeOrigin: getTiming(this.#response.info?.timing?.requestTime),
+      requestTime: getTiming(this.#response.info?.timing?.requestTime),
       redirectStart: 0,
       redirectEnd: 0,
-      fetchStart: 0,
-      dnsStart: 0,
-      dnsEnd: 0,
-      connectStart: 0,
-      connectEnd: 0,
-      tlsStart: 0,
-      requestStart: 0,
-      responseStart: 0,
-      responseEnd: 0,
+      // TODO: Verify this is correct
+      // https://source.chromium.org/chromium/chromium/src/+/main:net/base/load_timing_info.h;l=145
+      fetchStart: getTiming(this.#response.info?.timing?.requestTime),
+      dnsStart: getTiming(this.#response.info?.timing?.dnsStart),
+      dnsEnd: getTiming(this.#response.info?.timing?.dnsEnd),
+      connectStart: getTiming(this.#response.info?.timing?.connectStart),
+      connectEnd: getTiming(this.#response.info?.timing?.connectEnd),
+      tlsStart: getTiming(this.#response.info?.timing?.sslStart),
+      requestStart: getTiming(this.#response.info?.timing?.sendStart),
+      // https://source.chromium.org/chromium/chromium/src/+/main:net/base/load_timing_info.h;l=196
+      responseStart: getTiming(
+        this.#response.info?.timing?.receiveHeadersStart
+      ),
+      responseEnd: getTiming(this.#response.info?.timing?.receiveHeadersEnd),
     };
   }
 
@@ -778,7 +784,7 @@ export class NetworkRequest {
       redirectCount: this.#redirectCount,
       request: this.#getRequestData(),
       // Timestamp should be in milliseconds, while CDP provides it in seconds.
-      timestamp: Math.round((this.#request.info?.wallTime ?? 0) * 1000),
+      timestamp: Math.round(getTiming(this.#request.info?.wallTime) * 1000),
       // Contains isBlocked and intercepts
       ...interceptProps,
     };
