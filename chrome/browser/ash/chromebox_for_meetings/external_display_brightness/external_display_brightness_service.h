@@ -7,8 +7,8 @@
 
 #include <optional>
 
+#include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
-#include "chromeos/services/chromebox_for_meetings/public/cpp/service_adaptor.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/external_display_brightness.mojom-shared.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/external_display_brightness.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -17,7 +17,7 @@ namespace ash::cfm {
 
 class ExternalDisplayBrightnessService
     : public CfmObserver,
-      public chromeos::cfm::ServiceAdaptor::Delegate,
+      public ServiceAdaptor::Delegate,
       public chromeos::cfm::mojom::ExternalDisplayBrightness {
  public:
   ExternalDisplayBrightnessService(const ExternalDisplayBrightnessService&) =
@@ -38,7 +38,7 @@ class ExternalDisplayBrightnessService
   // CfmObserver implementation
   bool ServiceRequestReceived(const std::string& interface_name) override;
 
-  // chromeos::cfm::ServiceAdaptor::Delegate implementation
+  // ServiceAdaptorDelegate implementation
   void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe) override;
   void OnAdaptorConnect(bool success) override;
   void OnAdaptorDisconnect() override;
@@ -62,7 +62,7 @@ class ExternalDisplayBrightnessService
       GetExternalDisplayBrightnessPercentCallback callback,
       std::optional<double> percent);
 
-  chromeos::cfm::ServiceAdaptor service_adaptor_;
+  ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<chromeos::cfm::mojom::ExternalDisplayBrightness> receivers_;
 };
 
