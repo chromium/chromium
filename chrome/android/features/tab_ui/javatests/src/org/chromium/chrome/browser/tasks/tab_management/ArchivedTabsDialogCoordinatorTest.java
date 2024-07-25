@@ -220,6 +220,48 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
+    public void testRestoreArchivedTabsAndOpenLast() throws Exception {
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+        showDialog(2);
+        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
+
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Restore all");
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+
+        // Back to the regular tab switcher -- verify that the undo button is showing.
+        int index = 2;
+        onView(withId(R.id.tab_list_recycler_view))
+                .perform(
+                        new ViewAction() {
+                            @Override
+                            public Matcher<View> getConstraints() {
+                                return isDisplayed();
+                            }
+
+                            @Override
+                            public String getDescription() {
+                                return "click on end button of item with index "
+                                        + String.valueOf(index);
+                            }
+
+                            @Override
+                            public void perform(UiController uiController, View view) {
+                                RecyclerView recyclerView = (RecyclerView) view;
+                                RecyclerView.ViewHolder viewHolder =
+                                        recyclerView.findViewHolderForAdapterPosition(index);
+                                if (viewHolder.itemView == null) return;
+                                viewHolder.itemView.performClick();
+                            }
+                        });
+        LayoutTestUtils.waitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+        Tab activityTab = mActivityTestRule.getActivity().getActivityTabProvider().get();
+        assertEquals(mRegularTabModel.getTabAt(2), activityTab);
+    }
+
+    @Test
+    @MediumTest
     public void testSettings() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");

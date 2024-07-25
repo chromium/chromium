@@ -31,8 +31,12 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.task.TaskTraits;
+import org.chromium.base.task.test.ShadowPostTask;
+import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
@@ -56,6 +60,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 /** Tests for {@link TabListMediator}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowPostTask.class})
 public class ArchivedTabsDialogCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
@@ -108,6 +113,16 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     }
 
     private void setUpMocks() {
+        // Run posted tasks immediately.
+        ShadowPostTask.setTestImpl(
+                new TestImpl() {
+                    @Override
+                    public void postDelayedTask(
+                            @TaskTraits int taskTraits, Runnable task, long delay) {
+                        task.run();
+                    }
+                });
+
         doReturn(mArchivedTabModelSelector)
                 .when(mArchivedTabModelOrchestrator)
                 .getTabModelSelector();

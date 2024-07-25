@@ -138,7 +138,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private final Callback<Integer> mTabCountObserver =
             (count) -> {
                 if (count <= 0) {
-                    hide();
+                    // Post task to allow the last tab to be unregistered.
+                    PostTask.postTask(TaskTraits.UI_DEFAULT, () -> hide());
                     return;
                 }
                 updateTitle();
