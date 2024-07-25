@@ -11,7 +11,4 @@ found in the LICENSE file.
     android:background="@color/google_bottom_bar_background_color"
     android:baselineAligned="false"
     android:gravity="center"
-    android:paddingTop="@dimen/google_bottom_bar_vertical_padding"
-    android:paddingBottom="@dimen/google_bottom_bar_vertical_padding"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/google_bottom_bar_height"/>
+    android:layout_width="match_parent"/>

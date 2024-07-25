@@ -21,4 +21,8 @@ message GoogleBottomBarIntentParams {
     SINGLE_DECKER_WITH_RIGHT_BUTTONS = 4;
   }
   optional VariantLayoutType variant_layout_type = 2 [default = NO_VARIANT];
+
+  optional int32 no_variant_height_dp = 3;
+
+  optional int32 single_decker_height_dp = 4;
 }

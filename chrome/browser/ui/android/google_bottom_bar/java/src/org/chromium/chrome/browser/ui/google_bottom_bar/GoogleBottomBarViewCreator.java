@@ -31,10 +31,13 @@ import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonCo
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarCreatedEvent;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarVariantCreatedEvent;
+import org.chromium.ui.base.ViewUtils;
 
 /** Builds the GoogleBottomBar view. */
 public class GoogleBottomBarViewCreator {
     private static final String TAG = "GbbViewCreator";
+
+    private static final int SINGLE_DECKER_MIN_HEIGHT_DP_FOR_LARGE_TOP_PADDING = 60;
 
     private final Context mContext;
     private final BottomBarConfig mConfig;
@@ -73,6 +76,7 @@ public class GoogleBottomBarViewCreator {
     View createGoogleBottomBarView() {
         mRootView = getLayoutRoot();
 
+        setDimensionsOnRootView();
         maybeAddButtons();
         maybeAddSearchbox();
         maybeAddButtonsOnRight();
@@ -82,15 +86,7 @@ public class GoogleBottomBarViewCreator {
 
     /** Calculates and returns the height of the bottom bar in pixels. */
     int getBottomBarHeightInPx() {
-        if (mConfig.getVariantLayoutType() == DOUBLE_DECKER) {
-            return mContext.getResources()
-                    .getDimensionPixelSize(R.dimen.google_bottom_bar_double_decker_height);
-        }
-        if (mConfig.getVariantLayoutType() == SINGLE_DECKER) {
-            return mContext.getResources()
-                    .getDimensionPixelSize(R.dimen.google_bottom_bar_single_decker_height);
-        }
-        return mContext.getResources().getDimensionPixelSize(R.dimen.google_bottom_bar_height);
+        return ViewUtils.dpToPx(mContext, (float) mConfig.getHeightDp());
     }
 
     private void maybeAddSearchbox() {
@@ -192,6 +188,28 @@ public class GoogleBottomBarViewCreator {
             }
         }
         return (ViewGroup) LayoutInflater.from(mContext).inflate(rootLayoutId, /* root= */ null);
+    }
+
+    private void setDimensionsOnRootView() {
+        mRootView.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, getBottomBarHeightInPx()));
+
+        if (mConfig.getVariantLayoutType() == SINGLE_DECKER
+                || mConfig.getVariantLayoutType() == SINGLE_DECKER_WITH_RIGHT_BUTTONS) {
+            // We prefer large (8dp) top padding, but if this will cause searchbox to be below 52dp
+            // we reduce it to small (4dp).
+            int singleDeckerTopPaddingResId =
+                    mConfig.getHeightDp() >= SINGLE_DECKER_MIN_HEIGHT_DP_FOR_LARGE_TOP_PADDING
+                            ? R.dimen.google_bottom_bar_single_decker_top_padding_large
+                            : R.dimen.google_bottom_bar_single_decker_top_padding_small;
+            mRootView.setPaddingRelative(
+                    /* start= */ mRootView.getPaddingStart(),
+                    /* top= */ mContext.getResources()
+                            .getDimensionPixelSize(singleDeckerTopPaddingResId),
+                    /* end= */ mRootView.getPaddingEnd(),
+                    /* bottom= */ mRootView.getPaddingBottom());
+        }
     }
 
     boolean updateBottomBarButton(@Nullable ButtonConfig buttonConfig) {

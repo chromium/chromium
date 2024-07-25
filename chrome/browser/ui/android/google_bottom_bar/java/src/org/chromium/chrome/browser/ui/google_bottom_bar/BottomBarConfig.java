@@ -76,14 +76,17 @@ class BottomBarConfig {
     private final @GoogleBottomBarVariantLayoutType int mVariantLayoutType;
     private final @Nullable @ButtonId Integer mSpotlightId;
     private final List<ButtonConfig> mButtonList;
+    private final int mHeightDp;
 
     BottomBarConfig(
             @Nullable @ButtonId Integer spotlightId,
             List<ButtonConfig> buttonList,
-            @GoogleBottomBarVariantLayoutType int variantLayoutType) {
+            @GoogleBottomBarVariantLayoutType int variantLayoutType,
+            int heightDp) {
         mSpotlightId = spotlightId;
         mButtonList = buttonList;
         mVariantLayoutType = variantLayoutType;
+        mHeightDp = heightDp;
     }
 
     /**
@@ -109,6 +112,13 @@ class BottomBarConfig {
     @GoogleBottomBarVariantLayoutType
     int getVariantLayoutType() {
         return mVariantLayoutType;
+    }
+
+    /**
+     * @return the height of the bottom bar in DP.
+     */
+    int getHeightDp() {
+        return mHeightDp;
     }
 
     /**

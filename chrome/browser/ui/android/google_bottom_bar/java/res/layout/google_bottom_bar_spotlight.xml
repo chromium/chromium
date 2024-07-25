@@ -20,7 +20,7 @@ found in the LICENSE file.
       android:id="@+id/google_bottom_bar_non_spotlit_buttons_container"
       android:layout_width="0dp"
       android:layout_weight="1"
-      android:layout_height="@dimen/google_bottom_bar_height"
+      android:layout_height="match_parent"
       android:layout_gravity="center_vertical"
       android:gravity="end"
       android:orientation="horizontal">

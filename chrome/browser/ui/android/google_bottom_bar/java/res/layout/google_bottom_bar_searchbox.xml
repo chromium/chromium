@@ -9,8 +9,8 @@ found in the LICENSE file.
     android:id="@+id/google_bottom_bar_searchbox"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:background="@drawable/bottom_bar_searchbox_background"
-    android:layout_height="@dimen/google_bottom_bar_searchbox_container_height" >
+    android:layout_height="match_parent"
+    android:background="@drawable/bottom_bar_searchbox_background" >
 
   <ImageButton
       android:id="@+id/google_bottom_bar_searchbox_super_g_button"
