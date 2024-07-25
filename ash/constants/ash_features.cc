@@ -235,7 +235,7 @@ BASE_FEATURE(kAutozoomNudgeSessionReset,
 // Make Battery Saver available.
 BASE_FEATURE(kBatterySaver,
              "CrosBatterySaver",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Determines the behavior of the battery saver controller auto enable threshold
 // and notification timing.
