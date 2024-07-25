@@ -2,22 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_SERVICE_ADAPTOR_H_
-#define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_SERVICE_ADAPTOR_H_
+#ifndef CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_SERVICE_ADAPTOR_H_
+#define CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_SERVICE_ADAPTOR_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace ash::cfm {
+namespace chromeos::cfm {
 
 // Abstract class that provides convenience methods, allowing new CfM Services
 // to register with the |CfmServiceContext| through its mojo |Interface|
-class ServiceAdaptor : public chromeos::cfm::mojom::CfmServiceAdaptor {
+class COMPONENT_EXPORT(CHROMEOS_CFMSERVICE) ServiceAdaptor
+    : public mojom::CfmServiceAdaptor {
  public:
   using GetServiceCallback =
-      chromeos::cfm::mojom::CfmServiceContext::RequestBindServiceCallback;
+      mojom::CfmServiceContext::RequestBindServiceCallback;
 
   class Delegate {
    public:
@@ -47,7 +48,7 @@ class ServiceAdaptor : public chromeos::cfm::mojom::CfmServiceAdaptor {
   ~ServiceAdaptor() override;
 
   // Returns the primary |mojom::CfmServiceContext|
-  virtual chromeos::cfm::mojom::CfmServiceContext* GetContext();
+  virtual mojom::CfmServiceContext* GetContext();
 
   // Binds a |mojo::Remote| to the primary |mojom::CfmServiceContext|
   virtual void BindServiceAdaptor();
@@ -83,12 +84,12 @@ class ServiceAdaptor : public chromeos::cfm::mojom::CfmServiceAdaptor {
 
   const raw_ptr<Delegate> delegate_;
 
-  mojo::Remote<chromeos::cfm::mojom::CfmServiceContext> context_;
-  mojo::Receiver<chromeos::cfm::mojom::CfmServiceAdaptor> adaptor_{this};
+  mojo::Remote<mojom::CfmServiceContext> context_;
+  mojo::Receiver<mojom::CfmServiceAdaptor> adaptor_{this};
 
   base::WeakPtrFactory<ServiceAdaptor> weak_ptr_factory_{this};
 };
 
-}  // namespace ash::cfm
+}  // namespace chromeos::cfm
 
-#endif  // CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_SERVICE_ADAPTOR_H_
+#endif  // CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_SERVICE_ADAPTOR_H_
