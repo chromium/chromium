@@ -545,8 +545,8 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
         AcceleratorLayoutDetails(
             AcceleratorAction::kEnableOrToggleDictation,
             IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_DICTATION,
-            mojom::AcceleratorCategory::kGeneral,
-            mojom::AcceleratorSubcategory::kGeneralControls,
+            mojom::AcceleratorCategory::kAccessibility,
+            mojom::AcceleratorSubcategory::kVisibility,
             /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
             mojom::AcceleratorSource::kAsh)},
        {AcceleratorAction::kStartAssistant,

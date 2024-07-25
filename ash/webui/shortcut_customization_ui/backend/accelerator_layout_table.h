@@ -293,7 +293,6 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     AcceleratorAction::kExit,
     AcceleratorAction::kSwitchToNextUser,
     AcceleratorAction::kSwitchToPreviousUser,
-    AcceleratorAction::kEnableOrToggleDictation,
     AcceleratorAction::kStartAssistant,
 
     // General > Apps
@@ -482,6 +481,7 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     AcceleratorAction::kToggleMouseKeys,
 
     // Accessibility > Visibility
+    AcceleratorAction::kEnableOrToggleDictation,
     AcceleratorAction::kEnableSelectToSpeak,
     AcceleratorAction::kToggleHighContrast,
     AcceleratorAction::kToggleDockedMagnifier,
