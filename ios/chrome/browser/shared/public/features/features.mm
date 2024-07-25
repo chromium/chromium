@@ -915,6 +915,12 @@ BASE_FEATURE(kEnableAppBackgroundRefresh,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAppBackgroundRefreshEnabled() {
+  version_info::Channel channel = ::GetChannel();
+  if (channel == version_info::Channel::BETA ||
+      channel == version_info::Channel::STABLE) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(kEnableAppBackgroundRefresh);
 }
 

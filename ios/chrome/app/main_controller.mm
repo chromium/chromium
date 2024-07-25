@@ -40,6 +40,8 @@
 #import "ios/chrome/app/app_metrics_app_state_agent.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_storage_metrics.h"
+#import "ios/chrome/app/background_refresh/background_refresh_app_agent.h"
+#import "ios/chrome/app/background_refresh/test_refresher.h"
 #import "ios/chrome/app/blocking_scene_commands.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/docking_promo_app_agent.h"
@@ -851,10 +853,21 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // Create app state agents.
   [appState addAgent:[[AppMetricsAppStateAgent alloc] init]];
   [appState addAgent:[[SafeModeAppAgent alloc] init]];
-  [appState addAgent:[[FeedAppAgent alloc] init]];
   [appState addAgent:[[SearchEngineChoiceAppAgent alloc] init]];
   [appState addAgent:[[VariationsAppStateAgent alloc] init]];
   [appState addAgent:[[IdentityConfirmationAppAgent alloc] init]];
+
+  BackgroundRefreshAppAgent* refreshAgent =
+      [[BackgroundRefreshAppAgent alloc] init];
+  [_appState addAgent:refreshAgent];
+  // Register background refresh providers.
+  [refreshAgent addAppRefreshProvider:[[TestRefresher alloc]
+                                          initWithAppState:self.appState]];
+  // Request background refresh.
+  [refreshAgent requestAppRefreshWithDelay:30 * 60.0];  // 30 minutes.
+
+  // TODO(crbug.com/355142171): Remove the FeedAppAgent.
+  [appState addAgent:[[FeedAppAgent alloc] init]];
 
   // Create the window accessibility agent only when multiple windows are
   // possible.
