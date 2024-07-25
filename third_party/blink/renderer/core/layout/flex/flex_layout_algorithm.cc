@@ -737,6 +737,24 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       }
       return layout_result->IntrinsicBlockSize();
     };
+    auto ContentBlockSizeFunc = [&]() -> LayoutUnit {
+      DCHECK(!MainAxisIsInlineAxis(child));
+      if (child.HasAspectRatio() && !child.IsReplaced()) {
+        const LayoutUnit inline_size = InlineSizeFunc();
+        if (inline_size != kIndefiniteSize) {
+          return BlockSizeFromAspectRatio(
+              border_padding_in_child_writing_mode, child.GetAspectRatio(),
+              child_style.BoxSizingForAspectRatio(), inline_size);
+        }
+
+        const MinMaxSizes min_max = ComputeTransferredMinMaxBlockSizes(
+            child.GetAspectRatio(), min_max_sizes_in_cross_axis_direction,
+            border_padding_in_child_writing_mode,
+            child.Style().BoxSizingForAspectRatio());
+        return min_max.ClampSizeToMinAndMax(IntrinsicBlockSizeFunc());
+      }
+      return IntrinsicBlockSizeFunc();
+    };
 
     const Length& flex_basis = child_style.FlexBasis();
     if (is_column_ && flex_basis.MayHavePercentDependence()) {
@@ -772,33 +790,12 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         return MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.max_size;
       }
 
-      // The block-axis is slightly different to the inline-axis.
-
-      auto ContentBlockSizeFunc = [&]() -> LayoutUnit {
-        DCHECK(!MainAxisIsInlineAxis(child));
-
-        is_used_flex_basis_indefinite = true;
-
-        if (child.HasAspectRatio() && !child.IsReplaced()) {
-          const LayoutUnit inline_size = InlineSizeFunc();
-          if (inline_size != kIndefiniteSize) {
-            return BlockSizeFromAspectRatio(
-                border_padding_in_child_writing_mode, child.GetAspectRatio(),
-                child_style.BoxSizingForAspectRatio(), inline_size);
-          }
-
-          const MinMaxSizes min_max = ComputeTransferredMinMaxBlockSizes(
-              child.GetAspectRatio(), min_max_sizes_in_cross_axis_direction,
-              border_padding_in_child_writing_mode,
-              child.Style().BoxSizingForAspectRatio());
-          return min_max.ClampSizeToMinAndMax(IntrinsicBlockSizeFunc());
-        }
-        return IntrinsicBlockSizeFunc();
-      };
-
-      return ResolveMainBlockLength(
-          flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          used_flex_basis_length, auto_length, ContentBlockSizeFunc);
+      return ResolveMainBlockLength(flex_basis_space, child_style,
+                                    border_padding_in_child_writing_mode,
+                                    used_flex_basis_length, auto_length, [&]() {
+                                      is_used_flex_basis_indefinite = true;
+                                      return ContentBlockSizeFunc();
+                                    });
     };
 
     const LayoutUnit flex_base_border_box = ([&]() -> LayoutUnit {
