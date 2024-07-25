@@ -229,6 +229,9 @@ enum class PreloadingEligibility {
   // Preloading was ineligible for non-http(s).
   kHttpOrHttpsOnly = 19,
 
+  // Preloading was ineligible because the network is too slow.
+  kSlowNetwork = 20,
+
   // See corresponding values in PrefetchStatus for documentation.
   kUserHasCookies = 55,
   kUserHasServiceWorker = 56,

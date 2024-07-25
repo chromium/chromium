@@ -126,3 +126,12 @@ const base::FeatureParam<base::TimeDelta>
     kAutocompletePreloadedDictionaryTimeout{
         &kAutocompleteDictionaryPreload,
         "autocomplete_preloaded_dictionary_timeout", base::Milliseconds(60000)};
+
+BASE_FEATURE(kSuppressesSearchPrefetchOnSlowNetwork,
+             "SuppressesSearchPrefetchOnSlowNetwork",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta>
+    kSuppressesSearchPrefetchOnSlowNetworkThreshold{
+        &kSuppressesSearchPrefetchOnSlowNetwork,
+        "slow_network_threshold_for_search_prefetch", base::Milliseconds(208)};

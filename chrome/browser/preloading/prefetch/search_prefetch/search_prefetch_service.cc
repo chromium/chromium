@@ -14,7 +14,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
@@ -47,6 +49,7 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
@@ -252,6 +255,17 @@ content::PreloadingFailureReason ToPreloadingFailureReason(
                            kPreloadingFailureReasonContentEnd));
 }
 
+bool IsSlowNetwork() {
+  static const base::TimeDelta kSlowNetworkThreshold =
+      kSuppressesSearchPrefetchOnSlowNetworkThreshold.Get();
+  if (g_browser_process->network_quality_tracker() &&
+      g_browser_process->network_quality_tracker()->GetHttpRTT() >
+          kSlowNetworkThreshold) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 #if BUILDFLAG(IS_ANDROID)
@@ -394,6 +408,14 @@ bool SearchPrefetchService::MaybePrefetchURL(
     recorder.reason_ = SearchPrefetchEligibilityReason::kJavascriptDisabled;
     SetEligibility(attempt,
                    content::PreloadingEligibility::kJavascriptDisabled);
+    return false;
+  }
+
+  static const bool kSuppressesSearchPrefetchOnSlowNetworkIsEnabled =
+      base::FeatureList::IsEnabled(kSuppressesSearchPrefetchOnSlowNetwork);
+  if (kSuppressesSearchPrefetchOnSlowNetworkIsEnabled && IsSlowNetwork()) {
+    recorder.reason_ = SearchPrefetchEligibilityReason::kSlowNetwork;
+    SetEligibility(attempt, content::PreloadingEligibility::kSlowNetwork);
     return false;
   }
 

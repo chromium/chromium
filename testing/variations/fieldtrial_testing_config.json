@@ -21846,6 +21846,29 @@
             ]
         }
     ],
+    "SuppressesSearchPrefetchOnSlowNetwork": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "slow_network_threshold_for_search_prefetch": "208ms"
+                    },
+                    "enable_features": [
+                        "SuppressesSearchPrefetchOnSlowNetwork"
+                    ]
+                }
+            ]
+        }
+    ],
     "SyncIncreaseNudgeDelayForSingleClient": [
         {
             "platforms": [

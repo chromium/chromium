@@ -73,7 +73,9 @@ enum class SearchPrefetchEligibilityReason {
   kMaxAttemptsReached = 7,
   // A URLLoaderThrottle decided this request should not be issued.
   kThrottled = 8,
-  kMaxValue = kThrottled,
+  // The prefetch was suppressed because the network is too slow.
+  kSlowNetwork = 9,
+  kMaxValue = kSlowNetwork,
 };
 // LINT.ThenChange()
 
