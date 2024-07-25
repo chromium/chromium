@@ -4103,11 +4103,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-throttle-display-none-and-visibility-hidden-cross-origin-iframes",
-    "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
-    "expiry_milestone": 128
-  },
-  {
     "name": "enable-tls13-early-data",
     "owners": [ "davidben@chromium.org", "svaldez@chromium.org", "bashi@chromium.org" ],
     "expiry_milestone": 130
