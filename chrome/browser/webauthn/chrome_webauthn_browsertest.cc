@@ -32,6 +32,7 @@
 #include "chrome/browser/webauthn/test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
@@ -431,9 +432,28 @@ class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
     WebAuthnBrowserTest::PostRunTestOnMainThread();
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    WebAuthnBrowserTest::SetUpInProcessBrowserTestFixture();
+    subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &WebAuthnGpmPasskeyTest::OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
+
  protected:
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    PasskeyModelFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<webauthn::TestPasskeyModel>();
+            }));
+  }
+
   std::unique_ptr<Observer> observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::CallbackListSubscription subscription_;
 };
 
 // Tests that chrome filters out GPM passkeys that don't appear on a request
@@ -444,12 +464,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, FilterGPMPasskeys) {
 
   // Set up two GPM passkeys.
   auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
-      PasskeyModelFactory::GetInstance()->SetTestingFactoryAndUse(
-          browser()->profile(),
-          base::BindRepeating(
-              [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-                return std::make_unique<webauthn::TestPasskeyModel>();
-              })));
+      PasskeyModelFactory::GetForProfile(browser()->profile()));
   passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
       kCredentialID, kUserId1, kUsername1, kDisplayName1));
   passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
@@ -493,15 +508,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportGPMPasskeys) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
 
-  // Set up GPM Passkey
+  // Set up GPM Passkey.
   auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
-      PasskeyModelFactory::GetInstance()->SetTestingFactoryAndUse(
-          browser()->profile(),
-          base::BindRepeating(
-              [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-                return std::make_unique<webauthn::TestPasskeyModel>();
-              })));
-
+      PasskeyModelFactory::GetForProfile(browser()->profile()));
   passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
       kCredentialID, kUserId1, kUsername1, kDisplayName1));
 

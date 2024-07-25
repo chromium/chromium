@@ -744,12 +744,6 @@ CommonControllerBuilder::Build(syncer::ModelTypeSet disabled_types,
             delegate)));
   }
 
-  // TODO(crbug.com/335688372): Temporary workaround to avoid test failures in
-  // some browser tests that override factories late, which otherwise runs into
-  // dangling raw pointers.
-  passkey_model_.Reset();
-  consent_auditor_.Reset();
-
   return controllers;
 }
 
