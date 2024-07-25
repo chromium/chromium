@@ -136,6 +136,21 @@ export class SettingsNearbyShareSubpageElement extends
         type: Boolean,
         value: () => loadTimeData.getBoolean('isQuickShareV2Enabled'),
       },
+
+      isDeviceVisible_: {
+        type: Boolean,
+        value: true,  // TODO
+      },
+
+      selectedVisibility_: {
+        type: String,
+        value: 'Your devices',  // TODO
+      },
+
+      isEveryoneModeOnlyForTenMinutes_: {
+        type: Boolean,
+        value: true,  // TODO
+      },
     };
   }
 
@@ -144,12 +159,15 @@ export class SettingsNearbyShareSubpageElement extends
   }
 
   isSettingsRetreived: boolean;
+  private isDeviceVisible_: boolean;
+  private isEveryoneModeOnlyForTenMinutes_: boolean;
   private inHighVisibility_: boolean;
   private isQuickShareV2Enabled_: boolean;
   private manageContactsUrl_: string;
   private profileLabel_: string;
   private profileName_: string;
   private receiveObserver_: ReceiveObserverReceiver|null;
+  private selectedVisibility_: string;
   private settings: NearbySettings;
   private shouldShowFastInititationNotificationToggle_: boolean;
   private showDataUsageDialog_: boolean;
@@ -461,6 +479,15 @@ export class SettingsNearbyShareSubpageElement extends
   private computeShouldShowFastInititationNotificationToggle_(
       isHardwareSupported: boolean): boolean {
     return isHardwareSupported;
+  }
+
+  private onSelectedVisibilityChange_(): void {
+    // TODO
+  }
+
+  private isEveryoneModeSelected_(): boolean {
+    // TODO
+    return this.selectedVisibility_ === 'Everyone';
   }
 }
 

@@ -112,77 +112,127 @@
         id="deviceNameDialog" on-close="onDeviceNameDialogClose_">
     </nearby-share-device-name-dialog>
   </template>
-  <div class="settings-box two-line" id="visibilityRow">
-    <div class="start">
-      <div role="heading" aria-hidden="true">
-        $i18n{nearbyShareContactVisibilityRowTitle}
+  <template is="dom-if" if="[[isQuickShareV2Enabled_]]">
+    <div class="settings-box two-line">
+      <div class="start">
+        <div>
+          Who can share with you
+        </div>
+        <div class="secondary">
+          No one can share with you until you make yourself visible
+        </div>
       </div>
-      <div aria-hidden="true" class="secondary">
-        [[getVisibilityText_(settings.visibility)]]
-      </div>
+      <cr-toggle
+        checked="[[isDeviceVisible_]]"
+        on-change="onSelectedVisiblityChange_">
+      </cr-toggle>
     </div>
-    <cr-button id="editVisibilityButton" on-click="onVisibilityClick_"
-        disabled="[[!prefs.nearby_sharing.enabled.value]]"
-        aria-description="[[getVisibilityDescription_(
-            settings.visibility)]]"
-        deep-link-focus-id$="[[Setting.kNearbyShareDeviceVisibility]]">
-      $i18n{nearbyShareEditVisibility}
-    </cr-button>
-  </div>
-  <div id="highVisibilityContainer" class="settings-box two-line">
-    <div class="start">
-      <div id="highVisibilityTitle"
-          role="heading" aria-hidden="true">
-        $i18n{nearbyShareHighVisibilityTitle}
-      </div>
-      <div id="highVisibilitySubtitle"
-          class="secondary" aria-hidden="true">
-        <localized-link id="highVisibilityOff"
-            localized-string="[[getHighVisibilityToggleText_(
-                inHighVisibility_)]]"
-            link-url="$i18n{nearbyShareLearnMoreLink}">
-        </localized-link>
-      </div>
-    </div>
-    <div class="separator"></div>
-    <cr-toggle
-        id="highVisibilityToggle"
-        checked="{{inHighVisibility_}}"
-        disabled="[[!prefs.nearby_sharing.enabled.value]]"
-        aria-labelledby="highVisibilityTitle"
-        aria-describedby="highVisibilitySubtitle"
-        on-change="onInHighVisibilityToggledByUser_">
-    </cr-toggle>
-  </div>
-  <template is="dom-if" if="[[showVisibilityDialog_]]" restamp>
-    <nearby-share-contact-visibility-dialog settings="{{settings}}" profile-email="[[profileLabel_]]"
-        id="visibilityDialog" on-close="onVisibilityDialogClose_">
-    </nearby-share-contact-visibility-dialog>
+    <cr-radio-group
+      class="list-frame"
+      selected="[[selectedVisibility_]]"
+      disabled="[[!isDeviceVisible_]]"
+      on-selected-changed="onSelectedVisiblityChange_">
+      <cr-radio-button
+        class="list-item"
+        name="Your devices"
+        label="Your devices">
+          <div class="secondary">Only devices signed into test@gmail.com</div>
+      </cr-radio-button>
+      <cr-radio-button
+        class="list-item"
+        name="Contacts"
+        label="Contacts">
+        <div class="secondary">Only your contacts with a Google account. View contacts.</div>
+      </cr-radio-button>
+      <cr-radio-button
+        class="list-item"
+        name="Everyone"
+        label="Everyone">
+        <div class="secondary">Anyone nearby</div>
+      </cr-radio-button>
+      <!--'style' attribute aligns start of checkbox with start of above radio button label by padding radio butto size (16px) + button-label spacing.-->
+      <cr-checkbox
+        class="list-item"
+        style="padding-inline-start: calc(16px + var(--cr-radio-button-label-spacing, 20px));" 
+        checked="isEveryoneModeOnlyForTenMinutes_"
+        disabled="[[isEveryoneModeSelected_()]]">
+        Only for 10 minutes
+      </cr-checkbox>
+    </cr-radio-group>
   </template>
-  <cr-link-row id="manageContactsLinkRow" class="hr"
-      on-click="onManageContactsClick_"
-      label="$i18n{nearbyShareManageContactsRowTitle}"
-      sub-label="[[getManageContactsSubLabel_(manageContactsUrl_)]]"
-      external
-      deep-link-focus-id$="[[Setting.kNearbyShareContacts]]">
-  </cr-link-row>
-  <div class="settings-box two-line" id="dataUsageRow">
-    <div class="start">
-      <div aria-hidden="true">
-        $i18n{nearbyShareDataUsageDialogTitle}
+  <template is="dom-if" if="[[!isQuickShareV2Enabled_]]">
+    <div class="settings-box two-line" id="visibilityRow">
+      <div class="start">
+        <div role="heading" aria-hidden="true">
+          $i18n{nearbyShareContactVisibilityRowTitle}
+        </div>
+        <div aria-hidden="true" class="secondary">
+          [[getVisibilityText_(settings.visibility)]]
+        </div>
       </div>
-      <div aria-hidden="true" class="secondary">
-        [[getDataUsageLabel_(prefs.nearby_sharing.data_usage.value)]]
-      </div>
+      <cr-button id="editVisibilityButton" on-click="onVisibilityClick_"
+          disabled="[[!prefs.nearby_sharing.enabled.value]]"
+          aria-description="[[getVisibilityDescription_(
+              settings.visibility)]]"
+          deep-link-focus-id$="[[Setting.kNearbyShareDeviceVisibility]]">
+        $i18n{nearbyShareEditVisibility}
+      </cr-button>
     </div>
-    <cr-button id="editDataUsageButton" on-click="onDataUsageClick_"
-        disabled="[[!prefs.nearby_sharing.enabled.value]]"
-        aria-description="[[getEditDataUsageButtonAriaDescription_(
-            prefs.nearby_sharing.data_usage.value)]]"
-        deep-link-focus-id$="[[Setting.kNearbyShareDataUsage]]">
-      $i18n{nearbyShareEditDataUsage}
-    </cr-button>
-  </div>
+    <div id="highVisibilityContainer" class="settings-box two-line">
+      <div class="start">
+        <div id="highVisibilityTitle"
+            role="heading" aria-hidden="true">
+          $i18n{nearbyShareHighVisibilityTitle}
+        </div>
+        <div id="highVisibilitySubtitle"
+            class="secondary" aria-hidden="true">
+          <localized-link id="highVisibilityOff"
+              localized-string="[[getHighVisibilityToggleText_(
+                  inHighVisibility_)]]"
+              link-url="$i18n{nearbyShareLearnMoreLink}">
+          </localized-link>
+        </div>
+      </div>
+      <div class="separator"></div>
+      <cr-toggle
+          id="highVisibilityToggle"
+          checked="{{inHighVisibility_}}"
+          disabled="[[!prefs.nearby_sharing.enabled.value]]"
+          aria-labelledby="highVisibilityTitle"
+          aria-describedby="highVisibilitySubtitle"
+          on-change="onInHighVisibilityToggledByUser_">
+      </cr-toggle>
+    </div>
+    <template is="dom-if" if="[[showVisibilityDialog_]]" restamp>
+      <nearby-share-contact-visibility-dialog settings="{{settings}}" profile-email="[[profileLabel_]]"
+          id="visibilityDialog" on-close="onVisibilityDialogClose_">
+      </nearby-share-contact-visibility-dialog>
+    </template>
+    <cr-link-row id="manageContactsLinkRow" class="hr"
+        on-click="onManageContactsClick_"
+        label="$i18n{nearbyShareManageContactsRowTitle}"
+        sub-label="[[getManageContactsSubLabel_(manageContactsUrl_)]]"
+        external
+        deep-link-focus-id$="[[Setting.kNearbyShareContacts]]">
+    </cr-link-row>
+    <div class="settings-box two-line" id="dataUsageRow">
+      <div class="start">
+        <div aria-hidden="true">
+          $i18n{nearbyShareDataUsageDialogTitle}
+        </div>
+        <div aria-hidden="true" class="secondary">
+          [[getDataUsageLabel_(prefs.nearby_sharing.data_usage.value)]]
+        </div>
+      </div>
+      <cr-button id="editDataUsageButton" on-click="onDataUsageClick_"
+          disabled="[[!prefs.nearby_sharing.enabled.value]]"
+          aria-description="[[getEditDataUsageButtonAriaDescription_(
+              prefs.nearby_sharing.data_usage.value)]]"
+          deep-link-focus-id$="[[Setting.kNearbyShareDataUsage]]">
+        $i18n{nearbyShareEditDataUsage}
+      </cr-button>
+    </div>
+  </template>
 </template>
 <template is="dom-if" if="[[shouldShowFastInititationNotificationToggle_]]"
     restamp>
