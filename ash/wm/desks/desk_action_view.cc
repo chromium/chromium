@@ -68,13 +68,6 @@ DeskActionView::~DeskActionView() {
 }
 
 bool DeskActionView::ChildHasFocus() const {
-  if (mini_view_->owner_bar()->type() == DeskBarViewBase::Type::kOverview &&
-      !features::IsOverviewNewFocusEnabled()) {
-    return (features::IsForestFeatureEnabled()
-                ? context_menu_button_->is_focused()
-                : combine_desks_button_->is_focused()) ||
-           close_all_button_->is_focused();
-  }
   return (features::IsForestFeatureEnabled()
               ? context_menu_button_->HasFocus()
               : combine_desks_button_->HasFocus()) ||

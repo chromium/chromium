@@ -4,7 +4,6 @@
 
 #include "ash/wm/desks/desk_button_base.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/wm_constants.h"
@@ -55,23 +54,11 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
-  if (bar_view_->type() == DeskBarViewBase::Type::kOverview &&
-      !features::IsOverviewNewFocusEnabled()) {
-    focus_ring->SetHasFocusPredicate(
-        base::BindRepeating([](const views::View* view) {
-          const auto* v = views::AsViewClass<DeskButtonBase>(view);
-          CHECK(v);
-          return v->is_focused();
-        }));
-  }
 }
 
 DeskButtonBase::~DeskButtonBase() = default;
 
 void DeskButtonBase::OnFocus() {
-  if (bar_view_->type() == DeskBarViewBase::Type::kOverview) {
-    MoveFocusToView(this);
-  }
   UpdateFocusState();
   View::OnFocus();
 }
@@ -79,27 +66,6 @@ void DeskButtonBase::OnFocus() {
 void DeskButtonBase::OnBlur() {
   UpdateFocusState();
   View::OnBlur();
-}
-
-views::View* DeskButtonBase::GetView() {
-  return this;
-}
-
-void DeskButtonBase::MaybeActivateFocusedView() {
-  pressed_callback_.Run();
-}
-
-void DeskButtonBase::MaybeCloseFocusedView(bool primary_action) {}
-
-void DeskButtonBase::MaybeSwapFocusedView(bool right) {}
-
-void DeskButtonBase::OnFocusableViewFocused() {
-  UpdateFocusState();
-  bar_view_->ScrollToShowViewIfNecessary(this);
-}
-
-void DeskButtonBase::OnFocusableViewBlurred() {
-  UpdateFocusState();
 }
 
 void DeskButtonBase::UpdateFocusState() {

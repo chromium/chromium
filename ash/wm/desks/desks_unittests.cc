@@ -311,15 +311,9 @@ bool TabUntil(bool reverse,
   return false;
 }
 
-// Returns a predicate that will return true if the given view is focused.
-auto OverviewItemFocused(DeskPreviewView* preview_view) {
-  return [preview_view] { return preview_view->HasFocus(); };
-}
-auto OverviewItemFocused(OverviewFocusableView* view) {
-  return [view] {
-    CHECK(view->GetView());
-    return view->GetView()->HasFocus();
-  };
+// Returns a predicate that will return true if the given `view` is focused.
+auto ViewFocused(views::View* view) {
+  return [view] { return view->HasFocus(); };
 }
 
 // Defines an observer to test DesksController notifications.
@@ -6423,7 +6417,7 @@ TEST_P(DesksTest, FocusedMiniViewIsVisible) {
             .Contains(mini_views[i]->bounds()));
     // Move the focus to the mini view's associated name view.
     ASSERT_TRUE(TabUntil(
-        /*reverse=*/false, OverviewItemFocused(mini_views[i]->desk_name_view()),
+        /*reverse=*/false, ViewFocused(mini_views[i]->desk_name_view()),
         generator));
   }
 
@@ -6431,8 +6425,8 @@ TEST_P(DesksTest, FocusedMiniViewIsVisible) {
   for (size_t i = desks_util::GetMaxNumberOfDesks() - 1; i > 0; i--) {
     // Move the focus to previous mini view's name view.
     ASSERT_TRUE(TabUntil(
-        /*reverse=*/true,
-        OverviewItemFocused(mini_views[i - 1]->desk_name_view()), generator));
+        /*reverse=*/true, ViewFocused(mini_views[i - 1]->desk_name_view()),
+        generator));
     EXPECT_TRUE(
         DesksTestApi::GetDeskBarScrollView(DeskBarViewBase::Type::kOverview)
             ->GetVisibleRect()
@@ -10292,7 +10286,7 @@ TEST_P(DeskBarTest, CloseActiveDesk) {
   // Focus desk #1.
   ASSERT_TRUE(TabUntil(
       /*reverse=*/false,
-      OverviewItemFocused(desk_bar_view->mini_views()[1]->desk_preview()),
+      ViewFocused(desk_bar_view->mini_views()[1]->desk_preview()),
       GetEventGenerator()));
 
   // Close active desk.
@@ -10338,7 +10332,7 @@ TEST_P(DeskBarTest, MergeActiveDesk) {
   // Focus desk #1
   ASSERT_TRUE(TabUntil(
       /*reverse=*/false,
-      OverviewItemFocused(desk_bar_view->mini_views()[1]->desk_preview()),
+      ViewFocused(desk_bar_view->mini_views()[1]->desk_preview()),
       GetEventGenerator()));
 
   // Merge active desk.
@@ -10383,7 +10377,7 @@ TEST_P(DeskBarTest, CloseNonActiveDesk) {
   // Highlight desk #1.
   ASSERT_TRUE(TabUntil(
       /*reverse=*/false,
-      OverviewItemFocused(desk_bar_view->mini_views()[1]->desk_preview()),
+      ViewFocused(desk_bar_view->mini_views()[1]->desk_preview()),
       GetEventGenerator()));
 
   // Close non-active desk.
@@ -10418,7 +10412,7 @@ TEST_P(DeskBarTest, MergeNonActiveDesk) {
   // Highlight desk #1.
   ASSERT_TRUE(TabUntil(
       /*reverse=*/false,
-      OverviewItemFocused(desk_bar_view->mini_views()[1]->desk_preview()),
+      ViewFocused(desk_bar_view->mini_views()[1]->desk_preview()),
       GetEventGenerator()));
 
   // Close non-active desk.

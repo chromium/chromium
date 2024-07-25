@@ -1268,12 +1268,7 @@ void OverviewSession::ShowSavedDeskLibrary(
     return;
   }
 
-  if (focus_cycler_old_) {
-    focus_cycler_old_->MoveFocusToView(grid_items.front(),
-                                       /*suppress_accessibility_event=*/false);
-  } else {
-    grid_items.front()->RequestFocus();
-  }
+  grid_items.front()->RequestFocus();
 }
 
 void OverviewSession::HideSavedDeskLibrary() {

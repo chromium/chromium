@@ -15,9 +15,8 @@ namespace ash {
 class DeskMiniView;
 
 // Defines a textfield styled to normally look like a label. Allows modifying
-// the name of its corresponding desk.
-// When Bento is enabled and the user creates a new desk, the accessible name
-// for `this` will be the default desk name.
+// the name of its corresponding desk. The accessible name for `this` will be
+// the default desk name.
 class ASH_EXPORT DeskNameView : public DeskTextfield {
   METADATA_HEADER(DeskNameView, DeskTextfield)
 
@@ -29,7 +28,6 @@ class ASH_EXPORT DeskNameView : public DeskTextfield {
 
   // DeskTextfield:
   void OnFocus() override;
-  void OnFocusableViewFocused() override;
 
  private:
   // The mini view that associated with this name view.

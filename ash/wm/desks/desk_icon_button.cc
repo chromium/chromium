@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/constants/ash_features.h"
 #include "ash/style/color_util.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
@@ -78,10 +77,7 @@ DeskIconButton::DeskIconButton(DeskBarViewBase* bar_view,
         base::BindRepeating([](const views::View* view) {
           const auto* v = views::AsViewClass<DeskIconButton>(view);
           CHECK(v);
-          if (v->is_focused()) {
-            return true;
-          }
-          if (v->HasFocus() && features::IsOverviewNewFocusEnabled()) {
+          if (v->HasFocus()) {
             return true;
           }
           if (v->state_ != State::kActive) {
@@ -155,10 +151,7 @@ gfx::Size DeskIconButton::CalculatePreferredSize(
 
 void DeskIconButton::UpdateFocusState() {
   auto get_focus_color = [this]() -> std::optional<ui::ColorId> {
-    if (is_focused()) {
-      return ui::kColorAshFocusRing;
-    }
-    if (HasFocus() && features::IsOverviewNewFocusEnabled()) {
+    if (HasFocus()) {
       return ui::kColorAshFocusRing;
     }
     if (state_ == State::kActive && bar_view_->dragged_item_over_bar() &&

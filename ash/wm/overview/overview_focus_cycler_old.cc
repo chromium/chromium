@@ -17,10 +17,6 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
-#include "ash/wm/desks/templates/saved_desk_grid_view.h"
-#include "ash/wm/desks/templates/saved_desk_item_view.h"
-#include "ash/wm/desks/templates/saved_desk_library_view.h"
-#include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
@@ -33,48 +29,6 @@
 #include "ui/views/view.h"
 
 namespace ash {
-
-namespace {
-
-void AddDesksBarTraversableViews(
-    OverviewGrid* grid,
-    std::vector<OverviewFocusableView*>& out_traversable_views) {
-  auto* bar_view = grid->desks_bar_view();
-  if (!bar_view) {
-    return;
-  }
-
-  // The desk items are always traversable from left to right, even in RTL
-  // languages.
-  if (bar_view->IsZeroState()) {
-    out_traversable_views.push_back(bar_view->default_desk_button());
-  } else {
-    for (DeskMiniView* mini_view : bar_view->mini_views()) {
-      auto* desk_action_view = mini_view->desk_action_view();
-      if (desk_action_view->combine_desks_button() &&
-          desk_action_view->combine_desks_button()->CanShow()) {
-        out_traversable_views.push_back(
-            desk_action_view->combine_desks_button());
-      }
-      if (desk_action_view->close_all_button()->CanShow()) {
-        out_traversable_views.push_back(desk_action_view->close_all_button());
-      }
-      out_traversable_views.push_back(mini_view->desk_name_view());
-    }
-  }
-  auto* new_desk_button = bar_view->new_desk_button();
-  if (new_desk_button->GetEnabled()) {
-    out_traversable_views.push_back(new_desk_button);
-  }
-
-  if (auto* library_button = bar_view->library_button()) {
-    if (library_button->GetVisible()) {
-      out_traversable_views.push_back(library_button);
-    }
-  }
-}
-
-}  // namespace
 
 OverviewFocusCyclerOld::OverviewFocusCyclerOld(OverviewSession* overview_session)
     : overview_session_(overview_session),
@@ -226,32 +180,6 @@ std::vector<OverviewFocusableView*> OverviewFocusCyclerOld::GetTraversableViews(
     const {
   std::vector<OverviewFocusableView*> traversable_views;
   traversable_views.reserve(32);  // Conservative default.
-
-  // Note that this order matches the order of the chromevox cycling in
-  // `OverviewSession::UpdateAccessibilityFocus()`.
-  for (auto& grid : overview_session_->grid_list()) {
-    // If the saved desk library is visible, we shouldn't try to add any
-    // overview items.
-    if (grid->IsShowingSavedDeskLibrary()) {
-      SavedDeskLibraryView* desk_library_view = grid->GetSavedDeskLibraryView();
-      DCHECK(desk_library_view);
-      for (SavedDeskGridView* saved_desk_grid_view :
-           desk_library_view->grid_views()) {
-        for (SavedDeskItemView* saved_desk_item :
-             saved_desk_grid_view->grid_items()) {
-          traversable_views.push_back(saved_desk_item);
-
-          // Admin templates names cannot be edited or focused.
-          SavedDeskNameView* name_view = saved_desk_item->name_view();
-          if (name_view->IsFocusable()) {
-            traversable_views.push_back(name_view);
-          }
-        }
-      }
-    }
-
-    AddDesksBarTraversableViews(grid.get(), traversable_views);
-  }
   return traversable_views;
 }
 

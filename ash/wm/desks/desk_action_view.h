@@ -57,12 +57,12 @@ class ASH_EXPORT DeskActionView : public views::BoxLayoutView,
   // focus.
   bool ChildHasFocus() const;
 
-  void OnFocusChange();
-
  private:
   // views::ViewObserver:
   void OnViewFocused(views::View* observed) override;
   void OnViewBlurred(views::View* observed) override;
+
+  void OnFocusChange();
 
   // Only one of the following two buttons will be shown, based on if the Forest
   // feature is enabled.

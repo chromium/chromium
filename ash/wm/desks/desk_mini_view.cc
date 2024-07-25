@@ -761,11 +761,6 @@ void DeskMiniView::OnViewFocused(views::View* observed_view) {
   // user pressed the escape key.
   should_commit_name_changes_ = true;
 
-  // Set the overview focus ring on `desk_name_view_`.
-  if (owner_bar_->type() == DeskBarViewBase::Type::kOverview) {
-    MoveFocusToView(desk_name_view_);
-  }
-
   if (!defer_select_all_)
     desk_name_view_->SelectAll(false);
 }

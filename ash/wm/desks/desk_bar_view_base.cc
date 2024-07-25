@@ -78,14 +78,6 @@ namespace {
 // Duration of delay when Bento Bar Desk Button is clicked.
 constexpr base::TimeDelta kAnimationDelayDuration = base::Milliseconds(100);
 
-OverviewFocusCyclerOld* GetFocusCycler() {
-  auto* overview_controller = Shell::Get()->overview_controller();
-  if (!overview_controller || !overview_controller->InOverviewSession()) {
-    return nullptr;
-  }
-  return overview_controller->overview_session()->focus_cycler_old();
-}
-
 // Check whether there are any external keyboards.
 bool HasExternalKeyboard() {
   for (const ui::InputDevice& device :
@@ -1152,8 +1144,6 @@ void DeskBarViewBase::NudgeDeskName(int desk_index) {
   name_view->RequestFocus();
 
   if (type_ == Type::kOverview) {
-    MoveFocusToView(name_view);
-
     // If we're in tablet mode and there are no external keyboards, open up the
     // virtual keyboard.
     if (display::Screen::GetScreen()->InTabletMode() &&
@@ -1546,28 +1536,9 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
     return;
   }
 
-  if (type_ == Type::kOverview) {
-    if (auto* focus_cycler = GetFocusCycler()) {
-      // Let the focus cycler know the view is destroying before it is removed
-      // from the collection because it needs to know the index of the mini
-      // view, or the desk name view (if either is currently focused) relative
-      // to other traversable views.
-      // The order here matters, we call it first on the desk_name_view since it
-      // comes later in the focus order (See documentation of
-      // `OnViewDestroyingOrDisabling()`).
-      focus_cycler->OnViewDestroyingOrDisabling((*iter)->desk_name_view());
-      focus_cycler->OnViewDestroyingOrDisabling(
-          (*iter)->desk_action_view()->close_all_button());
-      if (auto* combine_desks_button =
-              (*iter)->desk_action_view()->combine_desks_button()) {
-        focus_cycler->OnViewDestroyingOrDisabling(combine_desks_button);
-      }
-    }
-  }
-
   new_desk_button_->SetEnabled(/*enabled=*/true);
 
-  for (ash::DeskMiniView* mini_view : mini_views_) {
+  for (DeskMiniView* mini_view : mini_views_) {
     mini_view->UpdateDeskButtonVisibility();
   }
 

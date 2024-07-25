@@ -86,10 +86,7 @@ void DeskTextfield::OnFocus() {
 void DeskTextfield::OnBlur() {
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
   SystemTextfield::OnBlur();
-  // Give user indication for the quick activatable view.
-  if (!use_default_focus_manager_ && !features::IsOverviewNewFocusEnabled()) {
-    SetShowBackground(true);
-  }
+
   // Avoid having the focus restored to the same DeskNameView when the desk bar
   // widget is refocused. Use a post task to avoid calling
   // `FocusManager::SetStoredFocusView()` while `FocusManager::ClearFocus()` is
@@ -114,27 +111,6 @@ void DeskTextfield::OnDragEntered(const ui::DropTargetEvent& event) {
 void DeskTextfield::OnDragExited() {
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
   views::Textfield::OnDragExited();
-}
-
-views::View* DeskTextfield::GetView() {
-  return this;
-}
-
-void DeskTextfield::MaybeActivateFocusedView() {
-  RequestFocus();
-}
-
-void DeskTextfield::MaybeCloseFocusedView(bool primary_action) {}
-
-void DeskTextfield::MaybeSwapFocusedView(bool right) {}
-
-void DeskTextfield::OnFocusableViewFocused() {
-  SetShowFocusRing(true);
-}
-
-void DeskTextfield::OnFocusableViewBlurred() {
-  SetShowBackground(false);
-  SetShowFocusRing(false);
 }
 
 BEGIN_METADATA(DeskTextfield)
