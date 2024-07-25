@@ -64,9 +64,8 @@ features:
   dynamic_refresh: true
   per_profile: false
 owners:
+- dpr-eng@google.com
 - sseckler@google.com
-- rogerta@chromium.org
-- mad@chromium.org
 - domfc@chromium.org
 schema:
   items:

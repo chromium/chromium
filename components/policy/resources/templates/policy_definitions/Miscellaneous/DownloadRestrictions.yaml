@@ -47,7 +47,7 @@ items:
   value: 4
 label: Download restrictions
 owners:
-- mad@chromium.org
+- dpr-eng@google.com
 - zmin@chromium.org
 schema:
   enum:
