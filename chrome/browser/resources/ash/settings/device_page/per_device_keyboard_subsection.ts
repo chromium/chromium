@@ -372,7 +372,8 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
 
   private isChromeOsKeyboard(): boolean {
     return this.keyboard.metaKey === MetaKey.kLauncher ||
-        this.keyboard.metaKey === MetaKey.kSearch;
+        this.keyboard.metaKey === MetaKey.kSearch ||
+        this.keyboard.metaKey === MetaKey.kLauncherRefresh;
   }
 
   private openPersonalizationHub(): void {
