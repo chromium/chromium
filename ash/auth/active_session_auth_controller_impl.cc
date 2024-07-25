@@ -44,10 +44,20 @@ namespace ash {
 
 namespace {
 
+// Read the salt from local state.
+std::string GetUserSalt(const AccountId& account_id) {
+  user_manager::KnownUser known_user(Shell::Get()->local_state());
+  if (const std::string* salt =
+          known_user.FindStringPath(account_id, prefs::kQuickUnlockPinSalt)) {
+    return *salt;
+  }
+  return {};
+}
+
 std::unique_ptr<views::Widget> CreateAuthDialogWidget(
     std::unique_ptr<views::View> contents_view) {
   views::Widget::InitParams params(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.delegate = new views::WidgetDelegate();
@@ -99,15 +109,37 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
       user_manager::UserManager::Get()->GetActiveUser();
   auto user_context = std::make_unique<UserContext>(*active_user);
 
-  auth_factor_editor_->GetAuthFactorsConfiguration(
-      std::move(user_context),
-      base::BindOnce(&ActiveSessionAuthControllerImpl::OnAuthFactorsListed,
+  const bool ephemeral =
+      user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
+          account_id_);
+
+  auth_performer_->StartAuthSession(
+      std::move(user_context), ephemeral, ash::AuthSessionIntent::kVerifyOnly,
+      base::BindOnce(&ActiveSessionAuthControllerImpl::OnAuthSessionStarted,
                      weak_ptr_factory_.GetWeakPtr()));
+
   return true;
 }
 
 bool ActiveSessionAuthControllerImpl::IsShown() const {
   return widget_ != nullptr;
+}
+
+void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
+    bool user_exists,
+    std::unique_ptr<UserContext> user_context,
+    std::optional<AuthenticationError> authentication_error) {
+  if (!user_exists || authentication_error.has_value()) {
+    LOG(ERROR) << "Failed to start auth session, code "
+               << authentication_error->get_cryptohome_code();
+    Close();
+    return;
+  }
+
+  auth_factor_editor_->GetAuthFactorsConfiguration(
+      std::move(user_context),
+      base::BindOnce(&ActiveSessionAuthControllerImpl::OnAuthFactorsListed,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ActiveSessionAuthControllerImpl::OnAuthFactorsListed(
@@ -133,11 +165,12 @@ void ActiveSessionAuthControllerImpl::OnAuthFactorsListed(
   auto contents_view = std::make_unique<ActiveSessionAuthView>(
       account_id_, title_, description_, available_factors);
   contents_view_ = contents_view.get();
-  contents_view_->AddObserver(this);
 
   widget_ = CreateAuthDialogWidget(std::move(contents_view));
   contents_view_observer_.Observe(contents_view_);
+  contents_view_->AddObserver(this);
 
+  user_context_ = std::move(user_context);
   MoveToTheCenter();
   widget_->Show();
 }
@@ -163,6 +196,10 @@ void ActiveSessionAuthControllerImpl::Close() {
     std::move(on_auth_complete_)
         .Run(false, ash::AuthProofToken{}, base::TimeDelta{});
   }
+
+  if (user_context_) {
+    user_context_.reset();
+  }
 }
 
 void ActiveSessionAuthControllerImpl::OnViewPreferredSizeChanged(
@@ -176,83 +213,26 @@ void ActiveSessionAuthControllerImpl::MoveToTheCenter() {
 
 void ActiveSessionAuthControllerImpl::OnPasswordSubmit(
     const std::u16string& password) {
-  user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  auto user_context = std::make_unique<UserContext>(*active_user);
-
-  CHECK_EQ(active_user->GetAccountId(), account_id_);
-
-  const bool ephemeral =
-      user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
-          account_id_);
-
-  auth_performer_->StartAuthSession(
-      std::move(user_context), ephemeral, AuthSessionIntent::kVerifyOnly,
-      base::BindOnce(&ActiveSessionAuthControllerImpl::OnPasswordSessionStarted,
-                     weak_ptr_factory_.GetWeakPtr(), password));
-}
-
-void ActiveSessionAuthControllerImpl::OnPasswordSessionStarted(
-    const std::u16string& password,
-    bool exists,
-    std::unique_ptr<UserContext> user_context,
-    std::optional<AuthenticationError> authentication_error) {
-  if (authentication_error.has_value()) {
-    LOG(ERROR) << "Failed to start auth session, code "
-               << authentication_error->get_cryptohome_code();
-    // TODO: Is close is the right thing to do?
-    Close();
-    return;
-  }
+  CHECK(user_context_);
   const auto* password_factor =
-      user_context->GetAuthFactorsData().FindAnyPasswordFactor();
+      user_context_->GetAuthFactorsData().FindAnyPasswordFactor();
   CHECK(password_factor);
 
   const cryptohome::KeyLabel key_label = password_factor->ref().label();
 
   auth_performer_->AuthenticateWithPassword(
-      key_label.value(), base::UTF16ToUTF8(password), std::move(user_context),
+      key_label.value(), base::UTF16ToUTF8(password), std::move(user_context_),
       base::BindOnce(&ActiveSessionAuthControllerImpl::OnAuthComplete,
                      weak_ptr_factory_.GetWeakPtr(), AuthInputType::kPassword));
 }
 
 void ActiveSessionAuthControllerImpl::OnPinSubmit(const std::u16string& pin) {
-  user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  auto user_context = std::make_unique<UserContext>(*active_user);
-
-  CHECK_EQ(active_user->GetAccountId(), account_id_);
-
-  const bool ephemeral =
-      user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
-          account_id_);
-
-  auth_performer_->StartAuthSession(
-      std::move(user_context), ephemeral, AuthSessionIntent::kVerifyOnly,
-      base::BindOnce(&ActiveSessionAuthControllerImpl::OnPinSessionStarted,
-                     weak_ptr_factory_.GetWeakPtr(), pin));
-}
-
-void ActiveSessionAuthControllerImpl::OnPinSessionStarted(
-    const std::u16string& pin,
-    bool exists,
-    std::unique_ptr<UserContext> user_context,
-    std::optional<AuthenticationError> authentication_error) {
-  if (authentication_error.has_value()) {
-    LOG(ERROR) << "Failed to start auth session, code "
-               << authentication_error->get_cryptohome_code();
-    // TODO: Is close is the right thing to do?
-    Close();
-    return;
-  }
-
-  // TODO: Is this correct?!
+  CHECK(user_context_);
   user_manager::KnownUser known_user(Shell::Get()->local_state());
-  const std::string salt =
-      *known_user.FindStringPath(account_id_, prefs::kQuickUnlockPinSalt);
+  const std::string salt = GetUserSalt(account_id_);
 
   auth_performer_->AuthenticateWithPin(
-      base::UTF16ToUTF8(pin), salt, std::move(user_context),
+      base::UTF16ToUTF8(pin), salt, std::move(user_context_),
       base::BindOnce(&ActiveSessionAuthControllerImpl::OnAuthComplete,
                      weak_ptr_factory_.GetWeakPtr(), AuthInputType::kPin));
 }
@@ -262,6 +242,7 @@ void ActiveSessionAuthControllerImpl::OnAuthComplete(
     std::unique_ptr<UserContext> user_context,
     std::optional<AuthenticationError> authentication_error) {
   if (authentication_error.has_value()) {
+    user_context_ = std::move(user_context);
     contents_view_->SetErrorTitle(l10n_util::GetStringUTF16(
         input_type == AuthInputType::kPassword
             ? IDS_ASH_IN_SESSION_AUTH_PASSWORD_INCORRECT

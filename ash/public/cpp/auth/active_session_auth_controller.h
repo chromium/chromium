@@ -5,8 +5,6 @@
 #ifndef ASH_PUBLIC_CPP_AUTH_ACTIVE_SESSION_AUTH_CONTROLLER_H_
 #define ASH_PUBLIC_CPP_AUTH_ACTIVE_SESSION_AUTH_CONTROLLER_H_
 
-#include <memory>
-
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"

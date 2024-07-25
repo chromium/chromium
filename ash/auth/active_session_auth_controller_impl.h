@@ -26,11 +26,11 @@
 namespace ash {
 
 // ActiveSessionAuthControllerImpl is responsible for :
-// - Initialize the ActiveSessionAuthView and control this view
-// - Create and manage a widget to show the ActiveSessionAuthView
-// - Listening the ActiveSessionAuthView observers and call auth performer if
-// authentication is requested on the UI
-// - Call the callback with the authentication result
+// - Initialize the ActiveSessionAuthView and control this view.
+// - Create and manage a widget to show the ActiveSessionAuthView.
+// - Listening to the ActiveSessionAuthView observers and call auth performer if
+// authentication is requested on the UI.
+// - Call the callback with the authentication result.
 class ASH_EXPORT ActiveSessionAuthControllerImpl
     : public ActiveSessionAuthController,
       public ActiveSessionAuthView::Observer,
@@ -70,23 +70,16 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
 
  private:
   // Internal methods for authentication.
-  void OnAuthFactorsListed(
+  void OnAuthSessionStarted(
+      bool user_exists,
       std::unique_ptr<UserContext> user_context,
       std::optional<AuthenticationError> authentication_error);
-  void OnPasswordSessionStarted(
-      const std::u16string& password,
-      bool exists,
+  void OnAuthFactorsListed(
       std::unique_ptr<UserContext> user_context,
       std::optional<AuthenticationError> authentication_error);
   void OnAuthComplete(AuthInputType input_type,
                       std::unique_ptr<UserContext> user_context,
                       std::optional<AuthenticationError> authentication_error);
-  void OnPinSessionStarted(
-      const std::u16string& pin,
-      bool exists,
-      std::unique_ptr<UserContext> user_context,
-      std::optional<AuthenticationError> authentication_error);
-
   void NotifySuccess(const AuthProofToken& token, base::TimeDelta timeout);
 
   std::unique_ptr<views::Widget> widget_;
@@ -104,6 +97,8 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
 
   std::unique_ptr<AuthFactorEditor> auth_factor_editor_;
   std::unique_ptr<AuthPerformer> auth_performer_;
+
+  std::unique_ptr<UserContext> user_context_;
 
   base::WeakPtrFactory<ActiveSessionAuthControllerImpl> weak_ptr_factory_{this};
 };
