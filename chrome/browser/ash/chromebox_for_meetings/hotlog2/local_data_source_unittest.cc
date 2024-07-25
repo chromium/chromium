@@ -6,6 +6,8 @@
 
 #include "base/logging.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -44,6 +46,29 @@ void FetchCallbackFn(const std::vector<std::string>& expected_data,
 void AddWatchDogCallbackFn(bool expected_success, bool actual_success) {
   EXPECT_EQ(expected_success, actual_success);
 }
+
+// Create a new DataWatchDog implementation that will help us control
+// and check if callbacks have fired.
+class LocalWatchDogPeer : public mojom::DataWatchDog {
+ public:
+  LocalWatchDogPeer(mojo::PendingReceiver<mojom::DataWatchDog> pending_receiver,
+                    mojom::DataFilterPtr filter)
+      : receiver_(this, std::move(pending_receiver)) {}
+  LocalWatchDogPeer(const LocalWatchDogPeer&) = delete;
+  LocalWatchDogPeer& operator=(const LocalWatchDogPeer&) = delete;
+
+  bool DidCallbackFire() { return !callback_data_.empty(); }
+  const std::string& GetCallbackData() { return callback_data_; }
+  void Reset() { callback_data_.clear(); }
+
+ protected:
+  // mojom::DataWatchDog:
+  void OnNotify(const std::string& data) override { callback_data_ = data; }
+
+ private:
+  mojo::Receiver<mojom::DataWatchDog> receiver_;
+  std::string callback_data_;
+};
 
 // Subclass LocalDataSource so we can provide implementations
 // for pure-virtuals and control data creation.
@@ -113,6 +138,30 @@ class LocalDataSourcePeer : public LocalDataSource {
                 std::move(callback));
   }
 
+  void SetUpTestingWatchDog(mojom::DataFilterPtr filter) {
+    mojo::PendingReceiver<mojom::DataWatchDog> receiver;
+    auto remote = receiver.InitWithNewPipeAndPassRemote();
+    auto watchdog = std::make_unique<LocalWatchDogPeer>(std::move(receiver),
+                                                        filter.Clone());
+
+    // Use DoNothing() for these callbacks and assume success.
+    // We cover testing these callbacks elsewhere.
+    AddWatchDog(std::move(filter), std::move(remote), base::DoNothing());
+    watchdog_ = std::move(watchdog);
+  }
+
+  void AssertWatchDogCallbackFiredWithData(const std::string& expected_data) {
+    const std::string& actual_data = watchdog_->GetCallbackData();
+    EXPECT_EQ(expected_data, actual_data);
+    watchdog_->Reset();
+  }
+
+  bool DidWatchDogCallbackFire() {
+    bool result = watchdog_->DidCallbackFire();
+    watchdog_->Reset();
+    return result;
+  }
+
  protected:
   const std::string& GetDisplayName() override { return kDataSourceName; }
   std::vector<std::string> GetNextData() override { return {next_data_}; }
@@ -122,6 +171,9 @@ class LocalDataSourcePeer : public LocalDataSource {
 
  private:
   std::string next_data_;
+
+  // Support only one watchdog for now, for easier testing
+  std::unique_ptr<LocalWatchDogPeer> watchdog_;
 };
 
 // Define tests
@@ -300,6 +352,83 @@ TEST(HotlogWatchdogTest, TestVariousInvalidWatchdogs) {
   filter = mojom::DataFilter::New(CHANGE, "");
   incr_source.RunAddWatchDogWithExpectedResult(std::move(filter),
                                                expected_result);
+}
+
+TEST(HotlogWatchdogTest, TestChangeWatchdogsFireCorrectly) {
+  base::test::TaskEnvironment task_environment;
+
+  // Need non-incremental source for CHANGE watchdogs
+  auto source =
+      LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsNotIncremental);
+
+  // Pre-fill the buffer with some data, then add the watchdog
+  source.FillDataBufferForTesting("first");
+  source.SetUpTestingWatchDog(mojom::DataFilter::New(CHANGE, std::nullopt));
+  task_environment.RunUntilIdle();
+
+  // Adding a CHANGE watchdog should trigger it immediately with
+  // the last recorded data
+  source.AssertWatchDogCallbackFiredWithData("first");
+
+  source.FillDataBufferForTesting("second");
+  task_environment.RunUntilIdle();
+
+  // We went from "first" to "second", so the callback should have fired
+  source.AssertWatchDogCallbackFiredWithData("second");
+
+  // Add the same data
+  source.FillDataBufferForTesting("second");
+  task_environment.RunUntilIdle();
+
+  // "second" to "second" again, no callback
+  EXPECT_FALSE(source.DidWatchDogCallbackFire());
+
+  // Add new data
+  source.FillDataBufferForTesting("third");
+  task_environment.RunUntilIdle();
+
+  // "second" to "third", callback fired
+  source.AssertWatchDogCallbackFiredWithData("third");
+}
+
+TEST(HotlogWatchdogTest, TestRegexWatchdogsFireCorrectly) {
+  base::test::TaskEnvironment task_environment;
+
+  auto source =
+      LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
+
+  // Pre-fill the buffer with some data, then add the watchdog
+  source.FillDataBufferForTesting("ABC");
+  source.SetUpTestingWatchDog(mojom::DataFilter::New(REGEX, "[A-Z]+"));
+  task_environment.RunUntilIdle();
+
+  // Unlike CHANGE watchdogs, REGEX watchdogs do not fire on initial
+  // add, even if there is a match on old data.
+  EXPECT_FALSE(source.DidWatchDogCallbackFire());
+
+  source.FillDataBufferForTesting("ABC");
+  task_environment.RunUntilIdle();
+
+  // ABC matches the regex, expect callback
+  source.AssertWatchDogCallbackFiredWithData("ABC");
+
+  source.FillDataBufferForTesting("123ABC");
+  task_environment.RunUntilIdle();
+
+  // Regexes are partial matches, so 123ABC still matches
+  source.AssertWatchDogCallbackFiredWithData("123ABC");
+
+  source.FillDataBufferForTesting("123");
+  task_environment.RunUntilIdle();
+
+  // No match; data is all numbers
+  EXPECT_FALSE(source.DidWatchDogCallbackFire());
+
+  source.FillDataBufferForTesting("");
+  task_environment.RunUntilIdle();
+
+  // No match; data is empty
+  EXPECT_FALSE(source.DidWatchDogCallbackFire());
 }
 
 }  // namespace
