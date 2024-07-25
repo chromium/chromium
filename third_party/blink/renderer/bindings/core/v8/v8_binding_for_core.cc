@@ -642,8 +642,9 @@ LocalDOMWindow* ToLocalDOMWindow(const ScriptState* script_state) {
 }
 
 ExecutionContext* ToExecutionContext(const ScriptState* script_state) {
-  RUNTIME_CALL_TIMER_SCOPE(script_state->GetIsolate(),
-                           RuntimeCallStats::CounterId::kToExecutionContext);
+  RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(
+      script_state->GetIsolate(),
+      RuntimeCallStats::CounterId::kToExecutionContext);
   return static_cast<const ScriptStateImpl*>(script_state)
       ->GetExecutionContext();
 }
