@@ -15,6 +15,7 @@
 
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_mach_port.h"
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/ptr_util.h"
@@ -327,8 +328,9 @@ int ProcessMetrics::GetOpenFdCount() const {
     return -1;
   }
 
-  std::unique_ptr<char[]> buffer(new char[static_cast<size_t>(rv)]);
-  rv = proc_pidinfo(process_, PROC_PIDLISTFDS, 0, buffer.get(), rv);
+  base::HeapArray<char> buffer =
+      base::HeapArray<char>::WithSize(static_cast<size_t>(rv));
+  rv = proc_pidinfo(process_, PROC_PIDLISTFDS, 0, buffer.data(), rv);
   if (rv < 0) {
     return -1;
   }
