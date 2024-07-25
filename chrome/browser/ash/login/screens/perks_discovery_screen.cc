@@ -15,6 +15,7 @@
 namespace ash {
 namespace {
 
+constexpr const char kUserActionFinish[] = "finished";
 constexpr const char kUserActionLoaded[] = "loaded";
 
 std::vector<SinglePerkDiscoveryPayload> ParsePayload(
@@ -192,6 +193,13 @@ void PerksDiscoveryScreen::OnUserAction(const base::Value::List& args) {
     // transition if the loading step finishes too quickly.
     delay_overview_timer_.Start(FROM_HERE, delay_overview_step_, this,
                                 &PerksDiscoveryScreen::ShowOverviewStep);
+    return;
+  }
+
+  if (action_id == kUserActionFinish) {
+    CHECK_EQ(args.size(), 2u);
+    // TODO(b/347182375) forward the action to campaign manager
+    exit_callback_.Run(Result::kNext);
     return;
   }
 

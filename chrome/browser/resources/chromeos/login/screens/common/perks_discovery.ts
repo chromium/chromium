@@ -31,6 +31,14 @@ const GENERATE_WEB_VIEW_CSS = (backgroundColor: string) => {
   };
 };
 
+/**
+ * Available user actions.
+ */
+enum UserAction {
+  FINISHED = 'finished',
+  LOADED = 'loaded',
+}
+
 interface PerkData {
   perkId: string;
   title: string;
@@ -46,13 +54,6 @@ interface PerkData {
 enum PerksDiscoveryStep {
   LOADING = 'loading',
   OVERVIEW = 'overview',
-}
-
-/**
- * Available user actions.
- */
-enum UserAction {
-  LOADED = 'loaded',
 }
 
 
@@ -74,6 +75,12 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
         type: Array,
         value: [],
         notify: true,
+      },
+      /**
+       * A map that stores a user's interest in various perks.
+       */
+      interestedInPerks: {
+        type: Object,
       },
       /**
        * Current perk displayed.
@@ -100,6 +107,7 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
   }
 
   private perksList: PerkData[];
+  private interestedInPerks: Map<string, boolean>;
   private currentPerk: number;
   private itemIconsRendered: number;
   private itemIllustrationsRendered: number;
@@ -148,6 +156,7 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
     assert(perksData !== null);
     this.perksList = perksData;
     this.currentPerk = 0;
+    this.interestedInPerks = new Map<string, boolean>();
   }
 
   setOverviewStep(): void {
@@ -237,9 +246,23 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
     return currentStep > 0;
   }
 
-  private onNotInterestedClicked(): void {}
+  private advanceToNextPerk(): void {
+    this.currentPerk++;
+    if (this.currentPerk === this.perksList.length) {
+      this.userActed([UserAction.FINISHED, this.interestedInPerks]);
+    }
+  }
 
-  private onInterestedClicked(): void {}
+  private onNotInterestedClicked(): void {
+    this.interestedInPerks.set(this.perksList[this.currentPerk].perkId, false);
+    this.advanceToNextPerk();
+  }
+
+  private onInterestedClicked(): void {
+    this.interestedInPerks.set(this.perksList[this.currentPerk].perkId, true);
+    this.advanceToNextPerk();
+  }
+
 
   /**
    * Returns the title of the perk.
