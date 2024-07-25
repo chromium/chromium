@@ -251,7 +251,9 @@ ToolbarView::~ToolbarView() {
     return;
   }
 
-  overflow_button_->set_toolbar_controller(nullptr);
+  if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
+    overflow_button_->set_toolbar_controller(nullptr);
+  }
 
   for (const auto& view_and_command : GetViewCommandMap())
     chrome::RemoveCommandObserver(browser_, view_and_command.second, this);
