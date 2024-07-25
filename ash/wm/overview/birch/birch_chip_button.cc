@@ -55,7 +55,6 @@ constexpr int kAppCornerRadius = 20;
 constexpr int kIllustrationSize = 40;
 constexpr int kIllustrationCornerRadius = 8;
 constexpr int kWeatherImageSize = 32;
-constexpr int kErrorImageSize = 32;
 
 // The colors of icons.
 constexpr ui::ColorId kIconBackgroundColorId =
@@ -68,8 +67,28 @@ constexpr ui::ColorId kTitleColorId = cros_tokens::kCrosSysOnSurface;
 constexpr TypographyToken kSubtitleFont = TypographyToken::kCrosAnnotation1;
 constexpr ui::ColorId kSubtitleColorId = cros_tokens::kCrosSysOnSurfaceVariant;
 
+// Returns the size in DIPs to use for the icon for an item of `type`.
+int IconSizeForItemType(BirchItemType type) {
+  switch (type) {
+    case BirchItemType::kTest:
+    case BirchItemType::kCalendar:
+    case BirchItemType::kAttachment:
+    case BirchItemType::kFile:
+      return kAppIconSize;
+    case BirchItemType::kWeather:
+      return kWeatherImageSize;
+    case BirchItemType::kReleaseNotes:
+      return kIllustrationSize;
+    case BirchItemType::kTab:
+    case BirchItemType::kSelfShare:
+    case BirchItemType::kMostVisited:
+    case BirchItemType::kLastActive:
+    case BirchItemType::kLostMedia:
+      return kFaviconSize;
+  }
+}
+
 void StylizeIconForItemType(views::ImageView* icon, BirchItemType type) {
-  int icon_size;
   int rounded_corners;
   std::optional<ui::ColorId> background_color_id;
 
@@ -78,15 +97,12 @@ void StylizeIconForItemType(views::ImageView* icon, BirchItemType type) {
     case BirchItemType::kCalendar:
     case BirchItemType::kAttachment:
     case BirchItemType::kFile:
-      icon_size = kAppIconSize;
       rounded_corners = kAppCornerRadius;
       background_color_id = kIconBackgroundColorId;
       break;
     case BirchItemType::kWeather:
-      icon_size = kWeatherImageSize;
       break;
     case BirchItemType::kReleaseNotes:
-      icon_size = kIllustrationSize;
       rounded_corners = kIllustrationCornerRadius;
       background_color_id = kIconBackgroundColorId;
       break;
@@ -95,12 +111,12 @@ void StylizeIconForItemType(views::ImageView* icon, BirchItemType type) {
     case BirchItemType::kMostVisited:
     case BirchItemType::kLastActive:
     case BirchItemType::kLostMedia:
-      icon_size = kFaviconSize;
       rounded_corners = kFaviconCornerRadius;
       background_color_id = kIconBackgroundColorId;
       break;
   }
 
+  int icon_size = IconSizeForItemType(type);
   icon->SetImageSize(gfx::Size(icon_size, icon_size));
   icon->SetBorder(
       views::CreateEmptyBorder(gfx::Insets((kIconViewSize - icon_size) / 2)));
@@ -256,11 +272,12 @@ void BirchChipButton::SetIconImage(const ui::ImageModel& icon_image,
                                    bool success) {
   icon_->SetImage(icon_image);
 
-  // Enlarge error icons.
   if (!success) {
-    icon_->SetImageSize(gfx::Size(kErrorImageSize, kErrorImageSize));
-    icon_->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets((kIconViewSize - kErrorImageSize) / 2)));
+    // Ensure error icons are the same size as the non-error icons.
+    int icon_size = IconSizeForItemType(item_->GetType());
+    icon_->SetImageSize(gfx::Size(icon_size, icon_size));
+    icon_->SetBorder(
+        views::CreateEmptyBorder(gfx::Insets((kIconViewSize - icon_size) / 2)));
   }
 }
 
