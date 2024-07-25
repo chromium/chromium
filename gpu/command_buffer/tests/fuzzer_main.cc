@@ -281,6 +281,7 @@ struct Config {
     gl_context_attribs.global_texture_share_group = true;
     gl_context_attribs.robust_resource_initialization = true;
     gl_context_attribs.robust_buffer_access = true;
+    gl_context_attribs.allow_client_arrays = false;
     gl_context_attribs.client_major_es_version =
         IsWebGL2OrES3OrHigherContextType(attrib_helper.context_type) ? 3 : 2;
     gl_context_attribs.client_minor_es_version =

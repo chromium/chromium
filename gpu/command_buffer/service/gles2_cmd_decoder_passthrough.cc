@@ -1962,6 +1962,7 @@ bool GLES2DecoderPassthroughImpl::LazySharedContextState::Initialize() {
   attribs.global_semaphore_share_group = true;
   attribs.robust_resource_initialization = true;
   attribs.robust_buffer_access = true;
+  attribs.allow_client_arrays = false;
   auto gl_context = gl::init::CreateGLContext(impl_->context_->share_group(),
                                               gl_surface.get(), attribs);
   if (!gl_context) {
