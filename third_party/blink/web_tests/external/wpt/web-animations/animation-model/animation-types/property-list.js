@@ -1297,6 +1297,18 @@ const gCSSProperties2 = {
       { type: 'discrete', options: [ [ 'normal', 'no-autospace' ] ] }
     ]
   },
+  'text-box-edge': {
+    // https://drafts.csswg.org/css-inline-3/#text-edges
+    types: [
+      { type: 'discrete', options: [ [ 'leading', 'text' ] ] }
+    ]
+  },
+  'text-box-trim': {
+    // https://drafts.csswg.org/css-inline-3/#propdef-text-box-trim
+    types: [
+      { type: 'discrete', options: [ [ 'none', 'start' ] ] }
+    ]
+  },
   'text-decoration-color': {
     // https://drafts.csswg.org/css-text-decor-3/#propdef-text-decoration-color
     types: [ 'color' ]

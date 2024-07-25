@@ -2560,6 +2560,7 @@ crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failur
 crbug.com/324447993 external/wpt/web-locks/clientids.https.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-grid/subgrid/scrollbar-gutter-002.html [ Crash Timeout ]
 crbug.com/343770003 external/wpt/trusted-types/WorkerGlobalScope-eval.html [ Failure ]
+external/wpt/scroll-to-text-fragment/find-range-from-text-directive.html [ Pass Failure Timeout ]  # Also has flaky output
 
 # These tests crash due to DCHECKs. Only CQ/debug CI builders enable DCHECKs;
 # `*-blink-rel` builders don't.
@@ -5399,9 +5400,6 @@ crbug.com/1318952 http/tests/inspector-protocol/fetch/fetch-samesite-cookies.js 
 
 # Sheriff 2022-04-25
 crbug.com/1319320 rootscroller/root-scroller-apply-filter-to-parent.html [ Failure Pass ]
-
-# Sheriff 2022-04-26
-crbug.com/1288741 external/wpt/scroll-to-text-fragment/find-range-from-text-directive.html [ Pass Timeout ]
 
 
 crbug.com/1137003 fast/dom/timer-throttling-background-page-near-alignment-interval.html [ Failure Pass ]
