@@ -65,31 +65,55 @@ constexpr char kValueOtherBrowser[] = "OTHER_BROWSER";
 constexpr char kValueInIFrame[] = "IN_IFRAME";
 constexpr char kValueInMain[] = "IN_MAIN";
 
-enum LinkCaptureTestParam {
-  kInvalid = 0,
-  // The starting point for the test:
-  kAppWindow = 1 << 1,
-  kTab = 1 << 2,
-  // Whether to navigate within the same scope or outside it:
-  kScopeA2A = 1 << 3,
-  kScopeA2B = 1 << 4,
-  kScopeA2ARedirectB = 1 << 5,
-  kScopeA2BRedirectA = 1 << 6,
-  // The element to use for navigation:
-  kElementLink = 1 << 7,
-  kElementButton = 1 << 8,
-  // The method of interacting with the element:
-  kLeftClick = 1 << 9,
-  kMiddleClick = 1 << 10,
-  // Whether to supply an Opener/NoOpener:
-  kOpener = 1 << 11,
-  kNoOpener = 1 << 12,
-  // The target to supply for the navigation:
-  kSelf = 1 << 13,
-  kFrame = 1 << 14,
-  kBlank = 1 << 15,
-  kNoFrame = 1 << 16,
+// The starting point for the test:
+enum class StartingPoint {
+  kAppWindow,
+  kTab,
 };
+
+// Whether to navigate within the same scope or outside it:
+enum class Destination {
+  kScopeA2A,
+  kScopeA2B,
+  kScopeA2ARedirectB,
+  kScopeA2BRedirectA,
+};
+
+// The element to use for navigation:
+enum class NavigationElement {
+  kElementLink,
+  kElementButton,
+};
+
+// The method of interacting with the element:
+enum class ClickMethod {
+  kLeftClick,
+  kMiddleClick,
+};
+
+// Whether to supply an Opener/NoOpener:
+enum class OpenerMode {
+  kOpener,
+  kNoOpener,
+};
+
+// The target to supply for the navigation:
+enum class NavigationTarget {
+  // The target to supply for the navigation:
+  kSelf,
+  kFrame,
+  kBlank,
+  kNoFrame,
+};
+
+// Use a std::tuple for the overall test configuration so testing::Combine can
+// be used to construct the values.
+using LinkCaptureTestParam = std::tuple<StartingPoint,
+                                        Destination,
+                                        NavigationElement,
+                                        ClickMethod,
+                                        OpenerMode,
+                                        NavigationTarget>;
 
 // This helper class monitors WebContents creation in all tabs (of all browsers)
 // and can be queried for the last one seen.
@@ -135,12 +159,7 @@ class WebContentsCreationMonitor : public ui_test_utils::AllTabsObserver {
 //
 class WebAppLinkCapturingBrowserTestParameterized
     : public InProcessBrowserTest,
-      public testing::WithParamInterface<std::tuple<LinkCaptureTestParam,
-                                                    LinkCaptureTestParam,
-                                                    LinkCaptureTestParam,
-                                                    LinkCaptureTestParam,
-                                                    LinkCaptureTestParam,
-                                                    LinkCaptureTestParam>> {
+      public testing::WithParamInterface<LinkCaptureTestParam> {
  public:
   WebAppLinkCapturingBrowserTestParameterized() {
     auto link_capture_test_path = GetPathForLinkCaptureInputJson();
@@ -187,71 +206,66 @@ class WebAppLinkCapturingBrowserTestParameterized
   // This function converts the test param to a string, which is used to provide
   // a unique for the given test run.
   static std::string ParamToString(
-      testing::TestParamInfo<std::tuple<LinkCaptureTestParam,
-                                        LinkCaptureTestParam,
-                                        LinkCaptureTestParam,
-                                        LinkCaptureTestParam,
-                                        LinkCaptureTestParam,
-                                        LinkCaptureTestParam>> param_info) {
+      testing::TestParamInfo<LinkCaptureTestParam> param_info) {
     std::string result = "";
 
-    LinkCaptureTestParam container = std::get<0>(param_info.param);
-    if (container & LinkCaptureTestParam::kAppWindow) {
+    StartingPoint container = std::get<0>(param_info.param);
+    if (container == StartingPoint::kAppWindow) {
       result += "AppWnd_";
     }
-    if (container & LinkCaptureTestParam::kTab) {
+    if (container == StartingPoint::kTab) {
       result += "Tab_";
     }
 
-    LinkCaptureTestParam destination = std::get<1>(param_info.param);
-    if (destination & LinkCaptureTestParam::kScopeA2A) {
+    Destination destination = std::get<1>(param_info.param);
+    if (destination == Destination::kScopeA2A) {
       result += "ScopeA2A_";
     }
-    if (destination & LinkCaptureTestParam::kScopeA2B) {
+    if (destination == Destination::kScopeA2B) {
       result += "ScopeA2B_";
     }
-    if (destination & LinkCaptureTestParam::kScopeA2ARedirectB) {
+    if (destination == Destination::kScopeA2ARedirectB) {
       result += "ScopeA2ARedirectB_";
     }
-    if (destination & LinkCaptureTestParam::kScopeA2BRedirectA) {
+    if (destination == Destination::kScopeA2BRedirectA) {
       result += "ScopeA2BRedirectA_";
     }
 
-    LinkCaptureTestParam element = std::get<2>(param_info.param);
-    if (element & LinkCaptureTestParam::kElementLink) {
+    NavigationElement element = std::get<2>(param_info.param);
+    if (element == NavigationElement::kElementLink) {
       result += "ViaLink_";
     }
-    if (element & LinkCaptureTestParam::kElementButton) {
+    if (element == NavigationElement::kElementButton) {
       result += "ViaButton_";
     }
 
-    LinkCaptureTestParam method = std::get<3>(param_info.param);
-    if (method & LinkCaptureTestParam::kLeftClick) {
+    ClickMethod method = std::get<3>(param_info.param);
+    if (method == ClickMethod::kLeftClick) {
       result += "LeftClick_";
     }
-    if (method & LinkCaptureTestParam::kMiddleClick) {
+    if (method == ClickMethod::kMiddleClick) {
       result += "MiddleClick_";
     }
 
-    LinkCaptureTestParam opener = std::get<4>(param_info.param);
-    if (opener & LinkCaptureTestParam::kOpener) {
+    OpenerMode opener = std::get<4>(param_info.param);
+    if (opener == OpenerMode::kOpener) {
       result += "WithOpener_";
     }
-    if (opener & LinkCaptureTestParam::kNoOpener) {
+    if (opener == OpenerMode::kNoOpener) {
       result += "WithoutOpener_";
     }
 
-    LinkCaptureTestParam target = std::get<5>(param_info.param);
-    if (target & LinkCaptureTestParam::kSelf) {
+    NavigationTarget target = std::get<5>(param_info.param);
+    if (target == NavigationTarget::kSelf) {
       result += "TargetSelf";
     }
-    if (target & LinkCaptureTestParam::kFrame) {
+    if (target == NavigationTarget::kFrame) {
       result += "TargetFrame";
     }
-    if (target & LinkCaptureTestParam::kBlank) {
+    if (target == NavigationTarget::kBlank) {
       result += "TargetBlank";
     }
-    if (target & LinkCaptureTestParam::kNoFrame) {
+    if (target == NavigationTarget::kNoFrame) {
       result += "TargetNoFrame";
     }
 
@@ -269,10 +283,7 @@ class WebAppLinkCapturingBrowserTestParameterized
   // (expected) BrowserType and a bool signifying whether the test should expect
   // the old browser object to be used for the navigation to the destination.
   TestExpectation GetTestExpectationFromParam() {
-    testing::TestParamInfo<std::tuple<
-        LinkCaptureTestParam, LinkCaptureTestParam, LinkCaptureTestParam,
-        LinkCaptureTestParam, LinkCaptureTestParam, LinkCaptureTestParam>>
-        param(GetParam(), 0);
+    testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
 
     const base::Value& value = test_expectations_.value();
     const base::Value::Dict& dict = value.GetDict();
@@ -443,78 +454,78 @@ class WebAppLinkCapturingBrowserTestParameterized
   // Returns `true` if the test should start inside an app window (and `false`
   // if the test should start in a tab).
   bool StartInAppWindow() const {
-    LinkCaptureTestParam container = std::get<0>(GetParam());
-    return (container & LinkCaptureTestParam::kAppWindow);
+    StartingPoint container = std::get<0>(GetParam());
+    return container == StartingPoint::kAppWindow;
   }
 
   // Returns `true` if the test should navigate to a page within the same scope.
   bool WillNavigateA2A() const {
-    LinkCaptureTestParam scope = std::get<1>(GetParam());
-    return (scope & LinkCaptureTestParam::kScopeA2A);
+    Destination scope = std::get<1>(GetParam());
+    return scope == Destination::kScopeA2A;
   }
 
   // Returns `true` if the test should navigate to a page in a different scope.
   bool WillNavigateA2B() const {
-    LinkCaptureTestParam scope = std::get<1>(GetParam());
-    return (scope & LinkCaptureTestParam::kScopeA2B);
+    Destination scope = std::get<1>(GetParam());
+    return scope == Destination::kScopeA2B;
   }
 
   // Returns `true` if the test should navigate to a page in a different scope,
   // but end up on the same scope due to an HTTP redirect.
   bool WillNavigateA2AWithRedir() const {
-    LinkCaptureTestParam scope = std::get<1>(GetParam());
-    return (scope & LinkCaptureTestParam::kScopeA2ARedirectB);
+    Destination scope = std::get<1>(GetParam());
+    return scope == Destination::kScopeA2ARedirectB;
   }
 
   // Returns `true` if the test should navigate to a page in the same scope, but
   // end up on back scope A due to an HTTP redirect.
   bool WillNavigateA2BWithRedir() const {
-    LinkCaptureTestParam scope = std::get<1>(GetParam());
-    return (scope & LinkCaptureTestParam::kScopeA2BRedirectA);
+    Destination scope = std::get<1>(GetParam());
+    return scope == Destination::kScopeA2BRedirectA;
   }
 
   // Returns `true` if the test should use a link to navigate (and `false` if
   // the test should use a button).
   bool WillNavigateViaLink() const {
-    LinkCaptureTestParam element = std::get<2>(GetParam());
-    return (element & LinkCaptureTestParam::kElementLink);
+    NavigationElement element = std::get<2>(GetParam());
+    return element == NavigationElement::kElementLink;
   }
 
   // Returns `true` if the test should use a middle-click for the navigation
   // click (and `false` if the test should use left-click).
   bool IsMiddleClick() const {
-    LinkCaptureTestParam method = std::get<3>(GetParam());
-    return (method & LinkCaptureTestParam::kMiddleClick);
+    ClickMethod method = std::get<3>(GetParam());
+    return method == ClickMethod::kMiddleClick;
   }
 
   // Returns `true` if the test should supply an opener value.
   bool WithOpener() const {
-    LinkCaptureTestParam opener = std::get<4>(GetParam());
-    return (opener & LinkCaptureTestParam::kOpener);
+    OpenerMode opener = std::get<4>(GetParam());
+    return opener == OpenerMode::kOpener;
   }
 
   // Returns `true` if the test should target _self for the navigation.
   bool IsTargetSelf() const {
-    LinkCaptureTestParam target = std::get<5>(GetParam());
-    return (target & LinkCaptureTestParam::kSelf);
+    NavigationTarget target = std::get<5>(GetParam());
+    return target == NavigationTarget::kSelf;
   }
 
   // Returns `true` if the test should target a named frame for the navigation.
   bool IsTargetFrame() const {
-    LinkCaptureTestParam target = std::get<5>(GetParam());
-    return (target & LinkCaptureTestParam::kFrame);
+    NavigationTarget target = std::get<5>(GetParam());
+    return target == NavigationTarget::kFrame;
   }
 
   // Returns `true` if the test should target _blank for the navigation.
   bool IsTargetBlank() const {
-    LinkCaptureTestParam target = std::get<5>(GetParam());
-    return (target & LinkCaptureTestParam::kBlank);
+    NavigationTarget target = std::get<5>(GetParam());
+    return target == NavigationTarget::kBlank;
   }
 
   // Returns `true` if the test should target _ for the navigation.
   bool IsTargetNoFrame() const {
-    LinkCaptureTestParam target = std::get<5>(GetParam());
-    return (target & LinkCaptureTestParam::kNoFrame);
+    NavigationTarget target = std::get<5>(GetParam());
+    return target == NavigationTarget::kNoFrame;
   }
 
   // The test page contains elements (links and buttons) that are configured
@@ -687,10 +698,7 @@ class WebAppLinkCapturingBrowserTestParameterized
 // and need to be generated separately.
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTestParameterized,
                        DISABLED_CheckLinkCaptureCombinations) {
-  testing::TestParamInfo<std::tuple<LinkCaptureTestParam, LinkCaptureTestParam,
-                                    LinkCaptureTestParam, LinkCaptureTestParam,
-                                    LinkCaptureTestParam, LinkCaptureTestParam>>
-      param(GetParam(), 0);
+  testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
 
   // Use PiP browser type as default because it would always be an unexpected
   // result for this test.
@@ -816,31 +824,29 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingBrowserTestParameterized,
     testing::Combine(
         testing::Values(
-            LinkCaptureTestParam::kAppWindow,  // Starting point is app window.
-            LinkCaptureTestParam::kTab         // Starting point is a tab.
+            StartingPoint::kAppWindow,  // Starting point is app window.
+            StartingPoint::kTab         // Starting point is a tab.
+            ),
+        testing::Values(Destination::kScopeA2A,  // Navigate in-scope A.
+                        Destination::kScopeA2B,  // Navigate A -> B.
+                        Destination::kScopeA2ARedirectB,  // Redirect A -> B.
+                        Destination::kScopeA2BRedirectA   // Redirect back to A.
+                        ),
+        testing::Values(
+            NavigationElement::kElementLink,   // Navigate via element.
+            NavigationElement::kElementButton  // Navigate via button.
             ),
         testing::Values(
-            LinkCaptureTestParam::kScopeA2A,           // Navigate in-scope A.
-            LinkCaptureTestParam::kScopeA2B,           // Navigate A -> B.
-            LinkCaptureTestParam::kScopeA2ARedirectB,  // Redirect A -> B.
-            LinkCaptureTestParam::kScopeA2BRedirectA   // Redirect back to A.
+            ClickMethod::kLeftClick,   // Simulate left-mouse click.
+            ClickMethod::kMiddleClick  // Simulate middle-mouse click
             ),
+        testing::Values(OpenerMode::kOpener,   // Supply 'opener' property.
+                        OpenerMode::kNoOpener  // Supply 'noopener' property.
+                        ),
         testing::Values(
-            LinkCaptureTestParam::kElementLink,   // Navigate via element.
-            LinkCaptureTestParam::kElementButton  // Navigate via button.
-            ),
-        testing::Values(
-            LinkCaptureTestParam::kLeftClick,   // Simulate left-mouse click.
-            LinkCaptureTestParam::kMiddleClick  // Simulate middle-mouse click
-            ),
-        testing::Values(
-            LinkCaptureTestParam::kOpener,   // Supply 'opener' property.
-            LinkCaptureTestParam::kNoOpener  // Supply 'noopener' property.
-            ),
-        testing::Values(
-            LinkCaptureTestParam::kSelf,    // Use target _self.
-            LinkCaptureTestParam::kFrame,   // Use named frame as target.
-            LinkCaptureTestParam::kBlank,   // User Target is _blank.
-            LinkCaptureTestParam::kNoFrame  // Target is non-existing frame.
+            NavigationTarget::kSelf,    // Use target _self.
+            NavigationTarget::kFrame,   // Use named frame as target.
+            NavigationTarget::kBlank,   // User Target is _blank.
+            NavigationTarget::kNoFrame  // Target is non-existing frame.
             )),
     WebAppLinkCapturingBrowserTestParameterized::ParamToString);
