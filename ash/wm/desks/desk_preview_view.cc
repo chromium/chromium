@@ -680,10 +680,6 @@ void DeskPreviewView::OnThemeChanged() {
 }
 
 void DeskPreviewView::OnFocus() {
-  if (mini_view_->owner_bar()->type() == DeskBarViewBase::Type::kOverview) {
-    MoveFocusToView(this);
-  }
-
   mini_view_->UpdateDeskButtonVisibility();
   mini_view_->UpdateFocusColor();
   View::OnFocus();
@@ -721,43 +717,6 @@ bool DeskPreviewView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 
 bool DeskPreviewView::CanHandleAccelerators() const {
   return HasFocus() && views::Button::CanHandleAccelerators();
-}
-
-views::View* DeskPreviewView::GetView() {
-  return this;
-}
-
-void DeskPreviewView::MaybeActivateFocusedView() {
-  DesksController::Get()->ActivateDesk(
-      mini_view_->desk(),
-      mini_view_->owner_bar()->type() == DeskBarViewBase::Type::kDeskButton
-          ? DesksSwitchSource::kDeskButtonMiniViewButton
-          : DesksSwitchSource::kMiniViewButton);
-}
-
-void DeskPreviewView::MaybeCloseFocusedView(bool primary_action) {
-  Close(primary_action);
-}
-
-void DeskPreviewView::MaybeSwapFocusedView(bool right) {
-  Swap(right);
-}
-
-bool DeskPreviewView::MaybeActivateFocusedViewOnOverviewExit(
-    OverviewSession* overview_session) {
-  MaybeActivateFocusedView();
-  return true;
-}
-
-void DeskPreviewView::OnFocusableViewFocused() {
-  mini_view_->UpdateDeskButtonVisibility();
-  mini_view_->UpdateFocusColor();
-  mini_view_->owner_bar()->ScrollToShowViewIfNecessary(mini_view_);
-}
-
-void DeskPreviewView::OnFocusableViewBlurred() {
-  mini_view_->UpdateDeskButtonVisibility();
-  mini_view_->UpdateFocusColor();
 }
 
 void DeskPreviewView::OnWindowOcclusionChanged(aura::Window* window) {

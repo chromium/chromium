@@ -1008,18 +1008,6 @@ void OverviewGrid::RemoveItem(OverviewItemBase* overview_item,
   UpdateNumSavedDeskUnsupportedWindows(overview_item->GetWindows(),
                                        /*increment=*/false);
 
-  // This can also be called when shutting down `this`, at which point the item
-  // will be cleaned up and its associated view may be nullptr. `overview_item`
-  // still needs to be in `item_list_` to compute the corresponding index.
-  if (overview_session_) {
-    if (OverviewFocusCyclerOld* focus_cycler_old =
-            overview_session_->focus_cycler_old()) {
-      for (auto* focusable_view : overview_item->GetFocusableViews()) {
-        focus_cycler_old->OnViewDestroyingOrDisabling(focusable_view);
-      }
-    }
-  }
-
   // Erase from the list first because deleting OverviewItem can lead to
   // iterating through the `item_list_`.
   std::unique_ptr<OverviewItemBase> tmp = std::move(*iter);

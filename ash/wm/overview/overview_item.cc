@@ -20,7 +20,6 @@
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_drop_target.h"
-#include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
 #include "ash/wm/overview/overview_item_base.h"
@@ -602,12 +601,10 @@ void OverviewItem::RestoreWindow(bool reset_transform, bool animate) {
     return;
   }
 
-  const auto enter_exit_type = overview_session_->enter_exit_overview_type();
+  const OverviewEnterExitType enter_exit_type =
+      overview_session_->enter_exit_overview_type();
   if (is_moving_to_another_desk_ ||
       enter_exit_type == OverviewEnterExitType::kImmediateExit) {
-    if (auto* focus_cycler_old = overview_session_->focus_cycler_old()) {
-      focus_cycler_old->OnViewDestroyingOrDisabling(overview_item_view_);
-    }
     ImmediatelyCloseWidgetOnExit(std::move(item_widget_));
     overview_item_view_ = nullptr;
     return;
@@ -659,14 +656,6 @@ void OverviewItem::ScaleUpSelectedItem(OverviewAnimationType animation_type) {
 
 void OverviewItem::EnsureVisible() {
   transform_window_.EnsureVisible();
-}
-
-std::vector<OverviewFocusableView*> OverviewItem::GetFocusableViews() const {
-  // `overview_item_view_` might be set to nullptr in `RestoreWindow()` or
-  // `ShutDown()`.
-  return overview_item_view_
-             ? std::vector<OverviewFocusableView*>{overview_item_view_}
-             : std::vector<OverviewFocusableView*>{};
 }
 
 std::vector<views::Widget*> OverviewItem::GetFocusableWidgets() {
@@ -929,10 +918,6 @@ void OverviewItem::UpdateOverviewItemFillMode() {
   const bool show_backdrop =
       GetOverviewItemFillMode() != OverviewItemFillMode::kNormal;
   overview_item_view_->SetBackdropVisibility(show_backdrop);
-}
-
-gfx::Point OverviewItem::GetMagnifierFocusPointInScreen() const {
-  return overview_item_view_->GetMagnifierFocusPointInScreen();
 }
 
 const gfx::RoundedCornersF OverviewItem::GetRoundedCorners() const {

@@ -109,7 +109,7 @@ class ScopedActivatable : public views::WidgetObserver {
       return;
     }
 
-    OverviewItemBase* item = item_view->GetOverviewItem();
+    OverviewItemBase* item = item_view->overview_item();
     if (!item) {
       return;
     }

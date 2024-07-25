@@ -36,7 +36,6 @@ class View;
 namespace ash {
 
 class DragWindowController;
-class OverviewFocusableView;
 class OverviewGrid;
 class OverviewItem;
 class OverviewSession;
@@ -226,8 +225,7 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   // Ensures that a possibly minimized window becomes visible after restore.
   virtual void EnsureVisible() = 0;
 
-  // Returns the focusable views/widgets contained in `this`.
-  virtual std::vector<OverviewFocusableView*> GetFocusableViews() const = 0;
+  // Returns the focusable widgets contained in `this`.
   virtual std::vector<views::Widget*> GetFocusableWidgets() = 0;
 
   // Returns the backdrop view of `this`.
@@ -296,10 +294,6 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
 
   // Updates the `OverviewItemFillMode` for this item.
   virtual void UpdateOverviewItemFillMode() = 0;
-
-  // Returns the point the accessibility magnifiers should focus on when `this`
-  // is focused.
-  virtual gfx::Point GetMagnifierFocusPointInScreen() const = 0;
 
   virtual const gfx::RoundedCornersF GetRoundedCorners() const = 0;
 

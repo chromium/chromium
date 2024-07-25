@@ -50,7 +50,6 @@ void AddDesksBarTraversableViews(
     out_traversable_views.push_back(bar_view->default_desk_button());
   } else {
     for (DeskMiniView* mini_view : bar_view->mini_views()) {
-      out_traversable_views.push_back(mini_view->desk_preview());
       auto* desk_action_view = mini_view->desk_action_view();
       if (desk_action_view->combine_desks_button() &&
           desk_action_view->combine_desks_button()->CanShow()) {
@@ -247,12 +246,6 @@ std::vector<OverviewFocusableView*> OverviewFocusCyclerOld::GetTraversableViews(
           if (name_view->IsFocusable()) {
             traversable_views.push_back(name_view);
           }
-        }
-      }
-    } else {
-      for (const auto& item : grid->item_list()) {
-        for (auto* focusable_view : item->GetFocusableViews()) {
-          traversable_views.push_back(focusable_view);
         }
       }
     }

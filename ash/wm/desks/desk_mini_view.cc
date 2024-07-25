@@ -150,13 +150,8 @@ DeskMiniView::DeskMiniView(
         switch (mini_view->owner_bar()->type()) {
           case DeskBarViewBase::Type::kOverview:
             // Show focus ring for the overview bar when:
-            //   1a) it's focused via the customized focus cycler;
-            if (desk_preview->is_focused()) {
-              return true;
-            }
-            //   1b) it's focused via focus manager;
-            if (desk_preview->HasFocus() &&
-                features::IsOverviewNewFocusEnabled()) {
+            //   1) it's focused via focus manager;
+            if (desk_preview->HasFocus()) {
               return true;
             }
             //   2) dragging an overview item over this mini view;
@@ -315,15 +310,6 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
       return true;
     }
 
-    if (owner_bar_->type() == DeskBarViewBase::Type::kOverview &&
-        !features::IsOverviewNewFocusEnabled()) {
-      if (desk_preview_->is_focused() || desk_action_view_->ChildHasFocus()) {
-        return true;
-      }
-      return desk_profile_button_ && desk_profile_button_->HasFocus();
-    }
-
-    // New overview focus uses the same mechanisms as the desk button desk bar.
     if (desk_preview_->HasFocus() || desk_action_view_->ChildHasFocus()) {
       return true;
     }
@@ -386,10 +372,7 @@ std::optional<ui::ColorId> DeskMiniView::GetFocusColor() const {
           IsPointOnMiniView(owner_bar_->last_dragged_item_screen_location())) {
         return focused_desk_color_id;
       }
-      if (desk_preview_->is_focused()) {
-        return focused_desk_color_id;
-      }
-      if (desk_preview_->HasFocus() && features::IsOverviewNewFocusEnabled()) {
+      if (desk_preview_->HasFocus()) {
         return focused_desk_color_id;
       }
       if (desk_->is_active() && owner_bar_->overview_grid() &&
@@ -577,11 +560,6 @@ void DeskMiniView::OnRemovingDesk(DeskCloseType close_type) {
 }
 
 void DeskMiniView::OnPreviewOrProfileAboutToBeFocusedByReverseTab() {
-  if (owner_bar_->type() == DeskBarViewBase::Type::kOverview &&
-      !features::IsOverviewNewFocusEnabled()) {
-    return;
-  }
-
   if ((!desk_action_view_->ChildHasFocus() &&
        (desk_profile_button_ == nullptr ||
         !desk_profile_button_->HasFocus()))) {

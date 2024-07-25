@@ -312,6 +312,9 @@ bool TabUntil(bool reverse,
 }
 
 // Returns a predicate that will return true if the given view is focused.
+auto OverviewItemFocused(DeskPreviewView* preview_view) {
+  return [preview_view] { return preview_view->HasFocus(); };
+}
 auto OverviewItemFocused(OverviewFocusableView* view) {
   return [view] {
     CHECK(view->GetView());

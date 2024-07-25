@@ -1050,13 +1050,13 @@ aura::Window* OverviewSession::GetFocusedWindow() const {
   }
 
   CHECK(focus_cycler_);
-  views::View* focused_view = focus_cycler_->GetOverviewFocusedView();
-  auto* item_view = views::AsViewClass<OverviewItemView>(focused_view);
+  auto* item_view = views::AsViewClass<OverviewItemView>(
+      focus_cycler_->GetOverviewFocusedView());
   if (!item_view) {
     return nullptr;
   }
 
-  OverviewItemBase* item = item_view->GetOverviewItem();
+  OverviewItemBase* item = item_view->overview_item();
   return item ? item->GetWindow() : nullptr;
 }
 
