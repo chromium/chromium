@@ -89,13 +89,11 @@ class CORE_EXPORT MultipartParser final
   Matcher DelimiterMatcher(size_t num_already_matched_bytes = 0u) const;
   Matcher DelimiterSuffixMatcher() const;
 
-  void ParseDataAndDelimiter(const char** bytes_pointer, const char* bytes_end);
-  void ParseDelimiter(const char** bytes_pointer, const char* bytes_end);
-  bool ParseHeaderFields(const char** bytes_pointer,
-                         const char* bytes_end,
+  void ParseDataAndDelimiter(base::span<const char>& bytes);
+  void ParseDelimiter(base::span<const char>& bytes);
+  bool ParseHeaderFields(base::span<const char>& bytes,
                          HTTPHeaderMap* header_fields);
-  void ParseTransportPadding(const char** bytes_pointer,
-                             const char* bytes_end) const;
+  void ParseTransportPadding(base::span<const char>& bytes) const;
 
   Matcher matcher_;
   Vector<char> buffered_header_bytes_;
