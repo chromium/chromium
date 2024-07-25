@@ -35,7 +35,7 @@ import java.util.Set;
  * SyncConsentActivity}. After UNO, this will launch the re-FRE with {@link
  * SigninAndHistorySyncActivity}.
  */
-public final class FullscreenSigninPromoUtil {
+public final class FullscreenSigninPromoLauncher {
     /**
      * Launches the {@link SyncConsentActivity} or the {@link igninAndHistoryOptInActivity} if it
      * needs to be displayed.
@@ -145,5 +145,5 @@ public final class FullscreenSigninPromoUtil {
                 || !previousAccountEmails.containsAll(currentAccountEmails);
     }
 
-    private FullscreenSigninPromoUtil() {}
+    private FullscreenSigninPromoLauncher() {}
 }
