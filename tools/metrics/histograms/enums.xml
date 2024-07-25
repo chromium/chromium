@@ -34158,6 +34158,41 @@ Called by update_net_error_codes.py.-->
   <int value="73" label=".raf"/>
   <int value="74" label=".rw2"/>
   <int value="75" label=".tini"/>
+  <int value="76" label=".7z"/>
+  <int value="77" label=".apk"/>
+  <int value="78" label=".apng"/>
+  <int value="79" label=".avif"/>
+  <int value="80" label=".bz2"/>
+  <int value="81" label=".c"/>
+  <int value="82" label=".crswap"/>
+  <int value="83" label=".css"/>
+  <int value="84" label=".dat"/>
+  <int value="85" label=".email"/>
+  <int value="86" label=".eml"/>
+  <int value="87" label=".eps"/>
+  <int value="88" label=".gz"/>
+  <int value="89" label=".ico"/>
+  <int value="90" label=".ics"/>
+  <int value="91" label=".iso"/>
+  <int value="92" label=".java"/>
+  <int value="93" label=".jxl"/>
+  <int value="94" label=".mpeg"/>
+  <int value="95" label=".msg"/>
+  <int value="96" label=".msi"/>
+  <int value="97" label=".pps"/>
+  <int value="98" label=".ppsx"/>
+  <int value="99" label=".psd"/>
+  <int value="100" label=".py"/>
+  <int value="101" label=".sh"/>
+  <int value="102" label=".svg"/>
+  <int value="103" label=".svgz"/>
+  <int value="104" label=".tar"/>
+  <int value="105" label=".tgz"/>
+  <int value="106" label=".tif"/>
+  <int value="107" label=".tiff"/>
+  <int value="108" label=".vcf"/>
+  <int value="109" label=".xml"/>
+  <int value="110" label=".xz"/>
 </enum>
 
 <enum name="VoiceInteractionEventSource">
