@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
+#include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -109,9 +109,9 @@ Iban::~Iban() = default;
 
 Iban& Iban::operator=(const Iban& iban) = default;
 
-AutofillMetadata Iban::GetMetadata() const {
+PaymentsMetadata Iban::GetMetadata() const {
   CHECK_NE(record_type_, Iban::kUnknown);
-  AutofillMetadata metadata(*this);
+  PaymentsMetadata metadata(*this);
   metadata.id = record_type_ == Iban::kLocalIban
                     ? guid()
                     : base::NumberToString(instrument_id());
@@ -487,7 +487,7 @@ size_t Iban::GetLengthOfIbanCountry(IbanSupportedCountry supported_country) {
   }
 }
 
-bool Iban::SetMetadata(const AutofillMetadata& metadata) {
+bool Iban::SetMetadata(const PaymentsMetadata& metadata) {
   if (metadata.id != guid()) {
     return false;
   }

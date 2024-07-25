@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
+#include "components/autofill/core/browser/data_model/payments_metadata.h"
 
 #include <ostream>
 
@@ -12,14 +12,14 @@
 
 namespace autofill {
 
-AutofillMetadata::AutofillMetadata(const AutofillDataModel& model)
+PaymentsMetadata::PaymentsMetadata(const AutofillDataModel& model)
     : use_count(model.use_count()), use_date(model.use_date()) {}
 
-bool AutofillMetadata::IsDeletable() const {
+bool PaymentsMetadata::IsDeletable() const {
   return IsAutofillEntryWithUseDateDeletable(use_date);
 }
 
-std::ostream& operator<<(std::ostream& os, const AutofillMetadata& metadata) {
+std::ostream& operator<<(std::ostream& os, const PaymentsMetadata& metadata) {
   return os << metadata.id << " " << metadata.use_count << " "
             << metadata.use_date << " " << metadata.billing_address_id;
 }

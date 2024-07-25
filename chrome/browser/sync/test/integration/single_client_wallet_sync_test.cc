@@ -21,9 +21,9 @@
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
@@ -50,10 +50,10 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using autofill::AutofillMetadata;
 using autofill::AutofillMetrics;
 using autofill::CreditCard;
 using autofill::CreditCardCloudTokenData;
+using autofill::PaymentsMetadata;
 using autofill::data_util::TruncateUTF8;
 using testing::Contains;
 using wallet_helper::CreateDefaultSyncCreditCardCloudTokenData;
@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, SameUpdatesAreIgnored) {
   EXPECT_EQ("data-2", cloud_token_data[0]->instrument_token);
 
   // Test that the non-default metadata values stayed around.
-  std::vector<AutofillMetadata> cards_metadata = GetServerCardsMetadata(0);
+  std::vector<PaymentsMetadata> cards_metadata = GetServerCardsMetadata(0);
   ASSERT_EQ(1U, cards_metadata.size());
   EXPECT_EQ(2U, cards_metadata[0].use_count);
 }
@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ChangedEntityGetsUpdated) {
   EXPECT_EQ("data-2", cloud_token_data[0]->instrument_token);
 
   // Test that the non-default metadata values stayed around.
-  std::vector<AutofillMetadata> cards_metadata = GetServerCardsMetadata(0);
+  std::vector<PaymentsMetadata> cards_metadata = GetServerCardsMetadata(0);
   ASSERT_EQ(1U, cards_metadata.size());
   EXPECT_EQ(2U, cards_metadata[0].use_count);
 }

@@ -32,7 +32,6 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
@@ -40,6 +39,7 @@
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/data_model/payment_instrument.h"
+#include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
@@ -1048,7 +1048,7 @@ bool PaymentsAutofillTable::ClearLocalCvcs() {
 }
 
 bool PaymentsAutofillTable::AddServerCardMetadata(
-    const AutofillMetadata& card_metadata) {
+    const PaymentsMetadata& card_metadata) {
   sql::Statement s;
   InsertBuilder(db_, s, kServerCardMetadataTable,
                 {kUseCount, kUseDate, kBillingAddressId, kId});
@@ -1080,7 +1080,7 @@ bool PaymentsAutofillTable::UpdateServerCardMetadata(const CreditCard& credit_ca
 }
 
 bool PaymentsAutofillTable::UpdateServerCardMetadata(
-    const AutofillMetadata& card_metadata) {
+    const PaymentsMetadata& card_metadata) {
   // Do not check if there was a record that got deleted. Inserting a new one is
   // also fine.
   RemoveServerCardMetadata(card_metadata.id);
@@ -1102,7 +1102,7 @@ bool PaymentsAutofillTable::RemoveServerCardMetadata(const std::string& id) {
 }
 
 bool PaymentsAutofillTable::GetServerCardsMetadata(
-    std::vector<AutofillMetadata>& cards_metadata) const {
+    std::vector<PaymentsMetadata>& cards_metadata) const {
   cards_metadata.clear();
 
   sql::Statement s;
@@ -1112,7 +1112,7 @@ bool PaymentsAutofillTable::GetServerCardsMetadata(
   while (s.Step()) {
     int index = 0;
 
-    AutofillMetadata card_metadata;
+    PaymentsMetadata card_metadata;
     card_metadata.id = s.ColumnString(index++);
     card_metadata.use_count = s.ColumnInt64(index++);
     card_metadata.use_date = base::Time::FromDeltaSinceWindowsEpoch(
@@ -1124,7 +1124,7 @@ bool PaymentsAutofillTable::GetServerCardsMetadata(
 }
 
 bool PaymentsAutofillTable::AddOrUpdateServerIbanMetadata(
-    const AutofillMetadata& iban_metadata) {
+    const PaymentsMetadata& iban_metadata) {
   // There's no need to verify if removal succeeded, because if it's a new IBAN,
   // the removal call won't do anything.
   RemoveServerIbanMetadata(iban_metadata.id);
@@ -1147,7 +1147,7 @@ bool PaymentsAutofillTable::RemoveServerIbanMetadata(const std::string& instrume
 }
 
 bool PaymentsAutofillTable::GetServerIbansMetadata(
-    std::vector<AutofillMetadata>& ibans_metadata) const {
+    std::vector<PaymentsMetadata>& ibans_metadata) const {
   ibans_metadata.clear();
   sql::Statement s;
   SelectBuilder(db_, s, kMaskedIbansMetadataTable,
@@ -1155,7 +1155,7 @@ bool PaymentsAutofillTable::GetServerIbansMetadata(
 
   while (s.Step()) {
     int index = 0;
-    AutofillMetadata iban_metadata;
+    PaymentsMetadata iban_metadata;
     iban_metadata.id = s.ColumnString(index++);
     iban_metadata.use_count = s.ColumnInt64(index++);
     iban_metadata.use_date = base::Time::FromDeltaSinceWindowsEpoch(

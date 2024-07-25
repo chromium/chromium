@@ -28,7 +28,6 @@ class Time;
 
 namespace autofill {
 
-struct AutofillMetadata;
 class AutofillOfferData;
 class AutofillTableEncryptor;
 class BankAccount;
@@ -36,6 +35,7 @@ class CreditCard;
 struct CreditCardCloudTokenData;
 class Iban;
 struct PaymentsCustomerData;
+struct PaymentsMetadata;
 class VirtualCardUsageData;
 // Helper struct to better group server cvc related variables for better
 // passing last_updated_timestamp, which is needed for sync bridge. Limited
@@ -449,16 +449,16 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // occurred.
   // TODO (crbug.com/1504063): Merge Add/UpdateServerCardMetadata into a single
   // method AddOrUpdateServerCardMetadata.
-  bool AddServerCardMetadata(const AutofillMetadata& card_metadata);
+  bool AddServerCardMetadata(const PaymentsMetadata& card_metadata);
   bool UpdateServerCardMetadata(const CreditCard& credit_card);
-  bool UpdateServerCardMetadata(const AutofillMetadata& card_metadata);
+  bool UpdateServerCardMetadata(const PaymentsMetadata& card_metadata);
   bool RemoveServerCardMetadata(const std::string& id);
   bool GetServerCardsMetadata(
-      std::vector<AutofillMetadata>& cards_metadata) const;
-  bool AddOrUpdateServerIbanMetadata(const AutofillMetadata& iban_metadata);
+      std::vector<PaymentsMetadata>& cards_metadata) const;
+  bool AddOrUpdateServerIbanMetadata(const PaymentsMetadata& iban_metadata);
   bool RemoveServerIbanMetadata(const std::string& instrument_id);
   bool GetServerIbansMetadata(
-      std::vector<AutofillMetadata>& ibans_metadata) const;
+      std::vector<PaymentsMetadata>& ibans_metadata) const;
 
   // Method to add the server cards independently from the metadata.
   void SetServerCardsData(const std::vector<CreditCard>& credit_cards);

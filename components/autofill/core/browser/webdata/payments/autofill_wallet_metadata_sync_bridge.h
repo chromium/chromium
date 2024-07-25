@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
@@ -139,7 +140,7 @@ class AutofillWalletMetadataSyncBridge
 
   // Cache of the local data that allows figuring out the diff for local
   // changes; keyed by storage keys.
-  std::map<std::string, AutofillMetadata> cache_;
+  std::map<std::string, PaymentsMetadata> cache_;
 
   // The bridge should be used on the same sequence where it is constructed.
   SEQUENCE_CHECKER(sequence_checker_);

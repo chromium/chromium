@@ -8,7 +8,7 @@
 
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
+#include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -67,7 +67,7 @@ TEST(IbanTest, GetMetadata) {
   Iban local_iban = test::GetLocalIban();
   local_iban.set_use_count(2);
   local_iban.set_use_date(base::Time::FromSecondsSinceUnixEpoch(25));
-  AutofillMetadata local_metadata = local_iban.GetMetadata();
+  PaymentsMetadata local_metadata = local_iban.GetMetadata();
 
   EXPECT_EQ(local_iban.guid(), local_metadata.id);
   EXPECT_EQ(local_iban.use_count(), local_metadata.use_count);

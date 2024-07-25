@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_METADATA_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_METADATA_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_METADATA_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_METADATA_H_
 
 #include <string>
 
@@ -13,14 +13,14 @@ namespace autofill {
 
 class AutofillDataModel;
 
-// This struct contains the metadata to an autofill data model. It is used to
-// abstract the data from the metadata.
-struct AutofillMetadata {
-  AutofillMetadata() = default;
-  explicit AutofillMetadata(const AutofillDataModel& model);
-  ~AutofillMetadata() = default;
+// This struct contains the metadata of a payments model. It is used to abstract
+// the data from the metadata.
+struct PaymentsMetadata {
+  PaymentsMetadata() = default;
+  explicit PaymentsMetadata(const AutofillDataModel& model);
+  ~PaymentsMetadata() = default;
 
-  bool operator==(const AutofillMetadata&) const = default;
+  bool operator==(const PaymentsMetadata&) const = default;
 
   // Returns whether the metadata is deletable: if it has not been used for
   // longer than `kDisusedDataModelDeletionTimeDelta`.
@@ -41,9 +41,9 @@ struct AutofillMetadata {
   std::string billing_address_id;
 };
 
-// So we can compare AutofillMetadata with EXPECT_EQ().
-std::ostream& operator<<(std::ostream& os, const AutofillMetadata& metadata);
+// So we can compare PaymentsMetadata with EXPECT_EQ().
+std::ostream& operator<<(std::ostream& os, const PaymentsMetadata& metadata);
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_METADATA_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_METADATA_H_

@@ -26,8 +26,8 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
+#include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -377,8 +377,8 @@ void CreditCard::SetNetworkForMaskedCard(std::string_view network) {
   network_ = std::string(network);
 }
 
-AutofillMetadata CreditCard::GetMetadata() const {
-  AutofillMetadata metadata(*this);
+PaymentsMetadata CreditCard::GetMetadata() const {
+  PaymentsMetadata metadata(*this);
   metadata.id = (record_type_ == RecordType::kLocalCard ? guid() : server_id_);
   metadata.billing_address_id = billing_address_id_;
   return metadata;
@@ -408,7 +408,7 @@ double CreditCard::GetRankingScore(base::Time current_time) const {
   return AutofillDataModel::GetRankingScore(current_time);
 }
 
-bool CreditCard::SetMetadata(const AutofillMetadata& metadata) {
+bool CreditCard::SetMetadata(const PaymentsMetadata& metadata) {
   // Make sure the ids matches.
   if (metadata.id !=
       (record_type_ == RecordType::kLocalCard ? guid() : server_id_)) {

@@ -24,13 +24,13 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit_test_api.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -180,7 +180,7 @@ TEST_F(PaymentsAutofillTableTest, MaskedServerIban) {
   EXPECT_THAT(ibans, UnorderedElementsAre(*masked_server_ibans[0],
                                           *masked_server_ibans[1],
                                           *masked_server_ibans[2]));
-  std::vector<AutofillMetadata> outputs;
+  std::vector<PaymentsMetadata> outputs;
   ASSERT_TRUE(table_->GetServerIbansMetadata(outputs));
   ASSERT_FALSE(outputs.empty());
   EXPECT_EQ(iban_0.use_date(), outputs[0].use_date);
@@ -953,7 +953,7 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
 
 TEST_F(PaymentsAutofillTableTest, SetGetRemoveServerCardMetadata) {
   // Create and set the metadata.
-  AutofillMetadata input;
+  PaymentsMetadata input;
   input.id = "server id";
   input.use_count = 50;
   input.use_date = AutofillClock::Now();
@@ -961,7 +961,7 @@ TEST_F(PaymentsAutofillTableTest, SetGetRemoveServerCardMetadata) {
   EXPECT_TRUE(table_->AddServerCardMetadata(input));
 
   // Make sure it was added correctly.
-  std::vector<AutofillMetadata> outputs;
+  std::vector<PaymentsMetadata> outputs;
   ASSERT_TRUE(table_->GetServerCardsMetadata(outputs));
   ASSERT_EQ(1U, outputs.size());
   EXPECT_EQ(input, outputs[0]);
@@ -984,7 +984,7 @@ TEST_F(PaymentsAutofillTableTest, SetGetRemoveServerIbanMetadata) {
   EXPECT_TRUE(table_->AddOrUpdateServerIbanMetadata(iban.GetMetadata()));
 
   // Make sure it was added correctly.
-  std::vector<AutofillMetadata> outputs;
+  std::vector<PaymentsMetadata> outputs;
   ASSERT_TRUE(table_->GetServerIbansMetadata(outputs));
   ASSERT_EQ(1U, outputs.size());
   EXPECT_EQ(iban.GetMetadata(), outputs[0]);
@@ -999,7 +999,7 @@ TEST_F(PaymentsAutofillTableTest, SetGetRemoveServerIbanMetadata) {
 
 TEST_F(PaymentsAutofillTableTest, AddUpdateServerCardMetadata) {
   // Create and set the metadata.
-  AutofillMetadata input;
+  PaymentsMetadata input;
   input.id = "server id";
   input.use_count = 50;
   input.use_date = AutofillClock::Now();
@@ -1007,7 +1007,7 @@ TEST_F(PaymentsAutofillTableTest, AddUpdateServerCardMetadata) {
   ASSERT_TRUE(table_->AddServerCardMetadata(input));
 
   // Make sure it was added correctly.
-  std::vector<AutofillMetadata> outputs;
+  std::vector<PaymentsMetadata> outputs;
   ASSERT_TRUE(table_->GetServerCardsMetadata(outputs));
   ASSERT_EQ(1U, outputs.size());
   ASSERT_EQ(input, outputs[0]);
@@ -1047,11 +1047,11 @@ TEST_F(PaymentsAutofillTableTest, UpdateServerCardMetadataDoesNotChangeData) {
   ASSERT_NE(outputs[0]->use_count(), 51u);
   outputs[0]->set_use_count(51);
 
-  AutofillMetadata input_metadata = outputs[0]->GetMetadata();
+  PaymentsMetadata input_metadata = outputs[0]->GetMetadata();
   EXPECT_TRUE(table_->UpdateServerCardMetadata(input_metadata));
 
   // Make sure it was updated correctly.
-  std::vector<AutofillMetadata> output_metadata;
+  std::vector<PaymentsMetadata> output_metadata;
   ASSERT_TRUE(table_->GetServerCardsMetadata(output_metadata));
   ASSERT_EQ(1U, output_metadata.size());
   EXPECT_EQ(input_metadata, output_metadata[0]);
@@ -1079,7 +1079,7 @@ TEST_F(PaymentsAutofillTableTest, UpdateServerIbanMetadata) {
   EXPECT_TRUE(table_->AddOrUpdateServerIbanMetadata(outputs[0]->GetMetadata()));
 
   // Make sure it was updated correctly.
-  std::vector<AutofillMetadata> output_metadata;
+  std::vector<PaymentsMetadata> output_metadata;
   ASSERT_TRUE(table_->GetServerIbansMetadata(output_metadata));
   ASSERT_EQ(1U, output_metadata.size());
   EXPECT_EQ(outputs[0]->GetMetadata(), output_metadata[0]);
@@ -1093,7 +1093,7 @@ TEST_F(PaymentsAutofillTableTest, UpdateServerIbanMetadata) {
 
 TEST_F(PaymentsAutofillTableTest, RemoveWrongServerCardMetadata) {
   // Crete and set some metadata.
-  AutofillMetadata input;
+  PaymentsMetadata input;
   input.id = "server id";
   input.use_count = 50;
   input.use_date = AutofillClock::Now();
@@ -1101,7 +1101,7 @@ TEST_F(PaymentsAutofillTableTest, RemoveWrongServerCardMetadata) {
   table_->AddServerCardMetadata(input);
 
   // Make sure it was added correctly.
-  std::vector<AutofillMetadata> outputs;
+  std::vector<PaymentsMetadata> outputs;
   ASSERT_TRUE(table_->GetServerCardsMetadata(outputs));
   ASSERT_EQ(1U, outputs.size());
   EXPECT_EQ(input, outputs[0]);
@@ -1165,7 +1165,7 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardsData) {
   EXPECT_EQ(u"Fake description", outputs[0]->product_description());
 
   // Make sure no metadata was added.
-  std::vector<AutofillMetadata> metadata;
+  std::vector<PaymentsMetadata> metadata;
   ASSERT_TRUE(table_->GetServerCardsMetadata(metadata));
   ASSERT_EQ(0U, metadata.size());
 
@@ -1188,7 +1188,7 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardsData) {
 // Tests that adding server cards data does not delete the existing metadata.
 TEST_F(PaymentsAutofillTableTest, SetServerCardsData_ExistingMetadata) {
   // Create and set some metadata.
-  AutofillMetadata input;
+  PaymentsMetadata input;
   input.id = "server id";
   input.use_count = 50;
   input.use_date = AutofillClock::Now();
@@ -1201,7 +1201,7 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardsData_ExistingMetadata) {
   table_->SetServerCardsData(inputs);
 
   // Make sure the metadata is still intact.
-  std::vector<AutofillMetadata> outputs;
+  std::vector<PaymentsMetadata> outputs;
   ASSERT_TRUE(table_->GetServerCardsMetadata(outputs));
   EXPECT_THAT(outputs, ElementsAre(input));
 }
