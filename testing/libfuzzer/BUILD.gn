@@ -167,3 +167,8 @@ if (use_fuzztest_wrapper) {
     ]
   }
 }
+
+group("research") {
+  testonly = true
+  deps = [ "research:research" ]
+}
