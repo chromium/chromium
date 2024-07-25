@@ -2288,6 +2288,7 @@ if (!is_android) {
         "//chrome/browser/ash/policy/external_data:test_support",
         "//chrome/browser/ash/policy/handlers",
         "//chrome/browser/ash/policy/handlers:test_support",
+        "//chrome/browser/ash/policy/login:test_support",
         "//chrome/browser/ash/policy/remote_commands",
         "//chrome/browser/ash/policy/remote_commands:test_support",
         "//chrome/browser/ash/policy/skyvault",

@@ -30,6 +30,7 @@ static_library("auth") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/login",
     "//chrome/browser/ash/profiles",
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus/userdataauth",
