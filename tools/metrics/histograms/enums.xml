@@ -21315,6 +21315,7 @@ from previous Chrome versions.
   <int value="186463628" label="DnsOverHttps:disabled"/>
   <int value="187109402" label="SyncingCompromisedCredentials:enabled"/>
   <int value="188213654" label="PageInfoHideSiteSettings:disabled"/>
+  <int value="188531208" label="HidGetFeatureReportFix:disabled"/>
   <int value="188610022" label="NewMessageListView:enabled"/>
   <int value="189728101" label="FasterLocationReload:disabled"/>
   <int value="189777537" label="DisableInitialMostVisitedFadeIn:enabled"/>
@@ -22354,6 +22355,7 @@ from previous Chrome versions.
   <int value="633442161" label="ExperimentalUi:disabled"/>
   <int value="633573061"
       label="UnifiedPasswordManagerSyncOnlyInGMSCore:enabled"/>
+  <int value="634557307" label="HidGetFeatureReportFix:enabled"/>
   <int value="634789085" label="LayeredAPI:disabled"/>
   <int value="635032392" label="QuickDeleteAndroidFollowup:disabled"/>
   <int value="635076832" label="MarkHttpAs:disabled"/>

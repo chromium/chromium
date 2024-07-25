@@ -38,6 +38,12 @@ BASE_FEATURE(kSerialPortConnected,
 BASE_FEATURE(kWinSystemLocationPermission,
              "WinSystemLocationPermission",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables a fix for a HID issue where feature reports read from devices that
+// do not use report IDs would incorrectly include an extra zero byte at the
+// start of the report and truncate the last byte of the report.
+BASE_FEATURE(kHidGetFeatureReportFix,
+             "HidGetFeatureReportFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 // Enables usage of the location provider manager to select between
 // the operating system's location API or our network-based provider

@@ -3264,6 +3264,9 @@ extern const char kHardwareSecureDecryptionExperimentDescription[];
 extern const char kHardwareSecureDecryptionFallbackName[];
 extern const char kHardwareSecureDecryptionFallbackDescription[];
 
+extern const char kHidGetFeatureReportFixName[];
+extern const char kHidGetFeatureReportFixDescription[];
+
 extern const char kMediaFoundationClearName[];
 extern const char kMediaFoundationClearDescription[];
 

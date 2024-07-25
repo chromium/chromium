@@ -5089,6 +5089,11 @@
     "expiry_milestone": 131
   },
   {
+    "name": "hid-get-feature-report-fix",
+    "owners": [ "mattreynolds@google.com", "deviceapi-team@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "hide-incognito-media-metadata",
     "owners": [
       "fsenra@google.com",

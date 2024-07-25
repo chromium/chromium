@@ -12033,6 +12033,13 @@ const FeatureEntry kFeatureEntries[] = {
          performance_manager::features::kFreezingOnBatterySaverForTesting)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN)
+    {"hid-get-feature-report-fix",
+     flag_descriptions::kHidGetFeatureReportFixName,
+     flag_descriptions::kHidGetFeatureReportFixDescription, kOsWin,
+     FEATURE_VALUE_TYPE(features::kHidGetFeatureReportFix)},
+#endif  // BUILDFLAG(IS_WIN)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -5614,6 +5614,12 @@ const char kHardwareSecureDecryptionDescription[] =
     "Enable/Disable the use of hardware secure Content Decryption Module (CDM) "
     "for protected content playback.";
 
+const char kHidGetFeatureReportFixName[] =
+    "Adjust feature reports received with WebHID";
+const char kHidGetFeatureReportFixDescription[] =
+    "Enable/Disable a fix for a bug that caused feature reports to be offset "
+    "by one byte when received from devices that do not use numbered reports.";
+
 const char kHardwareSecureDecryptionExperimentName[] =
     "Hardware Secure Decryption Experiment";
 const char kHardwareSecureDecryptionExperimentDescription[] =
