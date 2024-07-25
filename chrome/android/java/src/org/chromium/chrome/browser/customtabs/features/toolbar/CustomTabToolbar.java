@@ -1747,7 +1747,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
                             getContext(),
                             background,
-                            mBrandedColorScheme == BrandedColorScheme.INCOGNITO);
+                            mBrandedColorScheme == BrandedColorScheme.INCOGNITO,
+                            /* isCustomTab= */ true);
             mOmniboxBackground.setTint(bg);
         }
 

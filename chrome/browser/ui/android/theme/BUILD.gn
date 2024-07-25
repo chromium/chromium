@@ -40,3 +40,25 @@ android_resources("java_resources") {
     "//components/browser_ui/widget/android:java_resources",
   ]
 }
+
+robolectric_library("junit") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/theme/ThemeUtilsUnitTest.java" ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/styles/android:java",
+    "//testing/android/junit:junit_test_support",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.theme"
+}
