@@ -25,6 +25,8 @@
 
 #if BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
 #import "base/command_line.h"
+#import "base/strings/string_split.h"
+#import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/switches.h"
 #endif
 
@@ -107,6 +109,22 @@ JavaScriptContentWorld::JavaScriptContentWorld(BrowserState* browser_state,
                    << "\n###########\n\n";
     }
 
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            web::switches::kDisableListedJavascriptFeatures)) {
+      num_flags_enabled++;
+      LOG(WARNING) << "\n\n###########\nFlag set: "
+                   << web::switches::kDisableListedJavascriptFeatures
+                   << "\n###########\n\n";
+    }
+
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            web::switches::kEnableListedJavascriptFeatures)) {
+      num_flags_enabled++;
+      LOG(WARNING) << "\n\n###########\nFlag set: "
+                   << web::switches::kEnableListedJavascriptFeatures
+                   << "\n###########\n\n";
+    }
+
     if (num_flags_enabled > 1) {
       LOG(ERROR) << "Multiple JavaScript flags set, results undefined. Ensure "
                     "only one is set and re-run.";
@@ -127,6 +145,55 @@ bool JavaScriptContentWorld::HasFeature(const JavaScriptFeature* feature) {
 }
 
 void JavaScriptContentWorld::AddFeature(const JavaScriptFeature* feature) {
+#if BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          web::switches::kDisableListedJavascriptFeatures)) {
+    std::optional<std::string> message_handler_name =
+        feature->GetScriptMessageHandlerName();
+    if (message_handler_name) {
+      auto disable_features_flag =
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              web::switches::kDisableListedJavascriptFeatures);
+      auto disable_features = base::SplitStringPiece(disable_features_flag, ",",
+                                                     base::TRIM_WHITESPACE,
+                                                     base::SPLIT_WANT_NONEMPTY);
+      if (std::find(disable_features.begin(), disable_features.end(),
+                    message_handler_name.value().c_str()) !=
+          disable_features.end()) {
+        // `feature`'s message handler name was found in passed switch value.
+        return;
+      }
+    }
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          web::switches::kEnableListedJavascriptFeatures)) {
+    std::optional<std::string> message_handler_name =
+        feature->GetScriptMessageHandlerName();
+    if (feature != java_script_features::GetBaseJavaScriptFeature() &&
+        feature != java_script_features::GetCommonJavaScriptFeature() &&
+        feature != java_script_features::GetMessageJavaScriptFeature()) {
+      if (!message_handler_name) {
+        return;
+      }
+
+      auto enable_features_flag =
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              web::switches::kEnableListedJavascriptFeatures);
+      auto enable_features = base::SplitStringPiece(enable_features_flag, ",",
+                                                    base::TRIM_WHITESPACE,
+                                                    base::SPLIT_WANT_NONEMPTY);
+      if (std::find(enable_features.begin(), enable_features.end(),
+                    message_handler_name.value().c_str()) ==
+          enable_features.end()) {
+        // `feature`'s message handler name was NOT found in passed switch
+        // value.
+        return;
+      }
+    }
+  }
+#endif
+
   if (HasFeature(feature)) {
     // `feature` has already been added to this content world.
     return;

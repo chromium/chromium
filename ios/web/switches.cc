@@ -30,5 +30,25 @@ extern const char kDisableListedScripts[] = "disable-listed-scripts";
 // Note that all dependencies, must be manually enabled when using this flag.
 extern const char kEnableListedScripts[] = "enable-listed-scripts";
 
+// Disables the listed JavaScriptFeature instances. The value must be a
+// comma separated string of the value returned by
+// `JavaScriptFeature::GetScriptMessageHandlerName()`.
+// For example, to disable ContextMenuJavaScriptFeature, use:
+// `--disable-listed-javascript-features=FindElementResultHandler`
+extern const char kDisableListedJavascriptFeatures[] =
+    "disable-listed-javascript-features";
+// Enables only the listed JavaScriptFeature instances. The value must be a
+// comma separated string of the value returned by
+// `JavaScriptFeature::GetScriptMessageHandlerName()`. If a feature does not
+// have a message handler, it will NOT be enabled when using this flag. However,
+// the features returned by `GetBaseJavaScriptFeature()`,
+// `GetCommonJavaScriptFeature()` and `GetMessageJavaScriptFeature()` are always
+// enabled (even though they do not have message handlers) because most features
+// rely on them and there would otherwise be no way to enable them.
+// For example, to only enable only ContextMenuJavaScriptFeature, use:
+// `--enable-listed-javascript-features=FindElementResultHandler`
+extern const char kEnableListedJavascriptFeatures[] =
+    "enable-listed-javascript-features";
+
 }  // namespace switches
 }  // namespace web
