@@ -1109,6 +1109,10 @@ views::WebView* Browser::GetWebView() {
   return window_->GetContentsWebView();
 }
 
+Profile* Browser::GetProfile() {
+  return profile();
+}
+
 void Browser::OpenGURL(const GURL& gurl, WindowOpenDisposition disposition) {
   OpenURL(content::OpenURLParams(gurl, content::Referrer(), disposition,
                                  ui::PAGE_TRANSITION_LINK,
@@ -1153,6 +1157,10 @@ base::CallbackListSubscription Browser::RegisterDidBecomeActive(
 base::CallbackListSubscription Browser::RegisterDidBecomeInactive(
     DidBecomeInactiveCallback callback) {
   return did_become_inactive_callback_list_.Add(std::move(callback));
+}
+
+ExclusiveAccessManager* Browser::GetExclusiveAccessManager() {
+  return exclusive_access_manager();
 }
 
 void Browser::DidBecomeActive() {

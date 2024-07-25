@@ -30,7 +30,9 @@ class WebContentsModalDialogHost;
 }  // namespace web_modal
 
 class BrowserWindowFeatures;
+class ExclusiveAccessManager;
 class GURL;
+class Profile;
 class SessionID;
 
 class BrowserWindowInterface : public content::PageNavigator {
@@ -39,6 +41,9 @@ class BrowserWindowInterface : public content::PageNavigator {
   // active tab switches, the contents of the views::WebView is modified, but
   // the instance itself remains the same.
   virtual views::WebView* GetWebView() = 0;
+
+  // Returns the profile that semantically owns this browser window.
+  virtual Profile* GetProfile() = 0;
 
   // Opens a URL, with the given disposition. This is a convenience wrapper
   // around OpenURL from content::PageNavigator.
@@ -82,6 +87,9 @@ class BrowserWindowInterface : public content::PageNavigator {
       base::RepeatingCallback<void(BrowserWindowInterface*)>;
   virtual base::CallbackListSubscription RegisterDidBecomeInactive(
       DidBecomeInactiveCallback callback) = 0;
+
+  // This class is responsible for controlling fullscreen and pointer lock.
+  virtual ExclusiveAccessManager* GetExclusiveAccessManager() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_

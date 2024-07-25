@@ -18,7 +18,6 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -316,8 +315,6 @@ void LensOverlayController::ShowUI(
   invocation_source_ = invocation_source;
 
   // Request user permission before grabbing a screenshot.
-  Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents());
-  CHECK(tab_browser);
   CHECK(pref_service_);
   if (!lens::CanSharePageScreenshotWithLensOverlay(pref_service_)) {
     if (!permission_bubble_controller_) {
@@ -365,7 +362,7 @@ void LensOverlayController::ShowUI(
       variations_client_, identity_manager_, profile, invocation_source,
       lens::LensOverlayShouldUseDarkMode(theme_service_));
   side_panel_coordinator_ =
-      SidePanelUtil::GetSidePanelCoordinatorForBrowser(tab_browser);
+      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
   CHECK(side_panel_coordinator_);
 
   // Setup observer to be notified of side panel opens and closes.
@@ -381,8 +378,9 @@ void LensOverlayController::ShowUI(
   }
 
   scoped_tab_modal_ui_ = tab_->ShowModalUI();
-  fullscreen_observation_.Observe(
-      tab_browser->exclusive_access_manager()->fullscreen_controller());
+  fullscreen_observation_.Observe(tab_->GetBrowserWindowInterface()
+                                      ->GetExclusiveAccessManager()
+                                      ->fullscreen_controller());
 
   // This should be the last thing called in ShowUI, so if something goes wrong
   // in capturing the screenshot, the state gets cleaned up correctly.
@@ -1728,12 +1726,10 @@ void LensOverlayController::CloseRequestedByOverlayBackgroundClick() {
 }
 
 void LensOverlayController::FeedbackRequestedByOverlay() {
-  Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents());
-  if (!tab_browser) {
-    return;
-  }
   chrome::ShowFeedbackPage(
-      tab_browser, feedback::kFeedbackSourceLensOverlay,
+      tab_->GetContents()->GetLastCommittedURL(),
+      tab_->GetBrowserWindowInterface()->GetProfile(),
+      feedback::kFeedbackSourceLensOverlay,
       /*description_template=*/std::string(),
       /*description_placeholder_text=*/
       l10n_util::GetStringUTF8(IDS_LENS_SEND_FEEDBACK_PLACEHOLDER),

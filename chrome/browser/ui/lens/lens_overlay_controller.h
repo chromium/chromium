@@ -14,7 +14,6 @@
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"
@@ -143,10 +142,6 @@ class LensOverlayController : public LensSearchboxClient,
     // The selection type of the current Lens request, if any.
     lens::LensOverlaySelectionType lens_selection_type_;
   };
-
-  // Returns whether the Lens Overlay feature is enabled for this user profile
-  // and browser window.
-  static bool IsEnabled(Browser* browser);
 
   // Sets a region to search after the overlay loads, then calls ShowUI().
   // All units are in device pixels. region_bitmap contains the high definition

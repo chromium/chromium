@@ -870,6 +870,7 @@ class Browser : public TabStripModelObserver,
 
   // BrowserWindowInterface overrides:
   views::WebView* GetWebView() override;
+  Profile* GetProfile() override;
   void OpenGURL(const GURL& gurl, WindowOpenDisposition disposition) override;
   content::WebContents* OpenURL(
       const content::OpenURLParams& params,
@@ -887,6 +888,7 @@ class Browser : public TabStripModelObserver,
       DidBecomeActiveCallback callback) override;
   base::CallbackListSubscription RegisterDidBecomeInactive(
       DidBecomeInactiveCallback callback) override;
+  ExclusiveAccessManager* GetExclusiveAccessManager() override;
 
   // Called by BrowserView when on active changes.
   void DidBecomeActive();
