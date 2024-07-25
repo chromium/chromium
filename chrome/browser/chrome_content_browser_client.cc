@@ -439,7 +439,9 @@
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/media_app_ui/url_constants.h"
+#include "ash/webui/print_management/url_constants.h"
 #include "ash/webui/scanning/url_constants.h"
+#include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "chrome/app/chrome_crash_reporter_client.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_backend_delegate.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_backend_delegate.h"
@@ -6374,6 +6376,14 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
 
   if (url.DomainIs(chrome::kChromeUIUntrustedTerminalHost)) {
     return IsSystemFeatureDisabled(policy::SystemFeature::kTerminal);
+  }
+
+  if (url.DomainIs(ash::kChromeUIPrintManagementHost)) {
+    return IsSystemFeatureDisabled(policy::SystemFeature::kPrintJobs);
+  }
+
+  if (url.DomainIs(ash::kChromeUIShortcutCustomizationAppHost)) {
+    return IsSystemFeatureDisabled(policy::SystemFeature::kKeyShortcuts);
   }
 
 #endif

@@ -832,6 +832,13 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       case policy::SystemFeature::kGallery:
         disabled_system_apps_.insert(ash::SystemWebAppType::MEDIA);
         break;
+      case policy::SystemFeature::kPrintJobs:
+        disabled_system_apps_.insert(ash::SystemWebAppType::PRINT_MANAGEMENT);
+        break;
+      case policy::SystemFeature::kKeyShortcuts:
+        disabled_system_apps_.insert(
+            ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION);
+        break;
 #else
       case policy::SystemFeature::kCamera:
       case policy::SystemFeature::kOsSettings:
@@ -840,6 +847,8 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       case policy::SystemFeature::kCrosh:
       case policy::SystemFeature::kTerminal:
       case policy::SystemFeature::kGallery:
+      case policy::SystemFeature::kPrintJobs:
+      case policy::SystemFeature::kKeyShortcuts:
         break;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       case policy::SystemFeature::kUnknownSystemFeature:

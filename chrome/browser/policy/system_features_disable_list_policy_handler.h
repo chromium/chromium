@@ -32,7 +32,9 @@ enum class SystemFeature : int {
   kCrosh = 9,                 // The ChromeOS shell.
   kTerminal = 10,             // The terminal client web app on ChromeOS.
   kGallery = 11,              // The gallery web app on ChromeOS.
-  kMaxValue = kGallery
+  kPrintJobs = 12,            // The print jobs app on ChromeOS.
+  kKeyShortcuts = 13,         // The Key Shortcuts app on ChromeOS.
+  kMaxValue = kKeyShortcuts
 };
 
 // A disabling mode that decides the user experience when a system feature is
@@ -54,6 +56,8 @@ extern const char kExploreFeature[];
 extern const char kCroshFeature[];
 extern const char kTerminalFeature[];
 extern const char kGalleryFeature[];
+extern const char kPrintJobsFeature[];
+extern const char kKeyShortcutsFeature[];
 
 extern const char kBlockedDisableMode[];
 extern const char kHiddenDisableMode[];

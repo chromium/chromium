@@ -341,6 +341,13 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableSWAs) {
 
   // Disable Terminal app.
   VerifyAppDisableMode(guest_os::kTerminalSystemAppId, kTerminalFeature);
+
+  // Disable Print Jobs app.
+  VerifyAppDisableMode(web_app::kPrintManagementAppId, kPrintJobsFeature);
+
+  // Disable Key Shortcuts app.
+  VerifyAppDisableMode(web_app::kShortcutCustomizationAppId,
+                       kKeyShortcutsFeature);
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
@@ -356,7 +363,9 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
                                                 .Append(kCanvasFeature)
                                                 .Append(kCroshFeature)
                                                 .Append(kGalleryFeature)
-                                                .Append(kTerminalFeature);
+                                                .Append(kTerminalFeature)
+                                                .Append(kPrintJobsFeature)
+                                                .Append(kKeyShortcutsFeature);
   UpdateSystemFeaturesDisableList(system_features.Clone(), kHiddenDisableMode);
 
   VisibilityFlags expected_visibility =
@@ -375,6 +384,10 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
   VerifyAppState(web_app::kMediaAppId, apps::Readiness::kDisabledByPolicy, true,
                  expected_visibility);
   VerifyAppState(guest_os::kTerminalSystemAppId,
+                 apps::Readiness::kDisabledByPolicy, true, expected_visibility);
+  VerifyAppState(web_app::kPrintManagementAppId,
+                 apps::Readiness::kDisabledByPolicy, true, expected_visibility);
+  VerifyAppState(web_app::kShortcutCustomizationAppId,
                  apps::Readiness::kDisabledByPolicy, true, expected_visibility);
 
   // Disable and block apps.
@@ -399,6 +412,10 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
                  expected_visibility);
   VerifyAppState(guest_os::kTerminalSystemAppId,
                  apps::Readiness::kDisabledByPolicy, true, expected_visibility);
+  VerifyAppState(web_app::kPrintManagementAppId,
+                 apps::Readiness::kDisabledByPolicy, true, expected_visibility);
+  VerifyAppState(web_app::kShortcutCustomizationAppId,
+                 apps::Readiness::kDisabledByPolicy, true, expected_visibility);
 
   // Enable apps.
   UpdateSystemFeaturesDisableList(base::Value(), nullptr);
@@ -416,6 +433,10 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
                  expected_visibility);
   VerifyAppState(guest_os::kTerminalSystemAppId, apps::Readiness::kReady, false,
                  expected_visibility);
+  VerifyAppState(web_app::kPrintManagementAppId, apps::Readiness::kReady, false,
+                 expected_visibility);
+  VerifyAppState(web_app::kShortcutCustomizationAppId, apps::Readiness::kReady,
+                 false, expected_visibility);
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
@@ -427,7 +448,9 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
                                                 .Append(kCanvasFeature)
                                                 .Append(kCroshFeature)
                                                 .Append(kGalleryFeature)
-                                                .Append(kTerminalFeature);
+                                                .Append(kTerminalFeature)
+                                                .Append(kPrintJobsFeature)
+                                                .Append(kKeyShortcutsFeature);
   UpdateSystemFeaturesDisableList(system_features.Clone(), kHiddenDisableMode);
 
   InstallSWAs();
@@ -451,6 +474,10 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
   VerifyAppState(web_app::kMediaAppId, apps::Readiness::kDisabledByPolicy, true,
                  expected_visibility);
   VerifyAppState(guest_os::kTerminalSystemAppId,
+                 apps::Readiness::kDisabledByPolicy, true, expected_visibility);
+  VerifyAppState(web_app::kPrintManagementAppId,
+                 apps::Readiness::kDisabledByPolicy, true, expected_visibility);
+  VerifyAppState(web_app::kShortcutCustomizationAppId,
                  apps::Readiness::kDisabledByPolicy, true, expected_visibility);
 }
 
