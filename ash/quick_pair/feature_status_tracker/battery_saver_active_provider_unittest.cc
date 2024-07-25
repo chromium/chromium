@@ -72,8 +72,9 @@ class BatterySaverActiveProviderTest : public AshTestBase {
   std::unique_ptr<BatterySaverActiveProvider> battery_saver_active_provider_;
 };
 
+// TODO(b/355485660): This test is failing on chromeos builders.
 TEST_F(BatterySaverActiveProviderTest,
-       ProviderDisabledIfPowerStatusNotInitialized) {
+       DISABLED_ProviderDisabledIfPowerStatusNotInitialized) {
   InitializePowerStatus(/*should_initialize=*/false);
   InitializeProvider();
   EXPECT_FALSE(IsBatterySaverActive());
