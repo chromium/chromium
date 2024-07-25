@@ -7041,6 +7041,7 @@ TEST_P(DesksTest, ReorderDesksByGesture) {
   // Add two desks (Now we have three desks).
   NewDesk();
   NewDesk();
+  RunScheduledLayoutForAllOverviewDeskBars();
 
   // Cache the mini view and corresponding desks.
   std::vector<raw_ptr<DeskMiniView, VectorExperimental>> mini_views =
@@ -7088,6 +7089,7 @@ TEST_P(DesksTest, ReorderDesksByGesture) {
   event_generator->MoveTouchBy(10, 0);
 
   event_generator->MoveTouch(desk_center_2);
+  RunScheduledLayoutForAllOverviewDeskBars();
 
   // Now, the desks order should be [0, 2, 1]:
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
