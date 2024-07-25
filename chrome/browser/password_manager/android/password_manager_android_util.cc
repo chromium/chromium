@@ -25,6 +25,7 @@
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
 #include "components/version_info/android/channel_getter.h"
@@ -61,6 +62,9 @@ enum class ActivationError {
   kMigrationWarningUnacknowledged = 6,
   kMaxValue = kMigrationWarningUnacknowledged,
 };
+
+// Set on startup before the local passwords migration starts.
+bool last_migration_attempt_failed = false;
 
 bool IsPasswordSyncEnabled(PrefService* pref_service) {
   // It's not possible to ask the SyncService whether password sync is enabled,
@@ -446,6 +450,12 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
                            static_cast<int>(kOff));
 }
 
+bool HasPasswordsInProfileStore(PrefService* pref_service) {
+  int total_passwords_in_profile_store = pref_service->GetInteger(
+      password_manager::prefs::kTotalPasswordsAvailableForProfile);
+  return total_passwords_in_profile_store > 0;
+}
+
 }  // namespace
 
 UseUpmLocalAndSeparateStoresState GetSplitStoresAndLocalUpmPrefValue(
@@ -500,7 +510,12 @@ bool ShouldUseUpmWiring(const syncer::SyncService* sync_service,
 void SetUsesSplitStoresAndUPMForLocal(
     PrefService* pref_service,
     const base::FilePath& login_db_directory) {
-  if (GetSplitStoresAndLocalUpmPrefValue(pref_service) != kOff) {
+  UseUpmLocalAndSeparateStoresState split_stores_and_local_upm =
+      GetSplitStoresAndLocalUpmPrefValue(pref_service);
+  last_migration_attempt_failed =
+      split_stores_and_local_upm == kOffAndMigrationPending ? true : false;
+
+  if (split_stores_and_local_upm != kOff) {
     MaybeDeactivateSplitStoresAndLocalUpm(pref_service, login_db_directory);
   } else {
     MaybeActivateSplitStoresAndLocalUpm(pref_service, login_db_directory);
@@ -514,6 +529,53 @@ void SetUsesSplitStoresAndUPMForLocal(
   base::UmaHistogramEnumeration(
       "PasswordManager.LocalUpmActivationStatus",
       GetSplitStoresAndLocalUpmPrefValue(pref_service));
+}
+
+PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
+    const std::string& gms_version_str,
+    PrefService* pref_service) {
+  // No warning should be displayed to the users, who don't have any passwords
+  // in the profile store.
+  if (!HasPasswordsInProfileStore(pref_service)) {
+    return PasswordAccessLossWarningType::kNone;
+  }
+
+  int gms_version = 0;
+  // GMSCore version could not be parsed, probably no GMSCore installed.
+  if (!base::StringToInt(gms_version_str, &gms_version)) {
+    return PasswordAccessLossWarningType::kNoGmsCore;
+  }
+
+  // GMSCore version is pre-UPM, update is required.
+  if (gms_version < password_manager::features::kAccountUpmMinGmsVersion) {
+    return PasswordAccessLossWarningType::kNoUpm;
+  }
+
+  // GMSCore version supports the account passwords, but doesn't support local
+  // passwords. Update is still required.
+  bool is_automotive = base::android::BuildInfo::GetInstance()->is_automotive();
+  if (is_automotive &&
+      gms_version <
+          password_manager::features::kDefaultLocalUpmMinGmsVersionForAuto) {
+    return PasswordAccessLossWarningType::kOnlyAccountUpm;
+  }
+  if (!is_automotive &&
+      gms_version < password_manager::features::kDefaultLocalUpmMinGmsVersion) {
+    return PasswordAccessLossWarningType::kOnlyAccountUpm;
+  }
+
+  // GMSCore is up to date, but the local passwords migration has failed, so
+  // manual export/import flow should be done. Checking the
+  // `SplitStoresAndLocalUpmState` again here because the migration might have
+  // succeeded in this run.
+  if (last_migration_attempt_failed &&
+      GetSplitStoresAndLocalUpmPrefValue(pref_service) ==
+          kOffAndMigrationPending) {
+    return PasswordAccessLossWarningType::kNewGmsCoreMigrationFailed;
+  }
+
+  // Everything is fine, no warning will be shown.
+  return PasswordAccessLossWarningType::kNone;
 }
 
 }  // namespace password_manager_android_util

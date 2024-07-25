@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ANDROID_UTIL_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ANDROID_UTIL_H_
 
+#include <memory>
+
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 
 class PrefService;
@@ -18,6 +20,15 @@ class SyncService;
 }  // namespace syncer
 
 namespace password_manager_android_util {
+
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.access_loss
+enum class PasswordAccessLossWarningType {
+  kNone = 0,       // No warning.
+  kNoGmsCore = 1,  // A warning that the password manager will stop working.
+  kNoUpm = 2,      // A warning that GMS Core is outdated; updated suggested.
+  kOnlyAccountUpm = 3,  // A warning that GMSCore is outdated; update suggested.
+  kNewGmsCoreMigrationFailed = 4  // A warning for fixing the migration error.
+};
 
 // Used to prevent static casting issues with
 // `PasswordsUseUPMLocalAndSeparateStores` pref.
@@ -43,6 +54,23 @@ bool ShouldUseUpmWiring(const syncer::SyncService* sync_service,
 // command-line, the GmsCore version check will be skipped.
 void SetUsesSplitStoresAndUPMForLocal(PrefService* pref_service,
                                       const base::FilePath& login_db_directory);
+
+// This is part of UPM 4.1 implementation. Checks which type of passwords access
+// loss warning to show to the user if any (`kNone` means that no warning will
+// be displayed). The order of the checks is the following:
+// - If there are no passwords in the profile store, no warning is needed.
+// - If GMS Core is not installed, `kNoGms` is returned.
+// - If GMS Core is installed, but has no support for passwords (neither
+// account, nor local), `kOutdatedGms` is returned.
+// - If GMS Core is installed and has the version which supports account
+// passwords, but doesn't support local passwords, `kNoLocalSupportGms` is
+// returned.
+// - If there is a local passwords migration pending, then `kMigrationPending`
+// is returned.
+// - Otherwise no warning is shown.
+PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
+    const std::string& gms_version_str,
+    PrefService* pref_service);
 
 }  // namespace password_manager_android_util
 
