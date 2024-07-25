@@ -104,7 +104,8 @@ AcceleratorModificationData ValueToAcceleratorModificationData(
 
 void SetLookupMaps(base::span<const ash::AcceleratorData> accelerators,
                    ash::ActionIdToAcceleratorsMap& id_to_accelerator,
-                   AcceleratorActionMap& accelerator_to_id) {
+                   AcceleratorActionMap& accelerator_to_id,
+                   base::flat_set<ui::Accelerator>& locked_accelerator_set) {
   for (const auto& acceleratorData : accelerators) {
     ui::Accelerator accelerator(acceleratorData.keycode,
                                 acceleratorData.modifiers);
@@ -115,6 +116,9 @@ void SetLookupMaps(base::span<const ash::AcceleratorData> accelerators,
         std::make_pair(accelerator, acceleratorData.action));
     id_to_accelerator[static_cast<uint32_t>(acceleratorData.action)].push_back(
         accelerator);
+    if (acceleratorData.accelerator_locked) {
+      locked_accelerator_set.insert(accelerator);
+    }
   }
 }
 
@@ -253,6 +257,11 @@ bool AshAcceleratorConfiguration::IsMutable() const {
 bool AshAcceleratorConfiguration::IsDeprecated(
     const ui::Accelerator& accelerator) const {
   return deprecated_accelerators_to_id_.Find(accelerator);
+}
+
+bool AshAcceleratorConfiguration::IsAcceleratorLocked(
+    const ui::Accelerator& accelerator) const {
+  return locked_accelerator_set_.contains(accelerator);
 }
 
 const AcceleratorAction* AshAcceleratorConfiguration::FindAcceleratorAction(
@@ -415,7 +424,7 @@ void AshAcceleratorConfiguration::Initialize(
 
   // Cache these accelerators as the default.
   SetLookupMaps(accelerators, default_id_to_accelerators_cache_,
-                default_accelerators_to_id_cache_);
+                default_accelerators_to_id_cache_, locked_accelerator_set_);
 
   // TODO(jimmyxgong): Before adding the accelerators to the mappings, apply
   // pref remaps.
@@ -466,7 +475,8 @@ void AshAcceleratorConfiguration::InitializeDeprecatedAccelerators(
 
 void AshAcceleratorConfiguration::AddAccelerators(
     base::span<const AcceleratorData> accelerators) {
-  SetLookupMaps(accelerators, id_to_accelerators_, accelerator_to_id_);
+  SetLookupMaps(accelerators, id_to_accelerators_, accelerator_to_id_,
+                locked_accelerator_set_);
   UpdateAndNotifyAccelerators();
 }
 

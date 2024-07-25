@@ -28,6 +28,7 @@ struct AcceleratorData {
   ui::KeyboardCode keycode;
   int modifiers;
   AcceleratorAction action;
+  bool accelerator_locked = false;
 };
 
 // A mask of all the modifiers used for debug accelerators.

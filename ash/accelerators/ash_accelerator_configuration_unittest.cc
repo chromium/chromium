@@ -198,6 +198,10 @@ TEST_F(AshAcceleratorConfigurationTest, VerifyAcceleratorMappingPopulated) {
       {/*trigger_on_press=*/true, ui::VKEY_TAB,
        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
        AcceleratorAction::kCycleBackwardMru},
+      {true, ui::VKEY_SPACE, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
+       AcceleratorAction::kShowEmojiPicker, true},
+      {true, ui::VKEY_EMOJI_PICKER, ui::EF_NONE,
+       AcceleratorAction::kShowEmojiPicker, true},
   };
 
   config_->Initialize(test_data);
@@ -205,6 +209,9 @@ TEST_F(AshAcceleratorConfigurationTest, VerifyAcceleratorMappingPopulated) {
       config_->GetAllAccelerators();
 
   ExpectAllAcceleratorsEqual(test_data, accelerators);
+
+  ui::Accelerator accelerator(ui::VKEY_EMOJI_PICKER, ui::EF_NONE);
+  EXPECT_TRUE(config_->IsAcceleratorLocked(accelerator));
 }
 
 TEST_F(AshAcceleratorConfigurationTest, DeprecatedAccelerators) {
