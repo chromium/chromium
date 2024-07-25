@@ -34,12 +34,12 @@ b/325323464 http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout
 
 # WPT failures
 crbug.com/1518086 external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Failure ]
-crbug.com/dawn/2456 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-video.html [ Failure Crash ]
-crbug.com/dawn/2456 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure Crash ]
+crbug.com/dawn/2456 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-video.html [ Crash Failure ]
+crbug.com/dawn/2456 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Crash Failure ]
 crbug.com/dawn/2456 external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Crash ]
 crbug.com/dawn/2456 external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Crash ]
-b/328789624 external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Pass Crash ]
-b/328789624 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Pass Crash ]
+b/328789624 external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Crash Pass ]
+b/328789624 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/343515409 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pad.https.any.worker.html?gpu [ Timeout ]

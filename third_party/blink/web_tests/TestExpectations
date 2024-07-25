@@ -2560,7 +2560,7 @@ crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failur
 crbug.com/324447993 external/wpt/web-locks/clientids.https.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-grid/subgrid/scrollbar-gutter-002.html [ Crash Timeout ]
 crbug.com/343770003 external/wpt/trusted-types/WorkerGlobalScope-eval.html [ Failure ]
-external/wpt/scroll-to-text-fragment/find-range-from-text-directive.html [ Pass Failure Timeout ]  # Also has flaky output
+crbug.com/355428699 external/wpt/scroll-to-text-fragment/find-range-from-text-directive.html [ Failure Pass Timeout ]
 
 # These tests crash due to DCHECKs. Only CQ/debug CI builders enable DCHECKs;
 # `*-blink-rel` builders don't.
