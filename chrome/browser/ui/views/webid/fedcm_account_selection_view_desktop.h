@@ -115,7 +115,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void SetIdpSigninPopupWindowForTesting(std::unique_ptr<FedCmModalDialogView>);
 
   // AccountSelectionBubbleView::Observer:
-  content::WebContents* ShowModalDialog(const GURL& url) override;
+  content::WebContents* ShowModalDialog(const GURL& url,
+                                        blink::mojom::RpMode rp_mode) override;
   void CloseModalDialog() override;
   void PrimaryMainFrameWasResized(bool width_changed) override;
 

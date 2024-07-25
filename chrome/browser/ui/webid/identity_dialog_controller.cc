@@ -175,13 +175,14 @@ void IdentityDialogController::ShowUrl(LinkType type, const GURL& url) {
 
 content::WebContents* IdentityDialogController::ShowModalDialog(
     const GURL& url,
+    blink::mojom::RpMode rp_mode,
     DismissCallback dismiss_callback) {
   on_dismiss_ = std::move(dismiss_callback);
   if (!account_view_) {
     account_view_ = AccountSelectionView::Create(this);
   }
 
-  return account_view_->ShowModalDialog(url);
+  return account_view_->ShowModalDialog(url, rp_mode);
 }
 
 void IdentityDialogController::CloseModalDialog() {
