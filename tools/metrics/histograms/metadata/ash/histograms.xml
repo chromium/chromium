@@ -6083,13 +6083,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.AnimationSmoothness.Exit{OverviewAnimationMode}"
-    units="%" expires_after="2024-02-07">
+    units="%" expires_after="2025-01-05">
   <owner>achuith@chromium.org</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
     Relative smoothness of animations when exiting overview mode, recorded when
     the animation completes. 100% represents ideally smooth 60 frames per
-    second. {OverviewAnimationMode}
+    second. {OverviewAnimationMode}. Warning: this histogram was expired from
+    2024-02-07 to 2024-07-25; data may be missing.
   </summary>
   <token key="OverviewAnimationMode" variants="OverviewAnimationMode"/>
 </histogram>
