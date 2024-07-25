@@ -160,6 +160,11 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   [_bottomOmniboxEnabled stop];
   [_bottomOmniboxEnabled setObserver:nil];
   _bottomOmniboxEnabled = nil;
+  if (_remoteSuggestionsServiceObserverBridge) {
+    self.remoteSuggestionsService->RemoveObserver(
+        _remoteSuggestionsServiceObserverBridge.get());
+    _remoteSuggestionsServiceObserverBridge.reset();
+  }
 }
 
 - (void)updateMatches:(const AutocompleteResult&)result {
