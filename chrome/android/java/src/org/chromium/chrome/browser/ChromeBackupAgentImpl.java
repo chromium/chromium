@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -51,11 +50,13 @@ import org.chromium.components.sync.internal.SyncPrefNames;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentProcessInfo;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 
 /** Backup agent for Chrome, using Android key/value backup. */
 @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
@@ -394,6 +396,23 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             }
         }
 
+        PostTask.runSynchronously(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    // Chrome library loading and metrics-related code below depend on PathUtils.
+                    PathUtils.setPrivateDataDirectorySuffix(
+                            SplitCompatApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
+                });
+
+        if (isMetricsReportingEnabled(backupNames, backupValues)) {
+            try {
+                enableRestoreFlowMetrics();
+            } catch (IOException e) {
+                // Couldn't enable metrics - log the error and try to proceed with the restore flow.
+                Log.w(TAG, "Couldn't enable restore flow metrics", e);
+            }
+        }
+
         // Start and wait for the Async init tasks. This loads the library, and attempts to load the
         // first run variations seed. Since these are both slow it makes sense to run them in
         // parallel as Android AsyncTasks, reusing some of Chrome's async startup logic.
@@ -406,9 +425,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     // TODO(crbug.com/40283943): Wait for AccountManagerFacade to load accounts.
-                    // Chrome library loading depends on PathUtils.
-                    PathUtils.setPrivateDataDirectorySuffix(
-                            SplitCompatApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
                     createAsyncInitTaskRunner(latch)
                             .startBackgroundTasks(
                                     /* allocateChildConnection= */ false,
@@ -547,14 +563,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             }
         }
 
-        // TODO(crbug.com/40075135): Restore the metrics related preferences and update the upload
-        // states as early as possible, i.e. before the native prefs restoration/getting accounts.
-        // Refresh the metrics service state after related preferences are restored, to allow the
-        // experiment metrics to be sent if there's any.
-        if (SigninFeatureMap.isEnabled(SigninFeatures.UPDATE_METRICS_SERVICES_STATE_IN_RESTORE)) {
-            UmaSessionStats.updateMetricsServiceState();
-        }
-
         if (syncAccountInfo != null) {
             // Both accounts are recorded at the same time. Since only one account is in signed-in
             // state at a given time, they should be identical if both are valid.
@@ -595,6 +603,68 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             signInAndWaitForResult(signedInAccountInfo);
         }
         Log.i(TAG, "Restore complete");
+    }
+
+    private boolean isMetricsReportingEnabled(
+            ArrayList<String> backupNames, ArrayList<byte[]> backupValues) {
+        Predicate<String> prefGetter =
+                (String prefName) -> {
+                    int index = backupNames.indexOf(ANDROID_DEFAULT_PREFIX + prefName);
+                    return index != -1 && bytesToBoolean(backupValues.get(index));
+                };
+        return prefGetter.test(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY)
+                && prefGetter.test(
+                        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER);
+    }
+
+    // TODO(crbug.com/338972271): Find a less hacky fix for restore flow metrics.
+    private void enableRestoreFlowMetrics() throws IOException {
+        File dataDirectory = new File(PathUtils.getDataDirectory());
+        if (!dataDirectory.exists()) {
+            dataDirectory.mkdir();
+        }
+
+        // Native code checks the whether metrics are enabled early during start-up - before
+        // the restore flow can set the correct value in the Local State. To work around this,
+        // create an empty file - the existence of this file will be used as the default value
+        // for UMA reporting. It is safe to do here, because we know that metrics state will be
+        // restored to enabled (due to the check above).
+        final String consentFileName = "Consent To Send Stats";
+        File consentFile = new File(dataDirectory, consentFileName);
+        if (!consentFile.exists()) {
+            consentFile.createNewFile();
+        }
+
+        // Chrome's process will be terminated after the restore flow is finished. To ensure
+        // metrics from the restore process survive until the post-restore run and actually get
+        // uploaded - persistent histograms should be backed by a memory-mapped file. This
+        // memory-mapped file mechanic requires a spare file on Android (otherwise, histograms
+        // are stored in memory, without the backing file and will be lost after the restore
+        // process is finished). Normally, a spare file is created by the previous run of
+        // Chrome. However, since the restore flow is the very first run for this particular
+        // install - there won't be a spare file to be used, breaking persistent histograms and
+        // thus restore flow metrics. To work around this issue and still get metrics from the
+        // restore flow - create a spare file manually.
+        // LINT.IfChange
+        final String spareFileName = "BrowserMetrics-spare.pma";
+        final int spareFileSize = 4 * 1024 * 1024;
+        // LINT.ThenChange(/components/metrics/persistent_histograms.cc)
+
+        File spareFile = new File(dataDirectory, spareFileName);
+        try (OutputStream outputStream = new FileOutputStream(spareFile)) {
+            // Zero-initialize the whole file to make sure the space is actually allocated and it
+            // can be used for persisting histograms.
+            byte[] buffer = new byte[8192];
+            for (int writtenBytes = 0; writtenBytes < spareFileSize; ) {
+                int writeSize = Math.min(buffer.length, spareFileSize - writtenBytes);
+                outputStream.write(buffer, 0, writeSize);
+                writtenBytes += writeSize;
+            }
+        } catch (IOException e) {
+            // The writing failed in the middle - delete the file.
+            spareFile.delete();
+            throw e;
+        }
     }
 
     @VisibleForTesting

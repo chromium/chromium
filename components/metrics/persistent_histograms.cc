@@ -83,8 +83,15 @@ constexpr base::TimeDelta kDeleteOldWindowsTempFilesDelay = base::Minutes(2);
 // percentile around 3MiB as of 2018-10-22.
 // Please update ServicificationBackgroundServiceTest.java if the |kAllocSize|
 // is changed.
+// LINT.IfChange
 const size_t kAllocSize = 4 << 20;     // 4 MiB
 const uint32_t kAllocId = 0x935DDD43;  // SHA1(BrowserMetrics)
+
+base::FilePath GetSpareFilePath(const base::FilePath& metrics_dir) {
+  return base::GlobalHistogramAllocator::ConstructFilePath(
+      metrics_dir, kBrowserMetricsName + std::string("-spare"));
+}
+// LINT.ThenChange(/chrome/android/java/src/org/chromium/chrome/browser/ChromeBackupAgentImpl.java)
 
 // Logged to UMA - keep in sync with enums.xml.
 enum InitResult {
@@ -97,11 +104,6 @@ enum InitResult {
   kNoUploadDir,
   kMaxValue = kNoUploadDir
 };
-
-base::FilePath GetSpareFilePath(const base::FilePath& metrics_dir) {
-  return base::GlobalHistogramAllocator::ConstructFilePath(
-      metrics_dir, kBrowserMetricsName + std::string("-spare"));
-}
 
 // Initializes persistent histograms with a memory-mapped file.
 InitResult InitWithMappedFile(const base::FilePath& metrics_dir,
