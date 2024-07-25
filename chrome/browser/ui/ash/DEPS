@@ -67,6 +67,7 @@ include_rules = [
   "+chrome/browser/extensions/test_extension_system.h",
   "+chrome/browser/favicon/favicon_service_factory.h",
   "+chrome/browser/feature_engagement/tracker_factory.h",
+  "+chrome/browser/feedback/show_feedback_page.h",
   "+chrome/browser/file_system_access/chrome_file_system_access_permission_context.h",
   "+chrome/browser/file_system_access/file_system_access_permission_context_factory.h",
   "+chrome/browser/history/history_service_factory.h",

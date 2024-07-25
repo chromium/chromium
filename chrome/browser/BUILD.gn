@@ -3921,6 +3921,7 @@ static_library("browser") {
       "feedback/feedback_uploader_factory_chrome.cc",
       "feedback/feedback_uploader_factory_chrome.h",
       "feedback/show_feedback_page.cc",
+      "feedback/show_feedback_page.h",
       "feedback/system_logs/about_system_logs_fetcher.cc",
       "feedback/system_logs/about_system_logs_fetcher.h",
       "feedback/system_logs/chrome_system_logs_fetcher.cc",
@@ -4561,6 +4562,8 @@ static_library("browser") {
       "webauthn/webauthn_switches.cc",
       "webauthn/webauthn_switches.h",
     ]
+
+    #!is_android
     deps += [
       "//chrome/app:command_ids",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
@@ -4570,6 +4573,7 @@ static_library("browser") {
       "//chrome/browser/companion/visual_query",
       "//chrome/browser/enterprise/connectors/analysis:features",
       "//chrome/browser/enterprise/signals:utils",
+      "//chrome/browser/feedback:feedback_enum",
       "//chrome/browser/icon_transcoder",
       "//chrome/browser/image_editor:image_editor_component_util",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",

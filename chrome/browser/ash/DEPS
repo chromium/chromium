@@ -189,6 +189,7 @@ include_rules = [
   "+chrome/browser/feedback/feedback_dialog_utils.h",
   "+chrome/browser/feedback/feedback_uploader_chrome.h",
   "+chrome/browser/feedback/feedback_uploader_factory_chrome.h",
+  "+chrome/browser/feedback/show_feedback_page.h",
   "+chrome/browser/feedback/system_logs/chrome_system_logs_fetcher.h",
   "+chrome/browser/file_select_helper.h",
   "+chrome/browser/file_system_access/chrome_file_system_access_permission_context.h",
