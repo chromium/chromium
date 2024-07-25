@@ -1518,14 +1518,19 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIM118);
 // shipped.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIM125);
 
-// For the Shared Storage API, allows cross-origin script in `addModule()` and
-// aligns `createWorklet()`'s default data origin with `addModule()`'s to use
+// For the Shared Storage API, allows cross-origin script in `addModule()`.
+// TODO(crbug.com/40185706): Merge this flag with `kSharedStorageAPI` once
+// shipped.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageCrossOriginScript);
+
+// Aligns `createWorklet()`'s default data origin with `addModule()`'s to use
 // the invoking context's origin. Also adds the manual `dataOrigin` option to
 // that can be passed in the options dictionary for `createWorklet()` to use the
 // script's origin as the data origin instead.
 // TODO(crbug.com/40185706): Merge this flag with `kSharedStorageAPI` once
 // shipped.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageCrossOriginScript);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kSharedStorageCreateWorkletUseContextOriginByDefault);
 
 // Enables WAL (write-ahead-logging) mode for the Shared Storage API SQLite
 // database backend.
