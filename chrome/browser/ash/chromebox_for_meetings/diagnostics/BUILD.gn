@@ -1,0 +1,51 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromebox_for_meetings/buildflags.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+assert(is_cfm)
+
+static_library("diagnostics") {
+  sources = [
+    "diagnostics_service.cc",
+    "diagnostics_service.h",
+  ]
+
+  public_deps = [
+    "//chromeos/ash/components/dbus/chromebox_for_meetings",
+    "//chromeos/services/chromebox_for_meetings/public/cpp",
+    "//chromeos/services/chromebox_for_meetings/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "diagnostics_service_unittest.cc" ]
+
+  deps = [
+    ":diagnostics",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus/chromebox_for_meetings",
+    "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//chromeos/services/chromebox_for_meetings/public/cpp",
+    "//chromeos/services/chromebox_for_meetings/public/cpp:test_support",
+    "//chromeos/services/chromebox_for_meetings/public/mojom",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+  ]
+}

@@ -1,0 +1,30 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromebox_for_meetings/buildflags.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+assert(is_cfm)
+
+static_library("external_display_brightness") {
+  sources = [
+    "external_display_brightness_service.cc",
+    "external_display_brightness_service.h",
+  ]
+
+  public_deps = [
+    "//chromeos/ash/components/dbus/chromebox_for_meetings",
+    "//chromeos/services/chromebox_for_meetings/public/cpp",
+    "//chromeos/services/chromebox_for_meetings/public/mojom",
+    "//chromeos/services/chromebox_for_meetings/public/mojom:mojom_shared",
+    "//chromeos/services/chromebox_for_meetings/public/mojom:mojom_shared_cpp_sources",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+  ]
+}
