@@ -48,6 +48,8 @@ T* ConstructAtInternalPartition(Args&&... args) {
 }
 
 // Destroy an object on heap in the internal partition.
+// TODO(crbug.com/40274826) This is an unused function. Start using it in tests
+// and/or in production code.
 template <typename T>
 void DestroyAtInternalPartition(T* ptr) {
   // Destroying an array is not supported.

@@ -113,6 +113,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
   bool GetStats(AddressSpaceStats* stats);
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  // This function just exists to static_assert the layout of the private fields
+  // in Pool. It is never called.
   static void AssertThreadIsolatedLayout();
 #endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 

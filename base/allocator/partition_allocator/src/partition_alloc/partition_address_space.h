@@ -321,6 +321,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // mean the given |ptr| is valid. Because we don't use the entire address
   // space for the shadow. We only use 2 SystemPageSize() / kSuperPageSize(%)
   // of the space. See PoolShadowOffset().
+  //
+  // TODO(crbug.com/40238514) This is an unused function. Start using it in
+  // tests and/or in production code.
   PA_ALWAYS_INLINE static bool IsInPoolShadow(const void* ptr) {
     uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
     return (pool_shadow_address_ <= ptr_as_uintptr &&

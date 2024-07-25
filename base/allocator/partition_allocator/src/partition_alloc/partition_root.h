@@ -910,6 +910,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   }
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
+  // TODO(crbug.com/40238514) This is an unused function. Start using it in
+  // tests and/or in production code.
   static void EnableShadowMetadata(internal::PoolHandleMask mask);
 
   PA_ALWAYS_INLINE std::ptrdiff_t ShadowPoolOffset() const {

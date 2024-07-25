@@ -58,10 +58,6 @@ void DCheckRootLockIsAcquired(PartitionRoot* root) {
   PartitionRootLock(root).AssertAcquired();
 }
 
-void DCheckRootLockOfSlotSpanIsAcquired(internal::SlotSpanMetadata* slot_span) {
-  DCheckRootLockIsAcquired(PartitionRoot::FromSlotSpanMetadata(slot_span));
-}
-
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 }  // namespace partition_alloc::internal

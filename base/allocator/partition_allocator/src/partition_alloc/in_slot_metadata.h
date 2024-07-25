@@ -317,6 +317,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
 
   // Request to quarantine this allocation. The request might be ignored if
   // the allocation is already freed.
+  // TODO(crbug.com/329027914) This is an unused function. Start using it in
+  // tests and/or in production code.
   PA_ALWAYS_INLINE void SetQuarantineRequest() {
     CountType old_count =
         count_.fetch_or(kRequestQuarantineBit, std::memory_order_relaxed);
@@ -325,6 +327,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   }
 
   // Get and clear out quarantine request.
+  // TODO(crbug.com/329027914) This is an unused function. Start using it in
+  // tests and/or in production code.
   PA_ALWAYS_INLINE bool PopQuarantineRequest() {
     CountType old_count =
         count_.fetch_and(~kRequestQuarantineBit, std::memory_order_acq_rel);
@@ -337,7 +341,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   // make sure the `raw_ptr<T>` release operation will never attempt to call the
   // PA `free` on such a slot. GWP-ASan takes the extra reference into account
   // when determining whether the slot can be reused.
-  PA_ALWAYS_INLINE void InitalizeForGwpAsan() {
+  PA_ALWAYS_INLINE void InitializeForGwpAsan() {
 #if PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE)
     brp_cookie_ = CalculateCookie();
 #endif
