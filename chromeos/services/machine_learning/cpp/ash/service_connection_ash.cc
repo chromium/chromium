@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -114,6 +115,12 @@ void ServiceConnectionAsh::BindPrimordialMachineLearningServiceIfNeeded() {
   // Include an initial Mojo pipe in the invitation.
   mojo::ScopedMessagePipeHandle pipe =
       invitation.AttachMessagePipe(ml::kBootstrapMojoConnectionChannelToken);
+  if (mojo::core::IsMojoIpczEnabled()) {
+    // IPCz requires an application to explicitly opt in to broker sharing
+    // and inheritance when establishing a direct connection between two
+    // non-broker nodes.
+    invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_SHARE_BROKER);
+  }
   mojo::OutgoingInvitation::Send(std::move(invitation),
                                  base::kNullProcessHandle,
                                  platform_channel.TakeLocalEndpoint());
