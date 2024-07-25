@@ -36,6 +36,7 @@ static_library("network") {
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/mobile",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/profiles:signin_profile_handler",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/carrier_lock",

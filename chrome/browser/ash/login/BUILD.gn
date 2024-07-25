@@ -547,6 +547,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/net/rollback_network_config",
     "//chrome/browser/ash/net/rollback_network_config:test_support",
     "//chrome/browser/ash/policy/enrollment:test_support",
+    "//chrome/browser/ash/profiles:signin_profile_handler",
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/extensions:test_support",

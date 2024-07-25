@@ -64,8 +64,6 @@ static_library("avatar") {
     "//ui/chromeos/strings",
     "//ui/gfx/codec",
   ]
-
-  allow_circular_includes_from = [ "//chrome/browser/ash/profiles" ]
 }
 
 static_library("test_support") {

@@ -137,6 +137,7 @@ static_library("test_support") {
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
