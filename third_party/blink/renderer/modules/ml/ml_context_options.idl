@@ -27,8 +27,8 @@ enum MLDeviceType {
 };
 
 enum MLPowerPreference {
-  // Let the backend selects the most suitable behavior.
-  "auto",
+  // Let the user agent select the most suitable behavior.
+  "default",
   // Prioritizes execution speed over power consumption.
   "high-performance",
   // Prioritizes power consumption over other considerations such as execution
@@ -49,7 +49,7 @@ dictionary MLContextOptions {
   MLDeviceType deviceType = "cpu";
 
   // Preference as related to power consumption.
-  MLPowerPreference powerPreference = "auto";
+  MLPowerPreference powerPreference = "default";
 
   // Model format for the model loader API.
   MLModelFormat modelFormat = "tflite";

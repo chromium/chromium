@@ -35,7 +35,7 @@ webnn::mojom::blink::CreateContextOptions::PowerPreference
 ConvertBlinkPowerPreferenceToMojo(
     const V8MLPowerPreference& power_preference_blink) {
   switch (power_preference_blink.AsEnum()) {
-    case V8MLPowerPreference::Enum::kAuto:
+    case V8MLPowerPreference::Enum::kDefault:
       return webnn::mojom::blink::CreateContextOptions::PowerPreference::
           kDefault;
     case V8MLPowerPreference::Enum::kLowPower:
