@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.browser_controls;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
@@ -20,6 +21,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Unit tests for the BrowserStateBrowserControlsVisibilityDelegate. */
@@ -49,9 +51,181 @@ public class BottomControlsStackerUnitTest {
         FeatureList.setTestValues(testValues);
     }
 
+    // Visibility
+
+    @Test
+    public void layerVisibilities_visibleIfOthersVisible_switchSingleLayerVisibility() {
+        // Add a layer that is VISIBLE_IF_OTHERS_VISIBLE. As no layers are unconditionally VISIBLE,
+        // the height should be 0.
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.SCROLL_OFF,
+                        LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(0, 0);
+
+        bottom.setVisibility(LayerVisibility.VISIBLE);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(10, 0);
+    }
+
+    @Test
+    public void layerVisibilities_visibleIfOthersVisible_toggleSecondLayerVisibility() {
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.NO_SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.NO_SCROLL_OFF,
+                        LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(110, 110);
+
+        top.setVisibility(LayerVisibility.HIDDEN);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(0, 0);
+
+        top.setVisibility(LayerVisibility.VISIBLE);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer, times(2)).setBottomControlsHeight(110, 110);
+    }
+
+    @Test
+    public void layerVisibilities_changeHiddenToVisibleIfOthersVisible() {
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.HIDDEN);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(100, 0);
+
+        bottom.setVisibility(LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(110, 0);
+    }
+
+    @Test
+    public void layerVisibilities_visibleLayer_addVisibleIfOthersVisibleLayer() {
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.NO_SCROLL_OFF, LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(100, 100);
+
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.NO_SCROLL_OFF,
+                        LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(110, 110);
+    }
+
+    @Test
+    public void layerVisibilities_hiddenLayer_addVisibleIfOthersVisibleLayer() {
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.NO_SCROLL_OFF, LayerVisibility.HIDDEN);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(0, 0);
+
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.NO_SCROLL_OFF,
+                        LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer, times(2)).setBottomControlsHeight(0, 0);
+    }
+
+    @Test
+    public void layerVisibilities_visibleIfOthersVisibleLayer_addHiddenLayer() {
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER,
+                        100,
+                        LayerScrollBehavior.NO_SCROLL_OFF,
+                        LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        verify(mBrowserControlsSizer).setBottomControlsHeight(0, 0);
+
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.NO_SCROLL_OFF,
+                        LayerVisibility.HIDDEN);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        verify(mBrowserControlsSizer, times(2)).setBottomControlsHeight(0, 0);
+    }
+
+    @Test
+    public void layerVisibilities_visibleIfOthersVisible_showsIfVisibleLayerAdded() {
+        // Add a layer that is VISIBLE_IF_OTHERS_VISIBLE. As no layers are unconditionally VISIBLE,
+        // the height should be 0.
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.SCROLL_OFF,
+                        LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(0, 0);
+
+        // Add a second layer that is VISIBLE_IF_OTHERS_VISIBLE. As no layers are unconditionally
+        // VISIBLE, the height should be 0.
+        TestLayer mid =
+                new TestLayer(
+                        MID_LAYER,
+                        50,
+                        LayerScrollBehavior.SCROLL_OFF,
+                        LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE);
+        mBottomControlsStacker.addLayer(mid);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer, times(2)).setBottomControlsHeight(0, 0);
+
+        // Add a VISIBLE layer. The VISIBLE_IF_OTHERS_VISIBLE layers should now contribute to the
+        // height.
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(160, 0);
+
+        // Hide the VISIBLE layer. The height should return to 0.
+        top.setVisibility(LayerVisibility.HIDDEN);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer, times(3)).setBottomControlsHeight(0, 0);
+    }
+
     @Test
     public void singleLayerScrollOff() {
-        TestLayer layer = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer layer =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(layer);
         mBottomControlsStacker.requestLayerUpdate(false);
         verify(mBrowserControlsSizer).setBottomControlsHeight(100, 0);
@@ -59,7 +233,9 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void singleLayerNoScrollOff() {
-        TestLayer layer = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.NO_SCROLL_OFF);
+        TestLayer layer =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.NO_SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(layer);
         mBottomControlsStacker.requestLayerUpdate(false);
         verify(mBrowserControlsSizer).setBottomControlsHeight(100, 100);
@@ -67,8 +243,10 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void singleLayerNotVisible() {
-        TestLayer layer = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
-        layer.setVisible(false);
+        TestLayer layer =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        layer.setVisibility(LayerVisibility.HIDDEN);
         mBottomControlsStacker.addLayer(layer);
         mBottomControlsStacker.requestLayerUpdate(false);
         verify(mBrowserControlsSizer).setBottomControlsHeight(0, 0);
@@ -76,8 +254,12 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void stackLayerBothScrollOff() {
-        TestLayer layer1 = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer layer2 = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer layer1 =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer layer2 =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(layer1);
         mBottomControlsStacker.addLayer(layer2);
         mBottomControlsStacker.requestLayerUpdate(true);
@@ -88,8 +270,15 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void stackLayerBothNoScrollOff() {
-        TestLayer layer1 = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.NO_SCROLL_OFF);
-        TestLayer layer2 = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.NO_SCROLL_OFF);
+        TestLayer layer1 =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.NO_SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer layer2 =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.NO_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(layer1);
         mBottomControlsStacker.addLayer(layer2);
         mBottomControlsStacker.requestLayerUpdate(true);
@@ -100,8 +289,15 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void stackLayerOneScrollOff() {
-        TestLayer layer1 = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer layer2 = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.NO_SCROLL_OFF);
+        TestLayer layer1 =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer layer2 =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.NO_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(layer1);
         mBottomControlsStacker.addLayer(layer2);
         mBottomControlsStacker.requestLayerUpdate(true);
@@ -112,8 +308,12 @@ public class BottomControlsStackerUnitTest {
 
     @Test(expected = AssertionError.class)
     public void stackLayerInvalidScrollBehavior() {
-        TestLayer layer1 = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.NO_SCROLL_OFF);
-        TestLayer layer2 = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer layer1 =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.NO_SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer layer2 =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(layer1);
         mBottomControlsStacker.addLayer(layer2);
 
@@ -123,8 +323,15 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void stackLayerChangeHeight() {
-        TestLayer layer1 = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer layer2 = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.NO_SCROLL_OFF);
+        TestLayer layer1 =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer layer2 =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.NO_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(layer1);
         mBottomControlsStacker.addLayer(layer2);
 
@@ -141,7 +348,9 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_ScrollOff_OneLayer() {
-        TestLayer layer = new TestLayer(BOTTOM_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer layer =
+                new TestLayer(
+                        BOTTOM_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(layer);
 
         mBottomControlsStacker.requestLayerUpdate(false);
@@ -170,8 +379,12 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_ScrollOff_TwoLayers() {
-        TestLayer top = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(top);
         mBottomControlsStacker.addLayer(bottom);
         mBottomControlsStacker.requestLayerUpdate(false);
@@ -210,9 +423,15 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_ScrollOff_ThreeLayers() {
-        TestLayer top = new TestLayer(TOP_LAYER, 1000, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer mid = new TestLayer(MID_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 1000, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer mid =
+                new TestLayer(
+                        MID_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(top);
         mBottomControlsStacker.addLayer(mid);
         mBottomControlsStacker.addLayer(bottom);
@@ -276,7 +495,12 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_NoScrollOff_OneLayer() {
-        TestLayer layer = new TestLayer(BOTTOM_LAYER, 100, LayerScrollBehavior.NO_SCROLL_OFF);
+        TestLayer layer =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        100,
+                        LayerScrollBehavior.NO_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(layer);
 
         mBottomControlsStacker.requestLayerUpdate(false);
@@ -289,8 +513,15 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_Mixed_TwoLayers_BottomLayerNoScroll() {
-        TestLayer top = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.NO_SCROLL_OFF);
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.NO_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(top);
         mBottomControlsStacker.addLayer(bottom);
 
@@ -335,8 +566,12 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_RemoveLayer_RemoveTop() {
-        TestLayer top = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(top);
         mBottomControlsStacker.addLayer(bottom);
 
@@ -361,8 +596,12 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_RemoveLayer_RemoveTop_Animated() {
-        TestLayer top = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(top);
         mBottomControlsStacker.addLayer(bottom);
 
@@ -375,7 +614,7 @@ public class BottomControlsStackerUnitTest {
         assertLayerYOffset(bottom, 0);
 
         // Simulate a browser controls height change because top layer is removed.
-        top.setVisible(false);
+        top.setVisibility(LayerVisibility.HIDDEN);
         mBottomControlsStacker.requestLayerUpdate(true);
         verify(mBrowserControlsSizer).setBottomControlsHeight(10, 0);
         verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
@@ -402,8 +641,12 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_RemoveLayer_RemovedBottom() {
-        TestLayer top = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(top);
         mBottomControlsStacker.addLayer(bottom);
 
@@ -428,8 +671,12 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_RemoveLayer_RemovedBottom_Animated() {
-        TestLayer top = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(top);
         mBottomControlsStacker.addLayer(bottom);
 
@@ -442,7 +689,7 @@ public class BottomControlsStackerUnitTest {
         assertLayerYOffset(bottom, 0);
 
         // Simulate a browser controls height change because bottom layer is removed.
-        bottom.setVisible(false);
+        bottom.setVisibility(LayerVisibility.HIDDEN);
         mBottomControlsStacker.requestLayerUpdate(true);
         verify(mBrowserControlsSizer).setBottomControlsHeight(100, 0);
         verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
@@ -469,9 +716,15 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_RemoveLayer_RemovedMid() {
-        TestLayer top = new TestLayer(TOP_LAYER, 1000, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer mid = new TestLayer(MID_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 1000, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer mid =
+                new TestLayer(
+                        MID_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(top);
         mBottomControlsStacker.addLayer(mid);
         mBottomControlsStacker.addLayer(bottom);
@@ -499,9 +752,15 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_RemoveLayer_RemovedMid_Animated() {
-        TestLayer top = new TestLayer(TOP_LAYER, 1000, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer mid = new TestLayer(MID_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 1000, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer mid =
+                new TestLayer(
+                        MID_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(top);
         mBottomControlsStacker.addLayer(mid);
         mBottomControlsStacker.addLayer(bottom);
@@ -516,7 +775,7 @@ public class BottomControlsStackerUnitTest {
         assertLayerYOffset(bottom, 0);
 
         // Simulate a browser controls height change because mid layer is hidden.
-        mid.setVisible(false);
+        mid.setVisibility(LayerVisibility.HIDDEN);
         mBottomControlsStacker.requestLayerUpdate(true);
         verify(mBrowserControlsSizer).setBottomControlsHeight(1010, 0);
         verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
@@ -549,7 +808,9 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_AddLayers_AddBottom() {
-        TestLayer top = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(top);
         mBottomControlsStacker.requestLayerUpdate(false);
         verify(mBrowserControlsSizer).setBottomControlsHeight(100, 0);
@@ -557,7 +818,9 @@ public class BottomControlsStackerUnitTest {
         onBottomControlsOffsetChanged(0, 0, false);
         assertLayerYOffset(top, 0);
 
-        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(bottom);
         mBottomControlsStacker.requestLayerUpdate(false);
         verify(mBrowserControlsSizer).setBottomControlsHeight(110, 0);
@@ -569,7 +832,9 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_AddLayers_AddBottom_Animated() {
-        TestLayer top = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(top);
         mBottomControlsStacker.requestLayerUpdate(false);
         verify(mBrowserControlsSizer).setBottomControlsHeight(100, 0);
@@ -577,7 +842,9 @@ public class BottomControlsStackerUnitTest {
         onBottomControlsOffsetChanged(0, 0, false);
         assertLayerYOffset(top, 0);
 
-        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(bottom);
         mBottomControlsStacker.requestLayerUpdate(true);
         verify(mBrowserControlsSizer).setBottomControlsHeight(110, 0);
@@ -603,7 +870,9 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_AddLayers_AddTop() {
-        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(bottom);
         mBottomControlsStacker.requestLayerUpdate(false);
         verify(mBrowserControlsSizer).setBottomControlsHeight(10, 0);
@@ -611,7 +880,9 @@ public class BottomControlsStackerUnitTest {
         onBottomControlsOffsetChanged(0, 0, false);
         assertLayerYOffset(bottom, 0);
 
-        TestLayer top = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(top);
         mBottomControlsStacker.requestLayerUpdate(false);
         verify(mBrowserControlsSizer).setBottomControlsHeight(110, 0);
@@ -623,7 +894,9 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_AddLayers_AddTop_Animated() {
-        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(bottom);
         mBottomControlsStacker.requestLayerUpdate(false);
         verify(mBrowserControlsSizer).setBottomControlsHeight(10, 0);
@@ -631,7 +904,9 @@ public class BottomControlsStackerUnitTest {
         onBottomControlsOffsetChanged(0, 0, false);
         assertLayerYOffset(bottom, 0);
 
-        TestLayer top = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(top);
         mBottomControlsStacker.requestLayerUpdate(true);
         verify(mBrowserControlsSizer).setBottomControlsHeight(110, 0);
@@ -657,8 +932,12 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_AddLayers_AddMid() {
-        TestLayer top = new TestLayer(TOP_LAYER, 1000, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 1000, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(top);
         mBottomControlsStacker.addLayer(bottom);
         mBottomControlsStacker.requestLayerUpdate(false);
@@ -668,7 +947,9 @@ public class BottomControlsStackerUnitTest {
         assertLayerYOffset(top, -10);
         assertLayerYOffset(bottom, 0);
 
-        TestLayer mid = new TestLayer(MID_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer mid =
+                new TestLayer(
+                        MID_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(mid);
         mBottomControlsStacker.requestLayerUpdate(false);
         verify(mBrowserControlsSizer).setBottomControlsHeight(1110, 0);
@@ -681,8 +962,12 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     public void reposition_AddLayers_AddMid_Animated() {
-        TestLayer top = new TestLayer(TOP_LAYER, 1000, LayerScrollBehavior.SCROLL_OFF);
-        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER, 1000, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(top);
         mBottomControlsStacker.addLayer(bottom);
         mBottomControlsStacker.requestLayerUpdate(false);
@@ -692,7 +977,9 @@ public class BottomControlsStackerUnitTest {
         assertLayerYOffset(top, -10);
         assertLayerYOffset(bottom, 0);
 
-        TestLayer mid = new TestLayer(MID_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer mid =
+                new TestLayer(
+                        MID_LAYER, 100, LayerScrollBehavior.SCROLL_OFF, LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(mid);
         mBottomControlsStacker.requestLayerUpdate(true);
         verify(mBrowserControlsSizer).setBottomControlsHeight(1110, 0);
@@ -740,18 +1027,22 @@ public class BottomControlsStackerUnitTest {
         private final @LayerType int mType;
         private final @LayerScrollBehavior int mScrollBehavior;
         private int mHeight;
-        private boolean mIsVisible;
+        private @LayerVisibility int mVisibility;
         private int mYOffset;
 
-        TestLayer(@LayerType int type, int height, @LayerScrollBehavior int scrollBehavior) {
+        TestLayer(
+                @LayerType int type,
+                int height,
+                @LayerScrollBehavior int scrollBehavior,
+                @LayerVisibility int layerVisibility) {
             mType = type;
             mHeight = height;
             mScrollBehavior = scrollBehavior;
-            mIsVisible = true;
+            mVisibility = layerVisibility;
         }
 
-        public void setVisible(boolean visible) {
-            mIsVisible = visible;
+        public void setVisibility(@LayerVisibility int visibility) {
+            mVisibility = visibility;
         }
 
         public void setHeight(int height) {
@@ -769,8 +1060,8 @@ public class BottomControlsStackerUnitTest {
         }
 
         @Override
-        public boolean isVisible() {
-            return mIsVisible;
+        public @LayerVisibility int getLayerVisibility() {
+            return mVisibility;
         }
 
         @Override

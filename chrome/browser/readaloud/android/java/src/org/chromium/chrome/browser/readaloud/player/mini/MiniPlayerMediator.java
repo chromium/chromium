@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -265,6 +266,12 @@ public class MiniPlayerMediator implements BottomControlsLayer {
         }
     }
 
+    private boolean isVisible() {
+        // Consider layer visible even during its transition.
+        return mModel.get(Properties.VISIBILITY) == VisibilityState.VISIBLE
+                || mModel.get(Properties.VISIBILITY) == VisibilityState.SHOWING;
+    }
+
     // Implements BottomControlsStacker.BottomControlsLayer
 
     @Override
@@ -284,10 +291,8 @@ public class MiniPlayerMediator implements BottomControlsLayer {
     }
 
     @Override
-    public boolean isVisible() {
-        // Consider layer visible even it's during transition.
-        return mModel.get(Properties.VISIBILITY) == VisibilityState.VISIBLE
-                || mModel.get(Properties.VISIBILITY) == VisibilityState.SHOWING;
+    public @LayerVisibility int getLayerVisibility() {
+        return isVisible() ? LayerVisibility.VISIBLE : LayerVisibility.HIDDEN;
     }
 
     @Override

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.browser_controls;
 
 import android.util.SparseArray;
+import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
 import androidx.annotation.ColorInt;
@@ -50,6 +51,21 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         int NO_SCROLL_OFF = 1;
     }
 
+    /** Enums that defines the type and position for each bottom controls. */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+        LayerVisibility.VISIBLE,
+        LayerVisibility.HIDDEN,
+        LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE
+    })
+    public @interface LayerVisibility {
+        int VISIBLE = 0;
+        int HIDDEN = 1;
+
+        /** Will be shown if and only if another layer is labeled as VISIBLE. */
+        int VISIBLE_IF_OTHERS_VISIBLE = 2;
+    }
+
     // The pre-defined stack order for different bottom controls.
     private static final @LayerType int[] STACK_ORDER =
             new int[] {
@@ -62,6 +78,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     private final SparseArray<BottomControlsLayer> mLayers = new SparseArray<>();
     // Recorded the yOffset for all current layers. This only record the yOffset for visible layers.
     private final SparseIntArray mLayerYOffsets = new SparseIntArray();
+    private final SparseBooleanArray mLayerVisibilities = new SparseBooleanArray();
     private final BrowserControlsSizer mBrowserControlsSizer;
 
     private int mTotalHeight = INVALID_HEIGHT;
@@ -100,24 +117,13 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     }
 
     /**
-     * @return The height of the given layer type, or 0 if the layer does not exist or isn't
-     *     visible.
-     */
-    public int getLayerHeight(@LayerType int type) {
-        BottomControlsLayer layer = mLayers.get(type);
-        if (layer == null || !layer.isVisible()) return 0;
-        return layer.getHeight();
-    }
-
-    /**
      * Checks whether there are any layers that are currently visible besides the specified type.
      */
     public boolean hasVisibleLayersOtherThan(@LayerType int type) {
         for (int layerType : STACK_ORDER) {
             if (type == layerType) continue;
 
-            BottomControlsLayer layer = mLayers.get(type);
-            if (layer != null && layer.isVisible()) return true;
+            if (mLayerVisibilities.get(type)) return true;
         }
         return false;
     }
@@ -131,6 +137,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     public void requestLayerUpdate(boolean animate) {
         assert isEnabled();
 
+        updateLayerVisibilities();
         recalculateLayerSizes();
         updateBrowserControlsHeight(animate);
         if (mBrowserControlsSizer.offsetOverridden() && isDispatchingYOffset()) {
@@ -257,7 +264,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         // through layers shouldn't be too costly.
         for (int type : STACK_ORDER) {
             BottomControlsLayer layer = mLayers.get(type);
-            if (layer == null || !layer.isVisible()) continue;
+            if (layer == null || !mLayerVisibilities.get(type)) continue;
 
             boolean canScrollOff = layer.getScrollBehavior() == LayerScrollBehavior.SCROLL_OFF;
             assert totalMinHeight == 0 || !canScrollOff
@@ -351,7 +358,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             // Record the current yOffset in case the offset will be used for future animated
             // height adjustment.
             int yOffset = yOffsetOfLayers.get(layerType, layer.getHeight());
-            if (!layer.isVisible()) {
+            if (!mLayerVisibilities.get(layerType)) {
                 mLayerYOffsets.delete(layerType);
             } else {
                 mLayerYOffsets.put(layerType, yOffset);
@@ -370,7 +377,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         int minHeight = 0;
         for (int type : STACK_ORDER) {
             BottomControlsLayer layer = mLayers.get(type);
-            if (layer == null || !layer.isVisible()) continue;
+            if (layer == null || !mLayerVisibilities.get(type)) continue;
 
             boolean canScrollOff = layer.getScrollBehavior() == LayerScrollBehavior.SCROLL_OFF;
             assert minHeight == 0 || !canScrollOff
@@ -395,6 +402,36 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         // This method is used as a kill switch to fallback to the previous behavior.
         return isEnabled()
                 && !ChromeFeatureList.sDisableBottomControlsStackerYOffsetDispatching.getValue();
+    }
+
+    /**
+     * Updates the visibilities of the layers. This is done altogether, since the visibility of some
+     * layers may depend on the visibility of others.
+     */
+    private void updateLayerVisibilities() {
+        mLayerVisibilities.clear();
+        boolean atLeastOneVisibleLayer = false;
+        for (int type : STACK_ORDER) {
+            BottomControlsLayer layer = mLayers.get(type);
+            if (layer == null) continue;
+
+            if (layer.getLayerVisibility() == LayerVisibility.VISIBLE) {
+                atLeastOneVisibleLayer = true;
+                break;
+            }
+        }
+        for (int type : STACK_ORDER) {
+            BottomControlsLayer layer = mLayers.get(type);
+            if (layer == null) continue;
+
+            @LayerVisibility int layerVisibility = layer.getLayerVisibility();
+            mLayerVisibilities.put(
+                    type,
+                    layerVisibility == LayerVisibility.VISIBLE
+                            || (atLeastOneVisibleLayer
+                                    && layerVisibility
+                                            == LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE));
+        }
     }
 
     private static void logIfHeightMismatch(

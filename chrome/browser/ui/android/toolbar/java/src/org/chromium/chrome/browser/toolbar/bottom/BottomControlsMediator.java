@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -343,8 +344,8 @@ class BottomControlsMediator
     }
 
     @Override
-    public boolean isVisible() {
-        return isCompositedViewVisible();
+    public @LayerVisibility int getLayerVisibility() {
+        return isCompositedViewVisible() ? LayerVisibility.VISIBLE : LayerVisibility.HIDDEN;
     }
 
     @Override
