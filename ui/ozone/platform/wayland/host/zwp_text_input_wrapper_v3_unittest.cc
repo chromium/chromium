@@ -438,16 +438,55 @@ TEST_F(ZWPTextInputWrapperV3Test, OnPreeditString) {
   VerifyAndClearExpectations();
 }
 
+TEST_F(ZWPTextInputWrapperV3Test, OnCommitString) {
+  constexpr std::string kCommitString("CommitString");
+  EXPECT_CALL(test_client_, OnCommitString(kCommitString));
+  PostToServerAndWait([kCommitString](wl::TestWaylandServerThread* server) {
+    auto* text_input = server->text_input_manager_v3()->text_input();
+    zwp_text_input_v3_send_commit_string(text_input->resource(),
+                                         kCommitString.c_str());
+    zwp_text_input_v3_send_done(text_input->resource(), 0);
+  });
+  VerifyAndClearExpectations();
+}
+
+TEST_F(ZWPTextInputWrapperV3Test, OnDoneWithCommitAndPreedit) {
+  constexpr std::string kPreeditString("PreeditString");
+  constexpr gfx::Range kPreeditCursor{0, 13};
+  constexpr std::string kCommitString("CommitString");
+  InSequence s;
+  EXPECT_CALL(test_client_, OnCommitString(kCommitString));
+  EXPECT_CALL(
+      test_client_,
+      OnPreeditString(kPreeditString,
+                      std::vector<ZWPTextInputWrapperClient::SpanStyle>{},
+                      kPreeditCursor));
+  PostToServerAndWait([kPreeditString, kPreeditCursor,
+                       kCommitString](wl::TestWaylandServerThread* server) {
+    auto* text_input = server->text_input_manager_v3()->text_input();
+    zwp_text_input_v3_send_preedit_string(
+        text_input->resource(), kPreeditString.c_str(), kPreeditCursor.start(),
+        kPreeditCursor.end());
+    zwp_text_input_v3_send_commit_string(text_input->resource(),
+                                         kCommitString.c_str());
+    zwp_text_input_v3_send_done(text_input->resource(), 0);
+  });
+  VerifyAndClearExpectations();
+}
+
 TEST_F(ZWPTextInputWrapperV3Test, PendingInputEventsClearedOnEnable) {
+  constexpr std::string kCommitString("CommitString");
   constexpr std::string_view kPreeditString("PreeditString");
   constexpr gfx::Range kPreeditCursor{0, 13};
-  PostToServerAndWait(
-      [kPreeditString, kPreeditCursor](wl::TestWaylandServerThread* server) {
-        auto* text_input = server->text_input_manager_v3()->text_input();
-        zwp_text_input_v3_send_preedit_string(
-            text_input->resource(), kPreeditString.data(),
-            kPreeditCursor.start(), kPreeditCursor.end());
-      });
+  PostToServerAndWait([kPreeditString, kPreeditCursor,
+                       kCommitString](wl::TestWaylandServerThread* server) {
+    auto* text_input = server->text_input_manager_v3()->text_input();
+    zwp_text_input_v3_send_commit_string(text_input->resource(),
+                                         kCommitString.c_str());
+    zwp_text_input_v3_send_preedit_string(
+        text_input->resource(), kPreeditString.data(), kPreeditCursor.start(),
+        kPreeditCursor.end());
+  });
 
   // Enable should clear pending requests.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -460,6 +499,7 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingInputEventsClearedOnEnable) {
   VerifyAndClearExpectations();
 
   // Sending done should have no effect.
+  EXPECT_CALL(test_client_, OnCommitString(_)).Times(0);
   EXPECT_CALL(test_client_, OnPreeditString(_, _, _)).Times(0);
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* text_input = server->text_input_manager_v3()->text_input();
@@ -499,15 +539,18 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingInputEventsClearedOnDisable) {
 }
 
 TEST_F(ZWPTextInputWrapperV3Test, PendingInputEventsClearedOnReset) {
+  constexpr std::string kCommitString("CommitString");
   constexpr std::string_view kPreeditString("PreeditString");
   constexpr gfx::Range kPreeditCursor{0, 13};
-  PostToServerAndWait(
-      [kPreeditString, kPreeditCursor](wl::TestWaylandServerThread* server) {
-        auto* text_input = server->text_input_manager_v3()->text_input();
-        zwp_text_input_v3_send_preedit_string(
-            text_input->resource(), kPreeditString.data(),
-            kPreeditCursor.start(), kPreeditCursor.end());
-      });
+  PostToServerAndWait([kPreeditString, kPreeditCursor,
+                       kCommitString](wl::TestWaylandServerThread* server) {
+    auto* text_input = server->text_input_manager_v3()->text_input();
+    zwp_text_input_v3_send_commit_string(text_input->resource(),
+                                         kCommitString.c_str());
+    zwp_text_input_v3_send_preedit_string(
+        text_input->resource(), kPreeditString.data(), kPreeditCursor.start(),
+        kPreeditCursor.end());
+  });
 
   // Reset should clear pending requests.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -522,6 +565,7 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingInputEventsClearedOnReset) {
   VerifyAndClearExpectations();
 
   // Sending done should have no effect.
+  EXPECT_CALL(test_client_, OnCommitString(_)).Times(0);
   EXPECT_CALL(test_client_, OnPreeditString(_, _, _)).Times(0);
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* text_input = server->text_input_manager_v3()->text_input();

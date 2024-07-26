@@ -275,6 +275,7 @@ void ZWPTextInputWrapperV3::ResetLastSentValues() {
 
 void ZWPTextInputWrapperV3::ResetPendingInputEvents() {
   pending_preedit_.reset();
+  pending_commit_.reset();
 }
 
 void ZWPTextInputWrapperV3::Commit() {
@@ -316,7 +317,8 @@ void ZWPTextInputWrapperV3::OnPreeditString(
 void ZWPTextInputWrapperV3::OnCommitString(void* data,
                                            struct zwp_text_input_v3* text_input,
                                            const char* text) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<ZWPTextInputWrapperV3*>(data);
+  self->pending_commit_ = text ? text : std::string();
 }
 
 void ZWPTextInputWrapperV3::OnDeleteSurroundingText(
@@ -330,9 +332,13 @@ void ZWPTextInputWrapperV3::OnDeleteSurroundingText(
 void ZWPTextInputWrapperV3::OnDone(void* data,
                                    struct zwp_text_input_v3* text_input,
                                    uint32_t serial) {
-  // TODO(crbug.com/40113488) apply preedit, commit, delete surrounding
+  // TODO(crbug.com/40113488) apply delete surrounding
   auto* self = static_cast<ZWPTextInputWrapperV3*>(data);
 
+  if (const auto& commit_string = self->pending_commit_) {
+    // Replace the existing preedit with the commit string.
+    self->client_->OnCommitString(commit_string->c_str());
+  }
   if (const auto& preedit_data = self->pending_preedit_) {
     gfx::Range preedit_cursor =
         (preedit_data->cursor_begin < 0 || preedit_data->cursor_end < 0)

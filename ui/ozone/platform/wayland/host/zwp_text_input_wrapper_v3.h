@@ -116,6 +116,7 @@ class ZWPTextInputWrapperV3 : public ZWPTextInputWrapper {
 
   // Pending input events that will be applied in done event.
   std::optional<PreeditData> pending_preedit_;
+  std::optional<std::string> pending_commit_;
 
   // Pending set requests to be sent to compositor
   std::optional<gfx::Rect> pending_set_cursor_rect_;
