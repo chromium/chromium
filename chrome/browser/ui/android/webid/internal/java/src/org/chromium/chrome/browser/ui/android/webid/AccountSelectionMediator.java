@@ -139,6 +139,9 @@ class AccountSelectionMediator {
     // mediator should not display any accounts until such dialog is closed.
     private boolean mIsModalDialogOpen;
 
+    // View to explicitly focus on for screen reader accessibility purposes.
+    private View mFocusView;
+
     private KeyboardVisibilityListener mKeyboardVisibilityListener =
             new KeyboardVisibilityListener() {
                 @Override
@@ -187,17 +190,21 @@ class AccountSelectionMediator {
 
                         boolean isSingleAccountChooser = mAccounts != null && mAccounts.size() == 1;
                         View focusView =
-                                continueButton != null
-                                                && continueButton.isShown()
-                                                && !isSingleAccountChooser
-                                                && getSheetType() == SheetType.ACCOUNT_SELECTION
-                                        ? continueButton
-                                        : contentView.findViewById(R.id.header);
+                                mFocusView != null
+                                        ? mFocusView
+                                        : continueButton != null
+                                                        && continueButton.isShown()
+                                                        && !isSingleAccountChooser
+                                                        && getSheetType()
+                                                                == SheetType.ACCOUNT_SELECTION
+                                                ? continueButton
+                                                : contentView.findViewById(R.id.header);
 
                         if (focusView == null) return;
 
                         focusView.requestFocus();
                         focusView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                        mFocusView = null;
                     }
 
                     @Override
@@ -269,6 +276,15 @@ class AccountSelectionMediator {
                 };
     }
 
+    private void setFocusView(View focusView) {
+        // If focus view has already been set, we do not override it. This is because we bind views
+        // in order of most important to least important for accessibility so the first call to this
+        // method should be from the most important element that should take focus.
+        if (mFocusView != null) return;
+
+        mFocusView = focusView;
+    }
+
     private void updateBackPressBehavior() {
         mBottomSheetContent.setCustomBackPressBehavior(
                 !mWasDismissed
@@ -323,6 +339,7 @@ class AccountSelectionMediator {
                 .with(
                         HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER,
                         mSelectedAccount == null && mAccounts != null && mAccounts.size() > 1)
+                .with(HeaderProperties.SET_FOCUS_VIEW_CALLBACK, this::setFocusView)
                 .build();
     }
 
@@ -608,6 +625,10 @@ class AccountSelectionMediator {
                 accounts,
                 areAccountsClickable,
                 supportsAddAccount && !isSingleAccountChooser);
+        // If there is a change in the header, setFocusView() will be called and focus will land on
+        // the header when screen reader is on. Since the header is updated before any item is
+        // created, the header will always take precedence for focus. Do not reorder this
+        // updateHeader() call to happen after item creation.
         updateHeader();
 
         boolean isDataSharingConsentVisible = false;
@@ -653,17 +674,34 @@ class AccountSelectionMediator {
             continueButtonCallback = this::onClickAccountSelected;
         }
 
+        // On button mode since the disclosure text is above the continue button, create the
+        // disclosure text before creating the continue button so setFocusView() will focus
+        // in logical linear reading order. Keep the order in mind when adding an item that calls
+        // setFocusView() because the first item which calls it will get the focus.
+        if (mRpMode == RpMode.BUTTON) {
+            mModel.set(
+                    ItemProperties.DATA_SHARING_CONSENT,
+                    isDataSharingConsentVisible
+                            ? createDataSharingConsentItem(mIdpForDisplay, mClientMetadata)
+                            : null);
+        }
         mModel.set(
                 ItemProperties.CONTINUE_BUTTON,
                 (continueButtonCallback != null)
                         ? createContinueBtnItem(
                                 mSelectedAccount, mIdpMetadata, continueButtonCallback)
                         : null);
-        mModel.set(
-                ItemProperties.DATA_SHARING_CONSENT,
-                isDataSharingConsentVisible
-                        ? createDataSharingConsentItem(mIdpForDisplay, mClientMetadata)
-                        : null);
+        // On widget mode since the disclosure text is below the continue button, create the
+        // disclosure text after creating the continue button so setFocusView() will focus
+        // in logical linear reading order. Keep the order in mind when adding an item that calls
+        // setFocusView() because the first item which calls it will get the focus.
+        if (mRpMode == RpMode.WIDGET) {
+            mModel.set(
+                    ItemProperties.DATA_SHARING_CONSENT,
+                    isDataSharingConsentVisible
+                            ? createDataSharingConsentItem(mIdpForDisplay, mClientMetadata)
+                            : null);
+        }
         mModel.set(
                 ItemProperties.IDP_SIGNIN,
                 mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC
@@ -875,6 +913,7 @@ class AccountSelectionMediator {
         properties.mIdpMetadata = idpMetadata;
         properties.mOnClickListener = onClickListener;
         properties.mHeaderType = mHeaderType;
+        properties.mSetFocusViewCallback = this::setFocusView;
         return new PropertyModel.Builder(ContinueButtonProperties.ALL_KEYS)
                 .with(ContinueButtonProperties.PROPERTIES, properties)
                 .build();
@@ -911,6 +950,7 @@ class AccountSelectionMediator {
                             IdentityRequestDialogLinkType.PRIVACY_POLICY,
                             metadata.getPrivacyPolicyUrl());
                 };
+        properties.mSetFocusViewCallback = this::setFocusView;
 
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROPERTIES, properties)

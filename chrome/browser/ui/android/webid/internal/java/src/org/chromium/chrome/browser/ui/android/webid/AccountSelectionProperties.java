@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.android.webid;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -88,6 +89,8 @@ class AccountSelectionProperties {
                 new ReadableObjectPropertyKey<>("rp_mode");
         static final ReadableBooleanPropertyKey IS_MULTIPLE_ACCOUNT_CHOOSER =
                 new ReadableBooleanPropertyKey("is_multiple_account_chooser");
+        static final ReadableObjectPropertyKey<Callback<View>> SET_FOCUS_VIEW_CALLBACK =
+                new ReadableObjectPropertyKey<>("set_focus_view_callback");
 
         static final PropertyKey[] ALL_KEYS = {
             CLOSE_ON_CLICK_LISTENER,
@@ -98,7 +101,8 @@ class AccountSelectionProperties {
             TYPE,
             RP_CONTEXT,
             RP_MODE,
-            IS_MULTIPLE_ACCOUNT_CHOOSER
+            IS_MULTIPLE_ACCOUNT_CHOOSER,
+            SET_FOCUS_VIEW_CALLBACK
         };
 
         private HeaderProperties() {}
@@ -115,6 +119,7 @@ class AccountSelectionProperties {
             public GURL mPrivacyPolicyUrl;
             public Consumer<Context> mTermsOfServiceClickCallback;
             public Consumer<Context> mPrivacyPolicyClickCallback;
+            public Callback<View> mSetFocusViewCallback;
         }
 
         static final ReadableObjectPropertyKey<Properties> PROPERTIES =
@@ -135,6 +140,7 @@ class AccountSelectionProperties {
             public IdentityProviderMetadata mIdpMetadata;
             public Callback<Account> mOnClickListener;
             public HeaderProperties.HeaderType mHeaderType;
+            public Callback<View> mSetFocusViewCallback;
         }
 
         static final ReadableObjectPropertyKey<Properties> PROPERTIES =
