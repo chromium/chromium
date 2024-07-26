@@ -6,6 +6,7 @@ import("//build/android/resource_sizes.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//build/config/coverage/coverage.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/zip.gni")
 import("//build/util/lastchange.gni")
@@ -2063,13 +2064,15 @@ group("cronet_package_android") {
   # Marked as testonly as it contains test-only targets too.
   testonly = true
   deps = [
-    ":cronet_combined_proguard_flags_golden_test",
     ":cronet_non_test_package",
     ":cronet_test_package",
     ":generate_licenses",
   ]
-  if (!using_sanitizer) {
+  if (!using_sanitizer && !use_jacoco_coverage) {
     deps += [ ":dependencies_checks" ]
+  }
+  if (!use_jacoco_coverage) {
+    deps += [ ":cronet_combined_proguard_flags_golden_test" ]
   }
 }
 
