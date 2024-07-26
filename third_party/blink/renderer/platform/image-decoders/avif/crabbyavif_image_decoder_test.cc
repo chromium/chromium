@@ -1062,9 +1062,7 @@ TEST(CrabbyStaticAVIFTests, GetAdobeGainmapInfoAndData) {
   EXPECT_TRUE(gainmap_frame);
 }
 
-// TODO(b/338342146): Re-enable this test once CrabbyAvif has been updated to
-// the ISO specification.
-TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapInfoAndData) {
+TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kGainmapHdrImages,
@@ -1122,9 +1120,7 @@ TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapInfoAndData) {
   EXPECT_TRUE(gainmap_frame);
 }
 
-// TODO(b/338342146): Re-enable this test once CrabbyAvif has been updated to
-// the ISO specification.
-TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapInfoAndDataHdrToSdr) {
+TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndDataHdrToSdr) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kGainmapHdrImages,
@@ -1180,9 +1176,7 @@ TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapInfoAndDataHdrToSdr) {
   EXPECT_TRUE(gainmap_frame);
 }
 
-// TODO(b/338342146): Re-enable this test once CrabbyAvif has been updated to
-// the ISO specification.
-TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapColorSpaceSameICC) {
+TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceSameICC) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kGainmapHdrImages,
@@ -1215,9 +1209,7 @@ void ExpectMatrixNear(const skcms_Matrix3x3& lhs,
   }
 }
 
-// TODO(b/338342146): Re-enable this test once CrabbyAvif has been updated to
-// the ISO specification.
-TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapColorSpaceDifferentICC) {
+TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceDifferentICC) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kGainmapHdrImages,
@@ -1248,9 +1240,7 @@ TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapColorSpaceDifferentICC) {
   ExpectMatrixNear(matrix, SkNamedGamut::kDisplayP3, 0.001);
 }
 
-// TODO(b/338342146): Re-enable this test once CrabbyAvif has been updated to
-// the ISO specification.
-TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapColorSpaceDifferentCICP) {
+TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceDifferentCICP) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kGainmapHdrImages,
