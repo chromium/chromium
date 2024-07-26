@@ -326,7 +326,6 @@ class VIEWS_EXPORT Label : public View,
   gfx::Size CalculatePreferredSize(
       const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
-  int GetHeightForWidth(int w) const override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   bool GetCanProcessEventsWithinSubtree() const override;
   WordLookupClient* GetWordLookupClient() override;
@@ -432,6 +431,9 @@ class VIEWS_EXPORT Label : public View,
   // Get the text size that ignores the current layout and respects
   // `available_size`.
   gfx::Size GetBoundedTextSize(const SizeBounds& available_size) const;
+
+  // Returns the height of the Label given the width `w`.
+  int GetLabelHeightForWidth(int w) const;
 
   // Returns the appropriate foreground color to use given the proposed
   // |foreground| and |background| colors.
