@@ -434,13 +434,13 @@ class TrustedSignalsCacheTest : public testing::Test {
   };
 
   // Test case class shared by a number of tests. Each test makes a request
-  // using `bidding_params1` before `bidding_params2`.
-  struct BidderTestCase {
+  // using `params1` before `params2`.
+  struct TestCase {
     // Used for documentation + useful output on errors.
     const char* description;
     RequestRelation request_relation = RequestRelation::kDifferentFetches;
-    BiddingParams bidding_params1;
-    BiddingParams bidding_params2;
+    BiddingParams params1;
+    BiddingParams params2;
   };
 
   TrustedSignalsCacheTest() { CreateCache(); }
@@ -453,7 +453,18 @@ class TrustedSignalsCacheTest : public testing::Test {
     cache_mojo_pipe_.Bind(trusted_signals_cache_->CreateMojoPipe());
   }
 
-  BiddingParams CreateDefaultBiddingParams() const {
+  // Waits for the next `num_fetches`
+  // TestTrustedSignalsFetcher::PendingBiddingSignalsFetches.
+  auto WaitForSignalsFetches(int num_fetches) {
+    return trusted_signals_cache_->WaitForBiddingSignalsFetches(num_fetches);
+  }
+
+  // Waits the next TestTrustedSignalsFetcher::PendingBiddingSignalsFetch.
+  auto WaitForSignalsFetch() {
+    return trusted_signals_cache_->WaitForBiddingSignalsFetch();
+  }
+
+  BiddingParams CreateDefaultParams() const {
     BiddingParams out;
     out.main_frame_origin = kMainFrameOrigin;
     out.bidder = kBidder;
@@ -466,79 +477,78 @@ class TrustedSignalsCacheTest : public testing::Test {
     return out;
   }
 
-  BidderTestCase CreateDefaultTestCase() {
-    BidderTestCase out;
-    out.bidding_params1 = CreateDefaultBiddingParams();
-    out.bidding_params2 = CreateDefaultBiddingParams();
+  TestCase CreateDefaultTestCase() {
+    TestCase out;
+    out.params1 = CreateDefaultParams();
+    out.params2 = CreateDefaultParams();
     return out;
   }
 
   // Returns a shared set of test cases used by a number of different tests.
-  std::vector<BidderTestCase> CreateBidderTestCases() {
-    std::vector<BidderTestCase> out;
+  std::vector<TestCase> CreateTestCases() {
+    std::vector<TestCase> out;
 
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Different main frame origins";
     out.back().request_relation = RequestRelation::kDifferentFetches;
-    out.back().bidding_params2.main_frame_origin =
+    out.back().params2.main_frame_origin =
         url::Origin::Create(GURL("https://other.origin.test/"));
 
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Different bidders";
     out.back().request_relation = RequestRelation::kDifferentFetches;
-    out.back().bidding_params2.bidder =
+    out.back().params2.bidder =
         url::Origin::Create(GURL("https://other.bidder.test/"));
 
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Different interest group names";
     out.back().request_relation = RequestRelation::kDifferentPartitions;
-    out.back().bidding_params2.interest_group_names = {"other interest group"};
+    out.back().params2.interest_group_names = {"other interest group"};
 
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Different joining origins";
     out.back().request_relation = RequestRelation::kDifferentCompressionGroups;
-    out.back().bidding_params2.joining_origin =
+    out.back().params2.joining_origin =
         url::Origin::Create(GURL("https://other.joining.origin.test"));
 
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Different trusted bidding signals URLs";
     out.back().request_relation = RequestRelation::kDifferentFetches;
-    out.back().bidding_params2.trusted_signals_url =
+    out.back().params2.trusted_signals_url =
         GURL("https://other.bidder.test/signals");
 
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "First request has no keys";
     out.back().request_relation = RequestRelation::kSamePartitionModified;
-    out.back().bidding_params1.trusted_bidding_signals_keys.reset();
+    out.back().params1.trusted_bidding_signals_keys.reset();
 
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Second request has no keys";
     out.back().request_relation = RequestRelation::kSamePartitionUnmodified;
-    out.back().bidding_params2.trusted_bidding_signals_keys.reset();
+    out.back().params2.trusted_bidding_signals_keys.reset();
 
     out.emplace_back(CreateDefaultTestCase());
     out.back().description =
         "First request's keys are a subset of the second request's";
     out.back().request_relation = RequestRelation::kSamePartitionModified;
-    out.back().bidding_params2.trusted_bidding_signals_keys->emplace_back(
-        "other key");
+    out.back().params2.trusted_bidding_signals_keys->emplace_back("other key");
 
     out.emplace_back(CreateDefaultTestCase());
     out.back().description =
         "Second request's keys are a subset of the first request's";
     out.back().request_relation = RequestRelation::kSamePartitionUnmodified;
-    out.back().bidding_params2.trusted_bidding_signals_keys->erase(
-        out.back().bidding_params2.trusted_bidding_signals_keys->begin());
+    out.back().params2.trusted_bidding_signals_keys->erase(
+        out.back().params2.trusted_bidding_signals_keys->begin());
 
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Requests have complete distinct keys";
     out.back().request_relation = RequestRelation::kSamePartitionModified;
-    out.back().bidding_params2.trusted_bidding_signals_keys = {{"other key"}};
+    out.back().params2.trusted_bidding_signals_keys = {{"other key"}};
 
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Requests have different `additional_params`";
     out.back().request_relation = RequestRelation::kDifferentPartitions;
-    out.back().bidding_params2.additional_params.Set("additional", "param");
+    out.back().params2.additional_params.Set("additional", "param");
 
     // Group-by-origin tests.
 
@@ -547,7 +557,7 @@ class TrustedSignalsCacheTest : public testing::Test {
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Group-by-origin: First request group-by-origin";
     out.back().request_relation = RequestRelation::kDifferentPartitions;
-    out.back().bidding_params1.execution_mode =
+    out.back().params1.execution_mode =
         blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
 
     // Same interest group name is unlikely when other fields don't match, but
@@ -555,46 +565,46 @@ class TrustedSignalsCacheTest : public testing::Test {
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Group-by-origin: Second request group-by-origin";
     out.back().request_relation = RequestRelation::kDifferentPartitions;
-    out.back().bidding_params2.execution_mode =
+    out.back().params2.execution_mode =
         blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
 
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Group-by-origin: Different interest group names";
     out.back().request_relation = RequestRelation::kSamePartitionModified;
-    out.back().bidding_params1.execution_mode =
+    out.back().params1.execution_mode =
         blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().bidding_params2.execution_mode =
+    out.back().params2.execution_mode =
         blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().bidding_params2.interest_group_names = {"other interest group"};
+    out.back().params2.interest_group_names = {"other interest group"};
 
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Group-by-origin: Different keys.";
     out.back().request_relation = RequestRelation::kSamePartitionModified;
-    out.back().bidding_params1.execution_mode =
+    out.back().params1.execution_mode =
         blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().bidding_params2.execution_mode =
+    out.back().params2.execution_mode =
         blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().bidding_params2.trusted_bidding_signals_keys = {{"other key"}};
+    out.back().params2.trusted_bidding_signals_keys = {{"other key"}};
 
     out.emplace_back(CreateDefaultTestCase());
     out.back().description =
         "Group-by-origin: Different keys and interest group names.";
     out.back().request_relation = RequestRelation::kSamePartitionModified;
-    out.back().bidding_params1.execution_mode =
+    out.back().params1.execution_mode =
         blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().bidding_params2.execution_mode =
+    out.back().params2.execution_mode =
         blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().bidding_params2.interest_group_names = {"other interest group"};
-    out.back().bidding_params2.trusted_bidding_signals_keys = {{"other key"}};
+    out.back().params2.interest_group_names = {"other interest group"};
+    out.back().params2.trusted_bidding_signals_keys = {{"other key"}};
 
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Group-by-origin: Different main frame origins";
     out.back().request_relation = RequestRelation::kDifferentFetches;
-    out.back().bidding_params1.execution_mode =
+    out.back().params1.execution_mode =
         blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().bidding_params2.execution_mode =
+    out.back().params2.execution_mode =
         blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().bidding_params2.main_frame_origin =
+    out.back().params2.main_frame_origin =
         url::Origin::Create(GURL("https://other.origin.test/"));
 
     // It would be unusual to have the same IG with different joining origins,
@@ -603,11 +613,11 @@ class TrustedSignalsCacheTest : public testing::Test {
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Group-by-origin: Different joining origin.";
     out.back().request_relation = RequestRelation::kDifferentCompressionGroups;
-    out.back().bidding_params1.execution_mode =
+    out.back().params1.execution_mode =
         blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().bidding_params2.execution_mode =
+    out.back().params2.execution_mode =
         blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().bidding_params2.joining_origin =
+    out.back().params2.joining_origin =
         url::Origin::Create(GURL("https://other.joining.origin.test"));
 
     // Like above test, but the more common case of different IGs with different
@@ -616,12 +626,12 @@ class TrustedSignalsCacheTest : public testing::Test {
     out.back().description =
         "Group-by-origin: Different joining origin, different IGs.";
     out.back().request_relation = RequestRelation::kDifferentCompressionGroups;
-    out.back().bidding_params1.execution_mode =
+    out.back().params1.execution_mode =
         blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().bidding_params2.execution_mode =
+    out.back().params2.execution_mode =
         blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().bidding_params2.interest_group_names = {"group2"};
-    out.back().bidding_params2.joining_origin =
+    out.back().params2.interest_group_names = {"group2"};
+    out.back().params2.joining_origin =
         url::Origin::Create(GURL("https://other.joining.origin.test"));
 
     return out;
@@ -630,9 +640,8 @@ class TrustedSignalsCacheTest : public testing::Test {
   // Create set of merged bidding parameters. Useful to use with
   // ValidateFetchParams() when two requests should be merged into a single
   // partition.
-  BiddingParams CreateMergedBiddingParams(
-      const BiddingParams& bidding_params1,
-      const BiddingParams& bidding_params2) {
+  BiddingParams CreateMergedParams(const BiddingParams& bidding_params1,
+                                   const BiddingParams& bidding_params2) {
     // In order to merge two sets of params, only `interest_group_names` and
     // `trusted_bidding_signals_keys` may be different.
     EXPECT_EQ(bidding_params1.main_frame_origin,
@@ -676,7 +685,7 @@ class TrustedSignalsCacheTest : public testing::Test {
   // boilerplate a bit, at the cost of making types at callsites a little less
   // clear.
   std::pair<scoped_refptr<TestTrustedSignalsCache::Handle>, int>
-  RequestTrustedBiddingSignals(const BiddingParams& bidding_params) {
+  RequestTrustedSignals(const BiddingParams& bidding_params) {
     int partition_id = -1;
     // There should only be a single name for each request. It's a std::set
     // solely for the ValidateFetchParams family of methods.
@@ -716,16 +725,16 @@ class TrustedSignalsCacheTest : public testing::Test {
 
 // Test the case where a GetTrustedSignals() request is received before the
 // fetch completes.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetBeforeFetchCompletes) {
-  auto bidding_params = CreateDefaultBiddingParams();
-  auto [handle, partition_id] = RequestTrustedBiddingSignals(bidding_params);
+TEST_F(TrustedSignalsCacheTest, GetBeforeFetchCompletes) {
+  auto params = CreateDefaultParams();
+  auto [handle, partition_id] = RequestTrustedSignals(params);
   EXPECT_EQ(partition_id, 0);
 
   // Wait for creation of the Fetcher before requesting over Mojo. Not needed,
   // but ensures the events in the test run in a consistent order.
-  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch, bidding_params,
-                      /*expected_compression_group_id=*/0, partition_id);
+  auto fetch = WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id);
 
   TestTrustedSignalsCacheClient client(handle, cache_mojo_pipe_);
 
@@ -740,16 +749,16 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetBeforeFetchCompletes) {
 
 // Test the case where a GetTrustedSignals() request is received before the
 // fetch fails.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetBeforeFetchFails) {
-  auto bidding_params = CreateDefaultBiddingParams();
-  auto [handle, partition_id] = RequestTrustedBiddingSignals(bidding_params);
+TEST_F(TrustedSignalsCacheTest, GetBeforeFetchFails) {
+  auto params = CreateDefaultParams();
+  auto [handle, partition_id] = RequestTrustedSignals(params);
   EXPECT_EQ(partition_id, 0);
 
   // Wait for creation of the Fetcher before requesting over Mojo. Not needed,
   // but ensures the events in the test run in a consistent order.
-  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch, bidding_params,
-                      /*expected_compression_group_id=*/0, partition_id);
+  auto fetch = WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id);
 
   TestTrustedSignalsCacheClient client(handle, cache_mojo_pipe_);
 
@@ -763,18 +772,18 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetBeforeFetchFails) {
 
 // Test the case where a GetTrustedSignals() request is made after the fetch
 // completes.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetAfterFetchCompletes) {
-  auto bidding_params = CreateDefaultBiddingParams();
-  auto [handle, partition_id] = RequestTrustedBiddingSignals(bidding_params);
+TEST_F(TrustedSignalsCacheTest, GetAfterFetchCompletes) {
+  auto params = CreateDefaultParams();
+  auto [handle, partition_id] = RequestTrustedSignals(params);
   EXPECT_EQ(partition_id, 0);
 
   // Wait for the fetch to be observed and response to it. No need to spin the
   // message loop, since fetch responses at this layer are passed directly to
   // the cache, and don't go through Mojo, as the TrustedSignalsFetcher is
   // entirely mocked out.
-  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch, bidding_params,
-                      /*expected_compression_group_id=*/0, partition_id);
+  auto fetch = WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id);
   RespondToFetchWithSuccess(fetch);
 
   TestTrustedSignalsCacheClient client(handle, cache_mojo_pipe_);
@@ -783,18 +792,18 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetAfterFetchCompletes) {
 
 // Test the case where a GetTrustedSignals() request is made after the fetch
 // fails.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetAfterFetchFails) {
-  auto bidding_params = CreateDefaultBiddingParams();
-  auto [handle, partition_id] = RequestTrustedBiddingSignals(bidding_params);
+TEST_F(TrustedSignalsCacheTest, GetAfterFetchFails) {
+  auto params = CreateDefaultParams();
+  auto [handle, partition_id] = RequestTrustedSignals(params);
   EXPECT_EQ(partition_id, 0);
 
   // Wait for the fetch to be observed and response to it. No need to spin the
   // message loop, since fetch responses at this layer are passed directly to
   // the cache, and don't go through Mojo, as the TrustedSignalsFetcher is
   // entirely mocked out.
-  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch, bidding_params,
-                      /*expected_compression_group_id=*/0, partition_id);
+  auto fetch = WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id);
   RespondToFetchWithError(fetch);
 
   TestTrustedSignalsCacheClient client(handle, cache_mojo_pipe_);
@@ -803,12 +812,12 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetAfterFetchFails) {
 
 // Test the case where a GetTrustedSignals() request waiting on a fetch when the
 // Handle is destroyed.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsHandleDestroyedAfterGet) {
-  auto bidding_params = CreateDefaultBiddingParams();
-  auto [handle, partition_id] = RequestTrustedBiddingSignals(bidding_params);
+TEST_F(TrustedSignalsCacheTest, HandleDestroyedAfterGet) {
+  auto params = CreateDefaultParams();
+  auto [handle, partition_id] = RequestTrustedSignals(params);
   EXPECT_EQ(partition_id, 0);
   // Wait for the fetch.
-  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+  auto fetch = WaitForSignalsFetch();
 
   TestTrustedSignalsCacheClient client(handle, cache_mojo_pipe_);
   // Wait fo the request to hit the cache.
@@ -828,7 +837,7 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsHandleDestroyedAfterGet) {
 //
 // Since in all cases the handle was destroyed before the read attempt, all
 // cases should return errors.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetAfterHandleDestroyed) {
+TEST_F(TrustedSignalsCacheTest, GetAfterHandleDestroyed) {
   enum class TestCase { kFetchNotStarted, kFetchNotCompleted, kFetchSucceeded };
 
   for (auto test_case :
@@ -839,17 +848,17 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetAfterHandleDestroyed) {
     // Start with a clean slate for each test. Not strictly necessary, but
     // limits what's under test a bit.
     CreateCache();
-    auto bidding_params = CreateDefaultBiddingParams();
-    auto [handle, partition_id] = RequestTrustedBiddingSignals(bidding_params);
+    auto params = CreateDefaultParams();
+    auto [handle, partition_id] = RequestTrustedSignals(params);
     EXPECT_EQ(partition_id, 0);
     base::UnguessableToken compression_group_token =
         handle->compression_group_token();
 
     if (test_case != TestCase::kFetchNotStarted) {
       // Wait for the fetch to be observed.
-      auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-      ValidateFetchParams(fetch, bidding_params,
-                          /*expected_compression_group_id=*/0, partition_id);
+      auto fetch = WaitForSignalsFetch();
+      ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                          partition_id);
       if (test_case == TestCase::kFetchSucceeded) {
         // Respond to fetch if needed.
         RespondToFetchWithSuccess(fetch);
@@ -868,23 +877,23 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetAfterHandleDestroyed) {
 // Handle. Note that there's no need to test empty UnguessableTokens - the Mojo
 // serialization code DCHECKs when passed them, and the deserialization code
 // rejects them.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetWithNovelId) {
+TEST_F(TrustedSignalsCacheTest, GetWithNovelId) {
   // Novel id with no live cache entries.
   TestTrustedSignalsCacheClient client1(base::UnguessableToken::Create(),
                                         cache_mojo_pipe_);
   client1.WaitForError(kRequestCancelledError);
 
-  auto bidding_params = CreateDefaultBiddingParams();
-  auto [handle, partition_id] = RequestTrustedBiddingSignals(bidding_params);
+  auto params = CreateDefaultParams();
+  auto [handle, partition_id] = RequestTrustedSignals(params);
 
   // Novel id  with a cache entry with a pending fetch.
   TestTrustedSignalsCacheClient client2(base::UnguessableToken::Create(),
                                         cache_mojo_pipe_);
   client2.WaitForError(kRequestCancelledError);
 
-  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch, bidding_params,
-                      /*expected_compression_group_id=*/0, partition_id);
+  auto fetch = WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id);
   RespondToFetchWithSuccess(fetch);
 
   // Novel id with a loaded cache entry.
@@ -896,15 +905,15 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetWithNovelId) {
 // Tests multiple GetTrustedSignals calls for a single request, with one live
 // handle. Requests are made both before and after the response has been
 // received.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetMultipleTimes) {
-  auto bidding_params = CreateDefaultBiddingParams();
-  auto [handle, partition_id] = RequestTrustedBiddingSignals(bidding_params);
+TEST_F(TrustedSignalsCacheTest, GetMultipleTimes) {
+  auto params = CreateDefaultParams();
+  auto [handle, partition_id] = RequestTrustedSignals(params);
 
   // Wait for creation of the Fetcher before requesting over Mojo. Not needed,
   // but ensures the events in the test run in a consistent order.
-  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch, bidding_params,
-                      /*expected_compression_group_id=*/0, partition_id);
+  auto fetch = WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id);
 
   TestTrustedSignalsCacheClient client1(handle, cache_mojo_pipe_);
   TestTrustedSignalsCacheClient client2(handle, cache_mojo_pipe_);
@@ -930,11 +939,11 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsGetMultipleTimes) {
 
 // Check that re-requesting trusted bidding with the same arguments returns the
 // same handle and IDs, when any Handle is still alive.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsReRequestSignalsReused) {
-  auto bidding_params = CreateDefaultBiddingParams();
-  auto [handle1, partition_id1] = RequestTrustedBiddingSignals(bidding_params);
+TEST_F(TrustedSignalsCacheTest, ReRequestSignalsReused) {
+  auto params = CreateDefaultParams();
+  auto [handle1, partition_id1] = RequestTrustedSignals(params);
 
-  auto [handle2, partition_id2] = RequestTrustedBiddingSignals(bidding_params);
+  auto [handle2, partition_id2] = RequestTrustedSignals(params);
   EXPECT_EQ(handle1, handle2);
   EXPECT_EQ(partition_id1, partition_id2);
 
@@ -944,13 +953,13 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsReRequestSignalsReused) {
   handle1.reset();
 
   // Wait for Fetcher.
-  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch, bidding_params,
-                      /*expected_compression_group_id=*/0, partition_id1);
+  auto fetch = WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id1);
 
   // Create yet another handle, which should again be merged, and destroy the
   // second handle.
-  auto [handle3, partition_id3] = RequestTrustedBiddingSignals(bidding_params);
+  auto [handle3, partition_id3] = RequestTrustedSignals(params);
   EXPECT_EQ(handle2, handle3);
   EXPECT_EQ(partition_id2, partition_id3);
   handle2.reset();
@@ -960,7 +969,7 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsReRequestSignalsReused) {
 
   // Create yet another handle, which should again be merged, and destroy the
   // third handle.
-  auto [handle4, partition_id4] = RequestTrustedBiddingSignals(bidding_params);
+  auto [handle4, partition_id4] = RequestTrustedSignals(params);
   EXPECT_EQ(handle3, handle4);
   EXPECT_EQ(partition_id3, partition_id4);
   handle3.reset();
@@ -976,11 +985,11 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsReRequestSignalsReused) {
 // Check that re-requesting trusted bidding with the same arguments returns a
 // different ID, when all Handles have been destroyed. Tests all points at which
 // a Handle may be deleted.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsReRequestSignalsNotReused) {
-  auto bidding_params = CreateDefaultBiddingParams();
+TEST_F(TrustedSignalsCacheTest, ReRequestSignalsNotReused) {
+  auto params = CreateDefaultParams();
 
   // Create a Handle, create a request for it, destroy the Handle.
-  auto [handle1, partition_id1] = RequestTrustedBiddingSignals(bidding_params);
+  auto [handle1, partition_id1] = RequestTrustedSignals(params);
   base::UnguessableToken compression_group_token1 =
       handle1->compression_group_token();
   TestTrustedSignalsCacheClient client1(handle1, cache_mojo_pipe_);
@@ -989,21 +998,21 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsReRequestSignalsNotReused) {
 
   // A new request with the same parameters should get a new
   // `compression_group_id`.
-  auto [handle2, partition_id2] = RequestTrustedBiddingSignals(bidding_params);
+  auto [handle2, partition_id2] = RequestTrustedSignals(params);
   base::UnguessableToken compression_group_token2 =
       handle2->compression_group_token();
   EXPECT_NE(compression_group_token1, compression_group_token2);
   TestTrustedSignalsCacheClient client2(handle2, cache_mojo_pipe_);
 
   // Wait for fetch request, then destroy the second handle.
-  auto fetch2 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch2, bidding_params,
-                      /*expected_compression_group_id=*/0, partition_id2);
+  auto fetch2 = WaitForSignalsFetch();
+  ValidateFetchParams(fetch2, params, /*expected_compression_group_id=*/0,
+                      partition_id2);
   handle2.reset();
 
   // A new request with the same parameters should get a new
   // `compression_group_id`.
-  auto [handle3, partition_id3] = RequestTrustedBiddingSignals(bidding_params);
+  auto [handle3, partition_id3] = RequestTrustedSignals(params);
   base::UnguessableToken compression_group_token3 =
       handle3->compression_group_token();
   EXPECT_NE(compression_group_token1, compression_group_token3);
@@ -1014,9 +1023,9 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsReRequestSignalsNotReused) {
 
   // Wait for another fetch request, send a response, and retrieve it over the
   // Mojo pipe.
-  auto fetch3 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch3, bidding_params,
-                      /*expected_compression_group_id=*/0, partition_id3);
+  auto fetch3 = WaitForSignalsFetch();
+  ValidateFetchParams(fetch3, params, /*expected_compression_group_id=*/0,
+                      partition_id3);
   RespondToFetchWithSuccess(fetch3);
 
   // Destroy the third handle.
@@ -1024,7 +1033,7 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsReRequestSignalsNotReused) {
 
   // Create a new request with the same parameters should get a new
   // `compression_group_id`.
-  auto [handle4, partition_id4] = RequestTrustedBiddingSignals(bidding_params);
+  auto [handle4, partition_id4] = RequestTrustedSignals(params);
   base::UnguessableToken compression_group_token4 =
       handle4->compression_group_token();
   EXPECT_NE(compression_group_token1, compression_group_token4);
@@ -1034,7 +1043,7 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsReRequestSignalsNotReused) {
   // Wait for the request from `client4` to make it to the cache.
   base::RunLoop().RunUntilIdle();
   // Wait for the fetch.
-  auto fetch4 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+  auto fetch4 = WaitForSignalsFetch();
   // Destroy the handle, which should fail the request.
   handle4.reset();
 
@@ -1047,20 +1056,19 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsReRequestSignalsNotReused) {
 
 // Test the case where a bidding signals request is made while there's still an
 // outstanding Handle, but the response has expired.
-TEST_F(TrustedSignalsCacheTest,
-       BiddingSignalsOutstandingHandleResponseExpired) {
+TEST_F(TrustedSignalsCacheTest, OutstandingHandleResponseExpired) {
   const base::TimeDelta kTtl = base::Minutes(10);
   // A small amount of time. Test will wait until this much time before
   // expiration, and then wait for this much time to pass, to check before/after
   // expiration behavior.
   const base::TimeDelta kTinyTime = base::Milliseconds(1);
 
-  auto bidding_params = CreateDefaultBiddingParams();
-  auto [handle1, partition_id1] = RequestTrustedBiddingSignals(bidding_params);
+  auto params = CreateDefaultParams();
+  auto [handle1, partition_id1] = RequestTrustedSignals(params);
 
-  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch, bidding_params,
-                      /*expected_compression_group_id=*/0, partition_id1);
+  auto fetch = WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id1);
   RespondToFetchWithSuccess(
       fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
       kSuccessBody, kTtl);
@@ -1073,7 +1081,7 @@ TEST_F(TrustedSignalsCacheTest,
 
   // Re-requesting the data before expiration time should return the same Handle
   // and partition.
-  auto [handle2, partition_id2] = RequestTrustedBiddingSignals(bidding_params);
+  auto [handle2, partition_id2] = RequestTrustedSignals(params);
   EXPECT_EQ(handle1, handle2);
   EXPECT_EQ(partition_id1, partition_id2);
 
@@ -1086,14 +1094,14 @@ TEST_F(TrustedSignalsCacheTest,
 
   // Re-request the data. A different handle should be returned, since the old
   // data has expired.
-  auto [handle3, partition_id3] = RequestTrustedBiddingSignals(bidding_params);
+  auto [handle3, partition_id3] = RequestTrustedSignals(params);
   EXPECT_NE(handle1->compression_group_token(),
             handle3->compression_group_token());
 
   // Give a different response for the second fetch.
-  fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch, bidding_params,
-                      /*expected_compression_group_id=*/0, partition_id3);
+  fetch = WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id3);
   RespondToFetchWithSuccess(
       fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
       kOtherSuccessBody, kTtl);
@@ -1111,17 +1119,17 @@ TEST_F(TrustedSignalsCacheTest,
 
 // Check that bidding signals error responses are not cached beyond the end of
 // the fetch.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsOutstandingHandleError) {
-  auto bidding_params = CreateDefaultBiddingParams();
-  auto [handle1, partition_id1] = RequestTrustedBiddingSignals(bidding_params);
+TEST_F(TrustedSignalsCacheTest, OutstandingHandleError) {
+  auto params = CreateDefaultParams();
+  auto [handle1, partition_id1] = RequestTrustedSignals(params);
 
-  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch, bidding_params,
-                      /*expected_compression_group_id=*/0, partition_id1);
+  auto fetch = WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id1);
 
   // Re-requesting the data before the response is received should return the
   // same Handle and partition.
-  auto [handle2, partition_id2] = RequestTrustedBiddingSignals(bidding_params);
+  auto [handle2, partition_id2] = RequestTrustedSignals(params);
   EXPECT_EQ(handle1, handle2);
   EXPECT_EQ(partition_id1, partition_id2);
 
@@ -1132,14 +1140,14 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsOutstandingHandleError) {
 
   // Re-request the data. A different handle should be returned, since the error
   // should not be cached.
-  auto [handle3, partition_id3] = RequestTrustedBiddingSignals(bidding_params);
+  auto [handle3, partition_id3] = RequestTrustedSignals(params);
   EXPECT_NE(handle1->compression_group_token(),
             handle3->compression_group_token());
 
   // Give a success response for the second fetch.
-  fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch, bidding_params,
-                      /*expected_compression_group_id=*/0, partition_id3);
+  fetch = WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id3);
   RespondToFetchWithSuccess(fetch);
 
   // A request for `handle3`'s data should return a success.
@@ -1151,24 +1159,22 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsOutstandingHandleError) {
 
 // Check that zero (and negative) TTL bidding signals responses are handled
 // appropriately.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsOutstandingHandleSuccessZeroTTL) {
+TEST_F(TrustedSignalsCacheTest, OutstandingHandleSuccessZeroTTL) {
   for (base::TimeDelta ttl : {base::Seconds(-1), base::Seconds(0)}) {
     // Start with a clean slate for each test. Not strictly necessary, but
     // limits what's under test a bit.
     CreateCache();
 
-    auto bidding_params = CreateDefaultBiddingParams();
-    auto [handle1, partition_id1] =
-        RequestTrustedBiddingSignals(bidding_params);
+    auto params = CreateDefaultParams();
+    auto [handle1, partition_id1] = RequestTrustedSignals(params);
 
-    auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-    ValidateFetchParams(fetch, bidding_params,
-                        /*expected_compression_group_id=*/0, partition_id1);
+    auto fetch = WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id1);
 
     // Re-requesting the data before a response is received should return the
     // same Handle and partition.
-    auto [handle2, partition_id2] =
-        RequestTrustedBiddingSignals(bidding_params);
+    auto [handle2, partition_id2] = RequestTrustedSignals(params);
     EXPECT_EQ(handle1, handle2);
     EXPECT_EQ(partition_id1, partition_id2);
 
@@ -1181,15 +1187,14 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsOutstandingHandleSuccessZeroTTL) {
 
     // Re-request the data. A different handle should be returned, since the
     // data should not be cached.
-    auto [handle3, partition_id3] =
-        RequestTrustedBiddingSignals(bidding_params);
+    auto [handle3, partition_id3] = RequestTrustedSignals(params);
     EXPECT_NE(handle1->compression_group_token(),
               handle3->compression_group_token());
 
     // Give a different response for the second fetch.
-    fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-    ValidateFetchParams(fetch, bidding_params,
-                        /*expected_compression_group_id=*/0, partition_id3);
+    fetch = WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id3);
     RespondToFetchWithSuccess(
         fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
         kOtherSuccessBody, ttl);
@@ -1209,37 +1214,34 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsOutstandingHandleSuccessZeroTTL) {
 // Test the case of expiration of two requests that share the same compression
 // group, but are in different partitions.
 TEST_F(TrustedSignalsCacheTest,
-       BiddingSignalsOutstandingHandleResponseExpiredSharedCompressionGroup) {
+       OutstandingHandleResponseExpiredSharedCompressionGroup) {
   const base::TimeDelta kTtl = base::Minutes(10);
   // A small amount of time. Test will wait until this much time before
   // expiration, and then wait for this much time to pass, to check before/after
   // expiration behavior.
   const base::TimeDelta kTinyTime = base::Milliseconds(1);
 
-  auto bidding_params1 = CreateDefaultBiddingParams();
-  auto bidding_params2 = CreateDefaultBiddingParams();
-  bidding_params2.interest_group_names = {"other interest group"};
+  auto params1 = CreateDefaultParams();
+  auto params2 = CreateDefaultParams();
 
-  // Since the two IGs have the same joining origin, but different names, and do
-  // not use group-by-origin mode, the requests for the two sets of parameters
-  // should be in different partitions in the same compression group, so should
-  // share a Handle, but have different partition IDs.
-  auto [handle1, partition_id1] = RequestTrustedBiddingSignals(bidding_params1);
-  auto [handle2, partition_id2] = RequestTrustedBiddingSignals(bidding_params2);
+  // Modify `params2` so that the requests share the same compression group but
+  // not the same partition.
+  params2.interest_group_names = {"other interest group"};
+
+  auto [handle1, partition_id1] = RequestTrustedSignals(params1);
+  auto [handle2, partition_id2] = RequestTrustedSignals(params2);
   EXPECT_EQ(handle1, handle2);
   EXPECT_NE(partition_id1, partition_id2);
-  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+  auto fetch = WaitForSignalsFetch();
 
-  EXPECT_EQ(fetch.trusted_signals_url, bidding_params1.trusted_signals_url);
+  EXPECT_EQ(fetch.trusted_signals_url, params1.trusted_signals_url);
   ASSERT_EQ(fetch.compression_groups.size(), 1u);
   EXPECT_EQ(fetch.compression_groups.begin()->first, 0);
 
   const auto& partitions = fetch.compression_groups.begin()->second;
   ASSERT_EQ(partitions.size(), 2u);
-  ValidateFetchParamsForPartition(partitions[0], bidding_params1,
-                                  partition_id1);
-  ValidateFetchParamsForPartition(partitions[1], bidding_params2,
-                                  partition_id2);
+  ValidateFetchParamsForPartition(partitions[0], params1, partition_id1);
+  ValidateFetchParamsForPartition(partitions[1], params2, partition_id2);
   RespondToFetchWithSuccess(
       fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
       kSuccessBody, kTtl);
@@ -1249,10 +1251,10 @@ TEST_F(TrustedSignalsCacheTest,
 
   // Re-requesting either set of parameters should return the same Handle and
   // partition as the first requests.
-  auto [handle3, partition_id3] = RequestTrustedBiddingSignals(bidding_params1);
+  auto [handle3, partition_id3] = RequestTrustedSignals(params1);
   EXPECT_EQ(handle1, handle3);
   EXPECT_EQ(partition_id1, partition_id3);
-  auto [handle4, partition_id4] = RequestTrustedBiddingSignals(bidding_params2);
+  auto [handle4, partition_id4] = RequestTrustedSignals(params2);
   EXPECT_EQ(handle2, handle4);
   EXPECT_EQ(partition_id2, partition_id4);
 
@@ -1263,17 +1265,17 @@ TEST_F(TrustedSignalsCacheTest,
   // Re-request the data for both parameters. A different Handle should be
   // returned from the original, since the old data has expired. As before, both
   // requests should share a Handle but have distinct partition IDs.
-  auto [handle5, partition_id5] = RequestTrustedBiddingSignals(bidding_params1);
+  auto [handle5, partition_id5] = RequestTrustedSignals(params1);
   EXPECT_NE(handle1->compression_group_token(),
             handle5->compression_group_token());
-  auto [handle6, partition_id6] = RequestTrustedBiddingSignals(bidding_params2);
+  auto [handle6, partition_id6] = RequestTrustedSignals(params2);
   EXPECT_NE(handle2->compression_group_token(),
             handle6->compression_group_token());
   EXPECT_EQ(handle5, handle6);
   EXPECT_NE(partition_id5, partition_id6);
 
   // Give a different response for the second fetch.
-  fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+  fetch = WaitForSignalsFetch();
   RespondToFetchWithSuccess(
       fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
       kOtherSuccessBody, kTtl);
@@ -1293,9 +1295,8 @@ TEST_F(TrustedSignalsCacheTest,
 // Test the case of expiration of two requests that are sent in the same fetch,
 // but in different compression groups. The requests have different expiration
 // times.
-TEST_F(
-    TrustedSignalsCacheTest,
-    BiddingSignalsOutstandingHandleResponseExpiredDifferentCompressionGroup) {
+TEST_F(TrustedSignalsCacheTest,
+       OutstandingHandleResponseExpiredDifferentCompressionGroup) {
   const base::TimeDelta kTtl1 = base::Minutes(5);
   const base::TimeDelta kTtl2 = base::Minutes(10);
   // A small amount of time. Test will wait until this much time before
@@ -1303,28 +1304,28 @@ TEST_F(
   // expiration behavior.
   const base::TimeDelta kTinyTime = base::Milliseconds(1);
 
-  auto bidding_params1 = CreateDefaultBiddingParams();
-  auto bidding_params2 = CreateDefaultBiddingParams();
-  bidding_params2.joining_origin =
+  auto params1 = CreateDefaultParams();
+  auto params2 = CreateDefaultParams();
+  params2.joining_origin =
       url::Origin::Create(GURL("https://other.joining.origin.test"));
 
-  auto [handle1, partition_id1] = RequestTrustedBiddingSignals(bidding_params1);
-  auto [handle2, partition_id2] = RequestTrustedBiddingSignals(bidding_params2);
+  auto [handle1, partition_id1] = RequestTrustedSignals(params1);
+  auto [handle2, partition_id2] = RequestTrustedSignals(params2);
   EXPECT_NE(handle1, handle2);
   EXPECT_NE(handle1->compression_group_token(),
             handle2->compression_group_token());
-  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+  auto fetch = WaitForSignalsFetch();
 
-  EXPECT_EQ(fetch.trusted_signals_url, bidding_params1.trusted_signals_url);
+  EXPECT_EQ(fetch.trusted_signals_url, params1.trusted_signals_url);
   ASSERT_EQ(fetch.compression_groups.size(), 2u);
 
   // Compression groups are appended in FIFO order.
   ASSERT_EQ(1u, fetch.compression_groups.count(0));
-  ValidateFetchParamsForPartitions(fetch.compression_groups.at(0),
-                                   bidding_params1, partition_id1);
+  ValidateFetchParamsForPartitions(fetch.compression_groups.at(0), params1,
+                                   partition_id1);
   ASSERT_EQ(1u, fetch.compression_groups.count(1));
-  ValidateFetchParamsForPartitions(fetch.compression_groups.at(1),
-                                   bidding_params2, partition_id2);
+  ValidateFetchParamsForPartitions(fetch.compression_groups.at(1), params2,
+                                   partition_id2);
 
   // Respond with different results for each compression group.
   RespondToTwoCompressionGroupFetchWithSuccess(fetch, kTtl1, kTtl2);
@@ -1333,10 +1334,10 @@ TEST_F(
   task_environment_.FastForwardBy(kTtl1 - kTinyTime);
 
   // Re-request both sets of parameters. The same Handles should be returned.
-  auto [handle3, partition_id3] = RequestTrustedBiddingSignals(bidding_params1);
+  auto [handle3, partition_id3] = RequestTrustedSignals(params1);
   EXPECT_EQ(handle1, handle3);
   EXPECT_EQ(partition_id1, partition_id3);
-  auto [handle4, partition_id4] = RequestTrustedBiddingSignals(bidding_params2);
+  auto [handle4, partition_id4] = RequestTrustedSignals(params2);
   EXPECT_EQ(handle2, handle4);
   EXPECT_EQ(partition_id2, partition_id4);
 
@@ -1346,17 +1347,17 @@ TEST_F(
   // Re-request both sets of parameters. The first set of parameters should get
   // a new handle, and trigger a new fetch. The second set of parameters should
   // get the same Handle, since it has yet to expire.
-  auto [handle5, partition_id5] = RequestTrustedBiddingSignals(bidding_params1);
+  auto [handle5, partition_id5] = RequestTrustedSignals(params1);
   EXPECT_NE(handle1, handle5);
-  auto [handle6, partition_id6] = RequestTrustedBiddingSignals(bidding_params2);
+  auto [handle6, partition_id6] = RequestTrustedSignals(params2);
   EXPECT_EQ(handle2, handle6);
   EXPECT_EQ(partition_id2, partition_id6);
 
   // Validate there is indeed a new fetch for the first set of parameters, and
   // provide a response.
-  fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch, bidding_params1,
-                      /*expected_compression_group_id=*/0, partition_id5);
+  fetch = WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params1, /*expected_compression_group_id=*/0,
+                      partition_id5);
   RespondToFetchWithSuccess(
       fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
       kSomeOtherSuccessBody, kTtl2);
@@ -1366,10 +1367,10 @@ TEST_F(
 
   // Re-request both sets of parameters. The same Handles should be returned as
   // the last time.
-  auto [handle7, partition_id7] = RequestTrustedBiddingSignals(bidding_params1);
+  auto [handle7, partition_id7] = RequestTrustedSignals(params1);
   EXPECT_EQ(handle5, handle7);
   EXPECT_EQ(partition_id5, partition_id7);
-  auto [handle8, partition_id8] = RequestTrustedBiddingSignals(bidding_params2);
+  auto [handle8, partition_id8] = RequestTrustedSignals(params2);
   EXPECT_EQ(handle2, handle8);
   EXPECT_EQ(partition_id2, partition_id8);
 
@@ -1378,18 +1379,17 @@ TEST_F(
 
   // Re-request both sets of parameters. This time, only the second set of
   // parameters should get a new Handle.
-  auto [handle9, partition_id9] = RequestTrustedBiddingSignals(bidding_params1);
+  auto [handle9, partition_id9] = RequestTrustedSignals(params1);
   EXPECT_EQ(handle5, handle9);
   EXPECT_EQ(partition_id5, partition_id9);
-  auto [handle10, partition_id10] =
-      RequestTrustedBiddingSignals(bidding_params2);
+  auto [handle10, partition_id10] = RequestTrustedSignals(params2);
   EXPECT_NE(handle2, handle10);
 
   // Validate there is indeed a new fetch for the second set of parameters, and
   // provide a response.
-  fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch, bidding_params2,
-                      /*expected_compression_group_id=*/0, partition_id9);
+  fetch = WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params2, /*expected_compression_group_id=*/0,
+                      partition_id9);
   RespondToFetchWithSuccess(
       fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
       kSomeOtherSuccessBody, kTtl2);
@@ -1413,13 +1413,13 @@ TEST_F(
 }
 
 // Test the case where the response has no compression groups.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsNoCompressionGroup) {
-  auto bidding_params = CreateDefaultBiddingParams();
-  auto [handle, partition_id] = RequestTrustedBiddingSignals(bidding_params);
+TEST_F(TrustedSignalsCacheTest, NoCompressionGroup) {
+  auto params = CreateDefaultParams();
+  auto [handle, partition_id] = RequestTrustedSignals(params);
 
-  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch, bidding_params,
-                      /*expected_compression_group_id=*/0, partition_id);
+  auto fetch = WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id);
 
   // Respond with an empty map with no compression groups.
   std::move(fetch.callback).Run({});
@@ -1430,21 +1430,19 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsNoCompressionGroup) {
 
 // Test the case where only information for the wrong compression group is
 // received.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsWrongCompressionGroup) {
-  auto bidding_params = CreateDefaultBiddingParams();
-  auto [handle, partition_id] = RequestTrustedBiddingSignals(bidding_params);
+TEST_F(TrustedSignalsCacheTest, WrongCompressionGroup) {
+  auto params = CreateDefaultParams();
+  auto [handle, partition_id] = RequestTrustedSignals(params);
 
-  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch, bidding_params,
-                      /*expected_compression_group_id=*/0, partition_id);
+  auto fetch = WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id);
 
   // Modify index of the only compression group when generating a response.
   CHECK(base::Contains(fetch.compression_groups, 0));
-  std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>
-      modified_compression_groups;
-  modified_compression_groups.emplace(1,
-                                      std::move(fetch.compression_groups[0]));
-  fetch.compression_groups = std::move(modified_compression_groups);
+  auto compression_group_node = fetch.compression_groups.extract(0);
+  compression_group_node.key() = 1;
+  fetch.compression_groups.insert(std::move(compression_group_node));
   RespondToFetchWithSuccess(fetch);
 
   // A request for `handle3`'s data should return the different data.
@@ -1455,22 +1453,19 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsWrongCompressionGroup) {
 // Test the case where only one of two compression groups is returned by the
 // server. Both compression groups should fail. Run two test cases, one with the
 // first compression group missing, one with the second missing.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsOneCompressionGroupMissing) {
+TEST_F(TrustedSignalsCacheTest, OneCompressionGroupMissing) {
   for (int missing_group : {0, 1}) {
-    auto bidding_params1 = CreateDefaultBiddingParams();
-    auto bidding_params2 = CreateDefaultBiddingParams();
-    bidding_params2.joining_origin =
+    auto params1 = CreateDefaultParams();
+    auto params2 = CreateDefaultParams();
+    params2.joining_origin =
         url::Origin::Create(GURL("https://other.joining.origin.test"));
 
-    auto [handle1, partition_id1] =
-        RequestTrustedBiddingSignals(bidding_params1);
-    auto [handle2, partition_id2] =
-        RequestTrustedBiddingSignals(bidding_params2);
+    auto [handle1, partition_id1] = RequestTrustedSignals(params1);
+    auto [handle2, partition_id2] = RequestTrustedSignals(params2);
     EXPECT_NE(handle1->compression_group_token(),
               handle2->compression_group_token());
 
-    auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-    EXPECT_EQ(fetch.trusted_signals_url, bidding_params1.trusted_signals_url);
+    auto fetch = WaitForSignalsFetch();
     ASSERT_EQ(fetch.compression_groups.size(), 2u);
 
     // Remove missing compression group from the request, and generate a valid
@@ -1503,32 +1498,30 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsOneCompressionGroupMissing) {
 // group.
 //
 // * kSamePartitionModified, kSamePartitionUnmodified: Same partition is used.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsDifferentParamsBeforeFetchStart) {
-  for (const auto& test_case : CreateBidderTestCases()) {
+TEST_F(TrustedSignalsCacheTest, DifferentParamsBeforeFetchStart) {
+  for (const auto& test_case : CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
     // Start with a clean slate for each test. Not strictly necessary, but
     // limits what's under test a bit.
     CreateCache();
-    const auto& bidding_params1 = test_case.bidding_params1;
-    const auto& bidding_params2 = test_case.bidding_params2;
+    const auto& params1 = test_case.params1;
+    const auto& params2 = test_case.params2;
 
-    auto [handle1, partition_id1] =
-        RequestTrustedBiddingSignals(bidding_params1);
-    auto [handle2, partition_id2] =
-        RequestTrustedBiddingSignals(bidding_params2);
+    auto [handle1, partition_id1] = RequestTrustedSignals(params1);
+    auto [handle2, partition_id2] = RequestTrustedSignals(params2);
 
     switch (test_case.request_relation) {
       case RequestRelation::kDifferentFetches: {
         ASSERT_NE(handle1, handle2);
         ASSERT_NE(handle1->compression_group_token(),
                   handle2->compression_group_token());
-        auto fetches = trusted_signals_cache_->WaitForBiddingSignalsFetches(2);
+        auto fetches = WaitForSignalsFetches(2);
 
         // fetches are made in FIFO order.
-        ValidateFetchParams(fetches[0], bidding_params1,
+        ValidateFetchParams(fetches[0], params1,
                             /*expected_compression_group_id=*/0, partition_id1);
-        ValidateFetchParams(fetches[1], bidding_params2,
+        ValidateFetchParams(fetches[1], params2,
                             /*expected_compression_group_id=*/0, partition_id2);
 
         // Make both requests succeed with different bodies, and check that they
@@ -1551,19 +1544,18 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsDifferentParamsBeforeFetchStart) {
         EXPECT_NE(handle1, handle2);
         EXPECT_NE(handle1->compression_group_token(),
                   handle2->compression_group_token());
-        auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+        auto fetch = WaitForSignalsFetch();
 
-        EXPECT_EQ(fetch.trusted_signals_url,
-                  bidding_params1.trusted_signals_url);
+        EXPECT_EQ(fetch.trusted_signals_url, params1.trusted_signals_url);
         ASSERT_EQ(fetch.compression_groups.size(), 2u);
 
         // Compression groups are appended in FIFO order.
         ASSERT_EQ(1u, fetch.compression_groups.count(0));
         ValidateFetchParamsForPartitions(fetch.compression_groups.at(0),
-                                         bidding_params1, partition_id1);
+                                         params1, partition_id1);
         ASSERT_EQ(1u, fetch.compression_groups.count(1));
         ValidateFetchParamsForPartitions(fetch.compression_groups.at(1),
-                                         bidding_params2, partition_id2);
+                                         params2, partition_id2);
 
         // Respond with different results for each compression group.
         RespondToTwoCompressionGroupFetchWithSuccess(fetch);
@@ -1579,19 +1571,16 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsDifferentParamsBeforeFetchStart) {
       case RequestRelation::kDifferentPartitions: {
         EXPECT_EQ(handle1, handle2);
         EXPECT_NE(partition_id1, partition_id2);
-        auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+        auto fetch = WaitForSignalsFetch();
 
-        EXPECT_EQ(fetch.trusted_signals_url,
-                  bidding_params1.trusted_signals_url);
+        EXPECT_EQ(fetch.trusted_signals_url, params1.trusted_signals_url);
         ASSERT_EQ(fetch.compression_groups.size(), 1u);
         EXPECT_EQ(fetch.compression_groups.begin()->first, 0);
 
         const auto& partitions = fetch.compression_groups.begin()->second;
         ASSERT_EQ(partitions.size(), 2u);
-        ValidateFetchParamsForPartition(partitions[0], bidding_params1,
-                                        partition_id1);
-        ValidateFetchParamsForPartition(partitions[1], bidding_params2,
-                                        partition_id2);
+        ValidateFetchParamsForPartition(partitions[0], params1, partition_id1);
+        ValidateFetchParamsForPartition(partitions[1], params2, partition_id2);
 
         // Respond with a single response for the partition, and read it - no
         // need for multiple clients, since the handles are the same.
@@ -1605,12 +1594,11 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsDifferentParamsBeforeFetchStart) {
       case RequestRelation::kSamePartitionUnmodified: {
         EXPECT_EQ(handle1, handle2);
         EXPECT_EQ(partition_id1, partition_id2);
-        auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+        auto fetch = WaitForSignalsFetch();
 
-        auto merged_bidding_params =
-            CreateMergedBiddingParams(bidding_params1, bidding_params2);
+        auto merged_params = CreateMergedParams(params1, params2);
         // The fetch exactly match the merged parameters.
-        ValidateFetchParams(fetch, merged_bidding_params,
+        ValidateFetchParams(fetch, merged_params,
                             /*expected_compression_group_id=*/0, partition_id1);
 
         // Respond with a single response for the partition, and read it - no
@@ -1631,23 +1619,21 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsDifferentParamsBeforeFetchStart) {
 // kDifferentCompressionGroups, kSamePartitionModified: A new fetch is made.
 //
 // * kSamePartitionUnmodified: Old response is reused.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsDifferentParamsAfterFetchStart) {
-  for (const auto& test_case : CreateBidderTestCases()) {
+TEST_F(TrustedSignalsCacheTest, DifferentParamsAfterFetchStart) {
+  for (const auto& test_case : CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
     // Start with a clean slate for each test. Not strictly necessary, but
     // limits what's under test a bit.
     CreateCache();
-    const auto& bidding_params1 = test_case.bidding_params1;
-    const auto& bidding_params2 = test_case.bidding_params2;
+    const auto& params1 = test_case.params1;
+    const auto& params2 = test_case.params2;
 
-    auto [handle1, partition_id1] =
-        RequestTrustedBiddingSignals(bidding_params1);
-    auto fetch1 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-    ValidateFetchParams(fetch1, bidding_params1,
-                        /*expected_compression_group_id=*/0, partition_id1);
-    auto [handle2, partition_id2] =
-        RequestTrustedBiddingSignals(bidding_params2);
+    auto [handle1, partition_id1] = RequestTrustedSignals(params1);
+    auto fetch1 = WaitForSignalsFetch();
+    ValidateFetchParams(fetch1, params1, /*expected_compression_group_id=*/0,
+                        partition_id1);
+    auto [handle2, partition_id2] = RequestTrustedSignals(params2);
 
     switch (test_case.request_relation) {
       case RequestRelation::kDifferentFetches:
@@ -1658,8 +1644,8 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsDifferentParamsAfterFetchStart) {
         ASSERT_NE(handle1->compression_group_token(),
                   handle2->compression_group_token());
 
-        auto fetch2 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-        ValidateFetchParams(fetch2, bidding_params2,
+        auto fetch2 = WaitForSignalsFetch();
+        ValidateFetchParams(fetch2, params2,
                             /*expected_compression_group_id=*/0, partition_id2);
 
         // Make both requests succeed with different bodies, and check that they
@@ -1701,28 +1687,25 @@ TEST_F(TrustedSignalsCacheTest, BiddingSignalsDifferentParamsAfterFetchStart) {
 // kDifferentCompressionGroups, kSamePartitionModified: A new fetch.
 //
 // * kSamePartitionUnmodified: Old response is reused.
-TEST_F(TrustedSignalsCacheTest,
-       BiddingSignalsDifferentParamsAfterFetchComplete) {
-  for (const auto& test_case : CreateBidderTestCases()) {
+TEST_F(TrustedSignalsCacheTest, DifferentParamsAfterFetchComplete) {
+  for (const auto& test_case : CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
     // Start with a clean slate for each test. Not strictly necessary, but
     // limits what's under test a bit.
     CreateCache();
-    const auto& bidding_params1 = test_case.bidding_params1;
-    const auto& bidding_params2 = test_case.bidding_params2;
+    const auto& params1 = test_case.params1;
+    const auto& params2 = test_case.params2;
 
-    auto [handle1, partition_id1] =
-        RequestTrustedBiddingSignals(bidding_params1);
-    auto fetch1 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-    ValidateFetchParams(fetch1, bidding_params1,
-                        /*expected_compression_group_id=*/0, partition_id1);
+    auto [handle1, partition_id1] = RequestTrustedSignals(params1);
+    auto fetch1 = WaitForSignalsFetch();
+    ValidateFetchParams(fetch1, params1, /*expected_compression_group_id=*/0,
+                        partition_id1);
     RespondToFetchWithSuccess(fetch1);
     TestTrustedSignalsCacheClient client1(handle1, cache_mojo_pipe_);
     client1.WaitForSuccess();
 
-    auto [handle2, partition_id2] =
-        RequestTrustedBiddingSignals(bidding_params2);
+    auto [handle2, partition_id2] = RequestTrustedSignals(params2);
 
     switch (test_case.request_relation) {
       case RequestRelation::kDifferentFetches:
@@ -1733,8 +1716,8 @@ TEST_F(TrustedSignalsCacheTest,
         ASSERT_NE(handle1->compression_group_token(),
                   handle2->compression_group_token());
 
-        auto fetch2 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-        ValidateFetchParams(fetch2, bidding_params2,
+        auto fetch2 = WaitForSignalsFetch();
+        ValidateFetchParams(fetch2, params2,
                             /*expected_compression_group_id=*/0, partition_id2);
 
         RespondToFetchWithSuccess(
@@ -1779,28 +1762,25 @@ TEST_F(TrustedSignalsCacheTest,
 //
 // * kSamePartitionModified / kSamePartitionUnmodified: Same partition is used.
 // Only one fetch is made.
-TEST_F(TrustedSignalsCacheTest,
-       BiddingSignalsDifferentParamsCancelSecondBeforeFetchStart) {
-  for (const auto& test_case : CreateBidderTestCases()) {
+TEST_F(TrustedSignalsCacheTest, DifferentParamsCancelSecondBeforeFetchStart) {
+  for (const auto& test_case : CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
     // Start with a clean slate for each test. Not strictly necessary, but
     // limits what's under test a bit.
     CreateCache();
-    const auto& bidding_params1 = test_case.bidding_params1;
-    const auto& bidding_params2 = test_case.bidding_params2;
+    const auto& params1 = test_case.params1;
+    const auto& params2 = test_case.params2;
 
     // Don't bother to compare handles here - that's covered by another test.
-    auto [handle1, partition_id1] =
-        RequestTrustedBiddingSignals(bidding_params1);
-    auto [handle2, partition_id2] =
-        RequestTrustedBiddingSignals(bidding_params2);
+    auto [handle1, partition_id1] = RequestTrustedSignals(params1);
+    auto [handle2, partition_id2] = RequestTrustedSignals(params2);
 
     // Cancel the second request immediately, before any fetch is made.
     handle2.reset();
 
     // In all cases, that should result in a single fetch being made.
-    auto fetch1 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+    auto fetch1 = WaitForSignalsFetch();
 
     switch (test_case.request_relation) {
       // Despite these two cases being different internally, they look the same
@@ -1808,19 +1788,18 @@ TEST_F(TrustedSignalsCacheTest,
       case RequestRelation::kDifferentFetches:
       case RequestRelation::kDifferentCompressionGroups: {
         // Fetch should not be affected by the second bid.
-        ValidateFetchParams(fetch1, bidding_params1,
+        ValidateFetchParams(fetch1, params1,
                             /*expected_compression_group_id=*/0, partition_id1);
         RespondToFetchWithSuccess(fetch1);
         TestTrustedSignalsCacheClient client1(handle1, cache_mojo_pipe_);
         client1.WaitForSuccess();
 
-        // Make a second request using `bidding_params2`. It should result in a
-        // new request.
-        auto [handle3, partition_id3] =
-            RequestTrustedBiddingSignals(bidding_params2);
+        // Make a second request using `params2`. It should result in a new
+        // request.
+        auto [handle3, partition_id3] = RequestTrustedSignals(params2);
         EXPECT_NE(handle1, handle3);
-        auto fetch3 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-        ValidateFetchParams(fetch3, bidding_params2,
+        auto fetch3 = WaitForSignalsFetch();
+        ValidateFetchParams(fetch3, params2,
                             /*expected_compression_group_id=*/0, partition_id3);
         RespondToFetchWithSuccess(
             fetch3,
@@ -1834,27 +1813,23 @@ TEST_F(TrustedSignalsCacheTest,
       }
 
       case RequestRelation::kDifferentPartitions: {
-        EXPECT_EQ(fetch1.trusted_signals_url,
-                  bidding_params1.trusted_signals_url);
+        EXPECT_EQ(fetch1.trusted_signals_url, params1.trusted_signals_url);
         ASSERT_EQ(fetch1.compression_groups.size(), 1u);
         EXPECT_EQ(fetch1.compression_groups.begin()->first, 0);
 
         const auto& partitions = fetch1.compression_groups.begin()->second;
         ASSERT_EQ(partitions.size(), 2u);
-        ValidateFetchParamsForPartition(partitions[0], bidding_params1,
-                                        partition_id1);
-        ValidateFetchParamsForPartition(partitions[1], bidding_params2,
-                                        partition_id2);
+        ValidateFetchParamsForPartition(partitions[0], params1, partition_id1);
+        ValidateFetchParamsForPartition(partitions[1], params2, partition_id2);
 
         // Respond with a single response for the partition, and read it.
         RespondToFetchWithSuccess(fetch1);
         TestTrustedSignalsCacheClient client1(handle1, cache_mojo_pipe_);
         client1.WaitForSuccess();
 
-        // Make a second request using `bidding_params2`. It should reuse the
-        // response to the initial request.
-        auto [handle3, partition_id3] =
-            RequestTrustedBiddingSignals(bidding_params2);
+        // Make a second request using `params2`. It should reuse the response
+        // to the initial request.
+        auto [handle3, partition_id3] = RequestTrustedSignals(params2);
         EXPECT_EQ(handle1, handle3);
         EXPECT_NE(partition_id1, partition_id3);
         EXPECT_EQ(partition_id2, partition_id3);
@@ -1865,9 +1840,8 @@ TEST_F(TrustedSignalsCacheTest,
 
       case RequestRelation::kSamePartitionModified:
       case RequestRelation::kSamePartitionUnmodified: {
-        auto merged_bidding_params =
-            CreateMergedBiddingParams(bidding_params1, bidding_params2);
-        ValidateFetchParams(fetch1, merged_bidding_params,
+        auto merged_params = CreateMergedParams(params1, params2);
+        ValidateFetchParams(fetch1, merged_params,
                             /*expected_compression_group_id=*/0, partition_id1);
 
         // Respond with a single response for the partition, and read it.
@@ -1875,10 +1849,9 @@ TEST_F(TrustedSignalsCacheTest,
         TestTrustedSignalsCacheClient client1(handle1, cache_mojo_pipe_);
         client1.WaitForSuccess();
 
-        // Make a second request using `bidding_params2`. It should reuse the
-        // response to the initial request, including the same partition ID.
-        auto [handle3, partition_id3] =
-            RequestTrustedBiddingSignals(bidding_params2);
+        // Make a second request using `params2`. It should reuse the response
+        // to the initial request, including the same partition ID.
+        auto [handle3, partition_id3] = RequestTrustedSignals(params2);
         EXPECT_EQ(handle1, handle3);
         EXPECT_EQ(partition_id1, partition_id3);
 
@@ -1895,28 +1868,25 @@ TEST_F(TrustedSignalsCacheTest,
 // second one. This is to test that cancelled the compression group 0 or
 // partition 0 request doesn't cause issues with the compression group 1 or
 // partition 1 request.
-TEST_F(TrustedSignalsCacheTest,
-       BiddingSignalsDifferentParamsCancelFirstBeforeFetchStart) {
-  for (const auto& test_case : CreateBidderTestCases()) {
+TEST_F(TrustedSignalsCacheTest, DifferentParamsCancelFirstBeforeFetchStart) {
+  for (const auto& test_case : CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
     // Start with a clean slate for each test. Not strictly necessary, but
     // limits what's under test a bit.
     CreateCache();
-    const auto& bidding_params1 = test_case.bidding_params1;
-    const auto& bidding_params2 = test_case.bidding_params2;
+    const auto& params1 = test_case.params1;
+    const auto& params2 = test_case.params2;
 
     // Don't bother to compare handles here - that's covered by another test.
-    auto [handle1, partition_id1] =
-        RequestTrustedBiddingSignals(bidding_params1);
-    auto [handle2, partition_id2] =
-        RequestTrustedBiddingSignals(bidding_params2);
+    auto [handle1, partition_id1] = RequestTrustedSignals(params1);
+    auto [handle2, partition_id2] = RequestTrustedSignals(params2);
 
     // Cancel the first request immediately, before any fetch is made.
     handle1.reset();
 
     // In all cases, that should result in a single fetch being made.
-    auto fetch1 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+    auto fetch1 = WaitForSignalsFetch();
 
     switch (test_case.request_relation) {
         // Despite these two cases being different internally, they look the
@@ -1924,19 +1894,18 @@ TEST_F(TrustedSignalsCacheTest,
       case RequestRelation::kDifferentFetches:
       case RequestRelation::kDifferentCompressionGroups: {
         // Fetch should not be affected by the first bid.
-        ValidateFetchParams(fetch1, bidding_params2,
+        ValidateFetchParams(fetch1, params2,
                             /*expected_compression_group_id=*/0, partition_id2);
         RespondToFetchWithSuccess(fetch1);
         TestTrustedSignalsCacheClient client1(handle2, cache_mojo_pipe_);
         client1.WaitForSuccess();
 
-        // Make a second request using `bidding_params1`. It should result in a
-        // new request.
-        auto [handle3, partition_id3] =
-            RequestTrustedBiddingSignals(bidding_params1);
+        // Make a second request using `params1`. It should result in a new
+        // request.
+        auto [handle3, partition_id3] = RequestTrustedSignals(params1);
         EXPECT_NE(handle1, handle3);
-        auto fetch3 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-        ValidateFetchParams(fetch3, bidding_params1,
+        auto fetch3 = WaitForSignalsFetch();
+        ValidateFetchParams(fetch3, params1,
                             /*expected_compression_group_id=*/0, partition_id3);
         RespondToFetchWithSuccess(
             fetch3,
@@ -1950,27 +1919,23 @@ TEST_F(TrustedSignalsCacheTest,
       }
 
       case RequestRelation::kDifferentPartitions: {
-        EXPECT_EQ(fetch1.trusted_signals_url,
-                  bidding_params2.trusted_signals_url);
+        EXPECT_EQ(fetch1.trusted_signals_url, params2.trusted_signals_url);
         ASSERT_EQ(fetch1.compression_groups.size(), 1u);
         EXPECT_EQ(fetch1.compression_groups.begin()->first, 0);
 
         const auto& partitions = fetch1.compression_groups.begin()->second;
         ASSERT_EQ(partitions.size(), 2u);
-        ValidateFetchParamsForPartition(partitions[0], bidding_params1,
-                                        partition_id1);
-        ValidateFetchParamsForPartition(partitions[1], bidding_params2,
-                                        partition_id2);
+        ValidateFetchParamsForPartition(partitions[0], params1, partition_id1);
+        ValidateFetchParamsForPartition(partitions[1], params2, partition_id2);
 
         // Respond with a single response for the partition, and read it.
         RespondToFetchWithSuccess(fetch1);
         TestTrustedSignalsCacheClient client1(handle2, cache_mojo_pipe_);
         client1.WaitForSuccess();
 
-        // Make a second request using `bidding_params1`. It should reuse the
-        // response to the initial request.
-        auto [handle3, partition_id3] =
-            RequestTrustedBiddingSignals(bidding_params1);
+        // Make a second request using `params1`. It should reuse the response
+        // to the initial request.
+        auto [handle3, partition_id3] = RequestTrustedSignals(params1);
         EXPECT_EQ(handle2, handle3);
         EXPECT_EQ(partition_id1, partition_id3);
         EXPECT_NE(partition_id2, partition_id3);
@@ -1981,9 +1946,8 @@ TEST_F(TrustedSignalsCacheTest,
 
       case RequestRelation::kSamePartitionModified:
       case RequestRelation::kSamePartitionUnmodified: {
-        auto merged_bidding_params =
-            CreateMergedBiddingParams(bidding_params1, bidding_params2);
-        ValidateFetchParams(fetch1, merged_bidding_params,
+        auto merged_params = CreateMergedParams(params1, params2);
+        ValidateFetchParams(fetch1, merged_params,
                             /*expected_compression_group_id=*/0, partition_id1);
 
         // Respond with a single response for the partition, and read it.
@@ -1991,10 +1955,9 @@ TEST_F(TrustedSignalsCacheTest,
         TestTrustedSignalsCacheClient client1(handle2, cache_mojo_pipe_);
         client1.WaitForSuccess();
 
-        // Make a second request using `bidding_params1`. It should reuse the
-        // response to the initial request, including the same partition ID.
-        auto [handle3, partition_id3] =
-            RequestTrustedBiddingSignals(bidding_params1);
+        // Make a second request using `params1`. It should reuse the response
+        // to the initial request, including the same partition ID.
+        auto [handle3, partition_id3] = RequestTrustedSignals(params1);
         EXPECT_EQ(handle2, handle3);
         EXPECT_EQ(partition_id2, partition_id3);
 
@@ -2025,33 +1988,30 @@ TEST_F(TrustedSignalsCacheTest,
 // partition is scoped to the lifetime of the compression group.
 //
 // * kSamePartitionModified / kSamePartitionUnmodified: Only one fetch is made.
-TEST_F(TrustedSignalsCacheTest,
-       BiddingSignalsDifferentParamsCancelSecondAfterFetchStart) {
-  for (const auto& test_case : CreateBidderTestCases()) {
+TEST_F(TrustedSignalsCacheTest, DifferentParamsCancelSecondAfterFetchStart) {
+  for (const auto& test_case : CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
     // Start with a clean slate for each test. Not strictly necessary, but
     // limits what's under test a bit.
     CreateCache();
-    const auto& bidding_params1 = test_case.bidding_params1;
-    const auto& bidding_params2 = test_case.bidding_params2;
+    const auto& params1 = test_case.params1;
+    const auto& params2 = test_case.params2;
 
-    auto [handle1, partition_id1] =
-        RequestTrustedBiddingSignals(bidding_params1);
-    auto [handle2, partition_id2] =
-        RequestTrustedBiddingSignals(bidding_params2);
+    auto [handle1, partition_id1] = RequestTrustedSignals(params1);
+    auto [handle2, partition_id2] = RequestTrustedSignals(params2);
 
     switch (test_case.request_relation) {
       case RequestRelation::kDifferentFetches: {
         ASSERT_NE(handle1, handle2);
         ASSERT_NE(handle1->compression_group_token(),
                   handle2->compression_group_token());
-        auto fetches = trusted_signals_cache_->WaitForBiddingSignalsFetches(2);
+        auto fetches = WaitForSignalsFetches(2);
 
         // fetches are made in FIFO order.
-        ValidateFetchParams(fetches[0], bidding_params1,
+        ValidateFetchParams(fetches[0], params1,
                             /*expected_compression_group_id=*/0, partition_id1);
-        ValidateFetchParams(fetches[1], bidding_params2,
+        ValidateFetchParams(fetches[1], params2,
                             /*expected_compression_group_id=*/0, partition_id2);
 
         // Cancel the second request. Its fetcher should be destroyed.
@@ -2059,9 +2019,8 @@ TEST_F(TrustedSignalsCacheTest,
         EXPECT_FALSE(fetches[1].fetcher_alive);
 
         // Reissue second request, which should start a new fetch.
-        auto [handle3, partition_id3] =
-            RequestTrustedBiddingSignals(bidding_params2);
-        auto fetch3 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+        auto [handle3, partition_id3] = RequestTrustedSignals(params2);
+        auto fetch3 = WaitForSignalsFetch();
 
         // Make both requests succeed with different bodies, and check that they
         // can be read.
@@ -2083,19 +2042,18 @@ TEST_F(TrustedSignalsCacheTest,
         EXPECT_NE(handle1, handle2);
         EXPECT_NE(handle1->compression_group_token(),
                   handle2->compression_group_token());
-        auto fetch1 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+        auto fetch1 = WaitForSignalsFetch();
 
-        EXPECT_EQ(fetch1.trusted_signals_url,
-                  bidding_params1.trusted_signals_url);
+        EXPECT_EQ(fetch1.trusted_signals_url, params1.trusted_signals_url);
         ASSERT_EQ(fetch1.compression_groups.size(), 2u);
 
         // Compression groups are appended in FIFO order.
         ASSERT_EQ(1u, fetch1.compression_groups.count(0));
         ValidateFetchParamsForPartitions(fetch1.compression_groups.at(0),
-                                         bidding_params1, partition_id1);
+                                         params1, partition_id1);
         ASSERT_EQ(1u, fetch1.compression_groups.count(1));
         ValidateFetchParamsForPartitions(fetch1.compression_groups.at(1),
-                                         bidding_params2, partition_id2);
+                                         params2, partition_id2);
 
         // Cancel the second request. The shared fetcher should not be
         // destroyed.
@@ -2105,12 +2063,11 @@ TEST_F(TrustedSignalsCacheTest,
         EXPECT_TRUE(fetch1.fetcher_alive);
 
         // Reissue second request, which should start a new fetch.
-        auto [handle3, partition_id3] =
-            RequestTrustedBiddingSignals(bidding_params2);
+        auto [handle3, partition_id3] = RequestTrustedSignals(params2);
         EXPECT_NE(handle3->compression_group_token(),
                   handle1->compression_group_token());
         EXPECT_NE(handle3->compression_group_token(), compression_group_token2);
-        auto fetch3 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+        auto fetch3 = WaitForSignalsFetch();
 
         // Respond to requests with 3 different results. `fetch[0]` gets
         // responses of `kSuccessBody` and `kOtherSuccessBody` for its two
@@ -2139,19 +2096,16 @@ TEST_F(TrustedSignalsCacheTest,
       case RequestRelation::kDifferentPartitions: {
         EXPECT_EQ(handle1, handle2);
         EXPECT_NE(partition_id1, partition_id2);
-        auto fetch1 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+        auto fetch1 = WaitForSignalsFetch();
 
-        EXPECT_EQ(fetch1.trusted_signals_url,
-                  bidding_params1.trusted_signals_url);
+        EXPECT_EQ(fetch1.trusted_signals_url, params1.trusted_signals_url);
         ASSERT_EQ(fetch1.compression_groups.size(), 1u);
         EXPECT_EQ(fetch1.compression_groups.begin()->first, 0);
 
         const auto& partitions = fetch1.compression_groups.begin()->second;
         ASSERT_EQ(partitions.size(), 2u);
-        ValidateFetchParamsForPartition(partitions[0], bidding_params1,
-                                        partition_id1);
-        ValidateFetchParamsForPartition(partitions[0], bidding_params1,
-                                        partition_id1);
+        ValidateFetchParamsForPartition(partitions[0], params1, partition_id1);
+        ValidateFetchParamsForPartition(partitions[0], params1, partition_id1);
 
         // Cancel the second request. The shared fetcher should not be
         // destroyed.
@@ -2161,8 +2115,7 @@ TEST_F(TrustedSignalsCacheTest,
         // Reissue second request, which should result in the same signals
         // request ID as the other requests, and the same partition ID as the
         // second request.
-        auto [handle3, partition_id3] =
-            RequestTrustedBiddingSignals(bidding_params2);
+        auto [handle3, partition_id3] = RequestTrustedSignals(params2);
         EXPECT_EQ(handle1, handle3);
         EXPECT_EQ(partition_id2, partition_id3);
 
@@ -2178,11 +2131,10 @@ TEST_F(TrustedSignalsCacheTest,
       case RequestRelation::kSamePartitionUnmodified: {
         EXPECT_EQ(handle1, handle2);
         EXPECT_EQ(partition_id1, partition_id2);
-        auto fetch1 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+        auto fetch1 = WaitForSignalsFetch();
 
-        auto merged_bidding_params =
-            CreateMergedBiddingParams(bidding_params1, bidding_params2);
-        ValidateFetchParams(fetch1, merged_bidding_params,
+        auto merged_params = CreateMergedParams(params1, params2);
+        ValidateFetchParams(fetch1, merged_params,
                             /*expected_compression_group_id=*/0, partition_id1);
 
         // Cancel the second request. The shared fetcher should not be
@@ -2192,8 +2144,7 @@ TEST_F(TrustedSignalsCacheTest,
 
         // Reissue second request, which should result in the same signals
         // request ID and partition ID as the other requests.
-        auto [handle3, partition_id3] =
-            RequestTrustedBiddingSignals(bidding_params2);
+        auto [handle3, partition_id3] = RequestTrustedSignals(params2);
         EXPECT_EQ(handle1, handle3);
         EXPECT_EQ(partition_id1, partition_id3);
 
@@ -2211,21 +2162,18 @@ TEST_F(TrustedSignalsCacheTest,
 // Tests the case where two requests are made and both are cancelled before the
 // requests starts. No fetches should be made, regardless of whether the two
 // requests would normally share a fetch or not.
-TEST_F(TrustedSignalsCacheTest,
-       BiddingSignalsDifferentParamsCancelBothBeforeFetchStart) {
-  for (const auto& test_case : CreateBidderTestCases()) {
+TEST_F(TrustedSignalsCacheTest, DifferentParamsCancelBothBeforeFetchStart) {
+  for (const auto& test_case : CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
     // Start with a clean slate for each test. Not strictly necessary, but
     // limits what's under test a bit.
     CreateCache();
-    const auto& bidding_params1 = test_case.bidding_params1;
-    const auto& bidding_params2 = test_case.bidding_params2;
+    const auto& params1 = test_case.params1;
+    const auto& params2 = test_case.params2;
 
-    auto [handle1, partition_id1] =
-        RequestTrustedBiddingSignals(bidding_params1);
-    auto [handle2, partition_id2] =
-        RequestTrustedBiddingSignals(bidding_params2);
+    auto [handle1, partition_id1] = RequestTrustedSignals(params1);
+    auto [handle2, partition_id2] = RequestTrustedSignals(params2);
 
     handle1.reset();
     handle2.reset();
@@ -2237,25 +2185,22 @@ TEST_F(TrustedSignalsCacheTest,
 
 // Tests the case where two requests are made and both are cancelled after the
 // fetch(es) start. The fetch(es) should be cancelled.
-TEST_F(TrustedSignalsCacheTest,
-       BiddingSignalsDifferentParamsCancelBothAfterFetchStart) {
-  for (const auto& test_case : CreateBidderTestCases()) {
+TEST_F(TrustedSignalsCacheTest, DifferentParamsCancelBothAfterFetchStart) {
+  for (const auto& test_case : CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
     // Start with a clean slate for each test. Not strictly necessary, but
     // limits what's under test a bit.
     CreateCache();
-    const auto& bidding_params1 = test_case.bidding_params1;
-    const auto& bidding_params2 = test_case.bidding_params2;
+    const auto& params1 = test_case.params1;
+    const auto& params2 = test_case.params2;
 
-    auto [handle1, partition_id1] =
-        RequestTrustedBiddingSignals(bidding_params1);
-    auto [handle2, partition_id2] =
-        RequestTrustedBiddingSignals(bidding_params2);
+    auto [handle1, partition_id1] = RequestTrustedSignals(params1);
+    auto [handle2, partition_id2] = RequestTrustedSignals(params2);
 
     switch (test_case.request_relation) {
       case RequestRelation::kDifferentFetches: {
-        auto fetches = trusted_signals_cache_->WaitForBiddingSignalsFetches(2);
+        auto fetches = WaitForSignalsFetches(2);
         handle1.reset();
         handle2.reset();
         EXPECT_FALSE(fetches[0].fetcher_alive);
@@ -2269,7 +2214,7 @@ TEST_F(TrustedSignalsCacheTest,
       case RequestRelation::kSamePartitionUnmodified: {
         // Don't bother to distinguish these cases - other tests cover the
         // relations between handles and partitions IDs in this case.
-        auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+        auto fetch = WaitForSignalsFetch();
         handle1.reset();
         handle2.reset();
         EXPECT_FALSE(fetch.fetcher_alive);
@@ -2282,41 +2227,40 @@ TEST_F(TrustedSignalsCacheTest,
 // Tests the case of merging multiple requests with the same FetchKey. This test
 // serves to make sure that when there are multiple outstanding fetches, the
 // last fetch can be modified as long as it has not started.
-TEST_F(TrustedSignalsCacheTest, BiddingSignalsMultipleRequestsSameCacheKey) {
+TEST_F(TrustedSignalsCacheTest, MultipleRequestsSameCacheKey) {
   // Start request and wait for its fetch.
-  auto bidding_params1 = CreateDefaultBiddingParams();
-  auto [handle1, partition_id1] = RequestTrustedBiddingSignals(bidding_params1);
-  auto fetch1 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(fetch1, bidding_params1,
-                      /*expected_compression_group_id=*/0, partition_id1);
+  auto params1 = CreateDefaultParams();
+  auto [handle1, partition_id1] = RequestTrustedSignals(params1);
+  auto fetch1 = WaitForSignalsFetch();
+  ValidateFetchParams(fetch1, params1, /*expected_compression_group_id=*/0,
+                      partition_id1);
 
   // Start another request with same CacheKey as the first, but that can't be
   // merged into the first request, since it has a live fetch.
-  auto bidding_params2 = CreateDefaultBiddingParams();
-  bidding_params2.trusted_bidding_signals_keys = {{"othey_key2"}};
-  auto [handle2, partition_id2] = RequestTrustedBiddingSignals(bidding_params2);
+  auto params2 = CreateDefaultParams();
+  params2.trusted_bidding_signals_keys = {{"othey_key2"}};
+  auto [handle2, partition_id2] = RequestTrustedSignals(params2);
   EXPECT_NE(handle1, handle2);
 
   // Create another fetch with the default set of parameters. It's merged into
   // the second request, not the first. This is because the first and second
   // request have the same cache key, so the second request overwrite the cache
   // key of the first, though its compression group ID should still be valid.
-  auto [handle3, partition_id3] = RequestTrustedBiddingSignals(bidding_params1);
+  auto [handle3, partition_id3] = RequestTrustedSignals(params1);
   EXPECT_EQ(handle2, handle3);
   EXPECT_EQ(partition_id2, partition_id3);
 
   // Wait for the combined fetch.
-  auto fetch2 = trusted_signals_cache_->WaitForBiddingSignalsFetch();
-  ValidateFetchParams(
-      fetch2, CreateMergedBiddingParams(bidding_params2, bidding_params1),
-      /*expected_compression_group_id=*/0, partition_id2);
+  auto fetch2 = WaitForSignalsFetch();
+  ValidateFetchParams(fetch2, CreateMergedParams(params2, params1),
+                      /*expected_compression_group_id=*/0, partition_id2);
 
-  // Reissuing a request with either previous set of bidding params should reuse
-  // the partition shared by the second and third fetches.
-  auto [handle4, partition_id4] = RequestTrustedBiddingSignals(bidding_params1);
+  // Reissuing a request with either previous set of params should reuse the
+  // partition shared by the second and third fetches.
+  auto [handle4, partition_id4] = RequestTrustedSignals(params1);
   EXPECT_EQ(handle2, handle4);
   EXPECT_EQ(partition_id2, partition_id4);
-  auto [handle5, partition_id5] = RequestTrustedBiddingSignals(bidding_params2);
+  auto [handle5, partition_id5] = RequestTrustedSignals(params2);
   EXPECT_EQ(handle2, handle5);
   EXPECT_EQ(partition_id2, partition_id5);
 
