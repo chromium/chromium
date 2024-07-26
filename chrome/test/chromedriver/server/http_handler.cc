@@ -1061,6 +1061,21 @@ HttpHandler::HttpHandler(
           WrapToCommand("ClearDevicePosture",
                         base::BindRepeating(&ExecuteClearDevicePosture))),
 
+      // Extensions for Compute Pressure API:
+      // https://w3c.github.io/compute-pressure/#automation
+      CommandMapping(kPost, "session/:sessionId/pressuresource",
+                     WrapToCommand("CreateVirtualPressureSource",
+                                   base::BindRepeating(
+                                       &ExecuteCreateVirtualPressureSource))),
+      CommandMapping(kPost, "session/:sessionId/pressuresource/:type",
+                     WrapToCommand("UpdateVirtualPressureSource",
+                                   base::BindRepeating(
+                                       &ExecuteUpdateVirtualPressureSource))),
+      CommandMapping(kDelete, "session/:sessionId/pressuresource/:type",
+                     WrapToCommand("RemoveVirtualPressureSource",
+                                   base::BindRepeating(
+                                       &ExecuteRemoveVirtualPressureSource))),
+
       //
       // Non-standard extension commands
       //
