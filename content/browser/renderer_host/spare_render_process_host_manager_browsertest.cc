@@ -8,6 +8,7 @@
 
 #include "base/callback_list.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -32,7 +33,13 @@ namespace content {
 class SpareRenderProcessHostManagerTest : public ContentBrowserTest,
                                           public RenderProcessHostObserver {
  public:
-  SpareRenderProcessHostManagerTest() = default;
+  SpareRenderProcessHostManagerTest() {
+    // The AndroidWarmUpSpareRendererWithTimeout will stop
+    // PrepareForFutureRequests from creating a delayed process. Disable so that
+    // we can test the defer behavior.
+    feature_list_.InitAndDisableFeature(
+        features::kAndroidWarmUpSpareRendererWithTimeout);
+  }
 
  protected:
   void SetUpOnMainThread() override {
@@ -83,6 +90,7 @@ class SpareRenderProcessHostManagerTest : public ContentBrowserTest,
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
       observation_{this};
   base::OnceClosure process_exit_callback_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // This test verifies the creation of a deferred spare renderer. It checks two

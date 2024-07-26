@@ -126,10 +126,13 @@ public class ChildProcessLauncherIntegrationTest {
 
     @Test
     @MediumTest
-    // This test may run with --site-per-process, which also enables a feature to maintain a
-    // spare renderer process. The spare process interferes with assertions on the number of
-    // process connections in this test, so disable it.
-    @CommandLineFlags.Add({"disable-features=SpareRendererForSitePerProcess"})
+    // This test may run with --site-per-process or AndroidWarmUpSpareRendererWithTimeout, which
+    // also enables a feature to maintain a spare renderer process.
+    // The spare process interferes with assertions on the number of process connections in this
+    // test, so disable it.
+    @CommandLineFlags.Add({
+        "disable-features=SpareRendererForSitePerProcess,AndroidWarmUpSpareRendererWithTimeout"
+    })
     public void testCrossDomainNavigationDoNotLoseImportance() throws Throwable {
         final TestChildProcessConnectionFactory factory = new TestChildProcessConnectionFactory();
         final List<TestChildProcessConnection> connections = factory.getConnections();
@@ -186,10 +189,13 @@ public class ChildProcessLauncherIntegrationTest {
 
     @Test
     @MediumTest
-    // This test may run with --site-per-process, which also enables a feature to maintain a
-    // spare renderer process. The spare process interferes with assertions on the number of
-    // process connections in this test, so disable it.
-    @CommandLineFlags.Add({"disable-features=SpareRendererForSitePerProcess"})
+    // This test may run with --site-per-process or AndroidWarmUpSpareRendererWithTimeout, which
+    // also enables a feature to maintain a spare renderer process.
+    // The spare process interferes with assertions on the number of process connections in this
+    // test, so disable it.
+    @CommandLineFlags.Add({
+        "disable-features=SpareRendererForSitePerProcess,AndroidWarmUpSpareRendererWithTimeout"
+    })
     public void testIntentionalKillToFreeServiceSlot() throws Throwable {
         final TestChildProcessConnectionFactory factory = new TestChildProcessConnectionFactory();
         final List<TestChildProcessConnection> connections = factory.getConnections();
@@ -360,7 +366,7 @@ public class ChildProcessLauncherIntegrationTest {
         final CrashOnLaunchChildProcessConnectionFactory factory =
                 new CrashOnLaunchChildProcessConnectionFactory();
         ChildProcessLauncherHelperImpl.setSandboxServicesSettingsForTesting(
-                factory, 1, null /* use default service name */);
+                factory, 2, null /* use default service name */);
 
         // Load url which should fail.
         String url = UrlUtils.getIsolatedTestFileUrl("content/test/data/android/title1.html");
