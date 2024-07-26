@@ -198,7 +198,9 @@ split's classloader upon subsequent app launches.
 
 **Work-around:**
 
-In progress: https://bugs.chromium.org/p/chromium/issues/detail?id=1066842#c34
+ * Always add `<uses-library>` to the base split.
+
+[b/265589431]: https://issuetracker.google.com/265589431
 
 ## Other Quirks & Subtleties
 
