@@ -6262,16 +6262,16 @@ Press an assigned switch or key to remove assignment.
     Treat top-row keys as function keys
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_COLORS" desc="In Device Settings, the direct link from Keyboard Settings to Personalization Hub's RGB keyboard control">
-    Backlight colors
+    Keyboard backlight colors
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_BRIGHTNESS_LABEL" desc="The label for setting the keyboard brightness.">
-    Backlight brightness
+    Keyboard backlight brightness
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_AUTO_BRIGHNTESS_ENABLE_LABEL" desc="The label for setting the keyboard auto brightness enabled.">
-    Automatically adjust backlight brightness
+    Automatically adjust keyboard backlight brightness
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_AUTO_BRIGHNTESS_ENABLE_SUB_LABEL" desc="The sub-label for setting the keyboard auto brightness enabled.">
-    Adjust keyboard backlight based on surrounding light levels
+    Adjust brightness based on your environment
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE" desc="The checkbox label for enabling keyboard auto-repeat.">
     Press and hold to automatically repeat the key
