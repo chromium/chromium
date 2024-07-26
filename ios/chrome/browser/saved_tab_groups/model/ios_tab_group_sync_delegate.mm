@@ -27,6 +27,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -84,20 +87,73 @@ void IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
   IOSTabGroupActionContext* ios_context =
       static_cast<IOSTabGroupActionContext*>(context.get());
   const auto saved_tab_group = sync_service_->GetGroup(sync_tab_group_id);
-  if (!saved_tab_group) {
-    // The group doesn't exist.
+  Browser* origin_browser = ios_context->browser;
+
+  if (!saved_tab_group || !origin_browser) {
+    // The group doesn't exist or there is no origin browser.
     return;
   }
+
+  Browser* target_browser = origin_browser;
 
   LocalTabGroupInfo tab_group_info =
       GetLocalTabGroupInfo(browser_list_, *saved_tab_group);
   if (tab_group_info.tab_group) {
-    // TODO(crbug.com/329626315): Focus the window it belongs to and open the
-    // group in the UI.
+    if (!tab_group_info.browser) {
+      return;
+    }
+    target_browser = tab_group_info.browser;
+
+    if (target_browser != origin_browser) {
+      // The group is in another window.
+      SceneState* target_scene_state = target_browser->GetSceneState();
+      UISceneActivationRequestOptions* options =
+          [[UISceneActivationRequestOptions alloc] init];
+      options.requestingScene = origin_browser->GetSceneState().scene;
+
+      if (@available(iOS 17, *)) {
+        UISceneSessionActivationRequest* request =
+            [UISceneSessionActivationRequest
+                requestWithSession:target_scene_state.scene.session];
+        request.options = options;
+        [[UIApplication sharedApplication]
+            activateSceneSessionForRequest:request
+                              errorHandler:^(NSError* error) {
+                                LOG(ERROR) << base::SysNSStringToUTF8(
+                                    error.localizedDescription);
+                                NOTREACHED();
+                              }];
+
+      } else {
+        [[UIApplication sharedApplication]
+            requestSceneSessionActivation:target_scene_state.scene.session
+                             userActivity:nil
+                                  options:options
+                             errorHandler:^(NSError* error) {
+                               LOG(ERROR) << base::SysNSStringToUTF8(
+                                   error.localizedDescription);
+                               NOTREACHED();
+                             }];
+      }
+
+      if (!target_scene_state.UIEnabled) {
+        return;
+      }
+
+      CommandDispatcher* dispatcher = target_browser->GetCommandDispatcher();
+      id<ApplicationCommands> applicationHandler =
+          HandlerForProtocol(dispatcher, ApplicationCommands);
+      [applicationHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
+      id<TabGroupsCommands> tabGroupsHandler =
+          HandlerForProtocol(dispatcher, TabGroupsCommands);
+      [tabGroupsHandler showTabGroup:tab_group_info.tab_group];
+
+      return;
+    }
   } else {
-    CreateLocalTabGroupImpl(*saved_tab_group, ios_context->browser);
-    // TODO(crbug.com/329626315): Open the group in the UI.
+    CreateLocalTabGroupImpl(*saved_tab_group, origin_browser);
   }
+  // TODO(crbug.com/329626315): Open the group in the UI of `target_browser`.
 }
 
 std::unique_ptr<ScopedLocalObservationPauser>

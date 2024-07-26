@@ -35,6 +35,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -602,12 +605,12 @@ TEST_F(IOSTabGroupSyncDelegateTest,
   EXPECT_EQ(1u, local_tab_group_info.web_state_list->GetGroups().size());
 }
 
-// Tests opening a tab group from sync that is already open locally doesn't open
-// a new local group.
+// Tests opening a tab group from sync that is already open locally in this
+// window doesn't open a new local group.
 TEST_F(IOSTabGroupSyncDelegateTest,
-       HandleOpenTabGroupRequest_OpenedSavedTabGroup) {
+       HandleOpenTabGroupRequest_OpenedSavedTabGroupSameWindow) {
   // Create a local group.
-  WebStateList* web_state_list = browser_same_browser_state_->GetWebStateList();
+  WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
       "| a [0 b* c ] d", browser_->GetBrowserState()));
@@ -631,6 +634,80 @@ TEST_F(IOSTabGroupSyncDelegateTest,
   auto local_group_ids = delegate_->GetLocalTabGroupIds();
   EXPECT_EQ(1u, local_group_ids.size());
   EXPECT_EQ(1u, web_state_list->GetGroups().size());
+}
+
+// Tests opening a tab group from sync that is already open locally on another
+// window doesn't open a new local group.
+TEST_F(IOSTabGroupSyncDelegateTest,
+       HandleOpenTabGroupRequest_OpenedSavedTabGroupDifferentWindow) {
+  // Create a local group.
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a [0 b* c ] d", browser_->GetBrowserState()));
+  const TabGroup* local_tab_group = builder.GetTabGroupForIdentifier('0');
+  LocalTabGroupID local_id_group_0 = local_tab_group->tab_group_id();
+  ASSERT_EQ(1u, delegate_->GetLocalTabGroupIds().size());
+  ASSERT_EQ(1u, web_state_list->GetGroups().size());
+  // Create the associated distant group.
+  base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
+  SavedTabGroup saved_group(kGroupTitle, kGroupColor,
+                            CreateSavedTabs(saved_tab_group_id),
+                            std::make_optional(0), saved_tab_group_id);
+  saved_group.SetLocalGroupId(local_id_group_0);
+
+  SceneState* scene_state = browser_->GetSceneState();
+  scene_state.UIEnabled = NO;
+  UIApplication* app = [UIApplication sharedApplication];
+  id app_mock = OCMPartialMock(app);
+  if (@available(iOS 17, *)) {
+    id request_arg =
+        [OCMArg checkWithBlock:^BOOL(UISceneSessionActivationRequest* request) {
+          return request.session == scene_state.scene.session &&
+                 request.options.requestingScene ==
+                     browser_same_browser_state_->GetSceneState().scene;
+        }];
+    OCMStub([app_mock activateSceneSessionForRequest:request_arg
+                                        errorHandler:[OCMArg any]])
+        .andDo(^(NSInvocation* invocation) {
+          scene_state.UIEnabled = YES;
+        });
+  } else {
+    OCMStub([app_mock requestSceneSessionActivation:scene_state.scene.session
+                                       userActivity:nil
+                                            options:[OCMArg any]
+                                       errorHandler:[OCMArg any]])
+        .andDo(^(NSInvocation* invocation) {
+          scene_state.UIEnabled = YES;
+        });
+  }
+
+  id mock_application_handler_ =
+      OCMStrictProtocolMock(@protocol(ApplicationCommands));
+  id mock_tab_groups_handler_ =
+      OCMStrictProtocolMock(@protocol(TabGroupsCommands));
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  [dispatcher startDispatchingToTarget:mock_application_handler_
+                           forProtocol:@protocol(ApplicationCommands)];
+  [dispatcher startDispatchingToTarget:mock_tab_groups_handler_
+                           forProtocol:@protocol(TabGroupsCommands)];
+
+  OCMStub([mock_application_handler_
+      displayTabGridInMode:TabGridOpeningMode::kRegular]);
+  OCMStub([mock_tab_groups_handler_ showTabGroup:local_tab_group]);
+
+  EXPECT_CALL(*mock_service_, GetGroup(saved_tab_group_id))
+      .WillOnce(Return(saved_group));
+  delegate_->HandleOpenTabGroupRequest(
+      saved_tab_group_id,
+      std::make_unique<IOSTabGroupActionContext>(browser_same_browser_state_));
+
+  // Check that there is still only one tab group opened locally.
+  auto local_group_ids = delegate_->GetLocalTabGroupIds();
+  EXPECT_EQ(1u, local_group_ids.size());
+  EXPECT_EQ(1u, web_state_list->GetGroups().size());
+  EXPECT_OCMOCK_VERIFY(mock_application_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_tab_groups_handler_);
 }
 
 }  // namespace tab_groups

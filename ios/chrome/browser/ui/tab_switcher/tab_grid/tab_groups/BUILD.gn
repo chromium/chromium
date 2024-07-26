@@ -20,7 +20,6 @@ source_set("tab_groups") {
   deps = [
     ":tab_group_consumer",
     ":tab_group_mutator",
-    ":tab_groups_commands",
     ":tab_groups_ui",
     "//base",
     "//components/saved_tab_groups:core",
@@ -71,7 +70,6 @@ source_set("tab_group_creation") {
     ":tab_group_consumer",
     ":tab_group_creation_ui",
     ":tab_group_mutator",
-    ":tab_groups_commands",
     ":tab_groups_ui",
     "//base",
     "//components/tab_groups",
@@ -113,12 +111,12 @@ source_set("tab_groups_ui") {
   deps = [
     ":tab_group_consumer",
     ":tab_group_mutator",
-    ":tab_groups_commands",
     ":tab_groups_constant",
     "//base",
     "//base:i18n",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -148,7 +146,6 @@ source_set("tab_group_creation_ui") {
     ":snapshots_view",
     ":tab_group_consumer",
     ":tab_group_mutator",
-    ":tab_groups_commands",
     ":tab_groups_constant",
     ":tab_groups_ui",
     "//base",
@@ -190,10 +187,6 @@ source_set("snapshots_view") {
   ]
 }
 
-source_set("tab_groups_commands") {
-  sources = [ "tab_groups_commands.h" ]
-}
-
 source_set("tab_group_consumer") {
   sources = [
     "tab_group_consumer.h",
@@ -230,7 +223,6 @@ source_set("unit_tests") {
   deps = [
     ":tab_group_consumer",
     ":tab_groups",
-    ":tab_groups_commands",
     ":tab_groups_ui",
     "//base/test:test_support",
     "//components/policy/core/common:common_constants",
