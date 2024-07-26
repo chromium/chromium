@@ -1000,7 +1000,7 @@ BASE_FEATURE(kFastPairHandshakeLongTermRefactor,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables prototype support for Fast Pair HID.
-BASE_FEATURE(kFastPairHID, "FastPairHID", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFastPairHID, "FastPairHID", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Saved Devices nicknames logic for Fast Pair.
 BASE_FEATURE(kFastPairSavedDevicesNicknames,
