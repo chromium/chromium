@@ -149,25 +149,25 @@ class BuildResolver:
         #     directly.
         run_web_tests_pattern = re.compile(
             r'[\w_-]*(webdriver|blink_(web|wpt))_tests.*\(with patch\)[^|]*')
-        output_props = raw_build.get('output', {}).get('properties', {})
-        # Buildbucket's `FAILURE` status encompasses both normal test failures
-        # (i.e., needs rebaseline) and unrelated compile or result merge
-        # failures that should be coerced to `INFRA_FAILURE`. To distinguish
-        # them, look at the failure reason yielded by the recipe, which is
-        # opaque to Buildbucket:
-        # https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:recipes/recipe_modules/tryserver/api.py;l=295-334;drc=c868adc3689fe6ab70be6d195041debfe8faf725;bpv=0;bpt=0
-        #
-        # TODO(crbug.com/1496938): Investigate if this information can be
-        # obtained by the absence of `full_results.json` instead.
-        if output_props.get('failure_type') not in {None, 'TEST_FAILURE'}:
-            return BuildStatus.INFRA_FAILURE
+        status = BuildStatus[raw_build['status']]
+        if status is BuildStatus.FAILURE:
+            output_props = raw_build.get('output', {}).get('properties', {})
+            # Buildbucket's `FAILURE` status encompasses both normal test
+            # failures (i.e., needs rebaseline) and unrelated compile or
+            # result merge failures. To distinguish them, look at the failure
+            # reason yielded by the recipe.
+            failure_type = output_props.get('failure_type')
+            try:
+                status = BuildStatus[failure_type]
+            except KeyError:
+                status = BuildStatus.OTHER_FAILURE
         for step in raw_build.get('steps', []):
             if run_web_tests_pattern.fullmatch(step['name']):
                 summary = self._fetch_swarming_summary(step)
                 shards = (summary or {}).get('shards', [])
                 if any(map(_shard_interrupted, shards)):
                     return BuildStatus.INFRA_FAILURE
-        return BuildStatus[raw_build['status']]
+        return status
 
     def _fetch_swarming_summary(self,
                                 step,
@@ -248,7 +248,7 @@ class BuildResolver:
     def log_builds(self, build_statuses: BuildStatuses):
         """Log builds in a tabular format."""
         finished_builds = {
-            build: status.name or '--'
+            build: status
             for build, status in build_statuses.items()
             if status in BuildStatus.COMPLETED
         }
@@ -261,7 +261,7 @@ class BuildResolver:
         else:
             _log.info('No finished builds.')
         unfinished_builds = {
-            build: status.name
+            build: status
             for build, status in build_statuses.items() if
             build not in finished_builds and status is not BuildStatus.MISSING
         }
@@ -275,12 +275,15 @@ class BuildResolver:
         # Clamp to a minimum width to visually separate the `BUILDER` and
         # `NUMBER` columns.
         name_column_width = max(20, *map(len, builder_names))
-        template = f'  %-{name_column_width}s %-7s %-9s %-6s'
+        status_column_width = max(
+            len(status.name) for status in build_statuses.values())
+        template = (f'  %-{name_column_width}s %-7s '
+                    f'%-{status_column_width}s %-6s')
         _log.info(template, 'BUILDER', 'NUMBER', 'STATUS', 'BUCKET')
         for build in sorted(build_statuses, key=_build_sort_key):
             _log.info(template, build.builder_name,
-                      str(build.build_number or '--'), build_statuses[build],
-                      build.bucket)
+                      str(build.build_number or '--'),
+                      build_statuses[build].name, build.bucket)
 
 
 def _build_sort_key(build: Build) -> Tuple[str, int]:

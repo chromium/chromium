@@ -401,4 +401,4 @@ class GitCL:
 
     @staticmethod
     def some_failed(try_results):
-        return any(s is BuildStatus.FAILURE for s in try_results.values())
+        return any(s & BuildStatus.FAILURE for s in try_results.values())

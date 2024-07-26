@@ -246,7 +246,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         for build, status in build_statuses.items():
             for step in self._tool.builders.step_names_for_builder(
                     build.builder_name):
-                if status is BuildStatus.FAILURE:
+                if status is BuildStatus.TEST_FAILURE:
                     # Only completed failed builds will contain actual failed
                     # web tests to download baselines for.
                     build_steps_to_fetch.append((build, step))

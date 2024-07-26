@@ -47,15 +47,15 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         self.maxDiff = None
         self.builds = {
             Build('MOCK Try Win', 5000, 'Build-1'):
-            BuildStatus.FAILURE,
+            BuildStatus.TEST_FAILURE,
             Build('MOCK Try Mac', 4000, 'Build-2'):
-            BuildStatus.FAILURE,
+            BuildStatus.TEST_FAILURE,
             Build('MOCK Try Linux', 6000, 'Build-3'):
-            BuildStatus.FAILURE,
+            BuildStatus.TEST_FAILURE,
             Build('MOCK Try Linux (CQ duplicate)', 7000, 'Build-4'):
-            BuildStatus.FAILURE,
+            BuildStatus.TEST_FAILURE,
             Build('MOCK Try Linux Multiple Steps', 9000, 'Build-5'):
-            BuildStatus.FAILURE,
+            BuildStatus.TEST_FAILURE,
         }
 
         self.command.git_cl = MockGitCL(self.tool, self.builds)
@@ -442,8 +442,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
 
     def test_execute_one_missing_build(self):
         builds = {
-            Build('MOCK Try Win', 5000): BuildStatus.FAILURE,
-            Build('MOCK Try Mac', 4000): BuildStatus.FAILURE,
+            Build('MOCK Try Win', 5000): BuildStatus.TEST_FAILURE,
+            Build('MOCK Try Mac', 4000): BuildStatus.TEST_FAILURE,
         }
         self.command.git_cl = MockGitCL(self.tool, builds)
         exit_code = self.command.execute(self.command_options(), [], self.tool)
@@ -451,9 +451,9 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         self.assertLog([
             'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: Finished builds:\n',
-            'INFO:   BUILDER              NUMBER  STATUS    BUCKET\n',
-            'INFO:   MOCK Try Mac         4000    FAILURE   try   \n',
-            'INFO:   MOCK Try Win         5000    FAILURE   try   \n',
+            'INFO:   BUILDER              NUMBER  STATUS       BUCKET\n',
+            'INFO:   MOCK Try Mac         4000    TEST_FAILURE try   \n',
+            'INFO:   MOCK Try Win         5000    TEST_FAILURE try   \n',
             'INFO: Scheduled or started builds:\n',
             'INFO:   BUILDER                       NUMBER  STATUS    BUCKET\n',
             'INFO:   MOCK Try Linux                --      TRIGGERED try   \n',
@@ -478,13 +478,13 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
     def test_execute_with_unfinished_jobs(self):
         builds = {
             Build('MOCK Try Win', 5000, 'Build-1'):
-            BuildStatus.FAILURE,
+            BuildStatus.TEST_FAILURE,
             Build('MOCK Try Mac', 4000, 'Build-2'):
             BuildStatus.STARTED,
             Build('MOCK Try Linux', 6000, 'Build-3'):
             BuildStatus.SCHEDULED,
             Build('MOCK Try Linux (CQ duplicate)', 7000, 'Build-4'):
-            BuildStatus.FAILURE,
+            BuildStatus.TEST_FAILURE,
         }
         self.command.git_cl = MockGitCL(self.tool, builds)
         exit_code = self.command.execute(self.command_options(), [], self.tool)
@@ -492,9 +492,9 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         self.assertLog([
             'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: Finished builds:\n',
-            'INFO:   BUILDER                       NUMBER  STATUS    BUCKET\n',
-            'INFO:   MOCK Try Linux (CQ duplicate) 7000    FAILURE   try   \n',
-            'INFO:   MOCK Try Win                  5000    FAILURE   try   \n',
+            'INFO:   BUILDER                       NUMBER  STATUS       BUCKET\n',
+            'INFO:   MOCK Try Linux (CQ duplicate) 7000    TEST_FAILURE try   \n',
+            'INFO:   MOCK Try Win                  5000    TEST_FAILURE try   \n',
             'INFO: Scheduled or started builds:\n',
             'INFO:   BUILDER              NUMBER  STATUS    BUCKET\n',
             'INFO:   MOCK Try Linux       6000    SCHEDULED try   \n',
@@ -515,7 +515,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
     def test_execute_with_passing_jobs(self):
         builds = {
             Build('MOCK Try Win', 5000, 'Build-1'):
-            BuildStatus.FAILURE,
+            BuildStatus.TEST_FAILURE,
             Build('MOCK Try Mac', 4000, 'Build-2'):
             BuildStatus.SUCCESS,
             Build('MOCK Try Linux', 6000, 'Build-3'):
@@ -554,11 +554,11 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         """
         builds = {
             Build('MOCK Try Win', 5000, 'Build-1'):
-            BuildStatus.FAILURE,
+            BuildStatus.TEST_FAILURE,
             Build('MOCK Try Mac', 4000, 'Build-2'):
-            BuildStatus.FAILURE,
+            BuildStatus.TEST_FAILURE,
             Build('MOCK Try Linux', 6000, 'Build-3'):
-            BuildStatus.FAILURE,
+            BuildStatus.TEST_FAILURE,
             Build('MOCK Try Linux (CQ duplicate)', 7000, 'Build-4'):
             BuildStatus.SUCCESS,
         }
@@ -577,8 +577,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
 
     def test_execute_with_no_trigger_jobs_option(self):
         builds = {
-            Build('MOCK Try Win', 5000, 'Build-1'): BuildStatus.FAILURE,
-            Build('MOCK Try Mac', 4000, 'Build-2'): BuildStatus.FAILURE,
+            Build('MOCK Try Win', 5000, 'Build-1'): BuildStatus.TEST_FAILURE,
+            Build('MOCK Try Mac', 4000, 'Build-2'): BuildStatus.TEST_FAILURE,
         }
         self.command.git_cl = MockGitCL(self.tool, builds)
         exit_code = self.command.execute(
@@ -587,9 +587,9 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         self.assertLog([
             'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: Finished builds:\n',
-            'INFO:   BUILDER              NUMBER  STATUS    BUCKET\n',
-            'INFO:   MOCK Try Mac         4000    FAILURE   try   \n',
-            'INFO:   MOCK Try Win         5000    FAILURE   try   \n',
+            'INFO:   BUILDER              NUMBER  STATUS       BUCKET\n',
+            'INFO:   MOCK Try Mac         4000    TEST_FAILURE try   \n',
+            'INFO:   MOCK Try Win         5000    TEST_FAILURE try   \n',
             'INFO: Fetching test results for 2 suites.\n',
             'WARNING: Some builds have incomplete results:\n',
             'WARNING:   "MOCK Try Linux", "blink_web_tests": '
