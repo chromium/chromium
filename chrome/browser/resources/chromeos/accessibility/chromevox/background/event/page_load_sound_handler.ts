@@ -7,6 +7,7 @@
  */
 import {AsyncUtil} from '/common/async_util.js';
 import {AutomationUtil} from '/common/automation_util.js';
+import {CursorRange} from '/common/cursors/range.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
@@ -17,19 +18,19 @@ import {ChromeVoxRange, ChromeVoxRangeObserver} from '../chromevox_range.js';
 import {BaseAutomationHandler} from './base_automation_handler.js';
 
 const EventType = chrome.automation.EventType;
+const StateType = chrome.automation.StateType;
 
-/** @implements {ChromeVoxRangeObserver} */
-export class PageLoadSoundHandler extends BaseAutomationHandler {
-  /** @private */
-  constructor() {
-    super(null);
+export class PageLoadSoundHandler extends BaseAutomationHandler
+    implements ChromeVoxRangeObserver {
+  private didRequestLoadSound_ = false;
 
-    /** @private {boolean} */
-    this.didRequestLoadSound_ = false;
+  static instance: PageLoadSoundHandler;
+
+  private constructor() {
+    super(undefined);
   }
 
-  /** @private */
-  async initListeners_() {
+  private async initListeners_(): Promise<void> {
     this.node_ = await AsyncUtil.getDesktop();
 
     this.addListener_(EventType.LOAD_COMPLETE, this.onLoadComplete);
@@ -38,47 +39,45 @@ export class PageLoadSoundHandler extends BaseAutomationHandler {
     ChromeVoxRange.addObserver(this);
   }
 
-  static async init() {
+  static async init(): Promise<void> {
     if (PageLoadSoundHandler.instance) {
-      throw 'Error: Trying to create two instances of singleton PageLoadSoundHandler';
+      throw 'Error: Trying to create two instances of singleton ' +
+          'PageLoadSoundHandler';
     }
     PageLoadSoundHandler.instance = new PageLoadSoundHandler();
     await PageLoadSoundHandler.instance.initListeners_();
   }
 
-  /**
-   * Stops page load sound on load complete.
-   * @param {!ChromeVoxEvent} evt
-   */
-  onLoadComplete(evt) {
+  /** Stops page load sound on load complete. */
+  onLoadComplete(evt: ChromeVoxEvent): void {
     // We are only interested in load completes on valid top level roots.
     const top = AutomationUtil.getTopLevelRoot(evt.target);
     if (!top || top !== evt.target.root || !top.docUrl) {
       return;
     }
 
-    if (this.didRequestLoadSound_ && top.parent && top.parent.state.focused) {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (this.didRequestLoadSound_ && top.parent &&
+        top.parent.state![StateType.FOCUSED]) {
       ChromeVox.earcons.playEarcon(EarconId.PAGE_FINISH_LOADING);
       this.didRequestLoadSound_ = false;
     }
   }
 
-  /**
-   * Starts page load sound on load start.
-   * @param {!ChromeVoxEvent} evt
-   */
-  onLoadStart(evt) {
+  /** Starts page load sound on load start. */
+  onLoadStart(evt: ChromeVoxEvent): void {
     // We are only interested in load starts on focused top level roots.
     const top = AutomationUtil.getTopLevelRoot(evt.target);
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     if (top && top === evt.target.root && top.docUrl && top.parent &&
-        top.parent.state.focused) {
+        top.parent.state![StateType.FOCUSED]) {
       ChromeVox.earcons.playEarcon(EarconId.PAGE_START_LOADING);
       this.didRequestLoadSound_ = true;
     }
   }
 
-  /** @override */
-  onCurrentRangeChanged(range) {
+  /** ChromeVoxRangeObserver implementation */
+  onCurrentRangeChanged(range: CursorRange): void {
     if (!range || !range.start || !range.start.node) {
       return;
     }
@@ -94,8 +93,5 @@ export class PageLoadSoundHandler extends BaseAutomationHandler {
     // the docLoadingProgress < 1.
   }
 }
-
-/** @type {PageLoadSoundHandler} */
-PageLoadSoundHandler.instance;
 
 TestImportManager.exportForTesting(PageLoadSoundHandler);
