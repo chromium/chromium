@@ -161,6 +161,7 @@ class UserCloudPolicyManagerAsh
 
   // CloudPolicyService::Observer:
   void OnCloudPolicyServiceInitializationCompleted() override;
+  std::string_view name() const override;
 
   // CloudPolicyClient::Observer:
   void OnPolicyFetched(CloudPolicyClient* client) override;

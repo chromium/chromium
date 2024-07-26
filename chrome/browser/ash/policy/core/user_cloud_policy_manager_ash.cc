@@ -850,4 +850,8 @@ void UserCloudPolicyManagerAsh::EnsureFactoryBuilt() {
   UserCloudPolicyManagerAshNotifierFactory::GetInstance();
 }
 
+std::string_view UserCloudPolicyManagerAsh::name() const {
+  return "UserCloudPolicyManagerAsh";
+}
+
 }  // namespace policy
