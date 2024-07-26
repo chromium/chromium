@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -151,7 +152,7 @@ void MediaPermissionDispatcher::OnPermissionStatus(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   auto iter = requests_.find(request_id);
-  DCHECK(iter != requests_.end()) << "Request not found.";
+  CHECK(iter != requests_.end(), base::NotFatalUntil::M130);
 
   PermissionStatusCB permission_status_cb = std::move(iter->second);
   requests_.erase(iter);
