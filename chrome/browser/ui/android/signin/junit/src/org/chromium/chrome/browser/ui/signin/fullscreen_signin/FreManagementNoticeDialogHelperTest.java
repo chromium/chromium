@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.signin;
+package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -44,10 +44,10 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Tests for {@link SigninUtils}. */
+/** Tests for {@link FreManagementNoticeDialogHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-public class SigninUtilsTest {
+public class FreManagementNoticeDialogHelperTest {
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
@@ -94,7 +94,7 @@ public class SigninUtilsTest {
     @DisableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
     public void testPolicyOnSigninDisabled() {
         @SigninAccessPoint int accessPoint = SigninAccessPoint.START_PAGE;
-        SigninUtils.checkAccountManagementAndSignIn(
+        FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                 mCoreAccountInfo, mSigninManager, accessPoint, null, mContext, mModalDialogManager);
 
         verify(mSigninManager).signin(eq(mCoreAccountInfo), eq(accessPoint), any());
@@ -127,7 +127,7 @@ public class SigninUtilsTest {
                 .when(mSigninManager)
                 .signin(eq(mCoreAccountInfo), eq(accessPoint), notNull());
 
-        SigninUtils.checkAccountManagementAndSignIn(
+        FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                 mCoreAccountInfo,
                 mSigninManager,
                 accessPoint,
@@ -165,7 +165,7 @@ public class SigninUtilsTest {
                 .when(mSigninManager)
                 .signin(eq(mCoreAccountInfo), eq(accessPoint), notNull());
 
-        SigninUtils.checkAccountManagementAndSignIn(
+        FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                 mCoreAccountInfo,
                 mSigninManager,
                 accessPoint,
@@ -194,7 +194,7 @@ public class SigninUtilsTest {
                 .when(mModalDialogManager)
                 .showDialog(any(), anyInt());
 
-        SigninUtils.checkAccountManagementAndSignIn(
+        FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                 mCoreAccountInfo,
                 mSigninManager,
                 accessPoint,
@@ -212,7 +212,7 @@ public class SigninUtilsTest {
         mIsAccountManaged = false;
         @SigninAccessPoint int accessPoint = SigninAccessPoint.START_PAGE;
 
-        SigninUtils.checkAccountManagementAndSignIn(
+        FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                 mCoreAccountInfo,
                 mSigninManager,
                 accessPoint,
