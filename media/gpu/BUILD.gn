@@ -606,7 +606,6 @@ source_set("unit_tests") {
     "//media:test_support",
     "//media/gpu",
     "//media/gpu:test_support",
-    "//media/gpu/ipc/service:unit_tests",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gl:test_support",
