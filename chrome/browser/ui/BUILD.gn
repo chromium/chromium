@@ -423,6 +423,7 @@ static_library("ui") {
     # should be added to //chrome/browser:browser_generated_files.
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/headless",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/ui/tabs:tab_enums",
   ]
 
@@ -750,6 +751,9 @@ static_library("ui") {
 
     # TODO(crbug.com/344921703): Remove circular dependencies.
     "//chrome/browser/sync",
+
+    # TODO(crbug.com/353284909): Remove this circular dependency.
+    "//chrome/browser/media/webrtc",
   ]
 
   if (enable_vr && is_win) {

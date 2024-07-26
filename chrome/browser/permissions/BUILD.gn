@@ -60,6 +60,7 @@ source_set("permissions") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
   ]
 
@@ -237,6 +238,7 @@ if (!is_android) {
     ]
     deps = [
       ":permissions",
+      "//chrome/browser/media/webrtc",
       "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/test:test_support",

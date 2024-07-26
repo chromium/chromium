@@ -203,6 +203,7 @@ source_set("chromeos") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/chromeos/enterprise/cloud_storage",
     "//chrome/browser/extensions",
+    "//chrome/browser/media/webrtc",
   ]
   public_deps = [
     "//base",
@@ -273,6 +274,7 @@ source_set("chromeos") {
     "//chrome/browser/chromeos/tast_support",
     "//chrome/browser/enterprise/data_controls",
     "//chrome/browser/favicon",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/screen_ai:screen_ai_service_router_factory",
     "//chrome/common",
