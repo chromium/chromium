@@ -61,8 +61,7 @@ class TrackingProtectionSettingsTest : public testing::Test {
         /*should_record_metrics=*/false);
     feature_list_.InitWithFeatures(
         {privacy_sandbox::kIpProtectionV1,
-         privacy_sandbox::kFingerprintingProtectionSetting,
-         privacy_sandbox::kTrackingProtectionSettingsLaunch},
+         privacy_sandbox::kFingerprintingProtectionSetting},
         {});
     tracking_protection_settings_ =
         std::make_unique<TrackingProtectionSettings>(

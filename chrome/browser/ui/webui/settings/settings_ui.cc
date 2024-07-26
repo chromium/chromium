@@ -526,23 +526,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("enableSafetyHub",
                           base::FeatureList::IsEnabled(features::kSafetyHub));
 
-  // Tracking Protection
+  // Mode B UX
   html_source->AddBoolean(
       "is3pcdCookieSettingsRedesignEnabled",
       TrackingProtectionSettingsFactory::GetForProfile(profile)
           ->IsTrackingProtection3pcdEnabled());
-  html_source->AddBoolean(
-      "enableTrackingProtectionRolloutUx",
-      TrackingProtectionSettingsFactory::GetForProfile(profile)
-              ->IsTrackingProtection3pcdEnabled() &&
-          base::FeatureList::IsEnabled(
-              privacy_sandbox::kTrackingProtectionSettingsLaunch));
-  html_source->AddBoolean(
-      "isIpProtectionV1Enabled",
-      base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx));
-  html_source->AddBoolean("isFingerprintingProtectionEnabled",
-                          base::FeatureList::IsEnabled(
-                              privacy_sandbox::kFingerprintingProtectionUx));
 
   html_source->AddBoolean(
       "isProactiveTopicsBlockingEnabled",
