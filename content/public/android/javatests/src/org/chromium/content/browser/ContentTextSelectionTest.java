@@ -8,6 +8,9 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.SystemClock;
@@ -126,7 +129,11 @@ public class ContentTextSelectionTest {
 
         @Override
         public List<ResolveInfo> filterTextProcessingActivities(List<ResolveInfo> activities) {
-            return new ArrayList<>();
+            List<ResolveInfo> resolveInfos = new ArrayList<>();
+            ResolveInfo resolveInfo =
+                    createResolveInfoWithActivityInfo("ProcessTextActivity", true);
+            resolveInfos.add(resolveInfo);
+            return resolveInfos;
         }
 
         @Override
@@ -136,7 +143,29 @@ public class ContentTextSelectionTest {
 
         @Override
         public List<SelectionMenuItem> getAdditionalTextProcessingItems() {
-            return Arrays.asList(new SelectionMenuItem.Builder("testTextProcessingItem").build());
+            return new ArrayList<>();
+        }
+
+        private ResolveInfo createResolveInfoWithActivityInfo(
+                String activityName, boolean exported) {
+            String packageName = "org.chromium.content.browser.ContentTextSelectionTest";
+
+            ActivityInfo activityInfo = new ActivityInfo();
+            activityInfo.packageName = packageName;
+            activityInfo.name = activityName;
+            activityInfo.exported = exported;
+            activityInfo.applicationInfo = new ApplicationInfo();
+            activityInfo.applicationInfo.flags = ApplicationInfo.FLAG_SYSTEM;
+
+            ResolveInfo resolveInfo =
+                    new ResolveInfo() {
+                        @Override
+                        public CharSequence loadLabel(PackageManager pm) {
+                            return "testTextProcessingItem";
+                        }
+                    };
+            resolveInfo.activityInfo = activityInfo;
+            return resolveInfo;
         }
     }
 
@@ -336,6 +365,13 @@ public class ContentTextSelectionTest {
                 "testTextProcessingItem",
                 menuGroups[2].items.first().getTitle(mActivityTestRule.getActivity()));
         Assert.assertTrue(menuGroups[2].items.first().isEnabled);
+        // Check correct processText intent state is sent to 3rd party apps.
+        Assert.assertFalse(
+                menuGroups[2]
+                        .items
+                        .first()
+                        .intent
+                        .getBooleanExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, false));
     }
 
     @Test
@@ -381,6 +417,13 @@ public class ContentTextSelectionTest {
                 "testTextProcessingItem",
                 menuGroups[2].items.first().getTitle(mActivityTestRule.getActivity()));
         Assert.assertTrue(menuGroups[2].items.first().isEnabled);
+        // Check correct processText intent state is sent to 3rd party apps.
+        Assert.assertTrue(
+                menuGroups[2]
+                        .items
+                        .first()
+                        .intent
+                        .getBooleanExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, false));
     }
 
     @Test
