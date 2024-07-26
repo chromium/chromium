@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/trace_event/memory_dump_manager.h"
 
 #include <inttypes.h>
 #include <stdio.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -462,11 +458,7 @@ void MemoryDumpManager::InvokeOnMemoryDump(MemoryDumpProviderInfo* mdpinfo,
   // A stack allocated string with dump provider name is useful to debug
   // crashes while invoking dump after a |dump_provider| is not unregistered
   // in safe way.
-  char provider_name_for_debugging[16];
-  strncpy(provider_name_for_debugging, mdpinfo->name,
-          sizeof(provider_name_for_debugging) - 1);
-  provider_name_for_debugging[sizeof(provider_name_for_debugging) - 1] = '\0';
-  base::debug::Alias(provider_name_for_debugging);
+  DEBUG_ALIAS_FOR_CSTR(provider_name_for_debugging, mdpinfo->name, 16);
 
   ABSL_ANNOTATE_BENIGN_RACE(&mdpinfo->disabled, "best-effort race detection");
   CHECK(!is_thread_bound ||

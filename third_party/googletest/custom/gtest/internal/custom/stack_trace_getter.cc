@@ -59,7 +59,7 @@ std::string StackTraceGetter::CurrentStackTrace(int max_depth, int skip_count) {
     current = current.subspan(0, static_cast<size_t>(max_depth));
   }
 
-  return base::debug::StackTrace(current.data(), current.size()).ToString();
+  return base::debug::StackTrace(current).ToString();
 }
 
 void StackTraceGetter::UponLeavingGTest() {

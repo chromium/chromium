@@ -201,10 +201,8 @@ Vector<String> InspectorMemoryAgent::Symbolize(
     }
   }
 
-  String text(base::debug::StackTrace(addresses_to_symbolize.data(),
-                                      addresses_to_symbolize.size())
-                  .ToString()
-                  .c_str());
+  String text(
+      base::debug::StackTrace(addresses_to_symbolize).ToString().c_str());
   // Populate cache with new entries.
   wtf_size_t next_pos;
   for (wtf_size_t pos = 0, i = 0;; pos = next_pos + 1, ++i) {

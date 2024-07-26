@@ -348,14 +348,12 @@ class OperationRecordTest : public Test {
   using ReferenceStackTrace = std::vector<const void*>;
 
   ReferenceStackTrace GetReferenceTrace() {
-    constexpr size_t max_trace_size = 128;
-    const void* frame_pointers[max_trace_size]{nullptr};
-    const auto num_frames = base::debug::TraceStackFramePointers(
-        &frame_pointers[0], max_trace_size, 0);
-    ReferenceStackTrace trace;
-    std::copy_n(std::begin(frame_pointers), num_frames,
-                std::back_inserter(trace));
-    return trace;
+    ReferenceStackTrace frame_pointers(128);
+    const auto num_frames =
+        base::debug::TraceStackFramePointers(frame_pointers, 0);
+    frame_pointers.resize(num_frames);
+    frame_pointers.shrink_to_fit();
+    return frame_pointers;
   }
 
   void VerifyStackTrace(

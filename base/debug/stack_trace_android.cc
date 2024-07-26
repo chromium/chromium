@@ -81,8 +81,9 @@ bool EnableInProcessStackDumping() {
   return (sigaction(SIGPIPE, &action, NULL) == 0);
 }
 
-size_t CollectStackTrace(const void** trace, size_t count) {
-  StackCrawlState state(reinterpret_cast<uintptr_t*>(trace), count);
+size_t CollectStackTrace(span<const void*> trace) {
+  StackCrawlState state(reinterpret_cast<uintptr_t*>(trace.data()),
+                        trace.size());
   _Unwind_Backtrace(&TraceStackFrame, &state);
   return state.frame_count;
 }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/341324165): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/trace_event/memory_usage_estimator.h"
 
 #include <stdlib.h>
@@ -97,14 +92,22 @@ TEST(EstimateMemoryUsageTest, Arrays) {
     EXPECT_EQ(170u, EstimateMemoryUsage(array));
   }
 
-  // C array
+  // HeapArray
   {
     struct Item {
       char payload[10];
     };
-    Item* array = new Item[7];
-    EXPECT_EQ(70u, EstimateMemoryUsage(base::span<const Item>(array, 7u)));
-    delete[] array;
+    auto array = base::HeapArray<Item>::WithSize(7u);
+    EXPECT_EQ(70u, EstimateMemoryUsage(array));
+  }
+
+  // Owning span
+  {
+    struct Item {
+      char payload[10];
+    };
+    auto array = base::HeapArray<Item>::WithSize(7u);
+    EXPECT_EQ(70u, EstimateMemoryUsage(array.as_span()));
   }
 }
 

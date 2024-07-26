@@ -31,6 +31,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/linked_list.h"
 #include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
@@ -116,7 +117,10 @@ template <class T, size_t N>
 size_t EstimateMemoryUsage(T (&array)[N]);
 
 template <class T>
-size_t EstimateMemoryUsage(base::span<const T> span);
+size_t EstimateMemoryUsage(const base::HeapArray<T>& array);
+
+template <class T>
+size_t EstimateMemoryUsage(base::span<T> array);
 
 // std::unique_ptr
 
@@ -325,12 +329,13 @@ size_t EstimateMemoryUsage(T (&array)[N]) {
 }
 
 template <class T>
-size_t EstimateMemoryUsage(base::span<const T> span) {
-  size_t memory_usage = sizeof(T) * span.size();
-  for (size_t i = 0; i != span.size(); ++i) {
-    memory_usage += EstimateItemMemoryUsage(span[i]);
-  }
-  return memory_usage;
+size_t EstimateMemoryUsage(const base::HeapArray<T>& array) {
+  return sizeof(T) * array.size() + EstimateIterableMemoryUsage(array);
+}
+
+template <class T>
+size_t EstimateMemoryUsage(base::span<T> array) {
+  return sizeof(T) * array.size() + EstimateIterableMemoryUsage(array);
 }
 
 // std::unique_ptr

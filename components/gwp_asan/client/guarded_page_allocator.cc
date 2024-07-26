@@ -431,8 +431,7 @@ void GuardedPageAllocator::RecordAllocationMetadata(
   metadata_[metadata_idx].alloc_ptr = reinterpret_cast<uintptr_t>(ptr);
 
   const void* trace[AllocatorState::kMaxStackFrames];
-  size_t len =
-      AllocationInfo::GetStackTrace(trace, AllocatorState::kMaxStackFrames);
+  size_t len = AllocationInfo::GetStackTrace(trace);
   metadata_[metadata_idx].alloc.trace_len =
       Pack(reinterpret_cast<uintptr_t*>(trace), len,
            metadata_[metadata_idx].stack_trace_pool,
@@ -449,8 +448,7 @@ void GuardedPageAllocator::RecordAllocationMetadata(
 void GuardedPageAllocator::RecordDeallocationMetadata(
     AllocatorState::MetadataIdx metadata_idx) {
   const void* trace[AllocatorState::kMaxStackFrames];
-  size_t len =
-      AllocationInfo::GetStackTrace(trace, AllocatorState::kMaxStackFrames);
+  size_t len = AllocationInfo::GetStackTrace(trace);
   metadata_[metadata_idx].dealloc.trace_len =
       Pack(reinterpret_cast<uintptr_t*>(trace), len,
            metadata_[metadata_idx].stack_trace_pool +

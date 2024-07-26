@@ -70,8 +70,7 @@ void PoisonMetadataRecorder::RecordAndZap(void* ptr, size_t size) {
   slot_metadata.alloc_ptr = reinterpret_cast<uintptr_t>(ptr);
 
   const void* trace[LightweightDetectorState::kMaxStackFrames];
-  size_t len = AllocationInfo::GetStackTrace(
-      trace, LightweightDetectorState::kMaxStackFrames);
+  size_t len = AllocationInfo::GetStackTrace(trace);
   slot_metadata.dealloc.trace_len =
       Pack(reinterpret_cast<uintptr_t*>(trace), len,
            slot_metadata.deallocation_stack_trace,

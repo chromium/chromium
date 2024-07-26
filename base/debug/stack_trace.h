@@ -90,10 +90,10 @@ class BASE_EXPORT StackTrace {
   // |count| will be limited to at most |kMaxTraces|.
   explicit StackTrace(size_t count);
 
-  // Creates a stacktrace from an existing array of instruction
-  // pointers (such as returned by Addresses()).  |count| will be
-  // limited to at most |kMaxTraces|.
-  StackTrace(const void* const* trace, size_t count);
+  // Creates a stacktrace from an existing array of instruction pointers (such
+  // as returned by Addresses()). Only the first `kMaxTraces` of the span will
+  // be used.
+  explicit StackTrace(span<const void* const> trace);
 
 #if BUILDFLAG(IS_WIN)
   // Creates a stacktrace for an exception.
@@ -174,7 +174,7 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& os, const StackTrace& s);
 
 // Record a stack trace with up to |count| frames into |trace|. Returns the
 // number of frames read.
-BASE_EXPORT size_t CollectStackTrace(const void** trace, size_t count);
+BASE_EXPORT size_t CollectStackTrace(span<const void*> trace);
 
 // A helper for tests that must either override the default suppression of
 // symbolized stack traces in death tests, or the default generation of them in
@@ -219,22 +219,9 @@ constexpr bool kEnableScanningByDefault = false;
 // Returns number of frames written. |enable_scanning| enables scanning on
 // platforms that do not enable scanning by default.
 BASE_EXPORT size_t
-TraceStackFramePointers(const void** out_trace,
-                        size_t max_depth,
+TraceStackFramePointers(span<const void*> out_trace,
                         size_t skip_initial,
                         bool enable_scanning = kEnableScanningByDefault);
-
-// Same as above function, but allows to pass in frame pointer and stack end
-// address for unwinding. This is useful when unwinding based on a copied stack
-// segment. Note that the client has to take care of rewriting all the pointers
-// in the stack pointing within the stack to point to the copied addresses.
-BASE_EXPORT size_t TraceStackFramePointersFromBuffer(
-    uintptr_t fp,
-    uintptr_t stack_end,
-    const void** out_trace,
-    size_t max_depth,
-    size_t skip_initial,
-    bool enable_scanning = kEnableScanningByDefault);
 
 // Links stack frame |fp| to |parent_fp|, so that during stack unwinding
 // TraceStackFramePointers() visits |parent_fp| after visiting |fp|.
