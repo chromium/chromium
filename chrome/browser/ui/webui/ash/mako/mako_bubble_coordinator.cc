@@ -62,6 +62,7 @@ void MakoBubbleCoordinator::LoadConsentUI(Profile* profile) {
 void MakoBubbleCoordinator::LoadEditorUI(
     Profile* profile,
     MakoEditorMode mode,
+    bool can_fallback_to_center_position,
     std::optional<std::string_view> preset_query_id,
     std::optional<std::string_view> freeform_text) {
   if (IsShowingUI()) {
@@ -87,7 +88,8 @@ void MakoBubbleCoordinator::LoadEditorUI(
       /*esc_closes_ui=*/false);
   views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<MakoRewriteView>(contents_wrapper_.get(),
-                                        context_caret_bounds_));
+                                        context_caret_bounds_,
+                                        can_fallback_to_center_position));
 }
 
 void MakoBubbleCoordinator::ShowUI() {

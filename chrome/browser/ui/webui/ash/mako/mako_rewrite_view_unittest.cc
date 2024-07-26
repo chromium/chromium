@@ -59,7 +59,8 @@ TEST_F(MakoRewriteViewTest, ResizesToWebViewSize) {
   TestWebUIContentsWrapper contents_wrapper(&profile);
 
   auto mako_rewrite_view = std::make_unique<MakoRewriteView>(
-      &contents_wrapper, /*caret_bounds=*/gfx::Rect(20, 20));
+      &contents_wrapper, /*caret_bounds=*/gfx::Rect(20, 20),
+      /*can_fallback_to_center_position=*/false);
   auto* mako_rewrite_view_ptr = mako_rewrite_view.get();
   views::BubbleDialogDelegateView::CreateBubble(std::move(mako_rewrite_view));
 
@@ -74,8 +75,9 @@ TEST_F(MakoRewriteViewTest, DefaultBoundsAtBottomLeftOfCaret) {
   TestWebUIContentsWrapper contents_wrapper(&profile);
 
   constexpr gfx::Rect kCaretBounds(30, 40, 0, 10);
-  auto mako_rewrite_view =
-      std::make_unique<MakoRewriteView>(&contents_wrapper, kCaretBounds);
+  auto mako_rewrite_view = std::make_unique<MakoRewriteView>(
+      &contents_wrapper, kCaretBounds,
+      /*can_fallback_to_center_position=*/false);
   auto* mako_rewrite_view_ptr = mako_rewrite_view.get();
   views::BubbleDialogDelegateView::CreateBubble(std::move(mako_rewrite_view));
 
@@ -94,8 +96,9 @@ TEST_F(MakoRewriteViewTest, AtTopLeftOfCaretForCaretAtScreenBottom) {
   const int screen_bottom =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area().bottom();
   const gfx::Rect caret_bounds(30, screen_bottom - 20, 0, 10);
-  auto mako_rewrite_view =
-      std::make_unique<MakoRewriteView>(&contents_wrapper, caret_bounds);
+  auto mako_rewrite_view = std::make_unique<MakoRewriteView>(
+      &contents_wrapper, caret_bounds,
+      /*can_fallback_to_center_position=*/false);
   auto* mako_rewrite_view_ptr = mako_rewrite_view.get();
   views::BubbleDialogDelegateView::CreateBubble(std::move(mako_rewrite_view));
 
@@ -112,8 +115,9 @@ TEST_F(MakoRewriteViewTest, OnScreenWithoutOverlapForSmallSelection) {
   TestWebUIContentsWrapper contents_wrapper(&profile);
 
   constexpr gfx::Rect kSelectionBounds(100, 40, 200, 100);
-  auto mako_rewrite_view =
-      std::make_unique<MakoRewriteView>(&contents_wrapper, kSelectionBounds);
+  auto mako_rewrite_view = std::make_unique<MakoRewriteView>(
+      &contents_wrapper, kSelectionBounds,
+      /*can_fallback_to_center_position=*/false);
   auto* mako_rewrite_view_ptr = mako_rewrite_view.get();
   views::BubbleDialogDelegateView::CreateBubble(std::move(mako_rewrite_view));
 
@@ -132,8 +136,9 @@ TEST_F(MakoRewriteViewTest, OnScreenForLargeSelection) {
 
   const gfx::Rect selection_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
-  auto mako_rewrite_view =
-      std::make_unique<MakoRewriteView>(&contents_wrapper, selection_bounds);
+  auto mako_rewrite_view = std::make_unique<MakoRewriteView>(
+      &contents_wrapper, selection_bounds,
+      /*can_fallback_to_center_position=*/false);
   auto* mako_rewrite_view_ptr = mako_rewrite_view.get();
   views::BubbleDialogDelegateView::CreateBubble(std::move(mako_rewrite_view));
 
@@ -142,6 +147,28 @@ TEST_F(MakoRewriteViewTest, OnScreenForLargeSelection) {
   EXPECT_TRUE(
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area().Contains(
           mako_rewrite_view_ptr->GetBoundsInScreen()));
+}
+
+TEST_F(MakoRewriteViewTest, FallbackToScreenCenter) {
+  TestingProfile profile;
+  TestWebUIContentsWrapper contents_wrapper(&profile);
+
+  // Simulate a situation when the client fails to report selection bounds.
+  constexpr gfx::Size kWebViewSize(440, 343);
+  constexpr gfx::Rect kSelectionBounds(0, 0, 0, 0);
+  auto mako_rewrite_view = std::make_unique<MakoRewriteView>(
+      &contents_wrapper, kSelectionBounds,
+      /*can_fallback_to_center_position=*/true);
+  auto* mako_rewrite_view_ptr = mako_rewrite_view.get();
+  views::BubbleDialogDelegateView::CreateBubble(std::move(mako_rewrite_view));
+
+  mako_rewrite_view_ptr->ShowUI();
+
+  gfx::Rect work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+
+  EXPECT_EQ(mako_rewrite_view_ptr->GetBoundsInScreen().x(),
+            work_area.x() + work_area.width() / 2 - kWebViewSize.width() / 2);
 }
 
 }  // namespace

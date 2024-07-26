@@ -20,7 +20,8 @@ class MakoRewriteView : public WebUIBubbleDialogView,
 
  public:
   MakoRewriteView(WebUIContentsWrapper* contents_wrapper,
-                  const gfx::Rect& caret_bounds);
+                  const gfx::Rect& caret_bounds,
+                  bool can_fallback_to_center_position);
   MakoRewriteView(const MakoRewriteView&) = delete;
   MakoRewriteView& operator=(const MakoRewriteView&) = delete;
   ~MakoRewriteView() override;
@@ -55,6 +56,7 @@ class MakoRewriteView : public WebUIBubbleDialogView,
   bool dragging_initialized_;
   bool resizing_initialized_;
   bool content_bounds_updated_by_webui_;
+  bool can_fallback_to_center_position_;
 
   void SetupDraggingSupport();
   void SetupResizingSupport();

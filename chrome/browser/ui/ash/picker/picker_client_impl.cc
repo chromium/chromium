@@ -312,13 +312,13 @@ PickerClientImpl::ShowEditorCallback PickerClientImpl::CacheEditorContext() {
     return {};
   }
 
+  editor_mediator->CacheContext();
+
   ash::input_method::EditorMode editor_mode = editor_mediator->GetEditorMode();
   if (editor_mode == ash::input_method::EditorMode::kSoftBlocked ||
       editor_mode == ash::input_method::EditorMode::kHardBlocked) {
     return {};
   }
-
-  editor_mediator->CacheContext();
 
   return base::BindOnce(&PickerClientImpl::ShowEditor,
                         weak_factory_.GetWeakPtr());
