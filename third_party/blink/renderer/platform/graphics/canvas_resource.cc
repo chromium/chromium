@@ -326,8 +326,9 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedBitmap::Bitmap() {
   // the SkImage is destroyed.
   SkImageInfo image_info = SkImageInfo::Make(
       SkISize::Make(Size().width(), Size().height()), GetSkColorInfo());
-  SkPixmap pixmap(image_info, shared_mapping_.memory(),
-                  image_info.minRowBytes());
+  base::span<uint8_t> bytes(shared_mapping_);
+  CHECK_GE(bytes.size(), image_info.computeByteSize(image_info.minRowBytes()));
+  SkPixmap pixmap(image_info, bytes.data(), image_info.minRowBytes());
   AddRef();
   sk_sp<SkImage> sk_image = SkImages::RasterFromPixmap(
       pixmap,
@@ -390,8 +391,10 @@ void CanvasResourceSharedBitmap::NotifyResourceLost() {
 void CanvasResourceSharedBitmap::TakeSkImage(sk_sp<SkImage> image) {
   SkImageInfo image_info = SkImageInfo::Make(
       SkISize::Make(Size().width(), Size().height()), GetSkColorInfo());
+  base::span<uint8_t> bytes(shared_mapping_);
+  CHECK_GE(bytes.size(), image_info.computeByteSize(image_info.minRowBytes()));
   bool read_pixels_successful = image->readPixels(
-      image_info, shared_mapping_.memory(), image_info.minRowBytes(), 0, 0);
+      image_info, bytes.data(), image_info.minRowBytes(), 0, 0);
   DCHECK(read_pixels_successful);
 }
 

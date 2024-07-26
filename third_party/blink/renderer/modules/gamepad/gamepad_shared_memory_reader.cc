@@ -61,10 +61,9 @@ void GamepadSharedMemoryReader::Start(blink::GamepadListener* listener) {
 
   renderer_shared_buffer_mapping_ = renderer_shared_buffer_region_.Map();
   CHECK(renderer_shared_buffer_mapping_.IsValid());
-  const void* memory = renderer_shared_buffer_mapping_.memory();
-  CHECK(memory);
-  gamepad_hardware_buffer_ =
-      static_cast<const device::GamepadHardwareBuffer*>(memory);
+  gamepad_hardware_buffer_ = renderer_shared_buffer_mapping_
+                                 .GetMemoryAs<device::GamepadHardwareBuffer>();
+  CHECK(gamepad_hardware_buffer_);
 }
 
 void GamepadSharedMemoryReader::Stop() {

@@ -456,11 +456,14 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
 
     SkImageInfo info = SkImageInfo::MakeN32Premul(
         pool_resource.size().width(), pool_resource.size().height());
+    SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+    const size_t row_bytes = info.minRowBytes();
     auto* backing =
         static_cast<HudSoftwareBacking*>(pool_resource.software_backing());
-    SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-    sk_sp<SkSurface> surface = SkSurfaces::WrapPixels(
-        info, backing->shared_mapping.memory(), info.minRowBytes(), &props);
+    base::span<uint8_t> mem(backing->shared_mapping);
+    CHECK_GE(mem.size(), info.computeByteSize(row_bytes));
+    sk_sp<SkSurface> surface =
+        SkSurfaces::WrapPixels(info, mem.data(), row_bytes, &props);
 
     SkiaPaintCanvas canvas(surface->getCanvas());
     DrawHudContents(&canvas);

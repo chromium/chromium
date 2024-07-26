@@ -6,11 +6,7 @@
 
 namespace device {
 
-SensorReadingSharedBuffer::SensorReadingSharedBuffer() = default;
-SensorReadingSharedBuffer::~SensorReadingSharedBuffer() = default;
-
-// static
-uint64_t SensorReadingSharedBuffer::GetOffset(mojom::SensorType type) {
+uint64_t GetSensorReadingSharedBufferOffset(mojom::SensorType type) {
   return static_cast<uint64_t>(type) * sizeof(SensorReadingSharedBuffer);
 }
 

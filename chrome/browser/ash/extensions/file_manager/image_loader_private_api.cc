@@ -245,7 +245,7 @@ void ImageLoaderPrivateGetPdfThumbnailFunction::FetchThumbnail(
     Respond(Error("Failed allocate memory for PDF file"));
     return;
   }
-  memcpy(pdf_region.mapping.memory(), content.data(), content.size());
+  base::as_writable_chars(base::span(pdf_region.mapping)).copy_from(content);
   DCHECK(!pdf_thumbnailer_.is_bound());
   GetPdfService()->BindPdfThumbnailer(
       pdf_thumbnailer_.BindNewPipeAndPassReceiver());

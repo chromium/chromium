@@ -44,14 +44,8 @@ SensorReadingSharedBufferReader::Create(base::ReadOnlySharedMemoryRegion region,
 
 bool SensorReadingSharedBufferReader::GetReading(SensorReading* result) {
   DCHECK(mapping_.IsValid());
-
-  // TODO(someone): This *should* use GetMemoryAs, but SensorReadingSharedBuffer
-  // is not considered trivially copyable. Maybe there's a better trait to
-  // use...
-  const auto* buffer =
-      static_cast<const device::SensorReadingSharedBuffer*>(mapping_.memory());
-
-  return GetReading(buffer, result);
+  return GetReading(mapping_.GetMemoryAs<device::SensorReadingSharedBuffer>(),
+                    result);
 }
 
 // static

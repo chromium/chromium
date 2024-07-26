@@ -5,8 +5,8 @@
 #ifndef UI_OZONE_COMMON_GL_SURFACE_EGL_READBACK_H_
 #define UI_OZONE_COMMON_GL_SURFACE_EGL_READBACK_H_
 
-#include <memory>
-
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -44,14 +44,16 @@ class GLSurfaceEglReadback : public gl::PbufferGLSurfaceEGL {
   // Implementations should override this, use the pixels data and then return
   // true if succesful. Should return true on succesful swap or false on swap
   // failure.
-  virtual bool HandlePixels(uint8_t* pixels);
+  //
+  // TODO(danakj): This method should take a span, like ReadPixels.
+  UNSAFE_BUFFER_USAGE virtual bool HandlePixels(uint8_t* pixels);
 
   // Reads pixels with glReadPixels from fbo to |buffer|.
-  void ReadPixels(void* buffer);
+  void ReadPixels(base::span<uint8_t> buffer);
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  std::unique_ptr<uint8_t[]> pixels_;
+  base::HeapArray<uint8_t> pixels_;
 };
 
 }  // namespace ui

@@ -115,7 +115,7 @@ struct SharedState {
 SharedState* SharedStateFromSharedMemory(
     const WritableSharedMemoryMapping& shared_memory) {
   DCHECK(shared_memory.IsValid());
-  return static_cast<SharedState*>(shared_memory.memory());
+  return shared_memory.GetMemoryAs<SharedState>();
 }
 
 // Round up |size| to a multiple of page size.

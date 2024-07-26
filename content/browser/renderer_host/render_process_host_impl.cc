@@ -1728,13 +1728,10 @@ void RenderProcessHostImpl::InitializeSharedMemoryRegionsOnceChannelIsUp() {
         sizeof(std::atomic<base::TimeTicks>));
     CHECK(last_foreground_time_region_.IsValid());
 
-    // Placement new to initialize the std::atomic in place.
-    new (last_foreground_time_region_.mapping.memory())
-        std::atomic<base::TimeTicks>;
-    // Then initialized to the appropriate value. `std::memory_order_relaxed` is
-    // sufficient as reads on the renderer side will happen-after this per the
-    // ordering relationship implicitly established between this operation and
-    // the renderer via TransferSharedLastForegroundTime().
+    // `std::memory_order_relaxed` is sufficient as reads on the renderer side
+    // will happen-after this per the ordering relationship implicitly
+    // established between this operation and the renderer via
+    // TransferSharedLastForegroundTime().
     last_foreground_time_region_.mapping
         .GetMemoryAs<std::atomic<base::TimeTicks>>()
         ->store(priority_.is_background() ? base::TimeTicks()

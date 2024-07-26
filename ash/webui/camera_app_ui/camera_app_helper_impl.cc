@@ -411,7 +411,7 @@ void CameraAppHelperImpl::ScanDocumentCorners(
     std::move(callback).Run({});
     return;
   }
-  memcpy(memory.mapping.memory(), jpeg_data.data(), jpeg_data.size());
+  base::span(memory.mapping).copy_from(jpeg_data);
 
   // Since |this| owns |document_scanner_service|, and the callback will be
   // posted to other sequence with weak pointer of |document_scanner_service|.
@@ -441,7 +441,7 @@ void CameraAppHelperImpl::ConvertToDocument(
     std::move(callback).Run({});
     return;
   }
-  memcpy(memory.mapping.memory(), jpeg_data.data(), jpeg_data.size());
+  base::span(memory.mapping).copy_from(jpeg_data);
 
   // Since |this| owns |document_scanner_service|, and the callback will be
   // posted to other sequence with weak pointer of |document_scanner_service|.

@@ -163,8 +163,8 @@ void SynchronousCompositorProxy::ZeroSharedMemory() {
   if (software_draw_shm_->zeroed)
     return;
 
-  memset(software_draw_shm_->shared_memory.memory(), 0,
-         software_draw_shm_->buffer_size);
+  base::span<uint8_t> mem(software_draw_shm_->shared_memory);
+  std::ranges::fill(mem.first(software_draw_shm_->buffer_size), 0u);
   software_draw_shm_->zeroed = true;
 }
 
@@ -203,9 +203,10 @@ void SynchronousCompositorProxy::DoDemandDrawSw(
   size_t buffer_size = info.computeByteSize(stride);
   DCHECK_EQ(software_draw_shm_->buffer_size, buffer_size);
 
+  base::span<uint8_t> mem(software_draw_shm_->shared_memory);
+  CHECK_GE(mem.size(), buffer_size);
   SkBitmap bitmap;
-  if (!bitmap.installPixels(info, software_draw_shm_->shared_memory.memory(),
-                            stride)) {
+  if (!bitmap.installPixels(info, mem.data(), stride)) {
     return;
   }
   SkCanvas canvas(bitmap);

@@ -29,18 +29,22 @@ TEST(NativeLibraryPrefetcherTest, DISABLED_TestPercentageOfResidentCode) {
   ASSERT_TRUE(shared_region.IsValid());
   auto mapping = shared_region.Map();
   ASSERT_TRUE(mapping.IsValid());
-  void* address = mapping.memory();
-  size_t start = reinterpret_cast<size_t>(address);
-  size_t end = start + length;
+  // SAFETY: There's no public way to get a span of the full mapped memory size.
+  // The `mapped_size()` is larger then `size()` but is the actual size of the
+  // shared memory backing.
+  span<uint8_t> memory =
+      UNSAFE_BUFFERS(base::span(mapping.data(), mapping.mapped_size()));
+  auto start = reinterpret_cast<uintptr_t>(&*memory.begin());
+  auto end = reinterpret_cast<uintptr_t>(&*memory.end());
 
   // Remove everything.
-  ASSERT_EQ(0, madvise(address, length, MADV_DONTNEED));
+  ASSERT_EQ(0, madvise(memory.data(), memory.size(), MADV_DONTNEED));
   EXPECT_EQ(0, NativeLibraryPrefetcher::PercentageOfResidentCode(start, end));
 
   // Get everything back.
-  ASSERT_EQ(0, mlock(address, length));
+  ASSERT_EQ(0, mlock(memory.data(), memory.size()));
   EXPECT_EQ(100, NativeLibraryPrefetcher::PercentageOfResidentCode(start, end));
-  munlock(address, length);
+  munlock(memory.data(), memory.size());
 }
 #endif  // !defined(ADDRESS_SANITIZER)
 

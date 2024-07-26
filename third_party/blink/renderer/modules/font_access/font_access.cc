@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -150,7 +151,9 @@ void FontAccess::DidGetEnumerationResponse(
   }
 
   HeapVector<Member<FontMetadata>> entries;
-  table.ParseFromArray(mapping.memory(), static_cast<int>(mapping.size()));
+  base::span<const uint8_t> mapped_mem(mapping);
+  table.ParseFromArray(mapped_mem.data(),
+                       base::checked_cast<int>(mapped_mem.size()));
   for (const auto& element : table.fonts()) {
     // If the optional postscript name filter is set in QueryOptions,
     // only allow items that match.

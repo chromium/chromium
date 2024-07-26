@@ -264,7 +264,9 @@ bool TraceStartupConfig::EnableFromConfigHandle() {
       << "Invald memory region passed on command line.";
 
   base::ReadOnlySharedMemoryMapping mapping = shmem_region->Map();
-  if (!perfetto_config_.ParseFromArray(mapping.memory(), mapping.size())) {
+  base::span<const uint8_t> mapping_mem(mapping);
+  if (!perfetto_config_.ParseFromArray(mapping_mem.data(),
+                                       mapping_mem.size())) {
     DLOG(WARNING) << "Could not parse --" << switches::kTraceConfigHandle;
     return false;
   }

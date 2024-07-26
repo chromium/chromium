@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <set>
 
@@ -1810,7 +1811,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   constexpr int64_t kLargeSize = 51 * 1024 * 1024;
   base::MappedReadOnlyRegion page =
       base::ReadOnlySharedMemoryRegion::Create(kLargeSize);
-  memset(page.mapping.memory(), 'a', kLargeSize);
+  std::ranges::fill(base::span(page.mapping), 'a');
   data.page = std::move(page.region);
 
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(browser()->profile(),

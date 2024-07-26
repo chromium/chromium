@@ -437,7 +437,9 @@ bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas,
   UpdateFrameMetaData(metadata_version, std::move(*metadata), std::nullopt);
 
   SkBitmap bitmap;
-  SkPixmap pixmap(info, software_draw_shm_->shared_memory.memory(), stride);
+  base::span<uint8_t> mem(software_draw_shm_->shared_memory);
+  CHECK_GE(mem.size(), info.computeByteSize(stride));
+  SkPixmap pixmap(info, mem.data(), stride);
 
   bool pixels_released = false;
   {

@@ -207,14 +207,19 @@ PlatformSensorProvider::GetPendingRequestTypes() {
 SensorReadingSharedBuffer*
 PlatformSensorProvider::GetSensorReadingSharedBufferForType(
     mojom::SensorType type) {
-  auto* ptr = static_cast<char*>(mapped_region_.mapping.memory());
-  if (!ptr) {
+  base::span<SensorReadingSharedBuffer> buffers =
+      mapped_region_.mapping.GetMemoryAsSpan<SensorReadingSharedBuffer>();
+  if (buffers.empty()) {
     return nullptr;
   }
 
-  ptr += SensorReadingSharedBuffer::GetOffset(type);
-  memset(ptr, 0, kReadingBufferSize);
-  return reinterpret_cast<SensorReadingSharedBuffer*>(ptr);
+  size_t offset = GetSensorReadingSharedBufferOffset(type);
+  CHECK(offset % sizeof(SensorReadingSharedBuffer) == 0u);
+
+  SensorReadingSharedBuffer& buffer =
+      buffers[offset / sizeof(SensorReadingSharedBuffer)];
+  std::ranges::fill(base::byte_span_from_ref(buffer), 0u);
+  return &buffer;
 }
 
 #if BUILDFLAG(IS_WIN)

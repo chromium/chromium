@@ -41,7 +41,9 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace device {
-class Gamepad;
+template <class T>
+class GamepadImpl;
+using Gamepad = GamepadImpl<void>;
 }
 
 namespace blink {

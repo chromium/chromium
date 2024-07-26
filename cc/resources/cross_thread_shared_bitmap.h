@@ -33,7 +33,11 @@ class CC_EXPORT CrossThreadSharedBitmap
   const base::ReadOnlySharedMemoryRegion& shared_region() const {
     return region_;
   }
-  void* memory() const { return mapping_.memory(); }
+  void* memory() const {
+    // TODO(crbug.com/355003196): This returns an unsafe unbounded pointer. The
+    // return type here should be changed to a span, then return span(mapping_).
+    return mapping_.data();
+  }
   const gfx::Size& size() const { return size_; }
   viz::SharedImageFormat format() const { return format_; }
 

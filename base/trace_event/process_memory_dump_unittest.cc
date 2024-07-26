@@ -59,6 +59,18 @@ void Unmap(void* addr, size_t size) {
 #endif
 }
 
+std::optional<size_t> CountResidentBytesInSharedMemory(
+    const WritableSharedMemoryMapping& mapping) {
+  // SAFETY: We need the actual mapped memory size here. There's no public
+  // method to get this as a span, so we need to construct it unsafely. The
+  // mapped_size() is larger than `mem.size()` but represents the actual memory
+  // segment size in the SharedMemoryMapping.
+  auto mapped =
+      UNSAFE_BUFFERS(base::span(mapping.data(), mapping.mapped_size()));
+  return ProcessMemoryDump::CountResidentBytesInSharedMemory(mapped.data(),
+                                                             mapped.size());
+}
+
 }  // namespace
 
 TEST(ProcessMemoryDumpTest, MoveConstructor) {
@@ -524,10 +536,9 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
     const size_t kDirtyMemorySize = 5 * page_size;
     auto region = base::WritableSharedMemoryRegion::Create(kDirtyMemorySize);
     base::WritableSharedMemoryMapping mapping = region.Map();
-    memset(mapping.memory(), 0, kDirtyMemorySize);
-    std::optional<size_t> res1 =
-        ProcessMemoryDump::CountResidentBytesInSharedMemory(
-            mapping.memory(), mapping.mapped_size());
+    base::span<uint8_t> mapping_mem(mapping);
+    std::ranges::fill(mapping_mem, 0u);
+    std::optional<size_t> res1 = CountResidentBytesInSharedMemory(mapping);
     ASSERT_TRUE(res1.has_value());
     ASSERT_EQ(res1.value(), kDirtyMemorySize);
   }
@@ -539,10 +550,9 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
         base::WritableSharedMemoryRegion::Create(kDirtyMemorySize + page_size);
     base::WritableSharedMemoryMapping mapping =
         region.MapAt(page_size / 2, kDirtyMemorySize);
-    memset(mapping.memory(), 0, kDirtyMemorySize);
-    std::optional<size_t> res1 =
-        ProcessMemoryDump::CountResidentBytesInSharedMemory(
-            mapping.memory(), mapping.mapped_size());
+    base::span<uint8_t> mapping_mem(mapping);
+    std::ranges::fill(mapping_mem, 0u);
+    std::optional<size_t> res1 = CountResidentBytesInSharedMemory(mapping);
     ASSERT_TRUE(res1.has_value());
     ASSERT_EQ(res1.value(), kDirtyMemorySize + page_size);
   }
@@ -553,10 +563,9 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
     auto region =
         base::WritableSharedMemoryRegion::Create(kVeryLargeMemorySize);
     base::WritableSharedMemoryMapping mapping = region.Map();
-    memset(mapping.memory(), 0, kVeryLargeMemorySize);
-    std::optional<size_t> res2 =
-        ProcessMemoryDump::CountResidentBytesInSharedMemory(
-            mapping.memory(), mapping.mapped_size());
+    base::span<uint8_t> mapping_mem(mapping);
+    std::ranges::fill(mapping_mem, 0u);
+    std::optional<size_t> res2 = CountResidentBytesInSharedMemory(mapping);
     ASSERT_TRUE(res2.has_value());
     ASSERT_EQ(res2.value(), kVeryLargeMemorySize);
   }
@@ -566,10 +575,9 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
     const size_t kTouchedMemorySize = 7 * 1024 * 1024;
     auto region = base::WritableSharedMemoryRegion::Create(kTouchedMemorySize);
     base::WritableSharedMemoryMapping mapping = region.Map();
-    memset(mapping.memory(), 0, kTouchedMemorySize);
-    std::optional<size_t> res3 =
-        ProcessMemoryDump::CountResidentBytesInSharedMemory(
-            mapping.memory(), mapping.mapped_size());
+    base::span<uint8_t> mapping_mem(mapping);
+    std::ranges::fill(mapping_mem, 0u);
+    std::optional<size_t> res3 = CountResidentBytesInSharedMemory(mapping);
     ASSERT_TRUE(res3.has_value());
     ASSERT_EQ(res3.value(), kTouchedMemorySize);
   }

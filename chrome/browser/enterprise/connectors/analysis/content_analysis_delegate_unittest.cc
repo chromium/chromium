@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <string>
@@ -107,7 +108,7 @@ std::string small_text() {
 base::ReadOnlySharedMemoryRegion create_page(size_t size) {
   base::MappedReadOnlyRegion page =
       base::ReadOnlySharedMemoryRegion::Create(size);
-  memset(page.mapping.memory(), 'a', size);
+  std::ranges::fill(base::span(page.mapping), 'a');
   return std::move(page.region);
 }
 
