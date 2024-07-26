@@ -62,6 +62,7 @@ class BirchChipButton : public BirchChipButtonBase,
   void OnRemoveComponentPressed();
 
   // Sets the item icon.
+  // TODO(jamescook): Eliminate `success`; it is not used.
   void SetIconImage(const ui::ImageModel& icon_image, bool success);
 
   // The chip context menu controller.

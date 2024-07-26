@@ -78,6 +78,7 @@ class ASH_EXPORT BirchItem {
   // Loads the icon for this image. This may invoke the callback immediately
   // (e.g. with a local icon) or there may be a delay for a network fetch.
   // The bool is true if the icon load was successful.
+  // TODO(jamescook): Eliminate the bool for success; it is not used.
   using LoadIconCallback =
       base::OnceCallback<void(const ui::ImageModel&, bool)>;
   virtual void LoadIcon(LoadIconCallback callback) const = 0;
