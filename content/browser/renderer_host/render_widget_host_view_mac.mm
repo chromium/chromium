@@ -1335,10 +1335,6 @@ blink::mojom::PointerLockResult RenderWidgetHostViewMac::LockPointer(
     return blink::mojom::PointerLockResult::kSuccess;
   }
 
-  if (request_unadjusted_movement && !IsUnadjustedMouseMovementSupported()) {
-    return blink::mojom::PointerLockResult::kUnsupportedOptions;
-  }
-
   pointer_locked_ = true;
   pointer_lock_unadjusted_movement_ = request_unadjusted_movement;
 
@@ -1354,10 +1350,6 @@ blink::mojom::PointerLockResult RenderWidgetHostViewMac::LockPointer(
 
 blink::mojom::PointerLockResult RenderWidgetHostViewMac::ChangePointerLock(
     bool request_unadjusted_movement) {
-  if (request_unadjusted_movement && !IsUnadjustedMouseMovementSupported()) {
-    return blink::mojom::PointerLockResult::kUnsupportedOptions;
-  }
-
   pointer_lock_unadjusted_movement_ = request_unadjusted_movement;
   ns_view_->SetCursorLockedUnacceleratedMovement(request_unadjusted_movement);
   return blink::mojom::PointerLockResult::kSuccess;
@@ -1378,19 +1370,6 @@ void RenderWidgetHostViewMac::UnlockPointer() {
 
 bool RenderWidgetHostViewMac::GetIsPointerLockedUnadjustedMovementForTesting() {
   return pointer_locked_ && pointer_lock_unadjusted_movement_;
-}
-
-bool RenderWidgetHostViewMac::IsUnadjustedMouseMovementSupported() {
-  // kCGEventUnacceleratedPointerMovementX/Y were first added as CGEventField
-  // enum values in the 10.15.1 SDK.
-  //
-  // While they do seem to work at runtime back to 10.14, the safest approach is
-  // to limit their use to 10.15.1 and newer to avoid relying on private or
-  // undocumented APIs on earlier OSes.
-  if (@available(macOS 10.15.1, *)) {
-    return true;
-  }
-  return false;
 }
 
 bool RenderWidgetHostViewMac::CanBePointerLocked() {

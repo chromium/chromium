@@ -184,7 +184,6 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   bool GetIsPointerLockedUnadjustedMovementForTesting() override;
   // Returns true when running on a recent enough OS for unaccelerated pointer
   // events.
-  static bool IsUnadjustedMouseMovementSupported();
   bool LockKeyboard(std::optional<base::flat_set<ui::DomCode>> codes) override;
   void UnlockKeyboard() override;
   bool IsKeyboardLocked() override;
