@@ -750,9 +750,9 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4AacAudioSampleEntry) {
   ChannelLayout channel_layout = aac.GetChannelLayout(false);
   EXPECT_EQ(media::CHANNEL_LAYOUT_STEREO, channel_layout);
 
-  std::vector<uint8_t> buffer;
   int adts_header_size;
-  EXPECT_TRUE(aac.ConvertEsdsToADTS(&buffer, &adts_header_size));
+  auto buffer = aac.CreateAdtsFromEsds({}, &adts_header_size);
+  EXPECT_FALSE(buffer.empty());
 
   ADTSStreamParser adts_parser;
 

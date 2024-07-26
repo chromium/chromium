@@ -143,6 +143,11 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
       bool is_key_frame,
       Type type,
       TrackId track_id);
+  static scoped_refptr<StreamParserBuffer> FromArray(
+      base::HeapArray<uint8_t> heap_array,
+      bool is_key_frame,
+      Type type,
+      TrackId track_id);
 
   StreamParserBuffer(const StreamParserBuffer&) = delete;
   StreamParserBuffer& operator=(const StreamParserBuffer&) = delete;
@@ -192,6 +197,11 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
   size_t GetMemoryUsage() const override;
 
  private:
+  StreamParserBuffer(base::HeapArray<uint8_t> heap_array,
+                     bool is_key_frame,
+                     Type type,
+                     TrackId track_id);
+
   StreamParserBuffer(std::unique_ptr<ExternalMemory> external_memory,
                      bool is_key_frame,
                      Type type,

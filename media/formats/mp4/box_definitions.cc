@@ -1699,7 +1699,7 @@ bool IamfSpecificBox::Parse(BoxReader* reader) {
 
   BufferReader config_reader(ia_descriptors.data(), ia_descriptors.size());
 
-  while (config_reader.pos() < config_reader.buffer_size()) {
+  while (config_reader.pos() < config_reader.buffer().size()) {
     RCHECK(ReadOBU(&config_reader));
   }
 

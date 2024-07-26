@@ -191,30 +191,26 @@ ChannelLayout AAC::GetChannelLayout(bool sbr_in_mimetype) const {
 
 base::HeapArray<uint8_t> AAC::CreateAdtsFromEsds(
     base::span<const uint8_t> buffer,
-    int* adts_header_size) {
+    int* adts_header_size) const {
+  *adts_header_size = 0;
   if (profile_ == kXHeAAcType) {
-    return base::HeapArray<uint8_t>();
+    return {};
   }
 
-  const size_t total_size = buffer.size() + kADTSHeaderMinSize;
+  DCHECK(profile_ >= 1 && profile_ <= 4 && frequency_index_ != 0xf &&
+         channel_config_ <= 7);
 
   // `total_size` might be too big; ADTS represents packet size in 13 bits.
+  const size_t total_size = buffer.size() + kADTSHeaderMinSize;
   if (total_size >= (1 << 13)) {
     return base::HeapArray<uint8_t>();
   }
 
-  auto adts = base::HeapArray<uint8_t>::Uninit(total_size);
-  auto adts_header = adts.first(kADTSHeaderMinSize);
-  auto adts_data = adts.subspan(kADTSHeaderMinSize);
-
-  SetAdtsHeader(adts_header, total_size);
-
-  CHECK_EQ(adts_data.size_bytes(), buffer.size_bytes());
-  memcpy(adts_data.data(), buffer.data(), adts_data.size_bytes());
-
+  auto output_buffer = base::HeapArray<uint8_t>::Uninit(total_size);
+  SetAdtsHeader(output_buffer.first(kADTSHeaderMinSize), total_size);
+  output_buffer.last(buffer.size()).copy_from(buffer);
   *adts_header_size = kADTSHeaderMinSize;
-
-  return adts;
+  return output_buffer;
 }
 
 void AAC::SetAdtsHeader(base::span<uint8_t> adts, size_t total_size) const {
@@ -230,35 +226,6 @@ void AAC::SetAdtsHeader(base::span<uint8_t> adts, size_t total_size) const {
   adts[4] = static_cast<uint8_t>((total_size & 0x7ff) >> 3);
   adts[5] = ((total_size & 7) << 5) + 0x1f;
   adts[6] = 0xfc;
-}
-
-bool AAC::ConvertEsdsToADTS(std::vector<uint8_t>* buffer,
-                            int* adts_header_size) const {
-  // Don't append ADTS header for XHE-AAC; it doesn't have enough bits to signal
-  // the correct profile.
-  if (profile_ == kXHeAAcType) {
-    *adts_header_size = 0;
-    return true;
-  }
-
-  size_t size = buffer->size() + kADTSHeaderMinSize;
-
-  DCHECK(profile_ >= 1 && profile_ <= 4 && frequency_index_ != 0xf &&
-         channel_config_ <= 7);
-
-  // ADTS header uses 13 bits for packet size.
-  if (size >= (1 << 13)) {
-    return false;
-  }
-
-  std::vector<uint8_t>& adts = *buffer;
-
-  adts.insert(buffer->begin(), kADTSHeaderMinSize, 0);
-
-  SetAdtsHeader(base::make_span(adts).first<kADTSHeaderMinSize>(), size);
-
-  *adts_header_size = kADTSHeaderMinSize;
-  return true;
 }
 
 AudioCodecProfile AAC::GetProfile() const {
