@@ -90,7 +90,6 @@ class CORE_EXPORT FlexLayoutAlgorithm
 
   // This is same method as FlexItem but we need that logic before FlexItem is
   // constructed.
-  bool MainAxisIsInlineAxis(const BlockNode& child) const;
   LayoutUnit MainAxisContentExtent(LayoutUnit sum_hypothetical_main_size) const;
 
   void HandleOutOfFlowPositionedItems(

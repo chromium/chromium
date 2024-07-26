@@ -144,10 +144,6 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
     layout_info_for_devtools_ = std::make_unique<DevtoolsFlexInfo>();
 }
 
-bool FlexLayoutAlgorithm::MainAxisIsInlineAxis(const BlockNode& child) const {
-  return child.Style().IsHorizontalWritingMode() == is_horizontal_flow_;
-}
-
 LayoutUnit FlexLayoutAlgorithm::MainAxisContentExtent(
     LayoutUnit sum_hypothetical_main_size) const {
   if (is_column_) {
@@ -643,6 +639,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 
     const ComputedStyle& child_style = child.Style();
     const auto child_writing_mode = child_style.GetWritingMode();
+    const bool is_main_axis_inline_axis =
+        IsHorizontalWritingMode(child_writing_mode) == is_horizontal_flow_;
 
     if (is_alignment_behavior_change_possible &&
         all_items_match_container_alignment && phase == Phase::kLayout) {
@@ -692,37 +690,6 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       return *min_max_sizes;
     };
 
-    MinMaxSizes min_max_sizes_in_main_axis_direction{main_axis_border_padding,
-                                                     LayoutUnit::Max()};
-    MinMaxSizes min_max_sizes_in_cross_axis_direction{LayoutUnit(),
-                                                      LayoutUnit::Max()};
-    const Length& max_property_in_main_axis = is_horizontal_flow_
-                                                  ? child.Style().MaxWidth()
-                                                  : child.Style().MaxHeight();
-    if (MainAxisIsInlineAxis(child)) {
-      min_max_sizes_in_main_axis_direction.max_size = ResolveMaxInlineLength(
-          flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          MinMaxSizesFunc, max_property_in_main_axis);
-      min_max_sizes_in_cross_axis_direction = ComputeMinMaxBlockSizes(
-          flex_basis_space, child_style, border_padding_in_child_writing_mode);
-    } else {
-      min_max_sizes_in_main_axis_direction.max_size = ResolveMaxBlockLength(
-          flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          max_property_in_main_axis);
-      min_max_sizes_in_cross_axis_direction = ComputeMinMaxInlineSizes(
-          flex_basis_space, child, border_padding_in_child_writing_mode,
-          MinMaxSizesFunc);
-    }
-
-    auto InlineSizeFunc = [&]() -> LayoutUnit {
-      DCHECK(!MainAxisIsInlineAxis(child));
-      const ConstraintSpace child_space =
-          BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
-      return CalculateInitialFragmentGeometry(child_space, child,
-                                              /* break_token */ nullptr)
-          .border_box_size.inline_size;
-    };
-
     const LayoutResult* layout_result = nullptr;
     auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
       if (!layout_result) {
@@ -737,8 +704,16 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       }
       return layout_result->IntrinsicBlockSize();
     };
+    auto InlineSizeFunc = [&]() -> LayoutUnit {
+      DCHECK(!is_main_axis_inline_axis);
+      const ConstraintSpace child_space =
+          BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
+      return CalculateInitialFragmentGeometry(child_space, child,
+                                              /* break_token */ nullptr)
+          .border_box_size.inline_size;
+    };
     auto ContentBlockSizeFunc = [&]() -> LayoutUnit {
-      DCHECK(!MainAxisIsInlineAxis(child));
+      DCHECK(!is_main_axis_inline_axis);
       if (child.HasAspectRatio() && !child.IsReplaced()) {
         const LayoutUnit inline_size = InlineSizeFunc();
         if (inline_size != kIndefiniteSize) {
@@ -747,14 +722,40 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
               child_style.BoxSizingForAspectRatio(), inline_size);
         }
 
+        const MinMaxSizes inline_min_max = ComputeMinMaxInlineSizes(
+            flex_basis_space, child, border_padding_in_child_writing_mode,
+            MinMaxSizesFunc);
+
         const MinMaxSizes min_max = ComputeTransferredMinMaxBlockSizes(
-            child.GetAspectRatio(), min_max_sizes_in_cross_axis_direction,
+            child.GetAspectRatio(), inline_min_max,
             border_padding_in_child_writing_mode,
             child.Style().BoxSizingForAspectRatio());
         return min_max.ClampSizeToMinAndMax(IntrinsicBlockSizeFunc());
       }
       return IntrinsicBlockSizeFunc();
     };
+
+    MinMaxSizes min_max_sizes_in_main_axis_direction{main_axis_border_padding,
+                                                     LayoutUnit::Max()};
+    MinMaxSizes min_max_sizes_in_cross_axis_direction{LayoutUnit(),
+                                                      LayoutUnit::Max()};
+    const Length& max_property_in_main_axis = is_horizontal_flow_
+                                                  ? child.Style().MaxWidth()
+                                                  : child.Style().MaxHeight();
+    if (is_main_axis_inline_axis) {
+      min_max_sizes_in_main_axis_direction.max_size = ResolveMaxInlineLength(
+          flex_basis_space, child_style, border_padding_in_child_writing_mode,
+          MinMaxSizesFunc, max_property_in_main_axis);
+      min_max_sizes_in_cross_axis_direction = ComputeMinMaxBlockSizes(
+          flex_basis_space, child_style, border_padding_in_child_writing_mode);
+    } else {
+      min_max_sizes_in_main_axis_direction.max_size = ResolveMaxBlockLength(
+          flex_basis_space, child_style, border_padding_in_child_writing_mode,
+          max_property_in_main_axis);
+      min_max_sizes_in_cross_axis_direction = ComputeMinMaxInlineSizes(
+          flex_basis_space, child, border_padding_in_child_writing_mode,
+          MinMaxSizesFunc);
+    }
 
     const Length& flex_basis = child_style.FlexBasis();
     if (is_column_ && flex_basis.MayHavePercentDependence()) {
@@ -771,7 +772,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     // need to handle resolving the length in the main axis twice.
     auto resolve_main_length = [&](const Length& used_flex_basis_length,
                                    const Length* auto_length) -> LayoutUnit {
-      if (MainAxisIsInlineAxis(child)) {
+      if (is_main_axis_inline_axis) {
         const LayoutUnit inline_size = ResolveMainInlineLength(
             flex_basis_space, child_style, border_padding_in_child_writing_mode,
             [&](MinMaxSizesType type) -> MinMaxSizesResult {
@@ -826,7 +827,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
           flex_basis, base::OptionalToPtr(auto_flex_basis_length));
 
       // Add the caption block-size only to sizes that are not content-based.
-      if (!MainAxisIsInlineAxis(child) && !is_used_flex_basis_indefinite) {
+      if (!is_main_axis_inline_axis && !is_used_flex_basis_indefinite) {
         // 1. A table interprets forced block-size as the block-size of its
         //    captions and rows.
         // 2. The specified block-size of a table only applies to its rows.
@@ -855,15 +856,15 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     if (algorithm_.ShouldApplyMinSizeAutoForChild(*child.GetLayoutBox())) {
       const LayoutUnit content_size_suggestion = ([&]() -> LayoutUnit {
         const LayoutUnit intrinsic_size =
-            MainAxisIsInlineAxis(child)
+            is_main_axis_inline_axis
                 ? MinMaxSizesFunc(MinMaxSizesType::kIntrinsic).sizes.min_size
                 : IntrinsicBlockSizeFunc();
 
         // If appropriate clamp by the transferred min/max sizes.
         if (child.HasAspectRatio()) {
           auto transferred_min_max_func =
-              MainAxisIsInlineAxis(child) ? ComputeTransferredMinMaxInlineSizes
-                                          : ComputeTransferredMinMaxBlockSizes;
+              is_main_axis_inline_axis ? ComputeTransferredMinMaxInlineSizes
+                                       : ComputeTransferredMinMaxBlockSizes;
           const MinMaxSizes transferred_min_max = transferred_min_max_func(
               child.GetAspectRatio(), min_max_sizes_in_cross_axis_direction,
               border_padding_in_child_writing_mode,
@@ -882,7 +883,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
           return LayoutUnit::Max();
         }
         const LayoutUnit resolved_size =
-            MainAxisIsInlineAxis(child)
+            is_main_axis_inline_axis
                 ? ResolveMainInlineLength(
                       flex_basis_space, child_style,
                       border_padding_in_child_writing_mode, MinMaxSizesFunc,
@@ -901,7 +902,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       min_max_sizes_in_main_axis_direction.min_size =
           std::min({specified_size_suggestion, content_size_suggestion,
                     min_max_sizes_in_main_axis_direction.max_size});
-    } else if (MainAxisIsInlineAxis(child)) {
+    } else if (is_main_axis_inline_axis) {
       min_max_sizes_in_main_axis_direction.min_size = ResolveMinInlineLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
           MinMaxSizesFunc, min);
@@ -913,7 +914,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     // Flex needs to never give a table a flexed main size that is less than its
     // min-content size, so floor the min main-axis size by min-content size.
     if (child.IsTable()) {
-      if (MainAxisIsInlineAxis(child)) {
+      if (is_main_axis_inline_axis) {
         min_max_sizes_in_main_axis_direction.Encompass(
             MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.min_size);
       } else {
@@ -929,7 +930,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     const BoxStrut scrollbars = ComputeScrollbarsForNonAnonymous(child);
 
     auto AspectRatioProvidesBlockMainSize = [&]() -> bool {
-      if (MainAxisIsInlineAxis(child)) {
+      if (is_main_axis_inline_axis) {
         return false;
       }
       if (child.IsReplaced()) {
@@ -946,7 +947,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     //
     // See: // https://drafts.csswg.org/css-flexbox/#definite-sizes
     const bool is_initial_block_size_indefinite =
-        is_column_ && !MainAxisIsInlineAxis(child) &&
+        is_column_ && !is_main_axis_inline_axis &&
         ChildAvailableSize().block_size == kIndefiniteSize &&
         is_used_flex_basis_indefinite && !AspectRatioProvidesBlockMainSize();
 
@@ -973,7 +974,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         .ng_input_node_ = child;
     // Save the layout result so that we can maybe reuse it later.
     if (layout_result) {
-      DCHECK(!MainAxisIsInlineAxis(child));
+      DCHECK(!is_main_axis_inline_axis);
       algorithm_.all_items_.back().layout_result_ = layout_result;
     }
     algorithm_.all_items_.back().max_content_contribution_ =
@@ -1261,7 +1262,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       //    fragment)
       if (DoesItemStretch(flex_item.ng_input_node_) &&
           flex_item.layout_result_) {
-        DCHECK(!MainAxisIsInlineAxis(flex_item.ng_input_node_));
+        DCHECK(!flex_item.MainAxisIsInlineAxis());
         BoxStrut border = ComputeBorders(child_space, flex_item.ng_input_node_);
         BoxStrut padding =
             ComputePadding(child_space, flex_item.ng_input_node_.Style());
