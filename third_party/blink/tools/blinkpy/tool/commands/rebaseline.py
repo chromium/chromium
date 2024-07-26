@@ -297,7 +297,8 @@ class TestBaselineSet(collections.abc.Set):
             build: A Build object. Along with the step name, this specifies
                 where to fetch baselines from.
             step_name: The name of the build step this test was run for.
-            port_name: This specifies what platform the baseline is for.
+            port_name: This specifies what platform the baseline is for. It's
+                usually deduced from the builder name, but can be overridden.
         """
         if not port_name:
             # TODO(crbug.com/1512219): Remove this special logic by either:
