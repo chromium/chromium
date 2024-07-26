@@ -459,11 +459,7 @@ int UDPSocketPosix::SetDoNotFragment() {
 #if !defined(IP_PMTUDISC_DO) && !BUILDFLAG(IS_MAC)
   return ERR_NOT_IMPLEMENTED;
 
-// setsockopt(IP_DONTFRAG) is supported on macOS from Big Sur
 #elif BUILDFLAG(IS_MAC)
-  if (base::mac::MacOSMajorVersion() < 11) {
-    return ERR_NOT_IMPLEMENTED;
-  }
   int val = 1;
   if (addr_family_ == AF_INET6) {
     int rv =
