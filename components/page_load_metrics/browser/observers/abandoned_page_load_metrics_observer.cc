@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -98,6 +99,8 @@ const char kFirstContentfulPaint[] = "FirstContentfulPaint";
 const char kDOMContentLoaded[] = "DOMContentLoaded";
 const char kLoadEventStarted[] = "LoadStarted";
 const char kLargestContentfulPaint[] = "LargestContentfulPaint";
+const char kAFTStart[] = "AFTStart";
+const char kAFTEnd[] = "AFTEnd";
 
 const char kRendererProcessCreatedBeforeNavHistogramName[] =
     "RendererProcessCreatedBeforeNav";
@@ -176,6 +179,10 @@ std::string AbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
       return internal::kLoadEventStarted;
     case NavigationMilestone::kLargestContentfulPaint:
       return internal::kLargestContentfulPaint;
+    case NavigationMilestone::kAFTStart:
+      return internal::kAFTStart;
+    case NavigationMilestone::kAFTEnd:
+      return internal::kAFTEnd;
   }
 }
 
@@ -205,6 +212,15 @@ std::string AbandonedPageLoadMetricsObserver::GetHistogramPrefix() const {
 std::vector<std::string>
 AbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
   return {""};
+}
+
+const base::flat_map<std::string,
+                     AbandonedPageLoadMetricsObserver::NavigationMilestone>&
+AbandonedPageLoadMetricsObserver::GetCustomUserTimingMarkNames() const {
+  static const base::NoDestructor<
+      base::flat_map<std::string, NavigationMilestone>>
+      mark_names;
+  return *mark_names;
 }
 
 std::string AbandonedPageLoadMetricsObserver::GetHistogramSuffix(
@@ -554,6 +570,18 @@ void AbandonedPageLoadMetricsObserver::OnLoadEventStart(
 void AbandonedPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   FinalizeLCP();
+}
+
+void AbandonedPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
+    const std::vector<page_load_metrics::mojom::CustomUserTimingMarkPtr>&
+        timings) {
+  base::flat_map<std::string, NavigationMilestone> custom_timings =
+      GetCustomUserTimingMarkNames();
+  for (const auto& mark : timings) {
+    if (custom_timings.contains(mark->mark_name)) {
+      LogLoadingMilestone(custom_timings[mark->mark_name], mark->start_time);
+    }
+  }
 }
 
 void AbandonedPageLoadMetricsObserver::FinalizeLCP() {

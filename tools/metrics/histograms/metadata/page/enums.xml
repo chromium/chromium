@@ -211,6 +211,8 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="kDOMContentLoaded"/>
   <int value="13" label="kLoadEventStarted"/>
   <int value="14" label="kLargestContentfulPaint"/>
+  <int value="15" label="kAFTStart"/>
+  <int value="16" label="kAFTEnd"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:NavigationMilestone) -->

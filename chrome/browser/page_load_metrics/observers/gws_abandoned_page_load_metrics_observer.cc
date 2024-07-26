@@ -6,10 +6,13 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/page_load_metrics/observers/gws_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/navigation_handle.h"
@@ -72,6 +75,17 @@ GWSAbandonedPageLoadMetricsObserver::OnNavigationEvent(
   }
 
   return CONTINUE_OBSERVING;
+}
+
+const base::flat_map<std::string,
+                     AbandonedPageLoadMetricsObserver::NavigationMilestone>&
+GWSAbandonedPageLoadMetricsObserver::GetCustomUserTimingMarkNames() const {
+  static const base::NoDestructor<
+      base::flat_map<std::string, NavigationMilestone>>
+      mark_names(
+          {{internal::kGwsAFTStartMarkName, NavigationMilestone::kAFTStart},
+           {internal::kGwsAFTEndMarkName, NavigationMilestone::kAFTEnd}});
+  return *mark_names;
 }
 
 bool GWSAbandonedPageLoadMetricsObserver::IsAllowedToLogMetrics() const {
