@@ -7,7 +7,9 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/fixed_array.h"
 
 namespace {
 
@@ -77,13 +79,13 @@ std::optional<std::string> GetHexModelIdFromServiceData(
 
   // Copy appropriate bytes to new array.
   int bytes_size = end - id_index;
-  uint8_t bytes[bytes_size];
+  base::FixedArray<uint8_t> bytes(bytes_size);
 
   for (int i = 0; i < bytes_size; i++) {
     bytes[i] = (*service_data)[i + id_index];
   }
 
-  return base::HexEncode(bytes, bytes_size);
+  return base::HexEncode(base::span<uint8_t>(bytes));
 }
 
 }  // namespace fast_pair_decoder
