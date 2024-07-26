@@ -111,6 +111,14 @@ const char kCdmStorageDatabaseMigrationDescription[] =
     "Use the Cdm Storage Database over the MediaLicenseDatabase for Cdm "
     "storage operations.";
 
+const char kClassifyUrlOnProcessResponseEventName[] =
+    "Classify Url on process response event";
+const char kClassifyUrlOnProcessResponseEventDescription[] =
+    "Alters the behavior of a supervised user navigation throttle so that the"
+    "decision whether to proceed or cancel is made when the response is ready"
+    "to be rendered, rather than before the request (or any redirect)"
+    "is issued.";
+
 const char kClearUndecryptablePasswordsName[] =
     "Removes passwords that can no longer be decrypted";
 const char kClearUndecryptablePasswordsDescription[] =

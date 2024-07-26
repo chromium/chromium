@@ -104,6 +104,9 @@ extern const char kCdmStorageDatabaseDescription[];
 extern const char kCdmStorageDatabaseMigrationName[];
 extern const char kCdmStorageDatabaseMigrationDescription[];
 
+extern const char kClassifyUrlOnProcessResponseEventName[];
+extern const char kClassifyUrlOnProcessResponseEventDescription[];
+
 extern const char kClearUndecryptablePasswordsName[];
 extern const char kClearUndecryptablePasswordsDescription[];
 
