@@ -175,6 +175,7 @@ static_library("ash") {
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/external_data/handlers",
     "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/policy/off_hours",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/sync",
