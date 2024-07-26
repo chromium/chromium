@@ -318,16 +318,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.SkippedEvictionRoundsPerHour" units="units"
-    expires_after="2024-07-21">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Number of skipped eviction rounds in an hour. Histogram expired between
-    2018/08 and 2022/06.
-  </summary>
-</histogram>
-
 <histogram name="Quota.SkippedInvalidOriginUsage" enum="InvalidOriginReason"
     expires_after="2024-08-24">
   <owner>ayui@chromium.org</owner>
@@ -363,16 +353,6 @@ chromium-metrics-reviews@google.com.
     Number of buckets in the QuotaDatabase buckets table with nonce in the
     StorageKey to inform better eviction logic. Logged hourly. These will
     typically be used by anonymous iframes, fenced frames, etc.
-  </summary>
-</histogram>
-
-<histogram name="Quota.TimeDeltaOfEvictionRounds" units="units"
-    expires_after="2024-07-21">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Time between two consecutive eviction rounds. Only recorded if at least one
-    origin has been evicted in each eviction round.
   </summary>
 </histogram>
 
