@@ -84,7 +84,9 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
             NavigationMilestone::kNonRedirectedRequestStart,
             NavigationMilestone::kNonRedirectResponseStart,
             NavigationMilestone::kNonRedirectResponseLoaderCallback,
-            NavigationMilestone::kCommitSent, NavigationMilestone::kDidCommit,
+            NavigationMilestone::kCommitSent,
+            NavigationMilestone::kCommitReceived,
+            NavigationMilestone::kDidCommit,
             // TODO(crbug.com/352578800): Add other loading milestones.
             NavigationMilestone::kParseStart};
   }
@@ -354,73 +356,19 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
 
     // There should be new entries for the navigation milestone metrics up until
     // the abandonment, but no entries for milestones after that.
-
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(NavigationMilestone::kNavigationStart,
-                                  histogram_suffix),
-        1);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(NavigationMilestone::kLoaderStart,
-                                  histogram_suffix),
-        abandon_milestone == NavigationMilestone::kNavigationStart ? 0 : 1);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(
-            NavigationMilestone::kFirstRedirectedRequestStart,
-            histogram_suffix),
-        (has_redirect &&
-         abandon_milestone >=
-             NavigationMilestone::kFirstRedirectResponseLoaderCallback)
-            ? 1
-            : 0);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(
-            NavigationMilestone::kFirstRedirectResponseLoaderCallback,
-            histogram_suffix),
-        (has_redirect &&
-         abandon_milestone >=
-             NavigationMilestone::kFirstRedirectResponseLoaderCallback)
-            ? 1
-            : 0);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(
-            NavigationMilestone::kFirstRedirectResponseLoaderCallback,
-            histogram_suffix),
-        (has_redirect &&
-         abandon_milestone >=
-             NavigationMilestone::kFirstRedirectResponseLoaderCallback)
-            ? 1
-            : 0);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(
-            NavigationMilestone::kNonRedirectedRequestStart, histogram_suffix),
-        abandon_milestone >=
-                NavigationMilestone::kNonRedirectResponseLoaderCallback
-            ? 1
-            : 0);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(
-            NavigationMilestone::kNonRedirectResponseLoaderCallback,
-            histogram_suffix),
-        abandon_milestone >=
-                NavigationMilestone::kNonRedirectResponseLoaderCallback
-            ? 1
-            : 0);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(
-            NavigationMilestone::kNonRedirectResponseLoaderCallback,
-            histogram_suffix),
-        abandon_milestone >=
-                NavigationMilestone::kNonRedirectResponseLoaderCallback
-            ? 1
-            : 0);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(NavigationMilestone::kCommitSent,
-                                  histogram_suffix),
-        abandon_milestone >= NavigationMilestone::kCommitSent ? 1 : 0);
-    histogram_tester.ExpectTotalCount(
-        GetMilestoneHistogramName(NavigationMilestone::kDidCommit,
-                                  histogram_suffix),
-        0);
+    for (auto milestone : all_milestones()) {
+      if (abandon_milestone < milestone ||
+          (!has_redirect &&
+           (milestone >= NavigationMilestone::kFirstRedirectedRequestStart &&
+            milestone <=
+                NavigationMilestone::kFirstRedirectResponseLoaderCallback))) {
+        histogram_tester.ExpectTotalCount(
+            GetMilestoneHistogramName(milestone, histogram_suffix), 0);
+      } else {
+        histogram_tester.ExpectTotalCount(
+            GetMilestoneHistogramName(milestone, histogram_suffix), 1);
+      }
+    }
 
     // There should be a new entry for exactly one of the abandonment
     // histograms, indicating that the SRP navigation is abandoned just after

@@ -53,12 +53,16 @@ AbandonReason DiscardReasonToAbandonReason(
   }
 }
 
+bool IsEventAfter(base::TimeTicks event_time, base::TimeTicks time_to_compare) {
+  return !time_to_compare.is_null() && event_time > time_to_compare;
+}
+
 }  // namespace
 
 namespace internal {
 
 const char kAbandonedPageLoadMetricsHistogramPrefix[] =
-    "PageLoad.Clients.Leakage.";
+    "PageLoad.Clients.Leakage2.";
 
 const char kAbandonReasonNewReloadNavigation[] = "NewReloadNavigation";
 const char kAbandonReasonNewHistoryNavigation[] = "NewHistoryNavigation";
@@ -93,6 +97,7 @@ const char kMilestoneNonRedirectResponseStart[] = "NonRedirectResponseStart";
 const char kMilestoneNonRedirectResponseLoaderCallback[] =
     "NonRedirectResponseLoaderCallback";
 const char kMilestoneCommitSent[] = "CommitSent";
+const char kMilestoneCommitReceived[] = "CommitReceived";
 const char kMilestoneDidCommit[] = "DidCommit";
 const char kMilestoneParseStart[] = "ParseStart";
 const char kFirstContentfulPaint[] = "FirstContentfulPaint";
@@ -167,6 +172,8 @@ std::string AbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
       return internal::kMilestoneNonRedirectResponseLoaderCallback;
     case NavigationMilestone::kCommitSent:
       return internal::kMilestoneCommitSent;
+    case NavigationMilestone::kCommitReceived:
+      return internal::kMilestoneCommitReceived;
     case NavigationMilestone::kDidCommit:
       return internal::kMilestoneDidCommit;
     case NavigationMilestone::kParseStart:
@@ -344,23 +351,24 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
       (event_time - navigation_start_time).InMilliseconds());
   builder.SetAbandonTimingFromLastMilestone(
       (event_time - relative_start_time).InMilliseconds());
-  if (!first_backgrounded_timestamp_.is_null()) {
+  if (IsEventAfter(event_time, first_backgrounded_timestamp_)) {
     builder.SetPreviousBackgroundedTime(
         (first_backgrounded_timestamp_ - navigation_start_time)
             .InMilliseconds());
   }
 
-  if (!renderer_process_init_time_.is_null()) {
-    builder.SetRendererProcessInitTime(
-        (renderer_process_init_time_ - navigation_start_time).InMilliseconds());
-  }
-
-  if (!first_hidden_timestamp_.is_null()) {
+  if (IsEventAfter(event_time, first_hidden_timestamp_)) {
     builder.SetPreviousHiddenTime(
         (first_hidden_timestamp_ - navigation_start_time).InMilliseconds());
   }
 
-  if (!latest_navigation_handle_timing_.loader_start_time.is_null()) {
+  if (IsEventAfter(event_time, renderer_process_init_time_)) {
+    builder.SetRendererProcessInitTime(
+        (renderer_process_init_time_ - navigation_start_time).InMilliseconds());
+  }
+
+  if (IsEventAfter(event_time,
+                   latest_navigation_handle_timing_.loader_start_time)) {
     builder.SetLoaderStartTime(
         (latest_navigation_handle_timing_.loader_start_time -
          navigation_start_time)
@@ -370,9 +378,13 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
   if (latest_navigation_handle_timing_.first_loader_callback_time !=
           latest_navigation_handle_timing_
               .non_redirect_response_loader_callback_time &&
-      !latest_navigation_handle_timing_.first_loader_callback_time.is_null()) {
+      IsEventAfter(
+          event_time,
+          latest_navigation_handle_timing_.first_loader_callback_time)) {
     builder.SetFirstRedirectResponseReceived(true);
-    if (!latest_navigation_handle_timing_.first_request_start_time.is_null()) {
+    if (IsEventAfter(
+            event_time,
+            latest_navigation_handle_timing_.first_request_start_time)) {
       builder.SetFirstRedirectedRequestStartTime(
           (latest_navigation_handle_timing_.first_request_start_time -
            navigation_start_time)
@@ -383,34 +395,71 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
   }
 
   builder.SetNonRedirectResponseReceived(
-      latest_navigation_handle_timing_
-          .non_redirect_response_loader_callback_time.is_null());
-  if (!latest_navigation_handle_timing_.non_redirected_request_start_time
-           .is_null()) {
+      !latest_navigation_handle_timing_
+           .non_redirect_response_loader_callback_time.is_null());
+  if (IsEventAfter(
+          event_time,
+          latest_navigation_handle_timing_.non_redirected_request_start_time)) {
     builder.SetNonRedirectedRequestStartTime(
         (latest_navigation_handle_timing_.non_redirected_request_start_time -
          navigation_start_time)
             .InMilliseconds());
   }
 
-  if (!latest_navigation_handle_timing_.navigation_commit_sent_time.is_null()) {
+  if (IsEventAfter(
+          event_time,
+          latest_navigation_handle_timing_.navigation_commit_sent_time)) {
     builder.SetCommitSentTime(
         (latest_navigation_handle_timing_.navigation_commit_sent_time -
          navigation_start_time)
             .InMilliseconds());
   }
 
+  if (IsEventAfter(
+          event_time,
+          latest_navigation_handle_timing_.navigation_commit_received_time)) {
+    builder.SetCommitReceivedTime(
+        (latest_navigation_handle_timing_.navigation_commit_received_time -
+         navigation_start_time)
+            .InMilliseconds());
+  }
+
+  if (IsEventAfter(
+          event_time,
+          latest_navigation_handle_timing_.navigation_did_commit_time)) {
+    builder.SetDidCommitTime(
+        (latest_navigation_handle_timing_.navigation_did_commit_time -
+         navigation_start_time)
+            .InMilliseconds());
+  }
+
   for (const auto& loading_milestone : loading_milestones_) {
+    if (!IsEventAfter(event_time,
+                      loading_milestone.second + navigation_start_time)) {
+      continue;
+    }
     if (loading_milestone.first == NavigationMilestone::kParseStart) {
       builder.SetParseStartTime(loading_milestone.second.InMilliseconds());
+    } else if (loading_milestone.first ==
+               NavigationMilestone::kFirstContentfulPaint) {
+      builder.SetFirstContentfulPaintTime(
+          loading_milestone.second.InMilliseconds());
     } else if (loading_milestone.first ==
                NavigationMilestone::kDOMContentLoaded) {
       builder.SetDOMContentLoadedTime(
           loading_milestone.second.InMilliseconds());
     } else if (loading_milestone.first ==
-               NavigationMilestone::kFirstContentfulPaint) {
-      builder.SetFirstContentfulPaintTime(
+               NavigationMilestone::kLoadEventStarted) {
+      builder.SetLoadEventStartedTime(
           loading_milestone.second.InMilliseconds());
+    } else if (loading_milestone.first ==
+               NavigationMilestone::kLargestContentfulPaint) {
+      builder.SetLargestContentfulPaintTime(
+          loading_milestone.second.InMilliseconds());
+    } else if (loading_milestone.first == NavigationMilestone::kAFTStart) {
+      builder.SetAFTStartTime(loading_milestone.second.InMilliseconds());
+    } else if (loading_milestone.first == NavigationMilestone::kAFTEnd) {
+      builder.SetAFTEndTime(loading_milestone.second.InMilliseconds());
     }
   }
 
@@ -530,8 +579,14 @@ AbandonedPageLoadMetricsObserver::OnCommit(
   }
 
   LogNavigationMilestoneMetrics();
-  LogMilestoneHistogram(NavigationMilestone::kDidCommit, base::TimeTicks::Now(),
+  LogMilestoneHistogram(NavigationMilestone::kCommitReceived,
+                        navigation_handle->GetNavigationHandleTiming()
+                            .navigation_commit_received_time,
                         GetDelegate().GetNavigationStart());
+  LogMilestoneHistogram(
+      NavigationMilestone::kDidCommit,
+      navigation_handle->GetNavigationHandleTiming().navigation_did_commit_time,
+      GetDelegate().GetNavigationStart());
 
   // If there's any previous hiding/backgrounding that hasn't been logged (e.g.
   // if the navigation didn't allow logging when these abandonments happen),

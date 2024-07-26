@@ -68,6 +68,10 @@ class CONTENT_EXPORT NavigationState {
     common_params_->transition = transition;
   }
 
+  const base::TimeTicks& commit_start_time() const {
+    return commit_start_time_;
+  }
+
   void RunCommitNavigationCallback(
       mojom::DidCommitProvisionalLoadParamsPtr params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params);
@@ -85,6 +89,10 @@ class CONTENT_EXPORT NavigationState {
                   mojom::Frame::CommitSameDocumentNavigationCallback
                       commit_same_document_callback,
                   bool was_initiated_in_this_frame);
+
+  // The time when the NavigationState is created, which is when the commit IPC
+  // from the browser is received in the renderer.
+  base::TimeTicks commit_start_time_;
 
   bool was_within_same_document_;
 

@@ -58,6 +58,7 @@ class AbandonedPageLoadMetricsObserverBrowserTest
             NavigationMilestone::kNonRedirectResponseStart,
             NavigationMilestone::kNonRedirectResponseLoaderCallback,
             NavigationMilestone::kCommitSent,
+            NavigationMilestone::kCommitReceived,
             NavigationMilestone::kDidCommit,
             NavigationMilestone::kParseStart,
             NavigationMilestone::kFirstContentfulPaint,
