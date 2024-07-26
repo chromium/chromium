@@ -17,7 +17,6 @@
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/privacy_sandbox/mock_tracking_protection_onboarding_delegate.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
@@ -48,11 +47,9 @@ class TrackingProtectionSettingsTest : public testing::Test {
     content_settings::CookieSettings::RegisterProfilePrefs(prefs()->registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs()->registry());
     RegisterProfilePrefs(prefs()->registry());
-    auto delegate =
-        std::make_unique<MockTrackingProtectionOnboardingDelegate>();
 
     onboarding_service_ = std::make_unique<TrackingProtectionOnboarding>(
-        std::move(delegate), &prefs_, version_info::Channel::UNKNOWN);
+        &prefs_, version_info::Channel::UNKNOWN);
   }
 
   GURL GetTestUrl() { return GURL("http://cool.things.com"); }
