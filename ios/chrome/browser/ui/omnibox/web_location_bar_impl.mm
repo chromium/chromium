@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/omnibox/web_location_bar_impl.h"
 
 #import "components/omnibox/browser/location_bar_model.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_url_loader.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_controller_delegate.h"
 #import "url/gurl.h"

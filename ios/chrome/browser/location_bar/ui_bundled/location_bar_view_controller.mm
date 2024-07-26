@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/location_bar/location_bar_view_controller.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_view_controller.h"
 
 #import "base/containers/contains.h"
 #import "base/functional/bind.h"
@@ -25,8 +25,8 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/text_field_view_containing.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_offset_provider.h"

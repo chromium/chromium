@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/location_bar/test/fake_location_bar_steady_view_consumer.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/test/fake_location_bar_steady_view_consumer.h"
 
 @implementation FakeLocationBarSteadyViewConsumer
 

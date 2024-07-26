@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("location_bar") {
+source_set("ui_bundled") {
   sources = [
     "location_bar_consumer.h",
     "location_bar_coordinator.h",
@@ -151,7 +151,7 @@ source_set("unit_tests") {
     "location_bar_steady_view_mediator_unittest.mm",
   ]
   deps = [
-    ":location_bar",
+    ":ui_bundled",
     "//base",
     "//base/test:test_support",
     "//components/omnibox/browser:test_support",
@@ -169,7 +169,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/location_bar/test",
+    "//ios/chrome/browser/location_bar/ui_bundled/test",
     "//ios/chrome/browser/ui/omnibox",
     "//ios/chrome/browser/ui/toolbar",
     "//ios/chrome/browser/ui/toolbar/test",

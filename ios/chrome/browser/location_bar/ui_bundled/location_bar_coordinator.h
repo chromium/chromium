@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_url_loader.h"
 
 @class BubblePresenter;
 @protocol BrowserCoordinatorCommands;
@@ -65,4 +65,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_COORDINATOR_H_

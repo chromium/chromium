@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_coordinator.h"
 
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -49,14 +49,14 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_consumer.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_mediator.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_model_delegate_ios.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_steady_view_consumer.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_steady_view_mediator.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_view_controller.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mediator.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_model_delegate_ios.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view_consumer.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view_mediator.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_url_loader.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_view_controller.h"
 #import "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_controller_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view.h"
 
 #import "base/check.h"
 #import "base/check_op.h"

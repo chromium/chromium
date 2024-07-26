@@ -3,7 +3,7 @@ include_rules = [
   "+ios/chrome/browser/ui/menu",
   "+ios/chrome/browser/ui/popup_menu/public",
   "+ios/chrome/browser/ui/fullscreen",
-  "+ios/chrome/browser/ui/location_bar",
+  "+ios/chrome/browser/location_bar/ui_bundled",
   "+ios/chrome/browser/ui/omnibox",
   "+ios/chrome/browser/ui/orchestrator",
   "+ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h",

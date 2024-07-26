@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_MODEL_DELEGATE_IOS_H_
-#define IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_MODEL_DELEGATE_IOS_H_
+#ifndef IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_MODEL_DELEGATE_IOS_H_
+#define IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_MODEL_DELEGATE_IOS_H_
 
 #import "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/location_bar_model_delegate.h"
@@ -61,4 +61,4 @@ class LocationBarModelDelegateIOS : public LocationBarModelDelegate {
   raw_ptr<ChromeBrowserState> browser_state_;
 };
 
-#endif  // IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_MODEL_DELEGATE_IOS_H_
+#endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_MODEL_DELEGATE_IOS_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/location_bar/location_bar_steady_view_mediator.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view_mediator.h"
 
 #import "components/omnibox/browser/test_location_bar_model.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/ui/location_bar/test/fake_location_bar_steady_view_consumer.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/test/fake_location_bar_steady_view_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
