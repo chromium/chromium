@@ -248,6 +248,11 @@ std::u16string generate_plus_address_str() {
       IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID);
 }
 
+std::u16string select_plus_address_str() {
+  return l10n_util::GetStringUTF16(
+      IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID);
+}
+
 // Creates a AccessorySheetDataBuilder object with a "Manage passwords..."
 // footer.
 AccessorySheetData::Builder PasswordAccessorySheetDataBuilder(
@@ -894,6 +899,9 @@ TEST_F(PasswordAccessoryControllerTest,
           .AppendFooterCommand(generate_plus_address_str(),
                                autofill::AccessoryAction::
                                    CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
+          .AppendFooterCommand(select_plus_address_str(),
+                               autofill::AccessoryAction::
+                                   SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
           .Build());
 }
 

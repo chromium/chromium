@@ -31,6 +31,7 @@
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
 #include "chrome/grit/generated_resources.h"
@@ -259,6 +260,10 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
         l10n_util::GetStringUTF16(
             IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
         autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
+    footer_commands_to_add.emplace_back(
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID),
+        autofill::AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
   }
 
   bool has_suggestions = !info_to_add.empty() || !passkeys_to_add.empty();
@@ -436,6 +441,16 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
                 weak_ptr_factory_.GetWeakPtr()));
         GetManualFillingController()->Hide();
       }
+      return;
+    }
+    case autofill::AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET: {
+      all_plus_addresses_bottom_sheet_controller_ = std::make_unique<
+          plus_addresses::AllPlusAddressesBottomSheetController>(
+          &GetWebContents());
+      all_plus_addresses_bottom_sheet_controller_->Show(base::BindOnce(
+          &PasswordAccessoryControllerImpl::OnPlusAddressSelected,
+          weak_ptr_factory_.GetWeakPtr()));
+      GetManualFillingController()->Hide();
       return;
     }
     default:
@@ -740,6 +755,19 @@ void PasswordAccessoryControllerImpl::OnPlusAddressCreated(
   }
   driver->FillIntoFocusedField(/*is_password=*/false,
                                base::UTF8ToUTF16(plus_address));
+}
+
+void PasswordAccessoryControllerImpl::OnPlusAddressSelected(
+    base::optional_ref<const std::string> plus_address) {
+  all_plus_addresses_bottom_sheet_controller_.reset();
+  if (!plus_address) {
+    return;
+  }
+  if (password_manager::PasswordManagerDriver* driver =
+          driver_supplier_.Run(&GetWebContents())) {
+    driver->FillIntoFocusedField(/*is_password=*/false,
+                                 base::UTF8ToUTF16(plus_address.value()));
+  }
 }
 
 bool PasswordAccessoryControllerImpl::IsSecureSite() const {

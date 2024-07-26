@@ -168,6 +168,7 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
             &AddressAccessoryControllerImpl::OnPlusAddressSelected,
             weak_ptr_factory_.GetWeakPtr(),
             GetManualFillingController()->GetLastFocusedFieldId()));
+        GetManualFillingController()->Hide();
       }
       return;
     }
