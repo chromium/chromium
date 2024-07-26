@@ -239826,6 +239826,19 @@
        {}
       ]
      ],
+     "no-named-elements.html": [
+      "ee7625591319ef36163b2337390cb8db45882bab",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/no-named-elements-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "no-painting-while-render-blocked.html": [
       "1feb4759eb87e43e125f0753bd3c0c9c889816f7",
       [
@@ -348240,6 +348253,10 @@
       "99ca705d00e3d6e9b1a5d26c1cf2477a2d8c9d7e",
       []
      ],
+     "no-named-elements-ref.html": [
+      "750fdf37303c4268c16993f3a813795365d518dd",
+      []
+     ],
      "no-painting-while-render-blocked-ref.html": [
       "8c7ab1bc5ffee13ff74e7bf33532145180b50e70",
       []
@@ -450748,7 +450765,7 @@
      ],
      "stability": {
       "animation-event-destroy-renderer.html": [
-       "0a1e1d508530a23ee80dc27efbb66413adc0570e",
+       "3540d5c5ecbd16529010deb2d6f2f7f85edbc7da",
        [
         "css/css-animations/stability/animation-event-destroy-renderer.html?animationiteration",
         {}
@@ -577854,7 +577871,7 @@
         ]
        ],
        "document-cookie.html": [
-        "2af65effeb291f829334d77a4072a41033f4e4a9",
+        "5310fd8e8a36285dd1e9ae3d46042ec227eefa51",
         [
          null,
          {}
