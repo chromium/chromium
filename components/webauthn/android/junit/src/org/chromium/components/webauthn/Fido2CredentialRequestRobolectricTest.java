@@ -136,6 +136,7 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
         WebauthnModeProvider.setInstanceForTesting(mModeProviderMock);
         Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.CHROME);
+        Mockito.when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.CHROME);
         Mockito.when(mAuthenticationContextProviderMock.getIntentSender()).thenReturn(null);
         Mockito.when(mAuthenticationContextProviderMock.getContext()).thenReturn(mActivity);
         Mockito.when(mAuthenticationContextProviderMock.getRenderFrameHost())
@@ -301,6 +302,7 @@ public class Fido2CredentialRequestRobolectricTest {
     @SmallTest
     public void testMakeCredential_webauthnModeAppAndBelowAndroid14_goesToPlayServices() {
         Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
+        Mockito.when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.NONE);
         CredManSupportProvider.setupForTesting(/* override= */ false);
 
         mRequest.handleMakeCredentialRequest(
@@ -319,6 +321,7 @@ public class Fido2CredentialRequestRobolectricTest {
     @SmallTest
     public void testMakeCredential_webauthnModeAppAndAboveAndroid14_goesToCredMan() {
         Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
+        Mockito.when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.NONE);
         CredManSupportProvider.setupForTesting(/* override= */ true);
 
         mRequest.handleMakeCredentialRequest(
@@ -668,6 +671,7 @@ public class Fido2CredentialRequestRobolectricTest {
         CredManSupportProvider.setupForTesting(/* override= */ false);
 
         Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
+        Mockito.when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.NONE);
         final byte[] clientDataHash = new byte[] {1, 2, 3, 4};
         Mockito.when(mAuthenticationContextProviderMock.getRenderFrameHost()).thenReturn(null);
 
@@ -691,6 +695,7 @@ public class Fido2CredentialRequestRobolectricTest {
         CredManSupportProvider.setupForTesting(/* override= */ false);
 
         Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
+        Mockito.when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.NONE);
         final byte[] clientDataHash = new byte[] {1, 2, 3, 4};
         mFido2ApiCallHelper.setArePlayServicesAvailable(false);
         Mockito.when(mAuthenticationContextProviderMock.getRenderFrameHost()).thenReturn(null);
@@ -786,6 +791,7 @@ public class Fido2CredentialRequestRobolectricTest {
     public void testConditionalGetAssertion_webauthnModeNotChrome_notImplemented() {
         mRequestOptions.isConditional = true;
         Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
+        Mockito.when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.NONE);
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
@@ -895,6 +901,112 @@ public class Fido2CredentialRequestRobolectricTest {
         rpIdValidationCallback[0].onResult(
                 new WebAuthSecurityChecksResults(AuthenticatorStatus.NOT_ALLOWED_ERROR, false));
         assertThat(mCallback.getStatus()).isEqualTo(AuthenticatorStatus.ABORT_ERROR);
+    }
+
+    @Test
+    @SmallTest
+    public void
+            testConditionalGetAssertion_webauthnModeChrome3ppAndCredManDisabled_notImplemented() {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, false);
+        FeatureList.setTestValues(testValues);
+
+        mRequestOptions.isConditional = true;
+        Mockito.when(mModeProviderMock.getWebauthnMode(any()))
+                .thenReturn(WebauthnMode.CHROME_3PP_ENABLED);
+        Mockito.when(mModeProviderMock.getGlobalWebauthnMode())
+                .thenReturn(WebauthnMode.CHROME_3PP_ENABLED);
+
+        mRequest.handleGetAssertionRequest(
+                mRequestOptions,
+                /* maybeClientDataHash= */ null,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError);
+
+        assertThat(mCallback.getStatus()).isEqualTo(AuthenticatorStatus.NOT_IMPLEMENTED);
+        verifyNoInteractions(mCredManHelperMock);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_webauthnModeChrome3ppAndCredManDisabled_goesToPlayServices() {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, false);
+        FeatureList.setTestValues(testValues);
+
+        Mockito.when(mModeProviderMock.getWebauthnMode(any()))
+                .thenReturn(WebauthnMode.CHROME_3PP_ENABLED);
+        Mockito.when(mModeProviderMock.getGlobalWebauthnMode())
+                .thenReturn(WebauthnMode.CHROME_3PP_ENABLED);
+
+        mRequest.handleGetAssertionRequest(
+                mRequestOptions,
+                /* maybeClientDataHash= */ null,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError);
+
+        verifyNoInteractions(mCredManHelperMock);
+        assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
+    }
+
+    @Test
+    @SmallTest
+    public void testConditionalGetAssertion_webauthnModeChrome3ppAndCredManEnabled_goesToCredMan() {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, true);
+        FeatureList.setTestValues(testValues);
+
+        mRequestOptions.isConditional = true;
+        Mockito.when(mModeProviderMock.getWebauthnMode(any()))
+                .thenReturn(WebauthnMode.CHROME_3PP_ENABLED);
+        Mockito.when(mModeProviderMock.getGlobalWebauthnMode())
+                .thenReturn(WebauthnMode.CHROME_3PP_ENABLED);
+
+        mRequest.handleGetAssertionRequest(
+                mRequestOptions,
+                /* maybeClientDataHash= */ null,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError);
+
+        assertThat(mCallback.getStatus()).isNull();
+        verify(mCredManHelperMock, times(1))
+                .startPrefetchRequest(
+                        any(), any(), anyBoolean(), any(), any(), any(), any(), anyBoolean());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_webauthnModeChrome3ppAndCredManEnabled_goesToCredMan() {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, true);
+        FeatureList.setTestValues(testValues);
+
+        Mockito.when(mModeProviderMock.getWebauthnMode(any()))
+                .thenReturn(WebauthnMode.CHROME_3PP_ENABLED);
+        Mockito.when(mModeProviderMock.getGlobalWebauthnMode())
+                .thenReturn(WebauthnMode.CHROME_3PP_ENABLED);
+
+        mRequest.handleGetAssertionRequest(
+                mRequestOptions,
+                /* maybeClientDataHash= */ null,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError);
+
+        verify(mCredManHelperMock, times(1))
+                .startGetRequest(any(), any(), anyBoolean(), any(), any(), any(), anyBoolean());
+        assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
     }
 
     private WebauthnCredentialDetails createWebauthnCredential() {

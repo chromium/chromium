@@ -4,6 +4,7 @@
 
 package org.chromium.components.webauthn;
 
+import static org.chromium.components.webauthn.WebauthnModeProvider.is;
 import static org.chromium.components.webauthn.WebauthnModeProvider.isChrome;
 
 import android.app.Activity;
@@ -45,6 +46,7 @@ import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.GURLUtils;
 import org.chromium.url.Origin;
 
@@ -448,13 +450,18 @@ public class Fido2CredentialRequest
                 // the request needs to be routed directly to Play Services.
                 checkForMatchingCredentials(options, origin, maybeClientDataHash);
             } else {
-                mCredManHelper.setNoCredentialsFallback(
-                        () ->
-                                this.maybeDispatchGetAssertionRequest(
-                                        options,
-                                        convertOriginToString(origin),
-                                        maybeClientDataHash,
-                                        /* credentialId= */ null));
+                // WebauthnMode.CHROME_3PP_ENABLED will keep using CredMan's no credentials UI.
+                if (is(mAuthenticationContextProvider.getWebContents(), WebauthnMode.CHROME)) {
+                    mCredManHelper.setNoCredentialsFallback(
+                            () ->
+                                    this.maybeDispatchGetAssertionRequest(
+                                            options,
+                                            convertOriginToString(origin),
+                                            maybeClientDataHash,
+                                            /* credentialId= */ null));
+                } else {
+                    mCredManHelper.setNoCredentialsFallback(null);
+                }
                 int response =
                         mCredManHelper.startGetRequest(
                                 options,
@@ -472,6 +479,15 @@ public class Fido2CredentialRequest
         if (!mPlayServicesAvailable) {
             Log.e(TAG, "Google Play Services' Fido2PrivilegedApi is not available.");
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+            return;
+        }
+
+        // Conditional requests for Chrome 3rd party PWM mode when CredMan not enabled is not
+        // defined yet.
+        WebContents webContents = mAuthenticationContextProvider.getWebContents();
+        if (options.isConditional && is(webContents, WebauthnMode.CHROME_3PP_ENABLED)) {
+
+            returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
             return;
         }
 
@@ -494,9 +510,12 @@ public class Fido2CredentialRequest
             }
         }
 
-        if (frameHost != null && (options.isConditional || !hasAllowCredentials)) {
-            // Enumerate credentials from Play Services so that we can show the
-            // picker in Chrome UI.
+        // Enumerate credentials from Play Services so that we can show the picker in Chrome UI.
+        // Chrome 3rd party mode does not support enumeration in Chrome UI, hence use FIDO 2
+        // enumeration for them.
+        if (frameHost != null
+                && (options.isConditional || !hasAllowCredentials)
+                && is(webContents, WebauthnMode.CHROME)) {
             final byte[] finalClientDataHash = clientDataHash;
 
             if (getBarrierMode() == Barrier.Mode.BOTH) {

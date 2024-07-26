@@ -84,6 +84,10 @@ public class WebauthnModeProvider {
         return mode == WebauthnMode.CHROME || mode == WebauthnMode.CHROME_3PP_ENABLED;
     }
 
+    public static boolean is(WebContents webContents, @WebauthnMode int expectedMode) {
+        return getInstance().getWebauthnMode(webContents) == expectedMode;
+    }
+
     public static WebauthnModeProvider getInstance() {
         if (sInstance == null) sInstance = new WebauthnModeProvider();
         return sInstance;
