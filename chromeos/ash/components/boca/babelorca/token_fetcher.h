@@ -25,7 +25,7 @@ class TokenFetcher {
 
   virtual ~TokenFetcher() = default;
 
-  virtual void fetchToken(TokenFetchCallback callback) = 0;
+  virtual void FetchToken(TokenFetchCallback callback) = 0;
 
  protected:
   TokenFetcher() = default;

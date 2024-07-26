@@ -45,17 +45,17 @@ OAuthTokenFetcher::~OAuthTokenFetcher() {
 }
 
 // TokenFetcher:
-void OAuthTokenFetcher::fetchToken(TokenFetchCallback callback) {
+void OAuthTokenFetcher::FetchToken(TokenFetchCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (access_token_fetcher_) {
     LOG(ERROR) << "Tachyon oauth token fetch is already in progress.";
     std::move(callback).Run(std::nullopt);
     return;
   }
-  fetchTokenInternal(std::move(callback), /*retry_num=*/0);
+  FetchTokenInternal(std::move(callback), /*retry_num=*/0);
 }
 
-void OAuthTokenFetcher::fetchTokenInternal(TokenFetchCallback callback,
+void OAuthTokenFetcher::FetchTokenInternal(TokenFetchCallback callback,
                                            int retry_num) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(identity_manager_);
@@ -82,7 +82,7 @@ void OAuthTokenFetcher::OnOAuthTokenRequestCompleted(
   if (retry_num < kMaxRetries &&
       IsOAuthTokenFetchRetryableError(error.state())) {
     retry_timer_.Start(FROM_HERE, (retry_num + 1) * kRetryInitialBackoff,
-                       base::BindOnce(&OAuthTokenFetcher::fetchTokenInternal,
+                       base::BindOnce(&OAuthTokenFetcher::FetchTokenInternal,
                                       base::Unretained(this),
                                       std::move(callback), retry_num + 1));
     return;

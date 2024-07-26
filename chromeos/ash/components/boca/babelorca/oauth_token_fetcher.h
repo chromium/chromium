@@ -34,10 +34,10 @@ class OAuthTokenFetcher : public TokenFetcher {
   ~OAuthTokenFetcher() override;
 
   // TokenFetcher:
-  void fetchToken(TokenFetchCallback callback) override;
+  void FetchToken(TokenFetchCallback callback) override;
 
  private:
-  void fetchTokenInternal(TokenFetchCallback callback, int retry_num);
+  void FetchTokenInternal(TokenFetchCallback callback, int retry_num);
 
   void OnOAuthTokenRequestCompleted(TokenFetchCallback callback,
                                     int retry_num,

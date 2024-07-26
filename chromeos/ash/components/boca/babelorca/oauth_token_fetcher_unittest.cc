@@ -47,7 +47,7 @@ TEST_F(OAuthTokenFetcherTest, SuccessfulOAuthTokenFetch) {
   base::test::TestFuture<std::optional<TokenDataWrapper>> fetch_future;
   OAuthTokenFetcher oauth_token_fetcher(identity_test_env_.identity_manager());
 
-  oauth_token_fetcher.fetchToken(fetch_future.GetCallback());
+  oauth_token_fetcher.FetchToken(fetch_future.GetCallback());
   identity_test_env_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
           kOAuthToken, kExpirationTime, kIdToken,
@@ -63,7 +63,7 @@ TEST_F(OAuthTokenFetcherTest, FailedOAuthTokenFetch) {
   base::test::TestFuture<std::optional<TokenDataWrapper>> fetch_future;
   OAuthTokenFetcher oauth_token_fetcher(identity_test_env_.identity_manager());
 
-  oauth_token_fetcher.fetchToken(fetch_future.GetCallback());
+  oauth_token_fetcher.FetchToken(fetch_future.GetCallback());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       account_info_.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_ERROR));
@@ -77,8 +77,8 @@ TEST_F(OAuthTokenFetcherTest, OverlappingTokenFetchShouldFail) {
   base::test::TestFuture<std::optional<TokenDataWrapper>> overlap_fetch_future;
   OAuthTokenFetcher oauth_token_fetcher(identity_test_env_.identity_manager());
 
-  oauth_token_fetcher.fetchToken(first_fetch_future.GetCallback());
-  oauth_token_fetcher.fetchToken(overlap_fetch_future.GetCallback());
+  oauth_token_fetcher.FetchToken(first_fetch_future.GetCallback());
+  oauth_token_fetcher.FetchToken(overlap_fetch_future.GetCallback());
   identity_test_env_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
           kOAuthToken, kExpirationTime, kIdToken,
@@ -93,12 +93,12 @@ TEST_F(OAuthTokenFetcherTest, SuccessiveTokenFetchShouldProceed) {
   base::test::TestFuture<std::optional<TokenDataWrapper>> second_fetch_future;
   OAuthTokenFetcher oauth_token_fetcher(identity_test_env_.identity_manager());
 
-  oauth_token_fetcher.fetchToken(first_fetch_future.GetCallback());
+  oauth_token_fetcher.FetchToken(first_fetch_future.GetCallback());
   identity_test_env_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
           kOAuthToken, kExpirationTime, kIdToken,
           {GaiaConstants::kTachyonOAuthScope});
-  oauth_token_fetcher.fetchToken(second_fetch_future.GetCallback());
+  oauth_token_fetcher.FetchToken(second_fetch_future.GetCallback());
   identity_test_env_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
           kOAuthToken, kExpirationTime, kIdToken,
@@ -112,7 +112,7 @@ TEST_F(OAuthTokenFetcherTest, RetryOnRetriableError) {
   base::test::TestFuture<std::optional<TokenDataWrapper>> fetch_future;
   OAuthTokenFetcher oauth_token_fetcher(identity_test_env_.identity_manager());
 
-  oauth_token_fetcher.fetchToken(fetch_future.GetCallback());
+  oauth_token_fetcher.FetchToken(fetch_future.GetCallback());
   // Failure.
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       account_info_.account_id,
@@ -131,7 +131,7 @@ TEST_F(OAuthTokenFetcherTest, RespondOnLastSuccessfulRetry) {
   base::test::TestFuture<std::optional<TokenDataWrapper>> fetch_future;
   OAuthTokenFetcher oauth_token_fetcher(identity_test_env_.identity_manager());
 
-  oauth_token_fetcher.fetchToken(fetch_future.GetCallback());
+  oauth_token_fetcher.FetchToken(fetch_future.GetCallback());
   // Failure.
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       account_info_.account_id,
@@ -156,7 +156,7 @@ TEST_F(OAuthTokenFetcherTest, RespondAfterMaxRetries) {
   base::test::TestFuture<std::optional<TokenDataWrapper>> fetch_future;
   OAuthTokenFetcher oauth_token_fetcher(identity_test_env_.identity_manager());
 
-  oauth_token_fetcher.fetchToken(fetch_future.GetCallback());
+  oauth_token_fetcher.FetchToken(fetch_future.GetCallback());
   // Failure.
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       account_info_.account_id,
