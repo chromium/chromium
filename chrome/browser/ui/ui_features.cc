@@ -442,10 +442,6 @@ BASE_FEATURE(kViewsFirstRunDialog,
              "ViewsFirstRunDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kViewsTaskManager,
-             "ViewsTaskManager",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kViewsJSAppModalDialog,
              "ViewsJSAppModalDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);

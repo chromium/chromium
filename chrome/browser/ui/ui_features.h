@@ -260,7 +260,6 @@ BASE_DECLARE_FEATURE(kWebUITabStripContextMenuAfterTap);
 // Cocoa to views migration.
 #if BUILDFLAG(IS_MAC)
 BASE_DECLARE_FEATURE(kViewsFirstRunDialog);
-BASE_DECLARE_FEATURE(kViewsTaskManager);
 BASE_DECLARE_FEATURE(kViewsJSAppModalDialog);
 #endif
 
