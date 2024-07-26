@@ -23,6 +23,7 @@
 #include "net/reporting/reporting_delegate.h"
 #include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_policy.h"
+#include "net/reporting/reporting_target_type.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -69,9 +70,13 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
     int total_weight = 0;
 
     for (const ReportingEndpoint& endpoint : endpoints) {
-      if (!delegate_->CanUseClient(endpoint.group_key.origin,
-                                   endpoint.info.url)) {
-        continue;
+      // Enterprise endpoints don't have an origin.
+      if (endpoint.group_key.target_type == ReportingTargetType::kDeveloper) {
+        DCHECK(endpoint.group_key.origin.has_value());
+        if (!delegate_->CanUseClient(endpoint.group_key.origin.value(),
+                                     endpoint.info.url)) {
+          continue;
+        }
       }
 
       // If this client is lower priority than the ones we've found, skip it.

@@ -19,7 +19,7 @@ ReportingEndpointGroupKey::ReportingEndpointGroupKey() = default;
 
 ReportingEndpointGroupKey::ReportingEndpointGroupKey(
     const NetworkAnonymizationKey& network_anonymization_key,
-    const url::Origin& origin,
+    const std::optional<url::Origin>& origin,
     const std::string& group_name,
     ReportingTargetType target_type)
     : ReportingEndpointGroupKey(network_anonymization_key,
@@ -31,7 +31,7 @@ ReportingEndpointGroupKey::ReportingEndpointGroupKey(
 ReportingEndpointGroupKey::ReportingEndpointGroupKey(
     const NetworkAnonymizationKey& network_anonymization_key,
     std::optional<base::UnguessableToken> reporting_source,
-    const url::Origin& origin,
+    const std::optional<url::Origin>& origin,
     const std::string& group_name,
     ReportingTargetType target_type)
     : network_anonymization_key(network_anonymization_key),
@@ -39,9 +39,15 @@ ReportingEndpointGroupKey::ReportingEndpointGroupKey(
       origin(origin),
       group_name(group_name),
       target_type(target_type) {
-  // If |reporting_source| is present, it must not be empty.
+  // If `reporting_source` is present, it must not be empty.
   DCHECK(!(this->reporting_source.has_value() &&
            this->reporting_source->is_empty()));
+  // If `target_type` is developer, `origin` must be present.
+  // If `target_type` is enterprise, `origin` must not be present.
+  DCHECK((this->origin.has_value() &&
+          this->target_type == ReportingTargetType::kDeveloper) ||
+         (!this->origin.has_value() &&
+          this->target_type == ReportingTargetType::kEnterprise));
 }
 
 ReportingEndpointGroupKey::ReportingEndpointGroupKey(
@@ -90,8 +96,8 @@ std::string ReportingEndpointGroupKey::ToString() const {
   return "Source: " +
          (reporting_source ? reporting_source->ToString() : "null") +
          "; NAK: " + network_anonymization_key.ToDebugString() +
-         "; Origin: " + origin.Serialize() + "; Group name: " + group_name +
-         "; Target type: " +
+         "; Origin: " + (origin ? origin->Serialize() : "null") +
+         "; Group name: " + group_name + "; Target type: " +
          (target_type == ReportingTargetType::kDeveloper ? "developer"
                                                          : "enterprise");
 }

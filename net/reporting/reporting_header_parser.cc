@@ -83,7 +83,9 @@ bool ProcessEndpoint(ReportingDelegate* delegate,
     return false;
 
   GURL endpoint_url;
-  if (!ProcessEndpointURLString(*endpoint_url_string, group_key.origin,
+  // V0 endpoints should have an origin.
+  DCHECK(group_key.origin.has_value());
+  if (!ProcessEndpointURLString(*endpoint_url_string, group_key.origin.value(),
                                 endpoint_url)) {
     return false;
   }
@@ -109,7 +111,8 @@ bool ProcessEndpoint(ReportingDelegate* delegate,
     return false;
   endpoint_info_out->weight = weight;
 
-  return delegate->CanSetClient(group_key.origin, endpoint_info_out->url);
+  return delegate->CanSetClient(group_key.origin.value(),
+                                endpoint_info_out->url);
 }
 
 // Processes a single endpoint group tuple received in a Report-To header.
@@ -203,7 +206,9 @@ bool ProcessEndpoint(ReportingDelegate* delegate,
     return false;
 
   GURL endpoint_url;
-  if (!ProcessEndpointURLString(endpoint_url_string, group_key.origin,
+  // Document endpoints should have an origin.
+  DCHECK(group_key.origin.has_value());
+  if (!ProcessEndpointURLString(endpoint_url_string, group_key.origin.value(),
                                 endpoint_url)) {
     return false;
   }
@@ -214,7 +219,8 @@ bool ProcessEndpoint(ReportingDelegate* delegate,
       ReportingEndpoint::EndpointInfo::kDefaultPriority;
   endpoint_info_out.weight = ReportingEndpoint::EndpointInfo::kDefaultWeight;
 
-  return delegate->CanSetClient(group_key.origin, endpoint_info_out.url);
+  return delegate->CanSetClient(group_key.origin.value(),
+                                endpoint_info_out.url);
 }
 
 // Process a single endpoint received in a Reporting-Endpoints header.

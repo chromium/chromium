@@ -21,21 +21,26 @@ namespace net {
 
 // Identifies an endpoint group.
 struct NET_EXPORT ReportingEndpointGroupKey {
+  // Constructs a default ReportingEndpointGroupKey.
   ReportingEndpointGroupKey();
 
+  // Constructs a ReportingEndpointGroupKey with a null `reporting_source`.
   ReportingEndpointGroupKey(
       const NetworkAnonymizationKey& network_anonymization_key,
-      const url::Origin& origin,
+      const std::optional<url::Origin>& origin,
       const std::string& group_name,
       ReportingTargetType target_type);
 
+  // Constructs a ReportingEndpointGroupKey with the given parameters.
   ReportingEndpointGroupKey(
       const NetworkAnonymizationKey& network_anonymization_key,
       std::optional<base::UnguessableToken> reporting_source,
-      const url::Origin& origin,
+      const std::optional<url::Origin>& origin,
       const std::string& group_name,
       ReportingTargetType target_type);
 
+  // Constructs a ReportingEndpointGroupKey with the given `reporting_source`
+  // and all other members from `other`.
   ReportingEndpointGroupKey(
       const ReportingEndpointGroupKey& other,
       const std::optional<base::UnguessableToken>& reporting_source);
@@ -70,8 +75,9 @@ struct NET_EXPORT ReportingEndpointGroupKey {
   // this will be nullopt.
   std::optional<base::UnguessableToken> reporting_source;
 
-  // Origin that configured this endpoint group.
-  url::Origin origin;
+  // Origin that configured this endpoint group. For enterprise endpoint groups,
+  // this will be nullopt.
+  std::optional<url::Origin> origin;
 
   // Name of the endpoint group (defaults to "default" during header parsing).
   std::string group_name;

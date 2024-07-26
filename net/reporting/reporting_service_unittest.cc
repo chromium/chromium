@@ -635,24 +635,21 @@ TEST_P(ReportingServiceTest,
       {"endpoint-3", GURL("https://report-collector.example")},
   };
 
-  // TODO(crbug.com/350061802): Update origin in the ReportingEndpointGroupKey
-  // after origin is made optional. Current origin, "https://origin/", is for
-  // testing.
   std::vector<ReportingEndpoint> expected_enterprise_endpoints = {
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           url::Origin::Create(GURL("https://origin/")), "endpoint-1",
-           ReportingTargetType::kEnterprise),
+      {ReportingEndpointGroupKey(NetworkAnonymizationKey(),
+                                 /*reporting_source=*/std::nullopt,
+                                 /*origin=*/std::nullopt, "endpoint-1",
+                                 ReportingTargetType::kEnterprise),
        {.url = GURL("https://example.com/reports")}},
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           url::Origin::Create(GURL("https://origin/")), "endpoint-2",
-           ReportingTargetType::kEnterprise),
+      {ReportingEndpointGroupKey(NetworkAnonymizationKey(),
+                                 /*reporting_source=*/std::nullopt,
+                                 /*origin=*/std::nullopt, "endpoint-2",
+                                 ReportingTargetType::kEnterprise),
        {.url = GURL("https://reporting.example/cookie-issues")}},
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           url::Origin::Create(GURL("https://origin/")), "endpoint-3",
-           ReportingTargetType::kEnterprise),
+      {ReportingEndpointGroupKey(NetworkAnonymizationKey(),
+                                 /*reporting_source=*/std::nullopt,
+                                 /*origin=*/std::nullopt, "endpoint-3",
+                                 ReportingTargetType::kEnterprise),
        {.url = GURL("https://report-collector.example")}}};
 
   service()->SetEnterpriseReportingEndpoints(test_enterprise_endpoints);
@@ -669,24 +666,21 @@ TEST_P(ReportingServiceTest,
       {"endpoint-3", GURL("https://report-collector.example")},
   };
 
-  // TODO(crbug.com/350061802): Update origin in the ReportingEndpointGroupKey
-  // after origin is made optional. Current origin, "https://origin/", is for
-  // testing.
   std::vector<ReportingEndpoint> expected_enterprise_endpoints = {
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           url::Origin::Create(GURL("https://origin/")), "endpoint-1",
-           ReportingTargetType::kEnterprise),
+      {ReportingEndpointGroupKey(NetworkAnonymizationKey(),
+                                 /*reporting_source=*/std::nullopt,
+                                 /*origin=*/std::nullopt, "endpoint-1",
+                                 ReportingTargetType::kEnterprise),
        {.url = GURL("https://example.com/reports")}},
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           url::Origin::Create(GURL("https://origin/")), "endpoint-2",
-           ReportingTargetType::kEnterprise),
+      {ReportingEndpointGroupKey(NetworkAnonymizationKey(),
+                                 /*reporting_source=*/std::nullopt,
+                                 /*origin=*/std::nullopt, "endpoint-2",
+                                 ReportingTargetType::kEnterprise),
        {.url = GURL("https://reporting.example/cookie-issues")}},
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           url::Origin::Create(GURL("https://origin/")), "endpoint-3",
-           ReportingTargetType::kEnterprise),
+      {ReportingEndpointGroupKey(NetworkAnonymizationKey(),
+                                 /*reporting_source=*/std::nullopt,
+                                 /*origin=*/std::nullopt, "endpoint-3",
+                                 ReportingTargetType::kEnterprise),
        {.url = GURL("https://report-collector.example")}}};
 
   service()->SetEnterpriseReportingEndpoints(test_enterprise_endpoints);

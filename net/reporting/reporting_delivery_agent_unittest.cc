@@ -97,7 +97,7 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
     ASSERT_TRUE(SetEndpointInCache(
         dummy_group, GURL("https://dummy.test/upload"), kExpires_));
     AddReport(std::nullopt, dummy_group.network_anonymization_key,
-              dummy_group.origin.GetURL(), dummy_group.group_name);
+              dummy_group.origin.value().GetURL(), dummy_group.group_name);
 
     ASSERT_EQ(1u, pending_uploads().size());
     pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
@@ -115,7 +115,7 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
     SetV1EndpointInCache(dummy_group, kDocumentReportingSource_,
                          kIsolationInfo_, GURL("https://dummy.test/upload"));
     AddReport(kDocumentReportingSource_, dummy_group.network_anonymization_key,
-              dummy_group.origin.GetURL(), dummy_group.group_name);
+              dummy_group.origin.value().GetURL(), dummy_group.group_name);
 
     ASSERT_EQ(1u, pending_uploads().size());
     pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
@@ -891,8 +891,8 @@ TEST_F(ReportingDeliveryAgentTest, SendDeveloperReportsForSource) {
 
 TEST_F(ReportingDeliveryAgentTest, SendEnterpriseReports) {
   const ReportingEndpointGroupKey kEnterpriseGroupKey(
-      NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt, kOrigin_,
-      kGroup_, ReportingTargetType::kEnterprise);
+      NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
+      /*origin=*/std::nullopt, kGroup_, ReportingTargetType::kEnterprise);
 
   SetEnterpriseEndpointInCache(kEnterpriseGroupKey, kUrl_);
 
@@ -912,8 +912,8 @@ TEST_F(ReportingDeliveryAgentTest, SendEnterpriseReports) {
 
 TEST_F(ReportingDeliveryAgentTest, SendEnterpriseReportsBatched) {
   const ReportingEndpointGroupKey kEnterpriseGroupKey(
-      NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt, kOrigin_,
-      kGroup_, ReportingTargetType::kEnterprise);
+      NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
+      /*origin=*/std::nullopt, kGroup_, ReportingTargetType::kEnterprise);
 
   SetEnterpriseEndpointInCache(kEnterpriseGroupKey, kUrl_);
 
@@ -951,7 +951,7 @@ TEST_F(ReportingDeliveryAgentTest, SendDeveloperAndEnterpriseReports) {
       ReportingTargetType::kDeveloper);
   const ReportingEndpointGroupKey kEnterpriseGroupKey(
       NetworkAnonymizationKey(),
-      /*reporting_source=*/std::nullopt, kOrigin_, kGroup_,
+      /*reporting_source=*/std::nullopt, /*origin=*/std::nullopt, kGroup_,
       ReportingTargetType::kEnterprise);
 
   SetV1EndpointInCache(kDeveloperGroupKey, kDocumentReportingSource_,

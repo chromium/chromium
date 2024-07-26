@@ -438,13 +438,16 @@ struct SQLitePersistentReportingAndNelStore::Backend::ReportingEndpointInfo {
                         std::string network_anonymization_key_string)
       : network_anonymization_key_string(
             std::move(network_anonymization_key_string)),
-        origin_scheme(endpoint.group_key.origin.scheme()),
-        origin_host(endpoint.group_key.origin.host()),
-        origin_port(endpoint.group_key.origin.port()),
         group_name(endpoint.group_key.group_name),
         url(endpoint.info.url.spec()),
         priority(endpoint.info.priority),
-        weight(endpoint.info.weight) {}
+        weight(endpoint.info.weight) {
+    // The group key should have an origin.
+    DCHECK(endpoint.group_key.origin.has_value());
+    origin_scheme = endpoint.group_key.origin.value().scheme();
+    origin_host = endpoint.group_key.origin.value().host();
+    origin_port = endpoint.group_key.origin.value().port();
+  }
 
   // Creates the specified operation for the given endpoint. Returns nullptr for
   // endpoints with transient NetworkAnonymizationKeys.
@@ -488,16 +491,19 @@ struct SQLitePersistentReportingAndNelStore::Backend::
                              std::string network_anonymization_key_string)
       : network_anonymization_key_string(
             std::move(network_anonymization_key_string)),
-        origin_scheme(group.group_key.origin.scheme()),
-        origin_host(group.group_key.origin.host()),
-        origin_port(group.group_key.origin.port()),
         group_name(group.group_key.group_name),
         is_include_subdomains(group.include_subdomains ==
                               OriginSubdomains::INCLUDE),
         expires_us_since_epoch(
             group.expires.ToDeltaSinceWindowsEpoch().InMicroseconds()),
         last_access_us_since_epoch(
-            group.last_used.ToDeltaSinceWindowsEpoch().InMicroseconds()) {}
+            group.last_used.ToDeltaSinceWindowsEpoch().InMicroseconds()) {
+    // The group key should have an origin.
+    DCHECK(group.group_key.origin.has_value());
+    origin_scheme = group.group_key.origin.value().scheme();
+    origin_host = group.group_key.origin.value().host();
+    origin_port = group.group_key.origin.value().port();
+  }
 
   // Creates the specified operation for the given endpoint reporting group.
   // Returns nullptr for groups with transient NetworkAnonymizationKeys.
