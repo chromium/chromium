@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributesInt) {
   TestFormat(R"~~(<p contentEditable="true">Text</p>)~~",
              {":2;AXLineForIndex(0)=*"}, R"~~(AXWebArea
-++AXTextArea AXLineForIndex(0)=0
+++AXGroup AXLineForIndex(0)=0
 ++++AXStaticText
 )~~");
 }
@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributesNSRange) {
   TestFormat(R"~~(<p contentEditable="true">Text</p>)~~",
              {":2;AXStringForRange({loc: 1, len: 2})=*"}, R"~~(AXWebArea
-++AXTextArea AXStringForRange({loc: 1, len: 2})='ex'
+++AXGroup AXStringForRange({loc: 1, len: 2})='ex'
 ++++AXStaticText
 )~~");
 }
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributesUIElement) {
   TestFormat(R"~~(<p contentEditable='true'>Text</p>)~~",
              {":2;AXIndexForChildUIElement(:3)=*"}, R"~~(AXWebArea
-++AXTextArea AXIndexForChildUIElement(:3)=0
+++AXGroup AXIndexForChildUIElement(:3)=0
 ++++AXStaticText
 )~~");
 }
