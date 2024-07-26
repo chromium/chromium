@@ -6885,6 +6885,18 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_A11Y_DICTATION_NOTIFICATION_ONLY_SODA_DOWNLOADED_DESC" desc="The description for a notification that is shown when speech recognition files download successfully. This notification is only shown if speech recognition assets are downloaded and command parsing assets are not.">
         Speech is processed locally and dictation works offline, but some voice commands won’t work.
       </message>
+      <message name="IDS_ASH_A11Y_FACEGAZE_ASSETS_DOWNLOADED_TITLE" desc="The title for a notification that is shown when the facegaze-assets DLC is successfully downloaded.">
+        Face control files downloaded
+      </message>
+      <message name="IDS_ASH_A11Y_FACEGAZE_ASSETS_DOWNLOADED_DESC" desc="The description for a notification that is shown when the facegaze-assets DLC is successfully downloaded.">
+        Face control will be available to other users on the device
+      </message>
+      <message name="IDS_ASH_A11Y_FACEGAZE_ASSETS_FAILED_TITLE" desc="The title for a notification that is shown when the facegaze-assets DLC fails to download.">
+        Couldn't download face control files
+      </message>
+      <message name="IDS_ASH_A11Y_FACEGAZE_ASSETS_FAILED_DESC" desc="The description for a notification that is shown when the facegaze-assets DLC fails to download.">
+        Try again later
+      </message>
 
       <!-- Debugd notification strings -->
       <message name="IDS_ASH_DEBUG_PACKET_CAPTURE_STARTED" desc="The label used for the notification to indicate network packet capture operation has started and network information is being collected on the device.">

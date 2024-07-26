@@ -1808,6 +1808,41 @@ TEST_F(AccessibilityControllerTest,
   ASSERT_EQ(nullptr, controller->GetDisableTrackpadEventRewriterForTest());
 }
 
+TEST_F(AccessibilityControllerTest, FaceGazeNotificationsOnlyShownOnce) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+  ASSERT_FALSE(
+      prefs->GetBoolean(prefs::kFaceGazeDlcSuccessNotificationHasBeenShown));
+  ASSERT_FALSE(
+      prefs->GetBoolean(prefs::kFaceGazeDlcFailureNotificationHasBeenShown));
+
+  controller->ShowNotificationForFaceGaze(
+      FaceGazeNotificationType::kDlcSucceeded);
+  ASSERT_EQ(1u, MessageCenter::Get()->GetVisibleNotifications().size());
+  ASSERT_TRUE(
+      prefs->GetBoolean(prefs::kFaceGazeDlcSuccessNotificationHasBeenShown));
+  message_center::MessageCenter::Get()->RemoveAllNotifications(
+      /*by_user=*/false, message_center::MessageCenter::RemoveType::ALL);
+
+  // The success notification shouldn't be shown again.
+  controller->ShowNotificationForFaceGaze(
+      FaceGazeNotificationType::kDlcSucceeded);
+  ASSERT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
+
+  controller->ShowNotificationForFaceGaze(FaceGazeNotificationType::kDlcFailed);
+  ASSERT_EQ(1u, MessageCenter::Get()->GetVisibleNotifications().size());
+  ASSERT_TRUE(
+      prefs->GetBoolean(prefs::kFaceGazeDlcFailureNotificationHasBeenShown));
+  message_center::MessageCenter::Get()->RemoveAllNotifications(
+      /*by_user=*/false, message_center::MessageCenter::RemoveType::ALL);
+
+  // The failure notification shouldn't be shown again.
+  controller->ShowNotificationForFaceGaze(FaceGazeNotificationType::kDlcFailed);
+  ASSERT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
+}
+
 namespace {
 
 enum class TestUserLoginType {

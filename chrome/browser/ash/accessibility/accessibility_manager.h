@@ -621,6 +621,7 @@ class AccessibilityManager
 
   // Methods for managing the FaceGaze assets DLC.
   void OnFaceGazeAssetsInstalled(bool success, const std::string& root_path);
+  void OnFaceGazeAssetsFailed(std::string_view error);
   void OnFaceGazeAssetsCreated(
       std::optional<::extensions::api::accessibility_private::FaceGazeAssets>
           assets);

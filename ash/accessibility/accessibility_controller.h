@@ -94,6 +94,10 @@ enum class A11yNotificationType {
   kDicationOnlyPumpkinDownloaded,
   // Shown when the SODA DLC (but no other DLCs) have downloaded.
   kDictationOnlySodaDownloaded,
+  // Shown when the facegaze-assets DLC has successfully downloaded.
+  kFaceGazeAssetsDownloaded,
+  // Shown when the facegaze-assets DLC failed to download.
+  kFaceGazeAssetsFailed,
   // Shown when braille display is connected while spoken feedback is not
   // enabled yet. Note: in this case braille display connected would enable
   // spoken feedback.
@@ -567,6 +571,9 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
       DictationBubbleIconType icon,
       const std::optional<std::u16string>& text,
       const std::optional<std::vector<DictationBubbleHintType>>& hints);
+
+  // Shows a notification notifying the user about the FaceGaze DLC download.
+  void ShowNotificationForFaceGaze(FaceGazeNotificationType type);
 
   // Cancels all of spoken feedback's current and queued speech immediately.
   void SilenceSpokenFeedback();

@@ -246,6 +246,12 @@ enum class DictationNotificationType {
   kOnlyPumpkinDownloaded,
 };
 
+// The types of notifications that can be shown by FaceGaze.
+enum class FaceGazeNotificationType {
+  kDlcFailed,
+  kDlcSucceeded,
+};
+
 // The types of accessibility-related toasts. This enum should be kept in sync
 // with chrome.accessibilityPrivate.ToastType.
 enum class AccessibilityToastType {

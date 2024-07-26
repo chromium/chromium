@@ -814,6 +814,14 @@ inline constexpr char kAccessibilityFaceGazeActionsEnabled[] =
 // separately or whether speeds in all directions should be adjusted together.
 inline constexpr char kAccessibilityFaceGazeAdjustSpeedSeparately[] =
     "settings.a11y.face_gaze.adjust_speed_separately";
+// A boolean pref which indicates whether the FaceGaze DLC success notification
+// has ever been shown.
+inline constexpr char kFaceGazeDlcSuccessNotificationHasBeenShown[] =
+    "settings.a11y.face_gaze.dlc_success_notification_has_been_shown";
+// A boolean pref which indicates whether the FaceGaze DLC failure notification
+// has ever been shown.
+inline constexpr char kFaceGazeDlcFailureNotificationHasBeenShown[] =
+    "settings.a11y.face_gaze.dlc_failure_notification_has_been_shown";
 
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.
