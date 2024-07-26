@@ -267,7 +267,9 @@ TEST_F(KeyboardBrightnessControllerTest, SetKeyboardAmbientLightSensorEnabled) {
 
 TEST_F(KeyboardBrightnessControllerTest, SaveKeyboardALSPrefToKnownUser) {
   // Set initial ALS status.
-  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
 
   // Clear user sessions and reset to the primary login screen.
   ClearLogin();
@@ -453,7 +455,9 @@ TEST_F(KeyboardBrightnessControllerTest,
       features::kEnableKeyboardBacklightControlInSettings);
 
   // Set initial ALS status and brightness level.
-  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
   power_manager_client()->set_keyboard_brightness_percent(
       kInitialKeyboardBrightness);
 
@@ -498,10 +502,11 @@ TEST_F(KeyboardBrightnessControllerTest,
   ExpectKeyboardBrightnessPercent(first_brightness_change_percent);
 
   // Simulate a reboot, which resets the value of the keyboard ambient light
-  // sensor and
-  // the keyboard brightness.
+  // sensor and the keyboard brightness.
   ClearLogin();
-  power_manager_client()->SetAmbientLightSensorEnabled(true);
+  power_manager::SetAmbientLightSensorEnabledRequest request2;
+  request2.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request2);
   power_manager_client()->set_screen_brightness_percent(
       kInitialKeyboardBrightness);
 
@@ -530,7 +535,9 @@ TEST_F(KeyboardBrightnessControllerTest,
       features::kEnableKeyboardBacklightControlInSettings);
 
   // Set initial ALS status.
-  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
   power_manager_client()->set_keyboard_brightness_percent(
       kInitialKeyboardBrightness);
 
@@ -575,7 +582,8 @@ TEST_F(KeyboardBrightnessControllerTest,
   // Simulate a reboot, which resets the value of the ambient light sensor.
   // the keyboard brightness.
   ClearLogin();
-  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
   power_manager_client()->set_keyboard_brightness_percent(
       kInitialKeyboardBrightness);
 
@@ -600,7 +608,9 @@ TEST_F(KeyboardBrightnessControllerTest,
 
 TEST_F(KeyboardBrightnessControllerTest, KeyboardALSDisabledReasonPref) {
   // Set initial ALS status and brightness level.
-  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
   power_manager_client()->set_keyboard_brightness_percent(
       kInitialKeyboardBrightness);
 
@@ -655,7 +665,9 @@ TEST_F(KeyboardBrightnessControllerTest, KeyboardAmbientLightEnabledUserPref) {
       session_manager::SessionState::ACTIVE);
 
   // Set the ambient light sensor to be enabled initially.
-  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
   run_loop_.RunUntilIdle();
 
   // User pref is default to true.
@@ -686,7 +698,9 @@ TEST_F(KeyboardBrightnessControllerTest,
       features::kEnableKeyboardBacklightControlInSettings);
 
   // Set initial ALS and keyboard brightness.
-  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
   power_manager_client()->set_keyboard_brightness_percent(
       kInitialKeyboardBrightness);
 
@@ -719,7 +733,8 @@ TEST_F(KeyboardBrightnessControllerTest,
   // Simulate a reboot, which resets the value of the ambient light sensor and
   // the keyboard brightness.
   ClearLogin();
-  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
   power_manager_client()->set_keyboard_brightness_percent(
       kInitialKeyboardBrightness);
 
@@ -754,7 +769,9 @@ TEST_F(KeyboardBrightnessControllerTest,
       features::kEnableKeyboardBacklightControlInSettings);
 
   // Set initial ALS and keyboard brightness.
-  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
   power_manager_client()->set_keyboard_brightness_percent(
       kInitialKeyboardBrightness);
 
@@ -787,7 +804,8 @@ TEST_F(KeyboardBrightnessControllerTest,
   // Simulate a reboot, which resets the value of the ambient light sensor and
   // the keyboard brightness.
   ClearLogin();
-  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
   power_manager_client()->set_keyboard_brightness_percent(
       kInitialKeyboardBrightness);
 
@@ -843,7 +861,9 @@ TEST_F(KeyboardBrightnessControllerTest,
        RecordStartupKeyboardAmbientLightSensorStatus) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kEnableKeyboardBacklightControlInSettings);
-  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
   power_manager_client()->set_has_ambient_light_sensor(true);
   base::RunLoop().RunUntilIdle();
 

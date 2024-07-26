@@ -161,7 +161,13 @@ void BrightnessControllerChromeos::GetBrightnessPercent(
 }
 
 void BrightnessControllerChromeos::SetAmbientLightSensorEnabled(bool enabled) {
-  chromeos::PowerManagerClient::Get()->SetAmbientLightSensorEnabled(enabled);
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(enabled);
+  // TODO(longbowei): Add param and change it based on source.
+  request.set_cause(
+      power_manager::
+          SetAmbientLightSensorEnabledRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP);
+  chromeos::PowerManagerClient::Get()->SetAmbientLightSensorEnabled(request);
 }
 
 void BrightnessControllerChromeos::GetAmbientLightSensorEnabled(

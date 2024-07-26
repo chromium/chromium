@@ -239,8 +239,14 @@ void KeyboardBrightnessController::HandleGetKeyboardBrightness(
 
 void KeyboardBrightnessController::HandleSetKeyboardAmbientLightSensorEnabled(
     bool enabled) {
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(enabled);
+  // TODO(longbowei): Add param and change it based on source.
+  request.set_cause(
+      power_manager::
+          SetAmbientLightSensorEnabledRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP);
   chromeos::PowerManagerClient::Get()->SetKeyboardAmbientLightSensorEnabled(
-      enabled);
+      request);
 }
 
 void KeyboardBrightnessController::RestoreKeyboardBrightnessSettings(

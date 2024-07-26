@@ -128,7 +128,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void SetScreenBrightness(
       const power_manager::SetBacklightBrightnessRequest& request) override;
   void GetScreenBrightnessPercent(DBusMethodCallback<double> callback) override;
-  void SetAmbientLightSensorEnabled(bool enabled) override;
+  void SetAmbientLightSensorEnabled(
+      const power_manager::SetAmbientLightSensorEnabledRequest& request)
+      override;
   void GetAmbientLightSensorEnabled(DBusMethodCallback<bool> callback) override;
   void HasAmbientLightSensor(DBusMethodCallback<bool> callback) override;
   void HasKeyboardBacklight(DBusMethodCallback<bool> callback) override;
@@ -139,7 +141,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void SetKeyboardBrightness(
       const power_manager::SetBacklightBrightnessRequest& request) override;
   void ToggleKeyboardBacklight() override;
-  void SetKeyboardAmbientLightSensorEnabled(bool enabled) override;
+  void SetKeyboardAmbientLightSensorEnabled(
+      const power_manager::SetAmbientLightSensorEnabledRequest& request)
+      override;
   void GetKeyboardAmbientLightSensorEnabled(
       DBusMethodCallback<bool> callback) override;
   const std::optional<power_manager::PowerSupplyProperties>& GetLastStatus()

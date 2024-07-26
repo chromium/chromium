@@ -136,14 +136,14 @@ MATCHER_P2(IsAmbientLightSensorEnabled, method_name, sensor_enabled, "") {
     return false;
   }
   dbus::MessageReader reader(arg);
-  bool read_sensor_enabled;
-  if (!reader.PopBool(&read_sensor_enabled)) {
-    *result_listener << "missing value 1 (enabled)";
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  if (!reader.PopArrayOfBytesAsProto(&request)) {
+    *result_listener << "missing or invalid protobuf";
     return false;
   }
-  if (read_sensor_enabled != sensor_enabled) {
+  if (request.sensor_enabled() != sensor_enabled) {
     *result_listener << "expected enabled = " << sensor_enabled << ", got "
-                     << read_sensor_enabled;
+                     << request.sensor_enabled();
     return false;
   }
   return true;
@@ -890,39 +890,45 @@ TEST_F(PowerManagerClientTest, BatterySaverModeStateChanged) {
 // Tests that |SetAmbientLightSensorEnabled| calls the DBus method with the same
 // name.
 TEST_F(PowerManagerClientTest, SetAmbientLightSensorEnabled) {
-  bool expected_sensor_enabled = false;
-  EXPECT_CALL(*proxy_.get(), DoCallMethod(IsAmbientLightSensorEnabled(
-                                              "SetAmbientLightSensorEnabled",
-                                              expected_sensor_enabled),
-                                          _, _));
-  client_->SetAmbientLightSensorEnabled(expected_sensor_enabled);
+  power_manager::SetAmbientLightSensorEnabledRequest request;
 
-  bool expected_sensor_enabled2 = true;
-  EXPECT_CALL(*proxy_.get(), DoCallMethod(IsAmbientLightSensorEnabled(
-                                              "SetAmbientLightSensorEnabled",
-                                              expected_sensor_enabled2),
-                                          _, _));
-  client_->SetAmbientLightSensorEnabled(expected_sensor_enabled2);
+  // Test with sensor disabled
+  request.set_sensor_enabled(false);
+  EXPECT_CALL(*proxy_.get(),
+              DoCallMethod(IsAmbientLightSensorEnabled(
+                               "SetAmbientLightSensorEnabled", false),
+                           _, _));
+  client_->SetAmbientLightSensorEnabled(request);
+
+  // Test with sensor enabled
+  request.set_sensor_enabled(true);
+  EXPECT_CALL(*proxy_.get(),
+              DoCallMethod(IsAmbientLightSensorEnabled(
+                               "SetAmbientLightSensorEnabled", true),
+                           _, _));
+  client_->SetAmbientLightSensorEnabled(request);
 }
 
-// Tests that |SetKeyboardAmbientLightSensorEnabled| calls the DBus method with
-// the same name.
+// Tests that |SetKeyboardAmbientLightSensorEnabled| calls the DBus method
+// with the same name.
 TEST_F(PowerManagerClientTest, SetKeyboardAmbientLightSensorEnabled) {
-  bool expected_sensor_enabled = false;
-  EXPECT_CALL(*proxy_.get(),
-              DoCallMethod(IsAmbientLightSensorEnabled(
-                               "SetKeyboardAmbientLightSensorEnabled",
-                               expected_sensor_enabled),
-                           _, _));
-  client_->SetKeyboardAmbientLightSensorEnabled(expected_sensor_enabled);
+  power_manager::SetAmbientLightSensorEnabledRequest request;
 
-  bool expected_sensor_enabled2 = true;
+  // Test with sensor disabled
+  request.set_sensor_enabled(false);
   EXPECT_CALL(*proxy_.get(),
               DoCallMethod(IsAmbientLightSensorEnabled(
-                               "SetKeyboardAmbientLightSensorEnabled",
-                               expected_sensor_enabled2),
+                               "SetKeyboardAmbientLightSensorEnabled", false),
                            _, _));
-  client_->SetKeyboardAmbientLightSensorEnabled(expected_sensor_enabled2);
+  client_->SetKeyboardAmbientLightSensorEnabled(request);
+
+  // Test with sensor enabled
+  request.set_sensor_enabled(true);
+  EXPECT_CALL(*proxy_.get(),
+              DoCallMethod(IsAmbientLightSensorEnabled(
+                               "SetKeyboardAmbientLightSensorEnabled", true),
+                           _, _));
+  client_->SetKeyboardAmbientLightSensorEnabled(request);
 }
 
 TEST_F(PowerManagerClientTest, GetKeyboardAmbientLightSensorEnabled) {
