@@ -56,7 +56,9 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
           CreateIconForMenuItem(kForbidIcon));
       break;
     case BirchSuggestionType::kMedia:
-      add_hide_suggestion_item();
+      // There's no "Hide this suggestion" for media because the media URLs we
+      // have in the BirchItem are very generic (e.g. "youtube.com"), so hiding
+      // "this" suggestion would hide all media from a given site.
       AddItemWithIcon(
           base::to_underlying(CommandId::kHideMediaSuggestions),
           l10n_util::GetStringUTF16(IDS_ASH_BIRCH_HIDE_MEDIA_SUGGESTIONS),

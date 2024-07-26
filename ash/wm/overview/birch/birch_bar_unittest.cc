@@ -1274,7 +1274,8 @@ TEST_F(BirchBarMenuTest, HideSuggestionTypes) {
 
     const BirchItemType item_type = chip->GetItem()->GetType();
     int hide_suggestions_type_idx = 1;
-    if (item_type == BirchItemType::kWeather) {
+    if (item_type == BirchItemType::kWeather ||
+        item_type == BirchItemType::kLostMedia) {
       hide_suggestions_type_idx = 0;
     }
 
