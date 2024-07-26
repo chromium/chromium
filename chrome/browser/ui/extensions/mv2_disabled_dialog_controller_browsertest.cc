@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -223,8 +224,13 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerBrowserTest, NoUserAction) {
 
 // Tests that only MV2 disabled extensions that can be uninstalled are included
 // in the dialog.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PolicyInstalledExtensions DISABLED_PolicyInstalledExtensions
+#else
+#define MAYBE_PolicyInstalledExtensions PolicyInstalledExtensions
+#endif
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerBrowserTest,
-                       PolicyInstalledExtensions) {
+                       MAYBE_PolicyInstalledExtensions) {
   const ExtensionId internal_extension_id =
       AddMV2Extension("Internal Extension", mojom::ManifestLocation::kInternal)
           ->id();
