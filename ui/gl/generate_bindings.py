@@ -2982,6 +2982,11 @@ def GenerateSource(file, functions, set_name, used_extensions,
   file.write(LICENSE_AND_HEADER +
 """
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <string>
 
 %s
