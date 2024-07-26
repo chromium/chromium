@@ -192,7 +192,7 @@ class HostResolverServiceEndpointRequestTest
     : public HostResolverManagerDnsTest {
  public:
   HostResolverServiceEndpointRequestTest() {
-    feature_list_.InitAndEnableFeature(features::kUseServiceEndpointRequest);
+    feature_list_.InitAndEnableFeature(features::kEnableHappyEyeballsV3);
   }
 
   ~HostResolverServiceEndpointRequestTest() override = default;

@@ -224,7 +224,7 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
                                        base::Unretained(this)));
   }
 
-  if (base::FeatureList::IsEnabled(features::kUseServiceEndpointRequest)) {
+  if (base::FeatureList::IsEnabled(features::kEnableHappyEyeballsV3)) {
     http_stream_pool_ = std::make_unique<HttpStreamPool>(
         this,
         /*cleanup_on_ip_address_change=*/!params.ignore_ip_address_changes);

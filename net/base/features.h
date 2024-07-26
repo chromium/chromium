@@ -97,10 +97,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kUseDnsHttpsSvcbAlpn);
 // transactions complete.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseHostResolverCache);
 
-// Enables the DNS ServiceEndpointRequest API, which provides intermediate
-// service endpoints in the middle of a DNS transaction so that clients of this
-// API can attempt connections as soon as candidate endpoints are available.
-NET_EXPORT BASE_DECLARE_FEATURE(kUseServiceEndpointRequest);
+// Enables the Happy Eyeballs v3, where we use intermediate DNS resolution
+// results to make connection attempts as soon as possible.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableHappyEyeballsV3);
 
 // If the `kUseAlternativePortForGloballyReachableCheck` flag is enabled, the
 // globally reachable check will use the port number specified by

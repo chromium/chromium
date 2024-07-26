@@ -416,7 +416,7 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
   HttpStreamPoolJobTest()
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitAndEnableFeature(features::kUseServiceEndpointRequest);
+    feature_list_.InitAndEnableFeature(features::kEnableHappyEyeballsV3);
     session_deps_.alternate_host_resolver =
         std::make_unique<FakeServiceEndpointResolver>();
     http_network_session_ =
