@@ -930,7 +930,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         getTabModelSelector(),
                         adaptOnToolbarAlphaChange(),
                         getProfileProviderSupplier(),
-                        mHubManagerSupplier,
+                        mHubProvider.getHubManagerSupplier(),
                         () ->
                                 ((TabbedRootUiCoordinator) mRootUiCoordinator)
                                         .getTabGroupSyncController(),

@@ -161,7 +161,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull TabModelSelector tabModelSelector,
             @NonNull DoubleConsumer onToolbarAlphaChange,
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
-            @NonNull OneshotSupplier<HubManager> hubManagerSupplier,
+            @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         LazyOneshotSupplier<TabModelFilter> tabModelFilterSupplier =

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -135,7 +136,7 @@ public interface TabManagementDelegate {
             @NonNull TabModelSelector tabModelSelector,
             @NonNull DoubleConsumer onToolbarAlphaChange,
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
-            @NonNull OneshotSupplier<HubManager> hubManagerSupplier,
+            @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier);
 }
