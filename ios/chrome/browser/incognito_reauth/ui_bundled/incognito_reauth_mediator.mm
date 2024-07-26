@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_mediator.h"
 
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_consumer.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 
 @interface IncognitoReauthMediator () <IncognitoReauthObserver>
 

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_INCOGNITO_REAUTH_INCOGNITO_REAUTH_SCENE_AGENT_H_
-#define IOS_CHROME_BROWSER_UI_INCOGNITO_REAUTH_INCOGNITO_REAUTH_SCENE_AGENT_H_
+#ifndef IOS_CHROME_BROWSER_INCOGNITO_REAUTH_UI_BUNDLED_INCOGNITO_REAUTH_SCENE_AGENT_H_
+#define IOS_CHROME_BROWSER_INCOGNITO_REAUTH_UI_BUNDLED_INCOGNITO_REAUTH_SCENE_AGENT_H_
 
 #import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
 
 @class IncognitoReauthSceneAgent;
 class PrefRegistrySimple;
@@ -66,4 +66,4 @@ class PrefService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_INCOGNITO_REAUTH_INCOGNITO_REAUTH_SCENE_AGENT_H_
+#endif  // IOS_CHROME_BROWSER_INCOGNITO_REAUTH_UI_BUNDLED_INCOGNITO_REAUTH_SCENE_AGENT_H_

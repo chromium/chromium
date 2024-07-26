@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_util.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 
 #import <LocalAuthentication/LocalAuthentication.h>
 #import "ios/chrome/grit/ios_strings.h"
