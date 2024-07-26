@@ -33,6 +33,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -48,31 +50,157 @@ namespace {
 
 constexpr char kHostname[] = "direct-sockets.com";
 
+constexpr std::string_view kTcpReadWriteScript = R"(
+  (async () => {
+    try {
+      const socket = new TCPSocket($1, $2);
+
+      const { readable, writable } = await socket.opened;
+
+      const reader = readable.getReader();
+      const writer = writable.getWriter();
+
+      const kTcpPacket =
+        "POST /echo HTTP/1.1\r\n" +
+        "Content-Length: 19\r\n\r\n" +
+        "0100000005320000005";
+
+      // The echo server can send back the response in multiple chunks.
+      // We must wait for at least `kTcpMinExpectedResponseLength` bytes to
+      // be received before matching the response with `kTcpResponsePattern`.
+      const kTcpMinExpectedResponseLength = 102;
+
+      const kTcpResponsePattern = "0100000005320000005";
+
+      let tcpResponse = "";
+      const readUntil = async () => {
+        const { value, done } = await reader.read();
+        if (done) {
+          console.log("ReadableStream must not be exhausted at this point.");
+          return false;
+        }
+
+        const message = (new TextDecoder()).decode(value);
+        tcpResponse += message;
+        if (tcpResponse.length >= kTcpMinExpectedResponseLength) {
+          if (!tcpResponse.match(kTcpResponsePattern)) {
+            console.log("The data returned must match the data sent.");
+            return false;
+          }
+
+          return true;
+        } else {
+          return await readUntil();
+        }
+      };
+
+      writer.write((new TextEncoder()).encode(kTcpPacket));
+
+      return await readUntil();
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+  })();
+)";
+
+constexpr std::string_view kUdpConnectedReadWriteScript = R"(
+  (async () => {
+    try {
+      const socket = new UDPSocket({ remoteAddress: $1, remotePort: $2 });
+      const { readable, writable } = await socket.opened;
+
+      const kUdpMessage = "udp_message";
+      writable.getWriter().write({
+        data: (new TextEncoder()).encode(kUdpMessage)
+      });
+      return await readable.getReader().read().then(packet => {
+        const { value, done } = packet;
+        if (done) {
+          return false;
+        }
+        const { data } = value;
+        if ((new TextDecoder()).decode(data) !== kUdpMessage) {
+          return false;
+        }
+        return true;
+      });
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+  })();
+)";
+
+constexpr std::string_view kUdpBoundReadWriteScript = R"(
+  (async () => {
+    try {
+      const socket = new UDPSocket({ localAddress: "127.0.0.1" });
+      const { readable, writable } = await socket.opened;
+
+      const kUdpMessage = "udp_message";
+      writable.getWriter().write({
+        data: (new TextEncoder()).encode(kUdpMessage),
+        remoteAddress: $1,
+        remotePort: $2,
+      });
+      return await readable.getReader().read().then(packet => {
+        const { value, done } = packet;
+        if (done) {
+          return false;
+        }
+        const { data, remoteAddress, remotePort } = value;
+        if ((new TextDecoder()).decode(data) !== kUdpMessage) {
+          return false;
+        }
+        if (remoteAddress !== "127.0.0.1") {
+          return false;
+        }
+        if (remotePort !== $2) {
+          return false;
+        }
+        return true;
+      });
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+  })();
+)";
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
-std::string GenerateManifest(
+base::Value::Dict GenerateManifest(
     std::optional<base::Value::Dict> socket_permissions = {}) {
-  base::Value::Dict manifest;
-  manifest.Set(extensions::manifest_keys::kName,
-               "Direct Sockets in Chrome Apps");
-  manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
-  manifest.Set(extensions::manifest_keys::kVersion, "1.0");
+  auto manifest = base::Value::Dict()
+                      .Set(extensions::manifest_keys::kName,
+                           "Direct Sockets in Chrome Apps")
+                      .Set(extensions::manifest_keys::kManifestVersion, 2)
+                      .Set(extensions::manifest_keys::kVersion, "1.0");
 
-  base::Value::List scripts;
-  scripts.Append("background.js");
   manifest.SetByDottedPath(
       extensions::manifest_keys::kPlatformAppBackgroundScripts,
-      std::move(scripts));
+      base::Value::List().Append("background.js"));
 
   if (socket_permissions) {
     manifest.Set(extensions::manifest_keys::kSockets,
                  std::move(*socket_permissions));
   }
 
-  std::string out;
-  base::JSONWriter::Write(manifest, &out);
+  return manifest;
+}
 
-  return out;
+auto AccessBlocked() {
+  return testing::HasSubstr("Access to the requested host is blocked");
+}
+
+auto NotDefined(std::string_view symbol) {
+  return testing::HasSubstr(
+      base::StringPrintf("%s is not defined", symbol.data()));
+}
+
+auto ErrorIs(const auto& matcher) {
+  return testing::Field(&content::EvalJsResult::error, matcher);
 }
 
 #endif
@@ -181,589 +309,234 @@ class ChromeDirectSocketsUdpTest : public ChromeDirectSocketsTest<TestHarness> {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
+class ChromeAppApiTest : public extensions::ExtensionApiTest {
+ public:
+  content::RenderFrameHost* InstallAndOpenChromeApp(
+      const base::Value::Dict& manifest) {
+    dir.WriteManifest(manifest);
+    dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+
+    const extensions::Extension& extension =
+        CHECK_DEREF(LoadExtension(dir.UnpackedPath()));
+    return CHECK_DEREF(extensions::ProcessManager::Get(profile())
+                           ->GetBackgroundHostForExtension(extension.id()))
+        .main_frame_host();
+  }
+
+ private:
+  extensions::TestExtensionDir dir;
+};
+
 using ChromeDirectSocketsTcpApiTest =
-    ChromeDirectSocketsTcpTest<extensions::ExtensionApiTest>;
+    ChromeDirectSocketsTcpTest<ChromeAppApiTest>;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest, TcpReadWrite) {
-  extensions::TestExtensionDir dir;
-
-  dir.WriteManifest(
+  content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
       GenerateManifest(/*socket_permissions=*/
                        base::Value::Dict().Set(
                            "tcp", base::Value::Dict().Set("connect", "*"))));
-  dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
-    chrome.test.sendMessage("ready", async (message) => {
-      try {
-        const [remoteAddress, remotePort] = message.split(':');
-        const socket = new TCPSocket(remoteAddress, remotePort);
-
-        const { readable, writable } = await socket.opened;
-
-        const reader = readable.getReader();
-        const writer = writable.getWriter();
-
-        const kTcpPacket =
-          "POST /echo HTTP/1.1\r\n" +
-          "Content-Length: 19\r\n\r\n" +
-          "0100000005320000005";
-
-        // The echo server can send back the response in multiple chunks.
-        // We must wait for at least `kTcpMinExpectedResponseLength` bytes to
-        // be received before matching the response with `kTcpResponsePattern`.
-        const kTcpMinExpectedResponseLength = 102;
-
-        const kTcpResponsePattern = "0100000005320000005";
-
-        let tcpResponse = "";
-        const readUntil = async () => {
-          reader.read().then(packet => {
-            const { value, done } = packet;
-            chrome.test.assertFalse(done,
-                "ReadableStream must not be exhausted at this point.");
-
-            const message = (new TextDecoder()).decode(value);
-            tcpResponse += message;
-            if (tcpResponse.length >= kTcpMinExpectedResponseLength) {
-              chrome.test.assertTrue(
-                !!tcpResponse.match(kTcpResponsePattern),
-                "The data returned must match the data sent."
-              );
-
-              chrome.test.succeed();
-            } else {
-              readUntil();
-            }
-          });
-        };
-
-        readUntil();
-
-        writer.write((new TextEncoder()).encode(kTcpPacket));
-      } catch (e) {
-        chrome.test.fail(e.name + ':' + e.message);
-      }
-    });
-  )");
-
-  extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-
-  ASSERT_TRUE(LoadExtension(dir.UnpackedPath()));
-  EXPECT_TRUE(listener.WaitUntilSatisfied());
-
-  listener.Reply(base::StringPrintf("%s:%d", kHostname, test_server()->port()));
-  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest,
-                       TcpSocketUndefinedWithoutSocketsPermission) {
-  extensions::TestExtensionDir dir;
-
-  // "sockets" key is not present in the manifest.
-  dir.WriteManifest(GenerateManifest());
-  dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
-    chrome.test.sendMessage("ready", async (message) => {
-      try {
-        const [remoteAddress, remotePort] = message.split(':');
-        const socket = new TCPSocket(remoteAddress, remotePort);
-      } catch (e) {
-        chrome.test.assertEq(e.message, "TCPSocket is not defined");
-        chrome.test.succeed();
-      }
-    });
-  )");
-
-  extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-
-  ASSERT_TRUE(LoadExtension(dir.UnpackedPath()));
-  ASSERT_TRUE(listener.WaitUntilSatisfied());
-
-  listener.Reply(base::StringPrintf("%s:%d", kHostname, 0));
-  EXPECT_TRUE(catcher.GetNextResult());
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest,
-                       TcpFailsWithoutSocketsTcpConnectPermission) {
-  extensions::TestExtensionDir dir;
-
-  // "sockets" key is present in the manifest, but "sockets.tcp.connect" is not.
-  dir.WriteManifest(
-      GenerateManifest(/*socket_permissions=*/base::Value::Dict()));
-  dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
-    chrome.test.sendMessage("ready", async (message) => {
-      try {
-        const [remoteAddress, remotePort] = message.split(':');
-        const socket = new TCPSocket(remoteAddress, remotePort);
-
-        await chrome.test.assertPromiseRejects(
-          socket.opened,
-          "InvalidAccessError: Access to the requested host is blocked."
-        );
-
-        chrome.test.succeed();
-      } catch (e) {
-        chrome.test.fail(e.name + ':' + e.message);
-      }
-    });
-  )");
-
-  extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-
-  ASSERT_TRUE(LoadExtension(dir.UnpackedPath()));
-  ASSERT_TRUE(listener.WaitUntilSatisfied());
-
-  listener.Reply(base::StringPrintf("%s:%d", kHostname, 0));
-  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-}
-
-using ChromeDirectSocketsUdpApiTest =
-    ChromeDirectSocketsUdpTest<extensions::ExtensionApiTest>;
-
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpReadWrite) {
-  extensions::TestExtensionDir dir;
-
-  dir.WriteManifest(
-      GenerateManifest(/*socket_permissions=*/base::Value::Dict().Set(
-          "udp", base::Value::Dict().Set("send", "*"))));
-  dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
-    chrome.test.sendMessage("ready", async (message) => {
-      try {
-        const [remoteAddress, remotePort] = message.split(':');
-        const socket = new UDPSocket({ remoteAddress, remotePort });
-
-        const { readable, writable } = await socket.opened;
-
-        const reader = readable.getReader();
-        const writer = writable.getWriter();
-
-        const kUdpMessage = "udp_message";
-
-        reader.read().then(packet => {
-          const { value, done } = packet;
-          chrome.test.assertFalse(done,
-              "ReadableStream must not be exhausted at this point.");
-
-          const { data } = value;
-          chrome.test.assertEq((new TextDecoder()).decode(data), kUdpMessage,
-              "The data returned must exactly match the data sent.");
-
-          chrome.test.succeed();
-        });
-
-        writer.write({
-          data: (new TextEncoder()).encode(kUdpMessage)
-        });
-      } catch (e) {
-        chrome.test.fail(e.name + ':' + e.message);
-      }
-    });
-  )");
-
-  extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-
-  ASSERT_TRUE(LoadExtension(dir.UnpackedPath()));
-  EXPECT_TRUE(listener.WaitUntilSatisfied());
-
-  listener.Reply(base::StringPrintf("%s:%d", kHostname, test_server()->port()));
-  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
-                       UdpSocketUndefinedWithoutSocketsPermission) {
-  extensions::TestExtensionDir dir;
-
-  // "sockets" key is not present in the manifest.
-  dir.WriteManifest(GenerateManifest());
-  dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
-    chrome.test.sendMessage("ready", async (message) => {
-      try {
-        const [remoteAddress, remotePort] = message.split(':');
-        const socket = new UDPSocket({ remoteAddress, remotePort });
-      } catch (e) {
-        chrome.test.assertEq(e.message, "UDPSocket is not defined");
-        chrome.test.succeed();
-      }
-    });
-  )");
-
-  extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-
-  ASSERT_TRUE(LoadExtension(dir.UnpackedPath()));
-  ASSERT_TRUE(listener.WaitUntilSatisfied());
-
-  listener.Reply(base::StringPrintf("%s:%d", kHostname, 0));
-  EXPECT_TRUE(catcher.GetNextResult());
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
-                       UdpConnectedFailsWithoutSocketsUdpSendPermission) {
-  extensions::TestExtensionDir dir;
-
-  // "sockets" key is present in the manifest, but "sockets.udp.send" is
-  // not.
-  dir.WriteManifest(
-      GenerateManifest(/*socket_permissions=*/base::Value::Dict()));
-  dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
-    chrome.test.sendMessage("ready", async (message) => {
-      try {
-        const [remoteAddress, remotePort] = message.split(':');
-        const socket = new UDPSocket({ remoteAddress, remotePort });
-
-        await chrome.test.assertPromiseRejects(
-          socket.opened,
-          "InvalidAccessError: Access to the requested host is blocked."
-        );
-
-        chrome.test.succeed();
-      } catch (e) {
-        chrome.test.fail(e.name + ':' + e.message);
-      }
-    });
-  )");
-
-  extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-
-  ASSERT_TRUE(LoadExtension(dir.UnpackedPath()));
-  ASSERT_TRUE(listener.WaitUntilSatisfied());
-
-  listener.Reply(base::StringPrintf("%s:%d", kHostname, 0));
-  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
-                       UdpBoundFailsWithoutSocketsUdpBindPermission) {
-  extensions::TestExtensionDir dir;
-
-  // "sockets" key is present in the manifest as well as "sockets.udp.send",
-  // but "sockets.udp.bind" is not.
-  dir.WriteManifest(
-      GenerateManifest(/*socket_permissions=*/base::Value::Dict()));
-  dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
-    chrome.test.sendMessage("ready", async (message) => {
-      try {
-        const socket = new UDPSocket({ localAddress: "::" });
-
-        await chrome.test.assertPromiseRejects(
-          socket.opened,
-          "InvalidAccessError: Access to the requested host is blocked."
-        );
-
-        chrome.test.succeed();
-      } catch (e) {
-        chrome.test.fail(e.name + ':' + e.message);
-      }
-    });
-  )");
-
-  extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-
-  ASSERT_TRUE(LoadExtension(dir.UnpackedPath()));
-  ASSERT_TRUE(listener.WaitUntilSatisfied());
-
-  listener.Reply("");
-  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpServerReadWrite) {
-  extensions::TestExtensionDir dir;
-
-  dir.WriteManifest(
-      GenerateManifest(/*socket_permissions=*/base::Value::Dict().Set(
-          "udp", base::Value::Dict().Set("bind", "*").Set("send", "*"))));
-  dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
-    chrome.test.sendMessage("ready", async (message) => {
-      try {
-        const [clientAddress, clientPort] = message.split(':');
-
-        const socket = new UDPSocket({ localAddress: "127.0.0.1" });
-
-        const { readable, writable } = await socket.opened;
-
-        const reader = readable.getReader();
-        const writer = writable.getWriter();
-
-        const kUdpMessage = "udp_message";
-
-        reader.read().then(packet => {
-          const { value, done } = packet;
-          chrome.test.assertFalse(done,
-              "ReadableStream must not be exhausted at this point.");
-
-          const { data, remoteAddress, remotePort } = value;
-          chrome.test.assertEq((new TextDecoder()).decode(data), kUdpMessage,
-              "The data returned must exactly match the data sent.");
-
-          chrome.test.assertEq(remoteAddress, "127.0.0.1");
-          chrome.test.assertEq(remotePort, parseInt(clientPort));
-          chrome.test.succeed();
-        });
-
-        writer.write({
-          data: (new TextEncoder()).encode(kUdpMessage),
-          remoteAddress: clientAddress,
-          remotePort: clientPort,
-        });
-      } catch (e) {
-        chrome.test.fail(e.name + ':' + e.message);
-      }
-    });
-  )");
-
-  extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-
-  ASSERT_TRUE(LoadExtension(dir.UnpackedPath()));
-  ASSERT_TRUE(listener.WaitUntilSatisfied());
-
-  listener.Reply(base::StringPrintf("%s:%d", kHostname, test_server()->port()));
-  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-}
-
-using ChromeDirectSocketsTcpServerApiTest = extensions::ExtensionApiTest;
-
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
-                       TcpServerSocketUndefinedWithoutSocketsPermission) {
-  extensions::TestExtensionDir dir;
-
-  // "sockets" key is not present in the manifest.
-  dir.WriteManifest(GenerateManifest());
-  dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
-    chrome.test.sendMessage("ready", async (message) => {
-      try {
-        const socket = new TCPServerSocket("::");
-      } catch (e) {
-        chrome.test.assertEq(e.message, "TCPServerSocket is not defined");
-        chrome.test.succeed();
-      }
-    });
-  )");
-
-  extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-
-  ASSERT_TRUE(LoadExtension(dir.UnpackedPath()));
-  ASSERT_TRUE(listener.WaitUntilSatisfied());
-
-  listener.Reply("");
-  EXPECT_TRUE(catcher.GetNextResult());
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
-                       TcpServerFailsWithoutSocketsTcpServerListenPermission) {
-  extensions::TestExtensionDir dir;
-
-  // "sockets" key is present in the manifest, but "sockets.tcpServer.listen" is
-  // not.
-  dir.WriteManifest(
-      GenerateManifest(/*socket_permissions=*/base::Value::Dict()));
-  dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
-    chrome.test.sendMessage("ready", async (message) => {
-      try {
-        const socket = new TCPServerSocket("::");
-
-        await chrome.test.assertPromiseRejects(
-          socket.opened,
-          "InvalidAccessError: Access to the requested host is blocked."
-        );
-
-        chrome.test.succeed();
-      } catch (e) {
-        chrome.test.fail(e.name + ':' + e.message);
-      }
-    });
-  )");
-
-  extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-
-  ASSERT_TRUE(LoadExtension(dir.UnpackedPath()));
-  ASSERT_TRUE(listener.WaitUntilSatisfied());
-
-  listener.Reply("");
-  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-}
-
-#endif
-
-class IsolatedWebAppTestHarnessWithDirectSocketsEnabled
-    : public web_app::IsolatedWebAppBrowserTestHarness {
- private:
-  base::test::ScopedFeatureList features_{blink::features::kDirectSockets};
-};
-
-using ChromeDirectSocketsTcpIsolatedWebAppTest = ChromeDirectSocketsTcpTest<
-    IsolatedWebAppTestHarnessWithDirectSocketsEnabled>;
-
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest, TcpReadWrite) {
-  // Install & open the IWA.
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
-      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server->GetOrigin());
-  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-
-  // Run the echo script.
-  constexpr std::string_view kTcpSendReceiveHttpScript = R"(
-    (async () => {
-      try {
-        const socket = new TCPSocket($1, $2);
-
-        const { readable, writable } = await socket.opened;
-
-        const reader = readable.getReader();
-        const writer = writable.getWriter();
-
-        const kTcpPacket =
-          "POST /echo HTTP/1.1\r\n" +
-          "Content-Length: 19\r\n\r\n" +
-          "0100000005320000005";
-
-        // The echo server can send back the response in multiple chunks.
-        // We must wait for at least `kTcpMinExpectedResponseLength` bytes to
-        // be received before matching the response with `kTcpResponsePattern`.
-        const kTcpMinExpectedResponseLength = 102;
-
-        const kTcpResponsePattern = "0100000005320000005";
-
-        let tcpResponse = "";
-        const readUntil = async () => {
-          const { value, done } = await reader.read();
-          if (done) {
-            console.log("ReadableStream must not be exhausted at this point.");
-            return false;
-          }
-
-          const message = (new TextDecoder()).decode(value);
-          tcpResponse += message;
-          if (tcpResponse.length >= kTcpMinExpectedResponseLength) {
-            if (!tcpResponse.match(kTcpResponsePattern)) {
-              console.log("The data returned must match the data sent.");
-              return false;
-            }
-
-            return true;
-          } else {
-            return await readUntil();
-          }
-        };
-
-        writer.write((new TextEncoder()).encode(kTcpPacket));
-
-        return await readUntil();
-      } catch (err) {
-        console.log(err);
-        return false;
-      }
-    })();
-  )";
 
   ASSERT_TRUE(
-      EvalJs(app_frame, content::JsReplace(kTcpSendReceiveHttpScript, kHostname,
+      EvalJs(app_frame, content::JsReplace(kTcpReadWriteScript, kHostname,
                                            test_server()->port()))
           .ExtractBool());
 }
 
-using ChromeDirectSocketsUdpIsolatedWebAppTest = ChromeDirectSocketsUdpTest<
-    IsolatedWebAppTestHarnessWithDirectSocketsEnabled>;
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest,
+                       TcpSocketUndefinedWithoutSocketsPermission) {
+  // "sockets" key is not present in the manifest.
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenChromeApp(GenerateManifest());
 
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest, UdpReadWrite) {
-  // Install & open the IWA.
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
-      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server->GetOrigin());
-  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  static constexpr std::string_view kScript = R"(
+    const socket = new TCPSocket($1, $2);
+  )";
 
-  // Run the echo script.
-  constexpr std::string_view kUdpSendReceiveEchoScript = R"(
+  EXPECT_THAT(EvalJs(app_frame, content::JsReplace(kScript, kHostname, 0)),
+              ErrorIs(NotDefined("TCPSocket")));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest,
+                       TcpFailsWithoutSocketsTcpConnectPermission) {
+  // "sockets" key is present in the manifest, but "sockets.tcp.connect" is not.
+  content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
+      GenerateManifest(/*socket_permissions=*/base::Value::Dict()));
+
+  static constexpr std::string_view kScript = R"(
     (async () => {
-      try {
-        const socket = new UDPSocket({ remoteAddress: $1, remotePort: $2 });
-        const { readable, writable } = await socket.opened;
-
-        const kUdpMessage = "udp_message";
-        writable.getWriter().write({
-          data: (new TextEncoder()).encode(kUdpMessage)
-        });
-        return await readable.getReader().read().then(packet => {
-          const { value, done } = packet;
-          if (done) {
-            return false;
-          }
-          const { data } = value;
-          if ((new TextDecoder()).decode(data) !== kUdpMessage) {
-            return false;
-          }
-          return true;
-        });
-      } catch (err) {
-        console.log(err);
-        return false;
-      }
+      const socket = new TCPSocket($1, $2);
+      await socket.opened;
     })();
   )";
 
+  EXPECT_THAT(EvalJs(app_frame, content::JsReplace(kScript, kHostname,
+                                                   test_server()->port())),
+              ErrorIs(AccessBlocked()));
+}
+
+using ChromeDirectSocketsUdpApiTest =
+    ChromeDirectSocketsUdpTest<ChromeAppApiTest>;
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpReadWrite) {
+  content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
+      GenerateManifest(/*socket_permissions=*/base::Value::Dict().Set(
+          "udp", base::Value::Dict().Set("send", "*"))));
+
   ASSERT_TRUE(
-      EvalJs(app_frame, content::JsReplace(kUdpSendReceiveEchoScript, kHostname,
+      EvalJs(app_frame, content::JsReplace(kUdpConnectedReadWriteScript,
+                                           kHostname, test_server()->port()))
+          .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
+                       UdpSocketUndefinedWithoutSocketsPermission) {
+  // "sockets" key is not present in the manifest.
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenChromeApp(GenerateManifest());
+
+  static constexpr std::string_view kScript = R"(
+    const socket = new UDPSocket({ remoteAddress: $1, remotePort: $2 });
+  )";
+
+  EXPECT_THAT(EvalJs(app_frame, content::JsReplace(kScript, kHostname, 0)),
+              ErrorIs(NotDefined("UDPSocket")));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
+                       UdpConnectedFailsWithoutSocketsUdpSendPermission) {
+  // "sockets" key is present in the manifest, but "sockets.udp.send" is
+  // not.
+  content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
+      GenerateManifest(/*socket_permissions=*/base::Value::Dict()));
+
+  static constexpr std::string_view kScript = R"(
+    (async () => {
+      const socket = new UDPSocket({ remoteAddress: $1, remotePort: $2 });
+      await socket.opened;
+    })();
+  )";
+
+  EXPECT_THAT(EvalJs(app_frame, content::JsReplace(kScript, kHostname,
+                                                   test_server()->port())),
+              ErrorIs(AccessBlocked()));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
+                       UdpBoundFailsWithoutSocketsUdpBindPermission) {
+  // "sockets" key is present in the manifest as well as "sockets.udp.send",
+  // but "sockets.udp.bind" is not.
+  content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
+      GenerateManifest(/*socket_permissions=*/base::Value::Dict()));
+
+  static constexpr std::string_view kScript = R"(
+    (async () => {
+      const socket = new UDPSocket({ localAddress: "::" });
+      await socket.opened;
+    })();
+  )";
+
+  EXPECT_THAT(EvalJs(app_frame, kScript), ErrorIs(AccessBlocked()));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpServerReadWrite) {
+  content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
+      GenerateManifest(/*socket_permissions=*/base::Value::Dict().Set(
+          "udp", base::Value::Dict().Set("bind", "*").Set("send", "*"))));
+
+  ASSERT_TRUE(
+      EvalJs(app_frame, content::JsReplace(kUdpBoundReadWriteScript, kHostname,
                                            test_server()->port()))
+          .ExtractBool());
+}
+
+using ChromeDirectSocketsTcpServerApiTest = ChromeAppApiTest;
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
+                       TcpServerSocketUndefinedWithoutSocketsPermission) {
+  // "sockets" key is not present in the manifest.
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenChromeApp(GenerateManifest());
+
+  static constexpr std::string_view kScript = R"(
+    const socket = new TCPServerSocket("::");
+  )";
+
+  EXPECT_THAT(EvalJs(app_frame, kScript),
+              ErrorIs(NotDefined("TCPServerSocket")));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
+                       TcpServerFailsWithoutSocketsTcpServerListenPermission) {
+  // "sockets" key is present in the manifest, but "sockets.tcpServer.listen" is
+  // not.
+  content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
+      GenerateManifest(/*socket_permissions=*/base::Value::Dict()));
+
+  static constexpr std::string_view kScript = R"(
+    (async () => {
+      const socket = new TCPServerSocket("::");
+      await socket.opened;
+    })();
+  )";
+
+  EXPECT_THAT(EvalJs(app_frame, kScript), ErrorIs(AccessBlocked()));
+}
+
+#endif
+
+class IsolatedWebAppApiTest : public web_app::IsolatedWebAppBrowserTestHarness {
+ public:
+  content::RenderFrameHost* InstallAndOpenIsolatedWebApp() {
+    auto app = web_app::IsolatedWebAppBuilder(
+                   web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+                       blink::mojom::PermissionsPolicyFeature::kDirectSockets))
+                   .BuildBundle();
+    app->TrustSigningKey();
+    web_app::IsolatedWebAppUrlInfo url_info = app->Install(profile()).value();
+    return OpenApp(url_info.app_id());
+  }
+
+ private:
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_;
+};
+
+class IsolatedWebAppApiTestWithDirectSocketsEnabled
+    : public IsolatedWebAppApiTest {
+ private:
+  base::test::ScopedFeatureList features_{blink::features::kDirectSockets};
+};
+
+using ChromeDirectSocketsTcpIsolatedWebAppTest =
+    ChromeDirectSocketsTcpTest<IsolatedWebAppApiTestWithDirectSocketsEnabled>;
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest, TcpReadWrite) {
+  content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
+
+  ASSERT_TRUE(
+      EvalJs(app_frame, content::JsReplace(kTcpReadWriteScript, kHostname,
+                                           test_server()->port()))
+          .ExtractBool());
+}
+
+using ChromeDirectSocketsUdpIsolatedWebAppTest =
+    ChromeDirectSocketsUdpTest<IsolatedWebAppApiTestWithDirectSocketsEnabled>;
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest, UdpReadWrite) {
+  content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
+
+  ASSERT_TRUE(
+      EvalJs(app_frame, content::JsReplace(kUdpConnectedReadWriteScript,
+                                           kHostname, test_server()->port()))
           .ExtractBool());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
                        UdpServerReadWrite) {
-  // Install & open the IWA.
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
-      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server->GetOrigin());
-  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-
-  // Run the echo script.
-  constexpr std::string_view kUdpServerSendReceiveEchoScript = R"(
-    (async () => {
-      try {
-        const socket = new UDPSocket({ localAddress: "127.0.0.1" });
-        const { readable, writable } = await socket.opened;
-
-        const kUdpMessage = "udp_message";
-        writable.getWriter().write({
-          data: (new TextEncoder()).encode(kUdpMessage),
-          remoteAddress: $1,
-          remotePort: $2,
-        });
-        return await readable.getReader().read().then(packet => {
-          const { value, done } = packet;
-          if (done) {
-            return false;
-          }
-          const { data, remoteAddress, remotePort } = value;
-          if ((new TextDecoder()).decode(data) !== kUdpMessage) {
-            return false;
-          }
-          if (remoteAddress !== "127.0.0.1") {
-            return false;
-          }
-          if (remotePort !== $2) {
-            return false;
-          }
-          return true;
-        });
-      } catch (err) {
-        console.log(err);
-        return false;
-      }
-    })();
-  )";
+  content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
 
   ASSERT_TRUE(
-      EvalJs(app_frame, content::JsReplace(kUdpServerSendReceiveEchoScript,
-                                           kHostname, test_server()->port()))
+      EvalJs(app_frame, content::JsReplace(kUdpBoundReadWriteScript, kHostname,
+                                           test_server()->port()))
           .ExtractBool());
 }
 
@@ -817,25 +590,16 @@ class ChromeDirectSocketsApiAvailabilityTest
 };
 
 using ChromeDirectSocketsApiAvailabilityChromeAppsTest =
-    ChromeDirectSocketsApiAvailabilityTest<extensions::ExtensionApiTest>;
+    ChromeDirectSocketsApiAvailabilityTest<ChromeAppApiTest>;
 
 IN_PROC_BROWSER_TEST_P(ChromeDirectSocketsApiAvailabilityChromeAppsTest,
                        WithFeatureState) {
-  extensions::TestExtensionDir dir;
-
   // The exact socket permissions do not matter here since the API behavior
   // itself is not tested -- the only important piece is to have an entry named
   // "sockets" in the manifest.
-  dir.WriteManifest(GenerateManifest(
-      /*socket_permissions=*/base::Value::Dict()));
-  dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
-
-  const extensions::Extension& extension =
-      CHECK_DEREF(LoadExtension(dir.UnpackedPath()));
-  content::RenderFrameHost* rfh =
-      CHECK_DEREF(extensions::ProcessManager::Get(profile())
-                      ->GetBackgroundHostForExtension(extension.id()))
-          .main_frame_host();
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenChromeApp(GenerateManifest(
+          /*socket_permissions=*/base::Value::Dict()));
 
   // `kDirectSockets` is enabled by default or when the flag is forcefully set.
   EXPECT_EQ(base::FeatureList::IsEnabled(blink::features::kDirectSockets),
@@ -843,11 +607,11 @@ IN_PROC_BROWSER_TEST_P(ChromeDirectSocketsApiAvailabilityChromeAppsTest,
 
   // The API symbols in Chrome Apps are supposed to be exposed unless they're
   // force disabled.
-  EXPECT_EQ(IsTCPSocketExposed(rfh),
+  EXPECT_EQ(IsTCPSocketExposed(app_frame),
             feature_state() != FeatureState::kDisabled);
-  EXPECT_EQ(IsUDPSocketExposed(rfh),
+  EXPECT_EQ(IsUDPSocketExposed(app_frame),
             feature_state() != FeatureState::kDisabled);
-  EXPECT_EQ(IsTCPServerSocketExposed(rfh),
+  EXPECT_EQ(IsTCPServerSocketExposed(app_frame),
             feature_state() != FeatureState::kDisabled);
 }
 
@@ -868,20 +632,11 @@ INSTANTIATE_TEST_SUITE_P(/**/,
                          });
 
 using ChromeDirectSocketsApiAvailabilityIsolatedWebAppsTest =
-    ChromeDirectSocketsApiAvailabilityTest<
-        web_app::IsolatedWebAppBrowserTestHarness>;
+    ChromeDirectSocketsApiAvailabilityTest<IsolatedWebAppApiTest>;
 
 IN_PROC_BROWSER_TEST_P(ChromeDirectSocketsApiAvailabilityIsolatedWebAppsTest,
                        WithFeatureState) {
-  // Install & open the IWA.
-  auto app = web_app::IsolatedWebAppBuilder(
-                 web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-                     blink::mojom::PermissionsPolicyFeature::kDirectSockets))
-                 .BuildBundle();
-  app->TrustSigningKey();
-  web_app::IsolatedWebAppUrlInfo url_info = app->Install(profile()).value();
-
-  content::RenderFrameHost* rfh = OpenApp(url_info.app_id());
+  content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
 
   // `kDirectSockets` is enabled by default or when the flag is forcefully set.
   EXPECT_EQ(base::FeatureList::IsEnabled(blink::features::kDirectSockets),
@@ -889,9 +644,11 @@ IN_PROC_BROWSER_TEST_P(ChromeDirectSocketsApiAvailabilityIsolatedWebAppsTest,
 
   // However, the API symbols in Isolated Web Apps are only supposed to be
   // exposed when the flag is force-enabled (and not in the default state).
-  EXPECT_EQ(IsTCPSocketExposed(rfh), feature_state() == FeatureState::kEnabled);
-  EXPECT_EQ(IsUDPSocketExposed(rfh), feature_state() == FeatureState::kEnabled);
-  EXPECT_EQ(IsTCPServerSocketExposed(rfh),
+  EXPECT_EQ(IsTCPSocketExposed(app_frame),
+            feature_state() == FeatureState::kEnabled);
+  EXPECT_EQ(IsUDPSocketExposed(app_frame),
+            feature_state() == FeatureState::kEnabled);
+  EXPECT_EQ(IsTCPServerSocketExposed(app_frame),
             feature_state() == FeatureState::kEnabled);
 }
 
