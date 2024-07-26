@@ -130,8 +130,8 @@ class TouchToFillKeyboardSuppressor
 
   // The single AutofillManager whose keyboard is currently suppressed by this
   // suppressor; `nullptr` if no AutofillManager's keyboard is suppressed.
-  // A raw pointer suffices because because OnAutofillManagerDestroyed() resets
-  // it if necessary.
+  // A raw pointer suffices because because OnAutofillManagerStateChanged()
+  // resets it if necessary.
   raw_ptr<AutofillManager> suppressed_manager_ = nullptr;
 
   // Unsuppresses the keyboard after `timeout_`.

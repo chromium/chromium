@@ -171,7 +171,6 @@ AutofillManager::AutofillManager(AutofillDriver* driver)
 AutofillManager::~AutofillManager() {
   CHECK_EQ(lifecycle_state_, LifecycleState::kPendingDeletion,
            base::NotFatalUntil::M130);
-  NotifyObservers(&Observer::OnAutofillManagerDestroyed);
   translate_observation_.Reset();
 }
 
@@ -194,7 +193,6 @@ void AutofillManager::Reset(AutofillDriverPassKey) {
 
 void AutofillManager::ResetImpl() {
   parsing_weak_ptr_factory_.InvalidateWeakPtrs();
-  NotifyObservers(&Observer::OnAutofillManagerReset);
   form_structures_.clear();
   form_interactions_ukm_logger_ = CreateFormInteractionsUkmLogger();
 }

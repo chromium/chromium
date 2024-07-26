@@ -126,9 +126,6 @@ class AutofillManager
                                                LifecycleState previous,
                                                LifecycleState current) {}
 
-    virtual void OnAutofillManagerDestroyed(AutofillManager& manager) {}
-    virtual void OnAutofillManagerReset(AutofillManager& manager) {}
-
     virtual void OnBeforeLanguageDetermined(AutofillManager& manager) {}
     virtual void OnAfterLanguageDetermined(AutofillManager& manager) {}
 
