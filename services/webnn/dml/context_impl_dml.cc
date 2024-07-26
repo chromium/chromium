@@ -52,7 +52,7 @@ void HandleBufferCreationFailure(
 // static
 ContextProperties ContextImplDml::GetProperties(
     DML_FEATURE_LEVEL feature_level) {
-  CHECK_GE(feature_level, kMinDMLFeatureLevelForGpu);
+  CHECK_GE(feature_level, DML_FEATURE_LEVEL_4_0);
 
   static constexpr SupportedDataTypes kFloat16To32Ints8To32{
       OperandDataType::kFloat16, OperandDataType::kFloat32,

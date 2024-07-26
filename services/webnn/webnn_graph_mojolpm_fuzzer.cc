@@ -50,7 +50,8 @@ struct InitGlobals {
         base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
 #if BUILDFLAG(IS_WIN)
-    auto adapter_creation_result = webnn::dml::Adapter::GetInstanceForTesting();
+    auto adapter_creation_result =
+        webnn::dml::Adapter::GetGpuInstanceForTesting();
     if (adapter_creation_result.has_value()) {
       adapter = adapter_creation_result.value();
     }

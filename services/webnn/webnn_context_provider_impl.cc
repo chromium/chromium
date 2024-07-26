@@ -69,7 +69,7 @@ base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
     // a GpuServiceImpl must be initialized to obtain a SharedContextState.
     // Instead, we just enumerate the first DXGI adapter.
     CHECK_IS_TEST();
-    return dml::Adapter::GetInstanceForTesting(dml::kMinDMLFeatureLevelForGpu);
+    return dml::Adapter::GetGpuInstanceForTesting();
   }
 
   // At the current stage, all `ContextImplDml` share this instance.
@@ -90,8 +90,7 @@ base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
   ComPtr<IDXGIAdapter> dxgi_adapter;
   // Asking for an adapter from IDXGIDevice is always expected to succeed.
   CHECK_EQ(dxgi_device->GetAdapter(&dxgi_adapter), S_OK);
-  return dml::Adapter::GetGpuInstance(dml::kMinDMLFeatureLevelForGpu,
-                                      std::move(dxgi_adapter));
+  return dml::Adapter::GetGpuInstance(std::move(dxgi_adapter));
 }
 #endif
 
@@ -235,8 +234,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
             GetDmlGpuAdapter(shared_context_state_.get(), gpu_feature_info_);
         break;
       case mojom::CreateContextOptions::Device::kNpu:
-        adapter_creation_result = dml::Adapter::GetNpuInstance(
-            dml::kMinDMLFeatureLevelForNpu, gpu_feature_info_, gpu_info_);
+        adapter_creation_result =
+            dml::Adapter::GetNpuInstance(gpu_feature_info_, gpu_info_);
         break;
     }
     if (!adapter_creation_result.has_value()) {

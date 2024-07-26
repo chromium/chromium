@@ -9,6 +9,7 @@
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/test_base.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
@@ -22,6 +23,9 @@
 namespace webnn::dml {
 
 class WebNNContextDMLImplTest : public TestBase {
+ public:
+  void SetUp() override;
+
  protected:
   WebNNContextDMLImplTest()
       : scoped_feature_list_(
@@ -55,6 +59,20 @@ class WebNNContextDMLImplTest : public TestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+void WebNNContextDMLImplTest::SetUp() {
+  SKIP_TEST_IF(!UseGPUInTests());
+  Adapter::EnableDebugLayerForTesting();
+  auto adapter_creation_result = Adapter::GetGpuInstanceForTesting();
+  // If the adapter creation result has no value, it's most likely because
+  // platform functions were not properly loaded.
+  SKIP_TEST_IF(!adapter_creation_result.has_value());
+  auto adapter = adapter_creation_result.value();
+  // Graph compilation relies on IDMLDevice1::CompileGraph introduced in
+  // DirectML version 1.2 or DML_FEATURE_LEVEL_2_1, so skip the tests if the
+  // DirectML version doesn't support this feature.
+  SKIP_TEST_IF(!adapter->IsDMLDeviceCompileGraphSupportedForTesting());
+}
 
 TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;

@@ -252,7 +252,7 @@ void WebNNGraphImplBackendTest::SetUp() {
   SKIP_TEST_IF(!dml::UseGPUInTests());
 
   dml::Adapter::EnableDebugLayerForTesting();
-  auto adapter_creation_result = dml::Adapter::GetInstanceForTesting();
+  auto adapter_creation_result = dml::Adapter::GetGpuInstanceForTesting();
   // If the adapter creation result has no value, it's most likely because
   // platform functions were not properly loaded.
   SKIP_TEST_IF(!adapter_creation_result.has_value());

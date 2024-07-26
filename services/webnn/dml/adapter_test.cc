@@ -27,19 +27,19 @@ void WebNNAdapterTest::SetUp() {
   Adapter::EnableDebugLayerForTesting();
   // If the adapter creation result has no value, it's most likely because
   // platform functions were not properly loaded.
-  SKIP_TEST_IF(!Adapter::GetInstanceForTesting().has_value());
+  SKIP_TEST_IF(!Adapter::GetGpuInstanceForTesting().has_value());
 }
 
 TEST_F(WebNNAdapterTest, GetGpuInstance) {
-  // Test creating Adapter instance upon `GetGpuInstance()` and release it if
-  // there are no references anymore.
-  { EXPECT_TRUE(Adapter::GetInstanceForTesting().has_value()); }
+  // Test creating Adapter instance upon `GetGpuInstanceForTesting()` and
+  // release it if there are no references anymore.
+  { EXPECT_TRUE(Adapter::GetGpuInstanceForTesting().has_value()); }
   EXPECT_EQ(Adapter::gpu_instance_, nullptr);
 
   // Test two Adapters should share one instance.
   {
-    auto adapter1_creation_result = Adapter::GetInstanceForTesting();
-    auto adapter2_creation_result = Adapter::GetInstanceForTesting();
+    auto adapter1_creation_result = Adapter::GetGpuInstanceForTesting();
+    auto adapter2_creation_result = Adapter::GetGpuInstanceForTesting();
     ASSERT_TRUE(adapter1_creation_result.has_value());
     ASSERT_TRUE(adapter2_creation_result.has_value());
     EXPECT_EQ(adapter1_creation_result.value(),
@@ -69,7 +69,7 @@ TEST_F(WebNNAdapterTest, GetNpuInstance) {
 }
 
 TEST_F(WebNNAdapterTest, CheckAdapterAccessors) {
-  auto adapter_creation_result = Adapter::GetInstanceForTesting();
+  auto adapter_creation_result = Adapter::GetGpuInstanceForTesting();
   ASSERT_TRUE(adapter_creation_result.has_value());
   auto adapter = adapter_creation_result.value();
   EXPECT_NE(adapter->d3d12_device(), nullptr);
@@ -79,42 +79,13 @@ TEST_F(WebNNAdapterTest, CheckAdapterAccessors) {
   EXPECT_EQ(adapter->init_task_runner_for_npu(), nullptr);
 }
 
-TEST_F(WebNNAdapterTest, CreateAdapterMinRequiredFeatureLevel) {
-  SKIP_TEST_IF(
-      !Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_4_0).has_value());
-  ASSERT_TRUE(
-      Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_4_0).has_value());
-  ASSERT_TRUE(
-      Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_2_0).has_value());
-  EXPECT_EQ(Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_4_0).value(),
-            Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_2_0).value());
-}
-
 TEST_F(WebNNAdapterTest, CheckAdapterMinFeatureLevel) {
   // DML_FEATURE_LEVEL_2_0 is the minimum required feature level because that is
   // where DMLCreateDevice1 was introduced.
-  auto adapter_creation_result =
-      Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_2_0);
+  auto adapter_creation_result = Adapter::GetGpuInstanceForTesting();
   ASSERT_TRUE(adapter_creation_result.has_value());
   EXPECT_TRUE(adapter_creation_result.value()->IsDMLFeatureLevelSupported(
       DML_FEATURE_LEVEL_2_0));
-}
-
-TEST_F(WebNNAdapterTest, CheckAdapterMinRequiredFeatureLevel) {
-  // Check adapter feature level, if DML_FEATURE_LEVEL_4_0 is supported.
-  SKIP_TEST_IF(
-      !Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_4_0).has_value());
-  auto adapter_creation_result =
-      Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_4_0);
-  ASSERT_TRUE(adapter_creation_result.has_value());
-  EXPECT_TRUE(adapter_creation_result.value()->IsDMLFeatureLevelSupported(
-      DML_FEATURE_LEVEL_4_0));
-  EXPECT_TRUE(adapter_creation_result.value()->IsDMLFeatureLevelSupported(
-      DML_FEATURE_LEVEL_3_0));
-  EXPECT_TRUE(adapter_creation_result.value()->IsDMLFeatureLevelSupported(
-      DML_FEATURE_LEVEL_2_0));
-  EXPECT_TRUE(adapter_creation_result.value()->IsDMLFeatureLevelSupported(
-      DML_FEATURE_LEVEL_1_0));
 }
 
 }  // namespace webnn::dml

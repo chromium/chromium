@@ -42,27 +42,18 @@ base::unexpected<mojom::ErrorPtr> HandleAdapterFailure(
 
 // static
 base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetGpuInstance(
-    DML_FEATURE_LEVEL min_required_dml_feature_level,
     Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter) {
   // If the `Adapter` instance is created, add a reference and return it.
   if (gpu_instance_) {
-    if (!gpu_instance_->IsDMLFeatureLevelSupported(
-            min_required_dml_feature_level)) {
-      return HandleAdapterFailure(mojom::Error::Code::kNotSupportedError,
-                                  "The DirectML feature level on this platform "
-                                  "is lower than the minimum required one.");
-    }
     return base::WrapRefCounted(gpu_instance_);
   }
 
-  return Adapter::Create(std::move(dxgi_adapter),
-                         min_required_dml_feature_level);
+  return Adapter::Create(std::move(dxgi_adapter), DML_FEATURE_LEVEL_4_0);
 }
 
 // static
 base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
-Adapter::GetInstanceForTesting(
-    DML_FEATURE_LEVEL min_required_dml_feature_level) {
+Adapter::GetGpuInstanceForTesting() {
   CHECK_IS_TEST();
 
   Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
@@ -80,23 +71,16 @@ Adapter::GetInstanceForTesting(
         "Failed to get an IDXGIAdapter from EnumAdapters for testing.", hr);
   }
 
-  return Adapter::GetGpuInstance(min_required_dml_feature_level,
-                                 std::move(dxgi_adapter));
-}
+  // If the `Adapter` instance is created, add a reference and return it.
+  if (gpu_instance_) {
+    return base::WrapRefCounted(gpu_instance_);
+  }
 
-// static
-base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
-Adapter::GetNpuInstanceForTesting() {
-  CHECK_IS_TEST();
-  gpu::GpuFeatureInfo gpu_feature_info;
-  gpu::GPUInfo gpu_info;
-  gpu::CollectBasicGraphicsInfo(&gpu_info);
-  return GetNpuInstance(DML_FEATURE_LEVEL_6_4, gpu_feature_info, gpu_info);
+  return Adapter::Create(std::move(dxgi_adapter), DML_FEATURE_LEVEL_2_0);
 }
 
 // static
 base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetNpuInstance(
-    DML_FEATURE_LEVEL min_required_dml_feature_level,
     const gpu::GpuFeatureInfo& gpu_feature_info,
     const gpu::GPUInfo& gpu_info) {
   if (gpu_feature_info.IsWorkaroundEnabled(gpu::DISABLE_WEBNN_FOR_NPU)) {
@@ -106,12 +90,6 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetNpuInstance(
 
   // If the `Adapter` instance is created, add a reference and return it.
   if (npu_instance_) {
-    if (!npu_instance_->IsDMLFeatureLevelSupported(
-            min_required_dml_feature_level)) {
-      return HandleAdapterFailure(mojom::Error::Code::kNotSupportedError,
-                                  "The DirectML feature level on this platform "
-                                  "is lower than the minimum required one.");
-    }
     return base::WrapRefCounted(npu_instance_);
   }
 
@@ -154,8 +132,17 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetNpuInstance(
                                 "Unable to find a capable adapter.", hr);
   }
 
-  return Adapter::Create(std::move(dxcore_npu_adapter),
-                         min_required_dml_feature_level);
+  return Adapter::Create(std::move(dxcore_npu_adapter), DML_FEATURE_LEVEL_6_4);
+}
+
+// static
+base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
+Adapter::GetNpuInstanceForTesting() {
+  CHECK_IS_TEST();
+  gpu::GpuFeatureInfo gpu_feature_info;
+  gpu::GPUInfo gpu_info;
+  gpu::CollectBasicGraphicsInfo(&gpu_info);
+  return GetNpuInstance(gpu_feature_info, gpu_info);
 }
 
 // static
