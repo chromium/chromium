@@ -394,6 +394,29 @@ void MigrateStringPref(std::string_view pref_name,
   source_pref_service->ClearPref(pref_name);
 }
 
+// Migrates a Dict pref from source to target PrefService.
+void MigrateDictPref(std::string_view pref_name,
+                     PrefService* target_pref_service,
+                     PrefService* source_pref_service) {
+  const PrefService::Preference* target_pref =
+      target_pref_service->FindPreference(pref_name);
+  CHECK(target_pref);
+
+  const PrefService::Preference* source_pref =
+      source_pref_service->FindPreference(pref_name);
+  CHECK(source_pref);
+
+  // Only migrate the pref if 1. it is not set in target,
+  // 2. it is not the default in source.
+  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
+    target_pref_service->SetDict(
+        pref_name, source_pref_service->GetDict(pref_name).Clone());
+  }
+
+  // In all cases, clear the pref from source.
+  source_pref_service->ClearPref(pref_name);
+}
+
 // Helper function migrating the `list` preference from LocalState prefs to
 // BrowserState prefs.
 void MigrateListPrefFromLocalStatePrefsToProfilePrefs(
@@ -435,18 +458,8 @@ void MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
 void MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
     std::string_view pref_name,
     PrefService* profile_pref_service) {
-  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
-
-  const PrefService::Preference* legacy_pref =
-      local_pref_service->FindPreference(pref_name.data());
-
-  if (legacy_pref && !legacy_pref->IsDefaultValue()) {
-    profile_pref_service->SetDict(
-        pref_name.data(),
-        local_pref_service->GetDict(pref_name.data()).Clone());
-
-    local_pref_service->ClearPref(pref_name.data());
-  }
+  MigrateDictPref(pref_name, profile_pref_service,
+                  GetApplicationContext()->GetLocalState());
 }
 
 }  // namespace
