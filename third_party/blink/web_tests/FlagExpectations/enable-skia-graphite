@@ -42,8 +42,8 @@ b/328789624 external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disa
 b/328789624 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/filter-effects/backdrop-filter-boundary.html [ Failure ]
-external/wpt/css/filter-effects/backdrop-filter-edge-mirror.html [ Failure ]
+crbug.com/355484322 external/wpt/css/filter-effects/backdrop-filter-boundary.html [ Failure ]
+crbug.com/355484322 external/wpt/css/filter-effects/backdrop-filter-edge-mirror.html [ Failure ]
 crbug.com/343515409 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pad.https.any.worker.html?gpu [ Timeout ]
 crbug.com/343515409 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pooling.https.any.worker.html?gpu [ Timeout ]
 crbug.com/343515409 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/prelu.https.any.worker.html?gpu [ Timeout ]
