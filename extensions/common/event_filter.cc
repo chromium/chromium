@@ -127,6 +127,10 @@ bool EventFilter::AddDictionaryAsConditionSet(
 
 std::string EventFilter::RemoveEventMatcher(MatcherID id) {
   auto it = id_to_event_name_.find(id);
+  if (it == id_to_event_name_.end()) {
+    return "";
+  }
+
   std::string event_name = it->second;
   // EventMatcherEntry's destructor causes the condition set ids to be removed
   // from url_matcher_.
