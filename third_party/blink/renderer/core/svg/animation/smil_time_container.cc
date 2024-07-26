@@ -38,6 +38,9 @@
 #include "third_party/blink/renderer/core/svg/animation/element_smil_animations.h"
 #include "third_party/blink/renderer/core/svg/animation/svg_smil_element.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
+#include "third_party/blink/renderer/core/svg/svg_component_transfer_function_element.h"
+#include "third_party/blink/renderer/core/svg/svg_fe_light_element.h"
+#include "third_party/blink/renderer/core/svg/svg_fe_merge_node_element.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -638,6 +641,12 @@ void SMILTimeContainer::UpdateTimedElements(TimingUpdate& update) {
 
 namespace {
 
+bool NonRenderedElementThatAffectsContent(const SVGElement& target) {
+  return IsA<SVGFELightElement>(target) ||
+         IsA<SVGComponentTransferFunctionElement>(target) ||
+         IsA<SVGFEMergeNodeElement>(target);
+}
+
 bool CanThrottleTarget(const SVGElement& target) {
   // Don't throttle if the target is in the layout tree.
   if (target.GetLayoutObject()) {
@@ -652,6 +661,12 @@ bool CanThrottleTarget(const SVGElement& target) {
   if (!target.InstancesForElement().empty()) {
     return false;
   }
+  // Don't throttle if the target is a non-rendered element that affects
+  // content.
+  if (NonRenderedElementThatAffectsContent(target)) {
+    return false;
+  }
+
   return true;
 }
 
