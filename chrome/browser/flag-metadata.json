@@ -2264,6 +2264,16 @@
     "expiry_milestone": 90
   },
   {
+    "name": "dynamic-safe-area-insets",
+    "owners": [ "wenyufu@chromium.org", "clhager@google.com","twellington@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
+    "name": "dynamic-safe-area-insets-on-scroll",
+    "owners": [ "wenyufu@chromium.org", "clhager@google.com", "twellington@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "dynamic-search-update-animation",
     "owners": ["yulunwu@chromium.org"],
     "expiry_milestone": 103
