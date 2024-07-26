@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.3](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.6.2...chromium-bidi-v0.6.3) (2024-07-26)
+
+
+### Features
+
+* implement part of request timings ([#2435](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2435)) ([370b649](https://github.com/GoogleChromeLabs/chromium-bidi/commit/370b6496b639be3b2f7c806a6ed0616c7089bcf4))
+
 ## [0.6.2](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.6.1...chromium-bidi-v0.6.2) (2024-07-22)
 
 
