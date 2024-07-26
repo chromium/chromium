@@ -1372,10 +1372,7 @@ export class EmojiPickerApp extends PolymerElement {
    *
    */
   private getEmojiGroupPreference(category: CategoryEnum): PreferenceMapping {
-    return this.incognito ? {} :
-                            // ! is safe as categories history must contain
-                            // entries for all categories.
-        this.categoriesHistory[category]!.getPreferenceMapping();
+    return this.categoriesHistory[category]?.getPreferenceMapping() ?? {};
   }
 
   private onShowEmojiVariants(ev: events.EmojiVariantsShownEvent) {
