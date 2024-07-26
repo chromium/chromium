@@ -199,13 +199,6 @@ BASE_FEATURE(kPsRedesignAdPrivacyPage,
 const base::FeatureParam<bool> kPsRedesignAdPrivacyPageEnableToggles{
     &kPsRedesignAdPrivacyPage, "enable-toggles", false};
 
-BASE_FEATURE(kTrackingProtectionOnboarding,
-             "TrackingProtectionOnboarding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kTrackingProtectionBlock3PC{
-    &kTrackingProtectionOnboarding, "block-3pc", false};
-
 BASE_FEATURE(kTrackingProtectionReminder,
              "TrackingProtectionReminder",
              base::FEATURE_DISABLED_BY_DEFAULT);

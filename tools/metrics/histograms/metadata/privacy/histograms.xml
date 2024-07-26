@@ -78,22 +78,6 @@ reviewer.
 </variants>
 
 <variants name="PSNotice">
-  <variant name="Full3PCDClankBrApp"
-      summary="3PCD notice on Clank Browser App."/>
-  <variant name="Full3PCDClankCCT" summary="3PCD notice on Clank CCT."/>
-  <variant name="Full3PCDDesktopIPH" summary="3PCD notice on Desktop."/>
-  <variant name="Full3PCDSilentClankBrApp"
-      summary="Silent 3PCD notice on Clank Browser App."/>
-  <variant name="Full3PCDSilentClankCCT"
-      summary="Silent 3PCD notice on Clank CCT."/>
-  <variant name="Full3PCDSilentDesktopIPH"
-      summary="Silent 3PCD notice on Desktop."/>
-  <variant name="Full3PCDWithIPPClankBrApp"
-      summary="3PCD with IPP notice on Browser App."/>
-  <variant name="Full3PCDWithIPPClankCCT"
-      summary="3PCD with IPP notice on Clank CCT."/>
-  <variant name="Full3PCDWithIPPDesktopIPH"
-      summary="3PCD with IPP notice on Desktop."/>
   <variant name="TopicsConsentDesktopModal"
       summary="Consent notice with Topics API on Desktop."/>
   <variant name="TopicsConsentModalClankBrApp"
