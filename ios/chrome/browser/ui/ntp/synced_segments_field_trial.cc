@@ -12,7 +12,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/first_run/model/first_run.h"
-#include "ios/chrome/browser/ui/first_run/ios_first_run_field_trials.h"
+#include "ios/chrome/browser/first_run/ui_bundled/ios_first_run_field_trials.h"
 #include "ios/chrome/browser/ui/ntp/synced_segments_field_trial_constants.h"
 #include "ios/chrome/common/channel_info.h"
 

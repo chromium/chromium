@@ -40,8 +40,7 @@ source_set("history_sync") {
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/common/ui/promo_style:promo_style",
   ]
-  public_deps =
-      [ "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator" ]
+  public_deps = [ "//ios/chrome/browser/first_run/ui_bundled:interruptible_chrome_coordinator" ]
 }
 
 source_set("ui") {

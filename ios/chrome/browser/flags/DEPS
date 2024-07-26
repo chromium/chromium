@@ -8,7 +8,7 @@ specific_include_rules = {
   "^ios_chrome_field_trials.mm": [
     "+ios/chrome/browser/variations/model",
     "+ios/chrome/browser/ui/content_suggestions",
-    "+ios/chrome/browser/ui/first_run",
+    "+ios/chrome/browser/first_run/ui_bundled",
     "+ios/chrome/browser/ui/ntp",
   ],
   "^system_flags.mm": [
