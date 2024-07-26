@@ -180,9 +180,10 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
+// TODO: crbug.com/355618977 - Fix flakiness.
 IN_PROC_BROWSER_TEST_F(
     PickerAccessibilityBrowserTest,
-    SetDescendantThenFocusingSearchFieldAnnouncesDescendant) {
+    DISABLED_SetDescendantThenFocusingSearchFieldAnnouncesDescendant) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
