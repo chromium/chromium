@@ -195,6 +195,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     private static final int REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL = 1;
     private static final int REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED = 2;
 
+    private BatchUploadCardPreference mBatchUploadCardPreference;
     private SyncService mSyncService;
     private SnackbarManager mSnackbarManager;
 
@@ -266,10 +267,12 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             identityErrorCardPreference.initialize(profile, this);
 
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS)) {
-                BatchUploadCardPreference batchUploadCardPreference =
+                mBatchUploadCardPreference =
                         (BatchUploadCardPreference)
                                 findPreference(PREF_BATCH_UPLOAD_CARD_PREFERENCE);
-                batchUploadCardPreference.initialize(profile);
+                mBatchUploadCardPreference.initialize(
+                        profile,
+                        ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
             }
 
             if (mSyncService.isSyncDisabledByEnterprisePolicy()) {
@@ -797,6 +800,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         mSnackbarManager = snackbarManager;
         if (shouldReplaceSyncSettingsWithAccountSettings()) {
             mSignOutPreference.setSnackbarManager(snackbarManager);
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS)) {
+                mBatchUploadCardPreference.setSnackbarManager(snackbarManager);
+            }
         }
     }
 

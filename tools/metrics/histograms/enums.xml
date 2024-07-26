@@ -32601,6 +32601,11 @@ Called by update_net_error_codes.py.-->
   <int value="64" label="UMA_SIGN_OUT"/>
   <int value="65" label="UMA_TAB_GROUP_DELETE_UNDO"/>
   <int value="66" label="UMA_SINGLE_TAB_GROUP_DELETE_UNDO"/>
+  <int value="67" label="UMA_SAFETY_HUB_REGRANT_SINGLE_PERMISSION"/>
+  <int value="68" label="UMA_SAFETY_HUB_REGRANT_MULTIPLE_PERMISSIONS"/>
+  <int value="69" label="UMA_SAFETY_HUB_SINGLE_SITE_NOTIFICATIONS"/>
+  <int value="70" label="UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS"/>
+  <int value="71" label="UMA_SETTINGS_BATCH_UPLOAD"/>
 </enum>
 
 <enum name="SnapshotItemId">

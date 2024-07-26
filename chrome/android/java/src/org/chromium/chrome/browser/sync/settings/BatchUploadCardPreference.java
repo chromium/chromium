@@ -18,21 +18,26 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.LocalDataDescription;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.HashMap;
 import java.util.Set;
 
 public class BatchUploadCardPreference extends Preference
-        implements SyncService.SyncStateChangedListener {
+        implements SyncService.SyncStateChangedListener, BatchUploadDialogCoordinator.Listener {
     private Profile mProfile;
     private SyncService mSyncService;
     private HashMap<Integer, LocalDataDescription> mLocalDataDescriptionsMap;
+    private ModalDialogManager mDialogManager;
+    private SnackbarManager mSnackbarManager;
 
     public BatchUploadCardPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -41,13 +46,18 @@ public class BatchUploadCardPreference extends Preference
     }
 
     /** Initialize the dependencies for the BatchUploadCardPreference and update the error card. */
-    public void initialize(Profile profile) {
+    public void initialize(Profile profile, ModalDialogManager dialogManager) {
         mProfile = profile;
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
+        mDialogManager = dialogManager;
         if (mSyncService != null) {
             mSyncService.addSyncStateChangedListener(this);
         }
         update();
+    }
+
+    public void setSnackbarManager(SnackbarManager snackbarManager) {
+        mSnackbarManager = snackbarManager;
     }
 
     @Override
@@ -72,6 +82,35 @@ public class BatchUploadCardPreference extends Preference
         update();
     }
 
+    @Override
+    public void onSaveInAccountDialogButtonClicked(Set<Integer> types, int itemsCount) {
+        // Temporarily hide, assuming that in most cases all local data is migrated. If needed, it
+        // will become visible again once getLocalDataDescriptions() completes, which is triggered
+        // from update().
+        setVisible(false);
+        notifyChanged();
+
+        SyncServiceFactory.getForProfile(mProfile).triggerLocalDataMigration(types);
+        String snackbarMessage =
+                getContext()
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.account_settings_bulk_upload_saved_snackbar_message,
+                                itemsCount,
+                                IdentityServicesProvider.get()
+                                        .getIdentityManager(mProfile)
+                                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
+                                        .getEmail());
+        mSnackbarManager.showSnackbar(
+                Snackbar.make(
+                                snackbarMessage,
+                                /* controller= */ null,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_SETTINGS_BATCH_UPLOAD)
+                        .setSingleLine(false));
+        update();
+    }
+
     private void update() {
         mSyncService.getLocalDataDescriptions(
                 Set.of(ModelType.BOOKMARKS, ModelType.PASSWORDS, ModelType.READING_LIST),
@@ -85,8 +124,8 @@ public class BatchUploadCardPreference extends Preference
                         setVisible(false);
                     } else {
                         setVisible(true);
-                        notifyChanged();
                     }
+                    notifyChanged();
                 });
     }
 
@@ -99,28 +138,11 @@ public class BatchUploadCardPreference extends Preference
 
         Button button = (Button) card.findViewById(R.id.signin_settings_card_button);
         button.setText(R.string.account_settings_bulk_upload_section_save_button);
-
-        // TODO(b/326040498): Remove the stub usages of the strings below and create a dialog here
-        // where those strings will be used.
-        stubUsage(
-                R.string.account_settings_bulk_upload_dialog_title,
-                R.string.account_settings_bulk_upload_dialog_save_button,
-                R.string.account_settings_bulk_upload_dialog_cancel_button,
-                R.string.account_settings_bulk_upload_dialog_description,
-                context.getResources()
-                        .getQuantityString(
-                                R.plurals.account_settings_bulk_upload_dialog_bookmarks, 1, 1),
-                context.getResources()
-                        .getQuantityString(
-                                R.plurals.account_settings_bulk_upload_dialog_passwords, 1, 1),
-                context.getResources()
-                        .getQuantityString(
-                                R.plurals.account_settings_bulk_upload_dialog_reading_list, 1, 1),
-                context.getResources()
-                        .getQuantityString(
-                                R.plurals.account_settings_bulk_upload_saved_snackbar_message,
-                                1,
-                                "elisa.g.beckett@gmail.com"));
+        button.setOnClickListener(
+                v -> {
+                    BatchUploadDialogCoordinator.show(
+                            context, mProfile, mLocalDataDescriptionsMap, mDialogManager, this);
+                });
 
         ImageView image = (ImageView) card.findViewById(R.id.signin_settings_card_icon);
         image.setImageDrawable(
@@ -129,10 +151,25 @@ public class BatchUploadCardPreference extends Preference
                         R.drawable.ic_cloud_upload_24dp,
                         R.color.default_icon_color_accent1_tint_list));
 
-        int localPasswordsCount = mLocalDataDescriptionsMap.get(ModelType.PASSWORDS).itemCount();
-        int localItemsCount =
-                mLocalDataDescriptionsMap.get(ModelType.BOOKMARKS).itemCount()
-                        + mLocalDataDescriptionsMap.get(ModelType.READING_LIST).itemCount();
+        int localPasswordsCount = 0;
+        LocalDataDescription passwordsLocalDataDescription =
+                mLocalDataDescriptionsMap.get(ModelType.PASSWORDS);
+        if (passwordsLocalDataDescription != null) {
+            localPasswordsCount = passwordsLocalDataDescription.itemCount();
+        }
+
+        int localItemsCountExcludingPasswords = 0;
+        LocalDataDescription bookmarksLocalDataDescription =
+                mLocalDataDescriptionsMap.get(ModelType.BOOKMARKS);
+        if (bookmarksLocalDataDescription != null) {
+            localItemsCountExcludingPasswords += bookmarksLocalDataDescription.itemCount();
+        }
+
+        LocalDataDescription readingListLocalDataDescription =
+                mLocalDataDescriptionsMap.get(ModelType.READING_LIST);
+        if (readingListLocalDataDescription != null) {
+            localItemsCountExcludingPasswords += readingListLocalDataDescription.itemCount();
+        }
 
         TextView text = (TextView) card.findViewById(R.id.signin_settings_card_description);
         // TODO(b/354686035): Handle accounts with non-displayable email address.
@@ -140,7 +177,7 @@ public class BatchUploadCardPreference extends Preference
                 IdentityServicesProvider.get()
                         .getIdentityManager(mProfile)
                         .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        if (localItemsCount == 0) {
+        if (localItemsCountExcludingPasswords == 0) {
             text.setText(
                     context.getResources()
                             .getQuantityString(
@@ -155,8 +192,8 @@ public class BatchUploadCardPreference extends Preference
                             .getQuantityString(
                                     R.plurals
                                             .account_settings_bulk_upload_section_description_other,
-                                    localItemsCount,
-                                    localItemsCount,
+                                    localItemsCountExcludingPasswords,
+                                    localItemsCountExcludingPasswords,
                                     accountInfo.getEmail()));
         } else {
             text.setText(
@@ -169,8 +206,4 @@ public class BatchUploadCardPreference extends Preference
                                     accountInfo.getEmail()));
         }
     }
-
-    // TODO(b/326040498): This method should be removed.
-    private void stubUsage(
-            int s1, int s2, int s3, int s4, String s5, String s6, String s7, String s8) {}
 }

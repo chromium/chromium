@@ -44,6 +44,10 @@ public class LocalDataDescription {
         return mItemCount;
     }
 
+    public int domainCount() {
+        return mDomainCount;
+    }
+
     @NativeMethods
     interface Natives {
         @JniType("std::u16string")
