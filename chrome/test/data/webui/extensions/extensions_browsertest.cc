@@ -744,6 +744,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsErrorPageTest, InvalidUrl) {
   RunTestCase("InvalidUrl");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsErrorPageTest, ReloadItem) {
+  RunTestCase("ReloadItem");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Code Section Tests
 

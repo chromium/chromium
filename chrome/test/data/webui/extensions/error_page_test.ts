@@ -11,9 +11,12 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
-import {ClickMock, createExtensionInfo} from './test_util.js';
+import {createExtensionInfo, MockItemDelegate} from './test_util.js';
 
-class MockErrorPageDelegate extends ClickMock implements ErrorPageDelegate {
+// The delegate in the error page is an intersection type of
+// ItemDelegate&ErrorPageDelegate and MockItemDelegate extends ClickMock.
+class MockErrorPageDelegate extends MockItemDelegate implements
+    ErrorPageDelegate {
   requestFileSourceArgs: chrome.developerPrivate.RequestFileSourceProperties|
       undefined;
   requestFileSourceResolver:
@@ -80,6 +83,10 @@ suite('ExtensionErrorPageTest', function() {
     errorPage.delegate = mockDelegate;
     errorPage.data = extensionData;
     document.body.appendChild(errorPage);
+
+    // The toast manager is needed for reloading, see item_mixin.ts.
+    const toastManager = document.createElement('cr-toast-manager');
+    document.body.appendChild(toastManager);
   });
 
   test('Layout', function() {
@@ -224,5 +231,31 @@ suite('ExtensionErrorPageTest', function() {
     flush();
 
     assertEquals(extensionData.runtimeErrors[0], errorPage.getSelectedError());
+  });
+
+  // Test that the reload button is only shown for unpacked extensions in dev
+  // mode, and that it can be clicked.
+  test('ReloadItem', async function() {
+    flush();
+
+    const isVisible = isChildVisible.bind(null, errorPage);
+    assertFalse(isVisible('#dev-reload-button'));
+
+    errorPage.inDevMode = true;
+    errorPage.set('data.location', chrome.developerPrivate.Location.UNPACKED);
+
+    flush();
+    assertTrue(isVisible('#dev-reload-button'));
+
+    await mockDelegate.testClickingCalls(
+        errorPage.shadowRoot!.querySelector('#dev-reload-button')!,
+        'reloadItem', [errorPage.data.id], Promise.resolve());
+
+    // Disable the extension. The button should now be hidden.
+    errorPage.set(
+        'data.state', chrome.developerPrivate.ExtensionState.DISABLED);
+
+    flush();
+    assertFalse(isVisible('#dev-reload-button'));
   });
 });
