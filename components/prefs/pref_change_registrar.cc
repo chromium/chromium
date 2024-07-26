@@ -35,13 +35,13 @@ void PrefChangeRegistrar::Reset() {
   service_ = nullptr;
 }
 
-void PrefChangeRegistrar::Add(const std::string& path,
+void PrefChangeRegistrar::Add(std::string_view path,
                               const base::RepeatingClosure& obs) {
   Add(path,
       base::BindRepeating(&PrefChangeRegistrar::InvokeUnnamedCallback, obs));
 }
 
-void PrefChangeRegistrar::Add(const std::string& path,
+void PrefChangeRegistrar::Add(std::string_view path,
                               const NamedChangeCallback& obs) {
   if (!service_) {
     NOTREACHED_IN_MIGRATION();
@@ -51,13 +51,15 @@ void PrefChangeRegistrar::Add(const std::string& path,
                             << "\", registered.";
 
   service_->AddPrefObserver(path, this);
-  observers_[path] = obs;
+  observers_.insert_or_assign(std::string(path), obs);
 }
 
-void PrefChangeRegistrar::Remove(const std::string& path) {
+void PrefChangeRegistrar::Remove(std::string_view path) {
   DCHECK(IsObserved(path));
 
-  observers_.erase(path);
+  // Use std::map::erase directly once C++23 is supported.
+  auto it = observers_.find(path);
+  observers_.erase(it);
   service_->RemovePrefObserver(path, this);
 }
 

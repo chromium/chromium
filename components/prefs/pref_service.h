@@ -477,8 +477,8 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // make sure the observer gets cleaned up properly.
   //
   // Virtual for testing.
-  virtual void AddPrefObserver(const std::string& path, PrefObserver* obs);
-  virtual void RemovePrefObserver(const std::string& path, PrefObserver* obs);
+  virtual void AddPrefObserver(std::string_view path, PrefObserver* obs);
+  virtual void RemovePrefObserver(std::string_view path, PrefObserver* obs);
 
   // A PrefStore::Observer which reports loading errors from
   // PersistentPrefStores after they are loaded. Usually this is only user_prefs

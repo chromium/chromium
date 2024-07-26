@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <map>
-#include <string>
 #include <string_view>
 
 #include "base/memory/ref_counted.h"
@@ -38,7 +37,7 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
   // Returns true if a value has been set for the |key| in this
   // OverlayUserPrefStore, i.e. if it potentially overrides a value
   // from the |persistent_user_pref_store_|.
-  virtual bool IsSetInOverlay(const std::string& key) const;
+  virtual bool IsSetInOverlay(std::string_view key) const;
 
   // Methods of PrefStore.
   void AddObserver(PrefStore::Observer* observer) override;
@@ -70,7 +69,7 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
 
   // Registers preferences that should be stored in the persistent preferences
   // (|persistent_user_pref_store_|).
-  void RegisterPersistentPref(const std::string& key);
+  void RegisterPersistentPref(std::string_view key);
 
   void OnStoreDeletionFromDisk() override;
   bool HasReadErrorDelegate() const override;

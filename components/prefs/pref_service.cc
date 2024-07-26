@@ -399,12 +399,11 @@ const base::Value* PrefService::GetDefaultPrefValue(
   return value;
 }
 
-void PrefService::AddPrefObserver(const std::string& path, PrefObserver* obs) {
+void PrefService::AddPrefObserver(std::string_view path, PrefObserver* obs) {
   pref_notifier_->AddPrefObserver(path, obs);
 }
 
-void PrefService::RemovePrefObserver(const std::string& path,
-                                     PrefObserver* obs) {
+void PrefService::RemovePrefObserver(std::string_view path, PrefObserver* obs) {
   pref_notifier_->RemovePrefObserver(path, obs);
 }
 

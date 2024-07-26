@@ -49,11 +49,11 @@ class COMPONENTS_PREFS_EXPORT PrefChangeRegistrar final : public PrefObserver {
   // the preference that is changing as its parameter.
   //
   // Only one observer may be registered per path.
-  void Add(const std::string& path, const base::RepeatingClosure& obs);
-  void Add(const std::string& path, const NamedChangeCallback& obs);
+  void Add(std::string_view path, const base::RepeatingClosure& obs);
+  void Add(std::string_view path, const NamedChangeCallback& obs);
 
   // Removes the pref observer registered for |path|.
-  void Remove(const std::string& path);
+  void Remove(std::string_view path);
 
   // Removes all observers that have been previously added with a call to Add.
   void RemoveAll();
