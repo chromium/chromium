@@ -15,6 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace url_deduplication {
+
 class SearchEngineURLStripHandlerTest : public ::testing::Test {
  public:
   SearchEngineURLStripHandlerTest() = default;
@@ -50,3 +52,5 @@ TEST_F(SearchEngineURLStripHandlerTest, StripURL) {
   GURL stripped_url = Handler()->StripExtraParams(full_url);
   ASSERT_EQ("https://sherlock.example/?q=test", stripped_url.spec());
 }
+
+}  // namespace url_deduplication

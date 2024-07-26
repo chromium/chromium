@@ -4,9 +4,13 @@
 
 #include "components/url_deduplication/deduplication_strategy.h"
 
+namespace url_deduplication {
+
 DeduplicationStrategy::DeduplicationStrategy() = default;
 
 DeduplicationStrategy::DeduplicationStrategy(
     const DeduplicationStrategy& strategy) = default;
 
 DeduplicationStrategy::~DeduplicationStrategy() = default;
+
+}  // namespace url_deduplication

@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+namespace url_deduplication {
+
 class DeduplicationStrategy {
  public:
   DeduplicationStrategy();
@@ -16,10 +18,6 @@ class DeduplicationStrategy {
 
   ~DeduplicationStrategy();
 
-  // Param to determine if deduping should occur on similar documents.
-  bool include_documents{false};
-  // Param to determine if deduping should occur on search provider urls.
-  bool include_template_urls{false};
   // Vector of prefixes to remove from urls.
   std::vector<std::string> excluded_prefixes{{}};
   // Param to determine if https should be replaced with http.
@@ -35,5 +33,7 @@ class DeduplicationStrategy {
   // Param to determine if port should be cleared.
   bool clear_port{false};
 };
+
+}  // namespace url_deduplication
 
 #endif  // COMPONENTS_URL_DEDUPLICATION_DEDUPLICATION_STRATEGY_H_
