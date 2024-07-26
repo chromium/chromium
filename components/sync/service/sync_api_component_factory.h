@@ -8,31 +8,22 @@
 #include <memory>
 #include <string>
 
-#include "components/sync/base/model_type.h"
-#include "components/sync/service/model_type_controller.h"
-
 namespace signin {
 class GaiaIdHash;
 }
 
 namespace syncer {
 
-class DataTypeEncryptionHandler;
-class DataTypeManager;
-class DataTypeManagerObserver;
 class SyncEngine;
 class SyncInvalidationsService;
 
 // This factory provides sync service code with the model type specific sync/api
 // service (like SyncableService) implementations.
+// TODO(crbug.com/335688372): Rename class to EngineLoader or similar to convey
+// its scope.
 class SyncApiComponentFactory {
  public:
   virtual ~SyncApiComponentFactory() = default;
-
-  virtual std::unique_ptr<DataTypeManager> CreateDataTypeManager(
-      ModelTypeController::TypeVector controllers,
-      const DataTypeEncryptionHandler* encryption_handler,
-      DataTypeManagerObserver* observer) = 0;
 
   // Creating this in the factory helps us mock it out in testing.
   // `sync_invalidation_service` must not be null.

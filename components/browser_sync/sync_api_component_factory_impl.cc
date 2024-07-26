@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -14,23 +13,15 @@
 #include "base/time/default_clock.h"
 #include "components/browser_sync/active_devices_provider_impl.h"
 #include "components/signin/public/base/gaia_id_hash.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/legacy_directory_deletion.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
-#include "components/sync/model/model_type_store_service.h"
-#include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/service/glue/sync_engine_impl.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/sync_client.h"
 #include "components/sync_device_info/device_info_tracker.h"
 
 namespace browser_sync {
-
-using syncer::DataTypeManager;
-using syncer::DataTypeManagerImpl;
-using syncer::DataTypeManagerObserver;
 
 SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
     syncer::SyncClient* sync_client,
@@ -47,15 +38,6 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
 }
 
 SyncApiComponentFactoryImpl::~SyncApiComponentFactoryImpl() = default;
-
-std::unique_ptr<DataTypeManager>
-SyncApiComponentFactoryImpl::CreateDataTypeManager(
-    syncer::ModelTypeController::TypeVector controllers,
-    const syncer::DataTypeEncryptionHandler* encryption_handler,
-    DataTypeManagerObserver* observer) {
-  return std::make_unique<DataTypeManagerImpl>(std::move(controllers),
-                                               encryption_handler, observer);
-}
 
 std::unique_ptr<syncer::SyncEngine>
 SyncApiComponentFactoryImpl::CreateSyncEngine(

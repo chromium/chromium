@@ -10,14 +10,10 @@
 
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/sync_engine.h"
-#include "components/sync/service/data_type_manager.h"
-#include "components/sync/service/model_type_controller.h"
 #include "components/sync/service/sync_api_component_factory.h"
 
 namespace syncer {
 
-class DataTypeEncryptionHandler;
-class DataTypeManagerImpl;
 class FakeSyncEngine;
 
 class FakeSyncApiComponentFactory : public SyncApiComponentFactory {
@@ -29,9 +25,6 @@ class FakeSyncApiComponentFactory : public SyncApiComponentFactory {
   // Initialize(). Defaults to true.
   void AllowFakeEngineInitCompletion(bool allow);
 
-  DataTypeManagerImpl* last_created_data_type_manager() {
-    return last_created_data_type_manager_.get();
-  }
   FakeSyncEngine* last_created_engine() { return last_created_engine_.get(); }
 
   // Determines whether future initialization of FakeSyncEngine will report
@@ -41,10 +34,6 @@ class FakeSyncApiComponentFactory : public SyncApiComponentFactory {
   }
 
   // SyncApiComponentFactory overrides.
-  std::unique_ptr<DataTypeManager> CreateDataTypeManager(
-      ModelTypeController::TypeVector controllers,
-      const DataTypeEncryptionHandler* encryption_handler,
-      DataTypeManagerObserver* observer) override;
   std::unique_ptr<SyncEngine> CreateSyncEngine(
       const std::string& name,
       const signin::GaiaIdHash& gaia_id_hash,
@@ -56,7 +45,6 @@ class FakeSyncApiComponentFactory : public SyncApiComponentFactory {
       const signin::GaiaIdHash& gaia_id_hash) override;
 
  private:
-  base::WeakPtr<DataTypeManagerImpl> last_created_data_type_manager_;
   base::WeakPtr<FakeSyncEngine> last_created_engine_;
   bool allow_fake_engine_init_completion_ = true;
   bool is_first_time_sync_configure_done_ = false;

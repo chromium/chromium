@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_status.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -36,6 +37,10 @@ class FakeSyncEngine final : public SyncEngine {
 
   CoreAccountId authenticated_account_id() const {
     return authenticated_account_id_;
+  }
+
+  ConfigureReason last_configure_reason() const {
+    return last_configure_reason_;
   }
 
   bool started_handling_invalidations() {
@@ -128,6 +133,7 @@ class FakeSyncEngine final : public SyncEngine {
   CoreAccountId authenticated_account_id_;
   bool started_handling_invalidations_ = false;
   bool is_next_poll_time_in_the_past_ = false;
+  ConfigureReason last_configure_reason_ = CONFIGURE_REASON_UNKNOWN;
   base::WeakPtrFactory<FakeSyncEngine> weak_ptr_factory_{this};
 };
 

@@ -49,6 +49,7 @@
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/service/backend_migrator.h"
 #include "components/sync/service/configure_context.h"
+#include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/service/get_types_with_unsynced_data_request_barrier.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_api_component_factory.h"
@@ -336,9 +337,8 @@ void SyncServiceImpl::Initialize() {
 
   // TODO(crbug.com/335688372): The controllers map should be provided as
   // argument.
-  data_type_manager_ =
-      sync_client_->GetSyncApiComponentFactory()->CreateDataTypeManager(
-          sync_client_->CreateModelTypeControllers(this), &crypto_, this);
+  data_type_manager_ = std::make_unique<DataTypeManagerImpl>(
+      sync_client_->CreateModelTypeControllers(this), &crypto_, this);
 
   // It's safe to pass a raw ptr, since SyncServiceImpl outlives
   // SyncUserSettingsImpl.

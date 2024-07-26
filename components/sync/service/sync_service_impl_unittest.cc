@@ -37,7 +37,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/sync_status.h"
-#include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync/service/sync_token_status.h"
 #include "components/sync/service/trusted_vault_synthetic_field_trial.h"
@@ -281,10 +280,6 @@ class SyncServiceImplTest : public ::testing::Test {
 
   FakeSyncApiComponentFactory* component_factory() {
     return sync_service_impl_bundle_.component_factory();
-  }
-
-  DataTypeManagerImpl* data_type_manager() {
-    return component_factory()->last_created_data_type_manager();
   }
 
   FakeSyncEngine* engine() {
@@ -1533,15 +1528,14 @@ TEST_F(SyncServiceImplTest, ConfigureDataTypeManagerReason) {
 
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-  EXPECT_EQ(CONFIGURE_REASON_NEW_CLIENT,
-            data_type_manager()->last_configure_reason_for_test());
+  EXPECT_EQ(CONFIGURE_REASON_NEW_CLIENT, engine()->last_configure_reason());
 
   // Reconfiguration.
   // Trigger a reconfig by grabbing a SyncSetupInProgressHandle and immediately
   // releasing it again (via the temporary unique_ptr going away).
   service()->GetSetupInProgressHandle();
   EXPECT_EQ(CONFIGURE_REASON_RECONFIGURATION,
-            data_type_manager()->last_configure_reason_for_test());
+            engine()->last_configure_reason());
   ShutdownAndReleaseService();
 
   // Nth sync.
@@ -1552,14 +1546,14 @@ TEST_F(SyncServiceImplTest, ConfigureDataTypeManagerReason) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   EXPECT_EQ(CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE,
-            data_type_manager()->last_configure_reason_for_test());
+            engine()->last_configure_reason());
 
   // Reconfiguration.
   // Trigger a reconfig by grabbing a SyncSetupInProgressHandle and immediately
   // releasing it again (via the temporary unique_ptr going away).
   service()->GetSetupInProgressHandle();
   EXPECT_EQ(CONFIGURE_REASON_RECONFIGURATION,
-            data_type_manager()->last_configure_reason_for_test());
+            engine()->last_configure_reason());
   ShutdownAndReleaseService();
 }
 
@@ -1860,10 +1854,8 @@ TEST_F(SyncServiceImplTest, ShouldReturnErrorDownloadStatus) {
   InitializeService();
   base::RunLoop().RunUntilIdle();
 
-  data_type_manager()->OnSingleDataTypeWillStop(
-      syncer::BOOKMARKS,
-      SyncError(FROM_HERE, SyncError::ErrorType::DATATYPE_ERROR,
-                "Data type failure", syncer::BOOKMARKS));
+  get_controller(BOOKMARKS)->model()->SimulateModelError(
+      ModelError(FROM_HERE, "Model error"));
   EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
             SyncService::ModelTypeDownloadStatus::kError);
 }
@@ -1890,12 +1882,12 @@ TEST_F(SyncServiceImplTest, ShouldReturnWaitingDownloadStatus) {
   bool met_configuring_data_type_manager = false;
   testing::NiceMock<MockSyncServiceObserver> mock_sync_service_observer;
   ON_CALL(mock_sync_service_observer, OnStateChanged)
-      .WillByDefault(Invoke([this, &met_configuring_data_type_manager](
+      .WillByDefault(Invoke([&met_configuring_data_type_manager](
                                 SyncService* service) {
         EXPECT_NE(service->GetDownloadStatusFor(syncer::BOOKMARKS),
                   SyncService::ModelTypeDownloadStatus::kError);
-        if (data_type_manager()->state() ==
-            DataTypeManager::State::CONFIGURING) {
+        if (service->GetTransportState() ==
+            SyncService::TransportState::CONFIGURING) {
           met_configuring_data_type_manager = true;
           EXPECT_EQ(service->GetDownloadStatusFor(syncer::BOOKMARKS),
                     SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);

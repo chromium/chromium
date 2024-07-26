@@ -11,7 +11,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/pref_names.h"
-#include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/test/fake_model_type_controller.h"
 #include "components/sync/test/fake_sync_api_component_factory.h"
 #include "components/sync/test/fake_sync_engine.h"
@@ -162,10 +161,6 @@ class SyncServiceImplStartupTest : public testing::Test {
     return sync_service_impl_bundle_.component_factory();
   }
 
-  DataTypeManagerImpl* data_type_manager() {
-    return component_factory()->last_created_data_type_manager();
-  }
-
   FakeSyncEngine* engine() {
     return component_factory()->last_created_engine();
   }
@@ -233,7 +228,6 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
   // released.
   sync_blocker.reset();
   ASSERT_FALSE(sync_service()->IsSetupInProgress());
-  EXPECT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
   // Sync-the-feature is still not active, but rather pending confirmation.
@@ -244,7 +238,6 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
   // DataTypeManager in full Sync-the-feature mode.
   sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-  EXPECT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
 
   // This should have fully enabled sync.
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
@@ -415,7 +408,6 @@ TEST_F(SyncServiceImplStartupTest, StartAshNoCredentials) {
   // initialize the engine, and configure the DataTypeManager.
   sync_service()->Initialize();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
 
   // Sync should be considered active, even though there is no refresh token.
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
@@ -451,7 +443,6 @@ TEST_F(SyncServiceImplStartupTest, DisableSync) {
   sync_service()->Initialize();
   FastForwardUntilNoTasksRemain();
   ASSERT_TRUE(sync_service()->IsSyncFeatureActive());
-  ASSERT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
 
@@ -459,7 +450,6 @@ TEST_F(SyncServiceImplStartupTest, DisableSync) {
   // transport mode.
   sync_service()->StopAndClear();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
 
@@ -483,7 +473,6 @@ TEST_F(SyncServiceImplStartupTest, DisableSync) {
   // mode. It should immediately start up again in transport mode.
   sync_service()->StopAndClear();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
 }
@@ -742,7 +731,6 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   // already done.
   EXPECT_EQ(SyncService::TransportState::CONFIGURING,
             sync_service()->GetTransportState());
-  EXPECT_EQ(DataTypeManager::CONFIGURING, data_type_manager()->state());
   EXPECT_TRUE(engine());
 
   // Finish model initialization.
@@ -751,7 +739,6 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   // Sync is fully up and running.
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
-  EXPECT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
   EXPECT_TRUE(engine());
 }
 

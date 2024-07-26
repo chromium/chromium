@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/sync/service/model_type_controller.h"
 #include "components/sync/service/sync_api_component_factory.h"
 
 namespace syncer {
@@ -33,10 +32,6 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
   ~SyncApiComponentFactoryImpl() override;
 
   // SyncApiComponentFactory implementation:
-  std::unique_ptr<syncer::DataTypeManager> CreateDataTypeManager(
-      syncer::ModelTypeController::TypeVector controllers,
-      const syncer::DataTypeEncryptionHandler* encryption_handler,
-      syncer::DataTypeManagerObserver* observer) override;
   std::unique_ptr<syncer::SyncEngine> CreateSyncEngine(
       const std::string& name,
       const signin::GaiaIdHash& gaia_id_hash,

@@ -108,6 +108,7 @@ void FakeSyncEngine::Shutdown(ShutdownReason reason) {
 }
 
 void FakeSyncEngine::ConfigureDataTypes(ConfigureParams params) {
+  last_configure_reason_ = params.reason;
   std::move(params.ready_task)
       .Run(/*succeeded_configuration_types=*/params.to_download,
            /*failed_configuration_types=*/ModelTypeSet());

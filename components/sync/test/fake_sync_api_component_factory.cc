@@ -7,27 +7,9 @@
 #include <utility>
 
 #include "base/test/bind.h"
-#include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/test/fake_sync_engine.h"
 
 namespace syncer {
-
-namespace {
-
-// Subclass of DataTypeManagerImpl to support weak pointers.
-class TestDataTypeManagerImpl final : public DataTypeManagerImpl {
- public:
-  using DataTypeManagerImpl::DataTypeManagerImpl;
-
-  base::WeakPtr<TestDataTypeManagerImpl> AsWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  base::WeakPtrFactory<TestDataTypeManagerImpl> weak_ptr_factory_{this};
-};
-
-}  // namespace
 
 FakeSyncApiComponentFactory::FakeSyncApiComponentFactory() = default;
 
@@ -35,17 +17,6 @@ FakeSyncApiComponentFactory::~FakeSyncApiComponentFactory() = default;
 
 void FakeSyncApiComponentFactory::AllowFakeEngineInitCompletion(bool allow) {
   allow_fake_engine_init_completion_ = allow;
-}
-
-std::unique_ptr<DataTypeManager>
-FakeSyncApiComponentFactory::CreateDataTypeManager(
-    ModelTypeController::TypeVector controllers,
-    const DataTypeEncryptionHandler* encryption_handler,
-    DataTypeManagerObserver* observer) {
-  auto data_type_manager = std::make_unique<TestDataTypeManagerImpl>(
-      std::move(controllers), encryption_handler, observer);
-  last_created_data_type_manager_ = data_type_manager->AsWeakPtr();
-  return data_type_manager;
 }
 
 std::unique_ptr<SyncEngine> FakeSyncApiComponentFactory::CreateSyncEngine(
