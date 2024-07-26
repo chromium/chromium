@@ -1310,7 +1310,6 @@ def main():
       api_level = '21'
       if target_arch == 'riscv64':
         api_level = '35'
-        toolchain_dir = ANDROID_NDK_CANARY_TOOLCHAIN_DIR
       target_triple += '-linux-android' + api_level
       android_cflags = [
           '--sysroot=%s/sysroot' % toolchain_dir,
