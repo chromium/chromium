@@ -79,21 +79,14 @@ LayoutUnit ResolveInlineLengthInternal(
         value += border_padding.InlineSum();
       return value;
     }
-    case Length::kMinContent:
+    case Length::kContent:
     case Length::kMaxContent:
+      return min_max_sizes_func(MinMaxSizesType::kContent).sizes.max_size;
+    case Length::kMinContent:
+      return min_max_sizes_func(MinMaxSizesType::kContent).sizes.min_size;
     case Length::kMinIntrinsic:
+      return min_max_sizes_func(MinMaxSizesType::kIntrinsic).sizes.min_size;
     case Length::kFitContent: {
-      MinMaxSizes min_max_sizes =
-          min_max_sizes_func(length.IsMinIntrinsic()
-                                 ? MinMaxSizesType::kIntrinsic
-                                 : MinMaxSizesType::kContent)
-              .sizes;
-
-      if (length.IsMinContent() || length.IsMinIntrinsic())
-        return min_max_sizes.min_size;
-      if (length.IsMaxContent())
-        return min_max_sizes.max_size;
-
       const LayoutUnit available_size =
           override_available_size == kIndefiniteSize
               ? constraint_space.AvailableSize().inline_size
@@ -102,13 +95,12 @@ LayoutUnit ResolveInlineLengthInternal(
         return unresolvable_length_result;
       }
       DCHECK_GE(available_size, LayoutUnit());
-      BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
-      LayoutUnit fill_available =
+      const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
+      const LayoutUnit fill_available =
           (available_size - margins.InlineSum()).ClampNegativeToZero();
-      return min_max_sizes.ShrinkToFit(fill_available);
+      return min_max_sizes_func(MinMaxSizesType::kContent)
+          .sizes.ShrinkToFit(fill_available);
     }
-    case Length::kContent:
-      return min_max_sizes_func(MinMaxSizesType::kContent).sizes.max_size;
     case Length::kAuto:
     case Length::kNone:
       return unresolvable_length_result;
