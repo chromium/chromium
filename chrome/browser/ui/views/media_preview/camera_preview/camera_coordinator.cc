@@ -53,7 +53,7 @@ CameraCoordinator::CameraCoordinator(
 }
 
 CameraCoordinator::~CameraCoordinator() {
-  if (allow_device_selection_) {
+  if (allow_device_selection_ && camera_mediator_.IsDeviceListInitialized()) {
     RecordDeviceSelectionTotalDevices(metrics_context_,
                                       eligible_device_infos_.size());
   }

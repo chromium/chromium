@@ -43,6 +43,7 @@ void CameraMediator::OnVideoDevicesChanged(
     devices_changed_callback_.Run({});
     return;
   }
+  is_device_list_initialized_ = true;
   // Copy into a mutable vector in order to be re-ordered by
   // `PreferenceRankDeviceInfos`.
   auto ranked_device_infos = device_infos.value();

@@ -39,6 +39,8 @@ class MicMediator : public media_effects::MediaDeviceInfo::Observer {
 
   void InitializeDeviceList();
 
+  bool IsDeviceListInitialized() const { return is_device_list_initialized_; }
+
  private:
   // media_effects::MediaDeviceInfo::Observer overrides.
   void OnAudioDevicesChanged(
@@ -49,6 +51,8 @@ class MicMediator : public media_effects::MediaDeviceInfo::Observer {
   DevicesChangedCallback devices_changed_callback_;
   base::ScopedObservation<media_effects::MediaDeviceInfo, MicMediator>
       devices_observer_{this};
+
+  bool is_device_list_initialized_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_MIC_PREVIEW_MIC_MEDIATOR_H_

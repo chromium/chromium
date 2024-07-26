@@ -32,6 +32,8 @@ using testing::Pointwise;
 
 namespace {
 
+constexpr char kNumDevicesHistogram[] =
+    "MediaPreviews.UI.DeviceSelection.Permissions.Camera.NumDevices";
 constexpr char kDeviceId[] = "device_id";
 constexpr char kDeviceName[] = "device_name";
 constexpr char kDeviceId2[] = "device_id_2";
@@ -111,9 +113,7 @@ class CameraCoordinatorTest : public TestWithBrowserView {
   }
 
   void ExpectHistogramTotalDevices(size_t expected_bucket_min_value) {
-    const std::string histogram_name =
-        "MediaPreviews.UI.DeviceSelection.Permissions.Camera.NumDevices";
-    histogram_tester_->ExpectUniqueSample(histogram_name,
+    histogram_tester_->ExpectUniqueSample(kNumDevicesHistogram,
                                           expected_bucket_min_value,
                                           /*expected_bucket_count=*/1);
     histogram_tester_.emplace();
@@ -176,7 +176,9 @@ TEST_F(CameraCoordinatorTest, RelevantVideoCaptureDeviceInfoExtraction) {
 TEST_F(CameraCoordinatorTest,
        RelevantVideoCaptureDeviceInfoExtraction_ConstrainedToEligibleDevices) {
   coordinator_.reset();
-  ExpectHistogramTotalDevices(/*expected_bucket_min_value=*/0);
+  // Nothing is recorded if device list is not initialized yet.
+  histogram_tester_->ExpectTotalCount(kNumDevicesHistogram,
+                                      /*expected_count=*/0);
 
   InitializeCoordinator({kDeviceId2});
   EXPECT_EQ(GetComboboxModel().GetItemCount(), 0u);
