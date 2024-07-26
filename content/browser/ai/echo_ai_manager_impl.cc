@@ -7,8 +7,6 @@
 #include "base/no_destructor.h"
 #include "content/browser/ai/echo_ai_text_session.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
-#include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 
 namespace content {
 

@@ -12,8 +12,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-params-data.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session.mojom.h"
 
 namespace content {

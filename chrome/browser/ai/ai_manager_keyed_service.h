@@ -17,7 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-forward.h"
 
 // The browser-side implementation of `blink::mojom::AIManager`. There should be
 // one shared AIManagerKeyedService per BrowserContext.
