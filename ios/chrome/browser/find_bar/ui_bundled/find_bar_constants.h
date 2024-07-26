@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_FIND_BAR_UI_BUNDLED_FIND_BAR_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_FIND_BAR_UI_BUNDLED_FIND_BAR_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
 
@@ -22,4 +22,4 @@ extern NSString* const kFindInPageCloseButtonId;
 // The a11y ID of the results count label in the find-in-page bar.
 extern NSString* const kFindInPageResultsCountLabelId;
 
-#endif  // IOS_CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_FIND_BAR_UI_BUNDLED_FIND_BAR_CONSTANTS_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_coordinator.h"
 
 #import "ios/chrome/browser/find_in_page/model/abstract_find_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -10,9 +10,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
-#import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
-#import "ios/chrome/browser/ui/find_bar/find_bar_mediator.h"
-#import "ios/chrome/browser/ui/find_bar/find_bar_view_controller.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_controller_ios.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_mediator.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_view_controller.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"

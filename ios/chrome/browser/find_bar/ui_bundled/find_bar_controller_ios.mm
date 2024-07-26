@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_controller_ios.h"
 
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
@@ -16,9 +16,9 @@
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/find_bar/find_bar_constants.h"
-#import "ios/chrome/browser/ui/find_bar/find_bar_view.h"
-#import "ios/chrome/browser/ui/find_bar/find_bar_view_controller.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_constants.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_view.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_view_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"

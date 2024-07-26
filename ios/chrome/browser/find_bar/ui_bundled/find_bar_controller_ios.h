@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_CONTROLLER_IOS_H_
-#define IOS_CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_CONTROLLER_IOS_H_
+#ifndef IOS_CHROME_BROWSER_FIND_BAR_UI_BUNDLED_FIND_BAR_CONTROLLER_IOS_H_
+#define IOS_CHROME_BROWSER_FIND_BAR_UI_BUNDLED_FIND_BAR_CONTROLLER_IOS_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/find_bar/find_bar_consumer.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_consumer.h"
 
 @protocol BrowserCommands;
 @class FindBarViewController;
@@ -55,4 +55,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_CONTROLLER_IOS_H_
+#endif  // IOS_CHROME_BROWSER_FIND_BAR_UI_BUNDLED_FIND_BAR_CONTROLLER_IOS_H_

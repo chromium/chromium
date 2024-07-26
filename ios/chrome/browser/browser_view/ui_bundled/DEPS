@@ -20,6 +20,7 @@ include_rules = [
   "+ios/chrome/browser/download/model",
   "+ios/chrome/browser/download/ui_bundled",
   "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/find_bar/ui_bundled",
   "+ios/chrome/browser/find_in_page/model",
   "+ios/chrome/browser/follow/model",
   "+ios/chrome/browser/follow/ui_bundled",

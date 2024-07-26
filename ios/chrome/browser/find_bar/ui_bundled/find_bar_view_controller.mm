@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/find_bar/find_bar_view_controller.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/ui/find_bar/find_bar_view.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_view.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 
 @interface FindBarViewController ()
