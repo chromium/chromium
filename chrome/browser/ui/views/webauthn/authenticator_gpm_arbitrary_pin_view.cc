@@ -13,7 +13,6 @@
 #include "ui/views/layout/box_layout.h"
 
 namespace {
-constexpr int kGpmArbitraryPinMinLength = 4;
 constexpr int kBetweenChildSpacing = 8;
 constexpr int kPinTextfieldWidthInChars = 25;
 }  // namespace
@@ -22,6 +21,7 @@ AuthenticatorGPMArbitraryPinView::AuthenticatorGPMArbitraryPinView(
     bool ui_disabled,
     const std::u16string& pin,
     const std::u16string& pin_accessible_name,
+    const std::u16string& pin_accessible_description,
     Delegate* delegate)
     : delegate_(delegate) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
@@ -33,6 +33,10 @@ AuthenticatorGPMArbitraryPinView::AuthenticatorGPMArbitraryPinView(
   auto pin_textfield = std::make_unique<views::Textfield>();
   pin_textfield->SetController(this);
   pin_textfield->GetViewAccessibility().SetName(pin_accessible_name);
+  if (!pin_accessible_description.empty()) {
+    pin_textfield->GetViewAccessibility().SetDescription(
+        pin_accessible_description);
+  }
   pin_textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   pin_textfield->SetDefaultWidthInChars(kPinTextfieldWidthInChars);
   pin_textfield->SetReadOnly(ui_disabled);
@@ -63,19 +67,6 @@ void AuthenticatorGPMArbitraryPinView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
   delegate_->OnPinChanged(new_contents);
-}
-
-void AuthenticatorGPMArbitraryPinView::OnBeforeUserAction(
-    views::Textfield* sender) {
-  pin_length_before_user_action_ = sender->GetText().length();
-}
-
-void AuthenticatorGPMArbitraryPinView::OnAfterUserAction(
-    views::Textfield* sender) {
-  if (pin_length_before_user_action_ < kGpmArbitraryPinMinLength !=
-      sender->GetText().length() < kGpmArbitraryPinMinLength) {
-    delegate_->UpdateHintVisibility();
-  }
 }
 
 BEGIN_METADATA(AuthenticatorGPMArbitraryPinView)
