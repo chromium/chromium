@@ -130,15 +130,14 @@ void WebDialogBrowserTest::SimulateEscapeKey() {
 #define MAYBE_SizeWindow SizeWindow
 #endif
 IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
-  bool centered_in_window = false;
 #if BUILDFLAG(IS_MAC)
   // On macOS 11 (and presumably later) the new mechanism for sheets, which are
   // used for window modals like this dialog, always centers them within the
   // parent window regardless of the requested origin. The size is still
   // honored.
-  if (base::mac::MacOSMajorVersion() >= 11) {
-    centered_in_window = true;
-  }
+  bool centered_in_window = true;
+#else
+  bool centered_in_window = false;
 #endif
 
   gfx::Rect set_bounds = view_->GetWidget()->GetClientAreaBoundsInScreen();

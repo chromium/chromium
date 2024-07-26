@@ -496,15 +496,9 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     // TODO(crbug.com/40226210): Fix this so that we can inject HEVC support on
     // Windows.
     EXPECT_UNSUPPORTED(hevc_supported);
-#elif BUILDFLAG(IS_MAC)
-    // On Mac platforms, HEVC support should be available if OS >= Big Sur 11.0
-    // and kPlatformHEVCDecoderSupport is enabled.
-    if (__builtin_available(macOS 11.0, *)) {
-      EXPECT_ECK_PROPRIETARY(hevc_supported);
-    } else {
-      EXPECT_UNSUPPORTED(hevc_supported);
-    }
 #else
+    // On other platforms, HEVC support should be available if
+    // kPlatformHEVCDecoderSupport is enabled.
     EXPECT_ECK_PROPRIETARY(hevc_supported);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #else

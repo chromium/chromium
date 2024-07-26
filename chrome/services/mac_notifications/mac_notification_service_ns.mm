@@ -112,14 +112,6 @@ void AddActionButtons(
   // Force the notification to always show its action buttons.
   [notification setValue:@YES forKey:@"_showsButtons"];
 
-  // A default close button label is provided by the platform but we explicitly
-  // override it in case the user decides to not use the OS language in Chrome.
-  // macOS 11 already shows a close button in the top-left corner.
-  if (base::mac::MacOSMajorVersion() < 11) {
-    [notification setOtherButtonTitle:l10n_util::GetNSString(
-                                          IDS_NOTIFICATION_BUTTON_CLOSE)];
-  }
-
   NSMutableArray* action_buttons = [NSMutableArray arrayWithCapacity:3];
   for (const auto& button : buttons)
     [action_buttons addObject:base::SysUTF16ToNSString(button->title)];
@@ -152,16 +144,11 @@ void AddActionButtons(
   DCHECK([notification
       respondsToSelector:@selector(_alternateActionButtonTitles)]);
 
-  // macOS 11 does not support overriding the text of the overflow button and
+  // macOS does not support overriding the text of the overflow button and
   // will always show "Options" via this API. Setting actionButtonTitle just
   // appends another button into the overflow menu. Only the new UNNotification
-  // API allows overriding this title on macOS 11.
-  if (base::mac::MacOSMajorVersion() >= 11) {
-    [notification setValue:@NO forKey:@"_hasActionButton"];
-  } else {
-    [notification setActionButtonTitle:l10n_util::GetNSString(
-                                           IDS_NOTIFICATION_BUTTON_MORE)];
-  }
+  // API allows overriding this title.
+  [notification setValue:@NO forKey:@"_hasActionButton"];
 
   // Show the alternate menu with developer actions and settings if needed.
   [notification setValue:@YES forKey:@"_alwaysShowAlternateActionMenu"];

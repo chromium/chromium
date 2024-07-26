@@ -6675,6 +6675,7 @@ static_library("browser") {
       "AudioUnit.framework",
       "AVFoundation.framework",
       "AuthenticationServices.framework",
+      "CoreVideo.framework",  # Used for the Thumbnail capturer on macOS.
       "DiskArbitration.framework",
       "IOKit.framework",
       "ImageCaptureCore.framework",
@@ -6684,14 +6685,11 @@ static_library("browser") {
       "SafariServices.framework",
       "SecurityInterface.framework",
       "UserNotifications.framework",
-
-      # Used for the Thumbnail capturer on macOS.
-      "CoreVideo.framework",
+      "UniformTypeIdentifiers.framework",
       "VideoToolbox.framework",
     ]
     weak_frameworks = [
       "ScreenCaptureKit.framework",  # Available in macOS 12.3, stable in 13.2.
-      "UniformTypeIdentifiers.framework",  # macOS 11
     ]
   }
 

@@ -52,7 +52,6 @@ constexpr double kTitlePaddingWidthFraction = 0.1;
 
 // Empirical measurements of the traffic lights.
 constexpr int kCaptionButtonsWidth = 52;
-constexpr int kCaptionButtonsInsetsCatalinaOrOlder = 70;
 constexpr int kCaptionButtonsLeadingPadding = 20;
 
 FullscreenToolbarStyle GetUserPreferredToolbarStyle(bool always_show) {
@@ -418,11 +417,9 @@ void BrowserNonClientFrameViewMac::PaintChildren(const views::PaintInfo& info) {
 }
 
 gfx::Insets BrowserNonClientFrameViewMac::GetCaptionButtonInsets() const {
-  const int kCaptionButtonInset =
-      base::mac::MacOSMajorVersion() < 11
-          ? kCaptionButtonsInsetsCatalinaOrOlder
-          : (kCaptionButtonsWidth + (kCaptionButtonsLeadingPadding * 2) -
-             TabStyle::Get()->GetBottomCornerRadius());
+  const int kCaptionButtonInset = kCaptionButtonsWidth +
+                                  (kCaptionButtonsLeadingPadding * 2) -
+                                  TabStyle::Get()->GetBottomCornerRadius();
   if (CaptionButtonsOnLeadingEdge()) {
     return gfx::Insets::TLBR(0, kCaptionButtonInset, 0, 0);
   } else {

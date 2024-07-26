@@ -162,62 +162,20 @@ bool GetCleanupOnBootTempDir(base::FilePath* path) {
     return true;
   }
 
-  // Remove the @available check and the else block when
-  // `MAC_OS_X_VERSION_MIN_REQUIRED` is macOS 11+.
-  NSString* temp_dir;
-  if (@available(macOS 11.0, *)) {
-    char buffer[PATH_MAX];
-    if (!g_dirhelper_path_for_testing &&
-        !_dirhelper(DIRHELPER_USER_LOCAL_TRANSLOCATION, buffer, PATH_MAX)) {
-      DLOG(ERROR) << "_dirhelper error";
-      return false;
-    }
+  char buffer[PATH_MAX];
+  if (!g_dirhelper_path_for_testing &&
+      !_dirhelper(DIRHELPER_USER_LOCAL_TRANSLOCATION, buffer, PATH_MAX)) {
+    DLOG(ERROR) << "_dirhelper error";
+    return false;
+  }
 
-    // /var/folders/.../X/
-    temp_dir = g_dirhelper_path_for_testing ?: @(buffer);
+  // /var/folders/.../X/
+  NSString* temp_dir = g_dirhelper_path_for_testing ?: @(buffer);
 
-    // `_dirhelper` with `DIRHELPER_USER_LOCAL_TRANSLOCATION` shouldn't return
-    // any user controlled paths, but validate just to be sure.
-    if (!ValidateTempDir(base::apple::NSStringToFilePath(temp_dir))) {
-      return false;
-    }
-  } else {
-    // /var/folders/.../T/
-    temp_dir = NSTemporaryDirectory();
-
-    if (![temp_dir.lastPathComponent isEqualToString:@"T"]) {
-      DLOG(ERROR) << " NSTemporaryDirectory last component is not \"T\" "
-                  << std::quoted(temp_dir.fileSystemRepresentation);
-      return false;
-    }
-
-    // /var/folders/.../
-    temp_dir = [temp_dir stringByDeletingLastPathComponent];
-
-    // Internal `NSTemporaryDirectory` failures could result in env `TMPDIR`
-    // being returned. Ensure we get an expected path.
-    // Validate before trying to create "Cleanup At Startup".
-    if (!ValidateTempDir(base::apple::NSStringToFilePath(temp_dir))) {
-      return false;
-    }
-
-    // /var/folders/.../Cleanup At Startup/
-    temp_dir = [temp_dir stringByAppendingPathComponent:@"Cleanup At Startup"];
-
-    // Create the "Cleanup At Startup" directory if needed. When created by
-    // macOS the mode is 0755, do the same here. If we are the ones who created
-    // the directory, `chmod` 0755 to overcome a restrictive umask.
-    if (mkdir(temp_dir.fileSystemRepresentation, 0755) == 0) {
-      if (chmod(temp_dir.fileSystemRepresentation, 0755) != 0) {
-        DPLOG(ERROR) << "chmod "
-                     << std::quoted(temp_dir.fileSystemRepresentation);
-        return false;
-      }
-    } else if (errno != EEXIST) {
-      DPLOG(ERROR) << "mkdir "
-                   << std::quoted(temp_dir.fileSystemRepresentation);
-      return false;
-    }
+  // `_dirhelper` with `DIRHELPER_USER_LOCAL_TRANSLOCATION` shouldn't return
+  // any user controlled paths, but validate just to be sure.
+  if (!ValidateTempDir(base::apple::NSStringToFilePath(temp_dir))) {
+    return false;
   }
 
   base::FilePath temporary_directory_path =
