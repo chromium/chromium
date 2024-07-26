@@ -13,7 +13,15 @@ class WebContents;
 
 namespace system_permission_settings {
 
+class PlatformHandle;
+
 using SystemPermissionResponseCallback = base::OnceCallback<void()>;
+
+// For testing purposes only. Sets a fake / mock instance of
+// `PlatformHandle` to be used instead of the real implementation.
+// This allows tests to control the behavior of system permission checks and
+// requests.
+void SetInstanceForTesting(PlatformHandle* instance_for_testing);
 
 // Returns `true` if Chrome can request system-level permission. Returns
 // `false` otherwise.

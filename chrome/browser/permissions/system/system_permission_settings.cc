@@ -18,6 +18,9 @@
 namespace system_permission_settings {
 
 namespace {
+
+PlatformHandle* instance_for_testing_ = nullptr;
+
 std::map<ContentSettingsType, bool>& GlobalTestingBlockOverrides() {
   static std::map<ContentSettingsType, bool> g_testing_block_overrides;
   return g_testing_block_overrides;
@@ -25,6 +28,9 @@ std::map<ContentSettingsType, bool>& GlobalTestingBlockOverrides() {
 
 PlatformHandle* GetPlatformHandle() {
 #if !BUILDFLAG(IS_ANDROID)
+  if (instance_for_testing_) {
+    return instance_for_testing_;
+  }
   return CHECK_DEREF(CHECK_DEREF(g_browser_process).GetFeatures())
       .system_permissions_platform_handle();
 #else
@@ -33,6 +39,11 @@ PlatformHandle* GetPlatformHandle() {
 }
 
 }  // namespace
+
+// static
+void SetInstanceForTesting(PlatformHandle* instance_for_testing) {
+  instance_for_testing_ = instance_for_testing;
+}
 
 // static
 bool CanPrompt(ContentSettingsType type) {
