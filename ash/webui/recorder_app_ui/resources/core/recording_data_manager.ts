@@ -58,7 +58,7 @@ const derivedRecordingMetadataSchema = z.object({
 const recordingMetadataSchema = z.intersection([
   baseRecordingMetadataSchema,
   derivedRecordingMetadataSchema,
-] as const);
+]);
 
 export type RecordingMetadata = Infer<typeof recordingMetadataSchema>;
 
