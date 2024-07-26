@@ -147,6 +147,10 @@ struct URLVisitAggregate {
   // details.
   segmentation_platform::TrainingRequestId request_id;
 
+  // Returns a set of associated URL titles present in the data provided by the
+  // various fetchers that participated in constructing the aggregate object.
+  std::set<std::u16string_view> GetAssociatedTitles() const;
+
   // Returns a set of associated visit URLs present in the data provided by the
   // various fetchers that participated in constructing the aggregate object.
   std::set<const GURL*> GetAssociatedURLs() const;

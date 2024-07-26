@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
@@ -77,6 +78,13 @@ scoped_refptr<InputContext> AsInputContext(
     const std::array<FieldSchema, kNumInputs>& fields_schema,
     const URLVisitAggregate& url_visit_aggregate) {
   base::flat_map<std::string, ProcessedValue> signal_value_map;
+  signal_value_map.emplace(
+      "title", ProcessedValue(base::UTF16ToUTF8(
+                   *url_visit_aggregate.GetAssociatedTitles().begin())));
+  signal_value_map.emplace(
+      "url", ProcessedValue(*url_visit_aggregate.GetAssociatedURLs().begin()));
+  signal_value_map.emplace("url_key",
+                           ProcessedValue(url_visit_aggregate.url_key));
 
   auto* local_tab_data =
       (url_visit_aggregate.fetcher_data_map.find(Fetcher::kTabModel) !=
