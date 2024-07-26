@@ -10,6 +10,7 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 
 import org.chromium.android_webview.common.DeveloperModeUtils;
+import org.chromium.base.StrictModeContext;
 
 import java.util.Map;
 
@@ -47,7 +48,13 @@ public final class DeveloperModeContentProvider extends ContentProvider {
             String[] selectionArgs,
             String sortOrder) {
         if (DeveloperModeUtils.FLAG_OVERRIDE_URI_PATH.equals(uri.getPath())) {
-            Map<String, Boolean> flagOverrides = DeveloperUiService.getFlagOverrides();
+            Map<String, Boolean> flagOverrides;
+            // DeveloperUiService will read use SharedPreferences to read from disk. If this is the
+            // first time accessing SharedPreferences, then it may write to disk to create the
+            // SharedPreferences file. Use `allowDiskWrites()` to permit both reads and writes.
+            try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+                flagOverrides = DeveloperUiService.getFlagOverrides();
+            }
             final String[] columns = {
                 DeveloperModeUtils.FLAG_OVERRIDE_NAME_COLUMN,
                 DeveloperModeUtils.FLAG_OVERRIDE_STATE_COLUMN
