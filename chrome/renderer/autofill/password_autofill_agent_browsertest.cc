@@ -4964,10 +4964,6 @@ TEST_F(PasswordAutofillAgentTest, ModifySearchField) {
 // DOM tree starts between the <form> and <input> tags.
 TEST_F(PasswordAutofillAgentTest,
        ProvisionalPasswordSavingWhenFormTagHostsShadowDom) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kShadowDomSupport);
-
   LoadHTML(kFormTagHostsShadowDomInputs);
 
   // Identify username and password elements.
@@ -5001,9 +4997,6 @@ TEST_F(PasswordAutofillAgentTest,
 // DOM tree starts between the <form> and <input> tags.
 TEST_F(PasswordAutofillAgentTest,
        PasswordSuggestionFillingWhenFormTagHostsShadowDom) {
-  base::test::ScopedFeatureList feature_list{
-      password_manager::features::kShadowDomSupport};
-
   LoadHTML(kFormTagHostsShadowDomInputs);
   ASSERT_TRUE(UpdateFormElementsForFormHostingShadowDom());
 
@@ -5025,9 +5018,6 @@ TEST_F(PasswordAutofillAgentTest,
 // Tests that password generation works when a Shadow DOM tree starts between
 // the <form> and <input> tags.
 TEST_F(PasswordAutofillAgentTest, PasswordGenerationWhenFormTagHostsShadowDom) {
-  base::test::ScopedFeatureList feature_list{
-      password_manager::features::kShadowDomSupport};
-
   LoadHTML(kFormTagHostsShadowDomInputs);
   ASSERT_TRUE(UpdateFormElementsForFormHostingShadowDom());
 

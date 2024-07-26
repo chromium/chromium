@@ -2835,13 +2835,6 @@ void TraverseDomForFourDigitCombinations(
       .Run(std::vector<std::string>(matches.begin(), matches.end()));
 }
 
-WebFormElement GetFormElementForPasswordInput(const WebInputElement& element) {
-  return base::FeatureList::IsEnabled(
-             password_manager::features::kShadowDomSupport)
-             ? form_util::GetOwningForm(element)
-             : element.Form();
-}
-
 std::u16string GetAriaLabelForTesting(  // IN-TEST
     const WebDocument& document,
     const WebElement& element) {

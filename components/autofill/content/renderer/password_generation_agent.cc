@@ -410,8 +410,8 @@ std::optional<FormData> PasswordGenerationAgent::CreateFormDataToPresave() {
   // Since the form for presaving should match a form in the browser, create it
   // with the same algorithm (to match html attributes, action, etc.).
   std::unique_ptr<FormData> form_data;
-  WebFormElement form = form_util::GetFormElementForPasswordInput(
-      current_generation_item_->generation_element_);
+  WebFormElement form =
+      form_util::GetOwningForm(current_generation_item_->generation_element_);
   return form ? password_agent_->GetFormDataFromWebForm(form)
               : password_agent_->GetFormDataFromUnownedInputElements();
 }
@@ -490,8 +490,8 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
     if (!document) {
       return false;
     }
-    WebFormElement form = form_util::GetFormElementForPasswordInput(
-        last_focused_password_element);
+    WebFormElement form =
+        form_util::GetOwningForm(last_focused_password_element);
     std::vector<WebFormControlElement> control_elements =
         form_util::GetOwnedAutofillableFormControls(document, form);
 
@@ -591,8 +591,8 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
     // Presave the username if it has been changed.
     if (current_generation_item_ &&
         current_generation_item_->password_is_generated_ && element &&
-        form_util::GetFormElementForPasswordInput(element) ==
-            form_util::GetFormElementForPasswordInput(
+        form_util::GetOwningForm(element) ==
+            form_util::GetOwningForm(
                 current_generation_item_->generation_element_)) {
       const std::u16string generated_password =
           current_generation_item_->generation_element_.Value().Utf16();
@@ -760,8 +760,7 @@ void PasswordGenerationAgent::MaybeCreateCurrentGenerationItem(
        current_generation_item_->password_is_generated_))
     return;
 
-  WebFormElement form_element =
-      form_util::GetFormElementForPasswordInput(generation_element);
+  WebFormElement form_element = form_util::GetOwningForm(generation_element);
   std::optional<FormData> form_data =
       form_element ? password_agent_->GetFormDataFromWebForm(form_element)
                    : password_agent_->GetFormDataFromUnownedInputElements();

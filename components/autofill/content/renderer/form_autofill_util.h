@@ -277,11 +277,6 @@ void TraverseDomForFourDigitCombinations(
     base::OnceCallback<void(const std::vector<std::string>&)>
         potential_matches);
 
-// Returns the owning form element for a given input.
-// TODO: crbug.com/41490287 - Delete the method after ShadowDomSupport launch.
-blink::WebFormElement GetFormElementForPasswordInput(
-    const blink::WebInputElement& element);
-
 // The following functions exist in as internal helper functions in
 // form_autofill_util.cc and are exposed here just for testing purposes. Check
 // the wrapped functions in the .cc file for documentation.

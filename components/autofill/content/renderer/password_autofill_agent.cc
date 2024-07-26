@@ -364,8 +364,7 @@ WebInputElement FindUsernameElementPrecedingPasswordElement(
 
   std::vector<WebFormControlElement> elements =
       form_util::GetOwnedAutofillableFormControls(
-          frame->GetDocument(),
-          form_util::GetFormElementForPasswordInput(password_element));
+          frame->GetDocument(), form_util::GetOwningForm(password_element));
 
   auto iter = base::ranges::find(elements, password_element);
   if (iter == elements.end())
@@ -848,8 +847,7 @@ void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
     const WebInputElement& element) {
   NotifyPasswordManagerAboutFieldModification(element);
 
-  InformBrowserAboutUserInput(
-      form_util::GetFormElementForPasswordInput(element), element);
+  InformBrowserAboutUserInput(form_util::GetOwningForm(element), element);
 }
 
 // LINT.ThenChange(//components/password_manager/core/browser/password_manager.cc:update_password_state_for_text_change)
@@ -990,9 +988,8 @@ void PasswordAutofillAgent::FillPasswordFieldAndSave(
     const std::u16string& credential) {
   CHECK(password_input.FormControlTypeForAutofill() == kInputPassword);
   DoFillField(password_input, credential);
-  InformBrowserAboutUserInput(
-      form_util::GetFormElementForPasswordInput(password_input),
-      password_input);
+  InformBrowserAboutUserInput(form_util::GetOwningForm(password_input),
+                              password_input);
 }
 
 void PasswordAutofillAgent::PreviewSuggestion(
@@ -1162,8 +1159,7 @@ void PasswordAutofillAgent::MaybeCheckSafeBrowsingReputation(
   checked_safe_browsing_reputation_ = true;
   WebLocalFrame* frame = render_frame()->GetWebFrame();
   GURL frame_url = GURL(frame->GetDocument().Url());
-  WebFormElement form_element =
-      form_util::GetFormElementForPasswordInput(element);
+  WebFormElement form_element = form_util::GetOwningForm(element);
   GURL action_url = form_element
                         ? form_util::GetCanonicalActionForForm(form_element)
                         : GURL();
@@ -1205,10 +1201,9 @@ bool PasswordAutofillAgent::TryToShowKeyboardReplacingSurface(
       password_element && IsElementEditable(password_element);
   CHECK(has_amendable_username_element || has_editable_password_element);
 
-  WebFormElement form =
-      password_element
-          ? form_util::GetFormElementForPasswordInput(password_element)
-          : form_util::GetFormElementForPasswordInput(username_element);
+  WebFormElement form = password_element
+                            ? form_util::GetOwningForm(password_element)
+                            : form_util::GetOwningForm(username_element);
   std::optional<FormData> form_data =
       form ? GetFormDataFromWebForm(form)
            : GetFormDataFromUnownedInputElements();
@@ -1661,8 +1656,7 @@ void PasswordAutofillAgent::InformAboutFieldClearing(
     return;
   }
 
-  WebFormElement form =
-      form_util::GetFormElementForPasswordInput(cleared_element);
+  WebFormElement form = form_util::GetOwningForm(cleared_element);
   if (!form) {
     // Process password field clearing for fields outside the <form> tag.
     if (auto unowned_form_data = GetFormDataFromUnownedInputElements())

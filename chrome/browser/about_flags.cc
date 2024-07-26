@@ -11460,11 +11460,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"pwm-shadow-dom-support",
-     flag_descriptions::kPasswordManagerShadowDomSupportName,
-     flag_descriptions::kPasswordManagerShadowDomSupportDescription, kOsAll,
-     FEATURE_VALUE_TYPE(password_manager::features::kShadowDomSupport)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"password-manual-fallback-available",
      flag_descriptions::kPasswordManualFallbackAvailableName,

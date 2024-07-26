@@ -31,11 +31,6 @@ BASE_FEATURE(kIOSPasswordBottomSheetAutofocus,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
-// Enables filling and saving for forms in shadow DOM.
-BASE_FEATURE(kShadowDomSupport,
-             "ShadowDomSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables password reuse detection.
 BASE_FEATURE(kPasswordReuseDetectionEnabled,
              "PasswordReuseDetectionEnabled",
