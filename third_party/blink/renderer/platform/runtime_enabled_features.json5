@@ -1322,6 +1322,8 @@
       name: "DirectSockets",
       public: true,
       status: "experimental",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
     },
     {
       // Shipping in M121.  Flag should be removed after M121 has been

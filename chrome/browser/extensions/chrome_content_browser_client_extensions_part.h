@@ -42,8 +42,6 @@ class Profile;
 
 namespace extensions {
 
-BASE_DECLARE_FEATURE(kDirectSocketsInChromeApps);
-
 // Implements the extensions portion of ChromeContentBrowserClient.
 class ChromeContentBrowserClientExtensionsPart
     : public ChromeContentBrowserClientParts {

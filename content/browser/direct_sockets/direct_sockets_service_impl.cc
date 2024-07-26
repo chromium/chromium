@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -30,6 +31,7 @@
 #include "services/network/public/mojom/restricted_udp_socket.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
@@ -235,6 +237,12 @@ void DirectSocketsServiceImpl::CreateForFrame(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!base::FeatureList::IsEnabled(blink::features::kDirectSockets)) {
+    mojo::ReportBadMessage(
+        "features::kDirectSockets is disabled by command line parameters or a "
+        "Finch experiment.");
+    return;
+  }
   if (!render_frame_host->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kDirectSockets)) {
     mojo::ReportBadMessage(
