@@ -399,6 +399,16 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
       const base::FilePath& bundle_path) const override {
     updater::test::ExpectPrepareToRunBundleSuccess(bundle_path);
   }
+
+  void ExpectKSAdminFetchTag(
+      bool elevate,
+      const std::string& product_id,
+      const base::FilePath& xc_path,
+      std::optional<UpdaterScope> store_flag,
+      std::optional<std::string> want_tag) const override {
+    updater::test::ExpectKSAdminFetchTag(updater_scope_, elevate, product_id,
+                                         xc_path, store_flag, want_tag);
+  }
 #endif  // BUILDFLAG(IS_MAC)
 
   void ExpectLegacyUpdaterMigrated() const override {

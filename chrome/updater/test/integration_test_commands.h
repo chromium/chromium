@@ -172,6 +172,12 @@ class IntegrationTestCommands
   virtual void DeleteLegacyUpdater() const = 0;
   virtual void ExpectPrepareToRunBundleSuccess(
       const base::FilePath& bundle_path) const = 0;
+  virtual void ExpectKSAdminFetchTag(
+      bool elevate,
+      const std::string& product_id,
+      const base::FilePath& xc_path,
+      std::optional<UpdaterScope> store_flag,
+      std::optional<std::string> want_tag) const = 0;
 #endif  // BUILDFLAG(IS_WIN)
   virtual void ExpectLegacyUpdaterMigrated() const = 0;
   virtual void RunRecoveryComponent(const std::string& app_id,

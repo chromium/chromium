@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_TEST_INTEGRATION_TESTS_IMPL_H_
 #define CHROME_UPDATER_TEST_INTEGRATION_TESTS_IMPL_H_
 
+#include <map>
 #include <optional>
 #include <set>
 #include <string>
@@ -237,6 +238,14 @@ void DeleteActiveUpdaterExecutable(UpdaterScope scope);
 void Run(UpdaterScope scope,
          base::CommandLine command_line,
          int* exit_code = nullptr);
+
+// Runs the command (via sudo if `elevate` is true) and waits for it to exit,
+// then asserts that it returned the expected exit code (if provided) and
+// its stdout was exactly the expected string (if provided).
+void ExpectCliResult(base::CommandLine command_line,
+                     bool elevate,
+                     std::optional<std::string> want_stdout,
+                     std::optional<int> want_exit_code);
 
 // Returns the path of the Updater executable.
 std::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope);
@@ -472,6 +481,39 @@ void ExpectDeviceManagementTokenDeletionRequest(ScopedServer* test_server,
 void ExpectDeviceManagementPolicyValidationRequest(ScopedServer* test_server,
                                                    const std::string& dm_token);
 void ExpectProxyPacScriptRequest(ScopedServer* test_server);
+
+#if BUILDFLAG(IS_MAC)
+
+void ExpectKSAdminResult(UpdaterScope scope,
+                         bool elevate,
+                         const std::map<std::string, std::string>& switches,
+                         const std::optional<std::string>& want_stdout,
+                         const std::optional<int>& want_exit_code);
+
+// Expect ksadmin to fetch the specified tag for the specified product
+// ID, including fetching the empty tag if no tag is specified, or to
+// fail to retrieve a tag.
+//
+// Params:
+//      scope -- Picks which ksadmin binary to use.
+//    elevate -- Whether to run as root instead of the current user.
+// product_id -- Product ID to fetch the tag for.
+//    xc_path -- Optional: Existence checker path to include in the tag
+//               lookup operation. If empty, the `--xc_path` switch is not
+//               provided to ksadmin at all.
+// store_flag -- Adds the `--system_store` or `--user_store` switch to the
+//               ksadmin command line. Switch is omitted if nullopt.
+//   want_tag -- if valid, the tag that ksadmin is expected to successfully
+//               retrieve, which may be the empty string. If nullopt,
+//               specifies that `ksadmin` should return EXIT_FAILURE.
+void ExpectKSAdminFetchTag(UpdaterScope scope,
+                           bool elevate,
+                           const std::string& product_id,
+                           const base::FilePath& xc_path,
+                           std::optional<UpdaterScope> store_flag,
+                           const std::optional<std::string>& want_tag);
+
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace updater::test
 
