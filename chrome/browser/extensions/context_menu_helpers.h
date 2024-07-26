@@ -4,8 +4,8 @@
 
 // Definition of helper functions for the ContextMenus API.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_CONTEXT_MENUS_CONTEXT_MENUS_API_HELPERS_H_
-#define CHROME_BROWSER_EXTENSIONS_API_CONTEXT_MENUS_CONTEXT_MENUS_API_HELPERS_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_CONTEXT_MENU_HELPERS_H_
+#define CHROME_BROWSER_EXTENSIONS_CONTEXT_MENU_HELPERS_H_
 
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,7 +19,7 @@
 #include "extensions/common/utils/extension_utils.h"
 
 namespace extensions {
-namespace context_menus_api_helpers {
+namespace context_menu_helpers {
 
 namespace {
 
@@ -289,7 +289,7 @@ bool UpdateMenuItem(const PropertyWithEnumT& update_properties,
   return true;
 }
 
-}  // namespace context_menus_api_helpers
+}  // namespace context_menu_helpers
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_CONTEXT_MENUS_CONTEXT_MENUS_API_HELPERS_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_CONTEXT_MENU_HELPERS_H_

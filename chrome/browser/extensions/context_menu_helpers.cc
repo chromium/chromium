@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/context_menus/context_menus_api_helpers.h"
+#include "chrome/browser/extensions/context_menu_helpers.h"
 
 #include <stddef.h>
 
 #include "base/strings/string_number_conversions.h"
 
 namespace extensions {
-namespace context_menus_api_helpers {
+namespace context_menu_helpers {
 
 const char kActionNotAllowedError[] =
     "Only extensions are allowed to use action contexts";
@@ -128,5 +128,5 @@ MenuItem::Type GetType(extensions::api::context_menus::ItemType type,
   return extensions::MenuItem::NORMAL;
 }
 
-}  // namespace context_menus_api_helpers
+}  // namespace context_menu_helpers
 }  // namespace extensions
