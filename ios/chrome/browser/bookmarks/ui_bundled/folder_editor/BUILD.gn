@@ -65,6 +65,7 @@ source_set("ui") {
     "//ios/chrome/browser/bookmarks/ui_bundled:core",
     "//ios/chrome/browser/bookmarks/ui_bundled:utils",
     "//ios/chrome/browser/bookmarks/ui_bundled/cells",
+    "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -77,7 +78,6 @@ source_set("ui") {
     "//ios/chrome/browser/shared/ui/util/image",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]

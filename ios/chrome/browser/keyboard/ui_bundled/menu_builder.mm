@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/keyboard/menu_builder.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/menu_builder.h"
 
-#import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 
 // Note: this class can be called very early on in the start process, before
 // resource bundles are loaded. This means that to get localized strings, one

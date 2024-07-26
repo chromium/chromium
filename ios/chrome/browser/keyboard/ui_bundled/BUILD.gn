@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("keyboard") {
+source_set("ui_bundled") {
   sources = [
     "UIKeyCommand+Chrome.h",
     "UIKeyCommand+Chrome.mm",
@@ -20,7 +20,7 @@ source_set("unit_tests") {
     "menu_builder_unittest.mm",
   ]
   deps = [
-    ":keyboard",
+    ":ui_bundled",
     "//base",
     "//ios/chrome/app/strings",
     "//testing/gtest",

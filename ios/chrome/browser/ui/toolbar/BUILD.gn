@@ -131,6 +131,7 @@ source_set("toolbar_ui") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -139,7 +140,6 @@ source_set("toolbar_ui") {
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/fullscreen:ui",
-    "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/ntp:ntp",
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/orchestrator",

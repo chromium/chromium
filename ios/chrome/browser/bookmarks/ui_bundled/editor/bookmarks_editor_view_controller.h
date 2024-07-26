@@ -6,10 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_consumer.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
 @protocol BookmarksEditorMutator;
 // View controller for editing bookmarks. Allows editing of the title, URL and

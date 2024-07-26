@@ -10,8 +10,8 @@
 #include <set>
 #include <vector>
 
+#import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
-#import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 
 @protocol ApplicationCommands;
 @class BookmarksHomeViewController;

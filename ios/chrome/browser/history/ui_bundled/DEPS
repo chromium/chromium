@@ -8,7 +8,7 @@ include_rules = [
   "+ios/chrome/browser/ui/settings/clear_browsing_data",
   "+ios/chrome/browser/ui/sharing",
   "+ios/chrome/browser/ui/menu",
-  "+ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h",
+  "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/window_activities/model/window_activity_helpers.h",
 ]
