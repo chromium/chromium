@@ -45,6 +45,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -81,6 +82,23 @@ AuthenticatorRequestSheetView::~AuthenticatorRequestSheetView() = default;
 void AuthenticatorRequestSheetView::ReInitChildViews() {
   child_views_ = ChildViews();
   RemoveAllChildViews();
+
+  if (model()->IsActivityIndicatorVisible()) {
+    constexpr int kActivityIndicatorHeight = 4;
+    auto activity_indicator = std::make_unique<views::ProgressBar>();
+    activity_indicator->SetPreferredHeight(kActivityIndicatorHeight);
+    activity_indicator->SetPreferredCornerRadii(std::nullopt);
+    activity_indicator->SetValue(-1 /* infinite animation */);
+    activity_indicator->SetBackgroundColor(SK_ColorTRANSPARENT);
+    activity_indicator->SetPreferredSize(
+        gfx::Size(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH),
+                  kActivityIndicatorHeight));
+    activity_indicator->SizeToPreferredSize();
+    // The indicator is positioned absolutely at the top of the dialog.
+    activity_indicator->SetProperty(views::kViewIgnoredByLayoutKey, true);
+    AddChildView(activity_indicator.release());
+  }
 
   // No need to add further spacing between the upper and lower half. The image
   // is designed to fill the dialog's top half without any border/margins, and
@@ -155,19 +173,6 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
   auto header_view = std::make_unique<views::View>();
   header_view->SetPreferredSize(header_size);
   header_view->AddChildView(illustration);
-
-  if (model()->IsActivityIndicatorVisible()) {
-    constexpr int kActivityIndicatorHeight = 4;
-    auto activity_indicator = std::make_unique<views::ProgressBar>();
-    activity_indicator->SetPreferredHeight(kActivityIndicatorHeight);
-    activity_indicator->SetPreferredCornerRadii(std::nullopt);
-    activity_indicator->SetValue(-1 /* infinite animation */);
-    activity_indicator->SetBackgroundColor(SK_ColorTRANSPARENT);
-    activity_indicator->SetPreferredSize(
-        gfx::Size(dialog_width, kActivityIndicatorHeight));
-    activity_indicator->SizeToPreferredSize();
-    header_view->AddChildView(activity_indicator.release());
-  }
 
   if (GetWidget()) {
     UpdateIconImageFromModel();
