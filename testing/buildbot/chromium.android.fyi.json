@@ -11182,6 +11182,7 @@
         "args": [
           "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.content_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -13269,7 +13270,7 @@
         "args": [
           "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
