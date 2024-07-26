@@ -789,6 +789,14 @@ void ViewAccessibility::SetContainerLiveStatus(const std::string& status) {
                            status);
 }
 
+void ViewAccessibility::RemoveContainerLiveStatus() {
+  if (!data_.HasStringAttribute(
+          ax::mojom::StringAttribute::kContainerLiveStatus)) {
+    return;
+  }
+  data_.RemoveStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus);
+}
+
 void ViewAccessibility::SetValue(const std::string& value) {
   data_.AddStringAttribute(ax::mojom::StringAttribute::kValue, value);
   NotifyEvent(ax::mojom::Event::kValueChanged, true);

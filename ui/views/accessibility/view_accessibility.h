@@ -357,6 +357,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetShowContextMenu(bool show_context_menu);
 
   void SetContainerLiveStatus(const std::string& status);
+  void RemoveContainerLiveStatus();
 
   // Sets the kValue attribute of the accessible object.
   // In case of ProgressBar, if progressBarIndicator value is negative,

@@ -121,6 +121,12 @@ class AnnounceTextView : public View {
         announce_role_ = ax::mojom::Role::kStatus;
         break;
     }
+    if (base::FeatureList::IsEnabled(
+            features::kAnnounceTextAdditionalAttributes)) {
+      GetViewAccessibility().SetContainerLiveStatus("polite");
+    } else {
+      GetViewAccessibility().RemoveContainerLiveStatus();
+    }
     NotifyAccessibilityEvent(announce_event_type_, /*send_native_event=*/true);
   }
 
@@ -141,8 +147,6 @@ class AnnounceTextView : public View {
                                   "polite");
     if (base::FeatureList::IsEnabled(
             features::kAnnounceTextAdditionalAttributes)) {
-      node_data->AddStringAttribute(
-          ax::mojom::StringAttribute::kContainerLiveStatus, "polite");
       node_data->AddStringAttribute(ax::mojom::StringAttribute::kLiveRelevant,
                                     "additions text");
       node_data->AddStringAttribute(
