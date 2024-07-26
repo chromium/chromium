@@ -83,6 +83,10 @@ export class HealthdInternalsAppElement extends PolymerElement {
         this.$.thermalChart,
     );
 
+    this.$.settingsDialog.addEventListener('ui-update-interval-updated', () => {
+      this.updateUiUpdateInterval();
+    });
+
     this.$.settingsDialog.addEventListener('polling-cycle-updated', () => {
       this.setupFetchDataRequests();
     });
@@ -111,6 +115,7 @@ export class HealthdInternalsAppElement extends PolymerElement {
           // set.
           this.updateSelectedIndex(this.currentPath);
           this.handleVisibilityChanged(this.currentPath, true);
+          this.updateUiUpdateInterval();
           this.setupFetchDataRequests();
           this.updateDataRetentionDuration();
         });
@@ -174,6 +179,15 @@ export class HealthdInternalsAppElement extends PolymerElement {
       this.$.thermalChart.updateVisibility(isVisible);
     }
   }
+
+  private updateUiUpdateInterval() {
+    const interval: number = this.$.settingsDialog.getUiUpdateInterval();
+    this.$.batteryChart.updateUiUpdateInterval(interval);
+    this.$.cpuFrequencyChart.updateUiUpdateInterval(interval);
+    this.$.cpuUsageChart.updateUiUpdateInterval(interval);
+    this.$.thermalChart.updateUiUpdateInterval(interval);
+  }
+
 
   // Set up periodic fetch data requests to the backend to get required info.
   private setupFetchDataRequests() {

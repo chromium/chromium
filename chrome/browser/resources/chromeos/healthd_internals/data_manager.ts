@@ -130,15 +130,6 @@ export class DataManager {
     }
 
     this.removeOutdatedData(timestamp);
-
-    if (data.battery !== undefined) {
-      this.batteryChart.updateEndTime(timestamp);
-    }
-    this.cpuFrequencyChart.updateEndTime(timestamp);
-    this.thermalChart.updateEndTime(timestamp);
-    if (cpuUsage !== null) {
-      this.cpuUsageChart.updateEndTime(timestamp);
-    }
   }
 
   private removeOutdatedData(endTime: number) {

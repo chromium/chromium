@@ -34,18 +34,48 @@ export class HealthdInternalsBatteryChartElement extends PolymerElement {
     this.$.lineChart.initCanvasDrawer(UNIT_PURE_NUMBER, UNITBASE_NO_CARRY);
   }
 
+  // Whether the current page is visible.
+  private isVisible: boolean = false;
+  // The update internal for line chart in milliseconds.
+  private updateInterval?: number = undefined;
+  // The data fetching interval ID used for cancelling the running interval.
+  private updateChartInternalId?: number = undefined;
+
   addDataSeries(batteryDataSeries: DataSeries[]) {
     for (const dataSeries of batteryDataSeries) {
       this.$.lineChart.addDataSeries(dataSeries);
     }
   }
 
-  updateEndTime(timestamp: number) {
-    this.$.lineChart.updateEndTime(timestamp);
+  updateVisibility(isVisible: boolean) {
+    this.isVisible = isVisible;
+    this.$.lineChart.updateVisibility(isVisible);
+    this.setupUpdateChartRequests();
   }
 
-  updateVisibility(isVisble: boolean) {
-    this.$.lineChart.updateVisibility(isVisble);
+  updateUiUpdateInterval(intervalSeconds: number) {
+    this.updateInterval = intervalSeconds * 1000;
+    this.setupUpdateChartRequests();
+  }
+
+  private setupUpdateChartRequests() {
+    this.cancelUpdateChartRequests();
+
+    if (!this.isVisible || this.updateInterval === undefined ||
+        this.updateInterval === 0) {
+      return;
+    }
+    const updateChart = () => this.$.lineChart.updateEndTime(Date.now());
+    this.updateChartInternalId = setInterval(updateChart, this.updateInterval);
+    updateChart();
+  }
+
+  private cancelUpdateChartRequests() {
+    if (this.updateChartInternalId === undefined) {
+      return;
+    }
+    clearInterval(this.updateChartInternalId);
+    this.updateChartInternalId = undefined;
   }
 }
 
