@@ -56,7 +56,7 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
   class UmaRecorder {
    public:
     void OnIbanSuggestionsShown(FieldGlobalId field_global_id);
-    void OnIbanSuggestionSelected(const std::u16string& value);
+    void OnIbanSuggestionSelected(const Suggestion& suggestion);
 
    private:
     // The global id of the field that most recently had IBAN suggestions shown.

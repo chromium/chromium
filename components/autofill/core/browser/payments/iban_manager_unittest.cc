@@ -105,6 +105,13 @@ class IbanManagerTest : public testing::Test {
   Suggestion GetSuggestionForIban(const Iban& iban) {
     Suggestion iban_suggestion(iban.GetIdentifierStringForAutofillDisplay());
     iban_suggestion.type = SuggestionType::kIbanEntry;
+    if (iban.record_type() == Iban::kServerIban) {
+      iban_suggestion.payload =
+          Suggestion::BackendId(Suggestion::InstrumentId(iban.instrument_id()));
+    } else {
+      iban_suggestion.payload =
+          Suggestion::BackendId(Suggestion::Guid(iban.guid()));
+    }
     return iban_suggestion;
   }
 
@@ -627,9 +634,9 @@ TEST_F(IbanManagerTest, Metrics_SuggestionsShown) {
               1)));
 }
 
-// Test that the metrics for IBAN-related suggestion selected and selected once
-// are logged correctly.
-TEST_F(IbanManagerTest, Metrics_SuggestionSelected) {
+// Test that the metrics for local IBAN suggestion selected (once and total
+// count) are logged correctly.
+TEST_F(IbanManagerTest, Metrics_LocalIbanSuggestionSelected) {
   base::HistogramTester histogram_tester;
   SetUpLocalIban(test::kIbanValue, kNickname_0);
   SetUpLocalIban(test::kIbanValue_1, kNickname_1);
@@ -647,10 +654,11 @@ TEST_F(IbanManagerTest, Metrics_SuggestionSelected) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.Iban.Suggestions",
-      autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionSelected, 1);
+      autofill_metrics::IbanSuggestionsEvent::kLocalIbanSuggestionSelected, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.Iban.Suggestions",
-      autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionSelectedOnce, 1);
+      autofill_metrics::IbanSuggestionsEvent::kLocalIbanSuggestionSelectedOnce,
+      1);
 
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
       form_structure_.get(), *autofill_field_, autofill_field_,
@@ -659,10 +667,52 @@ TEST_F(IbanManagerTest, Metrics_SuggestionSelected) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.Iban.Suggestions",
-      autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionSelected, 2);
+      autofill_metrics::IbanSuggestionsEvent::kLocalIbanSuggestionSelected, 2);
   histogram_tester.ExpectBucketCount(
       "Autofill.Iban.Suggestions",
-      autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionSelectedOnce, 1);
+      autofill_metrics::IbanSuggestionsEvent::kLocalIbanSuggestionSelectedOnce,
+      1);
+}
+
+// Test that the metrics for server IBAN suggestion selected (once and total
+// count) is logged correctly.
+TEST_F(IbanManagerTest, Metrics_ServerIbanSuggestionSelected) {
+  base::HistogramTester histogram_tester;
+  personal_data_manager_.test_payments_data_manager()
+      .SetAutofillWalletImportEnabled(true);
+  Suggestion suggestion = GetSuggestionForIban(SetUpServerIban(
+      /*instrument_id=*/12345, /*prefix=*/"DE", /*suffix=*/"6789",
+      /*length=*/22, kNickname_0));
+
+  autofill_field_->set_renderer_id(test::MakeFieldRendererId());
+
+  // Simulate request for suggestions and select one suggested IBAN.
+  MockSuggestionsReturnedCallback mock_callback;
+  EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
+      form_structure_.get(), *autofill_field_, autofill_field_,
+      autofill_client_, mock_callback.Get()));
+  iban_manager_.OnSingleFieldSuggestionSelected(suggestion);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Iban.Suggestions",
+      autofill_metrics::IbanSuggestionsEvent::kServerIbanSuggestionSelected, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Iban.Suggestions",
+      autofill_metrics::IbanSuggestionsEvent::kServerIbanSuggestionSelectedOnce,
+      1);
+
+  EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
+      form_structure_.get(), *autofill_field_, autofill_field_,
+      autofill_client_, mock_callback.Get()));
+  iban_manager_.OnSingleFieldSuggestionSelected(suggestion);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Iban.Suggestions",
+      autofill_metrics::IbanSuggestionsEvent::kServerIbanSuggestionSelected, 2);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Iban.Suggestions",
+      autofill_metrics::IbanSuggestionsEvent::kServerIbanSuggestionSelectedOnce,
+      1);
 }
 
 TEST_F(IbanManagerTest, Metrics_SuggestionSelected_CountryOfSelectedIban) {
