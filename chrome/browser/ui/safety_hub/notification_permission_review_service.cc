@@ -321,6 +321,11 @@ NotificationPermissionsReviewService::UpdateOnUIThread(
        hcsm_->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS)) {
     std::pair pair(item.primary_pattern, item.secondary_pattern);
 
+    // Invalid primary pattern should not be in the review list.
+    if (!item.primary_pattern.IsValid()) {
+      continue;
+    }
+
     // Blocklisted permissions should not be in the review list.
     if (base::Contains(ignored_patterns_set, pair)) {
       continue;
@@ -337,12 +342,12 @@ NotificationPermissionsReviewService::UpdateOnUIThread(
       continue;
     }
 
-    int notification_count = notification_count_map[pair];
-
     // Converting primary pattern to GURL should always be valid, since
     // Notification Permission Review list only contains single origins.
     GURL url = GURL(item.primary_pattern.ToString());
     DCHECK(url.is_valid());
+
+    int notification_count = notification_count_map[pair];
     if (!ShouldAddToNotificationPermissionReviewList(url, notification_count)) {
       continue;
     }
