@@ -226,10 +226,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(blink::features::kDevicePosture);
   aw_feature_overrides.DisableFeature(blink::features::kViewportSegments);
 
-  // New Safe Browsing API is still being rolled out on WebView.
-  aw_feature_overrides.DisableFeature(
-      safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
-
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kDebugBsa)) {
     // Feature parameters can only be set via a field trial.
     const char kTrialName[] = "StudyDebugBsa";
