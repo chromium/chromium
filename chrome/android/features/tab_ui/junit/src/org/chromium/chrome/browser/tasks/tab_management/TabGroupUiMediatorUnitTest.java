@@ -117,6 +117,8 @@ public class TabGroupUiMediatorUnitTest {
     @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor ArgumentCaptor<Callback<Boolean>> mOmniboxFocusObserverCaptor;
 
+    private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier =
+            new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mTabGridDialogBackPressSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mTabGridDialogShowingOrAnimationSupplier =
@@ -190,6 +192,7 @@ public class TabGroupUiMediatorUnitTest {
                 new TabGroupUiMediator(
                         mContext,
                         mVisibilityController,
+                        mHandleBackPressChangedSupplier,
                         mResetHandler,
                         mModel,
                         mTabModelSelector,
