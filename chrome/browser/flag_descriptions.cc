@@ -439,12 +439,6 @@ const char kAutofillEnableCvcStorageAndFillingDescription[] =
     "When enabled, we will store CVC for both local and server credit cards. "
     "This will also allow the users to autofill their CVCs on checkout pages.";
 
-const char kAutofillEnableFIDOProgressDialogName[] =
-    "Show FIDO progress dialog on Android";
-const char kAutofillEnableFIDOProgressDialogDescription[] =
-    "When enabled, a progress dialog is displayed while authenticating with "
-    "FIDO on Android.";
-
 const char kAutofillEnableFpanRiskBasedAuthenticationName[] =
     "Enable risk-based authentication for FPAN retrieval";
 const char kAutofillEnableFpanRiskBasedAuthenticationDescription[] =

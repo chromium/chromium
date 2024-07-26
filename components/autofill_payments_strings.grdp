@@ -524,9 +524,6 @@
   <message name="IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_MESSAGE" desc="Message displayed after tapping a card, and the response from the bank indicates that no further verification is required.">
     Verified
   </message>
-  <message name="IDS_AUTOFILL_FIDO_AUTHENTICATION_PROMPT_TITLE" desc="Title for FIDO authentication progress dialog">
-      Verifying...
-  </message>
   <message name="IDS_AUTOFILL_IBAN_UNMASK_ERROR_DIALOG_TITLE" desc="Title displayed when there is a server failure during the process of unmasking a server IBAN.">
     IBAN not filled in
   </message>

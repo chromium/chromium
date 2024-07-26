@@ -699,11 +699,6 @@
     "expiry_milestone": 129
   },
   {
-    "name": "autofill-enable-fido-progress-dialog",
-    "owners": [ "siashah@chromium.org", "yiian@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "autofill-enable-fpan-risk-based-authentication",
     "owners": [ "junhuihe@google.com" ],
     "expiry_milestone": 130

@@ -792,16 +792,7 @@ bool CreditCardAccessManager::UserOptedInToFidoFromSettingsPageOnMobile()
 #if !BUILDFLAG(IS_IOS)
 void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     const CreditCardFidoAuthenticator::FidoAuthenticationResponse& response) {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableFIDOProgressDialog)) {
-    // Close the progress dialog when the authentication for getting the full
-    // card completes.
-    payments_autofill_client().CloseAutofillProgressDialog(
-        /*show_confirmation_before_closing=*/true,
-        /*no_interactive_authentication_callback=*/base::OnceClosure());
-  }
-#else
+#if !BUILDFLAG(IS_ANDROID)
   // Close the Webauthn verify pending dialog. If FIDO authentication succeeded,
   // card is filled to the form, otherwise fall back to CVC authentication which
   // does not need the verify pending dialog either.

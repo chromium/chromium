@@ -10254,14 +10254,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(device::features::kWebBluetoothConfirmPairingSupport)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-fido-progress-dialog",
-     flag_descriptions::kAutofillEnableFIDOProgressDialogName,
-     flag_descriptions::kAutofillEnableFIDOProgressDialogDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableFIDOProgressDialog)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"enable-perfetto-system-tracing",
      flag_descriptions::kEnablePerfettoSystemTracingName,
      flag_descriptions::kEnablePerfettoSystemTracingDescription, kOsAndroid,

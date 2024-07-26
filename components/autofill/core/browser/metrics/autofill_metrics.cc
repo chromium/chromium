@@ -1000,8 +1000,6 @@ void AutofillMetrics::LogProgressDialogShown(
 std::string_view AutofillMetrics::GetDialogTypeStringForLogging(
     AutofillProgressDialogType autofill_progress_dialog_type) {
   switch (autofill_progress_dialog_type) {
-    case AutofillProgressDialogType::kAndroidFIDOProgressDialog:
-      return "AndroidFIDO";
     case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
       return "VirtualCardUnmask";
     case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
