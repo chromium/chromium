@@ -2279,6 +2279,14 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
+
+  if (policy.has_devicerestrictionschedule()) {
+    const em::StringPolicyProto& container(policy.devicerestrictionschedule());
+    if (container.has_value()) {
+      SetJsonDevicePolicy(key::kDeviceRestrictionSchedule, container.value(),
+                          policies);
+    }
+  }
 }
 
 // TODO(b/324221325): Move other Kiosk-related policies to this function.

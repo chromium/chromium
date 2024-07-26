@@ -28,6 +28,8 @@ static_library("handlers") {
     "device_name_policy_handler_impl.h",
     "device_name_policy_handler_name_generator.cc",
     "device_name_policy_handler_name_generator.h",
+    "device_restriction_schedule_policy_handler.cc",
+    "device_restriction_schedule_policy_handler.h",
     "device_wifi_allowed_handler.cc",
     "device_wifi_allowed_handler.h",
     "lacros_availability_policy_handler.cc",

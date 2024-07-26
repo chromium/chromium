@@ -417,6 +417,7 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_wallpaper_image_external_data_handler.h"
 #include "chrome/browser/ash/policy/handlers/adb_sideloading_allowance_mode_policy_handler.h"
+#include "chrome/browser/ash/policy/handlers/device_restriction_schedule_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
@@ -1648,6 +1649,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   policy::MinimumVersionPolicyHandler::RegisterPrefs(registry);
   policy::EuiccStatusUploader::RegisterLocalStatePrefs(registry);
   policy::TPMAutoUpdateModePolicyHandler::RegisterPrefs(registry);
+  policy::DeviceRestrictionSchedulePolicyHandler::RegisterLocalStatePrefs(
+      registry);
   quirks::QuirksManager::RegisterPrefs(registry);
   UpgradeDetectorChromeos::RegisterPrefs(registry);
   RegisterNearbySharingLocalPrefs(registry);
