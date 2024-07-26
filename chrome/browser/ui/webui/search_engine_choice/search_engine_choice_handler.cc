@@ -48,7 +48,9 @@ void SearchEngineChoiceHandler::HandleLearnMoreLinkClicked() {
 }
 
 void SearchEngineChoiceHandler::HandleMoreButtonClicked() {
-  std::move(handle_more_button_clicked_callback_).Run();
+  if (handle_more_button_clicked_callback_) {
+    std::move(handle_more_button_clicked_callback_).Run();
+  }
 }
 
 void SearchEngineChoiceHandler::RecordScrollState(
