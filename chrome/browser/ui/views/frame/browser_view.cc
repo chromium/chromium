@@ -3904,9 +3904,12 @@ bool BrowserView::ShouldShowWindowTitle() const {
 }
 
 bool BrowserView::ShouldShowWindowIcon() const {
-  return GetIsWebAppType()
-             ? base::FeatureList::IsEnabled(features::kWebAppIconInTitlebar)
-             : WidgetDelegate::ShouldShowWindowIcon();
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (GetIsWebAppType() && !GetSupportsTabStrip()) {
+    return base::FeatureList::IsEnabled(features::kWebAppIconInTitlebar);
+  }
+#endif
+  return WidgetDelegate::ShouldShowWindowIcon();
 }
 
 ui::ImageModel BrowserView::GetWindowAppIcon() {
