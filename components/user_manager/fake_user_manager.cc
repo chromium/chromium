@@ -166,6 +166,12 @@ void FakeUserManager::SetUserNonCryptohomeDataEphemeral(
   }
 }
 
+void FakeUserManager::SetUserCryptohomeDataEphemeral(
+    const AccountId& account_id,
+    bool is_ephemeral) {
+  accounts_with_ephemeral_cryptohome_data_.insert({account_id, is_ephemeral});
+}
+
 void FakeUserManager::UserLoggedIn(const AccountId& account_id,
                                    const std::string& username_hash,
                                    bool browser_restart,
@@ -323,6 +329,19 @@ bool FakeUserManager::IsUserNonCryptohomeDataEphemeral(
     const AccountId& account_id) const {
   return base::Contains(accounts_with_ephemeral_non_cryptohome_data_,
                         account_id);
+}
+
+bool FakeUserManager::IsUserCryptohomeDataEphemeral(
+    const AccountId& account_id) const {
+  auto is_ephemeral_overriden =
+      base::Contains(accounts_with_ephemeral_cryptohome_data_, account_id);
+
+  if (!is_ephemeral_overriden) {
+    // Otherwise fall back to default behavior.
+    return UserManagerBase::IsUserCryptohomeDataEphemeral(account_id);
+  }
+
+  return accounts_with_ephemeral_cryptohome_data_.at(account_id);
 }
 
 bool FakeUserManager::IsGuestSessionAllowed() const {
