@@ -749,4 +749,34 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromLocalSource) {
   model_->Remove(group_1_.local_group_id().value());
 }
 
+class PinningTabGroupSyncServiceTest : public TabGroupSyncServiceTest {
+ public:
+  PinningTabGroupSyncServiceTest() {
+    feature_list_.InitWithFeatures({tab_groups::kTabGroupsSaveUIUpdate}, {});
+  }
+
+  PinningTabGroupSyncServiceTest(const PinningTabGroupSyncServiceTest&) =
+      delete;
+  PinningTabGroupSyncServiceTest& operator=(
+      const PinningTabGroupSyncServiceTest&) = delete;
+};
+
+TEST_F(PinningTabGroupSyncServiceTest, ToggleGroupPinnedState) {
+  tab_groups::TabGroupVisualData visual_data = test::CreateTabGroupVisualData();
+
+  auto group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_TRUE(group.has_value());
+
+  const bool pinned_state = group->is_pinned();
+  tab_group_sync_service_->ToggleGroupPinnedState(group->saved_guid());
+
+  group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_NE(group->is_pinned(), pinned_state);
+
+  tab_group_sync_service_->ToggleGroupPinnedState(group->saved_guid());
+
+  group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_EQ(group->is_pinned(), group_1_.is_pinned());
+}
+
 }  // namespace tab_groups

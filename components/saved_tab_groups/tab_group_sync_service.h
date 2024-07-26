@@ -94,6 +94,7 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual void UpdateVisualData(
       const LocalTabGroupID local_group_id,
       const tab_groups::TabGroupVisualData* visual_data) = 0;
+  virtual void ToggleGroupPinnedState(const base::Uuid& sync_id) = 0;
 
   // Mutator methods that result in tab metadata mutation.
   virtual void AddTab(const LocalTabGroupID& group_id,

@@ -62,6 +62,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void UpdateVisualData(
       const LocalTabGroupID local_group_id,
       const tab_groups::TabGroupVisualData* visual_data) override;
+  void ToggleGroupPinnedState(const base::Uuid& sync_id) override;
 
   void AddTab(const LocalTabGroupID& group_id,
               const LocalTabID& tab_id,

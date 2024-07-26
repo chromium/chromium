@@ -21,6 +21,7 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(void,
               UpdateVisualData,
               (const LocalTabGroupID, const tab_groups::TabGroupVisualData*));
+  MOCK_METHOD(void, ToggleGroupPinnedState, (const base::Uuid& sync_id));
   MOCK_METHOD(void,
               AddTab,
               (const LocalTabGroupID&,

@@ -88,6 +88,14 @@ void TabGroupServiceWrapper::UpdateVisualData(
   OnTabGroupVisualsChanged(group->saved_guid());
 }
 
+void TabGroupServiceWrapper::ToggleGroupPinnedState(const base::Uuid& sync_id) {
+  if (ShouldUseSyncService()) {
+    sync_service_->ToggleGroupPinnedState(sync_id);
+  } else {
+    saved_keyed_service_->model()->TogglePinState(sync_id);
+  }
+}
+
 void TabGroupServiceWrapper::AddTab(const LocalTabGroupID& group_id,
                                     const LocalTabID& tab_id,
                                     const std::u16string& title,

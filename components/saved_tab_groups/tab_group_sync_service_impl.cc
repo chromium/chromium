@@ -143,6 +143,12 @@ void TabGroupSyncServiceImpl::UpdateVisualData(
   stats::RecordTabGroupVisualsMetrics(visual_data);
 }
 
+void TabGroupSyncServiceImpl::ToggleGroupPinnedState(
+    const base::Uuid& sync_id) {
+  VLOG(2) << __func__;
+  model_->TogglePinState(sync_id);
+}
+
 void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
                                      const LocalTabID& tab_id,
                                      const std::u16string& title,
