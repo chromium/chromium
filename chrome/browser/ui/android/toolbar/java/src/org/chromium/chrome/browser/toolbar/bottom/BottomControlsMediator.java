@@ -340,7 +340,7 @@ class BottomControlsMediator
 
     @Override
     public @LayerScrollBehavior int getScrollBehavior() {
-        return LayerScrollBehavior.SCROLL_OFF;
+        return LayerScrollBehavior.ALWAYS_SCROLL_OFF;
     }
 
     @Override

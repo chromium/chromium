@@ -287,7 +287,7 @@ public class MiniPlayerMediator implements BottomControlsLayer {
 
     @Override
     public @LayerScrollBehavior int getScrollBehavior() {
-        return LayerScrollBehavior.NO_SCROLL_OFF;
+        return LayerScrollBehavior.NEVER_SCROLL_OFF;
     }
 
     @Override

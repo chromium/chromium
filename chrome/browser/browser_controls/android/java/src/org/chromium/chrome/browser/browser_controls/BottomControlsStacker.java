@@ -45,10 +45,20 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
 
     /** Enums that defines the scroll behavior for different controls. */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({LayerScrollBehavior.SCROLL_OFF, LayerScrollBehavior.NO_SCROLL_OFF})
+    @IntDef({
+        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+        LayerScrollBehavior.NEVER_SCROLL_OFF,
+        LayerScrollBehavior.DEFAULT_SCROLL_OFF
+    })
     public @interface LayerScrollBehavior {
-        int SCROLL_OFF = 0;
-        int NO_SCROLL_OFF = 1;
+        int ALWAYS_SCROLL_OFF = 0;
+        int NEVER_SCROLL_OFF = 1;
+
+        /**
+         * By default, this layer will scroll off. However, if this layer is positioned underneath a
+         * visible layer that is NEVER_SCROLL_OFF, this layer will no longer scroll off.
+         */
+        int DEFAULT_SCROLL_OFF = 2;
     }
 
     /** Enums that defines the type and position for each bottom controls. */
@@ -266,18 +276,18 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             BottomControlsLayer layer = mLayers.get(type);
             if (layer == null || !mLayerVisibilities.get(type)) continue;
 
-            boolean canScrollOff = layer.getScrollBehavior() == LayerScrollBehavior.SCROLL_OFF;
-            assert totalMinHeight == 0 || !canScrollOff
-                    : "SCROLL_OFF layer under a NON_SCROLL_OFF layer is not supported. Layer: "
+            boolean shouldScrollOff = shouldLayerScrollOff(layer, totalMinHeight);
+            assert totalMinHeight == 0 || !shouldScrollOff
+                    : "A scroll-off layer under a NEVER_SCROLL_OFF layer is not supported. Layer: "
                             + layer.getType();
 
             // 1. Accumulate the layer's height to ensure the height does not change during layout
             // update. This is only used for assertion.
             height += layer.getHeight();
-            totalMinHeight += canScrollOff ? 0 : layer.getHeight();
+            totalMinHeight += shouldScrollOff ? 0 : layer.getHeight();
 
             int layerYOffset;
-            if (canScrollOff) {
+            if (shouldScrollOff) {
                 // [Scrollable layers]
                 // Increase the layerBottomOffset so it represents the bottomOffset from the bottom
                 // edge of the layer. The bottom edge of this layer can sit lower in the controls
@@ -379,17 +389,28 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             BottomControlsLayer layer = mLayers.get(type);
             if (layer == null || !mLayerVisibilities.get(type)) continue;
 
-            boolean canScrollOff = layer.getScrollBehavior() == LayerScrollBehavior.SCROLL_OFF;
-            assert minHeight == 0 || !canScrollOff
-                    : "SCROLL_OFF layer under a NON_SCROLL_OFF layer is not supported. Layer: "
+            boolean shouldScrollOff = shouldLayerScrollOff(layer, minHeight);
+            assert minHeight == 0 || !shouldScrollOff
+                    : "A scroll-off layer under a NEVER_SCROLL_OFF layer is not supported. Layer: "
                             + layer.getType();
 
             height += layer.getHeight();
-            minHeight += canScrollOff ? 0 : layer.getHeight();
+            minHeight += shouldScrollOff ? 0 : layer.getHeight();
         }
 
         mTotalHeight = height;
         mTotalMinHeight = minHeight;
+    }
+
+    /**
+     * The layer should scroll off if it is labeled as ALWAYS_SCROLL_OFF, or if it is labeled as
+     * DEFAULT_SCROLL_OFF and isn't positioned under a NEVER_SCROLL_OFF layer.
+     */
+    private static boolean shouldLayerScrollOff(BottomControlsLayer layer, int totalMinHeight) {
+        int scrollOffBehavior = layer.getScrollBehavior();
+        return (scrollOffBehavior == LayerScrollBehavior.ALWAYS_SCROLL_OFF)
+                || (totalMinHeight == 0
+                        && scrollOffBehavior == LayerScrollBehavior.DEFAULT_SCROLL_OFF);
     }
 
     /** Returns whether bottom controls stacker is calculating height. */
