@@ -4125,8 +4125,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletNumPerPage_Two) {
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 2, 1);
 }
 
+// See crbug.com/350110056. The test is flaky on multiple builders.
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       WorkletNumPerPage_Three) {
+                       DISABLED_WorkletNumPerPage_Three) {
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
 
   // The test assumes pages get deleted after navigation. To ensure this,
