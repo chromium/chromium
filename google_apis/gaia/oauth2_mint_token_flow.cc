@@ -68,6 +68,8 @@ const char kMessage[] = "message";
 
 const char kTokenBindingChallengeHeader[] =
     "X-Chrome-Auth-Token-Binding-Challenge";
+constexpr char kTokenBindingResponseKey[] = "tokenBindingResponse";
+constexpr char kDirectedResponseKey[] = "directedResponse";
 
 static GoogleServiceAuthError CreateAuthError(
     int net_error,
@@ -421,6 +423,14 @@ OAuth2MintTokenFlow::ParseMintTokenResponse(const base::Value::Dict& dict) {
   }
   result.granted_scopes.insert(granted_scopes_vector.begin(),
                                granted_scopes_vector.end());
+
+  const base::Value::Dict* token_binding_response =
+      dict.FindDict(kTokenBindingResponseKey);
+  // The presence of `kDirectedResponseKey` indicates that the returned token is
+  // encrypted to the public key provided by the client earlier.
+  result.is_token_encrypted =
+      token_binding_response &&
+      token_binding_response->FindDict(kDirectedResponseKey);
 
   return result;
 }
