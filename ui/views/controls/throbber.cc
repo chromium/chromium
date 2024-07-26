@@ -4,8 +4,11 @@
 
 #include "ui/views/controls/throbber.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/time/time.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -20,6 +23,17 @@
 
 namespace views {
 
+namespace {
+
+// The larger the diameter, the smaller the delay returned. This is intended
+// because large diameters need less delay to look smooth and not jarring.
+int GetFrameDelay(int diameter) {
+  int frames_per_second = std::clamp(diameter * 2, 30, 120);
+  return base::Seconds(1).InMilliseconds() / frames_per_second;
+}
+
+}  // namespace
+
 Throbber::Throbber(int diameter) : diameter_(diameter) {}
 
 Throbber::~Throbber() {
@@ -32,7 +46,7 @@ void Throbber::Start() {
 
   start_time_ = base::TimeTicks::Now();
   timer_.Start(
-      FROM_HERE, base::Milliseconds(30),
+      FROM_HERE, base::Milliseconds(GetFrameDelay(diameter_)),
       base::BindRepeating(&Throbber::SchedulePaint, base::Unretained(this)));
   SchedulePaint();  // paint right away
 }
