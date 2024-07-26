@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cstddef>
+#include <cstring>
 
 #include "build/build_config.h"
 #include "build/rust/std/alias.h"
