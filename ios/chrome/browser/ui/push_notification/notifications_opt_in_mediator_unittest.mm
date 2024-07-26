@@ -88,6 +88,7 @@ class NotificationsOptInMediatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<PrefService> prefs_;
   std::unique_ptr<TestChromeBrowserStateManager> test_manager_;

@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "testing/gtest_mac.h"
@@ -84,6 +85,7 @@ class ContentNotificationClientTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   id mock_scene_state_;
   std::unique_ptr<TestBrowser> browser_;

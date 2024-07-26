@@ -382,6 +382,7 @@ class MagicStackRankingModelTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   FakeSceneState* scene_state_;

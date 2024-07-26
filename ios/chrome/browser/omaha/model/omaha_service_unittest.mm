@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/omaha/omaha_api.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -122,8 +123,9 @@ class OmahaServiceTest : public PlatformTest {
   bool need_update_ = false;
   bool was_one_off_ = false;
   bool scheduled_callback_used_ = false;
-  IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
 };
 
 TEST_F(OmahaServiceTest, PingMessageTest) {

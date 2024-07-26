@@ -86,6 +86,7 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   id mock_app_state_;
   std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   raw_ptr<PrefService> pref_service_;

@@ -176,6 +176,7 @@ class SetUpListTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   raw_ptr<PrefService> prefs_;
   std::unique_ptr<TestChromeBrowserStateManager> test_manager_;
   raw_ptr<AuthenticationService> auth_service_;

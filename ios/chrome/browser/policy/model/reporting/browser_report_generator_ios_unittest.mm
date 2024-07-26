@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "testing/platform_test.h"
 
@@ -69,6 +70,7 @@ class BrowserReportGeneratorIOSTest : public PlatformTest {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
   ReportingDelegateFactoryIOS delegate_factory_;
   BrowserReportGenerator generator_;

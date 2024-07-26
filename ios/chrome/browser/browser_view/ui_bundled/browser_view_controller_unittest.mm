@@ -414,6 +414,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   MOCK_METHOD0(OnCompletionCalled, void());
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   std::unique_ptr<Browser> browser_;
   KeyCommandsProvider* key_commands_provider_;

@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/test/block_cleanup_test.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/app_distribution/test_app_distribution.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -348,6 +349,7 @@ class AppStateTest : public BlockCleanupTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestAppState* app_state_;
   FakeSceneState* main_scene_state_;
   SafeModeAppAgent* safe_mode_app_agent_;
@@ -380,6 +382,7 @@ TEST_F(AppStateNoFixtureTest, WillResignActive) {
       [[FakeStartupInformation alloc] init];
   [startupInformation setIsColdStart:YES];
 
+  IOSChromeScopedTestingLocalState scoped_testing_local_state;
   TestChromeBrowserState::Builder test_cbs_builder;
   std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager =
       std::make_unique<TestChromeBrowserStateManager>(test_cbs_builder.Build());

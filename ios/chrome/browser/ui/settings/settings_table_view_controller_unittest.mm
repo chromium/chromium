@@ -212,6 +212,7 @@ class SettingsTableViewControllerTest
  protected:
   // Needed for test browser state created by TestChromeBrowserState().
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<ios::ChromeBrowserStateManager> test_manager_;
 
   FakeSystemIdentity* fake_identity_ = nullptr;

@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "testing/gtest_mac.h"
@@ -208,6 +209,7 @@ class TipsNotificationClientTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   const base::HistogramTester histogram_tester_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   id mock_scene_state_;
   std::unique_ptr<TestBrowser> browser_;

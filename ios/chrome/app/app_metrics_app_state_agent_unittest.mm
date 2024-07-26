@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -123,6 +124,7 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   AppMetricsAppStateAgent* agent_;
   raw_ptr<ChromeBrowserState> browser_state_;
   FakeAppState* app_state_;

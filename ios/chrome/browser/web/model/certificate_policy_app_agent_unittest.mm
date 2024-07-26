@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/block_cleanup_test.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/session_certificate_policy_cache.h"
@@ -226,6 +227,7 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
  private:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::IOThreadType::REAL_THREAD};
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   AppState* app_state_;
   CertificatePolicyAppAgent* app_agent_;
   raw_ptr<ChromeBrowserState> chrome_browser_state_;

@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -234,10 +235,10 @@ class AuthenticationServiceTest : public PlatformTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  raw_ptr<ChromeAccountManagerService> account_manager_;
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  raw_ptr<ChromeAccountManagerService> account_manager_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   // Used to verify histogram logging.

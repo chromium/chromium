@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -107,6 +108,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   LensOverlayCoordinator* coordinator_;
   std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;

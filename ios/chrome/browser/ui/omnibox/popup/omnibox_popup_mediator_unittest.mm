@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator+Testing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -222,8 +223,9 @@ class OmniboxPopupMediatorTest : public PlatformTest {
   }
 
   // Message loop for the main test thread.
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   base::test::TaskEnvironment environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   OmniboxPopupMediator* mediator_;
   MockOmniboxPopupMediatorDelegate delegate_;
   AutocompleteResult autocomplete_result_;

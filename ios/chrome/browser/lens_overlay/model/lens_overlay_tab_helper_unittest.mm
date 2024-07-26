@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -61,10 +62,11 @@ class LensOverlayTabHelperTest : public PlatformTest {
   }
 
  protected:
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
-  std::unique_ptr<web::WebState> web_state_;
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
+  std::unique_ptr<web::WebState> web_state_;
   raw_ptr<LensOverlayTabHelper> helper_ = nullptr;
   id handler_;
   id dispatcher_;

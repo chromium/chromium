@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_test_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -70,6 +71,8 @@ class OmniboxPositionChoiceSceneAgentTest : public PlatformTest {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserStateManager> test_manager_;
   OmniboxPositionChoiceSceneAgent* agent_;
   base::test::ScopedFeatureList feature_list_;
@@ -78,7 +81,6 @@ class OmniboxPositionChoiceSceneAgentTest : public PlatformTest {
   // SceneState only weakly holds AppState, so keep it alive here.
   AppState* app_state_;
   SceneState* scene_state_;
-  base::test::TaskEnvironment task_environment_;
 };
 
 // Tests that the promo gets registered when the conditions are met.

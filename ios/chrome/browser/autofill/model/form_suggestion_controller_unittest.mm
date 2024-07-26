@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -232,6 +233,17 @@ class FormSuggestionControllerTest : public PlatformTest {
     [accessory_mediator_ injectProvider:suggestion_controller_];
   }
 
+  // The scoped feature list to enable/disable features. This needs to be placed
+  // before task_environment_, as per
+  // https://source.chromium.org/chromium/chromium/src/+/main:base/test/scoped_feature_list.h;l=37-41;drc=fe05104cfedb627fa99f218d7d1af6862871566c.
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  // The associated test Web Threads.
+  web::WebTaskEnvironment task_environment_;
+
+  // Installs the local state in ApplicationContext.
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+
   std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
 
   // The FormSuggestionController under test.
@@ -245,14 +257,6 @@ class FormSuggestionControllerTest : public PlatformTest {
 
   // Accessory view controller.
   FormInputAccessoryMediator* accessory_mediator_;
-
-  // The scoped feature list to enable/disable features. This needs to be placed
-  // before task_environment_, as per
-  // https://source.chromium.org/chromium/chromium/src/+/main:base/test/scoped_feature_list.h;l=37-41;drc=fe05104cfedb627fa99f218d7d1af6862871566c.
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  // The associated test Web Threads.
-  web::WebTaskEnvironment task_environment_;
 
   // The fake WebState to simulate navigation and JavaScript events.
   web::FakeWebState fake_web_state_;

@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_mutator.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_table_view_controller.h"
 #import "ios/chrome/browser/ui/price_notifications/test_price_notifications_consumer.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -188,6 +189,7 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<Browser> browser_;
   PriceNotificationsPriceTrackingMediator* mediator_;
   std::unique_ptr<ios::ChromeBrowserStateManager> test_manager_;

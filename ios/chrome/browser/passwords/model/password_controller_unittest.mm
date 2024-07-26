@@ -51,6 +51,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -489,9 +490,10 @@ class PasswordControllerTest : public PlatformTest {
                                                   feature);
   }
 
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   raw_ptr<ChromeBrowserState> browser_state_;
   // `autofill_client_` mocks KeyedServices, which need to outlive the
   // `BrowserAutofillManager` owned by frame (`web_state`).

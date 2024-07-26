@@ -143,6 +143,7 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
   std::unique_ptr<policy::MockPolicyService> policy_service_;
   policy::SchemaRegistry schema_registry_;

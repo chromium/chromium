@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -18,6 +19,7 @@ using TestChromeBrowserStateManagerTest = PlatformTest;
 // constructor that accepts a user data directory path.
 TEST_F(TestChromeBrowserStateManagerTest, ConstructWithUserDataDirPath) {
   web::WebTaskEnvironment task_environment;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state;
   TestChromeBrowserStateManager browser_state_manager((base::FilePath()));
   EXPECT_EQ(0U, browser_state_manager.GetLoadedBrowserStates().size());
 }
@@ -26,6 +28,7 @@ TEST_F(TestChromeBrowserStateManagerTest, ConstructWithUserDataDirPath) {
 // the constructor that accepts a browser state.
 TEST_F(TestChromeBrowserStateManagerTest, ConstructWithBrowserState) {
   web::WebTaskEnvironment task_environment;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state;
   TestChromeBrowserStateManager browser_state_manager(
       TestChromeBrowserState::Builder().Build());
   EXPECT_EQ(1U, browser_state_manager.GetLoadedBrowserStates().size());
