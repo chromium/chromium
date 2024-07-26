@@ -93,6 +93,7 @@ android_library("java") {
     "//chrome/android:base_module_java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/feature_engagement:java",
+    "//chrome/browser/feedback/android:factory_java",
     "//chrome/browser/feedback/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",

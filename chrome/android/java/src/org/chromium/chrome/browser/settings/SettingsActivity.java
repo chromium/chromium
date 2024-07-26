@@ -557,15 +557,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (fragment instanceof PasswordCheckFragmentView) {
             PasswordCheckComponentUiFactory.create(
                     (PasswordCheckFragmentView) fragment,
-                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile),
                     LaunchIntentDispatcher::createCustomTabActivityIntent,
                     IntentUtils::addTrustedIntentExtras,
                     mProfile);
         }
         if (fragment instanceof CredentialEntryFragmentViewBase) {
-            CredentialEditUiFactory.create(
-                    (CredentialEntryFragmentViewBase) fragment,
-                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile));
+            CredentialEditUiFactory.create((CredentialEntryFragmentViewBase) fragment, mProfile);
         }
         if (fragment instanceof SearchEngineSettings) {
             SearchEngineSettings settings = (SearchEngineSettings) fragment;

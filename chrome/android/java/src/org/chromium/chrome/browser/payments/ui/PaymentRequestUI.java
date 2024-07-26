@@ -38,7 +38,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.payments.ShippingStrings;
@@ -426,8 +425,7 @@ public class PaymentRequestUI
                 (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.payment_request, null);
         prepareRequestView(mContext, title, origin, securityLevel, profile);
 
-        mEditorDialog =
-                new EditorDialogView(activity, HelpAndFeedbackLauncherImpl.getForProfile(profile));
+        mEditorDialog = new EditorDialogView(activity, profile);
         DimmingDialog.setVisibleStatusBarIconColor(mEditorDialog.getWindow());
 
         mDialog = new DimmingDialog(activity, this);

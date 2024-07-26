@@ -25,7 +25,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController;
 import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController.StoreInfoActionHandler;
@@ -92,8 +91,6 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     private String mOfflinePageCreationDate;
     private final TabCreator mTabCreator;
 
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
-
     static final String FEEDBACK_REPORT_TYPE =
             "com.google.chrome.browser.page_info.USER_INITIATED_FEEDBACK_REPORT";
 
@@ -125,8 +122,6 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         mOfflinePageLoadUrlDelegate = offlinePageLoadUrlDelegate;
 
         TrackerFactory.getTrackerForProfile(mProfile).notifyEvent(EventConstants.PAGE_INFO_OPENED);
-
-        mHelpAndFeedbackLauncher = HelpAndFeedbackLauncherImpl.getForProfile(mProfile);
     }
 
     private void initOfflinePageParams() {
@@ -271,8 +266,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         // FEEDBACK_REPORT_TYPE: Reports for Chrome mobile must have a contextTag of the form
         // com.chrome.feed.USER_INITIATED_FEEDBACK_REPORT, or they will be discarded for not
         // matching an allow list rule.
-        mHelpAndFeedbackLauncher.showFeedback(
-                activity, tab.getOriginalUrl().getHost(), FEEDBACK_REPORT_TYPE);
+        HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
+                .showFeedback(activity, tab.getOriginalUrl().getHost(), FEEDBACK_REPORT_TYPE);
     }
 
     @Override

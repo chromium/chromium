@@ -2714,11 +2714,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // disabling through the app menu for the nth time (determined by feature engagement).
             if (isEnabled) {
                 WebContentsDarkModeMessageController.attemptToShowDialog(
-                        this,
-                        profile,
-                        url.getSpec(),
-                        getModalDialogManager(),
-                        HelpAndFeedbackLauncherImpl.getForProfile(profile));
+                        this, profile, url.getSpec(), getModalDialogManager());
             }
 
             return true;

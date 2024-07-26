@@ -257,7 +257,6 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                             mAddressEditor =
                                     new AddressEditorCoordinator(
                                             getActivity(),
-                                            mLauncher,
                                             mDelegate,
                                             mProfile,
                                             /* saveToDisk= */ false);
@@ -281,7 +280,6 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                             mAddressEditor =
                                     new AddressEditorCoordinator(
                                             getActivity(),
-                                            mLauncher,
                                             mDelegate,
                                             mProfile,
                                             /* saveToDisk= */ false);
@@ -305,7 +303,6 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                             mAddressEditor =
                                     new AddressEditorCoordinator(
                                             getActivity(),
-                                            mLauncher,
                                             mDelegate,
                                             mProfile,
                                             new AutofillAddress(
@@ -334,7 +331,6 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                             mAddressEditor =
                                     new AddressEditorCoordinator(
                                             getActivity(),
-                                            mLauncher,
                                             mDelegate,
                                             mProfile,
                                             new AutofillAddress(
@@ -363,7 +359,6 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                             mAddressEditor =
                                     new AddressEditorCoordinator(
                                             getActivity(),
-                                            mLauncher,
                                             mDelegate,
                                             mProfile,
                                             new AutofillAddress(

@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.feed.FeedSurfaceRendererBridge;
 import org.chromium.chrome.browser.feed.FeedSurfaceRendererBridgeJni;
 import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -75,7 +74,6 @@ public class CreatorCoordinatorTest {
     @Mock private FeedStream mStreamMock;
     @Mock private SignInInterstitialInitiator mSignInInterstitialInitiator;
     @Mock private FeedActionDelegate mFeedActionDelegate;
-    @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -330,8 +328,7 @@ public class CreatorCoordinatorTest {
                 newCreatorCoordinator(
                         null, mWebFeedIdDefault, mEntryPointDefault, mFollowingDefault);
         PropertyModel creatorModel = creatorCoordinator.getCreatorModel();
-        creatorCoordinator.queryFeedStream(
-                mFeedActionDelegate, mHelpAndFeedbackLauncher, mShareDelegateSupplier);
+        creatorCoordinator.queryFeedStream(mFeedActionDelegate, mShareDelegateSupplier);
         verify(mWebFeedBridgeJniMock).queryWebFeedId(anyString(), any());
     }
 
@@ -340,8 +337,7 @@ public class CreatorCoordinatorTest {
         CreatorCoordinator creatorCoordinator =
                 newCreatorCoordinator(DEFAULT_URL, null, mEntryPointDefault, mFollowingDefault);
         PropertyModel creatorModel = creatorCoordinator.getCreatorModel();
-        creatorCoordinator.queryFeedStream(
-                mFeedActionDelegate, mHelpAndFeedbackLauncher, mShareDelegateSupplier);
+        creatorCoordinator.queryFeedStream(mFeedActionDelegate, mShareDelegateSupplier);
         verify(mWebFeedBridgeJniMock).queryWebFeed(anyString(), any());
     }
 

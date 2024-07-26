@@ -186,11 +186,7 @@ public class PasswordCheckViewTest {
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
         PasswordCheckComponentUiFactory.setCreationStrategy(
-                (fragmentView,
-                        helpAndFeedbackLauncher,
-                        customTabIntentHelper,
-                        trustedIntentHelper,
-                        profile) -> {
+                (fragmentView, customTabIntentHelper, trustedIntentHelper, profile) -> {
                     mPasswordCheckView = (PasswordCheckFragmentView) fragmentView;
                     mPasswordCheckView.setComponentDelegate(mComponentUi);
                     return mComponentUi;

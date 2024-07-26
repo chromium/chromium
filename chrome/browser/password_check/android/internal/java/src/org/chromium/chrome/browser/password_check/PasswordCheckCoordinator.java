@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LifecycleObserver;
 
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
@@ -24,7 +24,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * of the leaked password.
  */
 class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObserver {
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+    private final Profile mProfile;
     private final PasswordCheckFragmentView mFragmentView;
     private final PasswordAccessReauthenticationHelper mReauthenticationHelper;
     private final PasswordCheckMediator mMediator;
@@ -60,11 +60,10 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
 
     PasswordCheckCoordinator(
             PasswordCheckFragmentView fragmentView,
-            HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             CustomTabIntentHelper customTabIntentHelper,
             TrustedIntentHelper trustedIntentHelper,
             Profile profile) {
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
+        mProfile = profile;
         mFragmentView = fragmentView;
         // TODO(crbug.com/40138266): If help is part of the view, make mediator the delegate.
         mFragmentView.setComponentDelegate(this);
@@ -130,10 +129,13 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
     @Override
     public boolean handleHelp(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            mHelpAndFeedbackLauncher.show(
-                    mFragmentView.getActivity(),
-                    mFragmentView.getActivity().getString(R.string.help_context_check_passwords),
-                    null);
+            HelpAndFeedbackLauncherFactory.getForProfile(mProfile)
+                    .show(
+                            mFragmentView.getActivity(),
+                            mFragmentView
+                                    .getActivity()
+                                    .getString(R.string.help_context_check_passwords),
+                            null);
             return true;
         }
         return false;

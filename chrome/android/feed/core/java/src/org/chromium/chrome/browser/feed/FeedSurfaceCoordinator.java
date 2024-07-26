@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.feed.sections.SectionHeaderView;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderViewBinder;
 import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
@@ -105,7 +104,6 @@ public class FeedSurfaceCoordinator
     private final boolean mOverScrollDisabled;
     private final ObserverList<SurfaceCoordinator.Observer> mObservers = new ObserverList<>();
     private final FeedActionDelegate mActionDelegate;
-    private final HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     private final boolean mUseStaggeredLayout;
 
     // FeedReliabilityLogger params.
@@ -376,7 +374,6 @@ public class FeedSurfaceCoordinator
      * @param viewportView The view that should be used as a container for viewport measurement
      *     purposes, or |null| if the view returned by HybridListRenderer is to be used.
      * @param actionDelegate Implements some Feed actions.
-     * @param helpAndFeedbackLauncher A HelpAndFeedbackLauncher.
      * @param tabStripHeightSupplier Supplier for the tab strip height.
      */
     public FeedSurfaceCoordinator(
@@ -401,7 +398,6 @@ public class FeedSurfaceCoordinator
             boolean overScrollDisabled,
             @Nullable ViewGroup viewportView,
             FeedActionDelegate actionDelegate,
-            HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
         mActivity = activity;
         mSnackbarManager = snackbarManager;
@@ -420,7 +416,6 @@ public class FeedSurfaceCoordinator
         mOverScrollDisabled = overScrollDisabled;
         mViewportView = viewportView;
         mActionDelegate = actionDelegate;
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
         mEmbeddingSurfaceCreatedTimeNs = embeddingSurfaceCreatedTimeNs;
         mWebFeedHasContent = false;
         mSectionHeaderIndex = 0;
@@ -964,13 +959,13 @@ public class FeedSurfaceCoordinator
     FeedStream createFeedStream(@StreamKind int kind, Stream.StreamsMediator streamsMediator) {
         return new FeedStream(
                 mActivity,
+                mProfile,
                 mSnackbarManager,
                 mBottomSheetController,
                 mWindowAndroid,
                 mShareSupplier,
                 kind,
                 mActionDelegate,
-                mHelpAndFeedbackLauncher,
                 /* feedContentFirstLoadWatcher= */ this,
                 streamsMediator,
                 /* singleWebFeedParameters= */ null,

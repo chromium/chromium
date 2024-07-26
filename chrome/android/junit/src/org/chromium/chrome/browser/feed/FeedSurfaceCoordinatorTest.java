@@ -579,7 +579,6 @@ public class FeedSurfaceCoordinatorTest {
                 false,
                 /* viewportView= */ null,
                 mFeedActionDelegate,
-                /* helpAndFeedbackLauncher= */ null,
                 mTabStripHeightSupplier);
     }
 }

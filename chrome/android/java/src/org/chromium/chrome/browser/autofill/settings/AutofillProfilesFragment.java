@@ -239,7 +239,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             mAddressEditor =
                     new AddressEditorCoordinator(
                             getActivity(),
-                            getHelpAndFeedbackLauncher(),
                             mAddressEditorDelegate,
                             getProfile(),
                             /* saveToDisk= */ true);
@@ -248,7 +247,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             mAddressEditor =
                     new AddressEditorCoordinator(
                             getActivity(),
-                            getHelpAndFeedbackLauncher(),
                             mAddressEditorDelegate,
                             getProfile(),
                             autofillAddress,

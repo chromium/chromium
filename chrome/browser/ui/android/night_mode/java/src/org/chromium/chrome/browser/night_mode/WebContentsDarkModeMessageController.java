@@ -17,7 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
@@ -269,14 +269,9 @@ public class WebContentsDarkModeMessageController {
      * @param profile The current profile.
      * @param url The url the user is currently on.
      * @param modalDialogManager Manager that triggers the dialog.
-     * @param feedbackLauncher Launcher for feedback flow.
      */
     public static void attemptToShowDialog(
-            Activity activity,
-            Profile profile,
-            String url,
-            ModalDialogManager modalDialogManager,
-            HelpAndFeedbackLauncher feedbackLauncher) {
+            Activity activity, Profile profile, String url, ModalDialogManager modalDialogManager) {
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.notifyEvent(EventConstants.AUTO_DARK_DISABLED_IN_APP_MENU);
         if (!tracker.shouldTriggerHelpUI(FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE)) return;
@@ -308,7 +303,7 @@ public class WebContentsDarkModeMessageController {
                         if (buttonType == ButtonType.TITLE_ICON) return;
                         if (buttonType == ButtonType.POSITIVE) {
                             if (feedbackDialogEnabled) {
-                                showFeedback(feedbackLauncher, activity, url);
+                                showFeedback(activity, profile, url);
                             } else {
                                 openSettings(activity);
                             }
@@ -351,12 +346,12 @@ public class WebContentsDarkModeMessageController {
     }
 
     /** Show feedback. */
-    private static void showFeedback(
-            HelpAndFeedbackLauncher launcher, Activity activity, String url) {
+    private static void showFeedback(Activity activity, Profile profile, String url) {
         // TODO(crbug.com/40201746): Import ScreenshotMode instead of hardcoding value once new
         // build
         //  target added.
-        launcher.showFeedback(activity, url, null, /* ScreenshotMode.DEFAULT */ 0, null);
+        HelpAndFeedbackLauncherFactory.getForProfile(profile)
+                .showFeedback(activity, url, null, /* ScreenshotMode.DEFAULT */ 0, null);
     }
 
     /** Open settings */

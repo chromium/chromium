@@ -81,6 +81,7 @@ android_library("internal_java") {
     "//build/android:build_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/device_reauth/android:java",
+    "//chrome/browser/feedback/android:factory_java",
     "//chrome/browser/feedback/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/password_check/android:password_check_java_enums",

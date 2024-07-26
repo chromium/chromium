@@ -38,8 +38,9 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedRecommendationFollowAcceleratorController;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -487,8 +488,12 @@ public class FeedStream implements Stream {
             PostTask.postDelayedTask(
                     TaskTraits.UI_DEFAULT,
                     () ->
-                            mHelpAndFeedbackLauncher.showFeedback(
-                                    mActivity, url, FEEDBACK_REPORT_TYPE, productSpecificDataMap),
+                            HelpAndFeedbackLauncherFactory.getForProfile(mProfile)
+                                    .showFeedback(
+                                            mActivity,
+                                            url,
+                                            FEEDBACK_REPORT_TYPE,
+                                            productSpecificDataMap),
                     MENU_DISMISS_TASK_DELAY);
         }
 
@@ -645,6 +650,7 @@ public class FeedStream implements Stream {
     private final int mLoadMoreTriggerScrollDistanceDp;
 
     private final Activity mActivity;
+    private final Profile mProfile;
     private final ObserverList<ContentChangedListener> mContentChangedListeners =
             new ObserverList<>();
     private final int mStreamKind;
@@ -652,7 +658,6 @@ public class FeedStream implements Stream {
     // Various helpers/controllers.
     private ShareHelperWrapper mShareHelper;
     private SnackbarManager mSnackManager;
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     private WindowAndroid mWindowAndroid;
     private UnreadContentObserver mUnreadContentObserver;
     FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
@@ -701,26 +706,26 @@ public class FeedStream implements Stream {
      * Creates a new Feed Stream.
      *
      * @param activity {@link Activity} that this is bound to.
+     * @param profile {@link Profile} that this is bound to.
      * @param snackbarManager {@link SnackbarManager} for showing snackbars.
      * @param bottomSheetController {@link BottomSheetController} for menus.
      * @param windowAndroid The {@link WindowAndroid} this is shown on.
      * @param shareDelegateSupplier The supplier for {@link ShareDelegate} for sharing actions.
      * @param streamKind Kind of stream data this feed stream serves.
      * @param actionDelegate Implements some Feed actions.
-     * @param helpAndFeedbackLauncher A HelpAndFeedbackLauncher.
      * @param feedContentFirstLoadWatcher a listener for events about feed loading.
      * @param streamsMediator the mediator for multiple streams.
      * @param singleWebFeedParameters the parameters needed to create a single web feed.
      */
     public FeedStream(
             Activity activity,
+            Profile profile,
             SnackbarManager snackbarManager,
             BottomSheetController bottomSheetController,
             WindowAndroid windowAndroid,
             Supplier<ShareDelegate> shareDelegateSupplier,
             int streamKind,
             FeedActionDelegate actionDelegate,
-            HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             FeedContentFirstLoadWatcher feedContentFirstLoadWatcher,
             StreamsMediator streamsMediator,
             SingleWebFeedParameters singleWebFeedParameters,
@@ -733,11 +738,11 @@ public class FeedStream implements Stream {
                         streamKind,
                         singleWebFeedParameters);
         mActivity = activity;
+        mProfile = profile;
         mStreamKind = streamKind;
         mBottomSheetController = bottomSheetController;
         mShareHelper = new ShareHelperWrapper(windowAndroid, shareDelegateSupplier);
         mSnackManager = snackbarManager;
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
         mWindowAndroid = windowAndroid;
         mRotationObserver = new RotationObserver();
         mFeedContentFirstLoadWatcher = feedContentFirstLoadWatcher;
@@ -1370,10 +1375,6 @@ public class FeedStream implements Stream {
                 p = p.getParent();
             }
         }
-    }
-
-    void setHelpAndFeedbackLauncherForTest(HelpAndFeedbackLauncher launcher) {
-        mHelpAndFeedbackLauncher = launcher;
     }
 
     void setShareWrapperForTest(ShareHelperWrapper shareWrapper) {

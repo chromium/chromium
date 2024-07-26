@@ -1058,6 +1058,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/feature_engagement:java",
       "//chrome/browser/feed/android:java",
       "//chrome/browser/feed/android:junit",
+      "//chrome/browser/feedback/android:factory_java",
       "//chrome/browser/feedback/android:java",
       "//chrome/browser/first_run/android:java",
       "//chrome/browser/flags:flags_junit_tests",
