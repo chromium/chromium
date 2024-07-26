@@ -19,6 +19,8 @@
 #include "chrome/browser/ui/tabs/organization/logging_util.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -129,9 +131,18 @@ void PerformTabOrganizationExecution(
     tab->set_url(tab_data->original_url().spec());
   }
 
-  // When the user only has one valid tab, complete without running the model
-  // to show the "No groups found" error state.
-  if (valid_tabs < 2) {
+  // When the user only has one valid tab, and it cannot be added to existing
+  // groups, complete without running the model to show the "No groups found"
+  // error state.
+  bool should_request_organization = valid_tabs > 1;
+  if (valid_tabs == 1 &&
+      base::FeatureList::IsEnabled(features::kTabReorganization)) {
+    const auto* tab_group_model =
+        request->tab_datas()[0]->original_tab_strip_model()->group_model();
+    should_request_organization =
+        tab_group_model && !tab_group_model->ListTabGroups().empty();
+  }
+  if (!should_request_organization) {
     std::vector<TabOrganizationResponse::Organization> organizations;
     std::unique_ptr<TabOrganizationResponse> response =
         std::make_unique<TabOrganizationResponse>(std::move(organizations));
