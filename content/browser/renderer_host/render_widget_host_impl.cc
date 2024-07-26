@@ -3616,23 +3616,23 @@ void RenderWidgetHostImpl::SetScreenOrientationForTesting(
 }
 
 void RenderWidgetHostImpl::LockKeyboard() {
-  if (!keyboard_lock_allowed_ || !is_focused_ || !view_) {
+  if (!keyboard_lock_allowed_ || !view_) {
     if (keyboard_lock_request_callback_) {
       std::move(keyboard_lock_request_callback_)
           .Run(blink::mojom::KeyboardLockRequestResult::kRequestFailedError);
     }
     return;
   }
-  // Even if the page isn't in fullscreen, we still want to call
+  // Even if the page isn't focused or in fullscreen, we still want to call
   // `keyboard_lock_request_callback_` to let it know whether it has the
   // permission to lock the keyboard, but we don't actually lock the
-  // keyboard until it enters fullscreen. LockKeyboard() will be called again
-  // when the page enters fullscreen.
+  // keyboard until it gains focus and enters fullscreen. LockKeyboard() will be
+  // called again when the page gains focus or enters fullscreen.
   if (keyboard_lock_request_callback_) {
     std::move(keyboard_lock_request_callback_)
         .Run(blink::mojom::KeyboardLockRequestResult::kSuccess);
   }
-  if (!delegate_->IsFullscreen()) {
+  if (!delegate_->IsFullscreen() || !is_focused_) {
     return;
   }
   // KeyboardLock can be activated and deactivated several times per request,

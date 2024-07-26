@@ -115,8 +115,9 @@ void KeyboardLockController::RequestKeyboardLock(WebContents* web_contents,
       base::BindOnce(&KeyboardLockController::LockKeyboard,
                      weak_ptr_factory_.GetWeakPtr(), web_contents->GetWeakPtr(),
                      esc_key_locked),
-      base::BindOnce(&KeyboardLockController::UnlockKeyboard,
-                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&KeyboardLockController::UnlockKeyboardForWebContents,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     web_contents->GetWeakPtr()),
       web_contents);
 }
 
@@ -194,12 +195,19 @@ void KeyboardLockController::LockKeyboard(
 }
 
 void KeyboardLockController::UnlockKeyboard() {
-  if (!exclusive_access_tab())
+  UnlockKeyboardForWebContents(
+      exclusive_access_tab() ? exclusive_access_tab()->GetWeakPtr() : nullptr);
+}
+
+void KeyboardLockController::UnlockKeyboardForWebContents(
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
     return;
+  }
 
   keyboard_lock_state_ = KeyboardLockState::kUnlocked;
 
-  exclusive_access_tab()->GotResponseToKeyboardLockRequest(false);
+  web_contents->GotResponseToKeyboardLockRequest(false);
   SetTabWithExclusiveAccess(nullptr);
   exclusive_access_manager()->UpdateBubble(base::NullCallback());
 }
