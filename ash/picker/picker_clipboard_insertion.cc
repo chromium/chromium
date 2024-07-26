@@ -124,8 +124,6 @@ void InsertClipboardDataImpl(aura::Window* intended_window,
   ui::KeyEvent ctrl_release = SyntheticCtrl(ui::EventType::kKeyReleased);
   host->DeliverEventToSink(&ctrl_release);
 
-  std::move(done_callback).Run(true);
-
   if (!replaced_data) {
     // No was on the clipboard.
     return;
@@ -138,10 +136,12 @@ void InsertClipboardDataImpl(aura::Window* intended_window,
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          [](std::unique_ptr<ui::ClipboardData> data) {
+          [](std::unique_ptr<ui::ClipboardData> data,
+             base::OnceCallback<void(bool)> done_callback) {
             ReplaceClipboard(std::move(data));
+            std::move(done_callback).Run(true);
           },
-          std::move(replaced_data)),
+          std::move(replaced_data), std::move(done_callback)),
       base::Milliseconds(200));
 }
 
