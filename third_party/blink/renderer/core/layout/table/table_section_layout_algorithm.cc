@@ -128,6 +128,10 @@ const LayoutResult* TableSectionLayoutAlgorithm::Layout() {
       row_offsets.emplace_back(offset.block_offset);
     }
     intrinsic_block_size = offset.block_offset;
+
+    if (container_builder_.HasInflowChildBreakInside()) {
+      break;
+    }
   }
 
   if (!child_iterator.NextChild().node)
