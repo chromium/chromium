@@ -237,46 +237,38 @@ suite('AppReceivesToolbarChanges', () => {
         };
       });
 
-      suite('when the previous install of the language failed', () => {
-        const lang = 'en-us';
-        setup(() => {
-          app.updateVoicePackStatus(lang, 'kOther');
-        });
+      test(
+          'when previous language install failed, directly installs lang without usual protocol of sending status request first',
+          () => {
+            const lang = 'en-us';
+            app.updateVoicePackStatus(lang, 'kOther');
+            emitLanguageToggle(lang);
 
-        test(
-            'directly installs lang without usual protocol of sending status request first',
-            () => {
-              emitLanguageToggle(lang);
+            assertEquals(lang, sentInstallRequestFor);
+            assertEquals(
+                app.getVoicePackStatusForTesting(lang).client,
+                VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY);
+          });
 
-              assertEquals(lang, sentInstallRequestFor);
-              assertEquals(
-                  app.getVoicePackStatusForTesting(lang).client,
-                  VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY);
-            });
+      test(
+          'when there is no status for lang, directly sends install request',
+          () => {
+            emitLanguageToggle('en-us');
+
+            assertEquals('en-us', sentInstallRequestFor);
+          });
+
+
+      test(
+          'when language status is uninstalled, does not directly install lang',
+          () => {
+            const lang = 'en-us';
+            app.updateVoicePackStatus(lang, 'kNotInstalled');
+            emitLanguageToggle(lang);
+
+            assertEquals('', sentInstallRequestFor);
+          });
       });
-
-      suite('when there is no status for lang', () => {
-        test('directly sends install request', () => {
-          emitLanguageToggle('en-us');
-
-          assertEquals('en-us', sentInstallRequestFor);
-        });
-      });
-
-
-      suite('when the language status is uninstalled', () => {
-        const lang = 'en-us';
-        setup(() => {
-          app.updateVoicePackStatus(lang, 'kNotInstalled');
-        });
-
-        test('does not directly install lang', () => {
-          emitLanguageToggle(lang);
-
-          assertEquals('', sentInstallRequestFor);
-        });
-      });
-    });
 
   });
 
@@ -324,37 +316,27 @@ suite('AppReceivesToolbarChanges', () => {
       emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     }
 
-    suite('by default', () => {
-      test('is paused', () => {
-        assertFalse(app.speechPlayingState.isSpeechActive);
-        assertFalse(app.speechPlayingState.isSpeechTreeInitialized);
-        assertFalse(propagatedActiveState);
-      });
+    test('by default is paused', () => {
+      assertFalse(app.speechPlayingState.isSpeechActive);
+      assertFalse(app.speechPlayingState.isSpeechTreeInitialized);
+      assertFalse(propagatedActiveState);
     });
 
-    suite('on first click', () => {
-      setup(() => {
-        emitPlayPause();
-      });
 
-      test('starts speech', () => {
-        assertTrue(app.speechPlayingState.isSpeechActive);
-        assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
-        assertTrue(propagatedActiveState);
-      });
+    test('on first click starts speech', () => {
+      emitPlayPause();
+      assertTrue(app.speechPlayingState.isSpeechActive);
+      assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
+      assertTrue(propagatedActiveState);
     });
 
-    suite('on second click', () => {
-      setup(() => {
-        emitPlayPause();
-        emitPlayPause();
-      });
+    test('on second click stops speech', () => {
+      emitPlayPause();
+      emitPlayPause();
 
-      test('stops speech', () => {
-        assertFalse(app.speechPlayingState.isSpeechActive);
-        assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
-        assertFalse(propagatedActiveState);
-      });
+      assertFalse(app.speechPlayingState.isSpeechActive);
+      assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
+      assertFalse(propagatedActiveState);
     });
 
     suite('on keyboard k pressed', () => {
@@ -405,19 +387,21 @@ suite('AppReceivesToolbarChanges', () => {
       assertNotEquals('transparent', highlightColor());
     });
 
-    suite('after update color theme', () => {
-      test('uses colored highlight with highlights on', () => {
-        emitHighlight(true);
-        emitEvent(app, ToolbarEvent.THEME, {detail: {data: '-blue'}});
-        assertNotEquals('transparent', highlightColor());
-      });
+    test(
+        'after update color theme uses colored highlight with highlights on',
+        () => {
+          emitHighlight(true);
+          emitEvent(app, ToolbarEvent.THEME, {detail: {data: '-blue'}});
+          assertNotEquals('transparent', highlightColor());
+        });
 
-      test('uses transparent highlight with highlights off', () => {
-        emitHighlight(false);
-        emitEvent(app, ToolbarEvent.THEME, {detail: {data: '-yellow'}});
-        assertEquals('transparent', highlightColor());
-      });
-    });
+    test(
+        'after update color theme uses transparent highlight with highlights off',
+        () => {
+          emitHighlight(false);
+          emitEvent(app, ToolbarEvent.THEME, {detail: {data: '-yellow'}});
+          assertEquals('transparent', highlightColor());
+        });
   });
 
   suite('on granularity change', () => {
@@ -453,24 +437,22 @@ suite('AppReceivesToolbarChanges', () => {
       });
     });
 
-    suite('previous', () => {
-      test('propagates change', () => {
-        let movedToPrevious: boolean = false;
-        chrome.readingMode.movePositionToPreviousGranularity = () => {
-          movedToPrevious = true;
-        };
+    test('previous propagates change', () => {
+      let movedToPrevious: boolean = false;
+      chrome.readingMode.movePositionToPreviousGranularity = () => {
+        movedToPrevious = true;
+      };
 
-        emitPreviousGranularity();
+      emitPreviousGranularity();
 
-        assertTrue(movedToPrevious);
-      });
-
-      test('highlights text', () => {
-        emitPreviousGranularity();
-        const currentHighlight =
-            app.$.container.querySelector('.current-read-highlight');
-        assertTrue(!!currentHighlight!.textContent);
-      });
+      assertTrue(movedToPrevious);
     });
-  });
+
+    test('previous highlights text', () => {
+      emitPreviousGranularity();
+      const currentHighlight =
+          app.$.container.querySelector('.current-read-highlight');
+      assertTrue(!!currentHighlight!.textContent);
+    });
+    });
 });
