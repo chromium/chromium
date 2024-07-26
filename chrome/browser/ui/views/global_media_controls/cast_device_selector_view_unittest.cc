@@ -124,3 +124,24 @@ TEST_F(CastDeviceSelectorViewTest, DeviceEntryCheck) {
                                     gfx::Point(), ui::EventTimeForNow(), 0, 0));
   }
 }
+
+TEST_F(CastDeviceSelectorViewTest, DeviceEntryWithIssueCheck) {
+  global_media_controls::mojom::DevicePtr device =
+      global_media_controls::mojom::Device::New(
+          kTestDeviceId, kTestDeviceName, kTestDeviceStatusText,
+          global_media_controls::mojom::IconType::kInfo);
+  std::vector<global_media_controls::mojom::DevicePtr> devices;
+  devices.push_back(std::move(device));
+
+  CreateCastDeviceSelectorView(/*show_devices=*/true);
+  view()->OnDevicesUpdated(std::move(devices));
+  EXPECT_NE(view()->GetDeviceContainerViewForTesting(), nullptr);
+  for (views::View* child :
+       view()->GetDeviceContainerViewForTesting()->children()) {
+    auto* device_button = static_cast<IssueHoverButton*>(child);
+    EXPECT_EQ(base::UTF16ToUTF8(device_button->device_name_label()->GetText()),
+              kTestDeviceName);
+    EXPECT_EQ(base::UTF16ToUTF8(device_button->status_text_label()->GetText()),
+              kTestDeviceStatusText);
+  }
+}

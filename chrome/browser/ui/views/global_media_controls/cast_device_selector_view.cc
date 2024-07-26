@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
@@ -13,11 +12,14 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -34,8 +36,71 @@ constexpr int kDeviceEntryIconSize = 20;
 
 constexpr gfx::Insets kBackgroundInsets = gfx::Insets::VH(16, 8);
 constexpr gfx::Insets kCastToRowInsets = gfx::Insets::VH(0, 8);
+constexpr gfx::Insets kIssueHoverButtonInsets = gfx::Insets::VH(6, 16);
 
 }  // namespace
+
+IssueHoverButton::IssueHoverButton(PressedCallback callback,
+                                   global_media_controls::mojom::IconType icon,
+                                   const std::u16string& device_name,
+                                   const std::u16string& status_text,
+                                   ui::ColorId device_name_color_id,
+                                   ui::ColorId status_text_color_id)
+    : HoverButton(std::move(callback), std::u16string()) {
+  label()->SetVisible(false);
+  SetBorder(views::CreateEmptyBorder(gfx::Insets()));
+  ink_drop_container()->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  GetViewAccessibility().SetName(
+      base::JoinString({device_name, status_text}, u"\n"));
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, kIssueHoverButtonInsets,
+      kDeviceEntrySeparator));
+
+  // Create a column to hold the info icon view.
+  auto* icon_view_column =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  icon_view_column->SetCanProcessEventsWithinSubtree(false);
+  icon_view_column->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+
+  auto* icon_view = icon_view_column->AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          GetVectorIcon(icon), status_text_color_id, kDeviceEntryIconSize)));
+  icon_view->SetCanProcessEventsWithinSubtree(false);
+
+  // Create a column to hold the device name label and status text label.
+  auto* label_column = AddChildView(std::make_unique<views::BoxLayoutView>());
+  label_column->SetCanProcessEventsWithinSubtree(false);
+  label_column->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  label_column->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  label_column->SetBetweenChildSpacing(kDeviceContainerSeparator);
+  layout->SetFlexForView(label_column, 1);
+
+  device_name_label_ = label_column->AddChildView(
+      std::make_unique<views::Label>(device_name, views::style::CONTEXT_LABEL,
+                                     views::style::STYLE_BODY_2));
+  device_name_label_->SetCanProcessEventsWithinSubtree(false);
+  device_name_label_->SetEnabledColorId(device_name_color_id);
+
+  status_text_label_ = label_column->AddChildView(
+      std::make_unique<views::Label>(status_text, views::style::CONTEXT_LABEL,
+                                     views::style::STYLE_BODY_4));
+  status_text_label_->SetCanProcessEventsWithinSubtree(false);
+  status_text_label_->SetEnabledColorId(status_text_color_id);
+}
+
+gfx::Size IssueHoverButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return GetLayoutManager()->GetPreferredSize(this);
+}
+
+int IssueHoverButton::GetHeightForWidth(int w) const {
+  return GetLayoutManager()->GetPreferredHeightForWidth(this, w);
+}
+
+BEGIN_METADATA(IssueHoverButton)
+END_METADATA
 
 CastDeviceSelectorView::CastDeviceSelectorView(
     mojo::PendingRemote<global_media_controls::mojom::DeviceListHost>
@@ -132,7 +197,8 @@ void CastDeviceSelectorView::OnDevicesUpdated(
     auto device_view = BuildCastDeviceEntryView(
         base::BindRepeating(&CastDeviceSelectorView::OnCastDeviceSelected,
                             base::Unretained(this), device->id),
-        base::UTF8ToUTF16(device->name), device->icon);
+        device->icon, base::UTF8ToUTF16(device->name),
+        base::UTF8ToUTF16(device->status_text));
     device_container_view_->AddChildView(std::move(device_view));
   }
   if (media_item_ui_updated_view_) {
@@ -147,8 +213,9 @@ void CastDeviceSelectorView::OnDevicesUpdated(
 
 std::unique_ptr<HoverButton> CastDeviceSelectorView::BuildCastDeviceEntryView(
     views::Button::PressedCallback callback,
-    const std::u16string& text,
-    global_media_controls::mojom::IconType icon) {
+    global_media_controls::mojom::IconType icon,
+    const std::u16string& device_name,
+    const std::u16string& status_text) {
   std::unique_ptr<HoverButton> device_entry_button;
   if (icon == global_media_controls::mojom::IconType::kThrobber) {
     // Create the device entry button with an animating throbber icon view.
@@ -157,11 +224,18 @@ std::unique_ptr<HoverButton> CastDeviceSelectorView::BuildCastDeviceEntryView(
     throbber->Start();
 
     device_entry_button = std::make_unique<HoverButton>(
-        std::move(callback), std::move(throbber), text);
+        std::move(callback), std::move(throbber), device_name);
     device_entry_button->title()->SetDefaultTextStyle(
         views::style::STYLE_BODY_2);
     device_entry_button->title()->SetDefaultEnabledColorId(
         media_color_theme_.secondary_foreground_color_id);
+  } else if (icon == global_media_controls::mojom::IconType::kInfo) {
+    // Create the device entry button with a static info icon view, and
+    // display the issue for the device in an error format.
+    device_entry_button = std::make_unique<IssueHoverButton>(
+        std::move(callback), icon, device_name, status_text,
+        media_color_theme_.secondary_foreground_color_id,
+        media_color_theme_.error_foreground_color_id);
   } else {
     // Create the device entry button with a static icon view.
     device_entry_button = std::make_unique<HoverButton>(
@@ -170,7 +244,7 @@ std::unique_ptr<HoverButton> CastDeviceSelectorView::BuildCastDeviceEntryView(
             GetVectorIcon(icon),
             media_color_theme_.secondary_foreground_color_id,
             kDeviceEntryIconSize),
-        text);
+        device_name);
     device_entry_button->SetLabelStyle(views::style::STYLE_BODY_2);
     device_entry_button->SetEnabledTextColorIds(
         media_color_theme_.secondary_foreground_color_id);
