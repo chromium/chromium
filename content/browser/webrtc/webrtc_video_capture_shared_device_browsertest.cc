@@ -39,6 +39,9 @@ namespace content {
 
 namespace {
 
+using GetSourceInfosResult =
+    video_capture::mojom::VideoSourceProvider::GetSourceInfosResult;
+
 static const char kVideoCaptureHtmlFile[] = "/media/video_capture_test.html";
 static const char kStartVideoCaptureAndVerify[] =
     "startVideoCaptureAndVerifySize(%d, %d)";
@@ -110,7 +113,9 @@ class WebRtcVideoCaptureSharedDeviceBrowserTest : public ContentBrowserTest {
  private:
   void OnSourceInfosReceived(
       media::VideoCaptureBufferType buffer_type_to_request,
+      GetSourceInfosResult result,
       const std::vector<media::VideoCaptureDeviceInfo>& infos) {
+    ASSERT_EQ(result, GetSourceInfosResult::kSuccess);
     ASSERT_FALSE(infos.empty());
     video_source_provider_->GetVideoSource(
         infos[0].descriptor.device_id,

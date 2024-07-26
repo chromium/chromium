@@ -23,6 +23,9 @@
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 
+using GetSourceInfosResult =
+    video_capture::mojom::VideoSourceProvider::GetSourceInfosResult;
+
 class MediaClientImpl : public ash::MediaClient,
                         public ash::VmCameraMicManager::Observer,
                         public BrowserListObserver,
@@ -94,6 +97,7 @@ class MediaClientImpl : public ash::MediaClient,
   friend class MediaClientAppUsingCameraTest;
 
   using GetSourceCallback = base::OnceCallback<void(
+      GetSourceInfosResult,
       const std::vector<media::VideoCaptureDeviceInfo>&)>;
 
   // Passes a given callback to the GetSourcesInfos() method of the video source
@@ -137,10 +141,12 @@ class MediaClientImpl : public ash::MediaClient,
   void OnGetSourceInfosByCameraHWPrivacySwitchStateChanged(
       const std::string& device_id,
       cros::mojom::CameraPrivacySwitchState state,
+      GetSourceInfosResult,
       const std::vector<media::VideoCaptureDeviceInfo>& devices);
 
   void OnGetSourceInfosByActiveClientChanged(
       const base::flat_set<std::string>& active_device_ids,
+      GetSourceInfosResult,
       const std::vector<media::VideoCaptureDeviceInfo>& devices);
 
   // Returns true if the device (camera) with id `device_id` is being actively
@@ -148,6 +154,7 @@ class MediaClientImpl : public ash::MediaClient,
   bool IsDeviceActive(const std::string& device_id);
 
   void OnGetSourceInfosByCameraSWPrivacySwitchStateChanged(
+      GetSourceInfosResult,
       const std::vector<media::VideoCaptureDeviceInfo>& devices);
 
   void OnGetCameraSWPrivacySwitchState(

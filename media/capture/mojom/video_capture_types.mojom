@@ -423,5 +423,6 @@ enum ApplySubCaptureTargetResult {
 enum DeviceEnumerationResult {
   kSuccess,
   kUnknownError,
-  kErrorCaptureServiceCrash
+  kErrorCaptureServiceCrash,
+  kErrorCaptureServiceDroppedRequest
 };

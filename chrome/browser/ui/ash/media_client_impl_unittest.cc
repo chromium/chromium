@@ -263,8 +263,11 @@ class MediaClientAppUsingCameraTest : public testing::Test {
                                                            active_device_ids);
     media_client_.active_camera_client_count_ = active_client_count;
 
-    media_client_.OnGetSourceInfosByActiveClientChanged(active_device_ids,
-                                                        video_capture_devices_);
+    media_client_.OnGetSourceInfosByActiveClientChanged(
+        active_device_ids,
+        video_capture::mojom::VideoSourceProvider::GetSourceInfosResult::
+            kSuccess,
+        video_capture_devices_);
   }
 
   void AttachCamera(const std::string& device_id,

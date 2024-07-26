@@ -76,6 +76,7 @@ void CameraPresenceNotifier::CheckCameraPresence() {
 }
 
 void CameraPresenceNotifier::OnGotSourceInfos(
+    video_capture::mojom::VideoSourceProvider::GetSourceInfosResult,
     const std::vector<media::VideoCaptureDeviceInfo>& devices) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const int camera_count = devices.size();

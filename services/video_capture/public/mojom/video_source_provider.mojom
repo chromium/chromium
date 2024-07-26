@@ -14,7 +14,16 @@ import "services/video_capture/public/mojom/virtual_device.mojom";
 // to virtual devices that are used to simulate video capture devices, eg. for
 // tests.
 interface VideoSourceProvider {
-  GetSourceInfos() => (array<media.mojom.VideoCaptureDeviceInfo> source_infos);
+  // Results of GetSourceInfos calls.
+  enum GetSourceInfosResult {
+    kSuccess,
+    kErrorDroppedRequest
+  };
+
+  // Get a list of available video sources. source_infos is empty whenever
+  // result is not kSuccess.
+  GetSourceInfos() => (GetSourceInfosResult result,
+                       array<media.mojom.VideoCaptureDeviceInfo> source_infos);
 
   // This essentially constrains things down to a particular source. This is
   // useful for subsequently passing the resulting |stream| to clients that

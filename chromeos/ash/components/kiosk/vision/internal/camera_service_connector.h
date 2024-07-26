@@ -72,6 +72,7 @@ class CameraServiceConnector
   // Called back asynchronously by the video source provider to give us the list
   // of currently available camera `devices`.
   void OnCameraDevicesReceived(
+      video_capture::mojom::VideoSourceProvider::GetSourceInfosResult,
       const std::vector<media::VideoCaptureDeviceInfo>& devices);
 
   const std::string dlc_path_;
