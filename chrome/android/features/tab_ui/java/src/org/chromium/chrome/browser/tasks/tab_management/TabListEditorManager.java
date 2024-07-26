@@ -36,6 +36,7 @@ import java.util.List;
  */
 public class TabListEditorManager {
     private final @NonNull Activity mActivity;
+    private final @NonNull ModalDialogManager mModalDialogManager;
     private final @NonNull ViewGroup mCoordinatorView;
     private final @NonNull ViewGroup mRootView;
     private final @Nullable SnackbarManager mSnackbarManager;
@@ -77,6 +78,7 @@ public class TabListEditorManager {
             @TabListMode int mode,
             @Nullable Runnable onTabGroupCreation) {
         mActivity = activity;
+        mModalDialogManager = modalDialogManager;
         mCoordinatorView = coordinatorView;
         mRootView = rootView;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
@@ -127,7 +129,8 @@ public class TabListEditorManager {
                             mSnackbarManager,
                             mBottomSheetController,
                             TabProperties.TabActionState.SELECTABLE,
-                            /* gridCardOnClickListenerProvider= */ null);
+                            /* gridCardOnClickListenerProvider= */ null,
+                            mModalDialogManager);
             mControllerSupplier.set(mTabListEditorCoordinator.getController());
         }
     }
@@ -148,7 +151,8 @@ public class TabListEditorManager {
                             mActivity,
                             ShowMode.MENU_ONLY,
                             ButtonType.ICON_AND_TEXT,
-                            IconPosition.START));
+                            IconPosition.START,
+                            /* actionConfirmationManager= */ null));
             mTabListEditorActions.add(
                     TabListEditorGroupAction.createAction(
                             mActivity,

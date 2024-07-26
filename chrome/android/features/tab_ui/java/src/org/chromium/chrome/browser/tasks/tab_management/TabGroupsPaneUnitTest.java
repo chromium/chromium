@@ -55,12 +55,14 @@ public class TabGroupsPaneUnitTest {
     @Mock private Profile mProfile;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private Supplier<PaneManager> mPaneManagerSupplier;
-    @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     @Mock FaviconHelper.Natives mFaviconHelperJniMock;
     @Mock SyncService mSyncService;
+    @Mock ModalDialogManager mModalDialogManager;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileSupplier =
+            new OneshotSupplierImpl<>();
+    private final OneshotSupplierImpl<ModalDialogManager> mModalDialogManagerSupplier =
             new OneshotSupplierImpl<>();
 
     private TabGroupsPane mTabGroupsPane;
@@ -73,6 +75,7 @@ public class TabGroupsPaneUnitTest {
         ApplicationProvider.getApplicationContext().setTheme(R.style.Theme_BrowserUI_DayNight);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         mProfileSupplier.set(mProfileProvider);
+        mModalDialogManagerSupplier.set(mModalDialogManager);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
 

@@ -146,7 +146,8 @@ public class TabGroupUiCoordinator
                         mScrimCoordinator,
                         mTabStripCoordinator.getTabGroupTitleEditor(),
                         mRootView,
-                        actionConfirmationManager);
+                        actionConfirmationManager,
+                        mModalDialogManager);
         mTabGridDialogControllerSupplier.set(mTabGridDialogCoordinator);
     }
 
@@ -164,6 +165,7 @@ public class TabGroupUiCoordinator
                             TabListCoordinator.TabListMode.STRIP,
                             mContext,
                             mBrowserControlsStateProvider,
+                            mModalDialogManager,
                             currentTabModelFilterSupplier,
                             /* thumbnailProvider= */ null,
                             /* actionOnRelatedTabs= */ false,

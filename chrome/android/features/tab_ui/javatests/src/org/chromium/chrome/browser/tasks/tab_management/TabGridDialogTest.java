@@ -188,6 +188,7 @@ public class TabGridDialogTest {
     private boolean mHasReceivedSourceRect;
     private TabListEditorTestingRobot mSelectionEditorRobot = new TabListEditorTestingRobot();
     private ModalDialogManager mModalDialogManager;
+    private PrefService mPrefService;
 
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
@@ -249,8 +250,8 @@ public class TabGridDialogTest {
                                     .getProfileProviderSupplier()
                                     .get()
                                     .getOriginalProfile();
-                    PrefService prefService = UserPrefs.get(profile);
-                    ActionConfirmationManager.clearStopShowingPrefsForTesting(prefService);
+                    mPrefService = UserPrefs.get(profile);
+                    ActionConfirmationManager.clearStopShowingPrefsForTesting(mPrefService);
                 });
     }
 
@@ -866,7 +867,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    public void testDialogSelectionEditor_BookmarkSingleTabView() throws ExecutionException {
+    public void testDialogSelectionEditor_BookmarkSingleTabView() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         SnackbarManager snackbarManager = cta.getSnackbarManager();
         createTabs(cta, false, 2);
@@ -911,7 +912,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    public void testDialogSelectionEditor_BookmarkTabsView() throws ExecutionException {
+    public void testDialogSelectionEditor_BookmarkTabsView() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         SnackbarManager snackbarManager = cta.getSnackbarManager();
         createTabs(cta, false, 2);
@@ -958,7 +959,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
-    public void testDialogSelectionEditor_ShareActionView() throws Exception {
+    public void testDialogSelectionEditor_ShareActionView() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
 
@@ -1008,7 +1009,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
-    public void testDialogSelectionEditor_ShareActionTabs() throws Exception {
+    public void testDialogSelectionEditor_ShareActionTabs() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
         final String httpsCanonicalUrl =
@@ -1058,7 +1059,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    public void testDialogSelectionEditor_ShareActionAllFilterableTabs() throws ExecutionException {
+    public void testDialogSelectionEditor_ShareActionAllFilterableTabs() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
 
@@ -1118,7 +1119,12 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    public void testDialogSelectionEditor_UndoCloseAll() throws ExecutionException {
+    public void testDialogSelectionEditor_UndoCloseAll() {
+        // This test relies on the undo bar, which is only present when the confirmation dialog is
+        // not shown.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> ActionConfirmationManager.setAllStopShowingPrefsForTesting(mPrefService));
+
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 4);
         enterTabSwitcher(cta);
@@ -1141,6 +1147,7 @@ public class TabGridDialogTest {
                 .clickItemAtAdapterPosition(3)
                 .clickToolbarMenuButton()
                 .clickToolbarMenuItem("Close tabs");
+
         mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
         waitForDialogHidingAnimationInTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 0);
@@ -1176,11 +1183,7 @@ public class TabGridDialogTest {
                 .clickToolbarMenuButton()
                 .clickToolbarMenuItem("Ungroup tabs");
 
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(mModalDialogManager.isShowing(), Matchers.is(true));
-                });
-        onViewWaiting(withText("Delete group"), /* checkRootDialog= */ true).perform(click());
+        clickThroughConfirmationDialog();
 
         mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
         waitForDialogHidingAnimationInTabSwitcher(cta);
@@ -1214,6 +1217,9 @@ public class TabGridDialogTest {
                 .perform(
                         RecyclerViewActions.actionOnItemAtPosition(
                                 0, getSwipeToDismissAction(false)));
+
+        clickThroughConfirmationDialog();
+
         waitForDialogHidingAnimation(cta);
         verifyTabSwitcherCardCount(cta, 0);
     }
@@ -1784,7 +1790,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @DisableIf.Device(type = UiDisableIf.TABLET)
-    public void testStripDialog_TabListEditorCloseAll_NoCustomHomepage() throws Exception {
+    public void testStripDialog_TabListEditorCloseAll_NoCustomHomepage() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         // Create a tab group with 2 tabs.
         createTabs(cta, false, 2);
@@ -1821,6 +1827,8 @@ public class TabGridDialogTest {
                 .clickToolbarMenuButton()
                 .clickToolbarMenuItem("Close tabs");
 
+        clickThroughConfirmationDialog();
+
         // Rather than destroying the activity the GTS should be showing.
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         verifyTabSwitcherCardCount(cta, 0);
@@ -1829,7 +1837,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @DisableIf.Device(type = UiDisableIf.TABLET)
-    public void testStripDialog_TabListEditorCloseAll_CustomHomepage() throws Exception {
+    public void testStripDialog_TabListEditorCloseAll_CustomHomepage() {
         GURL url =
                 new GURL(
                         sActivityTestRule
@@ -1875,6 +1883,8 @@ public class TabGridDialogTest {
                 .clickItemAtAdapterPosition(1)
                 .clickToolbarMenuButton()
                 .clickToolbarMenuItem("Close tabs");
+
+        clickThroughConfirmationDialog();
 
         // With a custom homepage exit the app.
         CriteriaHelper.pollUiThread(() -> cta.isDestroyed());
@@ -2473,5 +2483,11 @@ public class TabGridDialogTest {
     private void enterTabListEditor(ChromeTabbedActivity cta) {
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.menu_select_tabs);
+    }
+
+    private void clickThroughConfirmationDialog() {
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(mModalDialogManager.isShowing(), Matchers.is(true)));
+        onViewWaiting(withText("Delete group"), /* checkRootDialog= */ true).perform(click());
     }
 }

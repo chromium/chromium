@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.util.Function;
@@ -46,6 +47,8 @@ public class ActionConfirmationManager {
     private static final String REMOVE_TAB_FULL_GROUP_USER_ACTION =
             TAB_GROUP_CONFIRMATION + "RemoveTabFullGroup.";
     private static final String CLOSE_TAB_USER_ACTION = TAB_GROUP_CONFIRMATION + "CloseTab.";
+    private static final String CLOSE_TAB_FULL_GROUP_USER_ACTION =
+            TAB_GROUP_CONFIRMATION + "CloseTabFullGroup.";
 
     // The result of processing an action.
     @IntDef({
@@ -80,7 +83,8 @@ public class ActionConfirmationManager {
             Profile profile,
             Context context,
             TabGroupModelFilter tabGroupModelFilter,
-            ModalDialogManager modalDialogManager) {
+            @NonNull ModalDialogManager modalDialogManager) {
+        assert modalDialogManager != null;
         mProfile = profile;
         mContext = context;
         mTabGroupModelFilter = tabGroupModelFilter;
@@ -163,6 +167,25 @@ public class ActionConfirmationManager {
                 onResult);
     }
 
+    /**
+     * This processes closing tabs within groups. Warns when the last tab(s) are being closed. The
+     * list of tabs should all be in the same group.
+     */
+    public void processCloseTabAttempt(List<Integer> tabIdList, Callback<Integer> onResult) {
+        if (isFullGroup(tabIdList)) {
+            processGenericAction(
+                    CLOSE_TAB_FULL_GROUP_USER_ACTION,
+                    Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_CLOSE,
+                    R.string.close_from_group_dialog_title,
+                    R.string.close_from_group_description,
+                    R.string.delete_tab_group_no_sync_description,
+                    R.string.delete_tab_group_action,
+                    onResult);
+        } else {
+            onResult.onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
+        }
+    }
+
     private boolean isFullGroup(List<Integer> tabIdList) {
         assert mTabGroupModelFilter != null : "TabGroupModelFilter has not been set";
         return tabIdList.size() >= mTabGroupModelFilter.getRelatedTabList(tabIdList.get(0)).size();
@@ -230,5 +253,12 @@ public class ActionConfirmationManager {
         prefService.clearPref(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_UNGROUP);
         prefService.clearPref(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_REMOVE);
         prefService.clearPref(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_CLOSE);
+    }
+
+    public static void setAllStopShowingPrefsForTesting(PrefService prefService) {
+        prefService.setBoolean(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_CLOSE, true);
+        prefService.setBoolean(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_UNGROUP, true);
+        prefService.setBoolean(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_REMOVE, true);
+        prefService.setBoolean(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_CLOSE, true);
     }
 }

@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -204,6 +205,7 @@ public class ArchivedTabsDialogCoordinator {
     private final @NonNull TabCreator mRegularTabCreator;
     private final @NonNull BackPressManager mBackPressManager;
     private final @NonNull TabArchiveSettings mTabArchiveSettings;
+    private final @NonNull ModalDialogManager mModalDialogManager;
 
     private ViewGroup mView;
     private @TabActionState int mTabActionState = TabActionState.CLOSABLE;
@@ -222,6 +224,7 @@ public class ArchivedTabsDialogCoordinator {
      * @param regularTabCreator Handles the creation of regular tabs.
      * @param backPressManager Manages the different back press handlers throughout the app.
      * @param tabArchiveSettings The settings manager for tab archive.
+     * @param modalDialogManager Used for managing the modal dialogs.
      */
     public ArchivedTabsDialogCoordinator(
             @NonNull Context context,
@@ -233,7 +236,8 @@ public class ArchivedTabsDialogCoordinator {
             @NonNull SnackbarManager snackbarManager,
             @NonNull TabCreator regularTabCreator,
             @NonNull BackPressManager backPressManager,
-            @NonNull TabArchiveSettings tabArchiveSettings) {
+            @NonNull TabArchiveSettings tabArchiveSettings,
+            @NonNull ModalDialogManager modalDialogManager) {
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabContentManager = tabContentManager;
@@ -243,6 +247,7 @@ public class ArchivedTabsDialogCoordinator {
         mRegularTabCreator = regularTabCreator;
         mBackPressManager = backPressManager;
         mTabArchiveSettings = tabArchiveSettings;
+        mModalDialogManager = modalDialogManager;
 
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
         mArchivedTabModel =
@@ -376,7 +381,8 @@ public class ArchivedTabsDialogCoordinator {
                         mSnackbarManager,
                         /* bottomSheetController= */ null,
                         TabProperties.TabActionState.CLOSABLE,
-                        mGridCardOnCLickListenerProvider);
+                        mGridCardOnCLickListenerProvider,
+                        mModalDialogManager);
     }
 
     @VisibleForTesting

@@ -728,7 +728,8 @@ public class TabGridDialogMediator
                         mContext,
                         ShowMode.MENU_ONLY,
                         ButtonType.ICON_AND_TEXT,
-                        IconPosition.START));
+                        IconPosition.START,
+                        mActionConfirmationManager));
         actions.add(
                 TabListEditorUngroupAction.createAction(
                         mContext,

@@ -36,6 +36,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -55,8 +56,9 @@ public class ClosableTabListEditorTest {
 
     @Mock private Callback<RecyclerViewPosition> mSetRecyclerViewPosition;
     @Mock private TabListEditorCoordinator.NavigationProvider mNavigationProvider;
+    @Mock private ModalDialogManager mModalDialogManager;
 
-    private TabListEditorTestingRobot mRobot = new TabListEditorTestingRobot();
+    private final TabListEditorTestingRobot mRobot = new TabListEditorTestingRobot();
 
     private TabModelSelector mTabModelSelector;
     private TabListEditorCoordinator.TabListEditorController mTabListEditorController;
@@ -95,7 +97,8 @@ public class ClosableTabListEditorTest {
                                     mSnackbarManager,
                                     /* bottomSheetController= */ null,
                                     TabProperties.TabActionState.CLOSABLE,
-                                    /* gridCardOnClickListenerProvider= */ null);
+                                    /* gridCardOnClickListenerProvider= */ null,
+                                    mModalDialogManager);
 
                     mTabListEditorController = mTabListEditorCoordinator.getController();
                     mTabListEditorLayout =
