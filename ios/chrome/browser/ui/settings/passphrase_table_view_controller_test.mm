@@ -81,7 +81,7 @@ void PassphraseTableViewControllerTest::SetUp() {
       base::BindRepeating(&CreateNiceMockSyncService));
   RegisterTestingFactories(test_cbs_builder);
   test_cbs_builder.SetPrefService(CreatePrefService());
-  chrome_browser_state_ = test_cbs_builder.Build();
+  chrome_browser_state_ = std::move(test_cbs_builder).Build();
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
       chrome_browser_state_.get(),
       std::make_unique<FakeAuthenticationServiceDelegate>());

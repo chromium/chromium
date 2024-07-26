@@ -239,7 +239,7 @@ class PasswordControllerTest : public PlatformTest {
   PasswordControllerTest() : web_client_(std::make_unique<ChromeWebClient>()) {
     TestChromeBrowserState::Builder test_cbs_builder;
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        test_cbs_builder.Build());
+        std::move(test_cbs_builder).Build());
     TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
         browser_state_manager_.get());
     browser_state_ =

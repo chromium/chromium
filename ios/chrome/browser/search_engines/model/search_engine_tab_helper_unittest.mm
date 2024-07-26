@@ -65,7 +65,7 @@ class SearchEngineTabHelperTest : public PlatformTest {
               return model;
             }));
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     web::WebState::CreateParams params(browser_state_.get());
     web_state_ = web::WebState::Create(params);
     web_state_->GetView();

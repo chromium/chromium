@@ -141,7 +141,7 @@ class PredictionManagerTestBase : public PlatformTest {
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
     builder.SetPrefService(std::move(testing_prefs));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     OptimizationGuideServiceFactory::GetForBrowserState(browser_state_.get())
         ->DoFinalInit(BackgroundDownloadServiceFactory::GetForBrowserState(

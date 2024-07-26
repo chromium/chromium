@@ -32,7 +32,7 @@ class PasswordsInOtherAppsCoordinatorTest : public PlatformTest {
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_ =
         std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
 

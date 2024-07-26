@@ -40,7 +40,7 @@ void BookmarkIOSUnitTestSupport::SetUp() {
       ManagedBookmarkServiceFactory::GetInstance(),
       ManagedBookmarkServiceFactory::GetDefaultFactory());
 
-  chrome_browser_state_ = test_cbs_builder.Build();
+  chrome_browser_state_ = std::move(test_cbs_builder).Build();
 
   SetUpBrowserStateBeforeCreatingServices();
 

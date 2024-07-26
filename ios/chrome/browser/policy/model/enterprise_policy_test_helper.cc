@@ -58,7 +58,7 @@ EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
   TestChromeBrowserState::Builder builder;
   builder.SetPath(state_directory_path);
   builder.SetPrefService(std::move(pref_service));
-  browser_state_ = builder.Build();
+  browser_state_ = std::move(builder).Build();
 }
 
 EnterprisePolicyTestHelper::~EnterprisePolicyTestHelper() = default;

@@ -43,7 +43,7 @@ class BandwidthManagementTableViewControllerTest
     RegisterBrowserStatePrefs(registry.get());
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.SetPrefService(std::move(prefs));
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
 
     CreateController();
   }

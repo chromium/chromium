@@ -27,7 +27,7 @@ class OptimizationGuideServiceFactoryTest : public PlatformTest {
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     OptimizationGuideServiceFactory::GetForBrowserState(browser_state_.get())
         ->DoFinalInit(BackgroundDownloadServiceFactory::GetForBrowserState(
             browser_state_.get()));
@@ -67,7 +67,7 @@ class OptimizationGuideServiceFactoryFeatureDisabledTest : public PlatformTest {
     scoped_feature_list_.InitAndDisableFeature(
         {optimization_guide::features::kOptimizationHints});
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
   }
 
  protected:

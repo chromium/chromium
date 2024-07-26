@@ -17,7 +17,7 @@ class UrlLanguageHistogramFactoryTest : public PlatformTest {
  public:
   UrlLanguageHistogramFactoryTest() {
     TestChromeBrowserState::Builder browser_state_builder;
-    chrome_browser_state_ = browser_state_builder.Build();
+    chrome_browser_state_ = std::move(browser_state_builder).Build();
   }
 
   ~UrlLanguageHistogramFactoryTest() override { chrome_browser_state_.reset(); }

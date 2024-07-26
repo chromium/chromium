@@ -134,7 +134,7 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
               std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     bulk_leak_check_service_ = static_cast<MockBulkLeakCheckService*>(
         IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(
             browser_state_.get()));

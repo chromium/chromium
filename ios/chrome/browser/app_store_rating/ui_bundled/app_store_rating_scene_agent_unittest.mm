@@ -150,7 +150,7 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
   void CreateFakeSceneState() {
     id mockAppState = OCMClassMock([AppState class]);
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     fake_scene_state_ =
         [[FakeSceneState alloc] initWithAppState:mockAppState
                                     browserState:browser_state_.get()];

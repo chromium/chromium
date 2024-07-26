@@ -36,7 +36,7 @@ class BlockPopupsTableViewControllerTest
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
     TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
   }
 
   LegacyChromeTableViewController* InstantiateController() override {

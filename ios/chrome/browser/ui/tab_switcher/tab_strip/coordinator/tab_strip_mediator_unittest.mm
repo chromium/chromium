@@ -285,7 +285,7 @@ class TabStripMediatorTest : public PlatformTest {
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
 
-    browser_state_ = browser_state_builder.Build();
+    browser_state_ = std::move(browser_state_builder).Build();
     browser_ = std::make_unique<TestBrowser>(
         browser_state_.get(), std::make_unique<FakeWebStateListDelegate>());
     web_state_list_ = browser_->GetWebStateList();

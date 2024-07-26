@@ -50,7 +50,8 @@ class SetUpListTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    std::unique_ptr<TestChromeBrowserState> browser_state = builder.Build();
+    std::unique_ptr<TestChromeBrowserState> browser_state =
+        std::move(builder).Build();
     test_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         std::move(browser_state));
     TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(

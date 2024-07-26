@@ -48,7 +48,7 @@ class NewTabPageTabHelperTest : public PlatformTest {
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
 
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
 
     auto fake_navigation_manager =
         std::make_unique<web::FakeNavigationManager>();

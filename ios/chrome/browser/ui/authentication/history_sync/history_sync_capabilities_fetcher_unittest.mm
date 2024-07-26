@@ -33,7 +33,7 @@ class HistorySyncCapabilitiesFetcherTest
   void SetUp() override {
     PlatformTest::SetUp();
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     feature_list_.InitAndEnableFeature(
         switches::kMinorModeRestrictionsForHistorySyncOptIn);
   }

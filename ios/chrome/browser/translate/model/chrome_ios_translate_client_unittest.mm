@@ -46,7 +46,7 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());

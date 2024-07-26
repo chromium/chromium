@@ -21,7 +21,7 @@ class FaviconWebStateDispatcherTest : public PlatformTest,
  public:
   FaviconWebStateDispatcherTest() : web_state_destroyed_(false) {
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
   }
 
   web::BrowserState* GetBrowserState() { return browser_state_.get(); }

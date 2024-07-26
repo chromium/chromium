@@ -18,7 +18,7 @@ class BrowserPolicyNewTabPageRewriterTest : public PlatformTest {
  public:
   void SetUp() override {
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
   }
 
  protected:

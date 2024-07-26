@@ -56,7 +56,7 @@ class AccountsTableViewControllerTest
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(

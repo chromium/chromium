@@ -53,7 +53,7 @@ class ChromeAccountManagerServiceTest : public PlatformTest {
  public:
   ChromeAccountManagerServiceTest() {
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     account_manager_ = ChromeAccountManagerServiceFactory::GetForBrowserState(
         browser_state_.get());

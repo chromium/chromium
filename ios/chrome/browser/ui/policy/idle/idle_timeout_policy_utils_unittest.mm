@@ -35,7 +35,7 @@ class IdleTimeoutPolicyUtilsTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     scoped_feature_list_.InitWithFeatures(
         {kClearDeviceDataOnSignOutForManagedUsers}, {});
-    browser_state_ = test_cbs_builder.Build();
+    browser_state_ = std::move(test_cbs_builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());

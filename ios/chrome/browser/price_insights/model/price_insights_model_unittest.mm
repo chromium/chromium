@@ -51,7 +51,7 @@ class PriceInsightsModelTest : public PlatformTest {
             [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
               return commerce::MockShoppingService::Build();
             }));
-    test_chrome_browser_state_ = builder.Build();
+    test_chrome_browser_state_ = std::move(builder).Build();
     std::unique_ptr<web::FakeNavigationManager> navigation_manager =
         std::make_unique<web::FakeNavigationManager>();
     navigation_manager->AddItem(GURL(kTestUrl), ui::PAGE_TRANSITION_LINK);

@@ -105,7 +105,7 @@ class TabsCloserTest : public PlatformTest {
         TestSessionRestorationService::GetTestingFactory());
     builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
                               FakeTabRestoreService::GetTestingFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     // Initialize the AuthenticationService.
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(

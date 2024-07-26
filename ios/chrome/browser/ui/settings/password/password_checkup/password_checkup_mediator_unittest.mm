@@ -68,7 +68,7 @@ class PasswordCheckupMediatorTest : public PlatformTest {
               std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     password_check_ = IOSChromePasswordCheckManagerFactory::GetForBrowserState(
         browser_state_.get());

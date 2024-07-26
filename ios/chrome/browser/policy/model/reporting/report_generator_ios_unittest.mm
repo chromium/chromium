@@ -48,7 +48,8 @@ class ReportGeneratorIOSTest : public PlatformTest {
     builder.SetPolicyConnector(
         std::make_unique<BrowserStatePolicyConnectorMock>(
             std::move(policy_service_), &schema_registry_));
-    std::unique_ptr<TestChromeBrowserState> browser_state = builder.Build();
+    std::unique_ptr<TestChromeBrowserState> browser_state =
+        std::move(builder).Build();
 
     InitPolicyMap();
     scoped_browser_state_manager_ =

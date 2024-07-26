@@ -37,7 +37,7 @@ class FeedTopSectionMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    fake_browser_state_ = builder.Build();
+    fake_browser_state_ = std::move(builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         fake_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());

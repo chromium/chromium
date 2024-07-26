@@ -67,7 +67,7 @@ class PreloadControllerTest : public PlatformTest {
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
     // Set up a NetworkChangeNotifier so that the test can simulate Wi-Fi vs.
     // cellular connection.
     network_change_notifier_.reset(new TestNetworkChangeNotifier);

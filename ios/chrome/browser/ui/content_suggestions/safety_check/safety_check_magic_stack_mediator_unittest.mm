@@ -48,8 +48,8 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
 
-    browser_state_manager_ =
-        std::make_unique<TestChromeBrowserStateManager>(builder.Build());
+    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
+        std::move(builder).Build());
 
     TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
         browser_state_manager_.get());

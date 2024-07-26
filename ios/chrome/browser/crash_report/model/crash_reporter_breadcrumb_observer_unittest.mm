@@ -34,10 +34,8 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
     // and registered.
     breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance();
 
-    TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = test_cbs_builder.Build();
-    TestChromeBrowserState::Builder test_cbs_builder_2;
-    chrome_browser_state_2_ = test_cbs_builder_2.Build();
+    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
+    chrome_browser_state_2_ = TestChromeBrowserState::Builder().Build();
   }
 
   void TearDown() override {

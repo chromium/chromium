@@ -21,7 +21,7 @@ class DefaultPageModeMediatorTest : public PlatformTest {
  protected:
   DefaultPageModeMediatorTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
   }
 
   web::WebTaskEnvironment task_environment_;

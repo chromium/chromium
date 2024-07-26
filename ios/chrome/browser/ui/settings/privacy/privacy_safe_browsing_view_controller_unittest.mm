@@ -27,7 +27,7 @@ class PrivacySafeBrowsingViewControllerTest
     LegacyChromeTableViewControllerTest::SetUp();
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.SetPrefService(CreatePrefService());
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
   }
 
   // Makes a PrefService to be used by the test.

@@ -38,7 +38,7 @@ class SyncServiceFactoryTest : public PlatformTest {
     browser_state_builder.AddTestingFactory(
         ios::WebDataServiceFactory::GetInstance(),
         ios::WebDataServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = browser_state_builder.Build();
+    chrome_browser_state_ = std::move(browser_state_builder).Build();
   }
 
   void TearDown() override {

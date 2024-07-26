@@ -217,7 +217,7 @@ class AppStateTest : public BlockCleanupTest {
         AuthenticationServiceFactory::GetDefaultFactory());
 
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        test_cbs_builder.Build());
+        std::move(test_cbs_builder).Build());
     TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
         browser_state_manager_.get());
 
@@ -385,7 +385,8 @@ TEST_F(AppStateNoFixtureTest, WillResignActive) {
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
   TestChromeBrowserState::Builder test_cbs_builder;
   std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager =
-      std::make_unique<TestChromeBrowserStateManager>(test_cbs_builder.Build());
+      std::make_unique<TestChromeBrowserStateManager>(
+          std::move(test_cbs_builder).Build());
   TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
       browser_state_manager.get());
 

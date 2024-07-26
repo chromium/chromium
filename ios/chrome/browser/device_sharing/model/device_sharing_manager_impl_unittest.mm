@@ -28,8 +28,7 @@ class DeviceSharingManagerImplTest : public PlatformTest {
         test_url_2_("http://test_sharing_2.html"),
         test_nsurl_1_(net::NSURLWithGURL(test_url_1_)),
         test_nsurl_2_(net::NSURLWithGURL(test_url_2_)) {
-    TestChromeBrowserState::Builder mainBrowserStateBuilder;
-    chrome_browser_state_ = mainBrowserStateBuilder.Build();
+    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
     sharing_manager_ = static_cast<DeviceSharingManagerImpl*>(
         DeviceSharingManagerFactory::GetForBrowserState(
             chrome_browser_state_.get()));

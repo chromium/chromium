@@ -70,7 +70,7 @@ class MiniMapCoordinatorTest : public PlatformTest {
   MiniMapCoordinatorTest() {
     TestChromeBrowserState::Builder builder;
     builder.SetPrefService(CreatePrefService());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     mock_application_command_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));

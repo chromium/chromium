@@ -32,7 +32,7 @@ class LocationBarSteadyViewMediatorTest : public PlatformTest {
         consumer_([[FakeLocationBarSteadyViewConsumer alloc] init]) {
     // Set up the TestBrowser.
     TestChromeBrowserState::Builder browser_state_builder;
-    browser_state_ = browser_state_builder.Build();
+    browser_state_ = std::move(browser_state_builder).Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     // Set up the OverlayPresenter.
     OverlayPresenter* overlay_presenter = OverlayPresenter::FromBrowser(

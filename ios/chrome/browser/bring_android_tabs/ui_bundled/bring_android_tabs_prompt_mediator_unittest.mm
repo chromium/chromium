@@ -29,7 +29,7 @@ class BringAndroidTabsPromptMediatorTest : public PlatformTest {
             GetInstance(),
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDefaultFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     // Create a tab in the mock BringAndroidTabsToIOS service.
     std::vector<std::unique_ptr<synced_sessions::DistantTab>> tabs;

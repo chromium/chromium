@@ -54,7 +54,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
 
-    chrome_browser_state_ = builder.Build();
+    chrome_browser_state_ = std::move(builder).Build();
     web_state_.SetBrowserState(chrome_browser_state_.get());
     SupervisedUserURLFilterTabHelper::CreateForWebState(&web_state_);
     SupervisedUserErrorContainer::CreateForWebState(&web_state_);

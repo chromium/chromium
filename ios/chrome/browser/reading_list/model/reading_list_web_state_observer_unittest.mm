@@ -77,7 +77,7 @@ class ReadingListWebStateObserverTest : public PlatformTest {
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::move(initial_entries)));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     test_web_state_.SetBrowserState(browser_state_.get());
 

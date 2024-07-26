@@ -52,7 +52,7 @@ class SettingsRootTableViewControllerTest : public PlatformTest {
   SettingsNavigationController* NavigationController() {
     if (!browser_) {
       TestChromeBrowserState::Builder test_cbs_builder;
-      chrome_browser_state_ = test_cbs_builder.Build();
+      chrome_browser_state_ = std::move(test_cbs_builder).Build();
       browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     }
     return [[SettingsNavigationController alloc]

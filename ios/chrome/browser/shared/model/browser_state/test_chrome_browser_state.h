@@ -145,6 +145,9 @@ class TestChromeBrowserState final : public ChromeBrowserState {
     Builder(const Builder&) = delete;
     Builder& operator=(const Builder&) = delete;
 
+    Builder(Builder&&);
+    Builder& operator=(Builder&&);
+
     ~Builder();
 
     // Adds a testing factory to the TestChromeBrowserState. These testing
@@ -194,12 +197,9 @@ class TestChromeBrowserState final : public ChromeBrowserState {
             user_cloud_policy_manager);
 
     // Creates the TestChromeBrowserState using previously-set settings.
-    std::unique_ptr<TestChromeBrowserState> Build();
+    std::unique_ptr<TestChromeBrowserState> Build() &&;
 
    private:
-    // If true, Build() has been called.
-    bool build_called_;
-
     // Various staging variables where values are held until Build() is invoked.
     base::FilePath state_path_;
     std::string browser_state_name_;

@@ -35,7 +35,7 @@ class ParcelTrackingSettingsMediatorUnittest : public PlatformTest {
     PlatformTest::SetUp();
 
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     consumer_ = [[MockParcelTrackingSettingsModelConsumer alloc] init];
     mediator_ = [[ParcelTrackingSettingsMediator alloc]

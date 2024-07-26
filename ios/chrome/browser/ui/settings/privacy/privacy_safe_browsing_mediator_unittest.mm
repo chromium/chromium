@@ -47,7 +47,7 @@ class PrivacySafeBrowsingMediatorTest : public PlatformTest {
   PrivacySafeBrowsingMediatorTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.SetPrefService(CreatePrefService());
-    browser_state_ = test_cbs_builder.Build();
+    browser_state_ = std::move(test_cbs_builder).Build();
 
     mediator_ = [[PrivacySafeBrowsingMediator alloc]
         initWithUserPrefService:browser_state_->GetPrefs()];

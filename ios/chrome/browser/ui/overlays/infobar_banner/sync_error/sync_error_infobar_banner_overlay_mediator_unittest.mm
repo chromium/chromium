@@ -39,7 +39,7 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
  public:
   SyncErrorInfobarBannerOverlayMediatorTest() {
     TestChromeBrowserState::Builder builder;
-    chrome_browser_state_ = builder.Build();
+    chrome_browser_state_ = std::move(builder).Build();
 
     // Create an InfoBarIOS with a MockSyncErrorInfobarDelegate.
     id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));

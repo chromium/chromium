@@ -34,7 +34,8 @@ class BrowserReportGeneratorIOSTest : public PlatformTest {
     builder.SetPath(kProfilePath);
     scoped_browser_state_manager_ =
         std::make_unique<IOSChromeScopedTestingChromeBrowserStateManager>(
-            std::make_unique<TestChromeBrowserStateManager>(builder.Build()));
+            std::make_unique<TestChromeBrowserStateManager>(
+                std::move(builder).Build()));
   }
   BrowserReportGeneratorIOSTest(const BrowserReportGeneratorIOSTest&) = delete;
   BrowserReportGeneratorIOSTest& operator=(

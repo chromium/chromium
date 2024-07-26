@@ -91,7 +91,7 @@ class CrashReporterURLObserverTest : public PlatformTest {
  public:
   CrashReporterURLObserverTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
-    test_chrome_browser_state_ = test_cbs_builder.Build();
+    test_chrome_browser_state_ = std::move(test_cbs_builder).Build();
     params_ = [[DictionaryParameterSetter alloc] init];
     observer_ = std::make_unique<CrashReporterURLObserver>(params_);
   }

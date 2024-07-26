@@ -25,7 +25,7 @@ class MiniMapMediatorTest : public PlatformTest {
   MiniMapMediatorTest() {
     TestChromeBrowserState::Builder builder;
     builder.SetPrefService(CreatePrefService());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     delegate_ = OCMStrictProtocolMock(@protocol(MiniMapMediatorDelegate));
 

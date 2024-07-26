@@ -112,7 +112,7 @@ class PasswordManagerViewControllerTest
               std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
 
     CreateController();

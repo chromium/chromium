@@ -81,7 +81,7 @@ void ChromeOmniboxClientIOSTest::SetUp() {
   TestChromeBrowserState::Builder builder;
   builder.AddTestingFactory(ios::ShortcutsBackendFactory::GetInstance(),
                             ios::ShortcutsBackendFactory::GetDefaultFactory());
-  browser_state_ = builder.Build();
+  browser_state_ = std::move(builder).Build();
   web_location_bar_ = std::make_unique<TestWebLocationBar>();
   tracker_ = feature_engagement::CreateTestTracker();
   chrome_omnibox_client_ios_ = std::make_unique<ChromeOmniboxClientIOS>(

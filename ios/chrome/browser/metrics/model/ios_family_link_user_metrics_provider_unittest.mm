@@ -103,7 +103,7 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
-    return builder.Build();
+    return std::move(builder).Build();
   }
 
   web::WebTaskEnvironment task_environment_;

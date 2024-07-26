@@ -61,7 +61,8 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
 
     scoped_browser_state_manager_ =
         std::make_unique<IOSChromeScopedTestingChromeBrowserStateManager>(
-            std::make_unique<TestChromeBrowserStateManager>(builder.Build()));
+            std::make_unique<TestChromeBrowserStateManager>(
+                std::move(builder).Build()));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         GetBrowserState(),

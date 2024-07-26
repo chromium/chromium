@@ -79,7 +79,7 @@ class OpenTabsSpotlightManagerTest : public PlatformTest {
   OpenTabsSpotlightManagerTest() {
     CreateMockLargeIconService();
     TestChromeBrowserState::Builder test_cbs_builder;
-    test_chrome_browser_state_ = test_cbs_builder.Build();
+    test_chrome_browser_state_ = std::move(test_cbs_builder).Build();
     searchableItemFactory_ = [[FakeSearchableItemFactory alloc]
         initWithDomain:spotlight::DOMAIN_OPEN_TABS];
   }

@@ -128,7 +128,7 @@ class UserPolicySigninServiceTest : public PlatformTest {
 
     TestChromeBrowserState::Builder builder;
     builder.SetUserCloudPolicyManager(BuildCloudPolicyManager());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_state_->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));

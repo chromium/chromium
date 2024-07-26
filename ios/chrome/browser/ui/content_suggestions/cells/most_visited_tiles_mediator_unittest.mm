@@ -32,7 +32,7 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
 
     favicon::LargeIconService* large_icon_service =
         IOSChromeLargeIconServiceFactory::GetForBrowserState(

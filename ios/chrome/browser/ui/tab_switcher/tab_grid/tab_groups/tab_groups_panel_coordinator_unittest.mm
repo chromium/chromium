@@ -106,7 +106,7 @@ class TabGroupsPanelCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateMockSyncService));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     base_view_controller_ = [[UIViewController alloc] init];
     toolbars_mutator_ = [[TestToolbarsMutator alloc] init];

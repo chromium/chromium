@@ -93,7 +93,7 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
         base::BindRepeating(&FakeProfileSessionDurationsService::Create));
 
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        test_cbs_builder.Build());
+        std::move(test_cbs_builder).Build());
     TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
         browser_state_manager_.get());
 

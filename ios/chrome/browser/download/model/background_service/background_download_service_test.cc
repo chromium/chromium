@@ -102,7 +102,7 @@ class BackgroundDownloadServiceTest
         base::BindRepeating(
             &BackgroundDownloadServiceTest::MakeBackgroundDowloadService,
             base::Unretained(this)));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     // Create a random file in root dir and an unknown file in downoad dir.
     ASSERT_TRUE(base::CreateTemporaryFileInDir(browser_state_->GetStatePath(),

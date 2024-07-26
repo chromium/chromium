@@ -52,7 +52,7 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
   void SetUp() override {
     TestChromeBrowserState::Builder test_cbs_builder;
     std::unique_ptr<TestChromeBrowserState> chrome_browser_state =
-        test_cbs_builder.Build();
+        std::move(test_cbs_builder).Build();
 
     FakeStartupInformation* startup_information =
         [[FakeStartupInformation alloc] init];

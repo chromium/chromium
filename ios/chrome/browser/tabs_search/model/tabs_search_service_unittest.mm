@@ -75,7 +75,7 @@ class TabsSearchServiceTest : public PlatformTest {
     test_browser_state_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = test_browser_state_builder.Build();
+    chrome_browser_state_ = std::move(test_browser_state_builder).Build();
 
     browser_list_ =
         BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());

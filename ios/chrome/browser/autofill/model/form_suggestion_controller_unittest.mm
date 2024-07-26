@@ -175,7 +175,7 @@ class FormSuggestionControllerTest : public PlatformTest {
 
     TestChromeBrowserState::Builder test_cbs_builder;
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        test_cbs_builder.Build());
+        std::move(test_cbs_builder).Build());
     TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
         browser_state_manager_.get());
 

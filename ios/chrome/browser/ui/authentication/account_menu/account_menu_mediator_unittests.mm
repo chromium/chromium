@@ -49,7 +49,7 @@ class AccountMenuMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     // Set the manager and services variables.
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(

@@ -45,7 +45,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                               ios::HistoryServiceFactory::GetDefaultFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     history_service_ = ios::HistoryServiceFactory::GetForBrowserState(
         browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);

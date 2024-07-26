@@ -82,7 +82,7 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
     builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     mock_service_ = static_cast<MockTabGroupSyncService*>(
         TabGroupSyncServiceFactory::GetForBrowserState(browser_state_.get()));
