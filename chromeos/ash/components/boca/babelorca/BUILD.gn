@@ -4,7 +4,8 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos/ash")
+assert(is_chromeos_ash,
+       "Non-Chrome-OS builds must not depend on //chromeos/ash")
 
 static_library("babelorca") {
   sources = [
@@ -22,10 +23,24 @@ static_library("babelorca") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_token_fetcher.cc",
+    "fake_token_fetcher.h",
+  ]
+
+  deps = [
+    ":babelorca",
+    "//base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
-  sources = ["oauth_token_fetcher_unittest.cc"]
+  sources = [ "oauth_token_fetcher_unittest.cc" ]
 
   deps = [
     ":babelorca",
