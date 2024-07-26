@@ -24,7 +24,6 @@
 #endif
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
@@ -78,6 +77,7 @@ class GURL;
 class MostRelevantTabResumptionPageHandler;
 class MostVisitedHandler;
 class NewTabPageHandler;
+class NtpCustomBackgroundService;
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
