@@ -102,7 +102,8 @@
       clearTimeout(failureTimer);
       let focused = focusedDocument().activeElement;
       assert_equals(focused, wanted,
-                    'step ' + step + ': expected focus ' + expectedId + ', actual focus ' + focused.id);
+                    'step ' + step + ' ' + JSON.stringify(move) + ':');
+
       // Kick off another async test step.
       stepAndAssertMoves(expectedMoves);
     });
@@ -143,8 +144,8 @@
         snav.assertSnavEnabledAndTestable();
       if (postAssertsFunc)
         gPostAssertsFunc = postAssertsFunc;
-      gAsyncTest = async_test("["+ get_title() + "] Focus movements:\n" +
-          JSON.stringify(expectedMoves).replace(/],/g, ']\n') + '\n');
+      gAsyncTest = async_test("["+ get_title() + "] Focus movements: " +
+          JSON.stringify(expectedMoves));
 
       // All iframes must be loaded before trying to navigate to them.
       window.addEventListener('load', gAsyncTest.step_func(() => {
