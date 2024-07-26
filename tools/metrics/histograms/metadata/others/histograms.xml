@@ -6748,13 +6748,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.Win.KeyDecryptionError" enum="WinGetLastError"
-    expires_after="2021-08-01">
+    expires_after="2024-12-15">
   <owner>wfh@chromium.org</owner>
   <owner>forshaw@chromium.org</owner>
   <summary>
     The Windows GetLastError after a failure from calling into DPAPI to decrypt
-    the master key for the os_crypt library on Windows. This is recorded during
-    the OSCrypt::Init each time the decryption fails.
+    the main key for the os_crypt library on Windows. This is recorded during
+    the OSCrypt::Init each time the decryption fails. Note that this metric was
+    not recorded between 2021-08 (M91) and 2024-07 (M128).
   </summary>
 </histogram>
 
