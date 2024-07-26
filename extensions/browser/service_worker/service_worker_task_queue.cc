@@ -719,7 +719,6 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
       "DeactivateExtension",
       success);
-  // TODO(crbug.com/346732739): Emit `status` as a metric.
 
   if (g_test_observer) {
     g_test_observer->WorkerUnregistered(extension_id);
@@ -733,6 +732,13 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
   if (!success) {
     // TODO(crbug.com/346732739): Handle this case.
     LOG(ERROR) << "Failed to unregister service worker!";
+    base::UmaHistogramEnumeration(
+        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+        status);
+    base::UmaHistogramEnumeration(
+        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
+        "DeactivateExtension",
+        status);
   }
 }
 

@@ -550,6 +550,13 @@ void ExtensionRegistrar::NotifyServiceWorkerUnregistered(
     // TODO(crbug.com/346732739): Handle this case.
     LOG(ERROR) << "Failed to unregister service worker for extension "
                << extension_id;
+    base::UmaHistogramEnumeration(
+        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+        status);
+    base::UmaHistogramEnumeration(
+        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
+        "AddExtension",
+        status);
   }
 }
 

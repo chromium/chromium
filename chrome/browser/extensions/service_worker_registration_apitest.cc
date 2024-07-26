@@ -66,6 +66,17 @@ void CheckBooleanHistogramCounts(const char* histogram_name,
                                      /*expected_count=*/false_count);
 }
 
+// Convenience method for checking counts of blink::ServiceWorkerStatusCode
+// emitting histograms.
+void CheckStatusCodeHistogramCounts(const char* histogram_name,
+                                    blink::ServiceWorkerStatusCode status,
+                                    int count,
+                                    base::HistogramTester& histogram_tester) {
+  histogram_tester.ExpectBucketCount(histogram_name,
+                                     /*sample=*/status,
+                                     /*expected_count=*/count);
+}
+
 GURL new_tab_url() {
   return GURL("chrome://newtab");
 }
@@ -1025,7 +1036,7 @@ class ServiceWorkerTaskQueueRegistrationObserver
   base::RunLoop register_loop;
 };
 
-// Tests that installing an extension emits metrics for unregistering the
+// Tests that uninstalling an extension emits metrics for unregistering the
 // service worker.
 IN_PROC_BROWSER_TEST_P(ServiceWorkerRegistrationInstallMetricBrowserTest,
                        ExtensionUninstall) {
@@ -1060,6 +1071,18 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRegistrationInstallMetricBrowserTest,
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
       "DeactivateExtension",
       /*true_count=*/1, /*false_count=*/0, histogram_tester);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
+      "DeactivateExtension",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
+      "AddExtension",
+      /*expected_count=*/0);
+
   // We didn't update the extension.
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
@@ -1113,6 +1136,17 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRegistrationRestartMetricBrowserTest,
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
       "DeactivateExtension",
       /*true_count=*/1, /*false_count=*/0, histogram_tester);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
+      "DeactivateExtension",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
+      "AddExtension",
+      /*expected_count=*/0);
   CheckBooleanHistogramCounts(
       "Extensions.ServiceWorkerBackground.WorkerRegistrationState",
       /*true_count=*/1, /*false_count=*/0, histogram_tester);
@@ -1246,7 +1280,7 @@ IN_PROC_BROWSER_TEST_P(MV2BackgroundsToMV3WorkerRegistrationMetricBrowserTest,
   // non-ServiceWorkerTaskQueue-tracked worker is registered for the extension
   // (example: an MV2 extension that registered a worker via the web API).
 
-  // When updating from an MV2 worker we unregister the previous worker
+  // When updating from an MV2 worker we try to unregister the previous worker
   // version first.
   CheckBooleanHistogramCounts(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState",
@@ -1255,12 +1289,25 @@ IN_PROC_BROWSER_TEST_P(MV2BackgroundsToMV3WorkerRegistrationMetricBrowserTest,
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
       "DeactivateExtension",
       /*expected_count=*/0);
-  // We unsuccessfully attempt to unregister it again to handle workers that are
+  // We unsuccessfully try to unregister it again to handle workers that are
   // registered via the web API. This is an expected failure.
   CheckBooleanHistogramCounts(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
       "AddExtension",
       /*true_count=*/0, /*false_count=*/1, histogram_tester);
+  CheckStatusCodeHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+      /*status=*/blink::ServiceWorkerStatusCode::kErrorNotFound, /*count=*/1,
+      histogram_tester);
+  CheckStatusCodeHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
+      "AddExtension",
+      /*status=*/blink::ServiceWorkerStatusCode::kErrorNotFound, /*count=*/1,
+      histogram_tester);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
+      "DeactivateExtension",
+      /*expected_count=*/0);
 
   // Then the new worker registration is registered.
   CheckBooleanHistogramCounts(
@@ -1383,6 +1430,17 @@ IN_PROC_BROWSER_TEST_P(WorkerBackgroundToWorkerBackgroundRegistrationMetricTest,
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
       "AddExtension",
       /*true_count=*/1, /*false_count=*/0, histogram_tester);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
+      "DeactivateExtension",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
+      "AddExtension",
+      /*expected_count=*/0);
 
   CheckBooleanHistogramCounts(
       "Extensions.ServiceWorkerBackground.WorkerRegistrationState",
