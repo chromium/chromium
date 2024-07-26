@@ -1488,6 +1488,16 @@ int SetupMain() {
       current_version,
   };
 
+  // Histogram storage is enabled at the very top of this function. We disable
+  // it for kConfigureBrowserInDirectory because this switch intended for use
+  // by Chrome for Testing, which does not perform any metrics processing. If it
+  // someday does, this should be changed to set the storage directory to the
+  // value of the kConfigureBrowserInDirectory switch (the path to the directory
+  // containing chrome.exe).
+  if (cmd_line.HasSwitch(installer::switches::kConfigureBrowserInDirectory)) {
+    persistent_histogram_storage.Disable();
+  }
+
   int exit_code = 0;
   if (HandleNonInstallCmdLineOptions(modify_params, cmd_line, prefs,
                                      &exit_code)) {
