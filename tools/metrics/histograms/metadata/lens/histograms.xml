@@ -277,6 +277,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.TimeToWebUIReady" units="ms"
+    expires_after="2025-05-06">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay WebUI is ready. Measures the elapsed
+    time between when the overlay was invoked and when its WebUI was ready.
+  </summary>
+</histogram>
+
 <histogram name="Lens.QuickActionSearchWidget.LensSupportStatus"
     enum="LensSupportStatus" expires_after="2024-06-21">
   <owner>benwgold@chromium.org</owner>

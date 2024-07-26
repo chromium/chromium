@@ -443,6 +443,7 @@ void LensOverlayController::ShowUI(
   // Establish data required for session metrics.
   search_performed_in_session_ = false;
   invocation_time_ = base::TimeTicks::Now();
+  invocation_time_since_epoch_ = base::Time::Now();
 }
 
 void LensOverlayController::CloseUIAsync(
@@ -594,6 +595,10 @@ void LensOverlayController::SetSearchboxHandler(
 
 void LensOverlayController::ResetSearchboxHandler() {
   searchbox_handler_.reset();
+}
+
+uint64_t LensOverlayController::GetInvocationTimeSinceEpoch() {
+  return invocation_time_since_epoch_.InMillisecondsSinceUnixEpoch();
 }
 
 views::View* LensOverlayController::GetOverlayViewForTesting() {
