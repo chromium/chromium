@@ -84,10 +84,12 @@ import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /** Tests {@link AccountManagementFragment}. */
 @RunWith(ParameterizedRunner.class)
@@ -121,7 +123,6 @@ public class AccountManagementFragmentTest {
 
     public static class ReplaceProfileIsChildWithAccountCapabilitiesParams
             implements ParameterProvider {
-
         private static List<ParameterSet> sReplaceProfileIsChildWithAccountCapabilities =
                 Arrays.asList(
                         new ParameterSet()
@@ -268,7 +269,8 @@ public class AccountManagementFragmentTest {
         onViewWaiting(allOf(is(view), isDisplayed()));
         mRenderTestRule.render(
                 view,
-                "account_management_fragment_for_child_account_with_add_account_for_supervised_users");
+                "account_management_fragment_for_child_account_with_add_account_for_supervised_"
+                        + "users");
     }
 
     @Test
@@ -301,12 +303,17 @@ public class AccountManagementFragmentTest {
         onViewWaiting(allOf(is(view), isDisplayed()));
         mRenderTestRule.render(
                 view,
-                "account_management_fragment_for_child_and_edu_accounts_with_add_account_for_supervised_users");
+                "account_management_fragment_for_child_and_edu_accounts_with_add_account_for_"
+                        + "supervised_users");
     }
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testSignOutUserWithoutShowingSignOutDialog() {
+        FakeSyncServiceImpl fakeSyncService = overrideSyncService();
+        fakeSyncService.setTypesWithUnsyncedData(Set.of(ModelType.BOOKMARKS));
+
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsActivityTestRule.startSettingsActivity();
 
@@ -319,6 +326,23 @@ public class AccountManagementFragmentTest {
                                         .getIdentityManager(
                                                 ProfileManager.getLastUsedRegularProfile())
                                         .hasPrimaryAccount(ConsentLevel.SIGNIN)));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testSignOutShowsUnsavedDataDialog() {
+        FakeSyncServiceImpl fakeSyncService = overrideSyncService();
+        fakeSyncService.setTypesWithUnsyncedData(Set.of(ModelType.BOOKMARKS));
+
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withText(R.string.sign_out)).perform(click());
+
+        onView(withText(R.string.sign_out_unsaved_data_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
     }
 
     @Test

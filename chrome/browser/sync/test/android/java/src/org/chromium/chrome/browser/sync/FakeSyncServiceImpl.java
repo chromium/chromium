@@ -38,6 +38,7 @@ public class FakeSyncServiceImpl implements SyncService {
     private boolean mEncryptEverythingEnabled;
     private boolean mRequiresClientUpgrade;
     @GoogleServiceAuthError.State private int mAuthError;
+    private Set<Integer> mTypesWithUnsyncedData = Set.of();
 
     public FakeSyncServiceImpl() {
         mDelegate = SyncServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
@@ -172,6 +173,20 @@ public class FakeSyncServiceImpl implements SyncService {
                 });
     }
 
+    @Override
+    public void getTypesWithUnsyncedData(Callback<Set<Integer>> callback) {
+        ThreadUtils.assertOnUiThread();
+        callback.onResult(mTypesWithUnsyncedData);
+    }
+
+    @AnyThread
+    public void setTypesWithUnsyncedData(Set<Integer> typesWithUnsyncedData) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTypesWithUnsyncedData = typesWithUnsyncedData;
+                });
+    }
+
     private void notifySyncStateChanged() {
         ((SyncServiceImpl) mDelegate).syncStateChanged();
     }
@@ -220,11 +235,6 @@ public class FakeSyncServiceImpl implements SyncService {
     @Override
     public Set<Integer> getSelectedTypes() {
         return mDelegate.getSelectedTypes();
-    }
-
-    @Override
-    public void getTypesWithUnsyncedData(Callback<Set<Integer>> callback) {
-        mDelegate.getTypesWithUnsyncedData(callback);
     }
 
     @Override

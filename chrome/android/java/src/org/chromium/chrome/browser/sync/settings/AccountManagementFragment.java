@@ -241,6 +241,21 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                             return false;
                         }
 
+                        if (ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+                            SignOutCoordinator.startSignOutFlow(
+                                    requireContext(),
+                                    getProfile(),
+                                    getChildFragmentManager(),
+                                    ((ModalDialogManagerHolder) getActivity())
+                                            .getModalDialogManager(),
+                                    mSnackbarManager,
+                                    SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
+                                    /* showConfirmDialog= */ false,
+                                    () -> {});
+                            return true;
+                        }
+
                         if (IdentityServicesProvider.get()
                                         .getIdentityManager(getProfile())
                                         .getPrimaryAccountInfo(ConsentLevel.SYNC)
