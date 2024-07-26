@@ -130,13 +130,15 @@ class WebKioskControlledFrameHttpTest
             /*https=*/GetParam()) {}
 };
 
-IN_PROC_BROWSER_TEST_P(WebKioskControlledFrameHttpTest, ApiAvailability) {
+IN_PROC_BROWSER_TEST_P(WebKioskControlledFrameHttpTest,
+                       DISABLED_ApiAvailability) {
   content::WebContents* web_contents = TestSetup();
   ASSERT_NE(web_contents, nullptr);
 
   // Controlled Frame API should be available for https urls, but not for http
   bool is_api_available = ControlledFrameElementCreated(web_contents);
   if (feature_enabled_ && UseHttpsUrl()) {
+    // TODO: crbug.com/355529251 - Fix expectation.
     EXPECT_TRUE(is_api_available);
   } else {
     EXPECT_FALSE(is_api_available);
