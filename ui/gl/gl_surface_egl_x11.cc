@@ -78,6 +78,7 @@ EGLint NativeViewGLSurfaceEGLX11::GetNativeVisualID() const {
 }
 
 NativeViewGLSurfaceEGLX11::~NativeViewGLSurfaceEGLX11() {
+  InvalidateWeakPtrs();
   Destroy();
 }
 

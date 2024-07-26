@@ -194,6 +194,7 @@ void NativeViewGLSurfaceEGLX11GLES2::OnEvent(const x11::Event& x11_event) {
 }
 
 NativeViewGLSurfaceEGLX11GLES2::~NativeViewGLSurfaceEGLX11GLES2() {
+  InvalidateWeakPtrs();
   Destroy();
 }
 

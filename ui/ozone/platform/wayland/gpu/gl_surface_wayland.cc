@@ -114,6 +114,7 @@ gfx::SwapResult GLSurfaceWayland::PostSubBuffer(int x,
 }
 
 GLSurfaceWayland::~GLSurfaceWayland() {
+  InvalidateWeakPtrs();
   Destroy();
 }
 

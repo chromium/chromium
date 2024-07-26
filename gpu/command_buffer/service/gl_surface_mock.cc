@@ -8,5 +8,8 @@ namespace gpu {
 
 GLSurfaceMock::GLSurfaceMock() = default;
 
-GLSurfaceMock::~GLSurfaceMock() = default;
+GLSurfaceMock::~GLSurfaceMock() {
+  InvalidateWeakPtrs();
+}
+
 }  // namespace gpu

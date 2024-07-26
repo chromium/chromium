@@ -344,7 +344,10 @@ GLDisplayEGL* GLSurfaceEGL::GetGLDisplayEGL() {
       GpuPreference::kDefault);
 }
 
-GLSurfaceEGL::~GLSurfaceEGL() = default;
+GLSurfaceEGL::~GLSurfaceEGL() {
+  // InvalidateWeakPtrs should be called from the concrete dtors.
+  CHECK(!HasWeakPtrs());
+}
 
 #if BUILDFLAG(IS_ANDROID)
 NativeViewGLSurfaceEGL::NativeViewGLSurfaceEGL(
@@ -986,6 +989,7 @@ void NativeViewGLSurfaceEGL::SetVSyncEnabled(bool enabled) {
 }
 
 NativeViewGLSurfaceEGL::~NativeViewGLSurfaceEGL() {
+  InvalidateWeakPtrs();
   Destroy();
 }
 
@@ -1137,6 +1141,7 @@ void* PbufferGLSurfaceEGL::GetShareHandle() {
 }
 
 PbufferGLSurfaceEGL::~PbufferGLSurfaceEGL() {
+  InvalidateWeakPtrs();
   Destroy();
 }
 
@@ -1186,6 +1191,7 @@ void* SurfacelessEGL::GetShareHandle() {
 }
 
 SurfacelessEGL::~SurfacelessEGL() {
+  InvalidateWeakPtrs();
 }
 
 }  // namespace gl

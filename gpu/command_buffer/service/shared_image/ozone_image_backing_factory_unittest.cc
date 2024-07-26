@@ -33,7 +33,7 @@ class FakeOnScreenSurface : public gl::SurfacelessEGL {
   bool IsSurfaceless() const override { return false; }
 
  protected:
-  ~FakeOnScreenSurface() override = default;
+  ~FakeOnScreenSurface() override { InvalidateWeakPtrs(); }
 };
 
 }  // namespace
