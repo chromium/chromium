@@ -2152,6 +2152,14 @@
     "expiry_milestone": 145
   },
   {
+    "name": "discount-on-shoppy-page",
+    "owners": [
+      "meiliang@chromium.org",
+      "chrome-shopping-eng@google.com"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "display-alignment-assistance",
     "owners": [ "zhangwenyu@google.com", "cros-peripherals@google.com" ],
     "expiry_milestone": 140

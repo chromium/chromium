@@ -23956,6 +23956,7 @@ from previous Chrome versions.
   <int value="1304609573" label="TabGroupSyncForceOff:enabled"/>
   <int value="1304636193" label="ArcEnableUnifiedAudioFocus:enabled"/>
   <int value="1304791513" label="EnableFakeMouseHeuristic:disabled"/>
+  <int value="1304989988" label="EnableDiscountInfoApi:disabled"/>
   <int value="1305339782"
       label="MayLaunchUrlUsesSeparateStoragePartition:disabled"/>
   <int value="1305792241" label="SafeBrowsingEnhancedProtection:disabled"/>
@@ -25198,6 +25199,7 @@ from previous Chrome versions.
   <int value="1817420759" label="CpuAffinityRestrictToLittleCores:disabled"/>
   <int value="1818473884" label="TabGroupSyncServiceDesktopMigration:disabled"/>
   <int value="1818829958" label="IdentityDisc:enabled"/>
+  <int value="1819437867" label="EnableDiscountInfoApi:enabled"/>
   <int value="1819536169" label="disable-cast-streaming-hw-encoding"/>
   <int value="1820317896" label="NTPShowGoogleGInOmnibox:disabled"/>
   <int value="1820359113"

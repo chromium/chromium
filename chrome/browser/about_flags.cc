@@ -4155,6 +4155,12 @@ const FeatureEntry::FeatureVariation
          nullptr}};
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+const FeatureEntry::FeatureParam kDiscountOnShoppyPage[] = {
+    {commerce::kDiscountOnShoppyPageParam, "true"}};
+const FeatureEntry::FeatureVariation kDiscountsVariations[] = {
+    {"Discount on Shoppy page", kDiscountOnShoppyPage,
+     std::size(kDiscountOnShoppyPage), nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -6974,6 +6980,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShareCustomActionsInCCTDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kShareCustomActionsInCCT)},
 #endif  // BUILDFLAG(IS_ANDROID)
+
+    {"discount-on-shoppy-page",
+     commerce::flag_descriptions::kDiscountOnShoppyPageName,
+     commerce::flag_descriptions::kDiscountOnShoppyPageDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kEnableDiscountInfoApi,
+                                    kDiscountsVariations,
+                                    "DisocuntOnShoppyPage")},
 
     {"product-specifications",
      commerce::flag_descriptions::kProductSpecificationsName,

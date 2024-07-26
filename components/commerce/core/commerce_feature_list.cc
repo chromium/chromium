@@ -225,6 +225,11 @@ BASE_FEATURE(kShoppingIconColorVariant,
 BASE_FEATURE(kEnableDiscountInfoApi,
              "EnableDiscountInfoApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kDiscountOnShoppyPageParam[] = "discount-on-shoppy-page";
+const base::FeatureParam<bool> kDiscountOnShoppyPage{
+    &kEnableDiscountInfoApi, kDiscountOnShoppyPageParam, false};
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kEnableDiscountInfoApiRegionLaunched,

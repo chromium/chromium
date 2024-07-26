@@ -114,6 +114,8 @@ extern const char kMerchantWideBehaviorParam[];
 extern const base::FeatureParam<int> kMerchantWideBehavior;
 extern const char kNonMerchantWideBehaviorParam[];
 extern const base::FeatureParam<int> kNonMerchantWideBehavior;
+extern const char kDiscountOnShoppyPageParam[];
+extern const base::FeatureParam<bool> kDiscountOnShoppyPage;
 
 BASE_DECLARE_FEATURE(kDiscountsUiRefactor);
 
