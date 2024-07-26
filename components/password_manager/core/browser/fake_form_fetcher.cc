@@ -143,7 +143,7 @@ FakeFormFetcher::GetAccountStoreBackendError() const {
 }
 
 bool FakeFormFetcher::WereGroupedCredentialsAvailable() const {
-  return false;
+  return were_grouped_credentials_available_;
 }
 
 void FakeFormFetcher::SetProfileStoreBackendError(

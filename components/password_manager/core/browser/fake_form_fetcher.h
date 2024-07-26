@@ -76,6 +76,11 @@ class FakeFormFetcher : public FormFetcher {
     insecure_credentials_ = credentials;
   }
 
+  void set_were_grouped_credentials_available(
+      bool were_grouped_credentials_available) {
+    were_grouped_credentials_available_ = were_grouped_credentials_available;
+  }
+
   // Set non-federated matches. All matches must have the same scheme
   // as |scheme_| as this is the standard case.
   void SetNonFederated(const std::vector<PasswordForm>& non_federated);
@@ -109,6 +114,7 @@ class FakeFormFetcher : public FormFetcher {
   bool is_blocklisted_ = false;
   std::optional<PasswordStoreBackendError> profile_store_backend_error_;
   std::optional<PasswordStoreBackendError> account_store_backend_error_;
+  bool were_grouped_credentials_available_ = false;
 };
 
 }  // namespace password_manager

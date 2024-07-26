@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
@@ -617,15 +618,15 @@ void PasswordFormMetricsRecorder::RecordPotentialPreferredMatch(
     return;
   }
 
-  switch (password_manager_util::GetMatchType(*preferred_match)) {
+  switch (password_manager_util::GetMatchType(CHECK_DEREF(preferred_match))) {
     case password_manager_util::GetLoginMatchType::kExact:
       match_type = FormMatchType::kExactMatch;
       break;
     case password_manager_util::GetLoginMatchType::kAffiliated:
-      match_type =
-          affiliations::IsValidAndroidFacetURI(preferred_match->signon_realm)
-              ? FormMatchType::kAffiliatedApp
-              : FormMatchType::kAffiliatedWebsites;
+      match_type = affiliations::IsValidAndroidFacetURI(
+                       CHECK_DEREF(preferred_match).signon_realm)
+                       ? FormMatchType::kAffiliatedApp
+                       : FormMatchType::kAffiliatedWebsites;
       break;
     case password_manager_util::GetLoginMatchType::kPSL:
       match_type = FormMatchType::kPublicSuffixMatch;

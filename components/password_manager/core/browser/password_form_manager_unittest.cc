@@ -395,7 +395,7 @@ class PasswordFormManagerTest : public testing::Test,
     pref_service_.registry()->RegisterIntegerPref(
         password_manager::prefs::kRelaunchChromeBubbleDismissedCounter, 0);
 #endif
-    form_manager_->set_wait_for_server_predictions_for_filling(true);
+    PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
 
     GURL origin = GURL("https://accounts.google.com/a/ServiceLoginAuth");
     GURL action = GURL("https://accounts.google.com/a/ServiceLogin");
@@ -934,7 +934,7 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsEmptyStore) {
 
 // Tests creating pending credentials when fetch completed
 TEST_P(PasswordFormManagerTest, CreatePendingCredentialsWhenFetchCompleted) {
-  form_manager_->set_wait_for_server_predictions_for_filling(false);
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
   form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                    possible_usernames_);
   SetNonFederatedAndNotifyFetchCompleted({parsed_submitted_form_});
@@ -2016,6 +2016,119 @@ TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordExistingCredential) {
   EXPECT_TRUE(saved_form.username_value.empty());
   EXPECT_EQ(form_with_generated_password.password_value,
             saved_form.password_value);
+}
+
+TEST_P(PasswordFormManagerTest, RecordsExactMatch) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+  base::HistogramTester histogram_tester;
+  CreateFormManager(observed_form_);
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+
+  form_manager_->Fill();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.MatchedFormType",
+      PasswordFormMetricsRecorder::MatchedFormType::kExactMatch, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PotentialBestMatchFormType",
+      PasswordFormMetricsRecorder::MatchedFormType::kExactMatch, 1);
+}
+
+TEST_P(PasswordFormManagerTest, RecordsPSLMatch) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+  base::HistogramTester histogram_tester;
+  CreateFormManager(observed_form_);
+  SetNonFederatedAndNotifyFetchCompleted({psl_saved_match_});
+
+  form_manager_->Fill();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.MatchedFormType",
+      PasswordFormMetricsRecorder::MatchedFormType::kPublicSuffixMatch, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PotentialBestMatchFormType",
+      PasswordFormMetricsRecorder::MatchedFormType::kPublicSuffixMatch, 1);
+}
+
+TEST_P(PasswordFormManagerTest, RecordsAffiliatedWebsiteMatch) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+  base::HistogramTester histogram_tester;
+  CreateFormManager(observed_form_);
+
+  PasswordForm affiliated_website_form = saved_match_;
+  affiliated_website_form.url =
+      GURL("https://affiliated.domain.com/a/ServiceLoginAuth");
+  affiliated_website_form.action =
+      GURL("https://affiliated.domain.com/a/ServiceLogin");
+  affiliated_website_form.signon_realm = "https://affiliated.domain.com/";
+  affiliated_website_form.match_type = PasswordForm::MatchType::kAffiliated;
+  SetNonFederatedAndNotifyFetchCompleted({affiliated_website_form});
+
+  form_manager_->Fill();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.MatchedFormType",
+      PasswordFormMetricsRecorder::MatchedFormType::kAffiliatedWebsites, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PotentialBestMatchFormType",
+      PasswordFormMetricsRecorder::MatchedFormType::kAffiliatedWebsites, 1);
+}
+
+TEST_P(PasswordFormManagerTest, RecordsAffiliatedAndroidAppMatch) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+  base::HistogramTester histogram_tester;
+  CreateFormManager(observed_form_);
+
+  PasswordForm affiliated_app_form = saved_match_;
+  affiliated_app_form.url = GURL("android://hash@com.example.android/");
+  affiliated_app_form.action = GURL("android://hash@com.example.android/");
+  affiliated_app_form.signon_realm = "android://hash@com.example.android/";
+  affiliated_app_form.match_type = PasswordForm::MatchType::kAffiliated;
+  SetNonFederatedAndNotifyFetchCompleted({affiliated_app_form});
+
+  form_manager_->Fill();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.MatchedFormType",
+      PasswordFormMetricsRecorder::MatchedFormType::kAffiliatedApp, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PotentialBestMatchFormType",
+      PasswordFormMetricsRecorder::MatchedFormType::kAffiliatedApp, 1);
+}
+
+TEST_P(PasswordFormManagerTest, RecordsGroupedWebsiteMatch) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+  base::HistogramTester histogram_tester;
+  CreateFormManager(observed_form_);
+
+  // Grouped credentials are ignored by the form fetched and are not returned to
+  // the consumers. The only way to detect them is via the
+  // `FormFetched::WereGroupedCredentialsAvailable()` API.
+  fetcher_->set_were_grouped_credentials_available(true);
+  SetNonFederatedAndNotifyFetchCompleted({});
+
+  form_manager_->Fill();
+
+  // `PasswordManager.MatchedFormType` metric is not recorded for the grouped
+  // credentials. It is only recorded when the best match is available.
+  histogram_tester.ExpectTotalCount("PasswordManager.MatchedFormType", 0);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PotentialBestMatchFormType",
+      PasswordFormMetricsRecorder::MatchedFormType::kGrouped, 1);
+}
+
+TEST_P(PasswordFormManagerTest, RecordsNoMatchesWhenNoCredentialsFetched) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+  base::HistogramTester histogram_tester;
+  CreateFormManager(observed_form_);
+
+  SetNonFederatedAndNotifyFetchCompleted({});
+
+  form_manager_->Fill();
+
+  histogram_tester.ExpectTotalCount("PasswordManager.MatchedFormType", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PotentialBestMatchFormType", 0);
 }
 
 TEST_P(PasswordFormManagerTest, UserEventsForGeneration) {
