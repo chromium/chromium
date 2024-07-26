@@ -125,7 +125,8 @@ class UnregisterWorkerObserver : public ProcessManagerObserver {
   UnregisterWorkerObserver& operator=(const UnregisterWorkerObserver&) = delete;
 
   // ProcessManagerObserver:
-  void OnServiceWorkerUnregistered(const WorkerId& worker_id) override;
+  void OnStoppedTrackingServiceWorkerInstance(
+      const WorkerId& worker_id) override;
 
   // Waits for ProcessManager::UnregisterServiceWorker for |extension_id_|.
   void WaitForUnregister();

@@ -182,7 +182,8 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   void MaybeSpinUpLazyContext(const Extension* extension, bool is_newly_added);
 
   // ProcessManagerObserver overrides
-  void OnServiceWorkerRegistered(const WorkerId& worker_id) override;
+  void OnStartedTrackingServiceWorkerInstance(
+      const WorkerId& worker_id) override;
 
   const raw_ptr<content::BrowserContext> browser_context_;
 

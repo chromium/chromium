@@ -267,9 +267,13 @@ void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
 
   util::InitializeFileSchemeAccessForExtension(render_process_id, extension_id,
                                                browser_context_);
+  // TODO(jlulejian): Do we need to start tracking this in initialization or
+  // could we start in `DidStartServiceWorkerContext()` instead since this is
+  // for a running (started) worker?
   ProcessManager::Get(browser_context_)
-      ->RegisterServiceWorker({extension_id, render_process_id,
-                               service_worker_version_id, thread_id});
+      ->StartTrackingServiceWorkerRunningInstance(
+          {extension_id, render_process_id, service_worker_version_id,
+           thread_id});
   RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
       ->ActivateExtensionInProcess(*extension, process_host);
 
@@ -330,7 +334,8 @@ void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
 
   const WorkerId worker_id = {extension_id, render_process_id,
                               service_worker_version_id, thread_id};
-  ProcessManager::Get(browser_context_)->UnregisterServiceWorker(worker_id);
+  ProcessManager::Get(browser_context_)
+      ->StopTrackingServiceWorkerRunningInstance(worker_id);
   const SequencedContextId context_id = {extension_id, browser_context_,
                                          activation_token};
 
@@ -912,7 +917,8 @@ void ServiceWorkerTaskQueue::OnStopped(int64_t version_id, const GURL& scope) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ProcessManager::Get(browser_context_)
-      ->UnregisterServiceWorker(/*extension_id=*/scope.host(), version_id);
+      ->StopTrackingServiceWorkerRunningInstance(/*extension_id=*/scope.host(),
+                                                 version_id);
 }
 
 size_t ServiceWorkerTaskQueue::GetNumPendingTasksForTest(

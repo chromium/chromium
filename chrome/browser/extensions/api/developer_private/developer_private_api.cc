@@ -627,13 +627,13 @@ void DeveloperPrivateEventRouter::OnExtensionFrameUnregistered(
                             extension_id);
 }
 
-void DeveloperPrivateEventRouter::OnServiceWorkerRegistered(
+void DeveloperPrivateEventRouter::OnStartedTrackingServiceWorkerInstance(
     const WorkerId& worker_id) {
   BroadcastItemStateChanged(developer::EventType::kServiceWorkerStarted,
                             worker_id.extension_id);
 }
 
-void DeveloperPrivateEventRouter::OnServiceWorkerUnregistered(
+void DeveloperPrivateEventRouter::OnStoppedTrackingServiceWorkerInstance(
     const WorkerId& worker_id) {
   BroadcastItemStateChanged(developer::EventType::kServiceWorkerStopped,
                             worker_id.extension_id);
