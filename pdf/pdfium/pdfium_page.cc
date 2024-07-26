@@ -217,38 +217,49 @@ bool CompareTextRuns(const T& a, const T& b) {
   return a.text_range.index < b.text_range.index;
 }
 
-// Set text run style information based on a character of the text run.
-AccessibilityTextStyleInfo CalculateTextRunStyleInfo(FPDF_TEXTPAGE text_page,
-                                                     int char_index) {
+// Set text run style information based on the `text_object` associated with a
+// character of the text run.
+AccessibilityTextStyleInfo CalculateTextRunStyleInfo(
+    FPDF_PAGEOBJECT text_object) {
   AccessibilityTextStyleInfo style_info;
-  style_info.font_size = FPDFText_GetFontSize(text_page, char_index);
 
-  int flags = 0;
-  size_t buffer_size =
-      FPDFText_GetFontInfo(text_page, char_index, nullptr, 0, &flags);
+  float font_size;
+  if (FPDFTextObj_GetFontSize(text_object, &font_size)) {
+    style_info.font_size = font_size;
+  }
+
+  FPDF_FONT font = FPDFTextObj_GetFont(text_object);
+  size_t buffer_size = FPDFFont_GetBaseFontName(font, nullptr, 0);
   if (buffer_size > 0) {
     PDFiumAPIStringBufferAdapter<std::string> api_string_adapter(
         &style_info.font_name, buffer_size, true);
-    void* data = api_string_adapter.GetData();
-    size_t bytes_written =
-        FPDFText_GetFontInfo(text_page, char_index, data, buffer_size, nullptr);
+    char* data = static_cast<char*>(api_string_adapter.GetData());
+    size_t bytes_written = FPDFFont_GetBaseFontName(font, data, buffer_size);
     // Trim the null character.
     api_string_adapter.Close(bytes_written);
   }
 
-  style_info.font_weight = FPDFText_GetFontWeight(text_page, char_index);
-  // As defined in PDF 1.7 table 5.20.
+  // As defined in ISO 32000-1:2008, table 123.
   constexpr int kFlagItalic = (1 << 6);
+  int font_flags = FPDFFont_GetFlags(font);
+  if (font_flags != -1) {
+    style_info.is_italic = (font_flags & kFlagItalic);
+  }
+
   // Bold text is considered bold when greater than or equal to 700.
   constexpr int kStandardBoldValue = 700;
-  style_info.is_italic = (flags & kFlagItalic);
-  style_info.is_bold = style_info.font_weight >= kStandardBoldValue;
+  int font_weight = FPDFFont_GetWeight(font);
+  if (font_weight != -1) {
+    style_info.font_weight = font_weight;
+    style_info.is_bold = style_info.font_weight >= kStandardBoldValue;
+  }
+
   unsigned int fill_r;
   unsigned int fill_g;
   unsigned int fill_b;
   unsigned int fill_a;
-  if (FPDFText_GetFillColor(text_page, char_index, &fill_r, &fill_g, &fill_b,
-                            &fill_a)) {
+  if (FPDFPageObj_GetFillColor(text_object, &fill_r, &fill_g, &fill_b,
+                               &fill_a)) {
     style_info.fill_color = MakeARGB(fill_a, fill_r, fill_g, fill_b);
   } else {
     style_info.fill_color = MakeARGB(0xff, 0, 0, 0);
@@ -258,14 +269,13 @@ AccessibilityTextStyleInfo CalculateTextRunStyleInfo(FPDF_TEXTPAGE text_page,
   unsigned int stroke_g;
   unsigned int stroke_b;
   unsigned int stroke_a;
-  if (FPDFText_GetStrokeColor(text_page, char_index, &stroke_r, &stroke_g,
-                              &stroke_b, &stroke_a)) {
+  if (FPDFPageObj_GetStrokeColor(text_object, &stroke_r, &stroke_g, &stroke_b,
+                                 &stroke_a)) {
     style_info.stroke_color = MakeARGB(stroke_a, stroke_r, stroke_g, stroke_b);
   } else {
     style_info.stroke_color = MakeARGB(0xff, 0, 0, 0);
   }
 
-  FPDF_PAGEOBJECT text_object = FPDFText_GetTextObject(text_page, char_index);
   int render_mode = FPDFTextObj_GetTextRenderMode(text_object);
   DCHECK_GE(render_mode,
             static_cast<int>(AccessibilityTextRenderMode::kUnknown));
@@ -276,13 +286,12 @@ AccessibilityTextStyleInfo CalculateTextRunStyleInfo(FPDF_TEXTPAGE text_page,
   return style_info;
 }
 
-// Returns true if the character at index `char_index` in `text_page` has the
+// Returns true if the `text_object` associated with a given character has the
 // same text style as the text run.
-bool AreTextStyleEqual(FPDF_TEXTPAGE text_page,
-                       int char_index,
+bool AreTextStyleEqual(FPDF_PAGEOBJECT text_object,
                        const AccessibilityTextStyleInfo& style) {
   AccessibilityTextStyleInfo char_style =
-      CalculateTextRunStyleInfo(text_page, char_index);
+      CalculateTextRunStyleInfo(text_object);
   return char_style.font_name == style.font_name &&
          char_style.font_weight == style.font_weight &&
          char_style.render_mode == style.render_mode &&
@@ -493,8 +502,9 @@ std::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(
   int char_index = actual_start_char_index;
 
   // Set text run's style info from the first character of the text run.
+  FPDF_PAGEOBJECT text_object = FPDFText_GetTextObject(text_page, char_index);
   AccessibilityTextRunInfo info;
-  info.style = CalculateTextRunStyleInfo(text_page, char_index);
+  info.style = CalculateTextRunStyleInfo(text_object);
 
   gfx::RectF start_char_rect =
       GetFloatCharRectInPixels(page, text_page, char_index);
@@ -505,7 +515,12 @@ std::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(
   // Without it, if a text run starts with a '.', its small bounding box could
   // lead to a break in the text run after only one space. Ex: ". Hello World"
   // would be split in two runs: "." and "Hello World".
-  double font_size_minimum = FPDFText_GetFontSize(text_page, char_index) / 3.0;
+  float font_size_minimum;
+  if (FPDFTextObj_GetFontSize(text_object, &font_size_minimum)) {
+    font_size_minimum /= 3.0f;
+  } else {
+    font_size_minimum = 0.0f;
+  }
   gfx::SizeF avg_char_size(font_size_minimum, font_size_minimum);
   int non_whitespace_chars_count = 1;
   AddCharSizeToAverageCharSize(start_char_rect.size(), &avg_char_size,
@@ -547,9 +562,15 @@ std::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(
 
     if (!base::IsUnicodeWhitespace(character)) {
       // Heuristic: End the text run if the text style of the current character
-      // is different from the text run's style.
-      if (!AreTextStyleEqual(text_page, char_index, info.style))
+      // is different from the text run's style. The style can only be different
+      // if the FPDF_PAGEOBJECTs are different, so check the FPDF_PAGEOBJECTs
+      // first to make the comparison faster.
+      FPDF_PAGEOBJECT current_text_object =
+          FPDFText_GetTextObject(text_page, char_index);
+      if (current_text_object != text_object &&
+          !AreTextStyleEqual(current_text_object, info.style)) {
         break;
+      }
 
       // Heuristic: End text run if character isn't going in the same direction.
       if (char_direction !=
