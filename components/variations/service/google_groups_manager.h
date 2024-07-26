@@ -13,6 +13,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service_observer.h"
+#include "components/variations/service/google_groups_manager_prefs.h"
 
 namespace syncer {
 class SyncService;
@@ -21,20 +22,6 @@ class SyncService;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
-
-namespace variations {
-// Per-profile preference for the sync data containing the list of dogfood group
-// gaia IDs for a given syncing user.
-// The variables below are the pref name, and the key for the gaia ID within
-// the dictionary value.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-inline constexpr char kOsDogfoodGroupsSyncPrefName[] = "sync.os_dogfood_groups";
-#else
-inline constexpr char kDogfoodGroupsSyncPrefName[] = "sync.dogfood_groups";
-#endif
-
-inline constexpr char kDogfoodGroupsSyncPrefGaiaIdKey[] = "gaia_id";
-}  // namespace variations
 
 // Service responsible for one-way synchronization of Google group information
 // from per-profile sync data to local-state.

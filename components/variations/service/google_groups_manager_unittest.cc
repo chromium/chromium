@@ -13,6 +13,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/service/google_groups_manager_prefs.h"
 #include "components/variations/variations_seed_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

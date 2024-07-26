@@ -18,6 +18,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync/service/sync_service.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/service/google_groups_manager_prefs.h"
 #include "components/variations/variations_seed_processor.h"
 
 GoogleGroupsManager::GoogleGroupsManager(
