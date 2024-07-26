@@ -955,10 +955,8 @@ void ProfilePickerHandler::OnLoadSigninFinished(bool success) {
 void ProfilePickerHandler::OnSwitchToProfileComplete(bool new_profile,
                                                      bool open_settings,
                                                      Browser* browser) {
-  if (!browser) {
-    // TODO(crbug.com/40242414): Make sure we do something or log an error if
-    // opening a browser window was not possible.
-    base::debug::DumpWithoutCrashing();
+  if (!browser || browser->is_delete_scheduled()) {
+    // The browser is destroyed or about to be destroyed.
     return;
   }
 
