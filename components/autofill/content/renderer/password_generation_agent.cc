@@ -480,10 +480,15 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
   FieldRendererId last_focused_password_element_id =
       form_util::GetFieldRendererId(last_focused_password_element);
 
-  bool is_automatic_generation_available = base::Contains(
-      generation_enabled_fields_, last_focused_password_element_id);
+  bool is_automatic_generation_available = false;
+  auto it = generation_enabled_fields_.find(last_focused_password_element_id);
 
-  if (!is_automatic_generation_available) {
+  if (it != generation_enabled_fields_.end()) {
+    is_automatic_generation_available = true;
+    MaybeCreateCurrentGenerationItem(
+        last_focused_password_element,
+        it->second.confirmation_password_renderer_id);
+  } else {
     blink::WebDocument document =
         render_frame() ? render_frame()->GetWebFrame()->GetDocument()
                        : WebDocument();
@@ -499,11 +504,6 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
         last_focused_password_element,
         FindConfirmationPasswordFieldId(control_elements,
                                         last_focused_password_element));
-  } else {
-    auto it = generation_enabled_fields_.find(last_focused_password_element_id);
-    MaybeCreateCurrentGenerationItem(
-        last_focused_password_element,
-        it->second.confirmation_password_renderer_id);
   }
 
   if (!current_generation_item_)
