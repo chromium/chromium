@@ -103,6 +103,9 @@ enum DistanceMetric {
   // Height to stop at when expanding a scrollable area in a dialog to
   // accommodate its content.
   DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT,
+  // Height to stop at when expanding a scrollable area in a modal dialog to
+  // accomodate its content.
+  DISTANCE_MODAL_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT,
   // Horizontal margin between a table cell and its contents.
   DISTANCE_TABLE_CELL_HORIZONTAL_MARGIN,
   // Horizontal padding applied to text in a textfield.

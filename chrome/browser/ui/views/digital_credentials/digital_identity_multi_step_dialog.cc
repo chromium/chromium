@@ -23,8 +23,8 @@ using ButtonModel = ui::DialogModel::Button;
 // Creates ScrollView for `contents_view`.
 std::unique_ptr<views::View> CreateContentsScrollView(
     std::unique_ptr<views::View> contents_view) {
-  // Max height matches BubbleDialogModelHost.
-  constexpr int kMaxDialogHeight = 448;
+  int kMaxDialogHeight = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT);
   auto scroll_view = std::make_unique<views::ScrollView>();
   scroll_view->ClipHeightTo(0, kMaxDialogHeight);
   scroll_view->SetHorizontalScrollBarMode(

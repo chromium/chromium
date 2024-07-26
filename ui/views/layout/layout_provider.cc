@@ -119,6 +119,8 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
       return 12;
     case DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT:
       return 192;
+    case DISTANCE_MODAL_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT:
+      return 448;
     case DISTANCE_TABLE_CELL_HORIZONTAL_MARGIN:
       return 12;
     case DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING:
