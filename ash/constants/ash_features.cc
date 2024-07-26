@@ -285,6 +285,11 @@ BASE_FEATURE(kBoca, "Boca", base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables or disables Boca consumer user experience on ChromeOS.
 BASE_FEATURE(kBocaConsumer, "BocaConsumer", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables Boca extension consumer experience on ChromeOS.
+BASE_FEATURE(kBocaExtensionConsumer,
+             "BocaExtensionConsumer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCameraAppAutoQRDetection,
@@ -3551,6 +3556,10 @@ bool IsBocaEnabled() {
 
 bool IsBocaConsumerEnabled() {
   return base::FeatureList::IsEnabled(kBocaConsumer);
+}
+
+bool IsBocaExtensionConsumerEnabled() {
+  return base::FeatureList::IsEnabled(kBocaExtensionConsumer);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {
