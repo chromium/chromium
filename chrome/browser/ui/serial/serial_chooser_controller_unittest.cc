@@ -21,7 +21,9 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/permissions/mock_chooser_controller_view.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 #include "services/device/public/cpp/test/fake_serial_port_manager.h"
@@ -33,8 +35,10 @@
 namespace {
 
 using ::device::BluetoothUUID;
+using ::device::MockBluetoothAdapter;
 using ::testing::_;
 using ::testing::Invoke;
+using ::testing::Return;
 
 constexpr char kBluetoothDevice1Address[] = "00:11:22:33:44:55";
 constexpr char16_t kBluetoothDevice1Name[] = u"Bluetooth #1";
@@ -67,6 +71,13 @@ class SerialChooserControllerTest : public ChromeRenderViewHostTestHarness {
     port_manager_.AddReceiver(port_manager.InitWithNewPipeAndPassReceiver());
     SerialChooserContextFactory::GetForProfile(profile())
         ->SetPortManagerForTesting(std::move(port_manager));
+
+    adapter_ = base::MakeRefCounted<testing::NiceMock<MockBluetoothAdapter>>();
+    device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
+    ON_CALL(*adapter_, GetOsPermissionStatus)
+        .WillByDefault(
+            Return(device::BluetoothAdapter::PermissionStatus::kAllowed));
+    ON_CALL(*adapter_, IsPowered).WillByDefault(Return(true));
   }
 
   base::UnguessableToken AddBluetoothPort(
@@ -104,9 +115,11 @@ class SerialChooserControllerTest : public ChromeRenderViewHostTestHarness {
   }
 
   device::FakeSerialPortManager& port_manager() { return port_manager_; }
+  MockBluetoothAdapter* adapter() { return adapter_.get(); }
 
  private:
   device::FakeSerialPortManager port_manager_;
+  scoped_refptr<MockBluetoothAdapter> adapter_;
 };
 
 TEST_F(SerialChooserControllerTest, GetPortsLateResponse) {
@@ -589,6 +602,200 @@ TEST_F(SerialChooserControllerTestWithBlockedPorts, Blocklist) {
       run_loop.Quit();
     }));
     port_manager().RemovePort(port_1);
+    run_loop.Run();
+  }
+}
+
+TEST_F(SerialChooserControllerTest,
+       NotWirelessSerialPortExclusiveNoBluetoothServiceClassIds) {
+  auto controller = std::make_unique<SerialChooserController>(
+      main_rfh(), std::vector<blink::mojom::SerialPortFilterPtr>(),
+      std::vector<device::BluetoothUUID>(), base::DoNothing());
+  permissions::MockChooserControllerView view;
+  controller->set_view(&view);
+
+  base::RunLoop run_loop;
+  // Check that there is no interaction with the bluetooth adapter.
+  EXPECT_CALL(*adapter(), GetOsPermissionStatus).Times(0);
+  EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+    EXPECT_EQ(0u, controller->NumOptions());
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+}
+
+TEST_F(SerialChooserControllerTest,
+       NotWirelessSerialPortExclusiveEmptyFilters) {
+  auto controller = std::make_unique<SerialChooserController>(
+      main_rfh(), std::vector<blink::mojom::SerialPortFilterPtr>(),
+      std::vector<device::BluetoothUUID>({kRandomBluetoothServiceClassId}),
+      base::DoNothing());
+  permissions::MockChooserControllerView view;
+  controller->set_view(&view);
+
+  base::RunLoop run_loop;
+  // Check that there is no interaction with the bluetooth adapter.
+  EXPECT_CALL(*adapter(), GetOsPermissionStatus).Times(0);
+  EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+    EXPECT_EQ(0u, controller->NumOptions());
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+}
+
+TEST_F(SerialChooserControllerTest,
+       NotWirelessSerialPortExclusiveFiltersWithBluetoothAndUsb) {
+  // Create filters that can match wired and wireless serial ports.
+  std::vector<blink::mojom::SerialPortFilterPtr> filters;
+  auto filter = blink::mojom::SerialPortFilter::New();
+  filter->bluetooth_service_class_id = kRandomBluetoothServiceClassId;
+  filters.push_back(std::move(filter));
+  filter = blink::mojom::SerialPortFilter::New();
+  filter->has_vendor_id = true;
+  filter->vendor_id = 0x1234;
+  filter->has_product_id = true;
+  filter->product_id = 0x0001;
+  filters.push_back(std::move(filter));
+
+  auto controller = std::make_unique<SerialChooserController>(
+      main_rfh(), std::move(filters),
+      std::vector<device::BluetoothUUID>({kRandomBluetoothServiceClassId}),
+      base::DoNothing());
+  permissions::MockChooserControllerView view;
+  controller->set_view(&view);
+
+  base::RunLoop run_loop;
+  // Check that there is no interaction with the bluetooth adapter.
+  EXPECT_CALL(*adapter(), GetOsPermissionStatus).Times(0);
+  EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+    EXPECT_EQ(0u, controller->NumOptions());
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+}
+
+TEST_F(SerialChooserControllerTest, SystemBluetoothPermissionDenied) {
+  std::vector<blink::mojom::SerialPortFilterPtr> filters;
+  auto filter = blink::mojom::SerialPortFilter::New();
+  filter->bluetooth_service_class_id = kRandomBluetoothServiceClassId;
+  filters.push_back(std::move(filter));
+
+  auto controller = std::make_unique<SerialChooserController>(
+      main_rfh(), std::move(filters),
+      std::vector<device::BluetoothUUID>({kRandomBluetoothServiceClassId}),
+      base::DoNothing());
+  permissions::MockChooserControllerView view;
+  controller->set_view(&view);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*adapter(), GetOsPermissionStatus)
+      .WillOnce(Return(device::BluetoothAdapter::PermissionStatus::kDenied));
+  EXPECT_CALL(view, OnAdapterAuthorizationChanged(false)).WillOnce(Invoke([&] {
+    EXPECT_EQ(0u, controller->NumOptions());
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+}
+
+TEST_F(SerialChooserControllerTest, SystemBluetoothPermissionUndetermined) {
+  std::vector<blink::mojom::SerialPortFilterPtr> filters;
+  auto filter = blink::mojom::SerialPortFilter::New();
+  filter->bluetooth_service_class_id = kRandomBluetoothServiceClassId;
+  filters.push_back(std::move(filter));
+
+  auto controller = std::make_unique<SerialChooserController>(
+      main_rfh(), std::move(filters),
+      std::vector<device::BluetoothUUID>({kRandomBluetoothServiceClassId}),
+      base::DoNothing());
+  permissions::MockChooserControllerView view;
+  controller->set_view(&view);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*adapter(), GetOsPermissionStatus)
+      .WillOnce(
+          Return(device::BluetoothAdapter::PermissionStatus::kUndetermined));
+  EXPECT_CALL(view, OnAdapterAuthorizationChanged(false)).WillOnce(Invoke([&] {
+    EXPECT_EQ(0u, controller->NumOptions());
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+}
+
+TEST_F(SerialChooserControllerTest, AdapterPowerOffThenPowerOn) {
+  AddBluetoothPort(kBluetoothDevice1Address, kBluetoothDevice1Name,
+                   kRandomBluetoothServiceClassId);
+
+  std::vector<blink::mojom::SerialPortFilterPtr> filters;
+  auto filter = blink::mojom::SerialPortFilter::New();
+  filter->bluetooth_service_class_id = kRandomBluetoothServiceClassId;
+  filters.push_back(std::move(filter));
+
+  // Start with adapter power off.
+  auto controller = std::make_unique<SerialChooserController>(
+      main_rfh(), std::move(filters),
+      std::vector<device::BluetoothUUID>({kRandomBluetoothServiceClassId}),
+      base::DoNothing());
+  permissions::MockChooserControllerView view;
+  controller->set_view(&view);
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*adapter(), IsPowered).WillOnce(Return(false));
+    EXPECT_CALL(view, OnAdapterEnabledChanged(false)).WillOnce(Invoke([&] {
+      EXPECT_EQ(0u, controller->NumOptions());
+      run_loop.Quit();
+    }));
+    run_loop.Run();
+  }
+
+  // Then adapter power on, expect to see ports.
+  EXPECT_CALL(*adapter(), IsPowered).WillOnce(Return(true));
+  EXPECT_CALL(view, OnAdapterEnabledChanged(true));
+  adapter()->NotifyAdapterPoweredChanged(true);
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+      ASSERT_EQ(1u, controller->NumOptions());
+      EXPECT_EQ(kBluetoothDevice1Name, controller->GetOption(0));
+      run_loop.Quit();
+    }));
+    run_loop.Run();
+  }
+}
+
+TEST_F(SerialChooserControllerTest, AdapterPowerOffAfterOptionsInitialized) {
+  AddBluetoothPort(kBluetoothDevice1Address, kBluetoothDevice1Name,
+                   kRandomBluetoothServiceClassId);
+
+  std::vector<blink::mojom::SerialPortFilterPtr> filters;
+  auto filter = blink::mojom::SerialPortFilter::New();
+  filter->bluetooth_service_class_id = kRandomBluetoothServiceClassId;
+  filters.push_back(std::move(filter));
+
+  // Start with adapter power on.
+  auto controller = std::make_unique<SerialChooserController>(
+      main_rfh(), std::move(filters),
+      std::vector<device::BluetoothUUID>({kRandomBluetoothServiceClassId}),
+      base::DoNothing());
+  permissions::MockChooserControllerView view;
+  controller->set_view(&view);
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*adapter(), IsPowered).WillOnce(Return(true));
+    EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+      ASSERT_EQ(1u, controller->NumOptions());
+      EXPECT_EQ(kBluetoothDevice1Name, controller->GetOption(0));
+      run_loop.Quit();
+    }));
+    run_loop.Run();
+  }
+
+  // Then adapter power off.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(view, OnAdapterEnabledChanged(false)).WillOnce(Invoke([&] {
+      run_loop.Quit();
+    }));
+    adapter()->NotifyAdapterPoweredChanged(false);
     run_loop.Run();
   }
 }
