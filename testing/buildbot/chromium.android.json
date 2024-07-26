@@ -2141,7 +2141,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.media_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
