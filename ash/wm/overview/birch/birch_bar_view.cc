@@ -559,6 +559,9 @@ void BirchBarView::AddReloadingChips() {
   // Clear the old chips and add the loader chips.
   Clear();
 
+  // The bar may just fade out.
+  layer()->SetOpacity(1.0f);
+
   views::AnimationBuilder reloading_animation;
 
   for (size_t i = 0; i < chip_num; i++) {
