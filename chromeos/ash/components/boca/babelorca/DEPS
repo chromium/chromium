@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/signin/public/base",
+  "+components/signin/public/identity_manager",
+]

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_BOCA_BABELORCA_CLIENT_TOKEN_FETCHER_H_
-#define CHROME_BROWSER_ASH_BOCA_BABELORCA_CLIENT_TOKEN_FETCHER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TOKEN_FETCHER_H_
+#define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TOKEN_FETCHER_H_
 
 #include <optional>
 
@@ -33,4 +33,4 @@ class TokenFetcher {
 
 }  // namespace babelorca
 
-#endif  // CHROME_BROWSER_ASH_BOCA_BABELORCA_CLIENT_TOKEN_FETCHER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TOKEN_FETCHER_H_

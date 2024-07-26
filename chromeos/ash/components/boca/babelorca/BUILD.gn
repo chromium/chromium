@@ -4,9 +4,9 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos/ash")
 
-static_library("client") {
+static_library("babelorca") {
   sources = [
     "oauth_token_fetcher.cc",
     "oauth_token_fetcher.h",
@@ -25,10 +25,10 @@ static_library("client") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "oauth_token_fetcher_unittest.cc" ]
+  sources = ["oauth_token_fetcher_unittest.cc"]
 
   deps = [
-    ":client",
+    ":babelorca",
     "//base",
     "//base/test:test_support",
     "//components/signin/public/base",

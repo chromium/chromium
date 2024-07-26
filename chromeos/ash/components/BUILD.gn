@@ -13,6 +13,7 @@ source_set("unit_tests") {
   deps = [
     "//chromeos/ash/components/attestation:unit_tests",
     "//chromeos/ash/components/audio:unit_tests",
+    "//chromeos/ash/components/boca/babelorca:unit_tests",
     "//chromeos/ash/components/browser_context_helper:unit_tests",
     "//chromeos/ash/components/carrier_lock:unit_tests",
     "//chromeos/ash/components/channel:unit_tests",

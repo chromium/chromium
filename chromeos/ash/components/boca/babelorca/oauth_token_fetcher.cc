@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/boca/babelorca/client/oauth_token_fetcher.h"
+#include "chromeos/ash/components/boca/babelorca/oauth_token_fetcher.h"
 
 #include <memory>
 #include <optional>
@@ -17,8 +17,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/boca/babelorca/client/token_data_wrapper.h"
-#include "chrome/browser/ash/boca/babelorca/client/token_fetcher.h"
+#include "chromeos/ash/components/boca/babelorca/token_data_wrapper.h"
+#include "chromeos/ash/components/boca/babelorca/token_fetcher.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"

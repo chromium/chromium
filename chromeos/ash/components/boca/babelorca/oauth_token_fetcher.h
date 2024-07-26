@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_BOCA_BABELORCA_CLIENT_OAUTH_TOKEN_FETCHER_H_
-#define CHROME_BROWSER_ASH_BOCA_BABELORCA_CLIENT_OAUTH_TOKEN_FETCHER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_OAUTH_TOKEN_FETCHER_H_
+#define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_OAUTH_TOKEN_FETCHER_H_
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/boca/babelorca/client/token_fetcher.h"
+#include "chromeos/ash/components/boca/babelorca/token_fetcher.h"
 
 namespace signin {
 class AccessTokenFetcher;
@@ -53,4 +53,4 @@ class OAuthTokenFetcher : public TokenFetcher {
 
 }  // namespace babelorca
 
-#endif  // CHROME_BROWSER_ASH_BOCA_BABELORCA_CLIENT_OAUTH_TOKEN_FETCHER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_OAUTH_TOKEN_FETCHER_H_
