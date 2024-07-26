@@ -846,7 +846,11 @@ bool TemplateURLRef::ParseParameter(size_t start,
   } else if (!prepopulated_) {
     base::UmaHistogramBoolean("Omnibox.TemplateUrl.UnrecognizedParameter",
                               /* is externally supplied template? */ false);
-    if (!base::FeatureList::IsEnabled(
+    // Note: in certain scenarios this function is tested before FeatureFlag is
+    // initialized. Check whether FeatureList has been instantiated before
+    // testing the flag to avoid talking to EarlyFeatureAccessTracker.
+    if (!base::FeatureList::GetInstance() ||
+        !base::FeatureList::IsEnabled(
             omnibox::kDropUnrecognizedTemplateUrlParameters)) {
       url->insert(start, full_parameter.data(), full_parameter.size());
       return false;
