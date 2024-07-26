@@ -593,17 +593,13 @@ if (is_mac) {
   action("gen_symbol_tools_packager") {
     testonly = true
     script = "scripts/gen_symbol_tools_packager.py"
-    _go_sources = [
-      "breakpad/src/tools/mac/upload_system_symbols/arch_reader.go",
-      "breakpad/src/tools/mac/upload_system_symbols/extract.go",
-      "breakpad/src/tools/mac/upload_system_symbols/upload_system_symbols.go",
-    ]
+    _go_source_dir = "breakpad/src/tools/mac/upload_system_symbols"
     _extra_sources = [
       "breakpad/src/tools/mac/upload_system_symbols/upload_system_symbols.sh",
     ]
 
-    sources = [ "scripts/package_symbol_tools.py.template" ] + _go_sources +
-              _extra_sources
+    sources = [ "scripts/package_symbol_tools.py.template" ] +
+              [ _go_source_dir ] + _extra_sources
     outputs = [ "$root_out_dir/package_symbol_tools.py" ]
     deps = [
       ":dump_syms",
@@ -616,8 +612,10 @@ if (is_mac) {
              "-t",
              rebase_path("scripts/package_symbol_tools.py.template",
                          root_build_dir),
-           ] + [ "-go_src" ] + rebase_path(_go_sources, root_build_dir) +
-           [ "-extra" ] + rebase_path(_extra_sources, root_build_dir)
+             "-go_src",
+             rebase_path(_go_source_dir, root_build_dir),
+             "-extra",
+           ] + rebase_path(_extra_sources, root_build_dir)
   }
 }
 

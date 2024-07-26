@@ -18,13 +18,10 @@ def build_upload_system_symbols(arch):
     if not shutil.which("go"):
         print("`go` not present in PATH", file=sys.stderr)
         return False
-    sources = [
-        @GO_SOURCES@
-    ]
     env = os.environ.copy()
     env["GOARCH"] = arch
     env["CC_FOR_TARGET"] = f"clang -arch {arch}"
-    cmd = ["go", "build", "-o", "upload_system_symbols"] + sources
+    cmd = ["go", "build", "-C", @GO_SOURCE_DIR@, "-o", "@CWD@"]
     subprocess.check_call(cmd, env=env)
     return True
 
