@@ -82,31 +82,6 @@ std::unique_ptr<views::Widget> CreateAuthDialogWidget(
 
 }  // namespace
 
-ActiveSessionAuthControllerImpl::TestApi::TestApi(
-    ActiveSessionAuthControllerImpl* controller)
-    : controller_(controller) {}
-
-ActiveSessionAuthControllerImpl::TestApi::~TestApi() = default;
-
-AuthFactorSet ActiveSessionAuthControllerImpl::TestApi::GetAvailableFactors()
-    const {
-  return controller_->available_factors_;
-}
-
-void ActiveSessionAuthControllerImpl::TestApi::SubmitPassword(
-    const std::string& password) {
-  controller_->OnPasswordSubmit(base::UTF8ToUTF16(password));
-}
-
-void ActiveSessionAuthControllerImpl::TestApi::SubmitPin(
-    const std::string& pin) {
-  controller_->OnPinSubmit(base::UTF8ToUTF16(pin));
-}
-
-void ActiveSessionAuthControllerImpl::TestApi::Close() {
-  controller_->Close();
-}
-
 ActiveSessionAuthControllerImpl::ActiveSessionAuthControllerImpl() = default;
 ActiveSessionAuthControllerImpl::~ActiveSessionAuthControllerImpl() = default;
 
@@ -177,16 +152,17 @@ void ActiveSessionAuthControllerImpl::OnAuthFactorsListed(
   }
 
   const auto& config = user_context->GetAuthFactorsConfiguration();
+  AuthFactorSet available_factors;
   if (config.FindFactorByType(cryptohome::AuthFactorType::kPassword)) {
-    available_factors_.Put(AuthInputType::kPassword);
+    available_factors.Put(AuthInputType::kPassword);
   }
 
   if (config.FindFactorByType(cryptohome::AuthFactorType::kPin)) {
-    available_factors_.Put(AuthInputType::kPin);
+    available_factors.Put(AuthInputType::kPin);
   }
 
   auto contents_view = std::make_unique<ActiveSessionAuthView>(
-      account_id_, title_, description_, available_factors_);
+      account_id_, title_, description_, available_factors);
   contents_view_ = contents_view.get();
 
   widget_ = CreateAuthDialogWidget(std::move(contents_view));
@@ -223,8 +199,6 @@ void ActiveSessionAuthControllerImpl::Close() {
   if (user_context_) {
     user_context_.reset();
   }
-
-  available_factors_.Clear();
 }
 
 void ActiveSessionAuthControllerImpl::OnViewPreferredSizeChanged(
