@@ -255,16 +255,14 @@ void WaylandInputMethodContext::Init(
   }
 
   bool use_ozone_wayland_vkb = initialize_for_testing || IsImeEnabled();
-
   // If text input instance is not created then all ime context operations
   // are noop. This option is because in some environments someone might not
   // want to enable ime/virtual keyboard even if it's available.
-  if (use_ozone_wayland_vkb && !text_input_ &&
-      connection_->text_input_manager_v1()) {
-    text_input_ = std::make_unique<ZWPTextInputWrapperV1>(
-        connection_, this, connection_->text_input_manager_v1(),
-        connection_->text_input_extension_v1());
+  if (!use_ozone_wayland_vkb || text_input_) {
+    return;
   }
+
+  text_input_ = connection_->CreateTextInputWrapper(this);
 }
 
 bool WaylandInputMethodContext::DispatchKeyEvent(const KeyEvent& key_event) {

@@ -14,6 +14,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -67,6 +68,10 @@
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
 #include "ui/ozone/platform/wayland/host/zwp_idle_inhibit_manager.h"
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
+#include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper.h"
+#include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v1.h"
+#include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v3.h"
+#include "ui/ozone/public/ozone_switches.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 
 namespace ui {
@@ -92,6 +97,10 @@ constexpr uint32_t kMaxXdgOutputManagerVersion = 3;
 constexpr uint32_t kMaxKeyboardShortcutsInhibitManagerVersion = 1;
 constexpr uint32_t kMaxStylusVersion = 2;
 constexpr uint32_t kMaxWpContentTypeVersion = 1;
+
+// Can be specified as value for --wayland-ime-version to use text-input-v3.
+constexpr char kWaylandTextInputVersion1[] = "1";
+constexpr char kWaylandTextInputVersion3[] = "3";
 
 int64_t ConvertTimespecToMicros(const struct timespec& ts) {
   // On 32-bit systems, the calculation cannot overflow int64_t.
@@ -272,6 +281,18 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
   // announced.
   if (!seat_)
     LOG(WARNING) << "No wl_seat object. The functionality may suffer.";
+
+  const auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  if (std::string text_input_version =
+          cmd_line->GetSwitchValueASCII(switches::kWaylandTextInputVersion);
+      text_input_version == kWaylandTextInputVersion3) {
+    text_input_wrapper_type_ = ZWPTextInputWrapperType::kV3;
+  } else if (cmd_line->HasSwitch(switches::kEnableWaylandIme) &&
+             !text_input_version.empty() &&
+             text_input_version != kWaylandTextInputVersion1) {
+    LOG(WARNING) << "text input version should be either 1 or 3. Defaulting to "
+                    "text-input-v1.";
+  }
 
   if (UseTestConfigForPlatformWindows())
     wayland_proxy_ = std::make_unique<wl::WaylandProxyImpl>(this);
@@ -543,6 +564,25 @@ bool WaylandConnection::ShouldUseOverlayDelegation() const {
   should_use_overlay_delegation &= !!single_pixel_buffer();
 #endif
   return should_use_overlay_delegation;
+}
+
+std::unique_ptr<ZWPTextInputWrapper> WaylandConnection::CreateTextInputWrapper(
+    ZWPTextInputWrapperClient* client) {
+  switch (text_input_wrapper_type_) {
+    case ZWPTextInputWrapperType::kV1:
+      if (text_input_manager_v1()) {
+        return std::make_unique<ZWPTextInputWrapperV1>(
+            this, client, text_input_manager_v1(), text_input_extension_v1());
+      }
+      break;
+    case ZWPTextInputWrapperType::kV3:
+      if (text_input_manager_v3()) {
+        return std::make_unique<ZWPTextInputWrapperV3>(this, client,
+                                                       text_input_manager_v3());
+      }
+      break;
+  }
+  return nullptr;
 }
 
 bool WaylandConnection::IsUsingZAuraOutputManager() const {

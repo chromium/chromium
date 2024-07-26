@@ -30,6 +30,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
+#include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper.h"
 
 struct wl_cursor;
 struct wl_event_queue;
@@ -334,6 +335,9 @@ class WaylandConnection {
 
   bool ShouldUseOverlayDelegation() const;
 
+  std::unique_ptr<ZWPTextInputWrapper> CreateTextInputWrapper(
+      ZWPTextInputWrapperClient* client);
+
   // True if the client has bound the either aura output manager globals. If
   // present aura output manager handles the responsibilities of keeping
   // output metrics up to date and triggering delegate notifications.
@@ -564,6 +568,10 @@ class WaylandConnection {
   // This is set if wp_viewporter may be used to instruct the compositor to
   // properly scale fractional scaled surfaces.
   bool supports_viewporter_surface_scaling_ = false;
+
+  // Default to text-input-v1
+  ZWPTextInputWrapperType text_input_wrapper_type_ =
+      ZWPTextInputWrapperType::kV1;
 
   wl::SerialTracker serial_tracker_;
 
