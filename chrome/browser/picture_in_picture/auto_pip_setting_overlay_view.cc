@@ -19,7 +19,7 @@
 
 namespace {
 
-constexpr float kOverlayViewOpacity = 0.99f;
+constexpr float kOverlayViewOpacity = 0.60f;
 
 // The time duration for |background_| to fade in.
 constexpr int kFadeInDurationMs = 500;
@@ -50,10 +50,9 @@ AutoPipSettingOverlayView::AutoPipSettingOverlayView(
       AddChildView(views::Builder<views::View>()
                        .SetPaintToLayer()
                        .SetBackground(views::CreateThemedSolidBackground(
-                           ui::kColorSysStateScrim))
+                           kColorPipWindowBackground))
                        .Build());
   background_->layer()->SetOpacity(0.0f);
-  background_->layer()->SetBackgroundBlur(4.0f);
   FadeInLayer(background_->layer());
 }
 
