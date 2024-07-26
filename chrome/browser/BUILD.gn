@@ -2572,6 +2572,7 @@ static_library("browser") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/companion/core",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/new_tab_page/chrome_colors",
@@ -2579,6 +2580,7 @@ static_library("browser") {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//components/manta",
       "//components/manta/proto",
@@ -2597,6 +2599,7 @@ static_library("browser") {
       "//chrome/browser/ui/views/side_panel",
 
       "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/views/toolbar",
     ]
   }
 

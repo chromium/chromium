@@ -156,6 +156,7 @@ source_set("side_panel") {
     "//chrome/browser/ui/actions",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views/toolbar",
     "//chrome/common",
     "//chrome/common:constants",
     "//components/accessibility:reading",
@@ -219,4 +220,6 @@ source_set("side_panel") {
     ]
     deps += [ "//chrome/common/extensions/api" ]
   }
+
+  allow_circular_includes_from = [ "//chrome/browser/ui/views/toolbar" ]
 }

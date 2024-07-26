@@ -142,6 +142,7 @@ static_library("chrome_test_launcher") {
 static_library("test_support") {
   defines = []
   deps = [ "//chrome/browser/ui:ui_features" ]
+  public_deps = []
   testonly = true
 
   sources = [
@@ -384,7 +385,7 @@ static_library("test_support") {
   ]
 
   # New deps should go in the non-iOS section below.
-  public_deps = [
+  public_deps += [
     "//base/test:test_support",
     "//chrome:resources",
     "//chrome:strings",
@@ -604,6 +605,7 @@ static_library("test_support") {
       ":test_support_ui",
       "//chrome/app:test_support",
       "//chrome/browser:test_support",
+      "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/web_applications",
       "//components/crx_file",
       "//components/enterprise/common/proto:connectors_proto",
@@ -1775,6 +1777,7 @@ if (!is_android) {
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:browser_tests",
@@ -1842,6 +1845,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/side_panel:side_panel_enums",
+      "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/web_applications:browser_tests",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings",
@@ -5580,6 +5584,7 @@ if (is_chromeos_lacros) {
       "//chrome/browser/apps/browser_instance",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:app_service_browser_tests",
+      "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos:test_support",
@@ -8269,7 +8274,10 @@ test("unit_tests") {
       deps += [ "//ui/ozone" ]
     }
 
-    public_deps += [ "//chrome/browser/ui/views/side_panel" ]
+    public_deps += [
+      "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/views/toolbar",
+    ]
 
     # Non-android deps for "unit_tests" target.
     deps += [
@@ -8282,6 +8290,7 @@ test("unit_tests") {
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/apps/app_service/app_icon:util",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/apps/link_capturing:unit_tests",
       "//chrome/browser/companion:unit_tests",
@@ -10614,6 +10623,7 @@ if (!is_android) {
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:test_support",
       "//chrome/browser/devtools",
@@ -10623,6 +10633,7 @@ if (!is_android) {
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
@@ -11078,6 +11089,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:interactive_ui_tests",
@@ -11101,6 +11113,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/lens:interactive_ui_tests",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/web_applications:interactive_ui_tests",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/webauthn:test_support",
@@ -12091,6 +12104,7 @@ if (!is_android) {
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:command_ids",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/search_engines",
       "//chrome/browser/sync",

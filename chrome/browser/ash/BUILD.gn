@@ -133,7 +133,6 @@ static_library("ash") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/media/webrtc",
     "//chrome/browser/apps/almanac_api_client",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/app_icon",
@@ -312,10 +311,12 @@ static_library("ash") {
     "//chrome/browser/chromeos",
     "//chrome/browser/extensions",
     "//chrome/browser/google",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/policy:onc",
     "//chrome/browser/sync",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui/ash/skyvault",
     "//chrome/browser/ui/webui/ash",
     "//chrome/browser/web_applications",
@@ -1040,6 +1041,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/holding_space",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings_shared",
     "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings",

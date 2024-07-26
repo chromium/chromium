@@ -13,8 +13,6 @@ source_set("link_capturing") {
     "apps_intent_picker_delegate.h",
     "intent_picker_info.cc",
     "intent_picker_info.h",
-    "link_capturing_features.cc",
-    "link_capturing_features.h",
     "link_capturing_navigation_throttle.cc",
     "link_capturing_navigation_throttle.h",
     "link_capturing_tab_data.cc",
@@ -29,6 +27,7 @@ source_set("link_capturing") {
   }
 
   deps = [
+    ":features",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
@@ -85,6 +84,15 @@ source_set("link_capturing") {
   }
 }
 
+source_set("features") {
+  sources = [
+    "link_capturing_features.cc",
+    "link_capturing_features.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [ "//chrome/common:chrome_features" ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -95,6 +103,7 @@ source_set("test_support") {
     ":link_capturing",
     "//base/test:test_support",
     "//chrome/browser:test_support",
+    "//chrome/browser/apps/link_capturing:features",
     "//chrome/browser/web_applications:web_applications",
     "//chrome/common:chrome_features",
     "//components/webapps/common",
@@ -105,8 +114,10 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "link_capturing_navigation_throttle_unittest.cc" ]
   deps = [
+    ":features",
     ":link_capturing",
     "//base/test:test_support",
+    "//chrome/browser/ui/views/toolbar",
     "//testing/gtest",
     "//ui/base:base",
     "//ui/display:test_support",
