@@ -2898,7 +2898,7 @@
   {
     "name": "enable-delegated-compositing",
     "owners": [ "petermcneeley@chromium.org" ],
-    "expiry_milestone": 126
+    "expiry_milestone": 140
   },
   {
     "name": "enable-desk-button",
