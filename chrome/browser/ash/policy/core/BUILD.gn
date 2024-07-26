@@ -78,6 +78,7 @@ static_library("core") {
     "//chrome/browser/ash/policy/networking",
     "//chrome/browser/ash/policy/rsu",
     "//chrome/browser/ash/policy/scheduled_task_handler",
+    "//chrome/browser/ash/policy/server_backed_state",
     "//chrome/browser/ash/printing/enterprise",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
@@ -142,6 +143,7 @@ static_library("core") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/rsu",
+    "//chrome/browser/ash/policy/server_backed_state",
     "//chrome/browser/ash/system",
   ]
 }

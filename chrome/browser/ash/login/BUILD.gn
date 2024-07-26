@@ -429,6 +429,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/enrollment/psm:test_support",
+    "//chrome/browser/ash/policy/server_backed_state",
     "//chrome/browser/extensions",
     "//chrome/browser/metrics/structured:test_support",
     "//chrome/browser/sync",
