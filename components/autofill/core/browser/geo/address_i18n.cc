@@ -18,52 +18,32 @@
 namespace autofill {
 namespace i18n {
 
-namespace {
-
-std::u16string GetInfoHelper(const AutofillProfile& profile,
-                             const std::string& app_locale,
-                             const AutofillType& type) {
-  return profile.GetInfo(type, app_locale);
-}
-
-}  // namespace
-
 using ::i18n::addressinput::AddressData;
 using ::i18n::addressinput::AddressField;
-
-std::unique_ptr<AddressData> CreateAddressData(
-    const base::RepeatingCallback<std::u16string(const AutofillType&)>&
-        get_info) {
-  auto address_data = std::make_unique<AddressData>();
-  address_data->recipient =
-      base::UTF16ToUTF8(get_info.Run(AutofillType(NAME_FULL)));
-  address_data->organization =
-      base::UTF16ToUTF8(get_info.Run(AutofillType(COMPANY_NAME)));
-  address_data->region_code = base::UTF16ToUTF8(
-      get_info.Run(AutofillType(HtmlFieldType::kCountryCode)));
-  address_data->administrative_area =
-      base::UTF16ToUTF8(get_info.Run(AutofillType(ADDRESS_HOME_STATE)));
-  address_data->locality =
-      base::UTF16ToUTF8(get_info.Run(AutofillType(ADDRESS_HOME_CITY)));
-  address_data->dependent_locality = base::UTF16ToUTF8(
-      get_info.Run(AutofillType(ADDRESS_HOME_DEPENDENT_LOCALITY)));
-  address_data->sorting_code =
-      base::UTF16ToUTF8(get_info.Run(AutofillType(ADDRESS_HOME_SORTING_CODE)));
-  address_data->postal_code =
-      base::UTF16ToUTF8(get_info.Run(AutofillType(ADDRESS_HOME_ZIP)));
-  address_data->address_line = base::SplitString(
-      base::UTF16ToUTF8(
-          get_info.Run(AutofillType(ADDRESS_HOME_STREET_ADDRESS))),
-      "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  return address_data;
-}
 
 std::unique_ptr<::i18n::addressinput::AddressData>
 CreateAddressDataFromAutofillProfile(const AutofillProfile& profile,
                                      const std::string& app_locale) {
-  std::unique_ptr<::i18n::addressinput::AddressData> address_data =
-      i18n::CreateAddressData(
-          base::BindRepeating(&GetInfoHelper, profile, app_locale));
+  auto get_info = [&profile, &app_locale](const AutofillType& type) {
+    return base::UTF16ToUTF8(profile.GetInfo(type, app_locale));
+  };
+
+  auto address_data = std::make_unique<AddressData>();
+  address_data->recipient = get_info(AutofillType(NAME_FULL));
+  address_data->organization = get_info(AutofillType(COMPANY_NAME));
+  address_data->region_code =
+      get_info(AutofillType(HtmlFieldType::kCountryCode));
+  address_data->administrative_area =
+      get_info(AutofillType(ADDRESS_HOME_STATE));
+  address_data->locality = get_info(AutofillType(ADDRESS_HOME_CITY));
+  address_data->dependent_locality =
+      get_info(AutofillType(ADDRESS_HOME_DEPENDENT_LOCALITY));
+  address_data->sorting_code =
+      get_info(AutofillType(ADDRESS_HOME_SORTING_CODE));
+  address_data->postal_code = get_info(AutofillType(ADDRESS_HOME_ZIP));
+  address_data->address_line =
+      base::SplitString(get_info(AutofillType(ADDRESS_HOME_STREET_ADDRESS)),
+                        "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   address_data->language_code = profile.language_code();
   return address_data;
 }
