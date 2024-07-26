@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_view_controller.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_header_view.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_link_cell.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
@@ -17,6 +18,9 @@ const CGFloat kLinkCellWidth = 343;
 
 // The vertical spacing between link cells.
 const CGFloat kSpacingBetweenCells = 12;
+
+// The vertical spacing below the header.
+const CGFloat kSpacingBelowHeader = 16;
 
 }  // namespace
 
@@ -36,6 +40,9 @@ const CGFloat kSpacingBetweenCells = 12;
 
   // Registration for the HomeCustomizationLinkCell.
   UICollectionViewCellRegistration* _linkCellRegistration;
+
+  // Registration for the collection's header.
+  UICollectionViewSupplementaryRegistration* _headerRegistration;
 }
 
 - (void)viewDidLoad {
@@ -66,6 +73,15 @@ const CGFloat kSpacingBetweenCells = 12;
              [cell configureCellWithType:linkType];
              cell.mutator = weakSelf.mutator;
            }];
+
+  _headerRegistration = [UICollectionViewSupplementaryRegistration
+      registrationWithSupplementaryClass:[HomeCustomizationHeaderView class]
+                             elementKind:UICollectionElementKindSectionHeader
+                    configurationHandler:^(HomeCustomizationHeaderView* header,
+                                           NSString* elementKind,
+                                           NSIndexPath* indexPath) {
+                      header.page = CustomizationMenuPage::kDiscover;
+                    }];
 }
 
 // Creates and returns the collection view for the main menu page.
@@ -120,6 +136,18 @@ const CGFloat kSpacingBetweenCells = 12;
         [NSCollectionLayoutGroup verticalGroupWithLayoutSize:groupSize
                                                     subitems:@[ item ]];
 
+    NSCollectionLayoutSize* headerSize = [NSCollectionLayoutSize
+        sizeWithWidthDimension:[NSCollectionLayoutDimension
+                                   fractionalWidthDimension:1.]
+               heightDimension:[NSCollectionLayoutDimension
+                                   estimatedDimension:kLinkCellHeight]];
+    NSCollectionLayoutBoundarySupplementaryItem* headerItem =
+        [NSCollectionLayoutBoundarySupplementaryItem
+            boundarySupplementaryItemWithLayoutSize:headerSize
+                                        elementKind:
+                                            UICollectionElementKindSectionHeader
+                                          alignment:NSRectAlignmentTopLeading];
+
     NSCollectionLayoutSection* linksSection =
         [NSCollectionLayoutSection sectionWithGroup:linksGroup];
 
@@ -127,8 +155,10 @@ const CGFloat kSpacingBetweenCells = 12;
     // have the correct width.
     linksSection.interGroupSpacing = kSpacingBetweenCells;
     linksSection.contentInsets = NSDirectionalEdgeInsetsMake(
-        0, (self.view.frame.size.width - kLinkCellWidth) / 2, 0,
-        (self.view.frame.size.width - kLinkCellWidth) / 2);
+        kSpacingBelowHeader, (self.view.frame.size.width - kLinkCellWidth) / 2,
+        0, (self.view.frame.size.width - kLinkCellWidth) / 2);
+
+    linksSection.boundarySupplementaryItems = @[ headerItem ];
 
     return linksSection;
   }
@@ -150,6 +180,11 @@ const CGFloat kSpacingBetweenCells = 12;
       [[UICollectionViewDiffableDataSource alloc]
           initWithCollectionView:_collectionView
                     cellProvider:cellProvider];
+  diffableDataSource.supplementaryViewProvider = ^UICollectionReusableView*(
+      UICollectionView* collectionView, NSString* elementKind,
+      NSIndexPath* indexPath) {
+    return [weakSelf configuredHeaderForIndexPath:indexPath];
+  };
 
   return diffableDataSource;
 }
@@ -161,6 +196,14 @@ const CGFloat kSpacingBetweenCells = 12;
       dequeueConfiguredReusableCellWithRegistration:_linkCellRegistration
                                        forIndexPath:indexPath
                                                item:itemIdentifier];
+}
+
+// Returns a configured header for the given path in the collection view.
+- (UICollectionViewCell*)configuredHeaderForIndexPath:(NSIndexPath*)indexPath {
+  return [_collectionView
+      dequeueConfiguredReusableSupplementaryViewWithRegistration:
+          _headerRegistration
+                                                    forIndexPath:indexPath];
 }
 
 // Creates a data snapshot representing the content of the collection view.

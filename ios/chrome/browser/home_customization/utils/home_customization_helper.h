@@ -41,6 +41,9 @@
 // Returns the accessibility identifier for a given link type.
 + (NSString*)accessibilityIdentifierForLinkType:(CustomizationLinkType)type;
 
+// Returns the text of the header for a given menu page.
++ (NSString*)headerTextForPage:(CustomizationMenuPage)page;
+
 // Returns `YES` if the given type supports navigation to a submenu.
 + (BOOL)doesTypeHaveSubmenu:(CustomizationToggleType)type;
 

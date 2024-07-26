@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 
+#import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -116,6 +117,20 @@
       return kCustomizationLinkActivityIdentifier;
     case CustomizationLinkType::kLearnMore:
       return kCustomizationLinkLearnMoreIdentifier;
+  }
+}
+
++ (NSString*)headerTextForPage:(CustomizationMenuPage)page {
+  switch (page) {
+    case CustomizationMenuPage::kMain:
+      return @"Main page text";
+    case CustomizationMenuPage::kDiscover:
+      return @"(PLACEHOLDER) A custom feed made for you by Google. Inlcuding "
+             @"News, Sports and Weather.";
+    case CustomizationMenuPage::kMagicStack:
+      return @"Magic stack page text";
+    case CustomizationMenuPage::kUnknown:
+      NOTREACHED_NORETURN();
   }
 }
 
