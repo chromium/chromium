@@ -5379,6 +5379,7 @@ static_library("browser") {
       "//chrome/browser/ash/policy/invalidation",
       "//chrome/browser/ash/policy/login",
       "//chrome/browser/ash/policy/multi_screen_capture",
+      "//chrome/browser/ash/policy/networking",
       "//chrome/browser/ash/policy/remote_commands",
       "//chrome/browser/ash/policy/remote_commands/crd",
       "//chrome/browser/ash/policy/reporting",
