@@ -310,8 +310,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/privacy_sandbox/ActivityTypeMapperTest.java",
   "junit/src/org/chromium/chrome/browser/privacy_sandbox/CctHandlerTest.java",
   "junit/src/org/chromium/chrome/browser/privacy_sandbox/FakeCookieControlsBridge.java",
-  "junit/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionOnboardingControllerTest.java",
-  "junit/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionOnboardingViewTest.java",
   "junit/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSnackbarControllerTest.java",
   "junit/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSnackbarLimiterTest.java",
   "junit/src/org/chromium/chrome/browser/quickactionsearchwidget/QuickActionSearchWidgetProviderTest.java",

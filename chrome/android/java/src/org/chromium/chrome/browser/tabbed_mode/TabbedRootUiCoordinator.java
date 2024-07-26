@@ -88,10 +88,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
-import org.chromium.chrome.browser.privacy_sandbox.SurfaceType;
-import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridge;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeController;
-import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionOnboardingController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
 import org.chromium.chrome.browser.readaloud.ReadAloudIPHController;
@@ -850,21 +847,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     boolean maybeTriggerTrackingProtectionNoticeAndOnboarding(
             Profile profile, boolean wasPromoTriggered) {
-        // Handles whether the Tracking Protection notices and onboarding controllers should be
-        // shown (independent of each other), and returns the updated value of wasPromoTriggered
-        if (!wasPromoTriggered
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.TRACKING_PROTECTION_FULL_ONBOARDING_MOBILE_TRIGGER)) {
-            wasPromoTriggered =
-                    TrackingProtectionOnboardingController.maybeCreate(
-                            mActivity,
-                            new TrackingProtectionBridge(profile),
-                            mActivityTabProvider,
-                            mMessageDispatcher,
-                            SettingsLauncherFactory.createSettingsLauncher(),
-                            SurfaceType.BR_APP);
-        }
-
         if (!wasPromoTriggered && TrackingProtectionNoticeController.shouldShowNotice(profile)) {
             TrackingProtectionNoticeController.create(
                     mActivity,

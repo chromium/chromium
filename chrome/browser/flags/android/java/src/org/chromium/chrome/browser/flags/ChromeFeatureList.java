@@ -512,8 +512,6 @@ public abstract class ChromeFeatureList {
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
     public static final String TINKER_TANK_BOTTOM_SHEET = "TinkerTankBottomSheet";
     public static final String TOOLBAR_SCROLL_ABLATION = "AndroidToolbarScrollAblation";
-    public static final String TRACKING_PROTECTION_FULL_ONBOARDING_MOBILE_TRIGGER =
-            "TrackingProtectionFullOnboardingMobileTrigger";
     public static final String TRACKING_PROTECTION_3PCD = "TrackingProtection3pcd";
     public static final String TRACKING_PROTECTION_SETTINGS_LAUNCH =
             "TrackingProtectionSettingsLaunch";
