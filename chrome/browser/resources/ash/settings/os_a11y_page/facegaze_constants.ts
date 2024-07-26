@@ -86,7 +86,7 @@ export class FaceGazeUtils {
       case FacialGesture.MOUTH_SMILE:
         return 'Smile';
       case FacialGesture.MOUTH_UPPER_UP:
-        return 'Make a circle with your lips';
+        return 'Wrinkle your nose';
       default:
         console.error(
             'Display text requested for unsupported FacialGesture ' + gesture);
