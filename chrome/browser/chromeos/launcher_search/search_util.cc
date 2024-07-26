@@ -16,10 +16,12 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/favicon_cache.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/search_engines/search_terms_data.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
+#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "ui/base/page_transition_types.h"
 
 namespace crosapi {
@@ -163,6 +165,18 @@ SearchResult::TextType TextStyleToType(
   }
 }
 
+SearchResult::TextType ColorTypeToType(
+    omnibox::FormattedString::ColorType type) {
+  switch (type) {
+    case omnibox::FormattedString::COLOR_ON_SURFACE_POSITIVE:
+      return SearchResult::TextType::kPositive;
+    case omnibox::FormattedString::COLOR_ON_SURFACE_NEGATIVE:
+      return SearchResult::TextType::kNegative;
+    default:
+      return SearchResult::TextType::kUnset;
+  }
+}
+
 SearchResult::TextType ClassesToType(
     const ACMatchClassifications& text_classes) {
   // Only retain the URL class, other classes are either ignored. Tag indices
@@ -273,7 +287,7 @@ SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
 
   // Special case: calculator results (are the only answer results to) have no
   // explicit answer data.
-  if (!match.answer.has_value()) {
+  if (match.answer_type == omnibox::ANSWER_TYPE_UNSPECIFIED) {
     DCHECK_EQ(match.type, AutocompleteMatchType::CALCULATOR);
     result->answer_type = SearchResult::AnswerType::kCalculator;
 
@@ -296,7 +310,38 @@ SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
     return result;
   }
 
-  result->answer_type = MatchTypeToAnswerType(match.answer->type());
+  result->answer_type = MatchTypeToAnswerType(match.answer_type);
+  result->contents = match.contents;
+
+  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
+      match.answer_template) {
+    const auto& headline = match.answer_template->answers(0).headline();
+    if (headline.fragments_size() > 1) {
+      // Only use the second fragment as the first is equivalent to
+      // |match.contents|.
+      result->additional_contents =
+          base::UTF8ToUTF16(headline.fragments(1).text());
+      result->additional_contents_type =
+          ColorTypeToType(headline.fragments(1).color());
+    }
+    const auto& subhead = match.answer_template->answers(0).subhead();
+    if (subhead.fragments_size() > 0) {
+      result->description = base::UTF8ToUTF16(subhead.fragments(0).text());
+      result->description_type = ColorTypeToType(subhead.fragments(0).color());
+    }
+    if (subhead.fragments_size() > 1) {
+      result->additional_description =
+          base::UTF8ToUTF16(subhead.fragments(1).text());
+      result->additional_description_type =
+          ColorTypeToType(subhead.fragments(1).color());
+    }
+    if (result->answer_type == SearchResult::AnswerType::kWeather) {
+      result->image_url = GURL(match.answer_template->answers(0).image().url());
+      result->description_a11y_label = base::UTF8ToUTF16(subhead.a11y_text());
+    }
+
+    return result;
+  }
 
   if (result->answer_type == SearchResult::AnswerType::kWeather) {
     result->image_url = match.answer->image_url();
@@ -306,8 +351,6 @@ SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
     if (a11y_label)
       result->description_a11y_label = *a11y_label;
   }
-
-  result->contents = match.contents;
 
   const auto& first = match.answer->first_line();
   if (first.additional_text()) {

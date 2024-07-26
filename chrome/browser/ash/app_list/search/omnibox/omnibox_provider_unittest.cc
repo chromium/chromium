@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -52,6 +53,9 @@ AutocompleteMatch NewOmniboxResult(const std::string& url) {
 
 AutocompleteMatch NewAnswerResult(const std::string& url,
                                   omnibox::AnswerType answer_type) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::SuggestionAnswerMigration>
+      scoped_config;
   AutocompleteMatch result;
 
   result.relevance = 1.0;
@@ -59,9 +63,15 @@ AutocompleteMatch NewAnswerResult(const std::string& url,
   result.stripped_destination_url = GURL(url);
   result.contents = u"contents";
   result.description = u"description";
-  SuggestionAnswer answer;
-  answer.set_type(answer_type);
-  result.answer = answer;
+  if (scoped_config.Get().enabled) {
+    omnibox::RichAnswerTemplate answer_template;
+    answer_template.add_answers();
+    result.answer_template = answer_template;
+  } else {
+    SuggestionAnswer answer;
+    result.answer = answer;
+  }
+  result.answer_type = answer_type;
 
   return result;
 }
