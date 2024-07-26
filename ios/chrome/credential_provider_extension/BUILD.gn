@@ -35,6 +35,7 @@ source_set("credential_provider") {
     ":reauthentication_handler",
     ":system_strings",
     "//base",
+    "//components/webauthn/core/browser:passkey_model",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/app_group:client",
     "//ios/chrome/common/crash_report",
