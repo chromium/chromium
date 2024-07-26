@@ -147,18 +147,21 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
             self.extractor.find_owners_file(REL_WPT_BASE + '/foo/bar.html'),
             owners_path)
 
-    def test_find_owners_file_out_of_external(self):
+    def test_find_owners_file_out_of_web_test(self):
         self._write_files({
+            '/mock-checkout/' + RELATIVE_WEB_TESTS + 'other/OWNERS':
+            '',
             '/mock-checkout/' + RELATIVE_WEB_TESTS + 'OWNERS':
-            'foo@chromium.org',
-            '/mock-checkout/' + RELATIVE_WEB_TESTS + 'other/some_file':
+            '',
+            '/not/in/chromium/src/OWNERS':
             '',
         })
+        self.assertEqual(
+            self.extractor.find_owners_file(RELATIVE_WEB_TESTS + 'other'),
+            '/mock-checkout/' + RELATIVE_WEB_TESTS + 'other/OWNERS')
+        self.assertIsNone(self.extractor.find_owners_file(RELATIVE_WEB_TESTS))
         self.assertIsNone(
-            self.extractor.find_owners_file(RELATIVE_WEB_TESTS[:-1]))
-        self.assertIsNone(
-            self.extractor.find_owners_file(RELATIVE_WEB_TESTS + 'other'))
-        self.assertIsNone(self.extractor.find_owners_file('third_party'))
+            self.extractor.find_owners_file('/not/in/chromium/src'))
 
     def test_extract_owners(self):
         fs = self.host.filesystem
