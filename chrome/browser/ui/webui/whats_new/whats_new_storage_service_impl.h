@@ -27,6 +27,9 @@ class WhatsNewStorageServiceImpl : public WhatsNewStorageService {
   const base::Value::List& ReadModuleData() const override;
   const base::Value::Dict& ReadEditionData() const override;
 
+  int GetModuleQueuePosition(const std::string_view module_name) const override;
+  std::optional<int> GetUsedVersion(
+      const std::string_view edition_name) const override;
   std::optional<std::string_view> FindEditionForCurrentVersion() const override;
   bool IsUsedEdition(const std::string_view edition_name) const override;
 
@@ -39,8 +42,6 @@ class WhatsNewStorageServiceImpl : public WhatsNewStorageService {
   void Reset() override;
 
  private:
-  std::optional<int> GetUsedVersion(const std::string_view edition_name) const;
-
   ScopedListPrefUpdate enabled_order_() {
     return ScopedListPrefUpdate(g_browser_process->local_state(),
                                 prefs::kWhatsNewFirstEnabledOrder);

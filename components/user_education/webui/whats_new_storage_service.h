@@ -25,9 +25,18 @@ class WhatsNewStorageService {
   virtual const base::Value::List& ReadModuleData() const = 0;
   virtual const base::Value::Dict& ReadEditionData() const = 0;
 
+  // Get the version this edition was used. Return nullopt if unused.
+  virtual std::optional<int> GetUsedVersion(
+      const std::string_view edition_name) const = 0;
+
   // Find the name of the edition used for the current version, if any.
   virtual std::optional<std::string_view> FindEditionForCurrentVersion()
       const = 0;
+
+  // Find the module's position in the queue of enabled modules.
+  // Returns -1 if the module is not in the queue.
+  virtual int GetModuleQueuePosition(
+      const std::string_view module_name) const = 0;
 
   // Returns whether an edition has ever been used for version.
   virtual bool IsUsedEdition(const std::string_view edition_name) const = 0;

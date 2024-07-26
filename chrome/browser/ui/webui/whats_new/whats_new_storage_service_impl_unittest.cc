@@ -38,10 +38,15 @@ TEST_F(WhatsNewStorageServiceTest, StoresModulesData) {
   EXPECT_FALSE(storage_service_->ReadModuleData().empty());
   EXPECT_EQ(static_cast<size_t>(1), storage_service_->ReadModuleData().size());
   EXPECT_EQ("ModuleA", storage_service_->ReadModuleData().front());
+  EXPECT_EQ(0, storage_service_->GetModuleQueuePosition("ModuleA"));
 
   storage_service_->SetModuleEnabled("ModuleB");
   EXPECT_EQ(static_cast<size_t>(2), storage_service_->ReadModuleData().size());
   EXPECT_EQ("ModuleB", storage_service_->ReadModuleData()[1]);
+  EXPECT_EQ(1, storage_service_->GetModuleQueuePosition("ModuleB"));
+
+  // Modules does not exist.
+  EXPECT_EQ(-1, storage_service_->GetModuleQueuePosition("ModuleC"));
 
   storage_service_->ClearModule("ModuleA");
   EXPECT_EQ(static_cast<size_t>(1), storage_service_->ReadModuleData().size());

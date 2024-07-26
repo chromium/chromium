@@ -88,8 +88,12 @@ class WhatsNewRegistry {
   // Resets all stored data for manual testing.
   void ResetData();
 
-  const std::vector<WhatsNewModule>& modules() { return modules_; }
-  const std::vector<WhatsNewEdition>& editions() { return editions_; }
+  const WhatsNewStorageService* storage_service() const {
+    return storage_service_.get();
+  }
+
+  const std::vector<WhatsNewModule>& modules() const { return modules_; }
+  const std::vector<WhatsNewEdition>& editions() const { return editions_; }
 
  private:
   std::unique_ptr<WhatsNewStorageService> storage_service_;

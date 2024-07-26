@@ -14,6 +14,7 @@ build_webui("build") {
   web_component_files = [
     "user_education_internals.ts",
     "user_education_internals_card.ts",
+    "user_education_whats_new_internals_card.ts",
   ]
 
   mojo_files_deps = [ "//chrome/browser/ui/webui/internals/user_education:mojo_bindings_ts__generator" ]

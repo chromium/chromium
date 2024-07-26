@@ -22,6 +22,22 @@ const base::Value::Dict& WhatsNewStorageServiceImpl::ReadEditionData() const {
   return editions;
 }
 
+int WhatsNewStorageServiceImpl::GetModuleQueuePosition(
+    const std::string_view module_name) const {
+  const base::Value::List& module_data = ReadModuleData();
+  auto order = std::find_if(module_data.begin(), module_data.end(),
+                            [&](auto& ordered_module_name) {
+                              return ordered_module_name == module_name;
+                            });
+  return order == module_data.end() ? -1 : order - module_data.begin();
+}
+
+std::optional<int> WhatsNewStorageServiceImpl::GetUsedVersion(
+    const std::string_view edition_name) const {
+  const base::Value* version = ReadEditionData().Find(edition_name);
+  return version == nullptr ? std::nullopt : std::optional(version->GetInt());
+}
+
 std::optional<std::string_view>
 WhatsNewStorageServiceImpl::FindEditionForCurrentVersion() const {
   const base::Value::Dict& edition_data = ReadEditionData();
@@ -46,12 +62,6 @@ void WhatsNewStorageServiceImpl::ClearModule(
   // Remove rolled feature from prefs. Order no longer matters for
   // rolled modules.
   enabled_order_()->EraseValue(base::Value(module_name));
-}
-
-std::optional<int> WhatsNewStorageServiceImpl::GetUsedVersion(
-    const std::string_view edition_name) const {
-  const base::Value* version = ReadEditionData().Find(edition_name);
-  return version == nullptr ? std::nullopt : std::optional(version->GetInt());
 }
 
 bool WhatsNewStorageServiceImpl::IsUsedEdition(

@@ -667,6 +667,7 @@ static_library("ui") {
     "//components/upload_list",
     "//components/url_formatter",
     "//components/url_formatter/spoof_checks/top_domains:common",
+    "//components/user_education/common:common",
     "//components/user_manager",
     "//components/user_prefs",
     "//components/variations",

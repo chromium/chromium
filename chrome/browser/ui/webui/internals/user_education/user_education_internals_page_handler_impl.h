@@ -50,6 +50,9 @@ class UserEducationInternalsPageHandlerImpl
   void GetNewBadges(GetNewBadgesCallback callback) override;
   void ClearNewBadgeData(const std::string& feature_name,
                          ClearNewBadgeDataCallback callback) override;
+  void GetWhatsNewModules(GetWhatsNewModulesCallback callback) override;
+  void GetWhatsNewEditions(GetWhatsNewEditionsCallback callback) override;
+  void ClearWhatsNewData(ClearWhatsNewDataCallback callback) override;
 
  private:
   raw_ptr<content::WebUI> web_ui_ = nullptr;
