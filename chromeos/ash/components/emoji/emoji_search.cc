@@ -271,21 +271,6 @@ std::string EmojiSearch::GetEmojiName(std::string_view emoji) const {
   return "";
 }
 
-std::vector<std::string> EmojiSearch::AllResultsForTesting(
-    const std::string& query) {
-  std::vector<std::string> ret;
-  for (EmojiSearchEntry& r : GetResultsFromMap(emojis_, query)) {
-    ret.push_back(std::move(r).emoji_string);
-  }
-  for (EmojiSearchEntry& r : GetResultsFromMap(emoticons_, query)) {
-    ret.push_back(std::move(r).emoji_string);
-  }
-  for (EmojiSearchEntry& r : GetResultsFromMap(symbols_, query)) {
-    ret.push_back(std::move(r).emoji_string);
-  }
-  return ret;
-}
-
 std::optional<EmojiSearch::LanguageResourceIds>
 EmojiSearch::GetLanguageResourceIds(LanguageCode code) {
   static constexpr auto kLanguageToData =

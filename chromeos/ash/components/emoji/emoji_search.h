@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_EMOJI_EMOJI_SEARCH_H_
 
 #include <map>
+#include <ostream>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -16,6 +17,10 @@ namespace emoji {
 struct EmojiSearchEntry {
   double weighting;
   std::string emoji_string;
+
+  friend void PrintTo(const EmojiSearchEntry& entry, std::ostream* os) {
+    *os << "(" << entry.weighting << "," << entry.emoji_string << ")";
+  }
 };
 
 struct EmojiSearchResult {
@@ -42,8 +47,6 @@ class EmojiSearch {
 
   // Returns an empty string if the emoji has no name.
   std::string GetEmojiName(std::string_view emoji) const;
-
-  std::vector<std::string> AllResultsForTesting(const std::string& query);
 
  private:
   using EntryMap =

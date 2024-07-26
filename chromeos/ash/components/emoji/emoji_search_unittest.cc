@@ -12,6 +12,9 @@ namespace emoji {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::FieldsAre;
+using ::testing::Gt;
+using ::testing::IsEmpty;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 
@@ -78,8 +81,11 @@ TEST_F(EmojiSearchTest, FindsSmilingEmojiInJapaneseLocale) {
   EmojiSearch search;
 
   ASSERT_TRUE(search.SetEmojiLanguage("ja"));
-  std::vector<std::string> results = search.AllResultsForTesting("笑顔");
-  EXPECT_THAT(results, UnorderedElementsAre("😀", "😺"));
+  EmojiSearchResult result = search.SearchEmoji("笑顔");
+  EXPECT_THAT(result.emojis, UnorderedElementsAre(FieldsAre(Gt(0), "😀"),
+                                                  FieldsAre(Gt(0), "😺")));
+  EXPECT_THAT(result.symbols, IsEmpty());
+  EXPECT_THAT(result.emoticons, IsEmpty());
 }
 
 TEST_F(EmojiSearchTest, FindsSymbolInJapaneseLocale) {
@@ -113,8 +119,10 @@ TEST_F(EmojiSearchTest, FindsSymbolInJapaneseLocale) {
   EmojiSearch search;
 
   ASSERT_TRUE(search.SetEmojiLanguage("ja"));
-  std::vector<std::string> results = search.AllResultsForTesting("矢印");
-  EXPECT_THAT(results, UnorderedElementsAre("←"));
+  EmojiSearchResult result = search.SearchEmoji("矢印");
+  EXPECT_THAT(result.symbols, UnorderedElementsAre(FieldsAre(Gt(0), "←")));
+  EXPECT_THAT(result.emojis, IsEmpty());
+  EXPECT_THAT(result.emoticons, IsEmpty());
 }
 
 TEST_F(EmojiSearchTest, FindsSmilingEmoji) {
@@ -136,9 +144,11 @@ TEST_F(EmojiSearchTest, FindsSmilingEmoji) {
 
   EmojiSearch search;
 
-  std::vector<std::string> results = search.AllResultsForTesting("face");
+  EmojiSearchResult result = search.SearchEmoji("face");
 
-  EXPECT_THAT(results, ElementsAre("😀", ":-)"));
+  EXPECT_THAT(result.emojis, ElementsAre(FieldsAre(Gt(0), "😀")));
+  EXPECT_THAT(result.emoticons, ElementsAre(FieldsAre(Gt(0), ":-)")));
+  EXPECT_THAT(result.symbols, IsEmpty());
 }
 
 TEST_F(EmojiSearchTest, MultiKeywordPartialMatch) {
@@ -160,9 +170,11 @@ TEST_F(EmojiSearchTest, MultiKeywordPartialMatch) {
 
   EmojiSearch search;
 
-  std::vector<std::string> results = search.AllResultsForTesting("gr fa");
+  EmojiSearchResult result = search.SearchEmoji("gr fa");
 
-  EXPECT_THAT(results, ElementsAre("😀"));
+  EXPECT_THAT(result.emojis, ElementsAre(FieldsAre(Gt(0), "😀")));
+  EXPECT_THAT(result.symbols, IsEmpty());
+  EXPECT_THAT(result.emoticons, IsEmpty());
 }
 
 TEST_F(EmojiSearchTest, FindsSmilingEmoticon) {
@@ -184,9 +196,11 @@ TEST_F(EmojiSearchTest, FindsSmilingEmoticon) {
 
   EmojiSearch search;
 
-  std::vector<std::string> results = search.AllResultsForTesting("smiley");
+  EmojiSearchResult result = search.SearchEmoji("smiley");
 
-  EXPECT_THAT(results, ElementsAre(":-)"));
+  EXPECT_THAT(result.emoticons, ElementsAre(FieldsAre(Gt(0), ":-)")));
+  EXPECT_THAT(result.emojis, IsEmpty());
+  EXPECT_THAT(result.symbols, IsEmpty());
 }
 
 TEST_F(EmojiSearchTest, FindsSymbol) {
@@ -207,9 +221,11 @@ TEST_F(EmojiSearchTest, FindsSymbol) {
             {"string":":-)","name":"smiley face "}}]}])-"}}});
   EmojiSearch search;
 
-  std::vector<std::string> results = search.AllResultsForTesting("left");
+  EmojiSearchResult result = search.SearchEmoji("left");
 
-  EXPECT_THAT(results, ElementsAre("←"));
+  EXPECT_THAT(result.symbols, ElementsAre(FieldsAre(Gt(0), "←")));
+  EXPECT_THAT(result.emojis, IsEmpty());
+  EXPECT_THAT(result.emoticons, IsEmpty());
 }
 
 TEST_F(EmojiSearchTest, IgnoresCase) {
@@ -231,9 +247,11 @@ TEST_F(EmojiSearchTest, IgnoresCase) {
 
   EmojiSearch search;
 
-  std::vector<std::string> results = search.AllResultsForTesting("LEFT");
+  EmojiSearchResult result = search.SearchEmoji("LEFT");
 
-  EXPECT_THAT(results, ElementsAre("←"));
+  EXPECT_THAT(result.symbols, ElementsAre(FieldsAre(Gt(0), "←")));
+  EXPECT_THAT(result.emojis, IsEmpty());
+  EXPECT_THAT(result.emoticons, IsEmpty());
 }
 
 TEST_F(EmojiSearchTest, WholeNameScoresHigherThanPartialMatch) {
@@ -255,10 +273,12 @@ TEST_F(EmojiSearchTest, WholeNameScoresHigherThanPartialMatch) {
 
   EmojiSearch search;
 
-  std::vector<std::string> results =
-      search.AllResultsForTesting("grinning face");
+  EmojiSearchResult result = search.SearchEmoji("grinning face");
 
-  EXPECT_THAT(results, ElementsAre("😀a", "😀"));
+  EXPECT_THAT(result.emojis,
+              ElementsAre(FieldsAre(Gt(0), "😀a"), FieldsAre(Gt(0), "😀")));
+  EXPECT_THAT(result.symbols, IsEmpty());
+  EXPECT_THAT(result.emoticons, IsEmpty());
 }
 
 TEST_F(EmojiSearchTest, NameMatchScoresHigherThanKeyword) {
@@ -280,10 +300,12 @@ TEST_F(EmojiSearchTest, NameMatchScoresHigherThanKeyword) {
 
   EmojiSearch search;
 
-  std::vector<std::string> results =
-      search.AllResultsForTesting("grinning face");
+  EmojiSearchResult result = search.SearchEmoji("grinning face");
 
-  EXPECT_THAT(results, ElementsAre("😀a", "😀"));
+  EXPECT_THAT(result.emojis,
+              ElementsAre(FieldsAre(Gt(0), "😀a"), FieldsAre(Gt(0), "😀")));
+  EXPECT_THAT(result.symbols, IsEmpty());
+  EXPECT_THAT(result.emoticons, IsEmpty());
 }
 
 TEST_F(EmojiSearchTest, KeywordPartialScoresHigherThanFullKeywordMatch) {
@@ -305,10 +327,12 @@ TEST_F(EmojiSearchTest, KeywordPartialScoresHigherThanFullKeywordMatch) {
 
   EmojiSearch search;
 
-  std::vector<std::string> results =
-      search.AllResultsForTesting("grinning face");
+  EmojiSearchResult result = search.SearchEmoji("grinning face");
 
-  EXPECT_THAT(results, ElementsAre("😀", "😀a"));
+  EXPECT_THAT(result.emojis,
+              ElementsAre(FieldsAre(Gt(0), "😀"), FieldsAre(Gt(0), "😀a")));
+  EXPECT_THAT(result.symbols, IsEmpty());
+  EXPECT_THAT(result.emoticons, IsEmpty());
 }
 
 }  // namespace
