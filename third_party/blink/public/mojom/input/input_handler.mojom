@@ -88,11 +88,6 @@ struct MouseData {
   WheelData? wheel_data;
 };
 
-struct ScrollUpdate {
-  float velocity_x;
-  float velocity_y;
-};
-
 struct ScrollData {
   float delta_x;
   float delta_y;
@@ -104,7 +99,6 @@ struct ScrollData {
   // Used for GestureScrollBegin type only. If this is true, we use the scroll
   // sequence to do cursor control rather than scroll.
   bool cursor_control;
-  ScrollUpdate? update_details;
 };
 
 struct PinchBeginData {

@@ -139,12 +139,6 @@ class PLATFORM_EXPORT FrameWidget {
   virtual void SetDelegatedInkMetadata(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) = 0;
 
-  // Called when the main thread overscrolled.
-  virtual void DidOverscroll(const gfx::Vector2dF& overscroll_delta,
-                             const gfx::Vector2dF& accumulated_overscroll,
-                             const gfx::PointF& position,
-                             const gfx::Vector2dF& velocity) = 0;
-
   // For a scrollbar scroll action, requests that a gesture of |injected_type|
   // be reissued at a later point in time. |injected_type| is required to be one
   // of GestureScroll{Begin,Update,End}. The dispatched gesture will scroll the

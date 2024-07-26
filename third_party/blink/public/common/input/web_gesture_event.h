@@ -121,8 +121,6 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
     struct {
       float delta_x;
       float delta_y;
-      float velocity_x;
-      float velocity_y;
       InertialPhaseState inertial_phase;
       // Default initialized to kScrollByPrecisePixel.
       ui::ScrollGranularity delta_units;
@@ -241,9 +239,6 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
   gfx::PointF PositionInRootFrame() const;
   InertialPhaseState InertialPhase() const;
   bool Synthetic() const;
-
-  float VelocityX() const;
-  float VelocityY() const;
 
   gfx::SizeF TapAreaInRootFrame() const;
   int TapCount() const;

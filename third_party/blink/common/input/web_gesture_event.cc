@@ -180,20 +180,6 @@ bool WebGestureEvent::Synthetic() const {
   return data.scroll_end.synthetic;
 }
 
-float WebGestureEvent::VelocityX() const {
-  if (type_ == WebInputEvent::Type::kGestureScrollUpdate)
-    return data.scroll_update.velocity_x;
-  DCHECK_EQ(type_, WebInputEvent::Type::kGestureFlingStart);
-  return data.fling_start.velocity_x;
-}
-
-float WebGestureEvent::VelocityY() const {
-  if (type_ == WebInputEvent::Type::kGestureScrollUpdate)
-    return data.scroll_update.velocity_y;
-  DCHECK_EQ(type_, WebInputEvent::Type::kGestureFlingStart);
-  return data.fling_start.velocity_y;
-}
-
 gfx::SizeF WebGestureEvent::TapAreaInRootFrame() const {
   if (type_ == WebInputEvent::Type::kGestureTwoFingerTap) {
     return gfx::SizeF(data.two_finger_tap.first_finger_width / frame_scale_,

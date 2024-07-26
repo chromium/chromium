@@ -849,7 +849,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       ui::ScrollGranularity::kScrollByPrecisePixel;
   gesture_scroll_update.data.scroll_update.delta_x = 0.f;
   gesture_scroll_update.data.scroll_update.delta_y = 5.f;
-  gesture_scroll_update.data.scroll_update.velocity_y = 5.f;
 
   child_rwh->ForwardGestureEvent(gesture_scroll_update);
 

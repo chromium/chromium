@@ -170,8 +170,6 @@ TEST_F(WebInputEventConversionTest, InputEventsScaling) {
     web_gesture_event.SetPositionInScreen(gfx::PointF(20, 22));
     web_gesture_event.data.scroll_update.delta_x = 45;
     web_gesture_event.data.scroll_update.delta_y = 48;
-    web_gesture_event.data.scroll_update.velocity_x = 40;
-    web_gesture_event.data.scroll_update.velocity_y = 42;
     web_gesture_event.data.scroll_update.inertial_phase =
         WebGestureEvent::InertialPhaseState::kMomentum;
 
@@ -185,10 +183,6 @@ TEST_F(WebInputEventConversionTest, InputEventsScaling) {
     EXPECT_EQ(22, scaled_gesture_event.PositionInScreen().y());
     EXPECT_EQ(15, scaled_gesture_event.DeltaXInRootFrame());
     EXPECT_EQ(16, scaled_gesture_event.DeltaYInRootFrame());
-    // TODO: The velocity values may need to be scaled to page scale in
-    // order to remain consist with delta values.
-    EXPECT_EQ(40, scaled_gesture_event.VelocityX());
-    EXPECT_EQ(42, scaled_gesture_event.VelocityY());
     EXPECT_EQ(WebGestureEvent::InertialPhaseState::kMomentum,
               scaled_gesture_event.InertialPhase());
   }

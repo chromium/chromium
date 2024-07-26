@@ -3749,36 +3749,6 @@ void WebFrameWidgetImpl::ClearKeyboardTriggeredTooltip() {
   widget_base_->ClearKeyboardTriggeredTooltip();
 }
 
-void WebFrameWidgetImpl::DidOverscroll(
-    const gfx::Vector2dF& overscroll_delta,
-    const gfx::Vector2dF& accumulated_overscroll,
-    const gfx::PointF& position,
-    const gfx::Vector2dF& velocity) {
-#if BUILDFLAG(IS_MAC)
-  // On OSX the user can disable the elastic overscroll effect. If that's the
-  // case, don't forward the overscroll notification.
-  if (!widget_base_->LayerTreeHost()->GetSettings().enable_elastic_overscroll)
-    return;
-#endif
-
-  cc::OverscrollBehavior overscroll_behavior =
-      widget_base_->LayerTreeHost()->overscroll_behavior();
-  if (!widget_base_->input_handler().DidOverscrollFromBlink(
-          overscroll_delta, accumulated_overscroll, position, velocity,
-          overscroll_behavior))
-    return;
-
-  // If we're currently handling an event, stash the overscroll data such that
-  // it can be bundled in the event ack.
-  if (mojom::blink::WidgetInputHandlerHost* host =
-          widget_base_->widget_input_handler_manager()
-              ->GetWidgetInputHandlerHost()) {
-    host->DidOverscroll(mojom::blink::DidOverscrollParams::New(
-        accumulated_overscroll, overscroll_delta, velocity, position,
-        overscroll_behavior));
-  }
-}
-
 void WebFrameWidgetImpl::InjectScrollbarGestureScroll(
     const gfx::Vector2dF& delta,
     ui::ScrollGranularity granularity,
