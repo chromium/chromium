@@ -15,6 +15,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"

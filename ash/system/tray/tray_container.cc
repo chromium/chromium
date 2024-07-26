@@ -8,6 +8,7 @@
 
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"

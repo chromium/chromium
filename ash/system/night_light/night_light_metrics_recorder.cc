@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "base/metrics/histogram_functions.h"

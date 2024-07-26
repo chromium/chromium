@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_panel_drag_controller.h"

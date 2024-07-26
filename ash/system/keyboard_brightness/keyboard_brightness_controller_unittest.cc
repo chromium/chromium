@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/login/login_screen_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/test/ash_test_base.h"

@@ -54,6 +54,7 @@ static_library("session") {
     "//ash/public/cpp/external_arc:external_arc",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",

@@ -5,6 +5,7 @@
 #include "ash/system/focus_mode/focus_mode_metrics_recorder.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"

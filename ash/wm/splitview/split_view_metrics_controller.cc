@@ -8,6 +8,7 @@
 
 #include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"

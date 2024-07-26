@@ -16,6 +16,7 @@
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"

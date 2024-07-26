@@ -4,6 +4,7 @@
 
 #include "ash/wm/gestures/wm_gesture_handler.h"
 
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desks_controller.h"

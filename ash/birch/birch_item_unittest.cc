@@ -13,6 +13,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"

@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/session/session_types.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/api/tasks/tasks_types.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"

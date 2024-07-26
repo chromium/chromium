@@ -68,6 +68,7 @@
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/system/core_scheduling.h"
 #include "components/user_manager/user_manager.h"

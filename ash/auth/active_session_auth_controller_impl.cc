@@ -12,6 +12,7 @@
 #include "ash/auth/views/auth_view_utils.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"

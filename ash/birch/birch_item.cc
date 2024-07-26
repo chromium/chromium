@@ -24,6 +24,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/base/file_icon_util.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/skia/include/core/SkColor.h"

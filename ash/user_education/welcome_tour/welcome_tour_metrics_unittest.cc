@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "base/containers/enum_set.h"

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/video_conference/bubble/vc_tile_ui_controller.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"

@@ -5,6 +5,7 @@
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk.h"

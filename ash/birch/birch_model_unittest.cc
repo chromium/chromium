@@ -16,6 +16,7 @@
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/scoped_temp_dir.h"

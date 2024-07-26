@@ -7,6 +7,7 @@
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/events/test_event_capturer.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"

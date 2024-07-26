@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/public/cpp/desk_profiles_delegate.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"

@@ -4,6 +4,7 @@
 
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_controller.h"
 
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "base/check.h"

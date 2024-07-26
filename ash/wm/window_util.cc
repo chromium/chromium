@@ -17,6 +17,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"

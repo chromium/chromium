@@ -7,6 +7,7 @@
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/system_dialog_delegate_view.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"

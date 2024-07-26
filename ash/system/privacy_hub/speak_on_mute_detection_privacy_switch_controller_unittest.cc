@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"

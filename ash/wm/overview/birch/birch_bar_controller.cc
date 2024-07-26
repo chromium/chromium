@@ -6,6 +6,7 @@
 
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
@@ -19,6 +20,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {

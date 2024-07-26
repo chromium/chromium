@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/login_data_dispatcher.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/power/power_status.h"

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/virtual_trackpad/virtual_trackpad_view.h"
-
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/virtual_trackpad/virtual_trackpad_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"

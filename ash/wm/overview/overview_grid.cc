@@ -22,6 +22,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/screen_util.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"

@@ -12,6 +12,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/model/fake_power_status.h"
 #include "ash/system/model/fake_system_tray_model.h"

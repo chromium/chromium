@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "content/public/browser/device_service.h"

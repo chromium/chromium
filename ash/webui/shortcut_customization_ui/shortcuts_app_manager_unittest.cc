@@ -12,6 +12,7 @@
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
