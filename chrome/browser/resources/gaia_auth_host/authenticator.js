@@ -112,6 +112,7 @@ export let AuthCompletedCredentials;
  *   frameUrl: URL,
  *   isFirstUser : (boolean|undefined),
  *   recordAccountCreation : (boolean|undefined),
+ *   autoReloadAttempts : number,
  * }}
  */
 export let AuthParams;
@@ -236,6 +237,10 @@ export const SUPPORTED_PARAMS = [
   'pwl',
   // Control if the account creation during sign in flow should be handled.
   'recordAccountCreation',
+  // Url parameter for the number of automatic reloads done to the
+  // authentication flow to avoid login page timeout. Added for
+  // `DeviceAuthenticationFlowAutoReloadInterval` policy.
+  'autoReloadAttempts',
 ];
 
 // Timeout in ms to wait for the message from Gaia indicating end of the flow.
@@ -810,6 +815,9 @@ export class Authenticator extends EventTarget {
       if (data.rart) {
         url = appendParam(url, 'rart', data.rart);
       }
+      if (data.autoReloadAttempts) {
+        url = appendParam(url, 'auto_reload_attempts', data.autoReloadAttempts);
+      }
 
       return url;
     }
@@ -894,6 +902,9 @@ export class Authenticator extends EventTarget {
     }
     if (data.pwl) {
       url = appendParam(url, 'pwl', data.pwl);
+    }
+    if (data.autoReloadAttempts) {
+      url = appendParam(url, 'auto_reload_attempts', data.autoReloadAttempts);
     }
 
     return url;

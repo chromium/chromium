@@ -581,6 +581,9 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
         local_state->GetString(prefs::kUrlParameterToAutofillSAMLUsername));
   }
 
+  params.Set("autoReloadAttempts",
+             auth_flow_auto_reload_manager_.GetAttemptsCount());
+
   was_security_token_pin_canceled_ = false;
 
   CallExternalAPI("loadAuthenticator", std::move(params));
@@ -1229,6 +1232,7 @@ void GaiaScreenHandler::Hide() {
   hidden_ = true;
   network_state_informer_->RemoveObserver(this);
   enable_ash_httpauth_.reset();
+  auth_flow_auto_reload_manager_.Terminate();
 }
 
 void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {

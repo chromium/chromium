@@ -61,12 +61,13 @@ void AuthenticationFlowAutoReloadManager::Activate(base::OnceClosure callback) {
 void AuthenticationFlowAutoReloadManager::ReloadAuthenticationFlow() {
   // TODO(b/352023469): postpone reload if user started typing
   // TODO(b/352023931): handle window popups when auto reload is enabled
-  // TODO(b/352025280): add url parameter
+  ++auto_reload_attempts_;
   std::move(callback_).Run();
 }
 
 void AuthenticationFlowAutoReloadManager::Terminate() {
   auto_reload_timer_->Stop();
+  auto_reload_attempts_ = 0;
 }
 
 // TODO(b/353937966): Restart timer on policy being updated
@@ -111,6 +112,10 @@ void AuthenticationFlowAutoReloadManager::ResumeTimerForTesting() {
 
 bool AuthenticationFlowAutoReloadManager::IsTimerActiveForTesting() {
   return auto_reload_timer_->IsRunning();
+}
+
+int AuthenticationFlowAutoReloadManager::GetAttemptsCount() const {
+  return auto_reload_attempts_;
 }
 
 }  // namespace ash

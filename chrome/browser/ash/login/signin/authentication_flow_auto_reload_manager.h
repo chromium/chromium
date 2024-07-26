@@ -44,6 +44,8 @@ class AuthenticationFlowAutoReloadManager {
 
   bool IsTimerActiveForTesting();
 
+  int GetAttemptsCount() const;
+
  private:
   // Fetch policy value for the reload time interval
   std::optional<base::TimeDelta> GetAutoReloadInterval();
@@ -57,6 +59,8 @@ class AuthenticationFlowAutoReloadManager {
   base::OnceClosure callback_;
 
   std::unique_ptr<base::WallClockTimer> auto_reload_timer_;
+
+  int auto_reload_attempts_ = 0;
 
   static base::Clock* clock_for_testing_;
   static base::TickClock* tick_clock_for_testing_;
