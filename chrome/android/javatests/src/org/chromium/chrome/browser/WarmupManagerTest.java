@@ -37,6 +37,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.WarmupManager.SpareTabFinalStatus;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
@@ -344,9 +345,14 @@ public class WarmupManagerTest {
         ProfileType profileType = ProfileType.valueOf(profileParameter);
         Profile profile = getProfile(profileType);
         EmbeddedTestServer server = new EmbeddedTestServer();
-        // The predictor prepares 2 connections when asked to preconnect. Initializes the
-        // semaphore to be unlocked after 2 connections.
-        final Semaphore connectionsSemaphore = new Semaphore(1 - 2);
+        // The predictor prepares 1 or 2 connections when asked to preconnect. Initializes the
+        // semaphore to be unlocked after 1 or 2 connections.
+        int expectedConnections =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.LOADING_PREDICTOR_LIMIT_PRECONNECT_SOCKET_COUNT)
+                        ? 1
+                        : 2;
+        final Semaphore connectionsSemaphore = new Semaphore(1 - expectedConnections);
         // Cannot use EmbeddedTestServer#createAndStartServer(), as we need to add the
         // connection listener.
         server.initializeNative(mContext, EmbeddedTestServer.ServerHTTPSSetting.USE_HTTP);
@@ -370,8 +376,10 @@ public class WarmupManagerTest {
             // Starts at -1.
             int actualConnections = connectionsSemaphore.availablePermits() + 1;
             Assert.fail(
-                    "Pre-connect failed for regular profile: Expected 2 connections, got "
-                            + actualConnections);
+                    String.format(
+                            "Pre-connect failed for regular profile: Expected %d connections, got"
+                                    + " %d",
+                            expectedConnections, actualConnections));
         } else if (profileType != ProfileType.REGULAR_PROFILE && isAcquired) {
             Assert.fail("Pre-connect should fail for incognito profiles.");
         }

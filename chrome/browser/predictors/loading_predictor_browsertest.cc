@@ -397,7 +397,10 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
          features::kNavigationPredictorPreconnectHoldback},
         // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
         // disable this feature.
-        {features::kHttpsUpgrades});
+        {features::kHttpsUpgrades,
+         // TODO(crbug.com/354087603): Update tests when this feature has
+         // positive (or neutral) effect of loading performance.
+         features::kLoadingPredictorLimitPreconnectSocketCount});
   }
 
   LoadingPredictorBrowserTest(const LoadingPredictorBrowserTest&) = delete;
