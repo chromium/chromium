@@ -26,6 +26,40 @@ function createQuickStartQR(): boolean[] {
   return qrData;
 }
 
+function createPerksData() {
+  return [
+    {
+      perkId: 'google_one',
+      title: 'Get 100G of cloud storage',
+      subtitle:
+          'Your Chromebook comes with 100GB of cloud storage. Enjoy plenty of space for all your files and photos with 12 months of Google One at no cost. Terms apply.',
+      iconUrl:
+          'https://www.gstatic.com/chromeos-oobe-eng/oobe-perks/google_one_icon.svg',
+      illustrationUrl:
+          'https://www.gstatic.com/chromeos-oobe-eng/oobe-perks/google_one_illustration.svg',
+      illustrationWidth: '406px',
+      illustrationHeight: '342px',
+      primaryButtonLabel: 'Get perk after setup',
+      secondaryButtonLabel: 'Not interested',
+    },
+    {
+      perkId: 'youtube_premuim',
+      title: 'Get 3 months of YouTube Premium on us',
+      subtitle:
+          'Get 3 months of YouTube Premium free of charge with your Chromebook and enjoy your favorite videos and music, ad-free.',
+      iconUrl:
+          'https://www.gstatic.com/chromeos-oobe-eng/oobe-perks/youtube_icon.svg',
+      illustrationUrl:
+          'https://www.gstatic.com/chromeos-oobe-eng/oobe-perks/youtube_illustration.svg',
+      illustrationWidth: '400px',
+      illustrationHeight: '280px',
+      primaryButtonLabel: 'Get perk after setup',
+      secondaryButtonLabel: 'Not interested',
+    },
+  ];
+}
+
+
 function createCategoriesAppsData() {
   const data = [
     {
@@ -457,6 +491,20 @@ const KNOWN_SCREENS: ScreenDefType[] = [
   {
     id: 'consumer-update',
     kind: ScreenKind.NORMAL,
+  },
+  {
+    id: 'perks-discovery',
+    kind: ScreenKind.NORMAL,
+    handledSteps: 'overview',
+    states: [
+      {
+        id: 'overview',
+        trigger: (screen: any) => {
+          screen.setUIStep('overview');
+          screen.setPerksData(createPerksData());
+        },
+      },
+    ],
   },
   {
     id: 'auto-enrollment-check',
