@@ -17,7 +17,6 @@
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/SettingsLauncherImpl_jni.h"
 #include "chrome/browser/password_manager/android/account_storage_notice/jni/AccountStorageNoticeCoordinator_jni.h"
 
 using base::android::AttachCurrentThread;
@@ -36,8 +35,7 @@ std::unique_ptr<AccountStorageNotice> AccountStorageNotice::MaybeShow(
           password_manager::IsGmsCoreUpdateRequired(
               pref_service, sync_service,
               base::android::BuildInfo::GetInstance()->gms_version_code()),
-          pref_service->GetJavaObject(), window_android->GetJavaObject(),
-          Java_SettingsLauncherImpl_create(AttachCurrentThread()));
+          pref_service->GetJavaObject(), window_android->GetJavaObject());
   if (java_coordinator) {
     return base::WrapUnique(
         new AccountStorageNotice(java_coordinator, std::move(done_cb)));

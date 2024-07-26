@@ -169,7 +169,6 @@ import org.chromium.chrome.browser.read_later.ReadingListBackPressHandler;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMagicStackBuilder;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.single_tab.SingleTabModuleBuilder;
@@ -227,7 +226,6 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
@@ -294,9 +292,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     // Name of the ChromeTabbedActivity alias that handles MAIN intents.
     public static final String MAIN_LAUNCHER_ACTIVITY_NAME = "com.google.android.apps.chrome.Main";
-
-    public static final SettingsLauncher SETTINGS_LAUNCHER =
-            SettingsLauncherFactory.createSettingsLauncher();
 
     public static final Set<String> TABBED_MODE_COMPONENT_NAMES =
             Set.of(
@@ -661,7 +656,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             // LocaleManager can only function after the native library is loaded.
             mLocaleManager = LocaleManager.getInstance();
-            mLocaleManager.setSettingsLauncher(SETTINGS_LAUNCHER);
             mLocaleManager.showSearchEnginePromoIfNeeded(this, null);
 
             mTabModelOrchestrator.onNativeLibraryReady(getTabContentManager());
@@ -1150,8 +1144,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mLocaleManager.startObservingPhoneChanges();
 
         // This call is not guarded by a feature flag.
-        SearchEngineChoiceNotification.handleSearchEngineChoice(
-                this, getSnackbarManager(), SETTINGS_LAUNCHER);
+        SearchEngineChoiceNotification.handleSearchEngineChoice(this, getSnackbarManager());
 
         if (!isWarmOnResume()) {
             getProfileProviderSupplier()
@@ -2210,7 +2203,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 && ChromeFeatureList.sSafetyHubMagicStack.isEnabled()) {
             SafetyHubMagicStackBuilder safetyHubMagicStackBuilder =
                     new SafetyHubMagicStackBuilder(
-                            this, mTabModelProfileSupplier, mTabModelSelector, SETTINGS_LAUNCHER);
+                            this, mTabModelProfileSupplier, mTabModelSelector);
             moduleRegistry.registerModule(ModuleType.SAFETY_HUB, safetyHubMagicStackBuilder);
         }
 

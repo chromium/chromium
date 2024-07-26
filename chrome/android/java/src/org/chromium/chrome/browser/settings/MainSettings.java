@@ -131,8 +131,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.settings);
-        mPasswordCheck =
-                PasswordCheckFactory.getOrCreate(SettingsLauncherFactory.createSettingsLauncher());
+        mPasswordCheck = PasswordCheckFactory.getOrCreate();
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
         if (signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false)) {
             signinManager.addSignInStateObserver(this);

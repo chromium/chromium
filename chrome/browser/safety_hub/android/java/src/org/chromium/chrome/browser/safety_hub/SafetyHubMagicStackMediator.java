@@ -14,9 +14,9 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -29,7 +29,6 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
     private final MagicStackBridge mMagicStackBridge;
     private final TabModelSelector mTabModelSelector;
     private final ModuleDelegate mModuleDelegate;
-    private final SettingsLauncher mSettingsLauncher;
     private final PrefChangeRegistrar mPrefChangeRegistrar;
 
     private boolean mHasBeenDismissed;
@@ -41,7 +40,6 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
             MagicStackBridge magicStackBridge,
             TabModelSelector tabModelSelector,
             ModuleDelegate moduleDelegate,
-            SettingsLauncher settingsLauncher,
             PrefChangeRegistrar prefChangeRegistrar) {
         mContext = context;
         mPrefService = prefService;
@@ -49,7 +47,6 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mMagicStackBridge = magicStackBridge;
         mTabModelSelector = tabModelSelector;
         mModuleDelegate = moduleDelegate;
-        mSettingsLauncher = settingsLauncher;
         mPrefChangeRegistrar = prefChangeRegistrar;
     }
 
@@ -154,8 +151,8 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) ->
-                        mSettingsLauncher.launchSettingsActivity(
-                                mContext, SafetyHubFragment.class));
+                        SettingsLauncherFactory.createSettingsLauncher()
+                                .launchSettingsActivity(mContext, SafetyHubFragment.class));
     }
 
     private void bindSafeBrowsingView(@NonNull String summary) {
@@ -180,7 +177,8 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) ->
-                        mSettingsLauncher.launchSettingsActivity(
-                                mContext, SafeBrowsingSettingsFragment.class));
+                        SettingsLauncherFactory.createSettingsLauncher()
+                                .launchSettingsActivity(
+                                        mContext, SafeBrowsingSettingsFragment.class));
     }
 }

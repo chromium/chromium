@@ -115,7 +115,6 @@ public class QuickDeleteController {
                         modalDialogManager,
                         this::onDialogDismissed,
                         tabModelSelector,
-                        mDelegate.getSettingsLauncher(),
                         mQuickDeleteMediator);
         dialogDelegate.showDialog();
     }

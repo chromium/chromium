@@ -188,7 +188,6 @@ public class PasswordCheckViewTest {
         PasswordCheckComponentUiFactory.setCreationStrategy(
                 (fragmentView,
                         helpAndFeedbackLauncher,
-                        settingsLauncher,
                         customTabIntentHelper,
                         trustedIntentHelper,
                         profile) -> {

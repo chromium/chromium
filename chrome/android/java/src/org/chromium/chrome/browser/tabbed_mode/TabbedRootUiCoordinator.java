@@ -92,7 +92,6 @@ import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeContr
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
 import org.chromium.chrome.browser.readaloud.ReadAloudIPHController;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextIPHController;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoSharingControllerImpl;
@@ -725,7 +724,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mTabModelSelectorSupplier.get(),
                         mModalDialogManagerSupplier.get(),
                         new IncognitoReauthManager(mActivity, profile),
-                        SettingsLauncherFactory.createSettingsLauncher(),
                         mLayoutManager,
                         mHubManagerSupplier,
                         /* showRegularOverviewIntent= */ null,
@@ -849,11 +847,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             Profile profile, boolean wasPromoTriggered) {
         if (!wasPromoTriggered && TrackingProtectionNoticeController.shouldShowNotice(profile)) {
             TrackingProtectionNoticeController.create(
-                    mActivity,
-                    profile,
-                    mActivityTabProvider,
-                    mMessageDispatcher,
-                    SettingsLauncherFactory.createSettingsLauncher());
+                    mActivity, profile, mActivityTabProvider, mMessageDispatcher);
             // Promo will be triggered eventually. We don't want for this promo to clash with other
             // promos in the same run.
             return true;
@@ -1004,7 +998,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     mActivity,
                     tab != null ? tab.getProfile() : profile,
                     tab != null ? tab.getWebContents() : null,
-                    SettingsLauncherFactory.createSettingsLauncher(),
                     mMessageDispatcher);
         }
 

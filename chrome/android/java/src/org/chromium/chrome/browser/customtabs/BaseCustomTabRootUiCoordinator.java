@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionSnackbarCon
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudIPHController;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
@@ -449,7 +448,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 mTabModelSelectorSupplier.get(),
                 mModalDialogManagerSupplier.get(),
                 new IncognitoReauthManager(mActivity, profile),
-                SettingsLauncherFactory.createSettingsLauncher(),
                 /* layoutManager= */ null,
                 /* hubManagerSupplier= */ null,
                 /* showRegularOverviewIntent= */ showRegularOverviewIntent,

@@ -250,7 +250,6 @@ void PasswordUIViewAndroid::HandleSerializePasswords(
 void PasswordUIViewAndroid::HandleShowPasswordEntryEditingView(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& context,
-    const base::android::JavaRef<jobject>& settings_launcher,
     int index,
     const JavaParamRef<jobject>& obj) {
   if (static_cast<size_t>(index) >= passwords_.size() ||
@@ -267,13 +266,12 @@ void PasswordUIViewAndroid::HandleShowPasswordEntryEditingView(
       &saved_passwords_presenter_,
       base::BindOnce(&PasswordUIViewAndroid::OnEditUIDismissed,
                      base::Unretained(this)),
-      context, settings_launcher);
+      context);
 }
 
 void PasswordUIViewAndroid::HandleShowBlockedCredentialView(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& context,
-    const base::android::JavaRef<jobject>& settings_launcher,
     int index,
     const JavaParamRef<jobject>& obj) {
   if (static_cast<size_t>(index) >= blocked_sites_.size() ||
@@ -285,7 +283,7 @@ void PasswordUIViewAndroid::HandleShowBlockedCredentialView(
       std::vector<std::u16string>(), &saved_passwords_presenter_,
       base::BindOnce(&PasswordUIViewAndroid::OnEditUIDismissed,
                      base::Unretained(this)),
-      context, settings_launcher);
+      context);
 }
 
 void PasswordUIViewAndroid::ShowMigrationWarning(

@@ -274,6 +274,8 @@ robolectric_binary("password_manager_junit_tests") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/safety_check/android:java",
+    "//chrome/browser/settings:factory_java",
+    "//chrome/browser/settings:internal_java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
     "//chrome/test/android:chrome_java_unit_test_support",

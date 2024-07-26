@@ -14,8 +14,8 @@ import androidx.annotation.Nullable;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
@@ -26,7 +26,6 @@ import java.util.function.Consumer;
 /** Handle the events related to {@link OmniboxAction}. */
 public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
     private final @NonNull Context mContext;
-    private final @NonNull SettingsLauncher mSettingsLauncher;
     private final @NonNull Consumer<String> mOpenUrlInExistingTabElseNewTabCb;
     private final @NonNull Runnable mOpenIncognitoTabCb;
     private final @NonNull Runnable mOpenPasswordSettingsCb;
@@ -36,14 +35,12 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
     public OmniboxActionDelegateImpl(
             @NonNull Context context,
             @NonNull Supplier<Tab> tabSupplier,
-            @NonNull SettingsLauncher settingsLauncher,
             @NonNull Consumer<String> openUrlInExistingTabElseNewTabCb,
             @NonNull Runnable openIncognitoTabCb,
             @NonNull Runnable openPasswordSettingsCb,
             @Nullable Runnable openQuickDeleteCb) {
         mContext = context;
         mTabSupplier = tabSupplier;
-        mSettingsLauncher = settingsLauncher;
         mOpenUrlInExistingTabElseNewTabCb = openUrlInExistingTabElseNewTabCb;
         mOpenIncognitoTabCb = openIncognitoTabCb;
         mOpenPasswordSettingsCb = openPasswordSettingsCb;
@@ -71,7 +68,7 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
 
     @Override
     public void openSettingsPage(@SettingsFragment int fragment) {
-        mSettingsLauncher.launchSettingsActivity(mContext, fragment);
+        SettingsLauncherFactory.createSettingsLauncher().launchSettingsActivity(mContext, fragment);
     }
 
     @Override

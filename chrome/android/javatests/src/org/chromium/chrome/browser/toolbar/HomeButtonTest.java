@@ -30,6 +30,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButton;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -84,7 +85,7 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
                                     homeButton,
                                     HomepageManager.getInstance()::onMenuClick,
                                     () -> false);
-                    HomepageManager.getInstance().setSettingsLauncherForTesting(mSettingsLauncher);
+                    SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
 
                     content.addView(homeButton);
                 });

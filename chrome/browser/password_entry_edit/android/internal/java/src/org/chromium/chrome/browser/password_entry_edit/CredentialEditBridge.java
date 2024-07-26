@@ -13,11 +13,12 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditCoordinator.CredentialActionDelegate;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditCoordinator.UiDismissalHandler;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
- * Class mediating the communication between the credential edit UI and the C++ part responsible
- * for saving the changes.
+ * Class mediating the communication between the credential edit UI and the C++ part responsible for
+ * saving the changes.
  */
 class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelegate {
     private static CredentialEditBridge sCredentialEditBridge;
@@ -45,10 +46,10 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
     void initAndLaunchUi(
             long nativeCredentialEditBridge,
             Context context,
-            SettingsLauncher settingsLauncher,
             boolean isBlockedCredential,
             boolean isFederatedCredential) {
         mNativeCredentialEditBridge = nativeCredentialEditBridge;
+        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         if (isBlockedCredential) {
             settingsLauncher.launchSettingsActivity(context, BlockedCredentialFragmentView.class);
             return;

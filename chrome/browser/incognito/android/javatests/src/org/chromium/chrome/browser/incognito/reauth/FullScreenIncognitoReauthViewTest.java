@@ -33,6 +33,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.R;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -67,15 +68,14 @@ public class FullScreenIncognitoReauthViewTest extends BlankUiTestActivityTestCa
     public void setUpTest() throws Exception {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
+        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncherMock);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(R.layout.incognito_reauth_view);
                     mView = getActivity().findViewById(android.R.id.content);
                     mIncognitoReauthMenuDelegate =
                             new IncognitoReauthMenuDelegate(
-                                    getActivity(),
-                                    mCloseAllIncognitoTabsRunnable,
-                                    mSettingsLauncherMock);
+                                    getActivity(), mCloseAllIncognitoTabsRunnable);
                 });
     }
 

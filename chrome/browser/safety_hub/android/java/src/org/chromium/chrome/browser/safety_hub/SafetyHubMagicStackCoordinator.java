@@ -11,7 +11,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -23,8 +22,7 @@ class SafetyHubMagicStackCoordinator implements ModuleProvider {
             Context context,
             Profile profile,
             TabModelSelector tabModelSelector,
-            ModuleDelegate moduleDelegate,
-            SettingsLauncher settingsLauncher) {
+            ModuleDelegate moduleDelegate) {
         PropertyModel model = new PropertyModel(SafetyHubMagicStackViewProperties.ALL_KEYS);
         mMediator =
                 new SafetyHubMagicStackMediator(
@@ -34,7 +32,6 @@ class SafetyHubMagicStackCoordinator implements ModuleProvider {
                         MagicStackBridge.getForProfile(profile),
                         tabModelSelector,
                         moduleDelegate,
-                        settingsLauncher,
                         new PrefChangeRegistrar());
     }
 

@@ -38,8 +38,8 @@ import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -152,7 +152,6 @@ public class PasswordManagerHelper {
     public void showPasswordSettings(
             Context context,
             @ManagePasswordsReferrer int referrer,
-            SettingsLauncher settingsLauncher,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             boolean managePasskeys,
             @Nullable String account) {
@@ -212,8 +211,9 @@ public class PasswordManagerHelper {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(MANAGE_PASSWORDS_REFERRER, referrer);
         context.startActivity(
-                settingsLauncher.createSettingsActivityIntent(
-                        context, SettingsFragment.PASSWORDS, fragmentArgs));
+                SettingsLauncherFactory.createSettingsLauncher()
+                        .createSettingsActivityIntent(
+                                context, SettingsFragment.PASSWORDS, fragmentArgs));
     }
 
     /**

@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.search_engines.TemplateUrlService;
 
 /**
@@ -89,11 +88,11 @@ public class SearchEngineSettings extends ListFragment implements ProfileDepende
     /**
      * Sets an instance of SettingsLauncher in a fragment.
      *
-     * @param settingsLauncher The SettingsLauncher that is injected.
+     * <p>TODO(crbug.com/354019554): Remove this since SettingsLauncher does not need to be set
+     * anymore.
      */
-    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
+    public void setSettingsLauncher() {
         createAdapterIfNecessary();
-        mSearchEngineAdapter.setSettingsLauncher(settingsLauncher);
     }
 
     private void createAdapterIfNecessary() {

@@ -29,10 +29,10 @@ import org.chromium.chrome.browser.search_engines.SogouPromoDialog;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogCoordinator;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.PageTransition;
@@ -58,7 +58,6 @@ public class LocaleManagerDelegate {
     // SnackbarManager is owned by ChromeActivity and is not null as long as the activity is alive.
     private WeakReference<SnackbarManager> mSnackbarManager = new WeakReference<>(null);
     private LocaleTemplateUrlLoader mLocaleTemplateUrlLoader;
-    @Nullable private SettingsLauncher mSettingsLauncher;
     private DefaultSearchEngineDialogHelper.Delegate mSearchEngineHelperDelegate;
 
     private SnackbarController mSnackbarController =
@@ -68,9 +67,9 @@ public class LocaleManagerDelegate {
 
                 @Override
                 public void onAction(Object actionData) {
-                    assert mSettingsLauncher != null;
                     Context context = ContextUtils.getApplicationContext();
-                    mSettingsLauncher.launchSettingsActivity(context, SearchEngineSettings.class);
+                    SettingsLauncherFactory.createSettingsLauncher()
+                            .launchSettingsActivity(context, SearchEngineSettings.class);
                 }
             };
 
@@ -219,8 +218,7 @@ public class LocaleManagerDelegate {
                                 new SogouPromoDialog(
                                                 activity,
                                                 this::onSelectSearchEngine,
-                                                finalizeInternalCallback,
-                                                mSettingsLauncher)
+                                                finalizeInternalCallback)
                                         .show();
                 break;
             case SearchEnginePromoType.SHOW_EXISTING:
@@ -299,11 +297,6 @@ public class LocaleManagerDelegate {
     /** @see LocaleManager#setSnackbarManager */
     public void setSnackbarManager(SnackbarManager manager) {
         mSnackbarManager = new WeakReference<SnackbarManager>(manager);
-    }
-
-    /** @see LocaleManager#setSettingsLauncher */
-    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
-        mSettingsLauncher = settingsLauncher;
     }
 
     private void showSnackbar(CharSequence title) {

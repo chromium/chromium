@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.password_check.CompromisedCredential;
 import org.chromium.chrome.browser.password_check.PasswordChangeType;
 import org.chromium.chrome.browser.password_check.PasswordCheckComponentUi;
 import org.chromium.chrome.browser.password_check.PasswordCheckUkmRecorder;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 import java.util.Objects;
 
@@ -26,17 +25,14 @@ import java.util.Objects;
  */
 public class PasswordCheckChangePasswordHelper {
     private final Context mContext;
-    private final SettingsLauncher mSettingsLauncher;
     private final PasswordCheckComponentUi.CustomTabIntentHelper mCustomTabIntentHelper;
     private final PasswordCheckComponentUi.TrustedIntentHelper mTrustedIntentHelper;
 
     public PasswordCheckChangePasswordHelper(
             Context context,
-            SettingsLauncher settingsLauncher,
             PasswordCheckComponentUi.CustomTabIntentHelper customTabIntentHelper,
             PasswordCheckComponentUi.TrustedIntentHelper trustedIntentHelper) {
         mContext = context;
-        mSettingsLauncher = settingsLauncher;
         mCustomTabIntentHelper = customTabIntentHelper;
         mTrustedIntentHelper = trustedIntentHelper;
     }

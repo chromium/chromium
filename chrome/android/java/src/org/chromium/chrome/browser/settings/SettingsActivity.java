@@ -546,7 +546,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     mProfile,
                     new SafetyCheckUpdatesDelegateImpl(),
                     new SafetyCheckBridge(mProfile),
-                    mSettingsLauncher,
                     SigninAndHistorySyncActivityLauncherImpl.get(),
                     SyncConsentActivityLauncherImpl.get(),
                     getModalDialogManagerSupplier(),
@@ -559,7 +558,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             PasswordCheckComponentUiFactory.create(
                     (PasswordCheckFragmentView) fragment,
                     HelpAndFeedbackLauncherImpl.getForProfile(mProfile),
-                    mSettingsLauncher,
                     LaunchIntentDispatcher::createCustomTabActivityIntent,
                     IntentUtils::addTrustedIntentExtras,
                     mProfile);
@@ -573,7 +571,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             SearchEngineSettings settings = (SearchEngineSettings) fragment;
             settings.setDisableAutoSwitchRunnable(
                     () -> LocaleManager.getInstance().setSearchEngineAutoSwitch(false));
-            settings.setSettingsLauncher(mSettingsLauncher);
+            settings.setSettingsLauncher();
         }
         if (fragment instanceof ImageDescriptionsSettings) {
             ImageDescriptionsSettings imageFragment = (ImageDescriptionsSettings) fragment;

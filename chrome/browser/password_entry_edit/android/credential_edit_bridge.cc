@@ -28,8 +28,7 @@ std::unique_ptr<CredentialEditBridge> CredentialEditBridge::MaybeCreate(
     std::vector<std::u16string> existing_usernames,
     password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
     base::OnceClosure dismissal_callback,
-    const base::android::JavaRef<jobject>& context,
-    const base::android::JavaRef<jobject>& settings_launcher) {
+    const base::android::JavaRef<jobject>& context) {
   base::android::ScopedJavaGlobalRef<jobject> java_bridge;
   java_bridge.Reset(Java_CredentialEditBridge_maybeCreate(
       base::android::AttachCurrentThread()));
@@ -39,8 +38,7 @@ std::unique_ptr<CredentialEditBridge> CredentialEditBridge::MaybeCreate(
   return base::WrapUnique(new CredentialEditBridge(
       std::move(credential), is_insecure_credential,
       std::move(existing_usernames), saved_passwords_presenter,
-      std::move(dismissal_callback), context, settings_launcher,
-      std::move(java_bridge)));
+      std::move(dismissal_callback), context, std::move(java_bridge)));
 }
 
 CredentialEditBridge::CredentialEditBridge(
@@ -50,7 +48,6 @@ CredentialEditBridge::CredentialEditBridge(
     password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
     base::OnceClosure dismissal_callback,
     const base::android::JavaRef<jobject>& context,
-    const base::android::JavaRef<jobject>& settings_launcher,
     base::android::ScopedJavaGlobalRef<jobject> java_bridge)
     : credential_(std::move(credential)),
       is_insecure_credential_(is_insecure_credential),
@@ -60,8 +57,8 @@ CredentialEditBridge::CredentialEditBridge(
       java_bridge_(java_bridge) {
   Java_CredentialEditBridge_initAndLaunchUi(
       base::android::AttachCurrentThread(), java_bridge_,
-      reinterpret_cast<intptr_t>(this), context, settings_launcher,
-      credential.blocked_by_user, credential.federation_origin.IsValid());
+      reinterpret_cast<intptr_t>(this), context, credential.blocked_by_user,
+      credential.federation_origin.IsValid());
 }
 
 CredentialEditBridge::~CredentialEditBridge() {

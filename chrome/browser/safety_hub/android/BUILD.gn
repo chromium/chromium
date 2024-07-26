@@ -122,6 +122,7 @@ robolectric_library("junit") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/safe_browsing/android:java",
+    "//chrome/browser/settings:factory_java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
     "//chrome/browser/tabmodel:java",

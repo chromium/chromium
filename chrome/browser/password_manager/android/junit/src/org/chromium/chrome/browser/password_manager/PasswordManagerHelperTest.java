@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper.PasswordCheckOperation;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
@@ -169,6 +170,8 @@ public class PasswordManagerHelperTest {
                 .thenReturn(mCredentialManagerLauncherMock);
         CredentialManagerLauncherFactory.setFactoryForTesting(
                 mCredentialManagerLauncherFactoryMock);
+
+        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncherMock);
     }
 
     @Test
@@ -293,7 +296,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS);
@@ -310,7 +312,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS);
@@ -376,7 +377,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS);
@@ -485,7 +485,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS);
@@ -510,7 +509,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 mockContext,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS);
@@ -529,7 +527,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 mockContext,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS);
@@ -549,7 +546,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS);
@@ -581,7 +577,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS);
@@ -609,7 +604,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS);
@@ -637,7 +631,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS);
@@ -666,7 +659,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS);
@@ -695,7 +687,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS);
@@ -724,7 +715,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS);
@@ -1746,7 +1736,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS);
@@ -1777,7 +1766,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS);
@@ -1815,7 +1803,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS);
@@ -1847,7 +1834,6 @@ public class PasswordManagerHelperTest {
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mSettingsLauncherMock,
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS);

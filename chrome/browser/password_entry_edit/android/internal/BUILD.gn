@@ -35,6 +35,7 @@ android_library("java") {
     "//chrome/browser/password_entry_edit/android:java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:factory_java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/settings/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",

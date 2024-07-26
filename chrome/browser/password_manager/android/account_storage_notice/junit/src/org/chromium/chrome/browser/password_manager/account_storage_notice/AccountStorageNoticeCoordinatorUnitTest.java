@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -73,7 +72,6 @@ public class AccountStorageNoticeCoordinatorUnitTest {
     @Mock private PrefService mPrefService;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Context mContext;
-    @Mock private SettingsLauncher mSettingsLauncher;
 
     @Before
     public void setUp() {
@@ -95,8 +93,7 @@ public class AccountStorageNoticeCoordinatorUnitTest {
                         /* hasChosenToSyncPasswords= */ false,
                         /* isGmsCoreUpdateRequired= */ false,
                         mPrefService,
-                        mWindowAndroid,
-                        mSettingsLauncher);
+                        mWindowAndroid);
 
         Assert.assertEquals(coordinator, null);
         verify(mPrefService, never())
@@ -115,8 +112,7 @@ public class AccountStorageNoticeCoordinatorUnitTest {
                         /* hasChosenToSyncPasswords= */ true,
                         /* isGmsCoreUpdateRequired= */ false,
                         mPrefService,
-                        mWindowAndroid,
-                        mSettingsLauncher);
+                        mWindowAndroid);
 
         Assert.assertEquals(coordinator, null);
         verify(mPrefService, never())
@@ -135,8 +131,7 @@ public class AccountStorageNoticeCoordinatorUnitTest {
                         /* hasChosenToSyncPasswords= */ true,
                         /* isGmsCoreUpdateRequired= */ true,
                         mPrefService,
-                        mWindowAndroid,
-                        mSettingsLauncher);
+                        mWindowAndroid);
 
         Assert.assertEquals(coordinator, null);
         verify(mPrefService, never())
@@ -155,8 +150,7 @@ public class AccountStorageNoticeCoordinatorUnitTest {
                         /* hasChosenToSyncPasswords= */ true,
                         /* isGmsCoreUpdateRequired= */ false,
                         mPrefService,
-                        mWindowAndroid,
-                        mSettingsLauncher);
+                        mWindowAndroid);
 
         Assert.assertEquals(coordinator, null);
         verify(mPrefService, never())
@@ -176,8 +170,7 @@ public class AccountStorageNoticeCoordinatorUnitTest {
                         /* hasChosenToSyncPasswords= */ true,
                         /* isGmsCoreUpdateRequired= */ false,
                         mPrefService,
-                        mWindowAndroid,
-                        mSettingsLauncher);
+                        mWindowAndroid);
 
         Assert.assertEquals(coordinator, null);
         verify(mPrefService, never())
@@ -197,8 +190,7 @@ public class AccountStorageNoticeCoordinatorUnitTest {
                         /* hasChosenToSyncPasswords= */ true,
                         /* isGmsCoreUpdateRequired= */ false,
                         mPrefService,
-                        mWindowAndroid,
-                        mSettingsLauncher);
+                        mWindowAndroid);
 
         Assert.assertEquals(coordinator, null);
         verify(mPrefService, never())
@@ -218,8 +210,7 @@ public class AccountStorageNoticeCoordinatorUnitTest {
                         /* hasChosenToSyncPasswords= */ true,
                         /* isGmsCoreUpdateRequired= */ false,
                         mPrefService,
-                        mWindowAndroid,
-                        mSettingsLauncher);
+                        mWindowAndroid);
 
         Assert.assertNotEquals(coordinator, null);
         verify(mPrefService).setBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN, true);

@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -206,8 +205,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPasswordCheck =
-                PasswordCheckFactory.getOrCreate(SettingsLauncherFactory.createSettingsLauncher());
+        mPasswordCheck = PasswordCheckFactory.getOrCreate();
         computeTrustedVaultBannerState();
     }
 
@@ -541,7 +539,6 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
                     .getPasswordManagerHandler()
                     .showPasswordEntryEditingView(
                             getActivity(),
-                            SettingsLauncherFactory.createSettingsLauncher(),
                             preference.getExtras().getInt(PasswordSettings.PASSWORD_LIST_ID),
                             isBlockedCredential);
         }
@@ -626,9 +623,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         // Add a listener which launches a settings page for the leak password check
         checkPasswords.setOnPreferenceClickListener(
                 preference -> {
-                    PasswordCheck passwordCheck =
-                            PasswordCheckFactory.getOrCreate(
-                                    SettingsLauncherFactory.createSettingsLauncher());
+                    PasswordCheck passwordCheck = PasswordCheckFactory.getOrCreate();
                     passwordCheck.showUi(
                             getStyledContext(), PasswordCheckReferrer.PASSWORD_SETTINGS);
                     // Return true to notify the click was handled.

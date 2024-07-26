@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.provider.Browser;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Callback;
@@ -22,6 +21,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
@@ -56,7 +56,6 @@ public class TrackingProtectionNoticeController {
     private final ActivityTabProvider mActivityTabProvider;
     private ActivityTabTabObserver mActivityTabTabObserver;
     private final MessageDispatcher mMessageDispatcher;
-    private final SettingsLauncher mSettingsLauncher;
     private static final String TRACKING_PROTECTION_HELP_CENTER =
             "https://support.google.com/chrome/?p=tracking_protection";
 
@@ -127,27 +126,23 @@ public class TrackingProtectionNoticeController {
             Context context,
             Profile profile,
             ActivityTabProvider activityTabProvider,
-            MessageDispatcher messageDispatcher,
-            @NonNull SettingsLauncher settingsLauncher) {
+            MessageDispatcher messageDispatcher) {
         return new TrackingProtectionNoticeController(
                 context,
                 new TrackingProtectionBridge(profile),
                 activityTabProvider,
-                messageDispatcher,
-                settingsLauncher);
+                messageDispatcher);
     }
 
     private TrackingProtectionNoticeController(
             Context context,
             TrackingProtectionBridge trackingProtectionBridge,
             ActivityTabProvider activityTabProvider,
-            MessageDispatcher messageDispatcher,
-            SettingsLauncher settingsLauncher) {
+            MessageDispatcher messageDispatcher) {
         mContext = context;
         mTrackingProtectionBridge = trackingProtectionBridge;
         mActivityTabProvider = activityTabProvider;
         mMessageDispatcher = messageDispatcher;
-        mSettingsLauncher = settingsLauncher;
 
         createActivityTabTabObserver(tab -> showNotice());
     }
@@ -325,8 +320,10 @@ public class TrackingProtectionNoticeController {
                 int clickedItemID = clickedItem.get(ListMenuItemProperties.MENU_ITEM_ID);
 
                 if (clickedItemID == SETTINGS_ITEM_ID) {
+                    SettingsLauncher settingsLauncher =
+                            SettingsLauncherFactory.createSettingsLauncher();
                     if (getNoticeType() == NoticeType.MODE_B_ONBOARDING) {
-                        mSettingsLauncher.launchSettingsActivity(
+                        settingsLauncher.launchSettingsActivity(
                                 mContext, TrackingProtectionSettings.class);
                     } else {
                         Bundle fragmentArguments = new Bundle();
@@ -338,7 +335,7 @@ public class TrackingProtectionNoticeController {
                                 SingleCategorySettings.EXTRA_TITLE,
                                 mContext.getResources()
                                         .getString(R.string.third_party_cookies_page_title));
-                        mSettingsLauncher.launchSettingsActivity(
+                        settingsLauncher.launchSettingsActivity(
                                 mContext, SingleCategorySettings.class, fragmentArguments);
                     }
 

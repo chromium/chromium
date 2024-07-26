@@ -32,6 +32,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
@@ -63,11 +64,11 @@ public class OmniboxActionDelegateImplUnitTest {
                 new OmniboxActionDelegateImpl(
                         mContext,
                         () -> mTabReference.get(),
-                        mMockSettingsLauncher,
                         mMockOpenUrl,
                         mMockOpenIncognitoPage,
                         mMockOpenPasswordSettings,
                         mMockOpenQuickDeleteDialog);
+        SettingsLauncherFactory.setInstanceForTesting(mMockSettingsLauncher);
     }
 
     @After

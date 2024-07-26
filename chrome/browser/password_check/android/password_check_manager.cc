@@ -125,8 +125,7 @@ void PasswordCheckManager::UpdateCredential(
 
 void PasswordCheckManager::OnEditCredential(
     const password_manager::CredentialUIEntry& credential,
-    const base::android::JavaParamRef<jobject>& context,
-    const base::android::JavaParamRef<jobject>& settings_launcher) {
+    const base::android::JavaParamRef<jobject>& context) {
   std::vector<password_manager::PasswordForm> forms =
       saved_passwords_presenter_.GetCorrespondingPasswordForms(credential);
   if (forms.empty() || credential_edit_bridge_)
@@ -143,7 +142,7 @@ void PasswordCheckManager::OnEditCredential(
       &saved_passwords_presenter_,
       base::BindOnce(&PasswordCheckManager::OnEditUIDismissed,
                      weak_ptr_factory_.GetWeakPtr()),
-      context, settings_launcher);
+      context);
 }
 
 void PasswordCheckManager::RemoveCredential(

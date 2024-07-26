@@ -10,7 +10,6 @@ import android.content.Context;
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * Interface for retrieving passwords and password exceptions (websites for which Chrome should not
@@ -68,21 +67,16 @@ public interface PasswordManagerHandler {
      * Show the UI that allows to edit saved credentials.
      *
      * @param context the current Activity to launch the edit view from, or an application context
-     * if no Activity is available.
-     * @param settingsLauncher the {@link SettingsLauncher} used to launch the edit UI fragment
+     *     if no Activity is available.
      * @param index the index of the password entry to edit
      * @param isBlockedCredential whether this credential is blocked for saving
      */
-    void showPasswordEntryEditingView(
-            Context context,
-            SettingsLauncher settingsLauncher,
-            int index,
-            boolean isBlockedCredential);
+    void showPasswordEntryEditingView(Context context, int index, boolean isBlockedCredential);
 
     /**
      * Calls C++ to trigger the migration warning. The C++ util centralizes the showing logic such
-     * that it can ensure that all appropriate checks are done an that the timestamp for showing
-     * the warning is uniformly recorded.
+     * that it can ensure that all appropriate checks are done an that the timestamp for showing the
+     * warning is uniformly recorded.
      *
      * @param activity the activity used to show the warning and potentially the export flow.
      * @param bottomSheetController the controller displaying the warning bottom sheet.

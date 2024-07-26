@@ -28,6 +28,7 @@ import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -93,7 +94,6 @@ public class AdaptiveToolbarButtonController
      * Constructs the {@link AdaptiveToolbarButtonController}.
      *
      * @param context used in {@link SettingsLauncher}
-     * @param settingsLauncher opens adaptive button settings
      * @param lifecycleDispatcher notifies about native initialization
      * @param profileSupplier Allows access to the {@link Profile} for the current session.
      */
@@ -102,7 +102,6 @@ public class AdaptiveToolbarButtonController
     @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     public AdaptiveToolbarButtonController(
             Context context,
-            SettingsLauncher settingsLauncher,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             ObservableSupplier<Profile> profileSupplier,
             AdaptiveButtonActionMenuCoordinator menuCoordinator,
@@ -113,8 +112,9 @@ public class AdaptiveToolbarButtonController
                 id -> {
                     if (id == R.id.customize_adaptive_button_menu_id) {
                         RecordUserAction.record("MobileAdaptiveMenuCustomize");
-                        settingsLauncher.launchSettingsActivity(
-                                context, AdaptiveToolbarSettingsFragment.class);
+                        SettingsLauncherFactory.createSettingsLauncher()
+                                .launchSettingsActivity(
+                                        context, AdaptiveToolbarSettingsFragment.class);
                         return;
                     }
                     assert false : "unknown adaptive button menu id: " + id;

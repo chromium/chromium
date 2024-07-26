@@ -2718,7 +2718,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         profile,
                         url.getSpec(),
                         getModalDialogManager(),
-                        SettingsLauncherFactory.createSettingsLauncher(),
                         HelpAndFeedbackLauncherImpl.getForProfile(profile));
             }
 

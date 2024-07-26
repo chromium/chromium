@@ -15,7 +15,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * Production implementation of PasswordManagerHandler, making calls to native C++ code to retrieve
@@ -114,27 +113,16 @@ public final class PasswordUIView implements PasswordManagerHandler {
 
     @Override
     public void showPasswordEntryEditingView(
-            Context context,
-            SettingsLauncher settingsLauncher,
-            int index,
-            boolean isBlockedCredential) {
+            Context context, int index, boolean isBlockedCredential) {
         if (isBlockedCredential) {
             PasswordUIViewJni.get()
                     .handleShowBlockedCredentialView(
-                            mNativePasswordUIViewAndroid,
-                            context,
-                            settingsLauncher,
-                            index,
-                            PasswordUIView.this);
+                            mNativePasswordUIViewAndroid, context, index, PasswordUIView.this);
             return;
         }
         PasswordUIViewJni.get()
                 .handleShowPasswordEntryEditingView(
-                        mNativePasswordUIViewAndroid,
-                        context,
-                        settingsLauncher,
-                        index,
-                        PasswordUIView.this);
+                        mNativePasswordUIViewAndroid, context, index, PasswordUIView.this);
     }
 
     @Override
@@ -224,14 +212,12 @@ public final class PasswordUIView implements PasswordManagerHandler {
         void handleShowPasswordEntryEditingView(
                 long nativePasswordUIViewAndroid,
                 Context context,
-                SettingsLauncher launcher,
                 int index,
                 PasswordUIView caller);
 
         void handleShowBlockedCredentialView(
                 long nativePasswordUIViewAndroid,
                 Context context,
-                SettingsLauncher launcher,
                 int index,
                 PasswordUIView caller);
 

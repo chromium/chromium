@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Arrays;
@@ -71,7 +70,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
     @Mock private TabModelSelector mTabModelSelectorMock;
     @Mock private ModalDialogManager mModalDialogManagerMock;
     @Mock private IncognitoReauthManager mIncognitoReauthManagerMock;
-    @Mock private SettingsLauncher mSettingsLauncherMock;
     @Mock private TabSwitcherCustomViewManager mTabSwitcherCustomViewManagerMock;
     @Mock private LayoutManager mLayoutManagerMock;
     @Mock private Intent mIntentMock;
@@ -114,7 +112,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
                         mTabModelSelectorMock,
                         mModalDialogManagerMock,
                         mIncognitoReauthManagerMock,
-                        mSettingsLauncherMock,
                         mLayoutManagerMock,
                         mHubManagerSupplier,
                         mIntentMock,
@@ -139,7 +136,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
                 mIncognitoTabModelMock,
                 mModalDialogManagerMock,
                 mIncognitoReauthManagerMock,
-                mSettingsLauncherMock,
                 mTabSwitcherCustomViewManagerMock,
                 mLayoutManagerMock,
                 mPaneManagerMock,

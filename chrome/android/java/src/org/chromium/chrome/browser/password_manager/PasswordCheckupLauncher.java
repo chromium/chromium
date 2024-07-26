@@ -58,7 +58,7 @@ public class PasswordCheckupLauncher {
             return;
         }
 
-        PasswordCheckFactory.getOrCreate(SettingsLauncherFactory.createSettingsLauncher())
+        PasswordCheckFactory.getOrCreate()
                 .showUi(windowAndroid.getContext().get(), passwordCheckReferrer);
     }
 
