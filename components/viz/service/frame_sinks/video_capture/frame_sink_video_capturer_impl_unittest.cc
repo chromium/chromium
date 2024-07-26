@@ -789,17 +789,24 @@ class TestGmbVideoFramePoolContext
       SkAlphaType alpha_type,
       gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
-    // Marking this method as not implemented as it's not used for now. It will
-    // be used and implemented when MappableSI is enabled in future CLs.
-    NOTIMPLEMENTED();
-    return nullptr;
+    context_provider_->SharedImageInterface()
+        ->UseTestGMBInSharedImageCreationWithBufferUsage();
+    return context_provider_->SharedImageInterface()->CreateSharedImage(
+        {si_format, size, color_space, surface_origin, alpha_type, usage,
+         "FrameSinkVideoCapturerImplUnittest"},
+        gpu::kNullSurfaceHandle, buffer_usage);
   }
 
-  void DestroySharedImage(
-      const gpu::SyncToken& sync_token,
-      scoped_refptr<gpu::ClientSharedImage> shared_image) override {
-    context_provider_->SharedImageInterface()->DestroySharedImage(
-        sync_token, std::move(shared_image));
+  void DestroySharedImage(const gpu::SyncToken& sync_token,
+                          scoped_refptr<gpu::ClientSharedImage> shared_image,
+                          const bool is_mappable_si_enabled) override {
+    CHECK(shared_image);
+    if (is_mappable_si_enabled) {
+      shared_image->UpdateDestructionSyncToken(sync_token);
+    } else {
+      context_provider_->SharedImageInterface()->DestroySharedImage(
+          sync_token, std::move(shared_image));
+    }
   }
 
  private:
