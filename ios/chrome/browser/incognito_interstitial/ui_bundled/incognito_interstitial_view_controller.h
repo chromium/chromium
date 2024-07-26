@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_INCOGNITO_INTERSTITIAL_INCOGNITO_INTERSTITIAL_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_INCOGNITO_INTERSTITIAL_INCOGNITO_INTERSTITIAL_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_INCOGNITO_INTERSTITIAL_UI_BUNDLED_INCOGNITO_INTERSTITIAL_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_INCOGNITO_INTERSTITIAL_UI_BUNDLED_INCOGNITO_INTERSTITIAL_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_view_controller_delegate.h"
+#import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_view_controller_delegate.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 @protocol NewTabPageURLLoaderDelegate;
@@ -25,4 +25,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_INCOGNITO_INTERSTITIAL_INCOGNITO_INTERSTITIAL_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_INCOGNITO_INTERSTITIAL_UI_BUNDLED_INCOGNITO_INTERSTITIAL_VIEW_CONTROLLER_H_

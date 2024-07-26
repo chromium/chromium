@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_view_controller.h"
+#import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_view_controller.h"
 
 #import <algorithm>
 
@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/util/attributed_string_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_constants.h"
+#import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_constants.h"
 #import "ios/chrome/browser/ui/ntp/incognito/incognito_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"

@@ -9,7 +9,7 @@ source_set("constants") {
   ]
 }
 
-source_set("incognito_interstitial_ui") {
+source_set("ui") {
   sources = [
     "incognito_interstitial_view_controller.h",
     "incognito_interstitial_view_controller.mm",
@@ -21,7 +21,7 @@ source_set("incognito_interstitial_ui") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements:elements",
     "//ios/chrome/browser/shared/ui/util:util",
-    "//ios/chrome/browser/ui/incognito_interstitial/resources",
+    "//ios/chrome/browser/incognito_interstitial/ui_bundled/resources",
     "//ios/chrome/browser/ui/ntp/incognito",
     "//ios/chrome/common/ui/colors:colors",
     "//ios/chrome/common/ui/promo_style:promo_style",
@@ -31,7 +31,7 @@ source_set("incognito_interstitial_ui") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("incognito_interstitial") {
+source_set("coordinator") {
   sources = [
     "incognito_interstitial_coordinator.h",
     "incognito_interstitial_coordinator.mm",
@@ -39,7 +39,7 @@ source_set("incognito_interstitial") {
   ]
   deps = [
     ":constants",
-    ":incognito_interstitial_ui",
+    ":ui",
     "//base:base",
     "//ios/chrome/app:mode",
     "//ios/chrome/app/application_delegate:tab_opening",

@@ -4,7 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_constants.h"
+#import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_constants.h"
 
 NSString* const kIncognitoInterstitialAccessibilityIdentifier =
     @"incognitoInterstitialAccessibilityIdentifier";
