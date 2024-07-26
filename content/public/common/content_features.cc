@@ -489,11 +489,6 @@ BASE_FEATURE(kNetworkQualityEstimatorWebHoldback,
 // (activated by kUserAgentClientHint)
 BASE_FEATURE(kGreaseUACH, "GreaseUACH", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Guard for work on https://crbug.com/40279485
-BASE_FEATURE(kIndexedDBShardBackingStores,
-             "IndexedDBShardBackingStores",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Kill switch for the GetInstalledRelatedApps API.
 BASE_FEATURE(kInstalledApp, "InstalledApp", base::FEATURE_ENABLED_BY_DEFAULT);
 

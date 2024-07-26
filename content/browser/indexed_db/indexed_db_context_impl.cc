@@ -59,7 +59,6 @@
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_factory_client.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
-#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -81,10 +80,6 @@ using blink::StorageKey;
 using storage::BucketLocator;
 
 namespace {
-
-bool ShardingEnabled() {
-  return base::FeatureList::IsEnabled(features::kIndexedDBShardBackingStores);
-}
 
 // Creates a task runner suitable for use either as the main IDB thread or for a
 // backing store. See https://crbug.com/329221141 for notes on task priority.
@@ -1122,12 +1117,10 @@ void IndexedDBContextImpl::EnsureBucketContext(
   const auto& [iter, inserted] = bucket_contexts_.emplace(
       bucket_locator.id,
       base::SequenceBound<IndexedDBBucketContext>(
-          (!ShardingEnabled() || force_single_thread_) ? IDBTaskRunner()
-                                                       : CreateTaskRunner(),
-          bucket, data_directory, std::move(bucket_delegate),
-          quota_manager_proxy_, io_task_runner_,
-          std::move(cloned_blob_storage_context), std::move(fsa_context),
-          for_each_bucket_context_));
+          force_single_thread_ ? IDBTaskRunner() : CreateTaskRunner(), bucket,
+          data_directory, std::move(bucket_delegate), quota_manager_proxy_,
+          io_task_runner_, std::move(cloned_blob_storage_context),
+          std::move(fsa_context), for_each_bucket_context_));
   DCHECK(inserted);
   if (pending_failure_injector_) {
     iter->second

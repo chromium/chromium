@@ -11036,11 +11036,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIndexedDBCompressValuesWithSnappyDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kIndexedDBCompressValuesWithSnappy)},
 
-    {"indexed-db-shard-backing-stores",
-     flag_descriptions::kIndexedDBShardBackingStores,
-     flag_descriptions::kIndexedDBShardBackingStores, kOsAll,
-     FEATURE_VALUE_TYPE(features::kIndexedDBShardBackingStores)},
-
     {"autofill-enable-server-iban",
      flag_descriptions::kAutofillEnableServerIbanName,
      flag_descriptions::kAutofillEnableServerIbanDescription, kOsDesktop,
