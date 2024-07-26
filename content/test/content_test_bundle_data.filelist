@@ -6139,6 +6139,8 @@ data/cross_site_iframe_factory.html
 data/cross_site_iframe_factory.html.mock-http-headers
 data/cross_site_scroll_into_view_factory.html
 data/cross_site_scroll_into_view_factory.html.mock-http-headers
+data/csp_report_only_data_url.html
+data/csp_report_only_data_url.html.mock-http-headers
 data/csp_sandboxed_frame.html
 data/csp_sandboxed_frame.html.mock-http-headers
 data/csp_wasm_eval.html

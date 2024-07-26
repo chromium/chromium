@@ -323,7 +323,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(
     TransparentPlaceholderImageContentSecurityPolicyBrowserTest,
-    ImgSrcBlocked) {
+    ImgSrcPolicyEnforced) {
   const char* page = R"(
     data:text/html,
     <meta http-equiv="Content-Security-Policy" content="img-src 'none';">
@@ -334,6 +334,21 @@ IN_PROC_BROWSER_TEST_P(
   WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(
       "Refused to load the image "
+      "'data:image/gif;base64,R0lGODlhAQABAIAAAP///////"
+      "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' because it violates the following "
+      "Content Security Policy directive: \"img-src 'none'\".\n");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  ASSERT_TRUE(console_observer.Wait());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    TransparentPlaceholderImageContentSecurityPolicyBrowserTest,
+    ImgSrcPolicyReported) {
+  GURL url = embedded_test_server()->GetURL("/csp_report_only_data_url.html");
+
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(
+      "[Report Only] Refused to load the image "
       "'data:image/gif;base64,R0lGODlhAQABAIAAAP///////"
       "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' because it violates the following "
       "Content Security Policy directive: \"img-src 'none'\".\n");
