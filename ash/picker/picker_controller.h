@@ -22,8 +22,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace ash {
 
@@ -41,7 +41,7 @@ class PickerSuggestionsController;
 
 // Controls a Picker widget.
 class ASH_EXPORT PickerController : public PickerViewDelegate,
-                                    public views::WidgetObserver,
+                                    public views::ViewObserver,
                                     public PickerAssetFetcherImplDelegate {
  public:
   PickerController();
@@ -109,8 +109,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   std::vector<PickerSearchResult> GetSuggestedEmoji() override;
   bool IsGifsEnabled() override;
 
-  // views:WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
+  // views:ViewObserver:
+  void OnViewIsDeleting(views::View* view) override;
 
   // PickerAssetFetcherImplDelegate:
   void FetchFileThumbnail(const base::FilePath& path,
@@ -151,8 +151,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   // Records metrics related to a session.
   std::unique_ptr<PickerSessionMetrics> session_metrics_;
 
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      widget_observation_{this};
+  base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
+      this};
 
   // Closes CapsLock state view after some time.
   base::OneShotTimer caps_lock_state_view_close_timer_;

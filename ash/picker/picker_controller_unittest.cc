@@ -869,6 +869,23 @@ TEST_F(PickerControllerTest, SearchesCaseTransformWhenSelectedText) {
   controller.StartSearch(u"uppercase", /*category=*/{}, callback.Get());
 }
 
+TEST_F(PickerControllerTest, IsValidDuringWidgetClose) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method->SetFocusedTextInputClient(&input_field);
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  controller.ToggleWidget();
+  views::test::WidgetVisibleWaiter(controller.widget_for_testing()).Wait();
+
+  controller.ToggleWidget();
+  controller.GetActionForResult(PickerSearchResult::Text(u"a"));
+  controller.IsGifsEnabled();
+  controller.GetAvailableCategories();
+}
+
 struct ActionTestCase {
   PickerSearchResult result;
   std::optional<PickerActionType> unfocused_action;

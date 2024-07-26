@@ -554,6 +554,7 @@ PickerSessionMetrics& PickerController::GetSessionMetrics() {
 
 PickerActionType PickerController::GetActionForResult(
     const PickerSearchResult& result) {
+  CHECK(model_);
   const PickerModeType mode = model_->GetMode();
   return std::visit(
       base::Overloaded{
@@ -619,11 +620,13 @@ bool PickerController::IsGifsEnabled() {
   return model_->IsGifsEnabled(client_->GetPrefs());
 }
 
-void PickerController::OnWidgetDestroying(views::Widget* widget) {
+void PickerController::OnViewIsDeleting(views::View* view) {
+  view_observation_.Reset();
+
   caps_lock_state_view_ = nullptr;
+  model_.reset();
   feature_usage_metrics_.StopUsage();
   session_metrics_.reset();
-  widget_observation_.Reset();
   emoji_suggester_.reset();
   emoji_history_model_.reset();
 }
@@ -651,7 +654,7 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp) {
     caps_lock_state_view_ = new PickerCapsLockStateView(
         GetParentView(), should_enable, GetCaretBounds());
     caps_lock_state_view_->Show();
-    widget_observation_.Observe(caps_lock_state_view_->GetWidget());
+    view_observation_.Observe(caps_lock_state_view_);
     caps_lock_state_view_close_timer_.Start(
         FROM_HERE, kCapsLockStateViewDisplayTime,
         base::BindOnce(&PickerController::CloseCapsLockStateView,
@@ -674,21 +677,20 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp) {
   widget_->Show();
 
   session_metrics_->OnStartSession(GetFocusedTextInputClient());
-  widget_observation_.Observe(widget_.get());
+  view_observation_.Observe(widget_->GetContentsView());
 }
 
 void PickerController::CloseWidget() {
   session_metrics_->SetOutcome(
       PickerSessionMetrics::SessionOutcome::kAbandoned);
   widget_->Close();
-  model_.reset();
 }
 
 void PickerController::CloseCapsLockStateView() {
   caps_lock_state_view_close_timer_.Stop();
   if (caps_lock_state_view_) {
     caps_lock_state_view_->Close();
-    OnWidgetDestroying(caps_lock_state_view_->GetWidget());
+    OnViewIsDeleting(caps_lock_state_view_);
   }
 }
 
