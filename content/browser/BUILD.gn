@@ -2668,9 +2668,7 @@ source_set("browser") {
       "CoreGraphics.framework",
       "QuartzCore.framework",
       "IOSurface.framework",
-    ]
-    weak_frameworks = [
-      "UniformTypeIdentifiers.framework",  # macOS 11
+      "UniformTypeIdentifiers.framework",
     ]
   } else if (is_ios) {
     sources += [
@@ -2778,7 +2776,7 @@ source_set("browser") {
         "//sandbox/mac:seatbelt_extension",
       ]
       frameworks += [ "CoreMedia.framework" ]
-      weak_frameworks += [ "ScreenCaptureKit.framework" ]  # macOS 12.3
+      weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 12.3
     }
     if (is_chromeos_ash) {
       sources += [
