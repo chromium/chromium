@@ -11580,22 +11580,16 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
               other {Ungroup Tab Groups?}}
         </message>
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_CLOSE_TAB_AND_DELETE" desc="The title for closing the tab and deleting the group. Displayed in the Tab Group Deletion Dialog.">
-          {TAB_COUNT, plural,
-            =1 {{GROUP_COUNT, plural,
-              =1 {Close Tab and Delete Group?}
-              other {Close Tab and Delete Groups?}}}
-            other {{GROUP_COUNT, plural,
-              =1 {Close Tabs and Delete Group?}
-              other {Close Tabs and Delete Groups?}}}}
+          {MULTI_GROUP_TAB_COUNT, plural,
+            =0 {Close Tab and Delete Group?}
+            =1 {Close Tabs and Delete Group?}
+            other {Close Tabs and Delete Groups?}}
         </message>
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_REMOVE_TAB_AND_DELETE" desc="The title for removing the tab and deleting the group. Displayed in the Tab Group Deletion Dialog.">
-          {TAB_COUNT, plural,
-            =1 {{GROUP_COUNT, plural,
-              =1 {Remove Tab and Delete Group?}
-              other {Remove Tab and Delete Groups?}}}
-            other {{GROUP_COUNT, plural,
-              =1 {Remove Tabs and Delete Group?}
-              other {Remove Tabs and Delete Groups?}}}}
+          {MULTI_GROUP_TAB_COUNT, plural,
+            =0 {Remove Tab and Delete Group?}
+            =1 {Remove Tabs and Delete Group?}
+            other {Remove Tabs and Delete Groups?}}
         </message>
         <!-- OK Text -->
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_OK_TEXT_DELETE" desc=". Displayed in the Tab Group Deletion Dialog.">
@@ -11624,22 +11618,16 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
               other {Ungroup tab groups?}}
         </message>
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_CLOSE_TAB_AND_DELETE" desc="The title for closing the tab and deleting the group. Displayed in the Tab Group Deletion Dialog.">
-          {TAB_COUNT, plural,
-            =1 {{GROUP_COUNT, plural,
-              =1 {Close tab and delete group?}
-              other {Close tab and delete groups?}}}
-            other {{GROUP_COUNT, plural,
-              =1 {Close tabs and delete group?}
-              other {Close tabs and delete groups?}}}}
+          {MULTI_GROUP_TAB_COUNT, plural,
+            =0 {Close tab and delete group?}
+            =1 {Close tabs and delete group?}
+            other {Close tabs and delete groups?}}
         </message>
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_REMOVE_TAB_AND_DELETE" desc="The title for removing the tab and deleting the group. Displayed in the Tab Group Deletion Dialog.">
-          {TAB_COUNT, plural,
-            =1 {{GROUP_COUNT, plural,
-              =1 {Remove tab and delete group?}
-              other {Remove tab and delete groups?}}}
-            other {{GROUP_COUNT, plural,
-              =1 {Remove tabs and delete group?}
-              other {Remove tabs and delete groups?}}}}
+          {MULTI_GROUP_TAB_COUNT, plural,
+            =0 {Remove tab and delete group?}
+            =1 {Remove tabs and delete group?}
+            other {Remove tabs and delete groups?}}
         </message>
         <!-- OK Text -->
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_OK_TEXT_DELETE" desc=". Displayed in the Tab Group Deletion Dialog.">

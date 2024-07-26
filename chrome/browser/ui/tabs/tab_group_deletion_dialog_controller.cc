@@ -87,6 +87,8 @@ DialogText GetDialogText(Profile* profile,
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
             .email);
   }
+  const int plural_type_count =
+      ((tab_count > 1) ? 1 : 0) + ((group_count > 1) ? 1 : 0);
 
   switch (type) {
     case DeletionDialogController::DialogType::DeleteSingle: {
@@ -115,8 +117,8 @@ DialogText GetDialogText(Profile* profile,
     case DeletionDialogController::DialogType::RemoveTabAndDelete: {
       return DialogText{
           base::i18n::MessageFormatter::FormatWithNumberedArgs(
-              l10n_util::GetStringUTF16(kRemoveTabAndDeleteTitleId), tab_count,
-              group_count),
+              l10n_util::GetStringUTF16(kRemoveTabAndDeleteTitleId),
+              plural_type_count),
           base::i18n::MessageFormatter::FormatWithNumberedArgs(
               is_sync_enabled
                   ? l10n_util::GetStringFUTF16(kDeleteBodySyncedId, email)
@@ -128,8 +130,8 @@ DialogText GetDialogText(Profile* profile,
     case DeletionDialogController::DialogType::CloseTabAndDelete: {
       return DialogText{
           base::i18n::MessageFormatter::FormatWithNumberedArgs(
-              l10n_util::GetStringUTF16(kCloseTabAndDeleteTitleId), tab_count,
-              group_count),
+              l10n_util::GetStringUTF16(kCloseTabAndDeleteTitleId),
+              plural_type_count),
           base::i18n::MessageFormatter::FormatWithNumberedArgs(
               is_sync_enabled
                   ? l10n_util::GetStringFUTF16(kDeleteBodySyncedId, email)
