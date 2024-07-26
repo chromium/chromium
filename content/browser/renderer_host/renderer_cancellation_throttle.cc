@@ -48,6 +48,16 @@ RendererCancellationThrottle::~RendererCancellationThrottle() = default;
 
 NavigationThrottle::ThrottleCheckResult
 RendererCancellationThrottle::WillProcessResponse() {
+  return WaitForRendererCancellationIfNeeded();
+}
+
+NavigationThrottle::ThrottleCheckResult
+RendererCancellationThrottle::WillCommitWithoutUrlLoader() {
+  return WaitForRendererCancellationIfNeeded();
+}
+
+NavigationThrottle::ThrottleCheckResult
+RendererCancellationThrottle::WaitForRendererCancellationIfNeeded() {
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
   DCHECK(request);
   if (request->renderer_cancellation_window_ended()) {
