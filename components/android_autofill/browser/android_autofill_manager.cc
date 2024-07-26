@@ -30,7 +30,7 @@ AndroidAutofillManager::AndroidAutofillManager(AutofillDriver* driver)
 }
 
 AndroidAutofillManager::~AndroidAutofillManager() {
-  ResetImpl();
+  Reset();
 }
 
 base::WeakPtr<AutofillManager> AndroidAutofillManager::GetWeakPtr() {
@@ -162,7 +162,7 @@ void AndroidAutofillManager::OnFormProcessed(
   }
 }
 
-void AndroidAutofillManager::ResetImpl() {
+void AndroidAutofillManager::Reset() {
   // Inform the provider before resetting state in case it needs to access it.
   if (auto* rfh =
           static_cast<ContentAutofillDriver&>(driver()).render_frame_host()) {
@@ -174,7 +174,7 @@ void AndroidAutofillManager::ResetImpl() {
       }
     }
   }
-  AutofillManager::ResetImpl();
+  AutofillManager::Reset();
   forms_with_server_predictions_.clear();
   StartNewLoggingSession();
 }

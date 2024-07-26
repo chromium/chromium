@@ -32,10 +32,7 @@ TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver)
       std::make_unique<TestFormFiller>(*this, log_manager(), "en-US"));
 }
 
-TestBrowserAutofillManager::~TestBrowserAutofillManager() {
-  test_api(*this).SetLifecycleState(
-      AutofillManager::LifecycleState::kPendingDeletion);
-}
+TestBrowserAutofillManager::~TestBrowserAutofillManager() = default;
 
 void TestBrowserAutofillManager::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {

@@ -52,7 +52,82 @@ class AutofillManager;
 // respectively, which own the AutofillDrivers.
 class AutofillDriver {
  public:
-  virtual ~AutofillDriver() = default;
+  // An AutofillDriver's LifecycleState indicates whether its content is
+  // currently presented to the user. It closely follows
+  // content::RenderFrameHost's LifecycleState but collapses inactive states.
+  //
+  // State changes must not happen during construction or destruction.
+  //
+  // State changes fire events in AutofillManager::Observer.
+  //
+  // The possible transitions are:
+  //
+  //   ╭───────────────────────────╮
+  //   │                           ▼
+  // kInactive ◄──► kActive ──► kPendingDeletion
+  //   ▲                ▲
+  //   │                ╰─────► kPendingReset
+  //   ╰──────────────────────► kPendingReset
+  //
+  // The initial state is kInactive.
+  //
+  // Transitions from kPendingReset can only return to the previous state.
+  // Transitions between kInactive and kPendingReset only happen if the frame is
+  // prerendering.
+  // TODO: crbug.com/342132628 - Such transitions won't be possible anymore when
+  // prerendered CADs are deferred.
+  //
+  // Common behavior very shortly after the AutofillDriver's creation is the
+  // following:
+  // 1. It transitions to kActive.
+  //    That happens unless the document is prerendering.
+  // 2. It transitions to kPendingReset and then back to its previous state,
+  //    kActive or kInactive. That happens on non-iOS when the frame does its
+  //    first navigation, which is just a special case of a navigation that the
+  //    AutofillDriver survives.
+  enum class LifecycleState {
+    // The AutofillDriver corresponds to a frame that is currently not
+    // displayed to the user, either because it is being prerendered or because
+    // it is BFCached.
+    kInactive,
+    // The AutofillDriver corresponds to a frame that is being displayed.
+    kActive,
+    // The AutofillDriver is about to be reset because the document in its
+    // associated driver is about to change.
+    kPendingReset,
+    // The destructor of AutofillDriver and its associated AutofillDriver are
+    // about to begin. The AutofillDriver is still fully intact at this point.
+    kPendingDeletion,
+  };
+
+  class AutofillDriverFactoryPassKey {
+   private:
+    friend class AutofillDriverIOS;
+    friend class AutofillDriverTestApi;
+    // The ContentAutofillDriverFactory, not the ContentAutofillDriver, calls
+    // SetLifecycleState(), because:
+    // - kActive is reached *after*
+    //   ContentAutofillDriverFactory::Observer::OnContentAutofillDriverCreated().
+    // - kPendingDeletion is reached *before* the beginning of
+    //   ~ContentAutofillDriver().
+    friend class ContentAutofillDriverFactory;
+    friend class ContentAutofillDriverTestApi;
+    AutofillDriverFactoryPassKey() = default;
+  };
+
+  virtual ~AutofillDriver();
+
+  // The current state of the driver. See LifecycleState for details.
+  LifecycleState GetLifecycleState() const { return lifecycle_state_; }
+
+  // Transitions GetLifecycleState() to `new_state` and afterwards notifies the
+  // AutofillManager about that change (i.e., calls
+  // (AutofillManager::OnAutofillDriverLifecycleStateChanged()).
+  //
+  // State changes must not happen during construction or destruction of the
+  // AutofillDriver.
+  void SetLifecycleState(LifecycleState new_state,
+                         AutofillDriverFactoryPassKey);
 
   // Returns the uniquely identifying frame token.
   virtual LocalFrameToken GetFrameToken() const = 0;
@@ -228,6 +303,11 @@ class AutofillDriver {
   virtual void GetFourDigitCombinationsFromDOM(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) = 0;
+
+ private:
+  friend class AutofillDriverTestApi;
+
+  LifecycleState lifecycle_state_ = LifecycleState::kInactive;
 };
 
 }  // namespace autofill

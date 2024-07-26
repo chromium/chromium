@@ -2408,7 +2408,7 @@ void BrowserAutofillManager::OnSubmissionFieldTypesDetermined(
 // - `weak_ptr_factory_` is used for vote uploading (but also in other cases)
 // TODO: crbug.com/354649269 - Several other members aren't recreated or reset
 // either, which is probably a bug.
-void BrowserAutofillManager::ResetImpl() {
+void BrowserAutofillManager::Reset() {
   // Process log events and record into UKM when the FormStructure is destroyed.
   for (const auto& [form_id, form_structure] : form_structures()) {
     ProcessFieldLogEventsInForm(*form_structure);
@@ -2431,7 +2431,7 @@ void BrowserAutofillManager::ResetImpl() {
   address_form_event_logger_.reset();
   credit_card_form_event_logger_->OnDestroyed();
   credit_card_form_event_logger_.reset();
-  AutofillManager::ResetImpl();
+  AutofillManager::Reset();
   address_form_event_logger_ =
       std::make_unique<autofill_metrics::AddressFormEventLogger>(
           driver().IsInAnyMainFrame(), form_interactions_ukm_logger(),

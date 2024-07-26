@@ -147,9 +147,6 @@ class TestAutofillManagerInjector : public TestAutofillManagerInjectorBase {
     void OnContentAutofillDriverCreated(
         ContentAutofillDriverFactory& factory,
         ContentAutofillDriver& driver) override {
-      AutofillManager& old_manager = driver.GetAutofillManager();
-      test_api(old_manager)
-          .SetLifecycleState(AutofillManager::LifecycleState::kPendingDeletion);
       auto new_manager = std::make_unique<T>(&driver);
       owner_->managers_[driver.render_frame_host()] = new_manager.get();
       test_api(driver).set_autofill_manager(std::move(new_manager));

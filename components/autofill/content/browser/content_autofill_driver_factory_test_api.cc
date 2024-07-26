@@ -27,13 +27,12 @@ std::unique_ptr<ContentAutofillDriver>
 ContentAutofillDriverFactoryTestApi::ExchangeDriver(
     content::RenderFrameHost* rfh,
     std::unique_ptr<ContentAutofillDriver> new_driver) {
+  using enum ContentAutofillDriver::LifecycleState;
   auto it = factory_->driver_map_.find(rfh);
   CHECK(it != factory_->driver_map_.end());
   std::unique_ptr<ContentAutofillDriver> old_driver =
       std::exchange(it->second, std::move(new_driver));
-  test_api(*old_driver)
-      .SetLifecycleState(
-          ContentAutofillDriver::LifecycleState::kPendingDeletion);
+  test_api(*old_driver).SetLifecycleState(kPendingDeletion);
   return old_driver;
 }
 

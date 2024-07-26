@@ -264,14 +264,7 @@ ContentAutofillDriver::~ContentAutofillDriver() {
   owner_->router().UnregisterDriver(*this, /*driver_is_dying=*/true);
 }
 
-void ContentAutofillDriver::SetLifecycleState(
-    LifecycleState state,
-    ContentAutofillDriverFactoryPassKey) {
-  autofill_manager_->SetLifecycleState(state, {});
-}
-
-void ContentAutofillDriver::Reset(ContentAutofillDriverFactoryPassKey) {
-  autofill_manager_->Reset({});
+void ContentAutofillDriver::Reset(AutofillDriverFactoryPassKey) {
   owner_->router().UnregisterDriver(*this, /*driver_is_dying=*/false);
 }
 

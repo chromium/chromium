@@ -84,6 +84,7 @@ static_library("browser") {
     "autofill_compose_delegate.h",
     "autofill_data_util.cc",
     "autofill_data_util.h",
+    "autofill_driver.cc",
     "autofill_driver.h",
     "autofill_driver_router.cc",
     "autofill_driver_router.h",
@@ -841,6 +842,7 @@ static_library("test_support") {
   sources = [
     "address_data_cleaner_test_api.h",
     "address_data_manager_test_api.h",
+    "autofill_driver_test_api.h",
     "autofill_form_test_utils.cc",
     "autofill_form_test_utils.h",
     "autofill_manager_test_api.h",

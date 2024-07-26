@@ -169,29 +169,23 @@ AutofillManager::AutofillManager(AutofillDriver* driver)
 }
 
 AutofillManager::~AutofillManager() {
-  CHECK_EQ(lifecycle_state_, LifecycleState::kPendingDeletion,
-           base::NotFatalUntil::M130);
   translate_observation_.Reset();
 }
 
-void AutofillManager::SetLifecycleState(LifecycleState state,
-                                        AutofillDriverPassKey) {
-  const LifecycleState previous = lifecycle_state_;
-  if (previous == state) {
-    return;
+void AutofillManager::OnAutofillDriverLifecycleStateChanged(
+    LifecycleState old_state,
+    LifecycleState new_state,
+    base::PassKey<AutofillDriver>) {
+  DCHECK_NE(new_state, old_state);
+  DCHECK_EQ(new_state, driver().GetLifecycleState());
+  NotifyObservers(&Observer::OnAutofillManagerStateChanged, old_state,
+                  new_state);
+  if (new_state == LifecycleState::kPendingReset) {
+    Reset();
   }
-  lifecycle_state_ = state;
-  NotifyObservers(&Observer::OnAutofillManagerStateChanged, previous,
-                  lifecycle_state_);
 }
 
-void AutofillManager::Reset(AutofillDriverPassKey) {
-  CHECK_EQ(lifecycle_state_, LifecycleState::kPendingReset,
-           base::NotFatalUntil::M130);
-  ResetImpl();
-}
-
-void AutofillManager::ResetImpl() {
+void AutofillManager::Reset() {
   parsing_weak_ptr_factory_.InvalidateWeakPtrs();
   form_structures_.clear();
   form_interactions_ukm_logger_ = CreateFormInteractionsUkmLogger();

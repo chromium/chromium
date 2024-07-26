@@ -104,10 +104,10 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
       }
       // TODO: crbug.com/342132628 - `driver->IsActive()` is guaranteed once
       // prerendered CADs are deferred.
-      driver->SetLifecycleState(
-          driver->IsActive() ? AutofillManager::LifecycleState::kActive
-                             : AutofillManager::LifecycleState::kInactive,
-          {});
+      driver->SetLifecycleState(driver->IsActive()
+                                    ? AutofillDriver::LifecycleState::kActive
+                                    : AutofillDriver::LifecycleState::kInactive,
+                                {});
       DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(),
                 driver.get());
     } else {
@@ -141,7 +141,7 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
     observer.OnContentAutofillDriverWillBeDeleted(*this, *driver);
   }
 
-  driver->SetLifecycleState(AutofillManager::LifecycleState::kPendingDeletion,
+  driver->SetLifecycleState(AutofillDriver::LifecycleState::kPendingDeletion,
                             {});
   driver_map_.erase(it);
 }
@@ -215,13 +215,13 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
     return;
   }
 
-  driver->SetLifecycleState(AutofillManager::LifecycleState::kPendingReset, {});
+  driver->SetLifecycleState(AutofillDriver::LifecycleState::kPendingReset, {});
   driver->Reset({});
   // TODO: crbug.com/342132628 - `driver->IsActive()` is guaranteed once
   // prerendered CADs are deferred.
   driver->SetLifecycleState(driver->IsActive()
-                                ? AutofillManager::LifecycleState::kActive
-                                : AutofillManager::LifecycleState::kInactive,
+                                ? AutofillDriver::LifecycleState::kActive
+                                : AutofillDriver::LifecycleState::kInactive,
                             {});
 }
 

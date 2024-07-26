@@ -313,7 +313,7 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
       : BrowserAutofillManager(driver, kAppLocale) {}
   ~MockBrowserAutofillManager() override = default;
 
-  MOCK_METHOD(void, ResetImpl, (), (override));
+  MOCK_METHOD(void, Reset, (), (override));
   MOCK_METHOD(bool, ShouldParseForms, (), (override));
   MOCK_METHOD(void,
               OnFormsSeen,
@@ -385,14 +385,6 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
 
   content::RenderFrameHost* main_frame() {
     return web_contents()->GetPrimaryMainFrame();
-  }
-
-  // LifecycleState is currently only stored in AutofillManager. We test it here
-  // because it is controlled by by ContentAutofillDriverFactory and
-  // ContentAutofillDriver.
-  ContentAutofillDriver::LifecycleState lifecycle_state(
-      ContentAutofillDriver& driver) const {
-    return test_api(driver.GetAutofillManager()).lifecycle_state();
   }
 
   // `source_rfh` represents the render frame the form comes from.
@@ -629,120 +621,120 @@ class ContentAutofillDriverTestLifecycleState
 
 // Tests the lifecycle state changes on a same-document navigation.
 TEST_F(ContentAutofillDriverTestLifecycleState, NavigateSameDocument) {
-  using enum AutofillManager::LifecycleState;
-  EXPECT_EQ(lifecycle_state(driver()), kActive);
+  using enum AutofillDriver::LifecycleState;
+  EXPECT_EQ(driver().GetLifecycleState(), kActive);
 
   ContentAutofillDriver& driver1 = driver();
-  EXPECT_CALL(manager(), ResetImpl).Times(0);
+  EXPECT_CALL(manager(), Reset).Times(0);
   Navigate(NavigationType::kSameDocument);
   ContentAutofillDriver& driver2 = driver();
 
   EXPECT_EQ(&driver1, &driver2);
-  EXPECT_EQ(lifecycle_state(driver1), kActive);
+  EXPECT_EQ(driver1.GetLifecycleState(), kActive);
 }
 
 // Tests that the initial LifecycleState is kInactive and the transition to
 // kActive happens after OnContentAutofillDriverCreated().
 TEST_F(ContentAutofillDriverTestLifecycleState, DriverCreation) {
-  using enum AutofillManager::LifecycleState;
+  using enum AutofillDriver::LifecycleState;
   ContentAutofillDriver* created_driver = nullptr;
   EXPECT_CALL(factory_observer(), OnContentAutofillDriverCreated)
       .WillOnce([&](ContentAutofillDriverFactory& factory,
                     ContentAutofillDriver& driver) {
-        EXPECT_EQ(lifecycle_state(driver), kInactive);
+        EXPECT_EQ(driver.GetLifecycleState(), kInactive);
         created_driver = &driver;
       });
   Navigate(NavigationType::kCrossRfh);
-  EXPECT_EQ(lifecycle_state(*created_driver), kActive);
+  EXPECT_EQ(created_driver->GetLifecycleState(), kActive);
 }
 
 // Tests the lifecycle state changes on a same-origin navigation (or, more
 // precisely, same-RFH navigations).
 TEST_F(ContentAutofillDriverTestLifecycleState, NavigateSameOrigin) {
-  using enum AutofillManager::LifecycleState;
-  EXPECT_EQ(lifecycle_state(driver()), kActive);
+  using enum AutofillDriver::LifecycleState;
+  EXPECT_EQ(driver().GetLifecycleState(), kActive);
 
   ContentAutofillDriver& driver1 = driver();
-  EXPECT_CALL(manager(&driver1), ResetImpl).WillRepeatedly([&]() {
-    EXPECT_EQ(lifecycle_state(driver1), kPendingReset);
+  EXPECT_CALL(manager(&driver1), Reset).WillRepeatedly([&]() {
+    EXPECT_EQ(driver1.GetLifecycleState(), kPendingReset);
   });
   EXPECT_CALL(factory_observer(), OnContentAutofillDriverCreated).Times(0);
   Navigate(NavigationType::kSameRfh);
   ContentAutofillDriver& driver2 = driver();
 
   EXPECT_EQ(&driver1, &driver2);
-  EXPECT_EQ(lifecycle_state(driver1), kActive);
+  EXPECT_EQ(driver1.GetLifecycleState(), kActive);
 }
 
 // Tests the lifecycle state changes on a cross-origin navigation (or, more
 // precisely, cross-RFH navigations).
 TEST_F(ContentAutofillDriverTestLifecycleState, NavigateCrossOrigin) {
-  using enum AutofillManager::LifecycleState;
-  EXPECT_EQ(lifecycle_state(driver()), kActive);
+  using enum AutofillDriver::LifecycleState;
+  EXPECT_EQ(driver().GetLifecycleState(), kActive);
 
   ContentAutofillDriver& driver1 = driver();
-  EXPECT_CALL(manager(&driver1), ResetImpl).WillRepeatedly([&]() {
+  EXPECT_CALL(manager(&driver1), Reset).WillRepeatedly([&]() {
     EXPECT_NE(&driver(), &driver1);
-    EXPECT_EQ(lifecycle_state(driver()), kPendingReset);
+    EXPECT_EQ(driver().GetLifecycleState(), kPendingReset);
   });
   EXPECT_CALL(factory_observer(), OnContentAutofillDriverCreated);
   Navigate(NavigationType::kCrossRfh);
   ContentAutofillDriver& driver2 = driver();
 
   EXPECT_NE(&driver1, &driver2);
-  EXPECT_EQ(lifecycle_state(driver1), kInactive);
-  EXPECT_EQ(lifecycle_state(driver2), kActive);
+  EXPECT_EQ(driver1.GetLifecycleState(), kInactive);
+  EXPECT_EQ(driver2.GetLifecycleState(), kActive);
 }
 
 // Tests the lifecycle state changes when
 // 1. a navigation happens
 // 2. the reverse navigation is served from the BFCache.
 TEST_F(ContentAutofillDriverTestLifecycleState, NavigateBFCached) {
-  using enum AutofillManager::LifecycleState;
-  EXPECT_EQ(lifecycle_state(driver()), kActive);
+  using enum AutofillDriver::LifecycleState;
+  EXPECT_EQ(driver().GetLifecycleState(), kActive);
 
   ContentAutofillDriver& driver1 = driver();
-  EXPECT_CALL(manager(&driver1), ResetImpl).Times(0);
+  EXPECT_CALL(manager(&driver1), Reset).Times(0);
   EXPECT_CALL(factory_observer(), OnContentAutofillDriverCreated);
   Navigate(NavigationType::kCrossRfh);
   ContentAutofillDriver& driver2 = driver();
 
   EXPECT_NE(&driver1, &driver2);
-  EXPECT_EQ(lifecycle_state(driver1), kInactive);
-  EXPECT_EQ(lifecycle_state(driver2), kActive);
+  EXPECT_EQ(driver1.GetLifecycleState(), kInactive);
+  EXPECT_EQ(driver2.GetLifecycleState(), kActive);
 
-  EXPECT_CALL(manager(&driver1), ResetImpl).Times(0);
-  EXPECT_CALL(manager(&driver2), ResetImpl).Times(0);
+  EXPECT_CALL(manager(&driver1), Reset).Times(0);
+  EXPECT_CALL(manager(&driver2), Reset).Times(0);
   EXPECT_CALL(factory_observer(), OnContentAutofillDriverCreated).Times(0);
   Navigate(NavigationType::kBackwards);
 
   EXPECT_NE(&driver1, &driver2);
-  EXPECT_EQ(lifecycle_state(driver1), kActive);
-  EXPECT_EQ(lifecycle_state(driver2), kInactive);
+  EXPECT_EQ(driver1.GetLifecycleState(), kActive);
+  EXPECT_EQ(driver2.GetLifecycleState(), kInactive);
 }
 
 // Tests the lifecycle state changes when
 // 1. a frame is prerendered and
 // 2. that frame is activated afterwards.
 TEST_F(ContentAutofillDriverTestLifecycleState, NavigatePrerendering) {
-  using enum AutofillManager::LifecycleState;
+  using enum AutofillDriver::LifecycleState;
 
   ContentAutofillDriver& driver1 = driver();
-  EXPECT_CALL(manager(&driver1), ResetImpl).Times(0);
+  EXPECT_CALL(manager(&driver1), Reset).Times(0);
   EXPECT_CALL(factory_observer(), OnContentAutofillDriverCreated);
   ContentAutofillDriver& driver2 = driver(Navigate(NavigationType::kPrerender));
 
   EXPECT_NE(&driver1, &driver2);
-  EXPECT_EQ(lifecycle_state(driver1), kActive);
-  EXPECT_EQ(lifecycle_state(driver2), kInactive);
+  EXPECT_EQ(driver1.GetLifecycleState(), kActive);
+  EXPECT_EQ(driver2.GetLifecycleState(), kInactive);
 
-  EXPECT_CALL(manager(&driver1), ResetImpl).Times(0);
-  EXPECT_CALL(manager(&driver2), ResetImpl).Times(0);
+  EXPECT_CALL(manager(&driver1), Reset).Times(0);
+  EXPECT_CALL(manager(&driver2), Reset).Times(0);
   EXPECT_CALL(factory_observer(), OnContentAutofillDriverCreated).Times(0);
   Navigate(NavigationType::kPrerenderedActivation);
 
-  EXPECT_EQ(lifecycle_state(driver1), kInactive);
-  EXPECT_EQ(lifecycle_state(driver2), kActive);
+  EXPECT_EQ(driver1.GetLifecycleState(), kInactive);
+  EXPECT_EQ(driver2.GetLifecycleState(), kActive);
 }
 
 TEST_F(ContentAutofillDriverTest, Lift_Form) {
@@ -1160,7 +1152,7 @@ TEST_F(ContentAutofillDriverTest_PrerenderBadMessage,
   ASSERT_EQ(rfh->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kPrerendering);
   BadMessageHelper bad_message_helper;
-  EXPECT_CALL(manager(rfh), ResetImpl).Times(0);
+  EXPECT_CALL(manager(rfh), Reset).Times(0);
   EXPECT_CALL(bad_message_helper.callback(), Run);
   EXPECT_CALL(manager(rfh), OnFormsSeen).Times(0);
   driver(rfh).renderer_events().FormsSeen(/*updated_forms=*/{},
@@ -1170,7 +1162,7 @@ TEST_F(ContentAutofillDriverTest_PrerenderBadMessage,
 // Tests that a renderer event with a FieldRendererId that doesn't belong to the
 // associated FormData causes a bad message.
 TEST_F(ContentAutofillDriverTest, BadMessageIfFieldWithoutForm) {
-  EXPECT_CALL(manager(), ResetImpl).Times(0);
+  EXPECT_CALL(manager(), Reset).Times(0);
   BadMessageHelper bad_message_helper;
   EXPECT_CALL(bad_message_helper.callback(), Run);
   EXPECT_CALL(manager(), OnFormsSeen).Times(0);

@@ -13,10 +13,8 @@ TestAutofillDriver::TestAutofillDriver(AutofillClient* client)
     : autofill_client_(CHECK_DEREF(client)) {}
 
 TestAutofillDriver::~TestAutofillDriver() {
-  if (autofill_manager_) {
-    test_api(*autofill_manager_)
-        .SetLifecycleState(AutofillManager::LifecycleState::kPendingDeletion);
-  }
+  test_api(*this).SetLifecycleStateWithoutNotifications(
+      AutofillDriver::LifecycleState::kPendingDeletion);
 }
 
 AutofillClient& TestAutofillDriver::GetAutofillClient() {

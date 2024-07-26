@@ -91,17 +91,15 @@ AutofillDriverIOS::AutofillDriverIOS(web::WebState* web_state,
   // TODO: crbug.com/40269979 - Call AutofillManager::Reset() when necessary.
   // TODO: crbug.com/354043640 - Call AutofillManager::SetLifecycleState() from
   // the factory after construction is finished. That's required by the contract
-  // of AutofillManager::LifecycleState.
-  manager_->SetLifecycleState(AutofillManager::LifecycleState::kActive, {});
+  // of AutofillDriver::LifecycleState.
+  SetLifecycleState(AutofillDriver::LifecycleState::kActive, {});
 }
 
 AutofillDriverIOS::~AutofillDriverIOS() {
   // TODO: crbug.com/354043640 - Call AutofillManager::SetLifecycleState() from
   // the factory before destruction starts. That's required by the contract of
-  // AutofillManager::LifecycleState.
-  manager_->SetLifecycleState(AutofillManager::LifecycleState::kPendingDeletion,
-                              {});
-
+  // AutofillDriver::LifecycleState.
+  SetLifecycleState(AutofillDriver::LifecycleState::kPendingDeletion, {});
   Unregister();
 }
 
@@ -467,16 +465,19 @@ void AutofillDriverIOS::ClearLastInteractedForm() {
   last_interacted_form_.reset();
 }
 
+// TODO: crbug.com/354043640 - The flow of the event is strange here: it goes
+// factory -> driver -> manager -> driver. We should probably handle it coming
+// from the factory directly.
 void AutofillDriverIOS::OnAutofillManagerStateChanged(
     AutofillManager& manager,
-    AutofillManager::LifecycleState old_state,
-    AutofillManager::LifecycleState new_state) {
+    AutofillDriver::LifecycleState old_state,
+    AutofillDriver::LifecycleState new_state) {
   switch (new_state) {
-    case AutofillManager::LifecycleState::kInactive:
-    case AutofillManager::LifecycleState::kActive:
-    case AutofillManager::LifecycleState::kPendingReset:
+    case AutofillDriver::LifecycleState::kInactive:
+    case AutofillDriver::LifecycleState::kActive:
+    case AutofillDriver::LifecycleState::kPendingReset:
       break;
-    case AutofillManager::LifecycleState::kPendingDeletion:
+    case AutofillDriver::LifecycleState::kPendingDeletion:
       manager_observation_.Reset();
       break;
   }
