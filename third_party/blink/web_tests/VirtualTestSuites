@@ -270,7 +270,7 @@
     "bases": ["images",
               "external/wpt/css/css-images/gradient"],
     "args": ["--enable-gpu-rasterization"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "exotic-color-space",
