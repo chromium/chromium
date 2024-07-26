@@ -23,7 +23,7 @@ class CanonicalCookie;
 enum class CookieChangeCause {
   // The cookie was inserted.
   INSERTED,
-  // The cookie was changed directly by a consumer's action.
+  // The cookie was deleted directly by a consumer's action.
   EXPLICIT,
   // The cookie was deleted, but no more details are known.
   UNKNOWN_DELETION,
