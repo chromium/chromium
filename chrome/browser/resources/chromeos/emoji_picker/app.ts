@@ -190,9 +190,9 @@ export class EmojiPickerApp extends PolymerElement {
     };
   }
 
-  private initHistoryUi(incognito: boolean) {
+  private async initHistoryUi(incognito: boolean) {
     if (incognito !== this.incognito) {
-      this.updateIncognitoState(incognito);
+      await this.updateIncognitoState(incognito);
     }
     this.updateHistoryTabDisabledProperty();
     // Make highlight bar visible (now we know where it should be) and
@@ -1178,9 +1178,12 @@ export class EmojiPickerApp extends PolymerElement {
     this.updateEmojiPreferencesStore();
 
     // Load the history item for each category.
+    // Initialise all objects before async for extra safety.
     for (const category of Object.values(CategoryEnum)) {
       this.categoriesHistory[category] =
           incognito ? null : new RecentlyUsedStore(category);
+    }
+    for (const category of Object.values(CategoryEnum)) {
       await this.categoriesHistory[category]?.mergeWithPrefsHistory();
       this.categoryHistoryUpdated(category);
     }
