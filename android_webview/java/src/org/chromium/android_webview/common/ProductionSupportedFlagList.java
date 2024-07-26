@@ -368,6 +368,10 @@ public final class ProductionSupportedFlagList {
                 "When enabled, autofill uses an extra cache for matching regular expressions "
                         + "while executing local heuristics."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_STRUCTURED_FIELDS_DISABLE_ADDRESS_LINES,
+                "When enabled, Autofill disable address lines on forms with structured address"
+                        + " fields."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_LABEL_PRECEDENCE_FOR_TURKISH_ADDRESSES,
                 "When enabled, the precedence is given to the field label over the name when they"
                         + " match different types. Applied only for parsing of address forms in"
