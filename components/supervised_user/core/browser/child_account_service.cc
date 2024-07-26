@@ -85,14 +85,15 @@ void ChildAccountService::Init() {
   }
 }
 
-bool ChildAccountService::IsChildAccountStatusKnown() {
-  return supervised_user::IsChildAccountStatusKnown(user_prefs_.get());
-}
-
 void ChildAccountService::Shutdown() {
   identity_manager_->RemoveObserver(this);
   supervised_user_service_->SetDelegate(nullptr);
   DCHECK(!active_);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool ChildAccountService::IsChildAccountStatusKnown() {
+  return supervised_user::IsChildAccountStatusKnown(user_prefs_.get());
 }
 
 void ChildAccountService::AddChildStatusReceivedCallback(
@@ -103,6 +104,7 @@ void ChildAccountService::AddChildStatusReceivedCallback(
     status_received_callback_list_.push_back(std::move(callback));
   }
 }
+#endif
 
 ChildAccountService::AuthState ChildAccountService::GetGoogleAuthState() {
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
