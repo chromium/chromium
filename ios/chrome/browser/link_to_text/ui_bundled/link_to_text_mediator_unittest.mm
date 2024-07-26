@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/link_to_text/link_to_text_mediator.h"
+#import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_mediator.h"
 #import "base/time/time.h"
 
 #import "base/memory/raw_ptr.h"

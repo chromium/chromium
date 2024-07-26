@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_LINK_TO_TEXT_LINK_TO_TEXT_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_UI_LINK_TO_TEXT_LINK_TO_TEXT_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_LINK_TO_TEXT_UI_BUNDLED_LINK_TO_TEXT_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_LINK_TO_TEXT_UI_BUNDLED_LINK_TO_TEXT_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/link_to_text/link_to_text_delegate.h"
+#import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_delegate.h"
 
 @protocol ActivityServiceCommands;
 @protocol EditMenuAlertDelegate;
@@ -39,4 +39,4 @@ class WebStateList;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_LINK_TO_TEXT_LINK_TO_TEXT_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_LINK_TO_TEXT_UI_BUNDLED_LINK_TO_TEXT_MEDIATOR_H_

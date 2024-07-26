@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("link_to_text") {
+source_set("ui_bundled") {
   sources = [
     "link_to_text_delegate.h",
     "link_to_text_mediator.h",
@@ -26,7 +26,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "link_to_text_mediator_unittest.mm" ]
   deps = [
-    ":link_to_text",
+    ":ui_bundled",
     "//base",
     "//base/test:test_support",
     "//components/shared_highlighting/core/common",
