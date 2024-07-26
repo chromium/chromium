@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/enterprise/connectors/connectors_service_base.h"
+#include "components/enterprise/connectors/core/connectors_service_base.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"

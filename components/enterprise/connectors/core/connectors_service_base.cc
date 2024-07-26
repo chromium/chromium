@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/connectors/connectors_service_base.h"
+#include "components/enterprise/connectors/core/connectors_service_base.h"
 
 #include "components/prefs/pref_service.h"
 

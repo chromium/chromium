@@ -4,21 +4,12 @@
 
 import("//components/enterprise/buildflags/buildflags.gni")
 
-source_set("connectors") {
+source_set("core") {
   sources = [
-    "analysis/analysis_settings.cc",
-    "analysis/analysis_settings.h",
-    "common.cc",
-    "common.h",
-    "connectors_prefs.cc",
-    "connectors_prefs.h",
-    "device_trust/prefs.cc",
-    "device_trust/prefs.h",
-    "reporting/constants.h",
-    "reporting/reporting_service_settings.cc",
-    "reporting/reporting_service_settings.h",
-    "service_provider_config.cc",
-    "service_provider_config.h",
+    "connectors_service_base.cc",
+    "connectors_service_base.h",
+    "enterprise_connectors_policy_handler.cc",
+    "enterprise_connectors_policy_handler.h",
   ]
 
   deps = [
@@ -26,6 +17,7 @@ source_set("connectors") {
     "//components/download/public/common:public",
     "//components/enterprise/buildflags:buildflags",
     "//components/enterprise/common/proto:connectors_proto",
+    "//components/enterprise/connectors",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",
@@ -33,30 +25,27 @@ source_set("connectors") {
     "//components/strings:components_strings_grit",
     "//ui/gfx/range",
   ]
-
-  if (enterprise_client_certificates) {
-    deps += [ "//components/enterprise/client_certificates/core" ]
-  }
 }
 
 source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "reporting/reporting_service_settings_unittest.cc",
-    "service_provider_config_unittest.cc",
+    "connectors_service_base_unittest.cc",
+    "enterprise_connectors_policy_handler_unittest.cc",
   ]
 
-  public_deps = [ ":connectors" ]
+  public_deps = [ ":core" ]
 
   deps = [
     "//base",
+    "//components/enterprise/connectors",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//testing/gtest",
-    "//url:url",
+    "//url",
   ]
 }

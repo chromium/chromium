@@ -6822,7 +6822,10 @@ static_library("browser") {
     # Use this scope to migrate files/deps from
     # `enterprise_cloud_content_analysis` condiitions that now need to be
     # compiled on Android.
-    deps += [ "//components/enterprise/connectors" ]
+    deps += [
+      "//components/enterprise/connectors",
+      "//components/enterprise/connectors/core",
+    ]
   }
 
   if (enterprise_cloud_content_analysis) {
