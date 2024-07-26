@@ -11,6 +11,7 @@
 namespace emoji {
 namespace {
 
+using ::testing::DoubleNear;
 using ::testing::ElementsAre;
 using ::testing::FieldsAre;
 using ::testing::Gt;
@@ -317,7 +318,8 @@ TEST_F(EmojiSearchTest, KeywordPartialScoresHigherThanFullKeywordMatch) {
         FakeResource{
             IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
             R"([{"emoji":[{"base":{"string":"😀a","name":"something else",
-            "keywords":["face","grin","grinning face with something else",":D",":smile:"]}}]}])"},
+            "keywords":["face","grin","grinning facewithsomethingelse",":D",
+            ":smile:"]}}]}])"},
         FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
                      R"([{"group":"Arrows","emoji":[{"base":
             {"string":"←","name":"leftwards arrow"}}]}])"},
@@ -330,7 +332,8 @@ TEST_F(EmojiSearchTest, KeywordPartialScoresHigherThanFullKeywordMatch) {
   EmojiSearchResult result = search.SearchEmoji("grinning face");
 
   EXPECT_THAT(result.emojis,
-              ElementsAre(FieldsAre(Gt(0), "😀"), FieldsAre(Gt(0), "😀a")));
+              ElementsAre(FieldsAre(DoubleNear(0.0029, 0.00005), "😀"),
+                          FieldsAre(DoubleNear(0.0021, 0.00005), "😀a")));
   EXPECT_THAT(result.symbols, IsEmpty());
   EXPECT_THAT(result.emoticons, IsEmpty());
 }
