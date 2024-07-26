@@ -23,13 +23,10 @@ CookieSettingsPolicyHandler::~CookieSettingsPolicyHandler() = default;
 void CookieSettingsPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* third_party_cookie_blocking =
-      policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
-
-  if (third_party_cookie_blocking) {
+  if (const base::Value* third_party_cookie_blocking =
+          policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
+      third_party_cookie_blocking) {
     bool block_3pc = third_party_cookie_blocking->GetBool();
-    prefs->SetBoolean(prefs::kBlockAll3pcToggleEnabled, block_3pc);
-    prefs->SetBoolean(prefs::kAllowAll3pcToggleEnabled, !block_3pc);
     prefs->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(block_3pc ? CookieControlsMode::kBlockThirdParty
