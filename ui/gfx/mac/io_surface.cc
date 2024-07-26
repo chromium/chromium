@@ -184,20 +184,12 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
                                 ColorSpace::TransferID::PQ,
                                 ColorSpace::MatrixID::BT2020_NCL,
                                 ColorSpace::RangeID::LIMITED)) {
-    if (__builtin_available(macos 11.0, *)) {
-      color_space_name = kCGColorSpaceITUR_2100_PQ;
-    } else {
-      return true;
-    }
+    color_space_name = kCGColorSpaceITUR_2100_PQ;
   } else if (color_space == ColorSpace(ColorSpace::PrimaryID::BT2020,
                                        ColorSpace::TransferID::HLG,
                                        ColorSpace::MatrixID::BT2020_NCL,
                                        ColorSpace::RangeID::LIMITED)) {
-    if (__builtin_available(macos 11.0, *)) {
-      color_space_name = kCGColorSpaceITUR_2100_HLG;
-    } else {
-      return true;
-    }
+    color_space_name = kCGColorSpaceITUR_2100_HLG;
   }
 
   // https://crbug.com/1488397: Set parameters that will be rendering YUV

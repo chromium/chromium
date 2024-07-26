@@ -5,8 +5,7 @@
 #include "ui/base/clipboard/clipboard_util_mac.h"
 
 #include <AppKit/AppKit.h>
-#include <CoreServices/CoreServices.h>                      // pre-macOS 11
-#include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>  // macOS 11
+#include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #include <string>
 
@@ -155,28 +154,14 @@ URLAndTitle* ExtractStandardURLAndTitle(NSPasteboardItem* item) {
       // there is no official constant for that. However, that type does conform
       // to the generic "internet location" type (aka .inetloc), so check for
       // that.
-      if (@available(macOS 11, *)) {
-        UTType* type;
-        if (![file_url getResourceValue:&type
-                                 forKey:NSURLContentTypeKey
-                                  error:nil]) {
-          return nil;
-        }
-        if (![type conformsToType:UTTypeInternetLocation]) {
-          return nil;
-        }
-      } else {
-        NSString* type;
-        if (![file_url getResourceValue:&type
-                                 forKey:NSURLTypeIdentifierKey
-                                  error:nil]) {
-          return nil;
-        }
-        if (![NSWorkspace.sharedWorkspace type:type
-                                conformsToType:base::apple::CFToNSPtrCast(
-                                                   kUTTypeInternetLocation)]) {
-          return nil;
-        }
+      UTType* type;
+      if (![file_url getResourceValue:&type
+                               forKey:NSURLContentTypeKey
+                                error:nil]) {
+        return nil;
+      }
+      if (![type conformsToType:UTTypeInternetLocation]) {
+        return nil;
       }
 
       title = DeriveTitleFromFilename(file_url, /*strip_extension=*/true);
@@ -200,47 +185,23 @@ URLAndTitle* ExtractURLFromURLFile(NSPasteboardItem* item) {
   }
   NSURL* file_url = [NSURL URLWithString:file].filePathURL;
 
-  if (@available(macOS 11, *)) {
-    NSDictionary* resource_values;
-    resource_values = [file_url
-        resourceValuesForKeys:@[ NSURLFileSizeKey, NSURLContentTypeKey ]
-                        error:nil];
-    if (!resource_values) {
-      return nil;
-    }
+  NSDictionary* resource_values;
+  resource_values =
+      [file_url resourceValuesForKeys:@[ NSURLFileSizeKey, NSURLContentTypeKey ]
+                                error:nil];
+  if (!resource_values) {
+    return nil;
+  }
 
-    NSNumber* file_size = resource_values[NSURLFileSizeKey];
-    if (file_size.unsignedLongValue >
-        clipboard_util::internal::kMaximumParsableFileSize) {
-      return nil;
-    }
+  NSNumber* file_size = resource_values[NSURLFileSizeKey];
+  if (file_size.unsignedLongValue >
+      clipboard_util::internal::kMaximumParsableFileSize) {
+    return nil;
+  }
 
-    UTType* type = resource_values[NSURLContentTypeKey];
-    if (![type conformsToType:UTTypeInternetShortcut]) {
-      return nil;
-    }
-  } else {
-    NSDictionary* resource_values;
-    resource_values = [file_url
-        resourceValuesForKeys:@[ NSURLFileSizeKey, NSURLTypeIdentifierKey ]
-                        error:nil];
-    if (!resource_values) {
-      return nil;
-    }
-
-    NSNumber* file_size = resource_values[NSURLFileSizeKey];
-    if (file_size.unsignedLongValue >
-        clipboard_util::internal::kMaximumParsableFileSize) {
-      return nil;
-    }
-
-    NSString* type = resource_values[NSURLTypeIdentifierKey];
-    NSString* const kUTTypeInternetShortcut =
-        @"com.microsoft.internet-shortcut";
-    if (![NSWorkspace.sharedWorkspace type:type
-                            conformsToType:kUTTypeInternetShortcut]) {
-      return nil;
-    }
+  UTType* type = resource_values[NSURLContentTypeKey];
+  if (![type conformsToType:UTTypeInternetShortcut]) {
+    return nil;
   }
 
   // Windows codepage 1252 (aka WinLatin1) is the best guess.
