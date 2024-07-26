@@ -123,7 +123,7 @@ class MockMemoryUsageMonitor : public MemoryUsageMonitor {
   MockMemoryUsageMonitor() = delete;
 
   Page* CreateDummyPage() {
-    return Page::CreateNonOrdinary(GetStaticEmptyChromeClientInstance(),
+    return Page::CreateNonOrdinary(*MakeGarbageCollected<EmptyChromeClient>(),
                                    *agent_group_scheduler_,
                                    /*color_provider_colors=*/nullptr);
   }
