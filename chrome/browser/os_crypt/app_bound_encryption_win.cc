@@ -8,6 +8,7 @@
 
 #include <windows.h>
 
+#include <userenv.h>
 #include <wrl/client.h>
 
 #include "base/files/file_path.h"
@@ -22,6 +23,7 @@
 #include "chrome/elevation_service/elevation_service_idl.h"
 #include "chrome/install_static/install_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/pref_names.h"
 
 namespace os_crypt {
 
@@ -37,12 +39,28 @@ SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state) {
 
   // Policy allows disabling App-Bound encryption. Note, this will not disable
   // decryption of existing data.
-
   if (local_state->HasPrefPath(prefs::kApplicationBoundEncryptionEnabled) &&
       local_state->IsManagedPreference(
           prefs::kApplicationBoundEncryptionEnabled) &&
       !local_state->GetBoolean(prefs::kApplicationBoundEncryptionEnabled)) {
     return SupportLevel::kDisabledByPolicy;
+  }
+
+  // Note: this must be pulled from pref rather than calling
+  // `IsLocalSyncEnabled` to ensure that it's managed.
+  if (local_state->IsManagedPreference(
+          syncer::prefs::kEnableLocalSyncBackend) &&
+      local_state->GetBoolean(syncer::prefs::kEnableLocalSyncBackend)) {
+    return SupportLevel::kDisabledByRoamingChromeProfile;
+  }
+
+  DWORD profile_type;
+  if (::GetProfileType(&profile_type)) {
+    // App-Bound binds the encryption key to the SYSTEM DPAPI key, which does
+    // not roam with a roaming profile.
+    if (profile_type > 0) {
+      return SupportLevel::kDisabledByRoamingWindowsProfile;
+    }
   }
 
   base::FilePath user_data_dir;

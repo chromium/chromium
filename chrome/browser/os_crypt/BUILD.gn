@@ -37,6 +37,7 @@ source_set("app_bound_api") {
     "//chrome/elevation_service:public_headers",
     "//chrome/install_static:install_static_util",
     "//components/prefs:prefs",
+    "//components/sync/base",
   ]
 }
 

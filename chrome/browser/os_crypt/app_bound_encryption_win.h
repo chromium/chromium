@@ -24,7 +24,9 @@ enum class SupportLevel {
   kNotUsingDefaultUserDataDir = 4,
   kUserDataDirNotLocalDisk = 5,
   kDisabledByPolicy = 6,
-  kMaxValue = kDisabledByPolicy,
+  kDisabledByRoamingWindowsProfile = 7,
+  kDisabledByRoamingChromeProfile = 8,
+  kMaxValue = kDisabledByRoamingChromeProfile,
 };
 
 // Returns whether or not app-bound encryption is supported on the current
