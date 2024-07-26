@@ -22,6 +22,7 @@
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_utils.h"
@@ -165,6 +166,9 @@ class MockMintTokenFlow : public OAuth2MintTokenFlow {
   std::string CreateAuthorizationHeaderValue(
       const std::string& access_token) override {
     return OAuth2MintTokenFlow::CreateAuthorizationHeaderValue(access_token);
+  }
+  net::HttpRequestHeaders CreateApiCallHeaders() override {
+    return OAuth2MintTokenFlow::CreateApiCallHeaders();
   }
 };
 
@@ -388,6 +392,14 @@ TEST_F(OAuth2MintTokenFlowTest, CreateAuthorizationHeaderValue) {
   std::string header =
       flow_->CreateAuthorizationHeaderValue("test_access_token");
   EXPECT_EQ(header, "Bearer test_access_token");
+}
+
+TEST_F(OAuth2MintTokenFlowTest, CreateApiCallHeaders) {
+  CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
+  net::HttpRequestHeaders headers = flow_->CreateApiCallHeaders();
+  std::string header_value;
+  ASSERT_TRUE(headers.GetHeader("X-OAuth-Client-ID", &header_value));
+  EXPECT_EQ(header_value, kClientId);
 }
 
 TEST_F(OAuth2MintTokenFlowTest,
