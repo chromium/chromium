@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './icons.html.js';
-import './pdf-shared.css.js';
+import './pdf_shared.css.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -16,7 +16,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {SaveRequestType} from '../constants.js';
 
-import {getTemplate} from './viewer-download-controls.html.js';
+import {getTemplate} from './viewer_download_controls.html.js';
 
 export interface ViewerDownloadControlsElement {
   $: {

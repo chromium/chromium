@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shared-vars.css.js';
+import './shared_vars.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ChangePageOrigin} from './viewer-bookmark.js';
-import {getTemplate} from './viewer-page-selector.html.js';
+import {ChangePageOrigin} from './viewer_bookmark.js';
+import {getTemplate} from './viewer_page_selector.html.js';
 
 export interface ViewerPageSelectorElement {
   $: {

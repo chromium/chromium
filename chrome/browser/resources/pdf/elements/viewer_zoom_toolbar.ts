@@ -5,15 +5,15 @@
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './icons.html.js';
-import './viewer-zoom-button.js';
+import './viewer_zoom_button.js';
 
 import {isRTL} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FittingType} from '../constants.js';
 
-import type {ViewerZoomButtonElement} from './viewer-zoom-button.js';
-import {getTemplate} from './viewer-zoom-toolbar.html.js';
+import type {ViewerZoomButtonElement} from './viewer_zoom_button.js';
+import {getTemplate} from './viewer_zoom_toolbar.html.js';
 
 const FIT_TO_PAGE_BUTTON_STATE = 0;
 const FIT_TO_WIDTH_BUTTON_STATE = 1;

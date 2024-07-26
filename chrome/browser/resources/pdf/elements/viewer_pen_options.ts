@@ -8,7 +8,7 @@ import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_b
 import {assert} from 'chrome://resources/js/assert.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './viewer-pen-options.html.js';
+import {getTemplate} from './viewer_pen_options.html.js';
 
 interface Color {
   name: string;
