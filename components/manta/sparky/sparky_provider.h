@@ -100,9 +100,16 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
                         SparkyShowAnswerCallback done_callback,
                         manta::MantaStatus status);
 
+  void OnStorageReceived(std::unique_ptr<SparkyContext> sparky_context,
+                         SparkyShowAnswerCallback done_callback,
+                         manta::MantaStatus status,
+                         std::vector<Diagnostics> diagnostics_vector,
+                         std::unique_ptr<StorageData> storage_data);
+
   void OnDiagnosticsReceived(std::unique_ptr<SparkyContext> sparky_context,
                              SparkyShowAnswerCallback done_callback,
                              manta::MantaStatus status,
+                             std::unique_ptr<StorageData> storage_data,
                              std::unique_ptr<DiagnosticsData> diagnostics_data);
 
   std::unique_ptr<SparkyDelegate> sparky_delegate_;

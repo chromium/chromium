@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/sparky/system_info_delegate_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -124,7 +125,8 @@ void SystemInfoDelegateImpl::OnDiagnosticsUpdated() {
             cpu_data_ ? std::optional<manta::CpuData>(*cpu_data_)
                       : std::nullopt,
             memory_data_ ? std::optional<manta::MemoryData>(*memory_data_)
-                         : std::nullopt));
+                         : std::nullopt,
+            std::nullopt));
   }
 }
 

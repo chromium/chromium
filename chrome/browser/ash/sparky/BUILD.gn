@@ -53,6 +53,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/spaced:spaced",
+    "//chromeos/ash/components/disks:test_support",
     "//components/manta",
     "//components/prefs",
     "//content/test:test_support",

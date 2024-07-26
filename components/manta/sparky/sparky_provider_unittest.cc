@@ -89,6 +89,11 @@ class FakeSparkyDelegate : public SparkyDelegate {
   std::vector<AppsData> GetAppsList() override { return {}; }
   void LaunchApp(const std::string& app_id) override {}
 
+  void ObtainStorageInfo(StorageDataCallback storage_callback) override {
+    std::move(storage_callback)
+        .Run(std::make_unique<manta::StorageData>("78 GB", "128 GB"));
+  }
+
  private:
   SettingsDataList current_prefs_;
 };

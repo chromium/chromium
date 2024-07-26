@@ -223,12 +223,20 @@ void SparkyProvider::RequestAdditionalInformation(
     auto diagnostics_vector =
         ObtainDiagnosticsVectorFromProto(context_request.diagnostics());
     if (!diagnostics_vector.empty()) {
+      if (std::find(diagnostics_vector.begin(), diagnostics_vector.end(),
+                    Diagnostics::kStorage) != diagnostics_vector.end()) {
+        sparky_delegate_->ObtainStorageInfo(base::BindOnce(
+            &SparkyProvider::OnStorageReceived, weak_ptr_factory_.GetWeakPtr(),
+            std::move(sparky_context), std::move(done_callback), status,
+            diagnostics_vector));
+        return;
+      }
       system_info_delegate_->ObtainDiagnostics(
           diagnostics_vector,
           base::BindOnce(&SparkyProvider::OnDiagnosticsReceived,
                          weak_ptr_factory_.GetWeakPtr(),
                          std::move(sparky_context), std::move(done_callback),
-                         status));
+                         status, nullptr));
       return;
     }
     std::move(done_callback).Run(status, nullptr);
@@ -239,12 +247,43 @@ void SparkyProvider::RequestAdditionalInformation(
   std::move(done_callback).Run(status, nullptr);
 }
 
+void SparkyProvider::OnStorageReceived(
+    std::unique_ptr<SparkyContext> sparky_context,
+    SparkyShowAnswerCallback done_callback,
+    manta::MantaStatus status,
+    std::vector<Diagnostics> diagnostics_vector,
+    std::unique_ptr<StorageData> storage_data) {
+  bool get_system_diagnostics = false;
+  for (auto diagnostic : diagnostics_vector) {
+    if (diagnostic == Diagnostics::kBattery ||
+        diagnostic == Diagnostics::kCpu || diagnostic == Diagnostics::kMemory) {
+      get_system_diagnostics = true;
+      break;
+    }
+  }
+  if (get_system_diagnostics) {
+    system_info_delegate_->ObtainDiagnostics(
+        diagnostics_vector,
+        base::BindOnce(&SparkyProvider::OnDiagnosticsReceived,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(sparky_context), std::move(done_callback),
+                       status, std::move(storage_data)));
+    return;
+  }
+  sparky_context->diagnostics_data = std::make_optional<DiagnosticsData>(
+      std::nullopt, std::nullopt, std::nullopt,
+      std::make_optional(*storage_data));
+  QuestionAndAnswer(std::move(sparky_context), std::move(done_callback));
+}
+
 void SparkyProvider::OnDiagnosticsReceived(
     std::unique_ptr<SparkyContext> sparky_context,
     SparkyShowAnswerCallback done_callback,
     manta::MantaStatus status,
+    std::unique_ptr<StorageData> storage_data,
     std::unique_ptr<DiagnosticsData> diagnostics_data) {
   if (diagnostics_data) {
+    diagnostics_data->storage_data = std::make_optional(*storage_data);
     sparky_context->diagnostics_data = std::make_optional(*diagnostics_data);
     sparky_context->task = proto::TASK_DIAGNOSTICS;
     QuestionAndAnswer(std::move(sparky_context), std::move(done_callback));

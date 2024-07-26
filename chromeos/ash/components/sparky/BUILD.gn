@@ -10,6 +10,8 @@ component("sparky") {
   sources = [
     "snapshot_util.cc",
     "snapshot_util.h",
+    "sparky_util.cc",
+    "sparky_util.h",
     "system_info_delegate_impl.cc",
     "system_info_delegate_impl.h",
   ]

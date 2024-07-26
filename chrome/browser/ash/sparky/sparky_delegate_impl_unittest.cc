@@ -8,19 +8,66 @@
 #include <optional>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/files/file.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
+#include "base/system/sys_info.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_running_on_chromeos.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "chromeos/ash/components/sparky/sparky_util.h"
 #include "components/manta/sparky/sparky_delegate.h"
+#include "components/manta/sparky/system_info_delegate.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/text/bytes_formatting.h"
 
 namespace ash {
 
 namespace {
 using SettingsPrivatePrefType = extensions::api::settings_private::PrefType;
+
+// Get the path to file manager's test data directory.
+base::FilePath GetTestDataFilePath(const std::string& file_name) {
+  // Get the path to file manager's test data directory.
+  base::FilePath source_dir;
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_dir));
+  base::FilePath test_data_dir = source_dir.AppendASCII("chrome")
+                                     .AppendASCII("test")
+                                     .AppendASCII("data")
+                                     .AppendASCII("chromeos")
+                                     .AppendASCII("file_manager");
+
+  // Return full test data path to the given |file_name|.
+  return test_data_dir.Append(base::FilePath::FromUTF8Unsafe(file_name));
+}
+
+// Copy a file from the file manager's test data directory to the specified
+// target_path.
+void AddFile(const std::string& file_name,
+             int64_t expected_size,
+             base::FilePath target_path) {
+  const base::FilePath entry_path = GetTestDataFilePath(file_name);
+  target_path = target_path.AppendASCII(file_name);
+  ASSERT_TRUE(base::CopyFile(entry_path, target_path))
+      << "Copy from " << entry_path.value() << " to " << target_path.value()
+      << " failed.";
+  // Verify file size.
+  base::stat_wrapper_t stat;
+  const int res = base::File::Lstat(target_path, &stat);
+  ASSERT_FALSE(res < 0) << "Couldn't stat" << target_path.value();
+  ASSERT_EQ(expected_size, stat.st_size);
+}
 }  // namespace
 
 class SparkyDelegateImplTest : public testing::Test {
@@ -60,17 +107,45 @@ class SparkyDelegateImplTest : public testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     sparky_delegate_impl_ =
         std::make_unique<SparkyDelegateImpl>(profile_.get());
+
+    // Initialize fake DBus clients.
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::SpacedClient::InitializeFake();
+
+    ash::disks::DiskMountManager::InitializeForTesting(
+        new ash::disks::FakeDiskMountManager);
+
+    // Create and register MyFiles directory.
+    // By emulating chromeos running, GetMyFilesFolderForProfile will return the
+    // profile's temporary location instead of $HOME/Downloads.
+    base::test::ScopedRunningOnChromeOS running_on_chromeos;
+    const base::FilePath my_files_path =
+        file_manager::util::GetMyFilesFolderForProfile(profile_.get());
+    CHECK(base::CreateDirectory(my_files_path));
+    CHECK(storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+        file_manager::util::GetDownloadsMountPointName(profile_.get()),
+        storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+        my_files_path));
+
+    RunUntilIdle();
   }
 
-  void TearDown() override { sparky_delegate_impl_.reset(); }
+  void TearDown() override {
+    sparky_delegate_impl_.reset();
+    profile_.reset();
+    ash::disks::DiskMountManager::Shutdown();
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
+    ash::SpacedClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
+  }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
 
  private:
-  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<SparkyDelegateImpl> sparky_delegate_impl_;
 };
 
@@ -129,6 +204,62 @@ TEST_F(SparkyDelegateImplTest, AddPrefToMap) {
   ASSERT_EQ(GetCurrentPrefs()->find("double pref")->second->double_val, 0.5);
   ASSERT_EQ(GetCurrentPrefs()->find("string pref")->second->string_val,
             "my string");
+}
+
+TEST_F(SparkyDelegateImplTest, ObtainStorageInfo) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Get local filesystem storage statistics.
+  const base::FilePath mount_path =
+      file_manager::util::GetMyFilesFolderForProfile(profile_.get());
+  const base::FilePath downloads_path =
+      file_manager::util::GetDownloadsFolderForProfile(profile_.get());
+
+  const base::FilePath android_files_path =
+      profile_->GetPath().Append("AndroidFiles");
+  const base::FilePath android_files_download_path =
+      android_files_path.Append("Download");
+
+  // Create directories.
+  CHECK(base::CreateDirectory(downloads_path));
+  CHECK(base::CreateDirectory(android_files_path));
+
+  // Register android files mount point.
+  CHECK(storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+      file_manager::util::GetAndroidFilesMountPointName(),
+      storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+      android_files_path));
+
+  const int kMountPathBytes = 8092;
+  const int kAndroidPathBytes = 15271;
+  const int kDownloadsPathBytes = 56758;
+
+  // Add files in MyFiles and Android files.
+  AddFile("random.bin", kMountPathBytes, mount_path);          // ~7.9 KB
+  AddFile("tall.pdf", kAndroidPathBytes, android_files_path);  // ~14.9 KB
+  // Add file in Downloads and simulate bind mount with
+  // [android files]/Download.
+  AddFile("video.ogv", kDownloadsPathBytes, downloads_path);  // ~55.4 KB
+
+  int64_t total_bytes = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
+  int64_t available_bytes = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
+  int64_t rounded_total_size = sparky::RoundByteSize(total_bytes);
+
+  std::string available_size =
+      base::UTF16ToUTF8(ui::FormatBytes(available_bytes));
+  std::string total_size =
+      base::UTF16ToUTF8(ui::FormatBytes(rounded_total_size));
+  auto quit_closure = task_environment_.QuitClosure();
+
+  GetSparkyDelegateImpl()->ObtainStorageInfo(base::BindLambdaForTesting(
+      [&quit_closure, this, available_size,
+       total_size](std::unique_ptr<manta::StorageData> storage_data) {
+        RunUntilIdle();
+        ASSERT_TRUE(storage_data);
+        ASSERT_EQ(storage_data->free_bytes, available_size);
+        ASSERT_EQ(storage_data->total_bytes, total_size);
+        quit_closure.Run();
+      }));
 }
 
 }  // namespace ash

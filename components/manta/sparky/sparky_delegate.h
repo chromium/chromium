@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
+#include "components/manta/sparky/system_info_delegate.h"
 
 namespace manta {
 
@@ -68,6 +69,8 @@ struct COMPONENT_EXPORT(MANTA) AppsData {
   std::string id;
   std::vector<std::string> searchable_text;
 };
+using StorageDataCallback =
+    base::OnceCallback<void(std::unique_ptr<StorageData>)>;
 
 // Virtual class to handle the information requests and actions taken within
 // Sparky Provider which have a Chrome dependency.
@@ -87,6 +90,7 @@ class COMPONENT_EXPORT(MANTA) SparkyDelegate {
   virtual void GetScreenshot(ScreenshotDataCallback callback) = 0;
   virtual std::vector<AppsData> GetAppsList() = 0;
   virtual void LaunchApp(const std::string& app_id) = 0;
+  virtual void ObtainStorageInfo(StorageDataCallback storage_callback) = 0;
 };
 
 }  // namespace manta

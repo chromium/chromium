@@ -160,15 +160,19 @@ TEST_F(SparkyUtilTest, AddDiagnosticsProto) {
   auto memory_data = std::make_optional<MemoryData>(4.0, 8.0);
   auto battery_data =
       std::make_optional<BatteryData>(158, 76, "36 minutes until full", 80);
+  auto storage_data = std::make_optional<manta::StorageData>("78 GB", "128 GB");
   std::optional<DiagnosticsData> diagnostics_data =
       std::make_optional<DiagnosticsData>(
-          std::move(battery_data), std::move(cpu_data), std::move(memory_data));
+          std::move(battery_data), std::move(cpu_data), std::move(memory_data),
+          std::move(storage_data));
   proto::SparkyContextData sparky_context_data;
   auto* diagnostics_proto = sparky_context_data.mutable_diagnostics_data();
   AddDiagnosticsProto(std::move(diagnostics_data), diagnostics_proto);
   ASSERT_TRUE(diagnostics_proto->has_battery());
   ASSERT_TRUE(diagnostics_proto->has_cpu());
   ASSERT_TRUE(diagnostics_proto->has_memory());
+  ASSERT_TRUE(diagnostics_proto->has_storage());
+
   ASSERT_DOUBLE_EQ(diagnostics_proto->cpu().clock_speed_ghz(), 5.0);
   ASSERT_EQ(diagnostics_proto->cpu().cpu_usage_snapshot(), 40);
   ASSERT_EQ(diagnostics_proto->cpu().temperature(), 60);
@@ -179,6 +183,8 @@ TEST_F(SparkyUtilTest, AddDiagnosticsProto) {
   ASSERT_EQ(diagnostics_proto->battery().cycle_count(), 158);
   ASSERT_EQ(diagnostics_proto->battery().battery_time(),
             "36 minutes until full");
+  ASSERT_EQ(diagnostics_proto->storage().free_storage(), "78 GB");
+  ASSERT_EQ(diagnostics_proto->storage().total_storage(), "128 GB");
 }
 
 TEST_F(SparkyUtilTest, AddAppsData) {

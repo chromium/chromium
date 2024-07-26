@@ -238,6 +238,13 @@ void COMPONENT_EXPORT(MANTA)
       battery_proto->set_battery_time(
           diagnostics_data->battery_data->power_time);
     }
+    if (diagnostics_data->storage_data) {
+      auto* storage_proto = diagnostics_proto->mutable_storage();
+      storage_proto->set_free_storage(
+          diagnostics_data->storage_data->free_bytes);
+      storage_proto->set_total_storage(
+          diagnostics_data->storage_data->total_bytes);
+    }
   }
 }
 
