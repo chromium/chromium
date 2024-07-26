@@ -6,7 +6,7 @@ import {PdfScriptingApi} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehj
 import {FittingType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {createWheelEvent, ensureFullscreen, enterFullscreenWithUserGesture} from './test_util.js';
@@ -84,30 +84,30 @@ const tests = [
     chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
 
     // Test arrow keys.
-    keyDownOn(viewer, 0, '', 'ArrowDown');
+    keyDownOn(viewer, 0, [], 'ArrowDown');
     chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
 
-    keyDownOn(viewer, 0, '', 'ArrowUp');
+    keyDownOn(viewer, 0, [], 'ArrowUp');
     chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
 
-    keyDownOn(viewer, 0, '', 'ArrowRight');
+    keyDownOn(viewer, 0, [], 'ArrowRight');
     chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
 
-    keyDownOn(viewer, 0, '', 'ArrowLeft');
+    keyDownOn(viewer, 0, [], 'ArrowLeft');
     chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
 
     // Test Space key.
-    keyDownOn(viewer, 0, '', ' ');
+    keyDownOn(viewer, 0, [], ' ');
     chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
 
     keyDownOn(viewer, 0, 'shift', ' ');
     chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
 
     // Test PageUp/PageDown keys.
-    keyDownOn(viewer, 0, '', 'PageDown');
+    keyDownOn(viewer, 0, [], 'PageDown');
     chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
 
-    keyDownOn(viewer, 0, '', 'PageUp');
+    keyDownOn(viewer, 0, [], 'PageUp');
     chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
 
     chrome.test.succeed();

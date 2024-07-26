@@ -5,7 +5,8 @@
 import {PdfScriptingApi} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_scripting_api.js';
 import type {PdfViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import type {ModifiersParam} from 'chrome://webui-test/keyboard_mock_interactions.js';
 
 import {checkPdfTitleIsExpectedTitle} from './test_util.js';
 
@@ -87,7 +88,7 @@ chrome.test.runTests([
   async function testGetSelectedTextViaInvalidKeyPresses() {
     resetTextSelection();
 
-    const modifiers: Array<string|string[]> = ['shift', 'alt'];
+    const modifiers: ModifiersParam[] = ['shift', 'alt'];
     // <if expr="is_macosx">
     modifiers.push(['ctrl']);
     // </if>
