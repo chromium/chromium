@@ -29,6 +29,7 @@ export interface DownloadsDangerousDownloadInterstitialElement {
   $: {
     dialog: HTMLDialogElement,
     continueAnywayButton: CrButtonElement,
+    backToSafetyButton: CrButtonElement,
   };
 }
 
@@ -54,11 +55,14 @@ export class DownloadsDangerousDownloadInterstitialElement extends
       selectedRadioOption_: String,
 
       trustSiteLine: String,
+
+      trustSiteLineAccessibleText: String,
     };
   }
 
   bypassPromptItemId: string;
   trustSiteLine: string;
+  trustSiteLineAccessibleText: string;
 
   private boundKeydown_: ((e: KeyboardEvent) => void)|null = null;
   private hideSurveyAndDownloadButton_: boolean;
@@ -74,6 +78,7 @@ export class DownloadsDangerousDownloadInterstitialElement extends
   override connectedCallback() {
     super.connectedCallback();
     this.$.dialog.showModal();
+    this.$.dialog.focus();
     this.disableEscapeKey_();
   }
 
@@ -116,6 +121,10 @@ export class DownloadsDangerousDownloadInterstitialElement extends
     const continueAnywayButton = this.$.continueAnywayButton;
     assert(!!continueAnywayButton);
     continueAnywayButton.setAttribute('disabled', 'true');
+
+    const backToSafetyButton = this.$.backToSafetyButton;
+    assert(!!backToSafetyButton);
+    backToSafetyButton.focus();
     this.hideSurveyAndDownloadButton_ = false;
 
     assert(this.bypassPromptItemId !== '');

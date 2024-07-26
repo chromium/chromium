@@ -65,7 +65,7 @@ suite('interstitial tests', function() {
 
     const backToSafetyButton =
         interstitial!.shadowRoot!.querySelector<HTMLElement>(
-            '#back-to-safety-button');
+            '#backToSafetyButton');
     assertTrue(!!backToSafetyButton);
     backToSafetyButton.click();
 

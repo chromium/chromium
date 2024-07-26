@@ -23,7 +23,7 @@
     width: 72px;
   }
 
-  #main-message{
+  #main-message {
     margin: 30px 0;
   }
 
@@ -40,13 +40,13 @@
     padding-bottom: 30px;
   }
 
-  #back-to-safety-button {
+  #backToSafetyButton {
     background: white;
     border: none;
     color: var(--google-primary-40);
   }
 
-  #back-to-safety-button:hover {
+  #backToSafetyButton:hover {
     background: var(--google-primary-90);
   }
 
@@ -97,7 +97,8 @@
           <!-- noopener cuts off the script connection between
             chrome://downloads, which has sensitive capabilities, and the newly
             opened web renderer, which may be more readily compromised. -->
-          <a href="$i18n{blockedLearnMoreUrl}" target="_blank" rel="noopener">
+          <a href="$i18n{blockedLearnMoreUrl}" target="_blank" rel="noopener"
+              aria-label="$i18n{warningBypassPromptLearnMoreLinkAccessible}">
             $i18n{warningBypassPromptLearnMoreLink}
           </a>
         </p>
@@ -107,7 +108,7 @@
           on-click="onContinueAnywayClick_">
           $i18n{warningBypassInterstitialContinue}
         </cr-button>
-        <cr-button id="back-to-safety-button" on-click="onBackToSafetyClick_">
+        <cr-button id="backToSafetyButton" on-click="onBackToSafetyClick_">
           $i18n{warningBypassInterstitialCancel}
         </cr-button>
       </div>
@@ -116,15 +117,26 @@
       id="survey-and-download-button-wrapper">
       <div id="survey-wrapper">
         <p id="survey-title">$i18n{warningBypassInterstitialSurveyTitle}</p>
-        <cr-radio-group selected="{{selectedRadioOption_}}">
-          <cr-radio-button name="CreatedFile">
-            $i18n{warningBypassInterstitialSurveyCreatedFile}
+        <cr-radio-group
+            aria-label="$i18n{warningBypassInterstitialSurveyTitleAccessible}"
+            selected="{{selectedRadioOption_}}">
+          <cr-radio-button name="CreatedFile"
+            label="$i18n{warningBypassInterstitialSurveyCreatedFileAccessible}"
+            hide-label-text>
+            <span aria-hidden="true">
+              $i18n{warningBypassInterstitialSurveyCreatedFile}
+            </span>
           </cr-radio-button>
-          <cr-radio-button name="TrustSite">
-            [[trustSiteLine]]
+          <cr-radio-button name="TrustSite"
+            label="[[trustSiteLineAccessibleText]]" hide-label-text>
+            <span aria-hidden="true">[[trustSiteLine]]</span>
           </cr-radio-button>
-          <cr-radio-button name="AcceptRisk">
-            $i18n{warningBypassInterstitialSurveyAcceptRisk}
+          <cr-radio-button name="AcceptRisk"
+            label="$i18n{warningBypassInterstitialSurveyAcceptRiskAccessible}"
+            hide-label-text>
+            <span aria-hidden="true">
+              $i18n{warningBypassInterstitialSurveyAcceptRisk}
+            </span>
           </cr-radio-button>
         </cr-radio-group>
       </div>
