@@ -12,6 +12,12 @@ namespace features {
 
 // Alphabetical:
 
+// Enable auto granting storage access API requests. This will be done
+// if a relationship is detected between the app and the website.
+BASE_FEATURE(kWebViewAutoSAA,
+             "WebViewAutoSAA",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable back/forward cache support in WebView. Note that this will only take
 // effect iff both this feature flag and the content/public kBackForwardCache
 // flag is enabled.

@@ -251,6 +251,7 @@ source_set("browser") {
     "//components/component_updater/installer_policies",
     "//components/content_capture/android",
     "//components/content_capture/browser",
+    "//components/content_relationship_verification",
     "//components/embedder_support/android:context_menu",
 
     # Called via JNI in CrashpadMain

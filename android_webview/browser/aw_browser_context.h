@@ -29,6 +29,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/zoom_level_delegate.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 
 class GURL;
@@ -150,6 +151,9 @@ class AwBrowserContext : public content::BrowserContext,
   // android_webview::AwContextPermissionsDelegate implementation.
   blink::mojom::PermissionStatus GetGeolocationPermission(
       const GURL& origin) const override;
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  CreateURLLoaderFactory();
 
   PrefService* GetPrefService() const { return user_pref_service_.get(); }
 

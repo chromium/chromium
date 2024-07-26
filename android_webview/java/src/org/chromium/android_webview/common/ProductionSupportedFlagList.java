@@ -800,6 +800,10 @@ public final class ProductionSupportedFlagList {
                 "Enables text selection menu item modification based on "
                         + "embedder implementation."),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_AUTO_SAA,
+                "Enable auto granting storage access API requests. This will be done "
+                        + "if a relationship is detected between the app and the website."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION,
                 "Enable detection of the loading of mature sites on "
                         + "WebViews running on supervised user accounts"),

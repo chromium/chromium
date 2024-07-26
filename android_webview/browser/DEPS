@@ -15,6 +15,7 @@ include_rules = [
   "+components/cdm/browser",
   "+components/component_updater/android",
   "+components/component_updater/installer_policies",
+  "+components/content_relationship_verification",
   "+components/crash/content/browser",
   "+components/crash/core",
   "+components/download/public/common",

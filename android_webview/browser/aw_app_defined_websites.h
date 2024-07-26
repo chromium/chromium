@@ -37,13 +37,6 @@ enum class AppDefinedDomainCriteria {
 
 std::vector<std::string> GetAppDefinedDomains(AppDefinedDomainCriteria policy);
 
-// Returns if the `etld_plus1` requested is declared in the app's manifest.
-// This is compared to
-// AppDefinedDomainCriteria::kAndroidAssetStatementsAndWebLinks above. This
-// method lazy loads and caches this list in a thread safe way on the first call
-// for the remainder of the app lifecycle.
-bool IsAppDefined(std::string etld_plus1);
-
 }  // namespace android_webview
 
 #endif  // ANDROID_WEBVIEW_BROWSER_AW_APP_DEFINED_WEBSITES_H_

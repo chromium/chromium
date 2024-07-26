@@ -25,6 +25,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback_forward.h"
+#include "components/content_relationship_verification/digital_asset_links_handler.h"
 #include "components/js_injection/browser/js_communication_host.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -229,6 +230,8 @@ class AwContents : public FindHelper::Listener,
   void RequestMIDISysexPermission(const GURL& origin,
                                   PermissionCallback callback) override;
   void CancelMIDISysexPermissionRequests(const GURL& origin) override;
+  void RequestStorageAccess(const url::Origin& origin,
+                            PermissionCallback callback) override;
 
   // Find-in-page API and related methods.
   void FindAllAsync(JNIEnv* env,
@@ -349,6 +352,8 @@ class AwContents : public FindHelper::Listener,
   std::unique_ptr<AwPdfExporter> pdf_exporter_;
   std::unique_ptr<PermissionRequestHandler> permission_request_handler_;
   std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
+  std::unique_ptr<content_relationship_verification::DigitalAssetLinksHandler>
+      asset_link_handler_;
 
   bool view_tree_force_dark_state_ = false;
   std::string scheme_;

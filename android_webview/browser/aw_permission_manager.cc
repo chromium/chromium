@@ -14,11 +14,11 @@
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_context_permissions_delegate.h"
 #include "android_webview/browser/aw_settings.h"
+#include "android_webview/common/aw_features.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "components/permissions/permission_manager.h"
@@ -70,9 +70,14 @@ class LastRequestResultCache {
       return;
     }
 
-    if (permission != PermissionType::PROTECTED_MEDIA_IDENTIFIER) {
+    switch (permission) {
+      case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
+      case PermissionType::STORAGE_ACCESS_GRANT:
+      case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
+        break;
       // Other permissions are not cached.
-      return;
+      default:
+        return;
     }
 
     std::string key = GetCacheKey(requesting_origin, embedding_origin);
@@ -98,10 +103,16 @@ class LastRequestResultCache {
     DCHECK(embedding_origin.is_valid())
         << embedding_origin.possibly_invalid_spec();
 
-    if (permission != PermissionType::PROTECTED_MEDIA_IDENTIFIER) {
-      NOTREACHED_IN_MIGRATION()
-          << "Results are only cached for PROTECTED_MEDIA_IDENTIFIER";
-      return PermissionStatus::ASK;
+    switch (permission) {
+      case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
+      case PermissionType::STORAGE_ACCESS_GRANT:
+      case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
+        break;
+      // Other permissions are not cached.
+      default:
+        NOTREACHED_IN_MIGRATION()
+            << "Results are only cached for PROTECTED_MEDIA_IDENTIFIER AND SAA";
+        return PermissionStatus::ASK;
     }
 
     std::string key = GetCacheKey(requesting_origin, embedding_origin);
@@ -246,23 +257,6 @@ AwPermissionManager::~AwPermissionManager() {
   CancelPermissionRequests();
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused
-enum class StorageAccessAppDefinedType {
-  kAppDefined = 0,
-  kExternal = 1,
-  kMaxValue = kExternal,
-};
-
-void LogStorageAccessRequest(std::string etld_plus1) {
-  bool is_defined = IsAppDefined(std::move(etld_plus1));
-
-  base::UmaHistogramEnumeration("Android.WebView.StorageAccessRelation",
-                                is_defined
-                                    ? StorageAccessAppDefinedType::kAppDefined
-                                    : StorageAccessAppDefinedType::kExternal);
-}
-
 void AwPermissionManager::RequestPermissions(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
@@ -387,22 +381,14 @@ void AwPermissionManager::RequestPermissions(
       // source for storage access requests.
       case PermissionType::STORAGE_ACCESS_GRANT:
       case PermissionType::TOP_LEVEL_STORAGE_ACCESS: {
-        NOTIMPLEMENTED() << "RequestPermissions is not implemented for "
-                         << static_cast<int>(permissions[i]);
-        pending_request_raw->SetPermissionStatus(permissions[i],
-                                                 PermissionStatus::DENIED);
-
         const url::Origin& outer_origin =
             render_frame_host->GetOutermostMainFrame()
                 ->GetLastCommittedOrigin();
-        std::string etld_plus1 =
-            net::registry_controlled_domains::GetDomainAndRegistry(
-                outer_origin,
-                net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 
-        base::ThreadPool::PostTask(
-            FROM_HERE,
-            base::BindOnce(&LogStorageAccessRequest, std::move(etld_plus1)));
+        delegate->RequestStorageAccess(
+            outer_origin,
+            base::BindOnce(&OnRequestResponse, weak_ptr_factory_.GetWeakPtr(),
+                           request_id, permissions[i]));
         break;
       }
       case PermissionType::MIDI:
@@ -523,10 +509,20 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
     const GURL& embedding_origin,
     content::WebContents* web_contents) {
   switch (permission) {
-    case blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER:
-      // Method is called outside the Permissions API only for this permission.
+    // Setting results is called outside the Permissions API only for these
+    // permissions.
+    case blink::PermissionType::STORAGE_ACCESS_GRANT:
+    case blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS: {
+      if (!base::FeatureList::IsEnabled(features::kWebViewAutoSAA)) {
+        return PermissionStatus::DENIED;
+      }
       return result_cache_->GetResult(permission, requesting_origin,
                                       embedding_origin);
+    }
+    case blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER:
+      return result_cache_->GetResult(permission, requesting_origin,
+                                      embedding_origin);
+
     case blink::PermissionType::GEOLOCATION:
       return GetGeolocationPermission(requesting_origin, web_contents);
 
@@ -565,8 +561,6 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
     case blink::PermissionType::POINTER_LOCK:
     case blink::PermissionType::SMART_CARD:
     case blink::PermissionType::SPEAKER_SELECTION:
-    case blink::PermissionType::STORAGE_ACCESS_GRANT:
-    case blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS:
     case blink::PermissionType::VR:
     case blink::PermissionType::WAKE_LOCK_SCREEN:
     case blink::PermissionType::WAKE_LOCK_SYSTEM:

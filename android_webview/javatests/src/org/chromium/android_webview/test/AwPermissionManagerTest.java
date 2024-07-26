@@ -22,10 +22,13 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.content_public.browser.test.util.DomAutomationController;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -74,6 +77,18 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
             "navigator.mediaDevices.enumerateDevices().then("
                     + "(devices) => domAutomationController.send(devices.map("
                     + "  (d) => `${d['label']}`)));";
+
+    private static final String ASSET_STATEMENT_TEMPLATE =
+            """
+                [{
+                        "relation": ["delegate_permission/common.handle_all_urls"],
+                        "target": {
+                                "namespace": "android_app",
+                                "package_name": "%s",
+                                "sha256_cert_fingerprints": ["%s"]
+                        }
+                }]
+        """;
 
     private final DomAutomationController mDomAutomationController = new DomAutomationController();
     private TestWebServer mTestWebServer;
@@ -320,9 +335,58 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     public void testStorageAccessMetricLogged() throws Exception {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectAnyRecord("Android.WebView.StorageAccessRelation")
+                        .expectAnyRecord("Android.WebView.StorageAccessRelation2")
                         .build();
 
+        String result = requestEmbeddedStorageAccess(/* isInAppStatement= */ true);
+
+        // The storage access API doesn't work by default on WebView.
+        Assert.assertEquals("\"not granted\"", result);
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
+    public void testAutoGrantedStorageAccess() throws Exception {
+        var grantTimeHistogram = "Android.WebView.StorageAccessAutoGrantTime";
+        var histogramWatcher =
+                HistogramWatcher.newBuilder().expectAnyRecord(grantTimeHistogram).build();
+        var buildInfo = BuildInfo.getInstance();
+
+        // We add an asset statement to always trust the test app for auto granting.
+        mTestWebServer.setResponse(
+                "/.well-known/assetlinks.json",
+                String.format(
+                        ASSET_STATEMENT_TEMPLATE,
+                        buildInfo.hostPackageName,
+                        buildInfo.getHostSigningCertSha256()),
+                null);
+
+        String result = requestEmbeddedStorageAccess(/* isInAppStatement= */ true);
+        Assert.assertEquals("\"granted\"", result);
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder().expectNoRecords(grantTimeHistogram).build();
+        result = requestEmbeddedStorageAccess(/* isInAppStatement= */ false);
+        Assert.assertEquals("\"not granted\"", result);
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder().expectAnyRecord(grantTimeHistogram).build();
+        mTestWebServer.setResponse(
+                "/.well-known/assetlinks.json",
+                String.format(ASSET_STATEMENT_TEMPLATE, "some other app", "some hash"),
+                null);
+
+        result = requestEmbeddedStorageAccess(/* isInAppStatement= */ true);
+        Assert.assertEquals("\"not granted\"", result);
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    private String requestEmbeddedStorageAccess(boolean isInAppStatement) throws Exception {
         var contentsClient = new TestAwContentsClient();
         final AwContents awContents =
                 mActivityTestRule
@@ -337,25 +401,28 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
         var storagePage = mTestWebServer.setResponse("/storage", REQUEST_STORAGE_ACCESS_PAGE, null);
         var parentPage = mTestWebServer.setResponse("/", IFRAME_PARENT_PAGE, null);
 
+        // The test app trusts localhost. To test a flow where we don't have
+        // the website in our apps asset statement, we can just use a IP address
+        // that the app hasn't declared but still resolves.
+        if (!isInAppStatement) {
+            storagePage = storagePage.replace("localhost", "127.0.0.1");
+            parentPage = parentPage.replace("localhost", "127.0.0.1");
+        }
+
         mActivityTestRule.loadUrlSync(
                 awContents, contentsClient.getOnPageFinishedHelper(), parentPage);
 
         // We add an event listener for the result from the iframe and then initiate the page
         // load.
-        String result =
-                JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
-                        awContents.getWebContents(),
-                        String.format(
-                                """
+        return JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
+                awContents.getWebContents(),
+                String.format(
+                        """
                                 window.addEventListener('message', (e) => {
                                         domAutomationController.send(e.data)
                                 });
                                 document.querySelector('iframe').src = "%s";""",
-                                storagePage));
-
-        // The storage access API doesn't work on WebView.
-        Assert.assertEquals("\"not granted\"", result);
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+                        storagePage));
     }
 
     private void pollTitleAs(final String title, final AwContents awContents) {

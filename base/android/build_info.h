@@ -48,7 +48,7 @@ class BASE_EXPORT BuildInfo {
   BuildInfo(const BuildInfo&) = delete;
   BuildInfo& operator=(const BuildInfo&) = delete;
 
-  ~BuildInfo() {}
+  ~BuildInfo();
 
   // Static factory method for getting the singleton BuildInfo instance.
   // Note that ownership is not conferred on the caller and the BuildInfo in
@@ -104,6 +104,10 @@ class BASE_EXPORT BuildInfo {
   // app. In the context of the SDK Runtime, this is the versionCode of the app
   // that owns this particular instance of the SDK Runtime.
   const char* host_package_label() const { return host_package_label_; }
+
+  // The SHA256 of the public certificate used to sign the host application.
+  // This will default to an empty string if we were unable to retrieve it.
+  std::string host_signing_cert_sha256();
 
   const char* package_version_code() const {
     return package_version_code_;
