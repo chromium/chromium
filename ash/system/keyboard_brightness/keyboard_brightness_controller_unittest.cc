@@ -46,7 +46,9 @@ class FakeKeyboardBrightnessControlDelegate
       KeyboardBrightnessChangeSource source) override {
     keyboard_brightness_ = percent;
   }
-  void HandleSetKeyboardAmbientLightSensorEnabled(bool enabled) override {}
+  void HandleSetKeyboardAmbientLightSensorEnabled(
+      bool enabled,
+      KeyboardAmbientLightSensorEnabledChangeSource source) override {}
 
   void HandleGetKeyboardAmbientLightSensorEnabled(
       base::OnceCallback<void(std::optional<bool>)> callback) override {}
@@ -168,7 +170,9 @@ class KeyboardBrightnessControllerTest : public AshTestBase {
       bool enabled,
       power_manager::AmbientLightSensorChange_Cause cause) {
     keyboard_brightness_control_delegate()
-        ->HandleSetKeyboardAmbientLightSensorEnabled(enabled);
+        ->HandleSetKeyboardAmbientLightSensorEnabled(
+            enabled,
+            KeyboardAmbientLightSensorEnabledChangeSource::kSettingsApp);
     power_manager::AmbientLightSensorChange sensor_change;
     sensor_change.set_sensor_enabled(enabled);
     sensor_change.set_cause(cause);
@@ -240,7 +244,8 @@ TEST_F(KeyboardBrightnessControllerTest, SetKeyboardAmbientLightSensorEnabled) {
   EXPECT_TRUE(power_manager_client()->keyboard_ambient_light_sensor_enabled());
   // Disable the ambient light sensor.
   keyboard_brightness_control_delegate()
-      ->HandleSetKeyboardAmbientLightSensorEnabled(false);
+      ->HandleSetKeyboardAmbientLightSensorEnabled(
+          false, KeyboardAmbientLightSensorEnabledChangeSource::kSettingsApp);
 
   // Verify that the ambient light sensor is now disabled.
   EXPECT_FALSE(power_manager_client()->keyboard_ambient_light_sensor_enabled());
@@ -253,7 +258,8 @@ TEST_F(KeyboardBrightnessControllerTest, SetKeyboardAmbientLightSensorEnabled) {
 
   // Re-enabled the ambient light sensor
   keyboard_brightness_control_delegate()
-      ->HandleSetKeyboardAmbientLightSensorEnabled(true);
+      ->HandleSetKeyboardAmbientLightSensorEnabled(
+          true, KeyboardAmbientLightSensorEnabledChangeSource::kSettingsApp);
 
   // Verify that the ambient light sensor is enabled.
   EXPECT_TRUE(power_manager_client()->keyboard_ambient_light_sensor_enabled());

@@ -73,6 +73,10 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   requested_screen_brightness_cause() const {
     return requested_screen_brightness_cause_;
   }
+  power_manager::SetAmbientLightSensorEnabledRequest_Cause
+  requested_ambient_light_sensor_enabled_cause() const {
+    return requested_ambient_light_sensor_enabled_cause_;
+  }
   double keyboard_brightness_percent() const {
     return keyboard_brightness_percent_.value();
   }
@@ -333,6 +337,12 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   power_manager::SetBacklightBrightnessRequest_Cause
       requested_screen_brightness_cause_ =
           power_manager::SetBacklightBrightnessRequest_Cause_MODEL;
+
+  // Last als request cause via SetAmbientLightSensorEnabled().
+  // Initially set to an arbitrary value.
+  power_manager::SetAmbientLightSensorEnabledRequest_Cause
+      requested_ambient_light_sensor_enabled_cause_ = power_manager::
+          SetAmbientLightSensorEnabledRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP;
 
   // Last keyboard brightness request cause via HandleSetKeyboardBrightness().
   // Initially set to an arbitrary value.

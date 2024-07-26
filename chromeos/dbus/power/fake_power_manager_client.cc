@@ -201,6 +201,7 @@ void FakePowerManagerClient::SetAmbientLightSensorEnabled(
   }
 
   is_ambient_light_sensor_enabled_ = enabled;
+  requested_ambient_light_sensor_enabled_cause_ = request.cause();
 
   power_manager::AmbientLightSensorChange change;
   change.set_sensor_enabled(request.sensor_enabled());

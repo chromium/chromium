@@ -160,13 +160,17 @@ void BrightnessControllerChromeos::GetBrightnessPercent(
       std::move(callback));
 }
 
-void BrightnessControllerChromeos::SetAmbientLightSensorEnabled(bool enabled) {
+void BrightnessControllerChromeos::SetAmbientLightSensorEnabled(
+    bool enabled,
+    AmbientLightSensorEnabledChangeSource source) {
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(enabled);
-  // TODO(longbowei): Add param and change it based on source.
   request.set_cause(
-      power_manager::
-          SetAmbientLightSensorEnabledRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP);
+      source == AmbientLightSensorEnabledChangeSource::kSettingsApp
+          ? power_manager::
+                SetAmbientLightSensorEnabledRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP
+          : power_manager::
+                SetAmbientLightSensorEnabledRequest_Cause_RESTORED_FROM_USER_PREFERENCE);
   chromeos::PowerManagerClient::Get()->SetAmbientLightSensorEnabled(request);
 }
 
@@ -224,7 +228,10 @@ void BrightnessControllerChromeos::RestoreBrightnessSettings(
     }
   }
 
-  SetAmbientLightSensorEnabled(ambient_light_sensor_enabled_for_account);
+  SetAmbientLightSensorEnabled(
+      ambient_light_sensor_enabled_for_account,
+      BrightnessControlDelegate::AmbientLightSensorEnabledChangeSource::
+          kRestoredFromUserPref);
 
   // Record the display ambient light sensor status at login.
   if (has_sensor_ && !has_ambient_light_sensor_status_been_recorded_) {
@@ -258,7 +265,9 @@ void BrightnessControllerChromeos::RestoreBrightnessSettingsOnFirstLogin() {
           prefs::kDisplayAmbientLightSensorLastEnabled);
 
   SetAmbientLightSensorEnabled(
-      ambient_light_sensor_previously_enabled_for_account);
+      ambient_light_sensor_previously_enabled_for_account,
+      BrightnessControlDelegate::AmbientLightSensorEnabledChangeSource::
+          kRestoredFromUserPref);
 
   has_ambient_light_sensor_been_restored_for_new_user_ = true;
 }

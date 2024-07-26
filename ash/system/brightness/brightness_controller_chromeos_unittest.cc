@@ -597,13 +597,17 @@ TEST_F(BrightnessControllerChromeosTest, SetAmbientLightSensorEnabled) {
   EXPECT_TRUE(power_manager_client()->is_ambient_light_sensor_enabled());
 
   // Disable the ambient light sensor via the BrightnessControlDelegate.
-  brightness_control_delegate()->SetAmbientLightSensorEnabled(false);
+  brightness_control_delegate()->SetAmbientLightSensorEnabled(
+      false, BrightnessControlDelegate::AmbientLightSensorEnabledChangeSource::
+                 kSettingsApp);
   // PowerManagerClient should have been invoked, disabling the ambient light
   // sensor.
   EXPECT_FALSE(power_manager_client()->is_ambient_light_sensor_enabled());
 
   // Re-enabled the ambient light sensor via the BrightnessControlDelegate.
-  brightness_control_delegate()->SetAmbientLightSensorEnabled(true);
+  brightness_control_delegate()->SetAmbientLightSensorEnabled(
+      true, BrightnessControlDelegate::AmbientLightSensorEnabledChangeSource::
+                kSettingsApp);
   // PowerManagerClient should have been invoked, re-enabling the ambient light
   // sensor.
   EXPECT_TRUE(power_manager_client()->is_ambient_light_sensor_enabled());
@@ -615,7 +619,9 @@ TEST_F(BrightnessControllerChromeosTest, GetAmbientLightSensorEnabled) {
   SetBatteryPower();
 
   // Disable the ambient light sensor via the BrightnessControlDelegate.
-  brightness_control_delegate()->SetAmbientLightSensorEnabled(false);
+  brightness_control_delegate()->SetAmbientLightSensorEnabled(
+      false, BrightnessControlDelegate::AmbientLightSensorEnabledChangeSource::
+                 kSettingsApp);
 
   // GetAmbientLightSensorEnabled should return that the the light sensor is
   // currently not enabled.
@@ -625,7 +631,9 @@ TEST_F(BrightnessControllerChromeosTest, GetAmbientLightSensorEnabled) {
       }));
 
   // Re-enable the ambient light sensor via the BrightnessControlDelegate.
-  brightness_control_delegate()->SetAmbientLightSensorEnabled(true);
+  brightness_control_delegate()->SetAmbientLightSensorEnabled(
+      true, BrightnessControlDelegate::AmbientLightSensorEnabledChangeSource::
+                kSettingsApp);
 
   // GetAmbientLightSensorEnabled should return that the the light sensor is
   // currently enabled.
@@ -860,6 +868,34 @@ TEST_F(BrightnessControllerChromeosTest, SetBrightnessPercent_Cause) {
       power_manager_client()->requested_screen_brightness_cause(),
       power_manager::
           SetBacklightBrightnessRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP);
+}
+
+TEST_F(BrightnessControllerChromeosTest, SetAmbientLightSensorEnabled_Cause) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  SetChargerPower();
+
+  brightness_control_delegate()->SetAmbientLightSensorEnabled(
+      true, BrightnessControlDelegate::AmbientLightSensorEnabledChangeSource::
+                kSettingsApp);
+
+  // Brightness changes from Setting app should have cause
+  // "USER_REQUEST_FROM_SETTINGS_APP".
+  EXPECT_EQ(
+      power_manager_client()->requested_ambient_light_sensor_enabled_cause(),
+      power_manager::
+          SetAmbientLightSensorEnabledRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP);
+
+  brightness_control_delegate()->SetAmbientLightSensorEnabled(
+      false, BrightnessControlDelegate::AmbientLightSensorEnabledChangeSource::
+                 kRestoredFromUserPref);
+
+  // Brightness changes from the Settings app should have cause
+  // "USER_REQUEST_FROM_SETTINGS_APP".
+  EXPECT_EQ(
+      power_manager_client()->requested_ambient_light_sensor_enabled_cause(),
+      power_manager::
+          SetAmbientLightSensorEnabledRequest_Cause_RESTORED_FROM_USER_PREFERENCE);
 }
 
 TEST_F(BrightnessControllerChromeosTest,

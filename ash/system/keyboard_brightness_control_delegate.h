@@ -19,6 +19,17 @@ enum class KeyboardBrightnessChangeSource {
   kMaxValue = kRestoredFromUserPref,
 };
 
+// Enum to represent the source of a keyboard ambient light sensor enabled
+// change. Note that changing keyboard brightness can also disable the
+// KeyboardAmbient Light Sensor. This change is not directly made by calling the
+// HandleSetKeyboardAmbientLightSensorEnabled function in Chrome, it is handled
+// in the platform.
+enum class KeyboardAmbientLightSensorEnabledChangeSource {
+  kSettingsApp = 0,
+  kRestoredFromUserPref = 1,
+  kMaxValue = kRestoredFromUserPref,
+};
+
 // Delegate for controlling the keyboard brightness.
 class KeyboardBrightnessControlDelegate {
  public:
@@ -47,7 +58,9 @@ class KeyboardBrightnessControlDelegate {
 
   // Sets whether the ambient light sensor should be used in keyboard brightness
   // calculations.
-  virtual void HandleSetKeyboardAmbientLightSensorEnabled(bool enabled) = 0;
+  virtual void HandleSetKeyboardAmbientLightSensorEnabled(
+      bool enabled,
+      KeyboardAmbientLightSensorEnabledChangeSource source) = 0;
 
   // Asynchronously invokes |callback| with the current keyboard ambient light
   // enabled status, In case of error, it is called with nullopt.
