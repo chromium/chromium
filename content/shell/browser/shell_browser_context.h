@@ -23,7 +23,6 @@ class OriginTrialsControllerDelegate;
 class PermissionControllerDelegate;
 class ReduceAcceptLanguageControllerDelegate;
 class ShellDownloadManagerDelegate;
-class ShellFederatedPermissionContext;
 class ZoomLevelDelegate;
 
 class ShellBrowserContext : public BrowserContext {
@@ -61,18 +60,9 @@ class ShellBrowserContext : public BrowserContext {
   BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate() override;
   ContentIndexProvider* GetContentIndexProvider() override;
   ClientHintsControllerDelegate* GetClientHintsControllerDelegate() override;
-  FederatedIdentityApiPermissionContextDelegate*
-  GetFederatedIdentityApiPermissionContext() override;
-  FederatedIdentityAutoReauthnPermissionContextDelegate*
-  GetFederatedIdentityAutoReauthnPermissionContext() override;
-  FederatedIdentityPermissionContextDelegate*
-  GetFederatedIdentityPermissionContext() override;
   ReduceAcceptLanguageControllerDelegate*
   GetReduceAcceptLanguageControllerDelegate() override;
   OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate() override;
-
-  ShellFederatedPermissionContext* GetShellFederatedPermissionContext();
-  void ResetFederatedPermissionContext();
 
  protected:
   bool ignore_certificate_errors() const { return ignore_certificate_errors_; }
@@ -81,8 +71,6 @@ class ShellBrowserContext : public BrowserContext {
   std::unique_ptr<PermissionControllerDelegate> permission_manager_;
   std::unique_ptr<BackgroundSyncController> background_sync_controller_;
   std::unique_ptr<ContentIndexProvider> content_index_provider_;
-  std::unique_ptr<ShellFederatedPermissionContext>
-      federated_permission_context_;
   std::unique_ptr<ReduceAcceptLanguageControllerDelegate>
       reduce_accept_lang_controller_delegate_;
   std::unique_ptr<OriginTrialsControllerDelegate>

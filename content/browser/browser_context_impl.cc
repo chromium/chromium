@@ -13,6 +13,7 @@
 #include "content/browser/background_sync/background_sync_scheduler.h"
 #include "content/browser/browsing_data/browsing_data_remover_impl.h"
 #include "content/browser/download/download_manager_impl.h"
+#include "content/browser/in_memory_federated_permission_context.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
@@ -295,6 +296,19 @@ PrefetchService* BrowserContextImpl::GetPrefetchService() {
   }
 
   return prefetch_service_.get();
+}
+
+InMemoryFederatedPermissionContext*
+BrowserContextImpl::GetFederatedPermissionContext() {
+  if (!federated_permission_context_) {
+    federated_permission_context_ =
+        std::make_unique<InMemoryFederatedPermissionContext>();
+  }
+  return federated_permission_context_.get();
+}
+
+void BrowserContextImpl::ResetFederatedPermissionContext() {
+  federated_permission_context_.reset();
 }
 
 void BrowserContextImpl::SetPrefetchServiceForTesting(

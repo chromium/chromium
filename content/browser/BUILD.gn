@@ -1128,6 +1128,8 @@ source_set("browser") {
     "idle/idle_manager_impl.h",
     "image_capture/image_capture_impl.cc",
     "image_capture/image_capture_impl.h",
+    "in_memory_federated_permission_context.cc",
+    "in_memory_federated_permission_context.h",
     "indexed_db/indexed_db_internals_ui.cc",
     "indexed_db/indexed_db_internals_ui.h",
     "installedapp/fetch_related_apps_task.h",

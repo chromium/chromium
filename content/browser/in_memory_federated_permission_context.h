@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_SHELL_BROWSER_SHELL_FEDERATED_PERMISSION_CONTEXT_H_
-#define CONTENT_SHELL_BROWSER_SHELL_FEDERATED_PERMISSION_CONTEXT_H_
+#ifndef CONTENT_BROWSER_IN_MEMORY_FEDERATED_PERMISSION_CONTEXT_H_
+#define CONTENT_BROWSER_IN_MEMORY_FEDERATED_PERMISSION_CONTEXT_H_
 
 #include <map>
 #include <set>
@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_auto_reauthn_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
@@ -26,16 +27,15 @@ class Origin;
 
 namespace content {
 
-// This class implements the various FedCM delegates for content_shell.
-// It is used to store permission and login state in memory, so that we
-// can run wpt tests against it.
-class ShellFederatedPermissionContext
+// This class implements the various FedCM delegates. It is used to store
+// permission and login state in memory as a default implementation.
+class InMemoryFederatedPermissionContext
     : public FederatedIdentityApiPermissionContextDelegate,
       public FederatedIdentityAutoReauthnPermissionContextDelegate,
       public FederatedIdentityPermissionContextDelegate {
  public:
-  ShellFederatedPermissionContext();
-  ~ShellFederatedPermissionContext() override;
+  InMemoryFederatedPermissionContext();
+  ~InMemoryFederatedPermissionContext() override;
 
   // FederatedIdentityApiPermissionContextDelegate
   content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
@@ -106,9 +106,11 @@ class ShellFederatedPermissionContext
     idp_signin_status_closure_ = std::move(closure);
   }
 
-  void SetHasThirdPartyCookiesAccessForTesting(
+  CONTENT_EXPORT void SetHasThirdPartyCookiesAccessForTesting(
       const std::string& identity_provider,
       const std::string& relying_party_embedder);
+
+  CONTENT_EXPORT void ResetForTesting();
 
  private:
   // Pairs of <RP embedder, IDP>
@@ -139,4 +141,4 @@ class ShellFederatedPermissionContext
 
 }  // namespace content
 
-#endif  // CONTENT_SHELL_BROWSER_SHELL_FEDERATED_PERMISSION_CONTEXT_H_
+#endif  // CONTENT_BROWSER_IN_MEMORY_FEDERATED_PERMISSION_CONTEXT_H_

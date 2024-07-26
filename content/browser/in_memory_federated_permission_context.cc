@@ -2,24 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/shell/browser/shell_federated_permission_context.h"
+#include "content/browser/in_memory_federated_permission_context.h"
 
 #include <algorithm>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "content/public/common/content_features.h"
-#include "content/shell/common/shell_switches.h"
 
 namespace content {
 
-ShellFederatedPermissionContext::ShellFederatedPermissionContext() = default;
+InMemoryFederatedPermissionContext::InMemoryFederatedPermissionContext() =
+    default;
 
-ShellFederatedPermissionContext::~ShellFederatedPermissionContext() = default;
+InMemoryFederatedPermissionContext::~InMemoryFederatedPermissionContext() =
+    default;
 
 content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
-ShellFederatedPermissionContext::GetApiPermissionStatus(
+InMemoryFederatedPermissionContext::GetApiPermissionStatus(
     const url::Origin& relying_party_embedder) {
   if (!base::FeatureList::IsEnabled(features::kFedCm)) {
     return PermissionStatus::BLOCKED_VARIATIONS;
@@ -33,21 +35,22 @@ ShellFederatedPermissionContext::GetApiPermissionStatus(
 }
 
 // FederatedIdentityApiPermissionContextDelegate
-void ShellFederatedPermissionContext::RecordDismissAndEmbargo(
+void InMemoryFederatedPermissionContext::RecordDismissAndEmbargo(
     const url::Origin& relying_party_embedder) {
   embargoed_origins_.insert(relying_party_embedder);
 }
 
-void ShellFederatedPermissionContext::RemoveEmbargoAndResetCounts(
+void InMemoryFederatedPermissionContext::RemoveEmbargoAndResetCounts(
     const url::Origin& relying_party_embedder) {
   embargoed_origins_.erase(relying_party_embedder);
 }
 
-bool ShellFederatedPermissionContext::ShouldCompleteRequestImmediately() const {
-  return switches::IsRunWebTestsSwitchPresent();
+bool InMemoryFederatedPermissionContext::ShouldCompleteRequestImmediately()
+    const {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch("run-web-tests");
 }
 
-bool ShellFederatedPermissionContext::HasThirdPartyCookiesAccess(
+bool InMemoryFederatedPermissionContext::HasThirdPartyCookiesAccess(
     content::RenderFrameHost& host,
     const GURL& provider_url,
     const url::Origin& relying_party_embedder) const {
@@ -59,24 +62,25 @@ bool ShellFederatedPermissionContext::HasThirdPartyCookiesAccess(
              }) != has_third_party_cookies_access_.end();
 }
 
-void ShellFederatedPermissionContext::SetHasThirdPartyCookiesAccessForTesting(
-    const std::string& identity_provider,
-    const std::string& relying_party_embedder) {
+void InMemoryFederatedPermissionContext::
+    SetHasThirdPartyCookiesAccessForTesting(
+        const std::string& identity_provider,
+        const std::string& relying_party_embedder) {
   has_third_party_cookies_access_.insert(
       std::pair(identity_provider, relying_party_embedder));
 }
 
 // FederatedIdentityAutoReauthnPermissionContextDelegate
-bool ShellFederatedPermissionContext::IsAutoReauthnSettingEnabled() {
+bool InMemoryFederatedPermissionContext::IsAutoReauthnSettingEnabled() {
   return auto_reauthn_permission_;
 }
 
-bool ShellFederatedPermissionContext::IsAutoReauthnEmbargoed(
+bool InMemoryFederatedPermissionContext::IsAutoReauthnEmbargoed(
     const url::Origin& relying_party_embedder) {
   return false;
 }
 
-void ShellFederatedPermissionContext::SetRequiresUserMediation(
+void InMemoryFederatedPermissionContext::SetRequiresUserMediation(
     const url::Origin& rp_origin,
     bool requires_user_mediation) {
   if (requires_user_mediation) {
@@ -87,29 +91,29 @@ void ShellFederatedPermissionContext::SetRequiresUserMediation(
   OnSetRequiresUserMediation(rp_origin, base::DoNothing());
 }
 
-bool ShellFederatedPermissionContext::RequiresUserMediation(
+bool InMemoryFederatedPermissionContext::RequiresUserMediation(
     const url::Origin& rp_origin) {
   return require_user_mediation_sites_.contains(net::SchemefulSite(rp_origin));
 }
 
-void ShellFederatedPermissionContext::OnSetRequiresUserMediation(
+void InMemoryFederatedPermissionContext::OnSetRequiresUserMediation(
     const url::Origin& relying_party,
     base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-base::Time ShellFederatedPermissionContext::GetAutoReauthnEmbargoStartTime(
+base::Time InMemoryFederatedPermissionContext::GetAutoReauthnEmbargoStartTime(
     const url::Origin& relying_party_embedder) {
   return base::Time();
 }
 
-void ShellFederatedPermissionContext::RecordEmbargoForAutoReauthn(
+void InMemoryFederatedPermissionContext::RecordEmbargoForAutoReauthn(
     const url::Origin& relying_party_embedder) {}
 
-void ShellFederatedPermissionContext::RemoveEmbargoForAutoReauthn(
+void InMemoryFederatedPermissionContext::RemoveEmbargoForAutoReauthn(
     const url::Origin& relying_party_embedder) {}
 
-void ShellFederatedPermissionContext::AddIdpSigninStatusObserver(
+void InMemoryFederatedPermissionContext::AddIdpSigninStatusObserver(
     IdpSigninStatusObserver* observer) {
   if (idp_signin_status_observer_list_.HasObserver(observer)) {
     return;
@@ -118,12 +122,12 @@ void ShellFederatedPermissionContext::AddIdpSigninStatusObserver(
   idp_signin_status_observer_list_.AddObserver(observer);
 }
 
-void ShellFederatedPermissionContext::RemoveIdpSigninStatusObserver(
+void InMemoryFederatedPermissionContext::RemoveIdpSigninStatusObserver(
     IdpSigninStatusObserver* observer) {
   idp_signin_status_observer_list_.RemoveObserver(observer);
 }
 
-bool ShellFederatedPermissionContext::HasSharingPermission(
+bool InMemoryFederatedPermissionContext::HasSharingPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider) {
@@ -138,7 +142,8 @@ bool ShellFederatedPermissionContext::HasSharingPermission(
                       }) != sharing_permissions_.end();
 }
 
-std::optional<base::Time> ShellFederatedPermissionContext::GetLastUsedTimestamp(
+std::optional<base::Time>
+InMemoryFederatedPermissionContext::GetLastUsedTimestamp(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
@@ -157,7 +162,7 @@ std::optional<base::Time> ShellFederatedPermissionContext::GetLastUsedTimestamp(
              : std::nullopt;
 }
 
-bool ShellFederatedPermissionContext::HasSharingPermission(
+bool InMemoryFederatedPermissionContext::HasSharingPermission(
     const url::Origin& relying_party_requester) {
   return std::find_if(sharing_permissions_.begin(), sharing_permissions_.end(),
                       [&](const auto& entry) {
@@ -166,7 +171,7 @@ bool ShellFederatedPermissionContext::HasSharingPermission(
                       }) != sharing_permissions_.end();
 }
 
-void ShellFederatedPermissionContext::GrantSharingPermission(
+void InMemoryFederatedPermissionContext::GrantSharingPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
@@ -176,7 +181,7 @@ void ShellFederatedPermissionContext::GrantSharingPermission(
       identity_provider.Serialize(), account_id));
 }
 
-void ShellFederatedPermissionContext::RevokeSharingPermission(
+void InMemoryFederatedPermissionContext::RevokeSharingPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
@@ -205,7 +210,7 @@ void ShellFederatedPermissionContext::RevokeSharingPermission(
   }
 }
 
-void ShellFederatedPermissionContext::RefreshExistingSharingPermission(
+void InMemoryFederatedPermissionContext::RefreshExistingSharingPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
@@ -214,7 +219,7 @@ void ShellFederatedPermissionContext::RefreshExistingSharingPermission(
   // does nothing.
 }
 
-std::optional<bool> ShellFederatedPermissionContext::GetIdpSigninStatus(
+std::optional<bool> InMemoryFederatedPermissionContext::GetIdpSigninStatus(
     const url::Origin& idp_origin) {
   auto idp_signin_status = idp_signin_status_.find(idp_origin.Serialize());
   if (idp_signin_status != idp_signin_status_.end()) {
@@ -224,7 +229,7 @@ std::optional<bool> ShellFederatedPermissionContext::GetIdpSigninStatus(
   }
 }
 
-void ShellFederatedPermissionContext::SetIdpSigninStatus(
+void InMemoryFederatedPermissionContext::SetIdpSigninStatus(
     const url::Origin& idp_origin,
     bool idp_signin_status) {
   idp_signin_status_[idp_origin.Serialize()] = idp_signin_status;
@@ -233,22 +238,37 @@ void ShellFederatedPermissionContext::SetIdpSigninStatus(
   }
 
   // TODO(crbug.com/40245925): Replace this with AddIdpSigninStatusObserver.
-  if (idp_signin_status_closure_)
+  if (idp_signin_status_closure_) {
     idp_signin_status_closure_.Run();
+  }
 }
 
-void ShellFederatedPermissionContext::RegisterIdP(const ::GURL& configURL) {
+void InMemoryFederatedPermissionContext::RegisterIdP(const ::GURL& configURL) {
   idp_registry_.push_back(configURL);
 }
 
-void ShellFederatedPermissionContext::UnregisterIdP(const ::GURL& configURL) {
+void InMemoryFederatedPermissionContext::UnregisterIdP(
+    const ::GURL& configURL) {
   idp_registry_.erase(
       std::remove(idp_registry_.begin(), idp_registry_.end(), configURL),
       idp_registry_.end());
 }
 
-std::vector<GURL> ShellFederatedPermissionContext::GetRegisteredIdPs() {
+std::vector<GURL> InMemoryFederatedPermissionContext::GetRegisteredIdPs() {
   return idp_registry_;
+}
+
+void InMemoryFederatedPermissionContext::ResetForTesting() {
+  request_permissions_.clear();
+  sharing_permissions_.clear();
+  idp_signin_status_.clear();
+  has_third_party_cookies_access_.clear();
+  idp_signin_status_observer_list_.Clear();
+  idp_signin_status_closure_.Reset();
+  auto_reauthn_permission_ = true;
+  idp_registry_.clear();
+  embargoed_origins_.clear();
+  require_user_mediation_sites_.clear();
 }
 
 }  // namespace content

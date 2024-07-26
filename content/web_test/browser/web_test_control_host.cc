@@ -49,6 +49,7 @@
 #include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/in_memory_federated_permission_context.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -79,7 +80,6 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_content_index_provider.h"
 #include "content/shell/browser/shell_devtools_frontend.h"
-#include "content/shell/browser/shell_federated_permission_context.h"
 #include "content/test/mock_platform_notification_service.h"
 #include "content/test/storage_partition_test_helpers.h"
 #include "content/web_test/browser/devtools_protocol_test_bindings.h"
@@ -755,7 +755,9 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
 
   ShellBrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();
-  browser_context->ResetFederatedPermissionContext();
+  static_cast<InMemoryFederatedPermissionContext*>(
+      browser_context->GetFederatedIdentityPermissionContext())
+      ->ResetForTesting();
 
   // Delete any ScopedVirtualPressureSourceForDevTools and
   // WebTestPressureManager instances created by WebTestContentBrowserClient.
