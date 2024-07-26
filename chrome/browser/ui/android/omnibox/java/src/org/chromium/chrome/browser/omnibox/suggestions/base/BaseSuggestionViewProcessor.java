@@ -223,6 +223,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         model.set(
                 BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING,
                 OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(mContext));
+        model.set(BaseSuggestionViewProperties.TOP_PADDING, 0);
 
         if (OmniboxFeatures.isTouchDownTriggerForPrefetchEnabled()
                 && !OmniboxFeatures.isLowMemoryDevice()

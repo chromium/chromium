@@ -485,4 +485,10 @@ public class BaseSuggestionViewBinderUnitTest {
         assertEquals(largeEdgeSize, mIconView.getLayoutParams().height);
         assertEquals(largeRoundingRadius, mBaseView.decorationIconOutline.getRadiusForTesting());
     }
+
+    @Test
+    public void topPadding() {
+        mModel.set(BaseSuggestionViewProperties.TOP_PADDING, 13);
+        assertEquals(13, mBaseView.getPaddingTop());
+    }
 }

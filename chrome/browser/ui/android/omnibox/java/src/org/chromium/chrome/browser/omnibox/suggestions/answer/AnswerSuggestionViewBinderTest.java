@@ -40,16 +40,7 @@ public class AnswerSuggestionViewBinderTest {
 
     @Test
     public void setPadding() {
-        mModel.set(AnswerSuggestionViewProperties.TOP_PADDING, 12);
-        assertEquals(12, mBaseView.getPaddingTop());
-
         mModel.set(AnswerSuggestionViewProperties.RIGHT_PADDING, 13);
-        assertEquals(13, mBaseView.getPaddingRight());
-
-        mBaseView.setPadding(0, 0, 0, 0);
-        // Both top and right should be set when either one changes.
-        mModel.set(AnswerSuggestionViewProperties.TOP_PADDING, 11);
-        assertEquals(11, mBaseView.getPaddingTop());
         assertEquals(13, mBaseView.getPaddingRight());
     }
 }
