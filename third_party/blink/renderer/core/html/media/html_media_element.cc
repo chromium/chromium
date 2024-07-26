@@ -609,7 +609,14 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
       DCHECK(!opener_document_);
       // Only set this when we're going from "original opener" to "elsewhere",
       // in case we're moved from one same-origin window to another.
+      //
+      // This assumes that the first move is from the opener to the pip window.
+      // If `ShouldReusePlayer()` lets the first move be in the other direction,
+      // then we'll get this wrong.  Somebody would have to set
+      // `opener_document_` correctly before we get here, so we'd end up in the
+      // case above, instead.  They'd also have to create the context observer.
       opener_document_ = old_document;
+      CHECK(!opener_document_->domWindow()->IsPictureInPictureWindow());
       opener_context_observer_ =
           MakeGarbageCollected<OpenerContextObserver>(this);
     }
@@ -654,12 +661,34 @@ bool HTMLMediaElement::ShouldReusePlayer(Document& old_document,
     return false;
   }
 
-  // Reuse player if the two documents have opener-pip relationship (for either
-  // direction).
-  return (new_document.domWindow()->IsPictureInPictureWindow() &&
-          new_document.GetFrame()->Opener() == old_document.GetFrame()) ||
-         (old_document.domWindow()->IsPictureInPictureWindow() &&
-          old_document.GetFrame()->Opener() == new_document.GetFrame());
+  // If we're moving from the opener to pip window, then the player is already
+  // connected to the opener and should stay connected to prevent jank.
+  if (new_document.domWindow()->IsPictureInPictureWindow() &&
+      new_document.GetFrame()->Opener() == old_document.GetFrame()) {
+    return true;
+  }
+
+  // If we're moving from the pip window to the opener, then we should only
+  // reuse the player if it's already associated with the opener.  In practice,
+  // this means that `opener_document_` has been set, since
+  // `LocalFrameForOpener()` uses that to decide which frame owns the player.
+  //
+  // Since we don't currently check if the original document is a pip window in
+  // the ctor, that means that creating a video element in the pip window will
+  // not be jankless when moved to the opener the first time.  Once it's in the
+  // opener (either by being moved there or being created there), moves in both
+  // directions will be jankless.
+  //
+  // It could be made jankless in both directions if we noticed (e.g., in the
+  // ctor) that we're being created in a pip document, and set
+  // `opener_document_` correctly and create the context observer for it.
+  //
+  // This logic works whether or not we make the ctor smarter about pip.
+  // However, it can be simiplified to skip the `opener_document_` check if
+  // we're guaranteed that it's always set properly.
+  return (old_document.domWindow()->IsPictureInPictureWindow() &&
+          old_document.GetFrame()->Opener() == new_document.GetFrame()) &&
+         opener_document_ == &new_document;
 }
 
 void HTMLMediaElement::AttachToNewFrame() {
