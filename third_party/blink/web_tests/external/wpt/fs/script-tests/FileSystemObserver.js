@@ -6,13 +6,11 @@
 
 promise_test(async t => {
   function dummyCallback(records, observer) {};
-  let success = true;
   try {
     const observer = new FileSystemObserver(dummyCallback);
   } catch (error) {
-    success = false;
+    assert_unreached();
   }
-  assert_true(success);
 }, 'Creating a FileSystemObserver from a window succeeds');
 
 promise_test(async t => {
@@ -55,3 +53,45 @@ promise_test(async t => {
 
   assert_false(response.createObserverSuccess);
 }, 'Creating a FileSystemObserver from a service worker fails');
+
+directory_test(async (t, root_dir) => {
+  function dummyCallback(records, observer) {};
+  const observer = new FileSystemObserver(dummyCallback);
+  try {
+    observer.unobserve(root_dir);
+  } catch (error) {
+    assert_unreached();
+  }
+}, 'Calling unobserve() without a corresponding observe() shouldn\t throw');
+
+directory_test(async (t, root_dir) => {
+  function dummyCallback(records, observer) {};
+  const observer = new FileSystemObserver(dummyCallback);
+  try {
+    observer.unobserve(root_dir);
+    observer.unobserve(root_dir);
+  } catch (error) {
+    assert_unreached();
+  }
+}, 'unobserve() is idempotent');
+
+promise_test(async t => {
+  function dummyCallback(records, observer) {};
+  const observer = new FileSystemObserver(dummyCallback);
+  try {
+    observer.disconnect();
+  } catch (error) {
+    assert_unreached();
+  }
+}, 'Calling disconnect() without observing shouldn\'t throw');
+
+promise_test(async t => {
+  function dummyCallback(records, observer) {};
+  const observer = new FileSystemObserver(dummyCallback);
+  try {
+    observer.disconnect();
+    observer.disconnect();
+  } catch (error) {
+    assert_unreached();
+  }
+}, 'disconnect() is idempotent');
