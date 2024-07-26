@@ -9,7 +9,7 @@
  * #include=cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
-.trace-card {
+:host {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 3fr auto auto auto;
   grid-auto-flow: column;
@@ -26,7 +26,7 @@
   position: relative;
 }
 
-.trace-card > div {
+:host > div {
   overflow: hidden;
   min-width: 0;
 }
@@ -171,7 +171,19 @@
   border-radius: 4px;
 }
 
-.trace-spinner > paper-spinner-lite {
-  width: 20px;
-  height: 20px;
+.spinner {
+  --spinner-size: 20px;
+  mask-image: url(chrome://resources/images/throbber_small.svg);
+  mask-position: center;
+  mask-repeat: no-repeat;
+  background-color: var(--google-blue-500);
+  mask-size: var(--spinner-size) var(--spinner-size);
+  height: var(--spinner-size);
+  width: var(--spinner-size);
+}
+
+@media (prefers-color-scheme: dark) {
+  .spinner {
+    background-color: var(--google-blue-300);
+  }
 }

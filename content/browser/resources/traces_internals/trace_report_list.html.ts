@@ -2,58 +2,62 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import type {ClientTraceReport} from './trace_report.mojom-webui.js';
 import type {TraceReportListElement} from './trace_report_list.js';
+
+function getReportHtml(this: TraceReportListElement) {
+  // clang-format off
+  if (!this.hasTraces_()) {
+    return html`
+    <div class="empty-message">
+      <cr-icon icon="cr:warning"></cr-icon>
+      <h1>Could not find any traces saved locally.</h1>
+    </div>`;
+  }
+
+  return html`${this.traces_.map((traceReport: ClientTraceReport) => html`
+    <trace-report .trace="${traceReport}"></trace-report>`)}`;
+  // clang-format on
+}
 
 export function getHtml(this: TraceReportListElement) {
   // clang-format off
   return html`
-    <div class="traces-header">
-      <h1>Traces
-        <span class="trace-counter" ?hidden="${!this.hasTraces_()}">
-          ${this.traces.length}
-        </span>
-      </h1>
+  <div class="traces-header">
+    <h1>Traces
+      <span class="trace-counter" ?hidden="${!this.hasTraces_()}">
+        ${this.traces_.length}
+      </span>
+    </h1>
+    ${this.hasTraces_() ? html`<div class="utility-bar">
+    <cr-button class="floating-button" ?disabled="${!this.hasTraces_()}"
+        @click="${this.onDeleteAllTracesClick_}">
+      <cr-icon icon="cr:delete" aria-hidden="true"></cr-icon>
+      Delete All Traces
+    </cr-button>` : nothing}
+  </div>
+  ${this.isLoading_ ? html`
+  <div class="loading-spinner"><div class="spinner"></div></div>` :
+  html`
+  <div class="report-list-container">
+    ${getReportHtml.bind(this)()}
+  </div>`}
+  <cr-toast id="toast" duration="5000" ?hidden="${!this.notification_}">
+    <div id="notification-card">
+      <div class="icon-container ${this.getNotificationStyling_()}">
+        <cr-icon icon="${this.getNotificationIcon_()}"
+            aria-hidden="true">
+        </cr-icon>
+      </div>
+      <div class="notification-message">
+        <h4 class="notification-type ${this.getNotificationStyling_()}">
+          ${this.getNotificationType_()}
+        </h4>
+        <span class="notification-label">${this.getNotificationLabel_()}</span>
+      </div>
     </div>
-    ${this.isLoading ? html`
-      <div class="loading-spinner">
-        <paper-spinner-lite ?active="${this.isLoading}">
-        </paper-spinner-lite>
-      </div>` : ''}
-
-    ${!this.isLoading && this.hasTraces_() ? html`
-      <div class="utility-bar">
-        <cr-button class="floating-button"
-            ?disabled="${!this.hasTraces_()}"
-            @click="${this.onDeleteAllTracesClick_}">
-          <iron-icon icon="cr:delete" aria-hidden="true"></iron-icon>
-          Delete All Traces
-        </cr-button>
-      </div>
-      ${this.traces.map(item => html`
-        <trace-report .trace="${item}" @show-toast="${this.showToastHandler_}"
-            @refresh-traces-request="${this.initializeList}">
-        </trace-report>
-        `)}` : html`
-      <div class="empty-message" ?hidden="${this.hasTraces_()}">
-        <iron-icon icon="cr:warning"></iron-icon>
-        <h1>Could not find any traces saved locally.</h1>
-      </div>`}
-
-    <cr-toast id="toast" duration="5000" ?hidden="${!this.notification}">
-      <div id="notification-card">
-        <div class="icon-container ${this.getNotificationStyling_()}">
-          <iron-icon icon="${this.getNotificationIcon_()}" aria-hidden="true">
-          </iron-icon>
-        </div>
-        <div class="notification-message">
-          <h4 class="notification-type ${this.getNotificationStyling_()}">
-            ${this.notification.type}
-          </h4>
-          <span class="notification-label">${this.notification.label}</span>
-        </div>
-      </div>
-    </cr-toast>`;
+  </cr-toast>`;
   // clang-format on
 }

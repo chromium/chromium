@@ -14,7 +14,7 @@
 }
 
 h1 > .trace-counter {
-  margin-left: 14px;
+  margin-inline-start: 14px;
 }
 
 .loading-spinner {
@@ -24,9 +24,21 @@ h1 > .trace-counter {
   justify-content: center;
 }
 
-.loading-spinner > paper-spinner-lite {
-  width: 60px;
-  height: 60px;
+.spinner {
+  --spinner-size: 60px;
+  mask-image: url(chrome://resources/images/throbber_medium.svg);
+  mask-position: center;
+  mask-repeat: no-repeat;
+  background-color: var(--google-blue-500);
+  mask-size: var(--spinner-size) var(--spinner-size);
+  height: var(--spinner-size);
+  width: var(--spinner-size);
+}
+
+@media (prefers-color-scheme: dark) {
+  .spinner {
+    background-color: var(--google-blue-300);
+  }
 }
 
 #notification-card {
@@ -66,25 +78,25 @@ h1 > .trace-counter {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-right: 24px;
+  margin-inline-end: 24px;
   height: auto;
 }
 
-.icon-container > iron-icon {
+.icon-container > cr-icon {
   --iron-icon-fill-color: white;
   --iron-icon-width: 40px;
   --iron-icon-height: 40px;
 }
 
-.icon-container.error > iron-icon {
+.icon-container.error > cr-icon {
   --iron-icon-fill-color: rgb(195, 40, 40);
 }
 
-.icon-container.accouncement > iron-icon {
+.icon-container.accouncement > cr-icon {
   --iron-icon-fill-color: rgb(98, 133, 52);
 }
 
-.icon-container.update > iron-icon {
+.icon-container.update > cr-icon {
   --iron-icon-fill-color: rgb(34, 135, 211);
 }
 

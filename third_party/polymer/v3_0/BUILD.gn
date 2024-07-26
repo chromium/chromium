@@ -159,7 +159,6 @@ ts_library("library") {
     "//chrome/test/data/webui/side_panel/read_anything:build_ts",
     "//chrome/test/data/webui/signin:build_ts",
     "//chrome/test/data/webui/support_tool:build_ts",
-    "//content/browser/resources/traces_internals:build_ts",
     "//ui/webui/resources/cr_components/certificate_manager:build_ts",
     "//ui/webui/resources/cr_components/customize_themes:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
