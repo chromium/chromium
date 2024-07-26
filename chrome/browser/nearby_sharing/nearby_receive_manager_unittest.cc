@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-test-utils.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

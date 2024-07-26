@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/in_session_auth_token_provider_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/in_session_auth/in_session_auth_dialog_controller_impl.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "ash/shell.h"
 #include "base/check.h"

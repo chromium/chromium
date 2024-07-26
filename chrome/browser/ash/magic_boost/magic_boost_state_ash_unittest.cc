@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/types/cxx23_to_underlying.h"

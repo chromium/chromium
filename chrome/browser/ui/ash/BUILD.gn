@@ -116,6 +116,7 @@ static_library("ash") {
     "//ash",
     "//ash/components/arc:arc_features",
     "//ash/components/arc/vector_icons",
+    "//ash/in_session_auth",
     "//ash/quick_pair/keyed_service",
     "//ash/style",
     "//ash/webui/personalization_app",

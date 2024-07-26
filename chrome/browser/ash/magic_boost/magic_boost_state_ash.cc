@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/types/cxx23_to_underlying.h"

@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/api/image_writer_private/operation.h"
+
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
-#include "chrome/browser/extensions/api/image_writer_private/operation.h"
+#include "chrome/browser/extensions/api/image_writer_private/image_writer_utility_client.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "content/public/browser/browser_thread.h"
 

@@ -275,6 +275,7 @@ static_library("screens") {
     "//chrome/common:constants",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/components/growth:growth",

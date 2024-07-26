@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/public/cpp/session/session_types.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"

@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
