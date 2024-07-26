@@ -175,16 +175,9 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
 
 - (void)cameraDevice:(ICCameraDevice*)camera
          didAddItems:(NSArray<ICCameraItem*>*)items {
-  NSString* folderIdentifier;
-  if (@available(macOS 11, *)) {
-    folderIdentifier = UTTypeFolder.identifier;
-  } else {
-    folderIdentifier = base::apple::CFToNSPtrCast(kUTTypeFolder);
-  }
-
   for (ICCameraItem* item in items) {
     base::File::Info info;
-    if ([item.UTI isEqualToString:folderIdentifier]) {
+    if ([item.UTI isEqualToString:UTTypeFolder.identifier]) {
       info.is_directory = true;
     } else {
       info.size = base::apple::ObjCCastStrict<ICCameraFile>(item).fileSize;
