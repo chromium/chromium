@@ -246,6 +246,7 @@ source_set("interactive_ui_tests") {
   sources = [
     "lens_overlay_controller_interactive_uitest.cc",
     "lens_permission_bubble_controller_interactive_uitest.cc",
+    "lens_preselection_bubble_interactive_uitest.cc",
   ]
   deps = [
     ":lens",

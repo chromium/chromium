@@ -17,7 +17,10 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView {
   METADATA_HEADER(LensPreselectionBubble, views::BubbleDialogDelegateView)
 
  public:
-  explicit LensPreselectionBubble(views::View* anchor_view);
+  using ExitClickedCallback = views::Button::PressedCallback;
+  explicit LensPreselectionBubble(views::View* anchor_view,
+                                  bool offline,
+                                  ExitClickedCallback callback);
   ~LensPreselectionBubble() override;
 
   // views::BubbleDialogDelegateView:
@@ -31,6 +34,12 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView {
  private:
   raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<views::ImageView> icon_view_ = nullptr;
+  // Button shown in bubble to close lens overlay. Only shown in offline state.
+  raw_ptr<views::MdTextButton> exit_button_ = nullptr;
+  // Whether user is offline.
+  bool offline_ = false;
+  // Callback for exit button which closes the lens overlay.
+  ExitClickedCallback callback_;
 };
 
 }  // namespace lens

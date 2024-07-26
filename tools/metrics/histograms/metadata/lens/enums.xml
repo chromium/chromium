@@ -46,6 +46,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Tab closed"/>
   <int value="14" label="Error: Renderer exited"/>
   <int value="15" label="Find in page invoked"/>
+  <int value="16" label="Preselection toast exit button"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->

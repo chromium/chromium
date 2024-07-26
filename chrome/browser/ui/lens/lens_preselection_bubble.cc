@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "lens_preselection_bubble.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -35,8 +36,14 @@ const int kPreselectionBubbleMinY = 8;
 
 }  // namespace
 
-LensPreselectionBubble::LensPreselectionBubble(views::View* anchor_view)
-    : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::NONE) {
+LensPreselectionBubble::LensPreselectionBubble(views::View* anchor_view,
+                                               bool offline,
+                                               ExitClickedCallback callback)
+    : BubbleDialogDelegateView(anchor_view,
+                               views::BubbleBorder::NONE,
+                               views::BubbleBorder::NO_SHADOW),
+      offline_(offline),
+      callback_(std::move(callback)) {
   // Toast bubble doesn't have any buttons, cannot be active, and should not be
   // focus traversable.
   SetShowCloseButton(false);
@@ -53,11 +60,15 @@ void LensPreselectionBubble::Init() {
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal, gfx::Insets()));
-  set_margins(gfx::Insets::TLBR(12, 16, 12, 16));
+  offline_ ? set_margins(gfx::Insets::TLBR(6, 16, 6, 6))
+           : set_margins(gfx::Insets::TLBR(12, 16, 12, 16));
 
   // Set bubble icon and text
   const std::u16string toast_text =
-      l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE);
+      offline_
+          ? l10n_util::GetStringUTF16(
+                IDS_LENS_OVERLAY_INITIAL_TOAST_ERROR_MESSAGE)
+          : l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE);
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   label_ = AddChildView(std::make_unique<views::Label>(toast_text));
   label_->SetMultiLine(false);
@@ -68,6 +79,18 @@ void LensPreselectionBubble::Init() {
   // changed by SetEnabledColor() color mapper. Color tokens provided
   // have enough contrast.
   label_->SetAutoColorReadabilityEnabled(false);
+  if (offline_) {
+    exit_button_ = AddChildView(std::make_unique<views::MdTextButton>(
+        std::move(callback_),
+        l10n_util::GetStringUTF16(
+            IDS_LENS_OVERLAY_INITIAL_TOAST_ERROR_EXIT_BUTTON_TEXT)));
+    exit_button_->SetProperty(views::kMarginsKey,
+                              gfx::Insets::TLBR(0, 8, 0, 0));
+    exit_button_->SetPreferredSize(gfx::Size(55, 36));
+    exit_button_->SetStyle(ui::ButtonStyle::kProminent);
+    exit_button_->SetProperty(views::kElementIdentifierKey,
+                              kLensPreselectionBubbleExitButtonElementId);
+  }
 }
 
 gfx::Rect LensPreselectionBubble::GetBubbleBounds() {
@@ -94,12 +117,22 @@ void LensPreselectionBubble::OnThemeChanged() {
   set_color(color_provider->GetColor(kColorLensOverlayToastBackground));
   icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      vector_icons::kGoogleLensMonochromeLogoIcon,
+      offline_ ? vector_icons::kErrorOutlineIcon
+               : vector_icons::kGoogleLensMonochromeLogoIcon,
 #else
-      vector_icons::kSearchIcon,
+      offline_ ? vector_icons::kErrorOutlineIcon : vector_icons::kSearchIcon,
 #endif
       color_provider->GetColor(ui::kColorToastForeground), 24));
   label_->SetEnabledColor(color_provider->GetColor(ui::kColorToastForeground));
+
+  if (offline_) {
+    CHECK(exit_button_);
+    exit_button_->SetEnabledTextColors(
+        color_provider->GetColor(kColorLensOverlayToastButtonText));
+    exit_button_->SetBorder(views::CreateRoundedRectBorder(
+        1, 48, color_provider->GetColor(ui::kColorButtonBorder)));
+    exit_button_->SetBgColorIdOverride(kColorLensOverlayToastBackground);
+  }
 }
 
 BEGIN_METADATA(LensPreselectionBubble)

@@ -172,6 +172,7 @@
   E_CPONLY(kColorIntentPickerItemBackgroundSelected) \
   /* Lens overlay colors. */ \
   E_CPONLY(kColorLensOverlayToastBackground) \
+  E_CPONLY(kColorLensOverlayToastButtonText) \
   /* Location bar colors. */ \
   E_CPONLY(kColorLocationBarBackground) \
   E_CPONLY(kColorLocationBarBackgroundHovered) \
