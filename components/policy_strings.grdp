@@ -1292,4 +1292,13 @@ Additional details:
   <message name="IDS_POLICY_SKYVAULT_MISCONFIGURED_POLICY_MESSAGE" desc="The message informing the user that SkyVault policies aren't configured propely. It can be shown as an error inside the Files App or as a system notification.">
     The file system has been disabled by your administrator
   </message>
+  <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_UPLOAD_TITLE" desc="The title of the notificaton which shows after a screenshot is taken.">
+    Saving screenshot
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_UPLOAD_ONEDRIVE_MESSAGE" desc="The message of the notification which shows up informing the user that screenshot is being saved to OneDrive.">
+    Saving file to Microsoft OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_UPLOAD_CANCEL_BUTTON" desc="The for the cancel button on the notification that shows up informing the user that screenshot is being saved to OneDrive.">
+    Cancel
+  </message>
 </grit-part>

@@ -91,6 +91,9 @@ class OdfsSkyvaultUploader
   // Returns a weak pointer to this instance.
   base::WeakPtr<OdfsSkyvaultUploader> GetWeakPtr();
 
+  // Should cancel the whole upload, if possible.
+  void Cancel();
+
  private:
   friend base::RefCounted<OdfsSkyvaultUploader>;
 
@@ -149,6 +152,10 @@ class OdfsSkyvaultUploader
   // Upload callback run once with upload success/failure and the file url (if
   // successfully uploaded).
   UploadDoneCallback upload_callback_;
+
+  // Set to `true` if upload is explicitly cancelled by owner. Forces every step
+  // to exit early.
+  bool cancelled_ = false;
 
   base::WeakPtrFactory<OdfsSkyvaultUploader> weak_ptr_factory_{this};
 };

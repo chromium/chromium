@@ -102,6 +102,13 @@ base::WeakPtr<OdfsSkyvaultUploader> OdfsSkyvaultUploader::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+void OdfsSkyvaultUploader::Cancel() {
+  cancelled_ = true;
+  if (observed_task_id_.has_value()) {
+    io_task_controller_->Cancel(observed_task_id_.value());
+  }
+}
+
 OdfsSkyvaultUploader::OdfsSkyvaultUploader(
     Profile* profile,
     int64_t id,
@@ -127,6 +134,11 @@ OdfsSkyvaultUploader::~OdfsSkyvaultUploader() {
 
 void OdfsSkyvaultUploader::Run(UploadDoneCallback upload_callback) {
   upload_callback_ = std::move(upload_callback);
+
+  if (cancelled_) {
+    OnEndUpload(/*url=*/{}, MigrationUploadError::kCancelled);
+    return;
+  }
 
   if (!profile_) {
     LOG(ERROR) << "No profile";
@@ -157,7 +169,9 @@ void OdfsSkyvaultUploader::Run(UploadDoneCallback upload_callback) {
 void OdfsSkyvaultUploader::OnEndUpload(
     storage::FileSystemURL url,
     std::optional<MigrationUploadError> error) {
-  std::move(upload_callback_).Run(std::move(url), error);
+  if (upload_callback_) {
+    std::move(upload_callback_).Run(std::move(url), error);
+  }
 }
 
 void OdfsSkyvaultUploader::GetODFSMetadataAndStartIOTask() {
@@ -233,6 +247,11 @@ void OdfsSkyvaultUploader::OnIOTaskStatus(
 }
 
 void OdfsSkyvaultUploader::OnMountResponse(base::File::Error result) {
+  if (cancelled_) {
+    OnEndUpload(/*url=*/{}, MigrationUploadError::kCancelled);
+    return;
+  }
+
   if (result != base::File::Error::FILE_OK) {
     LOG(ERROR) << "Failed to mount ODFS: " << result;
     OnEndUpload(/*url=*/{}, MigrationUploadError::kServiceUnavailable);
@@ -247,6 +266,11 @@ void OdfsSkyvaultUploader::StartIOTask() {
     NOTREACHED_IN_MIGRATION()
         << "The IOTask was already triggered. Case should not be "
            "reached.";
+  }
+
+  if (cancelled_) {
+    OnEndUpload(/*url=*/{}, MigrationUploadError::kCancelled);
+    return;
   }
 
   file_system_provider::ProvidedFileSystemInterface* file_system =
