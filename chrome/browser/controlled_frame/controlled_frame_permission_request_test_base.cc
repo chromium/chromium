@@ -213,17 +213,13 @@ void ControlledFramePermissionRequestTestBase::RunTestAndVerify(
       content::EvalJs(controlled_frame, test_case.test_script).ExtractString(),
       StartsWith(std::move(callback).Run(test_param.expected_success)));
 
-  // TODO(b/349841268): Make permissions policy check happen before extensions
-  // event for media permissions.
-  if (test_case.permission_name != "media") {
-    // The permission event should only be fired when the embedder has the
-    // permissions policy for both the embedder and the requesting origin.
-    bool should_fire_permission_event =
-        test_param.embedder_policy ==
-        EmbedderPolicy::kBothEmbedderAndRequestingOrigin;
-    EXPECT_EQ(event_observer.events().size(),
-              should_fire_permission_event ? 1ul : 0ul);
-  }
+  // The permission event should only be fired when the embedder has the
+  // permissions policy for both the embedder and the requesting origin.
+  bool should_fire_permission_event =
+      test_param.embedder_policy ==
+      EmbedderPolicy::kBothEmbedderAndRequestingOrigin;
+  EXPECT_EQ(event_observer.events().size(),
+            should_fire_permission_event ? 1ul : 0ul);
 
   if (event_observer.events().size()) {
     EXPECT_THAT(event_observer.events().back(),

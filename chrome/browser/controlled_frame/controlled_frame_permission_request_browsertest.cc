@@ -60,7 +60,8 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Camera) {
   test_case.permission_name = "media";
   test_case.policy_features.insert(
       {blink::mojom::PermissionsPolicyFeature::kCamera});
-  // TODO(b/344910997): Add embedder content settings.
+  test_case.embedder_content_settings_type.insert(
+      {ContentSettingsType::MEDIASTREAM_CAMERA});
 
   PermissionRequestTestParam test_param = GetParam();
   RunTestAndVerify(test_case, test_param);
@@ -86,7 +87,8 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Microphone) {
   test_case.permission_name = "media";
   test_case.policy_features.insert(
       {blink::mojom::PermissionsPolicyFeature::kMicrophone});
-  // TODO(b/344910997): Add embedder content settings.
+  test_case.embedder_content_settings_type.insert(
+      {ContentSettingsType::MEDIASTREAM_MIC});
 
   PermissionRequestTestParam test_param = GetParam();
   RunTestAndVerify(test_case, test_param);

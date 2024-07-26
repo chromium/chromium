@@ -67,9 +67,21 @@ class WebViewPermissionHelper {
   void RequestMediaAccessPermission(content::WebContents* source,
                                     const content::MediaStreamRequest& request,
                                     content::MediaResponseCallback callback);
+
+  void RequestMediaAccessPermissionForControlledFrame(
+      content::WebContents* source,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback);
+
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type);
+
+  bool CheckMediaAccessPermissionForControlledFrame(
+      content::RenderFrameHost* render_frame_host,
+      const url::Origin& security_origin,
+      blink::mojom::MediaStreamType type);
+
   void CanDownload(const GURL& url,
                    const std::string& request_method,
                    base::OnceCallback<void(bool)> callback);
@@ -113,10 +125,6 @@ class WebViewPermissionHelper {
     return web_view_permission_helper_delegate_.get();
   }
 
-  void set_default_media_access_permission(bool allow_media_access) {
-    default_media_access_permission_ = allow_media_access;
-  }
-
  private:
   void OnMediaPermissionResponse(const content::MediaStreamRequest& request,
                                  content::MediaResponseCallback callback,
@@ -133,8 +141,6 @@ class WebViewPermissionHelper {
       web_view_permission_helper_delegate_;
 
   const raw_ptr<WebViewGuest> web_view_guest_;
-
-  bool default_media_access_permission_;
 
   base::WeakPtrFactory<WebViewPermissionHelper> weak_factory_{this};
 };
