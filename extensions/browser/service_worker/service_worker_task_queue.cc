@@ -668,7 +668,7 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   DCHECK(worker_state);
 
   if (reason == RegistrationReason::RE_REGISTER_ON_STATE_MISMATCH) {
-    UMA_HISTOGRAM_BOOLEAN(
+    base::UmaHistogramBoolean(
         "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated",
         success);
     if (g_test_observer) {
@@ -692,8 +692,8 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
                                                 std::move(error));
     return;
   }
-  UMA_HISTOGRAM_TIMES("Extensions.ServiceWorkerBackground.RegistrationTime",
-                      base::Time::Now() - start_time);
+  base::UmaHistogramTimes("Extensions.ServiceWorkerBackground.RegistrationTime",
+                          base::Time::Now() - start_time);
 
   worker_registered_.insert(context_id);
 

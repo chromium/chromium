@@ -4615,13 +4615,13 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ServiceWorkerBackground.RegistrationMismatchLocation"
-    enum="ExtensionLocation" expires_after="2024-12-08">
+    enum="ExtensionLocation" expires_after="2025-03-25">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
-    Recorded when Service Worker registration wasn't found when attempting to
-    verify that persisted-to-prefs (disk) worker registration. This also records
-    the manifest location of the extension.
+    Recorded when Service Worker registration wasn't found for an existing
+    extension when attempting to verify that persisted-to-prefs (ExtensionPrefs)
+    worker registration. It records the manifest location of the extension.
 
     Note: this histogram expired between 2023-04 and 2024-04, it will be missing
     data between those dates.
@@ -4630,7 +4630,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated"
-    enum="Boolean" expires_after="2024-12-08">
+    enum="Boolean" expires_after="2025-03-25">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4644,21 +4644,28 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.RegistrationTime"
-    units="ms" expires_after="2022-10-01">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>dbertoni@chromium.org</owner>
+    units="ms" expires_after="2025-03-25">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
-    The amount of time it takes to register a service worker background script.
+    The amount of time it takes to register a service worker background script
+    with the content service worker layer.
+
+    Measured in milliseconds from 1ms up to 10 seconds.
   </summary>
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.RegistrationWhenExpected"
-    enum="Boolean" expires_after="2023-08-13">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>dbertoni@chromium.org</owner>
+    enum="Boolean" expires_after="2025-03-25">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
-    Whether or not an expected Service Worker registration was found. Note that
-    this expectation was stored in ExtensionPrefs.
+    Whether or not a Service Worker registration was found in the content
+    service worker layer after finding a registration for the worker in
+    ExtensionPrefs.
+
+    Emitted immediately after the content service worker layer has tried to
+    search for the registration.
   </summary>
 </histogram>
 
