@@ -99,7 +99,8 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   using ContentHashCallback =
       base::OnceCallback<void(scoped_refptr<const ContentHash>)>;
 
-  // Retrieves ContentHash for an extension through |callback|.
+  // Creates, adds to cache, and returns ContentHash for an extension through
+  // |callback|.
   // Must be called on IO thread.
   // |callback| is called on IO thread.
   // |force_missing_computed_hashes_creation| should be true if
@@ -109,11 +110,18 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   // true, handing its behavior adds extra complexity in HashHelper and this
   // param should be removed when we can unify/fix computed_hashes.json
   // treatment, see https://crbug.com/819832 for details.
-  void GetContentHash(const ExtensionId& extension_id,
-                      const base::FilePath& extension_root,
-                      const base::Version& extension_version,
-                      bool force_missing_computed_hashes_creation,
-                      ContentHashCallback callback);
+  void CreateContentHash(const ExtensionId& extension_id,
+                         const base::FilePath& extension_root,
+                         const base::Version& extension_version,
+                         bool force_missing_computed_hashes_creation,
+                         ContentHashCallback callback);
+
+  // Retrieves cached ContentHash for an extension synchronously. If the hash is
+  // not found in the cache, returns nullptr.
+  scoped_refptr<const ContentHash> GetCachedContentHash(
+      const ExtensionId& extension_id,
+      const base::Version& extension_version,
+      bool force_missing_computed_hashes_creation);
 
   // Returns whether or not we should compute hashes during installation.
   // Typically we don't need this when extension has verified (signed) resources

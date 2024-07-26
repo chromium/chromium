@@ -117,7 +117,11 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   virtual ~ContentVerifyJob();
   friend class base::RefCountedThreadSafe<ContentVerifyJob>;
 
-  void DidGetContentHashOnIO(scoped_refptr<const ContentHash> hash);
+  // Called when the content verification hashes are created.
+  void DidCreateContentHashOnIO(scoped_refptr<const ContentHash> hash);
+
+  // Starts the verification process with the content verification hashes.
+  void StartWithContentHash(scoped_refptr<const ContentHash> hash);
 
   // Same as BytesRead, but is run without acquiring lock.
   void BytesReadImpl(const char* data, int count, MojoResult read_result);

@@ -91,16 +91,32 @@ ContentVerifyJob::~ContentVerifyJob() = default;
 void ContentVerifyJob::Start(ContentVerifier* verifier) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   base::AutoLock auto_lock(lock_);
-  verifier->GetContentHash(
+
+  // The content verification hashes are most likely already cached.
+  auto content_hash = verifier->GetCachedContentHash(
+      extension_id_, extension_version_,
+      /*force_missing_computed_hashes_creation=*/true);
+  if (content_hash) {
+    StartWithContentHash(std::move(content_hash));
+    return;
+  }
+
+  verifier->CreateContentHash(
       extension_id_, extension_root_, extension_version_,
-      true /* force_missing_computed_hashes_creation */,
-      base::BindOnce(&ContentVerifyJob::DidGetContentHashOnIO, this));
+      /*force_missing_computed_hashes_creation=*/true,
+      base::BindOnce(&ContentVerifyJob::DidCreateContentHashOnIO, this));
 }
 
-void ContentVerifyJob::DidGetContentHashOnIO(
+void ContentVerifyJob::DidCreateContentHashOnIO(
     scoped_refptr<const ContentHash> content_hash) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   base::AutoLock auto_lock(lock_);
+  StartWithContentHash(std::move(content_hash));
+}
+
+void ContentVerifyJob::StartWithContentHash(
+    scoped_refptr<const ContentHash> content_hash) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   scoped_refptr<TestObserver> test_observer = GetTestObserver();
   if (test_observer)
     test_observer->JobStarted(extension_id_, relative_path_);

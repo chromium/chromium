@@ -595,7 +595,7 @@ scoped_refptr<ContentVerifyJob> ContentVerifier::CreateAndStartJobFor(
   return job;
 }
 
-void ContentVerifier::GetContentHash(
+void ContentVerifier::CreateContentHash(
     const ExtensionId& extension_id,
     const base::FilePath& extension_root,
     const base::Version& extension_version,
@@ -603,25 +603,6 @@ void ContentVerifier::GetContentHash(
     ContentHashCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (shutdown_on_io_) {
-    // NOTE: Release |callback| asynchronously, so that we don't release ref of
-    // ContentVerifyJob and possibly destroy it synchronously here while
-    // ContentVerifyJob is holding a lock. The lock destroyer would fail DCHECK
-    // in that case.
-    // TODO(lazyboy): Make CreateJobFor return a scoped_refptr instead of raw
-    // pointer to fix this. Also add unit test to exercise this code path
-    // explicitly.
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::DoNothingWithBoundArgs(std::move(callback)));
-    return;
-  }
-
-  CacheKey cache_key(extension_id, extension_version,
-                     force_missing_computed_hashes_creation);
-  auto cache_iter = cache_.find(cache_key);
-  if (cache_iter != cache_.end()) {
-    // Currently, we expect |callback| to be called asynchronously.
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), cache_iter->second));
     return;
   }
 
@@ -630,6 +611,8 @@ void ContentVerifier::GetContentHash(
   DCHECK(data);
   ContentHash::FetchKey fetch_key =
       GetFetchKey(extension_id, extension_root, extension_version);
+  CacheKey cache_key(extension_id, extension_version,
+                     force_missing_computed_hashes_creation);
   // Since |shutdown_on_io_| = false, GetOrCreateHashHelper() must return
   // non-nullptr instance of HashHelper.
   GetOrCreateHashHelper()->GetContentHash(
@@ -637,6 +620,21 @@ void ContentVerifier::GetContentHash(
       force_missing_computed_hashes_creation,
       base::BindOnce(&ContentVerifier::DidGetContentHash, this, cache_key,
                      std::move(callback)));
+}
+
+scoped_refptr<const ContentHash> ContentVerifier::GetCachedContentHash(
+    const ExtensionId& extension_id,
+    const base::Version& extension_version,
+    bool force_missing_computed_hashes_creation) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  if (shutdown_on_io_) {
+    return nullptr;
+  }
+
+  CacheKey cache_key(extension_id, extension_version,
+                     force_missing_computed_hashes_creation);
+  auto cache_iter = cache_.find(cache_key);
+  return cache_iter != cache_.end() ? cache_iter->second : nullptr;
 }
 
 bool ContentVerifier::ShouldComputeHashesOnInstall(const Extension& extension) {
@@ -766,10 +764,10 @@ void ContentVerifier::OnExtensionLoadedOnIO(
     return;
 
   io_data_.AddData(extension_id, std::move(*data));
-  GetContentHash(extension_id, extension_root, extension_version,
-                 false /* force_missing_computed_hashes_creation */,
-                 // HashHelper will respond directly to OnFetchComplete().
-                 base::DoNothing());
+  CreateContentHash(extension_id, extension_root, extension_version,
+                    /*force_missing_computed_hashes_creation=*/false,
+                    // HashHelper will respond directly to OnFetchComplete().
+                    base::DoNothing());
 }
 
 void ContentVerifier::OnExtensionUnloaded(
