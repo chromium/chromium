@@ -226,6 +226,7 @@ function validateTwoInputsBroadcastable(operationName) {
           const unbroadcastableDimensionsArray = generateUnbroadcastableDimensionsArray(dimensions);
           for (let unbroadcastableDimensions of unbroadcastableDimensionsArray) {
             const inputB = builder.input(`inputB${++inputBIndex}`, {dataType, dimensions: unbroadcastableDimensions});
+            assert_equals(typeof builder[operationName], 'function');
             assert_throws_js(
                 TypeError, () => builder[operationName](inputA, inputB));
             assert_throws_js(
@@ -273,6 +274,7 @@ function validateTwoInputsOfSameDataType(operationName) {
             }
             if (dataType !== dataTypeB) {
               const inputB = builder.input(`inputB${++inputBIndex}`, {dataType: dataTypeB, dimensions});
+              assert_equals(typeof builder[subOperationName], 'function');
               assert_throws_js(
                   TypeError, () => builder[subOperationName](inputA, inputB));
             }
@@ -320,6 +322,7 @@ function validateOptionsAxes(operationName) {
             const input =
                 builder.input(`input${++inputIndex}`, {dataType, dimensions});
             for (let invalidAxis of invalidAxisArray) {
+              assert_equals(typeof builder[subOperationName], 'function');
               assert_throws_js(
                   TypeError,
                   () => builder[subOperationName](input, {axes: invalidAxis}));
@@ -328,6 +331,7 @@ function validateOptionsAxes(operationName) {
               assert_false(
                   typeof axis === 'number' && Number.isInteger(axis),
                   `[${subOperationName}] any of options.axes elements should be of 'unsigned long'`);
+              assert_equals(typeof builder[subOperationName], 'function');
               assert_throws_js(
                   TypeError,
                   () => builder[subOperationName](input, {axes: [axis]}));
@@ -354,6 +358,7 @@ function validateOptionsAxes(operationName) {
           if (rank >= 1) {
             const input =
                 builder.input(`input${++inputIndex}`, {dataType, dimensions});
+            assert_equals(typeof builder[subOperationName], 'function');
             assert_throws_js(
                 TypeError,
                 () => builder[subOperationName](input, {axes: [rank]}));
@@ -384,6 +389,7 @@ function validateOptionsAxes(operationName) {
             const axesArrayContainSameValues =
                 getAxesArrayContainSameValues(dimensions);
             for (let axes of axesArrayContainSameValues) {
+              assert_equals(typeof builder[subOperationName], 'function');
               assert_throws_js(
                   TypeError, () => builder[subOperationName](input, {axes}));
             }
@@ -418,6 +424,7 @@ function validateUnaryOperation(
       }
       for (let dimensions of allWebNNDimensionsArray) {
         const input = builder.input(`input`, {dataType, dimensions});
+        assert_equals(typeof builder[operationName], 'function');
         const output = builder[operationName](input);
         assert_equals(output.dataType(), dataType);
         assert_array_equals(output.shape(), dimensions);
@@ -439,6 +446,7 @@ function validateUnaryOperation(
       }
       for (let dimensions of allWebNNDimensionsArray) {
         const input = builder.input(`input`, {dataType, dimensions});
+        assert_equals(typeof builder[operationName], 'function');
         assert_throws_js(TypeError, () => builder[operationName](input));
       }
     }
@@ -490,6 +498,7 @@ function validateSingleInputOperation(
       }
       for (let dimensions of allWebNNDimensionsArray) {
         const input = builder.input(`input`, {dataType, dimensions});
+        assert_equals(typeof builder[operationName], 'function');
         assert_throws_js(TypeError, () => builder[operationName](input));
       }
     }
@@ -517,6 +526,7 @@ function validateInputFromAnotherBuilder(operatorName, operatorDescriptor = {
   multi_builder_test(async (t, builder, otherBuilder) => {
     const inputFromOtherBuilder =
         otherBuilder.input('input', operatorDescriptor);
+    assert_equals(typeof builder[operatorName], 'function');
     assert_throws_js(
         TypeError, () => builder[operatorName](inputFromOtherBuilder));
   }, `[${operatorName}] throw if input is from another builder`);
@@ -535,6 +545,7 @@ function validateTwoInputsFromMultipleBuilders(operatorName) {
     const inputFromOtherBuilder = otherBuilder.input('other', opDescriptor);
 
     const input = builder.input('input', opDescriptor);
+    assert_equals(typeof builder[operatorName], 'function');
     assert_throws_js(
         TypeError, () => builder[operatorName](inputFromOtherBuilder, input));
   }, `[${operatorName}] throw if first input is from another builder`);
@@ -543,6 +554,7 @@ function validateTwoInputsFromMultipleBuilders(operatorName) {
     const inputFromOtherBuilder = otherBuilder.input('other', opDescriptor);
 
     const input = builder.input('input', opDescriptor);
+    assert_equals(typeof builder[operatorName], 'function');
     assert_throws_js(
         TypeError, () => builder[operatorName](input, inputFromOtherBuilder));
   }, `[${operatorName}] throw if second input is from another builder`);
