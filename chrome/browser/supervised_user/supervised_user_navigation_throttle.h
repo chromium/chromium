@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_NAVIGATION_THROTTLE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
@@ -67,6 +69,13 @@ class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
   bool deferred_;
   supervised_user::FilteringBehaviorReason reason_;
   supervised_user::FilteringBehavior behavior_;
+
+  // See the ParallelNavigationThrottle. Since this throttle is always deferring
+  // navigation if check is asynchronous, it can only end up in 0 or positive
+  // delay.
+  std::optional<base::ElapsedTimer> waiting_for_decision_;
+  base::TimeDelta total_delay_;
+
   base::WeakPtrFactory<SupervisedUserNavigationThrottle> weak_ptr_factory_{
       this};
 };

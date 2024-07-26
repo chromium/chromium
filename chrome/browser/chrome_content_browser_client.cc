@@ -162,6 +162,7 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
+#include "chrome/browser/supervised_user/classify_url_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_google_auth_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
@@ -306,6 +307,7 @@
 #include "components/site_isolation/preloaded_isolated_origins.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/variations_associated_data.h"
@@ -5413,9 +5415,16 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       SupervisedUserGoogleAuthNavigationThrottle::MaybeCreate(handle),
       &throttles);
 
-  MaybeAddThrottle(
-      SupervisedUserNavigationThrottle::MaybeCreateThrottleFor(handle),
-      &throttles);
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kClassifyUrlOnProcessResponseEvent)) {
+    MaybeAddThrottle(
+        supervised_user::MaybeCreateClassifyUrlNavigationThrottleFor(handle),
+        &throttles);
+  } else {
+    MaybeAddThrottle(
+        SupervisedUserNavigationThrottle::MaybeCreateThrottleFor(handle),
+        &throttles);
+  }
 
   if (auto* throttle_manager =
           subresource_filter::ContentSubresourceFilterThrottleManager::

@@ -715,6 +715,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SupervisedUsers.ClassifyUrlThrottle.ClassifyResponseToContentResponseDelta"
+    units="ms" expires_after="2024-12-31">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records the time difference between completing the url classification for
+    the navigation (including request and possible redirects), and the moment
+    where the classification was needed to decide whether or not to proceed with
+    navigation.
+
+    Recorded only in the mainline case when the navigation was not blocked.
+
+    Together with the complementary
+    SupervisedUsers.ClassifyUrlThrottle.ContentResponseToClassifyResponseDelta
+    metric it forms a continuum of time, with 0 recorded in either (but only
+    one) metric meaning that the classification was ready exactly when it was
+    needed.
+  </summary>
+</histogram>
+
+<histogram
+    name="SupervisedUsers.ClassifyUrlThrottle.ContentResponseToClassifyResponseDelta"
+    units="ms" expires_after="2024-12-31">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records the time difference between when the navigation needs a url
+    classification to proceed, and the time when that classification was
+    completed. In other words, it tracks the user-visible delay introduced to
+    the navigation by the url classification.
+
+    Recorded only in the mainline case when the navigation was not blocked.
+
+    Together with the complementary
+    SupervisedUsers.ClassifyUrlThrottle.ClassifyResponseToContentResponseDelta
+    metric it forms a continuum of time, with 0 recorded in either (but only
+    one) metric meaning that the classification was ready exactly when it was
+    needed.
+  </summary>
+</histogram>
+
 <histogram name="SupervisedUsers.ExtensionApprovalsCountOnExtensionToggle"
     units="Extensions" expires_after="2024-12-12">
   <owner>anthie@google.com</owner>
