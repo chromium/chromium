@@ -64,6 +64,7 @@ static_library("ash") {
     "//ash/webui/common:chrome_os_webui_config",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/login",
     "//chrome/common",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
@@ -93,6 +94,7 @@ static_library("ash") {
     "//ui/webui/resources/cr_components/color_change_listener:mojom",
     "//url",
   ]
+
   deps = [
     "//ash",
     "//ash/constants",
@@ -193,8 +195,10 @@ static_library("ash") {
     "//ui/wm",
   ]
 
-  allow_circular_includes_from =
-      [ "//chrome/browser/ui/webui/ash/account_manager" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ui/webui/ash/account_manager",
+    "//chrome/browser/ui/webui/ash/login",
+  ]
 }
 
 source_set("unit_tests") {

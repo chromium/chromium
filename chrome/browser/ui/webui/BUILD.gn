@@ -106,6 +106,7 @@ source_set("configs") {
       "//chrome/browser/ui/webui/ash/kerberos",
       "//chrome/browser/ui/webui/ash/launcher_internals",
       "//chrome/browser/ui/webui/ash/lock_screen_reauth",
+      "//chrome/browser/ui/webui/ash/login",
       "//chrome/browser/ui/webui/ash/mako",
       "//chrome/browser/ui/webui/ash/manage_mirrorsync",
       "//chrome/browser/ui/webui/ash/multidevice_internals",

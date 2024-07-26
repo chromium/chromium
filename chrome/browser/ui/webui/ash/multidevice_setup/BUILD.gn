@@ -42,6 +42,7 @@ static_library("multidevice_setup") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos:multidevice_setup_resources",
     "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/login",
     "//chromeos/ash/services/multidevice_setup",
     "//chromeos/ash/services/multidevice_setup/public/cpp:url_provider",
     "//components/login",
@@ -55,4 +56,6 @@ static_library("multidevice_setup") {
     "//ui/webui",
     "//ui/wm",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ui/webui/ash/login" ]
 }

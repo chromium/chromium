@@ -49,6 +49,7 @@ static_library("users") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions",
     "//chrome/browser/policy:onc",
+    "//chrome/browser/ui/webui/ash/login",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
@@ -79,6 +80,7 @@ static_library("users") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ui/webui/ash/login",
   ]
 }
 
@@ -140,6 +142,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/policy/external_data:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/login",
     "//chrome/common:constants",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/cryptohome",

@@ -165,6 +165,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/demo_mode:test_support",
     "//chrome/browser/ash/login/ui:test_support",
+    "//chrome/browser/ui/webui/ash/login",
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes",
     "//components/arc:arc_test_support",

@@ -167,6 +167,9 @@ static_library("login") {
     "//chrome/browser/ash/system",
     "//chrome/browser/profiles",
     "//chrome/browser/sync",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/ui/webui/ash/login/osauth",
+    "//chrome/browser/ui/webui/ash/login/testapi",
     "//chrome/common",
     "//chrome/common:channel_info",
     "//chrome/common:chrome_features",
@@ -268,6 +271,9 @@ static_library("login") {
     "//chrome/browser/ash/system",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/sync",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/ui/webui/ash/login/osauth",
+    "//chrome/browser/ui/webui/ash/login/testapi",
   ]
 }
 

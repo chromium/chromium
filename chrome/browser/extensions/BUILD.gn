@@ -1306,6 +1306,7 @@ source_set("extensions") {
       "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/webui/ash",
+      "//chrome/browser/ui/webui/ash/login",
       "//chromeos/ash/components/attestation",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/cryptohome",
@@ -1406,6 +1407,7 @@ source_set("extensions") {
       "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/webui/ash",
+      "//chrome/browser/ui/webui/ash/login",
     ]
 
     if (is_cfm) {
