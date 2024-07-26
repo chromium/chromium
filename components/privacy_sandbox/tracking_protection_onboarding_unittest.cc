@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/version_info/channel.h"
 #include "privacy_sandbox_notice_constants.h"
@@ -64,7 +63,6 @@ class TrackingProtectionOnboardingTest : public testing::Test {
   TrackingProtectionOnboardingTest()
       : task_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     tracking_protection::RegisterProfilePrefs(prefs()->registry());
-    PrivacySandboxNoticeStorage::RegisterProfilePrefs(prefs()->registry());
   }
 
   void RecreateOnboardingService(
@@ -392,66 +390,6 @@ TEST_F(TrackingProtectionOnboardingTest,
   prefs()->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
 
   // Verification
-  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
-                SurfaceType::kDesktop),
-            NoticeType::kNone);
-}
-
-TEST_F(TrackingProtectionOnboardingTest, GetRequiredNotice_Full3PCDDisabled) {
-  feature_list_.InitAndDisableFeature(
-      privacy_sandbox::kTrackingProtectionOnboarding);
-
-  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
-                SurfaceType::kDesktop),
-            NoticeType::kNone);
-}
-
-TEST_F(TrackingProtectionOnboardingTest, GetRequiredNotice_Full3PCDEnabled) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kTrackingProtectionOnboarding,
-      {{privacy_sandbox::kTrackingProtectionBlock3PC.name, "true"}});
-
-  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
-                SurfaceType::kDesktop),
-            NoticeType::kFull3PCDOnboarding);
-}
-
-TEST_F(TrackingProtectionOnboardingTest,
-       GetRequiredNotice_Full3PCDSilentOnboarding) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kTrackingProtectionOnboarding,
-      {{privacy_sandbox::kTrackingProtectionBlock3PC.name, "false"}});
-
-  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
-                SurfaceType::kDesktop),
-            NoticeType::kFull3PCDSilentOnboarding);
-}
-
-TEST_F(TrackingProtectionOnboardingTest,
-       GetRequiredNotice_Full3PCDEnabledWithIPP) {
-  feature_list_.InitWithFeaturesAndParameters(
-      {{privacy_sandbox::kTrackingProtectionOnboarding,
-        {{privacy_sandbox::kTrackingProtectionBlock3PC.name, "true"}}},
-       {privacy_sandbox::kIpProtectionUx, {}}},
-      {});
-
-  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
-                SurfaceType::kDesktop),
-            NoticeType::kFull3PCDOnboardingWithIPP);
-}
-
-TEST_F(TrackingProtectionOnboardingTest, GetRequiredNotice_ModeBAlreadyAcked) {
-  tracking_protection_onboarding()->MaybeMarkModeBEligible();
-  tracking_protection_onboarding()->NoticeShown(SurfaceType::kDesktop,
-                                                NoticeType::kModeBOnboarding);
-  tracking_protection_onboarding()->NoticeActionTaken(
-      SurfaceType::kDesktop, NoticeType::kModeBOnboarding,
-      NoticeAction::kGotIt);
-
-  feature_list_.InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kTrackingProtectionOnboarding,
-      {{privacy_sandbox::kTrackingProtectionBlock3PC.name, "true"}});
-
   EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
                 SurfaceType::kDesktop),
             NoticeType::kNone);
@@ -1504,191 +1442,6 @@ TEST_F(TrackingProtectionOnboardingStartupStateTest,
       "PrivacySandbox.TrackingProtection.OnboardingStartup."
       "AckedSince",
       delay, 1);
-}
-
-class TrackingProtectionFull3PCDTest
-    : public TrackingProtectionOnboardingTest,
-      public testing::WithParamInterface<
-          std::tuple<TrackingProtectionOnboarding::SurfaceType,
-                     TrackingProtectionOnboarding::NoticeType,
-                     const char*>> {
- protected:
-  PrivacySandboxNoticeStorage notice_storage_;
-};
-
-TEST_P(TrackingProtectionFull3PCDTest, NoticeShownMarksPrefShown) {
-  // Action
-  tracking_protection_onboarding()->NoticeShown(std::get<0>(GetParam()),
-                                                std::get<1>(GetParam()));
-
-  // Verification
-  const auto notice_data =
-      notice_storage_.ReadNoticeData(prefs(), std::get<2>(GetParam()));
-  EXPECT_EQ(notice_data->notice_first_shown, base::Time::Now());
-  EXPECT_EQ(notice_data->notice_last_shown, base::Time::Now());
-}
-
-TEST_P(TrackingProtectionFull3PCDTest, UpdatesLastNoticeShownCorrectly) {
-  // Action
-  auto first_shown_time = base::Time::Now();
-  tracking_protection_onboarding()->NoticeShown(std::get<0>(GetParam()),
-                                                std::get<1>(GetParam()));
-  auto delay = base::Seconds(15);
-  task_env_.FastForwardBy(delay);
-  // Show the notice again.
-  tracking_protection_onboarding()->NoticeShown(std::get<0>(GetParam()),
-                                                std::get<1>(GetParam()));
-
-  // Verification
-  const auto notice_data =
-      notice_storage_.ReadNoticeData(prefs(), std::get<2>(GetParam()));
-  EXPECT_EQ(notice_data->notice_first_shown, first_shown_time);
-  EXPECT_EQ(notice_data->notice_last_shown, base::Time::Now());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    TrackingProtectionFull3PCDTest,
-    TrackingProtectionFull3PCDTest,
-    testing::Values(  // Full 3PCD.
-        std::make_tuple(SurfaceType::kDesktop,
-                        NoticeType::kFull3PCDOnboarding,
-                        kFull3PCDIPH),
-        std::make_tuple(SurfaceType::kBrApp,
-                        NoticeType::kFull3PCDOnboarding,
-                        kFull3PCDClankBrApp),
-        std::make_tuple(SurfaceType::kAGACCT,
-                        NoticeType::kFull3PCDOnboarding,
-                        kFull3PCDClankCCT),
-        // Full 3PCD with IPP.
-        std::make_tuple(SurfaceType::kDesktop,
-                        NoticeType::kFull3PCDOnboardingWithIPP,
-                        kFull3PCDWithIPPIPH),
-        std::make_tuple(SurfaceType::kBrApp,
-                        NoticeType::kFull3PCDOnboardingWithIPP,
-                        kFull3PCDWithIPPClankBrApp),
-        std::make_tuple(SurfaceType::kAGACCT,
-                        NoticeType::kFull3PCDOnboardingWithIPP,
-                        kFull3PCDWithIPPClankCCT),
-        // Full 3PCD silent.
-        std::make_tuple(SurfaceType::kDesktop,
-                        NoticeType::kFull3PCDSilentOnboarding,
-                        kFull3PCDSilentIPH),
-        std::make_tuple(SurfaceType::kBrApp,
-                        NoticeType::kFull3PCDSilentOnboarding,
-                        kFull3PCDSilentClankBrApp),
-        std::make_tuple(SurfaceType::kAGACCT,
-                        NoticeType::kFull3PCDSilentOnboarding,
-                        kFull3PCDSilentClankCCT)));
-
-class TrackingProtectionFull3PCDActionTest
-    : public TrackingProtectionOnboardingTest {
- protected:
-  std::string ToIPHNoticeName(NoticeType notice_type) {
-    switch (notice_type) {
-      case NoticeType::kFull3PCDOnboarding:
-        return kFull3PCDIPH;
-      case NoticeType::kFull3PCDOnboardingWithIPP:
-        return kFull3PCDWithIPPIPH;
-      case NoticeType::kFull3PCDSilentOnboarding:
-        return kFull3PCDSilentIPH;
-      default:
-        // Other cases aren't part of 3PCD.
-        NOTREACHED_NORETURN();
-    }
-  }
-  PrivacySandboxNoticeStorage notice_storage_;
-};
-
-class TrackingProtectionVisibleFull3PCDActionTest
-    : public TrackingProtectionFull3PCDActionTest,
-      public testing::WithParamInterface<
-          std::tuple<NoticeType,
-                     std::pair<TrackingProtectionOnboarding::NoticeAction,
-                               NoticeActionTaken>>> {};
-
-TEST_P(TrackingProtectionVisibleFull3PCDActionTest,
-       UserNoticeActionTakenAcknowledgedCorrectly) {
-  NoticeType notice_type = std::get<0>(GetParam());
-  TrackingProtectionOnboarding::NoticeAction notice_action =
-      std::get<1>(GetParam()).first;
-  // Action
-  tracking_protection_onboarding()->NoticeShown(SurfaceType::kDesktop,
-                                                notice_type);
-  auto delay = base::Seconds(15);
-  task_env_.FastForwardBy(delay);
-  tracking_protection_onboarding()->NoticeActionTaken(
-      SurfaceType::kDesktop, notice_type, notice_action);
-
-  // Verification
-  const auto notice_data =
-      notice_storage_.ReadNoticeData(prefs(), ToIPHNoticeName(notice_type));
-  EXPECT_EQ(notice_data->notice_action_taken, std::get<1>(GetParam()).second);
-  EXPECT_EQ(notice_data->notice_action_taken_time, base::Time::Now());
-  EXPECT_EQ(
-      notice_data->notice_shown_duration,
-      notice_data->notice_action_taken_time - notice_data->notice_first_shown);
-}
-
-TEST_P(TrackingProtectionVisibleFull3PCDActionTest,
-       PreviouslyAcknowledgedDoesntReacknowledge) {
-  NoticeType notice_type = std::get<0>(GetParam());
-  TrackingProtectionOnboarding::NoticeAction notice_action =
-      std::get<1>(GetParam()).first;
-  // Set up notice shown first.
-  tracking_protection_onboarding()->NoticeShown(SurfaceType::kDesktop,
-                                                notice_type);
-  // Initial action.
-  tracking_protection_onboarding()->NoticeActionTaken(
-      SurfaceType::kDesktop, notice_type, notice_action);
-  // Action: Re-Ack with 'LearnMore'
-  tracking_protection_onboarding()->NoticeActionTaken(
-      SurfaceType::kDesktop, notice_type,
-      TrackingProtectionOnboarding::NoticeAction::kLearnMore);
-
-  // Verification: LearnMore doesn't persist.
-  const auto notice_data =
-      notice_storage_.ReadNoticeData(prefs(), ToIPHNoticeName(notice_type));
-  EXPECT_EQ(notice_data->notice_action_taken, std::get<1>(GetParam()).second);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    TrackingProtectionVisibleFull3PCDActionTest,
-    TrackingProtectionVisibleFull3PCDActionTest,
-    Combine(
-        Values(NoticeType::kFull3PCDOnboarding,
-               NoticeType::kFull3PCDOnboardingWithIPP),
-        Values(
-            std::make_pair(TrackingProtectionOnboarding::NoticeAction::kGotIt,
-                           NoticeActionTaken::kAck),
-            std::make_pair(
-                TrackingProtectionOnboarding::NoticeAction::kSettings,
-                NoticeActionTaken::kSettings),
-            std::make_pair(TrackingProtectionOnboarding::NoticeAction::kOther,
-                           NoticeActionTaken::kOther),
-            std::make_pair(
-                TrackingProtectionOnboarding::NoticeAction::kLearnMore,
-                NoticeActionTaken::kLearnMore),
-            std::make_pair(TrackingProtectionOnboarding::NoticeAction::kClosed,
-                           NoticeActionTaken::kClosed))));
-
-class TrackingProtectionSilentFull3PCDActionTest
-    : public TrackingProtectionFull3PCDActionTest {};
-
-TEST_F(TrackingProtectionSilentFull3PCDActionTest,
-       NoticeDoesntTrackNoticeAction) {
-  // Action
-  tracking_protection_onboarding()->NoticeShown(
-      SurfaceType::kDesktop, NoticeType::kFull3PCDSilentOnboarding);
-  auto delay = base::Seconds(15);
-  task_env_.FastForwardBy(delay);
-  tracking_protection_onboarding()->NoticeActionTaken(
-      SurfaceType::kDesktop, NoticeType::kFull3PCDSilentOnboarding,
-      TrackingProtectionOnboarding::NoticeAction::kGotIt);
-
-  // Verification
-  const auto notice_data = notice_storage_.ReadNoticeData(
-      prefs(), ToIPHNoticeName(NoticeType::kFull3PCDSilentOnboarding));
-  EXPECT_EQ(notice_data->notice_action_taken, NoticeActionTaken::kNotSet);
 }
 }  // namespace
 }  // namespace privacy_sandbox
