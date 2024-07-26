@@ -36,6 +36,9 @@ constexpr CGFloat kHeaderAttributedStringLineSpacing = 2;
 // Font size for the cell's header title.
 constexpr CGFloat kHeaderAttributedStringTitleFontSize = 15;
 
+// Top and bottom padding for the header view label.
+constexpr CGFloat kHeaderViewLabelVerticalPadding = 6;
+
 // Minimum height for the header view.
 constexpr CGFloat kHeaderViewMinHeight = 44;
 
@@ -488,6 +491,11 @@ UIStackView* CreateHeaderView(UIView* icon,
     [NSLayoutConstraint activateConstraints:@[
       [header_view.heightAnchor
           constraintGreaterThanOrEqualToConstant:kHeaderViewMinHeight],
+      [label.topAnchor constraintEqualToAnchor:header_view.topAnchor
+                                      constant:kHeaderViewLabelVerticalPadding],
+      [label.bottomAnchor
+          constraintEqualToAnchor:header_view.bottomAnchor
+                         constant:-kHeaderViewLabelVerticalPadding],
     ]];
   }
 
