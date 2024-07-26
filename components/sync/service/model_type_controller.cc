@@ -219,12 +219,12 @@ void ModelTypeController::Stop(SyncStopMetadataFate fate,
 
   switch (state()) {
     case NOT_RUNNING:
-      // Nothing to stop.
-      std::move(callback).Run();
       // Clear metadata if needed.
       if (fate == CLEAR_METADATA) {
         ClearMetadataIfStopped();
       }
+      // Nothing to stop.
+      std::move(callback).Run();
       return;
 
     case FAILED:

@@ -139,6 +139,17 @@ DataTypeManagerImpl::DataTypeManagerImpl(
 
 DataTypeManagerImpl::~DataTypeManagerImpl() = default;
 
+void DataTypeManagerImpl::ClearMetadataWhileStoppedExceptFor(
+    ModelTypeSet types) {
+  CHECK_EQ(state_, STOPPED);
+
+  for (const auto& [type, controller] : *controllers_) {
+    if (!types.Has(type)) {
+      controller->Stop(CLEAR_METADATA, base::DoNothing());
+    }
+  }
+}
+
 void DataTypeManagerImpl::SetConfigurer(ModelTypeConfigurer* configurer) {
   CHECK_EQ(state_, STOPPED);
 
@@ -668,9 +679,8 @@ DataTypeManagerImpl::PrepareConfigureParams() {
 void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
                                                    const SyncError& error) {
   // OnSingleDataTypeWillStop() may get called even if the configurer was never
-  // set, if a Stop() happens while the SyncEngine was initializing.
-  // TODO(crbug.com/40913300, crbug.com/40901755): And in the future, also to
-  // clear metadata while already stopped.
+  // set, if a Stop() happens while the SyncEngine was initializing or while
+  // DataTypeManager was already stopped (to clear sync metadata).
   if (configurer_) {
     // No-op if the type is not connected.
     configurer_->DisconnectDataType(type);
@@ -699,12 +709,6 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
 }
 
 void DataTypeManagerImpl::Stop(SyncStopMetadataFate metadata_fate) {
-  // TODO(crbug.com/40913300, crbug.com/40901755): Even if already stopped,
-  // metadata may still need to be cleared.
-  if (state_ == STOPPED) {
-    return;
-  }
-
   bool need_to_notify = state_ == CONFIGURING;
 
   state_ = STOPPING;

@@ -458,12 +458,8 @@ void SyncServiceImpl::Initialize() {
   // Call Stop() on controllers for non-preferred types to clear metadata.
   // This allows clearing metadata for types disabled in previous run early-on
   // during initialization.
-  ModelTypeSet preferred_types = GetPreferredDataTypes();
-  for (auto& [type, controller] : model_type_controllers_) {
-    if (!preferred_types.Has(type)) {
-      controller->Stop(CLEAR_METADATA, base::DoNothing());
-    }
-  }
+  data_type_manager_->ClearMetadataWhileStoppedExceptFor(
+      GetPreferredDataTypes());
 
   if (IsEngineAllowedToRun()) {
     if (!sync_client_->GetSyncApiComponentFactory()
@@ -767,21 +763,21 @@ std::unique_ptr<SyncEngine> SyncServiceImpl::ResetEngine(
   const ShutdownReason shutdown_reason =
       ShutdownReasonForResetEngineReason(reset_reason);
 
+  // Stop all data type controllers, if needed. Note that until Stop completes,
+  // it is possible in theory to have a ChangeProcessor apply a change from a
+  // native model. In that case, it will get applied to the local storage as an
+  // unsynced change. That will be persisted, and committed on restart.
+  if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
+    data_type_manager_->Stop(
+        ShutdownReasonToSyncStopMetadataFate(shutdown_reason));
+    data_type_manager_->SetConfigurer(nullptr);
+  }
+
   if (!engine_) {
     // If the engine hasn't started or is already shut down when a DISABLE_SYNC
     // happens, the Directory needs to be cleaned up here.
     if (shutdown_reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
       sync_client_->GetSyncApiComponentFactory()->CleanupOnDisableSync();
-    }
-    if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
-      // Call controller's Stop() to inform them to clear the metadata.
-      // TODO(crbug.com/40901755): Plumb this through DataTypeManager instead of
-      // calling the controllers directly.
-      SyncStopMetadataFate fate =
-          ShutdownReasonToSyncStopMetadataFate(shutdown_reason);
-      for (auto& [type, controller] : model_type_controllers_) {
-        controller->Stop(fate, base::DoNothing());
-      }
     }
     // Depending on the `reset_reason`, maybe clear account-keyed transport
     // data.
@@ -812,16 +808,6 @@ std::unique_ptr<SyncEngine> SyncServiceImpl::ResetEngine(
   // First, we spin down the engine to stop change processing as soon as
   // possible.
   engine_->StopSyncingForShutdown();
-
-  // Stop all data type controllers, if needed. Note that until Stop completes,
-  // it is possible in theory to have a ChangeProcessor apply a change from a
-  // native model. In that case, it will get applied to the local storage as an
-  // unsynced change. That will be persisted, and committed on restart.
-  if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
-    data_type_manager_->Stop(
-        ShutdownReasonToSyncStopMetadataFate(shutdown_reason));
-    data_type_manager_->SetConfigurer(nullptr);
-  }
 
   // Shutdown the migrator before the engine to ensure it doesn't pull a null
   // snapshot.

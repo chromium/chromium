@@ -1885,4 +1885,17 @@ TEST_F(SyncDataTypeManagerImplTest, ShouldHandleStoppedTypesFailure) {
       dtm_->GetTypesWithPendingDownloadForInitialSync().Has(BOOKMARKS));
 }
 
+TEST_F(SyncDataTypeManagerImplTest, ClearMetadataWhileStoppedExceptFor) {
+  AddController(BOOKMARKS);
+  AddController(PREFERENCES);
+
+  ASSERT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_count());
+  ASSERT_EQ(0, GetController(PREFERENCES)->model()->clear_metadata_count());
+
+  dtm_->ClearMetadataWhileStoppedExceptFor({BOOKMARKS});
+
+  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_count());
+  EXPECT_EQ(1, GetController(PREFERENCES)->model()->clear_metadata_count());
+}
+
 }  // namespace syncer

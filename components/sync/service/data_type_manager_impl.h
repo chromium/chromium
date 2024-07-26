@@ -35,6 +35,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   ~DataTypeManagerImpl() override;
 
   // DataTypeManager interface.
+  void ClearMetadataWhileStoppedExceptFor(ModelTypeSet types) override;
   void SetConfigurer(ModelTypeConfigurer* configurer) override;
   void Configure(ModelTypeSet preferred_types,
                  const ConfigureContext& context) override;

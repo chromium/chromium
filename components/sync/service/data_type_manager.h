@@ -51,6 +51,11 @@ class DataTypeManager {
   // Converts a ConfigureStatus to string for debug purposes.
   static std::string ConfigureStatusToString(ConfigureStatus status);
 
+  // Clears metadata for all registered datatypes except for `types`. This
+  // allows clearing metadata for types disabled in previous run early-on during
+  // initialization. Must only be called while the state is STOPPED.
+  virtual void ClearMetadataWhileStoppedExceptFor(ModelTypeSet types) = 0;
+
   // Sets or clears the configurer (aka the SyncEngine) to use for
   // connecting/disconnecting and configuring the data types. Must only be
   // called while the state is STOPPED.
