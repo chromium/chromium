@@ -103,6 +103,8 @@ void OmniboxLacrosProvider::StartWithoutSearchProvider(
     match.contents_class = suggest_result.match_contents_class();
     match.suggestion_group_id = suggest_result.suggestion_group_id();
     match.answer = suggest_result.answer();
+    match.answer_template = suggest_result.answer_template();
+    match.answer_type = suggest_result.answer_type();
     match.stripped_destination_url = url;
 
     crosapi::mojom::SearchResultPtr result =
