@@ -345,6 +345,7 @@ webui_ts_library("build_ts") {
     "mocked_metrics_reporter.ts",
     "mock_timer_test.ts",
     "mock_timer.ts",
+    "mouse_mock_interactions.ts",
     "polymer_test_util.ts",
     "test_api.ts",
     "test_browser_proxy.ts",

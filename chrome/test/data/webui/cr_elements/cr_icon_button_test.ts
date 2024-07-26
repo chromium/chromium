@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {downAndUp} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {down, up} from 'chrome://webui-test/mouse_mock_interactions.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -145,6 +145,12 @@ suite('cr-icon-button', function() {
   });
 
   test('disabled prevents UI and programmatic clicks', async () => {
+    function downAndUp() {
+      down(button);
+      up(button);
+      button.click();
+    }
+
     let clickCount = 0;
     const clickHandler = () => {
       clickCount++;
@@ -155,7 +161,7 @@ suite('cr-icon-button', function() {
     await flushTasks();
     pressAndReleaseKeyOn(button, -1, [], 'Enter');
     pressAndReleaseKeyOn(button, -1, [], ' ');
-    downAndUp(button);
+    downAndUp();
     button.click();
     await flushTasks();
     assertEquals(0, clickCount);
@@ -164,7 +170,7 @@ suite('cr-icon-button', function() {
     await flushTasks();
     pressAndReleaseKeyOn(button, -1, [], 'Enter');
     pressAndReleaseKeyOn(button, -1, [], ' ');
-    downAndUp(button);
+    downAndUp();
     button.click();
     await flushTasks();
     assertEquals(4, clickCount);
