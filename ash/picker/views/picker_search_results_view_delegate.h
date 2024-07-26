@@ -29,6 +29,9 @@ class ASH_EXPORT PickerSearchResultsViewDelegate {
 
   virtual PickerActionType GetActionForResult(
       const PickerSearchResult& result) = 0;
+
+  // Informs that the height of the search results view may change.
+  virtual void OnSearchResultsViewHeightChanged() = 0;
 };
 
 }  // namespace ash

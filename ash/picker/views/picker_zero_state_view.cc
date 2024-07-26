@@ -111,6 +111,8 @@ PickerZeroStateView::PickerZeroStateView(
         base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
                             weak_ptr_factory_.GetWeakPtr(), category));
   }
+
+  delegate_->OnZeroStateViewHeightChanged();
 }
 
 PickerZeroStateView::~PickerZeroStateView() = default;
@@ -304,6 +306,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
   }
 
   delegate_->RequestPseudoFocus(section_list_view_->GetTopItem());
+  delegate_->OnZeroStateViewHeightChanged();
 }
 
 BEGIN_METADATA(PickerZeroStateView)

@@ -26,6 +26,7 @@
 #include "ash/picker/views/picker_search_results_view.h"
 #include "ash/picker/views/picker_section_list_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "ash/picker/views/picker_style.h"
 #include "ash/picker/views/picker_submenu_controller.h"
 #include "ash/picker/views/picker_submenu_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
@@ -257,13 +258,54 @@ PickerItemView* GetFirstCategoryItemView(PickerView* picker_view) {
       ->second->item_views_for_testing()[0];
 }
 
-TEST_F(PickerViewTest, SizeIsCorrect) {
-  FakePickerViewDelegate delegate;
+TEST_F(PickerViewTest, SizeIsLessThanMaxWhenNoContentWithoutEmojiBar) {
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kExpressions},
+  });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
 
-  EXPECT_EQ(view->size(), gfx::Size(320, 340));
+  EXPECT_EQ(view->size().width(), kPickerViewWidth);
+  EXPECT_LT(view->size().height(), 300);
+}
+
+TEST_F(PickerViewTest, SizeIsLessThanMaxWhenNoContentWithEmojiBar) {
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kExpressions},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* view = GetPickerViewFromWidget(*widget);
+
+  EXPECT_EQ(view->size().width(), kPickerViewWidth);
+  EXPECT_LT(view->size().height(), 356);
+}
+
+TEST_F(PickerViewTest, SizeIsMaxWhenLotsOfContentWithoutEmojiBar) {
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kLinks},
+      .zero_state_suggested_results =
+          std::vector<PickerSearchResult>(10, PickerSearchResult::Text(u"abc")),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* view = GetPickerViewFromWidget(*widget);
+
+  EXPECT_EQ(view->size(), gfx::Size(kPickerViewWidth, 300));
+}
+
+TEST_F(PickerViewTest, SizeIsMaxWhenLotsOfContentWithEmojiBar) {
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kExpressions},
+      .zero_state_suggested_results =
+          std::vector<PickerSearchResult>(10, PickerSearchResult::Text(u"abc")),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* view = GetPickerViewFromWidget(*widget);
+
+  EXPECT_EQ(view->size(), gfx::Size(kPickerViewWidth, 356));
 }
 
 TEST_F(PickerViewTest, ShowsZeroStateView) {

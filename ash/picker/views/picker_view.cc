@@ -202,12 +202,19 @@ ui::ImageModel GetNoResultsFoundIllustration() {
 }  // namespace
 
 PickerView::PickerView(PickerViewDelegate* delegate,
+                       const gfx::Rect& anchor_bounds,
                        PickerLayoutType layout_type,
                        const base::TimeTicks trigger_event_timestamp)
     : performance_metrics_(trigger_event_timestamp), delegate_(delegate) {
   SetShowCloseButton(false);
-  SetPreferredSize(gfx::Size(kPickerViewWidth, kPickerViewMaxHeight));
   SetProperty(views::kElementIdentifierKey, kPickerElementId);
+  // TODO: b/333020345 - This is *not* used by the Widget because PickerWidget
+  // does not use `autosize`. For this class, this is only used by PickerView to
+  // adjust the Widget bounds to realign the search field with the caret
+  // position. Move this logic to a standalone class.
+  set_desired_bounds_delegate(base::BindRepeating(&PickerView::GetTargetBounds,
+                                                  base::Unretained(this),
+                                                  anchor_bounds, layout_type));
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -267,6 +274,15 @@ void PickerView::RemovedFromWidget() {
   performance_metrics_.StopRecording();
 }
 
+void PickerView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
+
+  if (widget_bounds_needs_update_ && GetWidget() != nullptr) {
+    GetWidget()->SetBounds(GetDesiredWidgetBounds());
+    widget_bounds_needs_update_ = false;
+  }
+}
+
 void PickerView::SelectZeroStateCategory(PickerCategory category) {
   SelectCategory(category);
 }
@@ -278,6 +294,10 @@ void PickerView::SelectZeroStateResult(const PickerSearchResult& result) {
 PickerActionType PickerView::GetActionForResult(
     const PickerSearchResult& result) {
   return delegate_->GetActionForResult(result);
+}
+
+void PickerView::OnSearchResultsViewHeightChanged() {
+  OnMainContainerViewHeightChanged();
 }
 
 void PickerView::GetZeroStateSuggestedResults(
@@ -294,6 +314,10 @@ void PickerView::RequestPseudoFocus(views::View* view) {
     return;
   }
   SetPseudoFocusedView(view);
+}
+
+void PickerView::OnZeroStateViewHeightChanged() {
+  OnMainContainerViewHeightChanged();
 }
 
 void PickerView::SelectSearchResult(const PickerSearchResult& result) {
@@ -648,6 +672,7 @@ void PickerView::SetActivePage(PickerPageView* page_view) {
   SetPseudoFocusedView(nullptr);
   active_item_container_ = page_view;
   SetPseudoFocusedView(active_item_container_->GetTopItem());
+  OnMainContainerViewHeightChanged();
 }
 
 void PickerView::AdvanceActiveItemContainer(
@@ -724,6 +749,10 @@ void PickerView::ResetEmojiBarToZeroState() {
 bool PickerView::IsContainedInSubmenu(views::View* view) {
   return submenu_controller_.GetSubmenuView() != nullptr &&
          submenu_controller_.GetSubmenuView()->Contains(view);
+}
+
+void PickerView::OnMainContainerViewHeightChanged() {
+  widget_bounds_needs_update_ = true;
 }
 
 BEGIN_METADATA(PickerView)

@@ -108,6 +108,7 @@ class MockSearchResultsViewDelegate : public PickerSearchResultsViewDelegate {
               GetActionForResult,
               (const PickerSearchResult& result),
               (override));
+  MOCK_METHOD(void, OnSearchResultsViewHeightChanged, (), (override));
 };
 
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {

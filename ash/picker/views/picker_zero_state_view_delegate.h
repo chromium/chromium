@@ -41,6 +41,9 @@ class ASH_EXPORT PickerZeroStateViewDelegate {
 
   virtual PickerActionType GetActionForResult(
       const PickerSearchResult& result) = 0;
+
+  // Informs that the height of the zero state view may change.
+  virtual void OnZeroStateViewHeightChanged() = 0;
 };
 
 }  // namespace ash

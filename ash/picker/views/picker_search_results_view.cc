@@ -156,6 +156,7 @@ void PickerSearchResultsView::ClearSearchResults() {
   no_results_view_->SetVisible(false);
   StopLoadingAnimation();
   top_results_.clear();
+  delegate_->OnSearchResultsViewHeightChanged();
 }
 
 void PickerSearchResultsView::AppendSearchResults(
@@ -182,6 +183,7 @@ void PickerSearchResultsView::AppendSearchResults(
   section_views_.push_back(section_view);
 
   delegate_->RequestPseudoFocus(section_list_view_->GetTopItem());
+  delegate_->OnSearchResultsViewHeightChanged();
 }
 
 bool PickerSearchResultsView::SearchStopped(ui::ImageModel illustration,
@@ -195,6 +197,7 @@ bool PickerSearchResultsView::SearchStopped(ui::ImageModel illustration,
   no_results_label_->SetText(std::move(description));
   no_results_view_->SetVisible(true);
   section_list_view_->SetVisible(false);
+  delegate_->OnSearchResultsViewHeightChanged();
   return true;
 }
 
@@ -202,6 +205,7 @@ void PickerSearchResultsView::ShowLoadingAnimation() {
   ClearSearchResults();
   skeleton_loader_view_->StartAnimationAfter(kLoadingAnimationDelay);
   skeleton_loader_view_->SetVisible(true);
+  delegate_->OnSearchResultsViewHeightChanged();
 }
 
 void PickerSearchResultsView::SelectSearchResult(
@@ -243,6 +247,7 @@ int PickerSearchResultsView::GetIndex(
 void PickerSearchResultsView::StopLoadingAnimation() {
   skeleton_loader_view_->StopAnimation();
   skeleton_loader_view_->SetVisible(false);
+  delegate_->OnSearchResultsViewHeightChanged();
 }
 
 BEGIN_METADATA(PickerSearchResultsView)

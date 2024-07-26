@@ -64,6 +64,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
  public:
   // `delegate` must remain valid for the lifetime of this class.
   explicit PickerView(PickerViewDelegate* delegate,
+                      const gfx::Rect& anchor_bounds,
                       PickerLayoutType layout_type,
                       base::TimeTicks trigger_event_timestamp);
   PickerView(const PickerView&) = delete;
@@ -83,18 +84,21 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
       views::Widget* widget) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+  void Layout(PassKey) override;
 
   // PickerZeroStateViewDelegate:
   void SelectZeroStateCategory(PickerCategory category) override;
   void SelectZeroStateResult(const PickerSearchResult& result) override;
   void GetZeroStateSuggestedResults(SuggestedResultsCallback callback) override;
   void RequestPseudoFocus(views::View* view) override;
+  void OnZeroStateViewHeightChanged() override;
 
   // PickerSearchResultsViewDelegate:
   void SelectSearchResult(const PickerSearchResult& result) override;
   void SelectMoreResults(PickerSectionType type) override;
   PickerActionType GetActionForResult(
       const PickerSearchResult& result) override;
+  void OnSearchResultsViewHeightChanged() override;
 
   // PickerEmojiBarViewDelegate:
   void ShowEmojiPicker(ui::EmojiPickerCategory category) override;
@@ -203,6 +207,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // Returns true if `view` is contained in a submenu of this PickerView.
   bool IsContainedInSubmenu(views::View* view);
 
+  // Called when the main container height might have changed.
+  void OnMainContainerViewHeightChanged();
+
   std::optional<PickerCategory> selected_category_;
 
   PickerKeyEventHandler key_event_handler_;
@@ -226,6 +233,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // The currently pseudo focused view, which responds to user actions that
   // trigger `DoPseudoFocusedAction`.
   raw_ptr<views::View> pseudo_focused_view_ = nullptr;
+
+  // If true, the Widget bounds should be adjusted on the next layout.
+  bool widget_bounds_needs_update_ = true;
 
   // Clears `search_results_view_`'s old search results when a new search is
   // started - after `kClearResultsTimeout`, or when the first search results

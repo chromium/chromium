@@ -13,9 +13,6 @@
 namespace ash {
 
 inline constexpr int kPickerViewWidth = 320;
-// TODO: b/333020345 - This value should depend on whether the emoji bar is
-// visible.
-inline constexpr int kPickerViewMaxHeight = 340;
 
 inline constexpr int kPickerContainerBorderRadius = 12;
 inline constexpr ui::ColorId kPickerContainerBackgroundColor =

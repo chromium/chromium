@@ -93,6 +93,7 @@ class MockZeroStateViewDelegate : public PickerZeroStateViewDelegate {
               GetActionForResult,
               (const PickerSearchResult& result),
               (override));
+  MOCK_METHOD(void, OnZeroStateViewHeightChanged, (), (override));
 };
 
 class PickerZeroStateViewTest : public views::ViewsTestBase {

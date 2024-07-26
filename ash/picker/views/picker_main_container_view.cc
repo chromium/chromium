@@ -18,12 +18,14 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/highlight_border.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
+
+constexpr int kMainContainerMaxHeight = 300;
 
 std::unique_ptr<views::Separator> CreateSeparator() {
   return views::Builder<views::Separator>()
@@ -44,11 +46,19 @@ PickerMainContainerView::PickerMainContainerView() {
       this, kPickerContainerShadowType);
   shadow_->SetRoundedCornerRadius(kPickerContainerBorderRadius);
 
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
+  SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 }
 
 PickerMainContainerView::~PickerMainContainerView() = default;
+
+gfx::Size PickerMainContainerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  const int preferred_height =
+      views::View::CalculatePreferredSize(available_size).height();
+  return gfx::Size(kPickerViewWidth,
+                   std::min(preferred_height, kMainContainerMaxHeight));
+}
 
 views::View* PickerMainContainerView::GetTopItem() {
   return active_page_->GetTopItem();
@@ -114,10 +124,8 @@ PickerContentsView* PickerMainContainerView::AddContentsView(
   }
 
   contents_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded)
-          .WithWeight(1));
+      views::kBoxLayoutFlexKey,
+      views::BoxLayoutFlexSpecification().WithWeight(1));
 
   return contents_view_;
 }
