@@ -1941,10 +1941,6 @@ const char kForceUiDirectionDescription[] =
     "Explicitly force the UI to left-to-right (LTR) or right-to-left (RTL) "
     "mode, overriding the default direction of the UI language.";
 
-const char kForgotPasswordFormSupportName[] = "Forgot Password Form Support";
-const char kForgotPasswordFormSupportDescription[] =
-    "Detect and fill usernames in forgot password forms.";
-
 const char kGalleryAppLensName[] = "Gallery App Lens";
 const char kGalleryAppLensDescription[] =
     "Enable Gallery App lens integration.";

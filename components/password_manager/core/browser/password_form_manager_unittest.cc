@@ -4322,11 +4322,6 @@ TEST_P(PasswordFormManagerTest,
 // Tests that no vote is sent for the OTP field, unless there is a server
 // prediction confirming it's a single username field.
 TEST_P(PasswordFormManagerTest, ForgotPasswordFormVotesOnLikelyOTPField) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kForgotPasswordFormSupport},
-      /*disabled_features=*/{});
-
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
 
@@ -4383,11 +4378,6 @@ TEST_P(PasswordFormManagerTest, ForgotPasswordFormVotesOnLikelyOTPField) {
 // build pending credentials if it is predicted to be a single username field
 // by the server.
 TEST_P(PasswordFormManagerTest, ForgotPasswordFormUsernamePopulatedInPrompt) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kForgotPasswordFormSupport},
-      /*disabled_features=*/{});
-
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
 
@@ -4414,11 +4404,6 @@ TEST_P(PasswordFormManagerTest, ForgotPasswordFormUsernamePopulatedInPrompt) {
 // field by the server.
 TEST_P(PasswordFormManagerTest,
        ForgotPasswordFormUsernameNotPopulatedInPrompt) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kForgotPasswordFormSupport},
-      /*disabled_features=*/{});
-
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
 

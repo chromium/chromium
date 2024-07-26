@@ -4891,11 +4891,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "forgot-password-form-support",
-    "owners": [ "kazinova@google.com", "shaikhitdin@google.com" ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "fractional-scroll-offsets",
     "owners": [ "bokan@chromium.org" ],
     "expiry_milestone": 81

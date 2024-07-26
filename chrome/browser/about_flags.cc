@@ -10976,12 +10976,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-    {"forgot-password-form-support",
-     flag_descriptions::kForgotPasswordFormSupportName,
-     flag_descriptions::kForgotPasswordFormSupportDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kForgotPasswordFormSupport)},
-
     {"ip-protection-proxy-opt-out",
      flag_descriptions::kIpProtectionProxyOptOutName,
      flag_descriptions::kIpProtectionProxyOptOutDescription, kOsAll,

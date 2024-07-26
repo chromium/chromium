@@ -4259,13 +4259,9 @@ TEST_P(PasswordManagerTest, FillSingleUsername) {
 // Check that a non-password form with SINGLE_USERNAME_FORGOT_PASSWORD
 // prediction is filled.
 TEST_P(PasswordManagerTest, FillSingleUsernameForgotPassword) {
-  std::vector<FeatureRef> enabled_features = {
-      password_manager::features::kForgotPasswordFormSupport};
 #if BUILDFLAG(IS_IOS)
-  enabled_features.push_back(features::kIOSPasswordSignInUff);
+  base::test::ScopedFeatureList feature_list{features::kIOSPasswordSignInUff};
 #endif  // BUIDFLAG(IS_IOS)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(enabled_features, /*disabled_features=*/{});
 
   base::HistogramTester histogram_tester;
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
@@ -5735,10 +5731,6 @@ TEST_P(PasswordManagerTest, HaveFormManagersReceivedDataDependsOnDriver) {
 
 TEST_P(PasswordManagerTest,
        FieldInfoManagerHasDataPredictionsInitiallyAvailable) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kForgotPasswordFormSupport);
-
   // Process server predictions.
   PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
   const FieldType kFieldType = FieldType::SINGLE_USERNAME_FORGOT_PASSWORD;
@@ -5767,10 +5759,6 @@ TEST_P(PasswordManagerTest,
 }
 
 TEST_P(PasswordManagerTest, FieldInfoManagerHasDataPredictionsPropagatedLater) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kForgotPasswordFormSupport);
-
   // Simulate the user typed in a text field.
   PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
   ON_CALL(driver_, GetLastCommittedURL())

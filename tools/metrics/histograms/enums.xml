@@ -16109,7 +16109,6 @@ from previous Chrome versions.
       label="(Obsolete) AccessibilityUnserializeOptimizations:enabled"/>
   <int value="-2015293660" label="AccessibilityExposeDisplayNone:disabled"/>
   <int value="-2014948560" label="TabGroupsAutoCreate:enabled"/>
-  <int value="-2014920890" label="ForgotPasswordFormSupport:disabled"/>
   <int value="-2013948438"
       label="AudioFlexibleLoopbackForSystemLoopback:disabled"/>
   <int value="-2013551096" label="ViewsSimplifiedFullscreenUI:disabled"/>
@@ -16530,7 +16529,6 @@ from previous Chrome versions.
   <int value="-1846680525" label="WebUIA11yEnhancements:enabled"/>
   <int value="-1846471618"
       label="enable-experimental-accessibility-switch-access-text"/>
-  <int value="-1846358874" label="ForgotPasswordFormSupport:enabled"/>
   <int value="-1846070594" label="AllowWindowDragUsingSystemDragDrop:disabled"/>
   <int value="-1844754731" label="Mash:disabled"/>
   <int value="-1844445413"

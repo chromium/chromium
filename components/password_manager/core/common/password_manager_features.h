@@ -19,7 +19,6 @@ namespace password_manager::features {
 // alongside the definition of their values in the .cc file.
 BASE_DECLARE_FEATURE(kEnableOverwritingPlaceholderUsernames);
 
-BASE_DECLARE_FEATURE(kForgotPasswordFormSupport);
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kIOSPasswordBottomSheetAutofocus);
 #endif  // IS_IOS

@@ -785,8 +785,6 @@ void PasswordManager::OnUserModifiedNonPasswordField(
                              is_likely_otp));
   }
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kForgotPasswordFormSupport)) {
     FieldInfoManager* field_info_manager = client_->GetFieldInfoManager();
     // The manager might not exist in incognito.
     if (!field_info_manager) {
@@ -796,7 +794,6 @@ void PasswordManager::OnUserModifiedNonPasswordField(
         {driver_id, renderer_id, GetSignonRealm(driver->GetLastCommittedURL()),
          value, is_likely_otp},
         FindPredictionsForField(renderer_id, driver_id));
-  }
 }
 
 void PasswordManager::OnInformAboutUserInput(PasswordManagerDriver* driver,

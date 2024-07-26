@@ -1099,9 +1099,6 @@ extern const char kForceDirectionRtl[];
 extern const char kForceUiDirectionName[];
 extern const char kForceUiDirectionDescription[];
 
-extern const char kForgotPasswordFormSupportName[];
-extern const char kForgotPasswordFormSupportDescription[];
-
 extern const char kGalleryAppLensName[];
 extern const char kGalleryAppLensDescription[];
 
