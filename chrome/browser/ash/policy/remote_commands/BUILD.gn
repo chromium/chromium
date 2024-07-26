@@ -59,6 +59,7 @@ static_library("remote_commands") {
     "//chrome/browser/ash/policy/invalidation",
     "//chrome/browser/ash/policy/remote_commands/crd",
     "//chrome/browser/ash/policy/scheduled_task_handler",
+    "//chrome/browser/ash/policy/uploading",
     "//chrome/browser/ash/system",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/profiles:profile",

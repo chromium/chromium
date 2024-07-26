@@ -8671,6 +8671,7 @@ test("unit_tests") {
       "//chrome/browser/ash/policy/reporting/metrics_reporting",
       "//chrome/browser/ash/policy/skyvault",
       "//chrome/browser/ash/policy/status_collector",
+      "//chrome/browser/ash/policy/uploading",
       "//chrome/browser/ash/printing:test_support",
       "//chrome/browser/ash/release_notes",
       "//chrome/browser/ash/smb_client:test_support",
