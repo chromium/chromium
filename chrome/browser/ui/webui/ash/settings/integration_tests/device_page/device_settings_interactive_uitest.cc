@@ -19,6 +19,7 @@
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
@@ -863,6 +864,42 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, KeyboardFkeys) {
   EXPECT_TRUE(browser->window()->IsFullscreen());
 }
 
+class KeyboardAmbientLightSensorStateObserver
+    : public ui::test::ObservationStateObserver<
+          bool,
+          chromeos::PowerManagerClient,
+          chromeos::PowerManagerClient::Observer> {
+ public:
+  explicit KeyboardAmbientLightSensorStateObserver(
+      chromeos::PowerManagerClient* power_manager_client)
+      : ObservationStateObserver(power_manager_client) {
+    keyboard_ambient_light_sensor_enabled_ = true;
+  }
+  ~KeyboardAmbientLightSensorStateObserver() override = default;
+
+ private:
+  // chromeos::PowerManagerClient::Observer
+  void KeyboardAmbientLightSensorEnabledChanged(
+      const power_manager::AmbientLightSensorChange& change) override {
+    const bool enabled = change.sensor_enabled();
+    if (enabled == keyboard_ambient_light_sensor_enabled_) {
+      return;
+    }
+    keyboard_ambient_light_sensor_enabled_ = enabled;
+    OnStateObserverStateChanged(
+        /*state=*/keyboard_ambient_light_sensor_enabled_);
+  }
+
+  // ui::test::ObservationStateObserver:
+  bool GetStateObserverInitialState() const override { return true; }
+
+  bool GetKeyboardAmbientLightSensorEnabled() {
+    return keyboard_ambient_light_sensor_enabled_;
+  }
+
+  bool keyboard_ambient_light_sensor_enabled_;
+};
+
 class DeviceSettingsBrightnessInteractiveUiTest
     : public DeviceSettingsInteractiveUiTest {
  public:
@@ -875,6 +912,72 @@ class DeviceSettingsBrightnessInteractiveUiTest
         {});
   }
 };
+
+IN_PROC_BROWSER_TEST_F(DeviceSettingsBrightnessInteractiveUiTest,
+                       ToggleKeyboardAutoBrightness) {
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(KeyboardAmbientLightSensorStateObserver,
+                                      kKeyboardAmbientLightSensorEnabledState);
+
+  const DeepQuery kKeyboardAmbientLightSensorToggle{
+      "os-settings-ui",
+      "os-settings-main",
+      "#mainPageContainer",
+      "settings-device-page",
+      "settings-per-device-keyboard",
+      "settings-per-device-keyboard-subsection",
+      "#keyboardAutoBrightnessToggle",
+  };
+
+  RunTestSequence(
+      SetupInternalKeyboard(), Log("Opening OS settings system web app"),
+      LaunchSettingsApp(
+          webcontents_id_,
+          chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath),
+
+      Log("Verifying keyboard ambient light sensor state"),
+      ObserveState(kKeyboardAmbientLightSensorEnabledState,
+                   std::make_unique<KeyboardAmbientLightSensorStateObserver>(
+                       chromeos::PowerManagerClient::Get())),
+      WaitForState(kKeyboardAmbientLightSensorEnabledState, true),
+
+      Log("Manually setting hasKeyboardBacklight and hasAmbientLightSensor to "
+          "true."),
+      WaitForElementExists(webcontents_id_, kPerDeviceKeyboardSubsectionQuery),
+      ExecuteJsAt(webcontents_id_, kPerDeviceKeyboardSubsectionQuery,
+                  "(subsection) => { if (subsection) { "
+                  "subsection.hasKeyboardBacklight = true; "
+                  "subsection.hasAmbientLightSensor = true; "
+                  "subsection.notifyPath('hasKeyboardBacklight', true); "
+                  "subsection.notifyPath('hasAmbientLightSensor', true); "
+                  "}}"),
+
+      Log("Waiting for keyboard ambient light sensor toggle to exist"),
+      WaitForElementExists(webcontents_id_, kKeyboardAmbientLightSensorToggle),
+
+      Log("Waiting for toggle to be checked"),
+      WaitForToggleState(webcontents_id_, kKeyboardAmbientLightSensorToggle,
+                         true),
+
+      Log("Clicking keyboard ambient light sensor toggle"),
+      ClickElement(webcontents_id_, kKeyboardAmbientLightSensorToggle),
+
+      Log("Waiting for keyboard ambient light sensor to be disabled"),
+      WaitForState(kKeyboardAmbientLightSensorEnabledState, false),
+
+      Log("Waiting for toggle to be unchecked"),
+      WaitForToggleState(webcontents_id_, kKeyboardAmbientLightSensorToggle,
+                         false),
+
+      Log("Clicking keyboard ambient light sensor toggle again"),
+      ClickElement(webcontents_id_, kKeyboardAmbientLightSensorToggle),
+
+      Log("Waiting for keyboard ambient light sensor to be enabled"),
+      WaitForState(kKeyboardAmbientLightSensorEnabledState, true),
+
+      Log("Waiting for toggle to be checked again"),
+      WaitForToggleState(webcontents_id_, kKeyboardAmbientLightSensorToggle,
+                         true));
+}
 
 IN_PROC_BROWSER_TEST_F(DeviceSettingsBrightnessInteractiveUiTest,
                        NavigateToRgbCustomization) {
