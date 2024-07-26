@@ -57,6 +57,7 @@ static_library("app_list") {
     "//ash/public/cpp",
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/hats",
     "//chrome/browser/profiles:profile",
     "//components/feature_engagement/public",

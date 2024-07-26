@@ -518,6 +518,7 @@ static_library("crosapi") {
 
   public_deps = [
     ":browser_util",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/ash/parent_access",
     "//media/gpu:buildflags",
     "//printing",

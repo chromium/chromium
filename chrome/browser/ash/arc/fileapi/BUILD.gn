@@ -60,6 +60,8 @@ static_library("fileapi") {
     "file_stream_forwarder.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/components/arc",
     "//ash/constants",

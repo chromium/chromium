@@ -29,6 +29,8 @@ static_library("input_overlay") {
     "util.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/app_list",

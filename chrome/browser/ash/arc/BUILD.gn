@@ -28,6 +28,8 @@ static_library("arc") {
     "icon_decode_request.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/components/arc",

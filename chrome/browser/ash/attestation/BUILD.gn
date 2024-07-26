@@ -36,6 +36,8 @@ static_library("attestation") {
     "tpm_challenge_key_with_timeout.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     ":attestation_proto",
     "//ash/public/cpp",

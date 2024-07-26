@@ -12,6 +12,8 @@ static_library("tts") {
     "arc_tts_service.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/components/arc",
     "//ash/components/arc/mojom",

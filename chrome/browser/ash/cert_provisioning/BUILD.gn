@@ -34,6 +34,7 @@ static_library("cert_provisioning") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/dbus/constants",

@@ -32,6 +32,8 @@ static_library("android_sms") {
     "fcm_connection_establisher.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//base",

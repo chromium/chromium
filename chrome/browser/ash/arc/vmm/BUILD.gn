@@ -22,6 +22,8 @@ static_library("vmm") {
     "vmm_metrics_provider.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/components/arc",

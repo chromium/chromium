@@ -16,6 +16,8 @@ static_library("window_predictor") {
     "window_predictor_utils.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/components/arc/mojom",
     "//base",

@@ -74,6 +74,7 @@ static_library("borealis") {
   public_deps = [
     "//ash",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
     "//chrome/browser/ash/borealis/infra",
     "//chrome/browser/ash/hats",
