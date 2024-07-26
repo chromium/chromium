@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -35,6 +36,28 @@ class HatsNotificationController : public message_center::NotificationDelegate,
                                    public ProfileObserver {
  public:
   static const char kNotificationId[];
+
+  // Minimum amount of time before the notification is displayed again after a
+  // user has interacted with it.
+  static constexpr base::TimeDelta kHatsThreshold = base::Days(60);
+
+  // The threshold for a Googler is less.
+  static constexpr base::TimeDelta kHatsGooglerThreshold = base::Days(30);
+
+  // Prioritized HaTS has much shorter threshold.
+  static constexpr base::TimeDelta kPrioritizedHatsThreshold = base::Days(10);
+
+  // There are multiple pool/quota of cooldowns: normal and prioritized,
+  // when user was selected for one pool, there need to be another cooldown
+  // to ensure the user would not be selected for the other pool immediately
+  // after.
+  static constexpr base::TimeDelta kMinimumHatsThreshold = base::Days(1);
+
+  // HaTS threshold should be configured correctly.
+  static_assert(kHatsThreshold > kPrioritizedHatsThreshold);
+  static_assert(kHatsThreshold > kHatsGooglerThreshold);
+  static_assert(kPrioritizedHatsThreshold > kMinimumHatsThreshold);
+  static_assert(kHatsGooglerThreshold > kMinimumHatsThreshold);
 
   HatsNotificationController(
       Profile* profile,
