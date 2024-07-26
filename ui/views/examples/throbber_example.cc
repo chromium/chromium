@@ -12,8 +12,8 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/delegating_layout_manager.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 
 namespace views::examples {
@@ -24,8 +24,10 @@ class ThrobberView : public View, public LayoutDelegate {
   METADATA_HEADER(ThrobberView, View)
 
  public:
-  ThrobberView() {
-    throbber_ = AddChildView(std::make_unique<Throbber>());
+  explicit ThrobberView(std::optional<int> diameter = std::nullopt) {
+    throbber_ = diameter
+                    ? AddChildView(std::make_unique<Throbber>(diameter.value()))
+                    : AddChildView(std::make_unique<Throbber>());
     throbber_->Start();
     SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
   }
@@ -43,7 +45,6 @@ class ThrobberView : public View, public LayoutDelegate {
   // Overridden from LayoutDelegate:
   ProposedLayout CalculateProposedLayout(
       const SizeBounds& size_bounds) const override {
-    constexpr int kDiameter = 16;
     ProposedLayout layout;
     if (!size_bounds.is_fully_bounded()) {
       layout.host_size = GetPreferredSize();
@@ -51,11 +52,12 @@ class ThrobberView : public View, public LayoutDelegate {
       layout.host_size =
           gfx::Size(size_bounds.width().value(), size_bounds.height().value());
     }
+    const int diameter = throbber_->GetDiameter();
     layout.child_layouts.emplace_back(
         throbber_.get(), throbber_->GetVisible(),
-        gfx::Rect((layout.host_size.width() - kDiameter) / 2,
-                  (layout.host_size.height() - kDiameter) / 2, kDiameter,
-                  kDiameter));
+        gfx::Rect((layout.host_size.width() - diameter) / 2,
+                  (layout.host_size.height() - diameter) / 2, diameter,
+                  diameter));
     return layout;
   }
 
@@ -89,8 +91,10 @@ ThrobberExample::ThrobberExample()
 ThrobberExample::~ThrobberExample() = default;
 
 void ThrobberExample::CreateExampleView(View* container) {
-  container->SetLayoutManager(std::make_unique<FillLayout>());
+  auto* layout = container->SetLayoutManager(std::make_unique<BoxLayout>());
+  layout->SetDefaultFlex(1);
   container->AddChildView(std::make_unique<ThrobberView>());
+  container->AddChildView(std::make_unique<ThrobberView>(/*diameter=*/50));
 }
 
 }  // namespace views::examples

@@ -20,14 +20,7 @@
 
 namespace views {
 
-// The default diameter of a Throbber. If you change this, also change
-// kCheckmarkDipSize.
-constexpr int kDefaultDiameter = 16;
-// The size of the checkmark, in DIP. This magic number matches the default
-// diameter plus padding inherent in the checkmark SVG.
-constexpr int kCheckmarkDipSize = kDefaultDiameter + 2;
-
-Throbber::Throbber() = default;
+Throbber::Throbber(int diameter) : diameter_(diameter) {}
 
 Throbber::~Throbber() {
   Stop();
@@ -66,7 +59,7 @@ void Throbber::SetChecked(bool checked) {
 
 gfx::Size Throbber::CalculatePreferredSize(
     const SizeBounds& /*available_size*/) const {
-  return gfx::Size(kDefaultDiameter, kDefaultDiameter);
+  return gfx::Size(diameter_, diameter_);
 }
 
 void Throbber::OnPaint(gfx::Canvas* canvas) {
@@ -74,6 +67,9 @@ void Throbber::OnPaint(gfx::Canvas* canvas) {
 
   if (!IsRunning()) {
     if (checked_) {
+      // The size of the checkmark, in DIP. This magic number matches the
+      // diameter plus padding inherent in the checkmark SVG.
+      const int kCheckmarkDipSize = diameter_ + 2;
       canvas->Translate(gfx::Vector2d((width() - kCheckmarkDipSize) / 2,
                                       (height() - kCheckmarkDipSize) / 2));
       gfx::PaintVectorIcon(canvas, vector_icons::kCheckCircleIcon,
@@ -96,8 +92,9 @@ END_METADATA
 
 // Smoothed throbber ---------------------------------------------------------
 
-SmoothedThrobber::SmoothedThrobber()
-    : start_delay_(base::Milliseconds(200)),
+SmoothedThrobber::SmoothedThrobber(int diameter)
+    : Throbber(diameter),
+      start_delay_(base::Milliseconds(200)),
       stop_delay_(base::Milliseconds(50)) {}
 
 SmoothedThrobber::~SmoothedThrobber() = default;
