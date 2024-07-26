@@ -169,7 +169,14 @@ void WaitForHttpAuthDialog() {
     [ChromeEarlGrey loadURL:URL waitForCompletion:NO];
     WaitForHttpAuthDialog();
 
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+    id<GREYMatcher> cancelButtonMatcher = grey_allOf(
+        chrome_test_util::CancelButton(),
+        grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
+    // Wait for element to become enabled because auth dialog buttons are
+    // initially disabled. See crbug.com/341353783
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cancelButtonMatcher];
+
+    [[EarlGrey selectElementWithMatcher:cancelButtonMatcher]
         performAction:grey_tap()];
 
   }  // EG synchronization disabled block.

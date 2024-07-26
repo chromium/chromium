@@ -81,6 +81,7 @@ using alert_overlays::AlertRequest;
       UIModalPresentationOverCurrentContext;
   self.alertViewController.modalTransitionStyle =
       UIModalTransitionStyleCrossDissolve;
+  self.alertViewController.actionButtonsAreInitiallyDisabled = YES;
   self.alertMediator =
       [[AlertOverlayMediator alloc] initWithRequest:self.request];
   self.alertMediator.consumer = self.alertViewController;
