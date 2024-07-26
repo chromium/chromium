@@ -110,6 +110,7 @@
         'args': [
           '--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode', # https://crbug.com/1034001
         ],
+        'ci_only': True,
         'swarming': {
           'dimensions': {
             'device_type': 'crosshatch',
@@ -314,6 +315,7 @@
   'blink_platform_unittests': {
     'modifications': {
       'android-pie-arm64-rel': {
+        'ci_only': True,
         # TODO(crbug.com/40142574): Move this back to walleye if/when additional
         # capacity has been deployed.
         'swarming': {
@@ -1295,6 +1297,9 @@
         # TODO(crbug.com/343210417) : Remove once fixed.
         'experiment_percentage': 100,
       },
+      'android-pie-arm64-rel': {
+        'ci_only': True,
+      },
       'android-pie-x86-rel': {
         # https://crbug.com/1039860
         'args': [
@@ -1389,6 +1394,11 @@
     'remove_from': [
       'android-code-coverage-native', # Does not generate profraw data.
     ],
+    'modifications': {
+      'android-pie-arm64-rel': {
+        'ci_only': True,
+      },
+    },
   },
   'chrome_public_test_apk': {
     'remove_from': [
@@ -1964,6 +1974,7 @@
           '--gtest-also-run-pre-tests',
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter',
         ],
+        'ci_only': True,
         'swarming': {
           # TODO(crbug.com/40922014): Temporarily increase the shard by 5 for the surging number of tests.
           # Recover to default number of shards(20) after the bug is fixed.
@@ -3599,6 +3610,20 @@
       },
     },
   },
+  'monochrome_public_bundle_smoke_test': {
+    'modifications': {
+      'android-pie-arm64-rel': {
+        'ci_only': True,
+      },
+    },
+  },
+  'monochrome_public_smoke_test': {
+    'modifications': {
+      'android-pie-arm64-rel': {
+        'ci_only': True,
+      },
+    },
+  },
   'nacl_loader_unittests': {
     # If you change this, make similar changes in ppapi_unittests
     'remove_from': [
@@ -4817,6 +4842,9 @@
       'android-15-x64-fyi-rel': {
         # TODO(crbug.com/343210417) : Remove once fixed.
         'experiment_percentage': 100,
+      },
+      'android-pie-arm64-rel': {
+        'ci_only': True,
       },
       'fuchsia-fyi-arm64-dbg': {
         'args': [
