@@ -89,6 +89,7 @@ _CONFIG = [
             'base::MappedReadOnlyRegion',
             'base::MatchPattern',
             'base::MatcherStringPattern',
+            'base::MessagePump',
             'base::MetricsSubSampler',
             'base::Microseconds',
             'base::Milliseconds',

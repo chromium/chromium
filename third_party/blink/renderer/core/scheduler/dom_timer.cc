@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/scheduler/dom_timer.h"
 
+#include "base/message_loop/message_pump.h"
 #include "base/numerics/clamped_math.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -57,8 +58,9 @@ constexpr int kMaxTimerNestingLevel = 5;
 constexpr base::TimeDelta kMinimumInterval = base::Milliseconds(4);
 
 base::TimeDelta GetMaxHighResolutionInterval() {
-  return base::FeatureList::IsEnabled(
-             features::kLowerHighResolutionTimerThreshold)
+  return base::MessagePump::GetAlignWakeUpsEnabled() &&
+                 base::FeatureList::IsEnabled(
+                     features::kLowerHighResolutionTimerThreshold)
              ? base::Milliseconds(4)
              : base::Milliseconds(32);
 }
