@@ -1232,11 +1232,13 @@ std::optional<UrlMatchType> PrerenderHost::IsUrlMatch(const GURL& url) const {
     return result;
   }
 
+  // Override the result of default url match logic with the result
+  // from the custom url matching predicate call.
   if (attributes_.url_match_predicate.Run(url, result)) {
-    result = UrlMatchType::kURLPredicateMatch;
+    return UrlMatchType::kURLPredicateMatch;
   }
 
-  return result;
+  return std::nullopt;
 }
 
 bool PrerenderHost::IsNoVarySearchHintUrlMatch(const GURL& url) const {
