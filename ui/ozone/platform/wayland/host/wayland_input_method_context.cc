@@ -5,17 +5,20 @@
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
 
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/environment.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/nix/xdg_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
@@ -242,7 +245,10 @@ WaylandInputMethodContext::~WaylandInputMethodContext() {
 
 void WaylandInputMethodContext::Init(
     bool initialize_for_testing,
-    std::unique_ptr<ZWPTextInputWrapper> wrapper_for_testing) {
+    std::unique_ptr<ZWPTextInputWrapper> wrapper_for_testing,
+    std::optional<base::nix::DesktopEnvironment> desktop_for_testing) {
+  desktop_environment_ = desktop_for_testing.value_or(
+      base::nix::GetDesktopEnvironment(base::Environment::Create().get()));
   if (wrapper_for_testing) {
     text_input_ = std::move(wrapper_for_testing);
     return;
@@ -578,6 +584,28 @@ void WaylandInputMethodContext::OnPreeditString(
         static_cast<uint32_t>(preedit_cursor.start()),
         static_cast<uint32_t>(preedit_cursor.end())};
     base::UTF8ToUTF16AndAdjustOffsets(text, &offsets);
+    if (desktop_environment_ == base::nix::DESKTOP_ENVIRONMENT_GNOME) {
+      if (!compositor_sends_invalid_cursor_end_) {
+        // This was seen in gnome where it sends erroneous value for cursor_end
+        // in text-input-v3 [1].
+        // Currently only way to detect this is by checking if cursor end is
+        // less than cursor start or the value is invalid.
+        //
+        // [1] https://gitlab.gnome.org/GNOME/mutter/-/issues/3547
+        if (offsets[1] == std::u16string::npos || offsets[1] < offsets[0]) {
+          DVLOG(1) << "Detected invalid cursor end in gnome. Will disable "
+                      "preedit selection";
+          compositor_sends_invalid_cursor_end_ = true;
+        }
+      }
+      // Once an erroneous cursor end value is detected, it always be wrong
+      // going forward.
+      // So set it equal to cursor begin as workaround, i.e. default to cursor
+      // position at cursor_begin instead of using a selection.
+      if (compositor_sends_invalid_cursor_end_) {
+        offsets[1] = offsets[0];
+      }
+    }
     if (offsets[0] == std::u16string::npos ||
         offsets[1] == std::u16string::npos) {
       DVLOG(1) << "got invalid cursor position (byte offset)="

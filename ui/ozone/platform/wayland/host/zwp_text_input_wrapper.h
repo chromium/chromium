@@ -31,9 +31,14 @@ class ZWPTextInputWrapperClient {
  public:
   struct SpanStyle {
     struct Style {
+      bool operator==(const Style& other) const = default;
+
       ImeTextSpan::Type type;
       ImeTextSpan::Thickness thickness;
     };
+
+    bool operator==(const SpanStyle& other) const = default;
+
     // Byte offset.
     uint32_t index;
     // Length in bytes.

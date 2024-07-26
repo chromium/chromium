@@ -146,6 +146,7 @@ void ZWPTextInputWrapperV3::Reset() {
   // crbug.com/353915732 where surrounding text update is not sent after reset
   // when composition is canceled.
   ResetPendingSetRequests();
+  ResetPendingInputEvents();
   zwp_text_input_v3_enable(obj_.get());
   Commit();
 }
@@ -154,6 +155,7 @@ void ZWPTextInputWrapperV3::Activate(WaylandWindow* window,
                                      TextInputClient::FocusReason reason) {
   // Pending state is reset on enable.
   ResetPendingSetRequests();
+  ResetPendingInputEvents();
   zwp_text_input_v3_enable(obj_.get());
   Commit();
 }
@@ -161,6 +163,8 @@ void ZWPTextInputWrapperV3::Activate(WaylandWindow* window,
 void ZWPTextInputWrapperV3::Deactivate() {
   // Avoid sending pending requests if done is received after disabling.
   ResetPendingSetRequests();
+  // Do not process pending input events after deactivating.
+  ResetPendingInputEvents();
   zwp_text_input_v3_disable(obj_.get());
   Commit();
 }
@@ -269,6 +273,10 @@ void ZWPTextInputWrapperV3::ResetLastSentValues() {
   last_sent_content_type_ = {};
 }
 
+void ZWPTextInputWrapperV3::ResetPendingInputEvents() {
+  pending_preedit_.reset();
+}
+
 void ZWPTextInputWrapperV3::Commit() {
   zwp_text_input_v3_commit(obj_.get());
   // It will wrap around to 0 once it reaches uint32_t max value. It is
@@ -300,7 +308,9 @@ void ZWPTextInputWrapperV3::OnPreeditString(
     const char* text,
     int32_t cursor_begin,
     int32_t cursor_end) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<ZWPTextInputWrapperV3*>(data);
+  self->pending_preedit_ = {text ? text : std::string(), cursor_begin,
+                            cursor_end};
 }
 
 void ZWPTextInputWrapperV3::OnCommitString(void* data,
@@ -322,6 +332,18 @@ void ZWPTextInputWrapperV3::OnDone(void* data,
                                    uint32_t serial) {
   // TODO(crbug.com/40113488) apply preedit, commit, delete surrounding
   auto* self = static_cast<ZWPTextInputWrapperV3*>(data);
+
+  if (const auto& preedit_data = self->pending_preedit_) {
+    gfx::Range preedit_cursor =
+        (preedit_data->cursor_begin < 0 || preedit_data->cursor_end < 0)
+            ? gfx::Range::InvalidRange()
+            : gfx::Range(preedit_data->cursor_begin, preedit_data->cursor_end);
+    self->client_->OnPreeditString(preedit_data->text.c_str(), {},
+                                   preedit_cursor);
+  }
+
+  // reset the input event state.
+  self->ResetPendingInputEvents();
   self->last_done_serial_ = serial;
   if (self->last_done_serial_ == self->commit_count_) {
     self->ApplyPendingSetRequests();

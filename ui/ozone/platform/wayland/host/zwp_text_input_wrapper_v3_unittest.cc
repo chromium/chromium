@@ -7,6 +7,7 @@
 #include <text-input-unstable-v3-server-protocol.h>
 
 #include <memory>
+#include <string_view>
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,6 +43,7 @@ class ZWPTextInputWrapperV3Test : public WaylandTestSimple {
       Mock::VerifyAndClearExpectations(
           server->text_input_extension_v1()->extended_text_input());
     });
+    Mock::VerifyAndClearExpectations(&test_client_);
   }
 
   MockZWPTextInputWrapperClient test_client_;
@@ -381,6 +383,150 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnReset) {
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 1);
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 2);
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 3);
+  });
+  VerifyAndClearExpectations();
+}
+
+TEST_F(ZWPTextInputWrapperV3Test, OnPreeditString) {
+  constexpr std::string_view kPreeditString("PreeditString");
+  constexpr gfx::Range kPreeditCursor{0, 13};
+  EXPECT_CALL(
+      test_client_,
+      OnPreeditString(kPreeditString,
+                      std::vector<ZWPTextInputWrapperClient::SpanStyle>{},
+                      kPreeditCursor));
+  PostToServerAndWait(
+      [kPreeditString, kPreeditCursor](wl::TestWaylandServerThread* server) {
+        auto* text_input = server->text_input_manager_v3()->text_input();
+        zwp_text_input_v3_send_preedit_string(
+            text_input->resource(), kPreeditString.data(),
+            kPreeditCursor.start(), kPreeditCursor.end());
+        zwp_text_input_v3_send_done(text_input->resource(), 0);
+      });
+  VerifyAndClearExpectations();
+
+  // Invalid range if negative cursor begin
+  EXPECT_CALL(
+      test_client_,
+      OnPreeditString(kPreeditString,
+                      std::vector<ZWPTextInputWrapperClient::SpanStyle>{},
+                      gfx::Range::InvalidRange()));
+  PostToServerAndWait(
+      [kPreeditString, kPreeditCursor](wl::TestWaylandServerThread* server) {
+        auto* text_input = server->text_input_manager_v3()->text_input();
+        zwp_text_input_v3_send_preedit_string(text_input->resource(),
+                                              kPreeditString.data(), -1,
+                                              kPreeditCursor.end());
+        zwp_text_input_v3_send_done(text_input->resource(), 0);
+      });
+  VerifyAndClearExpectations();
+
+  // Invalid range if negative cursor end
+  EXPECT_CALL(
+      test_client_,
+      OnPreeditString(kPreeditString,
+                      std::vector<ZWPTextInputWrapperClient::SpanStyle>{},
+                      gfx::Range::InvalidRange()));
+  PostToServerAndWait(
+      [kPreeditString, kPreeditCursor](wl::TestWaylandServerThread* server) {
+        auto* text_input = server->text_input_manager_v3()->text_input();
+        zwp_text_input_v3_send_preedit_string(text_input->resource(),
+                                              kPreeditString.data(),
+                                              kPreeditCursor.start(), -1);
+        zwp_text_input_v3_send_done(text_input->resource(), 0);
+      });
+  VerifyAndClearExpectations();
+}
+
+TEST_F(ZWPTextInputWrapperV3Test, PendingInputEventsClearedOnEnable) {
+  constexpr std::string_view kPreeditString("PreeditString");
+  constexpr gfx::Range kPreeditCursor{0, 13};
+  PostToServerAndWait(
+      [kPreeditString, kPreeditCursor](wl::TestWaylandServerThread* server) {
+        auto* text_input = server->text_input_manager_v3()->text_input();
+        zwp_text_input_v3_send_preedit_string(
+            text_input->resource(), kPreeditString.data(),
+            kPreeditCursor.start(), kPreeditCursor.end());
+      });
+
+  // Enable should clear pending requests.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    InSequence s;
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+  });
+  wrapper_->Activate(window_.get(), ui::TextInputClient::FOCUS_REASON_NONE);
+  VerifyAndClearExpectations();
+
+  // Sending done should have no effect.
+  EXPECT_CALL(test_client_, OnPreeditString(_, _, _)).Times(0);
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* text_input = server->text_input_manager_v3()->text_input();
+    zwp_text_input_v3_send_done(text_input->resource(), 1);
+  });
+  VerifyAndClearExpectations();
+}
+
+TEST_F(ZWPTextInputWrapperV3Test, PendingInputEventsClearedOnDisable) {
+  constexpr std::string_view kPreeditString("PreeditString");
+  constexpr gfx::Range kPreeditCursor{0, 13};
+  PostToServerAndWait(
+      [kPreeditString, kPreeditCursor](wl::TestWaylandServerThread* server) {
+        auto* text_input = server->text_input_manager_v3()->text_input();
+        zwp_text_input_v3_send_preedit_string(
+            text_input->resource(), kPreeditString.data(),
+            kPreeditCursor.start(), kPreeditCursor.end());
+      });
+
+  // Disable should clear pending requests.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    InSequence s;
+    EXPECT_CALL(*zwp_text_input, Disable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+  });
+  wrapper_->Deactivate();
+  VerifyAndClearExpectations();
+
+  // Sending done should have no effect.
+  EXPECT_CALL(test_client_, OnPreeditString(_, _, _)).Times(0);
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* text_input = server->text_input_manager_v3()->text_input();
+    zwp_text_input_v3_send_done(text_input->resource(), 1);
+  });
+  VerifyAndClearExpectations();
+}
+
+TEST_F(ZWPTextInputWrapperV3Test, PendingInputEventsClearedOnReset) {
+  constexpr std::string_view kPreeditString("PreeditString");
+  constexpr gfx::Range kPreeditCursor{0, 13};
+  PostToServerAndWait(
+      [kPreeditString, kPreeditCursor](wl::TestWaylandServerThread* server) {
+        auto* text_input = server->text_input_manager_v3()->text_input();
+        zwp_text_input_v3_send_preedit_string(
+            text_input->resource(), kPreeditString.data(),
+            kPreeditCursor.start(), kPreeditCursor.end());
+      });
+
+  // Reset should clear pending requests.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    InSequence s;
+    EXPECT_CALL(*zwp_text_input, Disable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+  });
+  wrapper_->Reset();
+  VerifyAndClearExpectations();
+
+  // Sending done should have no effect.
+  EXPECT_CALL(test_client_, OnPreeditString(_, _, _)).Times(0);
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* text_input = server->text_input_manager_v3()->text_input();
+    zwp_text_input_v3_send_done(text_input->resource(), 1);
+    zwp_text_input_v3_send_done(text_input->resource(), 2);
   });
   VerifyAndClearExpectations();
 }
