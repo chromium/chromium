@@ -172,11 +172,11 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   // aperture) property.
   raw_ptr<const crabbyavif::avifImage, DanglingUntriaged> decoded_image_ =
       nullptr;
+  crabbyavif::avifIO avif_io_ = {};
+  AvifIOData avif_io_data_;
   std::unique_ptr<crabbyavif::avifDecoder,
                   decltype(&crabbyavif::crabby_avifDecoderDestroy)>
       decoder_{nullptr, crabbyavif::crabby_avifDecoderDestroy};
-  crabbyavif::avifIO avif_io_ = {};
-  AvifIOData avif_io_data_;
 
   const AnimationOption animation_option_;
 

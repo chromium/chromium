@@ -1062,8 +1062,8 @@ TEST(CrabbyStaticAVIFTests, GetAdobeGainmapInfoAndData) {
   EXPECT_TRUE(gainmap_frame);
 }
 
-// TODO(b/338342146): Re-enable this test once libavif and the test images are
-// updated to the ISO specification.
+// TODO(b/338342146): Re-enable this test once CrabbyAvif has been updated to
+// the ISO specification.
 TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapInfoAndData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -1111,6 +1111,8 @@ TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapInfoAndData) {
   EXPECT_NEAR(gainmap_info.fDisplayRatioSdr, 1.0, kEpsilon);
   EXPECT_NEAR(gainmap_info.fDisplayRatioHdr, std::exp2(1.4427), kEpsilon);
 
+  EXPECT_EQ(gainmap_info.fBaseImageType, SkGainmapInfo::BaseImageType::kSDR);
+
   EXPECT_EQ(gainmap_info.fGainmapMathColorSpace, nullptr);
 
   // Check that the gainmap can be decoded.
@@ -1120,8 +1122,8 @@ TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapInfoAndData) {
   EXPECT_TRUE(gainmap_frame);
 }
 
-// TODO(b/338342146): Re-enable this test once libavif and the test images are
-// updated to the ISO specification.
+// TODO(b/338342146): Re-enable this test once CrabbyAvif has been updated to
+// the ISO specification.
 TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapInfoAndDataHdrToSdr) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -1130,7 +1132,7 @@ TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapInfoAndDataHdrToSdr) {
       /*disabled_features=*/{});
 
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
-      "/images/resources/avif/small-with-gainmap-iso-hdrbase-forward.avif");
+      "/images/resources/avif/small-with-gainmap-iso-hdrbase.avif");
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
   decoder->SetData(data, true);
   SkGainmapInfo gainmap_info;
@@ -1141,14 +1143,14 @@ TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapInfoAndDataHdrToSdr) {
 
   // Check gainmap metadata.
   constexpr double kEpsilon = 0.00001;
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[0], std::exp2(-1.536), kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[1], std::exp2(-1.488), kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[2], std::exp2(-1.548), kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[0], 1.0, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[1], 1.0, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[2], 1.0, kEpsilon);
   EXPECT_NEAR(gainmap_info.fGainmapRatioMin[3], 1.0, kEpsilon);
 
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[0], std::exp2(0.372), kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[1], std::exp2(0.396), kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[2], std::exp2(0.444), kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[0], std::exp2(1.4427), kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[1], std::exp2(1.4427), kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[2], std::exp2(1.4427), kEpsilon);
   EXPECT_NEAR(gainmap_info.fGainmapRatioMax[3], 1.0, kEpsilon);
 
   EXPECT_NEAR(gainmap_info.fGainmapGamma[0], 1.0, kEpsilon);
@@ -1167,7 +1169,9 @@ TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapInfoAndDataHdrToSdr) {
   EXPECT_NEAR(gainmap_info.fEpsilonHdr[3], 1.0, kEpsilon);
 
   EXPECT_NEAR(gainmap_info.fDisplayRatioSdr, 1.0, kEpsilon);
-  EXPECT_NEAR(gainmap_info.fDisplayRatioHdr, std::exp2(2.0), kEpsilon);
+  EXPECT_NEAR(gainmap_info.fDisplayRatioHdr, std::exp2(1.4427), kEpsilon);
+
+  EXPECT_EQ(gainmap_info.fBaseImageType, SkGainmapInfo::BaseImageType::kHDR);
 
   // Check that the gainmap can be decoded.
   std::unique_ptr<ImageDecoder> gainmap_decoder = CreateAVIFDecoder();
@@ -1176,8 +1180,8 @@ TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapInfoAndDataHdrToSdr) {
   EXPECT_TRUE(gainmap_frame);
 }
 
-// TODO(b/338342146): Re-enable this test once libavif and the test images are
-// updated to the ISO specification.
+// TODO(b/338342146): Re-enable this test once CrabbyAvif has been updated to
+// the ISO specification.
 TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapColorSpaceSameICC) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -1211,8 +1215,8 @@ void ExpectMatrixNear(const skcms_Matrix3x3& lhs,
   }
 }
 
-// TODO(b/338342146): Re-enable this test once libavif and the test images are
-// updated to the ISO specification.
+// TODO(b/338342146): Re-enable this test once CrabbyAvif has been updated to
+// the ISO specification.
 TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapColorSpaceDifferentICC) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -1244,8 +1248,8 @@ TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapColorSpaceDifferentICC) {
   ExpectMatrixNear(matrix, SkNamedGamut::kDisplayP3, 0.001);
 }
 
-// TODO(b/338342146): Re-enable this test once libavif and the test images are
-// updated to the ISO specification.
+// TODO(b/338342146): Re-enable this test once CrabbyAvif has been updated to
+// the ISO specification.
 TEST(CrabbyStaticAVIFTests, DISABLED_GetIsoGainmapColorSpaceDifferentCICP) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -1304,7 +1308,7 @@ TEST(CrabbyStaticAVIFTests, GetGainmapInfoAndDataWithTruncatedData) {
 
   for (const std::string image :
        {"small-with-gainmap-adobe.avif", "small-with-gainmap-iso.avif"}) {
-    Vector<char> data_vector =
+    const Vector<char> data_vector =
         ReadFile("web_tests/images/resources/avif", image.c_str());
     scoped_refptr<SharedBuffer> half_data =
         SharedBuffer::Create(data_vector.data(), data_vector.size() / 2);
