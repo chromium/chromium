@@ -25,6 +25,10 @@
 
 class VideoStreamView;
 
+namespace views {
+class Throbber;
+}  // namespace views
+
 // Sets up, updates and maintains the lifetime of the VideoStreamView.
 // The view controller layer would be very thin so it is combined with the
 // coordinator for the VideoStreamView.
@@ -86,6 +90,7 @@ class VideoStreamCoordinator
 
   raw_ptr<VideoStreamView> video_stream_view_;
   raw_ptr<views::View> preview_badge_view_;
+  raw_ptr<views::Throbber> throbber_;
   std::unique_ptr<capture_mode::CameraVideoFrameHandler> video_frame_handler_;
 
   // Runs when a new frame is received. Used for testing.
