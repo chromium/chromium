@@ -75,6 +75,7 @@ public class HubManagerImplUnitTest {
     @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
+    @Mock private HubShowPaneHelper mHubShowPaneHelper;
     @Mock private DisplayButtonData mReferenceButtonData;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
@@ -152,7 +153,8 @@ public class HubManagerImplUnitTest {
                         mMenuOrKeyboardActionController,
                         mSnackbarManager,
                         mTabSupplier,
-                        mMenuButtonCoordinator);
+                        mMenuButtonCoordinator,
+                        mHubShowPaneHelper);
 
         PaneManager paneManager = hubManager.getPaneManager();
         assertNotNull(paneManager);
@@ -181,7 +183,8 @@ public class HubManagerImplUnitTest {
                         mMenuOrKeyboardActionController,
                         mSnackbarManager,
                         mTabSupplier,
-                        mMenuButtonCoordinator);
+                        mMenuButtonCoordinator,
+                        mHubShowPaneHelper);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -241,7 +244,8 @@ public class HubManagerImplUnitTest {
                         mMenuOrKeyboardActionController,
                         mSnackbarManager,
                         mTabSupplier,
-                        mMenuButtonCoordinator);
+                        mMenuButtonCoordinator,
+                        mHubShowPaneHelper);
         HubController hubController = hubManager.getHubController();
         hubController.setHubLayoutController(mHubLayoutController);
 
@@ -277,7 +281,8 @@ public class HubManagerImplUnitTest {
                         mMenuOrKeyboardActionController,
                         mSnackbarManager,
                         mTabSupplier,
-                        mMenuButtonCoordinator);
+                        mMenuButtonCoordinator,
+                        mHubShowPaneHelper);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -317,7 +322,8 @@ public class HubManagerImplUnitTest {
                         mMenuOrKeyboardActionController,
                         mSnackbarManager,
                         mTabSupplier,
-                        mMenuButtonCoordinator);
+                        mMenuButtonCoordinator,
+                        mHubShowPaneHelper);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -364,7 +370,8 @@ public class HubManagerImplUnitTest {
                         mMenuOrKeyboardActionController,
                         mSnackbarManager,
                         mTabSupplier,
-                        mMenuButtonCoordinator);
+                        mMenuButtonCoordinator,
+                        mHubShowPaneHelper);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();

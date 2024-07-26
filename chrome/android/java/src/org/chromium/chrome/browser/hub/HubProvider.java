@@ -34,6 +34,7 @@ public class HubProvider {
     private final @NonNull PaneListBuilder mPaneListBuilder;
     private final @NonNull Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final @NonNull Callback<Pane> mOnPaneFocused;
+    private final @NonNull HubShowPaneHelper mHubShowPaneHelper;
 
     private @Nullable CallbackController mCallbackController = new CallbackController();
     private @Nullable HubTabSwitcherMetricsRecorder mHubTabSwitcherMetricsRecorder;
@@ -61,6 +62,7 @@ public class HubProvider {
             @NonNull Supplier<MenuButtonCoordinator> menuButtonCoordinatorSupplier) {
         mPaneListBuilder = new PaneListBuilder(orderController);
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mHubShowPaneHelper = new HubShowPaneHelper();
         mHubManagerSupplier =
                 LazyOneshotSupplier.fromSupplier(
                         () -> {
@@ -79,7 +81,8 @@ public class HubProvider {
                                     menuOrKeyboardActionController,
                                     snackbarManager,
                                     tabSupplier,
-                                    menuButtonCoordinatorSupplier.get());
+                                    menuButtonCoordinatorSupplier.get(),
+                                    mHubShowPaneHelper);
                         });
 
         mOnPaneFocused =
@@ -132,6 +135,14 @@ public class HubProvider {
      */
     public @NonNull PaneListBuilder getPaneListBuilder() {
         return mPaneListBuilder;
+    }
+
+    /**
+     * Returns the {@link HubShowPaneHelper} used to select a pane to before opening the {@link
+     * HubLayout}.
+     */
+    public @NonNull HubShowPaneHelper getHubShowPaneHelper() {
+        return mHubShowPaneHelper;
     }
 
     private void onHubManagerAvailable(@NonNull HubManager hubManager) {

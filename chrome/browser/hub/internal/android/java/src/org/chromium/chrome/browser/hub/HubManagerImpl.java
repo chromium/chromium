@@ -47,6 +47,7 @@ public class HubManagerImpl implements HubManager, HubController {
     private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull ObservableSupplier<Tab> mTabSupplier;
     private final @NonNull MenuButtonCoordinator mMenuButtonCoordinator;
+    private final @NonNull HubShowPaneHelper mHubShowPaneHelper;
 
     // This is effectively NonNull and final once the HubLayout is initialized.
     private HubLayoutController mHubLayoutController;
@@ -64,7 +65,8 @@ public class HubManagerImpl implements HubManager, HubController {
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ObservableSupplier<Tab> tabSupplier,
-            @NonNull MenuButtonCoordinator menuButtonCoordinator) {
+            @NonNull MenuButtonCoordinator menuButtonCoordinator,
+            @NonNull HubShowPaneHelper hubShowPaneHelper) {
         mContext = context;
         mProfileProviderSupplier = profileProviderSupplier;
         mPaneManager = new PaneManagerImpl(paneListBuilder, mHubVisibilitySupplier);
@@ -73,6 +75,7 @@ public class HubManagerImpl implements HubManager, HubController {
         mSnackbarManager = snackbarManager;
         mTabSupplier = tabSupplier;
         mMenuButtonCoordinator = menuButtonCoordinator;
+        mHubShowPaneHelper = hubShowPaneHelper;
 
         // TODO(crbug.com/40283238): Consider making this a xml file so the entire core UI is
         // inflated.
@@ -104,6 +107,11 @@ public class HubManagerImpl implements HubManager, HubController {
     @Override
     public @NonNull ObservableSupplier<Boolean> getHubVisibilitySupplier() {
         return mHubVisibilitySupplier;
+    }
+
+    @Override
+    public @NonNull HubShowPaneHelper getHubShowPaneHelper() {
+        return mHubShowPaneHelper;
     }
 
     @Override

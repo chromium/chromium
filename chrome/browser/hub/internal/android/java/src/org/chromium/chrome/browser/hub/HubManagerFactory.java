@@ -42,7 +42,8 @@ public class HubManagerFactory {
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ObservableSupplier<Tab> tabSupplier,
-            @NonNull MenuButtonCoordinator menuButtonCoordinator) {
+            @NonNull MenuButtonCoordinator menuButtonCoordinator,
+            @NonNull HubShowPaneHelper hubShowPaneHelper) {
         return new HubManagerImpl(
                 context,
                 profileProviderSupplier,
@@ -51,6 +52,7 @@ public class HubManagerFactory {
                 menuOrKeyboardActionController,
                 snackbarManager,
                 tabSupplier,
-                menuButtonCoordinator);
+                menuButtonCoordinator,
+                hubShowPaneHelper);
     }
 }
