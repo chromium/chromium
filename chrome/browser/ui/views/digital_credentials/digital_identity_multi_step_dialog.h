@@ -30,7 +30,7 @@ class DigitalIdentityMultiStepDialog {
     views::Widget* get_widget() { return dialog_->dialog_.get(); }
 
     views::BubbleDialogDelegate* get_widget_delegate() {
-      return dialog_->dialog_delegate_.get();
+      return dialog_->GetWidgetDelegate();
     }
 
    private:
@@ -90,10 +90,11 @@ class DigitalIdentityMultiStepDialog {
     base::WeakPtrFactory<Delegate> weak_ptr_factory_{this};
   };
 
+  DigitalIdentityMultiStepDialog::Delegate* GetWidgetDelegate();
+
   // The web contents the dialog is modal to.
   base::WeakPtr<content::WebContents> web_contents_;
 
-  base::WeakPtr<Delegate> dialog_delegate_;
   base::WeakPtr<views::Widget> dialog_;
 };
 

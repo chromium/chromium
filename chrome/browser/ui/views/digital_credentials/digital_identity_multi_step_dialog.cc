@@ -163,7 +163,7 @@ DigitalIdentityMultiStepDialog::DigitalIdentityMultiStepDialog(
 
 DigitalIdentityMultiStepDialog::~DigitalIdentityMultiStepDialog() {
   if (dialog_ && !dialog_->IsClosed()) {
-    dialog_->CloseWithReason(dialog_delegate_->get_closed_reason());
+    dialog_->CloseWithReason(GetWidgetDelegate()->get_closed_reason());
   }
 }
 
@@ -184,15 +184,16 @@ void DigitalIdentityMultiStepDialog::TryShow(
   }
 
   std::unique_ptr<Delegate> new_dialog_delegate;
-  if (!dialog_delegate_) {
+  Delegate* delegate = GetWidgetDelegate();
+  if (!delegate) {
     new_dialog_delegate = std::make_unique<Delegate>();
-    dialog_delegate_ = AsWeakPtr(new_dialog_delegate.get());
+    delegate = new_dialog_delegate.get();
   }
 
-  dialog_delegate_->Update(accept_button, std::move(accept_callback),
-                           cancel_button, std::move(cancel_callback),
-                           dialog_title, body_text,
-                           std::move(custom_body_field));
+  CHECK(delegate);
+  delegate->Update(accept_button, std::move(accept_callback), cancel_button,
+                   std::move(cancel_callback), dialog_title, body_text,
+                   std::move(custom_body_field));
 
   if (new_dialog_delegate) {
     // views::Widget takes ownership of `new_dialog_delegate`.
@@ -200,4 +201,12 @@ void DigitalIdentityMultiStepDialog::TryShow(
                   new_dialog_delegate.release(), web_contents_.get())
                   ->GetWeakPtr();
   }
+}
+
+DigitalIdentityMultiStepDialog::Delegate*
+DigitalIdentityMultiStepDialog::GetWidgetDelegate() {
+  if (!dialog_) {
+    return nullptr;
+  }
+  return reinterpret_cast<Delegate*>(dialog_->widget_delegate());
 }

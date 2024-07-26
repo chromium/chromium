@@ -251,10 +251,14 @@ bool WidgetDelegate::GetSavedWindowPlacement(
   return display.bounds().Intersects(*bounds);
 }
 
-void WidgetDelegate::WidgetInitializing(Widget* widget) {
+base::WeakPtr<WidgetDelegate> WidgetDelegate::AttachWidgetAndGetHandle(
+    Widget* widget) {
   can_delete_this_ = false;
 
   widget_ = widget;
+  // This weak ptr is valid until `DeleteDelegate` is called. This
+  // will be called otherwise the dtor will CHECK on `can_delete_this_`.
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void WidgetDelegate::WidgetInitialized() {
@@ -288,9 +292,10 @@ void WidgetDelegate::DeleteDelegate() {
   ClosureVector delete_callbacks;
   delete_callbacks.swap(delete_delegate_callbacks_);
 
-  base::WeakPtr<WidgetDelegate> weak_this = AsWeakPtr();
-  for (auto&& callback : delete_callbacks)
+  const auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  for (auto&& callback : delete_callbacks) {
     std::move(callback).Run();
+  }
 
   if (weak_this && !owned_by_widget && widget_ &&
       widget_->ownership() == Widget::InitParams::CLIENT_OWNS_WIDGET) {
@@ -308,6 +313,9 @@ void WidgetDelegate::DeleteDelegate() {
     // TODO(kylxird): Rework this once the Widget stops being able to "own" the
     // delegate.
     delete this;
+  } else if (weak_this) {
+    widget_ = nullptr;
+    weak_ptr_factory_.InvalidateWeakPtrs();
   }
 }
 
