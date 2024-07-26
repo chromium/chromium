@@ -2215,7 +2215,7 @@
     "args": [
       "--enable-features=LCPCriticalPathPredictor:lcpp_adjust_image_load_priority/true,LCPTimingPredictorPrerender2"
     ],
-    "expires": "Jul 10, 2024",
+    "expires": "Jun 5, 2025",
     "owners": [
       "chikamune@chromium.org",
       "kouhei@chromium.org"
