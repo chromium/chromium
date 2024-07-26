@@ -27,13 +27,17 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
+import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -58,7 +62,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -443,6 +450,16 @@ public class TabGridDialogMediator
                                 mActionConfirmationManager,
                                 tabId,
                                 hideTabGroups);
+                    } else if (menuId == R.id.delete_shared_group) {
+                        TabUiUtils.deleteSharedTabGroup(
+                                (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                                mActionConfirmationManager,
+                                tabId);
+                    } else if (menuId == R.id.leave_group) {
+                        TabUiUtils.leaveTabGroup(
+                                (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                                mActionConfirmationManager,
+                                tabId);
                     }
                 };
 
@@ -837,14 +854,29 @@ public class TabGridDialogMediator
 
     private View.OnClickListener getMenuButtonClickListener() {
         assert mTabListEditorControllerSupplier != null;
-        boolean shouldShowDeleteGroup =
-                TabGroupSyncFeatures.isTabGroupSyncEnabled(
-                        mCurrentTabModelFilterSupplier.get().getTabModel().getProfile());
+        TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
+        Profile profile = tabModel.getProfile().getOriginalProfile();
+        boolean shouldShowDeleteGroup = TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
+
+        IdentityManager identityManager = null;
+        TabGroupSyncService tabGroupSyncService = null;
+        DataSharingService dataSharingService = null;
+        if (shouldShowDeleteGroup
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
+            identityManager = IdentityServicesProvider.get().getIdentityManager(profile);
+            tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+            dataSharingService = DataSharingServiceFactory.getForProfile(profile);
+        }
+
         return TabGridDialogMenuCoordinator.getTabGridDialogMenuOnClickListener(
                 mToolbarMenuCallback,
                 () -> mCurrentTabId,
                 () -> mModel.get(TabGridDialogProperties.IS_INCOGNITO),
-                shouldShowDeleteGroup);
+                shouldShowDeleteGroup,
+                () -> mCurrentTabModelFilterSupplier.get().getTabModel(),
+                identityManager,
+                tabGroupSyncService,
+                dataSharingService);
     }
 
     private View.OnClickListener getShareBarClickListener() {

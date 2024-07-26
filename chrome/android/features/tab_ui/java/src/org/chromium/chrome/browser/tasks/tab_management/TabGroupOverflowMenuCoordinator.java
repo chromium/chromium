@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
@@ -15,6 +16,7 @@ import android.widget.ListView;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.LifetimeAssert;
@@ -43,7 +45,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
 
     private final Context mContext;
     protected final OnItemClickedCallback mOnItemClickedCallback;
-    protected final Integer mTabId;
+    protected final int mTabId;
     private final ComponentCallbacks mComponentCallbacks;
     private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     private AnchoredPopupWindow mMenuWindow;
@@ -130,6 +132,15 @@ public abstract class TabGroupOverflowMenuCoordinator {
         int popupWidth = mContext.getResources().getDimensionPixelSize(popupWidthRes);
         mMenuWindow.setMaxWidth(popupWidth);
 
+        // Resize if any new elements are added.
+        adapter.registerDataSetObserver(
+                new DataSetObserver() {
+                    @Override
+                    public void onChanged() {
+                        mMenuWindow.onRectChanged();
+                    }
+                });
+
         // When the menu is dismissed, call destroy to unregister the orientation listener.
         mMenuWindow.addOnDismissListener(this::destroy);
     }
@@ -151,7 +162,8 @@ public abstract class TabGroupOverflowMenuCoordinator {
         mMenuWindow.show();
     }
 
-    private void destroy() {
+    @VisibleForTesting
+    public void destroy() {
         mContext.unregisterComponentCallbacks(mComponentCallbacks);
         // If mLifetimeAssert is GC'ed before this is called, it will throw an exception
         // with a stack trace showing the stack during LifetimeAssert.create().

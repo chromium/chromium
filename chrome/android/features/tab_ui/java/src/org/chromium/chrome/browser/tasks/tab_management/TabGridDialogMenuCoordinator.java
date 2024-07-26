@@ -5,14 +5,24 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.DimenRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
+import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 /**
@@ -28,13 +38,21 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
      * @param isIncognitoSupplier Whether the current tab group model filter is in an incognito
      *     state.
      * @param shouldShowDeleteGroup Whether to show the delete group option.
+     * @param tabModelSupplier Used for fetching tab data.
+     * @param identityManager Used for checking the current account.
+     * @param tabGroupSyncService Used to checking if a group is shared or synced.
+     * @param dataSharingService Used for checking the user is the owner of a group.
      * @return A {@link View.OnClickListener} for the button that opens up the menu.
      */
     static View.OnClickListener getTabGridDialogMenuOnClickListener(
             OnItemClickedCallback onItemClickedCallback,
             Supplier<Integer> currentTabIdSupplier,
             Supplier<Boolean> isIncognitoSupplier,
-            boolean shouldShowDeleteGroup) {
+            boolean shouldShowDeleteGroup,
+            @Nullable Supplier<TabModel> tabModelSupplier,
+            @Nullable IdentityManager identityManager,
+            @Nullable TabGroupSyncService tabGroupSyncService,
+            @Nullable DataSharingService dataSharingService) {
         return view -> {
             Context context = view.getContext();
             TabGridDialogMenuCoordinator menu =
@@ -44,19 +62,73 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                             onItemClickedCallback,
                             currentTabIdSupplier.get(),
                             isIncognitoSupplier.get(),
-                            shouldShowDeleteGroup);
+                            shouldShowDeleteGroup,
+                            tabModelSupplier,
+                            identityManager,
+                            tabGroupSyncService,
+                            dataSharingService);
             menu.display();
         };
     }
 
-    private TabGridDialogMenuCoordinator(
+    private class OnGroupDataOrFailureOutcome implements Callback<GroupDataOrFailureOutcome> {
+        private final ModelList mItemList;
+        private final boolean mIsIncognito;
+
+        OnGroupDataOrFailureOutcome(ModelList itemList, boolean isIncognito) {
+            mItemList = itemList;
+            mIsIncognito = isIncognito;
+        }
+
+        @Override
+        public void onResult(GroupDataOrFailureOutcome outcome) {
+            @MemberRole int memberRole = TabShareUtils.getSelfMemberRole(outcome, mIdentityManager);
+            if (memberRole == MemberRole.OWNER) {
+                mItemList.add(
+                        BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                                R.string.leave_tab_group_menu_item,
+                                R.id.delete_shared_group,
+                                R.drawable.material_ic_delete_24dp,
+                                R.color.default_icon_color_light_tint_list,
+                                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                                mIsIncognito,
+                                /* enabled= */ true));
+            } else if (memberRole == MemberRole.MEMBER) {
+                mItemList.add(
+                        BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                                R.string.leave_tab_group_menu_item,
+                                R.id.leave_group,
+                                R.drawable.material_ic_delete_24dp,
+                                R.color.default_icon_color_light_tint_list,
+                                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                                mIsIncognito,
+                                /* enabled= */ true));
+            }
+        }
+    }
+
+    private final @Nullable Supplier<TabModel> mTabModelSupplier;
+    private final @Nullable IdentityManager mIdentityManager;
+    private final @Nullable TabGroupSyncService mTabGroupSyncService;
+    private final @Nullable DataSharingService mDataSharingService;
+
+    @VisibleForTesting
+    public TabGridDialogMenuCoordinator(
             Context context,
             View anchorView,
             OnItemClickedCallback onItemClicked,
             int tabId,
             boolean isIncognito,
-            boolean shouldShowDeleteGroup) {
+            boolean shouldShowDeleteGroup,
+            @Nullable Supplier<TabModel> tabModelSupplier,
+            @Nullable IdentityManager identityManager,
+            @Nullable TabGroupSyncService tabGroupSyncService,
+            @Nullable DataSharingService dataSharingService) {
         super(context, anchorView, onItemClicked, tabId, isIncognito, shouldShowDeleteGroup);
+        mTabModelSupplier = tabModelSupplier;
+        mIdentityManager = identityManager;
+        mTabGroupSyncService = tabGroupSyncService;
+        mDataSharingService = dataSharingService;
     }
 
     @Override
@@ -70,7 +142,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                         R.color.default_icon_color_light_tint_list,
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
-                        true));
+                        /* enabled= */ true));
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                         R.string.tab_grid_dialog_toolbar_edit_group_name,
@@ -79,7 +151,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                         R.color.default_icon_color_light_tint_list,
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
-                        true));
+                        /* enabled= */ true));
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
@@ -89,7 +161,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                             R.color.default_icon_color_light_tint_list,
                             R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                             isIncognito,
-                            true));
+                            /* enabled= */ true));
         }
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
@@ -99,19 +171,36 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                         R.color.default_icon_color_light_tint_list,
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
-                        true));
+                        /* enabled= */ true));
         if (shouldShowDeleteGroup && !isIncognito) {
-            itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                            R.string.tab_grid_dialog_toolbar_delete_group,
-                            R.id.delete_tab,
-                            R.drawable.material_ic_delete_24dp,
-                            R.color.default_icon_color_light_tint_list,
-                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
-                            isIncognito,
-                            true));
+            @Nullable String collaborationId = getCollaborationIdOrNull();
+            if (TextUtils.isEmpty(collaborationId)
+                    || mIdentityManager == null
+                    || mDataSharingService == null) {
+                itemList.add(
+                        BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                                R.string.tab_grid_dialog_toolbar_delete_group,
+                                R.id.delete_tab,
+                                R.drawable.material_ic_delete_24dp,
+                                R.color.default_icon_color_light_tint_list,
+                                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                                isIncognito,
+                                /* enabled= */ true));
+            } else {
+                mDataSharingService.readGroup(
+                        collaborationId, new OnGroupDataOrFailureOutcome(itemList, isIncognito));
+            }
         }
         return itemList;
+    }
+
+    private @Nullable String getCollaborationIdOrNull() {
+        if (mTabModelSupplier == null) {
+            return null;
+        } else {
+            return TabShareUtils.getCollaborationIdOrNull(
+                    mTabId, mTabModelSupplier.get(), mTabGroupSyncService);
+        }
     }
 
     @Override

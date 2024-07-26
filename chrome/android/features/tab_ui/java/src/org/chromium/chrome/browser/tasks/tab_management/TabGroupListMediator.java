@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManage
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.GroupData;
-import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -52,7 +51,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 
 /** Populates a {@link ModelList} with an item for each tab group. */
@@ -244,7 +242,7 @@ public class TabGroupListMediator {
 
     private void repopulateModelList() {
         mModelList.clear();
-        @Nullable String currentAccountGaiaId = null;
+        @Nullable CoreAccountInfo currentAccountInfo = null;
         for (SavedTabGroup savedTabGroup : getSortedGroupList()) {
             String collaborationId = savedTabGroup.collaborationId;
             boolean isShared = !TextUtils.isEmpty(collaborationId);
@@ -260,14 +258,14 @@ public class TabGroupListMediator {
             mModelList.add(listItem);
 
             if (isShared) {
-                if (currentAccountGaiaId == null) {
-                    currentAccountGaiaId = getAccountGaiaId();
+                if (currentAccountInfo == null) {
+                    currentAccountInfo = getAccountInfo();
                 }
-                final String finalGaiaId = currentAccountGaiaId;
+                final CoreAccountInfo finalAccountInfo = currentAccountInfo;
                 mDataSharingService.readGroup(
                         collaborationId,
                         (GroupDataOrFailureOutcome outcome) ->
-                                onGroupDataOrFailureOutcome(outcome, finalGaiaId, model));
+                                onGroupDataOrFailureOutcome(outcome, finalAccountInfo, model));
             }
         }
 
@@ -275,36 +273,29 @@ public class TabGroupListMediator {
         mPropertyModel.set(TabGroupListProperties.EMPTY_STATE_VISIBLE, empty);
     }
 
-    private String getAccountGaiaId() {
-        @Nullable
-        CoreAccountInfo account = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        return account == null ? null : account.getGaiaId();
+    private CoreAccountInfo getAccountInfo() {
+        return mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
     }
 
     private void onGroupDataOrFailureOutcome(
-            GroupDataOrFailureOutcome outcome, String accountId, PropertyModel model) {
+            GroupDataOrFailureOutcome outcome, CoreAccountInfo accountInfo, PropertyModel model) {
+        @MemberRole
+        int memberRole = TabShareUtils.getSelfMemberRole(outcome, accountInfo.getGaiaId());
         @Nullable GroupData groupData = outcome.groupData;
-        if (groupData == null) return;
-
-        for (GroupMember member : groupData.members) {
-            if (Objects.equals(accountId, member.gaiaId)) {
-                if (member.role == MemberRole.OWNER) {
-                    model.set(
-                            DELETE_RUNNABLE,
-                            () ->
-                                    processDeleteSharedGroup(
-                                            groupData.displayName, groupData.groupToken.groupId));
-                } else {
-                    model.set(
-                            LEAVE_RUNNABLE,
-                            () ->
-                                    processLeaveGroup(
-                                            groupData.displayName,
-                                            groupData.groupToken.groupId,
-                                            member.email));
-                }
-                return;
-            }
+        if (memberRole == MemberRole.OWNER) {
+            model.set(
+                    DELETE_RUNNABLE,
+                    () ->
+                            processDeleteSharedGroup(
+                                    groupData.displayName, groupData.groupToken.groupId));
+        } else {
+            model.set(
+                    LEAVE_RUNNABLE,
+                    () ->
+                            processLeaveGroup(
+                                    groupData.displayName,
+                                    groupData.groupToken.groupId,
+                                    accountInfo.getEmail()));
         }
     }
 

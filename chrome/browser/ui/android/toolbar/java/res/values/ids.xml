@@ -14,6 +14,9 @@ found in the LICENSE file.
     <item type="id" name="edit_group_name" />
     <item type="id" name="edit_group_color" />
     <item type="id" name="select_tabs" />
+    <item type="id" name="leave_group" />
+    <!-- Presentation is the same as delete_tab, but helps handler impl. -->
+    <item type="id" name="delete_shared_group" />
 
     <!-- Menu IDs -->
     <item type="id" name="customize_adaptive_button_menu_id" />

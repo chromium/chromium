@@ -45,7 +45,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -55,14 +56,17 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -76,6 +80,12 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -90,14 +100,18 @@ import java.util.List;
 /** Tests for {@link TabGridDialogMediator}. */
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored"})
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.DATA_SHARING_ANDROID)
 public class TabGridDialogMediatorUnitTest {
-
     private static final String TAB1_TITLE = "Tab1";
     private static final String TAB2_TITLE = "Tab2";
     private static final String TAB3_TITLE = "Tab3";
     private static final String DIALOG_TITLE1 = "1 tab";
     private static final String DIALOG_TITLE2 = "2 tabs";
     private static final String CUSTOMIZED_DIALOG_TITLE = "Cool Tabs";
+    private static final String COLLABORATION_ID1 = "A";
+    private static final String GAIA_ID = "Z";
+    private static final String EMAIL = "fake@gmail.com";
+    private static final String GROUP_TITLE = "My Group";
     private static final int COLOR_2 = 1;
     private static final int COLOR_3 = 2;
     private static final int TAB1_ID = 456;
@@ -108,31 +122,36 @@ public class TabGridDialogMediatorUnitTest {
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
 
     @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock Profile mProfile;
-    @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
-    @Mock View mView;
-    @Mock TabGridDialogMediator.DialogController mDialogController;
-    @Mock TabCreatorManager mTabCreatorManager;
-    @Mock TabCreator mTabCreator;
-    @Mock TabSwitcherResetHandler mTabSwitcherResetHandler;
-    @Mock TabGridDialogMediator.AnimationSourceViewProvider mAnimationSourceViewProvider;
-    @Mock TabGroupModelFilter mTabGroupModelFilter;
-    @Mock TabModel mTabModel;
-    @Mock TabListEditorCoordinator.TabListEditorController mTabListEditorController;
-    @Mock TabGroupTitleEditor mTabGroupTitleEditor;
-    @Mock EditText mTitleTextView;
-    @Mock Editable mEditable;
-    @Mock SnackbarManager mSnackbarManager;
-    @Mock Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
-    @Mock BottomSheetController mBottomSheetController;
-    @Mock Runnable mShowShareBottomSheetRunnable;
-    @Mock Runnable mShowColorPickerPopupRunnable;
-    @Mock Runnable mShowInviteFlowUIRunnable;
-    @Mock ActionConfirmationManager mActionConfirmationManager;
+    @Mock private Profile mProfile;
+    @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
+    @Mock private View mView;
+    @Mock private TabGridDialogMediator.DialogController mDialogController;
+    @Mock private TabCreatorManager mTabCreatorManager;
+    @Mock private TabCreator mTabCreator;
+    @Mock private TabSwitcherResetHandler mTabSwitcherResetHandler;
+    @Mock private TabGridDialogMediator.AnimationSourceViewProvider mAnimationSourceViewProvider;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabModel mTabModel;
+    @Mock private TabListEditorCoordinator.TabListEditorController mTabListEditorController;
+    @Mock private TabGroupTitleEditor mTabGroupTitleEditor;
+    @Mock private EditText mTitleTextView;
+    @Mock private Editable mEditable;
+    @Mock private SnackbarManager mSnackbarManager;
+    @Mock private Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private Runnable mShowShareBottomSheetRunnable;
+    @Mock private Runnable mShowColorPickerPopupRunnable;
+    @Mock private Runnable mShowInviteFlowUIRunnable;
+    @Mock private ActionConfirmationManager mActionConfirmationManager;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private DataSharingService mDataSharingService;
 
-    @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
-    @Captor ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
+    @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
 
     private final ObservableSupplierImpl<TabModelFilter> mCurrentTabModelFilterSupplier =
             new ObservableSupplierImpl<>();
@@ -145,11 +164,14 @@ public class TabGridDialogMediatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mJniMocker.mock(TabGroupSyncFeaturesJni.TEST_HOOKS, mTabGroupSyncFeaturesJniMock);
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mProfile.isNativeInitialized()).thenReturn(true);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        DataSharingServiceFactory.setForTesting(mDataSharingService);
 
         mTab1 = prepareTab(TAB1_ID, TAB1_TITLE);
         mTab2 = prepareTab(TAB2_ID, TAB2_TITLE);
@@ -1425,6 +1447,46 @@ public class TabGridDialogMediatorUnitTest {
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);
         callback.onClick(R.id.delete_tab, TAB1_ID);
         verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
+    }
+
+    @Test
+    public void testDialogToolbarMenu_DeleteSharedGroup() {
+        TabGroupOverflowMenuCoordinator.OnItemClickedCallback callback =
+                mMediator.getToolbarMenuCallbackForTesting();
+
+        mMediator.setCurrentTabIdForTesting(TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+        when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);
+
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.title = GROUP_TITLE;
+        savedTabGroup.collaborationId = COLLABORATION_ID1;
+        when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(savedTabGroup);
+
+        callback.onClick(R.id.delete_shared_group, TAB1_ID);
+        verify(mActionConfirmationManager).processDeleteSharedGroupAttempt(eq(GROUP_TITLE), any());
+    }
+
+    @Test
+    public void testDialogToolbarMenu_LeaveSharedGroup() {
+        TabGroupOverflowMenuCoordinator.OnItemClickedCallback callback =
+                mMediator.getToolbarMenuCallbackForTesting();
+
+        mMediator.setCurrentTabIdForTesting(TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+        when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);
+
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.title = GROUP_TITLE;
+        savedTabGroup.collaborationId = COLLABORATION_ID1;
+        when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(savedTabGroup);
+        CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(EMAIL, GAIA_ID);
+        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
+
+        callback.onClick(R.id.leave_group, TAB1_ID);
+        verify(mActionConfirmationManager).processLeaveGroupAttempt(eq(GROUP_TITLE), any());
     }
 
     @Test
