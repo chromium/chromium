@@ -24,11 +24,13 @@ AnswererResult::AnswererResult(ComputeAnswerStatus status,
 AnswererResult::AnswererResult(const AnswererResult&) = default;
 AnswererResult::~AnswererResult() = default;
 
-Answerer::Context::Context() = default;
+////////////////////////////////////////////////////////////////////////////////
 
-Answerer::Context::Context(const Context& other)
-    : url_passages_map(other.url_passages_map) {}
+Answerer::Context::Context(std::string session_id)
+    : session_id(std::move(session_id)) {}
 
+Answerer::Context::Context(const Context& other) = default;
+Answerer::Context::Context(Context&& other) = default;
 Answerer::Context::~Context() = default;
 
 }  // namespace history_embeddings

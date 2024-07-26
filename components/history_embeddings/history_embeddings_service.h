@@ -23,6 +23,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/url_row.h"
+#include "components/history_embeddings/answerer.h"
 #include "components/history_embeddings/passage_embeddings_service_controller.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
@@ -31,7 +32,6 @@
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "components/sessions/core/session_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 
@@ -107,8 +107,11 @@ struct SearchResult {
   SearchResult& operator=(const SearchResult&);
   SearchResult& operator=(SearchResult&&);
 
-  // Unique ID to associate query with answers.
-  SessionID session_id;
+  // Gets the answer text from within the `answerer_result`.
+  const std::string& AnswerText() const;
+
+  // Session ID to associate query with answers.
+  std::string session_id;
 
   // Keep context for search parameters requested, to make logging easier.
   std::string query;
@@ -122,7 +125,7 @@ struct SearchResult {
   // This may be empty for initial embeddings search results, as the answer
   // isn't ready yet. When the answerer finishes work, a second search
   // result is provided with this answer filled.
-  std::string answer;
+  AnswererResult answerer_result;
 };
 
 using SearchResultCallback = base::RepeatingCallback<void(SearchResult)>;
@@ -301,6 +304,19 @@ class HistoryEmbeddingsService : public KeyedService,
       const std::vector<page_content_annotations::BatchAnnotationResult>&
           annotation_results);
 
+  // Called on main sequence after the history worker thread finalizes
+  // the initial search result with URL rows. Calls the `callback` and
+  // then proceeds to v2 answer generation if enabled.
+  void OnPrimarySearchResultReady(SearchResultCallback callback,
+                                  SearchResult result);
+
+  // Called after the answerer finishes computing an answer. Combines
+  // the `answer_result` into `search_result` and invokes `callback`
+  // with new search result complete with answer.
+  void OnAnswerComputed(SearchResultCallback callback,
+                        SearchResult search_result,
+                        AnswererResult answerer_result);
+
   // Rebuild absent embeddings from source passages.
   void RebuildAbsentEmbeddings(std::vector<UrlPassages> all_url_passages);
 
@@ -344,7 +360,8 @@ class HistoryEmbeddingsService : public KeyedService,
   // Metadata about the embedder.
   std::optional<EmbedderMetadata> embedder_metadata_;
 
-  // The answerer used to answer queries with context.
+  // The answerer used to answer queries with context. May be nullptr if
+  // the kEnableAnswers parameter is false.
   std::unique_ptr<Answerer> answerer_;
 
   // Storage is bound to a separate sequence.

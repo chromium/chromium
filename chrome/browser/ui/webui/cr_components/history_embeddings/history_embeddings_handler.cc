@@ -77,7 +77,7 @@ void HistoryEmbeddingsHandler::OnReceivedSearchResult(
 
   auto mojom_search_result = history_embeddings::mojom::SearchResult::New();
   mojom_search_result->query = native_search_result.query;
-  mojom_search_result->answer = native_search_result.answer;
+  mojom_search_result->answer = native_search_result.AnswerText();
   for (history_embeddings::ScoredUrlRow& scored_url_row :
        native_search_result.scored_url_rows) {
     auto item = history_embeddings::mojom::SearchResultItem::New();
