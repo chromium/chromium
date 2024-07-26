@@ -64,7 +64,6 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
              PickerSearchResult::CaseTransformData::Type::kUpperCase,
              PickerSearchResult::CaseTransformData::Type::kLowerCase,
              PickerSearchResult::CaseTransformData::Type::kTitleCase,
-             PickerSearchResult::CaseTransformData::Type::kSentenceCase,
          }) {
       case_transform_results.push_back(PickerSearchResult::CaseTransform(type));
     }

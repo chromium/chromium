@@ -538,24 +538,6 @@ TEST_F(PickerControllerTest, OpenTitleCaseResultCommitsTitleCase) {
   EXPECT_EQ(input_field.text(), u"How Are You");
 }
 
-TEST_F(PickerControllerTest, OpenSentenceCaseResultCommitsSentenceCase) {
-  auto* input_method =
-      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
-  ui::FakeTextInputClient input_field(input_method,
-                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
-  input_method->SetFocusedTextInputClient(&input_field);
-  input_field.SetTextAndSelection(u"how are you? fine. thanks!  ok",
-                                  gfx::Range(0, 30));
-  PickerController controller;
-  NiceMock<TestPickerClient> client(&controller);
-
-  controller.ToggleWidget();
-  controller.OpenResult(PickerSearchResult::CaseTransform(
-      PickerSearchResult::CaseTransformData::Type::kSentenceCase));
-  input_method->SetFocusedTextInputClient(&input_field);
-
-  EXPECT_EQ(input_field.text(), u"How are you? Fine. Thanks!  Ok");
-}
 TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);

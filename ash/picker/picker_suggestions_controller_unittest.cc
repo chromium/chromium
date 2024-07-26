@@ -158,8 +158,6 @@ TEST_F(PickerSuggestionsControllerTest,
               PickerSearchResult::CaseTransformData::Type::kLowerCase),
           PickerSearchResult::CaseTransform(
               PickerSearchResult::CaseTransformData::Type::kTitleCase),
-          PickerSearchResult::CaseTransform(
-              PickerSearchResult::CaseTransformData::Type::kSentenceCase),
       })))
       .Times(1);
 
@@ -188,10 +186,6 @@ TEST_F(PickerSuggestionsControllerTest,
   EXPECT_CALL(callback,
               Run(Contains(PickerSearchResult::CaseTransform(
                   PickerSearchResult::CaseTransformData::Type::kTitleCase))))
-      .Times(0);
-  EXPECT_CALL(callback,
-              Run(Contains(PickerSearchResult::CaseTransform(
-                  PickerSearchResult::CaseTransformData::Type::kSentenceCase))))
       .Times(0);
 
   controller.GetSuggestions(model, callback.Get());

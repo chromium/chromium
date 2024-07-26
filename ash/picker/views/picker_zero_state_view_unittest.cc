@@ -283,8 +283,6 @@ TEST_F(PickerZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {
                     PickerSearchResult::CaseTransformData::kLowerCase),
                 PickerSearchResult::CaseTransform(
                     PickerSearchResult::CaseTransformData::kTitleCase),
-                PickerSearchResult::CaseTransform(
-                    PickerSearchResult::CaseTransformData::kSentenceCase),
             });
           });
   PickerZeroStateView view(&mock_delegate, {}, kPickerWidth, &asset_fetcher_,

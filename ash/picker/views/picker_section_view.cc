@@ -112,8 +112,6 @@ std::u16string GetLabelForCaseTransformType(
       return l10n_util::GetStringUTF16(IDS_PICKER_LOWER_CASE_CATEGORY_LABEL);
     case PickerSearchResult::CaseTransformData::Type::kTitleCase:
       return l10n_util::GetStringUTF16(IDS_PICKER_TITLE_CASE_CATEGORY_LABEL);
-    case PickerSearchResult::CaseTransformData::Type::kSentenceCase:
-      return l10n_util::GetStringUTF16(IDS_PICKER_SENTENCE_CASE_CATEGORY_LABEL);
   }
 }
 
@@ -126,8 +124,6 @@ const gfx::VectorIcon& GetIconForCaseTransformType(
       return kPickerLowerCaseIcon;
     case PickerSearchResult::CaseTransformData::Type::kTitleCase:
       return kPickerTitleCaseIcon;
-    case PickerSearchResult::CaseTransformData::Type::kSentenceCase:
-      return kPickerSentenceCaseIcon;
   }
 }
 

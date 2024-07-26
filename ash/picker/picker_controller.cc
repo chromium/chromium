@@ -209,10 +209,6 @@ bool u16_isalpha(char16_t ch) {
   return (ch >= u'A' && ch <= u'Z') || (ch >= u'a' && ch <= u'z');
 }
 
-bool u16_is_sentence_end(char16_t ch) {
-  return ch == u'.' || ch == u'!' || ch == '?';
-}
-
 std::u16string ToTitleCase(std::u16string_view text) {
   std::u16string result(text);
   std::u16string uppercase_text = base::i18n::ToUpper(text);
@@ -224,33 +220,14 @@ std::u16string ToTitleCase(std::u16string_view text) {
   return result;
 }
 
-std::u16string ToSentenceCase(std::u16string_view text) {
-  std::u16string result(text);
-  std::u16string uppercase_text = base::i18n::ToUpper(text);
-  bool sentence_start = true;
-  for (size_t i = 0; i < result.length(); i++) {
-    if (u16_isalpha(result[i]) && sentence_start) {
-      result[i] = uppercase_text[i];
-    }
-    if (u16_is_sentence_end(result[i])) {
-      sentence_start = true;
-    } else if (result[i] != u' ') {
-      sentence_start = false;
-    }
-  }
-  return result;
-}
-
 std::u16string TransformText(std::u16string_view text,
                              PickerSearchResult::CaseTransformData::Type type) {
   switch (type) {
-    case PickerSearchResult::CaseTransformData::Type ::kUpperCase:
+    case PickerSearchResult::CaseTransformData::Type::kUpperCase:
       return base::i18n::ToUpper(text);
-    case PickerSearchResult::CaseTransformData::Type ::kLowerCase:
+    case PickerSearchResult::CaseTransformData::Type::kLowerCase:
       return base::i18n::ToLower(text);
-    case PickerSearchResult::CaseTransformData::Type ::kSentenceCase:
-      return ToSentenceCase(text);
-    case PickerSearchResult::CaseTransformData::Type ::kTitleCase:
+    case PickerSearchResult::CaseTransformData::Type::kTitleCase:
       return ToTitleCase(text);
   }
   NOTREACHED_NORETURN();

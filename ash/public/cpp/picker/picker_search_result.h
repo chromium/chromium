@@ -188,7 +188,6 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     enum Type {
       kUpperCase,
       kLowerCase,
-      kSentenceCase,
       kTitleCase,
     };
 
