@@ -733,33 +733,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.CoreAudioDispatchOverrideInitResult"
-    enum="CoreAudioDispatchOverrideInitResult" expires_after="2024-09-01">
-  <owner>fhernqvist@google.com</owner>
-  <owner>olka@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Tracks support and initialization success/failure of the CoreAudio dispatch
-    override hotfix. Logged during initialization of AudioManagerMac. The fix is
-    not supported on macOS earlier than version 10.10. Warning: this histogram
-    was expired from 2022-10-01 to 2022-12-08; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.CoreAudioDispatchOverrideLookupEvent"
-    enum="CoreAudioDispatchOverrideLookupEvent" expires_after="2024-09-01">
-  <owner>fhernqvist@google.com</owner>
-  <owner>olka@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Logged whenever the CoreAudio dispatch override hotfix needs to look up the
-    calling function using dladdr(). Once ResumeIO and PauseIO have been
-    identified, no more lookups should be performed during the session. Warning:
-    this histogram was expired from 2022-10-09 to 2022-10-18; data may be
-    missing.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.CrasInputStreamNotifyStreamError"
     units="errorcode" expires_after="2025-04-28">
   <owner>peah@chromium.org</owner>

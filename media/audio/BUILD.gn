@@ -189,8 +189,6 @@ source_set("audio") {
       "mac/audio_manager_mac.h",
       "mac/core_audio_util_mac.cc",
       "mac/core_audio_util_mac.h",
-      "mac/coreaudio_dispatch_override.cc",
-      "mac/coreaudio_dispatch_override.h",
       "mac/screen_capture_kit_swizzler.h",
       "mac/screen_capture_kit_swizzler.mm",
     ]
