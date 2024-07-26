@@ -2,6 +2,7 @@
   "chromium": {
     "android-archive-rel": "ci/android-archive-rel/gn-args.json",
     "android-arm64-archive-rel": "ci/android-arm64-archive-rel/gn-args.json",
+    "android-desktop-x64-archive-rel": "ci/android-desktop-x64-archive-rel/gn-args.json",
     "android-official": "ci/android-official/gn-args.json",
     "lacros-arm-archive-rel": "ci/lacros-arm-archive-rel/gn-args.json",
     "lacros-arm64-archive-rel": "ci/lacros-arm64-archive-rel/gn-args.json",
