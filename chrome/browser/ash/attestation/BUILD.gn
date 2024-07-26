@@ -43,6 +43,7 @@ static_library("attestation") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/rsu",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
     "//chrome/common:constants",
@@ -65,7 +66,10 @@ static_library("attestation") {
     "//third_party/securemessage/proto",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/rsu",
+  ]
 }
 
 static_library("test_support") {
