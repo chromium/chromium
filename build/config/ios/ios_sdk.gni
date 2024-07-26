@@ -68,6 +68,33 @@ if (target_environment == "device" && ios_enable_code_signing) {
              "pattern to match the identity to use).")
 }
 
+# Building XCTests requires copying XCTRunner.app which is part of the iOS
+# SDK (and shipped inside Xcode.app) into the application. When using the
+# system installation of Xcode, those files are outside of the checkout.
+# Using absolute path works with gn, however the distributed build system
+# requires that all paths are relative to the checkout. This is faked by
+# using symbolic links to the SDK inside of Xcode. Additionally, each build
+# directory may use a distinct version of Xcode (e.g. to build with beta),
+# so the symlink needs to be present in the $root_build_dir. However, when
+# doing that, we need to list inputs pointing to file in $root_build_dir,
+# and gn requires all files in $root_build_dir to be listed as outputs of
+# another target.
+#
+# To fulfill all of those requirements, we 1. create symlinks pointing to
+# the SDK files in Xcode, 2. declare a target listing the files as outputs
+# (the target is a script that does nothing, it only pretends to create
+# the files but they already exists).
+#
+# This works, but results in some files in $root_build_dir being links to
+# files outside of the build directory. Running `ninja -t clean` will try
+# to delete those files breaking Xcode installation. The recommendation is
+# to use `gn clean` or `ninja -t cleandead` instead.
+#
+# This variable controls whether we create the symlink and the workaround
+# is needed or not. See https://crbug.com/336382863#comment16 for details.
+ios_use_xcode_symlinks =
+    ios_sdk_path == "" && use_system_xcode && use_remoteexec
+
 if (ios_sdk_path == "") {
   # Compute default target.
   if (target_environment == "simulator") {
@@ -94,7 +121,7 @@ if (ios_sdk_path == "") {
       ios_sdk_developer_dir,
     ]
   }
-  if (use_system_xcode && use_remoteexec) {
+  if (ios_use_xcode_symlinks) {
     ios_sdk_info_args += [
       "--create_symlink_at",
       "sdk/xcode_links",

@@ -1922,7 +1922,7 @@ template("ios_xcuitest_test_runner_bundle") {
              "-o=" + rebase_path(_output_name, root_build_dir),
            ] + rebase_path(sources, root_build_dir)
 
-    if (use_system_xcode && use_remoteexec) {
+    if (ios_use_xcode_symlinks) {
       deps = [ "//build/config/ios:copy_xctrunner_app" ]
     }
   }
@@ -1955,7 +1955,7 @@ template("ios_xcuitest_test_runner_bundle") {
 
     outputs = [ "{{bundle_contents_dir}}/PkgInfo" ]
 
-    if (use_system_xcode && use_remoteexec) {
+    if (ios_use_xcode_symlinks) {
       public_deps = [ "//build/config/ios:copy_xctrunner_app" ]
     }
   }

@@ -267,7 +267,7 @@ _xctrunner_path =
 #
 # To workaround this, add a target that pretends to create those files
 # (but does nothing). See https://crbug.com/1061487 for why this is needed.
-if (use_system_xcode && (use_remoteexec || use_siso)) {
+if (ios_use_xcode_symlinks) {
   action("copy_xctrunner_app") {
     testonly = true
     script = "//build/noop.py"
@@ -299,7 +299,7 @@ action("xctest_runner_without_arm64e") {
   # When running under ASan, the ASan runtime library must be packaged alongside
   # the test runner binary.
   deps = [ "//build/config/sanitizers:deps" ]
-  if (use_system_xcode && (use_remoteexec || use_siso)) {
+  if (ios_use_xcode_symlinks) {
     deps += [ ":copy_xctrunner_app" ]
   }
 }
