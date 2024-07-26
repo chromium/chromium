@@ -695,7 +695,8 @@ public class TabGroupListMediatorUnitTest {
         model.get(DELETE_RUNNABLE).run();
 
         verify(mActionConfirmationManager)
-                .processDeleteGroupAttempt(mConfirmationResultCallbackCaptor.capture());
+                .processDeleteSharedGroupAttempt(
+                        any(), mConfirmationResultCallbackCaptor.capture());
         mConfirmationResultCallbackCaptor
                 .getValue()
                 .onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
@@ -762,7 +763,7 @@ public class TabGroupListMediatorUnitTest {
         model.get(LEAVE_RUNNABLE).run();
 
         verify(mActionConfirmationManager)
-                .processDeleteGroupAttempt(mConfirmationResultCallbackCaptor.capture());
+                .processLeaveGroupAttempt(any(), mConfirmationResultCallbackCaptor.capture());
         mConfirmationResultCallbackCaptor
                 .getValue()
                 .onResult(ConfirmationResult.CONFIRMATION_POSITIVE);

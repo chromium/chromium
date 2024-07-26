@@ -40517,6 +40517,42 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroupConfirmation.DeleteSharedGroup.Abort">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user aborts deleting a shared tab group closure in the
+    confirmation dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.DeleteSharedGroup.Proceed">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user proceeds with deleting a shared tab group closure in
+    the confirmation dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.LeaveGroup.Abort">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user aborts leaving a shared tab group in the confirmation
+    dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.LeaveGroup.Proceed">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user proceeds with leaving a shared tab group in the
+    confirmation dialog.
+  </description>
+</action>
+
 <action name="TabGroupConfirmation.RemoveTab.Abort">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>

@@ -291,11 +291,17 @@ public class TabGroupListMediator {
                 if (member.role == MemberRole.OWNER) {
                     model.set(
                             DELETE_RUNNABLE,
-                            () -> processDeleteSharedGroup(groupData.groupToken.groupId));
+                            () ->
+                                    processDeleteSharedGroup(
+                                            groupData.displayName, groupData.groupToken.groupId));
                 } else {
                     model.set(
                             LEAVE_RUNNABLE,
-                            () -> processLeaveGroup(groupData.groupToken.groupId, member.email));
+                            () ->
+                                    processLeaveGroup(
+                                            groupData.displayName,
+                                            groupData.groupToken.groupId,
+                                            member.email));
                 }
                 return;
             }
@@ -345,9 +351,9 @@ public class TabGroupListMediator {
                 });
     }
 
-    private void processDeleteSharedGroup(String groupId) {
-        // TODO(https://crbug.com/355235618): Create and use processDeleteSharedGroupAttempt.
-        mActionConfirmationManager.processDeleteGroupAttempt(
+    private void processDeleteSharedGroup(String groupTitle, String groupId) {
+        mActionConfirmationManager.processDeleteSharedGroupAttempt(
+                groupTitle,
                 (@ConfirmationResult Integer result) -> {
                     if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
                         mDataSharingService.deleteGroup(groupId, null);
@@ -355,9 +361,9 @@ public class TabGroupListMediator {
                 });
     }
 
-    private void processLeaveGroup(String groupId, String memberEmail) {
-        // TODO(https://crbug.com/355235618): Create and use processDeleteSharedGroupAttempt.
-        mActionConfirmationManager.processDeleteGroupAttempt(
+    private void processLeaveGroup(String groupTitle, String groupId, String memberEmail) {
+        mActionConfirmationManager.processLeaveGroupAttempt(
+                groupTitle,
                 (@ConfirmationResult Integer result) -> {
                     if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
                         mDataSharingService.removeMember(groupId, memberEmail, null);
