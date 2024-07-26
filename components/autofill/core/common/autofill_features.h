@@ -262,6 +262,23 @@ BASE_DECLARE_FEATURE(kAutofillSilentlyRemoveQuasiDuplicates);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillUpdateLowQualityTokenOnImport);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillUKMExperimentalFields);
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<std::string>
+    kAutofillUKMExperimentalFieldsBucket0;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<std::string>
+    kAutofillUKMExperimentalFieldsBucket1;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<std::string>
+    kAutofillUKMExperimentalFieldsBucket2;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<std::string>
+    kAutofillUKMExperimentalFieldsBucket3;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<std::string>
+    kAutofillUKMExperimentalFieldsBucket4;
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillTrackMultipleUseDates);
 
 #if BUILDFLAG(IS_ANDROID)

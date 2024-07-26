@@ -803,6 +803,20 @@ BASE_FEATURE(kAutofillUpdateLowQualityTokenOnImport,
              "AutofillUpdateLowQualityTokenOnImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAutofillUKMExperimentalFields,
+             "AutofillUKMExperimentalFields",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket0{
+    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket0", ""};
+const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket1{
+    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket1", ""};
+const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket2{
+    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket2", ""};
+const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket3{
+    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket3", ""};
+const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket4{
+    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket4", ""};
+
 // When enabled, `AutofillProfile` tracks the second and third last use date of
 // each profile (instead of just the last use date).
 // TODO(crbug.com/354706653): Remove when launched.

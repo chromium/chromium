@@ -2513,6 +2513,30 @@
             ]
         }
     ],
+    "AutofillUKMExperimentalFields": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "autofill_experimental_regex_bucket1": "test1"
+                    },
+                    "enable_features": [
+                        "AutofillUKMExperimentalFields"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillUploadCardRequestTimeout": [
         {
             "platforms": [

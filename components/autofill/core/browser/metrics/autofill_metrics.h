@@ -747,6 +747,8 @@ class AutofillMetrics {
         FormEventSet form_events,
         base::TimeTicks initial_interaction_timestamp,
         base::TimeTicks form_submitted_timestamp);
+    void LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
+        const FormStructure& form_structure);
     void LogFocusedComplexFormAtFormRemove(
         const FormStructure& form_structure,
         FormEventSet form_events,

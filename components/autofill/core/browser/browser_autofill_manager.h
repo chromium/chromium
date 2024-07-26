@@ -582,7 +582,8 @@ class BrowserAutofillManager : public AutofillManager {
   // other requirements which makes uploading UKM data worthwhile. E.g. the
   // form should not be a search form, the forms should have at least one
   // focusable input field with a type from heuristics or the server.
-  bool ShouldUploadUkm(const FormStructure& form_structure);
+  bool ShouldUploadUkm(const FormStructure& form_structure,
+                       bool require_classified_field);
 
   // Returns a compose suggestion if the compose service is available for
   // `field` and `trigger_source`.

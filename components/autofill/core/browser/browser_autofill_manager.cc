@@ -2312,7 +2312,8 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
   if (!submitted_form->ShouldBeUploaded()) {
     return;
   }
-  if (ShouldRecordUkm() && ShouldUploadUkm(*submitted_form)) {
+  if (ShouldRecordUkm() && ShouldUploadUkm(*submitted_form,
+                                           /*require_classified_field=*/true)) {
     AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
         client().GetUkmRecorder(), source_id, *submitted_form, submission_time);
   }
@@ -3149,7 +3150,9 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
 
   // ShouldUploadUkm reduces the UKM load by ignoring e.g. search boxes at best
   // effort.
-  bool should_upload_ukm = ShouldRecordUkm() && ShouldUploadUkm(form_structure);
+  bool should_upload_ukm =
+      ShouldRecordUkm() &&
+      ShouldUploadUkm(form_structure, /*require_classified_field=*/true);
 
   for (const auto& autofill_field : form_structure) {
     if (should_upload_ukm) {
@@ -3174,6 +3177,15 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
         form_submitted_timestamp_);
   }
 
+  if (base::FeatureList::IsEnabled(features::kAutofillUKMExperimentalFields) &&
+      !form_submitted_timestamp_.is_null() &&
+      ShouldUploadUkm(form_structure,
+                      /*require_classified_field=*/false)) {
+    form_interactions_ukm_logger()
+        ->LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
+            form_structure);
+  }
+
   for (const auto& autofill_field : form_structure) {
     // Clear log events.
     // Not conditioned on kAutofillLogUKMEventsWithSamplingOnSession because
@@ -3183,10 +3195,16 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
 }
 
 bool BrowserAutofillManager::ShouldUploadUkm(
-    const FormStructure& form_structure) {
+    const FormStructure& form_structure,
+    bool require_classified_field) {
   if (!form_structure.ShouldBeParsed()) {
     return false;
   }
+
+  auto is_focusable_text_field =
+      [](const std::unique_ptr<AutofillField>& field) {
+        return field->IsTextInputElement() && field->IsFocusable();
+      };
 
   // Return true if the field is a visible text input field which has predicted
   // types from heuristics or the server.
@@ -3200,7 +3218,9 @@ bool BrowserAutofillManager::ShouldUploadUkm(
       };
 
   size_t num_text_fields = base::ranges::count_if(
-      form_structure.fields(), is_focusable_predicted_text_field);
+      form_structure.fields(), require_classified_field
+                                   ? is_focusable_predicted_text_field
+                                   : is_focusable_text_field);
   if (num_text_fields == 0) {
     return false;
   }
@@ -3210,7 +3230,9 @@ bool BrowserAutofillManager::ShouldUploadUkm(
   // is not recorded into UKM. The form is considered a search box.
   if (num_text_fields == 1) {
     auto it = base::ranges::find_if(form_structure.fields(),
-                                    is_focusable_predicted_text_field);
+                                    require_classified_field
+                                        ? is_focusable_predicted_text_field
+                                        : is_focusable_text_field);
     if (base::ToLowerASCII((*it)->placeholder()).find(u"search") !=
             std::string::npos ||
         base::ToLowerASCII((*it)->name()).find(u"search") !=
