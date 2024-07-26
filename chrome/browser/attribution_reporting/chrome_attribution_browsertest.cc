@@ -64,7 +64,8 @@ class ChromeAttributionBrowserTest : public MixinBasedInProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     net::test_server::RegisterDefaultHandlers(&server_);
-    server_.ServeFilesFromSourceDirectory("content/test/data");
+    server_.ServeFilesFromSourceDirectory(
+        "content/test/data/attribution_reporting");
     content::SetupCrossSiteRedirector(&server_);
   }
 
@@ -77,16 +78,14 @@ class ChromeAttributionBrowserTest : public MixinBasedInProcessBrowserTest {
     content::WebContentsAddedObserver window_observer;
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
-        server_.GetURL(
-            "a.test",
-            "/attribution_reporting/page_with_impression_creator.html")));
+        server_.GetURL("a.test", "/page_with_impression_creator.html")));
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
 
-    GURL register_url = server_.GetURL(
-        "c.test", "/attribution_reporting/register_source_headers.html");
-    GURL link_url = server_.GetURL(
-        "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
+    GURL register_url =
+        server_.GetURL("c.test", "/register_source_headers.html");
+    GURL link_url =
+        server_.GetURL("d.test", "/page_with_conversion_redirect.html");
     // Navigate the page using window.open and set an attribution source.
     EXPECT_TRUE(
         ExecJs(web_contents, content::JsReplace(R"(
@@ -99,8 +98,8 @@ class ChromeAttributionBrowserTest : public MixinBasedInProcessBrowserTest {
   }
 
   void RegisterTrigger(content::WebContents* contents) {
-    GURL register_trigger_url = server_.GetURL(
-        "c.test", "/attribution_reporting/register_trigger_headers.html");
+    GURL register_trigger_url =
+        server_.GetURL("c.test", "/register_trigger_headers.html");
     EXPECT_TRUE(
         ExecJs(contents, content::JsReplace("createAttributionSrcImg($1);",
                                             register_trigger_url)));
@@ -228,7 +227,7 @@ class ChromeAttributionAttestationsBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeAttributionAttestationsBrowserTest,
-                       PRE_AttribtionUponAttestationsLoading) {
+                       PRE_AttributionUponAttestationsLoading) {
   privacy_sandbox::PrivacySandboxAttestationsProto proto;
 
   // Create an attestations file that contains the site with attestation for
@@ -239,27 +238,40 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionAttestationsBrowserTest,
   site_attestation.add_attested_apis(privacy_sandbox::ATTRIBUTION_REPORTING);
   (*proto.mutable_site_attestations())[site] = site_attestation;
 
+  // There is a pre-installed attestations component. Choose a version number
+  // that is sure to be higher than the pre-installed one. This makes sure that
+  // the component installer will choose the attestations file in the user-wide
+  // component directory.
   ASSERT_TRUE(
       component_updater::InstallPrivacySandboxAttestationsComponentForTesting(
-          proto, base::Version("1.2.3")));
+          proto, base::Version("12345.0.0.0")));
 }
 
 // TODO(crbug.com/327794975) Test is flaky on various platforms.
 IN_PROC_BROWSER_TEST_F(ChromeAttributionAttestationsBrowserTest,
-                       DISABLED_AttribtionUponAttestationsLoading) {
+                       AttributionUponAttestationsLoading) {
   PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
       ->SetAllPrivacySandboxAllowedForTesting();
 
   ExpectedReportWaiter expected_report(GURL(kReportEndpoint), &server_);
   ASSERT_TRUE(server_.Start());
 
-  auto* new_contents = RegisterSourceWithNavigation();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
 
-  content::WebContentsConsoleObserver console_observer(new_contents);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      server_.GetURL("d.test", "/page_with_impression_creator.html")));
+
+  GURL register_source_url = server_.GetURL(
+      "c.test", "/register_source_headers_and_redirect_trigger.html");
+  EXPECT_TRUE(ExecJs(
+      web_contents,
+      content::JsReplace("createAttributionSrcImg($1);", register_source_url)));
+
+  content::WebContentsConsoleObserver console_observer(web_contents);
   console_observer.SetPattern(
       "Attestation check for Attribution Reporting on * failed.");
-
-  RegisterTrigger(new_contents);
 
   expected_report.WaitForRequest();
   EXPECT_TRUE(console_observer.messages().empty());
