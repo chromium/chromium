@@ -54,8 +54,8 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
   std::unique_ptr<views::View> CreateMovePasswordFooterView();
 
   // Changes the contents of the page to either display the details of
-  // `currently_selected_password_` or the list of passwords when
-  // `currently_selected_password_` isn't set.
+  // `details_bubble_credential_` or the list of passwords when
+  // `details_bubble_credential_` isn't set.
   void RecreateLayout();
 
   void SwitchToReadingMode();

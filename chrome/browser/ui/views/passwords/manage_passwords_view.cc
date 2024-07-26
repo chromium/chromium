@@ -76,7 +76,7 @@ ManagePasswordsView::~ManagePasswordsView() = default;
 
 void ManagePasswordsView::DisplayDetailsOfPasswordForTesting(
     password_manager::PasswordForm password_form) {
-  controller_.set_currently_selected_password(std::move(password_form));
+  controller_.set_details_bubble_credential(std::move(password_form));
   RecreateLayout();
 }
 
@@ -101,12 +101,11 @@ void ManagePasswordsView::AddedToWidget() {
 }
 
 bool ManagePasswordsView::Accept() {
-  // Accept button is only visible in the details page where a password is
-  // selected.
+  // Accept button is only visible in the details page.
   DCHECK(password_details_view_);
-  DCHECK(controller_.get_currently_selected_password().has_value());
+  DCHECK(controller_.get_details_bubble_credential().has_value());
   password_manager::PasswordForm updated_form =
-      controller_.get_currently_selected_password().value();
+      controller_.get_details_bubble_credential().value();
   std::optional<std::u16string> updated_username =
       password_details_view_->GetUserEnteredUsernameValue();
   if (updated_username.has_value()) {
@@ -117,7 +116,8 @@ bool ManagePasswordsView::Accept() {
   if (updated_note.has_value()) {
     updated_form.SetNoteWithEmptyUniqueDisplayName(updated_note.value());
   }
-  controller_.UpdateSelectedCredentialInPasswordStore(std::move(updated_form));
+  controller_.UpdateDetailsBubbleCredentialInPasswordStore(
+      std::move(updated_form));
   SwitchToReadingMode();
   // Return false such that the bubble doesn't get closed upon clicking the
   // button.
@@ -125,9 +125,8 @@ bool ManagePasswordsView::Accept() {
 }
 
 bool ManagePasswordsView::Cancel() {
-  // Cancel button is only visible in the details page where a password is
-  // selected.
-  DCHECK(controller_.get_currently_selected_password().has_value());
+  // Cancel button is only visible in the details page.
+  DCHECK(controller_.get_details_bubble_credential().has_value());
   SwitchToReadingMode();
   // Return false such that the bubble doesn't get closed upon clicking the
   // button.
@@ -159,9 +158,9 @@ ManagePasswordsView::CreatePasswordListView() {
 
 std::unique_ptr<ManagePasswordsDetailsView>
 ManagePasswordsView::CreatePasswordDetailsView() {
-  DCHECK(controller_.get_currently_selected_password().has_value());
+  DCHECK(controller_.get_details_bubble_credential().has_value());
   return std::make_unique<ManagePasswordsDetailsView>(
-      controller_.get_currently_selected_password().value(),
+      controller_.get_details_bubble_credential().value(),
       base::BindRepeating(&ManagePasswordsBubbleController::UsernameExists,
                           base::Unretained(&controller_)),
       base::BindRepeating(
@@ -284,9 +283,9 @@ void ManagePasswordsView::RecreateLayout() {
   views::BubbleFrameView* frame_view = GetBubbleFrameView();
   CHECK(frame_view);
   frame_view->SetFootnoteView(nullptr);
-  if (controller_.get_currently_selected_password().has_value()) {
+  if (controller_.get_details_bubble_credential().has_value()) {
     frame_view->SetTitleView(ManagePasswordsDetailsView::CreateTitleView(
-        controller_.get_currently_selected_password().value(),
+        controller_.get_details_bubble_credential().value(),
         base::BindRepeating(&ManagePasswordsView::SwitchToListView,
                             base::Unretained(this))));
     std::unique_ptr<ManagePasswordsDetailsView> details_view =
@@ -294,7 +293,7 @@ void ManagePasswordsView::RecreateLayout() {
     password_details_view_ = details_view.get();
     page_container_->SwitchToPage(std::move(details_view));
     if (controller_.IsOptedInForAccountStorage() &&
-        !controller_.get_currently_selected_password()
+        !controller_.get_details_bubble_credential()
              .value()
              .IsUsingAccountStore()) {
       frame_view->SetFootnoteView(CreateMovePasswordFooterView());
@@ -321,7 +320,7 @@ void ManagePasswordsView::SwitchToReadingMode() {
 void ManagePasswordsView::SwitchToListView() {
   auth_timer_.Stop();
   SetButtons(ui::DIALOG_BUTTON_NONE);
-  controller_.set_currently_selected_password(std::nullopt);
+  controller_.set_details_bubble_credential(std::nullopt);
   RecreateLayout();
 }
 

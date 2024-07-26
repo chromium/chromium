@@ -74,14 +74,14 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
   base::span<std::unique_ptr<password_manager::PasswordForm> const>
   GetCredentials() const;
 
-  // Calls the password store backend to update the currently selected password
-  // to `updated_form`.
-  void UpdateSelectedCredentialInPasswordStore(
+  // Calls the password store backend to update the current details bubble
+  // credential to `updated_form`.
+  void UpdateDetailsBubbleCredentialInPasswordStore(
       password_manager::PasswordForm updated_form);
 
   // Calls OS-specific user authentication available via the
-  // PasswordsModelDelegate. Upon successful reauth, the `password_form` is the
-  // currently selected credential, and `completion` is invoked
+  // PasswordsModelDelegate. Upon successful reauth, the `password_form` is
+  // the current details bubble credential, and `completion` is invoked
   void AuthenticateUserAndDisplayDetailsOf(
       password_manager::PasswordForm password_form,
       base::OnceCallback<void(bool)> completion);
@@ -93,14 +93,14 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
   // Returns whether user can currently use account storage.
   bool IsOptedInForAccountStorage() const;
 
-  void set_currently_selected_password(
+  void set_details_bubble_credential(
       const std::optional<password_manager::PasswordForm>& password) {
-    currently_selected_password_ = password;
+    details_bubble_credential_ = password;
   }
 
   std::optional<password_manager::PasswordForm>
-  get_currently_selected_password() {
-    return currently_selected_password_;
+  get_details_bubble_credential() {
+    return details_bubble_credential_;
   }
 
  private:
@@ -118,8 +118,8 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
       const password_manager::PasswordForm& password_form) const;
 
   // Is invoked upon completion of user reauth. If  `authentication_result` is
-  // true, `password_form` becomes the currently selected credential. Invokes
-  // `completion` with the `authentication_result`.
+  // true, `password_form` becomes the current details bubble credential.
+  // Invokes `completion` with the `authentication_result`.
   void OnUserAuthenticationCompleted(
       password_manager::PasswordForm password_form,
       base::OnceCallback<void(bool)> completion,
@@ -133,9 +133,9 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
       password_manager::metrics_util::NO_DIRECT_INTERACTION;
 
   // If not set, the bubble displays the list of all credentials stored for the
-  // current domain. When set, the bubble displays the password details of the
-  // currently selected password.
-  std::optional<password_manager::PasswordForm> currently_selected_password_;
+  // current domain. When set, the bubble displays the details of this
+  // `PasswordForm`.
+  std::optional<password_manager::PasswordForm> details_bubble_credential_;
 
   base::WeakPtrFactory<ManagePasswordsBubbleController> weak_ptr_factory_{this};
 };
