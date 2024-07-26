@@ -2220,7 +2220,6 @@ static_library("browser") {
     "//components/media_effects",
     "//components/memory_pressure",
     "//components/metrics:call_stack_profile_collector",
-    "//components/metrics:call_stack_profile_params",
     "//components/metrics:component_metrics",
     "//components/metrics:content",
     "//components/metrics:net",

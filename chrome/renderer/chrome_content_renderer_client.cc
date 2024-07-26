@@ -19,6 +19,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/process/current_process.h"
+#include "base/profiler/process_type.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1371,15 +1372,14 @@ void ChromeContentRendererClient::PostIOThreadCreated(
     base::SingleThreadTaskRunner* io_thread_task_runner) {
   io_thread_task_runner->PostTask(
       FROM_HERE, base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                                metrics::CallStackProfileParams::Thread::kIo));
+                                base::ProfilerThreadType::kIo));
 }
 
 void ChromeContentRendererClient::PostCompositorThreadCreated(
     base::SingleThreadTaskRunner* compositor_thread_task_runner) {
   compositor_thread_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                     metrics::CallStackProfileParams::Thread::kCompositor));
+      FROM_HERE, base::BindOnce(&ThreadProfiler::StartOnChildThread,
+                                base::ProfilerThreadType::kCompositor));
   // Enable stack sampling for tracing.
   // We pass in CreateCoreUnwindersFactory here since it lives in the chrome/
   // layer while TracingSamplerProfiler is outside of chrome/.
@@ -1702,8 +1702,7 @@ bool ChromeContentRendererClient::AllowScriptExtensionForServiceWorker(
 void ChromeContentRendererClient::
     WillInitializeServiceWorkerContextOnWorkerThread() {
   // This is called on the service worker thread.
-  ThreadProfiler::StartOnChildThread(
-      metrics::CallStackProfileParams::Thread::kServiceWorker);
+  ThreadProfiler::StartOnChildThread(base::ProfilerThreadType::kServiceWorker);
 }
 
 void ChromeContentRendererClient::

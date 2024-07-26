@@ -12,8 +12,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/profiler/process_type.h"
 #include "base/sequence_checker.h"
-#include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -81,9 +81,8 @@ class BrowserProcessSnapshotController {
   void SetBindRemoteForChildProcessCallback(BindRemoteCallback callback);
 
   // Binds a remote endpoint to communicate with `child_process_id`.
-  void BindRemoteForChildProcess(
-      int child_process_id,
-      metrics::CallStackProfileParams::Process child_process_type);
+  void BindRemoteForChildProcess(int child_process_id,
+                                 base::ProfilerProcessType child_process_type);
 
   // Triggers snapshots in all known child processes. For each process type, a
   // random sample of processes of will be snapshotted based on the
@@ -101,7 +100,7 @@ class BrowserProcessSnapshotController {
   // `snapshot_task_runner`.
   void StoreRemoteOnSnapshotSequence(
       mojo::PendingRemote<mojom::SnapshotController> remote,
-      metrics::CallStackProfileParams::Process process_type);
+      base::ProfilerProcessType process_type);
 
   SEQUENCE_CHECKER(main_sequence_checker_);
   SEQUENCE_CHECKER(snapshot_sequence_checker_);
@@ -116,7 +115,7 @@ class BrowserProcessSnapshotController {
   // Remotes for controlling child processes, split up by process type. Must be
   // accessed on `snapshot_task_runner_`. Note that RemoteSet isn't movable so
   // flat_map needs to hold a pointer to it.
-  base::flat_map<metrics::CallStackProfileParams::Process,
+  base::flat_map<base::ProfilerProcessType,
                  std::unique_ptr<mojo::RemoteSet<mojom::SnapshotController>>>
       remotes_by_process_type_ GUARDED_BY_CONTEXT(snapshot_sequence_checker_);
 

@@ -33,6 +33,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/profiler/process_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -137,7 +138,6 @@
 #include "components/language/core/common/language_experiments.h"
 #include "components/language/core/common/language_util.h"
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
-#include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/expired_histogram_util.h"
 #include "components/metrics/metrics_reporting_default_state.h"
@@ -1211,7 +1211,7 @@ void ChromeBrowserMainParts::PostCreateThreads() {
   // stages.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                                metrics::CallStackProfileParams::Thread::kIo));
+                                base::ProfilerThreadType::kIo));
 // Sampling multiple threads might cause overhead on Android and we don't want
 // to enable it unless the data is needed.
 #if !BUILDFLAG(IS_ANDROID)

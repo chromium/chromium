@@ -9,13 +9,14 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/profiler/call_stack_profile_params.h"
+#include "base/profiler/process_type.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/profiler/unwinder.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "components/metrics/call_stacks/call_stack_profile_params.h"
 
 // PeriodicSamplingScheduler repeatedly schedules periodic sampling of the
 // thread through calls to GetTimeToNextCollection(). This class is exposed
@@ -86,8 +87,7 @@ class ThreadProfiler {
   // Creates a profiler for a child thread and immediately starts it. This
   // should be called from a task posted on the child thread immediately after
   // thread start. The thread will be profiled until exit.
-  static void StartOnChildThread(
-      metrics::CallStackProfileParams::Thread thread);
+  static void StartOnChildThread(base::ProfilerThreadType thread);
 
   // Returns true if called within a child process that will collect profiles
   // through a CallStackProfileCollector. If so,
@@ -104,8 +104,8 @@ class ThreadProfiler {
 
   // Creates the profiler. The task runner will be supplied for child threads
   // but not for main threads.
-  ThreadProfiler(
-      metrics::CallStackProfileParams::Thread thread,
+  explicit ThreadProfiler(
+      base::ProfilerThreadType thread,
       scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner =
           scoped_refptr<base::SingleThreadTaskRunner>());
 
@@ -127,8 +127,8 @@ class ThreadProfiler {
   // Creates a new periodic profiler and initiates a collection with it.
   void StartPeriodicSamplingCollection();
 
-  const metrics::CallStackProfileParams::Process process_;
-  const metrics::CallStackProfileParams::Thread thread_;
+  const base::ProfilerProcessType process_;
+  const base::ProfilerThreadType thread_;
 
   scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 

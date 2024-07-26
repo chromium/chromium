@@ -3056,7 +3056,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     if (const auto* heap_profiler_controller =
             heap_profiling::HeapProfilerController::GetInstance()) {
       heap_profiler_controller->AppendCommandLineSwitchForChildProcess(
-          command_line, GetProfileParamsProcess(*command_line),
+          command_line, GetProfilerProcessType(*command_line),
           child_process_id);
     }
   }

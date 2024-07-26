@@ -2018,7 +2018,7 @@ void ChromeMainDelegate::InitializeMemorySystem() {
   memory_system::Initializer()
       .SetGwpAsanParameters(gwp_asan_boost_sampling, process_type)
       .SetProfilingClientParameters(chrome::GetChannel(),
-                                    GetProfileParamsProcess(*command_line))
+                                    GetProfilerProcessType(*command_line))
       .SetDispatcherParameters(memory_system::DispatcherParameters::
                                    PoissonAllocationSamplerInclusion::kEnforce,
                                allocation_recorder_inclusion, process_type)

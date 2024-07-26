@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/profiler/process_type.h"
 #include "base/profiler/profiler_buildflags.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -115,23 +116,22 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
 MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                              GetChildProcessPerExecutionEnableFraction) {
   EXPECT_EQ(1.0, config()->GetChildProcessPerExecutionEnableFraction(
-                     metrics::CallStackProfileParams::Process::kGpu));
-  EXPECT_EQ(1.0,
-            config()->GetChildProcessPerExecutionEnableFraction(
-                metrics::CallStackProfileParams::Process::kNetworkService));
+                     base::ProfilerProcessType::kGpu));
+  EXPECT_EQ(1.0, config()->GetChildProcessPerExecutionEnableFraction(
+                     base::ProfilerProcessType::kNetworkService));
 
 #if BUILDFLAG(IS_ANDROID)
   // Android child processes that match ChooseEnabledProcess() should be
   // profiled unconditionally.
   EXPECT_EQ(1.0, config()->GetChildProcessPerExecutionEnableFraction(
-                     metrics::CallStackProfileParams::Process::kRenderer));
+                     base::ProfilerProcessType::kRenderer));
   EXPECT_EQ(1.0, config()->GetChildProcessPerExecutionEnableFraction(
-                     metrics::CallStackProfileParams::Process::kUnknown));
+                     base::ProfilerProcessType::kUnknown));
 #else
   EXPECT_EQ(0.2, config()->GetChildProcessPerExecutionEnableFraction(
-                     metrics::CallStackProfileParams::Process::kRenderer));
+                     base::ProfilerProcessType::kRenderer));
   EXPECT_EQ(0.0, config()->GetChildProcessPerExecutionEnableFraction(
-                     metrics::CallStackProfileParams::Process::kUnknown));
+                     base::ProfilerProcessType::kUnknown));
 #endif
 }
 
@@ -141,20 +141,15 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
   // assuming it is enabled for corresponding process. Not all these
   // combinations actually make sense or are implemented in the code, but
   // iterating over all combinations is the simplest way to test.
-  for (int i = 0;
-       i <= static_cast<int>(metrics::CallStackProfileParams::Process::kMax);
-       ++i) {
-    const auto process =
-        static_cast<metrics::CallStackProfileParams::Process>(i);
-    for (int j = 0;
-         j <= static_cast<int>(metrics::CallStackProfileParams::Thread::kMax);
+  for (int i = 0; i <= static_cast<int>(base::ProfilerProcessType::kMax); ++i) {
+    const auto process = static_cast<base::ProfilerProcessType>(i);
+    for (int j = 0; j <= static_cast<int>(base::ProfilerThreadType::kMax);
          ++j) {
-      const auto thread =
-          static_cast<metrics::CallStackProfileParams::Thread>(j);
+      const auto thread = static_cast<base::ProfilerThreadType>(j);
 
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-      if (process == metrics::CallStackProfileParams::Process::kBrowser &&
-          thread == metrics::CallStackProfileParams::Thread::kMain) {
+      if (process == base::ProfilerProcessType::kBrowser &&
+          thread == base::ProfilerThreadType::kMain) {
         EXPECT_TRUE(config()->IsEnabledForThread(
             process, thread, version_info::Channel::CANARY));
       } else {
@@ -185,8 +180,8 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
           /* browser_test_mode_enabled=*/false,
           base::BindLambdaForTesting([](double probability) { return false; }));
 
-      if (process == metrics::CallStackProfileParams::Process::kBrowser &&
-          thread == metrics::CallStackProfileParams::Thread::kMain) {
+      if (process == base::ProfilerProcessType::kBrowser &&
+          thread == base::ProfilerThreadType::kMain) {
         EXPECT_TRUE(android_config1->IsEnabledForThread(
             process, thread, version_info::Channel::DEV));
       } else {

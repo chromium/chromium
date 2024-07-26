@@ -250,7 +250,7 @@ source_set("web_internal") {
     "//components/language/core/browser",
     "//components/language/ios/browser",
     "//components/metrics",
-    "//components/metrics:call_stack_profile_params",
+    "//components/metrics:call_stack_profile_encoding",
     "//components/metrics:child_call_stack_profile_builder",
     "//components/metrics/public/mojom:call_stack_mojo_bindings",
     "//components/metrics_services_manager",

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "components/metrics/call_stacks/call_stack_profile_encoding.h"
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 

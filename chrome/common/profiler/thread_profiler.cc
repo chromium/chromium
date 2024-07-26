@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/work_id_provider.h"
 #include "base/process/process.h"
+#include "base/profiler/process_type.h"
 #include "base/profiler/profiler_buildflags.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
@@ -40,7 +41,7 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 using CallStackProfileBuilder = metrics::CallStackProfileBuilder;
-using CallStackProfileParams = metrics::CallStackProfileParams;
+using CallStackProfileParams = base::CallStackProfileParams;
 using StackSamplingProfiler = base::StackSamplingProfiler;
 
 namespace {
@@ -65,9 +66,10 @@ bool IsCurrentProcessBackgrounded() {
 }
 
 const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
-    CallStackProfileParams::Process process) {
-  if (process != CallStackProfileParams::Process::kRenderer)
+    base::ProfilerProcessType process) {
+  if (process != base::ProfilerProcessType::kRenderer) {
     return base::RepeatingClosure();
+  }
   static const base::SampleMetadata process_backgrounded(
       "ProcessBackgrounded", base::SampleMetadataScope::kProcess);
   return base::BindRepeating(
@@ -159,8 +161,8 @@ std::unique_ptr<ThreadProfiler> ThreadProfiler::CreateAndStartOnMainThread() {
   bool is_single_process = command_line->HasSwitch(switches::kSingleProcess) ||
                            command_line->HasSwitch(switches::kInProcessGPU);
   DCHECK(!g_main_thread_instance || is_single_process);
-  auto instance = base::WrapUnique(
-      new ThreadProfiler(CallStackProfileParams::Thread::kMain));
+  auto instance =
+      base::WrapUnique(new ThreadProfiler(base::ProfilerThreadType::kMain));
   if (!g_main_thread_instance)
     g_main_thread_instance = instance.get();
   return instance;
@@ -187,7 +189,7 @@ void ThreadProfiler::SetAuxUnwinderFactory(
 }
 
 // static
-void ThreadProfiler::StartOnChildThread(CallStackProfileParams::Thread thread) {
+void ThreadProfiler::StartOnChildThread(base::ProfilerThreadType thread) {
   // The profiler object is stored in a SequenceLocalStorageSlot on child
   // threads to give it the same lifetime as the threads.
   static base::SequenceLocalStorageSlot<std::unique_ptr<ThreadProfiler>>
@@ -204,9 +206,9 @@ void ThreadProfiler::StartOnChildThread(CallStackProfileParams::Thread thread) {
 
 // static
 bool ThreadProfiler::ShouldCollectProfilesForChildProcess() {
-  CallStackProfileParams::Process process =
-      GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess());
-  DCHECK_NE(CallStackProfileParams::Process::kBrowser, process);
+  base::ProfilerProcessType process =
+      GetProfilerProcessType(*base::CommandLine::ForCurrentProcess());
+  DCHECK_NE(base::ProfilerProcessType::kBrowser, process);
   return ThreadProfilerConfiguration::Get()
       ->IsProfilerEnabledForCurrentProcess();
 }
@@ -230,10 +232,9 @@ bool ThreadProfiler::ShouldCollectProfilesForChildProcess() {
 // The process in previous paragraph continues until the ThreadProfiler is
 // destroyed prior to thread exit.
 ThreadProfiler::ThreadProfiler(
-    CallStackProfileParams::Thread thread,
+    base::ProfilerThreadType thread,
     scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner)
-    : process_(
-          GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess())),
+    : process_(GetProfilerProcessType(*base::CommandLine::ForCurrentProcess())),
       thread_(thread),
       owning_thread_task_runner_(owning_thread_task_runner),
       work_id_recorder_(std::make_unique<WorkIdRecorder>(

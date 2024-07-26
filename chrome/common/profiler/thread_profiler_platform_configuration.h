@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
-#include "components/metrics/call_stacks/call_stack_profile_params.h"
+#include "base/profiler/process_type.h"
 #include "components/version_info/channel.h"
 
 // Encapsulates the platform-specific configuration for the ThreadProfiler.
@@ -67,19 +67,19 @@ class ThreadProfilerPlatformConfiguration {
   // Returns the fraction of the time that profiling should be randomly enabled
   // for the child |process|. The return value is in the range [0.0, 1.0].
   virtual double GetChildProcessPerExecutionEnableFraction(
-      metrics::CallStackProfileParams::Process process) const = 0;
+      base::ProfilerProcessType process) const = 0;
 
   // Choose a process to run profiling when profiling is enabled. Running
   // the sampler on a single process instead of all processes at the same time
   // will help reduce the impact on users. If std::nullopt is returned, the
   // setting can be ignored. All processes will be sampled.
-  virtual std::optional<metrics::CallStackProfileParams::Process>
-  ChooseEnabledProcess() const = 0;
+  virtual std::optional<base::ProfilerProcessType> ChooseEnabledProcess()
+      const = 0;
 
   // Returns whether the profiler is enabled for |thread| in |process|.
   virtual bool IsEnabledForThread(
-      metrics::CallStackProfileParams::Process process,
-      metrics::CallStackProfileParams::Thread thread,
+      base::ProfilerProcessType process,
+      base::ProfilerThreadType thread,
       std::optional<version_info::Channel> release_channel) const = 0;
 
  protected:

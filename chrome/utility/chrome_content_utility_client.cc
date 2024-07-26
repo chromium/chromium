@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/profiler/process_type.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
@@ -83,7 +84,7 @@ void ChromeContentUtilityClient::PostIOThreadCreated(
     base::SingleThreadTaskRunner* io_thread_task_runner) {
   io_thread_task_runner->PostTask(
       FROM_HERE, base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                                metrics::CallStackProfileParams::Thread::kIo));
+                                base::ProfilerThreadType::kIo));
 }
 
 void ChromeContentUtilityClient::RegisterIOThreadServices(
