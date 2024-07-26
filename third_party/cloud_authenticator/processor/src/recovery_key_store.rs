@@ -16,7 +16,7 @@
 //! recovery key store, also called Vault internally.
 
 use crate::{
-    debug, get_secret_from_request, pin, AuthLevel, Authentication, DirtyFlag, ParsedState, Reauth,
+    debug, get_secret_from_request, pin, Authentication, DirtyFlag, ParsedState, Reauth,
     RequestError, COUNTER_ID_KEY, VAULT_HANDLE_WITHOUT_TYPE_KEY, WRAPPED_PIN_DATA_KEY,
 };
 use alloc::collections::BTreeMap;
@@ -497,7 +497,7 @@ mod x509 {
         let (_version, tbs) = der::next_optional(tbs, der::CONTEXT_SPECIFIC | der::CONSTRUCTED)?;
         let (_serial_number, tbs) = der::next_tagged(tbs, der::INTEGER)?;
         let (sig_algo, tbs) = der::next_tagged(tbs, der::SEQUENCE)?;
-        let (sig_algo_oid, _) = der::next_tagged(sig_algo, der::OBJECT_IDENTIFER)?;
+        let (sig_algo_oid, _) = der::next_tagged(sig_algo, der::OBJECT_IDENTIFIER)?;
         let (der::SEQUENCE, _, issuer, tbs) = der::next_element(tbs)? else {
             return None;
         };
@@ -527,7 +527,7 @@ mod x509 {
                 let (extension, rest) = der::next_tagged(extensions, der::SEQUENCE)?;
                 extensions = rest;
 
-                let (id, rest) = der::next_tagged(extension, der::OBJECT_IDENTIFER)?;
+                let (id, rest) = der::next_tagged(extension, der::OBJECT_IDENTIFIER)?;
                 let (_critical, rest) = der::next_optional(rest, der::BOOLEAN)?;
                 let (value, rest) = der::next_tagged(rest, der::OCTET_STRING)?;
                 if !rest.is_empty() {
@@ -732,7 +732,7 @@ mod key_distribution {
 
     /// A Cohort represents a specific recovery key store cohort. It includes:
     ///   * The public key of the cohort.
-    ///   * It's certificate chain.
+    ///   * Its certificate chain.
     ///   * The serial number of the public key update.
     type Cohort = ([u8; crypto::P256_X962_LENGTH], Vec<Vec<u8>>, i64);
 
@@ -1545,12 +1545,10 @@ pub(crate) fn do_wrap_as_member(
     current_time_epoch_millis: i64,
     request: BTreeMap<MapKey, Value>,
 ) -> Result<cbor::Value, RequestError> {
-    // Either UV or else reauth is required to perform this command. The one-time
-    // UV is not enough.
+    // Reauth is required to perform this command. UV is not enough.
     let device_id = match auth {
-        Authentication::Device(device_id, AuthLevel::UserVerification, _, _) => device_id,
         Authentication::Device(device_id, _, _, Reauth::Done) => device_id,
-        _ => return debug("not authenticated"),
+        _ => return debug("PIN change needs reauth via RAPT token"),
     };
     let Some(Value::Bytestring(pin_hash)) = request.get(PIN_HASH_KEY) else {
         return debug("PIN hash required");

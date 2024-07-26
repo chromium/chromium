@@ -375,22 +375,16 @@ fn validate_pin(
     claim: &[u8],
     wrapped_pin_data: &[u8],
 ) -> Result<(), RequestError> {
-    let PINState { attempts, generation_high_water } = state.get_pin_state(device_id)?;
+    let PINState { attempts } = state.get_pin_state(device_id)?;
     if attempts >= MAX_PIN_ATTEMPTS {
         return Err(RequestError::PINLocked);
     }
 
     let pin_data = pin::Data::from_wrapped(wrapped_pin_data, security_domain_secret)?;
-    if pin_data.generation < generation_high_water {
-        return Err(RequestError::PINOutdated);
-    }
-
     let claimed_pin_hash = open_aes_256_gcm(&pin_data.claim_key, claim, PIN_CLAIM_AAD)
         .ok_or(RequestError::Debug("failed to decrypt PIN claim"))?;
     if !constant_time_compare(&claimed_pin_hash, &pin_data.pin_hash) {
-        state
-            .get_mut()
-            .set_pin_state(device_id, PINState { attempts: attempts + 1, generation_high_water })?;
+        state.get_mut().set_pin_state(device_id, PINState { attempts: attempts + 1 })?;
         return Err(RequestError::IncorrectPIN);
     }
 
@@ -404,14 +398,8 @@ fn validate_pin(
     // a PIN. Since the attack requires malware on the client machine, where the
     // user could probably be phished for their PIN much more effectively than
     // trying to exploit a concurrency issue, we err on the side of availability.
-    if attempts > 0 || pin_data.generation > generation_high_water {
-        state.get_mut_for_minor_change().set_pin_state(
-            device_id,
-            PINState {
-                attempts: 0,
-                generation_high_water: core::cmp::max(pin_data.generation, generation_high_water),
-            },
-        )?;
+    if attempts > 0 {
+        state.get_mut_for_minor_change().set_pin_state(device_id, PINState { attempts: 0 })?;
     }
 
     Ok(())
@@ -584,31 +572,6 @@ fn prf_default_values(prf: &BTreeMap<MapKey, Value>) -> Result<Option<PRFValues>
         return Ok(None);
     };
     Ok(Some(eval.try_into()?))
-}
-
-pub fn do_set_pin_generation_high_water(
-    auth: &Authentication,
-    state: &mut DirtyFlag<ParsedState>,
-    request: BTreeMap<MapKey, Value>,
-) -> Result<cbor::Value, RequestError> {
-    let Authentication::Device(device_id, _, _, _) = auth else {
-        return debug("device identity required");
-    };
-    let Some(Value::Int(new_high_water)) = request.get(PIN_GENERATION_KEY) else {
-        return debug("pin_generation required");
-    };
-    let pin_state = state.get_pin_state(device_id)?;
-    if pin_state.generation_high_water >= *new_high_water {
-        return debug("requested PIN generation doesn't exceed current one");
-    }
-    state.get_mut().set_pin_state(
-        &device_id,
-        // If the PIN was successfully changed then the attempt counter can be reset. If it wasn't
-        // changed then increasing the high-water simply disables PIN validation at the enclave
-        // anyway.
-        PINState { attempts: 0, generation_high_water: *new_high_water },
-    )?;
-    Ok(Value::Boolean(true))
 }
 
 #[cfg(test)]
