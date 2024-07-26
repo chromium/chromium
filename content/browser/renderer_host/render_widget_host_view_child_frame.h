@@ -119,6 +119,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
                                  const gfx::Rect& bounds) override;
   void ClearKeyboardTriggeredTooltip() override;
   void GestureEventAck(const blink::WebGestureEvent& event,
+                       blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
   // Since the URL of content rendered by this class is not displayed in
   // the URL bar, this method does not need an implementation.
@@ -289,6 +290,8 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       HiddenOOPIFWillNotGenerateCompositorFramesAfterNavigation);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            SubframeVisibleAfterRenderViewBecomesSwappedOut);
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostInputEventRouterTest,
+                           FilteredGestureDoesntInterruptBubbling);
 
   virtual void FirstSurfaceActivation(const viz::SurfaceInfo& surface_info);
 
@@ -304,6 +307,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   void ProcessTouchpadZoomEventAckInRoot(
       const blink::WebGestureEvent& event,
+      blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result);
   void ForwardTouchpadZoomEventIfNecessary(
       const blink::WebGestureEvent& event,
