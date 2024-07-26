@@ -10406,32 +10406,6 @@
             ]
         }
     ],
-    "H2InitialMaxConcurrentStreamsOverride": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "initial_max_concurrent_streams": "10"
-                    },
-                    "enable_features": [
-                        "H2InitialMaxConcurrentStreamsOverride"
-                    ]
-                }
-            ]
-        }
-    ],
     "HTTP2": [
         {
             "platforms": [
