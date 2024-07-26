@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.download;
 import static org.chromium.chrome.browser.download.DownloadSnackbarController.INVALID_NOTIFICATION_ID;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ServiceCompat;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 
@@ -33,23 +31,11 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
     private static final String TAG = "DownloadFg";
     private final IBinder mBinder = new LocalBinder();
 
-    private NotificationManager mNotificationManager;
-
     @IntDef({StopForegroundNotification.KILL, StopForegroundNotification.DETACH})
     @Retention(RetentionPolicy.SOURCE)
     public @interface StopForegroundNotification {
         int KILL = 0; // Kill notification regardless of ability to detach.
         int DETACH = 1; // Try to detach, otherwise kill and relaunch.
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        mNotificationManager =
-                (NotificationManager)
-                        ContextUtils.getApplicationContext()
-                                .getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     /**
