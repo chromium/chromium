@@ -34,12 +34,14 @@ using l10n_util::GetNSStringF;
 @implementation TrustedVaultReauthenticationCoordinator {
   base::OnceCallback<void(BOOL animated, ProceduralBlock cancel_done)>
       _dialogCancelCallback;
+  trusted_vault::SecurityDomainId _securityDomainID;
 }
 
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
                         intent:(SigninTrustedVaultDialogIntent)intent
+              securityDomainID:(trusted_vault::SecurityDomainId)securityDomainID
                        trigger:
                            (syncer::TrustedVaultUserActionTriggerForUMA)trigger
                    accessPoint:(signin_metrics::AccessPoint)accessPoint {
@@ -49,6 +51,7 @@ using l10n_util::GetNSStringF;
                                accessPoint:accessPoint];
   if (self) {
     _intent = intent;
+    _securityDomainID = securityDomainID;
     switch (intent) {
       case SigninTrustedVaultDialogIntentFetchKeys:
         syncer::RecordKeyRetrievalTrigger(trigger);
@@ -131,24 +134,20 @@ using l10n_util::GetNSStringF;
       ^(BOOL success, NSError* error) {
         [weakSelf trustedVaultDialogDoneWithSuccess:success error:error];
       };
-  // TODO(crbug.com/343007092): Need to replace the hardcoded the security
-  // domain path.
-  std::string security_domain_path_string =
-      GetSecurityDomainPath(trusted_vault::SecurityDomainId::kChromeSync);
+  std::string securityDomainPath = GetSecurityDomainPath(_securityDomainID);
   switch (self.intent) {
     case SigninTrustedVaultDialogIntentFetchKeys:
       _dialogCancelCallback =
           TrustedVaultClientBackendFactory::GetForBrowserState(
               self.browser->GetBrowserState())
-              ->Reauthentication(self.identity, security_domain_path_string,
+              ->Reauthentication(self.identity, securityDomainPath,
                                  self.baseViewController, callback);
       break;
     case SigninTrustedVaultDialogIntentDegradedRecoverability:
       _dialogCancelCallback =
           TrustedVaultClientBackendFactory::GetForBrowserState(
               self.browser->GetBrowserState())
-              ->FixDegradedRecoverability(self.identity,
-                                          security_domain_path_string,
+              ->FixDegradedRecoverability(self.identity, securityDomainPath,
                                           self.baseViewController, callback);
       break;
   }

@@ -16,6 +16,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -540,31 +541,36 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   id<ApplicationCommands> applicationCommands =
       static_cast<id<ApplicationCommands>>(
           self.browser->GetCommandDispatcher());
+  trusted_vault::SecurityDomainId chromeSyncID =
+      trusted_vault::SecurityDomainId::kChromeSync;
+  syncer::TrustedVaultUserActionTriggerForUMA settingsTrigger =
+      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  AccessPoint settingsAccessPoint = AccessPoint::ACCESS_POINT_SETTINGS;
   [applicationCommands
       showTrustedVaultReauthForFetchKeysFromViewController:self.viewController
-                                                   trigger:
-                                                       syncer::
-                                                           TrustedVaultUserActionTriggerForUMA::
-                                                               kSettings
-                                               accessPoint:
-                                                   AccessPoint::
-                                                       ACCESS_POINT_SETTINGS];
+                                          securityDomainID:chromeSyncID
+                                                   trigger:settingsTrigger
+                                               accessPoint:settingsAccessPoint];
 }
 
 - (void)openTrustedVaultReauthForDegradedRecoverability {
   id<ApplicationCommands> applicationCommands =
       static_cast<id<ApplicationCommands>>(
           self.browser->GetCommandDispatcher());
+  trusted_vault::SecurityDomainId chromeSyncID =
+      trusted_vault::SecurityDomainId::kChromeSync;
+  syncer::TrustedVaultUserActionTriggerForUMA settingsTrigger =
+      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  AccessPoint settingsAccessPoint = AccessPoint::ACCESS_POINT_SETTINGS;
   [applicationCommands
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
           self.viewController
+                                                       securityDomainID:
+                                                           chromeSyncID
                                                                 trigger:
-                                                                    syncer::
-                                                                        TrustedVaultUserActionTriggerForUMA::
-                                                                            kSettings
+                                                                    settingsTrigger
                                                             accessPoint:
-                                                                AccessPoint::
-                                                                    ACCESS_POINT_SETTINGS];
+                                                                settingsAccessPoint];
 }
 
 - (void)openMDMErrodDialogWithSystemIdentity:(id<SystemIdentity>)identity {

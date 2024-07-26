@@ -30,6 +30,7 @@
 #import "components/safe_browsing/core/common/features.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/translate/core/browser/translate_manager.h"
+#import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_coordinator.h"
@@ -3288,6 +3289,9 @@ enum class ToolbarKind {
     (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
       showTrustedVaultReauthForFetchKeysFromViewController:self.viewController
+                                          securityDomainID:
+                                              trusted_vault::SecurityDomainId::
+                                                  kChromeSync
                                                    trigger:trigger
                                                accessPoint:
                                                    signin_metrics::AccessPoint::
@@ -3299,6 +3303,10 @@ enum class ToolbarKind {
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
           self.viewController
+                                                       securityDomainID:
+                                                           trusted_vault::
+                                                               SecurityDomainId::
+                                                                   kChromeSync
                                                                 trigger:trigger
                                                             accessPoint:
                                                                 signin_metrics::

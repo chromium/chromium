@@ -1906,6 +1906,9 @@ using UserFeedbackDataCallback =
 - (void)
     showTrustedVaultReauthForFetchKeysFromViewController:
         (UIViewController*)viewController
+                                        securityDomainID:
+                                            (trusted_vault::SecurityDomainId)
+                                                securityDomainID
                                                  trigger:
                                                      (syncer::
                                                           TrustedVaultUserActionTriggerForUMA)
@@ -1917,6 +1920,7 @@ using UserFeedbackDataCallback =
       showTrustedVaultDialogFromViewController:viewController
                                         intent:
                                             SigninTrustedVaultDialogIntentFetchKeys
+                              securityDomainID:securityDomainID
                                        trigger:trigger
                                    accessPoint:accessPoint];
 }
@@ -1924,6 +1928,10 @@ using UserFeedbackDataCallback =
 - (void)
     showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
         (UIViewController*)viewController
+                                                     securityDomainID:
+                                                         (trusted_vault::
+                                                              SecurityDomainId)
+                                                             securityDomainID
                                                               trigger:
                                                                   (syncer::
                                                                        TrustedVaultUserActionTriggerForUMA)
@@ -1936,6 +1944,7 @@ using UserFeedbackDataCallback =
       showTrustedVaultDialogFromViewController:viewController
                                         intent:
                                             SigninTrustedVaultDialogIntentDegradedRecoverability
+                              securityDomainID:securityDomainID
                                        trigger:trigger
                                    accessPoint:accessPoint];
 }
@@ -3480,6 +3489,8 @@ using UserFeedbackDataCallback =
     showTrustedVaultDialogFromViewController:(UIViewController*)viewController
                                       intent:
                                           (SigninTrustedVaultDialogIntent)intent
+                            securityDomainID:(trusted_vault::SecurityDomainId)
+                                                 securityDomainID
                                      trigger:
                                          (syncer::
                                               TrustedVaultUserActionTriggerForUMA)
@@ -3495,6 +3506,8 @@ using UserFeedbackDataCallback =
           viewController
                                                             browser:mainBrowser
                                                              intent:intent
+                                                   securityDomainID:
+                                                       securityDomainID
                                                             trigger:trigger
                                                         accessPoint:
                                                             accessPoint];

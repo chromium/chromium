@@ -10,6 +10,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -369,12 +370,15 @@
   id<ApplicationCommands> applicationCommands =
       static_cast<id<ApplicationCommands>>(
           self.browser->GetCommandDispatcher());
+  trusted_vault::SecurityDomainId securityDomainID =
+      trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU;
   [applicationCommands
       showTrustedVaultReauthForFetchKeysFromViewController:_navigationController
+                                          securityDomainID:securityDomainID
                                                    trigger:trigger
                                                accessPoint:accessPoint];
 }
@@ -383,6 +387,8 @@
   id<ApplicationCommands> applicationCommands =
       static_cast<id<ApplicationCommands>>(
           self.browser->GetCommandDispatcher());
+  trusted_vault::SecurityDomainId securityDomainID =
+      trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   signin_metrics::AccessPoint accessPoint =
@@ -390,6 +396,8 @@
   [applicationCommands
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
           _navigationController
+                                                       securityDomainID:
+                                                           securityDomainID
                                                                 trigger:trigger
                                                             accessPoint:
                                                                 accessPoint];

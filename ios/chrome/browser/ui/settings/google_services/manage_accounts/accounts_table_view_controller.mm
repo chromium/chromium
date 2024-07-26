@@ -15,6 +15,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
+#import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
@@ -828,26 +829,34 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
 // Opens the trusted vault reauth dialog for fetch keys.
 - (void)openTrustedVaultReauthForFetchKeys {
+  trusted_vault::SecurityDomainId securityDomainID =
+      trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
   [_applicationHandler
       showTrustedVaultReauthForFetchKeysFromViewController:self
+                                          securityDomainID:securityDomainID
                                                    trigger:trigger
-                                               accessPoint:
-                                                   AccessPoint::
-                                                       ACCESS_POINT_SETTINGS];
+                                               accessPoint:accessPoint];
 }
 
 // Opens the trusted vault reauth dialog for degraded recoverability.
 - (void)openTrustedVaultReauthForDegradedRecoverability {
+  trusted_vault::SecurityDomainId securityDomainID =
+      trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
   [_applicationHandler
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
+                                                       securityDomainID:
+                                                           securityDomainID
                                                                 trigger:trigger
                                                             accessPoint:
-                                                                AccessPoint::
-                                                                    ACCESS_POINT_SETTINGS];
+                                                                accessPoint];
 }
 
 // Opens the passphrase dialog.

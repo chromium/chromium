@@ -26,6 +26,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
+#import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/table_view_url_drag_drop_handler.h"
@@ -1783,23 +1784,30 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 - (void)showTrustedVaultReauthForFetchKeysWithTrigger:
     (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
+  trusted_vault::SecurityDomainId securityDomainID =
+      trusted_vault::SecurityDomainId::kChromeSync;
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS;
   [self.applicationHandler
       showTrustedVaultReauthForFetchKeysFromViewController:self
+                                          securityDomainID:securityDomainID
                                                    trigger:trigger
-                                               accessPoint:
-                                                   signin_metrics::AccessPoint::
-                                                       ACCESS_POINT_RECENT_TABS];
+                                               accessPoint:accessPoint];
 }
 
 - (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
     (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
+  trusted_vault::SecurityDomainId securityDomainID =
+      trusted_vault::SecurityDomainId::kChromeSync;
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS;
   [self.applicationHandler
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
+                                                       securityDomainID:
+                                                           securityDomainID
                                                                 trigger:trigger
                                                             accessPoint:
-                                                                signin_metrics::
-                                                                    AccessPoint::
-                                                                        ACCESS_POINT_RECENT_TABS];
+                                                                accessPoint];
 }
 
 #pragma mark - SigninPresenter
