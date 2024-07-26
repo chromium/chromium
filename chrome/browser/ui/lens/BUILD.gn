@@ -21,6 +21,7 @@ source_set("lens") {
     "lens_overlay_side_panel_web_view.cc",
     "lens_untrusted_ui.cc",
     "lens_untrusted_ui.h",
+    "search_bubble_ui.cc",
   ]
 
   # TODO(crbug.com/339497734): It doesn't make sense to try to set up
@@ -135,7 +136,6 @@ source_set("lens_internal") {
     "lens_untrusted_ui_config.cc",
     "search_bubble_page_handler.cc",
     "search_bubble_page_handler.h",
-    "search_bubble_ui.cc",
   ]
 
   public_deps = [

@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../strings.m.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_components/searchbox/realbox.js';
 
+import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 
@@ -30,10 +33,6 @@ export class SearchBubbleAppElement extends PolymerElement {
 
   static get properties() {
     return {
-      logoColor_: {
-        computed: 'computeLogoColor_(theme_)',
-        type: String,
-      },
       singleColored: {
         reflectToAttribute: true,
         type: Boolean,
@@ -48,6 +47,11 @@ export class SearchBubbleAppElement extends PolymerElement {
 
   private browserProxy_: SearchBubbleProxy =
       SearchBubbleProxyImpl.getInstance();
+
+  constructor() {
+    super();
+    ColorChangeUpdater.forDocument().start();
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -73,12 +77,6 @@ export class SearchBubbleAppElement extends PolymerElement {
         this.theme_ && (!!this.theme_.logoColor || this.theme_.isDark);
     document.body.style.backgroundColor =
         skColorToRgba(this.theme_.backgroundColor);
-  }
-
-  private computeLogoColor_() {
-    return this.theme_.logoColor ? skColorToRgba(this.theme_.logoColor) :
-        this.theme_.isDark       ? '#ffffff' :
-                                   'var(--google-blue-600)';
   }
 }
 

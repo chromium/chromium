@@ -5,7 +5,11 @@
 #include "chrome/browser/ui/lens/search_bubble_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/search_bubble_page_handler.h"
+#include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
+#include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -16,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace lens {
 
@@ -32,6 +37,13 @@ SearchBubbleUI::SearchBubbleUI(content::WebUI* web_ui)
                               base::make_span(kLensSearchBubbleResources,
                                               kLensSearchBubbleResourcesSize),
                               IDR_LENS_SEARCH_BUBBLE_SEARCH_BUBBLE_HTML);
+  // Add required resources for the searchbox.
+  SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
+  source->AddBoolean("reportMetrics", false);
+  source->AddString("realboxDefaultIcon",
+                    "//resources/cr_components/searchbox/icons/google_g.svg");
+  source->AddLocalizedString("searchBoxHint",
+                             IDS_GOOGLE_LENS_SEARCH_BOX_EMPTY_HINT);
 }
 
 SearchBubbleUI::~SearchBubbleUI() = default;
@@ -43,6 +55,21 @@ void SearchBubbleUI::BindInterface(
         receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void SearchBubbleUI::BindInterface(
+    mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
+  contextual_searchbox_handler_ = std::make_unique<RealboxHandler>(
+      std::move(receiver), Profile::FromWebUI(web_ui_),
+      web_ui()->GetWebContents(),
+      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/nullptr,
+      /*omnibox_controller=*/nullptr);
+}
+
+void SearchBubbleUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void SearchBubbleUI::CreatePageHandler(

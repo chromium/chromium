@@ -1194,7 +1194,8 @@ void PopulateChromeWebUIFrameBinders(
                                            lens::LensUntrustedUI>(map);
   }
 
-  if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
+  if (lens::features::IsLensOverlayEnabled() &&
+      lens::features::IsLensOverlaySearchBubbleEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         lens::mojom::SearchBubblePageHandlerFactory, lens::SearchBubbleUI>(map);
   }
@@ -1931,6 +1932,12 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   if (lens::features::IsLensOverlayEnabled()) {
     registry.ForWebUI<lens::LensUntrustedUI>()
         .Add<lens::mojom::LensPageHandlerFactory>()
+        .Add<searchbox::mojom::PageHandler>()
+        .Add<color_change_listener::mojom::PageHandler>();
+  }
+  if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
+    registry.ForWebUI<lens::SearchBubbleUI>()
+        .Add<lens::mojom::SearchBubblePageHandlerFactory>()
         .Add<searchbox::mojom::PageHandler>()
         .Add<color_change_listener::mojom::PageHandler>();
   }
