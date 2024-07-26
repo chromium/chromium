@@ -104,6 +104,7 @@ source_set("browser_tests") {
     "web_kiosk_device_attributes_browsertest.cc",
     "web_kiosk_direct_sockets_browsertest.cc",
     "web_kiosk_lacros_browsertest.cc",
+    "web_kiosk_media_ui_browsertest.cc",
   ]
 
   deps = [

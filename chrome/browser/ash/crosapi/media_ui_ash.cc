@@ -14,6 +14,12 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "components/global_media_controls/public/constants.h"
 
+namespace {
+bool IsKioskSession() {
+  return ash::Shell::Get()->session_controller()->IsRunningInAppMode();
+}
+}  // namespace
+
 namespace crosapi {
 
 namespace mojom {
@@ -41,6 +47,12 @@ void MediaUIAsh::RegisterDeviceService(
 }
 
 void MediaUIAsh::ShowDevicePicker(const std::string& item_id) {
+  // Keep Media Tray pinned to use a separate widget in kiosk sessions because
+  // the Unified System Tray bubble is not available.
+  if (IsKioskSession()) {
+    ash::MediaTray::SetPinnedToShelf(true);
+  }
+
   if (ash::MediaTray::IsPinnedToShelf()) {
     ash::StatusAreaWidget::ForWindow(ash::Shell::Get()->GetPrimaryRootWindow())
         ->media_tray()
