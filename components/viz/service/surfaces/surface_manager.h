@@ -25,6 +25,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/surfaces/surface_observer.h"
@@ -46,9 +47,6 @@ class SurfaceAllocationGroup;
 class SurfaceClient;
 class SurfaceManagerDelegate;
 class SurfaceRange;
-struct BeginFrameAck;
-struct BeginFrameArgs;
-struct BeginFrameId;
 
 class VIZ_SERVICE_EXPORT SurfaceManager {
  public:
@@ -219,7 +217,7 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
                                       const CommitPredicate& predicate);
 
  private:
-  friend class CompositorFrameSinkSupportTest;
+  friend class CompositorFrameSinkSupportTestBase;
   friend class FrameSinkManagerTest;
   friend class HitTestAggregatorTest;
   friend class SurfaceSynchronizationTest;
@@ -289,6 +287,11 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // ready for destruction.
   void MaybeGarbageCollectAllocationGroups();
 
+  // This returns true if early-acks for frame activation during interaction is
+  // enabled and if the number of frames since ack and the last interactive
+  // frame is below the cooldown threshold.
+  bool ShouldAckInteractiveFrame(const BeginFrameAck& ack) const;
+
   // Can be nullptr.
   const raw_ptr<SurfaceManagerDelegate> delegate_;
 
@@ -347,6 +350,8 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   std::unordered_map<FrameSinkId, std::vector<LocalSurfaceId>, FrameSinkIdHash>
       temporary_reference_ranges_;
 
+  std::optional<BeginFrameId> last_interactive_frame_;
+
   // Timer to remove old temporary references that aren't removed after an
   // interval of time. The timer will started/stopped so it only runs if there
   // are temporary references. Also the timer isn't used with Android WebView.
@@ -357,6 +362,9 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // Maximum length of uncommitted queue, zero means all frames are committed
   // automatically.
   const size_t max_uncommitted_frames_;
+
+  std::optional<uint64_t>
+      cooldown_frames_for_ack_on_activation_during_interaction_;
 };
 
 }  // namespace viz

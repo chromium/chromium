@@ -16042,6 +16042,8 @@ from previous Chrome versions.
   <int value="-2038281501" label="ClipboardHistoryWebContentsPaste:enabled"/>
   <int value="-2038175774"
       label="AndroidAutofillViewStructureWithFormHierarchyLayer:enabled"/>
+  <int value="-2038165391"
+      label="AckOnSurfaceActivationWhenInteractive:enabled"/>
   <int value="-2038132420" label="OmniboxCacheSuggestionResources:enabled"/>
   <int value="-2037390759"
       label="IncognitoBrandConsistencyForAndroid:disabled"/>
@@ -17225,6 +17227,8 @@ from previous Chrome versions.
   <int value="-1543066715" label="VideoConference:disabled"/>
   <int value="-1541362086" label="NearbySharing:disabled"/>
   <int value="-1541187160" label="UsernameFirstFlow:disabled"/>
+  <int value="-1540949674"
+      label="AckOnSurfaceActivationWhenInteractive:disabled"/>
   <int value="-1540007054" label="ArcHostVpn:disabled"/>
   <int value="-1539513973" label="ContentSettingsRedesign:disabled"/>
   <int value="-1538921509" label="AutofillEnableCardBenefits:disabled"/>

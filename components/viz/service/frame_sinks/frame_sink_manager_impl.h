@@ -332,7 +332,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
  private:
   friend class FrameSinkManagerTest;
-  friend class CompositorFrameSinkSupportTest;
+  friend class CompositorFrameSinkSupportTestBase;
 
   // Metadata for a CompositorFrameSink.
   struct FrameSinkData {

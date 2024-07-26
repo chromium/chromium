@@ -42,6 +42,11 @@
     "expiry_milestone":-1
   },
   {
+    "name": "ack-on-surface-activation-when-interactive",
+    "owners": [ "vollick@chromium.org", "jonross@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "adaptive-button-in-top-toolbar-add-to-bookmarks",
     "owners": [ "salg@google.com", "chrome-segmentation-platform@google.com" ],
     "expiry_milestone": 130
@@ -2223,8 +2228,8 @@
   },
   {
     "name": "draw-immediately-when-interactive",
-    "owners": [ "vollick@chromium.org" ],
-    "expiry_milestone": 129
+    "owners": [ "vollick@chromium.org", "jonross@chromium.org" ],
+    "expiry_milestone": 135
   },
   {
     "name": "draw-key-native-edge-to-edge",

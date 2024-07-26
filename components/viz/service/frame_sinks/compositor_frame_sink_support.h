@@ -278,7 +278,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   void SetLayerContextWantsBeginFrames(bool wants_begin_frames);
 
  private:
-  friend class CompositorFrameSinkSupportTest;
+  friend class CompositorFrameSinkSupportTestBase;
   friend class DisplayTest;
   friend class FrameSinkManagerTest;
   friend class OnBeginFrameAcksCompositorFrameSinkSupportTest;

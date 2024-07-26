@@ -1076,6 +1076,9 @@ extern const char kFileSystemObserverDescription[];
 extern const char kDrawImmediatelyWhenInteractiveName[];
 extern const char kDrawImmediatelyWhenInteractiveDescription[];
 
+extern const char kAckOnSurfaceActivationWhenInteractiveName[];
+extern const char kAckOnSurfaceActivationWhenInteractiveDescription[];
+
 extern const char kFluentOverlayScrollbarsName[];
 extern const char kFluentOverlayScrollbarsDescription[];
 

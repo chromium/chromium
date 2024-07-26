@@ -306,6 +306,17 @@ BASE_FEATURE(kDrawImmediatelyWhenInteractive,
 #endif
 );
 
+// If enabled, we immediately send acks to clients when a viz surface
+// activates. This effectively removes back-pressure. This can result in wasted
+// work and contention, but should regularize the timing of client rendering.
+BASE_FEATURE(kAckOnSurfaceActivationWhenInteractive,
+             "AckOnSurfaceActivationWhenInteractive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int>
+    kNumCooldownFramesForAckOnSurfaceActivationDuringInteraction{
+        &kAckOnSurfaceActivationWhenInteractive, "frames", 3};
+
 // When enabled, SDR maximum luminance nits of then current display will be used
 // as the HDR metadata NDWL nits.
 BASE_FEATURE(kUseDisplaySDRMaxLuminanceNits,
@@ -509,6 +520,22 @@ bool IsOnBeginFrameAcksEnabled() {
 bool ShouldDrawImmediatelyWhenInteractive() {
   return base::FeatureList::IsEnabled(
       features::kDrawImmediatelyWhenInteractive);
+}
+bool ShouldAckOnSurfaceActivationWhenInteractive() {
+  return base::FeatureList::IsEnabled(
+      features::kAckOnSurfaceActivationWhenInteractive);
+}
+
+std::optional<uint64_t>
+NumCooldownFramesForAckOnSurfaceActivationDuringInteraction() {
+  if (!ShouldAckOnSurfaceActivationWhenInteractive()) {
+    return std::nullopt;
+  }
+  CHECK_GE(kNumCooldownFramesForAckOnSurfaceActivationDuringInteraction.Get(),
+           0)
+      << "The number of cooldown frames must be non-negative";
+  return static_cast<uint64_t>(
+      kNumCooldownFramesForAckOnSurfaceActivationDuringInteraction.Get());
 }
 
 std::optional<double> SnapshotEvictedRootSurfaceScale() {

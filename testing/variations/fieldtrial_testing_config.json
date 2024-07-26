@@ -8752,27 +8752,15 @@
             "platforms": [
                 "android",
                 "chromeos",
-                "chromeos_lacros",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledV4",
                     "enable_features": [
-                        "DrawImmediatelyWhenInteractive"
-                    ]
-                },
-                {
-                    "name": "EnabledV2",
-                    "enable_features": [
-                        "DrawImmediatelyWhenInteractive"
-                    ]
-                },
-                {
-                    "name": "EnabledV3",
-                    "enable_features": [
+                        "AckOnSurfaceActivationWhenInteractive",
                         "DrawImmediatelyWhenInteractive"
                     ]
                 }

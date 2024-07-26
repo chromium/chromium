@@ -1900,6 +1900,16 @@ const char kDrawImmediatelyWhenInteractiveDescription[] =
     "Causes viz to activate and draw frames immediately during a touch "
     "interaction or scroll.";
 
+const char kAckOnSurfaceActivationWhenInteractiveName[] =
+    "Ack On Surface Activation When Interactive";
+const char kAckOnSurfaceActivationWhenInteractiveDescription[] =
+    "If enabled, immediately send acks to clients when a viz surface "
+    "activates and when that surface is a dependency of an interactive frame "
+    "(i.e., when there is an active scroll or a touch interaction). This "
+    "effectively removes back-pressure in this case. This can result in "
+    "wasted work and contention, but should regularize the timing of client "
+    "rendering.";
+
 const char kFluentOverlayScrollbarsName[] = "Fluent Overlay scrollbars.";
 const char kFluentOverlayScrollbarsDescription[] =
     "Stylizes scrollbars with Microsoft Fluent design and makes them overlay "

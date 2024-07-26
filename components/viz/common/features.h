@@ -106,6 +106,7 @@ VIZ_COMMON_EXPORT extern const char kPredictorLinear2[];
 VIZ_COMMON_EXPORT extern const char kPredictorLsq[];
 
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawImmediatelyWhenInteractive);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAckOnSurfaceActivationWhenInteractive);
 
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kSnapshotEvictedRootSurface);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<double>
@@ -135,6 +136,11 @@ VIZ_COMMON_EXPORT bool IsCVDisplayLinkBeginFrameSourceEnabled();
 VIZ_COMMON_EXPORT bool IsVSyncAlignedPresentEnabled();
 VIZ_COMMON_EXPORT int NumPendingFrameSupported();
 VIZ_COMMON_EXPORT bool ShouldLogFrameQuadInfo();
+VIZ_COMMON_EXPORT std::optional<uint64_t>
+NumCooldownFramesForAckOnSurfaceActivationDuringInteraction();
+VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
+    kNumCooldownFramesForAckOnSurfaceActivationDuringInteraction;
+VIZ_COMMON_EXPORT bool ShouldAckOnSurfaceActivationWhenInteractive();
 
 }  // namespace features
 
