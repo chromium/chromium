@@ -881,6 +881,10 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
       current_step_->subscription = ElementTracker::Subscription();
     }
 
+    // Once a transition is successful, any remaining subsequences must be
+    // cleared to prevent them executing in the background.
+    current_step_->subsequence_data.clear();
+
     // If we've got a guard on the new current step's element having gone away
     // while we were waiting, we can release it.
     next_step_hidden_subscription_ = ElementTracker::Subscription();
