@@ -161,6 +161,10 @@ class TestReportingCache : public ReportingCache {
       std::vector<ReportingEndpoint> endpoints) override {
     NOTREACHED_IN_MIGRATION();
   }
+  void SetEnterpriseReportingEndpoints(
+      const base::flat_map<std::string, GURL>& endpoints) override {
+    NOTREACHED_NORETURN();
+  }
   std::set<url::Origin> GetAllOrigins() const override {
     NOTREACHED_IN_MIGRATION();
     return std::set<url::Origin>();
@@ -210,6 +214,10 @@ class TestReportingCache : public ReportingCache {
       const GURL& url) const override {
     NOTREACHED_IN_MIGRATION();
     return ReportingEndpoint();
+  }
+  std::vector<ReportingEndpoint> GetEnterpriseEndpointsForTesting()
+      const override {
+    NOTREACHED_NORETURN();
   }
   bool EndpointGroupExistsForTesting(const ReportingEndpointGroupKey& group_key,
                                      OriginSubdomains include_subdomains,

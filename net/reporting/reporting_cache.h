@@ -56,7 +56,9 @@ class NET_EXPORT ReportingCache {
  public:
   class PersistentReportingStore;
 
-  static std::unique_ptr<ReportingCache> Create(ReportingContext* context);
+  static std::unique_ptr<ReportingCache> Create(
+      ReportingContext* context,
+      const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints);
 
   virtual ~ReportingCache();
 
@@ -193,6 +195,11 @@ class NET_EXPORT ReportingCache {
       const IsolationInfo& isolation_info,
       std::vector<ReportingEndpoint> parsed_header) = 0;
 
+  // Sets reporting endpoints configured by the ReportingEndpoints enterprise
+  // policy in the cache.
+  virtual void SetEnterpriseReportingEndpoints(
+      const base::flat_map<std::string, GURL>& endpoints) = 0;
+
   // Gets all the origins of clients in the cache.
   virtual std::set<url::Origin> GetAllOrigins() const = 0;
 
@@ -285,6 +292,10 @@ class NET_EXPORT ReportingCache {
   virtual ReportingEndpoint GetEndpointForTesting(
       const ReportingEndpointGroupKey& group_key,
       const GURL& url) const = 0;
+
+  // Returns all enterprise endpoints in the cache.
+  virtual std::vector<ReportingEndpoint> GetEnterpriseEndpointsForTesting()
+      const = 0;
 
   // Returns whether an endpoint group with exactly the given properties exists
   // in the cache. If |expires| is base::Time(), it will not be checked.

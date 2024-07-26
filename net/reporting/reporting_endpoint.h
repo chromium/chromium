@@ -81,9 +81,8 @@ struct NET_EXPORT ReportingEndpointGroupKey {
   // reports aren’t sent to enterprise endpoints.
   ReportingTargetType target_type = ReportingTargetType::kDeveloper;
 
-  NET_EXPORT friend bool operator==(const ReportingEndpointGroupKey& lhs,
-                                    const ReportingEndpointGroupKey& rhs) =
-      default;
+  friend bool operator==(const ReportingEndpointGroupKey& lhs,
+                         const ReportingEndpointGroupKey& rhs) = default;
 };
 
 NET_EXPORT bool operator!=(const ReportingEndpointGroupKey& lhs,
@@ -112,6 +111,9 @@ struct NET_EXPORT ReportingEndpoint {
     // priority; among those with the same priority, each endpoint has a chance
     // of being chosen that is proportional to its weight.
     int weight = kDefaultWeight;
+
+    friend bool operator==(const EndpointInfo& lhs,
+                           const EndpointInfo& rhs) = default;
   };
 
   struct Statistics {
@@ -126,6 +128,9 @@ struct NET_EXPORT ReportingEndpoint {
     // The number of individual reports that we've successfully uploaded for
     // this endpoint.
     int successful_reports = 0;
+
+    friend bool operator==(const Statistics& lhs,
+                           const Statistics& rhs) = default;
   };
 
   // Constructs an invalid ReportingEndpoint.
@@ -139,6 +144,9 @@ struct NET_EXPORT ReportingEndpoint {
 
   ReportingEndpoint& operator=(const ReportingEndpoint&);
   ReportingEndpoint& operator=(ReportingEndpoint&&);
+
+  friend bool operator==(const ReportingEndpoint& lhs,
+                         const ReportingEndpoint& rhs) = default;
 
   ~ReportingEndpoint();
 

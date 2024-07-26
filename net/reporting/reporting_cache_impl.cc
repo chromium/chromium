@@ -17,6 +17,7 @@
 #include "base/stl_util.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
+#include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"
@@ -24,9 +25,12 @@
 
 namespace net {
 
-ReportingCacheImpl::ReportingCacheImpl(ReportingContext* context)
+ReportingCacheImpl::ReportingCacheImpl(
+    ReportingContext* context,
+    const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints)
     : context_(context) {
   DCHECK(context_);
+  SetEnterpriseReportingEndpoints(enterprise_reporting_endpoints);
 }
 
 ReportingCacheImpl::~ReportingCacheImpl() = default;
@@ -478,6 +482,31 @@ void ReportingCacheImpl::OnParsedReportingEndpointsHeader(
       FilterEndpointsByOrigin(document_endpoints_, origin));
 }
 
+void ReportingCacheImpl::SetEnterpriseReportingEndpoints(
+    const base::flat_map<std::string, GURL>& endpoints) {
+  if (!base::FeatureList::IsEnabled(
+          net::features::kReportingApiEnableEnterpriseCookieIssues)) {
+    return;
+  }
+  std::vector<ReportingEndpoint> new_enterprise_endpoints;
+  new_enterprise_endpoints.reserve(endpoints.size());
+  for (const auto& [endpoint_name, endpoint_url] : endpoints) {
+    ReportingEndpoint endpoint;
+    // TODO(crbug.com/350061802): Update origin in the ReportingEndpointGroupKey
+    // after origin is made optional. Current origin, "https://origin/", is for
+    // testing purposes.
+    endpoint.group_key = ReportingEndpointGroupKey(
+        NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
+        url::Origin::Create(GURL("https://origin/")), endpoint_name,
+        ReportingTargetType::kEnterprise);
+    ReportingEndpoint::EndpointInfo endpoint_info;
+    endpoint_info.url = std::move(endpoint_url);
+    endpoint.info = endpoint_info;
+    new_enterprise_endpoints.push_back(endpoint);
+  }
+  enterprise_endpoints_.swap(new_enterprise_endpoints);
+}
+
 std::set<url::Origin> ReportingCacheImpl::GetAllOrigins() const {
   ConsistencyCheckClients();
   std::set<url::Origin> origins_out;
@@ -832,6 +861,11 @@ ReportingEndpoint ReportingCacheImpl::GetEndpointForTesting(
       return endpoint;
   }
   return ReportingEndpoint();
+}
+
+std::vector<ReportingEndpoint>
+ReportingCacheImpl::GetEnterpriseEndpointsForTesting() const {
+  return enterprise_endpoints_;
 }
 
 bool ReportingCacheImpl::EndpointGroupExistsForTesting(

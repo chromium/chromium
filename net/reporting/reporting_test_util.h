@@ -158,7 +158,9 @@ class TestReportingContext : public ReportingContext {
       base::Clock* clock,
       const base::TickClock* tick_clock,
       const ReportingPolicy& policy,
-      ReportingCache::PersistentReportingStore* store = nullptr);
+      ReportingCache::PersistentReportingStore* store = nullptr,
+      const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints =
+          {});
 
   TestReportingContext(const TestReportingContext&) = delete;
   TestReportingContext& operator=(const TestReportingContext&) = delete;
