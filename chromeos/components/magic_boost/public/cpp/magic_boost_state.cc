@@ -40,6 +40,14 @@ void MagicBoostState::RemoveObserver(MagicBoostState::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void MagicBoostState::UpdateMagicBoostEnabled(bool enabled) {
+  magic_boost_enabled_ = enabled;
+
+  for (auto& observer : observers_) {
+    observer.OnMagicBoostEnabledUpdated(magic_boost_enabled_.value());
+  }
+}
+
 void MagicBoostState::UpdateHMREnabled(bool enabled) {
   hmr_enabled_ = enabled;
 

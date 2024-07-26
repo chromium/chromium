@@ -202,6 +202,29 @@ suite('<search-and-assistant-settings-card>', () => {
       assertFalse(magicBoostCollapse.opened);
     });
 
+    test('Magic Boost toggle is deep-linkable', async () => {
+      loadTimeData.overrideValues({
+        isMagicBoostFeatureEnabled: true,
+      });
+      createSearchAndAssistantCard();
+
+      const setting = settingMojom.Setting.kMagicBoostOnOff;
+      const params = new URLSearchParams();
+      params.append('settingId', setting.toString());
+      Router.getInstance().navigateTo(defaultRoute, params);
+
+      const deepLinkElement =
+          searchAndAssistantSettingsCard.shadowRoot!.querySelector<HTMLElement>(
+              '#magicBoostToggle');
+      assertTrue(!!deepLinkElement);
+
+      await waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement,
+          searchAndAssistantSettingsCard.shadowRoot!.activeElement,
+          `Element should be focused for settingId=${setting}.'`);
+    });
+
     test('sub items are deep-linkable', async () => {
       // Set `isMahiEnabled` false to hide the to-be-obsolete Mahi toggle that
       // uses the same deeplink as the HelpMeRead toggle under Magic boost.
@@ -220,21 +243,26 @@ suite('<search-and-assistant-settings-card>', () => {
       searchAndAssistantSettingsCard.prefs = fakePrefs;
       flush();
 
-      const setting = settingMojom.Setting.kMahiOnOff;
-      const params = new URLSearchParams();
-      params.append('settingId', setting.toString());
-      Router.getInstance().navigateTo(defaultRoute, params);
+      const subItems = new Map<settingMojom.Setting, string>([
+        [settingMojom.Setting.kMahiOnOff, '#helpMeReadToggle'],
+        [settingMojom.Setting.kShowOrca, '#helpMeWriteToggle'],
+      ]);
 
-      const deepLinkElement =
-          searchAndAssistantSettingsCard.shadowRoot!.querySelector<HTMLElement>(
-              '#helpMeReadToggle');
-      assertTrue(!!deepLinkElement);
+      for (const [setting, element] of subItems) {
+        const params = new URLSearchParams();
+        params.append('settingId', setting.toString());
+        Router.getInstance().navigateTo(defaultRoute, params);
 
-      await waitAfterNextRender(deepLinkElement);
-      assertEquals(
-          deepLinkElement,
-          searchAndAssistantSettingsCard.shadowRoot!.activeElement,
-          `Element should be focused for settingId=${setting}.'`);
+        const deepLinkElement = searchAndAssistantSettingsCard.shadowRoot!
+                                    .querySelector<HTMLElement>(element);
+        assertTrue(!!deepLinkElement);
+
+        await waitAfterNextRender(deepLinkElement);
+        assertEquals(
+            deepLinkElement,
+            searchAndAssistantSettingsCard.shadowRoot!.activeElement,
+            `Element should be focused for settingId=${setting}.'`);
+      }
     });
   });
 

@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_utils.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/search/google_assistant_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/search/search_concept.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -24,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -197,6 +199,38 @@ const std::vector<SearchConcept>& GetAssistantVoiceMatchSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetMagicBoostSearchConcepts(
+    const char* section_path) {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_MAGIC_BOOST,
+       section_path,
+       mojom::SearchResultIcon::kMagicBoost,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kMagicBoostOnOff}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetMagicBoostSubSearchConcepts(
+    const char* section_path) {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_MAGIC_BOOST_HMR,
+       section_path,
+       mojom::SearchResultIcon::kHelpMeRead,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kMahiOnOff}},
+      {IDS_OS_SETTINGS_TAG_MAGIC_BOOST_HMW,
+       section_path,
+       mojom::SearchResultIcon::kHelpMeWrite,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kShowOrca}},
+  });
+  return *tags;
+}
+
 bool IsVoiceMatchAllowed() {
   return !assistant::features::IsVoiceMatchDisabled();
 }
@@ -288,6 +322,13 @@ SearchSection::SearchSection(Profile* profile,
   if (QuickAnswersState::Get()) {
     QuickAnswersState::Get()->AddObserver(this);
     UpdateQuickAnswersSearchTags();
+  }
+
+  auto* magic_boost_state = chromeos::MagicBoostState::Get();
+  if (chromeos::features::IsMagicBoostEnabled() && magic_boost_state) {
+    updater.AddSearchTags(GetMagicBoostSearchConcepts(GetSectionPath()));
+    magic_boost_state->AddObserver(this);
+    UpdateSubMagicBoostSearchTags();
   }
 }
 
@@ -487,6 +528,14 @@ void SearchSection::OnEligibilityChanged(bool eligible) {
   UpdateQuickAnswersSearchTags();
 }
 
+void SearchSection::OnMagicBoostEnabledUpdated(bool enabled) {
+  UpdateSubMagicBoostSearchTags();
+}
+
+void SearchSection::OnIsDeleting() {
+  magic_boost_state_observation_.Reset();
+}
+
 bool SearchSection::IsAssistantAllowed() const {
   // NOTE: This will be false when the flag is disabled.
   return ::assistant::IsAssistantAllowedForProfile(profile()) ==
@@ -540,6 +589,19 @@ void SearchSection::UpdateQuickAnswersSearchTags() {
       QuickAnswersState::IsEnabledAs(
           QuickAnswersState::FeatureType::kQuickAnswers)) {
     updater.AddSearchTags(GetQuickAnswersOnSearchConcepts());
+  }
+}
+
+void SearchSection::UpdateSubMagicBoostSearchTags() {
+  auto* magic_boost_state = chromeos::MagicBoostState::Get();
+  DCHECK(magic_boost_state);
+
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+
+  updater.RemoveSearchTags(GetMagicBoostSubSearchConcepts(GetSectionPath()));
+
+  if (magic_boost_state->magic_boost_enabled().value_or(false)) {
+    updater.AddSearchTags(GetMagicBoostSubSearchConcepts(GetSectionPath()));
   }
 }
 
