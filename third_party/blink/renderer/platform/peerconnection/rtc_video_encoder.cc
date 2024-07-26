@@ -35,6 +35,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_switches.h"
@@ -70,6 +71,12 @@
 #include "third_party/webrtc/rtc_base/time_utils.h"
 
 namespace {
+
+// Allow MappableSI to be used for RTCVideoEncoder.
+BASE_FEATURE(kUseMappableSIForRTCVideoEncoder,
+             "UseMappableSIForRTCVideoEncoder",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 media::SVCScalabilityMode ToSVCScalabilityMode(
     const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
         spatial_layers,
@@ -1933,24 +1940,73 @@ bool RTCVideoEncoder::Impl::CreateBlackGpuMemoryBufferFrame(
     const gfx::Size& natural_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto gmb = gpu_factories_->CreateGpuMemoryBuffer(
-      natural_size, gfx::BufferFormat::YUV_420_BIPLANAR,
-      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+  const auto buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  const auto si_format = viz::GetSharedImageFormat(buffer_format);
+  const auto buffer_usage =
+      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
 
-  if (!gmb || !gmb->Map()) {
-    black_gmb_frame_ = nullptr;
-    return false;
+  // Setting some default usage in order to get a mappable shared image.
+  const auto si_usage =
+      gpu::SHARED_IMAGE_USAGE_CPU_WRITE | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  // Keeping the redundant code between if/else separate since it makes it
+  // easier to remove code once this feature is launched. Also note that this
+  // method as well as some variables here will be renamed when feature is fully
+  // launched.
+  if (base::FeatureList::IsEnabled(kUseMappableSIForRTCVideoEncoder)) {
+    auto* sii = gpu_factories_->SharedImageInterface();
+    if (!sii) {
+      return false;
+    }
+
+    auto shared_image = sii->CreateSharedImage(
+        {si_format, natural_size, gfx::ColorSpace(),
+         gpu::SharedImageUsageSet(si_usage), "RTCVideoEncoder"},
+        gpu::kNullSurfaceHandle, buffer_usage);
+    if (!shared_image) {
+      LOG(ERROR) << "Unable to create a mappable shared image.";
+      return false;
+    }
+
+    // Map in order to write to it.
+    auto mapping = shared_image->Map();
+    if (!mapping) {
+      LOG(ERROR) << "Mapping shared image failed.";
+      sii->DestroySharedImage(gpu::SyncToken(), std::move(shared_image));
+      return false;
+    }
+
+    // Fills the NV12 frame with YUV black (0x00, 0x80, 0x80).
+    const auto size = mapping->Size();
+    memset(static_cast<uint8_t*>(mapping->Memory(0)), 0x0,
+           mapping->Stride(0) * size.height());
+    memset(static_cast<uint8_t*>(mapping->Memory(1)), 0x80,
+           mapping->Stride(1) * size.height() / 2);
+
+    gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
+    black_gmb_frame_ = media::VideoFrame::WrapMappableSharedImage(
+        std::move(shared_image), sync_token, GL_TEXTURE_2D,
+        base::NullCallback(), gfx::Rect(size), natural_size, base::TimeDelta());
+  } else {
+    auto gmb = gpu_factories_->CreateGpuMemoryBuffer(
+        natural_size, gfx::BufferFormat::YUV_420_BIPLANAR,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+
+    if (!gmb || !gmb->Map()) {
+      black_gmb_frame_ = nullptr;
+      return false;
+    }
+    // Fills the NV12 frame with YUV black (0x00, 0x80, 0x80).
+    const auto gmb_size = gmb->GetSize();
+    memset(static_cast<uint8_t*>(gmb->memory(0)), 0x0,
+           gmb->stride(0) * gmb_size.height());
+    memset(static_cast<uint8_t*>(gmb->memory(1)), 0x80,
+           gmb->stride(1) * gmb_size.height() / 2);
+    gmb->Unmap();
+
+    black_gmb_frame_ = media::VideoFrame::WrapExternalGpuMemoryBuffer(
+        gfx::Rect(gmb_size), natural_size, std::move(gmb), base::TimeDelta());
   }
-  // Fills the NV12 frame with YUV black (0x00, 0x80, 0x80).
-  const auto gmb_size = gmb->GetSize();
-  memset(static_cast<uint8_t*>(gmb->memory(0)), 0x0,
-         gmb->stride(0) * gmb_size.height());
-  memset(static_cast<uint8_t*>(gmb->memory(1)), 0x80,
-         gmb->stride(1) * gmb_size.height() / 2);
-  gmb->Unmap();
-
-  black_gmb_frame_ = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-      gfx::Rect(gmb_size), natural_size, std::move(gmb), base::TimeDelta());
   return true;
 }
 
